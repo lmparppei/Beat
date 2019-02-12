@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "2AC64EDF5F21BF0BA07B7136049B1CA8548BF2E9",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "B36C22B2D6729CA8C35577F71174530C676903ED" : 0,
+    "2AC64EDF5F21BF0BA07B7136049B1CA8548BF2E9" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "994DB3DA-43EE-4C89-9B5B-09C986F9D17A",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "B36C22B2D6729CA8C35577F71174530C676903ED" : "..\/Fountain",
+    "2AC64EDF5F21BF0BA07B7136049B1CA8548BF2E9" : "Writer"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Writer",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Writer.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/HendrikNoeller\/Writer-Mac.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "2AC64EDF5F21BF0BA07B7136049B1CA8548BF2E9"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/nyousefi\/Fountain.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "B36C22B2D6729CA8C35577F71174530C676903ED"
+    }
+  ]
+}

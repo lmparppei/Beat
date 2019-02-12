@@ -1,0 +1,61 @@
+Title: Fountain Reference
+Credit: Written By
+Author: Hendrik Noeller
+Source: Writer.app
+Draft date: 17.4.2016
+Contact: noeller@me.com
+Info: This is a custom key that will not be printed
+
+The title page is right at the beginning of a document. It consists of lines like:
+Key: Value
+Only the keys Title, Credit, Author, Source, Draft date and Contact will be laid out on the title page of the printed or exported document. You can use as many other keys as you want for personal reference, but be aware that they will not be printed.
+
+INT. DAY - PLACE [[Scene Headings begin with INT, EXT, EST, I/E or INT/EXT]]
+
+EXT. NIGHT - OTHER PLACE [[And _can_ be finished with a scene number in #'s]] #42#
+
+Action is just Regular Text
+
+CHARACTER NAMES
+Are upper case, while dialogue and
+(parentheticals)
+come directly after a character name
+
+DOUBLE DIALOGUE ^
+(and it's parentheticals)
+are marked by a ^ after the 2nd name
+
+TRANSITIONS END IN TO:
+
+Page breaks are three or more '=' (and nothing else) in a line:
+
+===
+
+> Centered Text is enclosed in angle brackets <
+
+~Lyrics are preceded by a tilde
+
+.You can force a scene heading by preceding a line with a dot
+
+!YOU CAN FORCE ACTION BY PRECEDING A LINE WITH AN EXCLAMATION POINT
+
+@you can force a character by preceding a line with an at-sign
+
+>You can force a transition by preceding a line with a greater than sign
+
+#Sections start with a pound sign/number sign/hashtag/whatever you call it
+
+=Synopses start with an equals sign
+
+Sections and synopses will not be exported, they are just for your personal reference
+
+You can format any kind of text in the following way:
+**Bold text is surrounded in double stars**
+*Italic text is surrounded by single stars*
+_Underlined text is surrounded by underscores_
+[[Notes are surrounded in square brackets, and will not be printed or exported]]
+/*Omitted text is surrounded by a slash and a star, and will not be exported either.*/
+
+The difference between notes and omitted text is that a note is meant for personal reference, while an omitted section represents a piece of the screenplay that should not be included in the final result, yet not be deleted either. This is why an omitted section can span multiple lines, while a note (like bold, italic and underlined) can't.
+
+Based on these simple rules, you can just type away your screenplay without thinking about formatting, Writer will do it automatically for you. The general rule is: make it look like a screenplay, and you'll probably be pretty spot on with the syntax.
