@@ -109,6 +109,7 @@ body > p:first-child {
     text-align: center;
     margin: 1.3em 0;
     text-transform: uppercase;
+	text-decoration: underline;
 }
 #script-title .credit {
     text-align: center;

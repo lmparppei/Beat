@@ -22,6 +22,15 @@
 //  IN THE SOFTWARE.
 //
 
+/*
+ 
+ N.B. This file is customized for Beat. I have removed the English language
+ "written by" for international users.
+
+ [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
+ 
+*/
+
 #import "FNHTMLScript.h"
 #import "FNScript.h"
 #import "FNElement.h"
@@ -136,7 +145,7 @@
                 [body appendFormat:@"<p class='%@'>%@</p>", @"credit", values];
             }
             else {
-                [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @"written by"];
+                [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
             }
             
             // Authors
