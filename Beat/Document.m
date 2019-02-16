@@ -46,7 +46,7 @@
 #import "ColorView.h"
 #import "ContinousFountainParser.h"
 #import "ThemeManager.h"
-#import "Beat-Bridging-Header.h"
+//#import "Beat-Bridging-Header.h"
 
 @interface Document ()
 
