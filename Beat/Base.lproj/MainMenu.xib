@@ -569,7 +569,7 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="jA1-Lj-Irm">
                         <items>
-                            <menuItem title="Sample script" id="ZsI-w6-Fec">
+                            <menuItem title="Beat Tutorial" id="ZsI-w6-Fec">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showReference:" target="vEX-2F-hcj" id="qax-XK-0yN"/>

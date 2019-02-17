@@ -61,6 +61,9 @@
 @property (weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property BOOL outlineViewVisible;
 
+#pragma mark - Floating outline button
+@property (weak) IBOutlet NSButton *outlineButton;
+
 #pragma mark - Toolbar Buttons
 
 @property (weak) IBOutlet NSButton *outlineToolbarButton;
@@ -125,7 +128,7 @@
 #define LIVE_PREVIEW_KEY @"Live Preview"
 #define FONTSIZE_KEY @"Fontsize"
 #define ZOOMLEVEL_KEY @"Zoomlevel"
-#define DEFAULT_ZOOM 16
+#define DEFAULT_ZOOM 17
 #define FONT_SIZE_MODIFIER 0.027
 #define ZOOM_MODIFIER 40
 #define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
@@ -185,7 +188,11 @@
                                  _documentWidth * 1.35,
                                  _documentWidth * 1.3);
     [window setFrame:newFrame display:YES];
-    
+	
+	CGRect buttonFrame = self.outlineButton.frame;
+	buttonFrame.origin.x = 15;
+	self.outlineButton.frame = buttonFrame;
+	
     self.outlineViewVisible = false;
     self.outlineViewWidth.constant = 0;
     
@@ -1375,6 +1382,8 @@ Zoom level * zoom modifier * element size
     self.outlineViewVisible = !self.outlineViewVisible;
     
     if (self.outlineViewVisible) {
+		//[self.outlineButton setTranslatesAutoresizingMaskIntoConstraints:true];
+		
         [self.outlineView reloadData];
 		[self updateSceneTypes];
         [self.outlineViewWidth.animator setConstant:TREE_VIEW_WIDTH];
@@ -1384,7 +1393,16 @@ Zoom level * zoom modifier * element size
                                      window.frame.size.width + TREE_VIEW_WIDTH + 20,
                                      window.frame.size.height);
         [window.animator setFrame:newFrame display:YES];
+		
+		CGRect buttonFrame = self.outlineButton.frame;
+		buttonFrame.origin.x = TREE_VIEW_WIDTH + 15;
+		[self.outlineButton.animator setFrame:buttonFrame];
+
     } else {
+		CGRect buttonFrame = self.outlineButton.frame;
+		buttonFrame.origin.x = 15;
+		[self.outlineButton.animator setFrame:buttonFrame];
+		
         [self.outlineViewWidth.animator setConstant:0];
         NSWindow *window = self.windowControllers[0].window;
         NSRect newFrame = NSMakeRect(window.frame.origin.x - 20,

@@ -19,6 +19,7 @@
                 <outlet property="italicToolbarButton" destination="YZl-B1-yyf" id="gXy-bv-sJV"/>
                 <outlet property="noteToolbarButton" destination="5xl-bA-Iy2" id="ukI-9P-RUr"/>
                 <outlet property="omitToolbarButton" destination="UfY-1R-epx" id="f1f-wR-6eX"/>
+                <outlet property="outlineButton" destination="ULq-c1-qrj" id="TPP-Em-8Xy"/>
                 <outlet property="outlineToolbarButton" destination="nal-lQ-yoE" id="ABm-at-FZI"/>
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
                 <outlet property="outlineViewWidth" destination="gxm-x2-1t3" id="RIU-v7-T76"/>
@@ -146,6 +147,17 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
+                                        <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
+                                            <rect key="frame" x="259" y="570" width="22" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="NSPathTemplate" imagePosition="only" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="toggleOutlineView:" target="-2" id="itM-sD-VVq"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="6pm-Ac-n3m" firstAttribute="leading" secondItem="RaS-3C-d5c" secondAttribute="trailing" id="28O-dF-8Nd"/>
@@ -160,11 +172,11 @@
                             </tabViewItem>
                             <tabViewItem label="Render" identifier="2" id="Ycm-en-OeX" userLabel="Render Tab">
                                 <view key="view" id="ECs-3D-rzc">
-                                    <rect key="frame" x="0.0" y="0.0" width="800" height="599"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <webView translatesAutoresizingMaskIntoConstraints="NO" id="Vil-EQ-uOZ">
-                                            <rect key="frame" x="50" y="0.0" width="700" height="599"/>
+                                            <rect key="frame" x="175" y="0.0" width="700" height="599"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="700" id="6XZ-rK-7fU"/>
                                             </constraints>
