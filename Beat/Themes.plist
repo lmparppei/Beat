@@ -19,9 +19,9 @@
 			</array>
 			<key>Selection</key>
 			<array>
-				<integer>170</integer>
-				<integer>170</integer>
-				<integer>170</integer>
+				<integer>0</integer>
+				<integer>110</integer>
+				<integer>190</integer>
 			</array>
 			<key>Text</key>
 			<array>
@@ -59,9 +59,9 @@
 			</array>
 			<key>Selection</key>
 			<array>
-				<integer>30</integer>
-				<integer>30</integer>
-				<integer>30</integer>
+				<integer>150</integer>
+				<integer>150</integer>
+				<integer>150</integer>
 			</array>
 			<key>Text</key>
 			<array>

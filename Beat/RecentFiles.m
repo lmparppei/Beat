@@ -32,15 +32,6 @@
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
-	//NSArray *array = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
-	//NSString *url = [item URI];
-	//return url;
-	
-	/*NSURL *url = item;
-	NSURL *newURL = [NSURL URLWithString:
-					  [NSString stringWithCString:url
-										 encoding:NSUTF8StringEncoding]];
-	 */
 	return [item lastPathComponent];
 }
 - (IBAction)newDocument:(id)sender {
@@ -49,21 +40,23 @@
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView didClickTableColumn:(NSTableColumn *)tableColumn {
-	NSLog(@"Click");
+	
 }
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
-	NSLog(@"uri %@", [item path]);
+	//NSLog(@"uri %@://%@", [item scheme], [item path]);
+	//NSString *url = [NSString stringWithFormat:@"%@://%@", [item scheme], [item path]];
 	
-	//[[NSWorkspace sharedWorkspace] openFile:[item path]];
-	//[[NSApplication sharedApplication] openFile:[item path]];
-	//[[NSDocumentController alloc] openDocument:[item path]];
 	void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
-		[document setFileURL:[[NSURL alloc] init]];
-		[_startModal close];
+		
+		//[document setFileURL:[[NSURL alloc] init]];
 	};
 	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:item display:YES completionHandler:completionHander];
 	
+	
+	//[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:item display:YES completionHandler:nil];
+	
 	return YES;
+	 
 }
 
 // outlineView:numberOfChildrenOfItem:,

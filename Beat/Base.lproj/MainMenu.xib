@@ -393,6 +393,13 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Format" id="O6A-iY-8hf">
                         <items>
+                            <menuItem title="Add Title Page" id="kNr-WO-rzd">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="addTitlePage:" target="-1" id="s6K-xU-xbT"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="DDw-pc-ugk"/>
                             <menuItem title="Bold" keyEquivalent="b" id="SoY-Ie-ajo">
                                 <connections>
                                     <action selector="makeBold:" target="-1" id="SsS-X3-26H"/>
@@ -435,37 +442,16 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Ygd-Y8-VFo"/>
-                            <menuItem title="Omit" keyEquivalent="/" id="5Y3-LZ-qMb">
+                            <menuItem title="Note / Omit" keyEquivalent="e" id="5Y3-LZ-qMb">
                                 <connections>
                                     <action selector="makeOmitted:" target="-1" id="uw4-3u-NKQ"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Note" id="fKt-Xk-jG8">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Note" keyEquivalent="E" id="fKt-Xk-jG8">
                                 <connections>
                                     <action selector="makeNote:" target="-1" id="egH-7G-shU"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="SNs-fE-ES7"/>
-                            <menuItem title="Print automatic scene numbers" state="on" id="p37-Bz-gMZ">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="togglePrintSceneNumbers:" target="-1" id="8bJ-zj-vM7"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Lock scene numbers" id="cyU-kn-U6H">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="sceneNumbering:" target="-1" id="gQ6-kb-cxV"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Clear scene numbers" id="nIN-DD-JuD">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="clearSceneNumbers:" target="-1" id="MkN-Vh-mRS"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="DDw-pc-ugk"/>
                             <menuItem title="Add Page Break" id="GOV-Kw-xCI">
                                 <string key="keyEquivalent" base64-UTF8="YES">
 DQ
@@ -474,10 +460,23 @@ DQ
                                     <action selector="addPageBreak:" target="-1" id="QOi-6j-Qi0"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Add Title Page" id="kNr-WO-rzd">
+                            <menuItem isSeparatorItem="YES" id="SNs-fE-ES7"/>
+                            <menuItem title="Print Automatic Scene Numbers" state="on" id="p37-Bz-gMZ">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="addTitlePage:" target="-1" id="s6K-xU-xbT"/>
+                                    <action selector="togglePrintSceneNumbers:" target="-1" id="8bJ-zj-vM7"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Lock Scene Numbers" id="cyU-kn-U6H">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="sceneNumbering:" target="-1" id="gQ6-kb-cxV"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Clear Scene Numbers" id="nIN-DD-JuD">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="clearSceneNumbers:" target="-1" id="MkN-Vh-mRS"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="NmP-5j-KWS"/>
@@ -494,7 +493,25 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
                         <items>
-                            <menuItem title="Theme" id="SdI-kP-vhN">
+                            <menuItem title="Show Outline" keyEquivalent="d" id="7cA-vF-vVK">
+                                <connections>
+                                    <action selector="toggleOutlineView:" target="-1" id="jgE-Ew-h68"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Night Mode" id="4mq-FG-jAk">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleNightMode:" target="-1" id="hAB-tL-S3S"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Enter full screen" keyEquivalent="f" id="NJj-Ow-1UU">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="toggleFullScreen:" target="-1" id="20F-LW-XZo"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="D4X-40-17d"/>
+                            <menuItem title="Theme" hidden="YES" enabled="NO" id="SdI-kP-vhN">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" id="RAa-ji-vvT"/>
                                 <connections>
@@ -505,6 +522,7 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Zoom" id="xgR-jy-OLL">
                                     <items>
+                                        <menuItem isSeparatorItem="YES" id="c52-PG-mqe"/>
                                         <menuItem title="Zoom In" keyEquivalent="+" id="Vt3-Oc-Iy3">
                                             <connections>
                                                 <action selector="increaseFontSize:" target="-1" id="lZE-WX-ntU"/>
@@ -526,36 +544,18 @@ DQ
                                     <action selector="zoom:" target="-1" id="hGt-8H-RSC"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Live preview" id="lYw-08-5AI">
+                            <menuItem title="Live Preview" id="lYw-08-5AI">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleLivePreview:" target="-1" id="dod-fg-QA1"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show outline" keyEquivalent="d" id="7cA-vF-vVK">
-                                <connections>
-                                    <action selector="toggleOutlineView:" target="-1" id="jgE-Ew-h68"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="c52-PG-mqe"/>
+                            <menuItem isSeparatorItem="YES" id="eu3-7i-yIM"/>
                             <menuItem title="Minimize" keyEquivalent="m" id="OY7-WF-poV">
                                 <connections>
                                     <action selector="performMiniaturize:" target="-1" id="VwT-WD-YPe"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Zoom" id="R4o-n2-Eq4">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="performZoom:" target="-1" id="DIl-cC-cCs"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Enter full screen" keyEquivalent="f" id="NJj-Ow-1UU">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                <connections>
-                                    <action selector="toggleFullScreen:" target="-1" id="20F-LW-XZo"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="eu3-7i-yIM"/>
                             <menuItem title="Bring all to front" id="LE2-aR-0XJ">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -660,7 +660,7 @@ DQ
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                             <rect key="frame" x="0.0" y="0.0" width="322" height="316"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" indentationPerLevel="14" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                     <rect key="frame" x="0.0" y="0.0" width="322" height="316"/>
@@ -723,6 +723,17 @@ DQ
                             <action selector="openDocument:" target="-1" id="cj3-vF-WRe"/>
                         </connections>
                     </button>
+                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jcl-C2-5kX">
+                        <rect key="frame" x="12" y="7" width="113" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="roundTextured" title="Tutorial" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="U0e-4t-f7p">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="showReference:" target="vEX-2F-hcj" id="ifI-a0-uTd"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <point key="canvasLocation" x="698" y="335.5"/>
@@ -732,6 +743,35 @@ DQ
                 <outlet property="_startModal" destination="Tq0-bd-4zX" id="VfJ-73-UBZ"/>
             </connections>
         </customObject>
+        <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="blg-LD-9vu">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="534" height="317"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <view key="contentView" id="2zn-ZX-4dS">
+                <rect key="frame" x="0.0" y="0.0" width="534" height="317"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box fixedFrame="YES" boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="K7d-ci-ehz">
+                        <rect key="frame" x="0.0" y="0.0" width="534" height="317"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <view key="contentView" ambiguous="YES" id="lNI-cY-gcb">
+                            <rect key="frame" x="0.0" y="0.0" width="534" height="317"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yFl-KJ-dtP">
+                                    <rect key="frame" x="9" y="114" width="188" height="191"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Beat_256" id="9iv-jg-aVP"/>
+                                </imageView>
+                            </subviews>
+                        </view>
+                        <color key="fillColor" white="0.114375" alpha="1" colorSpace="calibratedWhite"/>
+                    </box>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="-4" y="561.5"/>
+        </window>
     </objects>
     <resources>
         <image name="Beat_256" width="256" height="256"/>

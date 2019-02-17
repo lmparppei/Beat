@@ -1,0 +1,79 @@
+Title: Beat Tutorial
+Credit: Written by
+Author: KAPITAN!
+Draft date: 16.02.2019
+Contact: beat@kapitan.fi
+
+INT. SCHOOL ROOM - DAY
+
+Is this is your first time using Beat?
+
+You don't need to worry about pressing any keys or using commands to write dialogue or a scene header.
+
+Just type "int. school" or "ext. park" on a new line and it will become a scene header. Try it out yourself!
+
+EXT. PARK - DAY
+
+The same is true with dialogue. You can just write CHARACTER NAME and then follow it with the dialogue (or parenthetical) on the next line. It will become dialogue.
+
+CHARACTER
+(gently nodding their head)
+This is your first dialogue block.
+
+CHARACTER 2
+Hello.
+
+Now you try it. It might take a few minutes to get used to, but it's very easy. No need to press tabs or anything, or worry about messing up the formatting of your script.
+
+You can also use transitions just by typing them out.
+
+CUT TO:
+
+That was easy. Then just type in more actions!
+Try it yourself!
+
+/*
+
+This is a note. It won't be printed or exported, don't worry, but you can add comments and omit scenes.
+
+Title page info you see at the beginning of this file will be printed out as a very nice title page. You can add the title page stuff from Format -> Add title page
+
+Check out the print preview, File -> Toggle preview
+
+*/
+
+# This is a new section
+= This is a synopse. Let's get technical.
+
+/* Sections and synopses won't be printed, but they help you structure your script. Take a look at the outline view (cmd-D) how the structure is laid out! */
+
+INT./EXT. BEACH HOUSE
+
+Text formatting can be done with the usual commands used in any software, (cmd-B, cmd-I etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
+
+Basically, text formatting works so that anything inside two apostrophes is **bolded**, inside one apostrophes is in *italic*. You can also _underline_ stuff.
+
+If you have to use those characters in your text, we need to get a bit more technical. You need to use escape character \. Like this: \* or \_ ... you probably won't need to.
+
+Every element also has a way of forcing it. Take a look at the Format menu. This is how you make your own, strange transitions:
+
+> SMALL, SURPRISINGLY LONG CROSSFADE TO:
+
+INT. COFFEE SHOP - DAY
+
+You can also make double dialogue with the ^ symbol after a character. Like this:
+
+CHARACTER
+Hello.
+
+CHARACTER 2 ^
+(interrupting)
+Well hello.
+
+That's it. You can find more information on the Fountain language at http://www.fountain.io/
+
+FADE OUT
+
+
+
+

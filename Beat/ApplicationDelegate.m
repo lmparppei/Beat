@@ -26,14 +26,19 @@
 
 - (IBAction)showReference:(id)sender
 {
-    NSURL* referenceFile = [[NSBundle mainBundle] URLForResource:@"Reference"
+    NSURL* referenceFile = [[NSBundle mainBundle] URLForResource:@"Tutorial"
                                                    withExtension:@"fountain"];
+/*
     void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
-        [document setFileURL:[[NSURL alloc] init]];
+        //[document setFileURL:[[NSURL alloc] init]];
+		[document setFileURL:nil];
     };
-    [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:referenceFile
-                                                                           display:YES
-                                                                 completionHandler:completionHander];
+	//[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:referenceFile display:YES completionHandler:completionHander];
+*/
+	
+	// Let's copy the tutorial file
+	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:false displayName:@"Tutorial" error:nil];
+	
 }
 
 - (IBAction)showFountainSyntax:(id)sender

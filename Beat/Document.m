@@ -51,7 +51,7 @@
 @interface Document ()
 
 @property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
-@property (unsafe_unretained) IBOutlet NSTextView *textView;
+@property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
 @property (weak) IBOutlet NSOutlineView *outlineView;
 
 @property (unsafe_unretained) IBOutlet WebView *webView;
@@ -105,11 +105,19 @@
 @property (nonatomic) NSUInteger doubleDialogueIndent;
 @property (nonatomic) NSUInteger ddRight;
 
+// Autocompletion purposes
+@property (nonatomic) Line *currentLine;
+@property (nonatomic) NSString *cachedText;
+@property (nonatomic) bool isAutoCompleting;
+@property (nonatomic) NSMutableArray *characterNames;
+@property (nonatomic) NSMutableArray *sceneHeadings;
+
 @property (strong, nonatomic) PrintView *printView; //To keep the asynchronously working print data generator in memory
 
 @property (strong, nonatomic) ContinousFountainParser* parser;
 
 @property (strong, nonatomic) ThemeManager* themeManager;
+@property (nonatomic) bool nightMode;
 @end
 
 
@@ -223,10 +231,16 @@
     } else {
         [self setText:@""];
     }
+	
     //Initialize Theme Manager (before the formatting, because we need the colors for formatting!)
     self.themeManager = [ThemeManager sharedManager];
     [self loadSelectedTheme];
-    
+	_nightMode = false;
+
+	// Autocomplete setup
+	self.characterNames = [[NSMutableArray alloc] init];
+	self.sceneHeadings = [[NSMutableArray alloc] init];
+	
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
     [self applyFormatChanges];
 }
@@ -408,8 +422,52 @@
             }
         }
     }
+	
+	// Fire up autocomplete
+	
+	if (_currentLine.type == character) {
+		//NSLog(@"AUTOCOMPLETE CHARACTER");
+		[self.textView setAutomaticTextCompletionEnabled:YES];
+	} else if (_currentLine.type == heading) {
+		//NSLog(@"AUTOCOMPLETE HEADING");
+		[self.textView setAutomaticTextCompletionEnabled:YES];
+	} else if ([_currentLine.string length] < 5) {
+		//NSLog(@"AUTOCOMPLETE UNDER 5");
+		[self.textView setAutomaticTextCompletionEnabled:YES];
+	} else {
+		//NSLog(@"DON'T AUTOCOMPLETE");
+		[self.textView setAutomaticTextCompletionEnabled:NO];
+	}
+	
     [self.parser parseChangeInRange:affectedCharRange withString:replacementString];
     return YES;
+}
+
+- (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+	if (![self.textView isAutomaticTextCompletionEnabled]) {
+		NSLog(@"NOOO");
+	}
+	NSMutableArray *matches = [NSMutableArray array];
+	NSMutableArray *search = [NSMutableArray array];
+	
+	if (_currentLine.type == character) {
+		[self collectCharacterNames];
+		search = _characterNames;
+	}
+	else if (_currentLine.type == heading) {
+		NSLog(@"Is head");
+		[self collectHeadings];
+		search = _sceneHeadings;
+	}
+	
+	for (NSString *string in search) {
+		if ([string rangeOfString:[[textView string] substringWithRange:charRange] options:NSAnchoredSearch|NSLiteralSearch range:NSMakeRange(0, [string length])].location != NSNotFound) {
+			[matches addObject:string];
+		}
+	}
+	[matches sortUsingSelector:@selector(compare:)];
+
+	return matches;
 }
 
 - (void)textDidChange:(NSNotification *)notification
@@ -420,6 +478,28 @@
     }
     [self applyFormatChanges];
 }
+
+/* #### AUTOCOMPLETE ##### */
+
+// Collect all character names from script
+- (void) collectCharacterNames {
+	[_characterNames removeAllObjects];
+	for (Line *line in [self.parser lines]) {
+		if (line.type == character && line != _currentLine && ![_characterNames containsObject:line.string]) {
+			[_characterNames addObject:line.string];
+		}
+	}
+}
+- (void) collectHeadings {
+	[_sceneHeadings removeAllObjects];
+	for (Line *line in [self.parser lines]) {
+		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
+			[_sceneHeadings addObject:line.string];
+		}
+	}
+}
+
+/* #### FORMATTING #### */
 
 - (void)formattAllLines
 {
@@ -475,6 +555,8 @@
 - (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly
 {
     if (self.livePreview) {
+		_currentLine = line;
+		
         NSTextStorage *textStorage = [self.textView textStorage];
         
         NSUInteger begin = line.position;
@@ -1351,6 +1433,8 @@ Zoom level * zoom modifier * element size
             return NO;
         }
     } else if ([menuItem.title isEqualToString:@"Theme"]) {
+		// Deprecated
+		/*
         [menuItem.submenu removeAllItems];
         
         NSUInteger selectedTheme = [self.themeManager selectedTheme];
@@ -1363,6 +1447,7 @@ Zoom level * zoom modifier * element size
             }
             [menuItem.submenu addItem:item];
         }
+		 */
         if ([self selectedTabViewTab] == 1) {
             return NO;
         }
@@ -1375,7 +1460,7 @@ Zoom level * zoom modifier * element size
         if ([self selectedTabViewTab] == 1) {
             return NO;
         }
-	} else if ([menuItem.title isEqualToString:@"Print automatic scene numbers"]) {
+	} else if ([menuItem.title isEqualToString:@"Print Automatic Scene Numbers"]) {
 		if (self.printSceneNumbers) {
 			[menuItem setState:NSOnState];
 		} else {
@@ -1384,7 +1469,7 @@ Zoom level * zoom modifier * element size
 		if ([self selectedTabViewTab] == 1) {
 			return NO;
 		}
-    } else if ([menuItem.title isEqualToString:@"Live preview"]) {
+    } else if ([menuItem.title isEqualToString:@"Live Preview"]) {
         if (self.livePreview) {
             [menuItem setState:NSOnState];
         } else {
@@ -1393,7 +1478,7 @@ Zoom level * zoom modifier * element size
         if ([self selectedTabViewTab] == 1) {
             return NO;
         }
-    } else if ([menuItem.title isEqualToString:@"Show outline"]) {
+    } else if ([menuItem.title isEqualToString:@"Show Outline"]) {
         if (self.outlineViewVisible) {
             [menuItem setState:NSOnState];
         } else {
@@ -1402,6 +1487,15 @@ Zoom level * zoom modifier * element size
         if ([self selectedTabViewTab] == 1) {
             return NO;
         }
+	} else if ([menuItem.title isEqualToString:@"Night Mode"]) {
+		if (self.nightMode) {
+			[menuItem setState:NSOnState];
+		} else {
+			[menuItem setState:NSOffState];
+		}
+		if ([self selectedTabViewTab] == 1) {
+			return NO;
+		}
     } else if ([menuItem.title isEqualToString:@"Zoom In"] || [menuItem.title isEqualToString:@"Zoom Out"] || [menuItem.title isEqualToString:@"Reset Zoom"]) {
         if ([self selectedTabViewTab] == 1) {
             return NO;
@@ -1415,7 +1509,18 @@ Zoom level * zoom modifier * element size
 {
     [[sender representedObject] performWithItems:@[self.fileURL]];
 }
+- (IBAction)toggleNightMode:(id)sender {
+	_nightMode = !_nightMode;
 
+	if (_nightMode) {
+		[self.themeManager selectThemeWithName:@"Night"];
+	} else {
+		[self.themeManager selectThemeWithName:@"Day"];
+	}
+	[self loadSelectedTheme];
+}
+
+// Deprecated
 - (IBAction)selectTheme:(id)sender
 {
     if ([sender isKindOfClass:[NSMenuItem class]]) {
@@ -1464,7 +1569,10 @@ Zoom level * zoom modifier * element size
     for (Document* doc in openDocuments) {
         NSTextView *textView = doc.textView;
         [textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
-        [textView setSelectedTextAttributes:@{NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor]}];
+        [textView setSelectedTextAttributes:@{
+											  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
+											  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
+		}];
         [textView setTextColor:[self.themeManager currentTextColor]];
         [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
         [doc formattAllLines];
