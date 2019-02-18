@@ -46,7 +46,6 @@
 		B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7232218B4A0005B8447 /* Themes.plist */; };
 		B6D2B7262218B4CA005B8447 /* Big-Fish.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */; };
 		B6D2B7282218B4DC005B8447 /* DocumentIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */; };
-		B6D2B72A2218B50A005B8447 /* Reference.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7292218B50A005B8447 /* Reference.fountain */; };
 		B6D2B72C2218B51D005B8447 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72B2218B51D005B8447 /* Credits.rtf */; };
 		B6D2B7312218B589005B8447 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72D2218B589005B8447 /* Document.xib */; };
 		B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72F2218B589005B8447 /* MainMenu.xib */; };
@@ -229,6 +228,7 @@
 				B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */,
 				B68AC7B32219732800E02466 /* Sample files */,
 				B6D2B7332218B5DC005B8447 /* Images.xcassets */,
+				B6482F7622195BD300175927 /* NCRTextView */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
 			);
 			name = Beat;
@@ -238,7 +238,7 @@
 		B138B57619E1C973000489C4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B6482F7622195BD300175927 /* NCRTextView */,
+				B68AC7B42219733900E02466 /* Tutorial.fountain */,
 				B6D2B72B2218B51D005B8447 /* Credits.rtf */,
 				B138B57719E1C973000489C4 /* Info.plist */,
 				B6D2B7192218B408005B8447 /* main.m */,
@@ -347,7 +347,6 @@
 			isa = PBXGroup;
 			children = (
 				B6D2B7292218B50A005B8447 /* Reference.fountain */,
-				B68AC7B42219733900E02466 /* Tutorial.fountain */,
 				B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */,
 			);
 			name = "Sample files";
@@ -457,7 +456,6 @@
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,
 				B6D2B7262218B4CA005B8447 /* Big-Fish.fountain in Resources */,
-				B6D2B72A2218B50A005B8447 /* Reference.fountain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
