@@ -639,7 +639,7 @@
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Beat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -664,7 +664,7 @@
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Beat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

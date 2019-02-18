@@ -114,6 +114,7 @@
 @property (nonatomic) bool isAutoCompleting;
 @property (nonatomic) NSMutableArray *characterNames;
 @property (nonatomic) NSMutableArray *sceneHeadings;
+@property (readwrite, nonatomic) bool darkPopup;
 
 @property (strong, nonatomic) PrintView *printView; //To keep the asynchronously working print data generator in memory
 
@@ -238,6 +239,19 @@
     } else {
         [self setText:@""];
     }
+
+/*
+	 // I'm doing this on xcode 8, so oh well. When I can upgrade, do this.
+ 
+	 if (@available(macOS 10.14, *)) {
+	 NSAppearanceName appearanceName = [self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		 if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			// use dark color
+		 } else {
+			// use light color
+		 }
+	 }
+*/
 	
     //Initialize Theme Manager (before the formatting, because we need the colors for formatting!)
     self.themeManager = [ThemeManager sharedManager];
@@ -255,7 +269,6 @@
 - (void)windowDidResize:(NSNotification *)notification {
     self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
 	CGFloat inset = self.textView.frame.size.width / 2 - _documentWidth / 2;
-	NSLog(@"View inset: %f", inset);
 }
 
 + (BOOL)autosavesInPlace {
@@ -451,9 +464,7 @@
 }
 
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-	if (![self.textView isAutomaticTextCompletionEnabled]) {
-		NSLog(@"NOOO");
-	}
+	
 	NSMutableArray *matches = [NSMutableArray array];
 	NSMutableArray *search = [NSMutableArray array];
 	
@@ -462,7 +473,6 @@
 		search = _characterNames;
 	}
 	else if (_currentLine.type == heading) {
-		NSLog(@"Is head");
 		[self collectHeadings];
 		search = _sceneHeadings;
 	}
@@ -1529,11 +1539,14 @@ Zoom level * zoom modifier * element size
 }
 - (IBAction)toggleNightMode:(id)sender {
 	_nightMode = !_nightMode;
-
+	[self.textView toggleDarkPopup:nil];
+	
 	if (_nightMode) {
 		[self.themeManager selectThemeWithName:@"Night"];
+		_darkPopup = true;
 	} else {
 		[self.themeManager selectThemeWithName:@"Day"];
+		_darkPopup = false;
 	}
 	[self loadSelectedTheme];
 }

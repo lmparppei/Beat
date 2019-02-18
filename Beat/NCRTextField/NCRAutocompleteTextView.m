@@ -19,7 +19,7 @@
 //#define WORD_BOUNDARY_CHARS [[NSCharacterSet alphanumericCharacterSet] invertedSet]
 //#define WORD_BOUNDARY_CHARS [[NSCharacterSet alphanumericCharacterSet] invertedSet]
 #define WORD_BOUNDARY_CHARS [NSCharacterSet newlineCharacterSet]
-#define POPOVER_WIDTH 250.0
+#define POPOVER_WIDTH 300.0
 #define POPOVER_PADDING 0.0
 
 #define POPOVER_APPEARANCE NSAppearanceNameVibrantDark
@@ -61,6 +61,7 @@
 @property (nonatomic, strong) NSPopover *autocompletePopover;
 @property (nonatomic, weak) NSTableView *autocompleteTableView;
 @property (nonatomic, strong) NSArray *matches;
+@property (nonatomic) bool nightMode;
 // Used to highlight typed characters and insert text
 @property (nonatomic, copy) NSString *substring;
 // Used to keep track of when the insert cursor has moved so we
@@ -105,6 +106,7 @@
 	
 	self.autocompletePopover = [[NSPopover alloc] init];
 	self.autocompletePopover.appearance = [NSAppearance appearanceNamed:POPOVER_APPEARANCE];
+	
 	self.autocompletePopover.animates = NO;
 	self.autocompletePopover.contentViewController = contentViewController;
 	
@@ -167,6 +169,21 @@
 	}
 }
 
+// Beat customization
+- (IBAction)toggleDarkPopup:(id)sender {
+	/*
+	 // Nah. Saved for later use.
+	 
+	_nightMode = !_nightMode;
+	
+	if (_nightMode) {
+		self.autocompletePopover.appearance = [NSAppearance appearanceNamed: NSAppearanceNameVibrantDark];
+	} else {
+		self.autocompletePopover.appearance = [NSAppearance appearanceNamed: NSAppearanceNameVibrantLight];
+	}
+	 */
+}
+
 - (void)insert:(id)sender {
 	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
 		NSString *string = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
@@ -219,33 +236,43 @@
 	self.matches = [self completionsForPartialWordRange:substringRange indexOfSelectedItem:&index];
 	
 	if (self.matches.count > 0) {
-		self.lastPos = self.selectedRange.location;
-		[self.autocompleteTableView reloadData];
 		
-		[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
-		[self.autocompleteTableView scrollRowToVisible:index];
+		// Beat customization: if we have only one possible match and it's the same the user has already typed, close it
+		if (self.matches.count == 1) {
+			NSString *match = [self.matches objectAtIndex:0];
+			if ([match localizedCaseInsensitiveCompare:self.substring] == NSOrderedSame) {
+				[self.autocompletePopover close];
+			}
+		} else {
 		
-		// Make the frame for the popover. We want it to shrink with a small number
-		// of items to autocomplete but never grow above a certain limit when there
-		// are a lot of items. The limit is set by MAX_RESULTS.
-		NSInteger numberOfRows = MIN(self.autocompleteTableView.numberOfRows, MAX_RESULTS);
-		CGFloat height = (self.autocompleteTableView.rowHeight + self.autocompleteTableView.intercellSpacing.height) * numberOfRows + 2 * POPOVER_PADDING;
-		NSRect frame = NSMakeRect(0, 0, POPOVER_WIDTH, height);
-		[self.autocompleteTableView.enclosingScrollView setFrame:NSInsetRect(frame, POPOVER_PADDING, POPOVER_PADDING)];
-		[self.autocompletePopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
-		
-		// We want to find the middle of the first character to show the popover.
-		// firstRectForCharacterRange: will give us the rect at the begeinning of
-		// the word, and then we need to find the half-width of the first character
-		// to add to it.
-		NSRect rect = [self firstRectForCharacterRange:substringRange actualRange:NULL];
-		rect = [self.window convertRectFromScreen:rect];
-		rect = [self convertRect:rect fromView:nil];
-		NSString *firstChar = [self.substring substringToIndex:1];
-		NSSize firstCharSize = [firstChar sizeWithAttributes:@{NSFontAttributeName:self.font}];
-		rect.size.width = firstCharSize.width;
-		
-		[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
+			self.lastPos = self.selectedRange.location;
+			[self.autocompleteTableView reloadData];
+			
+			[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
+			[self.autocompleteTableView scrollRowToVisible:index];
+			
+			// Make the frame for the popover. We want it to shrink with a small number
+			// of items to autocomplete but never grow above a certain limit when there
+			// are a lot of items. The limit is set by MAX_RESULTS.
+			NSInteger numberOfRows = MIN(self.autocompleteTableView.numberOfRows, MAX_RESULTS);
+			CGFloat height = (self.autocompleteTableView.rowHeight + self.autocompleteTableView.intercellSpacing.height) * numberOfRows + 2 * POPOVER_PADDING;
+			NSRect frame = NSMakeRect(0, 0, POPOVER_WIDTH, height);
+			[self.autocompleteTableView.enclosingScrollView setFrame:NSInsetRect(frame, POPOVER_PADDING, POPOVER_PADDING)];
+			[self.autocompletePopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
+			
+			// We want to find the middle of the first character to show the popover.
+			// firstRectForCharacterRange: will give us the rect at the begeinning of
+			// the word, and then we need to find the half-width of the first character
+			// to add to it.
+			NSRect rect = [self firstRectForCharacterRange:substringRange actualRange:NULL];
+			rect = [self.window convertRectFromScreen:rect];
+			rect = [self convertRect:rect fromView:nil];
+			NSString *firstChar = [self.substring substringToIndex:1];
+			NSSize firstCharSize = [firstChar sizeWithAttributes:@{NSFontAttributeName:self.font}];
+			rect.size.width = firstCharSize.width;
+			
+			[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
+		}
 	} else {
 		[self.autocompletePopover close];
 	}
