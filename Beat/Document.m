@@ -287,13 +287,9 @@
 - (void)resizeMargins {
 	/*
 	
-	 Margins to make an illusion of "page" view. These didn't work because they blocked the find field.
-	 Best solution would be just to make a background box and resize the textView accordingly, but
-	 I don't have the time or the nerves to count the sizes now. One fine day maybe. I'm not even sure if
-	 it would look that good or distracting.
+	 Margins to make an illusion of "page" view. These didn't work because they blocked the find field. Best solution would be just to make a background box and resize the textView accordingly, but I don't have the time or the nerves to count the sizes now. One fine day maybe. I'm not even sure if it would look that good or distracting.
 	 
 	*/
-	
 	
 	/*
 	CGRect leftFrame = self.leftMargin.frame;
@@ -315,8 +311,9 @@
 	*/
 }
 
+// Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
 + (BOOL)autosavesInPlace {
-    return YES;
+    return NO;
 }
 
 - (NSString *)windowNibName {
