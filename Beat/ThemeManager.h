@@ -2,7 +2,7 @@
 //  ThemeManager.h
 //  Writer / Beat
 //
-//  Created by Hendrik Noeller on 04.04.16.
+//  Parts Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //
 
@@ -19,6 +19,7 @@
 - (NSColor*) currentInvisibleTextColor;
 - (NSColor*) currentCaretColor;
 - (NSColor*) currentCommentColor;
+- (NSColor*) currentMarginColor;
 
 - (NSUInteger)numberOfThemes;
 - (NSString*)nameForThemeAtIndex:(NSUInteger)index;

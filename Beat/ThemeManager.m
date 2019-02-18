@@ -2,7 +2,7 @@
 //  ThemeManager.m
 //  Writer / Beat
 //
-//  Created by Hendrik Noeller on 04.04.16.
+//  Parts Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //
 
@@ -150,6 +150,7 @@
     NSArray* invisibleTextValues = [dict objectForKey:@"InvisibleText"];
     NSArray* caretValues = [dict objectForKey:@"Caret"];
     NSArray* commentValues = [dict objectForKey:@"Comment"];
+    NSArray* marginValues = [dict objectForKey:@"Margin"];
     
     theme.backgroundColor = [self colorFromArray:backgroundValues];
     theme.textColor = [self colorFromArray:textValues];
@@ -157,6 +158,7 @@
     theme.invisibleTextColor = [self colorFromArray:invisibleTextValues];
     theme.caretColor = [self colorFromArray:caretValues];
     theme.commentColor = [self colorFromArray:commentValues];
+	theme.marginColor = [self colorFromArray:marginValues];
     
     if (!theme.backgroundColor ||
         !theme.textColor ||
@@ -190,6 +192,11 @@
 - (NSColor*)currentBackgroundColor
 {
     return [self currentTheme].backgroundColor;
+}
+
+- (NSColor*) currentMarginColor
+{
+	return [self currentTheme].marginColor;
 }
 
 - (NSColor*)currentSelectionColor

@@ -53,10 +53,14 @@
 @property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
 @property (weak) IBOutlet NSOutlineView *outlineView;
+@property (nonatomic) NSWindow *thisWindow;
 
 @property (unsafe_unretained) IBOutlet WebView *webView;
 @property (unsafe_unretained) IBOutlet NSTabView *tabView;
 @property (weak) IBOutlet ColorView *backgroundView;
+
+@property (unsafe_unretained) IBOutlet NSBox *leftMargin;
+@property (unsafe_unretained) IBOutlet NSBox *rightMargin;
 
 @property (weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property BOOL outlineViewVisible;
@@ -168,6 +172,8 @@
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
+	_thisWindow = aController.window;
+	
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     //    aController.window.titleVisibility = NSWindowTitleHidden; //Makes the title and toolbar unified by hiding the title
 	
@@ -268,7 +274,45 @@
 
 - (void)windowDidResize:(NSNotification *)notification {
     self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-	CGFloat inset = self.textView.frame.size.width / 2 - _documentWidth / 2;
+	//CGFloat inset = self.textView.frame.size.width / 2 - _documentWidth / 2;
+/*
+	self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+*/
+	//self.leftMargin.frame
+	
+	[self resizeMargins];
+}
+
+- (void)resizeMargins {
+	/*
+	
+	 Margins to make an illusion of "page" view. These didn't work because they blocked the find field.
+	 Best solution would be just to make a background box and resize the textView accordingly, but
+	 I don't have the time or the nerves to count the sizes now. One fine day maybe. I'm not even sure if
+	 it would look that good or distracting.
+	 
+	*/
+	
+	
+	/*
+	CGRect leftFrame = self.leftMargin.frame;
+	leftFrame.origin.x = 0;
+	leftFrame.origin.y = 0;
+	leftFrame.size = CGSizeMake(self.textView.frame.size.width / 2 - _documentWidth / 2 - 150, self.textView.frame.size.height);
+	
+	NSLog(@"textview width %f documentwidth %lu", self.textView.frame.size.width, _documentWidth);
+	NSLog(@"width %f height %f", leftFrame.size.width, leftFrame.size.height);
+	//leftFrame.size = TREE_VIEW_WIDTH + 15;
+	//[self.outlineButton.animator setFrame:buttonFrame];
+	self.leftMargin.frame = leftFrame;
+	
+	CGRect rightFrame = self.rightMargin.frame;
+	rightFrame.origin.y = 0;
+	rightFrame.size = CGSizeMake(self.textView.frame.size.width / 2 - _documentWidth / 2 - 150, self.textView.frame.size.height);
+	rightFrame.origin.x = _thisWindow.frame.size.width - rightFrame.size.width;
+	self.rightMargin.frame = rightFrame;
+	*/
 }
 
 + (BOOL)autosavesInPlace {
@@ -1607,6 +1651,12 @@ Zoom level * zoom modifier * element size
         [textView setTextColor:[self.themeManager currentTextColor]];
         [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
         [doc formattAllLines];
+		
+		NSBox *leftMargin = doc.leftMargin;
+		NSBox *rightMargin = doc.rightMargin;
+		
+		[leftMargin setFillColor:[self.themeManager currentMarginColor]];
+		[rightMargin setFillColor:[self.themeManager currentMarginColor]];
     }
 }
 

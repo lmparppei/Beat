@@ -17,6 +17,12 @@
 				<integer>240</integer>
 				<integer>240</integer>
 			</array>
+			<key>Margin</key>
+			<array>
+				<integer>230</integer>
+				<integer>230</integer>
+				<integer>230</integer>
+			</array>
 			<key>Selection</key>
 			<array>
 				<integer>0</integer>
@@ -51,6 +57,12 @@
 		<dict>
 			<key>Name</key>
 			<string>Night</string>
+			<key>Margin</key>
+			<array>
+				<integer>10</integer>
+				<integer>10</integer>
+				<integer>10</integer>
+			</array>
 			<key>Background</key>
 			<array>
 				<integer>25</integer>

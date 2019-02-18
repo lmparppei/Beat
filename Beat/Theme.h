@@ -2,7 +2,7 @@
 //  Theme.h
 //  Writer / Beat
 //
-//  Created by Hendrik Noeller on 04.04.16.
+//  Parts Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //
 
@@ -16,6 +16,7 @@
 @property (strong, nonatomic) NSColor* invisibleTextColor;
 @property (strong, nonatomic) NSColor* caretColor;
 @property (strong, nonatomic) NSColor* commentColor;
+@property (strong, nonatomic) NSColor* marginColor;
 
 @property (strong, nonatomic) NSString* name;
 
