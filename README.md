@@ -8,4 +8,4 @@ This started as a personal project as I needed a simple, multi-window and lightw
 
 Beat has it all, and **it's free and open source**.
 
-I am an artist and a filmmaker, and my programming skills are somewhat limited, so I'm open for any suggestions, improvements, feedback and collaboration. I hope that Beat will work easier and more enjoyable for everyone.
+I am an artist and a filmmaker, and my programming skills are somewhat limited, so I'm open for any suggestions, improvements, feedback and collaboration. I hope that Beat will make work easier and more enjoyable for everyone.
