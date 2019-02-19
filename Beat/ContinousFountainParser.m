@@ -11,10 +11,10 @@
 #import "Line.h"
 #import "NSString+Whitespace.h"
 #import "NSMutableIndexSet+Lowest.h"
+#import "OutlineScene.h"
 
 @interface  ContinousFountainParser ()
 @property (nonatomic) BOOL changeInOutline;
-@property (nonatomic) NSUInteger numberOfScenes;
 @end
 
 @implementation ContinousFountainParser
@@ -29,6 +29,7 @@
     
     if (self) {
         _lines = [[NSMutableArray alloc] init];
+		_outline = [[NSMutableArray alloc] init];
         _changedIndices = [[NSMutableArray alloc] init];
         [self parseText:string];
     }
@@ -332,7 +333,7 @@
                                       and:NOTE_CLOSE_PATTERN
                                withLength:NOTE_PATTERN_LENGTH
                          excludingIndices:nil];
-    
+	
     if (line.type == heading) {
         NSRange sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
         if (sceneNumberRange.length == 0) {
@@ -675,14 +676,86 @@
 
 - (NSUInteger)numberOfOutlineItems
 {
-    NSUInteger result = 0;
-    for (Line* line in self.lines) {
-        if (line.type == section || line.type == synopse || line.type == heading) {
-            result++;
-        }
-    }
-    return result;
+	[self createOutline];
+	/*
+	NSUInteger result = 0;
+	for (Line* line in self.lines) {
+		
+		if (line.type == section || line.type == synopse || line.type == heading) {
+			result++;
+		}
+	}
+	return result;
+	 */
+	return [_outline count];
 }
+
+- (void) createOutline
+{
+	// One development goal is to create a nice, expandable outline view. It's not working yet, but maybe some day.
+	
+	// Document.m queries the parser for number of outline items.
+	// This happens any time the outline view is reloaded, so this is a good time to also build our experimental outline structure anew and see how it works.
+	// I have no idea how to convert between pointer and a property, and this seems to be a big problem.
+	
+	[_outline removeAllObjects];
+	
+	NSUInteger sections = 0;
+	NSUInteger result = 0;
+	NSUInteger sceneNumber = 1;
+	
+	for (Line* line in self.lines) {
+		
+		if (line.type == section || line.type == synopse || line.type == heading) {
+			OutlineScene *item;
+			item = [[OutlineScene alloc] init];
+			
+			item.string = line.string;
+			item.type = line.type;
+			item.line = line;
+			
+			if (line.type == heading) {
+				if (line.sceneNumber) { item.sceneNumber = line.sceneNumber; }
+				else {
+					item.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+					sceneNumber++;
+				}
+			}
+			
+			// If there are no sections, add the item as high-level object
+			if (line.type == heading && sections == 0) {
+				result ++;
+				[_outline addObject: item];
+			} else if (line.type == section) {
+				result++;
+				sections++;
+				
+				[_outline addObject: item];
+			} else {
+				// Let's add this as a child to the section
+				NSUInteger index = result - 1;
+				[[[_outline objectAtIndex:index] scenes] addObject: item];
+			}
+		}
+	}
+}
+
+/*
+// Backup
+- (NSUInteger)numberOfOutlineItems
+{
+	NSUInteger result = 0;
+	for (Line* line in self.lines) {
+
+		if (line.type == section || line.type == synopse || line.type == heading) {
+			result++;
+		}
+	}
+	return result;
+}
+
+*/
+
 
 - (Line*)outlineItemAtIndex:(NSUInteger)index
 {

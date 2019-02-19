@@ -43,20 +43,11 @@
 	
 }
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
-	//NSLog(@"uri %@://%@", [item scheme], [item path]);
-	//NSString *url = [NSString stringWithFormat:@"%@://%@", [item scheme], [item path]];
-	
 	void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
-		
-		//[document setFileURL:[[NSURL alloc] init]];
 	};
 	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:item display:YES completionHandler:completionHander];
 	
-	
-	//[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:item display:YES completionHandler:nil];
-	
 	return YES;
-	 
 }
 
 // outlineView:numberOfChildrenOfItem:,

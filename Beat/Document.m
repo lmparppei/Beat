@@ -46,6 +46,7 @@
 #import "ColorView.h"
 #import "ContinousFountainParser.h"
 #import "ThemeManager.h"
+#import "OutlineScene.h"
 //#import "Beat-Bridging-Header.h"
 
 @interface Document ()
@@ -64,6 +65,7 @@
 
 @property (weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property BOOL outlineViewVisible;
+@property (nonatomic) NSMutableArray *outlineClosedSections;
 
 #pragma mark - Floating outline button
 @property (weak) IBOutlet NSButton *outlineButton;
@@ -263,7 +265,10 @@
     self.themeManager = [ThemeManager sharedManager];
     [self loadSelectedTheme];
 	_nightMode = false;
-
+	
+	// Outline view setup
+	self.outlineClosedSections = [[NSMutableArray alloc] init];
+	
 	// Autocomplete setup
 	self.characterNames = [[NSMutableArray alloc] init];
 	self.sceneHeadings = [[NSMutableArray alloc] init];
@@ -531,7 +536,7 @@
 - (void)textDidChange:(NSNotification *)notification
 {
     if (self.outlineViewVisible && [self.parser getAndResetChangeInOutline]) {
-        [self.outlineView reloadData];
+		[self reloadOutline];
 		[self updateSceneTypes];
     }
     [self applyFormatChanges];
@@ -1435,8 +1440,11 @@ Zoom level * zoom modifier * element size
     if (self.outlineViewVisible) {
 		//[self.outlineButton setTranslatesAutoresizingMaskIntoConstraints:true];
 		
-        [self.outlineView reloadData];
+		[self reloadOutline];
 		[self updateSceneTypes];
+		
+		[self.outlineView expandItem:nil expandChildren:true];
+		
         [self.outlineViewWidth.animator setConstant:TREE_VIEW_WIDTH];
         NSWindow *window = self.windowControllers[0].window;
         NSRect newFrame = NSMakeRect(window.frame.origin.x,
@@ -1710,27 +1718,55 @@ Zoom level * zoom modifier * element size
     if (!item) {
         //Children of root
         return [self.parser numberOfOutlineItems];
-    }
-    return 0;
+	} else {
+		return [[item scenes] count];
+	}
+    //return 0;
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
 {
+	/*
     if (!item) {
         return [self.parser outlineItemAtIndex:index];
     }
     return nil;
+	*/
+	// One development goal is building a custom object to store a section/scene structure. Using that structure we could build an expandable outline, where you could hide scenes under certain sections / synopses. This might be pretty easy to achieve, but I'll see into it in the future.
+	
+	if (!item) {
+		return [[self.parser outline] objectAtIndex:index];
+	} else {
+		NSUInteger childIndex = [[self.parser outline] indexOfObject:item];
+		OutlineScene *outlineSection = [[self.parser outline] objectAtIndex:childIndex];
+		return [outlineSection.scenes objectAtIndex:index];
+	 
+		//return nil;
+	}
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
-    return NO;
+	if ([[item scenes] count] > 0) {
+		return YES;
+	}
+	else { return NO; }
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
-    if ([item isKindOfClass:[Line class]]) {
-        Line* line = item;
+	// Let's save this for later
+	/*
+	if ([item string]) {
+		return [item string];
+	} else {
+		return @"";
+	}
+	*/
+
+	
+    if ([item isKindOfClass:[OutlineScene class]]) {
+        OutlineScene* line = item;
 
 		// The outline elements will be formatted as rich text,
 		// which is apparently VERY CUMBERSOME in Objective-C.
@@ -1743,6 +1779,11 @@ Zoom level * zoom modifier * element size
             string = [string stringByReplacingOccurrencesOfString:@"INT./EXT" withString:@"I/E"];
             string = [string stringByReplacingOccurrencesOfString:@"EXT/INT" withString:@"I/E"];
             string = [string stringByReplacingOccurrencesOfString:@"EXT./INT" withString:@"I/E"];
+			
+			// Remove force scene character
+			if ([string characterAtIndex:0] == '.') {
+				string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+			}
 			
 			if (line.sceneNumber) {
 				NSString *sceneHeader = [NSString stringWithFormat:@"    %@:", line.sceneNumber];
@@ -1813,10 +1854,12 @@ Zoom level * zoom modifier * element size
 		return resultString;
     }
     return @"";
+	
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
+	/*
     if ([item isKindOfClass:[Line class]]) {
         Line* line = item;
         NSRange lineRange = NSMakeRange(line.position, line.string.length);
@@ -1825,6 +1868,50 @@ Zoom level * zoom modifier * element size
         return YES;
     }
     return NO;
+	*/
+	
+	if ([item isKindOfClass:[OutlineScene class]]) {
+		
+		NSRange lineRange = NSMakeRange([item line].position, [item line].string.length);
+		[self.textView setSelectedRange:lineRange];
+		[self.textView scrollRangeToVisible:lineRange];
+		return YES;
+	}
+	return YES;
+	
+}
+
+- (void) reloadOutline {
+	NSLog(@"Reloading outline");
+	/*
+	for (OutlineScene * item in [self.parser outline]) {
+		if ([self.outlineView isItemExpanded:item]) {
+			NSLog(@"Expanded: %@", item.string);
+		}
+	}
+	 */
+	[_outlineClosedSections removeAllObjects];
+	
+	// Save list of sections that have been closed
+	for (int i = 0; i < [[self.parser outline] count]; i++) {
+		id item = [self.outlineView itemAtRow:i];
+		if (![self.outlineView isItemExpanded:item]) {
+			[_outlineClosedSections addObject:[item string]];
+		}
+	}
+	
+	[self.outlineView reloadData];
+	
+	// Expand all
+	[self.outlineView expandItem:nil expandChildren:true];
+	
+	// Then let's close the ones that the user had closed
+	for (int i = 0; i < [[self.parser outline] count]; i++) {
+		id item = [self.outlineView itemAtRow:i];
+		if ([_outlineClosedSections containsObject:[item string]]) {
+			[self.outlineView collapseItem:item];
+		}
+	}
 }
 
 @end

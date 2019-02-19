@@ -152,7 +152,7 @@
 			// Return or tab
 			if (self.autocompletePopover.isShown) {
 				[self insert:self];
-				return; // Skip default behavior
+				//return; // Skip default behavior (nah, we don't need two returns?)
 			}
 		case 49:
 			// Space

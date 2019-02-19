@@ -13,6 +13,7 @@
 
 @property (nonatomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
 @property (nonatomic) NSMutableArray *changedIndices; //Stores every line that needs to be formatted according to the type
+@property (nonatomic) NSMutableArray *outline;
 
 //Parsing methods
 - (ContinousFountainParser*)initWithString:(NSString*)string;
