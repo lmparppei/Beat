@@ -54,6 +54,7 @@
 @property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
 @property (weak) IBOutlet NSOutlineView *outlineView;
+@property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (nonatomic) NSWindow *thisWindow;
 
 @property (unsafe_unretained) IBOutlet WebView *webView;
@@ -1726,14 +1727,6 @@ Zoom level * zoom modifier * element size
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
 {
-	/*
-    if (!item) {
-        return [self.parser outlineItemAtIndex:index];
-    }
-    return nil;
-	*/
-	// One development goal is building a custom object to store a section/scene structure. Using that structure we could build an expandable outline, where you could hide scenes under certain sections / synopses. This might be pretty easy to achieve, but I'll see into it in the future.
-	
 	if (!item) {
 		return [[self.parser outline] objectAtIndex:index];
 	} else {
@@ -1755,15 +1748,6 @@ Zoom level * zoom modifier * element size
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
-	// Let's save this for later
-	/*
-	if ([item string]) {
-		return [item string];
-	} else {
-		return @"";
-	}
-	*/
-
 	
     if ([item isKindOfClass:[OutlineScene class]]) {
         OutlineScene* line = item;
@@ -1900,6 +1884,9 @@ Zoom level * zoom modifier * element size
 		}
 	}
 	
+	// Save outline scroll position
+	NSPoint scrollPosition = [[self.outlineScrollView contentView] bounds].origin;
+	
 	[self.outlineView reloadData];
 	
 	// Expand all
@@ -1912,6 +1899,21 @@ Zoom level * zoom modifier * element size
 			[self.outlineView collapseItem:item];
 		}
 	}
+	/*
+	 // I'll look at this at a later time. I'd like to highlight / scroll to the currently edited outline item
+
+	 if (_currentLine) {
+		if (_currentLine.type == heading || _currentLine.type == section || _currentLine.type == synopse) {
+			OutlineScene * item = [self.parser getOutlineForLine:_currentLine];
+			NSLog(@"Found item: %@", item.string);
+			NSInteger row = [self.outlineView rowForItem:item];
+			[self.outlineView scrollRowToVisible:row];
+		}
+	}
+	*/
+	
+	// Scroll back to original position after reload
+	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
 }
 
 @end

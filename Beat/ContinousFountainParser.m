@@ -676,8 +676,9 @@
 
 - (NSUInteger)numberOfOutlineItems
 {
-	[self createOutline];
 	/*
+	// This is the old way. Outline used to be only Line objects.
+	 
 	NSUInteger result = 0;
 	for (Line* line in self.lines) {
 		
@@ -687,17 +688,29 @@
 	}
 	return result;
 	 */
+	
+	[self createOutline];
 	return [_outline count];
+}
+
+- (OutlineScene*) getOutlineForLine: (Line *) line {
+	for (OutlineScene * item in _outline) {
+		if (item.line == line) {
+			return item;
+		}
+		else if ([item.scenes count]) {
+			for (OutlineScene * subItem in item.scenes) {
+				if (subItem.line == line) {
+					return subItem;
+				}
+			}
+		}
+	}
+	return nil;
 }
 
 - (void) createOutline
 {
-	// One development goal is to create a nice, expandable outline view. It's not working yet, but maybe some day.
-	
-	// Document.m queries the parser for number of outline items.
-	// This happens any time the outline view is reloaded, so this is a good time to also build our experimental outline structure anew and see how it works.
-	// I have no idea how to convert between pointer and a property, and this seems to be a big problem.
-	
 	[_outline removeAllObjects];
 	
 	NSUInteger sections = 0;
@@ -756,7 +769,7 @@
 
 */
 
-
+// NOTE: THIS IS DEPRECATED
 - (Line*)outlineItemAtIndex:(NSUInteger)index
 {
 	NSUInteger sceneNumber = 0;

@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 #import "Line.h"
+#import "OutlineScene.h"
+@class OutlineScene;
 
 @interface ContinousFountainParser : NSObject
 
@@ -31,6 +33,8 @@
 - (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view
 - (Line*)outlineItemAtIndex:(NSUInteger)index; //Returns an items for the outline view
 - (NSInteger)outlineItemIndex:(Line*)item;
+//- (OutlineScene*) getOutlineForLine:(Line*)line;
+- (OutlineScene*) getOutlineForLine:(Line*)line;
 
 - (NSString*)description;
 @end
