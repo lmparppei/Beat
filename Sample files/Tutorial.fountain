@@ -61,7 +61,7 @@ Every element also has a way of forcing it. Take a look at the Format menu. This
 
 > SMALL, SURPRISINGLY LONG CROSSFADE TO:
 
-INT. BAR - NIGHT
+INT. BAR - NIGHT [[COLOR BLUE]]
 
 You can also make double dialogue with the ^ symbol after a character. Like this:
 
@@ -73,6 +73,9 @@ CHARACTER 2 ^
 Leave me alone.
 
 That's about it. Edit this file and try out stuff.
+
+There are certain power user features. You can set the color for your scene just by typing it out (this scene has a blue dot next to it in outline), which won't print out. This feature is still in development, so it might work so-and-so. Try at your own risk!
+
 You can find more information on the Fountain language at http://www.fountain.io/
 
 > FADE OUT
