@@ -17,16 +17,6 @@
 	if ((self = [super init]) == nil) { return nil; }
 	_scenes = [[NSMutableArray alloc] init];
 	
- /*
-	Item * anItem;
-	for (int itemIndex = 1; itemIndex <= 50; itemIndex++)
-	{
-		anItem = [[Item alloc] init];
-		anItem.kind = 1;
-		[items addObject:anItem];
-		[anItem release];
-	}
-*/
 	return self;
 }
 

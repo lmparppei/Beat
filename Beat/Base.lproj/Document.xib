@@ -44,7 +44,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1050" height="599"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -81,16 +81,16 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="36" horizontalPageScroll="10" verticalLineScroll="36" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
+                                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="38" horizontalPageScroll="10" verticalLineScroll="38" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
                                             <rect key="frame" x="0.0" y="0.0" width="250" height="599"/>
                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                 <rect key="frame" x="0.0" y="0.0" width="250" height="599"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="19" indentationPerLevel="1" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9">
+                                                    <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="19" indentationPerLevel="5" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9">
                                                         <rect key="frame" x="0.0" y="0.0" width="250" height="599"/>
                                                         <autoresizingMask key="autoresizingMask"/>
-                                                        <size key="intercellSpacing" width="0.0" height="17"/>
+                                                        <size key="intercellSpacing" width="0.0" height="19"/>
                                                         <color key="backgroundColor" red="0.083609941709844593" green="0.083609941709844593" blue="0.083609941709844593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                                         <color key="gridColor" red="0.32253886010362698" green="0.32253886010362698" blue="0.32253886010362698" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
@@ -112,6 +112,7 @@
                                                         <connections>
                                                             <outlet property="dataSource" destination="-2" id="loZ-ZJ-rVQ"/>
                                                             <outlet property="delegate" destination="-2" id="RqU-Db-rm4"/>
+                                                            <outlet property="menu" destination="Tqc-M2-IZ5" id="e7B-0a-jMc"/>
                                                         </connections>
                                                     </outlineView>
                                                 </subviews>
@@ -173,7 +174,7 @@
                                         <button fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
                                             <rect key="frame" x="259" y="568" width="24" height="19"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="square" alternateTitle="Show Outline View (⌘D)" bezelStyle="shadowlessSquare" image="OutlineIcon" imagePosition="overlaps" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
+                                            <buttonCell key="cell" type="square" alternateTitle="Show Outline View (⌘D)" bezelStyle="shadowlessSquare" image="OutlineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
@@ -483,6 +484,29 @@
             </connections>
             <point key="canvasLocation" x="216" y="87.5"/>
         </window>
+        <menu id="Tqc-M2-IZ5">
+            <items>
+                <menuItem title="Color" enabled="NO" id="Afp-fN-Tl7">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="  Red" id="LgM-Xa-gig">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setRedColor:" target="-2" id="IQZ-6V-635"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="  Blue" id="EzC-hd-0ex">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="  Green" id="tLV-bS-9E1">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+            </items>
+            <connections>
+                <outlet property="delegate" destination="-2" id="QLP-DS-JdJ"/>
+            </connections>
+            <point key="canvasLocation" x="-515" y="88"/>
+        </menu>
     </objects>
     <resources>
         <image name="Bold" width="25" height="25"/>

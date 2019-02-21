@@ -58,7 +58,7 @@
     _changeInOutline = YES;
 }
 
-#pragma mark Contionous Parsing
+#pragma mark Continuous Parsing
 
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
@@ -284,6 +284,9 @@
 #define UNDERLINE_PATTERN_LENGTH 1
 #define NOTE_PATTERN_LENGTH 2
 #define OMIT_PATTERN_LENGTH 2
+
+#define COLOR_PATTERN "color"
+#define STORYLINE_PATTERN "storyline"
 
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
 {
@@ -726,6 +729,25 @@
 			item.string = line.string;
 			item.type = line.type;
 			item.line = line;
+			
+			// Check if this heading contains a note. We can use notes to have colors etc. in the headings.
+			[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+								NSString * note = [line.string substringWithRange:range];
+				if (range.location) {
+					item.string = [line.string substringWithRange:NSMakeRange(0, range.location - 1)];
+				}
+				
+				NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
+				note =  [note substringWithRange:noteRange];
+				
+				if ([note rangeOfString:@COLOR_PATTERN].location != NSNotFound) {
+					if ([note length] > [@COLOR_PATTERN length] + 1) {
+						NSRange colorRange = [note rangeOfString:@COLOR_PATTERN];
+						item.color = [note substringWithRange:NSMakeRange(colorRange.length, [note length] - colorRange.length)];
+						item.color = [item.color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+					}
+				}
+			}];
 			
 			if (line.type == heading) {
 				if (line.sceneNumber) { item.sceneNumber = line.sceneNumber; }

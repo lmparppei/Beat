@@ -17,5 +17,6 @@
 @property (strong, nonatomic) NSString * string;
 @property LineType type;
 @property NSString * sceneNumber;
+@property NSString * color;
 @property (strong) Line * line; // Is this overkill regarding memory?
 @end

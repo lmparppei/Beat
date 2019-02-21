@@ -199,6 +199,9 @@
                                  _documentWidth * 1.3);
     [window setFrame:newFrame display:YES];
 	
+	// Accept mouse moved events
+	[aController.window setAcceptsMouseMovedEvents:YES];
+	
 	CGRect buttonFrame = self.outlineButton.frame;
 	buttonFrame.origin.x = 15;
 	self.outlineButton.frame = buttonFrame;
@@ -223,6 +226,9 @@
     [self.textView setAutomaticQuoteSubstitutionEnabled:NO];
     [self.textView setAutomaticDataDetectionEnabled:NO];
     [self.textView setAutomaticDashSubstitutionEnabled:NO];
+	
+	// Set first responder to the text field
+	[aController.window makeFirstResponder:self.textView];
     
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
         self.matchParentheses = YES;
@@ -1835,6 +1841,29 @@ Zoom level * zoom modifier * element size
             }
         }
 
+		if (line.color) {
+			
+			NSMutableAttributedString * color = [[NSMutableAttributedString alloc] initWithString:@" ⬤" attributes:nil];
+			NSColor *colorName = nil;
+
+			if ([line.color  caseInsensitiveCompare:@"red"] == NSOrderedSame) colorName = NSColor.redColor;
+			else if ([line.color  caseInsensitiveCompare:@"blue"] == NSOrderedSame) colorName = NSColor.blueColor;
+			else if ([line.color  caseInsensitiveCompare:@"green"] == NSOrderedSame) colorName = NSColor.greenColor;
+			else if ([line.color  caseInsensitiveCompare:@"yellow"] == NSOrderedSame) colorName = NSColor.yellowColor;
+			else if ([line.color  caseInsensitiveCompare:@"black"] == NSOrderedSame) colorName = NSColor.blackColor;
+			else if ([line.color  caseInsensitiveCompare:@"gray"] == NSOrderedSame) colorName = NSColor.grayColor;
+			else if ([line.color  caseInsensitiveCompare:@"grey"] == NSOrderedSame) colorName = NSColor.grayColor;
+			else if ([line.color  caseInsensitiveCompare:@"purple"] == NSOrderedSame) colorName = NSColor.purpleColor;
+			else if ([line.color  caseInsensitiveCompare:@"magenta"] == NSOrderedSame) colorName = NSColor.magentaColor;
+			else if ([line.color  caseInsensitiveCompare:@"pink"] == NSOrderedSame) colorName = NSColor.magentaColor;
+ 
+			// If we found a suitable color, let's add it
+			if (colorName != nil) {
+				[color addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(0, 2)];
+				[resultString appendAttributedString:color];
+			}
+		}
+		
 		return resultString;
     }
     return @"";
@@ -1861,19 +1890,10 @@ Zoom level * zoom modifier * element size
 		[self.textView scrollRangeToVisible:lineRange];
 		return YES;
 	}
-	return YES;
-	
+	return NO;
 }
 
 - (void) reloadOutline {
-	NSLog(@"Reloading outline");
-	/*
-	for (OutlineScene * item in [self.parser outline]) {
-		if ([self.outlineView isItemExpanded:item]) {
-			NSLog(@"Expanded: %@", item.string);
-		}
-	}
-	 */
 	[_outlineClosedSections removeAllObjects];
 	
 	// Save list of sections that have been closed
@@ -1899,6 +1919,7 @@ Zoom level * zoom modifier * element size
 			[self.outlineView collapseItem:item];
 		}
 	}
+	
 	/*
 	 // I'll look at this at a later time. I'd like to highlight / scroll to the currently edited outline item
 
@@ -1914,6 +1935,55 @@ Zoom level * zoom modifier * element size
 	
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
+}
+
+/*
+ 
+ Outline context menu, WIP.
+ 
+ To make this work reliably, we should check for a lot of stuff, such as if there already is a color or some other note on the heading line. I don't have the willpower to do it just now, but maybe someday.
+ 
+ The thing is, after this is done, we can also filter the outline view according to color tags. One thing to consider is also if we want to have multiple color tags on lines? I kind of hate that usually, especially if it's done badly, but in many cases it should be useful.
+
+Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll just search for ranges whenever I decide to do this.
+ 
+ In principle it should be possible that to enter custom colors in hex. Such as [[COLOR #d00dd]].
+ 
+*/
+- (void) menuNeedsUpdate:(NSMenu *)menu {
+	NSInteger clickedRow = [self.outlineView clickedRow];
+
+	id item = nil;
+	item = [self.outlineView itemAtRow:clickedRow];
+	
+	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
+		// Show context menu
+		for (NSMenuItem * menuItem in menu.itemArray) {
+			// menuItem.hidden = NO;
+			// But let's hide this context menu for now as it's WIP
+			menuItem.hidden = YES;
+		}
+
+	} else {
+		// Hide every item
+		for (NSMenuItem * menuItem in menu.itemArray) {
+			menuItem.hidden = YES;
+		}
+	}
+}
+
+- (IBAction) setRedColor:(id) sender {
+	NSLog(@"Color red");
+	[self setColor:@"RED"];
+}
+
+- (void) setColor:(NSString *) color {
+	id item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
+		NSString * colorString = [NSString stringWithFormat:@" [[COLOR %@]]", color];
+		NSUInteger position = [[item line] position] + [[item line].string length];
+		[self addString:colorString atIndex:position];
+	}
 }
 
 @end
