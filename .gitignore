@@ -1,4 +1,4 @@
 *.xcuserstate
 xcuserdata
 .DS_Store
-
+Sparkle.framework/

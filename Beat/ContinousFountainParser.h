@@ -31,7 +31,6 @@
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;
 - (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view
-- (Line*)outlineItemAtIndex:(NSUInteger)index; //Returns an items for the outline view
 - (NSInteger)outlineItemIndex:(Line*)item;
 //- (OutlineScene*) getOutlineForLine:(Line*)line;
 - (OutlineScene*) getOutlineForLine:(Line*)line;

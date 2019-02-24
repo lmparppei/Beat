@@ -30,6 +30,7 @@
                 <outlet property="printToolbarButton" destination="gEp-KZ-Tzf" id="MUG-H0-AZe"/>
                 <outlet property="rightMargin" destination="O5s-Jh-KDd" id="9vb-Kd-GJy"/>
                 <outlet property="tabView" destination="gz5-tZ-Ofd" id="v37-ia-HrJ"/>
+                <outlet property="textScrollView" destination="Mky-48-wwA" id="w22-2t-KE1"/>
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
                 <outlet property="titlepageToolbarButton" destination="qaE-x4-VZq" id="llA-7J-z5i"/>
                 <outlet property="toolbar" destination="4If-wa-HNF" id="Nx5-w4-mgL"/>
@@ -52,19 +53,19 @@
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="3qa-Wg-PsD" customClass="ColorView">
                         <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                         <subviews>
-                            <box autoresizesSubviews="NO" fixedFrame="YES" boxType="custom" borderType="none" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="Lu8-zJ-xdR">
+                            <box hidden="YES" autoresizesSubviews="NO" fixedFrame="YES" boxType="custom" borderType="none" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="Lu8-zJ-xdR">
                                 <rect key="frame" x="506" y="0.0" width="38" height="599"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <view key="contentView" id="95O-E5-lpx">
+                                <view key="contentView" hidden="YES" id="95O-E5-lpx">
                                     <rect key="frame" x="0.0" y="0.0" width="38" height="599"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                                 <color key="fillColor" white="0.35630580357142855" alpha="1" colorSpace="calibratedWhite"/>
                             </box>
-                            <box autoresizesSubviews="NO" fixedFrame="YES" boxType="custom" borderType="none" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="O5s-Jh-KDd">
+                            <box hidden="YES" autoresizesSubviews="NO" fixedFrame="YES" boxType="custom" borderType="none" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="O5s-Jh-KDd">
                                 <rect key="frame" x="506" y="0.0" width="38" height="599"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <view key="contentView" id="lK2-6z-7tl">
+                                <view key="contentView" hidden="YES" id="lK2-6z-7tl">
                                     <rect key="frame" x="0.0" y="0.0" width="38" height="599"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>

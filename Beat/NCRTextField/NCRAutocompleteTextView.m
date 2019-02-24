@@ -25,9 +25,9 @@
 #define POPOVER_APPEARANCE NSAppearanceNameVibrantDark
 //#define POPOVER_APPEARANCE NSAppearanceNameVibrantLight
 
-#define POPOVER_FONT [NSFont fontWithName:@"Menlo" size:11.0]
+#define POPOVER_FONT [NSFont fontWithName:@"Courier Prime" size:12.0]
 // The font for the characters that have already been typed
-#define POPOVER_BOLDFONT [NSFont fontWithName:@"Menlo-Bold" size:11.0]
+#define POPOVER_BOLDFONT [NSFont fontWithName:@"Courier Prime Bold" size:12.0]
 #define POPOVER_TEXTCOLOR [NSColor whiteColor]
 
 #pragma mark -

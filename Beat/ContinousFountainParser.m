@@ -791,24 +791,7 @@
 
 */
 
-// NOTE: THIS IS DEPRECATED
-- (Line*)outlineItemAtIndex:(NSUInteger)index
-{
-	NSUInteger sceneNumber = 0;
-    for (Line* line in self.lines) {
-		if (line.type == heading) { sceneNumber++; }
-		//NSLog(@"scene num: %lu", (unsigned long) sceneNumber);
-        if (line.type == section || line.type == synopse || line.type == heading) {
-            if (index == 0) {
-				Line* newLine = line;
-				if (!newLine.sceneNumber) newLine.sceneNumber = [NSString stringWithFormat: @"%lu", (unsigned long)sceneNumber];
-                return line;
-            }
-            index--;
-        }
-    }
-    return nil;
-}
+// Deprecated
 - (NSInteger)outlineItemIndex:(Line*)item {
 	return [self.lines indexOfObject:item];
 }

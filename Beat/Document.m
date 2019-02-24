@@ -47,12 +47,15 @@
 #import "ContinousFountainParser.h"
 #import "ThemeManager.h"
 #import "OutlineScene.h"
+
 //#import "Beat-Bridging-Header.h"
 
 @interface Document ()
 
 @property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
+@property (weak) IBOutlet NSScrollView *textScrollView;
+
 @property (weak) IBOutlet NSOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (nonatomic) NSWindow *thisWindow;
@@ -67,6 +70,8 @@
 @property (weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property BOOL outlineViewVisible;
 @property (nonatomic) NSMutableArray *outlineClosedSections;
+
+@property (nonatomic) NSMutableArray *sceneNumberLabels;
 
 #pragma mark - Floating outline button
 @property (weak) IBOutlet NSButton *outlineButton;
@@ -185,11 +190,8 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
 	// Get zoom level & font size
-	NSLog(@"Set start zoom level");
 	_zoomLevel = self.zoomLevel;
 	_documentWidth = _zoomLevel * ZOOM_MODIFIER;
-
-	NSLog(@"Zoom level: %lu Width: %lu", (unsigned long) _zoomLevel, (unsigned long) _documentWidth);
 	
     //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
     NSWindow *window = aController.window;
@@ -212,6 +214,9 @@
     self.toolbarButtons = @[_outlineToolbarButton,_boldToolbarButton, _italicToolbarButton, _underlineToolbarButton, _omitToolbarButton, _noteToolbarButton, _forceHeadingToolbarButton, _forceActionToolbarButton, _forceCharacterToolbarButton, _forceTransitionToolbarButton, _forceLyricsToolbarButton, _titlepageToolbarButton, _pagebreakToolbarButton, _previewToolbarButton, _printToolbarButton];
 	
     self.textView.textContainer.widthTracksTextView = false;
+	[[self.textScrollView contentView] setPostsBoundsChangedNotifications:YES];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
 	
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
 	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
@@ -229,6 +234,7 @@
 	
 	// Set first responder to the text field
 	[aController.window makeFirstResponder:self.textView];
+	[self.textView setEditable:YES];
     
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
         self.matchParentheses = YES;
@@ -242,11 +248,8 @@
 		self.printSceneNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:PRINT_SCENE_NUMBERS_KEY];
 	}
 	
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:LIVE_PREVIEW_KEY]) {
-        self.livePreview = YES;
-    } else {
-        self.livePreview = [[NSUserDefaults standardUserDefaults] boolForKey:LIVE_PREVIEW_KEY];
-    }
+	 // Let's enable live preview as default, don't load preferences for it.
+	self.livePreview = YES;
 	
     //Put any previously loaded data into the text view
     if (self.contentBuffer) {
@@ -254,7 +257,7 @@
     } else {
         [self setText:@""];
     }
-
+	
 /*
 	 // I'm doing this on xcode 8, so oh well. When I can upgrade, do this.
  
@@ -276,24 +279,32 @@
 	// Outline view setup
 	self.outlineClosedSections = [[NSMutableArray alloc] init];
 	
+	// Scene number labels
+	self.sceneNumberLabels = [[NSMutableArray alloc] init];
+	
 	// Autocomplete setup
 	self.characterNames = [[NSMutableArray alloc] init];
 	self.sceneHeadings = [[NSMutableArray alloc] init];
 	
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
     [self applyFormatChanges];
+	
+	// Let's set a timer for 200ms. This should update the scene number labels before letting the text to render.
+	// This doesn't work. Nothing works.
+	// [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
+}
+- (void) afterLoad {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self updateSceneNumberLabels];
+	});
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
     self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-	//CGFloat inset = self.textView.frame.size.width / 2 - _documentWidth / 2;
-/*
-	self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-*/
-	//self.leftMargin.frame
 	
-	[self resizeMargins];
+	[self resizeMargins]; // Unused for now
+	
+	[self updateSceneNumberLabels];
 }
 
 - (void)resizeMargins {
@@ -352,14 +363,6 @@
     return [self.textView string];
 }
 
-- (void)updateLayout:(id)sender {
-    
-}
-
-- (void) updateSceneTypes
-{
-}
-
 - (void)setText:(NSString *)text
 {
     if (!self.textView) {
@@ -368,6 +371,7 @@
         [self.textView setString:text];
         [self updateWebView];
     }
+	[self updateSceneNumberLabels];
 }
 
 - (IBAction)printDocument:(id)sender
@@ -499,16 +503,12 @@
 	// Fire up autocomplete
 	
 	if (_currentLine.type == character) {
-		//NSLog(@"AUTOCOMPLETE CHARACTER");
 		[self.textView setAutomaticTextCompletionEnabled:YES];
 	} else if (_currentLine.type == heading) {
-		//NSLog(@"AUTOCOMPLETE HEADING");
 		[self.textView setAutomaticTextCompletionEnabled:YES];
 	} else if ([_currentLine.string length] < 5) {
-		//NSLog(@"AUTOCOMPLETE UNDER 5");
 		[self.textView setAutomaticTextCompletionEnabled:YES];
 	} else {
-		//NSLog(@"DON'T AUTOCOMPLETE");
 		[self.textView setAutomaticTextCompletionEnabled:NO];
 	}
 	
@@ -544,9 +544,11 @@
 {
     if (self.outlineViewVisible && [self.parser getAndResetChangeInOutline]) {
 		[self reloadOutline];
-		[self updateSceneTypes];
     }
     [self applyFormatChanges];
+	
+	[self.parser numberOfOutlineItems];
+	[self updateSceneNumberLabels];
 }
 
 /* #### AUTOCOMPLETE ##### */
@@ -589,7 +591,8 @@
         
         [self.textView.textStorage addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [self getText].length)];
     }
-    
+	
+	[self updateSceneNumberLabels];
 }
 
 - (void)refontAllLines
@@ -652,7 +655,7 @@
             [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
             
         } else if (line.type == lyrics) {
-            //Set Font to itliac
+            //Set Font to italic
             [attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
         }
 
@@ -1379,7 +1382,7 @@ Zoom level * zoom modifier * element size
         }
     }
     [[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-    //[[NSUserDefaults standardUserDefaults] setInteger:self.fontSize forKey:FONTSIZE_KEY];
+	[self updateSceneNumberLabels];
 }
 
 - (IBAction)decreaseFontSize:(id)sender
@@ -1406,7 +1409,7 @@ Zoom level * zoom modifier * element size
         }
     }
     [[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-    //[[NSUserDefaults standardUserDefaults] setInteger:self.fontSize forKey:FONTSIZE_KEY];
+    [self updateSceneNumberLabels];
 }
 
 
@@ -1432,7 +1435,7 @@ Zoom level * zoom modifier * element size
 
     }
     [[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-    //[[NSUserDefaults standardUserDefaults] removeObjectForKey:FONTSIZE_KEY];
+	[self updateSceneNumberLabels];
 }
 
 
@@ -1448,7 +1451,6 @@ Zoom level * zoom modifier * element size
 		//[self.outlineButton setTranslatesAutoresizingMaskIntoConstraints:true];
 		
 		[self reloadOutline];
-		[self updateSceneTypes];
 		
 		[self.outlineView expandItem:nil expandChildren:true];
 		
@@ -1698,6 +1700,7 @@ Zoom level * zoom modifier * element size
             }
         }
     }
+	[self updateSceneNumberLabels];
 }
 - (void)cancelOperation:(id) sender
 {
@@ -1719,6 +1722,28 @@ Zoom level * zoom modifier * element size
 
 
 #pragma  mark - NSOutlineViewDataSource and Delegate
+
+- (NSUInteger) getNumberOfScenes {
+	NSUInteger result = 0;
+	for (Line * line in [self.parser lines]) {
+		if (line.type == heading) result++;
+	}
+	return result;
+}
+- (NSMutableArray *) getScenes {
+	NSMutableArray * scenes = [[NSMutableArray alloc] init];
+	for (OutlineScene * scene in [self.parser outline]) {
+		if (scene.type == heading) [scenes addObject:scene];
+		
+		if ([scene.scenes count]) {
+			for (OutlineScene * subscene in scene.scenes) {
+				if (subscene.type == heading) [scenes addObject:subscene];
+			}
+		}
+	}
+	
+	return scenes;
+}
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
@@ -1935,6 +1960,8 @@ Zoom level * zoom modifier * element size
 	
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
+	
+	[self updateSceneNumberLabels];
 }
 
 /*
@@ -1986,4 +2013,106 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 	}
 }
 
+#pragma  mark - Scene numbering for NSTextView
+
+/*
+ 
+ WORK IN PROGRESS
+ This following section might have problems with memory leaks.
+ 
+ */
+
+- (NSTextField *) createLabel: (OutlineScene *) scene {
+	NSTextField * label;
+	label = [[NSTextField alloc] init];
+	
+	if (scene != nil) {
+		NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
+		NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+		
+		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
+		NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
+		rect.origin.y += TEXT_INSET_TOP;
+		rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER;
+		rect.size.width = 10 * [scene.sceneNumber length];
+	}
+	
+	[label setBezeled:NO];
+	[label setSelectable:NO];
+	[label setDrawsBackground:NO];
+	[label setFont:self.courier];
+	[self.textView addSubview:label];
+	
+	[self.sceneNumberLabels addObject:label];
+	return label;
+}
+
+// This kind of works but might make things a bit slow. I'm not sure. There are CPU spikes on scroll at times, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
+// Send help.
+- (void) updateSceneNumberLabels {
+	if (![[self.parser outline] count]) {
+		[self.parser numberOfOutlineItems];
+	}
+	
+	NSInteger numberOfScenes = [self getNumberOfScenes];
+	NSInteger numberOfLabels = [self.sceneNumberLabels count];
+	NSInteger difference = numberOfScenes - numberOfLabels;
+	
+	if (difference > 0 && [self.sceneNumberLabels count]) {
+		for (NSUInteger d = 0; d < difference; d++) {
+			[self createLabel:nil];
+		}
+	}
+	
+	// Create labels if none are present
+	if (![self.sceneNumberLabels count]) {
+		[self createAllLabels];
+	} else {
+		NSUInteger index = 0;
+		
+		for (OutlineScene * scene in [self getScenes]) {
+			NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
+			
+			label = [self.sceneNumberLabels objectAtIndex:index];
+			if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
+						
+			NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
+			NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+			NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
+			
+			rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER;
+			rect.size.width = 1.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
+			
+			rect.origin.y += TEXT_INSET_TOP;
+			label.frame = rect;
+				
+		
+			index++;
+		}
+
+		// Remove unused labels from the end of the array.
+		if (difference < 0) {
+			for (NSInteger d = 0; d > difference; d--) {
+				NSTextField * label = [self.sceneNumberLabels objectAtIndex:[self.sceneNumberLabels count] - 1];
+				
+				//[label performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:NO];
+				[self.sceneNumberLabels removeObject:label];
+				[label removeFromSuperview];
+				
+			}
+		}
+	}
+	
+	return;
+}
+- (void) createAllLabels {
+	for (OutlineScene * scene in [self getScenes]) {
+		[self createLabel:scene];
+	}
+}
+
+/* Listen to scrolling of the view */
+- (void)boundsDidChange:(NSNotification*)notification {
+	[self updateSceneNumberLabels];
+}
 @end

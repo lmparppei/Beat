@@ -24,10 +24,12 @@
 
 /*
  
- N.B. This file is customized for Beat. I have removed the English language
- "written by" for international users.
-
+ N.B. This file is customized for Beat.
+ 
+ I have removed the English language default "written by" for international users.
  [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
+ 
+ The HTML version also prints out page divs. Some custom and non-printing CSS has been added. 
  
 */
 
@@ -117,8 +119,7 @@
     }
     
     if ([titlePage count] > 0) {
-
-        [body appendString:@"<div id='script-title'>"];
+        [body appendString:@"<div class='page'><div id='script-title'>"];
         
         
         // Title
@@ -193,7 +194,7 @@
             [body appendFormat:@"<p class='%@'>%@</p>", @"contact", values];
         }
 
-        [body appendString:@"</div>"];
+        [body appendString:@"</div></div>"];
     }
     
     NSInteger dualDialogueCharacterCount = 0;
@@ -207,7 +208,7 @@
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
         
         // Print what page we're on -- used for page jumper
-        
+		[body appendFormat:@"<div class='page'>"];
         if (self.customPage) {
             if ([self.customPage integerValue] == 0) {
                 if ([self.forRendering boolValue]) {
@@ -309,6 +310,7 @@
                 [body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
             }            
         }
+		[body appendFormat:@"</div>"];
     }
 
     return body;
