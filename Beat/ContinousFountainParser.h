@@ -21,6 +21,7 @@
 - (ContinousFountainParser*)initWithString:(NSString*)string;
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string;
 //- (void)setSceneNumbers:(NSString*)text;
+- (void)parseText:(NSString*)text;
 
 //Convenience Methods for Testing
 - (NSString*)stringAtLine:(NSUInteger)line;

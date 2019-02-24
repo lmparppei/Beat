@@ -72,6 +72,7 @@
 @property (nonatomic) NSMutableArray *outlineClosedSections;
 
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
+@property (nonatomic) bool sceneNumberLabelUpdateOff;
 
 #pragma mark - Floating outline button
 @property (weak) IBOutlet NSButton *outlineButton;
@@ -976,93 +977,35 @@ static NSString *forceLyricsSymbol = @"~";
     }
 }
 
-- (IBAction)clearSceneNumbers:(id)sender
+- (IBAction)unlockSceneNumbers:(id)sender
 {
-	// Backup text
-	NSString *rawText = [self.getText copy];
-	
-	// Regex for scene testing
-	NSString * pattern = @"^(([iI][nN][tT]|[eE][xX][tT]|[^\\w][eE][sS][tT]|\\.|[iI]\\.?\\[eE]\\.?)).+";
-	NSPredicate *test = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
+	NSString *sceneNumberPatternString = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
+	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPatternString];
 	
 	NSError *error = nil;
 	NSRegularExpression *sceneNumberPattern = [NSRegularExpression regularExpressionWithPattern: @" (\\#([0-9A-Za-z\\.\\)-]+)\\#)" options: NSRegularExpressionCaseInsensitive error: &error];
 	
-	NSArray *lines = [self.getText componentsSeparatedByString:@"\n"];
-	NSString *fullText = @"";
 	
-	for (__strong NSString *rawLine in lines) {
-		NSString *cleanedLine = [rawLine stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-		
-		// Test if this is a scene header
-		if ([test evaluateWithObject: cleanedLine]) {
-			// Remove scene numbers
-			cleanedLine = [sceneNumberPattern stringByReplacingMatchesInString:rawLine options:0 range:NSMakeRange(0, [rawLine length]) withTemplate:@""];
-			
-			// Make scene heading strings
-			NSString *newLine = [NSString stringWithFormat:@"%@", cleanedLine];
-			
-			fullText = [NSString stringWithFormat:@"%@%@\n", fullText, newLine];
-		} else {
-			fullText = [NSString stringWithFormat:@"%@%@\n", fullText, cleanedLine];
+	_sceneNumberLabelUpdateOff = true;
+	for (OutlineScene * scene in [self getScenes]) {
+		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
+			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, [scene.line.string length])];
+			if ([results count]) {
+				NSTextCheckingResult * result = [results objectAtIndex:0];
+				NSRange sceneNumberRange = NSMakeRange(scene.line.position + result.range.location, result.range.length);
+				[self replaceCharactersInRange:sceneNumberRange withString:@""];
+			}
 		}
 	}
 	
-	[self setText:fullText];
+	_sceneNumberLabelUpdateOff = false;
+	[self updateSceneNumberLabels];
 	
-	[self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
-	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
-	[self applyFormatChanges];
-	
-	[[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:rawText];
+	// Just in case
+	[self updateSceneNumberLabels];
 }
 
-- (IBAction)sceneNumbering:(id)sender
-{
-	// Backup text
-	NSString *rawText = [self.getText copy];
-	
-	// Regex for scene testing
-	NSString * pattern = @"^(([iI][nN][tT]|[eE][xX][tT]|[^\\w][eE][sS][tT]|\\.|[iI]\\.?\\[eE]\\.?)).+";
-	NSPredicate *test = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
-	
-	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
-	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
-	
-	NSUInteger sceneCount = 1; // Track scene amount
-	
-	NSArray *lines = [self.getText componentsSeparatedByString:@"\n"];
-	NSString *fullText = @"";
-	
-	for (__strong NSString *rawLine in lines) {
-		NSString *cleanedLine = [rawLine stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
-		
-		// Test if this is a scene header, but don't add an auto scene number
-		// if it already has one
-		if ([test evaluateWithObject: cleanedLine] && ![testSceneNumber evaluateWithObject: cleanedLine]) {
-			
-			// Make scene heading strings
-			NSString *sceneNumber = [NSString stringWithFormat:@"%@%lu%@", @"#", sceneCount, @"#"];
-			NSString *newLine = [NSString stringWithFormat:@"%@ %@", cleanedLine, sceneNumber];
-			
-			fullText = [NSString stringWithFormat:@"%@%@\n", fullText, newLine];
-			
-			sceneCount++;
-		} else {
-			fullText = [NSString stringWithFormat:@"%@%@\n", fullText, cleanedLine];
-		}
-	}
-	
-	[self setText:fullText];
-	[self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
-	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
-	[self applyFormatChanges];
-	
-	
-	[[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:rawText];
-}
 
-/* Uh... yeah. I couldn't figure out how to make this a separate method, so here we go again */
 - (NSString*) preprocessSceneNumbers
 {
 	// Regex for scene testing
@@ -1094,6 +1037,30 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 	
 	return fullText;
+}
+
+- (IBAction)lockSceneNumbers:(id)sender
+{
+	NSLog(@"Lock scene numbers (the new way)");
+	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
+	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
+	
+	_sceneNumberLabelUpdateOff = true;
+	for (OutlineScene * scene in [self getScenes]) {
+		if (![testSceneNumber evaluateWithObject: scene.string]) {
+			if (!scene.sceneNumber) { scene.sceneNumber = @""; }
+			NSString *sceneNumber = [NSString stringWithFormat:@"%@%@%@", @" #", scene.sceneNumber, @"#"];
+			NSUInteger index = scene.line.position + [scene.string length];
+			[self addString:sceneNumber atIndex:index];
+		}
+	}
+	
+	//[self applyFormatChanges];
+	
+	_sceneNumberLabelUpdateOff = false;
+	[self updateSceneNumberLabels];
+	
+	// [[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:rawText];
 }
 
 - (void)undoSceneNumbering:(NSString*)rawText
@@ -2050,6 +2017,8 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 // This kind of works but might make things a bit slow. I'm not sure. There are CPU spikes on scroll at times, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
 // Send help.
 - (void) updateSceneNumberLabels {
+	if (_sceneNumberLabelUpdateOff) return;
+	
 	if (![[self.parser outline] count]) {
 		[self.parser numberOfOutlineItems];
 	}

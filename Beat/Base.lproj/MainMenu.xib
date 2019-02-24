@@ -472,16 +472,16 @@ DQ
                                     <action selector="togglePrintSceneNumbers:" target="-1" id="8bJ-zj-vM7"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Lock Scene Numbers" id="cyU-kn-U6H">
+                            <menuItem title="Lock Scene Numbers" id="neY-LE-02O">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="sceneNumbering:" target="-1" id="gQ6-kb-cxV"/>
+                                    <action selector="lockSceneNumbers:" target="-1" id="2aS-fP-yJR"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Clear Scene Numbers" id="nIN-DD-JuD">
+                            <menuItem title="Clear Scene Numbers" id="6uV-eM-FCI">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="clearSceneNumbers:" target="-1" id="MkN-Vh-mRS"/>
+                                    <action selector="unlockSceneNumbers:" target="-1" id="Iwa-ri-jSu"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="NmP-5j-KWS"/>
@@ -612,7 +612,7 @@ DQ
         <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="Tq0-bd-4zX">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="196" y="240" width="564" height="355"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="vpm-hd-eID">
                 <rect key="frame" x="0.0" y="0.0" width="564" height="355"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -752,7 +752,7 @@ DQ
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="534" height="317"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="2zn-ZX-4dS">
                 <rect key="frame" x="0.0" y="0.0" width="534" height="317"/>
                 <autoresizingMask key="autoresizingMask"/>
