@@ -51,7 +51,6 @@
 		B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72F2218B589005B8447 /* MainMenu.xib */; };
 		B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
-		B6EBB7FA22241895005043E8 /* PerformSelectorWithDebounce.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBB7F922241895005043E8 /* PerformSelectorWithDebounce.m */; };
 		B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B62019E1D6FA000489C4 /* Cocoa.framework */; };
 		B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; };
 		B6F4A2D5221EEDDC0065D9CB /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -157,8 +156,6 @@
 		B6D2B7352218B6A7005B8447 /* FNScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FNScript.h; sourceTree = "<group>"; };
 		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/OutlineScene.m; sourceTree = SOURCE_ROOT; };
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/OutlineScene.h; sourceTree = SOURCE_ROOT; };
-		B6EBB7F822241895005043E8 /* PerformSelectorWithDebounce.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = PerformSelectorWithDebounce.h; path = Beat/PerformSelectorWithDebounce/PerformSelectorWithDebounce.h; sourceTree = "<group>"; };
-		B6EBB7F922241895005043E8 /* PerformSelectorWithDebounce.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; fileEncoding = 4; name = PerformSelectorWithDebounce.m; path = Beat/PerformSelectorWithDebounce/PerformSelectorWithDebounce.m; sourceTree = "<group>"; };
 		B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -393,8 +390,6 @@
 		B6EBB7F422241841005043E8 /* PerformDebounce */ = {
 			isa = PBXGroup;
 			children = (
-				B6EBB7F822241895005043E8 /* PerformSelectorWithDebounce.h */,
-				B6EBB7F922241895005043E8 /* PerformSelectorWithDebounce.m */,
 			);
 			name = PerformDebounce;
 			path = ..;
@@ -553,7 +548,6 @@
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
-				B6EBB7FA22241895005043E8 /* PerformSelectorWithDebounce.m in Sources */,
 				B138B66F19E1E8CA000489C4 /* RegexKitLite.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinousFountainParser.m in Sources */,
