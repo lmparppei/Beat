@@ -55,6 +55,7 @@
 @property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
 @property (weak) IBOutlet NSScrollView *textScrollView;
+@property (nonatomic) NSTimer * scrollTimer;
 
 @property (weak) IBOutlet NSOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
@@ -73,6 +74,7 @@
 
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
+@property (nonatomic) bool showSceneNumberLabels;
 
 #pragma mark - Floating outline button
 @property (weak) IBOutlet NSButton *outlineButton;
@@ -140,6 +142,7 @@
 
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
 #define LIVE_PREVIEW_KEY @"Live Preview"
+#define SHOW_SCENE_LABELS_KEY @"Show Scene Number Labels"
 #define FONTSIZE_KEY @"Fontsize"
 #define ZOOMLEVEL_KEY @"Zoomlevel"
 #define DEFAULT_ZOOM 17
@@ -248,6 +251,12 @@
 	} else {
 		self.printSceneNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:PRINT_SCENE_NUMBERS_KEY];
 	}
+
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_SCENE_LABELS_KEY]) {
+		self.showSceneNumberLabels = YES;
+	} else {
+		self.showSceneNumberLabels = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_SCENE_LABELS_KEY];
+	}
 	
 	 // Let's enable live preview as default, don't load preferences for it.
 	self.livePreview = YES;
@@ -290,12 +299,13 @@
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
     [self applyFormatChanges];
 	
-	// Let's set a timer for 200ms. This should update the scene number labels before letting the text to render.
-	// This doesn't work. Nothing works.
-	// [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
+	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
+	[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 }
 - (void) afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^{
+		// This is a silly duct-tape fix for a bug I can't track. Help.
+		[self updateSceneNumberLabels];
 		[self updateSceneNumberLabels];
 	});
 }
@@ -311,7 +321,7 @@
 - (void)resizeMargins {
 	/*
 	
-	 Margins to make an illusion of "page" view. These didn't work because they blocked the find field. Best solution would be just to make a background box and resize the textView accordingly, but I don't have the time or the nerves to count the sizes now. One fine day maybe. I'm not even sure if it would look that good or distracting.
+	 Margins to make an illusion of "page" view. These didn't work because they blocked the find field. Best solution would be just to make a background box and resize the textView accordingly, but I don't have the time or the nerves to count the sizes now. One fine day maybe. I'm not even sure if it would look that good or just distracting.
 	 
 	*/
 	
@@ -880,14 +890,6 @@
 
 - (NSUInteger)fontSize
 {
-    /*
-    if (_fontSize == 0) {
-        _fontSize = [[NSUserDefaults standardUserDefaults] integerForKey:FONTSIZE_KEY];
-        if (_fontSize == 0) {
-            _fontSize = _documentWidth * FONT_SIZE_MODIFIER;
-        }
-    }
-    */
     _fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
     return _fontSize;
 }
@@ -1485,22 +1487,7 @@ Zoom level * zoom modifier * element size
         if ([visibleCharacters length] == 0) {
             return NO;
         }
-    } else if ([menuItem.title isEqualToString:@"Theme"]) {
-		// Deprecated
-		/*
-        [menuItem.submenu removeAllItems];
-        
-        NSUInteger selectedTheme = [self.themeManager selectedTheme];
-        NSUInteger count = [self.themeManager numberOfThemes];
-        for (int i = 0; i < count; i++) {
-            NSString *themeName = [self.themeManager nameForThemeAtIndex:i];
-            NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:themeName action:@selector(selectTheme:) keyEquivalent:@""];
-            if (i == selectedTheme) {
-                [item setState:NSOnState];
-            }
-            [menuItem.submenu addItem:item];
-        }
-		 */
+    } else if ([menuItem.title isEqualToString:@"Theme"]) { // Deprecated
         if ([self selectedTabViewTab] == 1) {
             return NO;
         }
@@ -1513,6 +1500,15 @@ Zoom level * zoom modifier * element size
         if ([self selectedTabViewTab] == 1) {
             return NO;
         }
+	} else if ([menuItem.title isEqualToString:@"Show Scene Numbers"]) {
+		if (self.showSceneNumberLabels) {
+			[menuItem setState:NSOnState];
+		} else {
+			[menuItem setState:NSOffState];
+		}
+		if ([self selectedTabViewTab] == 1) {
+			return NO;
+		}
 	} else if ([menuItem.title isEqualToString:@"Print Automatic Scene Numbers"]) {
 		if (self.printSceneNumbers) {
 			[menuItem setState:NSOnState];
@@ -2000,14 +1996,17 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
 		NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
 		rect.origin.y += TEXT_INSET_TOP;
-		rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER;
-		rect.size.width = 10 * [scene.sceneNumber length];
+		rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
+		rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER - rect.size.width;
+		
+		
 	}
 	
 	[label setBezeled:NO];
 	[label setSelectable:NO];
 	[label setDrawsBackground:NO];
 	[label setFont:self.courier];
+	[label setAlignment:NSTextAlignmentRight];
 	[self.textView addSubview:label];
 	
 	[self.sceneNumberLabels addObject:label];
@@ -2017,7 +2016,7 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 // This kind of works but might make things a bit slow. I'm not sure. There are CPU spikes on scroll at times, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
 // Send help.
 - (void) updateSceneNumberLabels {
-	if (_sceneNumberLabelUpdateOff) return;
+	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	
 	if (![[self.parser outline] count]) {
 		[self.parser numberOfOutlineItems];
@@ -2048,9 +2047,10 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 			NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
 			NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 			NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-			
-			rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER;
-			rect.size.width = 1.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
+
+			rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
+			rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width;
+
 			
 			rect.origin.y += TEXT_INSET_TOP;
 			label.frame = rect;
@@ -2079,9 +2079,41 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 		[self createLabel:scene];
 	}
 }
+- (void) deleteAllLabels {
+	for (NSTextField * label in _sceneNumberLabels) {
+		[label removeFromSuperview];
+	}
+	[_sceneNumberLabels removeAllObjects];
+}
+- (IBAction) toggleSceneLabels: (id) sender {
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	
+	for (Document* doc in openDocuments) {
+		doc.showSceneNumberLabels = !doc.showSceneNumberLabels;
+		if (!doc.showSceneNumberLabels) {
+			[doc deleteAllLabels];
+		} else {
+			[doc updateSceneNumberLabels];
+		}
+	}
+	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
+
+}
 
 /* Listen to scrolling of the view */
 - (void)boundsDidChange:(NSNotification*)notification {
 	[self updateSceneNumberLabels];
+	
+	if(_scrollTimer == nil) [self updateSceneNumberLabels];
+	
+	if (_scrollTimer != nil && [_scrollTimer isValid])
+		[_scrollTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+	else
+		_scrollTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(scrollViewDidEndScrolling) userInfo:nil repeats:NO];
+}
+- (void)scrollViewDidEndScrolling
+{
+	[self updateSceneNumberLabels];
+	if(_scrollTimer != nil) _scrollTimer = nil;
 }
 @end
