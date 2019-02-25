@@ -27,6 +27,7 @@
 		B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */; };
 		B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */; };
 		B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
+		B62609E6222419C90019BF52 /* SelectorWithDebounce.m in Sources */ = {isa = PBXBuildFile; fileRef = B62609E5222419C90019BF52 /* SelectorWithDebounce.m */; };
 		B6482F7922195BEC00175927 /* NCRAutocompleteTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */; };
 		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
 		B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* ApplicationDelegate.m */; };
@@ -127,6 +128,8 @@
 		B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold.ttf"; sourceTree = "<group>"; };
 		B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Italic.ttf"; sourceTree = "<group>"; };
 		B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime.ttf"; sourceTree = "<group>"; };
+		B62609E4222419C90019BF52 /* SelectorWithDebounce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectorWithDebounce.h; path = Beat/PerformSelectorWithDebounce/SelectorWithDebounce.h; sourceTree = SOURCE_ROOT; };
+		B62609E5222419C90019BF52 /* SelectorWithDebounce.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectorWithDebounce.m; path = Beat/PerformSelectorWithDebounce/SelectorWithDebounce.m; sourceTree = SOURCE_ROOT; };
 		B6482F7722195BEC00175927 /* NCRAutocompleteTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NCRAutocompleteTextView.h; path = Beat/NCRTextField/NCRAutocompleteTextView.h; sourceTree = SOURCE_ROOT; };
 		B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NCRAutocompleteTextView.m; path = Beat/NCRTextField/NCRAutocompleteTextView.m; sourceTree = SOURCE_ROOT; };
 		B68AC7B42219733900E02466 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Tutorial.fountain; path = "Sample files/Tutorial.fountain"; sourceTree = SOURCE_ROOT; };
@@ -253,7 +256,7 @@
 				B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */,
 				B68AC7B32219732800E02466 /* Sample files */,
 				B6D2B7332218B5DC005B8447 /* Images.xcassets */,
-				B6EBB7F422241841005043E8 /* PerformDebounce */,
+				B62609E7222419CF0019BF52 /* Debounce */,
 				B6482F7622195BD300175927 /* NCRTextView */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
 			);
@@ -361,6 +364,15 @@
 			path = CourierPrime;
 			sourceTree = "<group>";
 		};
+		B62609E7222419CF0019BF52 /* Debounce */ = {
+			isa = PBXGroup;
+			children = (
+				B62609E4222419C90019BF52 /* SelectorWithDebounce.h */,
+				B62609E5222419C90019BF52 /* SelectorWithDebounce.m */,
+			);
+			name = Debounce;
+			sourceTree = "<group>";
+		};
 		B63ED42B221F2D30002B0B5F /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -385,14 +397,6 @@
 				B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */,
 			);
 			name = "Sample files";
-			sourceTree = "<group>";
-		};
-		B6EBB7F422241841005043E8 /* PerformDebounce */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = PerformDebounce;
-			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -562,6 +566,7 @@
 				B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */,
 				B138B66719E1E8CA000489C4 /* FNHTMLScript.m in Sources */,
 				B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */,
+				B62609E6222419C90019BF52 /* SelectorWithDebounce.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

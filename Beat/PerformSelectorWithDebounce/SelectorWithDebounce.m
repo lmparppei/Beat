@@ -5,7 +5,7 @@
 //  Copyright (c) 2013 Mindful Bear Apps. All rights reserved.
 //
 
-#import "PerformSelectorWithDebounce.h"
+#import "SelectorWithDebounce.h"
 #import <objc/runtime.h>
 #import <objc/message.h>
 

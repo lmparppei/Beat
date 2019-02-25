@@ -47,6 +47,7 @@
 #import "ContinousFountainParser.h"
 #import "ThemeManager.h"
 #import "OutlineScene.h"
+#import "SelectorWithDebounce.h"
 
 //#import "Beat-Bridging-Header.h"
 
@@ -2104,12 +2105,17 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 - (void)boundsDidChange:(NSNotification*)notification {
 	[self updateSceneNumberLabels];
 	
-	if(_scrollTimer == nil) [self updateSceneNumberLabels];
+	// if(_scrollTimer == nil) [self scrollViewDidScroll];
+	[self performSelector:@selector(updateSceneNumberLabels) withDebounceDuration:.1];
 	
 	if (_scrollTimer != nil && [_scrollTimer isValid])
-		[_scrollTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+		[_scrollTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:.1]];
 	else
-		_scrollTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(scrollViewDidEndScrolling) userInfo:nil repeats:NO];
+		_scrollTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(scrollViewDidEndScrolling) userInfo:nil repeats:NO];
+}
+- (void)scrollViewDidScroll {
+	//[self performSelector:@selector(updateSceneNumberLabels) withDebounceDuration:0.2];
+	//[self updateSceneNumberLabels];
 }
 - (void)scrollViewDidEndScrolling
 {
