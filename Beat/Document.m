@@ -312,6 +312,10 @@
 	});
 }
 
+- (bool) isFullscreen {
+	return (([_thisWindow styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask);
+}
+
 - (void)windowDidResize:(NSNotification *)notification {
 	// If we want to go the magnifying way, we need to fix this
 	self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
@@ -1450,21 +1454,30 @@ Zoom level * zoom modifier * element size
 - (IBAction)toggleOutlineView:(id)sender
 {
     self.outlineViewVisible = !self.outlineViewVisible;
-    
+	
+	NSUInteger offset = 20;
+	if ([self isFullscreen]) offset = 0;
+	
     if (self.outlineViewVisible) {
-		//[self.outlineButton setTranslatesAutoresizingMaskIntoConstraints:true];
-		
 		[self reloadOutline];
 		
 		[self.outlineView expandItem:nil expandChildren:true];
-		
         [self.outlineViewWidth.animator setConstant:TREE_VIEW_WIDTH];
-        NSWindow *window = self.windowControllers[0].window;
-        NSRect newFrame = NSMakeRect(window.frame.origin.x,
-                                     window.frame.origin.y,
-                                     window.frame.size.width + TREE_VIEW_WIDTH + 20,
-                                     window.frame.size.height);
-        [window.animator setFrame:newFrame display:YES];
+		
+		NSWindow *window = self.windowControllers[0].window;
+		NSRect newFrame;
+		
+		if (![self isFullscreen]) {
+			newFrame = NSMakeRect(window.frame.origin.x,
+										 window.frame.origin.y,
+										 window.frame.size.width + TREE_VIEW_WIDTH + offset,
+										 window.frame.size.height);
+			[window.animator setFrame:newFrame display:YES];
+		} else {
+			//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+			[self.textView.animator setTextContainerInset:NSMakeSize((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+		}
+		
 		
 		CGRect buttonFrame = self.outlineButton.frame;
 		buttonFrame.origin.x = TREE_VIEW_WIDTH + 15;
@@ -1475,13 +1488,26 @@ Zoom level * zoom modifier * element size
 		buttonFrame.origin.x = 15;
 		[self.outlineButton.animator setFrame:buttonFrame];
 		
-        [self.outlineViewWidth.animator setConstant:0];
-        NSWindow *window = self.windowControllers[0].window;
-        NSRect newFrame = NSMakeRect(window.frame.origin.x - 20,
-                                     window.frame.origin.y,
-                                     window.frame.size.width - TREE_VIEW_WIDTH - 50,
-                                     window.frame.size.height);
-        [window.animator setFrame:newFrame display:YES];
+		[self.outlineViewWidth.animator setConstant:0];
+		NSWindow *window = self.windowControllers[0].window;
+		NSRect newFrame;
+		if (![self isFullscreen]) {
+			newFrame = NSMakeRect(window.frame.origin.x - offset,
+										 window.frame.origin.y,
+										 window.frame.size.width - TREE_VIEW_WIDTH - offset * 2,
+										 window.frame.size.height);
+		} else {
+			newFrame = NSMakeRect(window.frame.origin.x - offset,
+								  window.frame.origin.y,
+								  window.frame.size.width,
+								  window.frame.size.height);
+
+			
+			//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+			[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+		}
+		[window.animator setFrame:newFrame display:YES];
+		
     }
 }
 
