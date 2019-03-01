@@ -740,9 +740,9 @@
 				NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
 				note =  [note substringWithRange:noteRange];
 				
-				if ([note rangeOfString:@COLOR_PATTERN].location != NSNotFound) {
+				if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN] == true) {
 					if ([note length] > [@COLOR_PATTERN length] + 1) {
-						NSRange colorRange = [note rangeOfString:@COLOR_PATTERN];
+						NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];
 						item.color = [note substringWithRange:NSMakeRange(colorRange.length, [note length] - colorRange.length)];
 						item.color = [item.color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 					}

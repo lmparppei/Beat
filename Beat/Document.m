@@ -186,6 +186,7 @@
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
 	_thisWindow = aController.window;
+	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, 350)];
 	
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
     //    aController.window.titleVisibility = NSWindowTitleHidden; //Makes the title and toolbar unified by hiding the title
@@ -312,9 +313,9 @@
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
-    self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-	
-	[self resizeMargins]; // Unused for now
+	// If we want to go the magnifying way, we need to fix this
+	self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	
 	[self updateSceneNumberLabels];
 }
@@ -1329,8 +1330,38 @@ Zoom level * zoom modifier * element size
 
 */
 
+/*
+
+ And this is the new way. Still have trouble with it though.
+ 
+ */
+- (void) setZoom: (bool) zoomIn {
+	CGPoint center = CGPointMake(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
+	center.y = 0;
+	
+	if (zoomIn == true) {
+		NSLog(@"Zoom in ");
+		_zoomLevel++;
+	} else {
+		_zoomLevel--;
+	}
+	
+	NSInteger zoom = _zoomLevel - 15;
+	CGFloat magnification = 1 + zoom * .015;
+	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
+	
+	NSUInteger cursorPosition;
+	cursorPosition = [[[self.textView selectedRanges] firstObject] rangeValue].location;
+	[self.textView scrollRangeToVisible:NSMakeRange(cursorPosition,0)];
+	
+	[self updateSceneNumberLabels];
+}
+
 - (IBAction)increaseFontSize:(id)sender
 {
+	// Work in progress
+	// [self setZoom:true]; return;
+	
     if (_zoomLevel < 30)
     {
         NSLog(@"Zoom in: %lu", _zoomLevel);
@@ -1357,6 +1388,9 @@ Zoom level * zoom modifier * element size
 
 - (IBAction)decreaseFontSize:(id)sender
 {
+	// Work in progress
+	// [self setZoom:false]; return;
+	
     if (_zoomLevel > 10) {
         NSLog(@"Zoom out: %lu", _zoomLevel);
         _zoomLevel--;
@@ -1537,7 +1571,7 @@ Zoom level * zoom modifier * element size
         if ([self selectedTabViewTab] == 1) {
             return NO;
         }
-	} else if ([menuItem.title isEqualToString:@"Night Mode"]) {
+	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
 		if (self.nightMode) {
 			[menuItem setState:NSOnState];
 		} else {
@@ -1725,11 +1759,7 @@ Zoom level * zoom modifier * element size
 	if (!item) {
 		return [[self.parser outline] objectAtIndex:index];
 	} else {
-		NSUInteger childIndex = [[self.parser outline] indexOfObject:item];
-		OutlineScene *outlineSection = [[self.parser outline] objectAtIndex:childIndex];
-		return [outlineSection.scenes objectAtIndex:index];
-	 
-		//return nil;
+		return [[item scenes] objectAtIndex:index];
 	}
 }
 
@@ -1743,8 +1773,8 @@ Zoom level * zoom modifier * element size
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
-	
     if ([item isKindOfClass:[OutlineScene class]]) {
+		
         OutlineScene* line = item;
 
 		// The outline elements will be formatted as rich text,
@@ -2051,11 +2081,11 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 
 			rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
 			rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width;
-
 			
 			rect.origin.y += TEXT_INSET_TOP;
 			label.frame = rect;
-				
+			[label setFont:self.courier];
+			[label setTextColor:self.themeManager.currentTextColor];
 		
 			index++;
 		}
