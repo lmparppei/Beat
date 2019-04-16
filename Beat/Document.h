@@ -31,7 +31,8 @@ THE SOFTWARE.
 #import <Cocoa/Cocoa.h>
 #import "NCRAutocompleteTextView.h"
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NCRAutocompleteTableViewDelegate, NSTableViewDelegate, NSMenuDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NCRAutocompleteTableViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate>
+	//NSCollectionViewDataSource, NSCollectionViewDelegate
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;

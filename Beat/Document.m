@@ -50,6 +50,7 @@
 #import "SelectorWithDebounce.h"
 
 //#import "Beat-Bridging-Header.h"
+//#import "Beat-Swift.h"
 
 @interface Document ()
 
@@ -61,6 +62,8 @@
 @property (weak) IBOutlet NSOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (nonatomic) NSWindow *thisWindow;
+
+@property (nonatomic) NSLayoutManager *layoutManager;
 
 @property (unsafe_unretained) IBOutlet WebView *webView;
 @property (unsafe_unretained) IBOutlet NSTabView *tabView;
@@ -76,6 +79,8 @@
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
 @property (nonatomic) bool showSceneNumberLabels;
+
+@property (unsafe_unretained) IBOutlet NSCollectionView *cardView;
 
 #pragma mark - Floating outline button
 @property (weak) IBOutlet NSButton *outlineButton;
@@ -221,7 +226,7 @@
 	
     self.textView.textContainer.widthTracksTextView = false;
 	[[self.textScrollView contentView] setPostsBoundsChangedNotifications:YES];
-	
+
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
 	
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
@@ -269,6 +274,7 @@
     } else {
         [self setText:@""];
     }
+	[self setLayout];
 	
 /*
 	 // I'm doing this on xcode 8, so oh well. When I can upgrade, do this.
@@ -318,10 +324,20 @@
 
 - (void)windowDidResize:(NSNotification *)notification {
 	// If we want to go the magnifying way, we need to fix this
+	
 	self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
 	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	
 	[self updateSceneNumberLabels];
+	[self setLayout];
+}
+
+- (void)setLayout {
+	/*
+	CGFloat fontLineHeight = [_layoutManager defaultLineHeightForFont:[self courier]];
+	CGFloat lineHeight = fontLineHeight * 1.4;
+	CGFloat baseLineNudge = (lineHeight - fontLineHeight);
+	*/
 }
 
 - (void)resizeMargins {
@@ -405,7 +421,7 @@
 		} else {
 			self.preprocessedText = [self.getText copy];
 		}
-        self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO];
+        self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO toPrint:YES];
     }
 }
 
@@ -417,7 +433,7 @@
 		self.preprocessedText = [self.getText copy];
 	}
 	
-    self.printView = [[PrintView alloc] initWithDocument:self toPDF:YES];
+	self.printView = [[PrintView alloc] initWithDocument:self toPDF:YES toPrint:YES];
 }
 
 - (IBAction)exportHTML:(id)sender
@@ -481,7 +497,7 @@
 
 - (void)updateWebView
 {
-    FNScript *script = [[FNScript alloc] initWithString:[self getText]];
+    FNScript *script = [[FNScript alloc] initWithString:[self preprocessSceneNumbers]];
     FNHTMLScript *htmpScript = [[FNHTMLScript alloc] initWithScript:script document:self];
     [[self.webView mainFrame] loadHTMLString:[htmpScript html] baseURL:nil];
 }
@@ -655,6 +671,11 @@
 		
         NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
 		
+		NSMutableParagraphStyle *lineHeight = [[NSMutableParagraphStyle alloc]init];
+		
+		// This doesn't format empty lines for some reason: [lineHeight setLineHeightMultiple:1.05];
+		[attributes setObject:lineHeight forKey:NSParagraphStyleAttributeName];
+		
         //Formatt according to style
         if ((line.type == heading && [line.string characterAtIndex:0] != '.') ||
             (line.type == transition && [line.string characterAtIndex:0] != '>')) {
@@ -677,28 +698,30 @@
         }
 
         if (!fontOnly) {
+			NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+			// This won't format empty lines for some reason: [paragraphStyle setLineHeightMultiple:1.05];
             if (line.type == titlePageTitle  ||
                 line.type == titlePageAuthor ||
                 line.type == titlePageCredit ||
                 line.type == titlePageSource) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+				
                 [paragraphStyle setAlignment:NSTextAlignmentCenter];
                 
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
             } else if (line.type == transition) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
                 [paragraphStyle setAlignment:NSTextAlignmentRight];
                 
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == centered || line.type == lyrics) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
                 [paragraphStyle setAlignment:NSTextAlignmentCenter];
                 
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == character) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
                 [paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
@@ -706,7 +729,7 @@
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == parenthetical) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
                 [paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
@@ -714,7 +737,7 @@
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == dialogue) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
                 [paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
@@ -722,7 +745,7 @@
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == doubleDialogueCharacter) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
                 [paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DD_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
@@ -730,7 +753,7 @@
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == doubleDialogueParenthetical) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
                 [paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DD_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
@@ -738,7 +761,7 @@
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == doubleDialogue) {
-                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+                //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
                 [paragraphStyle setFirstLineHeadIndent:DOUBLE_DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:DOUBLE_DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DD_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
@@ -1340,8 +1363,10 @@ Zoom level * zoom modifier * element size
  
  */
 - (void) setZoom: (bool) zoomIn {
-	CGPoint center = CGPointMake(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
-	center.y = 0;
+	//CGPoint center = CGPointMake(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
+	//center.y = 0;
+	
+	CGPoint center = CGPointMake(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
 	
 	if (zoomIn == true) {
 		NSLog(@"Zoom in ");
@@ -1364,7 +1389,7 @@ Zoom level * zoom modifier * element size
 - (IBAction)increaseFontSize:(id)sender
 {
 	// Work in progress
-	// [self setZoom:true]; return;
+	//[self setZoom:true]; return;
 	
     if (_zoomLevel < 30)
     {
@@ -1393,7 +1418,7 @@ Zoom level * zoom modifier * element size
 - (IBAction)decreaseFontSize:(id)sender
 {
 	// Work in progress
-	// [self setZoom:false]; return;
+	//[self setZoom:false]; return;
 	
     if (_zoomLevel > 10) {
         NSLog(@"Zoom out: %lu", _zoomLevel);
@@ -2020,7 +2045,6 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 }
 
 - (IBAction) setRedColor:(id) sender {
-	NSLog(@"Color red");
 	[self setColor:@"RED"];
 }
 
@@ -2032,6 +2056,31 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 		[self addString:colorString atIndex:position];
 	}
 }
+
+#pragma  mark - Card view
+
+- (IBAction) toggleCards: (id)sender {
+	if ([self selectedTabViewTab] != 2) {
+		[self setSelectedTabViewTab:2];
+		
+//		NSCollectionViewItem * item = [_cardView makeItemWithIdentifier:"item" forIndexPath:<#(nonnull NSIndexPath *)#>
+		
+	} else {
+		[self setSelectedTabViewTab:0];
+	}
+}
+
+- (NSCollectionViewItem*)collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath {
+	// Recycle or create an item.
+	NSCollectionViewItem* item = [self.cardView makeItemWithIdentifier:@"dataSourceItem" forIndexPath:indexPath];
+ 
+	// Configure the item with an image from the app's data structures
+	//NSImage* theImage = [myImageData objectAtIndex:indexPath.item];
+	//item.imageView.image = theImage;
+ 
+	return item;
+}
+
 
 #pragma  mark - Scene numbering for NSTextView
 
@@ -2096,6 +2145,8 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 		NSUInteger index = 0;
 		
 		for (OutlineScene * scene in [self getScenes]) {
+			if (index >= [self.sceneNumberLabels count]) break;
+			
 			NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
 			
 			label = [self.sceneNumberLabels objectAtIndex:index];

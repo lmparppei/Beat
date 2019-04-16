@@ -1,7 +1,9 @@
 //
 //  FNHTMLScript.m
+//	Modified for Beat
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
+//  Parts copyright (c) 2019 Lauri-Matti Parppei / KAPITAN!
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -26,10 +28,11 @@
  
  N.B. This file is customized for Beat.
  
- I have removed the English language default "written by" for international users.
+ I have removed the English language default "written by" to please international users.
  [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
  
- The HTML version also prints out page divs. Some custom and non-printing CSS has been added. 
+ The HTML output has either screen or print CSS depending on the target format.
+ Print & PDF versions rely on PrintCSS.css and preview mode uses modified ScriptCSS.css.
  
 */
 
@@ -59,6 +62,16 @@
     return self;
 }
 
+- (id)initWithScript:(FNScript *)aScript print:(bool)print {
+	self = [super init];
+	if (self) {
+		_script = aScript;
+		_font = [QUQFont fontWithName:@"Courier" size:12];
+		_print = print;
+	}
+	return self;
+}
+
 - (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument
 {
     self = [super init];
@@ -70,6 +83,19 @@
     return self;
 }
 
+- (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument print:(bool)print
+{
+	self = [super init];
+	if (self) {
+		_script = aScript;
+		_font = [QUQFont fontWithName:@"Courier" size:12];
+		_document = aDocument;
+		_print = print;
+	}
+	return self;
+}
+
+
 - (NSString *)html
 {
     if (!self.bodyText) {
@@ -80,11 +106,13 @@
     [html appendString:@"<!DOCTYPE html>\n"];
     [html appendString:@"<html>\n"];
     [html appendString:@"<head>\n"];
+	[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.2'/>\n"];
+	
     [html appendString:@"<style type='text/css'>\n"];
     [html appendString:self.cssText];
     [html appendString:@"</style>\n"];
     [html appendString:@"</head>\n"];
-    [html appendString:@"<body>\n<article>\n<section>\n"];
+    [html appendString:@"<body>\n<article>\n"];
     [html appendString:self.bodyText];
     [html appendString:@"</section>\n</article>\n</body>\n"];
     [html appendString:@"</html>"];        
@@ -99,12 +127,21 @@
 - (NSString *)cssText
 {    
     NSError *error = nil;
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"ScriptCSS.css" ofType:@""];
-    NSString *css = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-    if (error) {
-        NSLog(@"Couldn't load CSS");
-        css = @"";
-    }
+	NSString *css;
+	
+	if (!_print) {
+		NSString *path = [[NSBundle mainBundle] pathForResource:@"ScriptCSS.css" ofType:@""];
+		css = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+	} else {
+		NSString *path = [[NSBundle mainBundle] pathForResource:@"PrintCSS.css" ofType:@""];
+		css = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+	}
+
+	if (error) {
+		NSLog(@"Couldn't load CSS");
+		css = @"";
+	}
+
     return css;
 }
 
@@ -119,8 +156,9 @@
     }
     
     if ([titlePage count] > 0) {
-        [body appendString:@"<div class='page'><div id='script-title'>"];
-        
+        [body appendString:@"<section id='script-title' class='page'>"];
+		
+		[body appendFormat:@"<div class='mainTitle'>"];
         
         // Title
         if (titlePage[@"title"]) {
@@ -162,7 +200,8 @@
                 [body appendFormat:@"<p class='%@'>%@</p>", @"authors", @"Anonymous"];
             }
         }
-        
+		[body appendFormat:@"</div>"];
+		[body appendFormat:@"<div class='info'>"];
         // Source
         if (titlePage[@"source"]) {
             NSArray *obj = titlePage[@"source"];
@@ -181,7 +220,7 @@
             for (NSString *val in obj) {
                 [values appendFormat:@"%@<br>", val];
             }
-            [body appendFormat:@"<p class='%@'>%@</p>", @"draft date", values];
+            [body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", values];
         }
         
         // Contact
@@ -193,8 +232,9 @@
             }
             [body appendFormat:@"<p class='%@'>%@</p>", @"contact", values];
         }
-
-        [body appendString:@"</div></div>"];
+		[body appendFormat:@"</div>"];
+		
+        [body appendString:@"</section>"];
     }
     
     NSInteger dualDialogueCharacterCount = 0;
@@ -203,12 +243,13 @@
     
     FNPaginator *paginator = [[FNPaginator alloc] initWithScript:self.script document:self.document];
     NSUInteger maxPages = [paginator numberOfPages];
-    
+	
+	bool pageBreak = false;
     for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
         
         // Print what page we're on -- used for page jumper
-		[body appendFormat:@"<div class='page'>"];
+		[body appendFormat:@"<section>"];
         if (self.customPage) {
             if ([self.customPage integerValue] == 0) {
                 if ([self.forRendering boolValue]) {
@@ -235,12 +276,15 @@
             if ([ignoringTypes containsObject:element.elementType]) {
                 continue;
             }
-            
+			
+
             if ([element.elementType isEqualToString:@"Page Break"]) {
-                [body appendString:@"</section>\n<section>\n"];
+                //[body appendString:@"</section>\n<section>\n"];
+				// [body appendString:@"</section>\n"];
+				pageBreak = true;
                 continue;
             }
-            
+			
             if ([element.elementType isEqualToString:@"Character"] && element.isDualDialogue) {
                 dualDialogueCharacterCount++;
                 if (dualDialogueCharacterCount == 1) {
@@ -310,7 +354,8 @@
                 [body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
             }            
         }
-		[body appendFormat:@"</div>"];
+		//if (!pageBreak) [body appendFormat:@"</section>"];
+		[body appendFormat:@"</section>"];
     }
 
     return body;

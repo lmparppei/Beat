@@ -430,6 +430,12 @@
                         currentY    = blockHeight - spaceBefore;
                     }
                 }
+				/*
+				// Break apart too long actions. Harder than it sounds.
+				else if ([tmpElements count] > 0 && [[tmpElements[0] elementType] isEqualToString:@"Action"]) {
+				
+				}
+				 */
                 else {
                     [self.pages addObject:currentPage];
                     currentPage = [NSMutableArray array];
@@ -574,6 +580,7 @@
     
     // calculate the height
     NSInteger height = numberOfLines * lineHeight;
+	//NSLog(@"Korkeus: %lu - %@", height, string);
     return height;
 }
 

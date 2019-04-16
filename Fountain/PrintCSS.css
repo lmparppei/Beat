@@ -21,18 +21,17 @@ IN THE SOFTWARE.
 */
 
 * {
-	/* -webkit-touch-callout: none; */
+	-webkit-touch-callout: none;
 	-webkit-user-select: none;
-	box-sizing: border-box;
 }
 html {
 	margin: 0;
 	padding: 0;
 }
 body {
-	background: #333;
+	background-color: #fff;
 	color: #3e3e3e;
-	font: 12px/1.0em 'Courier', serif;
+	font: 12px/1.0em 'Courier Prime', serif;
 	padding: 0;
 	margin: 0;
 }
@@ -41,10 +40,10 @@ article {
 	margin: 0;
 }
 section {
-	
+	padding: 0 0 0 40px;
+	width: 465px;
 	margin-right: auto;
 	margin-left: auto;
-	
 }
 p {
 	margin: 1.3em auto;
@@ -101,20 +100,10 @@ body > p:first-child {
     text-align: center;
 }
 #script-title {
-	position: relative;
     overflow: hidden;
-    display: flex;
+    display: block;
     padding-bottom: 2.6em;
     margin-bottom: 2.6em;
-	
-	justify-content: center;
-	flex-direction: column;
-}
-#script-title .mainTitle {
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
-	flex: 1;
 }
 #script-title .title {
     text-align: center;
@@ -128,27 +117,14 @@ body > p:first-child {
 #script-title .authors {
     text-align: center;
 }
-#script-title .info {
-	margin: auto 0 0 auto;
-	padding-bottom: 3rem;
-	width: 35%;
-}
-#script-title p.source {
+#script-title .source {
     text-align: center;
-	padding:0;
-	margin: 0 0 .5rem 0;
+    padding-top: 1.3em;
 }
-#script-title p.notes {
-	padding: 0;
-	margin: 0 0 .5rem 0;
+#script-title .notes {
+    padding-top: 2.6em;
 }
-#script-title p.draft-date {
-	padding: 0;
-	margin: 0 0 .5rem 0;
-}
-#script-title p.contact { padding: 0; margin: 0; }
-
-#script-title p.notes {
+#script-title .notes {
     white-space: pre-line !important;shape-rendering
 }
 
@@ -179,24 +155,13 @@ hr {
 	padding-left: 40px;
 }
 p.page-break {
-	padding-right: 0;
-	margin-top: 0;
     text-align: right;
-    /* border-top: 1px solid #ccc;
+    border-top: 1px solid #ccc;
     padding-top: 20px;
     margin-top: 20px;
-	 */
 }
 p.page-break-render {
     text-align: right;
     padding-top: 20px;
     margin-top: 20px;
-}
-section {
-	background-color: #f0f0f0;
-	width: 630px;
-	min-height: 820px;
-	margin: 1rem auto 1rem auto;
-	padding: 3rem 80px 6rem 110px;
-	border: solid 1px #ccc;
 }

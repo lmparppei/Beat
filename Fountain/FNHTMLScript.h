@@ -1,7 +1,9 @@
 //
 //  FNHTMLScript.h
+//	Modified for Beat
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
+//  Parts copyright (c) 2019 Lauri-Matti Parppei / KAPITAN!
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -42,9 +44,12 @@
 @property (strong, nonatomic) NSDocument *document;
 @property (strong, nonatomic) NSNumber *customPage;
 @property (strong, nonatomic) NSNumber *forRendering;
+@property (nonatomic) bool print;
 
 - (id)initWithScript:(FNScript *)aScript;
 - (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument;
+- (id)initWithScript:(FNScript *)aScript print:(bool)print;
+- (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument print:(bool)print;
 
 - (NSString *)html;
 - (NSString *)htmlClassForType:(NSString *)elementType;

@@ -1,11 +1,9 @@
 //
-//  PrintView.h
-//  Writer / Beat
+//  CardView.h
+//  Beat
 //
-//  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
-
-//
+//  Released under GPL.
+//  Copyright © 2019 Lauri-Matti Parppei
 
 /*
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,12 +25,17 @@
  THE SOFTWARE.
  */
 
+
 #import <Cocoa/Cocoa.h>
-#import "Document.h"
-#import <WebKit/WebKit.h>
+// #import "Line.h"
+#import "OutlineScene.h"
 
-@interface PrintView : NSView
+@interface CardView : NSObject <NSCollectionViewDelegate, NSCollectionViewDataSource>
 
-- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print;
+//@property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
+//@property (nonatomic, readonly) NSString* preprocessedText;
+
+//- (NSString*)getText;
+//- (NSString*)fileNameString;
 
 @end

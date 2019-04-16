@@ -39,7 +39,7 @@
 @end
 @implementation PrintView
 
-- (id)initWithDocument:(Document*)document toPDF:(bool)pdf
+- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print
 {
     self = [super init];
     self.pdf = pdf;
@@ -129,8 +129,8 @@
                 [containingView addSubview:bottomWebView];
                 [self addSubview:containingView];
                 
-                FNHTMLScript *middleHTMLScript = [[FNHTMLScript alloc] initWithScript:middleScript];
-                FNHTMLScript *bottomHTMLScript = [[FNHTMLScript alloc] initWithScript:bottomScript];
+				FNHTMLScript *middleHTMLScript = [[FNHTMLScript alloc] initWithScript:middleScript print:print];
+				FNHTMLScript *bottomHTMLScript = [[FNHTMLScript alloc] initWithScript:bottomScript print:print];
                 middleHTMLScript.forRendering = @YES;
                 bottomHTMLScript.forRendering = @YES;
                 
@@ -152,7 +152,7 @@
                 pageWebView.frameLoadDelegate = self;
                 pageWebView.mainFrame.frameView.allowsScrolling = NO;
                 [self addSubview:pageWebView];
-                FNHTMLScript *pageHTMLScript = [[FNHTMLScript alloc] initWithScript:pageScript document:document];
+				FNHTMLScript *pageHTMLScript = [[FNHTMLScript alloc] initWithScript:pageScript document:document print:print];
                 pageHTMLScript.customPage = [NSNumber numberWithInt:i];
                 pageHTMLScript.forRendering = @YES;
                 [pageWebView.mainFrame loadHTMLString:[pageHTMLScript html] baseURL:nil];
