@@ -19,6 +19,6 @@ I am an artist and a filmmaker, and my programming skills are somewhat limited, 
 
 **Note:** This repository follows my development and does NOT match the released versions. Dread lightly, dear friend!
 
-Lauri-Matti Parppei
-KAPITAN!
+Lauri-Matti Parppei  
+KAPITAN!  
 https://kapitan.fi/
