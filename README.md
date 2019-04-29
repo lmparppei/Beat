@@ -10,9 +10,15 @@ This started as a personal project as I needed a simple, multi-window and lightw
 
 I am an artist and a filmmaker, and my programming skills are somewhat limited, so I'm open to any suggestions, improvements, feedback and collaboration. I hope that Beat will make work easier and more enjoyable for everyone!
 
-## Latest release: Beat 1.0.3
+## Latest release: Beat 1.0.6
 
 * Autocomplete characters and scene headings
 * Automatic scene numbering in edit view –- this has some quirks, but works. Recognizes Fountain scene numbering.
 * Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now.
 * Small visual bug fixes
+
+**Note:** This repository follows my development and does NOT match the released versions. Dread lightly, dear friend!
+
+Lauri-Matti Parppei
+KAPITAN!
+https://kapitan.fi/
