@@ -37,6 +37,7 @@
 */
 
 #import <WebKit/WebKit.h>
+#import <Foundation/Foundation.h>
 #import "Document.h"
 #import "FNScript.h"
 #import "FNHTMLScript.h"
@@ -69,6 +70,8 @@
 @property (unsafe_unretained) IBOutlet NSTabView *tabView;
 @property (weak) IBOutlet ColorView *backgroundView;
 
+@property (unsafe_unretained) IBOutlet WKWebView *cardView;
+
 @property (unsafe_unretained) IBOutlet NSBox *leftMargin;
 @property (unsafe_unretained) IBOutlet NSBox *rightMargin;
 
@@ -80,7 +83,7 @@
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
 @property (nonatomic) bool showSceneNumberLabels;
 
-@property (unsafe_unretained) IBOutlet NSCollectionView *cardView;
+// @property (unsafe_unretained) IBOutlet NSCollectionView *cardView;
 
 #pragma mark - Floating outline button
 @property (weak) IBOutlet NSButton *outlineButton;
@@ -114,6 +117,7 @@
 @property (nonatomic) NSUInteger zoomLevel;
 @property (nonatomic) bool livePreview;
 @property (nonatomic) bool printPreview;
+@property (nonatomic) bool cardsVisible;
 @property (nonatomic, readwrite) NSString *preprocessedText;
 
 @property (nonatomic) bool matchParentheses;
@@ -307,6 +311,10 @@
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
     [self applyFormatChanges];
 	
+	// CardView webkit
+	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
+	[self setupCards];
+	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 }
@@ -324,6 +332,7 @@
 
 - (void)windowDidResize:(NSNotification *)notification {
 	// If we want to go the magnifying way, we need to fix this
+	// ALSO, there's also a bug with the resizing while the card view is enabled.
 	
 	self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
 	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
@@ -1574,7 +1583,7 @@ Zoom level * zoom modifier * element size
             return NO;
         }
     } else if ([menuItem.title isEqualToString:@"Theme"]) { // Deprecated
-        if ([self selectedTabViewTab] == 1) {
+        if ([self selectedTabViewTab] != 0) {
             return NO;
         }
     } else if ([menuItem.title isEqualToString:@"Automatically Match Parentheses"]) {
@@ -1583,7 +1592,7 @@ Zoom level * zoom modifier * element size
         } else {
             [menuItem setState:NSOffState];
         }
-        if ([self selectedTabViewTab] == 1) {
+        if ([self selectedTabViewTab] != 0) {
             return NO;
         }
 	} else if ([menuItem.title isEqualToString:@"Show Scene Numbers"]) {
@@ -1592,7 +1601,7 @@ Zoom level * zoom modifier * element size
 		} else {
 			[menuItem setState:NSOffState];
 		}
-		if ([self selectedTabViewTab] == 1) {
+		if ([self selectedTabViewTab] != 0) {
 			return NO;
 		}
 	} else if ([menuItem.title isEqualToString:@"Print Automatic Scene Numbers"]) {
@@ -1601,7 +1610,7 @@ Zoom level * zoom modifier * element size
 		} else {
 			[menuItem setState:NSOffState];
 		}
-		if ([self selectedTabViewTab] == 1) {
+		if ([self selectedTabViewTab] != 0) {
 			return NO;
 		}
     } else if ([menuItem.title isEqualToString:@"Live Preview"]) {
@@ -1610,7 +1619,7 @@ Zoom level * zoom modifier * element size
         } else {
             [menuItem setState:NSOffState];
         }
-        if ([self selectedTabViewTab] == 1) {
+        if ([self selectedTabViewTab] != 0) {
             return NO;
         }
     } else if ([menuItem.title isEqualToString:@"Show Outline"]) {
@@ -1619,7 +1628,7 @@ Zoom level * zoom modifier * element size
         } else {
             [menuItem setState:NSOffState];
         }
-        if ([self selectedTabViewTab] == 1) {
+        if ([self selectedTabViewTab] != 0) {
             return NO;
         }
 	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
@@ -1628,15 +1637,22 @@ Zoom level * zoom modifier * element size
 		} else {
 			[menuItem setState:NSOffState];
 		}
-		if ([self selectedTabViewTab] == 1) {
+		if ([self selectedTabViewTab] != 0) {
 			return NO;
 		}
     } else if ([menuItem.title isEqualToString:@"Zoom In"] || [menuItem.title isEqualToString:@"Zoom Out"] || [menuItem.title isEqualToString:@"Reset Zoom"]) {
-        if ([self selectedTabViewTab] == 1) {
+        if ([self selectedTabViewTab] != 0) {
             return NO;
         }
-    }
-    
+    } else if ([menuItem.title isEqualToString:@"Show Cards"]) {
+		if ([self selectedTabViewTab] == 1) return NO;
+		if ([self selectedTabViewTab] == 2) {
+			[menuItem setState:NSOnState];
+		} else {
+			[menuItem setState:NSOffState];
+		}
+	}
+	
     return YES;
 }
 
@@ -1753,9 +1769,8 @@ Zoom level * zoom modifier * element size
 }
 - (void)cancelOperation:(id) sender
 {
-	if (_printPreview) {
-		[self preview:nil];
-	}
+	if (_printPreview) [self preview:nil];
+	if (_cardsVisible) [self toggleCards:nil];
 }
 
 - (NSUInteger)selectedTabViewTab
@@ -1793,6 +1808,7 @@ Zoom level * zoom modifier * element size
 	
 	return scenes;
 }
+
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
@@ -1942,17 +1958,6 @@ Zoom level * zoom modifier * element size
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
-	/*
-    if ([item isKindOfClass:[Line class]]) {
-        Line* line = item;
-        NSRange lineRange = NSMakeRange(line.position, line.string.length);
-        [self.textView setSelectedRange:lineRange];
-        [self.textView scrollRangeToVisible:lineRange];
-        return YES;
-    }
-    return NO;
-	*/
-	
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		
 		NSRange lineRange = NSMakeRange([item line].position, [item line].string.length);
@@ -2013,14 +2018,18 @@ Zoom level * zoom modifier * element size
  
  Outline context menu, WIP.
  
- To make this work reliably, we should check for a lot of stuff, such as if there already is a color or some other note on the heading line. I don't have the willpower to do it just now, but maybe someday.
+ To make this work reliably, we should check for a lot of stuff, such as if there already is a color
+ or some other note on the heading line. I don't have the willpower to do it just now, but maybe someday.
  
- The thing is, after this is done, we can also filter the outline view according to color tags. One thing to consider is also if we want to have multiple color tags on lines? I kind of hate that usually, especially if it's done badly, but in many cases it should be useful.
+ The thing is, after this is done, we can also filter the outline view according to color tags. One thing
+ to consider is also if we want to have multiple color tags on lines? I kind of hate that usually, 
+ especially if it's done badly, but in many cases it could be useful.
 
-Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll just search for ranges whenever I decide to do this.
+ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll just search for
+ ranges whenever I decide to do this.
  
- In principle it should be possible that to enter custom colors in hex. Such as [[COLOR #d00dd]].
- 
+ Also, in principle it should be possible to enter custom colors in hex. Such as [[COLOR #d00dd]].
+
 */
 - (void) menuNeedsUpdate:(NSMenu *)menu {
 	NSInteger clickedRow = [self.outlineView clickedRow];
@@ -2057,32 +2066,134 @@ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll j
 	}
 }
 
-#pragma  mark - Card view
+
+#pragma mark - Card view
 
 - (IBAction) toggleCards: (id)sender {
 	if ([self selectedTabViewTab] != 2) {
-		[self setSelectedTabViewTab:2];
+		_cardsVisible = YES;
 		
+		[self refreshCards];
+		[self setSelectedTabViewTab:2];
 //		NSCollectionViewItem * item = [_cardView makeItemWithIdentifier:"item" forIndexPath:<#(nonnull NSIndexPath *)#>
 		
 	} else {
+		_cardsVisible = NO;
 		[self setSelectedTabViewTab:0];
 	}
 }
 
-- (NSCollectionViewItem*)collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath {
-	// Recycle or create an item.
-	NSCollectionViewItem* item = [self.cardView makeItemWithIdentifier:@"dataSourceItem" forIndexPath:indexPath];
- 
-	// Configure the item with an image from the app's data structures
-	//NSImage* theImage = [myImageData objectAtIndex:indexPath.item];
-	//item.imageView.image = theImage;
- 
-	return item;
+// We should do most of the work listed here in the JavaScript, tbh.
+// Just load the view contents at the beginning and just inject new JSON data, and let's let the JS function build up the view.
+// That way we can also reuse the cards and avoid repositioning the view for no real reason.
+// Let's also move all this shit to another file some day.
+- (void) setupCards {
+	NSError *error = nil;
+	
+	NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"CardCSS.css" ofType:@""];
+	NSString *css = [NSString stringWithContentsOfFile:cssPath encoding:NSUTF8StringEncoding error:&error];
+	
+	NSString *jsPath = [[NSBundle mainBundle] pathForResource:@"CardView.js" ofType:@""];
+	NSString *javaScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:&error];
+	
+	NSString* content = [NSString stringWithFormat:@"<html><style>%@</style><body>", css];
+	content = [content stringByAppendingFormat:@"<script>%@</script></body></html>", javaScript];
+	[_cardView loadHTMLString:content baseURL:nil];
+}
+
+- (void) refreshCards {
+	
+	if (self.nightMode) {
+		[_cardView evaluateJavaScript:@"nightModeOn();" completionHandler:nil];
+	} else {
+		[_cardView evaluateJavaScript:@"nightModeOff();" completionHandler:nil];
+	}
+	
+	NSString * json = @"[";
+	for (OutlineScene * scene in [self.parser outline]) {
+		json = [json stringByAppendingFormat:@"{"];
+		json = [json stringByAppendingString:[self getJSONCard:scene selected:[self isSceneSelected:scene]]];
+		json = [json stringByAppendingFormat:@"},"];
+		
+		if ([scene.scenes count] > 0) {
+			for (OutlineScene * subScene in scene.scenes) {
+				json = [json stringByAppendingFormat:@"{ %@ },", [self getJSONCard:subScene selected:[self isSceneSelected:subScene]]];
+			}
+		}
+	}
+	json = [json stringByAppendingString:@"]"];
+	
+	NSString * jsCode = [NSString stringWithFormat:@"createCards(%@);", json];
+	[_cardView evaluateJavaScript:jsCode completionHandler:nil];
+}
+- (bool) isSceneSelected: (OutlineScene *) scene {
+	NSUInteger position = [self.textView selectedRange].location;
+	
+	NSMutableArray *scenes = [self getScenes];
+	NSUInteger index = [scenes indexOfObject:scene];
+	NSUInteger nextIndex = index + 1;
+	
+	if (nextIndex < [scenes count]) {
+		OutlineScene *nextScene = [scenes objectAtIndex:index+1];
+
+		if (position >= scene.line.position && position < nextScene.line.position) {
+			return YES;
+		}
+	} else {
+		if (position >= scene.line.position) return YES;
+	}
+	
+	return NO;
+}
+- (NSString *) getJSONCard:(OutlineScene *) scene selected:(bool)selected {
+	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
+	
+	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
+	NSUInteger lineIndex = index + 2;
+	NSString * snippet = @"";
+	if (lineIndex < [[self.parser lines] count]) {
+		snippet = [[[self.parser lines] objectAtIndex:lineIndex] string];
+	}
+	
+	NSString * status = @"'selected': ''";
+	if (selected) {
+		status =  @"'selected': 'yes'";
+	}
+	
+	if (scene.type == section) {
+		return [NSString stringWithFormat:@"'type': 'section', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
+	} else if (scene.type == synopse) {
+		return [NSString stringWithFormat:@"'type': 'synopse', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
+	} else {
+		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', %@", [self JSONString:scene.sceneNumber], [self JSONString:scene.string], [self JSONString:snippet], scene.line.position, status];
+	}
+}
+
+-(NSString *)JSONString:(NSString *)aString {
+	NSMutableString *s = [NSMutableString stringWithString:aString];
+	[s replaceOccurrencesOfString:@"\'" withString:@"\\\'" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"\"" withString:@"\\\"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"\"" withString:@"\\\"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"/" withString:@"\\/" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"\n" withString:@"\\n" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"\b" withString:@"\\b" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"\f" withString:@"\\f" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"\r" withString:@"\\r" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	[s replaceOccurrencesOfString:@"\t" withString:@"\\t" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
+	return [NSString stringWithString:s];
+}
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
+	NSLog(@"Testi %@", message.body);
+	
+	NSRange lineRange = NSMakeRange([message.body intValue], 0);
+	[self.textView setSelectedRange:lineRange];
+	[self.textView scrollRangeToVisible:lineRange];
+	[self toggleCards:nil];
 }
 
 
-#pragma  mark - Scene numbering for NSTextView
+#pragma mark - Scene numbering for NSTextView
 
 /*
  

@@ -27,15 +27,9 @@
 
 
 #import <Cocoa/Cocoa.h>
-// #import "Line.h"
+#import <WebKit/WebKit.h>
 #import "OutlineScene.h"
 
-@interface CardView : NSObject <NSCollectionViewDelegate, NSCollectionViewDataSource>
-
-//@property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
-//@property (nonatomic, readonly) NSString* preprocessedText;
-
-//- (NSString*)getText;
-//- (NSString*)fileNameString;
+@interface CardView : WKWebView
 
 @end

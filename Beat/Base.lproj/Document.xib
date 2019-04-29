@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="12121"/>
         <plugIn identifier="com.apple.WebKitIBPlugin" version="12121"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,7 +12,7 @@
             <connections>
                 <outlet property="backgroundView" destination="3qa-Wg-PsD" id="is8-W2-FQ7"/>
                 <outlet property="boldToolbarButton" destination="6Zj-2I-mQJ" id="B5E-Iy-xRn"/>
-                <outlet property="cardView" destination="m8e-Gn-aDx" id="BQd-3o-FMq"/>
+                <outlet property="cardView" destination="2ja-Hc-I6Z" id="RvV-26-dPe"/>
                 <outlet property="forceActionToolbarButton" destination="oMv-P1-uQi" id="7Hh-i1-h4R"/>
                 <outlet property="forceCharacterToolbarButton" destination="WCs-D3-8v5" id="3vJ-eW-jku"/>
                 <outlet property="forceHeadingToolbarButton" destination="4gP-Hh-L29" id="33C-VD-eAs"/>
@@ -200,31 +201,20 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView wantsLayer="YES" fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eZr-tR-aaH">
+                                        <wkWebView wantsLayer="YES" allowsLinkPreview="NO" allowsMagnification="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2ja-Hc-I6Z" customClass="CardView">
                                             <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <clipView key="contentView" ambiguous="YES" id="yHw-d2-UMB">
-                                                <rect key="frame" x="1" y="1" width="1048" height="597"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                <subviews>
-                                                    <collectionView ambiguous="YES" id="m8e-Gn-aDx">
-                                                        <rect key="frame" x="0.0" y="0.0" width="1048" height="597"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <color key="primaryBackgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                    </collectionView>
-                                                </subviews>
-                                                <color key="backgroundColor" white="0.11579241071428571" alpha="1" colorSpace="calibratedWhite"/>
-                                            </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="LJh-u6-0ao">
-                                                <rect key="frame" x="1" y="144" width="233" height="15"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                            </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="zIn-au-Zo0">
-                                                <rect key="frame" x="234" y="1" width="15" height="143"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                            </scroller>
-                                        </scrollView>
+                                            <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat">
+                                                <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                                <wkPreferences key="preferences"/>
+                                            </wkWebViewConfiguration>
+                                        </wkWebView>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="2ja-Hc-I6Z" secondAttribute="trailing" id="Ta6-L2-mY4"/>
+                                        <constraint firstItem="2ja-Hc-I6Z" firstAttribute="leading" secondItem="fPc-ie-Xae" secondAttribute="leading" id="n84-CS-68s"/>
+                                        <constraint firstItem="2ja-Hc-I6Z" firstAttribute="top" secondItem="fPc-ie-Xae" secondAttribute="top" id="oD4-Ek-dOd"/>
+                                        <constraint firstAttribute="bottom" secondItem="2ja-Hc-I6Z" secondAttribute="bottom" id="uk2-Ml-Raq"/>
+                                    </constraints>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>

@@ -29,9 +29,10 @@ THE SOFTWARE.
 
 
 #import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
 #import "NCRAutocompleteTextView.h"
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NCRAutocompleteTableViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NCRAutocompleteTableViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler>
 	//NSCollectionViewDataSource, NSCollectionViewDelegate
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;

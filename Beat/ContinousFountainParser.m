@@ -730,6 +730,13 @@
 			item.type = line.type;
 			item.line = line;
 			
+			if ([item.string characterAtIndex:0] == '#') {
+				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+			}
+			if ([item.string characterAtIndex:0] == '=') {
+				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+			}
+			
 			// Check if this heading contains a note. We can use notes to have colors etc. in the headings.
 			[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 								NSString * note = [line.string substringWithRange:range];

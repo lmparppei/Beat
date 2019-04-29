@@ -29,6 +29,9 @@
 		B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
 		B62609E6222419C90019BF52 /* SelectorWithDebounce.m in Sources */ = {isa = PBXBuildFile; fileRef = B62609E5222419C90019BF52 /* SelectorWithDebounce.m */; };
 		B6482F7922195BEC00175927 /* NCRAutocompleteTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */; };
+		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
+		B66FC9A6227704EF00C0265D /* CardView.m in Sources */ = {isa = PBXBuildFile; fileRef = B66FC9A5227704EF00C0265D /* CardView.m */; };
+		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
 		B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* ApplicationDelegate.m */; };
 		B6D2B7092218B320005B8447 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
@@ -52,7 +55,6 @@
 		B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72F2218B589005B8447 /* MainMenu.xib */; };
 		B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
-		B6E067CE222D59CE00CE425A /* CardView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6E067CD222D59CE00CE425A /* CardView.m */; };
 		B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS.css */; };
 		B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B62019E1D6FA000489C4 /* Cocoa.framework */; };
 		B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; };
@@ -134,7 +136,11 @@
 		B62609E5222419C90019BF52 /* SelectorWithDebounce.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectorWithDebounce.m; path = Beat/PerformSelectorWithDebounce/SelectorWithDebounce.m; sourceTree = SOURCE_ROOT; };
 		B6482F7722195BEC00175927 /* NCRAutocompleteTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NCRAutocompleteTextView.h; path = Beat/NCRTextField/NCRAutocompleteTextView.h; sourceTree = SOURCE_ROOT; };
 		B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NCRAutocompleteTextView.m; path = Beat/NCRTextField/NCRAutocompleteTextView.m; sourceTree = SOURCE_ROOT; };
+		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CardView.js; path = Beat/CardView.js; sourceTree = SOURCE_ROOT; };
+		B66FC9A4227704EF00C0265D /* CardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardView.h; sourceTree = "<group>"; };
+		B66FC9A5227704EF00C0265D /* CardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardView.m; sourceTree = "<group>"; };
 		B67D1E512265D57400644CB1 /* Beat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-Bridging-Header.h"; sourceTree = "<group>"; };
+		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = CardCSS.css; path = Beat/CardCSS.css; sourceTree = SOURCE_ROOT; };
 		B68AC7B42219733900E02466 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Tutorial.fountain; path = "Sample files/Tutorial.fountain"; sourceTree = SOURCE_ROOT; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecentFiles.h; path = Beat/RecentFiles.h; sourceTree = "<group>"; };
 		B6D2B7062218B308005B8447 /* ApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationDelegate.m; path = Beat/ApplicationDelegate.m; sourceTree = SOURCE_ROOT; };
@@ -162,8 +168,6 @@
 		B6D2B7352218B6A7005B8447 /* FNScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FNScript.h; sourceTree = "<group>"; };
 		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/OutlineScene.m; sourceTree = SOURCE_ROOT; };
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/OutlineScene.h; sourceTree = SOURCE_ROOT; };
-		B6E067CC222D594000CE425A /* CardView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CardView.h; path = Beat/CardView/CardView.h; sourceTree = SOURCE_ROOT; };
-		B6E067CD222D59CE00CE425A /* CardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CardView.m; path = Beat/CardView/CardView.m; sourceTree = SOURCE_ROOT; };
 		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
 		B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -221,7 +225,6 @@
 		B138B56A19E1C973000489C4 = {
 			isa = PBXGroup;
 			children = (
-				B63ED42B221F2D30002B0B5F /* iOS */,
 				B138B57519E1C973000489C4 /* Beat */,
 				B138B58C19E1C974000489C4 /* WriterTests */,
 				B138B64E19E1E8CA000489C4 /* Fountain */,
@@ -255,10 +258,9 @@
 				B6D2B71F2218B459005B8447 /* RecentFiles.m */,
 				B1B62A3819E3402F009F6E23 /* ColorView.h */,
 				B6D2B70C2218B359005B8447 /* ColorView.m */,
-				B6E067CC222D594000CE425A /* CardView.h */,
-				B6E067CD222D59CE00CE425A /* CardView.m */,
 				B6D2B72D2218B589005B8447 /* Document.xib */,
 				B6D2B72F2218B589005B8447 /* MainMenu.xib */,
+				B66FC9A3227704EF00C0265D /* CardView */,
 				B13111851CB2893F00D07A0C /* Themes */,
 				B13111911CB2A41B00D07A0C /* Parsing */,
 				B1509A3D1CB5C0B400884918 /* Export */,
@@ -267,6 +269,7 @@
 				B6D2B7332218B5DC005B8447 /* Images.xcassets */,
 				B62609E7222419CF0019BF52 /* Debounce */,
 				B6482F7622195BD300175927 /* NCRTextView */,
+				B66FC99F2276EADC00C0265D /* CardView */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
 			);
 			name = Beat;
@@ -383,14 +386,6 @@
 			name = Debounce;
 			sourceTree = "<group>";
 		};
-		B63ED42B221F2D30002B0B5F /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = iOS;
-			path = Writer;
-			sourceTree = "<group>";
-		};
 		B6482F7622195BD300175927 /* NCRTextView */ = {
 			isa = PBXGroup;
 			children = (
@@ -399,6 +394,25 @@
 			);
 			name = NCRTextView;
 			sourceTree = "<group>";
+		};
+		B66FC99F2276EADC00C0265D /* CardView */ = {
+			isa = PBXGroup;
+			children = (
+				B67F4A5D22762FE600E14FCA /* CardCSS.css */,
+				B66FC99D2276EAD800C0265D /* CardView.js */,
+			);
+			name = CardView;
+			sourceTree = "<group>";
+		};
+		B66FC9A3227704EF00C0265D /* CardView */ = {
+			isa = PBXGroup;
+			children = (
+				B66FC9A4227704EF00C0265D /* CardView.h */,
+				B66FC9A5227704EF00C0265D /* CardView.m */,
+			);
+			name = CardView;
+			path = Beat/CardView;
+			sourceTree = SOURCE_ROOT;
 		};
 		B68AC7B32219732800E02466 /* Sample files */ = {
 			isa = PBXGroup;
@@ -509,11 +523,13 @@
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
 				B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */,
+				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
 				B6D2B72C2218B51D005B8447 /* Credits.rtf in Resources */,
 				B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */,
 				B138B66E19E1E8CA000489C4 /* License.rtf in Resources */,
 				B6D2B7282218B4DC005B8447 /* DocumentIcon.icns in Resources */,
+				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
 				B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */,
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
@@ -558,7 +574,7 @@
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */,
-				B6E067CE222D59CE00CE425A /* CardView.m in Sources */,
+				B66FC9A6227704EF00C0265D /* CardView.m in Sources */,
 				B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,

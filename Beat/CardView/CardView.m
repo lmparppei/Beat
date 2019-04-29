@@ -6,25 +6,12 @@
 //  Copyright © 2019 KAPITAN!. All rights reserved.
 //
 
+#import <WebKit/WebKit.h>
 #import <Cocoa/Cocoa.h>
 #import "CardView.h"
 
-#pragma mark - Recent files
-
 @implementation CardView
 
-/*
-- (NSCollectionViewItem*)collectionView:(NSCollectionView *)collectionView
-	itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath {
-	// Recycle or create an item.
-	//NSCollectionViewItem* item = [self.collectionView makeItemWithIdentifier:@"dataSourceItem" forIndexPath:indexPath];
- 
-	// // Configure the item with an image from the app's data structures
-	// NSImage* theImage = [myImageData objectAtIndex:indexPath.item];
-	// item.imageView.image = theImage;
- 
-	// return item;
-}
-*/
+#pragma mark - Card view message handler
 
 @end
