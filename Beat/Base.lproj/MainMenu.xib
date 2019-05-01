@@ -467,6 +467,13 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="SNs-fE-ES7"/>
+                            <menuItem title="Reformat Everything" id="giJ-d7-DJr">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="reformatEverything:" target="-1" id="6E8-Py-FLm"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="ffW-ny-yDK"/>
                             <menuItem title="Show Scene Numbers" state="on" id="5Rh-Kl-j5e">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -510,8 +517,7 @@ DQ
                                     <action selector="toggleOutlineView:" target="-1" id="jgE-Ew-h68"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Cards" id="Z4r-zx-D3x">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Show Cards" keyEquivalent="D" id="Z4r-zx-D3x">
                                 <connections>
                                     <action selector="toggleCards:" target="-1" id="bKE-3j-CxK"/>
                                 </connections>

@@ -45,7 +45,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1050" height="599"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -152,23 +152,46 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
-                                        <button fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
+                                        <button allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
                                             <rect key="frame" x="259" y="568" width="24" height="19"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="24" id="26U-Jf-0Uo"/>
+                                            </constraints>
                                             <buttonCell key="cell" type="square" alternateTitle="Show Outline View (⌘D)" bezelStyle="shadowlessSquare" image="OutlineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <accessibility description="Outline view"/>
                                             <connections>
                                                 <action selector="toggleOutlineView:" target="-2" id="itM-sD-VVq"/>
+                                            </connections>
+                                        </button>
+                                        <button allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZL1-eS-Zb2" userLabel="Cards Button">
+                                            <rect key="frame" x="1000" y="568" width="24" height="19"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="24" id="Afx-Wj-98R"/>
+                                                <constraint firstAttribute="height" constant="19" id="ufE-00-HmI"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <accessibility description="Card view"/>
+                                            <connections>
+                                                <action selector="toggleCards:" target="-2" id="bmu-cy-63o"/>
                                             </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="6pm-Ac-n3m" firstAttribute="leading" secondItem="RaS-3C-d5c" secondAttribute="trailing" id="28O-dF-8Nd"/>
                                         <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="2sf-fb-9XP"/>
+                                        <constraint firstAttribute="trailing" secondItem="ZL1-eS-Zb2" secondAttribute="trailing" constant="26" id="3ED-YM-88R"/>
                                         <constraint firstAttribute="bottom" secondItem="RaS-3C-d5c" secondAttribute="bottom" id="7X8-sc-Xu4"/>
+                                        <constraint firstItem="ZL1-eS-Zb2" firstAttribute="baseline" secondItem="ULq-c1-qrj" secondAttribute="baseline" id="7mc-U1-G75"/>
+                                        <constraint firstItem="ZL1-eS-Zb2" firstAttribute="top" secondItem="ULq-c1-qrj" secondAttribute="top" id="Lgt-MR-HCD"/>
+                                        <constraint firstItem="ZL1-eS-Zb2" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" constant="12" id="RTh-Qz-PPe"/>
                                         <constraint firstItem="RaS-3C-d5c" firstAttribute="leading" secondItem="Qth-9B-jWR" secondAttribute="leading" id="g7d-Dc-bbO"/>
+                                        <constraint firstItem="ULq-c1-qrj" firstAttribute="leading" secondItem="RaS-3C-d5c" secondAttribute="trailing" constant="9" id="gH1-je-RTZ"/>
                                         <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="jp6-cC-eDj"/>
                                         <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="lbh-yN-sJt"/>
                                         <constraint firstItem="RaS-3C-d5c" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="rxn-C2-I4O"/>
@@ -514,6 +537,7 @@
     </objects>
     <resources>
         <image name="Bold" width="25" height="25"/>
+        <image name="CardsIcon" width="370" height="370"/>
         <image name="ForceAction" width="25" height="25"/>
         <image name="ForceCharacter" width="25" height="25"/>
         <image name="ForceHeading" width="25" height="25"/>

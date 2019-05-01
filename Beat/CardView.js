@@ -1,4 +1,10 @@
 var scenes = [];
+var container = document.getElementById('container');
+
+var closeButton = document.getElementById('close');
+closeButton.onclick = function () {
+	window.webkit.messageHandlers.cardClick.postMessage('exit');
+}
 
 document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
 
@@ -43,6 +49,6 @@ function createCards (cards) {
 	}
 	html += "</section>";
 	
-	document.body.innerHTML = html;
+	container.innerHTML = html;
 	setupCards();
 }

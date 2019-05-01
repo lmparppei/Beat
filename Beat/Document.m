@@ -191,6 +191,8 @@
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.74
 
+#define MAGNIFY NO
+
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
@@ -205,8 +207,14 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
 	// Get zoom level & font size
-	_zoomLevel = self.zoomLevel;
-	_documentWidth = _zoomLevel * ZOOM_MODIFIER;
+	if (!MAGNIFY) {
+		_zoomLevel = self.zoomLevel;
+		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
+	} else {
+		_zoomLevel = 10;
+		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
+	}
+
 	
     //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
     NSWindow *window = aController.window;
@@ -219,18 +227,25 @@
 	// Accept mouse moved events
 	[aController.window setAcceptsMouseMovedEvents:YES];
 	
+	/* ####### Outline button initialization ######## */
+	
 	CGRect buttonFrame = self.outlineButton.frame;
 	buttonFrame.origin.x = 15;
 	self.outlineButton.frame = buttonFrame;
 	
     self.outlineViewVisible = false;
     self.outlineViewWidth.constant = 0;
+	
+	
+	/* ####### Toolbar stuff, deprecated ######## */
     
     self.toolbarButtons = @[_outlineToolbarButton,_boldToolbarButton, _italicToolbarButton, _underlineToolbarButton, _omitToolbarButton, _noteToolbarButton, _forceHeadingToolbarButton, _forceActionToolbarButton, _forceCharacterToolbarButton, _forceTransitionToolbarButton, _forceLyricsToolbarButton, _titlepageToolbarButton, _pagebreakToolbarButton, _previewToolbarButton, _printToolbarButton];
 	
+	
+	/* ####### TextView setup ######## */
+	
     self.textView.textContainer.widthTracksTextView = false;
 	[[self.textScrollView contentView] setPostsBoundsChangedNotifications:YES];
-
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
 	
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
@@ -238,19 +253,23 @@
 	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	self.textView.textContainerInset = NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
 	
+	// Background fill
     self.backgroundView.fillColor = [NSColor colorWithCalibratedRed:0.3
                                                               green:0.3
                                                                blue:0.3
                                                               alpha:1.0];
-    [self.textView setFont:[self courier]];
+	
+	// Set textView style
+	[self.textView setFont:[self courier]];
     [self.textView setAutomaticQuoteSubstitutionEnabled:NO];
     [self.textView setAutomaticDataDetectionEnabled:NO];
     [self.textView setAutomaticDashSubstitutionEnabled:NO];
 	
-	// Set first responder to the text field
+	// Set first responder to the text field to focus it on startup
 	[aController.window makeFirstResponder:self.textView];
 	[self.textView setEditable:YES];
-    
+	
+	// Read default settings
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
         self.matchParentheses = YES;
     } else {
@@ -278,7 +297,6 @@
     } else {
         [self setText:@""];
     }
-	[self setLayout];
 	
 /*
 	 // I'm doing this on xcode 8, so oh well. When I can upgrade, do this.
@@ -293,7 +311,7 @@
 	 }
 */
 	
-    //Initialize Theme Manager (before the formatting, because we need the colors for formatting!)
+    //Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
     self.themeManager = [ThemeManager sharedManager];
     [self loadSelectedTheme];
 	_nightMode = false;
@@ -315,6 +333,9 @@
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[self setupCards];
 	
+	// Reset zoom
+	if (MAGNIFY) [self setZoom];
+	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 }
@@ -326,6 +347,8 @@
 	});
 }
 
+# pragma mark Window interactions
+
 - (bool) isFullscreen {
 	return (([_thisWindow styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask);
 }
@@ -333,21 +356,156 @@
 - (void)windowDidResize:(NSNotification *)notification {
 	// If we want to go the magnifying way, we need to fix this
 	// ALSO, there's also a bug with the resizing while the card view is enabled.
-	
-	self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+	if (!MAGNIFY) {
+		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+	} else {
+		//self.textView.textContainerInset = NSMakeSize(self.thisWindow.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+		//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+	}
 	
 	[self updateSceneNumberLabels];
-	[self setLayout];
 }
 
-- (void)setLayout {
-	/*
-	CGFloat fontLineHeight = [_layoutManager defaultLineHeightForFont:[self courier]];
-	CGFloat lineHeight = fontLineHeight * 1.4;
-	CGFloat baseLineNudge = (lineHeight - fontLineHeight);
-	*/
+/*
+ 
+ Zooming in / out
+ 
+ This no longer just adjusts font size, but rather the zoom level, and the
+ font size is calculated as a percentage of the width. This is a dirty and quirky
+ approach, but seems to work fine at larger zoom levels. Page layout insets and
+ margins are also defined as percentages (ie. CHARACTER_INDENT_P 0.36), and
+ the calculation is as follows:
+ 
+ Zoom level * zoom modifier * element size
+ 
+ And this is the new way. Still have trouble with it though.
+ 
+ */
+- (void) zoom: (bool) zoomIn {
+	//CGPoint center = CGPointMake(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
+	//center.y = 0;
+	
+	CGPoint center = CGPointMake(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
+	
+	if (zoomIn == true) {
+		_zoomLevel++;
+	} else {
+		if (_zoomLevel > 0)	_zoomLevel--; else return;
+	}
+	
+	NSLog(@"zoom level %lu", _zoomLevel);
+	
+	NSInteger zoom = _zoomLevel;
+	CGFloat magnification = 1 + zoom * .04;
+	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
+	
+	NSUInteger cursorPosition;
+	cursorPosition = [[[self.textView selectedRanges] firstObject] rangeValue].location;
+	[self.textView scrollRangeToVisible:NSMakeRange(cursorPosition,0)];
+	
+	[self updateSceneNumberLabels];
 }
+- (void) setZoom {
+	NSUInteger zoom = 0;
+	CGFloat magnification = 1 + zoom * .2;
+	_zoomLevel = zoom;
+	
+	CGPoint center = CGPointMake(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
+	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
+	
+	NSUInteger cursorPosition;
+	cursorPosition = [[[self.textView selectedRanges] firstObject] rangeValue].location;
+	[self.textView scrollRangeToVisible:NSMakeRange(cursorPosition,0)];
+	
+	[self updateSceneNumberLabels];
+}
+
+- (IBAction)increaseFontSize:(id)sender
+{
+	// Work in progress
+	if (MAGNIFY) { [self zoom:true]; return; }
+	
+	if (_zoomLevel < 30)
+	{
+		NSLog(@"Zoom in: %lu", _zoomLevel);
+		_zoomLevel++;
+		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
+		
+		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+		for (Document* doc in openDocuments) {
+			doc.fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
+			
+			// Center everything and adjust page width
+			self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+			self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+			
+			doc.courier = nil;
+			doc.boldCourier = nil;
+			doc.italicCourier = nil;
+			[doc refontAllLines];
+		}
+	}
+	[[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
+	[self updateSceneNumberLabels];
+}
+
+- (IBAction)decreaseFontSize:(id)sender
+{
+	// Work in progress
+	if (MAGNIFY) { [self zoom:false]; return; }
+	
+	if (_zoomLevel > 10) {
+		NSLog(@"Zoom out: %lu", _zoomLevel);
+		_zoomLevel--;
+		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
+		
+		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+		
+		for (Document* doc in openDocuments) {
+			doc.fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
+			
+			// Center everything and adjust page width
+			self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+			self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+			
+			//doc.fontSize--;
+			doc.courier = nil;
+			doc.boldCourier = nil;
+			doc.italicCourier = nil;
+			[doc refontAllLines];
+		}
+	}
+	[[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
+	[self updateSceneNumberLabels];
+}
+
+
+- (IBAction)resetFontSize:(id)sender
+{
+	// Reset zoom level
+	_zoomLevel = DEFAULT_ZOOM;
+	_documentWidth = _zoomLevel * ZOOM_MODIFIER;
+	
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	
+	for (Document* doc in openDocuments) {
+		doc.fontSize = _documentWidth * FONT_SIZE_MODIFIER;
+		
+		// Center everything and adjust page width
+		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		
+		doc.courier = nil;
+		doc.boldCourier = nil;
+		doc.italicCourier = nil;
+		[doc refontAllLines];
+		
+	}
+	[[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
+	[self updateSceneNumberLabels];
+}
+
 
 - (void)resizeMargins {
 	/*
@@ -399,6 +557,10 @@
     [self setText:[[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"]];
     return YES;
 }
+
+
+
+# pragma mark Text content stuff
 
 - (NSString *)getText
 {
@@ -614,6 +776,9 @@
 }
 
 /* #### FORMATTING #### */
+- (IBAction) reformatEverything:(id)sender {
+	[self formattAllLines];
+}
 
 - (void)formattAllLines
 {
@@ -1352,134 +1517,6 @@ static NSString *forceLyricsSymbol = @"~";
     
 }
 
-/*
- 
-Zooming in / out
-
-This no longer just adjusts font size, but rather the zoom level, and the 
-font size is calculated as a percentage of the width. This is a dirty and quirky
-approach, but seems to work fine at larger zoom levels. Page layout insets and
-margins are also defined as percentages (ie. CHARACTER_INDENT_P 0.36), and
-the calculation is as follows: 
-
-Zoom level * zoom modifier * element size
-
-*/
-
-/*
-
- And this is the new way. Still have trouble with it though.
- 
- */
-- (void) setZoom: (bool) zoomIn {
-	//CGPoint center = CGPointMake(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
-	//center.y = 0;
-	
-	CGPoint center = CGPointMake(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
-	
-	if (zoomIn == true) {
-		NSLog(@"Zoom in ");
-		_zoomLevel++;
-	} else {
-		_zoomLevel--;
-	}
-	
-	NSInteger zoom = _zoomLevel - 15;
-	CGFloat magnification = 1 + zoom * .015;
-	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
-	
-	NSUInteger cursorPosition;
-	cursorPosition = [[[self.textView selectedRanges] firstObject] rangeValue].location;
-	[self.textView scrollRangeToVisible:NSMakeRange(cursorPosition,0)];
-	
-	[self updateSceneNumberLabels];
-}
-
-- (IBAction)increaseFontSize:(id)sender
-{
-	// Work in progress
-	//[self setZoom:true]; return;
-	
-    if (_zoomLevel < 30)
-    {
-        NSLog(@"Zoom in: %lu", _zoomLevel);
-        _zoomLevel++;
-        _documentWidth = _zoomLevel * ZOOM_MODIFIER;
-        
-        NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-        for (Document* doc in openDocuments) {
-            doc.fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-
-            // Center everything and adjust page width
-            self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-            self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-        
-            doc.courier = nil;
-            doc.boldCourier = nil;
-            doc.italicCourier = nil;
-            [doc refontAllLines];
-        }
-    }
-    [[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-	[self updateSceneNumberLabels];
-}
-
-- (IBAction)decreaseFontSize:(id)sender
-{
-	// Work in progress
-	//[self setZoom:false]; return;
-	
-    if (_zoomLevel > 10) {
-        NSLog(@"Zoom out: %lu", _zoomLevel);
-        _zoomLevel--;
-        _documentWidth = _zoomLevel * ZOOM_MODIFIER;
-        
-        NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-        
-        for (Document* doc in openDocuments) {
-            doc.fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-            
-            // Center everything and adjust page width
-            self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-            self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-            
-            //doc.fontSize--;
-            doc.courier = nil;
-            doc.boldCourier = nil;
-            doc.italicCourier = nil;
-            [doc refontAllLines];
-        }
-    }
-    [[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-    [self updateSceneNumberLabels];
-}
-
-
-- (IBAction)resetFontSize:(id)sender
-{
-    // Reset zoom level
-    _zoomLevel = DEFAULT_ZOOM;
-    _documentWidth = _zoomLevel * ZOOM_MODIFIER;
-
-    NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-    
-    for (Document* doc in openDocuments) {
-        doc.fontSize = _documentWidth * FONT_SIZE_MODIFIER;
-
-        // Center everything and adjust page width
-        self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-        self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-            
-        doc.courier = nil;
-        doc.boldCourier = nil;
-        doc.italicCourier = nil;
-        [doc refontAllLines];
-
-    }
-    [[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-	[self updateSceneNumberLabels];
-}
-
 
 #pragma mark - User Interaction
 
@@ -1549,8 +1586,6 @@ Zoom level * zoom modifier * element size
 - (IBAction)share:(id)sender {}
 
 - (IBAction)themes:(id)sender {}
-
-- (IBAction)zoom:(id)sender {}
 
 - (IBAction)export:(id)sender {}
 
@@ -2096,8 +2131,8 @@ Zoom level * zoom modifier * element size
 	NSString *jsPath = [[NSBundle mainBundle] pathForResource:@"CardView.js" ofType:@""];
 	NSString *javaScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:&error];
 	
-	NSString* content = [NSString stringWithFormat:@"<html><style>%@</style><body>", css];
-	content = [content stringByAppendingFormat:@"<script>%@</script></body></html>", javaScript];
+	NSString* content = [NSString stringWithFormat:@"<html><style>%@</style><body><div id='close'>✕</div><div id='container'>", css];
+	content = [content stringByAppendingFormat:@"</div><script>%@</script></body></html>", javaScript];
 	[_cardView loadHTMLString:content baseURL:nil];
 }
 
@@ -2184,7 +2219,10 @@ Zoom level * zoom modifier * element size
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
-	NSLog(@"Testi %@", message.body);
+	if ([message.body  isEqual: @"exit"]) {
+		[self toggleCards:nil];
+		return;
+	}
 	
 	NSRange lineRange = NSMakeRange([message.body intValue], 0);
 	[self.textView setSelectedRange:lineRange];
