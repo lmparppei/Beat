@@ -626,10 +626,11 @@ DQ
         <customObject id="vEX-2F-hcj" customClass="ApplicationDelegate">
             <connections>
                 <outlet property="_startModal" destination="Tq0-bd-4zX" id="J2s-BT-MWa"/>
+                <outlet property="versionField" destination="TYI-Wq-8Wy" id="uXG-1x-yVE"/>
             </connections>
         </customObject>
         <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" showsToolbarButton="NO" frameAutosaveName="" animationBehavior="default" id="Tq0-bd-4zX">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <windowStyleMask key="styleMask" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="196" y="240" width="564" height="355"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="vpm-hd-eID">
@@ -644,16 +645,25 @@ DQ
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C6Z-Uz-f8Q">
-                                    <rect key="frame" x="7" y="38" width="148" height="15"/>
+                                    <rect key="frame" x="13" y="47" width="174" height="15"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="© KAPITAN! / L-M Parppei 2019" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="HVn-HB-zZO">
                                         <font key="font" size="10" name="HelveticaNeue"/>
-                                        <color key="textColor" white="0.7290736607142857" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TYI-Wq-8Wy">
+                                    <rect key="frame" x="14" y="65" width="148" height="15"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="n3L-4Q-7PB">
+                                        <font key="font" size="12" name="Courier"/>
+                                        <color key="textColor" white="0.62776227678571428" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ko6-j7-Hf2">
-                                    <rect key="frame" x="7" y="23" width="205" height="15"/>
+                                    <rect key="frame" x="13" y="32" width="205" height="15"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Released under GPL license" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="04g-R2-7Ye">
                                         <font key="font" size="10" name="HelveticaNeue"/>
@@ -662,7 +672,7 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VVj-eD-UCr">
-                                    <rect key="frame" x="7" y="8" width="205" height="15"/>
+                                    <rect key="frame" x="13" y="17" width="205" height="15"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Based on Writer © 2016 Hendrik Noeller" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="Wvp-jf-GGH">
                                         <font key="font" size="10" name="HelveticaNeue"/>
@@ -671,28 +681,28 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SZP-ku-Ryr">
-                                    <rect key="frame" x="8" y="67" width="225" height="239"/>
+                                    <rect key="frame" x="22" y="84" width="202" height="216"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Beat_256" id="TXx-4z-e0c"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="B_256" id="TXx-4z-e0c"/>
                                 </imageView>
                             </subviews>
                         </view>
                         <color key="fillColor" white="0.11437499999999992" alpha="1" colorSpace="calibratedWhite"/>
                     </box>
                     <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="45" horizontalPageScroll="10" verticalLineScroll="45" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Fv5-7P-sl9">
-                        <rect key="frame" x="242" y="39" width="322" height="316"/>
+                        <rect key="frame" x="247" y="39" width="317" height="316"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
-                            <rect key="frame" x="0.0" y="0.0" width="322" height="316"/>
+                            <rect key="frame" x="0.0" y="0.0" width="317" height="316"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowHeight="22" indentationPerLevel="14" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="322" height="316"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="317" height="316"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="0.0" height="23"/>
-                                    <color key="backgroundColor" white="0.13789062499999999" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="backgroundColor" white="0.14999999999999999" alpha="1" colorSpace="calibratedWhite"/>
                                     <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
-                                    <color key="gridColor" white="0.18345424107142858" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="gridColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
                                     <tableColumns>
                                         <tableColumn width="291" minWidth="16" maxWidth="1000" id="fG0-pM-cZd">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
@@ -714,7 +724,7 @@ DQ
                                     </connections>
                                 </outlineView>
                             </subviews>
-                            <color key="backgroundColor" white="0.17064732142857142" alpha="1" colorSpace="deviceWhite"/>
+                            <color key="backgroundColor" white="0.25" alpha="1" colorSpace="deviceWhite"/>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="9hE-xB-RN1">
                             <rect key="frame" x="-100" y="-100" width="0.0" height="15"/>
@@ -799,6 +809,7 @@ DQ
         <customObject id="fo0-Pp-nmB" customClass="SUUpdater"/>
     </objects>
     <resources>
+        <image name="B_256" width="256" height="256"/>
         <image name="Beat_256" width="256" height="256"/>
     </resources>
 </document>

@@ -10,6 +10,7 @@
 
 @implementation ApplicationDelegate
 //@synthesize window;
+//@synthesize versionField;
 
 #pragma mark - Help
 
@@ -21,7 +22,16 @@
 			[self closeStartModal];
 		}
 	}];
+	
 	return self;
+}
+
+-(void) awakeFromNib {
+	NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+	NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
+	
+	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
+	[versionField setStringValue:versionString];
 }
 
 - (IBAction)showReference:(id)sender

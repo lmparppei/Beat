@@ -10,7 +10,9 @@
 
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate> {
 	IBOutlet NSWindow* _startModal;
+	IBOutlet NSTextField* versionField;
 }
 @property (strong, nonatomic) NSWindow *_startModalWindow;
+//@property (nonatomic) NSTextField * versionField;
 - (IBAction)closeStartModal;
 @end

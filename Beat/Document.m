@@ -106,15 +106,17 @@
 @property (weak) IBOutlet NSButton *previewToolbarButton;
 @property (weak) IBOutlet NSButton *printToolbarButton;
 
-@property (strong) NSArray *toolbarButtons;
-
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
 
 @property (strong, nonatomic) NSFont *courier;
 @property (strong, nonatomic) NSFont *boldCourier;
 @property (strong, nonatomic) NSFont *italicCourier;
+
 @property (nonatomic) NSUInteger fontSize;
 @property (nonatomic) NSUInteger zoomLevel;
+@property (nonatomic) NSUInteger magnifyLevel;
+
+@property (nonatomic) CGFloat scale;
 @property (nonatomic) bool livePreview;
 @property (nonatomic) bool printPreview;
 @property (nonatomic) bool cardsVisible;
@@ -149,15 +151,22 @@
 @property (nonatomic) bool nightMode;
 @end
 
+#define UNIT_MULTIPLIER 16
+#define ZOOMLEVEL_KEY @"Zoomlevel"
+#define DEFAULT_ZOOM 16
+
+#define FONT_SIZE_MODIFIER 0.028
+#define ZOOM_MODIFIER 40
+
+#define MAGNIFYLEVEL_KEY @"Magnifylevel"
+#define DEFAULT_MAGNIFY 17
+#define MAGNIFY_REFERENCE 17
+#define MAGNIFY YES
 
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
 #define LIVE_PREVIEW_KEY @"Live Preview"
 #define SHOW_SCENE_LABELS_KEY @"Show Scene Number Labels"
 #define FONTSIZE_KEY @"Fontsize"
-#define ZOOMLEVEL_KEY @"Zoomlevel"
-#define DEFAULT_ZOOM 17
-#define FONT_SIZE_MODIFIER 0.027
-#define ZOOM_MODIFIER 40
 #define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
 
 @implementation Document
@@ -174,7 +183,7 @@
 }
 
 #define TEXT_INSET_SIDE 80
-#define TEXT_INSET_TOP 40
+#define TEXT_INSET_TOP 80
 
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
@@ -190,8 +199,6 @@
 #define PARENTHETICAL_INDENT_P 0.30
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.74
-
-#define MAGNIFY NO
 
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
@@ -211,10 +218,14 @@
 		_zoomLevel = self.zoomLevel;
 		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
 	} else {
-		_zoomLevel = 10;
-		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
+		// New way of zooming. This is pretty fucked up.
+		// DON'T TOUCH THESE FOR NOW!
+		_zoomLevel = DEFAULT_ZOOM;
+		_documentWidth = UNIT_MULTIPLIER * ZOOM_MODIFIER;
+		
+		// This is the new stuff
+		_magnifyLevel = self.magnifyLevel;
 	}
-
 	
     //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
     NSWindow *window = aController.window;
@@ -227,6 +238,8 @@
 	// Accept mouse moved events
 	[aController.window setAcceptsMouseMovedEvents:YES];
 	
+	
+	
 	/* ####### Outline button initialization ######## */
 	
 	CGRect buttonFrame = self.outlineButton.frame;
@@ -236,10 +249,6 @@
     self.outlineViewVisible = false;
     self.outlineViewWidth.constant = 0;
 	
-	
-	/* ####### Toolbar stuff, deprecated ######## */
-    
-    self.toolbarButtons = @[_outlineToolbarButton,_boldToolbarButton, _italicToolbarButton, _underlineToolbarButton, _omitToolbarButton, _noteToolbarButton, _forceHeadingToolbarButton, _forceActionToolbarButton, _forceCharacterToolbarButton, _forceTransitionToolbarButton, _forceLyricsToolbarButton, _titlepageToolbarButton, _pagebreakToolbarButton, _previewToolbarButton, _printToolbarButton];
 	
 	
 	/* ####### TextView setup ######## */
@@ -354,14 +363,34 @@
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
-	// If we want to go the magnifying way, we need to fix this
-	// ALSO, there's also a bug with the resizing while the card view is enabled.
+	[self updateLayout];
+}
+- (void) updateLayout {
 	if (!MAGNIFY) {
 		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	} else {
-		//self.textView.textContainerInset = NSMakeSize(self.thisWindow.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-		//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		CGFloat inset;
+		if (!_outlineViewVisible) {
+			inset = self.textScrollView.frame.size.width / 2 - _documentWidth / 2;
+		} else {
+			inset = self.textScrollView.frame.size.width / 2 - _documentWidth / 2 - self.outlineView.frame.size.width / 10;
+		}
+		
+		/*
+		NSRect visible = [self.textScrollView documentVisibleRect];
+		NSRect frame = [self.textScrollView.documentView frame];
+		NSRect newrect = NSInsetRect(visible, NSWidth(visible) / 2.0, NSHeight(visible) / 2.0);
+		[self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width, frame.size.height)];
+		[[self.textScrollView documentView] scrollPoint:newrect.origin];
+		
+		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
+		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		
+		 */
+		NSLog(@"New inset: %f", inset);
+		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
+		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	}
 	
 	[self updateSceneNumberLabels];
@@ -383,42 +412,78 @@
  
  */
 - (void) zoom: (bool) zoomIn {
-	//CGPoint center = CGPointMake(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
-	//center.y = 0;
-	
-	CGPoint center = CGPointMake(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
-	
 	if (zoomIn == true) {
-		_zoomLevel++;
+		_magnifyLevel++;
 	} else {
-		if (_zoomLevel > 0)	_zoomLevel--; else return;
+		if (_magnifyLevel > 17) _magnifyLevel--; else return;
 	}
 	
-	NSLog(@"zoom level %lu", _zoomLevel);
+
+	CGFloat magnification = [self.textScrollView magnification];
+	NSPoint center = NSMakePoint(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
+	if (zoomIn) magnification += .05; else magnification -= .05;
+
+	NSLog(@"Let's magnify - %f", magnification);
 	
-	NSInteger zoom = _zoomLevel;
-	CGFloat magnification = 1 + zoom * .04;
 	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
 	
-	NSUInteger cursorPosition;
-	cursorPosition = [[[self.textView selectedRanges] firstObject] rangeValue].location;
-	[self.textView scrollRangeToVisible:NSMakeRange(cursorPosition,0)];
 	
+	/*
+	NSLog(@"zoom level %lu", _magnifyLevel);
+	
+	NSRect visible = [self.textScrollView documentVisibleRect];
+	NSRect frame = [self.textScrollView.documentView frame];
+	
+	NSRect newrect;
+	
+	if (zoomIn) {
+		newrect = NSInsetRect(visible, NSWidth(visible)*(1 - 1 / _scale)/2.0, NSHeight(visible)*(1 - 1/_scale)/2.0);
+	} else {
+		newrect = NSOffsetRect(visible, -NSWidth(visible)*(_scale - 1)/2.0, -NSHeight(visible)*(_scale - 1)/2.0);
+	}
+	
+	if (zoomIn) {
+		[self.textScrollView.documentView scaleUnitSquareToSize:NSMakeSize(_scale, _scale)];
+		[self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width * _scale, frame.size.height * _scale)];
+	} else {
+		[self.textScrollView.documentView scaleUnitSquareToSize:NSMakeSize(1/_scale, 1/_scale)];
+		[self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width / _scale, frame.size.height / _scale)];
+	}
+
+	[[self.textScrollView documentView] scrollPoint:newrect.origin];
+
+	[[NSUserDefaults standardUserDefaults] setInteger:_magnifyLevel forKey:MAGNIFYLEVEL_KEY];
+	*/
+	
+	
+	[self updateLayout];
 	[self updateSceneNumberLabels];
 }
+
 - (void) setZoom {
-	NSUInteger zoom = 0;
-	CGFloat magnification = 1 + zoom * .2;
-	_zoomLevel = zoom;
+	return;
+    // Some duplicate code.
+    // This sets the initial zoom, which might be a bit unreliable?
+    
+    _scale = 1.05;
+    
+    CGFloat initialScale = (float) self.magnifyLevel / (float) MAGNIFY_REFERENCE;
+	NSLog(@"Zoomlevel: %lu Default zoom %d Initial scale %f", self.magnifyLevel, DEFAULT_MAGNIFY, initialScale);
 	
-	CGPoint center = CGPointMake(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
-	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
-	
-	NSUInteger cursorPosition;
-	cursorPosition = [[[self.textView selectedRanges] firstObject] rangeValue].location;
-	[self.textView scrollRangeToVisible:NSMakeRange(cursorPosition,0)];
-	
-	[self updateSceneNumberLabels];
+    NSRect visible = [self.textScrollView documentVisibleRect];
+    NSRect frame = [self.textScrollView.documentView frame];
+    
+    NSRect newrect;
+    
+    newrect = NSInsetRect(visible, NSWidth(visible)*(1 - 1 / initialScale)/2.0, NSHeight(visible)*(1 - 1/initialScale)/2.0);
+    
+    [self.textScrollView.documentView scaleUnitSquareToSize:NSMakeSize(initialScale, initialScale)];
+    [self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width * initialScale, frame.size.height * initialScale)];
+    
+    [[self.textScrollView documentView] scrollPoint:newrect.origin];
+
+    [self updateLayout];
+    [self updateSceneNumberLabels];
 }
 
 - (IBAction)increaseFontSize:(id)sender
@@ -483,6 +548,8 @@
 
 - (IBAction)resetFontSize:(id)sender
 {
+	if (MAGNIFY) return;
+	
 	// Reset zoom level
 	_zoomLevel = DEFAULT_ZOOM;
 	_documentWidth = _zoomLevel * ZOOM_MODIFIER;
@@ -1083,6 +1150,7 @@
 {
     if (_zoomLevel == 0) {
         _zoomLevel = [[NSUserDefaults standardUserDefaults] integerForKey:ZOOMLEVEL_KEY];
+		NSLog(@"User zoomlevel: %lu", _zoomLevel);
         if (_zoomLevel == 0) {
             _zoomLevel = DEFAULT_ZOOM;
         }
@@ -1090,11 +1158,28 @@
     
     return _zoomLevel;
 }
+- (NSUInteger)magnifyLevel
+{
+	if (_magnifyLevel == 0) {
+		_magnifyLevel = [[NSUserDefaults standardUserDefaults] integerForKey:MAGNIFYLEVEL_KEY];
+		NSLog(@"User magnify level: %lu", _magnifyLevel);
+		if (_magnifyLevel == 0) {
+			_magnifyLevel = DEFAULT_MAGNIFY;
+		}
+	}
+	
+	return _magnifyLevel;
+}
 
 - (NSUInteger)fontSize
 {
-    _fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-    return _fontSize;
+	if (!MAGNIFY) {
+		_fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
+		return _fontSize;
+	} else {
+		_fontSize = DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
+		return _fontSize;
+	}
 }
 
 
@@ -1781,24 +1866,9 @@ static NSString *forceLyricsSymbol = @"~";
         
         [self setSelectedTabViewTab:1];
 		_printPreview = YES;
-		
-        //Disable everything in the toolbar except print and preview and pdf
-        for (NSButton *button in self.toolbarButtons) {
-            if (button != _printToolbarButton && button != _previewToolbarButton) {
-                button.enabled = NO;
-            }
-        }
-        
     } else {
         [self setSelectedTabViewTab:0];
 		_printPreview = NO;
-		
-        //Enable everything in the toolbar except print and preview and pdf
-        for (NSButton *button in self.toolbarButtons) {
-            if (button != _printToolbarButton && button != _previewToolbarButton) {
-                button.enabled = YES;
-            }
-        }
     }
 	[self updateSceneNumberLabels];
 }
@@ -2115,6 +2185,7 @@ static NSString *forceLyricsSymbol = @"~";
 	} else {
 		_cardsVisible = NO;
 		[self setSelectedTabViewTab:0];
+		[self updateLayout];
 	}
 }
 
