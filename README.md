@@ -1,14 +1,14 @@
 # Beat
 
-A simple and elegant screenwriting app for macOS, using the plain-text Fountain screenplay format. It's pretty fast and lighteight and, above all, has a distraction free, minimalistic UI. Beat is also **free and open source**.
+A simple and elegant screenwriting app for macOS, using the plain-text Fountain screenplay format. It's pretty fast and lighteight and, above all, has a distraction free, minimalistic UI. Beat is also **free and open source** and will remain so.
 
 Read more on Beat website: https://kapitan.fi/beat/
 
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and still leans on his work, especially with the magnificent continuous Fountain parser.
 
-This started as a personal project as I needed a simple, multi-window and lightweight screenwriting application for my own films, preferrably using Fountain files. The ones that existed were expensive and/or cumbersome , weird or lacked some pretty important features  - such as automatic scene numbering.
+This started as a personal project as I needed a simple, multi-window and lightweight screenwriting application for my own films, preferrably using Fountain files. The ones that existed were weird, expensive and/or cumbersome or even lacked some pretty important features - such as automatic scene numbering.
 
-I am an artist and a filmmaker, and my programming skills are somewhat limited, so I'm open to any suggestions, improvements, feedback and collaboration. I hope that Beat will make work easier and more enjoyable for everyone!
+I am an artist and a filmmaker, and my programming skills are somewhat limited, so I'm open to any suggestions, improvements, feedback and collaboration. 
 
 ## Latest release: Beat 1.0.6
 
