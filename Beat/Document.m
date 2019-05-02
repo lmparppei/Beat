@@ -350,7 +350,7 @@
 }
 - (void) afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		// This is a silly duct-tape fix for a bug I can't track. Help.
+		// This is a silly duct-tape fix for a bug I can't track. Send help.
 		[self updateSceneNumberLabels];
 		[self updateSceneNumberLabels];
 	});
@@ -367,15 +367,27 @@
 }
 - (void) updateLayout {
 	if (!MAGNIFY) {
+		NSLog(@"Non-magnified resize");
 		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	} else {
+		
 		CGFloat inset;
+		CGFloat magnification = [self.textScrollView magnification];
+		NSLog(@"Resize, current mag %f - textView width %f", magnification, self.textView.frame.size.width);
+		/*
 		if (!_outlineViewVisible) {
-			inset = self.textScrollView.frame.size.width / 2 - _documentWidth / 2;
+			inset = (self.textView.frame.size.width / 2 - _documentWidth / 2) / magnification;
 		} else {
-			inset = self.textScrollView.frame.size.width / 2 - _documentWidth / 2 - self.outlineView.frame.size.width / 10;
+			inset = (self.textView.frame.size.width / 2 - _documentWidth / 2 - self.outlineView.frame.size.width / 10) / magnification;
 		}
+		 */
+		
+		/*
+		CGFloat magnification = [self.textScrollView magnification];
+		NSPoint center = NSMakePoint(self.textScrollView.documentView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
+		[self.textScrollView setMagnification:magnification centeredAtPoint:center];
+		*/
 		
 		/*
 		NSRect visible = [self.textScrollView documentVisibleRect];
@@ -388,9 +400,9 @@
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 		
 		 */
-		NSLog(@"New inset: %f", inset);
-		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
-		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		// NSLog(@"New inset: %f", inset);
+		//self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
+		//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	}
 	
 	[self updateSceneNumberLabels];
@@ -417,7 +429,6 @@
 	} else {
 		if (_magnifyLevel > 17) _magnifyLevel--; else return;
 	}
-	
 
 	CGFloat magnification = [self.textScrollView magnification];
 	NSPoint center = NSMakePoint(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
@@ -2375,11 +2386,12 @@ static NSString *forceLyricsSymbol = @"~";
 			NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
 			NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 			NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-
+			
 			rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
 			rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width;
 			
 			rect.origin.y += TEXT_INSET_TOP;
+
 			label.frame = rect;
 			[label setFont:self.courier];
 			[label setTextColor:self.themeManager.currentTextColor];

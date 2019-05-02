@@ -19,6 +19,23 @@ I am an artist and a filmmaker, and my programming skills are somewhat limited, 
 
 **Note:** This repository follows my development and does NOT match the released versions. Dread lightly, dear friend!
 
+## Future
+
+### State of development
+
+Beat is now pretty stable and not too many new features have been added. Next release will have the biggest new thing: outline card view, which (for now) won't have the possibility to rearrange the scenes with drag & drop.
+
+The biggest problem that still persist is zooming in/out. Out of legacy reasons, it is done by setting the width of the document and scaling the font accordingly. That's fine, when you have a short screenplay. With a 100-page document (like the one I'm working on right now) changing the zoom can take up to 30 seconds using this method.
+
+There have been experiments with magnifying and scaling the NSScrollView, but all efforts have failed, for now at least. Help is needed with this.
+
+### How can you help?
+
+Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer but a director, screenwriter and musician. Writing Objective-C has been a bit overwhelming, and because of that, Document.m has become a 2500-line monster that handles too many things.
+
+Bug reports, some donations and feedback help, but I'd be happy if someone could help with zooming and rearranging the code.
+
+
 Lauri-Matti Parppei  
 KAPITAN!  
 https://kapitan.fi/

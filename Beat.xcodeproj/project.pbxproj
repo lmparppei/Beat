@@ -29,6 +29,7 @@
 		B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
 		B62609E6222419C90019BF52 /* SelectorWithDebounce.m in Sources */ = {isa = PBXBuildFile; fileRef = B62609E5222419C90019BF52 /* SelectorWithDebounce.m */; };
 		B6482F7922195BEC00175927 /* NCRAutocompleteTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */; };
+		B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B64E1B2D227B08B2008DF194 /* CenteredClipView.m */; };
 		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B66FC9A6227704EF00C0265D /* CardView.m in Sources */ = {isa = PBXBuildFile; fileRef = B66FC9A5227704EF00C0265D /* CardView.m */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
@@ -136,6 +137,8 @@
 		B62609E5222419C90019BF52 /* SelectorWithDebounce.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectorWithDebounce.m; path = Beat/PerformSelectorWithDebounce/SelectorWithDebounce.m; sourceTree = SOURCE_ROOT; };
 		B6482F7722195BEC00175927 /* NCRAutocompleteTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NCRAutocompleteTextView.h; path = Beat/NCRTextField/NCRAutocompleteTextView.h; sourceTree = SOURCE_ROOT; };
 		B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NCRAutocompleteTextView.m; path = Beat/NCRTextField/NCRAutocompleteTextView.m; sourceTree = SOURCE_ROOT; };
+		B64E1B2D227B08B2008DF194 /* CenteredClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CenteredClipView.m; path = Beat/CenteredClipView/CenteredClipView.m; sourceTree = SOURCE_ROOT; };
+		B64E1B2F227B08D8008DF194 /* CenteredClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CenteredClipView.h; path = Beat/CenteredClipView/CenteredClipView.h; sourceTree = SOURCE_ROOT; };
 		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CardView.js; path = Beat/CardView.js; sourceTree = SOURCE_ROOT; };
 		B66FC9A4227704EF00C0265D /* CardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CardView.h; sourceTree = "<group>"; };
 		B66FC9A5227704EF00C0265D /* CardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CardView.m; sourceTree = "<group>"; };
@@ -271,6 +274,8 @@
 				B6482F7622195BD300175927 /* NCRTextView */,
 				B66FC99F2276EADC00C0265D /* CardView */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
+				B64E1B2D227B08B2008DF194 /* CenteredClipView.m */,
+				B64E1B2F227B08D8008DF194 /* CenteredClipView.h */,
 			);
 			name = Beat;
 			path = Writer;
@@ -574,6 +579,7 @@
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */,
+				B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */,
 				B66FC9A6227704EF00C0265D /* CardView.m in Sources */,
 				B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,

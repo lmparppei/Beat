@@ -45,7 +45,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1050" height="599"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -113,7 +113,7 @@
                                         </scrollView>
                                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA">
                                             <rect key="frame" x="250" y="0.0" width="800" height="599"/>
-                                            <clipView key="contentView" id="sxN-R8-PHt">
+                                            <clipView key="contentView" id="sxN-R8-PHt" customClass="CenteredClipView">
                                                 <rect key="frame" x="0.0" y="0.0" width="785" height="599"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
@@ -529,10 +529,6 @@
             </connections>
             <point key="canvasLocation" x="-515" y="88"/>
         </menu>
-        <view id="LQP-PL-IKS">
-            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
-            <autoresizingMask key="autoresizingMask"/>
-        </view>
         <userDefaultsController representsSharedInstance="YES" id="ho8-td-WxP"/>
     </objects>
     <resources>
