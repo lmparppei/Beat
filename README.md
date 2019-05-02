@@ -23,9 +23,11 @@ I am an artist and a filmmaker, and my programming skills are somewhat limited, 
 
 ### State of development
 
-Beat is now pretty stable and not too many new features have been added. Next release will have the biggest new thing: outline card view, which (for now) won't have the possibility to rearrange the scenes with drag & drop.
+Beat is under active development when I have the time or desperately need a new feature myself. Worst bugs will usually be fixed ASAP.
 
-The biggest problem that still persist is zooming in/out. Out of legacy reasons, it is done by setting the width of the document and scaling the font accordingly. That's fine, when you have a short screenplay. With a 100-page document (like the one I'm working on right now) changing the zoom can take up to 30 seconds using this method.
+The app is now pretty stable and has remained very minimalistic since its inception. Outline card view will be the biggest new feature since version 1.0.
+
+Beat has some quirks. The biggest problem that still persist is zooming in/out. Out of legacy reasons, it is done by setting the width of the document and scaling the font accordingly. That's fine, when you have a short screenplay, but with a 100-page document (like the one I'm working on right now) this method can take up to 30 seconds to zoom in or out.
 
 There have been experiments with magnifying and scaling the NSScrollView, but all efforts have failed, for now at least. Help is needed with this.
 
