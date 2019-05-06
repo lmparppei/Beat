@@ -35,7 +35,7 @@ Some future considerations:
 * Timeline view (with chronometry) 
 * Drag & drop scenes in the card view 
 * Fix problems with copying and pasting text 
-* Have Beat only write happy endings
+* Have Beat only allo happy endings
 * Making the world a better place 
 * Planting some trees to fight climate change 
 
