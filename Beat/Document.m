@@ -378,14 +378,17 @@
 		//frame.size.height = self.thisWindow.frame.size.height;
 		self.textView.frame = frame;
 		
-		CGFloat inset;
-		CGFloat magnification = [self.textScrollView magnification];
+		
+		// CGFloat magnification = [self.textScrollView magnification];
 		NSLog(@"TextView width %f / Window width %f", self.textView.frame.size.width, self.thisWindow.frame.size.width);
 		
-		inset = (self.textView.frame.size.width / 2 - _documentWidth / 2) / magnification;
+		// Old way, I have no idea what this did:
+		// inset = (self.textView.frame.size.width / 2 - _documentWidth / 2) / magnification;
+		
+		CGFloat inset = ((self.thisWindow.frame.size.width - self.outlineViewWidth.constant) / 2 - _documentWidth / 2);
+		
 		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
 		
-
 		NSLog(@"New inset: %f", inset);
 		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
@@ -1588,6 +1591,12 @@ static NSString *forceLyricsSymbol = @"~";
 	NSUInteger offset = 20;
 	if ([self isFullscreen]) offset = 0;
 	
+	[NSAnimationContext.currentContext setCompletionHandler:^{
+		//[self.textView setTextContainerInset:NSMakeSize((self.thisWindow.frame.size.width - self.outlineViewWidth.constant) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+		
+		[self updateSceneNumberLabels];
+	}];
+	
     if (self.outlineViewVisible) {
 		[self reloadOutline];
 		
@@ -1597,11 +1606,6 @@ static NSString *forceLyricsSymbol = @"~";
 		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
 		
-		[NSAnimationContext.currentContext setCompletionHandler:^{
-			[self updateLayout];
-			[self updateSceneNumberLabels];
-		}];
-		
 		if (![self isFullscreen]) {
 			newFrame = NSMakeRect(window.frame.origin.x,
 										 window.frame.origin.y,
@@ -1609,7 +1613,9 @@ static NSString *forceLyricsSymbol = @"~";
 										 window.frame.size.height);
 			[window.animator setFrame:newFrame display:YES];
 		} else {
-			[self.textView.animator setTextContainerInset:NSMakeSize((self.thisWindow.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			[self.textView.animator setTextContainerInset:NSMakeSize((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			
+			//[self.textView.animator setTextContainerInset:NSMakeSize((self.thisWindow.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
 			/*
 			[self.textView setTextContainerInset:NSMakeSize((self.textView.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
 			[self updateLayout];
@@ -1649,17 +1655,13 @@ static NSString *forceLyricsSymbol = @"~";
 								  window.frame.size.width,
 								  window.frame.size.height);
 
-			
 			//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 			//[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
 			
 		
-			[self.textView.animator setFrame:newFrame];
+			// [self.textView.animator setFrame:newFrame];
 			
-			[self.textView.animator setTextContainerInset:NSMakeSize(newFrame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
-			
-			
-			//[window.animator setFrame:newFrame display:YES];
+			[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
 		}
 		
 		//[self updateLayout];
