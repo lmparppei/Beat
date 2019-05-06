@@ -161,7 +161,7 @@
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
 #define DEFAULT_MAGNIFY 17
 #define MAGNIFY_REFERENCE 17
-#define MAGNIFY YES
+#define MAGNIFY NO
 
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
 #define LIVE_PREVIEW_KEY @"Live Preview"
