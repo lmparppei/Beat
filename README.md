@@ -6,18 +6,20 @@ Read more on Beat website: https://kapitan.fi/beat/
 
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and still leans on his work, especially with the magnificent continuous Fountain parser.
 
-This started as a personal project as I needed a simple, multi-window and lightweight screenwriting application for my own films, preferrably using Fountain files. The ones that existed were weird, expensive and/or cumbersome or even lacked some pretty important features - such as automatic scene numbering.
+This started as a personal project as I needed a simple, multi-window and lightweight screenwriting application for my own films, preferrably using Fountain files. The ones that existed were weird, expensive and/or cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing.
 
-I am an artist and a filmmaker, and my programming skills are somewhat limited, so I'm open to any suggestions, improvements, feedback and collaboration. 
+I am an artist and a filmmaker, and my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.0.6
+## Latest release: Beat 1.0.7
 
+* Finally got rid of the old method of zooming in/out
+* Outline card view (implemented in a separate WebView)
 * Autocomplete characters and scene headings
-* Automatic scene numbering in edit view –- this has some quirks, but works. Recognizes Fountain scene numbering.
+* Automatic scene numbering in edit view. Recognizes Fountain forced scene numbers.
 * Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now.
 * Small visual bug fixes
 
-**Note:** This repository follows my development and does NOT match the released versions. Dread lightly, dear friend!
+**Note:** This repository follows my development and usually DOES NOT match the released versions. Dread lightly, dear friend!
 
 ## Future
 
@@ -25,11 +27,17 @@ I am an artist and a filmmaker, and my programming skills are somewhat limited, 
 
 Beat is under active development when I have the time or desperately need a new feature myself. Worst bugs will usually be fixed ASAP.
 
-The app is now pretty stable and has remained very minimalistic since its inception. Outline card view will be the biggest new feature since version 1.0.
+The app is now pretty stable and has remained very minimalistic since its inception. Outline card view was be the biggest new feature since version 1.0.3.
 
-Beat has some quirks. The biggest problem that still persist is zooming in/out. Out of legacy reasons, it is done by setting the width of the document and scaling the font accordingly. That's fine, when you have a short screenplay, but with a 100-page document (like the one I'm working on right now) this method can take up to 30 seconds to zoom in or out.
+Some future considerations:
 
-There have been experiments with magnifying and scaling the NSScrollView, but all efforts have failed, for now at least. Help is needed with this.
+* Visual margins in edit view 
+* Timeline view (with chronometry) 
+* Drag & drop scenes in the card view 
+* Fix problems with copying and pasting text 
+* Have Beat only write happy endings
+* Making the world a better place 
+* Planting some trees to fight climate change 
 
 ### How can you help?
 
