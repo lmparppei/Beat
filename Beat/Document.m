@@ -49,6 +49,7 @@
 #import "ThemeManager.h"
 #import "OutlineScene.h"
 #import "SelectorWithDebounce.h"
+#import "CenteredClipView.h"
 
 //#import "Beat-Bridging-Header.h"
 //#import "Beat-Swift.h"
@@ -114,7 +115,7 @@
 
 @property (nonatomic) NSUInteger fontSize;
 @property (nonatomic) NSUInteger zoomLevel;
-@property (nonatomic) NSUInteger magnifyLevel;
+@property (nonatomic) NSUInteger zoomCenter;
 
 @property (nonatomic) CGFloat scale;
 @property (nonatomic) bool livePreview;
@@ -151,7 +152,7 @@
 @property (nonatomic) bool nightMode;
 @end
 
-#define UNIT_MULTIPLIER 16
+#define UNIT_MULTIPLIER 17
 #define ZOOMLEVEL_KEY @"Zoomlevel"
 #define DEFAULT_ZOOM 16
 
@@ -161,7 +162,7 @@
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
 #define DEFAULT_MAGNIFY 17
 #define MAGNIFY_REFERENCE 17
-#define MAGNIFY NO
+#define MAGNIFY YES
 
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
 #define LIVE_PREVIEW_KEY @"Live Preview"
@@ -183,7 +184,7 @@
 }
 
 #define TEXT_INSET_SIDE 80
-#define TEXT_INSET_TOP 80
+#define TEXT_INSET_TOP 40
 
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
@@ -200,6 +201,7 @@
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.74
 
+#define TREE_VIEW_WIDTH 350
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
@@ -221,18 +223,15 @@
 		// New way of zooming. This is pretty fucked up.
 		// DON'T TOUCH THESE FOR NOW!
 		_zoomLevel = DEFAULT_ZOOM;
-		_documentWidth = UNIT_MULTIPLIER * ZOOM_MODIFIER;
-		
-		// This is the new stuff
-		_magnifyLevel = self.magnifyLevel;
+		_documentWidth = DEFAULT_ZOOM * ZOOM_MODIFIER;
 	}
 	
     //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
     NSWindow *window = aController.window;
     NSRect newFrame = NSMakeRect(window.frame.origin.x,
                                  window.frame.origin.y,
-                                 _documentWidth * 1.35,
-                                 _documentWidth * 1.3);
+                                 _documentWidth * 1.7,
+                                 _documentWidth * 1.5);
     [window setFrame:newFrame display:YES];
 	
 	// Accept mouse moved events
@@ -342,14 +341,14 @@
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[self setupCards];
 	
-	// Reset zoom
-	if (MAGNIFY) [self setZoom];
 	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 }
 - (void) afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^{
+		if (MAGNIFY) [self setZoom];
+		
 		// This is a silly duct-tape fix for a bug I can't track. Send help.
 		[self updateSceneNumberLabels];
 		[self updateSceneNumberLabels];
@@ -367,133 +366,98 @@
 }
 - (void) updateLayout {
 	if (!MAGNIFY) {
-		NSLog(@"Non-magnified resize");
+		
 		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	} else {
 		
+		[self setMinimumWindowSize];
+		
+		NSRect frame = self.textView.frame;
+		frame.size.width = self.thisWindow.frame.size.width - self.outlineView.frame.size.width;
+		//frame.size.height = self.thisWindow.frame.size.height;
+		self.textView.frame = frame;
+		
 		CGFloat inset;
 		CGFloat magnification = [self.textScrollView magnification];
-		NSLog(@"Resize, current mag %f - textView width %f", magnification, self.textView.frame.size.width);
-		/*
-		if (!_outlineViewVisible) {
-			inset = (self.textView.frame.size.width / 2 - _documentWidth / 2) / magnification;
-		} else {
-			inset = (self.textView.frame.size.width / 2 - _documentWidth / 2 - self.outlineView.frame.size.width / 10) / magnification;
-		}
-		 */
+		NSLog(@"TextView width %f / Window width %f", self.textView.frame.size.width, self.thisWindow.frame.size.width);
 		
-		/*
-		CGFloat magnification = [self.textScrollView magnification];
-		NSPoint center = NSMakePoint(self.textScrollView.documentView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
-		[self.textScrollView setMagnification:magnification centeredAtPoint:center];
-		*/
+		inset = (self.textView.frame.size.width / 2 - _documentWidth / 2) / magnification;
+		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
 		
-		/*
-		NSRect visible = [self.textScrollView documentVisibleRect];
-		NSRect frame = [self.textScrollView.documentView frame];
-		NSRect newrect = NSInsetRect(visible, NSWidth(visible) / 2.0, NSHeight(visible) / 2.0);
-		[self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width, frame.size.height)];
-		[[self.textScrollView documentView] scrollPoint:newrect.origin];
-		
+
+		NSLog(@"New inset: %f", inset);
 		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-		
-		 */
-		// NSLog(@"New inset: %f", inset);
-		//self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
-		//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	}
 	
 	[self updateSceneNumberLabels];
+}
+- (void) setMinimumWindowSize {
+	CGFloat magnification = [self.textScrollView magnification];
+	if (!_outlineViewVisible) {
+		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * magnification + 200, 400)];
+	} else {
+		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * magnification + 200 + _outlineView.frame.size
+											   .width, 400)];
+	}
 }
 
 /*
  
  Zooming in / out
+
+ This is a mess. I am so sorry for anyone reading this.
  
- This no longer just adjusts font size, but rather the zoom level, and the
- font size is calculated as a percentage of the width. This is a dirty and quirky
- approach, but seems to work fine at larger zoom levels. Page layout insets and
- margins are also defined as percentages (ie. CHARACTER_INDENT_P 0.36), and
- the calculation is as follows:
- 
- Zoom level * zoom modifier * element size
- 
- And this is the new way. Still have trouble with it though.
+ The problem here is that we have multiple keys that set font size, document width, etc.
+ and out of legacy reasons, they are scattered around the code. Maybe some day I have the
+ time to fix everything, but for now, we're using duct-tape approach.
  
  */
 - (void) zoom: (bool) zoomIn {
-	if (zoomIn == true) {
-		_magnifyLevel++;
-	} else {
-		if (_magnifyLevel > 17) _magnifyLevel--; else return;
-	}
-
 	CGFloat magnification = [self.textScrollView magnification];
-	NSPoint center = NSMakePoint(self.textScrollView.frame.size.width / 2, self.textScrollView.frame.size.height / 2);
+	if (!zoomIn && magnification == 1.00) return; // Don't let zoom out below 1.00
+	if (zoomIn && magnification > 1.4) return;
+	
+	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
 	if (zoomIn) magnification += .05; else magnification -= .05;
 
 	NSLog(@"Let's magnify - %f", magnification);
 	
-	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
+	// Set minimum window size according to magnification
+	[self setMinimumWindowSize];
+	center.x = _documentWidth / 2;
+	//center.x = center.x * magnification;
 	
+		[self.textScrollView setMagnification:magnification centeredAtPoint:center];
+		[self.thisWindow layoutIfNeeded];
+		[self updateLayout];
+	
+		[self updateSceneNumberLabels];
+		[self updateLayout];
 	
 	/*
-	NSLog(@"zoom level %lu", _magnifyLevel);
-	
-	NSRect visible = [self.textScrollView documentVisibleRect];
-	NSRect frame = [self.textScrollView.documentView frame];
-	
-	NSRect newrect;
-	
-	if (zoomIn) {
-		newrect = NSInsetRect(visible, NSWidth(visible)*(1 - 1 / _scale)/2.0, NSHeight(visible)*(1 - 1/_scale)/2.0);
-	} else {
-		newrect = NSOffsetRect(visible, -NSWidth(visible)*(_scale - 1)/2.0, -NSHeight(visible)*(_scale - 1)/2.0);
-	}
-	
-	if (zoomIn) {
-		[self.textScrollView.documentView scaleUnitSquareToSize:NSMakeSize(_scale, _scale)];
-		[self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width * _scale, frame.size.height * _scale)];
-	} else {
-		[self.textScrollView.documentView scaleUnitSquareToSize:NSMakeSize(1/_scale, 1/_scale)];
-		[self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width / _scale, frame.size.height / _scale)];
-	}
-
-	[[self.textScrollView documentView] scrollPoint:newrect.origin];
-
 	[[NSUserDefaults standardUserDefaults] setInteger:_magnifyLevel forKey:MAGNIFYLEVEL_KEY];
 	*/
 	
-	
-	[self updateLayout];
 	[self updateSceneNumberLabels];
+	[self updateLayout];
 }
 
 - (void) setZoom {
-	return;
-    // Some duplicate code.
-    // This sets the initial zoom, which might be a bit unreliable?
-    
-    _scale = 1.05;
-    
-    CGFloat initialScale = (float) self.magnifyLevel / (float) MAGNIFY_REFERENCE;
-	NSLog(@"Zoomlevel: %lu Default zoom %d Initial scale %f", self.magnifyLevel, DEFAULT_MAGNIFY, initialScale);
+	// Set initial zoom
 	
-    NSRect visible = [self.textScrollView documentVisibleRect];
-    NSRect frame = [self.textScrollView.documentView frame];
-    
-    NSRect newrect;
-    
-    newrect = NSInsetRect(visible, NSWidth(visible)*(1 - 1 / initialScale)/2.0, NSHeight(visible)*(1 - 1/initialScale)/2.0);
-    
-    [self.textScrollView.documentView scaleUnitSquareToSize:NSMakeSize(initialScale, initialScale)];
-    [self.textScrollView.documentView setFrame:NSMakeRect(0, 0, frame.size.width * initialScale, frame.size.height * initialScale)];
-    
-    [[self.textScrollView documentView] scrollPoint:newrect.origin];
-
-    [self updateLayout];
+	[self updateLayout];
+	[self updateSceneNumberLabels];
+	
+	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
+	center.y = 0;
+	center.x = _documentWidth / 2;
+	
+	[self.textScrollView setMagnification:1.1 centeredAtPoint:center];
+	[self.thisWindow setMinSize:NSMakeSize(_documentWidth * 1.4 * self.textScrollView.magnification, 400)];
+	
+	[self updateLayout];
     [self updateSceneNumberLabels];
 }
 
@@ -1169,6 +1133,7 @@
     
     return _zoomLevel;
 }
+/*
 - (NSUInteger)magnifyLevel
 {
 	if (_magnifyLevel == 0) {
@@ -1181,7 +1146,7 @@
 	
 	return _magnifyLevel;
 }
-
+*/
 - (NSUInteger)fontSize
 {
 	if (!MAGNIFY) {
@@ -1616,8 +1581,6 @@ static NSString *forceLyricsSymbol = @"~";
 
 #pragma mark - User Interaction
 
-#define TREE_VIEW_WIDTH 350
-
 - (IBAction)toggleOutlineView:(id)sender
 {
     self.outlineViewVisible = !self.outlineViewVisible;
@@ -1634,6 +1597,11 @@ static NSString *forceLyricsSymbol = @"~";
 		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
 		
+		[NSAnimationContext.currentContext setCompletionHandler:^{
+			[self updateLayout];
+			[self updateSceneNumberLabels];
+		}];
+		
 		if (![self isFullscreen]) {
 			newFrame = NSMakeRect(window.frame.origin.x,
 										 window.frame.origin.y,
@@ -1641,8 +1609,18 @@ static NSString *forceLyricsSymbol = @"~";
 										 window.frame.size.height);
 			[window.animator setFrame:newFrame display:YES];
 		} else {
-			//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-			[self.textView.animator setTextContainerInset:NSMakeSize((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			[self.textView.animator setTextContainerInset:NSMakeSize((self.thisWindow.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			/*
+			[self.textView setTextContainerInset:NSMakeSize((self.textView.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			[self updateLayout];
+			
+			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
+				
+			} completionHandler:^{
+				[self updateLayout];
+			}];
+			*/
+			//[self.textView.animator setTextContainerInset:NSMakeSize((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
 		}
 		
 		
@@ -1658,11 +1636,13 @@ static NSString *forceLyricsSymbol = @"~";
 		[self.outlineViewWidth.animator setConstant:0];
 		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
+		
 		if (![self isFullscreen]) {
 			newFrame = NSMakeRect(window.frame.origin.x - offset,
 										 window.frame.origin.y,
 										 window.frame.size.width - TREE_VIEW_WIDTH - offset * 2,
 										 window.frame.size.height);
+			[window.animator setFrame:newFrame display:YES];
 		} else {
 			newFrame = NSMakeRect(window.frame.origin.x - offset,
 								  window.frame.origin.y,
@@ -1671,10 +1651,18 @@ static NSString *forceLyricsSymbol = @"~";
 
 			
 			//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-			[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
-		}
-		[window.animator setFrame:newFrame display:YES];
+			//[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			
 		
+			[self.textView.animator setFrame:newFrame];
+			
+			[self.textView.animator setTextContainerInset:NSMakeSize(newFrame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			
+			
+			//[window.animator setFrame:newFrame display:YES];
+		}
+		
+		//[self updateLayout];
     }
 }
 
@@ -1853,7 +1841,9 @@ static NSString *forceLyricsSymbol = @"~";
     
     for (Document* doc in openDocuments) {
         NSTextView *textView = doc.textView;
-        [textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
+		
+		[textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
+		
         [textView setSelectedTextAttributes:@{
 											  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
 											  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
@@ -2353,6 +2343,7 @@ static NSString *forceLyricsSymbol = @"~";
 // This kind of works but might make things a bit slow. I'm not sure. There are CPU spikes on scroll at times, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
 // Send help.
 - (void) updateSceneNumberLabels {
+	
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	
 	if (![[self.parser outline] count]) {

@@ -13,12 +13,12 @@
 
 - (instancetype) initWithFrame:(CGRect)frame {
 	self = [super initWithFrame:frame];
-	self.centersDocumentView = true;
+	self.centersDocumentView = YES;
 	return self;
 }
 - (instancetype) initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
-	self.centersDocumentView = true;
+	self.centersDocumentView = YES;
 	return self;
 }
 

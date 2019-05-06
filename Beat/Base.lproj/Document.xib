@@ -113,13 +113,13 @@
                                         </scrollView>
                                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA">
                                             <rect key="frame" x="250" y="0.0" width="800" height="599"/>
-                                            <clipView key="contentView" autoresizesSubviews="NO" id="sxN-R8-PHt" customClass="CenteredClipView">
+                                            <clipView key="contentView" id="sxN-R8-PHt" customClass="CenteredClipView">
                                                 <rect key="frame" x="0.0" y="0.0" width="785" height="599"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView importsGraphics="NO" richText="NO" findStyle="bar" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="NCRAutocompleteTextView">
                                                         <rect key="frame" x="0.0" y="0.0" width="785" height="599"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <size key="minSize" width="785" height="599"/>
                                                         <size key="maxSize" width="1035" height="10000000"/>
@@ -140,9 +140,6 @@
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <edgeInsets key="contentInsets" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
                                             </clipView>
-                                            <constraints>
-                                                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="800" id="8Cv-qg-9m9"/>
-                                            </constraints>
                                             <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="LxF-lQ-YYW">
                                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                 <autoresizingMask key="autoresizingMask"/>

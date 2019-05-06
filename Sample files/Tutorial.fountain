@@ -53,17 +53,17 @@ INT./EXT. BEACH HOUSE - NIGHT
 
 Text formatting can be done with the usual commands used in any software, (cmd-B, cmd-I etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
 
-Basically, text formatting works so that anything inside two apostrophes is **bolded**, inside one apostrophes is in *italic*. You can also _underline_ stuff.
+Basically, text formatting works so that anything inside dual apostrophes is **bolded**, inside single apostrophes in *italic*. You can also _underline_ stuff.
 
 If you have to use those characters in your text, we need to get a bit more technical. You need to use escape character \. Like this: \* or \_ ... but you probably won't need to.
 
 Every element also has a way of forcing it. Take a look at the Format menu. This is how you make your own, strange transitions:
 
-> SMALL, SURPRISINGLY LONG CROSSFADE TO:
+> SLOW, SURPRISINGLY LONG CROSSFADE TO:
 
 INT. BAR - NIGHT [[COLOR BLUE]]
 
-You can also make double dialogue with the ^ symbol after a character. Like this:
+Double dialogue is written with the ^ symbol after a character. Like this:
 
 CHARACTER
 Hello, have you heard about Beat?
@@ -76,7 +76,7 @@ That's about it. Edit this file and try out stuff.
 
 There are certain power user features. You can set the color for your scene just by typing it out (this scene has a blue dot next to it in outline), which won't print out. This feature is still in development, so it might work so-and-so. Try at your own risk!
 
-You can find more information on the Fountain language at http://www.fountain.io/
+You can find more information about the Fountain language at http://www.fountain.io/
 
 > FADE OUT
 
