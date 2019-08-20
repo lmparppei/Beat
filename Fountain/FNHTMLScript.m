@@ -293,7 +293,10 @@
                 }
                 else if (dualDialogueCharacterCount == 2) {
                     [body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
-                }
+				} else if (dualDialogueCharacterCount == 3) {
+					[body appendString:@"</div></div>\n"];
+					dualDialogueCharacterCount = 0;
+				}
             }
             
             if (dualDialogueCharacterCount >= 2 && ![dialogueTypes containsObject:element.elementType]) {

@@ -105,8 +105,10 @@
     @autoreleasepool {
         NSInteger oneInchBuffer = 72;
         NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 2.01);
+		//NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 1.8);
+		//NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 3);
         
-        QUQFont *font = [QUQFont fontWithName:@"Courier" size:12];
+        QUQFont *font = [QUQFont fontWithName:@"Courier Prime" size:12];
         NSInteger lineHeight = font.pointSize;
         
         NSInteger spaceBefore;
@@ -485,7 +487,7 @@
     NSSet *set      = [NSSet setWithObjects:@"Action", @"General", @"Character", @"Transition", nil];
     
     if ([type isEqualToString:@"Scene Heading"]) {
-        spaceBefore = 2;
+        spaceBefore = 3;
     }
     else if ([set containsObject:type]) {
         spaceBefore = 1;

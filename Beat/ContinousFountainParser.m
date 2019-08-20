@@ -5,7 +5,9 @@
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
-//
+
+//  Relased under GPL
+
 
 #import "ContinousFountainParser.h"
 #import "Line.h"
@@ -338,12 +340,14 @@
                          excludingIndices:nil];
 	
     if (line.type == heading) {
-        NSRange sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
+		NSRange sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
         if (sceneNumberRange.length == 0) {
             line.sceneNumber = nil;
         } else {
             line.sceneNumber = [line.string substringWithRange:sceneNumberRange];
         }
+		
+		line.color = [self colorForHeading:line];
     }
 }
 
@@ -631,6 +635,30 @@
     return NSMakeRange(0, 0);
 }
 
+- (NSString *)colorForHeading:(Line *)line
+{
+	__block NSString *color = @"";
+	
+	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSString * note = [line.string substringWithRange:range];
+
+		NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
+		note =  [note substringWithRange:noteRange];
+		
+		if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN] == true) {
+			if ([note length] > [@COLOR_PATTERN length] + 1) {
+				NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];
+				color = [note substringWithRange:NSMakeRange(colorRange.length, [note length] - colorRange.length)];
+				color = [color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			}
+		}
+	}];
+
+	return color;
+}
+
+
+
 
 #pragma mark - Data access
 
@@ -781,22 +809,6 @@
 		}
 	}
 }
-
-/*
-// Backup
-- (NSUInteger)numberOfOutlineItems
-{
-	NSUInteger result = 0;
-	for (Line* line in self.lines) {
-
-		if (line.type == section || line.type == synopse || line.type == heading) {
-			result++;
-		}
-	}
-	return result;
-}
-
-*/
 
 // Deprecated
 - (NSInteger)outlineItemIndex:(Line*)item {

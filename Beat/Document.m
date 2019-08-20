@@ -50,6 +50,7 @@
 #import "OutlineScene.h"
 #import "SelectorWithDebounce.h"
 #import "CenteredClipView.h"
+#import "ScalingScrollView.h"
 
 //#import "Beat-Bridging-Header.h"
 //#import "Beat-Swift.h"
@@ -58,7 +59,7 @@
 
 @property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
-@property (weak) IBOutlet NSScrollView *textScrollView;
+@property (weak) IBOutlet ScalingScrollView *textScrollView;
 @property (nonatomic) NSTimer * scrollTimer;
 
 @property (weak) IBOutlet NSOutlineView *outlineView;
@@ -91,27 +92,12 @@
 
 #pragma mark - Toolbar Buttons
 
-@property (weak) IBOutlet NSButton *outlineToolbarButton;
-@property (weak) IBOutlet NSButton *boldToolbarButton;
-@property (weak) IBOutlet NSButton *italicToolbarButton;
-@property (weak) IBOutlet NSButton *underlineToolbarButton;
-@property (weak) IBOutlet NSButton *omitToolbarButton;
-@property (weak) IBOutlet NSButton *noteToolbarButton;
-@property (weak) IBOutlet NSButton *forceHeadingToolbarButton;
-@property (weak) IBOutlet NSButton *forceActionToolbarButton;
-@property (weak) IBOutlet NSButton *forceCharacterToolbarButton;
-@property (weak) IBOutlet NSButton *forceTransitionToolbarButton;
-@property (weak) IBOutlet NSButton *forceLyricsToolbarButton;
-@property (weak) IBOutlet NSButton *titlepageToolbarButton;
-@property (weak) IBOutlet NSButton *pagebreakToolbarButton;
-@property (weak) IBOutlet NSButton *previewToolbarButton;
-@property (weak) IBOutlet NSButton *printToolbarButton;
-
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
 
 @property (strong, nonatomic) NSFont *courier;
 @property (strong, nonatomic) NSFont *boldCourier;
 @property (strong, nonatomic) NSFont *italicCourier;
+@property (strong, nonatomic) NSFont *cothamRegular;
 
 @property (nonatomic) NSUInteger fontSize;
 @property (nonatomic) NSUInteger zoomLevel;
@@ -162,7 +148,8 @@
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
 #define DEFAULT_MAGNIFY 17
 #define MAGNIFY_REFERENCE 17
-#define MAGNIFY YES
+// Change to YES to try out new zooms :--(
+#define MAGNIFY NO
 
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
 #define LIVE_PREVIEW_KEY @"Live Preview"
@@ -179,6 +166,7 @@
     if (self) {
         self.printInfo.topMargin = 25;
         self.printInfo.bottomMargin = 55;
+		self.printInfo.paperSize = NSMakeSize(595, 842);
     }
     return self;
 }
@@ -249,11 +237,12 @@
     self.outlineViewWidth.constant = 0;
 	
 	
-	
 	/* ####### TextView setup ######## */
 	
     self.textView.textContainer.widthTracksTextView = false;
-	[[self.textScrollView contentView] setPostsBoundsChangedNotifications:YES];
+	self.textView.textContainer.heightTracksTextView = false;
+	
+	[[self.textScrollView documentView] setPostsBoundsChangedNotifications:YES];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
 	
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
@@ -339,6 +328,7 @@
 	
 	// CardView webkit
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
+	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
 	[self setupCards];
 	
 	
@@ -365,33 +355,61 @@
 	[self updateLayout];
 }
 - (void) updateLayout {
-	if (!MAGNIFY) {
-		
-		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-	} else {
+	
+	if (!MAGNIFY) { // Old way of magnification
 		
 		[self setMinimumWindowSize];
+		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 		
-		NSRect frame = self.textView.frame;
-		frame.size.width = self.thisWindow.frame.size.width - self.outlineView.frame.size.width;
-		//frame.size.height = self.thisWindow.frame.size.height;
-		self.textView.frame = frame;
+	} else { // New way
 		
+		// THIS IS A MESS. SEND HELP. SEND IN THE CLOWNS.
+		
+		CGFloat magnification = self.textScrollView.magnification;
+		
+		NSRect visible = self.textScrollView.documentView.visibleRect;
+		NSRect contentView = self.textScrollView.contentView.frame;
+		CGFloat x = contentView.size.width / 2 - visible.size.width / 2;
+		
+		//contentView.origin.x = x;
+		//[self.textScrollView.contentView setFrame:contentView];
+		
+		NSLog(@"\nProposed x: %f\nVisible - x:%f y:%f w:%f h:%f\nContainer w:%f h:%f", x, visible.origin.x, visible.origin.y, visible.size.width, visible.size.height, self.textScrollView.contentView.frame.size.width, self.textScrollView.contentView.frame.size.height);
+		[self setMinimumWindowSize];
+		NSLog(@"Window min: %f", self.thisWindow.minSize.width);
+		
+		// What???
+		NSRect textFrame = self.textView.frame;
+		textFrame.size.width = self.textScrollView.frame.size.width / magnification - self.outlineViewWidth.constant;
+		textFrame.size.height = self.textScrollView.frame.size.height / magnification;
+		[self.textView setFrame:textFrame];
+		
+		
+		
+		// This is a panic recovery..... which crashes the app
+		/*
+		if (self.thisWindow.frame.size.width < self.thisWindow.minSize.width) {
+			NSRect newFrame = NSMakeRect(0, 0, self.thisWindow.minSize.width, self.thisWindow.frame.size.height);
+			[self.thisWindow setFrame:newFrame display:YES];
+		}
+		*/
 		
 		// CGFloat magnification = [self.textScrollView magnification];
-		NSLog(@"TextView width %f / Window width %f", self.textView.frame.size.width, self.thisWindow.frame.size.width);
+		NSLog(@"TextView: %f/%f - container %f - Window width %f", self.textView.frame.size.width, self.textView.frame.size.height, self.textView.textContainer.size.height, self.thisWindow.frame.size.width);
 		
 		// Old way, I have no idea what this did:
 		// inset = (self.textView.frame.size.width / 2 - _documentWidth / 2) / magnification;
 		
+		//[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+		/*
+		NSRect visibleRect = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer];
+		visibleRect.size.width = self.thisWindow.frame.size.width;
+		self.textView.frame = visibleRect;
+		*/
+
 		CGFloat inset = ((self.thisWindow.frame.size.width - self.outlineViewWidth.constant) / 2 - _documentWidth / 2);
-		
 		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
-		
-		NSLog(@"New inset: %f", inset);
-		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
-		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	}
 	
 	[self updateSceneNumberLabels];
@@ -418,19 +436,32 @@
  
  */
 - (void) zoom: (bool) zoomIn {
+	
+	//SCALINGZOOMVIEW EXPERIMENT
+	if (!_zoomCenter) _zoomCenter = 1.00;
+	if (zoomIn) {
+		//_zoomCenter += .05;
+		//[self.textScrollView zoomIn:_zoomCenter];
+		[self.textScrollView zoomIn:nil];
+	} else {
+		[self.textScrollView zoomOut:nil];
+	}
+		
+	return;
+	
 	CGFloat magnification = [self.textScrollView magnification];
+
 	if (!zoomIn && magnification == 1.00) return; // Don't let zoom out below 1.00
 	if (zoomIn && magnification > 1.4) return;
-	
-	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
-	if (zoomIn) magnification += .05; else magnification -= .05;
 
-	NSLog(@"Let's magnify - %f", magnification);
-	
 	// Set minimum window size according to magnification
 	[self setMinimumWindowSize];
+
+	if (zoomIn) magnification += .05; else magnification -= .05;
+	
+	// Define center of the view
+	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
 	center.x = _documentWidth / 2;
-	//center.x = center.x * magnification;
 	
 		[self.textScrollView setMagnification:magnification centeredAtPoint:center];
 		[self.thisWindow layoutIfNeeded];
@@ -440,9 +471,11 @@
 		[self updateLayout];
 	
 	/*
+	// We'll do this at a later time :-)
 	[[NSUserDefaults standardUserDefaults] setInteger:_magnifyLevel forKey:MAGNIFYLEVEL_KEY];
 	*/
 	
+	// Update everything in panic
 	[self updateSceneNumberLabels];
 	[self updateLayout];
 }
@@ -453,6 +486,7 @@
 	[self updateLayout];
 	[self updateSceneNumberLabels];
 	
+	// Define center of the view
 	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
 	center.y = 0;
 	center.x = _documentWidth / 2;
@@ -466,9 +500,10 @@
 
 - (IBAction)increaseFontSize:(id)sender
 {
-	// Work in progress
 	if (MAGNIFY) { [self zoom:true]; return; }
 	
+
+	// Old way
 	if (_zoomLevel < 30)
 	{
 		NSLog(@"Zoom in: %lu", _zoomLevel);
@@ -495,9 +530,9 @@
 
 - (IBAction)decreaseFontSize:(id)sender
 {
-	// Work in progress
 	if (MAGNIFY) { [self zoom:false]; return; }
 	
+	// Old way
 	if (_zoomLevel > 10) {
 		NSLog(@"Zoom out: %lu", _zoomLevel);
 		_zoomLevel--;
@@ -527,7 +562,7 @@
 - (IBAction)resetFontSize:(id)sender
 {
 	if (MAGNIFY) return;
-	
+
 	// Reset zoom level
 	_zoomLevel = DEFAULT_ZOOM;
 	_documentWidth = _zoomLevel * ZOOM_MODIFIER;
@@ -718,6 +753,9 @@
     [[self.webView mainFrame] loadHTMLString:[htmpScript html] baseURL:nil];
 }
 
+
+# pragma mark Should change text + autocomplete
+
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
     //If something is being inserted, check wether it is a "(" or a "[[" and auto close it
@@ -820,6 +858,8 @@
 	}
 }
 
+# pragma mark Formatting
+
 /* #### FORMATTING #### */
 - (IBAction) reformatEverything:(id)sender {
 	[self formattAllLines];
@@ -907,6 +947,13 @@
         if (line.type == heading) {
             //Set Font to bold
             [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
+			
+			//If the scene as a color, let's color it!
+			if (![line.color isEqualToString:@""]) {
+				NSColor* headingColor = [self colors][[line.color lowercaseString]];
+				if (headingColor != nil) [attributes setObject:headingColor forKey:NSForegroundColorAttributeName];
+			}
+		
         } else if (line.type == pageBreak) {
             //Set Font to bold
             [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
@@ -1099,6 +1146,13 @@
     return NSMakeRange(range->location + position, range->length);
 }
 
+
+- (NSFont*)cothamRegular {
+	if (!_cothamRegular) {
+		_cothamRegular = [NSFont fontWithName:@"Cotham Sans" size:11];
+	}
+	return _cothamRegular;
+}
 
 - (NSFont*)courier
 {
@@ -1572,6 +1626,12 @@ static NSString *forceLyricsSymbol = @"~";
     if ([self textView:self.textView shouldChangeTextInRange:range replacementString:string]) {
         [self.textView replaceCharactersInRange:range withString:string];
         [self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
+		
+		/*
+		NSString *oldString = [[self getText] substringWithRange:range];
+		NSRange undoRange = NSMakeRange(range.location, [oldString length]);
+		[[[self undoManager] prepareWithInvocationTarget:self] replaceCharactersInRange:undoRange withString:oldString];
+		 */
     }
 }
 
@@ -1677,7 +1737,22 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
-    if ([menuItem.title isEqualToString:@"Share"]) {
+	if ([self selectedTabViewTab] != 0) {
+		if ([self selectedTabViewTab] == 1 && [menuItem.title isEqualToString:@"Toggle Preview"]) {
+			[menuItem setState:NSOnState];
+			return YES;
+		}
+
+		if ([self selectedTabViewTab] == 2 && [menuItem.title isEqualToString:@"Show Cards"]) {
+			[menuItem setState:NSOnState];
+			return YES;
+		}
+		
+		return NO;
+	}
+	
+	
+	if ([menuItem.title isEqualToString:@"Share"]) {
         [menuItem.submenu removeAllItems];
         NSArray *services = @[];
         if (self.fileURL) {
@@ -1703,6 +1778,10 @@ static NSString *forceLyricsSymbol = @"~";
         if ([visibleCharacters length] == 0) {
             return NO;
         }
+	} else if ([menuItem.title isEqualToString:@"Undo"]) {
+		if ([self selectedTabViewTab] != 0) {
+			NO;
+		}
     } else if ([menuItem.title isEqualToString:@"Theme"]) { // Deprecated
         if ([self selectedTabViewTab] != 0) {
             return NO;
@@ -1955,6 +2034,7 @@ static NSString *forceLyricsSymbol = @"~";
 		// The outline elements will be formatted as rich text,
 		// which is apparently VERY CUMBERSOME in Objective-C.
 		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
+		[resultString addAttribute:NSFontAttributeName value:[self cothamRegular] range:NSMakeRange(0, [line.string length])];
 		
         if (line.type == heading) {
 			//Replace "INT/EXT" with "I/E" to make the lines match nicely
@@ -1970,7 +2050,7 @@ static NSString *forceLyricsSymbol = @"~";
 			}
 			
 			if (line.sceneNumber) {
-				NSString *sceneHeader = [NSString stringWithFormat:@"    %@:", line.sceneNumber];
+				NSString *sceneHeader = [NSString stringWithFormat:@"    %@.", line.sceneNumber];
                 string = [NSString stringWithFormat:@"%@ %@", sceneHeader, [string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""]];
 				resultString = [[NSMutableAttributedString alloc] initWithString:string];
 				
@@ -1983,6 +2063,7 @@ static NSString *forceLyricsSymbol = @"~";
                 //return [NSString stringWithFormat:@"  %@", string];
 				resultString = [[NSMutableAttributedString alloc] initWithString:string];
             }
+			[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
         }
         if (line.type == synopse) {
             NSString* string = line.string;
@@ -2021,6 +2102,8 @@ static NSString *forceLyricsSymbol = @"~";
                     string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
                 }
 				
+				string = [@"  " stringByAppendingString:string];
+				
 				NSFont *font = [NSFont systemFontOfSize:14.0f];
 				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 
@@ -2038,19 +2121,10 @@ static NSString *forceLyricsSymbol = @"~";
 		if (line.color) {
 			
 			NSMutableAttributedString * color = [[NSMutableAttributedString alloc] initWithString:@" ⬤" attributes:nil];
-			NSColor *colorName = nil;
-
-			if ([line.color  caseInsensitiveCompare:@"red"] == NSOrderedSame) colorName = NSColor.redColor;
-			else if ([line.color  caseInsensitiveCompare:@"blue"] == NSOrderedSame) colorName = NSColor.blueColor;
-			else if ([line.color  caseInsensitiveCompare:@"green"] == NSOrderedSame) colorName = NSColor.greenColor;
-			else if ([line.color  caseInsensitiveCompare:@"yellow"] == NSOrderedSame) colorName = NSColor.yellowColor;
-			else if ([line.color  caseInsensitiveCompare:@"black"] == NSOrderedSame) colorName = NSColor.blackColor;
-			else if ([line.color  caseInsensitiveCompare:@"gray"] == NSOrderedSame) colorName = NSColor.grayColor;
-			else if ([line.color  caseInsensitiveCompare:@"grey"] == NSOrderedSame) colorName = NSColor.grayColor;
-			else if ([line.color  caseInsensitiveCompare:@"purple"] == NSOrderedSame) colorName = NSColor.purpleColor;
-			else if ([line.color  caseInsensitiveCompare:@"magenta"] == NSOrderedSame) colorName = NSColor.magentaColor;
-			else if ([line.color  caseInsensitiveCompare:@"pink"] == NSOrderedSame) colorName = NSColor.magentaColor;
- 
+			NSString *colorString = [line.color lowercaseString];
+			NSColor *colorName = [self colors][colorString];
+			//NSColor *colorName = nil;
+			
 			// If we found a suitable color, let's add it
 			if (colorName != nil) {
 				[color addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(0, 2)];
@@ -2122,6 +2196,10 @@ static NSString *forceLyricsSymbol = @"~";
 	[self updateSceneNumberLabels];
 }
 
+
+
+#pragma mark - Outline context menu
+
 /*
  
  Outline context menu, WIP.
@@ -2148,9 +2226,9 @@ static NSString *forceLyricsSymbol = @"~";
 	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
 		// Show context menu
 		for (NSMenuItem * menuItem in menu.itemArray) {
-			// menuItem.hidden = NO;
+			menuItem.hidden = NO;
 			// But let's hide this context menu for now as it's WIP
-			menuItem.hidden = YES;
+			//menuItem.hidden = YES;
 		}
 
 	} else {
@@ -2161,18 +2239,91 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 }
 
-- (IBAction) setRedColor:(id) sender {
-	[self setColor:@"RED"];
-}
+- (IBAction) setNoneColor:(id) sender { [self setColor:@"NONE"]; }
+- (IBAction) setRedColor:(id) sender { [self setColor:@"RED"]; }
+- (IBAction) setBlueColor:(id) sender { [self setColor:@"BLUE"]; }
+- (IBAction) setGreenColor:(id) sender { [self setColor:@"GREEN"]; }
+- (IBAction) setCyanColor:(id) sender { [self setColor:@"CYAN"]; }
+- (IBAction) setOrangeColor:(id) sender { [self setColor:@"ORANGE"]; }
+- (IBAction) setPinkColor:(id) sender { [self setColor:@"PINK"]; }
+- (IBAction) setGrayColor:(id) sender { [self setColor:@"GRAY"]; }
+- (IBAction) setMagentaColor:(id) sender { [self setColor:@"MAGENTA"]; }
+- (IBAction) setBrownColor:(id) sender { [self setColor:@"BROWN"]; }
 
 - (void) setColor:(NSString *) color {
 	id item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
 	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
-		NSString * colorString = [NSString stringWithFormat:@" [[COLOR %@]]", color];
-		NSUInteger position = [[item line] position] + [[item line].string length];
-		[self addString:colorString atIndex:position];
+		OutlineScene *scene = item;
+		
+		[self setColor:color forScene:scene];
 	}
 }
+- (void) setColor:(NSString *) color forScene:(OutlineScene *) scene {
+	color = [color uppercaseString];
+	
+	if (![scene.color isEqualToString:@""] && scene.color != nil) {
+		if ([[color lowercaseString] isEqualToString:@"none"]) {
+			NSString *oldColorString = [NSString stringWithFormat:@"[[COLOR %@]]", [scene.color uppercaseString]];
+			NSRange innerRange = [scene.line.string rangeOfString:oldColorString];
+			NSRange range = NSMakeRange([[scene line] position] + innerRange.location, innerRange.length);
+			[self replaceCharactersInRange:range withString:@""];
+		} else {
+			NSString * oldColor = [NSString stringWithFormat:@"COLOR %@", scene.color];
+			NSString * newColor = [NSString stringWithFormat:@"COLOR %@", color];
+			NSRange innerRange = [scene.line.string rangeOfString:oldColor];
+			NSRange range = NSMakeRange([[scene line] position] + innerRange.location, innerRange.length);
+			[self replaceCharactersInRange:range withString:newColor];
+		}
+	} else {
+		if ([[color lowercaseString] isEqualToString:@"none"]) return; // Do nothing if set to none
+		
+		NSString * colorString = [NSString stringWithFormat:@" [[COLOR %@]]", color];
+		NSUInteger position = [[scene line] position] + [[scene line].string length];
+		[self addString:colorString atIndex:position];
+	}
+
+	return;
+}
+
+
+
+#pragma mark - Colors
+
+- (NSDictionary *) colors {
+	return @{
+			 @"red" : [self colorWithRed:239 green:0 blue:73],
+			 @"blue" : [self colorWithRed:0 green:129 blue:239],
+			 @"green": [self colorWithRed:0 green:223 blue:121],
+			 @"pink": [self colorWithRed:250 green:111 blue:193],
+			 @"magenta": [self colorWithRed:236 green:0 blue:140],
+			 @"gray": NSColor.grayColor,
+			 @"grey": NSColor.grayColor, // for the illiterate
+			 @"purple": [self colorWithRed:181 green:32 blue:218],
+			 @"prince": [self colorWithRed:181 green:32 blue:218], // for the purple one
+			 @"yellow": [self colorWithRed:251 green:193 blue:35],
+			 @"cyan": [self colorWithRed:7 green:189 blue:235],
+			 @"teal": [self colorWithRed:12 green:224 blue:227], // gotta have teal & orange
+			 @"orange": [self colorWithRed:255 green:161 blue:13],
+			 @"brown": [self colorWithRed:169 green:106 blue:7]
+    };
+}
+- (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
+	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
+}
+
+/*
+ if ([line.color  caseInsensitiveCompare:@"red"] == NSOrderedSame) colorName = NSColor.redColor;
+ else if ([line.color  caseInsensitiveCompare:@"blue"] == NSOrderedSame) colorName = NSColor.blueColor;
+ else if ([line.color  caseInsensitiveCompare:@"green"] == NSOrderedSame) colorName = NSColor.greenColor;
+ else if ([line.color  caseInsensitiveCompare:@"yellow"] == NSOrderedSame) colorName = NSColor.yellowColor;
+ else if ([line.color  caseInsensitiveCompare:@"black"] == NSOrderedSame) colorName = NSColor.blackColor;
+ else if ([line.color  caseInsensitiveCompare:@"gray"] == NSOrderedSame) colorName = NSColor.grayColor;
+ else if ([line.color  caseInsensitiveCompare:@"grey"] == NSOrderedSame) colorName = NSColor.grayColor;
+ else if ([line.color  caseInsensitiveCompare:@"purple"] == NSOrderedSame) colorName = NSColor.purpleColor;
+ else if ([line.color  caseInsensitiveCompare:@"magenta"] == NSOrderedSame) colorName = NSColor.magentaColor;
+ else if ([line.color  caseInsensitiveCompare:@"pink"] == NSOrderedSame) colorName = NSColor.magentaColor;
+ */
+
 
 
 #pragma mark - Card view
@@ -2210,6 +2361,21 @@ static NSString *forceLyricsSymbol = @"~";
 	[_cardView loadHTMLString:content baseURL:nil];
 }
 
+// This might be pretty shitty solution for my problem but whatever
+- (OutlineScene *) findSceneByLine: (Line *) line {
+	for (OutlineScene * scene in [self.parser outline]) {
+		if (line == scene.line) return scene;
+		
+		if ([scene.scenes count] > 0) {
+			for (OutlineScene * subScene in scene.scenes) {
+				if (line == subScene.line) return subScene;
+			}
+		}
+	}
+	
+	return nil;
+}
+	
 - (void) refreshCards {
 	
 	if (self.nightMode) {
@@ -2274,7 +2440,7 @@ static NSString *forceLyricsSymbol = @"~";
 	} else if (scene.type == synopse) {
 		return [NSString stringWithFormat:@"'type': 'synopse', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
 	} else {
-		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', %@", [self JSONString:scene.sceneNumber], [self JSONString:scene.string], [self JSONString:snippet], scene.line.position, status];
+		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', 'color': '%@', 'lineIndex': %lu, %@", [self JSONString:scene.sceneNumber], [self JSONString:scene.string], [self JSONString:snippet], scene.line.position, [scene.color lowercaseString], index, status];
 	}
 }
 
@@ -2298,10 +2464,29 @@ static NSString *forceLyricsSymbol = @"~";
 		return;
 	}
 	
-	NSRange lineRange = NSMakeRange([message.body intValue], 0);
-	[self.textView setSelectedRange:lineRange];
-	[self.textView scrollRangeToVisible:lineRange];
-	[self toggleCards:nil];
+	if ([message.name isEqualToString:@"cardClick"]) {
+		NSRange lineRange = NSMakeRange([message.body intValue], 0);
+		[self.textView setSelectedRange:lineRange];
+		[self.textView scrollRangeToVisible:lineRange];
+		[self toggleCards:nil];
+		
+		return;
+	}
+	
+	if ([message.name isEqualToString:@"setColor"]) {
+		NSLog(@"Body : %@", message.body);
+		
+		if ([message.body rangeOfString:@":"].location != NSNotFound) {
+			NSArray *indexAndColor = [message.body componentsSeparatedByString:@":"];
+			NSUInteger index = [[indexAndColor objectAtIndex:0] integerValue];
+			NSString *color = [indexAndColor objectAtIndex:1];
+			
+			Line *line = [[self.parser lines] objectAtIndex:index];
+			OutlineScene *scene = [self findSceneByLine:line];
+			
+			[self setColor:color forScene:scene];
+		}
+	}
 }
 
 
@@ -2327,8 +2512,6 @@ static NSString *forceLyricsSymbol = @"~";
 		rect.origin.y += TEXT_INSET_TOP;
 		rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
 		rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER - rect.size.width;
-		
-		
 	}
 	
 	[label setBezeled:NO];
@@ -2387,7 +2570,12 @@ static NSString *forceLyricsSymbol = @"~";
 
 			label.frame = rect;
 			[label setFont:self.courier];
-			[label setTextColor:self.themeManager.currentTextColor];
+			if (![scene.color isEqualToString:@""] && scene.color != nil) {
+				NSString *color = [scene.color lowercaseString];
+				[label setTextColor:[self colors][color]];
+			} else {
+				[label setTextColor:self.themeManager.currentTextColor];
+			}
 		
 			index++;
 		}
@@ -2395,11 +2583,14 @@ static NSString *forceLyricsSymbol = @"~";
 		// Remove unused labels from the end of the array.
 		if (difference < 0) {
 			for (NSInteger d = 0; d > difference; d--) {
-				NSTextField * label = [self.sceneNumberLabels objectAtIndex:[self.sceneNumberLabels count] - 1];
+				// Let's just do a double check to reduce the chance of errors
+				if ([self.sceneNumberLabels count] > [self.sceneNumberLabels count] - 1) {
+					NSTextField * label = [self.sceneNumberLabels objectAtIndex:[self.sceneNumberLabels count] - 1];
 				
-				//[label performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:NO];
-				[self.sceneNumberLabels removeObject:label];
-				[label removeFromSuperview];
+					//[label performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:NO];
+					[self.sceneNumberLabels removeObject:label];
+					[label removeFromSuperview];
+				}
 				
 			}
 		}

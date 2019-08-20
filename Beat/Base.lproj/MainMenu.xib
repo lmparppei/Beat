@@ -474,12 +474,6 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ffW-ny-yDK"/>
-                            <menuItem title="Show Scene Numbers" state="on" id="5Rh-Kl-j5e">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleSceneLabels:" target="-1" id="VCW-6l-TxD"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Print Automatic Scene Numbers" state="on" id="p37-Bz-gMZ">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -512,34 +506,33 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
                         <items>
-                            <menuItem title="Show Outline" keyEquivalent="d" id="7cA-vF-vVK">
+                            <menuItem title="Show Outline" keyEquivalent="d" id="gZR-Di-cF2">
                                 <connections>
-                                    <action selector="toggleOutlineView:" target="-1" id="jgE-Ew-h68"/>
+                                    <action selector="toggleOutlineView:" target="-1" id="FdN-Xv-eeb"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Cards" keyEquivalent="D" id="Z4r-zx-D3x">
+                            <menuItem title="Show Cards" keyEquivalent="D" id="0n5-ou-MCw">
                                 <connections>
-                                    <action selector="toggleCards:" target="-1" id="bKE-3j-CxK"/>
+                                    <action selector="toggleCards:" target="-1" id="Yus-6b-x57"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Dark Mode" id="4mq-FG-jAk">
+                            <menuItem title="Show Scene Numbers" state="on" id="5Rh-Kl-j5e">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="toggleNightMode:" target="-1" id="hAB-tL-S3S"/>
+                                    <action selector="toggleSceneLabels:" target="-1" id="VCW-6l-TxD"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Dark Mode" id="onG-wT-V8z">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleNightMode:" target="-1" id="2ed-nN-Bwt"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="a7U-Mw-XBM"/>
                             <menuItem title="Enter full screen" keyEquivalent="f" id="NJj-Ow-1UU">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="toggleFullScreen:" target="-1" id="20F-LW-XZo"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="D4X-40-17d"/>
-                            <menuItem title="Theme" hidden="YES" enabled="NO" id="SdI-kP-vhN">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" id="RAa-ji-vvT"/>
-                                <connections>
-                                    <action selector="themes:" target="-1" id="fv6-OV-M7K"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Zoom" id="2bU-pu-Jv0">
@@ -566,6 +559,13 @@ DQ
                                 </menu>
                                 <connections>
                                     <action selector="zoom:" target="-1" id="hGt-8H-RSC"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Theme" hidden="YES" enabled="NO" id="SdI-kP-vhN">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" id="RAa-ji-vvT"/>
+                                <connections>
+                                    <action selector="themes:" target="-1" id="fv6-OV-M7K"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Live Preview" hidden="YES" id="lYw-08-5AI">
