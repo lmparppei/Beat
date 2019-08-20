@@ -8,7 +8,9 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 
 This started as a personal project as I needed a simple, multi-window and lightweight screenwriting application for my own films, preferrably using Fountain files. The ones that existed were weird, expensive and/or cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing.
 
-I am an artist and a filmmaker, and my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
+There is an iOS version on the way, scheduled for release in late 2019. It won't be free (very cheap though), but a big chunk of its code is still under GPL.
+
+I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
 ## Latest release: Beat 1.0.7b
 
@@ -18,15 +20,15 @@ I am an artist and a filmmaker, and my programming skills are somewhat limited. 
 * Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now, and has some unfortunate bugs with undoing.
 * Small visual bug fixes
 
-**Note:** This repository follows my development and usually DOES NOT match the released versions. Dread lightly, dear friend!
+**Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 
 ## Future
 
 ### State of development
 
-Beat is under active development when I have the time or desperately need a new feature myself. Worst bugs will usually be fixed ASAP.
+Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP.
 
-The app is now pretty stable and has remained very minimalistic since its inception. Outline card view was be the biggest new feature since version 1.0.3.
+The app is finally pretty stable and has remained very minimalistic. Outline card view was be the biggest new feature since version 1.0.3.
 
 Some future considerations:
 
