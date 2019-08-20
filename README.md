@@ -10,13 +10,12 @@ This started as a personal project as I needed a simple, multi-window and lightw
 
 I am an artist and a filmmaker, and my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.0.7
+## Latest release: Beat 1.0.7b
 
-* Finally got rid of the old method of zooming in/out
 * Outline card view (implemented in a separate WebView)
 * Autocomplete characters and scene headings
 * Automatic scene numbering in edit view. Recognizes Fountain forced scene numbers.
-* Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now.
+* Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now, and has some unfortunate bugs with undoing.
 * Small visual bug fixes
 
 **Note:** This repository follows my development and usually DOES NOT match the released versions. Dread lightly, dear friend!
