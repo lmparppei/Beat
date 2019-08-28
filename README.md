@@ -12,7 +12,7 @@ There is an iOS version on the way, scheduled for release in late 2019. It won't
 
 I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.0.7b
+## Latest release: Beat 1.0.7e
 
 * Outline card view (implemented in a separate WebView)
 * Autocomplete characters and scene headings
@@ -30,19 +30,23 @@ Beat is under active development when I have the time -- or rather, desperately 
 
 The app is finally pretty stable and has remained very minimalistic. Outline card view was be the biggest new feature since version 1.0.3.
 
+Work in progress:
+
+* Dragging & dropping scenes in the card view
+* Fixing problems with copying and pasting text
+
 Some future considerations:
 
 * Visual margins in edit view 
-* Timeline view (with chronometry) 
-* Drag & drop scenes in the card view 
-* Fix problems with copying and pasting text 
+* Better zooming in/out
+* Timeline view (with chronometry)
 * Have Beat only allow happy endings
 * Making the world a better place 
 * Planting some trees to fight climate change 
 
 ### How can you help?
 
-Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer but a director, screenwriter and musician. Writing Objective-C has been a bit overwhelming, and because of that, Document.m has become a 2500-line monster that handles too many things.
+Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer but a director, screenwriter and musician. Writing Objective-C has been a bit overwhelming, and because of that, Document.m has become a 2700-line monster that handles too many things.
 
 Bug reports, some donations and feedback help, but I'd be happy if someone could help with zooming and rearranging the code.
 

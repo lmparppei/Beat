@@ -1995,7 +1995,43 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	return scenes;
 }
+- (NSRange) getRangeForScene:(OutlineScene *) scene {
+	NSUInteger start = scene.line.position;
+	NSUInteger length = 0;
+	
+	OutlineScene * nextScene = [self getNextScene:scene];
+	
+	if (nextScene != nil) {
+		length = nextScene.line.position - start;
+	} else {
+		// There is no next scene, so just grab the last line
+		Line * lastLine = [[self.parser lines] objectAtIndex: [[self.parser lines] count] + 1];
+		length = lastLine.position + lastLine.string.length - start;
+	}
 
+	return NSMakeRange(start, length);
+	
+}
+- (OutlineScene *) getNextScene:(OutlineScene *) currentScene {
+	// Returns the NEXT heading of any type to this scene .....
+	NSInteger index = 0;
+	bool found = false;
+	OutlineScene * nextScene = nil;
+	
+	for (OutlineScene * scene in [self.parser outline]) {
+		if (found) {
+			nextScene = scene;
+		}
+		
+		if (scene == currentScene) {
+			found = true;
+		}
+		
+		index++;
+	}
+	
+	return nextScene;
+}
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
@@ -2440,7 +2476,14 @@ static NSString *forceLyricsSymbol = @"~";
 	} else if (scene.type == synopse) {
 		return [NSString stringWithFormat:@"'type': 'synopse', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
 	} else {
-		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', 'color': '%@', 'lineIndex': %lu, %@", [self JSONString:scene.sceneNumber], [self JSONString:scene.string], [self JSONString:snippet], scene.line.position, [scene.color lowercaseString], index, status];
+		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', 'color': '%@', 'lineIndex': %lu, %@",
+				[self JSONString:scene.sceneNumber],
+				[self JSONString:scene.string],
+				[self JSONString:snippet],
+				scene.line.position,
+				[scene.color lowercaseString],
+				index,
+				status];
 	}
 }
 
@@ -2486,6 +2529,10 @@ static NSString *forceLyricsSymbol = @"~";
 			
 			[self setColor:color forScene:scene];
 		}
+	}
+	
+	if ([message.name isEqualToString:@"moveScene"]) {
+		NSLog(@"Body: %@", message.body);
 	}
 }
 
