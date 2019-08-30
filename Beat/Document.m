@@ -26,6 +26,13 @@
 
 
 /*
+ 
+ N.B. Much of this code has its origins in Writer by Hendrik Noeller. As I started
+ this project, I had close to zero knowledge on Objective-C, and it really shows.
+ Beat has been cooked up by using lots of trial and error, and this file has become a
+ 2700-line monster.
+ 
+ But - keep the flight in mind, the bird is mortal.
 
  Page sizing info:
  
@@ -2711,4 +2718,5 @@ static NSString *forceLyricsSymbol = @"~";
 	[self updateSceneNumberLabels];
 	if(_scrollTimer != nil) _scrollTimer = nil;
 }
+
 @end

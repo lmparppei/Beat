@@ -37,32 +37,35 @@
  - HTML output links to either screen or print CSS depending on the target format.
  Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
  
- - And - as I'm writing this, RegexKitLite.h hasn't been updated in 9 fucking years,
- and some of its functions have been deprecated in macOS 10.12+. Fair enough - that
- piece of code  was last updated in 2010.
+ - And - as I'm writing this, some functions in RegexKitLite.h have been deprecated
+ in macOS 10.12+. Fair enough - it was apparently last updated in 2010.
  
  I hadn't  made any films then. In 2010, I was young, madly in love and had dreams
- and aspirations. Under a year ago, I had started my studies in a film school.
+ and aspirations. I had just recently started my studies in a film school.
  In 9 years, I figured back then, I'd be making films that really communicated
  the pain I had gone through. My films would reach out to other lonely people,
- in their gloomy tomb, assured of their doom.
+ confined in their gloomy tomb, assured of their doom.
  
  Well.
  
  Instead, I'm reading about fucking C enumerators and OS spin locks to be able
  to build my own fucking software, which - mind you - ran just fine a few weeks ago.
  
- Hence, I tried to update the deprecated spin locks of RegexKitLite.h which
- was about to destroy my inner child. I just wanted to write nice films, I wasn't
- planning on fucking learning any motherfucking C language, FUCK.
+ Hence, I tried to replace the deprecated spin locks of RegexKitLite.h with modern ones.
+ It was about to destroy my inner child. I just wanted to write nice films, I wasn't
+ planning on fucking learning any motherfucking C!!!
  
- SO, if you are reading this: Beat now relies on a customized RegexKitLite.h,
- which might work or not. It could crash systems all around the world.
+ SO, if you are reading this: Beat now relies on a customized RegexKitLite,
+ which might work or not. It could crash systems all around the world. It could
+ consume your computer's soul and kill any glimpse of hope.
  
  I could have spent these hours with my dear friends, my lover or just watching
- flowers grow and maybe talking to them. I didn't. Here I am, typing this message
- to some random fucker who, for whatever reason, decides to take a look at my
- horrible code in the year 2030. Probably it's me, though.
+ flowers grow and maybe talking to them. Or even writing my film.
+ I didn't. Here I am, typing this message to some random fucker who, for
+ whatever reason, decides to take a look at my horrible code sometime in the
+ future.
+ 
+ Probably it's me, though.
  
  What can I say. STOP WASTING YOUR LIFE AND GO FUCK YOURSELF.
 

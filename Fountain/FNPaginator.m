@@ -612,7 +612,15 @@
  method) doesn't take into account line height, so text won't display correctly when we try and print.
  
  A note from the author of Beat:
- For some reason, this returns wrong heights at times.
+ For some reason, this returns wrong heights at times. I guess.
+ 
+ Here's some Bella Akhmadulina as a consolation.
+
+ Over my street for many-many years,
+ sound the steps – my friends leave me forever.
+ The slow exodus of all my dear friends
+ takes from the dark by windows its favor.
+ 
  */
 + (NSInteger)heightForString:(NSString *)string font:(QUQFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(NSInteger)lineHeight
 {
