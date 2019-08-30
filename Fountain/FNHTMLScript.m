@@ -3,7 +3,7 @@
 //	Modified for Beat
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
-//  Parts copyright (c) 2019 Lauri-Matti Parppei / KAPITAN!
+//  Parts copyright © 2019 Lauri-Matti Parppei / KAPITAN!
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -26,22 +26,58 @@
 
 /*
  
- N.B. This file is customized for Beat.
+ N.B. This version of FNHTMLScript.m is customized for Beat. It still outputs HTML
+ for printing out screenplays.
  
- I have removed the English language default "written by" to please international users.
+ There are certain differences:
+ 
+ - the English language default "written by" has been removed:
  [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
  
- The HTML output has either screen or print CSS depending on the target format.
- Print & PDF versions rely on PrintCSS.css and preview mode uses modified ScriptCSS.css.
+ - HTML output links to either screen or print CSS depending on the target format.
+ Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
+ 
+ - And - as I'm writing this, RegexKitLite.h hasn't been updated in 9 fucking years,
+ and some of its functions have been deprecated in macOS 10.12+. Fair enough - that
+ piece of code  was last updated in 2010.
+ 
+ I hadn't  made any films then. In 2010, I was young, madly in love and had dreams
+ and aspirations. Under a year ago, I had started my studies in a film school.
+ In 9 years, I figured back then, I'd be making films that really communicated
+ the pain I had gone through. My films would reach out to other lonely people,
+ in their gloomy tomb, assured of their doom.
+ 
+ Well.
+ 
+ Instead, I'm reading about fucking C enumerators and OS spin locks to be able
+ to build my own fucking software, which - mind you - ran just fine a few weeks ago.
+ 
+ Hence, I tried to update the deprecated spin locks of RegexKitLite.h which
+ was about to destroy my inner child. I just wanted to write nice films, I wasn't
+ planning on fucking learning any motherfucking C language, FUCK.
+ 
+ SO, if you are reading this: Beat now relies on a customized RegexKitLite.h,
+ which might work or not. It could crash systems all around the world.
+ 
+ I could have spent these hours with my dear friends, my lover or just watching
+ flowers grow and maybe talking to them. I didn't. Here I am, typing this message
+ to some random fucker who, for whatever reason, decides to take a look at my
+ horrible code in the year 2030. Probably it's me, though.
+ 
+ What can I say. STOP WASTING YOUR LIFE AND GO FUCK YOURSELF.
+
  
 */
 
 #import "FNHTMLScript.h"
 #import "FNScript.h"
 #import "FNElement.h"
-#import "RegexKitLite.h"
 #import "FountainRegexes.h"
 #import "FNPaginator.h"
+// #import "NSMutableString+Regex.h"
+
+// FUCK YOU REGEXKITLITE.H
+ #import "RegexKitLite.h"
 
 @interface FNHTMLScript ()
 
@@ -106,7 +142,7 @@
     [html appendString:@"<!DOCTYPE html>\n"];
     [html appendString:@"<html>\n"];
     [html appendString:@"<head>\n"];
-	[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.2'/>\n"];
+	//[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.1'/>\n"];
 	
     [html appendString:@"<style type='text/css'>\n"];
     [html appendString:self.cssText];
@@ -245,11 +281,15 @@
     NSUInteger maxPages = [paginator numberOfPages];
 	
 	bool pageBreak = false;
+	
     for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
         
         // Print what page we're on -- used for page jumper
 		[body appendFormat:@"<section>"];
+		
+		int index = (int)pageIndex+1;
+		
         if (self.customPage) {
             if ([self.customPage integerValue] == 0) {
                 if ([self.forRendering boolValue]) {
@@ -259,14 +299,17 @@
                 }
             } else {
                 if ([self.forRendering boolValue]) {
-                    [body appendFormat:@"<p class='page-break-render'>%d.</p>\n", [self.customPage intValue]];
+					// I don't understand this part. For some reason certain elements are cut off the page and have a random page number there when rendering. So, as a rational and solution-oriented person, I just removed the page number altogether if this happens.
+					if (index < 2) {
+                    	[body appendFormat:@"<p class='page-break-render'>%d.</p>\n", [self.customPage intValue]];
+					}
                 } else {
                     [body appendFormat:@"<p class='page-break'>%d.</p>\n", [self.customPage intValue]];
                 }
             }
         } else {
             if ([self.forRendering boolValue]) {
-                [body appendFormat:@"<p class='page-break-render'>%d.</p>\n", (int)pageIndex+1];
+                [body appendFormat:@"<p class='page-break-render'>render %d.</p>\n", (int)pageIndex+1];
             } else {
                 [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
             }

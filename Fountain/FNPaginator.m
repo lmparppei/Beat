@@ -2,6 +2,7 @@
 //  FNPaginator.m
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
+//  Parts copyright © 2019 Lauri-Matti Parppei / KAPITAN!
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -21,6 +22,16 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
 //  IN THE SOFTWARE.
 //
+
+/*
+ 
+ N.B.
+ This is a modified version of FNPaginator, used in Beat. I've cooked this up
+ through a lot of trial and error. There are certain inconsistencies between the
+ original Fountain CSS file and this paginator, which may or may not be
+ intentional. This modified version tries to navigate through those obstacles.
+ 
+ */
 
 #import "FNPaginator.h"
 #import "FNScript.h"
@@ -64,7 +75,7 @@
     if (self.document) {
         // Get paper size from the document
         CGSize paperSize = CGSizeMake(self.document.printInfo.paperSize.width, self.document.printInfo.paperSize.height);
-        
+		
         // run pagination
         [self paginateForSize:paperSize];
     } else {
@@ -102,12 +113,11 @@
 
 - (void)paginateForSize:(CGSize)pageSize
 {
-    @autoreleasepool {
+	@autoreleasepool {
         NSInteger oneInchBuffer = 72;
-        NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 2.01);
 		//NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 1.8);
-		//NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 3);
-        
+        NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 2.25);
+		
         QUQFont *font = [QUQFont fontWithName:@"Courier Prime" size:12];
         NSInteger lineHeight = font.pointSize;
         
@@ -153,7 +163,7 @@
             }
             
             // get spaceBefore, the leftMargin, and the elementWidth
-            spaceBefore         = [FNPaginator spaceBeforeForElement:element] * round(lineHeight);
+            spaceBefore         = [FNPaginator spaceBeforeForElement:element] * lineHeight;
             elementWidth        = [FNPaginator widthForElement:element];
             
             // get the height of the text
@@ -164,26 +174,27 @@
                 // height = lineHeight;
                 continue;
             }
-            
+			
             blockHeight += height;
             
             // only add the space before if we're not at the top of the current page
             if ([currentPage count] > 0) {
                 blockHeight += spaceBefore;
             }
-            
+		
+			
             // Fix to get styling to show up in PDFs. I have no idea.
             if (![element.elementText isMatchedByRegex:@" $"]) {
-                element.elementText = [NSString stringWithFormat:@"%@%@", element.elementText, @""];            
+                element.elementText = [NSString stringWithFormat:@"%@%@", element.elementText, @""];
             }
-            
+			
             // if it's a screne heading, get the next block
             // if it's a character cue, we need to get the entire dialogue block
             if ([element.elementType isEqualToString:@"Scene Heading"] && i+1 < maxElements) {
                 FNElement *nextElement = (self.script.elements)[i+1];
                 NSInteger nextElementWidth = [FNPaginator widthForElement:nextElement];
                 NSInteger nextElementHeight = [FNPaginator heightForString:nextElement.elementText font:font maxWidth:nextElementWidth lineHeight:lineHeight];
-                
+				
                 if ((blockHeight + currentY + nextElementHeight >= maxPageHeight) && (nextElementHeight >= lineHeight * 1)) {
                     FNElement *forcedBreak = [[FNElement alloc] init];
                     forcedBreak.elementType = @"Page Break";
@@ -197,7 +208,7 @@
             }
             else if ([element.elementType isEqualToString:@"Character"] && i+1 < maxElements) {
                 NSSet *dialogueBlockTypes = [NSSet setWithObjects:@"Dialogue", @"Parenthetical", nil];
-                
+
                 NSInteger j             = i + 1;
                 FNElement *nextElement  = element;
                 BOOL isEndOfArray       = NO;
@@ -233,38 +244,89 @@
                     NSInteger heightDiff = ABS(previousDualDialogueBlockHeight - blockHeight);
                     blockHeight = heightDiff;
                     previousDualDialogueBlockHeight = -1;
-                }            
+                }
             }
             else {
                 [tmpElements addObject:element];
             }
             
             NSInteger totalHeightUsed = blockHeight + currentY;
-            
+			/*
+			 // For debugging page heights etc. Nope.
+			NSString *debug = [NSString stringWithFormat:@"<span class='debug'>%lu / %lu</span>", blockHeight, currentY];
+			element.elementText = [NSString stringWithFormat:@"%@%@", debug, element.elementText];
+			 */
+			
             // At the end of the page
             if (totalHeightUsed > maxPageHeight) {
+				// Let's break actions into different paragraphs (©KAPITAN!)
+				if ([tmpElements count] > 0 && [[tmpElements[0] elementType] isEqualToString:@"Action"] && ((totalHeightUsed - maxPageHeight) >= (lineHeight * 2))) {
+					FNElement *action = tmpElements[0];
+					
+					// Max line width is 58 characters. Let's see how many lines are over the page.
+					NSInteger pageOverflow = totalHeightUsed - maxPageHeight;
+					
+					// Count how many lines will overflow
+					NSInteger charactersPerLine = 58;
+					NSInteger linesOverflow = (blockHeight - pageOverflow) / lineHeight;
+					if (linesOverflow == 0) linesOverflow = 1;
+					
+					// If the retained block is long enough, we'll cut it in two. Otherwise just put the whole block on the next page. No use in breaking apart short paragraphs, I guess.
+					if (action.elementText.length > linesOverflow * charactersPerLine) {
+						NSString *retain = [NSString stringWithString:action.elementText];
+						
+						NSRange range = NSMakeRange(0, charactersPerLine);
+						NSRange position = [retain rangeOfString:@" " options:NSBackwardsSearch range:range];
+						
+						retain = [retain substringToIndex:position.location];
+						
+						NSString *cutoff = action.elementText;
+						cutoff = [cutoff substringFromIndex:position.location + 1];
+						
+						FNElement * firstBlock = [[FNElement alloc] init];
+						firstBlock.elementType = @"Action";
+						firstBlock.elementText = retain;
+						[currentPage addObject:firstBlock];
+						
+						action.elementText = cutoff;
+					}
+				}
+				
                 // This is how we handle breaking a Character's dialogue across pages
-                if ([tmpElements count] > 0 && [[tmpElements[0] elementType] isEqualToString:@"Character"] && ((totalHeightUsed - maxPageHeight) >= (lineHeight * 4))) {
+                //if ([tmpElements count] > 0 && [[tmpElements[0] elementType] isEqualToString:@"Character"] && ((totalHeightUsed - maxPageHeight) >= (lineHeight * 2))) {
+				if ([tmpElements count] > 0 && [[tmpElements[0] elementType] isEqualToString:@"Character"]) {
+					//FNElement * element = tmpElements[0];
+					
                     NSInteger blockIndex        = -1;   // initial to -1 because we interate immediately
                     NSInteger maxTmpElements    = [tmpElements count];
                     
                     // if there are two lines free below the character cue, we can try to squeeze this block in.
                     NSInteger partialHeight = 0;
-                    NSInteger pageOverflow  = totalHeightUsed - maxPageHeight;
-                    
-                    
+                    //NSInteger pageOverflow  = totalHeightUsed - maxPageHeight;
+					
                     // figure out what index spills over the page
-                    while ((partialHeight < pageOverflow) && (blockIndex < maxTmpElements - 1)) {
+					
+					// THIS MATH IS WRONG. New approach below.
+                    // while ((partialHeight < pageOverflow) && (blockIndex < maxTmpElements - 1)) {
+					while ((currentY + partialHeight < maxPageHeight) && (blockIndex < maxTmpElements - 1)) {
                         blockIndex++;
+
                         FNElement *e = tmpElements[blockIndex];
                         NSInteger h  = [FNPaginator heightForString:e.elementText font:font maxWidth:[FNPaginator widthForElement:e] lineHeight:lineHeight];
                         NSInteger s  = [FNPaginator spaceBeforeForElement:e] * round(lineHeight);
                         partialHeight += h + s;
                     }
-                                        
+					
+					blockIndex = -1;
+					while (blockIndex < maxTmpElements - 1) {
+						blockIndex++;
+					}
+				
+					
                     if (blockIndex > 0) {
                         // determine what type of element spills
                         FNElement *spiller = tmpElements[blockIndex];
+
                         if ([spiller.elementType isEqualToString:@"Parenthetical"]) {
                             // break before, unless we're index 1 (the second element)
                             if (blockIndex > 1) {
@@ -274,7 +336,7 @@
                                 
                                 // add the more at the bottom of the page
                                 FNElement *more = [[FNElement alloc] init];
-                                more.elementType = @"Character";
+                                more.elementType = @"More";
                                 more.elementText = @"(MORE)";
                                 
                                 [currentPage addObject:more];
@@ -360,7 +422,7 @@
 
                                 // add the more at the bottom of the page
                                 FNElement *more = [[FNElement alloc] init];
-                                more.elementType = @"Character";
+                                more.elementType = @"More";
                                 more.elementText = @"(MORE)";
                                 
                                 [currentPage addObject:more];
@@ -479,18 +541,19 @@
 
 #pragma mark - Helper class methods
 
-+ (NSInteger)spaceBeforeForElement:(FNElement *)element
+// Modified to CGFloat
++ (CGFloat)spaceBeforeForElement:(FNElement *)element
 {
-    NSInteger spaceBefore = 0;
+    CGFloat spaceBefore = 0;
     
     NSString *type  = element.elementType;
     NSSet *set      = [NSSet setWithObjects:@"Action", @"General", @"Character", @"Transition", nil];
     
     if ([type isEqualToString:@"Scene Heading"]) {
-        spaceBefore = 3;
+        spaceBefore = 2.6;
     }
     else if ([set containsObject:type]) {
-        spaceBefore = 1;
+        spaceBefore = 1.1;
     }
     
     return spaceBefore;
@@ -526,7 +589,8 @@
     NSString *type  = element.elementType;
     
     if ([type isEqualToString:@"Action"] || [type isEqualToString:@"General"] || [type isEqualToString:@"Scene Heading"] || [type isEqualToString:@"Transition"]) {
-        width   = 430;
+        //width   = 430;
+		width = 465;
     }
     else if ([type isEqualToString:@"Character"]) {
         width   = 250;
@@ -535,7 +599,7 @@
         width   = 250;
     }
     else if ([type isEqualToString:@"Parenthetical"]) {
-        width   = 212;
+        width   = 250;
     }
     
     return width;
@@ -546,6 +610,9 @@
  of lines of text we have, then multiply that by the line height. This is NOT the method Apple describes
  in their docs, but we have to do this because getting the size of the layout box (Apple's recommended
  method) doesn't take into account line height, so text won't display correctly when we try and print.
+ 
+ A note from the author of Beat:
+ For some reason, this returns wrong heights at times.
  */
 + (NSInteger)heightForString:(NSString *)string font:(QUQFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(NSInteger)lineHeight
 {
@@ -553,7 +620,8 @@
      This method won't work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance 
      method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
      */
-    
+	
+	
     // set up the layout manager
     NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
     NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
@@ -582,7 +650,6 @@
     
     // calculate the height
     NSInteger height = numberOfLines * lineHeight;
-	//NSLog(@"Korkeus: %lu - %@", height, string);
     return height;
 }
 

@@ -348,7 +348,7 @@
 # pragma mark Window interactions
 
 - (bool) isFullscreen {
-	return (([_thisWindow styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask);
+	return (([_thisWindow styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
@@ -664,7 +664,7 @@
         NSAlert* alert = [[NSAlert alloc] init];
         alert.messageText = @"Can not print an empty document";
         alert.informativeText = @"Please enter some text before printing, or obtain white paper directly by accessing you printers paper tray.";
-        alert.alertStyle = NSWarningAlertStyle;
+		alert.alertStyle = NSAlertStyleWarning;
         [alert beginSheetModalForWindow:self.windowControllers[0].window completionHandler:nil];
     } else {
 		if (self.printSceneNumbers) {
@@ -1995,6 +1995,25 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	return scenes;
 }
+
+// NOTE: This returns a FLAT outline.
+- (NSMutableArray *) getOutlineItems {
+	NSMutableArray * outlineItems = [[NSMutableArray alloc] init];
+	
+	// WIP
+	for (OutlineScene * scene in [self.parser outline]) {
+		[outlineItems addObject:scene];
+		
+		if ([scene.scenes count]) {
+			for (OutlineScene * subscene in scene.scenes) {
+				[outlineItems addObject:subscene];
+			}
+		}
+	}
+	
+	return outlineItems;
+}
+
 - (NSRange) getRangeForScene:(OutlineScene *) scene {
 	NSUInteger start = scene.line.position;
 	NSUInteger length = 0;
@@ -2605,7 +2624,7 @@ static NSString *forceLyricsSymbol = @"~";
 			
 			label = [self.sceneNumberLabels objectAtIndex:index];
 			if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
-						
+			
 			NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
 			NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 			NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];

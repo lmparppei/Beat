@@ -44,7 +44,7 @@
 - (NSArray *)pageAtIndex:(NSUInteger)index;
 
 // Helper methods
-+ (NSInteger)spaceBeforeForElement:(FNElement *)element;
++ (CGFloat)spaceBeforeForElement:(FNElement *)element;
 + (NSInteger)leftMarginForElement:(FNElement *)element;
 + (NSInteger)widthForElement:(FNElement *)element;
 + (NSInteger)heightForString:(NSString *)string font:(QUQFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(NSInteger)lineHeight;

@@ -30,8 +30,8 @@ html {
 	padding: 0;
 }
 body {
-	color: black;
-	font: 12px/1em 'Courier', serif;
+	color: #3e3e3e;
+	font: 12px/1.0em 'Courier Prime', serif;
 	padding: 0;
 	margin: 0;
 }
@@ -44,65 +44,47 @@ section {
 	width: 465px;
 	margin-right: auto;
 	margin-left: auto;
-	page-break-after: always;
 }
 p {
-	position: relative;
-	margin: 1.1em auto;
+	margin: 1.3em auto;
 	word-wrap: break-word;
 	padding: 0 10px;
-}
-.debug {
-	display: block;
-	position: absolute;
-	left: -50px;
-	color: red;
-	font-size: .5em;
-}
-.debug:nth-of-type(1) {
-	top: 15px;
+	width: 430px;
 }
 body > p:first-child {
 	margin-top: 0;
 }
 .scene-heading, .transition, .new-act, .end-of-act, .character {
-	position: relative;
 	text-transform: uppercase;
 }
 
 .transition {
-	position: relative;
 	text-align: right;
 }
 
 .new-act, .end-of-act {
-	position: relative;
 	text-align: center;
 }
 
-.character, .more {
-	position: relative;
+.character {
 	margin: 1.1em auto 0;
 	width: 180px;
 }
-.more, p.more {
-	margin: 0 auto 0;
-}
 
 .dialogue {
-	position: relative;
-	margin: 0 auto 0 14%;
+	margin: 0;
 	width: 250px;
+	margin-left: 70px;
 }
 
 .parenthetical {
-	position: relative;
 	margin: 0 auto;
-	width: 250px;
+	width: 212px;
 }
 
 .scene-heading {
-	margin-top: 2.6em;
+	margin-top: 3em;
+	margin-bottom: 0;
 	font-weight: bold;
 	position: relative;
 	padding-right: 40px;
@@ -113,7 +95,8 @@ body > p:first-child {
 }
 .scene-number-right {
 	position: absolute;
-	right: 0;
+	text-align: right;
+	right: 10px;
 	top: 0;
 }
 .lyrics {
@@ -128,7 +111,7 @@ body > p:first-child {
 }
 #script-title .title {
 	text-align: center;
-	margin: 1em 0;
+	margin: 1.3em 0;
 	text-transform: uppercase;
 	text-decoration: underline;
 }
@@ -140,7 +123,7 @@ body > p:first-child {
 }
 #script-title .source {
 	text-align: center;
-	padding-top: 1em;
+	padding-top: 1.3em;
 }
 #script-title .notes {
 	padding-top: 2.6em;

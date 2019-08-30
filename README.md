@@ -12,13 +12,16 @@ There is an iOS version on the way, scheduled for release in late 2019. It won't
 
 I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.0.7e
+## Latest release: Beat 1.0.8
 
-* Outline card view (implemented in a separate WebView)
-* Autocomplete characters and scene headings
+**Features**
 * Automatic scene numbering in edit view. Recognizes Fountain forced scene numbers.
-* Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now, and has some unfortunate bugs with undoing.
-* Small visual bug fixes
+* Outline card view, with sections & synopses
+* Autocomplete characters and scene headings
+* Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now, and has some unfortunate bugs with undoing. **USE AT YOUR OWN RISK**
+
+**Fixes in 1.0.8**
+* New PDF export turned out to be buggy and messy. It is now fixed.
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 

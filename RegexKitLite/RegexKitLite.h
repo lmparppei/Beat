@@ -7,6 +7,9 @@
 /*
  Copyright (c) 2008-2010, John Engelhart
  
+ Parts Copyright (c) 2019, Lauri-Matti Parppei
+ Modified to use os_unfair_lock instead of OSSpinLock
+ 
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without

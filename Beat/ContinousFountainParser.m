@@ -2,7 +2,6 @@
 //  ContinousFountainParser.m
 //  Writer / Beat
 //
-//  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 
@@ -749,7 +748,6 @@
 	NSUInteger sceneNumber = 1;
 	
 	for (Line* line in self.lines) {
-		
 		if (line.type == section || line.type == synopse || line.type == heading) {
 			OutlineScene *item;
 			item = [[OutlineScene alloc] init];
@@ -785,10 +783,22 @@
 			}];
 			
 			if (line.type == heading) {
+				// Check if the scene is omited
+				__block bool omited = false;
+				[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+					//NSString * omitedLine = [line.string substringWithRange:range];
+					if (range.location == 0) omited = true;
+				}];
+			
 				if (line.sceneNumber) { item.sceneNumber = line.sceneNumber; }
 				else {
-					item.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-					sceneNumber++;
+					// If the scene is omited, let's not increment scene number for it.
+					if (!omited) {
+						item.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+						sceneNumber++;
+					} else {
+						item.sceneNumber = @"";
+					}
 				}
 			}
 			
