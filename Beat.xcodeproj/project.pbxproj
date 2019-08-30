@@ -38,6 +38,7 @@
 		B6976E0422821DA0006E08C2 /* ScalingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976E0322821DA0006E08C2 /* ScalingScrollView.m */; };
 		B69A928C231915E900FE6A3E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B69A928B231915E900FE6A3E /* README.md */; };
 		B69A928F2319254200FE6A3E /* About.xib in Resources */ = {isa = PBXBuildFile; fileRef = B69A928D2319254200FE6A3E /* About.xib */; };
+		B69A92962319387B00FE6A3E /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = B69A92952319387B00FE6A3E /* CHANGELOG */; };
 		B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* ApplicationDelegate.m */; };
 		B6D2B7092218B320005B8447 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
 		B6D2B70B2218B342005B8447 /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70A2218B342005B8447 /* Line.m */; };
@@ -155,6 +156,7 @@
 		B6976E0322821DA0006E08C2 /* ScalingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScalingScrollView.m; sourceTree = "<group>"; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B69A928E2319254200FE6A3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/About.xib; sourceTree = SOURCE_ROOT; };
+		B69A92952319387B00FE6A3E /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecentFiles.h; path = Beat/RecentFiles.h; sourceTree = "<group>"; };
 		B6D2B7062218B308005B8447 /* ApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationDelegate.m; path = Beat/ApplicationDelegate.m; sourceTree = SOURCE_ROOT; };
 		B6D2B7082218B320005B8447 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = Beat/Theme.m; sourceTree = SOURCE_ROOT; };
@@ -241,6 +243,7 @@
 			isa = PBXGroup;
 			children = (
 				B69A928B231915E900FE6A3E /* README.md */,
+				B69A92952319387B00FE6A3E /* CHANGELOG */,
 				B138B57519E1C973000489C4 /* Beat */,
 				B138B58C19E1C974000489C4 /* WriterTests */,
 				B138B64E19E1E8CA000489C4 /* Fountain */,
@@ -556,6 +559,7 @@
 				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
 				B6D2B72C2218B51D005B8447 /* Credits.rtf in Resources */,
 				B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */,
+				B69A92962319387B00FE6A3E /* CHANGELOG in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */,
 				B138B66E19E1E8CA000489C4 /* License.rtf in Resources */,
 				B6D2B7282218B4DC005B8447 /* DocumentIcon.icns in Resources */,
