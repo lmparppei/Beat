@@ -47,6 +47,7 @@ Check out the print preview, File -> Toggle preview.
 
 
 # This is a new section
+
 = This is a synopse. Let's get technical.
 
 /* Sections and synopses won't be printed, but they help you structure your script. Take a look at the outline view (cmd-D) how the structure is laid out! */

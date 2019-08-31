@@ -66,9 +66,12 @@ body > p:first-child {
 	text-align: center;
 }
 
-.character {
+.character, .more {
 	margin: 1.3em auto 0;
 	width: 180px;
+}
+.more, p.more {
+	margin: 0 auto 0;
 }
 
 .dialogue {

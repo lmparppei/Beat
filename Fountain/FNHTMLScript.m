@@ -86,6 +86,7 @@
 
 @property (readonly, copy, nonatomic) NSString *cssText;
 @property (copy, nonatomic) NSString *bodyText;
+@property (nonatomic) NSInteger numberOfPages;
 
 @end
 
@@ -134,6 +135,9 @@
 	return self;
 }
 
+- (NSInteger)pages {
+	return _numberOfPages + 1;
+}
 
 - (NSString *)html
 {
@@ -282,6 +286,7 @@
     
     FNPaginator *paginator = [[FNPaginator alloc] initWithScript:self.script document:self.document];
     NSUInteger maxPages = [paginator numberOfPages];
+	_numberOfPages = maxPages;
 	
 	bool pageBreak = false;
 	

@@ -747,22 +747,28 @@
 	NSUInteger result = 0;
 	NSUInteger sceneNumber = 1;
 	
+	OutlineScene *previousScene;
+	OutlineScene *currentScene;
+	
 	for (Line* line in self.lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
+			
 			OutlineScene *item;
 			item = [[OutlineScene alloc] init];
+
+			currentScene = item;
 			
 			item.string = line.string;
 			item.type = line.type;
 			item.line = line;
 			
-			if ([item.string characterAtIndex:0] == '#') {
+			// Remove formatting characters from the outline item string if needed
+			if ([item.string characterAtIndex:0] == '#' && [item.string length] > 1) {
 				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
 			}
-			if ([item.string characterAtIndex:0] == '=') {
+			if ([item.string characterAtIndex:0] == '=' && [item.string length] > 1) {
 				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
 			}
-			
 			// Check if this heading contains a note. We can use notes to have colors etc. in the headings.
 			[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 								NSString * note = [line.string substringWithRange:range];
@@ -802,8 +808,18 @@
 				}
 			}
 			
+			// Get in / out points
+			item.sceneStart = line.position;
+			
+			if (previousScene) {
+				previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
+			}
+			
+			// Set previous scene to point to the current one
+			previousScene = item;
+			
 			// If there are no sections, add the item as high-level object
-			if (line.type == heading && sections == 0) {
+			if ((line.type == heading || line.type == synopse) && sections == 0) {
 				result ++;
 				[_outline addObject: item];
 			} else if (line.type == section) {
@@ -811,11 +827,18 @@
 				sections++;
 				
 				[_outline addObject: item];
-			} else {
+			} else {				
 				// Let's add this as a child to the section
 				NSUInteger index = result - 1;
 				[[[_outline objectAtIndex:index] scenes] addObject: item];
 			}
+		}
+		
+		// As the loop has completed, let's set the length for last outline item.
+		// This is pretty sketchy I guess.
+		if (line == [self.lines lastObject]) {
+			//previousScene.sceneLength = line.position - previousScene.sceneStart + [line.string length];
+			currentScene.sceneLength = line.position + [line.string length] - currentScene.sceneStart;
 		}
 	}
 }

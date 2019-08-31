@@ -1,10 +1,19 @@
 
+var dragDrop = false;
+
 var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
 
 var scenes,
 	container,
 	closeButton,
 	contextMenu;
+
+var drake;
+var debugElement;
+
+Array.prototype.move = function (from, to) {
+  this.splice(to, 0, this.splice(from, 1)[0]);
+};
 
 function init () {
 	scenes = [];
@@ -17,9 +26,57 @@ function init () {
 	
 	document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
 	
+	// Init context menut
 	contextMenu.init();
-	
 	document.body.onclick = function (e) { contextMenu.close(); }
+
+	debugElement = document.getElementById('debug');
+	
+	if (dragDrop) initDragDrop();
+}
+
+function log(message) {
+	debugElement.innerHTML = message;
+}
+
+function initDragDrop () {
+	// Init dragula
+	drake = dragula({ 
+		direction: 'horizontal' ,
+		
+		invalid: function (el, handle) {
+			return el.tagName === "H2";
+		}
+	});
+
+	drake.on('drop', function (el, target, source, sibling) {
+
+		var sceneIndex = el.getAttribute('sceneIndex');
+		
+		if (sibling) {
+			log('fuck yeah');
+			var nextIndex = sibling.getAttribute('sceneIndex');
+		} else {
+			log('no');
+			var nextIndex = scenes.length;
+		}
+
+		//log("dropped " + sceneIndex + " before " + nextIndex);
+
+		if (!nextIndex) {
+			scenes[sceneIndex].sceneIndex;
+		} else {
+			scenes[sceneIndex].sceneIndex = nextIndex;
+			for (var i = nextIndex; i < scenes.count; i++) {
+				scenes[i].sceneIndex += 1;
+			}
+		}
+
+		scenes.sort((a, b) => (a.sceneIndex > b.sceneIndex) ? 1 : -1)
+		window.webkit.messageHandlers.move.postMessage(sceneIndex + "," + nextIndex);
+		//createCards(scenes);
+	});
+
 }
 
 function setupCards () {
@@ -28,7 +85,9 @@ function setupCards () {
 		card.onclick = function () { contextMenu.close(); }
 		card.ondblclick = function () {
 			var position = this.getAttribute('pos');
-			window.webkit.messageHandlers.cardClick.postMessage(position);
+			var index = this.getAttribute('sceneIndex');
+			//window.webkit.messageHandlers.cardClick.postMessage(position);
+			window.webkit.messageHandlers.cardClick.postMessage(index);
 		}
 				  
 		card.oncontextmenu = function (e) {
@@ -37,6 +96,8 @@ function setupCards () {
 			contextMenu.toggle(e);
 		}
 	});	
+	
+	//debugElement.innerHTML = drake;
 }
 
 function nightModeOn () {
@@ -52,7 +113,7 @@ contextMenu.init = function () {
 	contextMenu.menu.id = 'contextMenu';
 	
 	var content = '';
-	
+
 	for (var i in colors) {
 		var color = colors[i];
 		content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + color + "</div>";
@@ -115,13 +176,28 @@ function getPosition(e) {
 }
 
 function createCards (cards) {
-	var html = '<section>';
+	//drake = dragula({ direction: 'horizontal' });
+	//if (drake.containers.count) drake.containers.splice(0, drake.containers.count);
+
+	var html = "<section id='cardContainer'>";
+	var index = -1;
+
+	scenes = [];
+	debugElement.innerHTML = '';
+
 	for (let data in cards) {
 		let card = cards[data];
+		if (!card.name) { continue; }
+		
+		index++;
+		card.sceneIndex = index;
+
+		// Let's save the data to scenes array for later use
 		scenes.push(card);
 
 		var status = '';
 		var color = '';
+
 		if (card.selected == "yes") {
 			status = ' selected';
 		}
@@ -130,19 +206,28 @@ function createCards (cards) {
 		}
 
 		if (card.type == 'section') {
-			html += "</section><h2>" + card.name + "</h2><section>";
+			html += "<h2 sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
 		} else if (card.type == 'synopse') {
-			html += "<div pos='"+card.position+"' class='synopse'><h3>" + card.name + "</h3></div>"
+			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div sceneIndex='" + card.sceneIndex + "' pos='"+card.position+"' class='synopse'><h3>" + card.name + "</h3></div></div>"
 		} else {
-			html += "<div lineIndex='"+ card.lineIndex +"' pos='"+card.position+"' class='card" + color + status + "'>"+
+			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div lineIndex='" + 
+					card.lineIndex + "' pos='" + card.position + "' " +
+					"sceneIndex='" + card.sceneIndex + "' " +
+					"class='card" + color + status + 
+					"'>"+
 				"<div class='header'><div class='sceneNumber'>" + card.sceneNumber	+ "</div>" +
 				"<h3>" + card.name + "</h3></div>" +
-				"<p>" + card.snippet + "</p></div>";
+				"<p>" + card.snippet + "</p></div></div>";
 		}
+		//debugElement.innerHTML += "i " + card.sceneIndex + " - " + card.name;
 	}
 	html += "</section>";
-	
+
 	container.innerHTML = html;
+	if (dragDrop) drake.containers = [document.getElementById("cardContainer")];
+
+	//log (JSON.stringify(cards));
+
 	setupCards();
 }
 

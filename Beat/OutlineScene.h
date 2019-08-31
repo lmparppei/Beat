@@ -18,7 +18,7 @@
 @property LineType type;
 @property NSString * sceneNumber;
 @property NSString * color;
-@property NSUInteger start;
-@property NSUInteger length;
+@property NSUInteger sceneStart;
+@property NSUInteger sceneLength;
 @property (strong) Line * line; // Is this overkill regarding memory? Isn't this just a pointer?
 @end

@@ -1,3 +1,20 @@
+/* Dragula */
+.gu-mirror{position:fixed!important;margin:0!important;z-index:9999!important;opacity:.8;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";filter:alpha(opacity=80)}.gu-hide{display:none!important}.gu-unselectable{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important}.gu-transit{opacity:.2;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";filter:alpha(opacity=20)}
+
+/* 
+
+Beat Card View
+© 2019 Lauri-Matti Parppei / KAPITAN
+
+Released under GPL license.
+
+*/
+
+#debug {
+	display: none;
+	color: white;
+}
+
 * {
 	box-sizing: border-box;
 	cursor: default;
@@ -15,7 +32,15 @@ body {
 	flex-direction: column;
 }
 
-h2 { font-family: Helvetica, sans-serif; font-size: 2.2em; margin: 2rem 0 1rem .7rem; color: #eee; font-weight: 300; }
+h2 { 
+	width: 100%;	
+	font-family: Helvetica, sans-serif; 
+	font-size: 2.2em; 
+	padding: 2rem 0 1rem .7rem;
+	margin: 0; 
+	color: #eee; 
+	font-weight: 300; 
+}
 h3, p { font-size: 1em;  margin: 0;}
 h3 { margin-bottom: .5rem; line-height: 1em; }
 
@@ -74,7 +99,7 @@ section {
 	flex-grow: 0;
 	flex-shrink: 0;
 
-	font-size: .6em;
+	font-size: .65em;
 
 	font-family: Helvetica, sans-serif;
 	
@@ -106,14 +131,19 @@ section {
 	align-items: center;
 }
 
+.cardContainer {
+	width: 25%;
+	padding: .7rem;
+}
+
 .card, .synopse {
 	position: relative;
 
-	width: calc(100% / 4 - 1.4rem);
+	/* width: calc(100% / 4 - 1.4rem); */
 	height: 13rem;
 	padding: .7rem;
 	background-color: #d0d0d0;
-	margin: .7em;
+	/* margin: .7em; */
 	box-shadow: 0 .2rem .7rem rgba(0,0,0,.3);
 	color: #222;
 
@@ -130,16 +160,20 @@ section {
 	border: solid 1px #333;
 }
 @media screen and (max-width: 900px) {
-	.card, .synopse { width: calc(100% / 3 - 1.4rem); }
+	/* .card, .synopse { width: calc(100% / 3 - 1.4rem); } */
+	.cardContainer { width: calc(100% / 3);	}
 }
 @media screen and (max-width: 700px) {
-	.card, .synopse { width: calc(100% / 2 - 1.4rem); }
+	/* .card, .synopse { width: calc(100% / 2 - 1.4rem); } */
+	.cardContainer { width: calc(100% / 2);	}
 }
 @media screen and (min-width: 1350px) {
-	.card, .synopse { width: calc(100% / 5 - 1.4rem); }
+	/* .card, .synopse { width: calc(100% / 5 - 1.4rem); } */
+	.cardContainer { width: calc(100% / 5);	}
 }
 @media screen and (min-width: 1800px) {
-	.card, .synopse { width: calc(100% / 6 - 1.4rem); }
+	/* .card, .synopse { width: calc(100% / 6 - 1.4rem); } */
+	.cardContainer { width: calc(100% / 6);	}
 }
 
 .color.none { background-color: transparent; }

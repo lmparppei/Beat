@@ -336,6 +336,7 @@
 	// CardView webkit
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
+	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
 	[self setupCards];
 	
 	
@@ -756,8 +757,8 @@
 - (void)updateWebView
 {
     FNScript *script = [[FNScript alloc] initWithString:[self preprocessSceneNumbers]];
-    FNHTMLScript *htmpScript = [[FNHTMLScript alloc] initWithScript:script document:self];
-    [[self.webView mainFrame] loadHTMLString:[htmpScript html] baseURL:nil];
+    FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self];
+    [[self.webView mainFrame] loadHTMLString:[htmlScript html] baseURL:nil];
 }
 
 
@@ -2405,10 +2406,8 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 }
 
-// We should do most of the work listed here in the JavaScript, tbh.
-// Just load the view contents at the beginning and just inject new JSON data, and let's let the JS function build up the view.
-// That way we can also reuse the cards and avoid repositioning the view for no real reason.
-// Let's also move all this shit to another file some day.
+// Some day, we'll move all this stuff to another file. It won't be soon.
+
 - (void) setupCards {
 	NSError *error = nil;
 	
@@ -2418,7 +2417,12 @@ static NSString *forceLyricsSymbol = @"~";
 	NSString *jsPath = [[NSBundle mainBundle] pathForResource:@"CardView.js" ofType:@""];
 	NSString *javaScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:&error];
 	
-	NSString* content = [NSString stringWithFormat:@"<html><style>%@</style><body><div id='close'>✕</div><div id='container'>", css];
+	NSString *dragulaPath = [[NSBundle mainBundle] pathForResource:@"dragula.js" ofType:@""];
+	NSString *dragula = [NSString stringWithContentsOfFile:dragulaPath encoding:NSUTF8StringEncoding error:&error];
+
+	NSString* content = [NSString stringWithFormat:@"<html><head><style>%@</style>", css];
+	content = [content stringByAppendingFormat:@"<script>%@</script>", dragula];
+	content = [content stringByAppendingFormat:@"</head><body><div id='close'>✕</div><div id='debug'></div><div id='container'>"];
 	content = [content stringByAppendingFormat:@"</div><script>%@</script></body></html>", javaScript];
 	[_cardView loadHTMLString:content baseURL:nil];
 }
@@ -2485,6 +2489,8 @@ static NSString *forceLyricsSymbol = @"~";
 - (NSString *) getJSONCard:(OutlineScene *) scene selected:(bool)selected {
 	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
 	
+	NSUInteger sceneIndex = [[self getOutlineItems] indexOfObject:scene];
+	
 	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
 	NSUInteger lineIndex = index + 2;
 	NSString * snippet = @"";
@@ -2502,13 +2508,14 @@ static NSString *forceLyricsSymbol = @"~";
 	} else if (scene.type == synopse) {
 		return [NSString stringWithFormat:@"'type': 'synopse', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
 	} else {
-		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', 'color': '%@', 'lineIndex': %lu, %@",
+		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', 'color': '%@', 'lineIndex': %lu, 'sceneIndex': %lu, %@",
 				[self JSONString:scene.sceneNumber],
 				[self JSONString:scene.string],
 				[self JSONString:snippet],
 				scene.line.position,
 				[scene.color lowercaseString],
 				index,
+				sceneIndex,
 				status];
 	}
 }
@@ -2527,6 +2534,7 @@ static NSString *forceLyricsSymbol = @"~";
 	return [NSString stringWithString:s];
 }
 
+/* JavaScript call listener */
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
 	if ([message.body  isEqual: @"exit"]) {
 		[self toggleCards:nil];
@@ -2534,12 +2542,63 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 	
 	if ([message.name isEqualToString:@"cardClick"]) {
-		NSRange lineRange = NSMakeRange([message.body intValue], 0);
+		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
+		NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
 		[self.textView setSelectedRange:lineRange];
 		[self.textView scrollRangeToVisible:lineRange];
+		
 		[self toggleCards:nil];
 		
 		return;
+	}
+	
+	// Work in progress. Can be enabled by editing CardView.js and setting dragDrop = true;
+	if ([message.name isEqualToString:@"move"]) {
+		if ([message.body rangeOfString:@","].location != NSNotFound) {
+			NSArray *fromTo = [message.body componentsSeparatedByString:@","];
+			if ([fromTo count] < 2) return;
+			
+			NSInteger from = [[fromTo objectAtIndex:0] integerValue];
+			NSInteger to = [[fromTo objectAtIndex:1] integerValue];
+			
+			NSMutableArray *outline = [self getOutlineItems];
+			if ([outline count] < 1) return;
+			
+			// An item was moved as the last one, so it might get a wrong index
+			bool moveToEnd = false;
+			if (to >= [outline count]) {
+				to = [outline count] - 1;
+				moveToEnd = true;
+			}
+
+			OutlineScene *sceneToMove = [outline objectAtIndex:from];
+			
+			OutlineScene *beforeScene;
+			if (!moveToEnd) beforeScene = [outline objectAtIndex:to];
+			
+			// On to the very dangerous stuff :-) fuck me :----)
+			NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
+			NSString *textToMove = [[self getText] substringWithRange:range];
+			
+			// Delete the string... omg, I can't believe I'm actually doing this.
+			[self replaceCharactersInRange:range withString:@""];
+			
+			NSRange newRange;
+			
+			// God[any], help me
+			if (from < to) {
+				if (!moveToEnd) newRange = NSMakeRange(beforeScene.sceneStart - sceneToMove.sceneLength, 0);
+				else newRange = NSMakeRange([[self getText] length], 0);
+			} else {
+				newRange = NSMakeRange(beforeScene.sceneStart, 0);
+				//[self addString:textToMove atIndex:beforeScene.sceneStart + sceneToMove.sceneLength];
+			}
+			
+			[self replaceCharactersInRange:newRange withString:textToMove];
+			[self refreshCards];
+			
+			return;
+		}
 	}
 	
 	if ([message.name isEqualToString:@"setColor"]) {
@@ -2565,12 +2624,7 @@ static NSString *forceLyricsSymbol = @"~";
 
 #pragma mark - Scene numbering for NSTextView
 
-/*
- 
- WORK IN PROGRESS
- This following section might have problems with memory leaks.
- 
- */
+/* The following section COULD have problems with memory leaks. */
 
 - (NSTextField *) createLabel: (OutlineScene *) scene {
 	NSTextField * label;

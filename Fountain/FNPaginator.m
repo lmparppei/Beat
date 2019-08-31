@@ -134,7 +134,9 @@
         NSInteger maxElements = [self.script.elements count];
 
         NSInteger previousDualDialogueBlockHeight = -1;
-        
+		
+		NSLog(@"Max elements : %lu", maxElements);
+		
         // walk through the elements array
         for (NSInteger i = 0; i < maxElements; i++) {
             FNElement *element  = (self.script.elements)[i];
@@ -181,7 +183,6 @@
             if ([currentPage count] > 0) {
                 blockHeight += spaceBefore;
             }
-		
 			
             // Fix to get styling to show up in PDFs. I have no idea.
             if (![element.elementText isMatchedByRegex:@" $"]) {
@@ -296,18 +297,18 @@
                 //if ([tmpElements count] > 0 && [[tmpElements[0] elementType] isEqualToString:@"Character"] && ((totalHeightUsed - maxPageHeight) >= (lineHeight * 2))) {
 				if ([tmpElements count] > 0 && [[tmpElements[0] elementType] isEqualToString:@"Character"]) {
 					//FNElement * element = tmpElements[0];
-					
                     NSInteger blockIndex        = -1;   // initial to -1 because we interate immediately
                     NSInteger maxTmpElements    = [tmpElements count];
                     
                     // if there are two lines free below the character cue, we can try to squeeze this block in.
                     NSInteger partialHeight = 0;
-                    //NSInteger pageOverflow  = totalHeightUsed - maxPageHeight;
 					
                     // figure out what index spills over the page
 					
 					// THIS MATH IS WRONG. New approach below.
+					// NSInteger pageOverflow  = totalHeightUsed - maxPageHeight;
                     // while ((partialHeight < pageOverflow) && (blockIndex < maxTmpElements - 1)) {
+					
 					while ((currentY + partialHeight < maxPageHeight) && (blockIndex < maxTmpElements - 1)) {
                         blockIndex++;
 
@@ -338,7 +339,7 @@
                                 FNElement *more = [[FNElement alloc] init];
                                 more.elementType = @"More";
                                 more.elementText = @"(MORE)";
-                                
+								
                                 [currentPage addObject:more];
                                 
                                 // close the page
@@ -351,7 +352,7 @@
                                 // add the remaining elements, plus the character cue, to the previous page
                                 FNElement *characterCue = tmpElements[0];
                                 characterCue.elementText = [NSString stringWithFormat:@"%@ (CONT'D)", characterCue.elementText];
-                                
+								
                                 blockHeight += [FNPaginator heightForString:characterCue.elementText font:font maxWidth:[FNPaginator widthForElement:characterCue] lineHeight:lineHeight];
                                 
                                 [currentPage addObject:characterCue];
@@ -410,8 +411,7 @@
                             FNElement *preBreakDialogue = [[FNElement alloc] init];
                             preBreakDialogue.elementType = @"Dialogue";
                             preBreakDialogue.elementText = dialogueBeforeBreak;
-                            
-                            
+							
                             if (![preBreakDialogue.elementText isEqualToString:@""]) {
                                 // we need to split this element's text so that it fits on both pages
                                 for (NSInteger z = 0; z < blockIndex; z++) {
@@ -424,7 +424,7 @@
                                 FNElement *more = [[FNElement alloc] init];
                                 more.elementType = @"More";
                                 more.elementText = @"(MORE)";
-                                
+								
                                 [currentPage addObject:more];
                                 
                                 // close the page
@@ -439,21 +439,26 @@
                                     [currentPage addObject:tmpElements[z]];
                                 }
                             }
-                            
-                            
-
-                            // reset the block height
-                            blockHeight = 0;
-
+							
                             // add the remaining elements, plus the character cue, to the previous page
+							// (Beat: uh... what are you talking about. We need to push these on the NEXT page, don't we? Let's try it out.)
+							
+							NSLog(@"NEW PAGE");
+							
+							// reset the block height
+							blockHeight = 0;
+							
+							// Switcharoo - put ou new character cue to the tmpElements array
                             FNElement *characterCue = [[FNElement alloc] init];
                             characterCue.elementType = @"Character";
-                            characterCue.elementText = [NSString stringWithFormat:@"%@", [tmpElements[0] elementText]];
-                            
+                            characterCue.elementText = [NSString stringWithFormat:@"%@%@", [tmpElements[0] elementText],@" (CONT'D)"];
                             blockHeight += [FNPaginator heightForString:characterCue.elementText font:font maxWidth:[FNPaginator widthForElement:characterCue] lineHeight:lineHeight];
                             
-                            [currentPage addObject:characterCue];
-                            
+							// [currentPage addObject:characterCue];
+							// NEW PAGINATION
+							[tmpElements removeObjectAtIndex:0];
+							[tmpElements insertObject:characterCue atIndex:0];
+							
                             // create the postBreakDialogue
                             if (sentenceIndex < 0) {
                                 sentenceIndex = 0;
@@ -468,10 +473,12 @@
                             postBreakDialogue.elementType = @"Dialogue";
                             postBreakDialogue.elementText = dialogueAfterBreak;
                             
-                            blockHeight += [FNPaginator heightForString:postBreakDialogue.elementText font:font maxWidth:[FNPaginator widthForElement:postBreakDialogue] lineHeight:lineHeight];                        
+                            blockHeight += [FNPaginator heightForString:postBreakDialogue.elementText font:font maxWidth:[FNPaginator widthForElement:postBreakDialogue] lineHeight:lineHeight];
                             
-                            [currentPage addObject:postBreakDialogue];
-                            
+                            //[currentPage addObject:postBreakDialogue];
+							[tmpElements removeObjectAtIndex:1];
+							[tmpElements insertObject:postBreakDialogue atIndex:1];
+							
                             // add remaining elements
                             if (blockIndex + 1 < maxTmpElements) {
                                 for (NSInteger z = blockIndex + 1; z < maxTmpElements; z++) {
@@ -485,7 +492,8 @@
                             currentY    = blockHeight;
 
                             // reset the tmpElements
-                            tmpElements = [NSMutableArray array];
+                            //tmpElements = [NSMutableArray array];
+
                         }
                     }
                     else {

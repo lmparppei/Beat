@@ -51,6 +51,7 @@
 - (id)initWithScript:(FNScript *)aScript print:(bool)print;
 - (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument print:(bool)print;
 
+- (NSInteger)pages;
 - (NSString *)html;
 - (NSString *)htmlClassForType:(NSString *)elementType;
 
