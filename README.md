@@ -20,8 +20,9 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 * Autocomplete characters and scene headings
 * Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now, and has some unfortunate bugs with undoing. **USE AT YOUR OWN RISK**
 
-**Fixes in 1.0.8**
+**Fixes in 1.0.8b**
 * New PDF export turned out to be buggy and messy. It is now fixed.
+* Memory management issues fixed
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 
