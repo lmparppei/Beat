@@ -1,8 +1,11 @@
 Title: Beat Tutorial
 Credit: Written by
 Author: KAPITAN!
-Draft date: 16.02.2019
-Contact: beat@kapitan.fi
+Draft date: Version 2, 01.09.2019
+Contact:
+beat@kapitan.fi
+www.kapitan.fi/beat
+
 
 INT. SCHOOL ROOM - DAY
 
@@ -41,14 +44,14 @@ This is a note. It won't be printed or exported, don't worry. This way, you can 
 
 Oh by the way - title page info you see at the beginning of this file will be printed out as a very nice title page. You can add the title page stuff from Format -> Add title page
 
-Check out the print preview, File -> Toggle preview.
+Check out the print preview, File -> Toggle preview. (or alt-cmd-P)
 
 */
 
 
 # This is a new section
 
-= This is a synopse. Let's get technical.
+= This is a synopse. Let's get a bit more technical.
 
 /* Sections and synopses won't be printed, but they help you structure your script. Take a look at the outline view (cmd-D) how the structure is laid out! */
 
@@ -79,10 +82,13 @@ That's about it. Edit this file and try out stuff.
 
 There are certain power user features. You can set the color for your scene just by typing it out (this scene has a blue dot next to it in outline), which won't print out. This feature is still in development, so it might work so-and-so at times.
 
+Here's some lyrics:
+
+~if you come to my house, friend
+~bring me a lamp and a window I can look through
+~at the crowd in the happy alley.” 
+
 You can find more information about the Fountain language at http://www.fountain.io/
 
 > FADE OUT
-
-
-
 

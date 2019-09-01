@@ -32,14 +32,26 @@
  Beat has been cooked up by using lots of trial and error, and this file has become a
  2700-line monster.
  
- But - keep the flight in mind, the bird is mortal.
-
+ Anyway, may this be of some use to you, dear friend.
+ 
+ Lauri-Matti Parppei
+ 
+ = = = = = = = = = = = = = = = = = = = = = = = =
+ 
  Page sizing info:
  
  Character - 32%
  Parenthetical - 30%
  Dialogue - 16%
  Dialogue width - 74%
+ 
+ = = = = = = = = = = = = = = = = = = = = = = = =
+ 
+ I plant my hands in the garden soil—
+ I will sprout,
+              I know, I know, I know.
+ And in the hollow of my ink-stained palms
+ swallows will make their nest.
   
 */
 
@@ -71,7 +83,7 @@
 
 @property (weak) IBOutlet NSOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
-@property (nonatomic) NSWindow *thisWindow;
+@property (weak) NSWindow *thisWindow;
 
 @property (nonatomic) NSLayoutManager *layoutManager;
 
@@ -176,6 +188,14 @@
 		self.printInfo.paperSize = NSMakeSize(595, 842);
     }
     return self;
+}
+- (void) close {
+	self.textView = nil;
+	self.parser = nil;
+	self.outlineView = nil;
+	self.sceneNumberLabels = nil;
+	
+	[super close];
 }
 
 #define TEXT_INSET_SIDE 80
@@ -441,6 +461,8 @@
  The problem here is that we have multiple keys that set font size, document width, etc.
  and out of legacy reasons, they are scattered around the code. Maybe some day I have the
  time to fix everything, but for now, we're using duct-tape approach.
+ 
+ What matters most is how well you walk through the fire.
  
  */
 - (void) zoom: (bool) zoomIn {
@@ -756,11 +778,29 @@
 
 - (void)updateWebView
 {
-    FNScript *script = [[FNScript alloc] initWithString:[self preprocessSceneNumbers]];
-    FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self];
+	FNScript *script = [[FNScript alloc] initWithString:[self preprocessSceneNumbers]];
+	FNHTMLScript *htmlScript;
+	OutlineScene *currentScene = [self currentScene];
+	
+	// Let's see if we have a scene selected
+	if (currentScene) {
+		htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self scene:currentScene.sceneNumber];
+	} else {
+		htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self];
+	}
+	
     [[self.webView mainFrame] loadHTMLString:[htmlScript html] baseURL:nil];
 }
-
+- (OutlineScene*)currentScene {
+	NSInteger position = [self.textView selectedRange].location;
+	
+	for (OutlineScene *scene in [self getOutlineItems]) {
+		NSRange range = NSMakeRange(scene.sceneStart, scene.sceneLength);
+		if (NSLocationInRange(position, range)) return scene;
+	}
+	
+	return nil;
+}
 
 # pragma mark Should change text + autocomplete
 
@@ -2006,7 +2046,7 @@ static NSString *forceLyricsSymbol = @"~";
 
 // NOTE: This returns a FLAT outline.
 - (NSMutableArray *) getOutlineItems {
-	NSMutableArray * outlineItems = [[NSMutableArray alloc] init];
+	NSMutableArray * outlineItems = [NSMutableArray array];
 	
 	// WIP
 	for (OutlineScene * scene in [self.parser outline]) {
@@ -2022,46 +2062,11 @@ static NSString *forceLyricsSymbol = @"~";
 	return outlineItems;
 }
 
-- (NSRange) getRangeForScene:(OutlineScene *) scene {
-	NSUInteger start = scene.line.position;
-	NSUInteger length = 0;
-	
-	OutlineScene * nextScene = [self getNextScene:scene];
-	
-	if (nextScene != nil) {
-		length = nextScene.line.position - start;
-	} else {
-		// There is no next scene, so just grab the last line
-		Line * lastLine = [[self.parser lines] objectAtIndex: [[self.parser lines] count] + 1];
-		length = lastLine.position + lastLine.string.length - start;
-	}
-
-	return NSMakeRange(start, length);
-	
-}
-- (OutlineScene *) getNextScene:(OutlineScene *) currentScene {
-	// Returns the NEXT heading of any type to this scene .....
-	NSInteger index = 0;
-	bool found = false;
-	OutlineScene * nextScene = nil;
-	
-	for (OutlineScene * scene in [self.parser outline]) {
-		if (found) {
-			nextScene = scene;
-		}
-		
-		if (scene == currentScene) {
-			found = true;
-		}
-		
-		index++;
-	}
-	
-	return nextScene;
-}
-
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
+	if (![self.parser outline]) return 0;
+	if ([[self.parser outline] count] < 1) return 0;
+	
     if (!item) {
         //Children of root
         return [self.parser numberOfOutlineItems];
@@ -2662,6 +2667,7 @@ static NSString *forceLyricsSymbol = @"~";
 		[self.parser numberOfOutlineItems];
 	}
 	
+	
 	NSInteger numberOfScenes = [self getNumberOfScenes];
 	NSInteger numberOfLabels = [self.sceneNumberLabels count];
 	NSInteger difference = numberOfScenes - numberOfLabels;
@@ -2679,32 +2685,34 @@ static NSString *forceLyricsSymbol = @"~";
 		NSUInteger index = 0;
 		
 		for (OutlineScene * scene in [self getScenes]) {
-			if (index >= [self.sceneNumberLabels count]) break;
-			
-			NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
-			
-			label = [self.sceneNumberLabels objectAtIndex:index];
-			if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
-			
-			NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
-			NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-			NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-			
-			rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
-			rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width;
-			
-			rect.origin.y += TEXT_INSET_TOP;
+			@autoreleasepool {
+				if (index >= [self.sceneNumberLabels count]) break;
+				
+				NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
+				
+				label = [self.sceneNumberLabels objectAtIndex:index];
+				if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
+				
+				NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
+				NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+				NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
+				
+				rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
+				rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width;
+				
+				rect.origin.y += TEXT_INSET_TOP;
 
-			label.frame = rect;
-			[label setFont:self.courier];
-			if (![scene.color isEqualToString:@""] && scene.color != nil) {
-				NSString *color = [scene.color lowercaseString];
-				[label setTextColor:[self colors][color]];
-			} else {
-				[label setTextColor:self.themeManager.currentTextColor];
+				label.frame = rect;
+				[label setFont:self.courier];
+				if (![scene.color isEqualToString:@""] && scene.color != nil) {
+					NSString *color = [scene.color lowercaseString];
+					[label setTextColor:[self colors][color]];
+				} else {
+					[label setTextColor:self.themeManager.currentTextColor];
+				}
+			
+				index++;
 			}
-		
-			index++;
 		}
 
 		// Remove unused labels from the end of the array.

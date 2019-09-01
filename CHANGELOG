@@ -1,3 +1,10 @@
+# 1.0.8b
+
+* Oh well. Print layout was not really properly fixed, so it was kind of built from the ground up again. There MIGHT be some quirks left, but after testing it with 3 different feature-length scripts, it seems to work fine and return about the same page length as other screenwriting apps (within +-1-2 page range). I'm very sorry for any inconvenience. Mostly for myself.
+* Print preview now jumps to the selected scene
+* Scenes can be reordered by dragging & dropping in card view. This is an experimental feature for now and not enabled in released version.
+* Memory management issues with windows have been fixed
+
 # 1.0.8
 
 * Major change: I'll start updating this changelog

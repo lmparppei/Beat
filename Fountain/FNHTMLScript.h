@@ -48,6 +48,7 @@
 
 - (id)initWithScript:(FNScript *)aScript;
 - (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument;
+- (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument scene:(NSString*)aScene;
 - (id)initWithScript:(FNScript *)aScript print:(bool)print;
 - (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument print:(bool)print;
 

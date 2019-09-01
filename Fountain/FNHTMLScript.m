@@ -87,6 +87,7 @@
 @property (readonly, copy, nonatomic) NSString *cssText;
 @property (copy, nonatomic) NSString *bodyText;
 @property (nonatomic) NSInteger numberOfPages;
+@property (nonatomic) NSString *currentScene;
 
 @end
 
@@ -123,6 +124,18 @@
     return self;
 }
 
+- (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument scene:(NSString*)aScene
+{
+	self = [super init];
+	if (self) {
+		_script = aScript;
+		_font = [QUQFont fontWithName:@"Courier" size:12];
+		_document = aDocument;
+		_currentScene = aScene;
+	}
+	return self;
+}
+
 - (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument print:(bool)print
 {
 	self = [super init];
@@ -149,7 +162,7 @@
     [html appendString:@"<!DOCTYPE html>\n"];
     [html appendString:@"<html>\n"];
     [html appendString:@"<head>\n"];
-	//[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.1'/>\n"];
+	[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.2'/>\n"];
 	
     [html appendString:@"<style type='text/css'>\n"];
     [html appendString:self.cssText];
@@ -157,7 +170,14 @@
     [html appendString:@"</head>\n"];
     [html appendString:@"<body>\n<article>\n"];
     [html appendString:self.bodyText];
-    [html appendString:@"</section>\n</article>\n</body>\n"];
+	[html appendString:@"</section>\n</article>\n"];
+	
+	if (_currentScene) {
+		NSString *viewScript = [NSString stringWithFormat:@"<script>var el = document.getElementById('scene-%@'); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' });</script>", _currentScene];
+		[html appendString:viewScript];
+	}
+	
+	[html appendString:@"</body>\n"];
     [html appendString:@"</html>"];        
     return html;
 }
@@ -188,6 +208,19 @@
     return css;
 }
 
+- (NSString *)formatString: (NSMutableString *)string {
+	
+	[string replaceOccurrencesOfRegex:BOLD_ITALIC_UNDERLINE_PATTERN withString:@"<strong><em><u>$2</strong></em></u>"];
+	[string replaceOccurrencesOfRegex:BOLD_ITALIC_PATTERN withString:@"<strong><em>$2</strong></em>"];
+	[string replaceOccurrencesOfRegex:BOLD_UNDERLINE_PATTERN withString:@"<strong><u>$2</u></strong>"];
+	[string replaceOccurrencesOfRegex:ITALIC_UNDERLINE_PATTERN withString:@"<em><u>$2</em></u>"];
+	[string replaceOccurrencesOfRegex:BOLD_PATTERN withString:@"<strong>$2</strong>"];
+	[string replaceOccurrencesOfRegex:ITALIC_PATTERN withString:@"<em>$2</em>"];
+	[string replaceOccurrencesOfRegex:UNDERLINE_PATTERN withString:@"<u>$2</u>"];
+	
+	return string;
+}
+
 - (NSString *)bodyForScript
 {
     NSMutableString *body = [NSMutableString string];
@@ -210,7 +243,8 @@
             for (NSString *val in obj) {
                 [values appendFormat:@"%@<br>", val];
             }
-            [body appendFormat:@"<p class='%@'>%@</p>", @"title", values];
+			
+            [body appendFormat:@"<p class='%@'>%@</p>", @"title", [self formatString:values]];
         }
         else {
             [body appendFormat:@"<p class='%@'>%@</p>", @"title", @"Untitled"];
@@ -224,7 +258,7 @@
                 for (NSString *val in obj) {
                     [values appendFormat:@"%@<br>", val];
                 }
-                [body appendFormat:@"<p class='%@'>%@</p>", @"credit", values];
+				[body appendFormat:@"<p class='%@'>%@</p>", @"credit", [self formatString:values]];
             }
             else {
                 [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
@@ -237,24 +271,24 @@
                 for (NSString *val in obj) {
                     [values appendFormat:@"%@<br>", val];
                 }
-                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", values];
+                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self formatString:values]];
             }
             else {
-                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", @"Anonymous"];
+                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", @""];
             }
         }
+		// Source
+		if (titlePage[@"source"]) {
+			NSArray *obj = titlePage[@"source"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", @"source", [self formatString:values]];
+		}
+		
 		[body appendFormat:@"</div>"];
 		[body appendFormat:@"<div class='info'>"];
-        // Source
-        if (titlePage[@"source"]) {
-            NSArray *obj = titlePage[@"source"];
-            NSMutableString *values = [NSMutableString string];
-            for (NSString *val in obj) {
-                [values appendFormat:@"%@<br>", val];
-            }
-            [body appendFormat:@"<p class='%@'>%@</p>", @"source", values];
-        }
-        
         
         // Draft date
         if (titlePage[@"draft date"]) {
@@ -263,7 +297,7 @@
             for (NSString *val in obj) {
                 [values appendFormat:@"%@<br>", val];
             }
-            [body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", values];
+            [body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", [self formatString:values]];
         }
         
         // Contact
@@ -273,7 +307,7 @@
             for (NSString *val in obj) {
                 [values appendFormat:@"%@<br>", val];
             }
-            [body appendFormat:@"<p class='%@'>%@</p>", @"contact", values];
+            [body appendFormat:@"<p class='%@'>%@</p>", @"contact", [self formatString:values]];
         }
 		[body appendFormat:@"</div>"];
 		
@@ -317,7 +351,7 @@
             }
         } else {
             if ([self.forRendering boolValue]) {
-                [body appendFormat:@"<p class='page-break-render'>render %d.</p>\n", (int)pageIndex+1];
+                [body appendFormat:@"<p class='page-break-render'>%d.</p>\n", (int)pageIndex+1];
             } else {
                 [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
             }
@@ -357,7 +391,7 @@
             
             NSMutableString *text = [NSMutableString string];            
             if ([element.elementType isEqualToString:@"Scene Heading"] && element.sceneNumber) {
-                [text appendFormat:@"<span class='scene-number-left'>%@</span>", element.sceneNumber];
+                [text appendFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", element.sceneNumber, element.sceneNumber];
                 [text appendString:element.elementText];
                 [text appendFormat:@"<span class='scene-number-right'>%@</span>", element.sceneNumber];
             }

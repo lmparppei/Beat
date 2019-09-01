@@ -19,48 +19,58 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  IN THE SOFTWARE.
+
  */
 
-* {
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-}
 html {
 	margin: 0;
 	padding: 0;
 }
 body {
 	color: black;
-	font: 12px/1em 'Courier', serif;
+	font: .85em 'Courier Prime', 'Courier', serif;
+	line-height: 1.1em;
 	padding: 0;
 	margin: 0;
 }
+
+@page {
+	margin: 0cm;
+}
 article {
-	padding: 20px 0;
-	margin: 0;
+	margin-top: 0;
+	padding-bottom: 0;
+	margin-bottom: 0;
 }
 section {
 	padding: 0 0 0 40px;
-	width: 465px;
+	/*width: 465px;
+	*/
 	margin-right: auto;
 	margin-left: auto;
+	margin-bottom: 0;
+	
+	max-width: 21cm;
+
+	/* padding: 2.5cm 2.5cm 2.5cm 3.9cm; */
 	page-break-after: always;
 }
 p {
 	position: relative;
 	margin: 1.1em auto;
+	font-size: 1em;
 	word-wrap: break-word;
 	padding: 0 10px;
 }
 .debug {
 	display: block;
 	position: absolute;
-	left: -50px;
+	left: -30px;
 	color: red;
 	font-size: .5em;
 }
 .debug:nth-of-type(1) {
-	top: 15px;
+	top: 1px;
 }
 body > p:first-child {
 	margin-top: 0;
@@ -82,8 +92,9 @@ body > p:first-child {
 
 .character, .more {
 	position: relative;
-	margin: 1.1em auto 0;
+	margin: 1.1em auto 0 30%;
 	width: 180px;
+	width: 7cm;
 }
 .more, p.more {
 	margin: 0 auto 0;
@@ -91,8 +102,9 @@ body > p:first-child {
 
 .dialogue {
 	position: relative;
-	margin: 0 auto 0 14%;
+	margin: 0 auto 0 15%;
 	width: 250px;
+	width: 7.5cm;
 }
 
 .parenthetical {
@@ -102,7 +114,7 @@ body > p:first-child {
 }
 
 .scene-heading {
-	margin-top: 2.6em;
+	margin-top: 2.5em;
 	font-weight: bold;
 	position: relative;
 	padding-right: 40px;
@@ -126,11 +138,31 @@ body > p:first-child {
 	padding-bottom: 2.6em;
 	margin-bottom: 2.6em;
 }
+#script-title {
+	margin: 0;
+	padding: 0;
+	height: 23.5cm;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	position: relative;
+}
+
 #script-title .title {
 	text-align: center;
 	margin: 1em 0;
 	text-transform: uppercase;
 	text-decoration: underline;
+}
+#script-title .info {
+	margin: auto auto 0 0;
+	padding: 0;
+	position: absolute;
+	bottom: 0;
+	left: 0;
 }
 #script-title .credit {
 	text-align: center;

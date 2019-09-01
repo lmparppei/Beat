@@ -168,14 +168,14 @@ hr {
 }
 .dual-dialogue .dual-dialogue-left,
 .dual-dialogue .dual-dialogue-right {
-	width: 228px;
+	width: 50%;
 	float: left;
 }
 .dual-dialogue p {
 	width: auto;
 }
 .dual-dialogue .character {
-	xtext-align: center;
+	text-align: center;
 	padding-left: 40px;
 }
 .dual-dialogue .parenthetical {
