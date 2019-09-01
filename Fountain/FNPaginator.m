@@ -29,10 +29,11 @@
  
  It is duct-taped together to give somewhat acceptable pagination results when using European page sizes, and now also splits paragraphs into parts. There are quite a few bugs, I guess, but for now it kind of works together with my custom CSS.
  
- This comment has been pretty unhelpful for anyone stumbling upon this file one day. Try to make something out of it, if you will.
+ This comment has been pretty unhelpful for anyone stumbling upon this file some day. Try to make something out of it. I might be gone but the code lives on.
  
- Remember the flight
- the bird is mortal
+ "Remember the flight
+ the bird is mortal"
+ (Forough Farrokhzad)
  
  */
 
@@ -146,7 +147,10 @@
 			FNElement *element  = (self.script.elements)[i];
 			
 			// Skip invisible elements
-			if ([element.elementType isEqualToString:@"Synopsis"] || [element.elementType isEqualToString:@"Section Heading"]) continue;
+			if ([element.elementType isEqualToString:@"Synopsis"] || [element.elementType isEqualToString:@"Section Heading"] ||
+				[element.elementType isEqualToString:@"Boneyard"]) {
+				continue;
+			}
 			
 			// catch page breaks immediately
 			if ([element.elementType isEqualToString:@"Page Break"]) {
@@ -198,24 +202,30 @@
 				element.elementText = [NSString stringWithFormat:@"%@%@", element.elementText, @""];
 			}
 			
+			// Next part will handle checking if we want to break things on separate pages. It should work now. Original FNPaginator didn't break apart action paragraphs (I'm not sure if that's an American thing?) but we will do it. Also, this breaks apart dialogue blocks pretty nicely. Both SHOULD be agnostic to paper height.
+			
 			// if it's a screne heading, get the next block
-			// if it's a character cue, we need to get the entire dialogue block
 			if ([element.elementType isEqualToString:@"Scene Heading"] && i+1 < maxElements) {
 				FNElement *nextElement = (self.script.elements)[i+1];
 				NSInteger nextElementWidth = [FNPaginator widthForElement:nextElement];
 				NSInteger nextElementHeight = [FNPaginator heightForString:nextElement.elementText font:font maxWidth:nextElementWidth lineHeight:lineHeight];
 				
-				if ((blockHeight + currentY + nextElementHeight >= maxPageHeight) && (nextElementHeight >= lineHeight * 1)) {
+				double overflow = maxPageHeight - (blockHeight + currentY + nextElementHeight);
+				
+				if (overflow < 0 && fabs(overflow) <= lineHeight * 3) {
 					FNElement *forcedBreak = [[FNElement alloc] init];
 					forcedBreak.elementType = @"Page Break";
 					forcedBreak.elementText = @"";
 					[tmpElements addObject:forcedBreak];
+					[tmpElements addObject:element];
+					continue;
 				}
 				
 				[tmpElements addObject:element];
 				//continue;
 				
 			}
+			// if it's a character cue, we need to get the entire dialogue block
 			else if ([element.elementType isEqualToString:@"Character"] && i+1 < maxElements) {
 				NSSet *dialogueBlockTypes = [NSSet setWithObjects:@"Dialogue", @"Parenthetical", nil];
 				

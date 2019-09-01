@@ -130,7 +130,7 @@
 		B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationDelegate.h; path = ../Beat/ApplicationDelegate.h; sourceTree = "<group>"; };
 		B1509A3E1CB5C0C500884918 /* FDXInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FDXInterface.h; path = ../Beat/FDXInterface.h; sourceTree = "<group>"; };
 		B1509A411CB6EBBC00884918 /* WriterFDXTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriterFDXTests.m; sourceTree = "<group>"; };
-		B1B62A3819E3402F009F6E23 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorView.h; path = Beat/ColorView.h; sourceTree = "<group>"; };
+		B1B62A3819E3402F009F6E23 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ColorView.h; path = ../Beat/ColorView.h; sourceTree = "<group>"; };
 		B1D0B84919E31B86005252E4 /* PrintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrintView.h; path = ../Beat/PrintView.h; sourceTree = "<group>"; };
 		B1DCC4621CB32C5200438E7F /* WriterThemeManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriterThemeManagerTests.m; sourceTree = "<group>"; };
 		B1E7FF511BC4555B008E2B99 /* Writer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Writer.entitlements; path = Beat/Writer.entitlements; sourceTree = "<group>"; };

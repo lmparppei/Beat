@@ -71,8 +71,6 @@
 #import "CenteredClipView.h"
 #import "ScalingScrollView.h"
 
-//#import "Beat-Bridging-Header.h"
-//#import "Beat-Swift.h"
 
 @interface Document ()
 
@@ -104,9 +102,8 @@
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
 @property (nonatomic) bool showSceneNumberLabels;
 
-// @property (unsafe_unretained) IBOutlet NSCollectionView *cardView;
-
 #pragma mark - Floating outline button
+
 @property (weak) IBOutlet NSButton *outlineButton;
 
 #pragma mark - Toolbar Buttons
@@ -190,6 +187,8 @@
     return self;
 }
 - (void) close {
+	// This stuff is here to fix some strange memory issues.
+	// Probably unnecessary now.
 	self.textView = nil;
 	self.parser = nil;
 	self.outlineView = nil;
@@ -251,7 +250,6 @@
 	
 	// Accept mouse moved events
 	[aController.window setAcceptsMouseMovedEvents:YES];
-	
 	
 	
 	/* ####### Outline button initialization ######## */
@@ -322,11 +320,10 @@
         [self setText:@""];
     }
 	
-/*
 	 // I'm doing this on xcode 8, so oh well. When I can upgrade, do this.
- 
+ /*
 	 if (@available(macOS 10.14, *)) {
-	 NSAppearanceName appearanceName = [self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		 NSAppearanceName appearanceName = [[self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];]
 		 if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
 			// use dark color
 		 } else {
@@ -362,6 +359,13 @@
 	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
+
+	// That's about it. The rest is even messier.
+	
+	// Can I come over, I need to rest
+	// lay down for a while, disconnect
+	// the night was so long, the day even longer
+	// lay down for a while, recollect
 }
 - (void) afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -412,29 +416,10 @@
 		textFrame.size.width = self.textScrollView.frame.size.width / magnification - self.outlineViewWidth.constant;
 		textFrame.size.height = self.textScrollView.frame.size.height / magnification;
 		[self.textView setFrame:textFrame];
-		
-		
-		
-		// This is a panic recovery..... which crashes the app
-		/*
-		if (self.thisWindow.frame.size.width < self.thisWindow.minSize.width) {
-			NSRect newFrame = NSMakeRect(0, 0, self.thisWindow.minSize.width, self.thisWindow.frame.size.height);
-			[self.thisWindow setFrame:newFrame display:YES];
-		}
-		*/
+
 		
 		// CGFloat magnification = [self.textScrollView magnification];
 		NSLog(@"TextView: %f/%f - container %f - Window width %f", self.textView.frame.size.width, self.textView.frame.size.height, self.textView.textContainer.size.height, self.thisWindow.frame.size.width);
-		
-		// Old way, I have no idea what this did:
-		// inset = (self.textView.frame.size.width / 2 - _documentWidth / 2) / magnification;
-		
-		//[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-		/*
-		NSRect visibleRect = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer];
-		visibleRect.size.width = self.thisWindow.frame.size.width;
-		self.textView.frame = visibleRect;
-		*/
 
 		CGFloat inset = ((self.thisWindow.frame.size.width - self.outlineViewWidth.constant) / 2 - _documentWidth / 2);
 		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
@@ -2018,7 +2003,19 @@ static NSString *forceLyricsSymbol = @"~";
     [self.tabView selectTabViewItem:[self.tabView tabViewItemAtIndex:index]];
 }
 
-
+/*
+ 
+ Oh, table, on which I write!
+ I thank you with all my heart:
+ You’ve given a trunk to me –
+ With goal a table to be –
+ 
+ But keep being the living trunk! –
+ With – over my head – your leaf, young,
+ With fresh bark and hot pitch’s tears,
+ With roots – till the bottom of Earth!
+ 
+ */
 
 #pragma  mark - NSOutlineViewDataSource and Delegate
 
@@ -2266,21 +2263,17 @@ static NSString *forceLyricsSymbol = @"~";
 
 
 
-#pragma mark - Outline context menu
+#pragma mark - Outline context menu, including setting colors
 
 /*
  
  Outline context menu, WIP.
  
- To make this work reliably, we should check for a lot of stuff, such as if there already is a color
- or some other note on the heading line. I don't have the willpower to do it just now, but maybe someday.
+ To make this work reliably, we should check for a lot of stuff, such as if there already is a color or some other note on the heading line. I don't have the willpower to do it just now, but maybe someday.
  
- The thing is, after this is done, we can also filter the outline view according to color tags. One thing
- to consider is also if we want to have multiple color tags on lines? I kind of hate that usually, 
- especially if it's done badly, but in many cases it could be useful.
+ The thing is, after this is done, we can also filter the outline view according to color tags. One thing to consider is also if we want to have multiple color tags on lines? I kind of hate that usually,especially if it's done badly, but in many cases it could be useful.
 
- Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll just search for
- ranges whenever I decide to do this.
+ Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll just search for ranges whenever I decide to do this.
  
  Also, in principle it should be possible to enter custom colors in hex. Such as [[COLOR #d00dd]].
 
@@ -2378,20 +2371,6 @@ static NSString *forceLyricsSymbol = @"~";
 - (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
 	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
 }
-
-/*
- if ([line.color  caseInsensitiveCompare:@"red"] == NSOrderedSame) colorName = NSColor.redColor;
- else if ([line.color  caseInsensitiveCompare:@"blue"] == NSOrderedSame) colorName = NSColor.blueColor;
- else if ([line.color  caseInsensitiveCompare:@"green"] == NSOrderedSame) colorName = NSColor.greenColor;
- else if ([line.color  caseInsensitiveCompare:@"yellow"] == NSOrderedSame) colorName = NSColor.yellowColor;
- else if ([line.color  caseInsensitiveCompare:@"black"] == NSOrderedSame) colorName = NSColor.blackColor;
- else if ([line.color  caseInsensitiveCompare:@"gray"] == NSOrderedSame) colorName = NSColor.grayColor;
- else if ([line.color  caseInsensitiveCompare:@"grey"] == NSOrderedSame) colorName = NSColor.grayColor;
- else if ([line.color  caseInsensitiveCompare:@"purple"] == NSOrderedSame) colorName = NSColor.purpleColor;
- else if ([line.color  caseInsensitiveCompare:@"magenta"] == NSOrderedSame) colorName = NSColor.magentaColor;
- else if ([line.color  caseInsensitiveCompare:@"pink"] == NSOrderedSame) colorName = NSColor.magentaColor;
- */
-
 
 
 #pragma mark - Card view
@@ -2629,7 +2608,7 @@ static NSString *forceLyricsSymbol = @"~";
 
 #pragma mark - Scene numbering for NSTextView
 
-/* The following section COULD have problems with memory leaks. */
+/* The following section is memory-intesive. Would like to see it fixed somehow. */
 
 - (NSTextField *) createLabel: (OutlineScene *) scene {
 	NSTextField * label;
@@ -2657,7 +2636,7 @@ static NSString *forceLyricsSymbol = @"~";
 	return label;
 }
 
-// This kind of works but might make things a bit slow. I'm not sure. There are CPU spikes on scroll at times, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
+// This kind of works but might make things a bit slow. I'm not sure. There are CPU & memory spikes on scroll, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
 // Send help.
 - (void) updateSceneNumberLabels {
 	
@@ -2759,7 +2738,9 @@ static NSString *forceLyricsSymbol = @"~";
 
 }
 
-/* Listen to scrolling of the view */
+#pragma mark - scroll listeners
+
+/* Listen to scrolling of the view. Listen to the birds. Listen to wind blowing all your dreams away, to make space for new ones to rise, when the spring comes. */
 - (void)boundsDidChange:(NSNotification*)notification {
 	[self updateSceneNumberLabels];
 	
@@ -2782,3 +2763,11 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 @end
+/*
+ 
+ some moments are nice, some are
+ nicer, some are even worth
+ writing
+ about
+ 
+ */
