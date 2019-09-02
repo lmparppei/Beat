@@ -12,17 +12,24 @@ There is an iOS version on the way, scheduled for release in late 2019. It won't
 
 I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.0.8
+## Latest release: Beat 1.0.9
 
 **Features**
-* Automatic scene numbering in edit view. Recognizes Fountain forced scene numbers.
+* Minimalistic UI that stays out of the way
+* Automatic screenplay formatting, no need for shortcuts or hotkeys
+* Dark mode for the children of the night
+* Full support for Fountain syntax
+* Automatic scene numbering in edit view. Recognizes forced scene numbers.
+* Outline list view with collapsing sections
 * Outline card view, with sections & synopses
 * Autocomplete characters and scene headings
-* Set colors for scene headings, synopses and sections by typing `[[COLOR RED]]` (or any other common color) after the heading. This is an experimental feature for now, and has some unfortunate bugs with undoing. **USE AT YOUR OWN RISK**
+* Color-coded scenes
 
-**Fixes in 1.0.8b**
-* New PDF export turned out to be buggy and messy. It is now fixed.
+**Fixes in 1.0.9**
+* Better and cleaner printing and PDF export
 * Memory management issues fixed
+* Title page formatting fixed
+* Support for international standard ISO and US (letter) paper sizes
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 
