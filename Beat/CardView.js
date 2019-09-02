@@ -145,12 +145,14 @@ contextMenu.close = function () {
 }
 contextMenu.setColor = function (color) {
 	for (var c in colors) {
-		contextMenu.target.classList.remove(colors[c]);
+		if (typeof colors[c] === 'string') {
+			contextMenu.target.classList.remove(colors[c]);
+		}
 	}
+	
 	contextMenu.target.classList.add(color);
 	
 	window.webkit.messageHandlers.setColor.postMessage(contextMenu.target.getAttribute('lineIndex') + ":" + color );
-	//window.webkit.messageHandlers.setColor.postMessage({ "testi": color });
 }
 
 function getPosition(e) {

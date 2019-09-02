@@ -140,6 +140,7 @@
 
 // Autocompletion purposes
 @property (nonatomic) Line *currentLine;
+@property (nonatomic) OutlineScene *currentScene;
 @property (nonatomic) NSString *cachedText;
 @property (nonatomic) bool isAutoCompleting;
 @property (nonatomic) NSMutableArray *characterNames;
@@ -765,7 +766,7 @@
 {
 	FNScript *script = [[FNScript alloc] initWithString:[self preprocessSceneNumbers]];
 	FNHTMLScript *htmlScript;
-	OutlineScene *currentScene = [self currentScene];
+	OutlineScene *currentScene = [self getCurrentScene];
 	
 	// Let's see if we have a scene selected
 	if (currentScene) {
@@ -776,14 +777,20 @@
 	
     [[self.webView mainFrame] loadHTMLString:[htmlScript html] baseURL:nil];
 }
-- (OutlineScene*)currentScene {
+- (OutlineScene*)getCurrentScene {
 	NSInteger position = [self.textView selectedRange].location;
 	
 	for (OutlineScene *scene in [self getOutlineItems]) {
 		NSRange range = NSMakeRange(scene.sceneStart, scene.sceneLength);
-		if (NSLocationInRange(position, range)) return scene;
+		
+		// Found the current scene. Let's cache the result just in case
+		if (NSLocationInRange(position, range)) {
+			_currentScene = scene;
+			return scene;
+		}
 	}
 	
+	_currentScene = nil;
 	return nil;
 }
 
@@ -791,7 +798,7 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
-    //If something is being inserted, check wether it is a "(" or a "[[" and auto close it
+    //If something is being inserted, check whether it is a "(" or a "[[" and auto close it
     if (self.matchParentheses) {
         if (affectedCharRange.length == 0) {
             if ([replacementString isEqualToString:@"("]) {
@@ -869,6 +876,10 @@
 	
 	[self.parser numberOfOutlineItems];
 	[self updateSceneNumberLabels];
+}
+- (void)textViewDidChangeSelection:(NSNotification *)notification {
+	// Reload outline without refreshing the whole outline in parser
+	if (_outlineViewVisible) [self reloadOutline];
 }
 
 /* #### AUTOCOMPLETE ##### */
@@ -2090,18 +2101,26 @@ static NSString *forceLyricsSymbol = @"~";
 	else { return NO; }
 }
 
+
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
-{
+{ @autoreleasepool {
     if ([item isKindOfClass:[OutlineScene class]]) {
 		
         OutlineScene* line = item;
-
+		NSUInteger sceneNumberLength = 0;
+		bool currentScene = false;
+		
 		// The outline elements will be formatted as rich text,
 		// which is apparently VERY CUMBERSOME in Objective-C.
 		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
 		[resultString addAttribute:NSFontAttributeName value:[self cothamRegular] range:NSMakeRange(0, [line.string length])];
 		
         if (line.type == heading) {
+			if (_currentScene.string) {
+				if (_currentScene == line) currentScene = true;
+				if ([line.string isEqualToString:_currentScene.string] && line.sceneNumber == _currentScene.sceneNumber) currentScene = true;
+			}
+			
 			//Replace "INT/EXT" with "I/E" to make the lines match nicely
             NSString* string = [line.string uppercaseString];
             string = [string stringByReplacingOccurrencesOfString:@"INT/EXT" withString:@"I/E"];
@@ -2118,9 +2137,17 @@ static NSString *forceLyricsSymbol = @"~";
 				NSString *sceneHeader = [NSString stringWithFormat:@"    %@.", line.sceneNumber];
                 string = [NSString stringWithFormat:@"%@ %@", sceneHeader, [string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""]];
 				resultString = [[NSMutableAttributedString alloc] initWithString:string];
+				sceneNumberLength = [sceneHeader length];
 				
 				// Scene number will be displayed in a slightly darker shade
 				[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
+				[resultString addAttribute:NSForegroundColorAttributeName value:[self colors][@"darkGray"] range:NSMakeRange([sceneHeader length], [resultString length] - [sceneHeader length])];
+				
+				// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
+				if (currentScene) {
+					[resultString addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:NSMakeRange(0, [resultString length])];
+				}
+				
 				// Lines without RTF formatting have uneven leading, so let's fix that.
 				[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0,[resultString length])];
 				
@@ -2150,7 +2177,8 @@ static NSString *forceLyricsSymbol = @"~";
 				
 				// Italic + white color
 				[resultString applyFontTraits:NSItalicFontMask range:NSMakeRange(0,[resultString length])];
-				[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.whiteColor range:NSMakeRange(0,[resultString length])];
+				
+				[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.whiteColor range:NSMakeRange(0, [resultString length])];
             } else {
                 resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
             }
@@ -2185,15 +2213,15 @@ static NSString *forceLyricsSymbol = @"~";
 
 		if (line.color) {
 			
-			NSMutableAttributedString * color = [[NSMutableAttributedString alloc] initWithString:@" ⬤" attributes:nil];
+			//NSMutableAttributedString * color = [[NSMutableAttributedString alloc] initWithString:@" ⬤" attributes:nil];
 			NSString *colorString = [line.color lowercaseString];
 			NSColor *colorName = [self colors][colorString];
-			//NSColor *colorName = nil;
 			
 			// If we found a suitable color, let's add it
 			if (colorName != nil) {
-				[color addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(0, 2)];
-				[resultString appendAttributedString:color];
+				[resultString addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(sceneNumberLength, [resultString length] - sceneNumberLength)];
+				//[color addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(0, 2)];
+				//[resultString appendAttributedString:color];
 			}
 		}
 		
@@ -2201,7 +2229,30 @@ static NSString *forceLyricsSymbol = @"~";
     }
     return @"";
 	
+} }
+/*
+- (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {
+	NSLog(@"what");
+	OutlineScene *scene = [outlineView itemAtRow:row];
+	if (scene == _currentScene)	rowView.backgroundColor = [NSColor darkGrayColor];
 }
+*/
+
+/*
+-  (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+	
+	OutlineScene *scene = item;
+	if (!scene.string || !_currentScene.string) return;
+	//[self.outlineView setNeedsDisplayInRect:[self.outlineView rectOfRow:]];
+	//NSLog(@"item %@ / current %@", scene.string, _currentScene.string);
+	if ([scene.string isEqualToString:_currentScene.string] && scene.sceneNumber == _currentScene.sceneNumber)	{
+		NSLog(@"FFFFFOUND");
+		[cell setBackgroundColor:[NSColor redColor]];
+	} else {
+		[cell setBackgroundColor:[NSColor blackColor]];
+	}
+	 
+}*/
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
@@ -2217,6 +2268,9 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (void) reloadOutline {
 	[_outlineClosedSections removeAllObjects];
+	
+	// Get current scene to cache it
+	[self getCurrentScene];
 	
 	// Save list of sections that have been closed
 	for (int i = 0; i < [[self.parser outline] count]; i++) {
@@ -2365,7 +2419,8 @@ static NSString *forceLyricsSymbol = @"~";
 			 @"cyan": [self colorWithRed:7 green:189 blue:235],
 			 @"teal": [self colorWithRed:12 green:224 blue:227], // gotta have teal & orange
 			 @"orange": [self colorWithRed:255 green:161 blue:13],
-			 @"brown": [self colorWithRed:169 green:106 blue:7]
+			 @"brown": [self colorWithRed:169 green:106 blue:7],
+			 @"darkGray": [self colorWithRed:170 green:170 blue:170]
     };
 }
 - (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
@@ -2584,7 +2639,7 @@ static NSString *forceLyricsSymbol = @"~";
 			return;
 		}
 	}
-	
+
 	if ([message.name isEqualToString:@"setColor"]) {
 		NSLog(@"Body : %@", message.body);
 		
