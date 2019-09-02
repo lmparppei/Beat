@@ -57,7 +57,9 @@ Some future considerations:
 
 ### How can you help?
 
-Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer but a director, screenwriter and musician. Writing Objective-C has been a bit overwhelming, and because of that, Document.m has become a 2700-line monster that handles too many things.
+Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer but a director, screenwriter and musician. When I started the project, my understanding of Objective-C was little to none, and it was overwhelming at first. My code has been getting gradually better, but there are still silly things going on: for instance, Document.m has become a 2700-line monster that handles almost everything.
+
+At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetaeva and Charles Bukowski. All apologies.
 
 Bug reports, some donations and feedback help, but I'd be happy if someone could help with zooming and rearranging the code.
 
