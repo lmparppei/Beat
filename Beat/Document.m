@@ -227,7 +227,6 @@
     //    aController.window.titleVisibility = NSWindowTitleHidden; //Makes the title and toolbar unified by hiding the title
 	
 	/// Hide the welcome screen
-	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
 	// Get zoom level & font size
@@ -250,8 +249,7 @@
     [window setFrame:newFrame display:YES];
 	
 	// Accept mouse moved events
-	[aController.window setAcceptsMouseMovedEvents:YES];
-	
+	//[aController.window setAcceptsMouseMovedEvents:YES];
 	
 	/* ####### Outline button initialization ######## */
 	
@@ -314,6 +312,11 @@
 	 // Let's enable live preview as default, don't load preferences for it.
 	self.livePreview = YES;
 	
+	//Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
+	self.themeManager = [ThemeManager sharedManager];
+	[self loadSelectedTheme];
+	_nightMode = false;
+	
     //Put any previously loaded data into the text view
     if (self.contentBuffer) {
         [self setText:self.contentBuffer];
@@ -333,11 +336,6 @@
 	 }
 */
 	
-    //Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
-    self.themeManager = [ThemeManager sharedManager];
-    [self loadSelectedTheme];
-	_nightMode = false;
-	
 	// Outline view setup
 	self.outlineClosedSections = [[NSMutableArray alloc] init];
 	
@@ -349,18 +347,19 @@
 	self.sceneHeadings = [[NSMutableArray alloc] init];
 	
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
-    [self applyFormatChanges];
+
 	
 	// CardView webkit
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
-	[self setupCards];
+	//[self setupCards];
 	
-	
+	[self applyFormatChanges];
+
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
-
+	
 	// That's about it. The rest is even messier.
 	
 	// Can I come over, I need to rest
