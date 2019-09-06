@@ -505,102 +505,30 @@
 }
 
 - (void) setZoom {
-	if (MAGNIFY) {
-		_scaleFactor = 1.0;
-		_magnification = 1.1;
-		[self setScaleFactor:_magnification adjustPopup:false];
-		//[self setScaleFactor:_magnification adjustPopup:false];
+	_scaleFactor = 1.0;
+	_magnification = 1.1;
+	[self setScaleFactor:_magnification adjustPopup:false];
+	//[self setScaleFactor:_magnification adjustPopup:false];
 
-		[self updateLayout];
-	}
-	return;
+	[self updateLayout];
 }
 
 - (IBAction)increaseFontSize:(id)sender
 {
-	if (MAGNIFY) { [self zoom:true]; return; }
-	
-	// Old way
-	if (_zoomLevel < 30)
-	{
-		NSLog(@"Zoom in: %lu", _zoomLevel);
-		_zoomLevel++;
-		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
-		
-		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-		for (Document* doc in openDocuments) {
-			doc.fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-			
-			// Center everything and adjust page width
-			self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-			self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-			
-			doc.courier = nil;
-			doc.boldCourier = nil;
-			doc.italicCourier = nil;
-			[doc refontAllLines];
-		}
-	}
-	[[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-	[self updateSceneNumberLabels];
+	[self zoom:true];
 }
 
 - (IBAction)decreaseFontSize:(id)sender
 {
-	if (MAGNIFY) { [self zoom:false]; return; }
-	
-	// Old way
-	if (_zoomLevel > 10) {
-		NSLog(@"Zoom out: %lu", _zoomLevel);
-		_zoomLevel--;
-		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
-		
-		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-		
-		for (Document* doc in openDocuments) {
-			doc.fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-			
-			// Center everything and adjust page width
-			self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-			self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-			
-			//doc.fontSize--;
-			doc.courier = nil;
-			doc.boldCourier = nil;
-			doc.italicCourier = nil;
-			[doc refontAllLines];
-		}
-	}
-	[[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-	[self updateSceneNumberLabels];
+	[self zoom:false];
 }
 
 
 - (IBAction)resetFontSize:(id)sender
 {
-	if (MAGNIFY) return;
-
-	// Reset zoom level
-	_zoomLevel = DEFAULT_ZOOM;
-	_documentWidth = _zoomLevel * ZOOM_MODIFIER;
-	
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	
-	for (Document* doc in openDocuments) {
-		doc.fontSize = _documentWidth * FONT_SIZE_MODIFIER;
-		
-		// Center everything and adjust page width
-		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-		
-		doc.courier = nil;
-		doc.boldCourier = nil;
-		doc.italicCourier = nil;
-		[doc refontAllLines];
-		
-	}
-	[[NSUserDefaults standardUserDefaults] setInteger:self.zoomLevel forKey:ZOOMLEVEL_KEY];
-	[self updateSceneNumberLabels];
+	_magnification = 1.1;
+	[self setScaleFactor:_magnification adjustPopup:false];
+	[self updateLayout];
 }
 
 
@@ -1814,11 +1742,7 @@ static NSString *forceLyricsSymbol = @"~";
 		if ([self selectedTabViewTab] != 0) {
 			NO;
 		}
-    } else if ([menuItem.title isEqualToString:@"Theme"]) { // Deprecated
-        if ([self selectedTabViewTab] != 0) {
-            return NO;
-        }
-    } else if ([menuItem.title isEqualToString:@"Automatically Match Parentheses"]) {
+	} else if ([menuItem.title isEqualToString:@"Automatically Match Parentheses"]) {
         if (self.matchParentheses) {
             [menuItem setState:NSOnState];
         } else {
@@ -1904,17 +1828,6 @@ static NSString *forceLyricsSymbol = @"~";
 		_darkPopup = false;
 	}
 	[self loadSelectedTheme:true];
-}
-
-// Deprecated
-- (IBAction)selectTheme:(id)sender
-{
-    if ([sender isKindOfClass:[NSMenuItem class]]) {
-        NSMenuItem* menuItem = sender;
-        NSString* itemName = menuItem.title;
-        [self.themeManager selectThemeWithName:itemName];
-		[self loadSelectedTheme:true];
-    }
 }
 
 - (IBAction)toggleLivePreview:(id)sender
@@ -2781,6 +2694,94 @@ static NSString *forceLyricsSymbol = @"~";
 	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
 
 }
+
+#pragma mark - chronometry
+
+/*
+ 
+ This is a simple attempt at measuring scene lengths. It is not scientific.
+ I'm counting beats, and about 55 beats equal 1 minute.
+ 
+ Characters per line: ca 58
+ Lines per page: ca 55 -> 1 minute
+ Dialogue multiplier: 1,64 (meaning, how much more dialogue takes space)
+ 
+*/
+
+- (IBAction)showTimeline:(id)sender
+{
+	[self buildTimeline];
+}
+
+
+- (void) buildTimeline {
+	NSMutableArray *scenes = [self getOutlineItems];
+	
+	NSInteger charsPerLine = 58;
+	NSInteger charsPerDialogue = 35;
+	
+	CGFloat totalLengthInSeconds = 0.0;
+	
+	bool previousLineEmpty = false;
+	
+	for (OutlineScene *scene in scenes) {
+		if (scene.type == heading) {
+			NSInteger length = 2; // A scene heading is 2 beats
+
+			NSInteger position = [[self.parser lines] indexOfObject:scene.line];
+			NSInteger index = 0;
+			
+			// Loop the lines until next scene
+			while (position + index + 1 < [[self.parser lines] count]) {
+				index++;
+				Line* line = [[self.parser lines] objectAtIndex:position + index];
+				
+				// Break away when next scene is encountered
+				if (line.type == heading) break;
+				
+				// Don't count in synopses or sections
+				if (line.type == synopse || line.type == section) continue;
+				
+				// Empty row equals 1 beat
+				if ([line.string isEqualToString:@""]) {
+					if (previousLineEmpty) continue;
+					
+					previousLineEmpty = true;
+					length += 1;
+					continue;
+				} else {
+					previousLineEmpty = false;
+				}
+
+				// Character cue and parenthetical add 1 beat each
+				if (line.type == character || line.type == parenthetical) {
+					length += 1;
+					continue;
+				}
+				
+				if (line.type == dialogue) {
+					NSInteger lineLength = [line.string length];
+					length += (lineLength + charsPerDialogue - 1) / charsPerDialogue;
+					continue;
+				}
+				
+				if (line.type == action) {
+					NSInteger lineLength = [line.string length];
+					length += (lineLength + charsPerLine - 1) / charsPerLine;
+				}
+				
+				// NOTE: We need to take omitted ranges into consideration
+			}
+			
+			CGFloat seconds = round((CGFloat)length / 52 * 60);
+			totalLengthInSeconds += seconds;
+			NSLog(@"%@ \n   length %lu   seconds %f", scene.string, length, seconds);
+		}
+	}
+	
+	NSLog(@"Total length: %f minutes", round(totalLengthInSeconds / 60));
+}
+
 
 #pragma mark - scroll listeners
 
