@@ -425,12 +425,8 @@
 
  This is a mess. I am so sorry for anyone reading this.
  
- The problem here is that we have multiple keys that set font size, document width, etc.
- and out of legacy reasons, they are scattered around the code. Maybe some day I have the
- time to fix everything, but for now, we're using duct-tape approach.
- 
  Update 2019/09/06
- I will finally be rebuilding the zooming. I have tried all sorts of tricks from
+ I have finally rebuilt the zooming. I have tried all sorts of tricks from
  magnification to other weird stuff, such as 3rd party libraries for scaling the
  NSScrollView. Everything was terrible and caused even more problems. I'm not too
  familiar with Cocoa and/or Objective-C, but if I understand correctly, the best way
@@ -440,6 +436,10 @@
  
  I still have no help and I'm working alone. Until that changes, I guess
  this won't get any better. :-)
+ 
+ The problem here is that we have multiple keys that set font size, document width, etc.
+ and out of legacy reasons, they are scattered around the code. Maybe some day I have the
+ time to fix everything, but for now, we're using duct-tape approach.
  
  What matters most is how well you walk through the fire.
  
@@ -520,7 +520,6 @@
 {
 	if (MAGNIFY) { [self zoom:true]; return; }
 	
-
 	// Old way
 	if (_zoomLevel < 30)
 	{
