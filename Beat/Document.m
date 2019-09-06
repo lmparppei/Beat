@@ -119,6 +119,9 @@
 @property (nonatomic) NSUInteger zoomLevel;
 @property (nonatomic) NSUInteger zoomCenter;
 
+@property (nonatomic) CGFloat magnification;
+@property (nonatomic) CGFloat scaleFactor;
+
 @property (nonatomic) CGFloat scale;
 @property (nonatomic) bool livePreview;
 @property (nonatomic) bool printPreview;
@@ -166,7 +169,7 @@
 #define DEFAULT_MAGNIFY 17
 #define MAGNIFY_REFERENCE 17
 // Change to YES to try out new zooms :--(
-#define MAGNIFY NO
+#define MAGNIFY YES
 
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
 #define LIVE_PREVIEW_KEY @"Live Preview"
@@ -260,7 +263,6 @@
     self.outlineViewVisible = false;
     self.outlineViewWidth.constant = 0;
 	
-	
 	/* ####### TextView setup ######## */
 	
     self.textView.textContainer.widthTracksTextView = false;
@@ -314,7 +316,7 @@
 	
 	//Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
 	self.themeManager = [ThemeManager sharedManager];
-	[self loadSelectedTheme];
+	[self loadSelectedTheme:false];
 	_nightMode = false;
 	
     //Put any previously loaded data into the text view
@@ -353,7 +355,7 @@
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
-	//[self setupCards];
+	[self setupCards];
 	
 	[self applyFormatChanges];
 
@@ -395,36 +397,16 @@
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 		
 	} else { // New way
-		
-		// THIS IS A MESS. SEND HELP. SEND IN THE CLOWNS.
-		
-		CGFloat magnification = self.textScrollView.magnification;
-		
-		NSRect visible = self.textScrollView.documentView.visibleRect;
-		NSRect contentView = self.textScrollView.contentView.frame;
-		CGFloat x = contentView.size.width / 2 - visible.size.width / 2;
-		
-		//contentView.origin.x = x;
-		//[self.textScrollView.contentView setFrame:contentView];
-		
-		NSLog(@"\nProposed x: %f\nVisible - x:%f y:%f w:%f h:%f\nContainer w:%f h:%f", x, visible.origin.x, visible.origin.y, visible.size.width, visible.size.height, self.textScrollView.contentView.frame.size.width, self.textScrollView.contentView.frame.size.height);
 		[self setMinimumWindowSize];
-		NSLog(@"Window min: %f", self.thisWindow.minSize.width);
-		
-		// What???
-		NSRect textFrame = self.textView.frame;
-		textFrame.size.width = self.textScrollView.frame.size.width / magnification - self.outlineViewWidth.constant;
-		textFrame.size.height = self.textScrollView.frame.size.height / magnification;
-		[self.textView setFrame:textFrame];
-
-		
-		// CGFloat magnification = [self.textScrollView magnification];
-		NSLog(@"TextView: %f/%f - container %f - Window width %f", self.textView.frame.size.width, self.textView.frame.size.height, self.textView.textContainer.size.height, self.thisWindow.frame.size.width);
-
-		CGFloat inset = ((self.thisWindow.frame.size.width - self.outlineViewWidth.constant) / 2 - _documentWidth / 2);
-		self.textView.textContainerInset = NSMakeSize(inset, TEXT_INSET_TOP);
+		CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
+		if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
+			NSLog(@"width %f", width);
+			self.textView.textContainerInset =NSMakeSize(width, TEXT_INSET_TOP);
+			self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		}
 	}
 	
+	NSLog(@"Update layout");
 	[self updateSceneNumberLabels];
 }
 - (void) setMinimumWindowSize {
@@ -451,55 +433,70 @@
  
  */
 - (void) zoom: (bool) zoomIn {
+	if (!_scaleFactor) _scaleFactor = _magnification;
 	
-	//SCALINGZOOMVIEW EXPERIMENT
-	if (!_zoomCenter) _zoomCenter = 1.00;
 	if (zoomIn) {
-		//_zoomCenter += .05;
-		//[self.textScrollView zoomIn:_zoomCenter];
-		[self.textScrollView zoomIn:nil];
-	} else {
-		[self.textScrollView zoomOut:nil];
-	}
-		
-	return;
-	
-	CGFloat magnification = [self.textScrollView magnification];
+		_magnification += 0.1;
 
+		[self setScaleFactor:_magnification adjustPopup:false];
+	}
+	[self updateLayout];
+/*
+	CGFloat magnification = [self.textScrollView magnification];
 	if (!zoomIn && magnification == 1.00) return; // Don't let zoom out below 1.00
 	if (zoomIn && magnification > 1.4) return;
-
-	// Set minimum window size according to magnification
-	[self setMinimumWindowSize];
-
+	
 	if (zoomIn) magnification += .05; else magnification -= .05;
 	
-	// Define center of the view
 	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
-	center.x = _documentWidth / 2;
-	
-		[self.textScrollView setMagnification:magnification centeredAtPoint:center];
-		[self.thisWindow layoutIfNeeded];
-		[self updateLayout];
-	
-		[self updateSceneNumberLabels];
-		[self updateLayout];
-	
-	/*
-	// We'll do this at a later time :-)
-	[[NSUserDefaults standardUserDefaults] setInteger:_magnifyLevel forKey:MAGNIFYLEVEL_KEY];
-	*/
-	
-	// Update everything in panic
-	[self updateSceneNumberLabels];
+	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
 	[self updateLayout];
+	
+	return;
+ */
+}
+
+- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
+{
+	CGFloat oldScaleFactor = _scaleFactor;
+	if (_scaleFactor != newScaleFactor)
+	{
+		NSSize curDocFrameSize, newDocBoundsSize;
+		NSView *clipView = [[self textView] superview];
+		
+		_scaleFactor = newScaleFactor;
+		
+		// Get the frame.  The frame must stay the same.
+		curDocFrameSize = [clipView frame].size;
+		
+		// The new bounds will be frame divided by scale factor
+		newDocBoundsSize.width = curDocFrameSize.width / _scaleFactor;
+		newDocBoundsSize.height = curDocFrameSize.height / _scaleFactor;
+	}
+	_scaleFactor = newScaleFactor;
+	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
+}
+- (void) scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
+{
+	//NSInteger percent  = lroundf(newScale * 100);
+	
+	CGFloat scaler = newScale / oldScale;
+	NSLog(@"scale: %f", scaler);
+	[self.textView scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
+	
+	NSLayoutManager* lm = [self.textView layoutManager];
+	NSTextContainer* tc = [self.textView textContainer];
+	[lm ensureLayoutForTextContainer:tc];
 }
 
 - (void) setZoom {
+	if (MAGNIFY) { _magnification = 1.0; }
+	return;
+/*
 	// Set initial zoom
 	
 	[self updateLayout];
-	[self updateSceneNumberLabels];
+	//[self updateSceneNumberLabels];
 	
 	// Define center of the view
 	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
@@ -511,6 +508,7 @@
 	
 	[self updateLayout];
     [self updateSceneNumberLabels];
+*/
 }
 
 - (IBAction)increaseFontSize:(id)sender
@@ -1233,20 +1231,7 @@
     
     return _zoomLevel;
 }
-/*
-- (NSUInteger)magnifyLevel
-{
-	if (_magnifyLevel == 0) {
-		_magnifyLevel = [[NSUserDefaults standardUserDefaults] integerForKey:MAGNIFYLEVEL_KEY];
-		NSLog(@"User magnify level: %lu", _magnifyLevel);
-		if (_magnifyLevel == 0) {
-			_magnifyLevel = DEFAULT_MAGNIFY;
-		}
-	}
-	
-	return _magnifyLevel;
-}
-*/
+
 - (NSUInteger)fontSize
 {
 	if (!MAGNIFY) {
@@ -1914,7 +1899,7 @@ static NSString *forceLyricsSymbol = @"~";
 		[self.themeManager selectThemeWithName:@"Day"];
 		_darkPopup = false;
 	}
-	[self loadSelectedTheme];
+	[self loadSelectedTheme:true];
 }
 
 // Deprecated
@@ -1924,7 +1909,7 @@ static NSString *forceLyricsSymbol = @"~";
         NSMenuItem* menuItem = sender;
         NSString* itemName = menuItem.title;
         [self.themeManager selectThemeWithName:itemName];
-        [self loadSelectedTheme];
+		[self loadSelectedTheme:true];
     }
 }
 
@@ -1959,10 +1944,12 @@ static NSString *forceLyricsSymbol = @"~";
 	[[NSUserDefaults standardUserDefaults] setBool:self.printSceneNumbers forKey:PRINT_SCENE_NUMBERS_KEY];
 }
 
-- (void)loadSelectedTheme
+- (void)loadSelectedTheme:(bool)forAll
 {
-    NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-    
+	NSArray* openDocuments;
+	if (forAll) openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	else openDocuments = @[self];
+	
     for (Document* doc in openDocuments) {
         NSTextView *textView = doc.textView;
 		
@@ -1976,11 +1963,11 @@ static NSString *forceLyricsSymbol = @"~";
         [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
         [doc formattAllLines];
 		
-		NSBox *leftMargin = doc.leftMargin;
-		NSBox *rightMargin = doc.rightMargin;
+		//NSBox *leftMargin = doc.leftMargin;
+		//NSBox *rightMargin = doc.rightMargin;
 		
-		[leftMargin setFillColor:[self.themeManager currentMarginColor]];
-		[rightMargin setFillColor:[self.themeManager currentMarginColor]];
+		//[leftMargin setFillColor:[self.themeManager currentMarginColor]];
+		//[rightMargin setFillColor:[self.themeManager currentMarginColor]];
     }
 }
 
@@ -2693,7 +2680,6 @@ static NSString *forceLyricsSymbol = @"~";
 // This kind of works but might make things a bit slow. I'm not sure. There are CPU & memory spikes on scroll, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
 // Send help.
 - (void) updateSceneNumberLabels {
-	
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	
 	if (![[self.parser outline] count]) {
@@ -2796,8 +2782,11 @@ static NSString *forceLyricsSymbol = @"~";
 
 /* Listen to scrolling of the view. Listen to the birds. Listen to wind blowing all your dreams away, to make space for new ones to rise, when the spring comes. */
 - (void)boundsDidChange:(NSNotification*)notification {
+	if (notification.object != [self.textScrollView contentView]) return;
+	
 	[self updateSceneNumberLabels];
 	
+	/*
 	// if(_scrollTimer == nil) [self scrollViewDidScroll];
 	[self performSelector:@selector(updateSceneNumberLabels) withDebounceDuration:.1];
 	
@@ -2805,6 +2794,7 @@ static NSString *forceLyricsSymbol = @"~";
 		[_scrollTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:.1]];
 	else
 		_scrollTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(scrollViewDidEndScrolling) userInfo:nil repeats:NO];
+	 */
 }
 - (void)scrollViewDidScroll {
 	//[self performSelector:@selector(updateSceneNumberLabels) withDebounceDuration:0.2];

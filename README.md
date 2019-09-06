@@ -25,11 +25,12 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 * Autocomplete characters and scene headings
 * Color-coded scenes
 
-**Fixes in 1.0.9**
+**Fixes in 1.0.9d**
 * Better and cleaner printing and PDF export
 * Memory management issues fixed
 * Title page formatting fixed
 * Support for international standard ISO and US (letter) paper sizes
+* Fixed a silly bug which made loading multiple feature-length screenplays very slow
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 

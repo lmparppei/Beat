@@ -1,3 +1,7 @@
+# 1.0.9d
+
+* Fixed a stupid and silly bug which caused *every* screenplay get reformatted again, when another document was opened
+
 # 1.0.9c
 
 * Current scene is highlighted in outline view
