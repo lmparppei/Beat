@@ -1,3 +1,7 @@
+# 1.1
+
+* Zooming is finally fixed.
+
 # 1.0.9d
 
 * Fixed a stupid and silly bug which caused *every* screenplay get reformatted again, when another document was opened

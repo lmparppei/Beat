@@ -76,7 +76,7 @@
 
 @property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
-@property (weak) IBOutlet ScalingScrollView *textScrollView;
+@property (weak) IBOutlet NSScrollView *textScrollView;
 @property (nonatomic) NSTimer * scrollTimer;
 
 @property (weak) IBOutlet NSOutlineView *outlineView;
@@ -447,15 +447,27 @@
 
 - (void) zoom: (bool) zoomIn {
 	if (!_scaleFactor) _scaleFactor = _magnification;
+	CGFloat oldMagnification = _magnification;
 	
+	// Save scroll position
+	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
+	
+	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg help
 	if (zoomIn) {
-		if (_magnification < 1.6) _magnification += 0.1;
+		if (_magnification < 1.6) _magnification += 0.09;
 	} else {
-		if (_magnification > 0.8) _magnification -= 0.1;
+		if (_magnification > 0.9) _magnification -= 0.09;
 	}
 
-	[self setScaleFactor:_magnification adjustPopup:false];
-	[self updateLayout];
+	// If magnification did change, scale the view
+	if (oldMagnification != _magnification) {
+		[self setScaleFactor:_magnification adjustPopup:false];
+		[self updateLayout];
+		
+		// Scale and apply the scroll position
+		scrollPosition.y = scrollPosition.y * _magnification;
+		[self.textScrollView.contentView scrollToPoint:scrollPosition];
+	}
 }
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
@@ -502,23 +514,6 @@
 		[self updateLayout];
 	}
 	return;
-/*
-	// Set initial zoom
-	
-	[self updateLayout];
-	//[self updateSceneNumberLabels];
-	
-	// Define center of the view
-	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
-	center.y = 0;
-	center.x = _documentWidth / 2;
-	
-	[self.textScrollView setMagnification:1.1 centeredAtPoint:center];
-	[self.thisWindow setMinSize:NSMakeSize(_documentWidth * 1.4 * self.textScrollView.magnification, 400)];
-	
-	[self updateLayout];
-    [self updateSceneNumberLabels];
-*/
 }
 
 - (IBAction)increaseFontSize:(id)sender
