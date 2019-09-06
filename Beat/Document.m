@@ -241,6 +241,7 @@
 		// DON'T TOUCH THESE FOR NOW!
 		_zoomLevel = DEFAULT_ZOOM;
 		_documentWidth = DEFAULT_ZOOM * ZOOM_MODIFIER;
+		[self setZoom];
 	}
 	
     //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
@@ -371,7 +372,7 @@
 }
 - (void) afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		if (MAGNIFY) [self setZoom];
+		[self updateLayout];
 		
 		// This is a silly duct-tape fix for a bug I can't track. Send help.
 		[self updateSceneNumberLabels];
@@ -400,8 +401,7 @@
 		[self setMinimumWindowSize];
 		CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
 		if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
-			NSLog(@"width %f", width);
-			self.textView.textContainerInset =NSMakeSize(width, TEXT_INSET_TOP);
+			self.textView.textContainerInset = NSMakeSize(width, TEXT_INSET_TOP);
 			self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 		}
 	}
@@ -409,12 +409,12 @@
 	NSLog(@"Update layout");
 	[self updateSceneNumberLabels];
 }
+
 - (void) setMinimumWindowSize {
-	CGFloat magnification = [self.textScrollView magnification];
 	if (!_outlineViewVisible) {
-		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * magnification + 200, 400)];
+		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 200, 400)];
 	} else {
-		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * magnification + 200 + _outlineView.frame.size
+		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 200 + _outlineView.frame.size
 											   .width, 400)];
 	}
 }
@@ -429,31 +429,33 @@
  and out of legacy reasons, they are scattered around the code. Maybe some day I have the
  time to fix everything, but for now, we're using duct-tape approach.
  
+ Update 2019/09/06
+ I will finally be rebuilding the zooming. I have tried all sorts of tricks from
+ magnification to other weird stuff, such as 3rd party libraries for scaling the
+ NSScrollView. Everything was terrible and caused even more problems. I'm not too
+ familiar with Cocoa and/or Objective-C, but if I understand correctly, the best way
+ would be having a custom NSView inside the NSScrollView and then to magnify the
+ scroll view. NSTextView's layout manager would then handle displaying the
+ text in those custom views.
+ 
+ I still have no help and I'm working alone. Until that changes, I guess
+ this won't get any better. :-)
+ 
  What matters most is how well you walk through the fire.
  
  */
+
 - (void) zoom: (bool) zoomIn {
 	if (!_scaleFactor) _scaleFactor = _magnification;
 	
 	if (zoomIn) {
-		_magnification += 0.1;
-
-		[self setScaleFactor:_magnification adjustPopup:false];
+		if (_magnification < 1.6) _magnification += 0.1;
+	} else {
+		if (_magnification > 0.8) _magnification -= 0.1;
 	}
+
+	[self setScaleFactor:_magnification adjustPopup:false];
 	[self updateLayout];
-/*
-	CGFloat magnification = [self.textScrollView magnification];
-	if (!zoomIn && magnification == 1.00) return; // Don't let zoom out below 1.00
-	if (zoomIn && magnification > 1.4) return;
-	
-	if (zoomIn) magnification += .05; else magnification -= .05;
-	
-	NSPoint center = NSMakePoint(self.textView.frame.size.width / 2, self.textView.frame.size.height / 2);
-	[self.textScrollView setMagnification:magnification centeredAtPoint:center];
-	[self updateLayout];
-	
-	return;
- */
 }
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
@@ -470,18 +472,19 @@
 		curDocFrameSize = [clipView frame].size;
 		
 		// The new bounds will be frame divided by scale factor
-		newDocBoundsSize.width = curDocFrameSize.width / _scaleFactor;
+		//newDocBoundsSize.width = curDocFrameSize.width / _scaleFactor;
+		newDocBoundsSize.width = curDocFrameSize.width;
 		newDocBoundsSize.height = curDocFrameSize.height / _scaleFactor;
+		
+		NSRect newFrame = NSMakeRect(0, 0, newDocBoundsSize.width, newDocBoundsSize.height);
+		clipView.frame = newFrame;
 	}
 	_scaleFactor = newScaleFactor;
 	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
 }
 - (void) scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
 {
-	//NSInteger percent  = lroundf(newScale * 100);
-	
 	CGFloat scaler = newScale / oldScale;
-	NSLog(@"scale: %f", scaler);
 	[self.textView scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
 	
 	NSLayoutManager* lm = [self.textView layoutManager];
@@ -490,7 +493,14 @@
 }
 
 - (void) setZoom {
-	if (MAGNIFY) { _magnification = 1.0; }
+	if (MAGNIFY) {
+		_scaleFactor = 1.0;
+		_magnification = 1.1;
+		[self setScaleFactor:_magnification adjustPopup:false];
+		//[self setScaleFactor:_magnification adjustPopup:false];
+
+		[self updateLayout];
+	}
 	return;
 /*
 	// Set initial zoom
