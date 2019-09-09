@@ -19,6 +19,8 @@
                 <outlet property="tabView" destination="gz5-tZ-Ofd" id="v37-ia-HrJ"/>
                 <outlet property="textScrollView" destination="Mky-48-wwA" id="w22-2t-KE1"/>
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
+                <outlet property="timelineView" destination="uRk-cB-Qej" id="HYs-GX-9q7"/>
+                <outlet property="timelineViewHeight" destination="JRc-lw-lna" id="0zf-6f-BrV"/>
                 <outlet property="webView" destination="Vil-EQ-uOZ" id="hkl-cc-bIl"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
@@ -28,32 +30,32 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" id="xOd-HO-29H" userLabel="Window">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
-            <rect key="contentRect" x="384" y="326" width="1050" height="599"/>
+            <rect key="contentRect" x="384" y="326" width="1050" height="661"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="gIp-Ho-8D9">
-                <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
+                <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="3qa-Wg-PsD" customClass="ColorView">
-                        <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
                     </customView>
                     <tabView drawsBackground="NO" allowsTruncatedLabels="NO" type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="gz5-tZ-Ofd" userLabel="Tab View">
-                        <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Text" identifier="1" id="stc-hX-uX6" userLabel="Text Tab">
                                 <view key="view" id="Qth-9B-jWR">
-                                    <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="38" horizontalPageScroll="10" verticalLineScroll="38" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c" customClass="ScalingScrollView">
-                                            <rect key="frame" x="0.0" y="0.0" width="250" height="599"/>
+                                            <rect key="frame" x="0.0" y="120" width="250" height="541"/>
                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6" customClass="CenteredClipView">
-                                                <rect key="frame" x="0.0" y="0.0" width="250" height="599"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="250" height="541"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="19" indentationPerLevel="5" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9">
-                                                        <rect key="frame" x="0.0" y="0.0" width="250" height="599"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="250" height="541"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <size key="intercellSpacing" width="0.0" height="19"/>
                                                         <color key="backgroundColor" red="0.083609941709844593" green="0.083609941709844593" blue="0.083609941709844593" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -96,17 +98,17 @@
                                             </scroller>
                                         </scrollView>
                                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA">
-                                            <rect key="frame" x="250" y="0.0" width="800" height="599"/>
+                                            <rect key="frame" x="250" y="120" width="800" height="541"/>
                                             <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="CenteredClipView">
-                                                <rect key="frame" x="0.0" y="0.0" width="785" height="599"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="785" height="541"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="NCRAutocompleteTextView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="785" height="599"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="785" height="541"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                        <size key="minSize" width="785" height="599"/>
+                                                        <size key="minSize" width="785" height="541"/>
                                                         <size key="maxSize" width="1035" height="10000000"/>
                                                         <attributedString key="textStorage">
                                                             <fragment content="TEXT">
@@ -133,12 +135,22 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="NLv-wd-O2O">
-                                                <rect key="frame" x="785" y="0.0" width="15" height="599"/>
+                                                <rect key="frame" x="785" y="0.0" width="15" height="541"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
+                                        <wkWebView wantsLayer="YES" allowsLinkPreview="NO" allowsMagnification="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uRk-cB-Qej">
+                                            <rect key="frame" x="0.0" y="0.0" width="1050" height="120"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="120" id="JRc-lw-lna"/>
+                                            </constraints>
+                                            <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat">
+                                                <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                                <wkPreferences key="preferences"/>
+                                            </wkWebViewConfiguration>
+                                        </wkWebView>
                                         <button allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
-                                            <rect key="frame" x="259" y="568" width="24" height="19"/>
+                                            <rect key="frame" x="259" y="630" width="24" height="19"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="24" id="26U-Jf-0Uo"/>
                                             </constraints>
@@ -152,7 +164,7 @@
                                             </connections>
                                         </button>
                                         <button allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZL1-eS-Zb2" userLabel="Cards Button">
-                                            <rect key="frame" x="1000" y="568" width="24" height="19"/>
+                                            <rect key="frame" x="1000" y="630" width="24" height="19"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="24" id="Afx-Wj-98R"/>
                                                 <constraint firstAttribute="height" constant="19" id="ufE-00-HmI"/>
@@ -171,15 +183,18 @@
                                         <constraint firstItem="6pm-Ac-n3m" firstAttribute="leading" secondItem="RaS-3C-d5c" secondAttribute="trailing" id="28O-dF-8Nd"/>
                                         <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="2sf-fb-9XP"/>
                                         <constraint firstAttribute="trailing" secondItem="ZL1-eS-Zb2" secondAttribute="trailing" constant="26" id="3ED-YM-88R"/>
-                                        <constraint firstAttribute="bottom" secondItem="RaS-3C-d5c" secondAttribute="bottom" id="7X8-sc-Xu4"/>
+                                        <constraint firstAttribute="trailing" secondItem="uRk-cB-Qej" secondAttribute="trailing" id="6IE-bj-H3u"/>
                                         <constraint firstItem="ZL1-eS-Zb2" firstAttribute="baseline" secondItem="ULq-c1-qrj" secondAttribute="baseline" id="7mc-U1-G75"/>
+                                        <constraint firstItem="uRk-cB-Qej" firstAttribute="top" secondItem="Mky-48-wwA" secondAttribute="bottom" id="Bxb-gc-vdT"/>
+                                        <constraint firstAttribute="bottom" secondItem="uRk-cB-Qej" secondAttribute="bottom" id="EIK-TP-NFv"/>
+                                        <constraint firstItem="uRk-cB-Qej" firstAttribute="leading" secondItem="Qth-9B-jWR" secondAttribute="leading" id="L3a-wY-rAJ"/>
                                         <constraint firstItem="ZL1-eS-Zb2" firstAttribute="top" secondItem="ULq-c1-qrj" secondAttribute="top" id="Lgt-MR-HCD"/>
                                         <constraint firstItem="ZL1-eS-Zb2" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" constant="12" id="RTh-Qz-PPe"/>
                                         <constraint firstItem="RaS-3C-d5c" firstAttribute="leading" secondItem="Qth-9B-jWR" secondAttribute="leading" id="g7d-Dc-bbO"/>
                                         <constraint firstItem="ULq-c1-qrj" firstAttribute="leading" secondItem="RaS-3C-d5c" secondAttribute="trailing" constant="9" id="gH1-je-RTZ"/>
                                         <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="jp6-cC-eDj"/>
-                                        <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="lbh-yN-sJt"/>
                                         <constraint firstItem="RaS-3C-d5c" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="rxn-C2-I4O"/>
+                                        <constraint firstItem="uRk-cB-Qej" firstAttribute="top" secondItem="RaS-3C-d5c" secondAttribute="bottom" id="y2J-iw-bPB"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -204,7 +219,7 @@
                                     </constraints>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Cards" identifier="2" id="798-ya-EGc" userLabel="Cards Tab">
+                            <tabViewItem label="Cards" identifier="3" id="798-ya-EGc" userLabel="Cards Tab">
                                 <view key="view" id="fPc-ie-Xae">
                                     <rect key="frame" x="0.0" y="0.0" width="1050" height="599"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -243,7 +258,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-x8E"/>
             </connections>
-            <point key="canvasLocation" x="194" y="87.5"/>
+            <point key="canvasLocation" x="194" y="118.5"/>
         </window>
         <menu id="Tqc-M2-IZ5">
             <items>

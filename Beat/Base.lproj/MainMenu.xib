@@ -515,7 +515,7 @@ DQ
                                     <action selector="toggleCards:" target="-1" id="Yus-6b-x57"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Timeline" hidden="YES" id="bwK-MY-pTK">
+                            <menuItem title="Timeline" id="bwK-MY-pTK">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showTimeline:" target="-1" id="npa-ke-La5"/>
@@ -637,7 +637,7 @@ DQ
         <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" frameAutosaveName="" animationBehavior="default" id="Tq0-bd-4zX">
             <windowStyleMask key="styleMask" closable="YES" miniaturizable="YES"/>
             <rect key="contentRect" x="196" y="240" width="564" height="355"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="vpm-hd-eID">
                 <rect key="frame" x="0.0" y="0.0" width="564" height="355"/>
                 <autoresizingMask key="autoresizingMask"/>

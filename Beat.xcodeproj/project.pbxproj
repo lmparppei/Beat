@@ -62,6 +62,7 @@
 		B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72F2218B589005B8447 /* MainMenu.xib */; };
 		B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
+		B6D872B3232567C40050ED2D /* timeline.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D872B2232567C40050ED2D /* timeline.html */; };
 		B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS.css */; };
 		B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B62019E1D6FA000489C4 /* Cocoa.framework */; };
 		B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; };
@@ -185,6 +186,7 @@
 		B6D2B7352218B6A7005B8447 /* FNScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FNScript.h; sourceTree = "<group>"; };
 		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/OutlineScene.m; sourceTree = SOURCE_ROOT; };
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/OutlineScene.h; sourceTree = SOURCE_ROOT; };
+		B6D872B2232567C40050ED2D /* timeline.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = timeline.html; sourceTree = "<group>"; };
 		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
 		B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -296,6 +298,7 @@
 				B138B57619E1C973000489C4 /* Supporting Files */,
 				B64E1B2D227B08B2008DF194 /* CenteredClipView.m */,
 				B64E1B2F227B08D8008DF194 /* CenteredClipView.h */,
+				B6D872B1232567C40050ED2D /* Timeline */,
 			);
 			name = Beat;
 			path = Writer;
@@ -458,6 +461,15 @@
 			path = Beat/ScalingScrollView;
 			sourceTree = SOURCE_ROOT;
 		};
+		B6D872B1232567C40050ED2D /* Timeline */ = {
+			isa = PBXGroup;
+			children = (
+				B6D872B2232567C40050ED2D /* timeline.html */,
+			);
+			name = Timeline;
+			path = Beat/Timeline;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -570,6 +582,7 @@
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B69A928C231915E900FE6A3E /* README.md in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
+				B6D872B3232567C40050ED2D /* timeline.html in Resources */,
 				B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */,
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,

@@ -1,0 +1,266 @@
+<!doctype html>
+<!--[if lt IE 9]><html class="ie"><![endif]-->
+<!--[if gte IE 9]><!--><html><!--<![endif]-->
+	<head>
+		<meta charset="utf-8"/>
+		
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+		<title></title>
+
+		<style type="text/css">
+			* {
+				box-sizing: border-box;
+				cursor: default;
+			}
+			body {
+				margin: 0;
+				padding: 2.2rem .5rem .5rem .5rem;
+				background-color: #222;
+				font-family: "Helvetica Neue", Helvetica, sans-serif;
+				overflow-y: hidden;
+			}
+			#controls {
+				position: fixed;
+				display: flex;
+				z-index: 100;
+				top: 4.5rem;
+				align-items: center;
+				font-size: .6em;
+			}
+			#timeline {
+				display: flex;
+				position: relative;
+				width: 100%;
+				z-index: 1;
+			}
+			#timeline div {
+			}
+			.scene {
+				width: auto;
+				padding: .6rem .2rem .6rem .2rem;
+
+				border: solid 1px red;
+				background-color: #888;
+				border: solid 1px #222;
+				overflow: hidden;
+				font-size: .6em;
+				white-space: nowrap;
+				color: #ccc;
+				opacity: .7;
+				z-index: 1000;
+			}
+			.scene:hover {
+				opacity: 1;
+				z-index: 1000;
+			}
+			.selected {
+				background-color: white;
+				color: #222;
+				text-align: left;
+			}
+
+			.playhead::after {
+				display: block;
+				content: "▴";
+				font-size: 1em;
+				position: absolute;
+				color: white;
+				bottom: -1em;
+			}
+
+			.section, .synopsis {
+				width: 2px;
+				position: relative;
+			}
+			.synopsis { width: 0px; }
+
+			#timeline h2 {
+				pointer-events: none;
+				color: white;
+				font-weight: normal;
+				font-size: .8em;
+				margin: 0;
+				position: absolute;
+				padding-top: .2rem;
+				padding-bottom: 3rem;
+				padding-left: .3rem;
+				bottom: 0;
+				
+				border-left: solid 1px white;
+
+				background-color: #222;
+				white-space: nowrap;
+				width: auto;
+			}
+			#timeline h3 {
+				pointer-events: none;
+				color: gray;
+				background-color: #222;
+				font-weight: normal;
+				font-size: .5em;
+				margin: 0;
+				position: absolute;
+				top: -.9rem;
+				left: .1rem;
+				height: 1rem;
+				overflow-x: hidden;
+				overflow-y: hidden;
+				padding: 0 .2rem 0 .2rem;
+				white-space: nowrap;
+				width: auto;
+			}
+
+			input[type=range] {
+			  height: 26px;
+			  -webkit-appearance: none;
+			  width: 100%;
+			  background-color: transparent;
+			}
+			input[type=range]:focus {
+			  outline: none;
+			}
+			input[type=range]::-webkit-slider-runnable-track {
+			  width: 100%;
+			  height: 10px;
+			  cursor: pointer;
+			  transition: all ease 0.2s;
+			  box-shadow: 1px 1px 1px #50555C;
+			  background: #1a1a1a;
+			  border-radius: 5px;
+			  border: 0px solid #000000;
+			}
+			input[type=range]::-webkit-slider-thumb {
+			  box-shadow: 0px 0px 0px #000000;
+			  border: 0px solid #000000;
+			  height: 10px;
+			  width: 10px;
+			  border-radius: 12px;
+			  background: #eee;
+			  cursor: pointer;
+			  -webkit-appearance: none;
+			}
+			input[type=range]:focus::-webkit-slider-runnable-track {
+			  background: #1a1a1a;
+			}
+
+			/* Beat colors */
+			.red { background-color: rgb(239,0,73); color: white; }
+			.blue { background-color: rgb(0,129,239); color: white; }
+			.green { background-color: rgb(0,223,121); color: white; }
+			.pink { background-color: rgb(250,111,193); color: white; }
+			.magenta { background-color: rgb(236,0,140); color: white; }
+			.gray { background-color: gray; color: white; }
+			.purple { background-color: rgb(181, 32, 218); color: white; }
+			.prince { background-color: rgb(181, 32, 218); color: white; }
+			.yellow { background-color: rgb(255, 162, 0); color: #333; }
+			.cyan { background-color: rgb(7, 189, 236); color: white; }
+			.teal { background-color: rgb(12, 224, 227); color: white; }
+			.orange { background-color: rgb(255, 161, 13); color: white; }
+			.brown { background-color: rgb(169, 106, 7); color: white; }
+
+
+		</style>
+	</head>
+
+	<body lang="fi">
+
+		<div id='controls'>🔍 <input id='zoom' type="range" min="0" max="2000" value="0"></div>
+		<section id='timeline'></section>
+
+		<script>
+			var data = [{text: "1. näytös", type: 'section' },{ text: "INT. PAULIN KOTI - PÄIVÄ", sceneLength: 14, sceneIndex: 2 },{ text: "INT. AUTO - PÄIVÄ", sceneLength: 30, sceneIndex: 3 },{ text: "INT. PAULIN HUONE - AAMU", sceneLength: 55, sceneIndex: 4 },{ text: "INT. KYLPYHUONE - PÄIVÄ", color: "red", sceneLength: 7, sceneIndex: 5 },{ text: "INT. PAULIN HUONE - PÄIVÄ", sceneLength: 11, sceneIndex: 6 },{ text: "INT. KEITTIÖ - PÄIVÄ", sceneLength: 11, sceneIndex: 7 },{ text: "INT. AUTO - ILTAPÄIVÄ", sceneLength: 13, sceneIndex: 8 },{ text: "INT. RUOKAKAUPPA - ILTA", sceneLength: 11, sceneIndex: 9 },{ text: "EXT. AUTOMARKETIN PIHA - ILTA", sceneLength: 31, sceneIndex: 10 },{ text: "INT. PAULIN HUONE - PÄIVÄ", sceneLength: 9, sceneIndex: 11 }];
+
+			var totalLength = 0;
+			
+			var container = document.getElementById("timeline");
+			var zoomSlider = document.getElementById("zoom");
+			
+/*
+			// Pinch to zoom. Nevermind, this won't work on Webkit.
+			document.addEventListener("mousewheel", function (e) { e.preventDefault() }, { passive: false });
+
+			// Pich to zoom controls
+			var scale = 1;
+			var posX = 0;
+			var posY = 0;
+
+			window.onwheel = function (e) {
+			  if (e.ctrlKey) {
+			    	console.log(e.deltaY * 3);
+			    	scale -= e.deltaY * 3;
+			    	zoomSlider.value = scale;
+			    	zoomSlider.oninput();
+			  } else {
+			    posX -= e.deltaX * 2;
+			    posY -= e.deltaY * 2;
+			  }
+			};
+*/
+
+			// Refresh timeline
+			function refreshTimeline(newData = null, selectedIndex = null) {
+				if (newData) data = newData;
+
+				var widths = 0;
+				var index = 1;
+
+				totalLength = 0;
+				selectedScene = null;
+
+				container.innerHTML = '';
+
+				for (var d in data) {
+					var scene = data[d];
+					if (scene.sceneLength) totalLength += scene.sceneLength;
+				}
+
+				for (var d in data) {
+					var scene = data[d];
+					if (scene.type == "section") {
+						container.innerHTML += "<div class='section'><h2>" + scene.text + "</h2></div>";
+					}
+					else if (scene.type == "synopsis") {
+						container.innerHTML += "<div class='synopsis'><h3>" + scene.text + "</h3></div>";
+					} else {
+						var width = (scene.sceneLength / totalLength * 100).toFixed(2);
+						widths += (scene.sceneLength / totalLength * 100);
+
+						var selected = '';
+						var color = '';
+
+						if (scene.color) {
+							color = ' ' + scene.color;
+						}
+
+						if ((scene.selected && selectedIndex == null) || selectedIndex == scene.sceneIndex) {
+							selected = " selected";
+							container.innerHTML += "<div class='playhead'></div>";
+							selectedScene = "scene-" + scene.sceneIndex;
+						}
+						container.innerHTML += "<div id='scene-" + scene.sceneIndex + "' class='scene"+selected+color+"' style='width: calc(" + width + "% - 2px)'>" + scene.text +  "</div>";
+					}
+
+					index++;
+				}
+				zoomSlider.max = totalLength * .5;
+				zoomSlider.oninput();
+			}
+
+			zoomSlider.oninput = function (e) {
+				var value = 100 + parseInt(this.value);
+
+				container.style.width = value + "%";
+
+				if (selectedScene) {
+					var scene = document.getElementById(selectedScene);
+					scene.scrollIntoView({ block: "center", inline: "center" });
+				}
+			}
+
+			refreshTimeline(data);
+		</script>
+	</body>
+
+</html>

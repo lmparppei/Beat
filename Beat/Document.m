@@ -89,7 +89,12 @@
 @property (unsafe_unretained) IBOutlet NSTabView *tabView;
 @property (weak) IBOutlet ColorView *backgroundView;
 
+// Color property test
+@property (nonatomic) NSColor *textColor;
+
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
+@property (unsafe_unretained) IBOutlet WKWebView *timelineView;
+@property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
 
 @property (unsafe_unretained) IBOutlet NSBox *leftMargin;
 @property (unsafe_unretained) IBOutlet NSBox *rightMargin;
@@ -126,6 +131,7 @@
 @property (nonatomic) bool livePreview;
 @property (nonatomic) bool printPreview;
 @property (nonatomic) bool cardsVisible;
+@property (nonatomic) bool timelineVisible;
 @property (nonatomic, readwrite) NSString *preprocessedText;
 
 @property (nonatomic) bool matchParentheses;
@@ -220,6 +226,7 @@
 #define DIALOGUE_RIGHT_P 0.74
 
 #define TREE_VIEW_WIDTH 350
+#define TIMELINE_VIEW_HEIGHT 120
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
@@ -254,6 +261,7 @@
 	
 	// Accept mouse moved events
 	//[aController.window setAcceptsMouseMovedEvents:YES];
+	
 	
 	/* ####### Outline button initialization ######## */
 	
@@ -357,6 +365,11 @@
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
 	[self setupCards];
+	
+	// Timeline webkit
+	[self setupTimeline];
+	self.timelineVisible = false;
+	self.timelineViewHeight.constant = 0;
 	
 	[self applyFormatChanges];
 
@@ -798,17 +811,25 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
-    if (self.outlineViewVisible && [self.parser getAndResetChangeInOutline]) {
-		[self reloadOutline];
-    }
-    [self applyFormatChanges];
+	// If outline has changed, we will rebuild outline & timeline if needed
+	bool changeInOutline = [self.parser getAndResetChangeInOutline];
+    if (self.outlineViewVisible && changeInOutline) [self reloadOutline];
+	if (self.timelineVisible && changeInOutline) [self buildTimeline];
+	
+	[self applyFormatChanges];
 	
 	[self.parser numberOfOutlineItems];
 	[self updateSceneNumberLabels];
 }
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
 	// Reload outline without refreshing the whole outline in parser
+	// This highlights the current scene
 	if (_outlineViewVisible) [self reloadOutline];
+	
+	// FIX THIS!!!
+	// We need a function like "findintimeline" or something to avoid building the whole timeline on every keypress.
+	[self getCurrentScene];
+	if (_timelineVisible && _currentScene) [self findOnTimeline:_currentScene];
 }
 
 /* #### AUTOCOMPLETE ##### */
@@ -1710,6 +1731,12 @@ static NSString *forceLyricsSymbol = @"~";
 		
 		return NO;
 	}
+	if (_timelineVisible && [menuItem.title isEqualToString:@"Timeline"]) {
+		[menuItem setState:NSOnState];
+		return YES;
+	} else {
+		[menuItem setState:NSOffState];
+	}
 	
 	
 	if ([menuItem.title isEqualToString:@"Share"]) {
@@ -1905,6 +1932,7 @@ static NSString *forceLyricsSymbol = @"~";
 {
 	if (_printPreview) [self preview:nil];
 	if (_cardsVisible) [self toggleCards:nil];
+	//if (_timelineVisible) [self showTimeline:nil];
 }
 
 - (NSUInteger)selectedTabViewTab
@@ -2339,8 +2367,6 @@ static NSString *forceLyricsSymbol = @"~";
 		
 		[self refreshCards];
 		[self setSelectedTabViewTab:2];
-//		NSCollectionViewItem * item = [_cardView makeItemWithIdentifier:"item" forIndexPath:<#(nonnull NSIndexPath *)#>
-		
 	} else {
 		_cardsVisible = NO;
 		[self setSelectedTabViewTab:0];
@@ -2710,26 +2736,58 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (IBAction)showTimeline:(id)sender
 {
-	[self buildTimeline];
+	_timelineVisible = !_timelineVisible;
+		
+	if (_timelineVisible) {
+		self.timelineViewHeight.constant = TIMELINE_VIEW_HEIGHT;
+		[self buildTimeline];
+	} else {
+		self.timelineViewHeight.constant = 0;
+	}
 }
 
+- (void) setupTimeline {
+	NSString *timelinePath = [[NSBundle mainBundle] pathForResource:@"timeline.html" ofType:@""];
+	NSString *content = [NSString stringWithContentsOfFile:timelinePath encoding:NSUTF8StringEncoding error:nil];
 
+	[_timelineView loadHTMLString:content baseURL:nil];
+}
 - (void) buildTimeline {
+	[self getCurrentScene];
 	NSMutableArray *scenes = [self getOutlineItems];
 	
-	NSInteger charsPerLine = 58;
+	NSInteger charsPerLine = 57;
 	NSInteger charsPerDialogue = 35;
 	
 	CGFloat totalLengthInSeconds = 0.0;
 	
+	NSMutableString *jsonData = [NSMutableString stringWithString:@"["];
+	
 	bool previousLineEmpty = false;
 	
 	for (OutlineScene *scene in scenes) {
-		if (scene.type == heading) {
+		if (scene.type == synopse || scene.type == section) {
+			NSString *type;
+			if (scene.type == synopse) type = @"synopsis";
+			if (scene.type == section) type = @"section";
+			
+			[jsonData appendFormat:@"{ text: \"%@\", type: '%@' },", [self JSONString:scene.string], type];
+		}
+		else if (scene.type == heading) {
+			//[self JSONString:scene.string]
+			
 			NSInteger length = 2; // A scene heading is 2 beats
 
 			NSInteger position = [[self.parser lines] indexOfObject:scene.line];
 			NSInteger index = 0;
+			
+			bool selected = false;
+			if (_currentScene) {
+				if (scene.line == _currentScene.line) {
+					
+					selected = true;
+				}
+			}
 			
 			// Loop the lines until next scene
 			while (position + index + 1 < [[self.parser lines] count]) {
@@ -2775,11 +2833,23 @@ static NSString *forceLyricsSymbol = @"~";
 			
 			CGFloat seconds = round((CGFloat)length / 52 * 60);
 			totalLengthInSeconds += seconds;
-			NSLog(@"%@ \n   length %lu   seconds %f", scene.string, length, seconds);
+			
+			NSString *selectedValue = @"false";
+			if (selected) selectedValue = @"true";
+			
+			[jsonData appendFormat:@"{ text: \"%@\", sceneLength: %lu, sceneIndex: %lu, sceneNumber: '%@', color: '%@', selected: %@ },", [self JSONString:scene.string], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
 		}
 	}
+	[jsonData appendString:@"]"];
 	
-	NSLog(@"Total length: %f minutes", round(totalLengthInSeconds / 60));
+	NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(%@);", jsonData];
+	[_timelineView evaluateJavaScript:evalString completionHandler:nil];
+}
+- (void) findOnTimeline: (OutlineScene *) scene {
+	NSUInteger index = [[self getOutlineItems] indexOfObject:scene];
+		NSLog(@"Find on timeline %lu", index);
+	NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", index];
+	[_timelineView evaluateJavaScript:evalString completionHandler:nil];
 }
 
 

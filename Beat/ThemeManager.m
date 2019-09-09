@@ -56,8 +56,7 @@
                 [self copyAndLoadOriginalThemeFile];
             }
         }
-        */
-        
+		 
         [self copyAndLoadOriginalThemeFile];
         
         //Try to load the theme file. if it is corrupted, load the original and try again, but this time try to load as much as possible
@@ -65,10 +64,19 @@
             [self copyAndLoadOriginalThemeFile];
             [self readThemeFile:YES];
         }
-        
-        
+		 */
+
+		[self loadThemeFile];
+		if (![self readThemeFile:NO]) {
+			[self readThemeFile:YES];
+		}
     }
     return self;
+}
+
+- (void)loadThemeFile
+{
+	_plistContents = [NSDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
 }
 
 - (void)copyAndLoadOriginalThemeFile
