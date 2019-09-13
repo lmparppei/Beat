@@ -98,6 +98,9 @@
     NSUInteger lineIndex = [self lineIndexAtPosition:position];
     Line* line = self.lines[lineIndex];
     NSUInteger indexInLine = position - line.position;
+	
+	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = true;
+	
     if ([character isEqualToString:@"\n"]) {
         NSString* cutOffString;
         if (indexInLine == [line.string length]) {

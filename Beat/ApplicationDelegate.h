@@ -13,6 +13,9 @@
 	IBOutlet NSTextField* versionField;
 }
 @property (strong, nonatomic) NSWindow *_startModalWindow;
+@property (nonatomic) bool darkMode;
 //@property (nonatomic) NSTextField * versionField;
 - (IBAction)closeStartModal;
+- (bool)isDark;
+- (void)toggleDarkMode;
 @end

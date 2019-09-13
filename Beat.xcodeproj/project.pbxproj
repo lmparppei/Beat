@@ -34,12 +34,12 @@
 		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
-		B69307FB2281B89D0089A558 /* FlippedParentView.m in Sources */ = {isa = PBXBuildFile; fileRef = B69307FA2281B89D0089A558 /* FlippedParentView.m */; };
-		B6976E0422821DA0006E08C2 /* ScalingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6976E0322821DA0006E08C2 /* ScalingScrollView.m */; };
+		B6952C95232B89BE00448B57 /* ScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6952C94232B89BE00448B57 /* ScrollView.m */; };
 		B69A928C231915E900FE6A3E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B69A928B231915E900FE6A3E /* README.md */; };
 		B69A928F2319254200FE6A3E /* About.xib in Resources */ = {isa = PBXBuildFile; fileRef = B69A928D2319254200FE6A3E /* About.xib */; };
 		B69A92962319387B00FE6A3E /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = B69A92952319387B00FE6A3E /* CHANGELOG */; };
 		B69A929C2319609100FE6A3E /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
+		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
 		B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* ApplicationDelegate.m */; };
 		B6D2B7092218B320005B8447 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
 		B6D2B70B2218B342005B8447 /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70A2218B342005B8447 /* Line.m */; };
@@ -93,15 +93,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B13111821CB2885200D07A0C /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThemeManager.h; path = Beat/ThemeManager.h; sourceTree = "<group>"; };
-		B13111861CB289ED00D07A0C /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = Beat/Theme.h; sourceTree = "<group>"; };
+		B13111821CB2885200D07A0C /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThemeManager.h; path = ../Beat/ThemeManager.h; sourceTree = "<group>"; };
+		B13111861CB289ED00D07A0C /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = ../Beat/Theme.h; sourceTree = "<group>"; };
 		B131118B1CB2A41800D07A0C /* ContinousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContinousFountainParser.h; path = ../Beat/ContinousFountainParser.h; sourceTree = "<group>"; };
 		B131118D1CB2A41800D07A0C /* NSString+Whitespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Whitespace.h"; path = "../Beat/NSString+Whitespace.h"; sourceTree = "<group>"; };
 		B13111921CB2A42300D07A0C /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Line.h; path = ../Beat/Line.h; sourceTree = "<group>"; };
 		B13111991CB2BA7900D07A0C /* WriterParserPerformance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriterParserPerformance.m; sourceTree = "<group>"; };
 		B131119B1CB2C6B300D07A0C /* NSMutableIndexSet+Lowest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableIndexSet+Lowest.h"; path = "../Beat/NSMutableIndexSet+Lowest.h"; sourceTree = "<group>"; };
 		B138B57319E1C973000489C4 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B138B57719E1C973000489C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; name = Info.plist; path = Beat/Info.plist; sourceTree = "<group>"; };
+		B138B57719E1C973000489C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Beat/Info.plist; sourceTree = "<group>"; };
 		B138B57A19E1C973000489C4 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Document.h; path = ../Beat/Document.h; sourceTree = "<group>"; };
 		B138B58919E1C974000489C4 /* BeatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B138B58E19E1C974000489C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -152,15 +152,15 @@
 		B67D1E512265D57400644CB1 /* Beat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-Bridging-Header.h"; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = CardCSS.css; path = Beat/CardCSS.css; sourceTree = SOURCE_ROOT; };
 		B68AC7B42219733900E02466 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Tutorial.fountain; path = "Sample files/Tutorial.fountain"; sourceTree = SOURCE_ROOT; };
-		B69307F92281B8590089A558 /* FlippedParentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FlippedParentView.h; path = Beat/FlippedParentView/FlippedParentView.h; sourceTree = SOURCE_ROOT; };
-		B69307FA2281B89D0089A558 /* FlippedParentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FlippedParentView.m; path = Beat/FlippedParentView/FlippedParentView.m; sourceTree = SOURCE_ROOT; };
-		B6976E0222821DA0006E08C2 /* ScalingScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScalingScrollView.h; sourceTree = "<group>"; };
-		B6976E0322821DA0006E08C2 /* ScalingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScalingScrollView.m; sourceTree = "<group>"; };
+		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = Beat/ScrollView/ScrollView.h; sourceTree = SOURCE_ROOT; };
+		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = Beat/ScrollView/ScrollView.m; sourceTree = SOURCE_ROOT; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B69A928E2319254200FE6A3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/About.xib; sourceTree = SOURCE_ROOT; };
 		B69A92952319387B00FE6A3E /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = dragula.js; path = Beat/CardView/dragula.js; sourceTree = SOURCE_ROOT; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecentFiles.h; path = Beat/RecentFiles.h; sourceTree = "<group>"; };
+		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
+		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
 		B6D2B7062218B308005B8447 /* ApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationDelegate.m; path = Beat/ApplicationDelegate.m; sourceTree = SOURCE_ROOT; };
 		B6D2B7082218B320005B8447 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = Beat/Theme.m; sourceTree = SOURCE_ROOT; };
 		B6D2B70A2218B342005B8447 /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Line.m; path = Beat/Line.m; sourceTree = SOURCE_ROOT; };
@@ -220,6 +220,8 @@
 				B13111861CB289ED00D07A0C /* Theme.h */,
 				B6D2B7082218B320005B8447 /* Theme.m */,
 				B6D2B7232218B4A0005B8447 /* Themes.plist */,
+				B6CF7D0C2328D77F0045702C /* DynamicColor.h */,
+				B6CF7D0D2328D77F0045702C /* DynamicColor.m */,
 			);
 			name = Themes;
 			sourceTree = "<group>";
@@ -275,12 +277,12 @@
 				B1E7FF511BC4555B008E2B99 /* Writer.entitlements */,
 				B138B57A19E1C973000489C4 /* Document.h */,
 				B6D2B7122218B39A005B8447 /* Document.m */,
+				B6952C93232B89BE00448B57 /* ScrollView.h */,
+				B6952C94232B89BE00448B57 /* ScrollView.m */,
 				B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */,
 				B6D2B7062218B308005B8447 /* ApplicationDelegate.m */,
-				B6C0A5692214C09C00A8B33D /* RecentFiles.h */,
-				B6976E0122821DA0006E08C2 /* ScalingScrollView */,
-				B69307F82281B8420089A558 /* FlippedParentView */,
 				B6D2B71F2218B459005B8447 /* RecentFiles.m */,
+				B6C0A5692214C09C00A8B33D /* RecentFiles.h */,
 				B1B62A3819E3402F009F6E23 /* ColorView.h */,
 				B6D2B70C2218B359005B8447 /* ColorView.m */,
 				B6D2B72D2218B589005B8447 /* Document.xib */,
@@ -441,25 +443,6 @@
 			);
 			name = "Sample files";
 			sourceTree = "<group>";
-		};
-		B69307F82281B8420089A558 /* FlippedParentView */ = {
-			isa = PBXGroup;
-			children = (
-				B69307F92281B8590089A558 /* FlippedParentView.h */,
-				B69307FA2281B89D0089A558 /* FlippedParentView.m */,
-			);
-			name = FlippedParentView;
-			sourceTree = "<group>";
-		};
-		B6976E0122821DA0006E08C2 /* ScalingScrollView */ = {
-			isa = PBXGroup;
-			children = (
-				B6976E0222821DA0006E08C2 /* ScalingScrollView.h */,
-				B6976E0322821DA0006E08C2 /* ScalingScrollView.m */,
-			);
-			name = ScalingScrollView;
-			path = Beat/ScalingScrollView;
-			sourceTree = SOURCE_ROOT;
 		};
 		B6D872B1232567C40050ED2D /* Timeline */ = {
 			isa = PBXGroup;
@@ -628,9 +611,9 @@
 				B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */,
 				B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */,
 				B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */,
-				B6976E0422821DA0006E08C2 /* ScalingScrollView.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
+				B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
 				B138B66F19E1E8CA000489C4 /* RegexKitLite.m in Sources */,
@@ -644,12 +627,12 @@
 				B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */,
 				B138B66919E1E8CA000489C4 /* FNScript.m in Sources */,
 				B138B66519E1E8CA000489C4 /* FastFountainParser.m in Sources */,
-				B69307FB2281B89D0089A558 /* FlippedParentView.m in Sources */,
 				B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */,
 				B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */,
 				B138B66719E1E8CA000489C4 /* FNHTMLScript.m in Sources */,
 				B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */,
 				B62609E6222419C90019BF52 /* SelectorWithDebounce.m in Sources */,
+				B6952C95232B89BE00448B57 /* ScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

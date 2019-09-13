@@ -1,18 +1,27 @@
 //
 //  ThemeManager.m
-//  Writer / Beat
+//  Beat
 //
-//  Parts Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
-//  Copyright © 2016 Hendrik Noeller. All rights reserved.
+//  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
+//  Parts copyright © 2016 Hendrik Noeller. All rights reserved.
 //
+
+/*
+ 
+ NOTE:
+ This has been rewritten to support macOS dark mode and to NOT support multiple themes.
+ 
+ */
 
 #import "ThemeManager.h"
 #import "Theme.h"
+#import "DynamicColor.h"
 
 @interface ThemeManager ()
 @property (strong, nonatomic) NSMutableArray* themes;
 @property (nonatomic) NSUInteger selectedTheme;
 @property (nonatomic) NSDictionary* plistContents;
+@property (nonatomic) Theme* theme;
 
 @property (strong, nonatomic) Theme* fallbackTheme;
 @end
@@ -38,38 +47,8 @@
 {
     self = [super init];
     if (self) {
-		// OMITTED FOR NOW
-		
-        //If the theme file doesn't exist, copy the default file from the bundle
-        // NSFileManager* fileManager = [NSFileManager defaultManager];
-		/*
-        if (![fileManager fileExistsAtPath:[self plistFilePath]]) {
-            [self copyAndLoadOriginalThemeFile];
-        } else {
-            //If the file exists, but is an older version, copy the default file from the bundle
-            NSDictionary *bundlePlistContent = [NSDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
-            _plistContents = [NSDictionary dictionaryWithContentsOfFile:[self plistFilePath]];
-            NSUInteger installedVersion = [[_plistContents objectForKey:VERSION_KEY] integerValue];
-            NSUInteger bundleVersion = [[bundlePlistContent objectForKey:VERSION_KEY] integerValue];
-            
-            if (installedVersion < bundleVersion) {
-                [self copyAndLoadOriginalThemeFile];
-            }
-        }
-		 
-        [self copyAndLoadOriginalThemeFile];
-        
-        //Try to load the theme file. if it is corrupted, load the original and try again, but this time try to load as much as possible
-        if (![self readThemeFile:NO]) {
-            [self copyAndLoadOriginalThemeFile];
-            [self readThemeFile:YES];
-        }
-		 */
-
 		[self loadThemeFile];
-		if (![self readThemeFile:NO]) {
-			[self readThemeFile:YES];
-		}
+		[self readThemeFile:YES];
     }
     return self;
 }
@@ -77,18 +56,6 @@
 - (void)loadThemeFile
 {
 	_plistContents = [NSDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
-}
-
-- (void)copyAndLoadOriginalThemeFile
-{
-    //Remove any file that might exists
-    [[NSFileManager defaultManager] removeItemAtPath:[self plistFilePath]
-                                               error:nil];
-    //Copy file from bundle
-    [[NSFileManager defaultManager] copyItemAtPath:[self bundlePlistFilePath]
-                                            toPath:[self plistFilePath]
-                                             error:nil];
-    _plistContents = [NSDictionary dictionaryWithContentsOfFile:[self plistFilePath]];
 }
 
 - (NSString*)plistFilePath
@@ -116,68 +83,43 @@
 
 - (BOOL)readThemeFile:(BOOL)continueOnError
 {
-    //Get the themes
-    NSArray* rawThemes = [_plistContents objectForKey:THEMES_KEY];
-    if (!rawThemes && !continueOnError) {
-        return NO;
-    }
-    
-    self.themes = [[NSMutableArray alloc] initWithCapacity:[rawThemes count]];
-    
-    for (NSDictionary* dict in rawThemes) {
-        Theme* newTheme = [self themeFromDictionary:dict];
-        if (newTheme) {
-            [self.themes addObject:newTheme];
-        } else if (!continueOnError) {
-            return NO;
-        }
-    }
-    
-    //Get the selected Theme
-    self.selectedTheme = [[_plistContents objectForKey:SELECTED_THEME_KEY] integerValue];
-    if (self.selectedTheme >= [self numberOfThemes]) {
-        if (continueOnError) {
-            self.selectedTheme = [self numberOfThemes] == 0 ? 0 : [self numberOfThemes] - 1;
-        } else {
-            return NO;
-        }
-    }
-    return YES;
+	[self readTheme];
+	return true;
 }
 
-- (Theme*)themeFromDictionary:(NSDictionary*)dict
-{
-    Theme* theme = [[Theme alloc] init];
-    theme.name = [dict objectForKey:@"Name"];
-    if (!theme.name) {
-        return nil;
-    }
-    NSArray* backgroundValues = [dict objectForKey:@"Background"];
-    NSArray* selectionValues = [dict objectForKey:@"Selection"];
-    NSArray* textValues = [dict objectForKey:@"Text"];
-    NSArray* invisibleTextValues = [dict objectForKey:@"InvisibleText"];
-    NSArray* caretValues = [dict objectForKey:@"Caret"];
-    NSArray* commentValues = [dict objectForKey:@"Comment"];
-    NSArray* marginValues = [dict objectForKey:@"Margin"];
-    
-    theme.backgroundColor = [self colorFromArray:backgroundValues];
-    theme.textColor = [self colorFromArray:textValues];
-    theme.selectionColor = [self colorFromArray:selectionValues];
-    theme.invisibleTextColor = [self colorFromArray:invisibleTextValues];
-    theme.caretColor = [self colorFromArray:caretValues];
-    theme.commentColor = [self colorFromArray:commentValues];
-	theme.marginColor = [self colorFromArray:marginValues];
-    
-    if (!theme.backgroundColor ||
-        !theme.textColor ||
-        !theme.selectionColor ||
-        !theme.invisibleTextColor ||
-        !theme.caretColor ||
-        !theme.commentColor) {
-        return nil;
-    }
-    
-    return theme;
+-(void)readTheme {
+	Theme* theme = [[Theme alloc] init];
+	NSArray* themes = [_plistContents objectForKey:THEMES_KEY];
+	
+	NSArray* backgroundValuesLight = [[themes objectAtIndex:0] objectForKey:@"Background"];
+	NSArray* backgroundValuesDark = [[themes objectAtIndex:1] objectForKey:@"Background"];
+	
+	NSArray* selectionValuesLight = [[themes objectAtIndex:0] objectForKey:@"Selection"];
+	NSArray* selectionValuesDark = [[themes objectAtIndex:1] objectForKey:@"Selection"];
+	
+	NSArray* textValuesLight = [[themes objectAtIndex:0] objectForKey:@"Text"];
+	NSArray* textValuesDark = [[themes objectAtIndex:1] objectForKey:@"Text"];
+	
+	NSArray* invisibleTextValuesLight = [[themes objectAtIndex:0] objectForKey:@"InvisibleText"];
+	NSArray* invisibleTextValuesDark = [[themes objectAtIndex:1] objectForKey:@"InvisibleText"];
+	
+	NSArray* caretValuesLight = [[themes objectAtIndex:0] objectForKey:@"Caret"];
+	NSArray* caretValuesDark = [[themes objectAtIndex:1] objectForKey:@"Caret"];
+	
+	NSArray* commentValuesLight =  [[themes objectAtIndex:0] objectForKey:@"Comment"];
+	NSArray* commentValuesDark =  [[themes objectAtIndex:1] objectForKey:@"Comment"];
+	
+	// NSArray* marginValues = [dict objectForKey:@"Margin"];
+	
+	theme.backgroundColor = [self dynamicColorFromArray:backgroundValuesLight darkArray:backgroundValuesDark];
+	theme.textColor = [self dynamicColorFromArray:textValuesLight darkArray:textValuesDark];
+	theme.selectionColor = [self dynamicColorFromArray:selectionValuesLight darkArray:selectionValuesDark];
+	theme.invisibleTextColor = [self dynamicColorFromArray:invisibleTextValuesLight darkArray:invisibleTextValuesDark];
+	theme.caretColor = [self dynamicColorFromArray:caretValuesLight darkArray:caretValuesDark];
+	theme.commentColor = [self dynamicColorFromArray:commentValuesLight darkArray:commentValuesDark];
+	// theme.marginColor = [self dynamicColorFromArray:selectionValuesLight darkArray:selectionValuesDark];
+
+	_theme = theme;
 }
 
 - (NSColor*)colorFromArray:(NSArray*)array
@@ -195,99 +137,67 @@
     return [NSColor colorWithCalibratedRed:red green:green blue:blue alpha:1.0];
 }
 
+- (DynamicColor*)dynamicColorFromArray:(NSArray*)lightArray darkArray:(NSArray*)darkArray {
+	NSNumber* redValueLight = lightArray[0];
+	NSNumber* greenValueLight = lightArray[1];
+	NSNumber* blueValueLight = lightArray[2];
+
+	NSNumber* redValueDark = darkArray[0];
+	NSNumber* greenValueDark = darkArray[1];
+	NSNumber* blueValueDark = darkArray[2];
+	
+	double redLight = redValueLight.doubleValue / 255.0;
+	double greenLight = greenValueLight.doubleValue / 255.0;
+	double blueLight = blueValueLight.doubleValue / 255.0;
+	
+	double redDark = redValueDark.doubleValue / 255.0;
+	double greenDark = greenValueDark.doubleValue / 255.0;
+	double blueDark = blueValueDark.doubleValue / 255.0;
+
+	return [[DynamicColor new]
+			initWithAquaColor:[NSColor colorWithCalibratedRed:redLight green:greenLight blue:blueLight alpha:1.0]
+			darkAquaColor:[NSColor colorWithCalibratedRed:redDark green:greenDark blue:blueDark alpha:1.0]];
+}
+
 #pragma mark Value Access
 
 - (NSColor*)currentBackgroundColor
 {
-    return [self currentTheme].backgroundColor;
+	return _theme.backgroundColor;
 }
 
 - (NSColor*) currentMarginColor
 {
-	return [self currentTheme].marginColor;
+	return _theme.marginColor;
 }
 
 - (NSColor*)currentSelectionColor
 {
-    return [self currentTheme].selectionColor;
+	return _theme.selectionColor;
 }
 
 - (NSColor*) currentTextColor
 {
-    return [self currentTheme].textColor;
+	return _theme.textColor;
 }
 
 - (NSColor*) currentInvisibleTextColor
 {
-    return [self currentTheme].invisibleTextColor;
+	return _theme.invisibleTextColor;
 }
 
 - (NSColor*) currentCaretColor
 {
-    return [self currentTheme].caretColor;
+	return _theme.caretColor;
 }
 
 - (NSColor*) currentCommentColor
 {
-    return [self currentTheme].commentColor;
+	return _theme.commentColor;
 }
 
 - (Theme*)currentTheme {
-    if (self.selectedTheme >= [self numberOfThemes]) {
-        return self.fallbackTheme;
-    }
-    return self.themes[self.selectedTheme];
-}
-
-- (Theme *)fallbackTheme
-{
-    if (!_fallbackTheme) {
-        _fallbackTheme = [[Theme alloc] init];
-        _fallbackTheme.backgroundColor = [NSColor colorWithCalibratedWhite:0.0 alpha:1.0];
-        _fallbackTheme.selectionColor = [NSColor colorWithCalibratedWhite:0.8 alpha:1.0];
-        _fallbackTheme.textColor = [NSColor colorWithCalibratedWhite:1.0 alpha:1.0];
-        _fallbackTheme.invisibleTextColor = [NSColor colorWithCalibratedWhite:0.7 alpha:1.0];
-        _fallbackTheme.caretColor = [NSColor colorWithCalibratedWhite:0.1 alpha:1.0];
-        _fallbackTheme.commentColor = [NSColor colorWithCalibratedWhite:0.5 alpha:1.0];
-    }
-    return _fallbackTheme;
-}
-
-
-
-#pragma mark Selection management
-
-- (NSUInteger)numberOfThemes
-{
-    return [self.themes count];
-}
-
-- (NSString*)nameForThemeAtIndex:(NSUInteger)index
-{
-    if (index >= [self numberOfThemes]) {
-        return @"";
-    }
-    Theme* theme = self.themes[index];
-    return theme.name;
-}
-
-- (NSUInteger)selectedTheme
-{
-    return _selectedTheme;
-}
-
-- (void)selectThemeWithName:(NSString *)name
-{
-    for (int i = 0; i < [self numberOfThemes]; i++) {
-        Theme *theme = self.themes[i];
-        if ([theme.name isEqualToString:name]) {
-            self.selectedTheme = i;
-            [self.plistContents setValue:@(i) forKey:SELECTED_THEME_KEY];
-            NSString* plistFilePath = [self plistFilePath];
-            [self.plistContents writeToFile:plistFilePath atomically:YES];
-            return;
-        }
-    }
+	return _theme;
 }
 
 @end

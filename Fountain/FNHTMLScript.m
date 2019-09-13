@@ -53,7 +53,7 @@
  
  Hence, I tried to replace the deprecated spin locks of RegexKitLite.h with modern ones.
  It was about to destroy my inner child. I just wanted to write nice films, I wasn't
- planning on fucking learning any motherfucking C!!!
+ planning on fucking learning any motherfucking C!!!!!!
  
  SO, if you are reading this: Beat now relies on a customized RegexKitLite,
  which might work or not. It could crash systems all around the world. It could
@@ -77,7 +77,6 @@
 #import "FNElement.h"
 #import "FountainRegexes.h"
 #import "FNPaginator.h"
-// #import "NSMutableString+Regex.h"
 
 // FUCK YOU REGEXKITLITE.H
  #import "RegexKitLite.h"

@@ -5,7 +5,8 @@
 		<meta charset="utf-8"/>
 		
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
 
 		<title></title>
 
@@ -16,16 +17,23 @@
 			}
 			body {
 				margin: 0;
-				padding: 2.2rem .5rem .5rem .5rem;
+				padding: 2.5rem .5rem .5rem .5rem;
 				background-color: #222;
 				font-family: "Helvetica Neue", Helvetica, sans-serif;
 				overflow-y: hidden;
+
+				user-select: none; 
+				-webkit-user-select: none;
+			}
+			body.dark {
+				background-color: #151515;
 			}
 			#controls {
 				position: fixed;
 				display: flex;
 				z-index: 100;
 				top: 4.5rem;
+				right: 1rem;
 				align-items: center;
 				font-size: .6em;
 			}
@@ -51,6 +59,10 @@
 				opacity: .7;
 				z-index: 1000;
 			}
+			.dark .scene {
+				border-color: #151515;
+			}
+
 			.scene:hover {
 				opacity: 1;
 				z-index: 1000;
@@ -111,8 +123,11 @@
 				white-space: nowrap;
 				width: auto;
 			}
+			.dark #timeline h2 { background-color: #151515; color: #eee; }
+			.dark #timeline h3 { background-color: #151515; }
 
 			input[type=range] {
+			  margin-left: .5rem;
 			  height: 26px;
 			  -webkit-appearance: none;
 			  width: 100%;
@@ -127,7 +142,7 @@
 			  cursor: pointer;
 			  transition: all ease 0.2s;
 			  box-shadow: 1px 1px 1px #50555C;
-			  background: #1a1a1a;
+			  background: #151515;
 			  border-radius: 5px;
 			  border: 0px solid #000000;
 			}
@@ -142,7 +157,7 @@
 			  -webkit-appearance: none;
 			}
 			input[type=range]:focus::-webkit-slider-runnable-track {
-			  background: #1a1a1a;
+			  background: #151515;
 			}
 
 			/* Beat colors */
@@ -177,7 +192,7 @@
 			var container = document.getElementById("timeline");
 			var zoomSlider = document.getElementById("zoom");
 			
-/*
+
 			// Pinch to zoom. Nevermind, this won't work on Webkit.
 			document.addEventListener("mousewheel", function (e) { e.preventDefault() }, { passive: false });
 
@@ -188,16 +203,18 @@
 
 			window.onwheel = function (e) {
 			  if (e.ctrlKey) {
-			    	console.log(e.deltaY * 3);
 			    	scale -= e.deltaY * 3;
 			    	zoomSlider.value = scale;
 			    	zoomSlider.oninput();
 			  } else {
+			  	window.scrollTo(window.scrollX + e.deltaY * .25 + e.deltaX * .25, 0);
+			  	
+			  	/*
 			    posX -= e.deltaX * 2;
 			    posY -= e.deltaY * 2;
+			    */
 			  }
 			};
-*/
 
 			// Refresh timeline
 			function refreshTimeline(newData = null, selectedIndex = null) {
@@ -239,13 +256,13 @@
 							container.innerHTML += "<div class='playhead'></div>";
 							selectedScene = "scene-" + scene.sceneIndex;
 						}
-						container.innerHTML += "<div id='scene-" + scene.sceneIndex + "' class='scene"+selected+color+"' style='width: calc(" + width + "% - 2px)'>" + scene.text +  "</div>";
+						container.innerHTML += "<div sceneIndex='" + scene.sceneIndex + "' id='scene-" + scene.sceneIndex + "' class='scene"+selected+color+"' style='width: calc(" + width + "% - 2px)' onclick='selectScene(this)'>" + scene.sceneNumber + ". " + scene.text +  "</div>";
 					}
 
 					index++;
 				}
 				zoomSlider.max = totalLength * .5;
-				zoomSlider.oninput();
+				zoomSlider.oninput(null);
 			}
 
 			zoomSlider.oninput = function (e) {
@@ -253,10 +270,21 @@
 
 				container.style.width = value + "%";
 
+				var settings = { block: "center", inline: "center" };
+
 				if (selectedScene) {
 					var scene = document.getElementById(selectedScene);
-					scene.scrollIntoView({ block: "center", inline: "center" });
+					scene.scrollIntoView(settings);
 				}
+			}
+
+			function selectScene (el) {
+				var index = el.getAttribute('sceneIndex');
+				window.webkit.messageHandlers.jumpToScene.postMessage(index);
+			}
+
+			function setStyle(style) {
+				document.body.className = style;
 			}
 
 			refreshTimeline(data);

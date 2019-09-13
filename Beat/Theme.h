@@ -7,16 +7,17 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "DynamicColor.h"
 
 @interface Theme : NSObject
 
-@property (strong, nonatomic) NSColor* backgroundColor;
-@property (strong, nonatomic) NSColor* selectionColor;
-@property (strong, nonatomic) NSColor* textColor;
-@property (strong, nonatomic) NSColor* invisibleTextColor;
-@property (strong, nonatomic) NSColor* caretColor;
-@property (strong, nonatomic) NSColor* commentColor;
-@property (strong, nonatomic) NSColor* marginColor;
+@property (strong, nonatomic) DynamicColor* backgroundColor;
+@property (strong, nonatomic) DynamicColor* selectionColor;
+@property (strong, nonatomic) DynamicColor* textColor;
+@property (strong, nonatomic) DynamicColor* invisibleTextColor;
+@property (strong, nonatomic) DynamicColor* caretColor;
+@property (strong, nonatomic) DynamicColor* commentColor;
+@property (strong, nonatomic) DynamicColor* marginColor;
 
 @property (strong, nonatomic) NSString* name;
 

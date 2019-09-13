@@ -49,9 +49,7 @@ Work in progress:
 
 Some future considerations:
 
-* Visual margins in edit view 
-* Better zooming in/out
-* Timeline view (with chronometry)
+* Show pages in edit view (probably not, though)
 * Have Beat only allow happy endings
 * Making the world a better place 
 * Planting some trees to fight climate change 

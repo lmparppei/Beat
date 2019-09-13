@@ -1,7 +1,9 @@
 # 1.1
 
 * Zooming is finally fixed
-# Timeline view under development
+# Native dark mode support (+ switching between modes is 100000 times faster)
+# Timeline view (chronometry is still WIP)
+# Fixed bugs in card view
 
 # 1.0.9d
 

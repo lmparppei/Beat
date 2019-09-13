@@ -116,7 +116,9 @@ contextMenu.init = function () {
 
 	for (var i in colors) {
 		var color = colors[i];
-		content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + color + "</div>";
+		if (typeof color === 'string') {
+			content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + color + "</div>";
+		}
 	}
 	
 	contextMenu.menu.innerHTML = content;

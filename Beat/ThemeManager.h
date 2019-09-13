@@ -21,9 +21,4 @@
 - (NSColor*) currentCommentColor;
 - (NSColor*) currentMarginColor;
 
-- (NSUInteger)numberOfThemes;
-- (NSString*)nameForThemeAtIndex:(NSUInteger)index;
-- (NSUInteger)selectedTheme;
-- (void)selectThemeWithName:(NSString*)name;
-
 @end

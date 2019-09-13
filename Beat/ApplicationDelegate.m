@@ -15,6 +15,9 @@
 #pragma mark - Help
 
 - (instancetype) init {
+	// Omg let's test this out
+	_darkMode = true;
+	
 	// This might be a silly implementation, but ..... well.
 	// Let's close the welcome screen if any sort of document has been opened
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
@@ -51,6 +54,29 @@
 	
 }
 
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	_darkMode = false;
+	if (@available(macOS 10.14, *)) {
+		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			_darkMode = true;
+		}
+	}
+}
+- (bool)isDark {
+	if (@available(macOS 10.14, *)) {
+		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			return true;
+		}
+	}
+	
+	return _darkMode;
+}
+
 - (IBAction)showFountainSyntax:(id)sender
 {
     [self openURLInWebBrowser:@"http://www.fountain.io/syntax#section-overview"];
@@ -75,6 +101,9 @@
 - (IBAction)closeStartModal
 {
 	[_startModal close];
+}
+- (void) toggleDarkMode {
+	_darkMode = !_darkMode;
 }
 
 @end

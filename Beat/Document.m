@@ -1,8 +1,8 @@
 //  Document.m
 //  Beat
 //
-//  Copyright (c) 2019 Lauri-Matti Parppei
-//  Based on Writer, copyright (c) 2016 Hendrik Noeller
+//  Copyright © 2019 Lauri-Matti Parppei
+//  Based on Writer, copyright © 2016 Hendrik Noeller
 
 /*
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,8 +29,12 @@
  
  N.B. Much of this code has its origins in Writer by Hendrik Noeller. As I started
  this project, I had close to zero knowledge on Objective-C, and it really shows.
+ 
  Beat has been cooked up by using lots of trial and error, and this file has become a
- 2700-line monster.
+ 2900-line monster.  I've started fixing some of my silliest coding practices, but
+ it's still a WIP. Some structures (such as themes) are legacy from Writer, and
+ have since been replaced with totally different approach. Their names and complimentary
+ methods still linger around.
  
  Anyway, may this be of some use to you, dear friend.
  
@@ -69,12 +73,11 @@
 #import "OutlineScene.h"
 #import "SelectorWithDebounce.h"
 #import "CenteredClipView.h"
-#import "ScalingScrollView.h"
-
+#import "DynamicColor.h"
+#import "ApplicationDelegate.h"
 
 @interface Document ()
 
-@property (unsafe_unretained) IBOutlet NSToolbar *toolbar;
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
 @property (weak) IBOutlet NSScrollView *textScrollView;
 @property (nonatomic) NSTimer * scrollTimer;
@@ -88,9 +91,7 @@
 @property (unsafe_unretained) IBOutlet WebView *webView;
 @property (unsafe_unretained) IBOutlet NSTabView *tabView;
 @property (weak) IBOutlet ColorView *backgroundView;
-
-// Color property test
-@property (nonatomic) NSColor *textColor;
+@property (weak) IBOutlet NSView *masterView;
 
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
 @property (unsafe_unretained) IBOutlet WKWebView *timelineView;
@@ -107,18 +108,13 @@
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
 @property (nonatomic) bool showSceneNumberLabels;
 
-#pragma mark - Floating outline button
-
 @property (weak) IBOutlet NSButton *outlineButton;
-
-#pragma mark - Toolbar Buttons
 
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
 
 @property (strong, nonatomic) NSFont *courier;
 @property (strong, nonatomic) NSFont *boldCourier;
 @property (strong, nonatomic) NSFont *italicCourier;
-@property (strong, nonatomic) NSFont *cothamRegular;
 
 @property (nonatomic) NSUInteger fontSize;
 @property (nonatomic) NSUInteger zoomLevel;
@@ -172,9 +168,7 @@
 #define ZOOM_MODIFIER 40
 
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
-#define DEFAULT_MAGNIFY 17
-#define MAGNIFY_REFERENCE 17
-// Change to YES to try out new zooms :--(
+#define DEFAULT_MAGNIFY 1.1
 #define MAGNIFY YES
 
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
@@ -239,18 +233,12 @@
 	/// Hide the welcome screen
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
-	// Get zoom level & font size
-	if (!MAGNIFY) {
-		_zoomLevel = self.zoomLevel;
-		_documentWidth = _zoomLevel * ZOOM_MODIFIER;
-	} else {
-		// New way of zooming. This is pretty fucked up.
-		// DON'T TOUCH THESE FOR NOW!
-		_zoomLevel = DEFAULT_ZOOM;
-		_documentWidth = DEFAULT_ZOOM * ZOOM_MODIFIER;
-		[self setZoom];
-	}
-	
+	// Get zoom level & font size. This is pretty fucked up now, as from 1.1.0 onwards zooming is done by scaling.
+	// If you are wondering, read more nearby the setZoom method. Lol.
+	_zoomLevel = DEFAULT_ZOOM;
+	_documentWidth = DEFAULT_ZOOM * ZOOM_MODIFIER;
+	[self setZoom];
+
     //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
     NSWindow *window = aController.window;
     NSRect newFrame = NSMakeRect(window.frame.origin.x,
@@ -271,6 +259,7 @@
 	
     self.outlineViewVisible = false;
     self.outlineViewWidth.constant = 0;
+	
 	
 	/* ####### TextView setup ######## */
 	
@@ -326,7 +315,7 @@
 	//Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
 	self.themeManager = [ThemeManager sharedManager];
 	[self loadSelectedTheme:false];
-	_nightMode = false;
+	_nightMode = [self isDark];
 	
     //Put any previously loaded data into the text view
     if (self.contentBuffer) {
@@ -334,18 +323,6 @@
     } else {
         [self setText:@""];
     }
-	
-	 // I'm doing this on xcode 8, so oh well. When I can upgrade, do this.
- /*
-	 if (@available(macOS 10.14, *)) {
-		 NSAppearanceName appearanceName = [[self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];]
-		 if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			// use dark color
-		 } else {
-			// use light color
-		 }
-	 }
-*/
 	
 	// Outline view setup
 	self.outlineClosedSections = [[NSMutableArray alloc] init];
@@ -359,7 +336,6 @@
 	
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
 
-	
 	// CardView webkit
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
@@ -370,6 +346,7 @@
 	[self setupTimeline];
 	self.timelineVisible = false;
 	self.timelineViewHeight.constant = 0;
+	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"jumpToScene"];
 	
 	[self applyFormatChanges];
 
@@ -385,6 +362,7 @@
 }
 - (void) afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^{
+		[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 		[self updateLayout];
 		
 		// This is a silly duct-tape fix for a bug I can't track. Send help.
@@ -403,24 +381,14 @@
 	[self updateLayout];
 }
 - (void) updateLayout {
-	
-	if (!MAGNIFY) { // Old way of magnification
-		
-		[self setMinimumWindowSize];
-		self.textView.textContainerInset = NSMakeSize(self.textView.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+	[self setMinimumWindowSize];
+	CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
+	if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
+		self.textView.textContainerInset = NSMakeSize(width, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-		
-	} else { // New way
-		[self setMinimumWindowSize];
-		CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
-		if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
-			self.textView.textContainerInset = NSMakeSize(width, TEXT_INSET_TOP);
-			self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-		}
 	}
 	
-	NSLog(@"Update layout");
-	[self updateSceneNumberLabels];
+	[self ensureLayout];
 }
 
 - (void) setMinimumWindowSize {
@@ -480,7 +448,15 @@
 		// Scale and apply the scroll position
 		scrollPosition.y = scrollPosition.y * _magnification;
 		[self.textScrollView.contentView scrollToPoint:scrollPosition];
+		
+		[self ensureLayout];
 	}
+}
+
+- (void)ensureLayout {
+	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
+	[self.textView setNeedsDisplay:true];
+	[self updateSceneNumberLabels];
 }
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
@@ -546,12 +522,6 @@
 
 
 - (void)resizeMargins {
-	/*
-	
-	 Margins to make an illusion of "page" view. These didn't work because they blocked the find field. Best solution would be just to make a background box and resize the textView accordingly, but I don't have the time or the nerves to count the sizes now. One fine day maybe. I'm not even sure if it would look that good or just distracting.
-	 
-	*/
-	
 	/*
 	CGRect leftFrame = self.leftMargin.frame;
 	leftFrame.origin.x = 0;
@@ -813,8 +783,12 @@
 {
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
-    if (self.outlineViewVisible && changeInOutline) [self reloadOutline];
-	if (self.timelineVisible && changeInOutline) [self buildTimeline];
+	if (changeInOutline) {
+		// This builds outline in the parser. Weird method name, I know.
+		[self.parser numberOfOutlineItems];
+		if (self.outlineViewVisible) [self reloadOutline];
+		if (self.timelineVisible) [self buildTimeline];
+	}
 	
 	[self applyFormatChanges];
 	
@@ -822,17 +796,15 @@
 	[self updateSceneNumberLabels];
 }
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
-	// Reload outline without refreshing the whole outline in parser
-	// This highlights the current scene
+	// Locate current scene & reload outline without building it in parser
 	if (_outlineViewVisible) [self reloadOutline];
 	
-	// FIX THIS!!!
-	// We need a function like "findintimeline" or something to avoid building the whole timeline on every keypress.
 	[self getCurrentScene];
 	if (_timelineVisible && _currentScene) [self findOnTimeline:_currentScene];
 }
 
-/* #### AUTOCOMPLETE ##### */
+
+# pragma mark  Autocomplete
 
 // Collect all character names from script
 - (void) collectCharacterNames {
@@ -852,7 +824,7 @@
 	}
 }
 
-# pragma mark Formatting
+# pragma  mark Formatting
 
 /* #### FORMATTING #### */
 - (IBAction) reformatEverything:(id)sender {
@@ -1140,14 +1112,6 @@
     return NSMakeRange(range->location + position, range->length);
 }
 
-
-- (NSFont*)cothamRegular {
-	if (!_cothamRegular) {
-		_cothamRegular = [NSFont fontWithName:@"Cotham Sans" size:11];
-	}
-	return _cothamRegular;
-}
-
 - (NSFont*)courier
 {
     if (!_courier) {
@@ -1345,7 +1309,6 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (IBAction)lockSceneNumbers:(id)sender
 {
-	NSLog(@"Lock scene numbers (the new way)");
 	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
 	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
 	
@@ -1655,31 +1618,8 @@ static NSString *forceLyricsSymbol = @"~";
 			[window.animator setFrame:newFrame display:YES];
 		} else {
 			[self.textView.animator setTextContainerInset:NSMakeSize((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
-			
-			//[self.textView.animator setTextContainerInset:NSMakeSize((self.thisWindow.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
-			/*
-			[self.textView setTextContainerInset:NSMakeSize((self.textView.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
-			[self updateLayout];
-			
-			[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-				
-			} completionHandler:^{
-				[self updateLayout];
-			}];
-			*/
-			//[self.textView.animator setTextContainerInset:NSMakeSize((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
 		}
-		
-		
-		CGRect buttonFrame = self.outlineButton.frame;
-		buttonFrame.origin.x = TREE_VIEW_WIDTH + 15;
-		[self.outlineButton.animator setFrame:buttonFrame];
-
     } else {
-		CGRect buttonFrame = self.outlineButton.frame;
-		buttonFrame.origin.x = 15;
-		[self.outlineButton.animator setFrame:buttonFrame];
-		
 		[self.outlineViewWidth.animator setConstant:0];
 		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
@@ -1695,18 +1635,12 @@ static NSString *forceLyricsSymbol = @"~";
 								  window.frame.origin.y,
 								  window.frame.size.width,
 								  window.frame.size.height);
-
-			//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-			//[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
-			
-		
-			// [self.textView.animator setFrame:newFrame];
 			
 			[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
 		}
-		
-		//[self updateLayout];
     }
+	
+	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 }
 
 //Empty function, which needs to exists to make the share access the validateMenuItems function
@@ -1815,7 +1749,7 @@ static NSString *forceLyricsSymbol = @"~";
             return NO;
         }
 	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
-		if (self.nightMode) {
+		if ([(ApplicationDelegate *)[NSApp delegate] isDark]) {
 			[menuItem setState:NSOnState];
 		} else {
 			[menuItem setState:NSOffState];
@@ -1844,17 +1778,28 @@ static NSString *forceLyricsSymbol = @"~";
     [[sender representedObject] performWithItems:@[self.fileURL]];
 }
 - (IBAction)toggleNightMode:(id)sender {
-	_nightMode = !_nightMode;
-	[self.textView toggleDarkPopup:nil];
+	[(ApplicationDelegate *)[NSApp delegate] toggleDarkMode];
 	
-	if (_nightMode) {
-		[self.themeManager selectThemeWithName:@"Night"];
-		_darkPopup = true;
-	} else {
-		[self.themeManager selectThemeWithName:@"Day"];
-		_darkPopup = false;
+	[_masterView setNeedsDisplayInRect:[_masterView frame]];
+	[self.backgroundView setNeedsDisplay:true];
+	[self.thisWindow setViewsNeedDisplay:true];
+	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
+	//[self updateSceneNumberLabels];
+	
+	[self updateTimelineStyle];
+	
+	[self.textView setNeedsDisplay:true];
+	
+	for (NSTextField* textField in self.sceneNumberLabels) {
+		//textField.textColor = self.themeManager.currentTextColor;
+		[textField setNeedsDisplay:true];
 	}
-	[self loadSelectedTheme:true];
+	
+	[self.textView toggleDarkPopup:nil];
+	_darkPopup = [self isDark];
+}
+- (bool)isDark {
+	return [(ApplicationDelegate *)[NSApp delegate] isDark];
 }
 
 - (IBAction)toggleLivePreview:(id)sender
@@ -2032,6 +1977,14 @@ static NSString *forceLyricsSymbol = @"~";
 	else { return NO; }
 }
 
+/*
+ 
+ Searching for sunlight there in your room
+ Trolling for one light there in the gloom
+ You dream of a better day
+ alone with the moon
+ 
+ */
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 { @autoreleasepool {
@@ -2042,9 +1995,9 @@ static NSString *forceLyricsSymbol = @"~";
 		bool currentScene = false;
 		
 		// The outline elements will be formatted as rich text,
-		// which is apparently VERY CUMBERSOME in Objective-C.
+		// which is apparently VERY CUMBERSOME in Cocoa/Objective-C.
 		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
-		[resultString addAttribute:NSFontAttributeName value:[self cothamRegular] range:NSMakeRange(0, [line.string length])];
+		//[resultString addAttribute:NSFontAttributeName value:[self cothamRegular] range:NSMakeRange(0, [line.string length])];
 		
         if (line.type == heading) {
 			if (_currentScene.string) {
@@ -2161,29 +2114,6 @@ static NSString *forceLyricsSymbol = @"~";
     return @"";
 	
 } }
-/*
-- (void)outlineView:(NSOutlineView *)outlineView didAddRowView:(NSTableRowView *)rowView forRow:(NSInteger)row {
-	NSLog(@"what");
-	OutlineScene *scene = [outlineView itemAtRow:row];
-	if (scene == _currentScene)	rowView.backgroundColor = [NSColor darkGrayColor];
-}
-*/
-
-/*
--  (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item {
-	
-	OutlineScene *scene = item;
-	if (!scene.string || !_currentScene.string) return;
-	//[self.outlineView setNeedsDisplayInRect:[self.outlineView rectOfRow:]];
-	//NSLog(@"item %@ / current %@", scene.string, _currentScene.string);
-	if ([scene.string isEqualToString:_currentScene.string] && scene.sceneNumber == _currentScene.sceneNumber)	{
-		NSLog(@"FFFFFOUND");
-		[cell setBackgroundColor:[NSColor redColor]];
-	} else {
-		[cell setBackgroundColor:[NSColor blackColor]];
-	}
-	 
-}*/
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
@@ -2226,19 +2156,6 @@ static NSString *forceLyricsSymbol = @"~";
 			[self.outlineView collapseItem:item];
 		}
 	}
-	
-	/*
-	 // I'll look at this at a later time. I'd like to highlight / scroll to the currently edited outline item
-
-	 if (_currentLine) {
-		if (_currentLine.type == heading || _currentLine.type == section || _currentLine.type == synopse) {
-			OutlineScene * item = [self.parser getOutlineForLine:_currentLine];
-			NSLog(@"Found item: %@", item.string);
-			NSInteger row = [self.outlineView rowForItem:item];
-			[self.outlineView scrollRowToVisible:row];
-		}
-	}
-	*/
 	
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
@@ -2412,7 +2329,7 @@ static NSString *forceLyricsSymbol = @"~";
 	
 - (void) refreshCards {
 	
-	if (self.nightMode) {
+	if ([self isDark]) {
 		[_cardView evaluateJavaScript:@"nightModeOn();" completionHandler:nil];
 	} else {
 		[_cardView evaluateJavaScript:@"nightModeOff();" completionHandler:nil];
@@ -2509,6 +2426,14 @@ static NSString *forceLyricsSymbol = @"~";
 		return;
 	}
 	
+	if ([message.name isEqualToString:@"jumpToScene"]) {
+		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
+		NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
+		[self.textView setSelectedRange:lineRange];
+		[self.textView scrollRangeToVisible:lineRange];
+		return;
+	}
+	
 	if ([message.name isEqualToString:@"cardClick"]) {
 		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
 		NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
@@ -2570,8 +2495,6 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 
 	if ([message.name isEqualToString:@"setColor"]) {
-		NSLog(@"Body : %@", message.body);
-		
 		if ([message.body rangeOfString:@":"].location != NSNotFound) {
 			NSArray *indexAndColor = [message.body componentsSeparatedByString:@":"];
 			NSUInteger index = [[indexAndColor objectAtIndex:0] integerValue];
@@ -2582,10 +2505,6 @@ static NSString *forceLyricsSymbol = @"~";
 			
 			[self setColor:color forScene:scene];
 		}
-	}
-	
-	if ([message.name isEqualToString:@"moveScene"]) {
-		NSLog(@"Body: %@", message.body);
 	}
 }
 
@@ -2620,8 +2539,12 @@ static NSString *forceLyricsSymbol = @"~";
 	return label;
 }
 
-// This kind of works but might make things a bit slow. I'm not sure. There are CPU & memory spikes on scroll, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
+
+// This kind of works but might make things a bit slow. I'm not sure.
+// There are CPU & memory spikes on scroll, but debouncing the calls to update didn't work as scrolling might end during the debounce cooldown.
 // Send help.
+// Well, at least this is something that Slugline and Logline can't do. :--------)
+
 - (void) updateSceneNumberLabels {
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	
@@ -2629,11 +2552,11 @@ static NSString *forceLyricsSymbol = @"~";
 		[self.parser numberOfOutlineItems];
 	}
 	
-	
 	NSInteger numberOfScenes = [self getNumberOfScenes];
 	NSInteger numberOfLabels = [self.sceneNumberLabels count];
 	NSInteger difference = numberOfScenes - numberOfLabels;
 	
+	// Create missing labels for newly created scenes
 	if (difference > 0 && [self.sceneNumberLabels count]) {
 		for (NSUInteger d = 0; d < difference; d++) {
 			[self createLabel:nil];
@@ -2718,7 +2641,6 @@ static NSString *forceLyricsSymbol = @"~";
 		}
 	}
 	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
-
 }
 
 #pragma mark - chronometry
@@ -2736,14 +2658,32 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (IBAction)showTimeline:(id)sender
 {
+	// There is a KNOWN BUG here.
+	// For some reason, the textview jumps into strange position when timeline is toggled and scroll position is towards the end.
+	// It has to do with scaling, I guess, but I have no idea how to fix it.
+	
 	_timelineVisible = !_timelineVisible;
-		
+	
+	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
+
+	NSRect visibleRect = [[self.textScrollView contentView] documentVisibleRect];
+	
 	if (_timelineVisible) {
-		self.timelineViewHeight.constant = TIMELINE_VIEW_HEIGHT;
+		[self updateTimelineStyle];
 		[self buildTimeline];
+		self.timelineViewHeight.constant = TIMELINE_VIEW_HEIGHT;
+		
+		[self ensureLayout];
+		
+		[self.textView scrollPoint:scrollPosition];
 	} else {
 		self.timelineViewHeight.constant = 0;
+		scrollPosition.y = scrollPosition.y * _magnification;
+		
+		[self.textScrollView.contentView scrollToPoint:scrollPosition];
 	}
+	
+	//[self.textScrollView.contentView scrollToPoint:scrollPosition];
 }
 
 - (void) setupTimeline {
@@ -2751,6 +2691,11 @@ static NSString *forceLyricsSymbol = @"~";
 	NSString *content = [NSString stringWithContentsOfFile:timelinePath encoding:NSUTF8StringEncoding error:nil];
 
 	[_timelineView loadHTMLString:content baseURL:nil];
+	[self updateTimelineStyle];
+}
+- (void) updateTimelineStyle {
+	if ([self isDark]) [self.timelineView evaluateJavaScript:@"setStyle('dark');" completionHandler:nil];
+	else [self.timelineView evaluateJavaScript:@"setStyle('light');" completionHandler:nil];
 }
 - (void) buildTimeline {
 	[self getCurrentScene];
@@ -2811,6 +2756,15 @@ static NSString *forceLyricsSymbol = @"~";
 					previousLineEmpty = false;
 				}
 
+				NSInteger lineLength = [line.string length];
+				
+				// We need to take omitted ranges into consideration, so they won't add up to scene lengths
+				__block NSUInteger omitLength = 0;
+				[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+					omitLength += range.length;
+				}];
+				if (lineLength - omitLength >= 0) lineLength -= omitLength;
+				
 				// Character cue and parenthetical add 1 beat each
 				if (line.type == character || line.type == parenthetical) {
 					length += 1;
@@ -2818,17 +2772,14 @@ static NSString *forceLyricsSymbol = @"~";
 				}
 				
 				if (line.type == dialogue) {
-					NSInteger lineLength = [line.string length];
 					length += (lineLength + charsPerDialogue - 1) / charsPerDialogue;
 					continue;
 				}
 				
 				if (line.type == action) {
-					NSInteger lineLength = [line.string length];
 					length += (lineLength + charsPerLine - 1) / charsPerLine;
 				}
-				
-				// NOTE: We need to take omitted ranges into consideration
+		
 			}
 			
 			CGFloat seconds = round((CGFloat)length / 52 * 60);
@@ -2847,11 +2798,9 @@ static NSString *forceLyricsSymbol = @"~";
 }
 - (void) findOnTimeline: (OutlineScene *) scene {
 	NSUInteger index = [[self getOutlineItems] indexOfObject:scene];
-		NSLog(@"Find on timeline %lu", index);
 	NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", index];
 	[_timelineView evaluateJavaScript:evalString completionHandler:nil];
 }
-
 
 #pragma mark - scroll listeners
 
@@ -2859,9 +2808,9 @@ static NSString *forceLyricsSymbol = @"~";
 - (void)boundsDidChange:(NSNotification*)notification {
 	if (notification.object != [self.textScrollView contentView]) return;
 	
-	[self updateSceneNumberLabels];
+	//[self updateSceneNumberLabels];
 	
-	/*
+
 	// if(_scrollTimer == nil) [self scrollViewDidScroll];
 	[self performSelector:@selector(updateSceneNumberLabels) withDebounceDuration:.1];
 	
@@ -2869,10 +2818,9 @@ static NSString *forceLyricsSymbol = @"~";
 		[_scrollTimer setFireDate:[NSDate dateWithTimeIntervalSinceNow:.1]];
 	else
 		_scrollTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(scrollViewDidEndScrolling) userInfo:nil repeats:NO];
-	 */
 }
 - (void)scrollViewDidScroll {
-	//[self performSelector:@selector(updateSceneNumberLabels) withDebounceDuration:0.2];
+	//[self performSelector:@selector(updateSceneNumberLabels) withDebounceDuration:0.01];
 	//[self updateSceneNumberLabels];
 }
 - (void)scrollViewDidEndScrolling
