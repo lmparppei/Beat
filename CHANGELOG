@@ -1,9 +1,13 @@
-# 1.1
+# 1.1.0
 
-* Zooming is finally fixed
-# Native dark mode support (+ switching between modes is 100000 times faster)
-# Timeline view (chronometry is still WIP)
-# Fixed bugs in card view
+* Timeline view (chronometry is still WIP)
+* Zooming is now fast and efficient
+* Support for native macOS dark mode (+ switching between modes is 100000 times faster)
+* Fixed bugs in card view
+* Find bar no more overlaps outline and card view buttons
+* Fixed scrolling bugs for text view and optimized scene number labeling
+* Fixed undoing scene colors
+# Fixed bugs with fullscreen view
 
 # 1.0.9d
 

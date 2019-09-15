@@ -358,9 +358,18 @@
     NSString* string = line.string;
     NSUInteger length = [string length];
     
-    //Check if empty
+    // Check if empty.
     if (length == 0) {
-        return empty;
+		// If previous line is character cue, this line becomes dialogue right away
+		// Else it's just empty.
+		
+		Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
+		
+		if (preceedingLine.type == character) {
+			return dialogue;
+		} else {
+			return empty;
+		}
     }
     
     char firstChar = [string characterAtIndex:0];

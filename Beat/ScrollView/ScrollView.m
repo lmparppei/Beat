@@ -12,12 +12,9 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-
-	
-	
-    // Drawing code here.
 }
 
+// Listen to find bar open/close and move the buttons accordingly
 - (void)setFindBarVisible:(BOOL)findBarVisible {
 	[super setFindBarVisible:findBarVisible];
 	

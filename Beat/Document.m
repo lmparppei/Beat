@@ -93,9 +93,14 @@
 @property (weak) IBOutlet ColorView *backgroundView;
 @property (weak) IBOutlet NSView *masterView;
 
+@property (weak) IBOutlet NSMenu *colorMenu;
+
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
 @property (unsafe_unretained) IBOutlet WKWebView *timelineView;
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
+
+@property (nonatomic) NSInteger timelineClickedScene;
+@property (nonatomic) NSInteger timelineSelection;
 
 @property (unsafe_unretained) IBOutlet NSBox *leftMargin;
 @property (unsafe_unretained) IBOutlet NSBox *rightMargin;
@@ -145,7 +150,7 @@
 
 // Autocompletion purposes
 @property (nonatomic) Line *currentLine;
-@property (nonatomic) OutlineScene *currentScene;
+@property OutlineScene *currentScene;
 @property (nonatomic) NSString *cachedText;
 @property (nonatomic) bool isAutoCompleting;
 @property (nonatomic) NSMutableArray *characterNames;
@@ -347,6 +352,8 @@
 	self.timelineVisible = false;
 	self.timelineViewHeight.constant = 0;
 	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"jumpToScene"];
+	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"timelineContext"];
+	_timelineClickedScene = -1;
 	
 	[self applyFormatChanges];
 
@@ -371,7 +378,8 @@
 	});
 }
 
-# pragma mark Window interactions
+
+# pragma mark - Window interactions
 
 - (bool) isFullscreen {
 	return (([_thisWindow styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
@@ -520,28 +528,6 @@
 	[self updateLayout];
 }
 
-
-- (void)resizeMargins {
-	/*
-	CGRect leftFrame = self.leftMargin.frame;
-	leftFrame.origin.x = 0;
-	leftFrame.origin.y = 0;
-	leftFrame.size = CGSizeMake(self.textView.frame.size.width / 2 - _documentWidth / 2 - 150, self.textView.frame.size.height);
-	
-	NSLog(@"textview width %f documentwidth %lu", self.textView.frame.size.width, _documentWidth);
-	NSLog(@"width %f height %f", leftFrame.size.width, leftFrame.size.height);
-	//leftFrame.size = TREE_VIEW_WIDTH + 15;
-	//[self.outlineButton.animator setFrame:buttonFrame];
-	self.leftMargin.frame = leftFrame;
-	
-	CGRect rightFrame = self.rightMargin.frame;
-	rightFrame.origin.y = 0;
-	rightFrame.size = CGSizeMake(self.textView.frame.size.width / 2 - _documentWidth / 2 - 150, self.textView.frame.size.height);
-	rightFrame.origin.x = _thisWindow.frame.size.width - rightFrame.size.width;
-	self.rightMargin.frame = rightFrame;
-	*/
-}
-
 // Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
 + (BOOL)autosavesInPlace {
     return NO;
@@ -567,8 +553,7 @@
 }
 
 
-
-# pragma mark Text content stuff
+# pragma mark - Text I/O
 
 - (NSString *)getText
 {
@@ -706,7 +691,8 @@
 	return nil;
 }
 
-# pragma mark Should change text + autocomplete
+
+# pragma mark - Text manipulation
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
@@ -740,7 +726,6 @@
     }
 	
 	// Fire up autocomplete
-	
 	if (_currentLine.type == character) {
 		[self.textView setAutomaticTextCompletionEnabled:YES];
 	} else if (_currentLine.type == heading) {
@@ -753,6 +738,96 @@
 	
     [self.parser parseChangeInRange:affectedCharRange withString:replacementString];
     return YES;
+}
+
+- (void)textDidChange:(NSNotification *)notification
+{
+	// If outline has changed, we will rebuild outline & timeline if needed
+	bool changeInOutline = [self.parser getAndResetChangeInOutline];
+	if (changeInOutline) {
+		// This builds outline in the parser. Weird method name, I know.
+		[self.parser numberOfOutlineItems];
+		if (self.outlineViewVisible) [self reloadOutline];
+		if (self.timelineVisible) [self buildTimeline];
+	}
+	
+	[self applyFormatChanges];
+	
+	[self.parser numberOfOutlineItems];
+	[self updateSceneNumberLabels];
+}
+- (void)textViewDidChangeSelection:(NSNotification *)notification {
+	// Locate current scene & reload outline without building it in parser
+	
+	if (_outlineViewVisible || _timelineVisible) {
+		
+		[self getCurrentScene];
+		if (_timelineVisible && _currentScene) {
+			[self findOnTimeline:_currentScene];
+		}
+		
+		// So... uh. For some reason, _currentScene can get messed up after reloading the outline, so that's why we checked the timeline position first.
+		[self getCurrentScene];
+		if (_outlineViewVisible) [self reloadOutline];
+		if (_outlineViewVisible && _currentScene) [self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
+	}
+}
+
+- (void)addString:(NSString*)string atIndex:(NSUInteger)index
+{
+	[self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
+	[[[self undoManager] prepareWithInvocationTarget:self] removeString:string atIndex:index];
+}
+
+- (void)removeString:(NSString*)string atIndex:(NSUInteger)index
+{
+	[self replaceCharactersInRange:NSMakeRange(index, [string length]) withString:@""];
+	[[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:index];
+}
+
+- (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
+{
+	NSRange range = NSMakeRange(index, [string length]);
+	[self replaceCharactersInRange:range withString:newString];
+	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
+}
+
+// WIP
+// We need a method to be able to undo scene reordering.
+- (void)moveString:(NSString*)string from:(NSUInteger)from to:(NSUInteger)to
+{
+	//NSRange range = NSMakeRange(index, [string length]);
+}
+
+- (NSRange)cursorLocation
+{
+	return [[self.textView selectedRanges][0] rangeValue];
+}
+
+- (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
+{
+	return NSMakeRange(range->location + position, range->length);
+}
+
+
+# pragma mark - Autocomplete
+
+// Collect all character names from script
+- (void) collectCharacterNames {
+	[_characterNames removeAllObjects];
+	for (Line *line in [self.parser lines]) {
+		if (line.type == character && line != _currentLine && ![_characterNames containsObject:line.string]) {
+			[_characterNames addObject:line.string];
+		}
+	}
+}
+- (void) collectHeadings {
+	[_sceneHeadings removeAllObjects];
+	for (Line *line in [self.parser lines]) {
+		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
+			[_sceneHeadings addObject:line.string];
+		}
+	}
 }
 
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
@@ -775,59 +850,21 @@
 		}
 	}
 	[matches sortUsingSelector:@selector(compare:)];
-
+	
 	return matches;
 }
 
-- (void)textDidChange:(NSNotification *)notification
-{
-	// If outline has changed, we will rebuild outline & timeline if needed
-	bool changeInOutline = [self.parser getAndResetChangeInOutline];
-	if (changeInOutline) {
-		// This builds outline in the parser. Weird method name, I know.
-		[self.parser numberOfOutlineItems];
-		if (self.outlineViewVisible) [self reloadOutline];
-		if (self.timelineVisible) [self buildTimeline];
-	}
+
+# pragma  mark - Formatting
+
+// This is a panic button. It replaces the whole document with raw text input.
+- (IBAction) reformatEverything:(id)sender {
+	NSString *wholeText = [NSString stringWithString:[self getText]];
+	
+	[self setText:wholeText];
+	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
 	
 	[self applyFormatChanges];
-	
-	[self.parser numberOfOutlineItems];
-	[self updateSceneNumberLabels];
-}
-- (void)textViewDidChangeSelection:(NSNotification *)notification {
-	// Locate current scene & reload outline without building it in parser
-	if (_outlineViewVisible) [self reloadOutline];
-	
-	[self getCurrentScene];
-	if (_timelineVisible && _currentScene) [self findOnTimeline:_currentScene];
-}
-
-
-# pragma mark  Autocomplete
-
-// Collect all character names from script
-- (void) collectCharacterNames {
-	[_characterNames removeAllObjects];
-	for (Line *line in [self.parser lines]) {
-		if (line.type == character && line != _currentLine && ![_characterNames containsObject:line.string]) {
-			[_characterNames addObject:line.string];
-		}
-	}
-}
-- (void) collectHeadings {
-	[_sceneHeadings removeAllObjects];
-	for (Line *line in [self.parser lines]) {
-		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
-			[_sceneHeadings addObject:line.string];
-		}
-	}
-}
-
-# pragma  mark Formatting
-
-/* #### FORMATTING #### */
-- (IBAction) reformatEverything:(id)sender {
 	[self formattAllLines];
 }
 
@@ -957,7 +994,7 @@
                 [paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
-                
+
                 [attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
                 
             } else if (line.type == parenthetical) {
@@ -970,6 +1007,7 @@
                 
             } else if (line.type == dialogue) {
                 //NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+				
                 [paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
                 [paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
@@ -1025,9 +1063,11 @@
 		
         //Add selected attributes
         [textStorage addAttributes:attributes range:range];
-        
+		
+		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
+		if ([line.string length] == 0) [self.textView setTypingAttributes:attributes];
+		
         //Add in bold, underline, italic and all that other good stuff. it looks like a lot of code, but the content is only executed for every formatted block. for unformatted text, this just whizzes by
-        
         
         [line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
             NSUInteger symbolLength = 1;
@@ -1107,10 +1147,7 @@
     }
 }
 
-- (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
-{
-    return NSMakeRange(range->location + position, range->length);
-}
+# pragma  mark Fonts
 
 - (NSFont*)courier
 {
@@ -1136,28 +1173,13 @@
     return _italicCourier;
 }
 
-- (NSUInteger)zoomLevel
-{
-    if (_zoomLevel == 0) {
-        _zoomLevel = [[NSUserDefaults standardUserDefaults] integerForKey:ZOOMLEVEL_KEY];
-		NSLog(@"User zoomlevel: %lu", _zoomLevel);
-        if (_zoomLevel == 0) {
-            _zoomLevel = DEFAULT_ZOOM;
-        }
-    }
-    
-    return _zoomLevel;
-}
-
+// This is here for legacy reasons
 - (NSUInteger)fontSize
 {
-	if (!MAGNIFY) {
-		_fontSize = _zoomLevel * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-		return _fontSize;
-	} else {
-		_fontSize = DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-		return _fontSize;
-	}
+	// Beat used to have font-based "zoom", legacy of Writer. I tried thousands of weird tricks to fix and circumvent it until I figured out how to use scaleUnitToSize.
+	// Font size was finally determined by this weird equation. I have no idea what I was thinking about, but for now, this is how we set our font size...... everything is proportially sized, and it shouldn't be too hard to just use constants for these in the future. But, for now, until I have the time and energy, we're stuck with this stuff. Read more nearby setZoom.
+	_fontSize = DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
+	return _fontSize;
 }
 
 
@@ -1221,19 +1243,6 @@ static NSString *forceLyricsSymbol = @"~";
         }
     }
 }
-
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index
-{
-    [self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
-    [[[self undoManager] prepareWithInvocationTarget:self] removeString:string atIndex:index];
-}
-
-- (void)removeString:(NSString*)string atIndex:(NSUInteger)index
-{
-    [self replaceCharactersInRange:NSMakeRange(index, [string length]) withString:@""];
-    [[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:index];
-}
-
 
 - (IBAction)makeBold:(id)sender
 {
@@ -1379,12 +1388,6 @@ static NSString *forceLyricsSymbol = @"~";
         [self format:cursorLocation beginningSymbol:omitOpen endSymbol:omitClose];
     }
 }
-
-- (NSRange)cursorLocation
-{
-    return [[self.textView selectedRanges][0] rangeValue];
-}
-
 
 - (void)format:(NSRange)cursorLocation beginningSymbol:(NSString*)beginningSymbol endSymbol:(NSString*)endSymbol
 {
@@ -1579,33 +1582,23 @@ static NSString *forceLyricsSymbol = @"~";
     }
 }
 
-// WIP
--(void)updateSizes:(id)sender
-{
-    
-}
-
 
 #pragma mark - User Interaction
 
 - (IBAction)toggleOutlineView:(id)sender
 {
+	// Animations removed in 1.1.0. They were slow and ugly.
+	
     self.outlineViewVisible = !self.outlineViewVisible;
 	
 	NSUInteger offset = 20;
 	if ([self isFullscreen]) offset = 0;
 	
-	[NSAnimationContext.currentContext setCompletionHandler:^{
-		//[self.textView setTextContainerInset:NSMakeSize((self.thisWindow.frame.size.width - self.outlineViewWidth.constant) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
-		
-		[self updateSceneNumberLabels];
-	}];
-	
     if (self.outlineViewVisible) {
 		[self reloadOutline];
 		
 		[self.outlineView expandItem:nil expandChildren:true];
-        [self.outlineViewWidth.animator setConstant:TREE_VIEW_WIDTH];
+        [self.outlineViewWidth setConstant:TREE_VIEW_WIDTH];
 		
 		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
@@ -1615,12 +1608,13 @@ static NSString *forceLyricsSymbol = @"~";
 										 window.frame.origin.y,
 										 window.frame.size.width + TREE_VIEW_WIDTH + offset,
 										 window.frame.size.height);
-			[window.animator setFrame:newFrame display:YES];
+			[window setFrame:newFrame display:YES];
 		} else {
-			[self.textView.animator setTextContainerInset:NSMakeSize((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			CGFloat width = ((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth * _magnification / 2) / _magnification;
+			[self.textView setTextContainerInset:NSMakeSize(width, TEXT_INSET_TOP)];
 		}
     } else {
-		[self.outlineViewWidth.animator setConstant:0];
+		[self.outlineViewWidth setConstant:0];
 		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
 		
@@ -1629,14 +1623,16 @@ static NSString *forceLyricsSymbol = @"~";
 										 window.frame.origin.y,
 										 window.frame.size.width - TREE_VIEW_WIDTH - offset * 2,
 										 window.frame.size.height);
-			[window.animator setFrame:newFrame display:YES];
+			[window setFrame:newFrame display:YES];
 		} else {
 			newFrame = NSMakeRect(window.frame.origin.x - offset,
 								  window.frame.origin.y,
 								  window.frame.size.width,
 								  window.frame.size.height);
 			
-			[self.textView.animator setTextContainerInset:NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP)];
+			CGFloat width = (window.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
+			
+			[self.textView setTextContainerInset:NSMakeSize(width, TEXT_INSET_TOP)];
 		}
     }
 	
@@ -1645,9 +1641,6 @@ static NSString *forceLyricsSymbol = @"~";
 
 //Empty function, which needs to exists to make the share access the validateMenuItems function
 - (IBAction)share:(id)sender {}
-
-- (IBAction)themes:(id)sender {}
-
 - (IBAction)export:(id)sender {}
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -1877,7 +1870,7 @@ static NSString *forceLyricsSymbol = @"~";
 {
 	if (_printPreview) [self preview:nil];
 	if (_cardsVisible) [self toggleCards:nil];
-	//if (_timelineVisible) [self showTimeline:nil];
+	//if (_timelineVisible) [self toggleTimeline:nil];
 }
 
 - (NSUInteger)selectedTabViewTab
@@ -1904,7 +1897,7 @@ static NSString *forceLyricsSymbol = @"~";
  
  */
 
-#pragma  mark - NSOutlineViewDataSource and Delegate
+#pragma  mark - Outline data source + delegate
 
 - (NSUInteger) getNumberOfScenes {
 	NSUInteger result = 0;
@@ -2128,12 +2121,8 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 - (void) reloadOutline {
+	// Save list of sections that have been collapsed
 	[_outlineClosedSections removeAllObjects];
-	
-	// Get current scene to cache it
-	[self getCurrentScene];
-	
-	// Save list of sections that have been closed
 	for (int i = 0; i < [[self.parser outline] count]; i++) {
 		id item = [self.outlineView itemAtRow:i];
 		if (![self.outlineView isItemExpanded:item]) {
@@ -2159,41 +2148,46 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
-	
 	[self updateSceneNumberLabels];
 }
 
 
 
-#pragma mark - Outline context menu, including setting colors
+#pragma mark - Outline/timeline context menu, including setting colors
 
 /*
  
- Outline context menu, WIP.
+ Color rontext menu, WIP.
  
- To make this work reliably, we should check for a lot of stuff, such as if there already is a color or some other note on the heading line. I don't have the willpower to do it just now, but maybe someday.
+ The same menu is used for both outline and timeline. Because clickedRow is set all the time (?)
  
- The thing is, after this is done, we can also filter the outline view according to color tags. One thing to consider is also if we want to have multiple color tags on lines? I kind of hate that usually,especially if it's done badly, but in many cases it could be useful.
-
- Regexes hurt my brain, and they do so extra much in Objective-C, so maybe I'll just search for ranges whenever I decide to do this.
+ Regexes hurt my brain, and they do so even more in Objective-C, so maybe I'll just search for ranges whenever I decide to do this.
  
  Also, in principle it should be possible to enter custom colors in hex. Such as [[COLOR #d00dd]].
 
 */
-- (void) menuNeedsUpdate:(NSMenu *)menu {
-	NSInteger clickedRow = [self.outlineView clickedRow];
 
+// We are using this same menu for both outline & timeline view
+- (void) menuDidClose:(NSMenu *)menu {
+	// Reset timeline selection, to be on the safe side
+	_timelineClickedScene = -1;
+}
+- (void) menuNeedsUpdate:(NSMenu *)menu {
 	id item = nil;
-	item = [self.outlineView itemAtRow:clickedRow];
+	
+	if ([self.outlineView clickedRow] >= 0) {
+		item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+		_timelineSelection = -1;
+	} else if (_timelineClickedScene >= 0) {
+		item = [[self getOutlineItems] objectAtIndex:_timelineClickedScene];
+		_timelineSelection = _timelineClickedScene;
+	}
 	
 	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
 		// Show context menu
 		for (NSMenuItem * menuItem in menu.itemArray) {
 			menuItem.hidden = NO;
-			// But let's hide this context menu for now as it's WIP
-			//menuItem.hidden = YES;
 		}
-
 	} else {
 		// Hide every item
 		for (NSMenuItem * menuItem in menu.itemArray) {
@@ -2214,30 +2208,44 @@ static NSString *forceLyricsSymbol = @"~";
 - (IBAction) setBrownColor:(id) sender { [self setColor:@"BROWN"]; }
 
 - (void) setColor:(NSString *) color {
-	id item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+	id item = nil;
+	
+	if ([self.outlineView clickedRow] > -1) {
+		item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+	} else if (_timelineSelection > -1) {
+		item = [[self getOutlineItems] objectAtIndex:_timelineSelection];
+	}
+	
 	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
 		OutlineScene *scene = item;
-		
 		[self setColor:color forScene:scene];
+		if (_timelineClickedScene >= 0) [self buildTimeline];
 	}
+	_timelineClickedScene = -1;
 }
 - (void) setColor:(NSString *) color forScene:(OutlineScene *) scene {
 	color = [color uppercaseString];
 	
 	if (![scene.color isEqualToString:@""] && scene.color != nil) {
+		// Scene already has a color
+
+		// If color is set to none, we'll remove the previous string.
+		// If the color is changed, let's replace the string.
 		if ([[color lowercaseString] isEqualToString:@"none"]) {
 			NSString *oldColorString = [NSString stringWithFormat:@"[[COLOR %@]]", [scene.color uppercaseString]];
 			NSRange innerRange = [scene.line.string rangeOfString:oldColorString];
 			NSRange range = NSMakeRange([[scene line] position] + innerRange.location, innerRange.length);
-			[self replaceCharactersInRange:range withString:@""];
+			[self removeString:oldColorString atIndex:range.location];
 		} else {
 			NSString * oldColor = [NSString stringWithFormat:@"COLOR %@", scene.color];
 			NSString * newColor = [NSString stringWithFormat:@"COLOR %@", color];
 			NSRange innerRange = [scene.line.string rangeOfString:oldColor];
 			NSRange range = NSMakeRange([[scene line] position] + innerRange.location, innerRange.length);
-			[self replaceCharactersInRange:range withString:newColor];
+			[self replaceString:oldColor withString:newColor atIndex:range.location];
 		}
 	} else {
+		// No color yet
+		
 		if ([[color lowercaseString] isEqualToString:@"none"]) return; // Do nothing if set to none
 		
 		NSString * colorString = [NSString stringWithFormat:@" [[COLOR %@]]", color];
@@ -2445,6 +2453,13 @@ static NSString *forceLyricsSymbol = @"~";
 		return;
 	}
 	
+	// Context menu for timeline. WIP.
+	if ([message.name isEqualToString:@"timelineContext"]) {
+		_timelineClickedScene = [message.body integerValue];
+		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:_timelineClickedScene];
+		if (scene) [self contextMenu:scene.string];
+	}
+	
 	// Work in progress. Can be enabled by editing CardView.js and setting dragDrop = true;
 	if ([message.name isEqualToString:@"move"]) {
 		if ([message.body rangeOfString:@","].location != NSNotFound) {
@@ -2472,7 +2487,7 @@ static NSString *forceLyricsSymbol = @"~";
 			// On to the very dangerous stuff :-) fuck me :----)
 			NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
 			NSString *textToMove = [[self getText] substringWithRange:range];
-			
+
 			// Delete the string... omg, I can't believe I'm actually doing this.
 			[self replaceCharactersInRange:range withString:@""];
 			
@@ -2506,6 +2521,12 @@ static NSString *forceLyricsSymbol = @"~";
 			[self setColor:color forScene:scene];
 		}
 	}
+}
+- (void) contextMenu:(NSString*)context {
+	// Let's take a moment to marvel at the beauty of objective-c code:
+	NSPoint localPosition = [_timelineView convertPoint:[_thisWindow convertPointFromScreen:[NSEvent mouseLocation]] fromView:nil];
+	
+	[_colorMenu popUpMenuPositioningItem:_colorMenu.itemArray[0] atLocation:localPosition inView:_timelineView];
 }
 
 
@@ -2643,7 +2664,7 @@ static NSString *forceLyricsSymbol = @"~";
 	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
 }
 
-#pragma mark - chronometry
+#pragma mark - Timeline + chronometry
 
 /*
  
@@ -2656,7 +2677,7 @@ static NSString *forceLyricsSymbol = @"~";
  
 */
 
-- (IBAction)showTimeline:(id)sender
+- (IBAction)toggleTimeline:(id)sender
 {
 	// There is a KNOWN BUG here.
 	// For some reason, the textview jumps into strange position when timeline is toggled and scroll position is towards the end.
@@ -2665,8 +2686,6 @@ static NSString *forceLyricsSymbol = @"~";
 	_timelineVisible = !_timelineVisible;
 	
 	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
-
-	NSRect visibleRect = [[self.textScrollView contentView] documentVisibleRect];
 	
 	if (_timelineVisible) {
 		[self updateTimelineStyle];
@@ -2798,6 +2817,7 @@ static NSString *forceLyricsSymbol = @"~";
 }
 - (void) findOnTimeline: (OutlineScene *) scene {
 	NSUInteger index = [[self getOutlineItems] indexOfObject:scene];
+	
 	NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", index];
 	[_timelineView evaluateJavaScript:evalString completionHandler:nil];
 }

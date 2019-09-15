@@ -21,7 +21,7 @@
 	// This might be a silly implementation, but ..... well.
 	// Let's close the welcome screen if any sort of document has been opened
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		if (_startModal && [_startModal isVisible]) {
+		if (self->_startModal && [self->_startModal isVisible]) {
 			[self closeStartModal];
 		}
 	}];

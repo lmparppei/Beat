@@ -12,7 +12,7 @@ There is an iOS version on the way, scheduled for release in late 2019. It won't
 
 I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.0.9
+## Latest release: Beat 1.1.0
 
 **Features**
 * Minimalistic UI that stays out of the way
@@ -22,6 +22,7 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 * Automatic scene numbering in edit view. Recognizes forced scene numbers.
 * Outline list view with collapsing sections
 * Outline card view, with sections & synopses
+* Timeline view with sections & synopses
 * Autocomplete characters and scene headings
 * Color-coded scenes
 
@@ -40,23 +41,18 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 
 Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP.
 
-The app is finally pretty stable and has remained very minimalistic. Outline card view was be the biggest new feature since version 1.0.3.
-
-Work in progress:
-
-* Dragging & dropping scenes in the card view
-* Fixing problems with copying and pasting text
+As of 1.1.0, the app is finally pretty stable and has remained very minimalistic.
 
 Some future considerations:
 
 * Show pages in edit view (probably not, though)
-* Have Beat only allow happy endings
-* Making the world a better place 
-* Planting some trees to fight climate change 
+* Have Beat only allow happy endings (somewhat limiting)
+* Making the world a better place (not enough coding skills)
+* Planting some trees to fight climate change (WIP)
 
 ### How can you help?
 
-Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer but a director, screenwriter and musician. When I started the project, my understanding of Objective-C was little to none, and it was overwhelming at first. My code has been getting gradually better, but there are still silly things going on: for instance, Document.m has become a 2700-line monster that handles almost everything.
+Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer. When I started the project, my understanding of Objective-C was little to none, and it shows. My code has been getting gradually better, but there are still silly things going on: for instance, Document.m has become a 2900-line monster that handles almost everything.
 
 At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetaeva and Charles Bukowski. All apologies.
 

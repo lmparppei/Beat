@@ -112,7 +112,7 @@
 																	 }];
 					
 					//NSPrintOperation* printOperation = [NSPrintOperation printOperationWithView:self printInfo:printInfo];
-					NSPrintOperation *printOperation = [_webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+					NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
 					
 					printOperation.showsPrintPanel = NO;
 					printOperation.showsProgressPanel = YES;

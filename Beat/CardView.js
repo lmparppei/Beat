@@ -54,10 +54,8 @@ function initDragDrop () {
 		var sceneIndex = el.getAttribute('sceneIndex');
 		
 		if (sibling) {
-			log('fuck yeah');
 			var nextIndex = sibling.getAttribute('sceneIndex');
 		} else {
-			log('no');
 			var nextIndex = scenes.length;
 		}
 
@@ -134,11 +132,20 @@ contextMenu.toggle = function (e) {
 		
 		contextMenu.menu.style.left = coordinates.x + "px";
 		contextMenu.menu.style.top = coordinates.y + "px";
-		
+
 		contextMenu.target = e.target;
 		contextMenu.open = true;
 		
 		contextMenu.menu.className = 'visible';
+		
+		// Avoid overflow
+		if (contextMenu.menu.clientWidth + coordinates.x > window.innerWidth) {
+			contextMenu.menu.style.left = (coordinates.x - contextMenu.menu.clientWidth) + "px";
+		}
+
+		if (contextMenu.menu.clientHeight + coordinates.y > window.scrollY + document.body.clientHeight) {
+			contextMenu.menu.style.top = (coordinates.y - contextMenu.menu.clientHeight) + "px";
+		}
 	}
 }
 contextMenu.close = function () {
@@ -180,11 +187,10 @@ function getPosition(e) {
 }
 
 function createCards (cards) {
-	//drake = dragula({ direction: 'horizontal' });
-	//if (drake.containers.count) drake.containers.splice(0, drake.containers.count);
-
 	var html = "<section id='cardContainer'>";
 	var index = -1;
+
+	var selected = null;
 
 	scenes = [];
 	debugElement.innerHTML = '';
@@ -204,6 +210,7 @@ function createCards (cards) {
 
 		if (card.selected == "yes") {
 			status = ' selected';
+			selected = index;
 		}
 		if (card.color != "") {
 			color = ' colored ' + card.color;
@@ -223,14 +230,16 @@ function createCards (cards) {
 				"<h3>" + card.name + "</h3></div>" +
 				"<p>" + card.snippet + "</p></div></div>";
 		}
-		//debugElement.innerHTML += "i " + card.sceneIndex + " - " + card.name;
 	}
 	html += "</section>";
 
 	container.innerHTML = html;
 	if (dragDrop) drake.containers = [document.getElementById("cardContainer")];
 
-	//log (JSON.stringify(cards));
+	if (selected) {
+		var el = document.querySelector("div[sceneIndex='" + selected + "']");
+		el.scrollIntoView({ inline: "center", block: "center" });
+	}
 
 	setupCards();
 }

@@ -50,7 +50,7 @@
 				padding: .6rem .2rem .6rem .2rem;
 
 				border: solid 1px red;
-				background-color: #888;
+				background-color: #555;
 				border: solid 1px #222;
 				overflow: hidden;
 				font-size: .6em;
@@ -71,7 +71,9 @@
 				background-color: white;
 				color: #222;
 				text-align: left;
+				opacity: 1;
 			}
+
 
 			.playhead::after {
 				display: block;
@@ -208,13 +210,10 @@
 			    	zoomSlider.oninput();
 			  } else {
 			  	window.scrollTo(window.scrollX + e.deltaY * .25 + e.deltaX * .25, 0);
-			  	
-			  	/*
-			    posX -= e.deltaX * 2;
-			    posY -= e.deltaY * 2;
-			    */
 			  }
 			};
+
+			document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
 
 			// Refresh timeline
 			function refreshTimeline(newData = null, selectedIndex = null) {
@@ -263,6 +262,14 @@
 				}
 				zoomSlider.max = totalLength * .5;
 				zoomSlider.oninput(null);
+
+				var scenes = document.querySelectorAll('.scene');
+				scenes.forEach(function (scene) {
+					scene.oncontextmenu = function (e) {
+						window.webkit.messageHandlers.timelineContext.postMessage( e.target.getAttribute('sceneIndex') );
+					}
+
+				});
 			}
 
 			zoomSlider.oninput = function (e) {

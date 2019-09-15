@@ -447,12 +447,13 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Ygd-Y8-VFo"/>
-                            <menuItem title="Note / Omit" keyEquivalent="e" id="5Y3-LZ-qMb">
+                            <menuItem title="Omitted text" keyEquivalent="E" id="5Y3-LZ-qMb">
                                 <connections>
                                     <action selector="makeOmitted:" target="-1" id="uw4-3u-NKQ"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Note" keyEquivalent="E" id="fKt-Xk-jG8">
+                            <menuItem title="Note" keyEquivalent="e" id="fKt-Xk-jG8">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="makeNote:" target="-1" id="egH-7G-shU"/>
                                 </connections>
@@ -517,7 +518,7 @@ DQ
                             </menuItem>
                             <menuItem title="Timeline" keyEquivalent="t" id="bwK-MY-pTK">
                                 <connections>
-                                    <action selector="showTimeline:" target="-1" id="npa-ke-La5"/>
+                                    <action selector="toggleTimeline:" target="-1" id="znp-ER-3GH"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Show Scene Numbers" state="on" id="5Rh-Kl-j5e">
@@ -731,7 +732,7 @@ DQ
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O3j-Ar-9mq">
-                        <rect key="frame" x="347.5" y="7" width="103" height="25"/>
+                        <rect key="frame" x="347.5" y="7" width="104" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="Browse" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9GZ-Iv-cVZ">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -742,7 +743,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jcl-C2-5kX">
-                        <rect key="frame" x="12.5" y="7" width="113" height="25"/>
+                        <rect key="frame" x="12.5" y="7" width="114" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="Tutorial" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="U0e-4t-f7p">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -753,7 +754,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EgL-h8-fPx">
-                        <rect key="frame" x="457.5" y="7" width="96" height="25"/>
+                        <rect key="frame" x="457.5" y="7" width="97" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="New" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Lab-Kg-ETM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
