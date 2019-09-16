@@ -23,6 +23,12 @@
 //- (void)setSceneNumbers:(NSString*)text;
 - (void)parseText:(NSString*)text;
 
+
+// Parselinetype is available for some testing
+- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive;
+- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index currentlyEditing:(bool)currentLine;
+- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive currentlyEditing:(bool)currentLine;
+
 //Convenience Methods for Testing
 - (NSString*)stringAtLine:(NSUInteger)line;
 - (LineType)typeAtLine:(NSUInteger)line;

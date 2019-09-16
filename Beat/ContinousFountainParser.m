@@ -355,18 +355,40 @@
 
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index
 {
+	return [self parseLineType:line atIndex:index recursive:NO currentlyEditing:NO];
+}
+
+- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive
+{
+	return [self parseLineType:line atIndex:index recursive:recursive currentlyEditing:NO];
+}
+
+- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index currentlyEditing:(bool)currentLine {
+	return [self parseLineType:line atIndex:index recursive:NO currentlyEditing:currentLine];
+}
+
+- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive currentlyEditing:(bool)currentLine
+{
     NSString* string = line.string;
     NSUInteger length = [string length];
-    
+	
+	// So we need to pull all sorts of tricks out of our sleeve here. Usually Fountain files are parsed from bottom to up, but here we are parsing in a linear manner. That's why we need some extra pointers, which kinda sucks.
+	// I have no idea how I got this to work but it does.
+	
     // Check if empty.
     if (length == 0) {
-		// If previous line is character cue, this line becomes dialogue right away
+		// If previous line is part of dialogue block, this line becomes dialogue right away
 		// Else it's just empty.
-		
 		Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 		
-		if (preceedingLine.type == character) {
-			return dialogue;
+		if (preceedingLine.type == character || preceedingLine.type == parenthetical || preceedingLine.type == dialogue) {
+			
+			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty. OMG IT WORKS!
+			if ([preceedingLine.string length] > 0) {
+				return dialogue;
+			} else {
+				return empty;
+			}
 		} else {
 			return empty;
 		}
@@ -462,7 +484,7 @@
     }
     
     //Check for scene headings (lines beginning with "INT", "EXT", "EST",  "I/E"). "INT./EXT" and "INT/EXT" are also inside the spec, but already covered by "INT".
-    if (preceedingLine.type == empty) {
+    if (preceedingLine.type == empty || [preceedingLine.string length] == 0) {
         if (length >= 3) {
             NSString* firstChars = [[string substringToIndex:3] lowercaseString];
             if ([firstChars isEqualToString:@"int"] ||
@@ -496,12 +518,23 @@
     }
     
     //Check if all uppercase (and at least 3 characters to not indent every capital leter before anything else follows) = character name.
-    if (preceedingLine.type == empty) {
+    if (preceedingLine.type == empty || [preceedingLine.string length] == 0) {
         if (length >= 3 && [string containsOnlyUppercase] && !containsOnlyWhitespace) {
             // A character line ending in ^ is a double dialogue character
             if (lastChar == '^') {
                 return doubleDialogueCharacter;
             } else {
+				// It is possible that this IS NOT A CHARACTER anyway, so let's see.
+				// WIP
+				
+				if (index + 2 < self.lines.count && currentLine) {
+					Line* nextLine = (Line*)self.lines[index+1];
+					Line* twoLinesOver = (Line*)self.lines[index+2];
+					
+					if (recursive && [nextLine.string length] == 0 && [twoLinesOver.string length] > 0) {
+						return action;
+					}
+				}
                 return character;
             }
         }
@@ -519,7 +552,11 @@
             if (firstChar == '(' && lastChar == ')') {
                 return parenthetical;
             } else {
-                return dialogue;
+				if ([preceedingLine.string length] > 0) {
+					return dialogue;
+				} else {
+					return action;
+				}
             }
         } else if (preceedingLine.type == doubleDialogueCharacter || preceedingLine.type == doubleDialogue || preceedingLine.type == doubleDialogueParenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue

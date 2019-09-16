@@ -467,6 +467,11 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="SNs-fE-ES7"/>
+                            <menuItem title="Reformat Selected" keyEquivalent="r" id="OYT-mJ-6Jc">
+                                <connections>
+                                    <action selector="reformatRange:" target="-1" id="QHM-Pf-WuS"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Reformat Everything" id="giJ-d7-DJr">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>

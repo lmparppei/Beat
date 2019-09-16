@@ -36,9 +36,10 @@
     return NO;
 }
 
+
 - (bool)containsOnlyUppercase
 {
-    return [[self uppercaseString] isEqualToString:self] && [self containsUppercaseLetters];
+	return [[self uppercaseString] isEqualToString:self] && [self containsUppercaseLetters];
 }
 
 @end
