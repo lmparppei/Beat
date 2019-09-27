@@ -12,7 +12,7 @@ There is an iOS version on the way, scheduled for release in late 2019. It won't
 
 I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.1.0
+## Latest release: Beat 1.1.0d
 
 **Features**
 * Minimalistic UI that stays out of the way
@@ -20,18 +20,12 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 * Dark mode for the children of the night
 * Full support for Fountain syntax
 * Automatic scene numbering in edit view. Recognizes forced scene numbers.
-* Outline list view with collapsing sections
+* Outline list view, with reorderable scenes, sections and synopses
 * Outline card view, with sections & synopses
 * Timeline view with sections & synopses
 * Autocomplete characters and scene headings
 * Color-coded scenes
-
-**Fixes in 1.0.9d**
-* Better and cleaner printing and PDF export
-* Memory management issues fixed
-* Title page formatting fixed
-* Support for international standard ISO and US (letter) paper sizes
-* Fixed a silly bug which made loading multiple feature-length screenplays very slow
+* Faster and more stable than before
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 

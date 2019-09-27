@@ -85,6 +85,10 @@
 
 @property (weak) IBOutlet NSOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
+@property (weak) NSArray *draggedNodes;
+@property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
+@property (weak) NSMutableArray *flatOutline;
+
 @property (weak) NSWindow *thisWindow;
 
 @property (nonatomic) NSLayoutManager *layoutManager;
@@ -183,6 +187,11 @@
 #define FONTSIZE_KEY @"Fontsize"
 #define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
 
+#define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
+#define OUTLINE_DATATYPE @"OutlineDatatype"
+#define FLATOUTLINE YES
+
+
 @implementation Document
 
 #pragma mark - Document Basics
@@ -221,7 +230,7 @@
 #define DD_RIGHT_P .95
 
 #define CHARACTER_INDENT_P 0.36
-#define PARENTHETICAL_INDENT_P 0.30
+#define PARENTHETICAL_INDENT_P 0.27
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.74
 
@@ -323,6 +332,12 @@
 	[self loadSelectedTheme:false];
 	_nightMode = [self isDark];
 	
+	
+	// Initialize drag & drop for outline view
+	//[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, NSPasteboardTypeString]];
+	[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
+	[self.outlineView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
+
     //Put any previously loaded data into the text view
     if (self.contentBuffer) {
         [self setText:self.contentBuffer];
@@ -763,7 +778,7 @@
 		// This builds outline in the parser. Weird method name, I know.
 		[self.parser numberOfOutlineItems];
 		if (self.outlineViewVisible) [self reloadOutline];
-		if (self.timelineVisible) [self buildTimeline];
+		if (self.timelineVisible) [self reloadTimeline];
 	}
 	
 	[self applyFormatChanges];
@@ -807,11 +822,20 @@
 	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
 }
 
-// WIP
 // We need a method to be able to undo scene reordering.
-- (void)moveString:(NSString*)string from:(NSUInteger)from to:(NSUInteger)to
+- (void)moveString:(NSString*)string withRange:(NSRange)range newRange:(NSRange)newRange
 {
-	//NSRange range = NSMakeRange(index, [string length]);
+	// Delete the string and add it again to its new position
+	[self replaceCharactersInRange:range withString:@""];
+	[self replaceCharactersInRange:newRange withString:string];
+	
+	// Create new ranges for undoing the operation
+	NSRange undoRange = NSMakeRange(newRange.location, range.length);
+	NSRange undoNewRange = NSMakeRange(range.location, 0);
+	[[[self undoManager] prepareWithInvocationTarget:self] moveString:string withRange:undoRange newRange:undoNewRange];
+	
+	[self reloadOutline];
+	if (_timelineVisible) [self reloadTimeline];
 }
 
 - (NSRange)cursorLocation
@@ -2004,6 +2028,8 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
+	if (FLATOUTLINE) return [[self getOutlineItems] count];
+	
 	if (![self.parser outline]) return 0;
 	if ([[self.parser outline] count] < 1) return 0;
 	
@@ -2018,6 +2044,8 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
 {
+	if (FLATOUTLINE) return [[self getOutlineItems] objectAtIndex:index];
+	
 	if (!item) {
 		return [[self.parser outline] objectAtIndex:index];
 	} else {
@@ -2027,6 +2055,8 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
+	if (FLATOUTLINE) return NO;
+	
 	if ([[item scenes] count] > 0) {
 		return YES;
 	}
@@ -2171,16 +2201,64 @@ static NSString *forceLyricsSymbol = @"~";
 	
 } }
 
+// http://spec-zone.ru/RU/OSX/samplecode/DragNDropOutlineView/Listings/DragNDropOutlineView_AAPLAppController_m.html
+
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	if ([item isKindOfClass:[OutlineScene class]]) {
-		
 		NSRange lineRange = NSMakeRange([item line].position, [item line].string.length);
 		[self.textView setSelectedRange:lineRange];
 		[self.textView scrollRangeToVisible:lineRange];
-		return YES;
 	}
 	return NO;
+}
+
+- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems {
+	//_draggedNodes = draggedItems;
+	[session.draggingPasteboard setData:[NSData data] forType:LOCAL_REORDER_PASTEBOARD_TYPE];
+}
+
+- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation {
+	// operation == NSjotain
+	
+	//_draggedNodes = nil;
+}
+
+
+- (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item{
+	//OutlineScene *scene = (OutlineScene *)(((NSTreeNode *)item).representedObject);
+	
+	OutlineScene *scene = (OutlineScene*)item;
+	_draggedScene = scene;
+	
+	NSPasteboardItem *pboardItem = [[NSPasteboardItem alloc] init];
+	//[pboardItem setString:scene.string forType: NSPasteboardTypeString];
+	//NSData *data = [NSKeyedArchiver archivedDataWithRootObject:scene];
+	//[pboardItem setValue:scene forType:OUTLINE_DATATYPE];
+	return pboardItem;
+}
+
+- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index{
+	
+	// Don't allow dropping INTO scenes
+	OutlineScene *targetScene = (OutlineScene*)targetItem;
+	if ([targetScene.string length] > 0 || index < 0) return NSDragOperationNone;
+	
+	return NSDragOperationMove;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index{
+
+	NSMutableArray *outline = [self getOutlineItems];
+	
+	NSInteger to = index;
+	NSInteger from = [outline indexOfObject:_draggedScene];
+	
+	if (from == to || from  == to - 1) return NO;
+	
+	// Let's move the scene
+	[self moveScene:_draggedScene from:from to:to];
+	return YES;
 }
 
 - (void) reloadOutline {
@@ -2196,6 +2274,7 @@ static NSString *forceLyricsSymbol = @"~";
 	// Save outline scroll position
 	NSPoint scrollPosition = [[self.outlineScrollView contentView] bounds].origin;
 	
+	_flatOutline = [self getOutlineItems];
 	[self.outlineView reloadData];
 	
 	// Expand all
@@ -2214,6 +2293,46 @@ static NSString *forceLyricsSymbol = @"~";
 	[self updateSceneNumberLabels];
 }
 
+- (void) moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
+	// FOLLOWING CODE IS A MESS. Dread lightly.
+
+	NSMutableArray *outline = [self getOutlineItems];
+	
+	bool moveToEnd = false;
+	if (to >= [outline count]) {
+		to = [outline count] - 1;
+		moveToEnd = true;
+	}
+	
+	// Scene before which this scene will be moved, if not moved to the end
+	OutlineScene *beforeScene;
+	if (!moveToEnd) beforeScene = [outline objectAtIndex:to];
+	
+	// On to the very dangerous stuff :-) fuck me :----)
+	NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
+	NSString *textToMove = [[self getText] substringWithRange:range];
+
+	// Count the index.
+	NSInteger moveToIndex = 0;
+	if (!moveToEnd) moveToIndex = beforeScene.sceneStart;
+	else moveToIndex = [[self getText] length];
+	
+	NSRange newRange;
+	
+	// Different ranges depending on to which direction the scene was moved
+	if (from < to) {
+		if (!moveToEnd) {
+			newRange = NSMakeRange(beforeScene.sceneStart - sceneToMove.sceneLength, 0);
+		} else {
+			newRange = NSMakeRange([[self getText] length] - sceneToMove.sceneLength, 0);
+		}
+	} else {
+		newRange = NSMakeRange(beforeScene.sceneStart, 0);
+	}
+	
+	// We move the string itself in an easily undoable method
+	[self moveString:textToMove withRange:range newRange:newRange];
+}
 
 
 #pragma mark - Outline/timeline context menu, including setting colors
@@ -2282,7 +2401,7 @@ static NSString *forceLyricsSymbol = @"~";
 	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
 		OutlineScene *scene = item;
 		[self setColor:color forScene:scene];
-		if (_timelineClickedScene >= 0) [self buildTimeline];
+		if (_timelineClickedScene >= 0) [self reloadTimeline];
 	}
 	_timelineClickedScene = -1;
 }
@@ -2535,37 +2654,9 @@ static NSString *forceLyricsSymbol = @"~";
 			NSMutableArray *outline = [self getOutlineItems];
 			if ([outline count] < 1) return;
 			
-			// An item was moved as the last one, so it might get a wrong index
-			bool moveToEnd = false;
-			if (to >= [outline count]) {
-				to = [outline count] - 1;
-				moveToEnd = true;
-			}
-
-			OutlineScene *sceneToMove = [outline objectAtIndex:from];
+			// MOVESCENE
+			// [self ]
 			
-			OutlineScene *beforeScene;
-			if (!moveToEnd) beforeScene = [outline objectAtIndex:to];
-			
-			// On to the very dangerous stuff :-) fuck me :----)
-			NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
-			NSString *textToMove = [[self getText] substringWithRange:range];
-
-			// Delete the string... omg, I can't believe I'm actually doing this.
-			[self replaceCharactersInRange:range withString:@""];
-			
-			NSRange newRange;
-			
-			// God[any], help me
-			if (from < to) {
-				if (!moveToEnd) newRange = NSMakeRange(beforeScene.sceneStart - sceneToMove.sceneLength, 0);
-				else newRange = NSMakeRange([[self getText] length], 0);
-			} else {
-				newRange = NSMakeRange(beforeScene.sceneStart, 0);
-				//[self addString:textToMove atIndex:beforeScene.sceneStart + sceneToMove.sceneLength];
-			}
-			
-			[self replaceCharactersInRange:newRange withString:textToMove];
 			[self refreshCards];
 			
 			return;
@@ -2752,7 +2843,7 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	if (_timelineVisible) {
 		[self updateTimelineStyle];
-		[self buildTimeline];
+		[self reloadTimeline];
 		self.timelineViewHeight.constant = TIMELINE_VIEW_HEIGHT;
 		
 		[self ensureLayout];
@@ -2779,7 +2870,7 @@ static NSString *forceLyricsSymbol = @"~";
 	if ([self isDark]) [self.timelineView evaluateJavaScript:@"setStyle('dark');" completionHandler:nil];
 	else [self.timelineView evaluateJavaScript:@"setStyle('light');" completionHandler:nil];
 }
-- (void) buildTimeline {
+- (void) reloadTimeline {
 	[self getCurrentScene];
 	NSMutableArray *scenes = [self getOutlineItems];
 	
@@ -2913,6 +3004,7 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 @end
+
 /*
  
  some moments are nice, some are
