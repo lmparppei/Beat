@@ -1,4 +1,20 @@
-# 1.1.0
+# 1.1.0f beta
+
+* Added support for custom title page fields & fixed its layout
+* Script analysis view
+* Outline searching and filtering
+
+# 1.1.0e beta
+
+Fixed bugs with character cues and scene reorganization
+
+# 1.1.0d beta
+
+* Scenes can be reorganized in outline view
+* Character cues & non-character related UPPERCASE strings now behave more sensibly in edit mode
+* New About window
+
+# 1.1.0 beta
 
 * Timeline view (chronometry is still WIP)
 * Zooming is now fast and efficient

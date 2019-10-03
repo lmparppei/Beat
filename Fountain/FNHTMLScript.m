@@ -26,44 +26,29 @@
 
 /*
  
- N.B. This version of FNHTMLScript.m is customized for Beat. It still outputs HTML
- for printing out screenplays.
+ N.B. This version of FNHTMLScript.m is customized for Beat. It still outputs HTML for printing out screenplays.
  
  There are certain differences:
  
- - the English language default "written by" has been removed:
- [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
+ - the English language default "written by" has been removed: [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
  
- - HTML output links to either screen or print CSS depending on the target format.
- Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
+ - HTML output links to either screen or print CSS depending on the target format. Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
  
- - And - as I'm writing this, some functions in RegexKitLite.h have been deprecated
- in macOS 10.12+. Fair enough - it was apparently last updated in 2010.
+ - And - as I'm writing this, some functions in RegexKitLite.h have been deprecated in macOS 10.12+. Fair enough - it was apparently last updated in 2010.
  
- I hadn't  made any films then. In 2010, I was young, madly in love and had dreams
- and aspirations. I had just recently started my studies in a film school.
- In 9 years, I figured back then, I'd be making films that really communicated
- the pain I had gone through. My films would reach out to other lonely people,
- confined in their gloomy tomb, assured of their doom.
+ I hadn't  made any films then. In 2010, I was young, madly in love and had dreams and aspirations. I had just recently started my studies in a film school.
+ 
+ In 9 years, I figured back then, I'd be making films that really communicated the pain I had gone through. My films would reach out to other lonely people, confined in their gloomy tomb, assured of their doom.
  
  Well.
  
- Instead, I'm reading about fucking C enumerators and OS spin locks to be able
- to build my own fucking software, which - mind you - ran just fine a few weeks ago.
+ Instead, I'm reading about fucking C enumerators and OS spin locks to be able to build my own fucking software, which - mind you - ran just fine a few weeks ago.
  
- Hence, I tried to replace the deprecated spin locks of RegexKitLite.h with modern ones.
- It was about to destroy my inner child. I just wanted to write nice films, I wasn't
- planning on fucking learning any motherfucking C!!!!!!
+ Hence, I tried to replace the deprecated spin locks of RegexKitLite.h with modern ones. It was about to destroy my inner child. I just wanted to write nice films, I wasn't planning on fucking learning any motherfucking C!!!!!!
  
- SO, if you are reading this: Beat now relies on a customized RegexKitLite,
- which might work or not. It could crash systems all around the world. It could
- consume your computer's soul and kill any glimpse of hope.
+ SO, if you are reading this: Beat now relies on a customized RegexKitLite, which might work or not. It could crash systems all around the world. It could consume your computer's soul and kill any glimpse of hope.
  
- I could have spent these hours with my dear friends, my lover or just watching
- flowers grow and maybe talking to them. Or even writing my film.
- I didn't. Here I am, typing this message to some random fucker who, for
- whatever reason, decides to take a look at my horrible code sometime in the
- future.
+ I could have spent these hours with my dear friends, my lover or just watching flowers grow and maybe talking to them. Or even writing my film. I didn't. Here I am, typing this message to some random fucker who, for whatever reason, decides to take a look at my horrible code sometime in the future.
  
  Probably it's me, though.
  
@@ -244,6 +229,7 @@
             }
 			
             [body appendFormat:@"<p class='%@'>%@</p>", @"title", [self formatString:values]];
+			[titlePage removeObjectForKey:@"title"];
         }
         else {
             [body appendFormat:@"<p class='%@'>%@</p>", @"title", @"Untitled"];
@@ -258,6 +244,7 @@
                     [values appendFormat:@"%@<br>", val];
                 }
 				[body appendFormat:@"<p class='%@'>%@</p>", @"credit", [self formatString:values]];
+				[titlePage removeObjectForKey:@"credit"];
             }
             else {
                 [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
@@ -271,6 +258,7 @@
                     [values appendFormat:@"%@<br>", val];
                 }
                 [body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self formatString:values]];
+				[titlePage removeObjectForKey:@"authors"];
             }
             else {
                 [body appendFormat:@"<p class='%@'>%@</p>", @"authors", @""];
@@ -284,20 +272,26 @@
 				[values appendFormat:@"%@<br>", val];
 			}
 			[body appendFormat:@"<p class='%@'>%@</p>", @"source", [self formatString:values]];
+			[titlePage removeObjectForKey:@"source"];
 		}
 		
 		[body appendFormat:@"</div>"];
+		
+		// Draft date
+		[body appendFormat:@"<div class='versionInfo'>"];
+		if (titlePage[@"draft date"]) {
+			NSArray *obj = titlePage[@"draft date"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", [self formatString:values]];
+			[titlePage removeObjectForKey:@"draft date"];
+		}
+		[body appendFormat:@"</div>"];
+		
+		
 		[body appendFormat:@"<div class='info'>"];
-        
-        // Draft date
-        if (titlePage[@"draft date"]) {
-            NSArray *obj = titlePage[@"draft date"];
-            NSMutableString *values = [NSMutableString string];
-            for (NSString *val in obj) {
-                [values appendFormat:@"%@<br>", val];
-            }
-            [body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", [self formatString:values]];
-        }
         
         // Contact
         if (titlePage[@"contact"]) {
@@ -307,7 +301,30 @@
                 [values appendFormat:@"%@<br>", val];
             }
             [body appendFormat:@"<p class='%@'>%@</p>", @"contact", [self formatString:values]];
+			[titlePage removeObjectForKey:@"contact"];
         }
+		
+		// Notes
+		if (titlePage[@"notes"]) {
+			NSArray *obj = titlePage[@"notes"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", @"notes", [self formatString:values]];
+			[titlePage removeObjectForKey:@"notes"];
+		}
+		
+		// Append rest of the stuff
+		for (NSString* key in titlePage) {
+			NSArray *obj = titlePage[key];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", key, [self formatString:values]];
+		}
+		
 		[body appendFormat:@"</div>"];
 		
         [body appendString:@"</section>"];

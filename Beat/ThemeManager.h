@@ -7,18 +7,23 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "DynamicColor.h"
+#import "Theme.h"
 
 @interface ThemeManager : NSObject
 
 + (ThemeManager*)sharedManager;
 
 //Access the current theme
-- (NSColor*) currentBackgroundColor;
-- (NSColor*) currentSelectionColor;
-- (NSColor*) currentTextColor;
-- (NSColor*) currentInvisibleTextColor;
-- (NSColor*) currentCaretColor;
-- (NSColor*) currentCommentColor;
-- (NSColor*) currentMarginColor;
+- (Theme*) theme;
+- (DynamicColor*) currentBackgroundColor;
+- (DynamicColor*) currentSelectionColor;
+- (DynamicColor*) currentTextColor;
+- (DynamicColor*) currentInvisibleTextColor;
+- (DynamicColor*) currentCaretColor;
+- (DynamicColor*) currentCommentColor;
+- (DynamicColor*) currentMarginColor;
+- (DynamicColor*) currentOutlineBackground;
+- (DynamicColor*) currentOutlineHighlight;
 
 @end

@@ -108,6 +108,13 @@
 	
 	NSArray* commentValuesLight =  [[themes objectAtIndex:0] objectForKey:@"Comment"];
 	NSArray* commentValuesDark =  [[themes objectAtIndex:1] objectForKey:@"Comment"];
+
+	NSArray* outlineBackgroundLight =  [[themes objectAtIndex:0] objectForKey:@"OutlineBackground"];
+	NSArray* outlineBackgroundDark =  [[themes objectAtIndex:1] objectForKey:@"OutlineBackground"];
+	
+	NSArray* outlineHighlightLight =  [[themes objectAtIndex:0] objectForKey:@"OutlineHighlight"];
+	NSArray* outlineHighlightDark =  [[themes objectAtIndex:1] objectForKey:@"OutlineHighlight"];
+
 	
 	// NSArray* marginValues = [dict objectForKey:@"Margin"];
 	
@@ -119,6 +126,10 @@
 	theme.commentColor = [self dynamicColorFromArray:commentValuesLight darkArray:commentValuesDark];
 	// theme.marginColor = [self dynamicColorFromArray:selectionValuesLight darkArray:selectionValuesDark];
 
+	// Outline settings
+	theme.outlineBackground = [self dynamicColorFromArray:outlineBackgroundLight darkArray:outlineBackgroundDark];
+	theme.outlineHighlight =  [self dynamicColorFromArray:outlineHighlightLight darkArray:outlineHighlightDark];
+	
 	_theme = theme;
 }
 
@@ -161,43 +172,57 @@
 
 #pragma mark Value Access
 
-- (NSColor*)currentBackgroundColor
+- (Theme*)theme {
+	return _theme;
+}
+
+- (DynamicColor*)currentBackgroundColor
 {
 	return _theme.backgroundColor;
 }
 
-- (NSColor*) currentMarginColor
+- (DynamicColor*) currentMarginColor
 {
 	return _theme.marginColor;
 }
 
-- (NSColor*)currentSelectionColor
+- (DynamicColor*)currentSelectionColor
 {
 	return _theme.selectionColor;
 }
 
-- (NSColor*) currentTextColor
+- (DynamicColor*) currentTextColor
 {
 	return _theme.textColor;
 }
 
-- (NSColor*) currentInvisibleTextColor
+- (DynamicColor*) currentInvisibleTextColor
 {
 	return _theme.invisibleTextColor;
 }
 
-- (NSColor*) currentCaretColor
+- (DynamicColor*) currentCaretColor
 {
 	return _theme.caretColor;
 }
 
-- (NSColor*) currentCommentColor
+- (DynamicColor*) currentCommentColor
 {
 	return _theme.commentColor;
 }
 
 - (Theme*)currentTheme {
 	return _theme;
+}
+
+- (DynamicColor*)currentOutlineHighlight
+{
+	return _theme.outlineHighlight;
+}
+
+- (DynamicColor*)currentOutlineBackground
+{
+	return _theme.outlineBackground;
 }
 
 @end

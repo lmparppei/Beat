@@ -42,4 +42,13 @@
 	return [[self uppercaseString] isEqualToString:self] && [self containsUppercaseLetters];
 }
 
+- (NSString *)stringByTrimmingTrailingCharactersInSet:(NSCharacterSet *)characterSet {
+	NSRange rangeOfLastWantedCharacter = [self rangeOfCharacterFromSet:[characterSet invertedSet]
+															   options:NSBackwardsSearch];
+	if (rangeOfLastWantedCharacter.location == NSNotFound) {
+		return @"";
+	}
+	return [self substringToIndex:rangeOfLastWantedCharacter.location+1]; // non-inclusive
+}
+
 @end

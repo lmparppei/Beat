@@ -1,0 +1,223 @@
+<!doctype html>
+<!--[if lt IE 9]><html class="ie"><![endif]-->
+<!--[if gte IE 9]><!--><html><!--<![endif]-->
+	<head>
+		<meta charset="utf-8"/>
+		
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+
+		<title></title>
+
+		<style type="text/css">
+			* {
+				box-sizing: border-box;
+				cursor: default;
+			}
+			body {
+				margin: 0;
+				padding: 1rem;
+				background-color: #f8f8f8;
+				font-family: "Helvetica Neue", Helvetica, sans-serif;
+
+				color: #333;
+
+				user-select: none; 
+				-webkit-user-select: none;
+			}
+			body.dark {
+				background-color: #151515;
+				color: #eee;
+			}
+
+			.columns {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+			}
+			.column {
+				width: 49%;
+				display: flex;
+				flex-direction: column;
+			}
+
+			h1, h2 {
+				margin: 0 0 1rem 0;
+				font-family: "Helvetica Neue", Helvetica, sans-serif;
+				font-weight: normal;
+				font-weight: 300;
+				font-size: 2em;
+			}
+			h1 {
+				margin-bottom: 1.5rem;
+			}
+			h2 {
+				font-size: 1.2em;
+			}
+
+			table td {
+				font-size: .7em;
+			}
+
+			#characters {
+				width: 100%;
+			}
+			#characters td {
+				padding: .25rem;
+				border-bottom: 1px dotted #ddd;
+			}
+			.linesBar {
+				width: 50%;
+			}
+			.linesNumber {
+				width: 10%;
+				text-align: right;
+				color: #ccc;
+			}
+			.bar {
+				color: #eee;
+				background-color: #0088ee;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.legend {
+				font-size: .4rem;
+				text-transform: uppercase;
+			}
+			.box {
+				display: inline-block;
+				width: .5rem;
+				height: .5rem;
+			}
+
+			#sceneBar { width: 100%; display: flex; }
+			#sceneBar div {
+				height: 2rem; 
+				padding-left: .5rem;
+				overflow: hidden;
+				display: flex;
+				align-items: center;
+				color: #f0f0f0;
+				font-size: .7em;
+			}
+			.interior { background-color: #dd0088; }
+			.exterior { background-color: #00aadd; }
+			.other { background-color: #aaa; }
+
+			/* Beat colors */
+			.red { background-color: rgb(239,0,73); color: white; }
+			.blue { background-color: rgb(0,129,239); color: white; }
+			.green { background-color: rgb(0,223,121); color: white; }
+			.pink { background-color: rgb(250,111,193); color: white; }
+			.magenta { background-color: rgb(236,0,140); color: white; }
+			.gray { background-color: gray; color: white; }
+			.purple { background-color: rgb(181, 32, 218); color: white; }
+			.prince { background-color: rgb(181, 32, 218); color: white; }
+			.yellow { background-color: rgb(255, 162, 0); color: #333; }
+			.cyan { background-color: rgb(7, 189, 236); color: white; }
+			.teal { background-color: rgb(12, 224, 227); color: white; }
+			.orange { background-color: rgb(255, 161, 13); color: white; }
+			.brown { background-color: rgb(169, 106, 7); color: white; }
+
+		</style>
+	</head>
+
+	<body lang="fi">
+
+		<h1>Analysis</h1>
+
+		<div class='columns'>
+			<div class='column left'>
+				<h2>Dialogue</h2>
+				<table id='characters' cellspacing="0">
+				</table>
+			</div>
+			<div class='column right'>
+				<h2>Scenes</h2>
+				<div id='sceneBar'></div>
+				<p class='legend'><span class='box interior'></span> interior &nbsp; <span class='box exterior'></span> exterior  &nbsp; <span class='box other'></span> other</p>
+			</div>
+		</div>
+		
+
+		<script>
+			var defaultData = 
+				{characters:{'DON PRICE': 14,'WILBUR FREELY': 4,'JOSEPHINE': 46,'YOUNG EDWARD': 1,'RUTHIE': 2,'VARIOUS TOWNFOLK': 1,'SANDRA': 59,'LITTLE GIRL': 1,'LITTLE BRAVE': 1,'MAYOR': 3,'WOMANS VOICE': 1,'NURSE': 1,'GIRL': 1,'SON': 3,'DR. BENNETT': 15,'EDWARD AND WILL': 1,'KID': 1,'TELLER WOMAN': 3,'JING': 5,'A VOICE': 1,'VOICE': 1,'SHEPHARD': 1,'PING': 12,'BEAMEN': 14,'SHARECROPPER': 1,'KARL': 13,'YOUNG DR. BENNETT': 2,'AMOS': 25,'SOME FARMER': 1,'STUDENT': 1,'EDWARD': 293,'MILDRED': 5,'ZACKY': 5,'A GIRLS VOICE': 1,'THE CROWD': 1,'WILL': 141,'HOT-BLOODED SHOTGUN TOTER': 1,'ADULT EDWARD': 3,'WILLS DATE': 1,'NORTHER WINSLOW': 16,'JENNY': 58,'A DEEP VOICE': 1,'CASHIER': 1,'A MANS VOICE': 1,'THE MAN': 1,'JUMP LEADER': 1,'YOUNG WILL': 2,'MANS VOICE': 1}
+				};
+
+			var characterTable = document.getElementById('characters');
+			var sceneBar = document.getElementById('sceneBar');
+
+
+			function refresh (data) {
+
+				getCharacterData(data.characters);
+				getSceneData(data.scenes);
+
+			}
+
+			function getCharacterData(characters) {
+				console.log(characters);
+				if (characters == null) return;
+
+				var characterList = [];
+				for (var key in characters) characterList.push([key, characters[key]]);
+
+				characterList.sort(function(a, b) {
+				    a = a[1];
+				    b = b[1];
+
+				    return a < b ? -1 : (a > b ? 1 : 0);
+				});
+				characterList.reverse();
+
+				characterTable.innerHTML = "";
+
+				var maxLines = 0;
+
+				for (var c in characterList) {
+					if (c == 0) maxLines = characterList[c][1];
+
+					var lines = characterList[c][1];
+					var width = lines / maxLines * 100;
+					if (width < 1.5) width = 1.5;
+					var opacity = lines / maxLines;
+					if (opacity < .2) opacity = .2;
+
+					characterTable.innerHTML += "<tr><td class='name'>" + characterList[c][0] + "</td><td class='linesBar'><div class='bar' style='width:" + width + "%; opacity: " + opacity + "'>&nbsp;</div></td>"+
+					"<td class='linesNumber'>" + characterList[c][1] + "</td></tr>";
+				}
+			}
+
+			function getSceneData(scenes) {
+				sceneBar.innerHTML = "";
+
+				var total = scenes.interior + scenes.exterior + scenes.other;
+				sceneBar.innerHTML += "<div class='sceneCount interior' style='width: " + Math.floor(scenes.interior / total * 100) + "%'>" + scenes.interior + "</div>";
+				sceneBar.innerHTML += "<div class='sceneCount exterior' style='width: " + Math.floor(scenes.exterior / total * 100) + "%'>" + scenes.exterior + "</div>";
+				if (scenes.other > 0) sceneBar.innerHTML += "<div class='sceneCount other' style='width: " + Math.floor(scenes.other / total * 100) + "%'>" + scenes.other + "</div>";
+
+/*
+				var circle = '<svg viewBox="0 0 36 36"> '+
+					  '<path '+
+					    'd="M18 2.0845 '+
+					      'a 15.9155 15.9155 0 0 1 0 31.831 '+
+					      'a 15.9155 15.9155 0 0 1 0 -31.831" '+
+					    'fill="none" ' +
+					    'stroke="#444" ' +
+					    'stroke-width="1" ' +
+					    'stroke-dasharray="25" ' +
+					  '/>'+
+				'</svg>"';
+*/
+			}
+
+			//refresh(defaultData);
+
+		</script>
+	</body>
+
+</html>

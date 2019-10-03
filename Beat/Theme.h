@@ -18,6 +18,8 @@
 @property (strong, nonatomic) DynamicColor* caretColor;
 @property (strong, nonatomic) DynamicColor* commentColor;
 @property (strong, nonatomic) DynamicColor* marginColor;
+@property (strong, nonatomic) DynamicColor* outlineBackground;
+@property (strong, nonatomic) DynamicColor* outlineHighlight;
 
 @property (strong, nonatomic) NSString* name;
 

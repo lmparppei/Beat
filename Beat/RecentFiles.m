@@ -36,7 +36,7 @@
 }
 - (IBAction)newDocument:(id)sender {
 	[[NSDocumentController sharedDocumentController] newDocument:nil];
-	[_startModal close];
+	//[_startModal close];
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView didClickTableColumn:(NSTableColumn *)tableColumn {

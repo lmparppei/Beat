@@ -53,6 +53,18 @@
 				<integer>100</integer>
 				<integer>100</integer>
 			</array>
+			<key>OutlineBackground</key>
+			<array>
+				<integer>20</integer>
+				<integer>21</integer>
+				<integer>23</integer>
+			</array>
+			<key>OutlineHighlight</key>
+			<array>
+				<integer>230</integer>
+				<integer>230</integer>
+				<integer>230</integer>
+			</array>
 		</dict>
 		<dict>
 			<key>Name</key>
@@ -98,6 +110,18 @@
 				<integer>150</integer>
 				<integer>150</integer>
 				<integer>150</integer>
+			</array>
+			<key>OutlineBackground</key>
+			<array>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+			</array>
+			<key>OutlineHighlight</key>
+			<array>
+				<integer>200</integer>
+				<integer>200</integer>
+				<integer>200</integer>
 			</array>
 		</dict>
 	</array>

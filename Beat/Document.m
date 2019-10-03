@@ -76,6 +76,7 @@
 #import "DynamicColor.h"
 #import "ApplicationDelegate.h"
 #import "NSString+Whitespace.h"
+#import "FountainReport.h"
 
 @interface Document ()
 
@@ -87,7 +88,10 @@
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (weak) NSArray *draggedNodes;
 @property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
-@property (weak) NSMutableArray *flatOutline;
+@property (nonatomic) NSMutableArray *flatOutline;
+@property (nonatomic) NSMutableArray *filteredOutline;
+
+@property (weak) IBOutlet NSSearchField *outlineSearchField;
 
 @property (weak) NSWindow *thisWindow;
 
@@ -96,9 +100,13 @@
 @property (unsafe_unretained) IBOutlet WebView *webView;
 @property (unsafe_unretained) IBOutlet NSTabView *tabView;
 @property (weak) IBOutlet ColorView *backgroundView;
+@property (weak) IBOutlet ColorView *outlineBackgroundView;
 @property (weak) IBOutlet NSView *masterView;
 
 @property (weak) IBOutlet NSMenu *colorMenu;
+
+@property (weak) IBOutlet NSPanel *analysisPanel;
+@property (unsafe_unretained) IBOutlet WKWebView *analysisView;
 
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
 @property (unsafe_unretained) IBOutlet WKWebView *timelineView;
@@ -165,6 +173,7 @@
 @property (strong, nonatomic) PrintView *printView; //To keep the asynchronously working print data generator in memory
 
 @property (strong, nonatomic) ContinousFountainParser* parser;
+@property (strong, nonatomic) FountainReport* report;
 
 @property (strong, nonatomic) ThemeManager* themeManager;
 @property (nonatomic) bool nightMode;
@@ -203,15 +212,21 @@
         self.printInfo.bottomMargin = 55;
 		self.printInfo.paperSize = NSMakeSize(595, 842);
     }
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
+	
     return self;
 }
 - (void) close {
-	// This stuff is here to fix some strange memory issues.
-	// Probably unnecessary now.
+	// This stuff was here to fix some strange memory issues.
+	// Probably unnecessary now, but maybe it isn't bad to unset the most memory-consuming variables anyway
 	self.textView = nil;
 	self.parser = nil;
 	self.outlineView = nil;
 	self.sceneNumberLabels = nil;
+	self.thisWindow = nil;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document close" object:nil];
 	
 	[super close];
 }
@@ -228,6 +243,8 @@
 #define DOUBLE_DIALOGUE_INDENT_P 0.40
 #define DD_RIGHT 650
 #define DD_RIGHT_P .95
+
+#define TITLE_INDENT .2
 
 #define CHARACTER_INDENT_P 0.36
 #define PARENTHETICAL_INDENT_P 0.27
@@ -262,21 +279,16 @@
                                  _documentWidth * 1.5);
     [window setFrame:newFrame display:YES];
 	
-	// Accept mouse moved events
-	//[aController.window setAcceptsMouseMovedEvents:YES];
+	// Accept mouse moved events... nah
+	// [aController.window setAcceptsMouseMovedEvents:YES];
 	
 	
-	/* ####### Outline button initialization ######## */
-	
-	CGRect buttonFrame = self.outlineButton.frame;
-	buttonFrame.origin.x = 15;
-	self.outlineButton.frame = buttonFrame;
-	
+	// Outline view setup
     self.outlineViewVisible = false;
+	
     self.outlineViewWidth.constant = 0;
-	
-	
-	/* ####### TextView setup ######## */
+
+	// TextView setup
 	
     self.textView.textContainer.widthTracksTextView = false;
 	self.textView.textContainer.heightTracksTextView = false;
@@ -284,16 +296,12 @@
 	[[self.textScrollView documentView] setPostsBoundsChangedNotifications:YES];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
+	
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
 	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
 	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 	self.textView.textContainerInset = NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
-	
-	// Background fill
-    self.backgroundView.fillColor = [NSColor colorWithCalibratedRed:0.3
-                                                              green:0.3
-                                                               blue:0.3
-                                                              alpha:1.0];
 	
 	// Set textView style
 	[self.textView setFont:[self courier]];
@@ -332,6 +340,8 @@
 	[self loadSelectedTheme:false];
 	_nightMode = [self isDark];
 	
+	// Background fill
+	self.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
 	
 	// Initialize drag & drop for outline view
 	//[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, NSPasteboardTypeString]];
@@ -347,6 +357,7 @@
 	
 	// Outline view setup
 	self.outlineClosedSections = [[NSMutableArray alloc] init];
+	self.filteredOutline = [[NSMutableArray alloc] init];
 	
 	// Scene number labels
 	self.sceneNumberLabels = [[NSMutableArray alloc] init];
@@ -356,6 +367,7 @@
 	self.sceneHeadings = [[NSMutableArray alloc] init];
 	
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
+	self.report = [[FountainReport alloc] init];
 
 	// CardView webkit
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
@@ -371,7 +383,12 @@
 	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"timelineContext"];
 	_timelineClickedScene = -1;
 	
+	// Setup analysis
+	[self setupAnalysis];
+	
+	// Read more about this in (void)reformatScript
 	[self applyFormatChanges];
+	//[self reformatScript];
 
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
@@ -497,7 +514,6 @@
 		curDocFrameSize = [clipView frame].size;
 		
 		// The new bounds will be frame divided by scale factor
-		//newDocBoundsSize.width = curDocFrameSize.width / _scaleFactor;
 		newDocBoundsSize.width = curDocFrameSize.width;
 		newDocBoundsSize.height = curDocFrameSize.height / _scaleFactor;
 		
@@ -945,20 +961,19 @@
 	
     [self.parser.changedIndices removeAllObjects];
 }
-
-/*
-
-#define CHARACTER_INDENT 220
-#define PARENTHETICAL_INDENT 185
-#define DIALOGUE_INDENT 100
-#define DIALOGUE_RIGHT 450
-
-#define DD_CHARACTER_INDENT 200
-#define DD_PARENTHETICAL_INDENT 385
-#define DOUBLE_DIALOGUE_INDENT 150
-#define DD_RIGHT 650
-
-*/
+- (void)reformatScript
+{
+	// This function is used to perform lookback when loading the script. The thing is, Fountain files should be parsed from bottom to top, as otherwise we really won't know the meaning of some lines.
+	
+	// Beat relies on Hendrik Noeller's work on Continuous Fountain Parser, which parses the file in a linear manner. This works just fine most of the time, but in Beat, formatting methods have been updated to take next and previous lines into consideration.
+	
+	// Unfortunately, this also means having to parse the whole file two times when loading.
+	
+	// Set all indices as changed
+	[self.parser resetParsing];
+	// Format everything again
+	[self applyFormatChanges];
+}
 
 - (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly
 {
@@ -975,8 +990,10 @@
 	
 	NSUInteger cursor = [self cursorLocation].location;
 	
-	// Dread lightly. We'll look back a bit to see that we don't have some uppercase lines mistaken for character cues.
-	// I really have NO IDEA what's going on in here, but I managed to get it to work.
+	// We'll perform a lookback to see that we didn't mistake some uppercase for character cues.
+	// I really have NO FUCKING IDEA what's going on in here.
+	// Still I managed to get it to work.
+	
 	if (!recursive) {
 		NSInteger index = [[self.parser lines] indexOfObject:line];
 		if (index - 2 >= 0) {
@@ -998,11 +1015,30 @@
 			}
 			
 			if (preceedingLine.type == character) {
+				// If next line contains text, we will reformat it too
 				if (index + 1 < [self.parser.lines count] && [line.string length] > 0) {
 					Line *nextLine = [self.parser.lines objectAtIndex:index+1];
+
 					if ([nextLine.string length] > 0) {
-						nextLine.type = dialogue;
+						if (nextLine.type != dialogue && nextLine.type != parenthetical) nextLine.type = dialogue;
 						[self formatLineOfScreenplay:nextLine onlyFormatFont:NO recursive:YES];
+					}
+				}
+				
+				// Next part is terrible. Let me explain.
+				
+				// If the line currently parsed is EMPTY and we are NOT editing the line before or the current line, we'll take a step back and reformat it as action.
+				// This is unreliable at times, but 70% of the time it works OK.
+				
+				else if ([line.string length] == 0) {
+					NSRange previousLineRange = NSMakeRange(preceedingLine.position, [preceedingLine.string length]);
+					
+					if ((cursor >= previousLineRange.location && cursor <= previousLineRange.location + previousLineRange.length) || currentlyEditing) {
+						// Do nothing
+					} else {
+						// Reset the line type
+						preceedingLine.type = [self.parser parseLineType:preceedingLine atIndex:index - 2 recursive:YES];
+						[self formatLineOfScreenplay:preceedingLine onlyFormatFont:NO recursive:YES];
 					}
 				}
 			}
@@ -1021,7 +1057,7 @@
 	
 	//Formatt according to style
 	if ((line.type == heading && [line.string characterAtIndex:0] != '.') ||
-		(line.type == transition && [line.string characterAtIndex:0] != '>')) {
+		(line.type == transitionLine && [line.string characterAtIndex:0] != '>')) {
 		//Make uppercase, and then reapply cursor position, because they'd get lost otherwise
 		NSArray<NSValue*>* selectedRanges = self.textView.selectedRanges;
 		[textStorage replaceCharactersInRange:range
@@ -1058,7 +1094,18 @@
 			[paragraphStyle setAlignment:NSTextAlignmentCenter];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		} else if (line.type == transition) {
+		} else if (line.type == titlePageUnknown ||
+				   line.type == titlePageContact ||
+				   line.type == titlePageDraftDate) {
+			
+			NSColor* commentColor = [self.themeManager currentCommentColor];
+			[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
+			/* WORK IN PROGRESS */
+			//[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+			//[paragraphStyle setHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+			//[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+
+		} else if (line.type == transitionLine) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
 			[paragraphStyle setAlignment:NSTextAlignmentRight];
 			
@@ -1117,7 +1164,7 @@
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
-		} else if (line.type == section || line.type == synopse || line.type == titlePageUnknown) {
+		} else if (line.type == section || line.type == synopse) {
 			if (self.themeManager) {
 				NSColor* commentColor = [self.themeManager currentCommentColor];
 				[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
@@ -1283,7 +1330,7 @@ static NSString *omitClose= @"*/";
 static NSString *forceHeadingSymbol = @".";
 static NSString *forceActionSymbol = @"!";
 static NSString *forceCharacterSymbol = @"@";
-static NSString *forceTransitionSymbol = @">";
+static NSString *forcetransitionLineSymbol = @">";
 static NSString *forceLyricsSymbol = @"~";
 
 - (NSString*)titlePage
@@ -1579,14 +1626,14 @@ static NSString *forceLyricsSymbol = @"~";
     }
 }
 
-- (IBAction)forceTransition:(id)sender
+- (IBAction)forcetransitionLine:(id)sender
 {
     
     //Check if the currently selected tab is the one for editing
     if ([self selectedTabViewTab] == 0) {
         //Retreiving the cursor location
         NSRange cursorLocation = [self cursorLocation];
-        [self forceLineType:cursorLocation symbol:forceTransitionSymbol];
+        [self forceLineType:cursorLocation symbol:forcetransitionLineSymbol];
     }
 }
 
@@ -1636,7 +1683,7 @@ static NSString *forceLyricsSymbol = @"~";
         //If the line is not forced to the desirey type, check if it is forced to be something else
         BOOL otherForce = NO;
         
-        NSArray *allForceSymbols = @[forceActionSymbol, forceCharacterSymbol, forceHeadingSymbol, forceLyricsSymbol, forceTransitionSymbol];
+        NSArray *allForceSymbols = @[forceActionSymbol, forceCharacterSymbol, forceHeadingSymbol, forceLyricsSymbol, forcetransitionLineSymbol];
         
         for (NSString *otherSymbol in allForceSymbols) {
             if (otherSymbol != symbol && [firstCharacter isEqualToString:otherSymbol]) {
@@ -1660,12 +1707,6 @@ static NSString *forceLyricsSymbol = @"~";
     if ([self textView:self.textView shouldChangeTextInRange:range replacementString:string]) {
         [self.textView replaceCharactersInRange:range withString:string];
         [self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
-		
-		/*
-		NSString *oldString = [[self getText] substringWithRange:range];
-		NSRange undoRange = NSMakeRange(range.location, [oldString length]);
-		[[[self undoManager] prepareWithInvocationTarget:self] replaceCharactersInRange:undoRange withString:oldString];
-		 */
     }
 }
 
@@ -1745,7 +1786,7 @@ static NSString *forceLyricsSymbol = @"~";
 		
 		return NO;
 	}
-	if (_timelineVisible && [menuItem.title isEqualToString:@"Timeline"]) {
+	if (_timelineVisible && [menuItem.title isEqualToString:@"Show Timeline"]) {
 		[menuItem setState:NSOnState];
 		return YES;
 	} else {
@@ -1923,7 +1964,6 @@ static NSString *forceLyricsSymbol = @"~";
         NSTextView *textView = doc.textView;
 		
 		[textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
-		
         [textView setSelectedTextAttributes:@{
 											  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
 											  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
@@ -1931,6 +1971,12 @@ static NSString *forceLyricsSymbol = @"~";
         [textView setTextColor:[self.themeManager currentTextColor]];
         [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
         [doc formattAllLines];
+		
+		NSOutlineView *outlineView = doc.outlineView;
+		[outlineView setBackgroundColor:self.themeManager.theme.outlineBackground];
+		
+		// Set global background
+		doc.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
 		
 		//NSBox *leftMargin = doc.leftMargin;
 		//NSBox *rightMargin = doc.rightMargin;
@@ -2023,13 +2069,45 @@ static NSString *forceLyricsSymbol = @"~";
 		}
 	}
 	
+	_flatOutline = outlineItems;
 	return outlineItems;
+}
+
+- (void) filterOutline:(NSString*) filter {
+	// We don't need to GET outline at this point, let's use the cached one
+	[_filteredOutline removeAllObjects];
+	
+	for (OutlineScene * scene in _flatOutline) {
+		if ([scene.string rangeOfString:filter options:NSCaseInsensitiveSearch].location != NSNotFound) {
+			[_filteredOutline addObject:scene];
+		} else if ([scene.color localizedCaseInsensitiveContainsString:filter]) {
+			[_filteredOutline addObject:scene];
+		}
+	}
+}
+
+- (void)searchOutline {
+	// Don't search if it's only spaces
+	if ([_outlineSearchField.stringValue containsOnlyWhitespace] || [_outlineSearchField.stringValue length] < 1) {
+		[_filteredOutline removeAllObjects];
+	}
+	
+	[self filterOutline:_outlineSearchField.stringValue];
+	[self.outlineView reloadData];
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
-	if (FLATOUTLINE) return [[self getOutlineItems] count];
+	if (FLATOUTLINE) {
+		// If we have a search term, let's use the filtered array
+		if ([_outlineSearchField.stringValue length] > 0) {
+			return [_filteredOutline count];
+		} else {
+			return [[self getOutlineItems] count];
+		}
+	}
 	
+	/*
 	if (![self.parser outline]) return 0;
 	if ([[self.parser outline] count] < 1) return 0;
 	
@@ -2040,17 +2118,27 @@ static NSString *forceLyricsSymbol = @"~";
 		return [[item scenes] count];
 	}
     //return 0;
+	 */
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
 {
-	if (FLATOUTLINE) return [[self getOutlineItems] objectAtIndex:index];
+	if (FLATOUTLINE) {
+		// If there is a search term, let's search the filtered array
+		if ([_outlineSearchField.stringValue length] > 0) {
+			return [_filteredOutline objectAtIndex:index];
+		} else {
+			return [[self getOutlineItems] objectAtIndex:index];
+		}
+	}
 	
+	/*
 	if (!item) {
 		return [[self.parser outline] objectAtIndex:index];
 	} else {
 		return [[item scenes] objectAtIndex:index];
 	}
+	 */
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
@@ -2079,7 +2167,7 @@ static NSString *forceLyricsSymbol = @"~";
         OutlineScene* line = item;
 		NSUInteger sceneNumberLength = 0;
 		bool currentScene = false;
-		
+
 		// The outline elements will be formatted as rich text,
 		// which is apparently VERY CUMBERSOME in Cocoa/Objective-C.
 		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
@@ -2125,6 +2213,7 @@ static NSString *forceLyricsSymbol = @"~";
                 //return [NSString stringWithFormat:@"  %@", string];
 				resultString = [[NSMutableAttributedString alloc] initWithString:string];
             }
+			
 			[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
         }
         if (line.type == synopse) {
@@ -2140,7 +2229,7 @@ static NSString *forceLyricsSymbol = @"~";
                 }
                 string = [@"  " stringByAppendingString:string];
 				
-				NSFont *font = [NSFont systemFontOfSize:14.0f];
+				NSFont *font = [NSFont systemFontOfSize:13.0f];
 				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 				
 				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
@@ -2148,7 +2237,7 @@ static NSString *forceLyricsSymbol = @"~";
 				// Italic + white color
 				[resultString applyFontTraits:NSItalicFontMask range:NSMakeRange(0,[resultString length])];
 				
-				[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.whiteColor range:NSMakeRange(0, [resultString length])];
+				[resultString addAttribute:NSForegroundColorAttributeName value:self.themeManager.theme.outlineHighlight range:NSMakeRange(0, [resultString length])];
             } else {
                 resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
             }
@@ -2165,15 +2254,15 @@ static NSString *forceLyricsSymbol = @"~";
                     string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
                 }
 				
-				string = [@"  " stringByAppendingString:string];
+				string = [@"" stringByAppendingString:string];
 				
-				NSFont *font = [NSFont systemFontOfSize:14.0f];
+				NSFont *font = [NSFont systemFontOfSize:13.0f];
 				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 
 				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
 				
-				// Bold + white color
-				[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.whiteColor range:NSMakeRange(0,[resultString length])];
+				// Bold + highlight color
+				[resultString addAttribute:NSForegroundColorAttributeName value:self.themeManager.theme.outlineHighlight range:NSMakeRange(0,[resultString length])];
 				
 				[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
             } else {
@@ -2201,14 +2290,16 @@ static NSString *forceLyricsSymbol = @"~";
 	
 } }
 
-// http://spec-zone.ru/RU/OSX/samplecode/DragNDropOutlineView/Listings/DragNDropOutlineView_AAPLAppController_m.html
+- (void)scrollToScene:(OutlineScene*)scene {
+	NSRange lineRange = NSMakeRange([scene line].position, [scene line].string.length);
+	[self.textView setSelectedRange:lineRange];
+	[self.textView scrollRangeToVisible:lineRange];
+}
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	if ([item isKindOfClass:[OutlineScene class]]) {
-		NSRange lineRange = NSMakeRange([item line].position, [item line].string.length);
-		[self.textView setSelectedRange:lineRange];
-		[self.textView scrollRangeToVisible:lineRange];
+		[self scrollToScene:item];
 	}
 	return NO;
 }
@@ -2219,14 +2310,15 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 - (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation {
-	// operation == NSjotain
-	
-	//_draggedNodes = nil;
+	// ?
 }
 
 
 - (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item{
 	//OutlineScene *scene = (OutlineScene *)(((NSTreeNode *)item).representedObject);
+	
+	// Don't allow reordering a filtered list
+	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return nil;
 	
 	OutlineScene *scene = (OutlineScene*)item;
 	_draggedScene = scene;
@@ -2240,6 +2332,9 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index{
 	
+	// Don't allow reordering a filtered list
+	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return NSDragOperationNone;
+	
 	// Don't allow dropping INTO scenes
 	OutlineScene *targetScene = (OutlineScene*)targetItem;
 	if ([targetScene.string length] > 0 || index < 0) return NSDragOperationNone;
@@ -2249,6 +2344,9 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index{
 
+	// Don't allow reordering a filtered list
+	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return NSDragOperationNone;
+	
 	NSMutableArray *outline = [self getOutlineItems];
 	
 	NSInteger to = index;
@@ -2262,6 +2360,9 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 - (void) reloadOutline {
+	/*
+	// DEPRECATED
+	 
 	// Save list of sections that have been collapsed
 	[_outlineClosedSections removeAllObjects];
 	for (int i = 0; i < [[self.parser outline] count]; i++) {
@@ -2270,13 +2371,22 @@ static NSString *forceLyricsSymbol = @"~";
 			[_outlineClosedSections addObject:[item string]];
 		}
 	}
+	 */
 	
 	// Save outline scroll position
 	NSPoint scrollPosition = [[self.outlineScrollView contentView] bounds].origin;
 	
+	// Create outline
 	_flatOutline = [self getOutlineItems];
+	
+	// Build a filtered outline if we have a filter applied
+	if ([_outlineSearchField.stringValue length] > 0) [self filterOutline:_outlineSearchField.stringValue];
+	
 	[self.outlineView reloadData];
 	
+	/*
+	// DEPRECATED
+	 
 	// Expand all
 	[self.outlineView expandItem:nil expandChildren:true];
 	
@@ -2287,6 +2397,7 @@ static NSString *forceLyricsSymbol = @"~";
 			[self.outlineView collapseItem:item];
 		}
 	}
+	 */
 	
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
@@ -2342,9 +2453,7 @@ static NSString *forceLyricsSymbol = @"~";
  Color rontext menu, WIP.
  
  The same menu is used for both outline and timeline. Because clickedRow is set all the time (?)
- 
  Regexes hurt my brain, and they do so even more in Objective-C, so maybe I'll just search for ranges whenever I decide to do this.
- 
  Also, in principle it should be possible to enter custom colors in hex. Such as [[COLOR #d00dd]].
 
 */
@@ -2618,18 +2727,13 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	if ([message.name isEqualToString:@"jumpToScene"]) {
 		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
-		NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
-		[self.textView setSelectedRange:lineRange];
-		[self.textView scrollRangeToVisible:lineRange];
+		[self scrollToScene:scene];
 		return;
 	}
 	
 	if ([message.name isEqualToString:@"cardClick"]) {
 		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
-		NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
-		[self.textView setSelectedRange:lineRange];
-		[self.textView scrollRangeToVisible:lineRange];
-		
+		[self scrollToScene:scene];
 		[self toggleCards:nil];
 		
 		return;
@@ -2643,6 +2747,7 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 	
 	// Work in progress. Can be enabled by editing CardView.js and setting dragDrop = true;
+	// Trouble is, there is no way of undoing this from card view for now. Until then, this won't be enabled in the app.
 	if ([message.name isEqualToString:@"move"]) {
 		if ([message.body rangeOfString:@","].location != NSNotFound) {
 			NSArray *fromTo = [message.body componentsSeparatedByString:@","];
@@ -2654,8 +2759,10 @@ static NSString *forceLyricsSymbol = @"~";
 			NSMutableArray *outline = [self getOutlineItems];
 			if ([outline count] < 1) return;
 			
+			OutlineScene *scene = [outline objectAtIndex:from];
+			
 			// MOVESCENE
-			// [self ]
+			[self moveScene:scene from:from to:to];
 			
 			[self refreshCards];
 			
@@ -2871,103 +2978,109 @@ static NSString *forceLyricsSymbol = @"~";
 	else [self.timelineView evaluateJavaScript:@"setStyle('light');" completionHandler:nil];
 }
 - (void) reloadTimeline {
-	[self getCurrentScene];
-	NSMutableArray *scenes = [self getOutlineItems];
+	__block OutlineScene *currentScene = [self getCurrentScene];
+	__block NSMutableArray *scenes = [self getOutlineItems];
 	
-	NSInteger charsPerLine = 57;
-	NSInteger charsPerDialogue = 35;
-	
-	CGFloat totalLengthInSeconds = 0.0;
-	
-	NSMutableString *jsonData = [NSMutableString stringWithString:@"["];
-	
-	bool previousLineEmpty = false;
-	
-	for (OutlineScene *scene in scenes) {
-		if (scene.type == synopse || scene.type == section) {
-			NSString *type;
-			if (scene.type == synopse) type = @"synopsis";
-			if (scene.type == section) type = @"section";
-			
-			[jsonData appendFormat:@"{ text: \"%@\", type: '%@' },", [self JSONString:scene.string], type];
-		}
-		else if (scene.type == heading) {
-			//[self JSONString:scene.string]
-			
-			NSInteger length = 2; // A scene heading is 2 beats
-
-			NSInteger position = [[self.parser lines] indexOfObject:scene.line];
-			NSInteger index = 0;
-			
-			bool selected = false;
-			if (_currentScene) {
-				if (scene.line == _currentScene.line) {
-					
-					selected = true;
-				}
-			}
-			
-			// Loop the lines until next scene
-			while (position + index + 1 < [[self.parser lines] count]) {
-				index++;
-				Line* line = [[self.parser lines] objectAtIndex:position + index];
-				
-				// Break away when next scene is encountered
-				if (line.type == heading) break;
-				
-				// Don't count in synopses or sections
-				if (line.type == synopse || line.type == section) continue;
-				
-				// Empty row equals 1 beat
-				if ([line.string isEqualToString:@""]) {
-					if (previousLineEmpty) continue;
-					
-					previousLineEmpty = true;
-					length += 1;
-					continue;
-				} else {
-					previousLineEmpty = false;
-				}
-
-				NSInteger lineLength = [line.string length];
-				
-				// We need to take omitted ranges into consideration, so they won't add up to scene lengths
-				__block NSUInteger omitLength = 0;
-				[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-					omitLength += range.length;
-				}];
-				if (lineLength - omitLength >= 0) lineLength -= omitLength;
-				
-				// Character cue and parenthetical add 1 beat each
-				if (line.type == character || line.type == parenthetical) {
-					length += 1;
-					continue;
-				}
-				
-				if (line.type == dialogue) {
-					length += (lineLength + charsPerDialogue - 1) / charsPerDialogue;
-					continue;
-				}
-				
-				if (line.type == action) {
-					length += (lineLength + charsPerLine - 1) / charsPerLine;
-				}
+	// Let's build the timeline in another thread, to not slow down your writing
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		NSInteger charsPerLine = 57;
+		NSInteger charsPerDialogue = 35;
 		
+		CGFloat totalLengthInSeconds = 0.0;
+		
+		NSMutableString *jsonData = [NSMutableString stringWithString:@"["];
+		
+		bool previousLineEmpty = false;
+		
+		for (OutlineScene *scene in scenes) {
+			if (scene.type == synopse || scene.type == section) {
+				NSString *type;
+				if (scene.type == synopse) type = @"synopsis";
+				if (scene.type == section) type = @"section";
+				
+				[jsonData appendFormat:@"{ text: \"%@\", type: '%@' },", [self JSONString:scene.string], type];
 			}
+			else if (scene.type == heading) {
+				//[self JSONString:scene.string]
+				
+				NSInteger length = 2; // A scene heading is 2 beats
+
+				NSInteger position = [[self.parser lines] indexOfObject:scene.line];
+				NSInteger index = 0;
+				
+				bool selected = false;
+				if (currentScene) {
+					if (scene.line == currentScene.line) {
+						
+						selected = true;
+					}
+				}
+				
+				// Loop the lines until next scene
+				while (position + index + 1 < [[self.parser lines] count]) {
+					index++;
+					Line* line = [[self.parser lines] objectAtIndex:position + index];
+					
+					// Break away when next scene is encountered
+					if (line.type == heading) break;
+					
+					// Don't count in synopses or sections
+					if (line.type == synopse || line.type == section) continue;
+					
+					// Empty row equals 1 beat
+					if ([line.string isEqualToString:@""]) {
+						if (previousLineEmpty) continue;
+						
+						previousLineEmpty = true;
+						length += 1;
+						continue;
+					} else {
+						previousLineEmpty = false;
+					}
+
+					NSInteger lineLength = [line.string length];
+					
+					// We need to take omitted ranges into consideration, so they won't add up to scene lengths
+					__block NSUInteger omitLength = 0;
+					[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+						omitLength += range.length;
+					}];
+					if (lineLength - omitLength >= 0) lineLength -= omitLength;
+					
+					// Character cue and parenthetical add 1 beat each
+					if (line.type == character || line.type == parenthetical) {
+						length += 1;
+						continue;
+					}
+					
+					if (line.type == dialogue) {
+						length += (lineLength + charsPerDialogue - 1) / charsPerDialogue;
+						continue;
+					}
+					
+					if (line.type == action) {
+						length += (lineLength + charsPerLine - 1) / charsPerLine;
+					}
 			
-			CGFloat seconds = round((CGFloat)length / 52 * 60);
-			totalLengthInSeconds += seconds;
-			
-			NSString *selectedValue = @"false";
-			if (selected) selectedValue = @"true";
-			
-			[jsonData appendFormat:@"{ text: \"%@\", sceneLength: %lu, sceneIndex: %lu, sceneNumber: '%@', color: '%@', selected: %@ },", [self JSONString:scene.string], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
+				}
+				
+				CGFloat seconds = round((CGFloat)length / 52 * 60);
+				totalLengthInSeconds += seconds;
+				
+				NSString *selectedValue = @"false";
+				if (selected) selectedValue = @"true";
+				
+				[jsonData appendFormat:@"{ text: \"%@\", sceneLength: %lu, sceneIndex: %lu, sceneNumber: '%@', color: '%@', selected: %@ },", [self JSONString:scene.string], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
+			}
 		}
-	}
-	[jsonData appendString:@"]"];
-	
-	NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(%@);", jsonData];
-	[_timelineView evaluateJavaScript:evalString completionHandler:nil];
+		[jsonData appendString:@"]"];
+		
+		NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(%@);", jsonData];
+		
+		dispatch_async(dispatch_get_main_queue(), ^(void){
+			[self->_timelineView evaluateJavaScript:evalString completionHandler:nil];
+		});
+	});
 }
 - (void) findOnTimeline: (OutlineScene *) scene {
 	NSUInteger index = [[self getOutlineItems] indexOfObject:scene];
@@ -2975,6 +3088,31 @@ static NSString *forceLyricsSymbol = @"~";
 	NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", index];
 	[_timelineView evaluateJavaScript:evalString completionHandler:nil];
 }
+
+
+#pragma mark - Reporting
+
+- (IBAction)showAnalysis:(id)sender {
+
+}
+
+- (IBAction)createReport:(id)sender {
+	[_thisWindow beginSheet:_analysisPanel completionHandler:nil];
+	NSString *jsonString = [self.report createReport:[self.parser lines]];
+	NSString *javascript = [NSString stringWithFormat:@"refresh(%@)", jsonString];
+	[_analysisView evaluateJavaScript:javascript completionHandler:nil];
+}
+
+- (void) setupAnalysis {
+	NSString *analysisPath = [[NSBundle mainBundle] pathForResource:@"analysis.html" ofType:@""];
+	NSString *content = [NSString stringWithContentsOfFile:analysisPath encoding:NSUTF8StringEncoding error:nil];
+	
+	[_analysisView loadHTMLString:content baseURL:nil];
+}
+- (IBAction)closeAnalysis:(id)sender {
+	[_thisWindow endSheet:_analysisPanel];
+}
+
 
 #pragma mark - scroll listeners
 

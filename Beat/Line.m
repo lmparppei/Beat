@@ -65,7 +65,7 @@
             return @"DD Parenthetical";
         case doubleDialogue:
             return @"Double Dialogue";
-        case transition:
+        case transitionLine:
             return @"Transition";
         case lyrics:
             return @"Lyrics";

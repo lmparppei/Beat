@@ -349,7 +349,7 @@
             return @"Parenthetical";
         case doubleDialogue:
             return @"Dialogue";
-        case transition:
+        case transitionLine:
             return @"Transition";
         case lyrics:
             return @"Lyrics";

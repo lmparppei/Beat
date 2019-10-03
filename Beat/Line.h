@@ -27,7 +27,7 @@ typedef enum : NSUInteger {
     doubleDialogueCharacter,
     doubleDialogueParenthetical,
     doubleDialogue,
-    transition,
+    transitionLine,
     lyrics,
     pageBreak,
     centered,

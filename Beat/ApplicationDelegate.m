@@ -9,8 +9,7 @@
 #import "ApplicationDelegate.h"
 
 @implementation ApplicationDelegate
-//@synthesize window;
-//@synthesize versionField;
+@synthesize recentFiles;
 
 #pragma mark - Help
 
@@ -25,8 +24,27 @@
 			[self closeStartModal];
 		}
 	}];
+	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
+		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+		
+		if ([openDocuments count] == 1 && self->_startModal && ![self->_startModal isVisible]) {
+			//[self showStartModal];
+			[self->_startModal setIsVisible:true];
+			[self->recentFiles deselectAll:nil];
+			[self->recentFiles reloadData];
+		}
+	}];
+	[[NSNotificationCenter defaultCenter] addObserverForName:@"Show about screen" object:nil queue:nil usingBlock:^(NSNotification *note) {
+		//if (self->_startModal && [self->_startModal isVisible]) {
+		//	[self closeStartModal];
+		//}
+	}];
 	
 	return self;
+}
+
+- (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
+	return NO;
 }
 
 -(void) awakeFromNib {
@@ -35,6 +53,7 @@
 	
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
 	[versionField setStringValue:versionString];
+	[aboutVersionField setStringValue:versionString];
 }
 
 - (IBAction)showReference:(id)sender
@@ -54,8 +73,18 @@
 	
 }
 
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)flag {
+	if (flag) return NO; else return YES;
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	// Only open splash screen if no documents were opened by default
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	if ([openDocuments count] == 0 && self->_startModal && ![self->_startModal isVisible]) {
+		[self->_startModal setIsVisible:true];
+	}
+	
 	_darkMode = false;
 	if (@available(macOS 10.14, *)) {
 		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
@@ -104,6 +133,13 @@
 }
 - (void) toggleDarkMode {
 	_darkMode = !_darkMode;
+}
+
+- (IBAction)showAboutScreen:(id) sender {
+	[self->_aboutModal setIsVisible:true];
+	
+	NSString * rtfFile = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"rtf"];
+	[aboutText readRTFDFromFile:rtfFile];
 }
 
 @end

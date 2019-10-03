@@ -107,10 +107,13 @@ body > p:first-child {
 	position: relative;
     overflow: hidden;
     display: flex;
+    
+    padding: 0; 
     padding-bottom: 2.6em;
     margin-bottom: 2.6em;
 	
 	justify-content: center;
+	align-items: center;
 	flex-direction: column;
 }
 #script-title .mainTitle {
@@ -118,12 +121,12 @@ body > p:first-child {
 	justify-content: center;
 	flex-direction: column;
 	flex: 1;
+	margin-bottom: 6rem;
 }
 #script-title .title {
     text-align: center;
     margin: 1.3em 0;
     text-transform: uppercase;
-	text-decoration: underline;
 }
 #script-title .credit {
     text-align: center;
@@ -131,28 +134,43 @@ body > p:first-child {
 #script-title .authors {
     text-align: center;
 }
-#script-title .info {
-	margin: auto 0 0 auto;
-	padding-bottom: 3rem;
-	width: 35%;
-}
 #script-title p.source {
     text-align: center;
-	padding:0;
-	margin: 0 0 .5rem 0;
-}
-#script-title p.notes {
 	padding: 0;
 	margin: 0 0 .5rem 0;
 }
-#script-title p.draft-date {
+#script-title .versionInfo {
+	position: absolute;
+	bottom: 3rem;
+	right: 4rem;
+
+	width: 40%;
+
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+#script-title .info {
+	position: absolute;
+	bottom: 3rem;
+	left: 4rem;
+
+	width: 40%;
+
+	margin: 0;
+	padding: 0;
+}
+#script-title .info p {
 	padding: 0;
 	margin: 0 0 .5rem 0;
 }
-#script-title p.contact { padding: 0; margin: 0; }
+#script-title .versionInfo p {
+	padding: 0;
+	margin: 0 0 .5rem 0;
+}
 
 #script-title p.notes {
-    white-space: pre-line !important;shape-rendering
+    white-space: pre-line !important;
 }
 
 .center {

@@ -10,9 +10,15 @@
 
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate> {
 	IBOutlet NSWindow* _startModal;
+	IBOutlet NSWindow* _aboutModal;
+	IBOutlet NSOutlineView* recentFiles;
 	IBOutlet NSTextField* versionField;
+	
+	IBOutlet NSTextField* aboutVersionField;
+	IBOutlet NSTextView* aboutText;
 }
 @property (strong, nonatomic) NSWindow *_startModalWindow;
+@property (strong, nonatomic) NSOutlineView *recentFiles;
 @property (nonatomic) bool darkMode;
 //@property (nonatomic) NSTextField * versionField;
 - (IBAction)closeStartModal;

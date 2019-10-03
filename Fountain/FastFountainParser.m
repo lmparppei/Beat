@@ -2,6 +2,7 @@
 //  FastFountainParser.m
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
+//  Parts copyright © 2019 KAPITAN! / Lauri-Matti Parppei
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -88,16 +89,23 @@ static NSString * const kContentPattern = @"";
     for (NSString *line in topLines) {
         if ([line isEqualToString:@""] || [line isMatchedByRegex:kDirectivePattern]) {
             foundTitlePage = YES;
-            // If a key was open we want to close it
+			
+			// If a key was open, close it
+			// There was a bug in the original file, openValues didn't get flushed and remained in memory, containing contents for every directive pattern
             if (![openKey isEqualToString:@""]) {
-                NSDictionary *dict = @{openKey: openValues};
-                [self.titlePage addObject:dict];
+				NSDictionary *dict = @{openKey: [NSArray arrayWithArray:openValues]};
+				openValues = [NSMutableArray array];
+				[self.titlePage addObject:dict];
             }
             
             openKey = [[line stringByMatching:kDirectivePattern capture:1] lowercaseString];
-            if ([openKey isEqualToString:@"author"]) {
+			
+			if ([openKey isEqualToString:@"author"]) {
                 openKey = @"authors";
             }
+			if ([openKey isEqualToString:@"contact info"]) {
+				openKey = @"contact";
+			}
         }
         else if ([line isMatchedByRegex:kInlinePattern]) {
             foundTitlePage = YES;
@@ -111,11 +119,16 @@ static NSString * const kContentPattern = @"";
             
             NSString *key = [[line stringByMatching:kInlinePattern capture:1] lowercaseString];
             NSString *value = [line stringByMatching:kInlinePattern capture:2];
-            
+				
             if ([key isEqualToString:@"author"]) {
                 key = @"authors";
             }
-            
+			
+			// Support for "contact info" instead of "contact"
+			if ([key isEqualToString:@"contact info"]) {
+				key = @"contact";
+			}
+			
             NSDictionary *dict = @{key: @[value]};
             [self.titlePage addObject:dict];
             openKey = @"";

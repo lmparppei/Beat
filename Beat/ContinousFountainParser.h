@@ -22,7 +22,7 @@
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string;
 //- (void)setSceneNumbers:(NSString*)text;
 - (void)parseText:(NSString*)text;
-
+- (void)resetParsing;
 
 // Parselinetype is available for some testing
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive;

@@ -34,11 +34,13 @@
 		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
+		B6907E3B233FE17C00741071 /* analysis.html in Resources */ = {isa = PBXBuildFile; fileRef = B6907E3A233FE17C00741071 /* analysis.html */; };
 		B6952C95232B89BE00448B57 /* ScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6952C94232B89BE00448B57 /* ScrollView.m */; };
 		B69A928C231915E900FE6A3E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B69A928B231915E900FE6A3E /* README.md */; };
 		B69A928F2319254200FE6A3E /* About.xib in Resources */ = {isa = PBXBuildFile; fileRef = B69A928D2319254200FE6A3E /* About.xib */; };
 		B69A92962319387B00FE6A3E /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = B69A92952319387B00FE6A3E /* CHANGELOG */; };
 		B69A929C2319609100FE6A3E /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
+		B69AC76D233EB1ED00AC537C /* FountainReport.m in Sources */ = {isa = PBXBuildFile; fileRef = B69AC76C233EB1ED00AC537C /* FountainReport.m */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
 		B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* ApplicationDelegate.m */; };
 		B6D2B7092218B320005B8447 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
@@ -152,12 +154,15 @@
 		B67D1E512265D57400644CB1 /* Beat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-Bridging-Header.h"; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = CardCSS.css; path = Beat/CardCSS.css; sourceTree = SOURCE_ROOT; };
 		B68AC7B42219733900E02466 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Tutorial.fountain; path = "Sample files/Tutorial.fountain"; sourceTree = SOURCE_ROOT; };
+		B6907E3A233FE17C00741071 /* analysis.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = analysis.html; path = Beat/Analysis/analysis.html; sourceTree = SOURCE_ROOT; };
 		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = Beat/ScrollView/ScrollView.h; sourceTree = SOURCE_ROOT; };
 		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = Beat/ScrollView/ScrollView.m; sourceTree = SOURCE_ROOT; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B69A928E2319254200FE6A3E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/About.xib; sourceTree = SOURCE_ROOT; };
 		B69A92952319387B00FE6A3E /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = dragula.js; path = Beat/CardView/dragula.js; sourceTree = SOURCE_ROOT; };
+		B69AC76B233EB0AC00AC537C /* FountainReport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainReport.h; path = Writer/FountainReport.h; sourceTree = SOURCE_ROOT; };
+		B69AC76C233EB1ED00AC537C /* FountainReport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainReport.m; path = Beat/FountainReport.m; sourceTree = SOURCE_ROOT; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecentFiles.h; path = Beat/RecentFiles.h; sourceTree = "<group>"; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
@@ -229,6 +234,8 @@
 		B13111911CB2A41B00D07A0C /* Parsing */ = {
 			isa = PBXGroup;
 			children = (
+				B69AC76B233EB0AC00AC537C /* FountainReport.h */,
+				B69AC76C233EB1ED00AC537C /* FountainReport.m */,
 				B6D6E5F7221B305300A1C9BE /* OutlineScene.h */,
 				B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */,
 				B131118B1CB2A41800D07A0C /* ContinousFountainParser.h */,
@@ -296,6 +303,7 @@
 				B6D2B7332218B5DC005B8447 /* Images.xcassets */,
 				B62609E7222419CF0019BF52 /* Debounce */,
 				B6482F7622195BD300175927 /* NCRTextView */,
+				B6907E39233FE16200741071 /* Analysis */,
 				B66FC99F2276EADC00C0265D /* CardView */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
 				B64E1B2D227B08B2008DF194 /* CenteredClipView.m */,
@@ -444,6 +452,14 @@
 			name = "Sample files";
 			sourceTree = "<group>";
 		};
+		B6907E39233FE16200741071 /* Analysis */ = {
+			isa = PBXGroup;
+			children = (
+				B6907E3A233FE17C00741071 /* analysis.html */,
+			);
+			name = Analysis;
+			sourceTree = "<group>";
+		};
 		B6D872B1232567C40050ED2D /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
@@ -563,6 +579,7 @@
 				B138B66E19E1E8CA000489C4 /* License.rtf in Resources */,
 				B6D2B7282218B4DC005B8447 /* DocumentIcon.icns in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
+				B6907E3B233FE17C00741071 /* analysis.html in Resources */,
 				B69A928C231915E900FE6A3E /* README.md in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
 				B6D872B3232567C40050ED2D /* timeline.html in Resources */,
@@ -610,6 +627,7 @@
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */,
 				B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */,
+				B69AC76D233EB1ED00AC537C /* FountainReport.m in Sources */,
 				B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,

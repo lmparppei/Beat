@@ -155,7 +155,6 @@ body > p:first-child {
 	text-align: center;
 	margin: 1em 0;
 	text-transform: uppercase;
-	text-decoration: underline;
 }
 #script-title .info {
 	margin: auto auto 0 0;
@@ -163,6 +162,14 @@ body > p:first-child {
 	position: absolute;
 	bottom: 0;
 	left: 0;
+	width: 50%;
+}
+#script-title .versionInfo {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 40%;
+	text-align: right;
 }
 #script-title .credit {
 	text-align: center;
@@ -174,12 +181,15 @@ body > p:first-child {
 	text-align: center;
 	padding-top: 1em;
 }
+/*
 #script-title .notes {
 	padding-top: 2.6em;
 }
+
 #script-title .notes {
 	white-space: pre-line !important;
 }
+*/
 
 .center {
 	text-align: center !important;

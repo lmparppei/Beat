@@ -59,6 +59,16 @@
     _changeInOutline = YES;
 }
 
+// This sets EVERY INDICE as changed.
+// Used to perform lookback when loading a screenplay.
+- (void)resetParsing {
+	NSInteger index = 0;
+	while (index < [self.lines count]) {
+		[self.changedIndices addObject:@(index)];
+		index++;
+	}
+}
+
 #pragma mark Continuous Parsing
 
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
@@ -419,7 +429,7 @@
     }
     if (firstChar == '>' && lastChar != '<') {
         line.numberOfPreceedingFormattingCharacters = 1;
-        return transition;
+        return transitionLine;
     }
     if (firstChar == '#') {
         line.numberOfPreceedingFormattingCharacters = 1;
@@ -496,13 +506,13 @@
         }
     }
     
-    //Check for transitions and page breaks
+    //Check for transitionLines and page breaks
     if (length >= 3) {
-        //Transition happens if the last three chars are "TO:"
+        //transitionLine happens if the last three chars are "TO:"
         NSRange lastThreeRange = NSMakeRange(length-3, 3);
         NSString *lastThreeChars = [[string substringWithRange:lastThreeRange] lowercaseString];
         if ([lastThreeChars isEqualToString:@"to:"]) {
-            return transition;
+            return transitionLine;
         }
         
         //Page breaks start with "==="
@@ -549,7 +559,8 @@
     if (preceedingLine) {
         if (preceedingLine.type == character || preceedingLine.type == dialogue || preceedingLine.type == parenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
-            if (firstChar == '(' && lastChar == ')') {
+            //if (firstChar == '(' && lastChar == ')') {
+			if (firstChar == '(') {
                 return parenthetical;
             } else {
 				if ([preceedingLine.string length] > 0) {
