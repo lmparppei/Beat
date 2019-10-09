@@ -12,7 +12,7 @@ There is an iOS version on the way, scheduled for release in late 2019. It won't
 
 I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
-## Latest release: Beat 1.1.0d
+## Latest release: Beat 1.1.0f
 
 **Features**
 * Minimalistic UI that stays out of the way
@@ -22,6 +22,7 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 * Automatic scene numbering in edit view. Recognizes forced scene numbers.
 * Outline list view, with reorderable scenes, sections and synopses
 * Outline card view, with sections & synopses
+* Outline filtering with scene highlighting
 * Timeline view with sections & synopses
 * Autocomplete characters and scene headings
 * Color-coded scenes
