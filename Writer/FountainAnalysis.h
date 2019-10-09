@@ -10,13 +10,19 @@
 #import "ContinousFountainParser.h"
 #import "Line.h"
 
-@interface FountainReport : NSObject
+@interface FountainAnalysis : NSObject
 {
 }
 @property NSMutableArray * characters;
 @property NSMutableArray * lines;
+@property NSMutableArray * scenes;
 @property NSMutableDictionary<NSString *, NSNumber *>* characterLines;
 
-- (NSString*) createReport:(NSMutableArray*)lines;
+@property NSInteger interiorScenes;
+@property NSInteger exteriorScenes;
+@property NSInteger otherScenes;
 
+- (NSString*) getJSON;
+- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes;
+- (NSMutableArray*) scenesWithCharacter:(NSString*)character onlyDialogue:(bool)onlyDialogue;
 @end

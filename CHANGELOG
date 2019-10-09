@@ -1,20 +1,30 @@
-# 1.1.0f beta
+## 1.1.0f beta
 
 * Added support for custom title page fields & fixed its layout
 * Script analysis view
 * Outline searching and filtering
+* Start screen now requires a double click before opening a document
+* Reorganize scenes in card view (with undoing)
+* New color scheme with a bit cooler dark grays
+* More fixes with dialogue formatting, it should be reliable now
+* Window won't go out of screen bounds when hiding / showing outline view
+* Fixes with dark mode graphical glitches & zooming
+* Autocomplete now works as it should
 
-# 1.1.0e beta
 
-Fixed bugs with character cues and scene reorganization
+## 1.1.0e beta
 
-# 1.1.0d beta
+* Fixed bugs with character cues and scene reorganization
+
+
+## 1.1.0d beta
 
 * Scenes can be reorganized in outline view
 * Character cues & non-character related UPPERCASE strings now behave more sensibly in edit mode
-* New About window
+* New *About* window
 
-# 1.1.0 beta
+
+## 1.1.0 beta
 
 * Timeline view (chronometry is still WIP)
 * Zooming is now fast and efficient
@@ -23,29 +33,34 @@ Fixed bugs with character cues and scene reorganization
 * Find bar no more overlaps outline and card view buttons
 * Fixed scrolling bugs for text view and optimized scene number labeling
 * Fixed undoing scene colors
-# Fixed bugs with fullscreen view
+* Fixed bugs with fullscreen view
 
-# 1.0.9d
+
+## 1.0.9d
 
 * Fixed a stupid and silly bug which caused *every* screenplay get reformatted again, when another document was opened
 
-# 1.0.9c
+
+## 1.0.9c
 
 * Current scene is highlighted in outline view
 * Whole scene heading is color-coded in outline view (instead of the dot)
 
-# 1.0.9b
+
+## 1.0.9b
 
 * Fixed a bug which prevented adding scene colors in card view.
 
-# 1.0.9
+
+## 1.0.9
 
 * Oh well. Print layout was not really properly fixed, so it was kind of built from the ground up again. There MIGHT be some quirks left, but after testing it with 3 different feature-length scripts, it seems to work fine and return about the same page length as other screenwriting apps (within +-1-2 page range). I'm very sorry for any inconvenience. Mostly for myself.
 * Print preview now jumps to the selected scene.
 * Scenes can be reordered by dragging & dropping in card view. This is an experimental feature for now and not enabled in released version.
 * Memory management issues with windows have been fixed.
 
-# 1.0.8
+
+## 1.0.8
 
 * Major change: I'll start updating this changelog
 * Beat now uses a customized RegexKitLite.h, as OSSpinLock is deprecated in macOS 10.12+

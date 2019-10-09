@@ -17,6 +17,13 @@
 
 @implementation DataSource
 
+- (IBAction)doubleClickDocument:(id)sender {
+	void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+	};
+	
+	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:_selectedRow display:YES completionHandler:completionHander];
+}
+
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
 	NSArray *array = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
 	return [array count];
@@ -28,7 +35,7 @@
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
 	NSArray *array = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
-	return [array objectAtIndex:index];;
+	return [array objectAtIndex:index];
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
@@ -43,12 +50,11 @@
 	
 }
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
-	void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
-	};
-	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:item display:YES completionHandler:completionHander];
-	
+	_selectedRow = item;
 	return YES;
 }
+
+
 
 // outlineView:numberOfChildrenOfItem:,
 // outlineView:isItemExpandable:,

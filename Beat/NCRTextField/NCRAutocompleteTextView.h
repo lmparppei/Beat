@@ -17,4 +17,5 @@
 @interface NCRAutocompleteTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 //@property (weak) id <NCRAutocompleteTableViewDelegate> delegate;
+@property NSMutableArray* masks;
 @end

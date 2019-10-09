@@ -1,5 +1,5 @@
 
-var dragDrop = false;
+var dragDrop = true;
 
 var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
 
@@ -10,14 +10,19 @@ var scenes,
 
 var drake;
 var debugElement;
+var wait;
 
+/*
 Array.prototype.move = function (from, to) {
   this.splice(to, 0, this.splice(from, 1)[0]);
 };
+*/
 
 function init () {
 	scenes = [];
+	
 	container = document.getElementById('container');
+	wait = document.getElementById('wait');
 
 	closeButton = document.getElementById('close');
 	closeButton.onclick = function () {
@@ -32,6 +37,7 @@ function init () {
 
 	debugElement = document.getElementById('debug');
 	
+	// Init drag & drop
 	if (dragDrop) initDragDrop();
 }
 
@@ -49,6 +55,7 @@ function initDragDrop () {
 		}
 	});
 
+	// Handle drop
 	drake.on('drop', function (el, target, source, sibling) {
 
 		var sceneIndex = el.getAttribute('sceneIndex');
@@ -58,8 +65,6 @@ function initDragDrop () {
 		} else {
 			var nextIndex = scenes.length;
 		}
-
-		//log("dropped " + sceneIndex + " before " + nextIndex);
 
 		if (!nextIndex) {
 			scenes[sceneIndex].sceneIndex;
@@ -71,33 +76,19 @@ function initDragDrop () {
 		}
 
 		scenes.sort((a, b) => (a.sceneIndex > b.sceneIndex) ? 1 : -1)
+		
+		// Post move action to main window
 		window.webkit.messageHandlers.move.postMessage(sceneIndex + "," + nextIndex);
+
+		// Disable editing until the operation is complete
+		wait.className = "waiting";
+
 		//createCards(scenes);
 	});
 
 }
 
-function setupCards () {
-	let cards = document.querySelectorAll('.card');
-	cards.forEach(function (card) {
-		card.onclick = function () { contextMenu.close(); }
-		card.ondblclick = function () {
-			var position = this.getAttribute('pos');
-			var index = this.getAttribute('sceneIndex');
-			//window.webkit.messageHandlers.cardClick.postMessage(position);
-			window.webkit.messageHandlers.cardClick.postMessage(index);
-		}
-				  
-		card.oncontextmenu = function (e) {
-			e.preventDefault();
-			//card.innerHTML = "JEE";
-			contextMenu.toggle(e);
-		}
-	});	
-	
-	//debugElement.innerHTML = drake;
-}
-
+// Night mode
 function nightModeOn () {
 	document.body.className = 'nightMode';
 }
@@ -105,6 +96,7 @@ function nightModeOff () {
 	document.body.className = '';
 }
 
+// Context menu
 contextMenu = {};
 contextMenu.init = function () {
 	contextMenu.menu = document.createElement('div');
@@ -163,7 +155,6 @@ contextMenu.setColor = function (color) {
 	
 	window.webkit.messageHandlers.setColor.postMessage(contextMenu.target.getAttribute('lineIndex') + ":" + color );
 }
-
 function getPosition(e) {
 	var posx = 0;
 	var posy = 0;
@@ -186,7 +177,30 @@ function getPosition(e) {
 	}
 }
 
-function createCards (cards) {
+
+// Cards
+
+function setupCards () {
+	let cards = document.querySelectorAll('.card');
+	cards.forEach(function (card) {
+		card.onclick = function () { contextMenu.close(); }
+		card.ondblclick = function () {
+			var position = this.getAttribute('pos');
+			var index = this.getAttribute('sceneIndex');
+			//window.webkit.messageHandlers.cardClick.postMessage(position);
+			window.webkit.messageHandlers.cardClick.postMessage(index);
+		}
+				  
+		card.oncontextmenu = function (e) {
+			e.preventDefault();
+			//card.innerHTML = "JEE";
+			contextMenu.toggle(e);
+		}
+	});
+}
+
+// This refreshes the cards
+function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	var html = "<section id='cardContainer'>";
 	var index = -1;
 
@@ -207,6 +221,7 @@ function createCards (cards) {
 
 		var status = '';
 		var color = '';
+		var changed = '';
 
 		if (card.selected == "yes") {
 			status = ' selected';
@@ -214,6 +229,9 @@ function createCards (cards) {
 		}
 		if (card.color != "") {
 			color = ' colored ' + card.color;
+		}
+		if (index == changedIndex) {
+			changed = ' indexChanged ';
 		}
 
 		if (card.type == 'section') {
@@ -224,7 +242,7 @@ function createCards (cards) {
 			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div lineIndex='" + 
 					card.lineIndex + "' pos='" + card.position + "' " +
 					"sceneIndex='" + card.sceneIndex + "' " +
-					"class='card" + color + status + 
+					"class='card" + color + status + changed +
 					"'>"+
 				"<div class='header'><div class='sceneNumber'>" + card.sceneNumber	+ "</div>" +
 				"<h3>" + card.name + "</h3></div>" +
@@ -236,11 +254,16 @@ function createCards (cards) {
 	container.innerHTML = html;
 	if (dragDrop) drake.containers = [document.getElementById("cardContainer")];
 
-	if (selected) {
+	// If the view is already visible, don't scroll to selected scene
+	if (selected && !alreadyVisible) {
 		var el = document.querySelector("div[sceneIndex='" + selected + "']");
 		el.scrollIntoView({ inline: "center", block: "center" });
 	}
 
+	// Enable editing if we were waiting for something
+	wait.className = "";
+
+	// Setup drag & drop and context menus
 	setupCards();
 }
 

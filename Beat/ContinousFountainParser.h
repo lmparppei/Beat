@@ -23,6 +23,7 @@
 //- (void)setSceneNumbers:(NSString*)text;
 - (void)parseText:(NSString*)text;
 - (void)resetParsing;
+- (void)createOutline;
 
 // Parselinetype is available for some testing
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive;

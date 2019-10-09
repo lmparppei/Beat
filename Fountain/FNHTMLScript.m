@@ -372,9 +372,22 @@
                 [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
             }
         }
-        
+		
+		// We need to catch lyrics not to make them fill up a paragraph
+		bool isLyrics = false;
+		
         for (FNElement *element in elementsOnPage) {
+			bool beginBlock = false;
+			
             if ([ignoringTypes containsObject:element.elementType]) {
+				
+				// Close possible blocks
+				if (isLyrics) {
+					// Close lyrics block
+					[body appendFormat:@"</p>\n"];
+					isLyrics = false;
+				}
+				
                 continue;
             }
 			
@@ -382,6 +395,14 @@
             if ([element.elementType isEqualToString:@"Page Break"]) {
                 //[body appendString:@"</section>\n<section>\n"];
 				// [body appendString:@"</section>\n"];
+
+				// Close possible blocks
+				if (isLyrics) {
+					// Close lyrics block
+					[body appendFormat:@"</p>\n"];
+					isLyrics = false;
+				}
+				
 				pageBreak = true;
                 continue;
             }
@@ -430,12 +451,22 @@
             
             if ([element.elementType isEqualToString:@"Lyrics"]) {
                 [text replaceOccurrencesOfRegex:@"^~" withString:@""];
-            }
+				if (!isLyrics) {
+					beginBlock = true;
+					isLyrics = true;
+				}
+			} else {
+				// Close possible blocks
+				if (isLyrics) {
+					// Close lyrics block
+					[body appendFormat:@"</p>\n"];
+					isLyrics = false;
+				}
+			}
             
             if ([element.elementType isEqualToString:@"Action"]) {
                 [text replaceOccurrencesOfRegex:@"^\\!" withString:@""];
             }
-            
             
             [text replaceOccurrencesOfRegex:BOLD_ITALIC_UNDERLINE_PATTERN withString:@"<strong><em><u>$2</strong></em></u>"];
             [text replaceOccurrencesOfRegex:BOLD_ITALIC_PATTERN withString:@"<strong><em>$2</strong></em>"];
@@ -455,8 +486,27 @@
                 if (element.isCentered) {
                     [additionalClasses appendString:@" center"];
                 }
-                [body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
-            }            
+				
+				// If this line isn't part of a larger block, output it as paragraph
+				if (!beginBlock && !isLyrics) {
+					[body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
+				} else {
+					if (beginBlock) {
+						// Begin new block
+						[body appendFormat:@"<p class='%@%@'>%@<br>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
+					} else {
+						// Continue the block
+						[body appendFormat:@"%@<br>\n", text];
+					}
+				}
+			} else {
+				// Just in case
+				if (isLyrics) {
+					// Close lyrics block
+					[body appendFormat:@"</p>\n"];
+					isLyrics = false;
+				}
+			}
         }
 		//if (!pageBreak) [body appendFormat:@"</section>"];
 		[body appendFormat:@"</section>"];

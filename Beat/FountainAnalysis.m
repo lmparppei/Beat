@@ -7,43 +7,43 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FountainReport.h"
+#import "FountainAnalysis.h"
 #import "NSString+Whitespace.h"
 
-@implementation FountainReport
+@implementation FountainAnalysis
 
 - (id)init
 {
 	if ((self = [super init]) == nil) { return nil; }
-
-	// Fuck dictionaries
-	_characters = [[NSMutableArray alloc] init];
-	_lines = [[NSMutableArray alloc] init];
-	
 	_characterLines = [[NSMutableDictionary alloc] init];
 	
 	return self;
 }
 
-- (NSString*) createReport:(NSMutableArray*)lines {
+- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes {
+	_lines = lines;
+	_scenes = scenes;
+}
+
+- (void) createReport {
 	// Reset everything
 	[_characterLines removeAllObjects];
 	
-	NSInteger interiorScenes = 0;
-	NSInteger exteriorScenes = 0;
-	NSInteger otherScenes = 0;
+	_interiorScenes = 0;
+	_exteriorScenes = 0;
+	_otherScenes = 0;
 	
 	NSInteger lineIndex = -1;
 	
-	for (Line* line in lines) {
+	for (Line* line in _lines) {
 		lineIndex += 1;
 		
 		if (line.type == character) {
 			// Because we are sending the lines array from the continuous parser, we need to double check certain things
 			
 			// We won't proceed if there is no next line. I mean, come on.
-			if (lineIndex + 1 < [lines count]) {
-				Line* nextLine = [lines objectAtIndex:lineIndex+1];
+			if (lineIndex + 1 < [_lines count]) {
+				Line* nextLine = [_lines objectAtIndex:lineIndex+1];
 				
 				// This is not a character cue if the next line is empty
 				if ([nextLine.string length] < 1 || [nextLine.string containsOnlyWhitespace]) continue;
@@ -94,21 +94,32 @@
 			NSString *string = [line.string uppercaseString];
 			
 			if ([string rangeOfString:both].location != NSNotFound || [string rangeOfString:bothShort].location != NSNotFound) {
-				interiorScenes += 1;
-				exteriorScenes += 1;
+				_interiorScenes += 1;
+				_exteriorScenes += 1;
 				continue;
 			}
 			else if ([string rangeOfString:interior].location != NSNotFound || [string rangeOfString:interiorShort].location != NSNotFound) {
-				interiorScenes += 1;
+				_interiorScenes += 1;
 			}
 			else if ([string rangeOfString:exterior].location != NSNotFound || [string rangeOfString:exteriorShort].location != NSNotFound) {
-					exteriorScenes += 1;
+				_exteriorScenes += 1;
 			} else {
-				otherScenes += 1;
+				_otherScenes += 1;
 			}
 		}
 	}
-	
+}
+
+- (NSString*)getJSON {
+	if (![_lines count] || ![_scenes count]) {
+		NSLog(@"You forgot to setup the analyzer by [FountainAnalysis setupScript:...])");
+		return nil;
+	}
+	[self createReport];
+	return [self createJSON];
+}
+
+- (NSString*)createJSON {
 	// JSON BEGIN
 	NSMutableString * json = [NSMutableString stringWithString:@"{"];
 	
@@ -127,12 +138,63 @@
 	[json appendString:@"},"];
 	
 	// JSON scenes --------------------------------------------------------
-	[json appendFormat:@"scenes:{ interior: %lu, exterior: %lu, other: %lu }", interiorScenes, exteriorScenes, otherScenes];
+	[json appendFormat:@"scenes:{ interior: %lu, exterior: %lu, other: %lu }", _interiorScenes, _exteriorScenes, _otherScenes];
 	
 	// JSON END
 	[json appendString:@"}"];
 	
 	return json;
+}
+
+- (NSMutableArray*)scenesWithCharacter:(NSString *)characterName onlyDialogue:(bool)onlyDialogue  {
+	// Let's assume we have the scenes / lines property set
+	if (![_scenes count] || ![_lines count]) return nil;
+	
+	// We'll use a simple trick here.
+	// First remove all extra whitespace from the character and then add one space at the beginning.
+	// Later on, we'll do the exact same thing for lines in the scene, so we'll have a pretty reliable way of telling if that exact character string is present in the scene. Not waterproof, but splash resistant.
+	
+	characterName = [characterName stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	NSString* actionCharacter = [NSString stringWithFormat:@" %@", characterName];
+	
+	NSMutableArray* filteredScenes = [[NSMutableArray alloc] init];
+	
+	for (OutlineScene* scene in _scenes) {
+		// Don't go through synopses and sections
+		if (scene.type == synopse || scene.type == section) continue;
+		
+		NSInteger index = [self.lines indexOfObject:scene.line];
+		if (index + 1 >= [self.lines count]) break; // Heading was the last line
+		
+		// Loop through lines array until we encounter a scene heading
+		for (NSInteger i = index + 1; i < [self.lines count]; i++) {
+			Line* line = [self.lines objectAtIndex:i];
+			
+			// Break on next scene
+			if (line.type == heading) break;
+
+			bool found = NO;
+			NSString* string = line.string;
+			
+			// The character is talking in the scene
+			if (line.type == character) {
+				if ([string isEqualToString:characterName]) found = YES;
+			}
+			
+			// The character is at least MENTIONED within the action
+			if (line.type == action && !onlyDialogue) {
+				string = [NSString stringWithFormat:@" %@", string]; // See above
+				if ([string rangeOfString:actionCharacter options:NSCaseInsensitiveSearch].location != NSNotFound) found = YES;
+			}
+			
+			if (found && ![filteredScenes containsObject:scene]) {
+				[filteredScenes addObject:scene];
+				break; // Look no further
+			}
+		}
+	}
+	
+	return filteredScenes;
 }
 
 @end

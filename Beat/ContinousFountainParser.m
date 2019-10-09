@@ -395,7 +395,12 @@
 			
 			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty. OMG IT WORKS!
 			if ([preceedingLine.string length] > 0) {
-				return dialogue;
+				// If preceeded by character cue, return dialogue
+				if (preceedingLine.type == character) return dialogue;
+				// If its a parenthetical line, return dialogue
+				else if (preceedingLine.type == parenthetical) return dialogue;
+				// AND if its just dialogue, return action.
+				else return action;
 			} else {
 				return empty;
 			}
@@ -559,8 +564,7 @@
     if (preceedingLine) {
         if (preceedingLine.type == character || preceedingLine.type == dialogue || preceedingLine.type == parenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
-            //if (firstChar == '(' && lastChar == ')') {
-			if (firstChar == '(') {
+			if (firstChar == '(' && [preceedingLine.string length] > 0) {
                 return parenthetical;
             } else {
 				if ([preceedingLine.string length] > 0) {

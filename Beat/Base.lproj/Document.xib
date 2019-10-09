@@ -10,7 +10,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document">
             <connections>
-                <outlet property="analysisPanel" destination="Rni-cY-faX" id="K1r-Mx-qM7"/>
+                <outlet property="analysisPanel" destination="Rni-cY-faX" id="jnf-t5-nzv"/>
                 <outlet property="analysisView" destination="QXx-h6-RNu" id="rtS-jz-Lvj"/>
                 <outlet property="backgroundView" destination="3qa-Wg-PsD" id="is8-W2-FQ7"/>
                 <outlet property="cardView" destination="2ja-Hc-I6Z" id="RvV-26-dPe"/>
@@ -23,6 +23,7 @@
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
                 <outlet property="outlineViewWidth" destination="fOS-W7-FHd" id="Clh-sz-KY9"/>
                 <outlet property="tabView" destination="gz5-tZ-Ofd" id="v37-ia-HrJ"/>
+                <outlet property="textClipView" destination="sxN-R8-PHt" id="cYv-gE-6zc"/>
                 <outlet property="textScrollView" destination="Mky-48-wwA" id="w22-2t-KE1"/>
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
                 <outlet property="timelineView" destination="uRk-cB-Qej" id="HYs-GX-9q7"/>
@@ -37,7 +38,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1050" height="661"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -56,7 +57,7 @@
                                     <subviews>
                                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA" customClass="ScrollView">
                                             <rect key="frame" x="250" y="120" width="800" height="541"/>
-                                            <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="CenteredClipView">
+                                            <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt">
                                                 <rect key="frame" x="0.0" y="0.0" width="785" height="541"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
@@ -168,7 +169,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="250" height="506"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
-                                                            <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="19" indentationPerLevel="5" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9">
+                                                            <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="19" indentationPerLevel="5" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                 <rect key="frame" x="0.0" y="0.0" width="250" height="506"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <size key="intercellSpacing" width="0.0" height="15"/>
@@ -385,9 +386,11 @@
                             <wkPreferences key="preferences"/>
                         </wkWebViewConfiguration>
                     </wkWebView>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hDv-QM-8UZ">
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hDv-QM-8UZ">
                         <rect key="frame" x="631" y="3" width="107" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="95" id="Q3g-x7-N35"/>
+                        </constraints>
                         <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YFk-Wa-PAj">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -397,6 +400,10 @@
                         </connections>
                     </button>
                 </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="hDv-QM-8UZ" secondAttribute="trailing" constant="10" id="Ghf-q0-RwY"/>
+                    <constraint firstAttribute="bottom" secondItem="hDv-QM-8UZ" secondAttribute="bottom" constant="10" id="Ix2-fH-Whd"/>
+                </constraints>
             </view>
             <point key="canvasLocation" x="1261" y="141.5"/>
         </window>
