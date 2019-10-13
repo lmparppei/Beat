@@ -322,7 +322,8 @@
 			for (NSString *val in obj) {
 				[values appendFormat:@"%@<br>", val];
 			}
-			[body appendFormat:@"<p class='%@'>%@</p>", key, [self formatString:values]];
+			// We won't set a class value based on the custom key, because it might conflict with existing css styles
+			[body appendFormat:@"<p>%@</p>", [self formatString:values]];
 		}
 		
 		[body appendFormat:@"</div>"];

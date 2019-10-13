@@ -532,10 +532,10 @@ DQ
                                     <action selector="showAnalysis:" target="-1" id="Her-fk-4dH"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Test" hidden="YES" id="ce9-gT-GJX">
+                            <menuItem title="Title Page Editor" id="ce9-gT-GJX">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="filterCharacters:" target="-1" id="9Ok-UL-sUO"/>
+                                    <action selector="editTitlePage:" target="-1" id="xEW-Og-73S"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="UNn-da-tvs"/>

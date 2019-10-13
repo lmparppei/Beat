@@ -122,7 +122,7 @@
 // Analysis
 @property (weak) IBOutlet NSPanel *analysisPanel;
 @property (unsafe_unretained) IBOutlet WKWebView *analysisView;
-
+@property (strong, nonatomic) FountainAnalysis* analysis;
 
 // Card view
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
@@ -205,9 +205,19 @@
 @property (readwrite, nonatomic) bool darkPopup;
 
 
-// Parser + analyzer
+// Parser
 @property (strong, nonatomic) ContinousFountainParser* parser;
-@property (strong, nonatomic) FountainAnalysis* analysis;
+
+// Title page editor
+@property (weak) IBOutlet NSPanel *titlePagePanel;
+@property (weak) IBOutlet NSTextField *titleField;
+@property (weak) IBOutlet NSTextField *creditField;
+@property (weak) IBOutlet NSTextField *authorField;
+@property (weak) IBOutlet NSTextField *sourceField;
+@property (weak) IBOutlet NSTextField *dateField;
+@property (weak) IBOutlet NSTextField *contactField;
+@property (weak) IBOutlet NSTextField *notesField;
+@property (nonatomic) NSMutableArray *customFields;
 
 
 // Theme settings
@@ -286,7 +296,7 @@
 #define DD_RIGHT 650
 #define DD_RIGHT_P .95
 
-#define TITLE_INDENT .2
+#define TITLE_INDENT .15
 
 #define CHARACTER_INDENT_P 0.36
 #define PARENTHETICAL_INDENT_P 0.27
@@ -1202,25 +1212,43 @@
 
 	if (!fontOnly) {
 		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+		
 		// This won't format empty lines for some reason: [paragraphStyle setLineHeightMultiple:1.05];
+		
+		
+		// Handle title page block
 		if (line.type == titlePageTitle  ||
 			line.type == titlePageAuthor ||
 			line.type == titlePageCredit ||
 			line.type == titlePageSource) {
 			
-			[paragraphStyle setAlignment:NSTextAlignmentCenter];
+			// [paragraphStyle setAlignment:NSTextAlignmentCenter];
+			
+			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		} else if (line.type == titlePageUnknown ||
 				   line.type == titlePageContact ||
 				   line.type == titlePageDraftDate) {
 			
-			NSColor* commentColor = [self.themeManager currentCommentColor];
-			[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
+			//NSColor* commentColor = [self.themeManager currentCommentColor];
+			//[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
+			
 			/* WORK IN PROGRESS */
-			//[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
-			//[paragraphStyle setHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
-			//[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+			// We'll indent title page blocks a bit more
+			
+			if ([line.string rangeOfString:@":"].location != NSNotFound) {
+				[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+				[paragraphStyle setHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+			} else {
+				[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * 1.25 * ZOOM_MODIFIER * _zoomLevel];
+				[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * ZOOM_MODIFIER * _zoomLevel];
+			}
+
+			
+			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
 		} else if (line.type == transitionLine) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
@@ -3366,6 +3394,114 @@ static NSString *forceLyricsSymbol = @"~";
 	[self.textView setNeedsDisplay:YES];
 }
 
+
+#pragma mark - Title page editor
+
+- (IBAction)editTitlePage:(id)sender {
+	
+	FNScript* script = [[FNScript alloc] initWithString:[self getText]];
+
+/*
+	// Get parsed title page
+	NSMutableDictionary *titlePage = [NSMutableDictionary dictionary];
+	for (NSDictionary *dict in script.titlePage) {
+		NSLog(@"%@", dict.allKeys[0]);
+		//[titlePage addEntriesFromDictionary:dict];
+	}
+
+	NSLog(@"---------");
+	for (NSString *key in titlePage) {
+		NSLog(@"%@", key);
+	}
+*/
+	// Clear custom fields
+	_customFields = [NSMutableArray array];
+	
+	if ([script.titlePage count] > 0) {
+		// Here we fill up the required fields
+		NSArray *editableFields = @[@"title", @"credit", @"authors", @"source", @"draft date", @"contact", @"notes"];
+		NSArray *textFields = @[_titleField, _creditField, _authorField, _sourceField, _dateField, _contactField, _notesField];
+		
+		NSInteger index = 0;
+		for (NSString* field in editableFields) {
+			NSTextField * textField = [textFields objectAtIndex:index];
+			
+			NSMutableString *values = [NSMutableString string];
+
+			// This is a shitty approach, but what can you say. When copying the dictionary, the order of entries gets messed up, so we need to uh...
+			for (NSDictionary *dict in script.titlePage) {
+				NSString *key = [dict.allKeys objectAtIndex:0];
+				
+				if ([key isEqualToString:field]) {
+					for (NSString *val in dict[key]) {
+						if ([dict[key] indexOfObject:val] == [dict[key] count] - 1) [values appendFormat:@"%@", val];
+						else [values appendFormat:@"%@\n", val];
+					}
+				} else {
+					[_customFields addObject:dict];
+				}
+			}
+			
+			[textField setStringValue:values];
+			
+			// Let's only keep any custom fields in the dictionary
+			//[titlePage removeObjectForKey:field];
+			
+			index++;
+		}
+	}
+	
+	//_customFields = [NSMutableDictionary dictionaryWithDictionary:titlePage];
+	
+	// Display
+	[_thisWindow beginSheet:_titlePagePanel completionHandler:nil];
+}
+
+- (IBAction)cancelTitlePageEdit:(id)sender {
+	[_thisWindow endSheet:_titlePagePanel];
+}
+
+- (IBAction)applyTitlePageEdit:(id)sender {
+	[_thisWindow endSheet:_titlePagePanel];
+	
+	NSMutableString *titlePage = [NSMutableString string];
+	
+	// BTW, isn't Objective C nice, beautiful and elegant?
+	[titlePage appendFormat:@"Title: %@\n", [_titleField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	[titlePage appendFormat:@"Credit: %@\n", [_creditField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	[titlePage appendFormat:@"Author: %@\n", [_authorField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	[titlePage appendFormat:@"Source: %@\n", [_sourceField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	[titlePage appendFormat:@"Draft Date: %@\n", [_dateField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	[titlePage appendFormat:@"Contact:\n%@\n", [_contactField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	[titlePage appendFormat:@"Notes:\n%@\n", [_notesField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	
+	// Add back possible custom fields that were left out
+	for (NSDictionary *dict in _customFields) {
+		NSString *key = [dict.allKeys objectAtIndex:0];
+		NSArray *obj = dict[key];
+	
+		// Check if it is a text block or single line
+		if ([obj count] == 1) [titlePage appendFormat:@"%@:", [key capitalizedString]];
+		else  [titlePage appendFormat:@"%@:\n", [key capitalizedString]];
+		
+		for (NSString *val in obj) {
+			[titlePage appendFormat:@"%@\n", val];
+		}
+	}
+	
+	// Find the range
+	if ([[self getText] length] < 6) {
+		// If there is not much text in the script, just add the title page in the beginning of the document, followed by newlines
+		[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
+	} else if (![[[self getText] substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
+		// There is no title page present here either. We're just careful not to cause errors with ranges
+		[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
+	} else {
+		// There IS a title page, so we need to find out its range to replace it.
+		
+	}
+	
+}
 
 #pragma mark - scroll listeners
 

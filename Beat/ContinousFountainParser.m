@@ -408,7 +408,7 @@
 			return empty;
 		}
     }
-    
+	
     char firstChar = [string characterAtIndex:0];
     char lastChar = [string characterAtIndex:length-1];
     
@@ -448,58 +448,12 @@
         line.numberOfPreceedingFormattingCharacters = 1;
         return heading;
     }
-    
-    
-    //Check for title page elements. A title page element starts with "Title:", "Credit:", "Author:", "Draft date:" or "Contact:"
-    //it has to be either the first line or only be preceeded by title page elements.
-    Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
-    if (!preceedingLine ||
-        preceedingLine.type == titlePageTitle ||
-        preceedingLine.type == titlePageAuthor ||
-        preceedingLine.type == titlePageCredit ||
-        preceedingLine.type == titlePageSource ||
-        preceedingLine.type == titlePageContact ||
-        preceedingLine.type == titlePageDraftDate ||
-        preceedingLine.type == titlePageUnknown) {
-        
-        //Check for title page key: value pairs
-        // - search for ":"
-        // - extract key
-        NSRange firstColonRange = [string rangeOfString:@":"];
-        if (firstColonRange.length != 0) {
-            NSUInteger firstColonIndex = firstColonRange.location;
-            
-            NSString* key = [[string substringToIndex:firstColonIndex] lowercaseString];
-            
-            if ([key isEqualToString:@"title"]) {
-                return titlePageTitle;
-            } else if ([key isEqualToString:@"author"] || [key isEqualToString:@"authors"]) {
-                return titlePageAuthor;
-            } else if ([key isEqualToString:@"credit"]) {
-                return titlePageCredit;
-            } else if ([key isEqualToString:@"source"]) {
-                return titlePageSource;
-            } else if ([key isEqualToString:@"contact"]) {
-                return titlePageContact;
-            } else if ([key isEqualToString:@"draft date"]) {
-                return titlePageDraftDate;
-            } else {
-                return titlePageUnknown;
-            }
-        } else {
-            if (length >= 2 && [[string substringToIndex:2] isEqualToString:@"  "]) {
-                line.numberOfPreceedingFormattingCharacters = 2;
-                return preceedingLine.type;
-            } else if (length >= 1 && [[string substringToIndex:1] isEqualToString:@"\t"]) {
-                line.numberOfPreceedingFormattingCharacters = 1;
-                return preceedingLine.type;
-            }
-        }
-        
-    }
-    
+	
+
+	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
+	
     //Check for scene headings (lines beginning with "INT", "EXT", "EST",  "I/E"). "INT./EXT" and "INT/EXT" are also inside the spec, but already covered by "INT".
-    if (preceedingLine.type == empty || [preceedingLine.string length] == 0) {
+    if (preceedingLine.type == empty || [preceedingLine.string length] == 0 || line.position == 0) {
         if (length >= 3) {
             NSString* firstChars = [[string substringToIndex:3] lowercaseString];
             if ([firstChars isEqualToString:@"int"] ||
@@ -510,7 +464,56 @@
             }
         }
     }
-    
+	
+	//Check for title page elements. A title page element starts with "Title:", "Credit:", "Author:", "Draft date:" or "Contact:"
+	//it has to be either the first line or only be preceeded by title page elements.
+	if (!preceedingLine ||
+		preceedingLine.type == titlePageTitle ||
+		preceedingLine.type == titlePageAuthor ||
+		preceedingLine.type == titlePageCredit ||
+		preceedingLine.type == titlePageSource ||
+		preceedingLine.type == titlePageContact ||
+		preceedingLine.type == titlePageDraftDate ||
+		preceedingLine.type == titlePageUnknown) {
+		
+		//Check for title page key: value pairs
+		// - search for ":"
+		// - extract key
+		NSRange firstColonRange = [string rangeOfString:@":"];
+		if (firstColonRange.length != 0) {
+			NSUInteger firstColonIndex = firstColonRange.location;
+			
+			NSString* key = [[string substringToIndex:firstColonIndex] lowercaseString];
+			
+			if ([key isEqualToString:@"title"]) {
+				return titlePageTitle;
+			} else if ([key isEqualToString:@"author"] || [key isEqualToString:@"authors"]) {
+				return titlePageAuthor;
+			} else if ([key isEqualToString:@"credit"]) {
+				return titlePageCredit;
+			} else if ([key isEqualToString:@"source"]) {
+				return titlePageSource;
+			} else if ([key isEqualToString:@"contact"]) {
+				return titlePageContact;
+			} else if ([key isEqualToString:@"draft date"]) {
+				return titlePageDraftDate;
+			} else {
+				return titlePageUnknown;
+			}
+		} else {
+			/*
+			 if (length >= 2 && [[string substringToIndex:2] isEqualToString:@"  "]) {
+			 line.numberOfPreceedingFormattingCharacters = 2;
+			 return preceedingLine.type;
+			 } else if (length >= 1 && [[string substringToIndex:1] isEqualToString:@"\t"]) {
+			 line.numberOfPreceedingFormattingCharacters = 1;
+			 return preceedingLine.type;
+			 } */
+			return preceedingLine.type;
+		}
+		
+	}
+	    
     //Check for transitionLines and page breaks
     if (length >= 3) {
         //transitionLine happens if the last three chars are "TO:"
