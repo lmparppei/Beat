@@ -14,7 +14,7 @@
 				<string>fountain</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>DocumentIcon</string>
+			<string>BeatDocumentIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>Fountain script</string>
 			<key>CFBundleTypeOSTypes</key>
@@ -42,11 +42,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.0f beta</string>
+	<string>1.1.0h beta</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>3513</string>
+	<string>3567</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>

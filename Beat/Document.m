@@ -308,6 +308,7 @@
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
+		
 	_thisWindow = aController.window;
 	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, 350)];
 	
@@ -1314,6 +1315,9 @@
 				NSColor* commentColor = [self.themeManager currentCommentColor];
 				[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
 			}
+			// Bold section headings
+			if (line.type == section) [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
+			if (line.type == synopse) [attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
 		}
 	}
 	
@@ -2274,7 +2278,7 @@ static NSString *forceLyricsSymbol = @"~";
 {
 	if (FLATOUTLINE) {
 		// If we have a search term, let's use the filtered array
-		if ([_filteredOutline count]) {
+		if ([_filteredOutline count] || [_outlineSearchField.stringValue length]) {
 			return [_filteredOutline count];
 		} else {
 			return [[self getOutlineItems] count];
@@ -2334,6 +2338,7 @@ static NSString *forceLyricsSymbol = @"~";
  
  */
 
+// Outline items
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 { @autoreleasepool {
     if ([item isKindOfClass:[OutlineScene class]]) {
@@ -2344,8 +2349,18 @@ static NSString *forceLyricsSymbol = @"~";
 
 		// The outline elements will be formatted as rich text,
 		// which is apparently VERY CUMBERSOME in Cocoa/Objective-C.
-		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
+		NSMutableString *rawString = [NSMutableString stringWithString:line.string];
+		
+		// Strip any formatting
+		[rawString replaceOccurrencesOfString:@"*" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [rawString length])];
+		
+		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:rawString];
 		//[resultString addAttribute:NSFontAttributeName value:[self cothamRegular] range:NSMakeRange(0, [line.string length])];
+		
+		// If empty, return the empty string
+		if ([resultString length] == 0) return resultString;
+		
+		// Remove any formatting
 		
         if (line.type == heading) {
 			if (_currentScene.string) {
@@ -2354,7 +2369,7 @@ static NSString *forceLyricsSymbol = @"~";
 			}
 			
 			//Replace "INT/EXT" with "I/E" to make the lines match nicely
-            NSString* string = [line.string uppercaseString];
+			NSString* string = [rawString uppercaseString];
             string = [string stringByReplacingOccurrencesOfString:@"INT/EXT" withString:@"I/E"];
             string = [string stringByReplacingOccurrencesOfString:@"INT./EXT" withString:@"I/E"];
             string = [string stringByReplacingOccurrencesOfString:@"EXT/INT" withString:@"I/E"];
@@ -2391,7 +2406,7 @@ static NSString *forceLyricsSymbol = @"~";
 			[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
         }
         if (line.type == synopse) {
-            NSString* string = line.string;
+            NSString* string = rawString;
             if ([string length] > 0) {
                 //Remove "="
                 if ([string characterAtIndex:0] == '=') {
@@ -2417,7 +2432,7 @@ static NSString *forceLyricsSymbol = @"~";
             }
         }
         if (line.type == section) {
-            NSString* string = line.string;
+            NSString* string = rawString;
             if ([string length] > 0) {
                 //Remove "#"
                 if ([string characterAtIndex:0] == '#') {
@@ -3414,40 +3429,44 @@ static NSString *forceLyricsSymbol = @"~";
 		NSLog(@"%@", key);
 	}
 */
+	// List of applicable fields
+	NSDictionary* fields = @{
+							 @"title":_titleField,
+							 @"credit":_creditField,
+							 @"authors":_authorField,
+							 @"source":_sourceField,
+							 @"draft date":_dateField,
+							 @"contact":_contactField,
+							 @"notes":_notesField
+							 };
+
 	// Clear custom fields
 	_customFields = [NSMutableArray array];
 	
 	if ([script.titlePage count] > 0) {
-		// Here we fill up the required fields
-		NSArray *editableFields = @[@"title", @"credit", @"authors", @"source", @"draft date", @"contact", @"notes"];
-		NSArray *textFields = @[_titleField, _creditField, _authorField, _sourceField, _dateField, _contactField, _notesField];
-		
-		NSInteger index = 0;
-		for (NSString* field in editableFields) {
-			NSTextField * textField = [textFields objectAtIndex:index];
-			
-			NSMutableString *values = [NSMutableString string];
 
-			// This is a shitty approach, but what can you say. When copying the dictionary, the order of entries gets messed up, so we need to uh...
-			for (NSDictionary *dict in script.titlePage) {
-				NSString *key = [dict.allKeys objectAtIndex:0];
+		// This is a shitty approach, but what can you say. When copying the dictionary, the order of entries gets messed up, so we need to uh...
+		for (NSDictionary *dict in script.titlePage) {
+			NSString *key = [dict.allKeys objectAtIndex:0];
+
+			if ([fields objectForKey:key]) {
+				NSMutableString *values = [NSMutableString string];
 				
-				if ([key isEqualToString:field]) {
-					for (NSString *val in dict[key]) {
-						if ([dict[key] indexOfObject:val] == [dict[key] count] - 1) [values appendFormat:@"%@", val];
-						else [values appendFormat:@"%@\n", val];
-					}
-				} else {
-					[_customFields addObject:dict];
+				for (NSString *val in dict[key]) {
+					if ([dict[key] indexOfObject:val] == [dict[key] count] - 1) [values appendFormat:@"%@", val];
+					else [values appendFormat:@"%@\n", val];
 				}
+				
+				if (![fields[key] isKindOfClass:[NSTextView class]]) [fields[key] setStringValue:values];
+				else [fields[key] setString:values];
+			} else {
+				[_customFields addObject:dict];
 			}
-			
-			[textField setStringValue:values];
-			
-			// Let's only keep any custom fields in the dictionary
-			//[titlePage removeObjectForKey:field];
-			
-			index++;
+		}
+	} else {
+		// Clear all fields
+		for (NSString *key in fields) {
+			[fields[key] setStringValue:@""];
 		}
 	}
 	
@@ -3471,9 +3490,14 @@ static NSString *forceLyricsSymbol = @"~";
 	[titlePage appendFormat:@"Credit: %@\n", [_creditField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
 	[titlePage appendFormat:@"Author: %@\n", [_authorField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
 	[titlePage appendFormat:@"Source: %@\n", [_sourceField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	[titlePage appendFormat:@"Draft Date: %@\n", [_dateField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	[titlePage appendFormat:@"Contact:\n%@\n", [_contactField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	[titlePage appendFormat:@"Notes:\n%@\n", [_notesField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	[titlePage appendFormat:@"Draft date: %@\n", [_dateField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
+	
+	// Only add contact + notes fields they are not empty
+	NSString *contact = [_contactField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet];
+	if ([contact length] > 0) [titlePage appendFormat:@"Contact:\n%@\n", contact];
+	
+	NSString *notes = [_notesField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet];
+	if ([notes length] > 0) [titlePage appendFormat:@"Notes:\n%@\n", notes];
 	
 	// Add back possible custom fields that were left out
 	for (NSDictionary *dict in _customFields) {
@@ -3498,7 +3522,19 @@ static NSString *forceLyricsSymbol = @"~";
 		[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
 	} else {
 		// There IS a title page, so we need to find out its range to replace it.
+		NSInteger titlePageEnd = -1;
+		for (Line* line in [self.parser lines]) {
+			if (line.type == empty) {
+				titlePageEnd = line.position;
+				break;
+			}
+		}
+		if (titlePageEnd < 0) titlePageEnd = [[self getText] length];
 		
+		NSRange titlePageRange = NSMakeRange(0, titlePageEnd);
+		NSString *oldTitlePage = [[self getText] substringWithRange:titlePageRange];
+
+		[self replaceString:oldTitlePage withString:titlePage atIndex:0];
 	}
 	
 }

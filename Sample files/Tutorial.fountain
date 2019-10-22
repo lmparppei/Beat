@@ -9,7 +9,7 @@ www.kapitan.fi/beat
 
 INT. SCHOOL ROOM - DAY
 
-Is this is your first time using Beat? This file is a playground for you to mess around with.
+Is this your first time using Beat? This file is a playground for you to mess around with.
 
 In Beat, you don't need to press any special keys to write dialogue or a scene header. Just type "int. school" or "ext. park" on a new line and it will become a scene header.
 
@@ -18,7 +18,7 @@ Try it out yourself!
 
 EXT. PARK - DAY
 
-The same is true with dialogue. You can just write CHARACTER NAME and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue.
+The same is true with dialogue. Just type in CHARACTER NAME and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue.
 
 CHARACTER
 (gently nodding their head)
@@ -27,9 +27,7 @@ This is your first dialogue block.
 CHARACTER 2
 Hello.
 
-Try it out. It might take a few minutes to get used to, but it's very easy. No need to press tabs or anything, or worry about messing up the formatting of your script.
-
-Just write CHARACTER NAME (all caps), and the lines. After one empty line break the format will change back to action.
+Try it out. After one empty line break the format will change back to action.
 
 You can also use transitions just by typing them out, like this:
 

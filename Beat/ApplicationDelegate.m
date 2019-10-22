@@ -13,10 +13,7 @@
 
 #pragma mark - Help
 
-- (instancetype) init {
-	// Omg let's test this out
-	_darkMode = true;
-	
+- (instancetype) init {	
 	// This might be a silly implementation, but ..... well.
 	// Let's close the welcome screen if any sort of document has been opened
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
@@ -60,18 +57,18 @@
 {
     NSURL* referenceFile = [[NSBundle mainBundle] URLForResource:@"Tutorial"
                                                    withExtension:@"fountain"];
-/*
-    void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
-        //[document setFileURL:[[NSURL alloc] init]];
-		[document setFileURL:nil];
-    };
-	//[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:referenceFile display:YES completionHandler:completionHander];
-*/
-	
+
 	// Let's copy the tutorial file
-	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:false displayName:@"Tutorial" error:nil];
-	
+	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:YES displayName:@"Tutorial" error:nil];
 }
+
+- (IBAction)templateBeatSheet:(id)sender {
+	NSURL* referenceFile = [[NSBundle mainBundle] URLForResource:@"Beat Sheet"
+												   withExtension:@"fountain"];
+	// Let's copy the beat sheet file
+	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:YES displayName:@"Beat Sheet" error:nil];
+}
+
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)flag {
 	if (flag) return NO; else return YES;
@@ -79,6 +76,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	[NSApplication.sharedApplication setAutomaticCustomizeTouchBarMenuItemEnabled:YES];
+	
 	// Only open splash screen if no documents were opened by default
 	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
 	if ([openDocuments count] == 0 && self->_startModal && ![self->_startModal isVisible]) {

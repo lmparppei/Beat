@@ -1,3 +1,19 @@
+## 1.1.0h beta
+
+* Title page editor now supports multi-line text fields for Contact and Notes
+* New document icon
+* Fixed a bug with the tutorial opening just once (???)
+* Outline view now cleans headings and synopses from formatting characters (TODO: same thing for timeline & card view) 
+
+
+## 1.1.0g beta
+
+* Added title page editor and fixed title page field layout
+* Fixed a bug with the first line not becoming a scene 
+* Title page editor
+* Fixed bugs with outline filtering
+
+
 ## 1.1.0f beta
 
 * Added support for custom title page fields & fixed its layout
