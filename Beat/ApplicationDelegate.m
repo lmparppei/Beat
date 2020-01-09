@@ -7,6 +7,7 @@
 //	Released under GPL license
 
 #import "ApplicationDelegate.h"
+#import "FDXImport.h"
 
 @implementation ApplicationDelegate
 @synthesize recentFiles;
@@ -76,7 +77,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	[NSApplication.sharedApplication setAutomaticCustomizeTouchBarMenuItemEnabled:YES];
+	//[NSApplication.sharedApplication setAutomaticCustomizeTouchBarMenuItemEnabled:YES];
+	[NSApplication sharedApplication].automaticCustomizeTouchBarMenuItemEnabled = YES; 
 	
 	// Only open splash screen if no documents were opened by default
 	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
@@ -139,6 +141,74 @@
 	
 	NSString * rtfFile = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"rtf"];
 	[aboutText readRTFDFromFile:rtfFile];
+}
+
+- (IBAction)importFDX:(id)sender
+{
+	/*
+	NSAlert *alert = [[NSAlert alloc] init];
+	[alert addButtonWithTitle:@"Continue"];
+	[alert setMessageText:@"Final Draft Import"];
+	//[alert setInformativeText:@“NSWarningAlertStyle \r Do you want to continue with delete of selected records"];
+	[alert setInformativeText:@"NOTE: This feature is still under development. Basic elements (such as dialogue, actions, transitions) will import correctly, but you should double-check the results. Sorry for any inconvience!"];
+	[alert setAlertStyle:NSAlertStyleWarning];
+	
+	[alert beginSheetModalForWindow:NSApp.windows[0] completionHandler:^(NSInteger result) {
+*/
+		NSOpenPanel *openDialog = [NSOpenPanel openPanel];
+		[openDialog setAllowedFileTypes:@[@"fdx"]];
+	
+		[openDialog beginWithCompletionHandler:^(NSInteger result) {
+			if (result == NSFileHandlingPanelOKButton) {
+				
+				__block FDXImport *fdxImport;
+				fdxImport = [[FDXImport alloc] initWithURL:openDialog.URL completion:^(void) {
+					if ([fdxImport.script count] > 0) {
+						NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
+						NSError *error;
+						
+						[[fdxImport scriptAsString] writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
+						
+						if (!error) {
+							dispatch_async(dispatch_get_main_queue(), ^(void){
+								[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+							});
+						}
+					}
+				}];
+								
+				//[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:YES displayName:@"Tutorial" error:nil];
+/*
+				[[fdxImport scriptAsString] writeToURL:tempURL atomically:YES encoding:NSUTF8StringEncoding error:&error];
+
+				[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+				NSLog(@"jaa? %@", tempURL);
+*/
+				
+			}
+		}];
+	//}];
+}
+
+- (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix
+{
+    NSURL  *  result;
+    CFUUIDRef   uuid;
+    CFStringRef uuidStr;
+
+    uuid = CFUUIDCreate(NULL);
+    assert(uuid != NULL);
+
+    uuidStr = CFUUIDCreateString(NULL, uuid);
+    assert(uuidStr != NULL);
+	result = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@.%@", prefix, uuidStr, prefix]]];
+    
+    assert(result != nil);
+
+    CFRelease(uuidStr);
+    CFRelease(uuid);
+
+    return result;
 }
 
 @end

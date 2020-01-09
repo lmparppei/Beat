@@ -42,6 +42,7 @@ typedef enum : NSUInteger {
 @property NSUInteger numberOfPreceedingFormattingCharacters;
 @property NSString* sceneNumber;
 @property NSString* color;
+//@property double height;
 
 @property NSMutableIndexSet* boldRanges;
 @property NSMutableIndexSet* italicRanges;
@@ -54,5 +55,9 @@ typedef enum : NSUInteger {
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
 - (NSString*)toString;
 - (NSString*)typeAsString;
+- (bool)omited;
+
+//- (NSInteger)rowsForLine;
+//- (void)setElementHeight;
 
 @end

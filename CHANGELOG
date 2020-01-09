@@ -1,3 +1,16 @@
+
+## 1.1.0i
+
+* Script analysis has character genders (not the most inclusive implementation yet, unfortunately)
+* Donut charts in analysis view instead of bars
+* Preprocessing scene numbers is faster + more memory efficient (and some weird bugs are fixed)
+* Fixed locking scene numbers with colored scenes
+* Added filtering for colors & characters
+* Fixed bugs with dragging & dropping in macOS Catalina
+* Preliminary Final Draft (FDX) import
+* ... and added bunch of stuff I have already forgotten about
+
+
 ## 1.1.0h beta
 
 * Title page editor now supports multi-line text fields for Contact and Notes

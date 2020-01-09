@@ -30,10 +30,10 @@
 #define POPOVER_BOLDFONT [NSFont fontWithName:@"Courier Prime Bold" size:12.0]
 #define POPOVER_TEXTCOLOR [NSColor whiteColor]
 
-#pragma mark -
-
 @interface NCRAutocompleteTableRowView : NSTableRowView
 @end
+
+#pragma mark - Draw autocomplete table
 @implementation NCRAutocompleteTableRowView
 
 - (void)drawSelectionInRect:(NSRect)dirtyRect {
@@ -55,9 +55,12 @@
 }
 @end
 
-#pragma mark -
+static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalog.colorPicker";
 
+#pragma mark - Autocompleting
 @interface NCRAutocompleteTextView ()
+@property (weak) IBOutlet NSTouchBar *touchBar;
+
 @property (nonatomic, strong) NSPopover *autocompletePopover;
 @property (nonatomic, weak) NSTableView *autocompleteTableView;
 @property (nonatomic, strong) NSArray *matches;
@@ -67,11 +70,14 @@
 // Used to keep track of when the insert cursor has moved so we
 // can close the popover. See didChangeSelection:
 @property (nonatomic, assign) NSInteger lastPos;
+
 @end
 
 @implementation NCRAutocompleteTextView
 
 - (void)awakeFromNib {
+	self.pageBreaks = [NSMutableArray array];
+	
 	// Make a table view with 1 column and enclosing scroll view. It doesn't
 	// matter what the frames are here because they are set when the popover
 	// is displayed
@@ -117,6 +123,17 @@
 	
 	// BEAT BEAT BEAT
 	self.masks = [NSMutableArray array];
+}
+
+- (NSTouchBar*)makeTouchBar {
+	return _touchBar;
+}
+- (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier
+{
+    if ([identifier isEqualToString:ColorPickerItemIdentifier]) {
+		NSLog(@"jes");
+	}
+	return nil;
 }
 
 - (void)keyDown:(NSEvent *)theEvent {
@@ -337,10 +354,32 @@
 	return [[NCRAutocompleteTableRowView alloc] init];
 }
 
+#pragma mark - Rects for masking, page breaks etc.
+
 - (void)drawRect:(NSRect)dirtyRect {
 	[NSGraphicsContext saveGraphicsState];
 	[super drawRect:dirtyRect];
 	[NSGraphicsContext restoreGraphicsState];
+	
+	// Draw page margins
+	if (self.frame.size.width > 1000) {
+		// Multiply background color to make for a darker margin
+		NSColor *fillColor = self.backgroundColor;
+		fillColor = [fillColor colorWithAlphaComponent:0.3];
+		[fillColor setFill];
+		
+		CGFloat marginWidth = self.textContainerInset.width - 120;
+		CGFloat modifier = 1 / _zoomLevel;
+		
+		NSRect marginLeft = NSMakeRect(0, 0, marginWidth, self.frame.size.height);
+		NSRect marginRight = NSMakeRect((self.frame.size.width - marginWidth) * modifier, 0, marginWidth, self.frame.size.height);
+		
+		[NSGraphicsContext saveGraphicsState];
+		NSRectFillUsingOperation(marginLeft, NSCompositingOperationMultiply);
+		NSRectFillUsingOperation(marginRight, NSCompositingOperationMultiply);
+		
+		[NSGraphicsContext restoreGraphicsState];
+	}
 	
 	// An array of NSRanges which are used to mask parts of the text.
 	// Used to hide irrelevant parts when filtering scenes.
@@ -357,8 +396,66 @@
 			
 			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 		}
-
 	}
+	
+	/*
+	NSGraphicsContext *context = [NSGraphicsContext currentContext];
+	[context saveGraphicsState];
+
+	for (NSNumber *pageBreakPosition in self.pageBreaks) {
+		NSColor* fillColor = NSColor.grayColor;
+		[fillColor setFill];
+		
+		NSRect rect = NSMakeRect(0, [pageBreakPosition doubleValue], self.frame.size.width, 1);
+		NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
+	}
+	[context restoreGraphicsState];
+	*/
+	 
+	/*
+	 
+	 WIP
+	 
+	 Test for graphical page breaks while editing.
+	 
+	 Trouble is, page length etc. should be calculated while parsing. Some elements do not print (section, synopses) and page breaks can be forced, too.
+	 
+	 ---
+	
+	 NSLayoutManager *manager = self.textContainer.layoutManager;
+	 NSRange glyphRange = [manager glyphRangeForTextContainer:self.textContainer];
+	 
+	 CGFloat pagePosition = 0;
+	 NSInteger pages = 1;
+	 CGFloat pageBreak = 600;
+
+	 NSMutableArray *pageBreaks = [NSMutableArray array];
+	 NSGraphicsContext *context = [NSGraphicsContext currentContext];
+
+	 for (NSInteger glyphIndex = glyphRange.location; glyphIndex < NSMaxRange(glyphRange); glyphIndex++) {
+		 
+		 NSRect lineFragmentRect = [manager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:NULL];
+		 CGFloat position = lineFragmentRect.origin.y;
+		 pagePosition = position - (pages - 1) * pageBreak;
+		 
+		 if (pagePosition > pageBreak) {
+			 pages++;
+			 [pageBreaks addObject:[NSNumber numberWithFloat:position]];
+		 }
+	 }
+
+	 [context saveGraphicsState];
+
+	 for (NSNumber *pageBreakPosition in pageBreaks) {
+		 NSColor* fillColor = NSColor.grayColor;
+		 [fillColor setFill];
+		 
+		 NSRect rect = NSMakeRect(0, [pageBreakPosition floatValue], 500, 1);
+		 NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
+	 }
+	 [context restoreGraphicsState];
+	 */
+	 
 }
 
 

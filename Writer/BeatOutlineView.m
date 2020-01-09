@@ -27,4 +27,8 @@
 	}
 }
 
+- (NSTouchBar*)makeTouchBar {
+	return _touchBar;
+}
+
 @end

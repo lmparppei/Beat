@@ -7,8 +7,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-
-		<title></title>
+		<title>Screenplay Analysis</title>
 
 		<style type="text/css">
 			* {
@@ -37,9 +36,19 @@
 				justify-content: space-between;
 			}
 			.column {
-				width: 49%;
+				width: 48%;
 				display: flex;
 				flex-direction: column;
+			}
+			.right {
+				width: 40%;
+			}
+			.left { width: 60%; }
+		
+			section {
+				width: 180px;
+				padding: 0;
+				margin: 0 auto 1rem auto;
 			}
 
 			h1, h2 {
@@ -50,34 +59,44 @@
 				font-size: 2em;
 			}
 			h1 {
-				margin-bottom: 1.5rem;
+				margin-bottom: .5rem;
 			}
 			h2 {
+				margin-top: 1rem;
 				font-size: 1.2em;
+			}
+			section h2 {
+				text-align: center;
 			}
 
 			table td {
 				font-size: .7em;
+				padding: .35rem .25rem .35rem .25rem;
+				border-bottom: 1px dotted #ddd;
+			}
+			td.name {
+				width: 30%;
+			}
+			td.gender {
+				padding: .1rem;
 			}
 
 			#characters {
 				width: 100%;
 			}
-			#characters td {
-				padding: .25rem;
-				border-bottom: 1px dotted #ddd;
-			}
+
 			.linesBar {
 				width: 50%;
 			}
 			.linesNumber {
 				width: 10%;
 				text-align: right;
-				color: #ccc;
+				color: #999;
+				padding-right: 1rem;
 			}
 			.bar {
 				color: #eee;
-				background-color: #0088ee;
+				background-color: rgb(0,129,239);
 				display: flex;
 				justify-content: center;
 				align-items: center;
@@ -93,6 +112,12 @@
 				height: .5rem;
 			}
 
+			/* Gender */
+			input[type='radio'] {
+				width: .5rem;
+				height: auto;
+			}
+
 			#sceneBar { width: 100%; display: flex; }
 			#sceneBar div {
 				height: 2rem; 
@@ -103,24 +128,106 @@
 				color: #f0f0f0;
 				font-size: .7em;
 			}
-			.interior { background-color: #dd0088; }
-			.exterior { background-color: #00aadd; }
-			.other { background-color: #aaa; }
+			.interior { background-color: rgb(236,0,140); }
+			.exterior { background-color: rgb(0,129,239); }
 
 			/* Beat colors */
 			.red { background-color: rgb(239,0,73); color: white; }
 			.blue { background-color: rgb(0,129,239); color: white; }
+			.textBlue { color: rgb(0,129,239); }
 			.green { background-color: rgb(0,223,121); color: white; }
 			.pink { background-color: rgb(250,111,193); color: white; }
 			.magenta { background-color: rgb(236,0,140); color: white; }
+			.textMagenta { color: rgb(236,0,140); }
 			.gray { background-color: gray; color: white; }
+			.textGray { color: #ccc; }
 			.purple { background-color: rgb(181, 32, 218); color: white; }
+			.textPurple { color: rgb(181, 32, 218); }
 			.prince { background-color: rgb(181, 32, 218); color: white; }
 			.yellow { background-color: rgb(255, 162, 0); color: #333; }
 			.cyan { background-color: rgb(7, 189, 236); color: white; }
 			.teal { background-color: rgb(12, 224, 227); color: white; }
 			.orange { background-color: rgb(255, 161, 13); color: white; }
+			.textOrange { color: #006573; }
 			.brown { background-color: rgb(169, 106, 7); color: white; }
+			
+			.textJade { color: rgb(90, 208, 133) }
+
+			.textFemale { color: #1684ec; }
+			.textMale { color: #1f4a73; }
+			.textOther { color: rgb(236,0,140); }
+
+			.donutChart {
+				position: relative;
+				height: 180px;
+			}
+			.donutCanvas {
+				position: absolute;
+				width: 180px;
+			}
+			.donutLegend {
+				position: absolute;
+				border-radius: 50%;
+				display: flex;
+				width: 130px; height: 130px;
+				left: 25px; top: 25px;
+				background-color: #f8f8f8;
+				
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+				font-size: .7em;
+				flex-direction: column;
+			}
+			.donutLegend h3 {
+				font-size: inherit;
+				margin: 0 0 .25rem 0;
+			}
+
+		input[type="radio"] {
+
+			margin: 0;
+		    border-radius: 50%;
+
+		    cursor: pointer;
+		    display: inline-block;
+		    
+		    width: 12px;
+		    height: 12px;
+		    border: solid 1px #bbb;
+		    
+		    position: relative;
+
+		    -webkit-appearance: none;
+		}
+		input[type="radio"]:focus {
+			outline: none;
+		}
+		input[type="radio"]:after {
+		    background-color: transparent;
+		    border-radius: 25px;
+		    box-shadow: inset 0 0 0 0px hsla(0,0%,0%,.2),
+		                0 0px 0px hsla(0,0%,100%,.5);
+		    content: '';
+		    display: block;
+		    height: 8px;
+		    left: 1px;
+		    position: relative;
+		    top: 1px;
+		    width: 8px;
+		}
+		input[type="radio"]:checked:after {
+		    background-color: #888;
+		}
+		.other input[type="radio"]:checked:after {
+			background-color: rgb(236,0,140);
+		}
+		.female input[type="radio"]:checked:after {
+			background-color: #1684ec;;
+		}
+		.male input[type="radio"]:checked:after {
+			background-color: #1f4a73;
+		}
 
 		</style>
 	</head>
@@ -131,36 +238,195 @@
 
 		<div class='columns'>
 			<div class='column left'>
-				<h2>Dialogue</h2>
+			
 				<table id='characters' cellspacing="0">
 				</table>
+
 			</div>
+
 			<div class='column right'>
-				<h2>Scenes</h2>
-				<div id='sceneBar'></div>
+				
+				<section>
+					<div style='display: none;' id='sceneBar'></div>
+					
+					<div class='donutChart'>
+						<canvas class='donutCanvas' id='sceneCanvas' width="180" height="180"></canvas>
+						<div id='sceneLegend' class='donutLegend'></div>
+					</div>
+				</section>
+				<!--
 				<p class='legend'><span class='box interior'></span> interior &nbsp; <span class='box exterior'></span> exterior  &nbsp; <span class='box other'></span> other</p>
+				-->
+
+				<section>
+					<div id='genderPie' class='donutChart'>
+						<canvas id='genderCanvas' class='donutCanvas' width="180" height="180"></canvas>
+						<div id='genderLegend' class='donutLegend'></div>
+					</div>
+				</section>
+
 			</div>
 		</div>
 		
 
 		<script>
+			/*
+			var storage;
+			try {
+				storage = window.localStorage;
+			} 
+			catch (err) {
+				document.write(err);
+				storage = null;
+			}
+			*/
+			
+
 			var defaultData = 
-				{characters:{'DON PRICE': 14,'WILBUR FREELY': 4,'JOSEPHINE': 46,'YOUNG EDWARD': 1,'RUTHIE': 2,'VARIOUS TOWNFOLK': 1,'SANDRA': 59,'LITTLE GIRL': 1,'LITTLE BRAVE': 1,'MAYOR': 3,'WOMANS VOICE': 1,'NURSE': 1,'GIRL': 1,'SON': 3,'DR. BENNETT': 15,'EDWARD AND WILL': 1,'KID': 1,'TELLER WOMAN': 3,'JING': 5,'A VOICE': 1,'VOICE': 1,'SHEPHARD': 1,'PING': 12,'BEAMEN': 14,'SHARECROPPER': 1,'KARL': 13,'YOUNG DR. BENNETT': 2,'AMOS': 25,'SOME FARMER': 1,'STUDENT': 1,'EDWARD': 293,'MILDRED': 5,'ZACKY': 5,'A GIRLS VOICE': 1,'THE CROWD': 1,'WILL': 141,'HOT-BLOODED SHOTGUN TOTER': 1,'ADULT EDWARD': 3,'WILLS DATE': 1,'NORTHER WINSLOW': 16,'JENNY': 58,'A DEEP VOICE': 1,'CASHIER': 1,'A MANS VOICE': 1,'THE MAN': 1,'JUMP LEADER': 1,'YOUNG WILL': 2,'MANS VOICE': 1}
+				{characters:{'DON PRICE': 14,'WILBUR FREELY': 4,'JOSEPHINE': 46,'YOUNG EDWARD': 1,'RUTHIE': 2,'VARIOUS TOWNFOLK': 1,'SANDRA': 59,'LITTLE GIRL': 1,'LITTLE BRAVE': 1,'MAYOR': 3,'WOMANS VOICE': 1,'NURSE': 1,'GIRL': 1,'SON': 3,'DR. BENNETT': 15,'EDWARD AND WILL': 1,'KID': 1,'TELLER WOMAN': 3,'JING': 5,'A VOICE': 1,'VOICE': 1,'SHEPHARD': 1,'PING': 12,'BEAMEN': 14,'SHARECROPPER': 1,'KARL': 13,'YOUNG DR. BENNETT': 2,'AMOS': 25,'SOME FARMER': 1,'STUDENT': 1,'EDWARD': 293,'MILDRED': 5,'ZACKY': 5,'A GIRLS VOICE': 1,'THE CROWD': 1,'WILL': 141,'HOT-BLOODED SHOTGUN TOTER': 1,'ADULT EDWARD': 3,'WILLS DATE': 1,'NORTHER WINSLOW': 16,'JENNY': 58,'A DEEP VOICE': 1,'CASHIER': 1,'A MANS VOICE': 1,'THE MAN': 1,'JUMP LEADER': 1,'YOUNG WILL': 2,'MANS VOICE': 1},
+					genders: { "EDWARD": "male", "JOSEPHINE": "female", 'GIRL': 'female', 'MAYOR': 'male', 'RUTHIE': 'female', 'SANDRA': 'female', 'DON PRICE': 'male', 'JENNY': 'female', 'STUDENT': 'other', 'NORTHER WINSLOW': 'other' },
+					scenes: {
+						'interior': 100,
+						'other': 10,
+						'exterior': 80
+					}
 				};
 
 			var characterTable = document.getElementById('characters');
 			var sceneBar = document.getElementById('sceneBar');
+			
+			var sceneLegend = document.getElementById('sceneLegend');
+			var sceneCanvas = document.getElementById('sceneCanvas');
 
+			var genderLegend = document.getElementById('genderLegend');
+			var genderCanvas = document.getElementById('genderCanvas');
+
+			// An object containing the character gender data
+			var characterGender = {};
+			var genderStatistics = {
+				other: 0,
+				female: 0,
+				male: 0,
+				unspecified: 0
+			}
+
+			var chartColors = {
+				//male: "rgb(245, 163, 0)",
+				male: '#1f4a73',
+				
+				//female: "rgb(90, 208, 133)",
+				female: '#1684ec',
+
+				//other: "rgb(0,129,239)",
+				other: "rgb(236,0,140)",
+				unspecified: "#ccc",
+
+				interior: "rgb(236,0,140)",
+				exterior: "#1684ec",
+			}
+
+			var characterLines = {};
 
 			function refresh (data) {
+				characterGender = data.genders;
+				characterLines = data.characters;
 
 				getCharacterData(data.characters);
 				getSceneData(data.scenes);
 
+				getGenderStatistics();
+			}
+
+			function setGender(name, gender) {
+				//localStorage.setItem(name, gender);
+				characterGender[name] = gender;
+				genderStatistics();
+			}
+
+			function getGender(name) {
+				// return localStorage.getItem(name);
+				return characterGender[name];
+			}
+
+			function genderSwitch(el) {
+				characterGender[el.name] = el.value;
+				window.webkit.messageHandlers.setGender.postMessage( el.name + ":" + el.value );
+				getGenderStatistics();
+			}
+
+			function resetGenderStatistics() {
+				genderStatistics = {
+					other: 0,
+					female: 0,
+					male: 0,
+					unspecified: 0
+				}
+			}
+
+			function getGenderStatistics () {
+				resetGenderStatistics();
+				
+				// Total lines
+				var total = 0;
+				
+				// Go through characters
+				for (var c in characterLines) {
+					var gender = characterGender[c];
+
+					if (gender) {
+						genderStatistics[gender] += characterLines[c];
+					} else { 
+						genderStatistics['unspecified'] += characterLines[c];
+					}
+
+					total += characterLines[c];
+				}
+
+				genderStatistics.total = total;
+
+				var g = genderStatistics;
+				var chartValues = {
+					female: Math.round(g.female / g.total * 100),
+					male: Math.round(g.male / g.total * 100),
+					other: Math.round(g.other / g.total * 100),
+					unspecified: Math.round(g.unspecified / g.total * 100)
+				}
+
+				if (total == 0) {
+					chartValues = {
+						female: 0,
+						male: 0,
+						other: 0,
+						unspecified: 0
+					}
+				}
+
+				genderLegend.innerHTML = 
+				"<h3>Lines by gender</h3>" +
+				"<span class='textFemale'>Women " + chartValues.female + "%</span>" + 
+				"<span class='textMale'>Men " + chartValues.male + "%</span>" +
+				"<span class='textOther'>Other " + chartValues.other + "%</span>" + 
+				"<span class='textGray'>Unknown " + chartValues.unspecified + "%</span>";
+
+
+				// Draw donut chart
+				var data = [
+					chartValues.male,
+					chartValues.female,
+					chartValues.other,
+					chartValues.unspecified
+				];
+				var colors = [
+					chartColors.male,
+					chartColors.female,
+					chartColors.other,
+					chartColors.unspecified
+				];
+
+				drawChart(genderCanvas, data, colors)
 			}
 
 			function getCharacterData(characters) {
-				console.log(characters);
 				if (characters == null) return;
 
 				var characterList = [];
@@ -174,12 +440,21 @@
 				});
 				characterList.reverse();
 
-				characterTable.innerHTML = "";
+				characterTable.innerHTML = 
+				/*"<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>" + 
+				"<td class='gender'>?</td><td class='gender'>⚥</td><td class='gender'>♀</td><td class='gender'>♂</td></tr>"
+				*/
+				"<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>" + 
+				"<td class='gender'>?</td><td class='gender'>O</td><td class='gender'>W</td><td class='gender'>M</td></tr>"
+				
+				;
 
 				var maxLines = 0;
 
 				for (var c in characterList) {
 					if (c == 0) maxLines = characterList[c][1];
+
+					var name = characterList[c][0];
 
 					var lines = characterList[c][1];
 					var width = lines / maxLines * 100;
@@ -187,8 +462,29 @@
 					var opacity = lines / maxLines;
 					if (opacity < .2) opacity = .2;
 
-					characterTable.innerHTML += "<tr><td class='name'>" + characterList[c][0] + "</td><td class='linesBar'><div class='bar' style='width:" + width + "%; opacity: " + opacity + "'>&nbsp;</div></td>"+
-					"<td class='linesNumber'>" + characterList[c][1] + "</td></tr>";
+					// This is kinda silly. We want to have gender['other'] = 'checked' based on the data
+					var gender = {
+						other: '',
+						female: '',
+						male: '',
+						unspecified: ''
+					};
+
+					if (characterGender[name]) {
+						gender[characterGender[name]] = "checked";
+					} else {
+						gender['unspecified'] = 'checked';
+					}
+
+
+					characterTable.innerHTML += "<tr><td class='name'>" + name + "</td><td class='linesBar'><div class='bar' style='width:" + width + "%; opacity: " + opacity + "'>&nbsp;</div></td>"+
+					"<td class='linesNumber'>" + characterList[c][1] + "</td>"+
+					"<td class='gender unspecified'><input type='radio' " + gender['unspecified'] + " name='"+name+"' value='unspecified' onchange='genderSwitch(this)'></td>" +
+					"<td class='gender other'><input type='radio' " + gender['other'] + " name='"+name+"' value='other' onchange='genderSwitch(this)'></td>" +
+					"<td class='gender female'><input type='radio' " + gender['female'] + " name='"+name+"' value='female' onchange='genderSwitch(this)'></td>" + 
+					"<td class='gender male'><input type='radio' " + gender['male'] + " name='"+name+"' value='male' onchange='genderSwitch(this)'></td>" + 
+					"</td>" +
+					"</tr>";
 				}
 			}
 
@@ -196,26 +492,58 @@
 				sceneBar.innerHTML = "";
 
 				var total = scenes.interior + scenes.exterior + scenes.other;
+				/*
 				sceneBar.innerHTML += "<div class='sceneCount interior' style='width: " + Math.floor(scenes.interior / total * 100) + "%'>" + scenes.interior + "</div>";
 				sceneBar.innerHTML += "<div class='sceneCount exterior' style='width: " + Math.floor(scenes.exterior / total * 100) + "%'>" + scenes.exterior + "</div>";
 				if (scenes.other > 0) sceneBar.innerHTML += "<div class='sceneCount other' style='width: " + Math.floor(scenes.other / total * 100) + "%'>" + scenes.other + "</div>";
+				*/
 
-/*
-				var circle = '<svg viewBox="0 0 36 36"> '+
-					  '<path '+
-					    'd="M18 2.0845 '+
-					      'a 15.9155 15.9155 0 0 1 0 31.831 '+
-					      'a 15.9155 15.9155 0 0 1 0 -31.831" '+
-					    'fill="none" ' +
-					    'stroke="#444" ' +
-					    'stroke-width="1" ' +
-					    'stroke-dasharray="25" ' +
-					  '/>'+
-				'</svg>"';
-*/
+				var data = [
+					scenes.interior / total * 100,
+					scenes.exterior  / total * 100,
+					scenes.other / total * 100
+				];
+				var colors = [
+					chartColors.interior,
+					chartColors.exterior,
+					chartColors.unspecified,
+				];
+				console.log(data);
+				drawChart(sceneCanvas, data, colors);
+
+				sceneLegend.innerHTML = 
+					"<h3>Locations</h3>" +
+					"<span class='textBlue'>Interior " + scenes.interior + "</span>"+
+					"<span class='textMagenta'>Exterior " + scenes.exterior + "</span>"+
+					"<span class='textGray'>Other " + scenes.other + "</span>";
+
 			}
 
-			//refresh(defaultData);
+			// Thank you Alex W & Nathan Osman @ stackoverflow!
+			function drawChart(canvas, data, colors) {
+				var ctx = canvas.getContext("2d");
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+				var lastend = 0;
+				var total = 0;
+
+				for(var e = 0; e < data.length; e++)
+				{
+					total += data[e];
+				}
+
+				for (var i = 0; i < data.length; i++) {
+					ctx.fillStyle = colors[i];
+					ctx.beginPath();
+					ctx.moveTo(canvas.width / 2, canvas.height / 2);
+					ctx.arc(canvas.width / 2, canvas.height / 2, canvas.height / 2, lastend, lastend + (Math.PI * 2 * (data[i] / total)), false);
+					ctx.lineTo(canvas.width / 2, canvas.height / 2);
+					ctx.fill();
+					lastend += Math.PI * 2 * (data[i] / total);
+				}
+			}
+
+			refresh(defaultData);
 
 		</script>
 	</body>

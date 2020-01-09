@@ -15,8 +15,6 @@
 
 + (NSString*)fdxFromString:(NSString*)string
 {
-    
-    
     ContinousFountainParser* parser = [[ContinousFountainParser alloc] initWithString:string];
     if ([parser.lines count] == 0) {
         return @"";

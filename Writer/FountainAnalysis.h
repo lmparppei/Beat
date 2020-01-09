@@ -16,6 +16,7 @@
 @property NSMutableArray * characters;
 @property NSMutableArray * lines;
 @property NSMutableArray * scenes;
+@property NSDictionary * genders;
 @property NSMutableDictionary<NSString *, NSNumber *>* characterLines;
 
 @property NSInteger interiorScenes;
@@ -24,5 +25,6 @@
 
 - (NSString*) getJSON;
 - (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes;
+- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes characterGenders:(NSDictionary*)genders;
 - (NSMutableArray*) scenesWithCharacter:(NSString*)character onlyDialogue:(bool)onlyDialogue;
 @end

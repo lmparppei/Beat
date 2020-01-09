@@ -27,19 +27,11 @@
 
 /*
  
- N.B. Much of this code has its origins in Writer by Hendrik Noeller. As I started
- this project, I had close to zero knowledge on Objective-C, and it really shows.
+ N.B. Much of this code has its origins in Writer by Hendrik Noeller. As I started this project, I had close to zero knowledge on Objective-C, and it really shows.
  
- Beat has been cooked up by using lots of trial and error, and this file has become a
- 2900-line monster.  I've started fixing some of my silliest coding practices, but
- it's still a WIP. Some structures (such as themes) are legacy from Writer, and
- have since been replaced with totally different approach. Their names and complimentary
- methods still linger around.
+ Beat has been cooked up by using lots of trial and error, and this file has become a 2900-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. Some structures (such as themes) are legacy from Writer, and have since been replaced with totally different approach. Their names and complimentary methods still linger around.
  
- You can find some *very* shady stuff, such as ThemeManager and zoomLevel & zoomModifier,
- which are scattered around here and there with no real purpose. I built some very
- convoluted UI code around the legacy of the original Writer app. I have since
- made it much more sensible, but dismantling my weird solutions is still WIP.
+ You can find some *very* shady stuff, such as ThemeManager and zoomLevel & zoomModifier, which are scattered around here and there with no real purpose. I built some very convoluted UI code around the legacy of the original Writer app. I have since made it much more sensible, but dismantling my weird solutions is still WIP.
  
  Anyway, may this be of some use to you, dear friend.
  
@@ -82,6 +74,9 @@
 #import "NSString+Whitespace.h"
 #import "FountainAnalysis.h"
 #import "BeatOutlineView.h"
+#import "ColorCheckbox.h"
+#import "SceneFiltering.h"
+#import "FDXImport.h"
 
 @interface Document ()
 
@@ -110,6 +105,26 @@
 @property (nonatomic) NSMutableArray *outlineClosedSections;
 @property (weak) IBOutlet NSMenu *colorMenu;
 @property BOOL outlineEdit;
+@property (nonatomic) IBOutlet NSBox *filterView;
+@property (nonatomic) IBOutlet NSLayoutConstraint *filterViewHeight;
+@property (nonatomic) NSMutableArray *colorFilters;
+@property (nonatomic) IBOutlet NSPopUpButton *characterBox;
+@property (nonatomic) SceneFiltering *filters;
+@property (nonatomic) IBOutlet NSButton *resetColorFilterButton;
+@property (nonatomic) IBOutlet NSButton *resetCharacterFilterButton;
+
+// Fuck you macOS & Apple. For two things, particulary:
+// 1) IBOutletCollection is iOS-only
+// 2) This computer (and my phone and everything else) is made in subhuman conditions in some sweatshop in China, just to add to your fucking sky-high profits. You are the most profitable company operating in our current monetary and economic system. EQUALITY AND FREEDOM FOR EVERYONE.
+@property (nonatomic) IBOutlet ColorCheckbox *redCheck;
+@property (nonatomic) IBOutlet ColorCheckbox *blueCheck;
+@property (nonatomic) IBOutlet ColorCheckbox *greenCheck;
+@property (nonatomic) IBOutlet ColorCheckbox *orangeCheck;
+@property (nonatomic) IBOutlet ColorCheckbox *cyanCheck;
+@property (nonatomic) IBOutlet ColorCheckbox *brownCheck;
+@property (nonatomic) IBOutlet ColorCheckbox *magentaCheck;
+@property (nonatomic) IBOutlet ColorCheckbox *pinkCheck;
+
 
 // Views
 @property (unsafe_unretained) IBOutlet WebView *webView; // Print preview
@@ -123,6 +138,7 @@
 @property (weak) IBOutlet NSPanel *analysisPanel;
 @property (unsafe_unretained) IBOutlet WKWebView *analysisView;
 @property (strong, nonatomic) FountainAnalysis* analysis;
+@property (nonatomic) NSMutableDictionary *characterGenders;
 
 // Card view
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
@@ -194,7 +210,7 @@
 
 // Current line / scene
 @property (nonatomic) Line *currentLine;
-@property OutlineScene *currentScene;
+@property (nonatomic) OutlineScene *currentScene;
 
 
 // Autocompletion
@@ -204,6 +220,8 @@
 @property (nonatomic) NSMutableArray *sceneHeadings;
 @property (readwrite, nonatomic) bool darkPopup;
 
+// Touch bar
+@property (nonatomic) NSColorPickerTouchBarItem *colorPicker;
 
 // Parser
 @property (strong, nonatomic) ContinousFountainParser* parser;
@@ -218,7 +236,6 @@
 @property (weak) IBOutlet NSTextField *contactField;
 @property (weak) IBOutlet NSTextField *notesField;
 @property (nonatomic) NSMutableArray *customFields;
-
 
 // Theme settings
 @property (strong, nonatomic) ThemeManager* themeManager;
@@ -264,6 +281,9 @@
     return self;
 }
 - (void) close {
+	// Save the gender list, if needed
+	if ([_characterGenders count] > 0) [self saveGenders];
+	
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but maybe it isn't bad to unset the most memory-consuming variables anyway?
 	self.textView = nil;
@@ -308,7 +328,7 @@
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
-		
+	
 	_thisWindow = aController.window;
 	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, 350)];
 	
@@ -335,14 +355,11 @@
 	// Accept mouse moved events... nah
 	// [aController.window setAcceptsMouseMovedEvents:YES];
 	
-	
 	// Outline view setup
     self.outlineViewVisible = false;
-	
     self.outlineViewWidth.constant = 0;
 
 	// TextView setup
-	
     self.textView.textContainer.widthTracksTextView = false;
 	self.textView.textContainer.heightTracksTextView = false;
 	
@@ -391,7 +408,9 @@
 	_nightMode = [self isDark];
 	
 	// Background fill
-	self.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
+	//self.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
+	self.outlineBackgroundView.fillColor = self.themeManager.theme.outlineBackground;
+	self.backgroundView.fillColor = self.themeManager.theme.backgroundColor;
 	
 	// Initialize drag & drop for outline view
 	//[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, NSPasteboardTypeString]];
@@ -409,6 +428,7 @@
 	// Outline view setup
 	self.outlineClosedSections = [[NSMutableArray alloc] init];
 	self.filteredOutline = [[NSMutableArray alloc] init];
+	[self hideFilterView];
 	
 	// Scene number labels
 	self.sceneNumberLabels = [[NSMutableArray alloc] init];
@@ -436,10 +456,18 @@
 	
 	// Setup analysis
 	[self setupAnalysis];
+	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
 	
 	// Apply format changes to the changed region (which is the whole document) and mark document loading as done
 	[self applyFormatChanges];
 	_documentIsLoading = NO;
+	
+	// Setup touch bar colors
+	[self initColorPicker];
+	
+	// Init filtering
+	_filters = [[SceneFiltering alloc] init];
+	_colorFilters = [NSMutableArray array];
 	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
@@ -459,6 +487,21 @@
 		
 		[self updateSceneNumberLabels];
 	});
+}
+- (void)setFileURL:(NSURL *)fileURL {
+	NSString *oldName = [NSString stringWithString:[self fileNameString]];
+	[super setFileURL:fileURL];
+	NSString *newName = [NSString stringWithString:[self fileNameString]];
+						 
+    // The file was renamed
+	 if (![newName isEqualToString:oldName] && [oldName length] > 0) {
+		 // Set gender data
+		 /*
+		 NSDictionary *genderData = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:oldName];
+		 [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] setValue:genderData forKey:newName];
+		 NSLog(@"old gender data %@", genderData);
+		  */
+	 }
 }
 
 
@@ -498,20 +541,11 @@
  This is a mess. I am so sorry for anyone reading this.
  
  Update 2019/09/06
- I have finally rebuilt the zooming. I have tried all sorts of tricks from
- magnification to other weird stuff, such as 3rd party libraries for scaling the
- NSScrollView. Everything was terrible and caused even more problems. I'm not too
- familiar with Cocoa and/or Objective-C, but if I understand correctly, the best way
- would be having a custom NSView inside the NSScrollView and then to magnify the
- scroll view. NSTextView's layout manager would then handle displaying the
- text in those custom views.
+ I have finally rebuilt the zooming. I have tried all sorts of tricks from magnification to other weird stuff, such as 3rd party libraries for scaling the NSScrollView. Everything was terrible and caused even more problems. I'm not too familiar with Cocoa and/or Objective-C, but if I understand correctly, the best way would be having a custom NSView inside the NSScrollView and then to magnify the scroll view. NSTextView's layout manager would then handle displaying the text in those custom views.
  
- I still have no help and I'm working alone. Until that changes, I guess
- this won't get any better. :-)
+ I still have no help and I'm working alone. Until that changes, I guess this won't get any better. :-)
  
- The problem here is that we have multiple keys that set font size, document width, etc.
- and out of legacy reasons, they are scattered around the code. Maybe some day I have the
- time to fix everything, but for now, we're using duct-tape approach.
+ The problem here is that we have multiple keys that set font size document width, etc. and out of legacy reasons, they are scattered around the code. Maybe some day I have the time to fix everything, but for now, we're using duct-tape approach.
  
  What matters most is how well you walk through the fire.
  
@@ -524,7 +558,7 @@
 	// Save scroll position
 	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
 	
-	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg help
+	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	if (zoomIn) {
 		if (_magnification < 1.6) _magnification += 0.09;
 	} else {
@@ -559,6 +593,8 @@
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
 {
+	self.textView.zoomLevel = newScaleFactor;
+	
 	CGFloat oldScaleFactor = _scaleFactor;
 	if (_scaleFactor != newScaleFactor)
 	{
@@ -719,6 +755,8 @@
     [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
             NSString* fdxString = [FDXInterface fdxFromString:[self getText]];
+			NSLog(@"%@", fdxString);
+			NSLog(@"%@", saveDialog.URL);
             [fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
@@ -775,6 +813,14 @@
 		if (NSLocationInRange(position, range)) {
 			_currentScene = scene;
 			self.outlineView.currentScene = index;
+			
+			// Also, update touch bar color if needed (omg this is cool)
+			if (scene.color) {
+				if ([self colors][[scene.color lowercaseString]]) {
+					[_colorPicker setColor:[self colors][[scene.color lowercaseString]]];
+				}
+			}
+			
 			return scene;
 		}
 		index++;
@@ -786,6 +832,41 @@
 	return nil;
 }
 
+- (OutlineScene*)getPreviousScene {
+	if ([_flatOutline count] == 0) {
+		_flatOutline = [self getOutlineItems];
+		if ([_flatOutline count] == 0) return nil;
+	}
+	
+	_currentScene = [self getCurrentScene];
+	if (!_currentScene) return nil;
+	
+	NSInteger index = [_flatOutline indexOfObject:_currentScene];
+	
+	if (index - 1 >= 0 && index < [_flatOutline count]) {
+		return [_flatOutline objectAtIndex:index - 1];
+	} else {
+		return nil;
+	}
+}
+- (OutlineScene*)getNextScene {
+	if ([_flatOutline count] == 0) {
+		_flatOutline = [self getOutlineItems];
+		if ([_flatOutline count] == 0) return nil;
+	}
+	
+	_currentScene = [self getCurrentScene];
+	if (!_currentScene) return nil;
+
+	NSInteger index = [_flatOutline indexOfObject:_currentScene];
+
+	if (index >= 0 && (index + 1) < [_flatOutline count]) {
+		return [_flatOutline objectAtIndex:index + 1];
+	} else {
+		return nil;
+	}
+}
+
 # pragma mark - Undo
 
 - (IBAction)undoEdit:(id)sender {
@@ -793,6 +874,7 @@
 	if (_cardsVisible) [self refreshCards:YES];
 	
 	// To avoid some graphical glitches
+	[self updateSceneNumberLabels];
 	[self.textView setNeedsDisplay:YES];
 }
 - (IBAction)redoEdit:(id)sender {
@@ -835,7 +917,7 @@
             }
         }
     }
-	
+
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
 	
 	// Fire up autocomplete and create cached lists of scene headings / character names
@@ -846,24 +928,25 @@
 	} else if (_currentLine.type == heading) {
 		if (![_sceneHeadings count]) [self collectHeadings];
 		[self.textView setAutomaticTextCompletionEnabled:YES];
-/*
-	} else if ([_currentLine.string length] < 5) {
-		if (![_characterNames count]) [self collectCharacterNames];
-		if (![_sceneHeadings count]) [self collectCharacterNames];
-		[self.textView setAutomaticTextCompletionEnabled:YES];
-*/
+	
 	} else {
 		[_characterNames removeAllObjects];
 		[_sceneHeadings removeAllObjects];
 		[self.textView setAutomaticTextCompletionEnabled:NO];
 	}
 
+	/*
+	// Maybe pagination should happen in the parser, after all?
+	[self paginate];
+	*/
 	
     return YES;
 }
 
+// Never used
 - (Line*)getCurrentLine {
 	NSInteger position = [self cursorLocation].location;
+
 	for (Line* line in self.parser.lines) {
 		if (position >= line.position && position <= line.position + [line.string length]) return line;
 	}
@@ -996,21 +1079,63 @@
 
 // Collect all character names from script
 - (void) collectCharacterNames {
+    /*
+     
+     So let me elaborate a bit. This is currently two systems upon each other...
+     Other use is to collect character cues for autocompletion. There, it doesn't really matter if we have strange stuff after names, because different languages can use their own abbreviations.
+     
+     Characters are also collected for the filtering feature, so we will just strip away everything after the name, and hope for the best. That's why we have two separate lists of names.
+     
+     */
+    
 	[_characterNames removeAllObjects];
+	
+	// If there was a character selected in Character Filter Box, save it
+	NSString *selectedCharacter = _characterBox.selectedItem.title;
+    
+    NSMutableArray *characterList = [NSMutableArray array];
+    
+	[_characterBox removeAllItems];
+	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
+		
 	for (Line *line in [self.parser lines]) {
 		if (line.type == character && line != _currentLine && ![_characterNames containsObject:line.string]) {
 			// Don't add this line if it's just a character with cont'd, vo, or something we'll add automatically
 			if ([line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound) continue;
 			
-			[_characterNames addObject:[line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
+            NSString *character = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+			[_characterNames addObject:character];
 			
 			// Add automatic CONT'D suffixes
-			[_characterNames addObject:[NSString stringWithFormat:@"%@ (CONT'D)", line.string]];
+			[_characterNames addObject:[NSString stringWithFormat:@"%@ (CONT'D)", character]];
+			            
+            if ([character rangeOfString:@"("].location != NSNotFound) {
+                NSRange infoRange = [character rangeOfString:@"("];
+                NSRange characterRange = NSMakeRange(0, infoRange.location);
+                
+                character = [NSString stringWithString:[character substringWithRange:characterRange]];
+            }
+            
+            // Trim any useless whitespace
+            character = [NSString stringWithString:[character stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+            if (![characterList containsObject:character]) {
+                // Add character to the filter box
+                [_characterBox addItemWithTitle:character];
+                
+                // Add character to the pure list
+                [characterList addObject:character];
+            }
 		}
 	}
+    
+    // There was a character selected in the filtering menu, so select it again
+    if ([selectedCharacter length]) {
+        for (NSMenuItem *item in _characterBox.itemArray) {
+            if ([item.title isEqualToString:selectedCharacter]) [_characterBox selectItem:item];
+        }
+    }
 }
 - (void) collectHeadings {
-	NSLog(@"collect headings");
 	[_sceneHeadings removeAllObjects];
 	for (Line *line in [self.parser lines]) {
 		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
@@ -1037,7 +1162,7 @@
 	}
 	
 	for (NSString *string in search) {
-		NSString * stringToComplete = [[textView string] substringWithRange:charRange];
+		//NSString * stringToComplete = [[textView string] substringWithRange:charRange];
 		//if ([string rangeOfString:stringToComplete options:NSAnchoredSearch].location != NSNotFound) [matches addObject:string];
 		
 		if ([string rangeOfString:[[textView string] substringWithRange:charRange] options:NSAnchoredSearch range:NSMakeRange(0, [string length])].location != NSNotFound) {
@@ -1563,34 +1688,29 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 
+// Preprocessing was apparently a bottleneck. Redone in 1.1.0f
 - (NSString*) preprocessSceneNumbers
 {
-	// Regex for scene testing
-	NSString * pattern = @"^(([iI][nN][tT]|[eE][xX][tT]|[^\\w][eE][sS][tT]|\\.|[iI]\\.?\\[eE]\\.?)).+";
-	NSPredicate *test = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", pattern];
 	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
 	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
-	NSArray *lines = [self.getText componentsSeparatedByString:@"\n"];
-	NSString *fullText = @"";
+	NSMutableString *fullText = [NSMutableString stringWithString:@""];
 	
 	NSUInteger sceneCount = 1; // Track scene amount
 
-	for (__strong NSString *rawLine in lines) {
-		NSString *cleanedLine = [rawLine stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	Line *previousLine;
+	
+	for (Line *line in [self.parser lines]) {
+		NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet: NSCharacterSet.whitespaceCharacterSet];
 		
-		// Test if this is a scene header, but don't add an auto scene number
-		// if it already has one
-		if ([test evaluateWithObject: cleanedLine] && ![testSceneNumber evaluateWithObject: cleanedLine]) {
-			
-			// Make scene heading strings
-			NSString *sceneNumber = [NSString stringWithFormat:@"%@%lu%@", @"#", sceneCount, @"#"];
-			NSString *newLine = [NSString stringWithFormat:@"%@ %@", cleanedLine, sceneNumber];
-			fullText = [NSString stringWithFormat:@"%@%@\n", fullText, newLine];
-			
+		// If the heading already has a forced number, skip it
+		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
+			[fullText appendFormat:@"%@ #%lu#\n", cleanedLine, sceneCount];
 			sceneCount++;
 		} else {
-			fullText = [NSString stringWithFormat:@"%@%@\n", fullText, cleanedLine];
+			[fullText appendFormat:@"%@\n", cleanedLine];
 		}
+		
+		previousLine = line;
 	}
 	
 	return fullText;
@@ -1598,6 +1718,8 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (IBAction)lockSceneNumbers:(id)sender
 {
+	NSString *rawText = [self getText];
+	
 	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
 	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
 	
@@ -1611,20 +1733,22 @@ static NSString *forceLyricsSymbol = @"~";
 		}
 	}
 	
-	//[self applyFormatChanges];
-	
 	_sceneNumberLabelUpdateOff = false;
 	[self updateSceneNumberLabels];
 	
-	// [[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:rawText];
+	[[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:rawText];
 }
 
 - (void)undoSceneNumbering:(NSString*)rawText
 {
 	[self setText:rawText];
 	[self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
+	
 	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
 	[self applyFormatChanges];
+	
+	// This is a strange bug
+	[self updateSceneNumberLabels];
 }
 
 
@@ -1871,6 +1995,7 @@ static NSString *forceLyricsSymbol = @"~";
     if (self.outlineViewVisible) {
 		// Show outline
 		[self reloadOutline];
+		[self collectCharacterNames]; // For filtering
 		
 		[self.outlineView expandItem:nil expandChildren:true];
         [self.outlineViewWidth setConstant:TREE_VIEW_WIDTH];
@@ -2214,6 +2339,7 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 	return result;
 }
+
 - (NSMutableArray *) getScenes {
 	NSMutableArray * scenes = [[NSMutableArray alloc] init];
 	for (OutlineScene * scene in [self.parser outline]) {
@@ -2248,27 +2374,33 @@ static NSString *forceLyricsSymbol = @"~";
 	return outlineItems;
 }
 
-- (void) filterOutline:(NSString*) filter {
+- (void) filterOutline {
 	// We don't need to GET outline at this point, let's use the cached one
 	[_filteredOutline removeAllObjects];
+	if (![_filters activeFilters]) return;
 	
+	if ([_filters.character length] > 0) {
+		[_filters setScript:self.parser.lines scenes:[self getOutlineItems]];
+		[_filters byCharacter:self.filters.character];
+	} else {
+		[_filters resetScenes];
+	}
+
 	for (OutlineScene * scene in _flatOutline) {
-		if ([scene.string rangeOfString:filter options:NSCaseInsensitiveSearch].location != NSNotFound) {
-			[_filteredOutline addObject:scene];
-		} else if ([scene.color localizedCaseInsensitiveContainsString:filter]) {
-			[_filteredOutline addObject:scene];
-		}
+		//NSLog(@"%@ - %@", scene.string, [_filters match:scene] ? @"YES" : @"NO");
+        if ([_filters match:scene]) [_filteredOutline addObject:scene];
 	}
 }
 
 - (void)searchOutline {
 	// Don't search if it's only spaces
 	if ([_outlineSearchField.stringValue containsOnlyWhitespace] || [_outlineSearchField.stringValue length] < 1) {
-		[_filteredOutline removeAllObjects];
+		//[_filteredOutline removeAllObjects];
+        [_filters byText:@""];
 	}
 	
-	[self filterOutline:_outlineSearchField.stringValue];
-	[self.outlineView reloadData];
+    [_filters byText:_outlineSearchField.stringValue];
+    [self reloadOutline];
 	
 	// Mask scenes that were left out
 	[self maskScenes];
@@ -2278,32 +2410,19 @@ static NSString *forceLyricsSymbol = @"~";
 {
 	if (FLATOUTLINE) {
 		// If we have a search term, let's use the filtered array
-		if ([_filteredOutline count] || [_outlineSearchField.stringValue length]) {
+		if ([_filters activeFilters]) {
 			return [_filteredOutline count];
 		} else {
 			return [[self getOutlineItems] count];
 		}
 	}
-	
-	/*
-	if (![self.parser outline]) return 0;
-	if ([[self.parser outline] count] < 1) return 0;
-	
-    if (!item) {
-        //Children of root
-        return [self.parser numberOfOutlineItems];
-	} else {
-		return [[item scenes] count];
-	}
-    //return 0;
-	 */
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
 {
 	if (FLATOUTLINE) {
 		// If there is a search term, let's search the filtered array
-		if ([_filteredOutline count]) {
+		if ([_filters activeFilters]) {
 			return [_filteredOutline objectAtIndex:index];
 		} else {
 			return [[self getOutlineItems] objectAtIndex:index];
@@ -2355,7 +2474,6 @@ static NSString *forceLyricsSymbol = @"~";
 		[rawString replaceOccurrencesOfString:@"*" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [rawString length])];
 		
 		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:rawString];
-		//[resultString addAttribute:NSFontAttributeName value:[self cothamRegular] range:NSMakeRange(0, [line.string length])];
 		
 		// If empty, return the empty string
 		if ([resultString length] == 0) return resultString;
@@ -2505,15 +2623,15 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item{
 	//OutlineScene *scene = (OutlineScene *)(((NSTreeNode *)item).representedObject);
-	
+
 	// Don't allow reordering a filtered list
-	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return nil;
+	if ([_filters activeFilters]) return nil;
 	
 	OutlineScene *scene = (OutlineScene*)item;
 	_draggedScene = scene;
 	
 	NSPasteboardItem *pboardItem = [[NSPasteboardItem alloc] init];
-	//[pboardItem setString:scene.string forType: NSPasteboardTypeString];
+	[pboardItem setString:scene.string forType: NSPasteboardTypeString];
 	//NSData *data = [NSKeyedArchiver archivedDataWithRootObject:scene];
 	//[pboardItem setValue:scene forType:OUTLINE_DATATYPE];
 	return pboardItem;
@@ -2522,7 +2640,7 @@ static NSString *forceLyricsSymbol = @"~";
 - (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index{
 	
 	// Don't allow reordering a filtered list
-	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return NSDragOperationNone;
+	if ([_filters activeFilters]) return NSDragOperationNone;
 	
 	// Don't allow dropping INTO scenes
 	OutlineScene *targetScene = (OutlineScene*)targetItem;
@@ -2551,28 +2669,13 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 - (void) reloadOutline {
-	/*
-	// DEPRECATED
-	 
-	// Save list of sections that have been collapsed
-	[_outlineClosedSections removeAllObjects];
-	for (int i = 0; i < [[self.parser outline] count]; i++) {
-		id item = [self.outlineView itemAtRow:i];
-		if (![self.outlineView isItemExpanded:item]) {
-			[_outlineClosedSections addObject:[item string]];
-		}
-	}
-	 */
-	
 	// Save outline scroll position
 	NSPoint scrollPosition = [[self.outlineScrollView contentView] bounds].origin;
 	
 	// Create outline
 	_flatOutline = [self getOutlineItems];
 	
-	// Build a filtered outline if we have a filter applied
-	if ([_outlineSearchField.stringValue length] > 0) [self filterOutline:_outlineSearchField.stringValue];
-	
+	[self filterOutline];
 	[self.outlineView reloadData];
 	
 	/*
@@ -2678,6 +2781,44 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 }
 
+- (void)initColorPicker {
+	for (NSTouchBarItem *item in [self.textView.touchBar templateItems]) {
+		if ([item.className isEqualTo:@"NSColorPickerTouchBarItem"]) {
+			NSColorPickerTouchBarItem *picker = (NSColorPickerTouchBarItem*)item;
+			_colorPicker = picker;
+			picker.colorList = [[NSColorList alloc] init];
+
+			[picker.colorList setColor:NSColor.blackColor forKey:@"none"];
+			[picker.colorList setColor:[self colors][@"red"] forKey:@"red"];
+			[picker.colorList setColor:[self colors][@"blue"] forKey:@"blue"];
+			[picker.colorList setColor:[self colors][@"green"] forKey:@"green"];
+			[picker.colorList setColor:[self colors][@"cyan"] forKey:@"cyan"];
+			[picker.colorList setColor:[self colors][@"orange"] forKey:@"orange"];
+			[picker.colorList setColor:[self colors][@"pink"] forKey:@"pink"];
+			[picker.colorList setColor:[self colors][@"gray"] forKey:@"gray"];
+			[picker.colorList setColor:[self colors][@"magenta"] forKey:@"magenta"];
+		}
+	}
+}
+
+- (IBAction) pickColor:(id)sender {
+	NSString *pickedColor;
+
+	for (NSString *color in [self colors]) {
+		if ([_colorPicker.color isEqualTo:[self colors][color]]) {
+			pickedColor = color;
+		}
+	}
+	
+	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) pickedColor = @"none";
+	
+	_currentScene = [self getCurrentScene];
+	if (!_currentScene) return;
+	
+	[self setColor:pickedColor forScene:_currentScene];
+
+}
+
 - (IBAction) setNoneColor:(id) sender { [self setColor:@"NONE"]; }
 - (IBAction) setRedColor:(id) sender { [self setColor:@"RED"]; }
 - (IBAction) setBlueColor:(id) sender { [self setColor:@"BLUE"]; }
@@ -2707,7 +2848,7 @@ static NSString *forceLyricsSymbol = @"~";
 }
 - (void) setColor:(NSString *) color forScene:(OutlineScene *) scene {
 	color = [color uppercaseString];
-	
+
 	if (![scene.color isEqualToString:@""] && scene.color != nil) {
 		// Scene already has a color
 
@@ -2880,8 +3021,6 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	if (alreadyVisible && changedIndex > -1) {
 		// Already visible, changed index
-		NSLog(@"changed: %lu", changedIndex);
-		
 		jsCode = [NSString stringWithFormat:@"createCards(%@, true, %lu);", json, changedIndex];
 	} else if (alreadyVisible && changedIndex < 0) {
 		// Already visible, no index
@@ -3028,6 +3167,15 @@ static NSString *forceLyricsSymbol = @"~";
 			[self setColor:color forScene:scene];
 		}
 	}
+	
+	if ([message.name isEqualToString:@"setGender"]) {
+		if ([message.body rangeOfString:@":"].location != NSNotFound) {
+			NSArray *nameAndGender = [message.body componentsSeparatedByString:@":"];
+			NSString *name = [nameAndGender objectAtIndex:0];
+			NSString *gender = [nameAndGender objectAtIndex:1];
+			[self setGenderFor:name gender:gender];
+		}
+	}
 }
 - (void) contextMenu:(NSString*)context {
 	// Let's take a moment to marvel at the beauty of objective-c code:
@@ -3110,7 +3258,7 @@ static NSString *forceLyricsSymbol = @"~";
 				NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
 				
 				rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
-				rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width;
+				rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width + 10;
 				
 				rect.origin.y += TEXT_INSET_TOP;
 
@@ -3344,7 +3492,8 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (IBAction)createAnalysis:(id)sender {
 	// Setup analyzer
-	[self.analysis setupScript:[self.parser lines] scenes:[self getOutlineItems]];
+	
+	[self.analysis setupScript:[self.parser lines] scenes:[self getOutlineItems] characterGenders:_characterGenders];
 	
 	NSString *jsonString = [self.analysis getJSON];
 	NSString *javascript = [NSString stringWithFormat:@"refresh(%@)", jsonString];
@@ -3354,28 +3503,132 @@ static NSString *forceLyricsSymbol = @"~";
 - (void) setupAnalysis {
 	NSString *analysisPath = [[NSBundle mainBundle] pathForResource:@"analysis.html" ofType:@""];
 	NSString *content = [NSString stringWithContentsOfFile:analysisPath encoding:NSUTF8StringEncoding error:nil];
-	
+	_characterGenders = [NSMutableDictionary dictionaryWithDictionary:[self getGenders]];
 	[_analysisView loadHTMLString:content baseURL:nil];
 }
 - (IBAction)closeAnalysis:(id)sender {
 	[_thisWindow endSheet:_analysisPanel];
 }
 
+- (void) setGenderFor:(NSString*)name gender:(NSString*)gender {
+	[_characterGenders setObject:gender forKey:name];
+}
+- (NSMutableDictionary*) getGenders {
+	// The gender dictionary is saved per FILE
+	return [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:[self fileNameString]];
+}
+- (void) saveGenders {
+	// Get gender dictionary, which contains character genders according to FILE NAME
+	// Like this: { @"YourFile.fountain": { @"Name": @"female" } }
+	NSMutableDictionary *genderLists = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"]];
+	
+	[genderLists setObject:_characterGenders forKey:[self fileNameString]];
+	
+	// Save the list
+	[[NSUserDefaults standardUserDefaults] setObject:genderLists forKey:@"CharacterGender"];
+}
 
 #pragma mark - Advanced Filtering
 
-- (IBAction)filterCharacters:(id)sender {
-	NSMutableArray* array = [NSMutableArray array];
+// WIP
+
+- (IBAction)toggleFilterView:(id)sender {
+	NSButton *button = (NSButton*)sender;
 	
-	[self.analysis setupScript:[self.parser lines] scenes:_flatOutline];
-	array = [self.analysis scenesWithCharacter:@"IIRIS" onlyDialogue:NO];
+	if (button.state == NSControlStateValueOn) {
+		[self.filterViewHeight setConstant:75.0];
+	} else {
+		[_filterViewHeight setConstant:0.0];
+	}
+}
+- (void)hideFilterView {
+	[_filterViewHeight setConstant:0.0];
+}
+
+- (IBAction)toggleColorFilter:(id)sender {
+	ColorCheckbox *button = (ColorCheckbox*)sender;
+		
+	if (button.state == NSControlStateValueOn) {
+		// Apply color filter
+		[self addColorFilter:button.colorName];
+        [_filters addColorFilter:button.colorName];
+	} else {
+		[self removeColorFilter:button.colorName];
+        [_filters removeColorFilter:button.colorName];
+	}
 	
-	[_filteredOutline removeAllObjects];
-	_filteredOutline = array;
-	
+    // Hide / show button to reset filters
+    if ([_filters filterColor]) [_resetColorFilterButton setHidden:NO]; else [_resetColorFilterButton setHidden:YES];
+    
+    // Reload outline and set visual masks to apply the filter
+	[self reloadOutline];
 	[self maskScenes];
+}
+- (void)addColorFilter:(NSString*)color {
+	NSInteger index = [_colorFilters indexOfObject:color];
+	if (index == NSNotFound) {
+		[_colorFilters addObject:color];
+	}
+}
+- (void)removeColorFilter:(NSString*)color {
+	NSInteger index = [_colorFilters indexOfObject:color];
 	
-	if (_outlineViewVisible) [self.outlineView reloadData];
+	if (index != NSNotFound) {
+		[_colorFilters removeObjectAtIndex:index];
+	}
+}
+- (IBAction)resetColorFilters:(id)sender {
+    [_filters.colors removeAllObjects];
+    
+    // Read more about this (and my political views) in the property declarations
+    [_redCheck setState:NSControlStateValueOff];
+    [_blueCheck setState:NSControlStateValueOff];
+    [_greenCheck setState:NSControlStateValueOff];
+    [_orangeCheck setState:NSControlStateValueOff];
+    [_cyanCheck setState:NSControlStateValueOff];
+    [_brownCheck setState:NSControlStateValueOff];
+    [_magentaCheck setState:NSControlStateValueOff];
+    [_pinkCheck setState:NSControlStateValueOff];
+    
+    // Reload outline & reset masks
+    [self reloadOutline];
+    [self maskScenes];
+    
+    // Hide the button
+    [_resetColorFilterButton setHidden:YES];
+}
+
+- (IBAction)filterByCharacter:(id)sender {
+	NSString *characterName = _characterBox.selectedItem.title;
+	[_filters setScript:self.parser.lines scenes:[self getOutlineItems]];
+	
+	if ([characterName isEqualToString:@" "] || [characterName length] == 0) {
+        [self resetCharacterFilter:nil];
+		return;
+	}
+
+	[_filters byCharacter:characterName];
+    
+    // Reload outline and set visual masks to apply the filter
+	[self reloadOutline];
+	[self maskScenes];
+    
+    // Show the button to reset character filter
+    [_resetCharacterFilterButton setHidden:NO];
+}
+
+- (IBAction)resetCharacterFilter:(id)sender {
+    [_filters resetScenes];
+    _filters.character = @"";
+	
+    [self reloadOutline];
+	[self maskScenes];
+    
+    // Hide the button to reset filter
+    [_resetCharacterFilterButton setHidden:YES];
+    
+    // Select the first item (hopefully it exists by now)
+    [_characterBox selectItem:[_characterBox.itemArray objectAtIndex:0]];
 }
 
 - (void) maskScenes {
@@ -3409,6 +3662,111 @@ static NSString *forceLyricsSymbol = @"~";
 	[self.textView setNeedsDisplay:YES];
 }
 
+
+#pragma mark - Pagination
+
+/*
+ 
+ Let's make a couple of things clear:
+ - this probably will never make it into the main branch
+ - this is a complete waste of time
+ 
+ Right now, all my ideas are very CPU-inefficient and useless. The thing is, I should probably make a custom object that acts as NSTextView with a custom NSLayoutManager. I really don't know how to do it, especially as I don't want comments etc. to count to page heights. 
+
+ */
+
+- (void)paginate {
+	[self.textView.pageBreaks removeAllObjects];
+	
+	double height = 0;
+	double printHeight = 0;
+	double pageHeight = self.printInfo.paperSize.height - 24;
+	NSInteger pages = 0;
+	
+	Line* prevLine;
+	
+	for (Line* line in self.parser.lines) {
+		NSRange characterRange = NSMakeRange(line.position, [line.string length]);
+		NSRange glyphRange = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+		NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:glyphRange inTextContainer:[self.textView textContainer]];
+		
+		// Add the rect height to TOTAL HEIGHT.
+		height += rect.size.height;
+	
+		if (prevLine.type == empty && line.type == empty) continue;
+		else if ([line omited]) continue;
+		
+		// Don't add invisible elements to print height
+		switch (line.type) {
+			case titlePageTitle:
+			case titlePageAuthor:
+			case titlePageCredit:
+			case titlePageSource:
+			case titlePageContact:
+			case titlePageDraftDate:
+			case titlePageUnknown:
+			case doubleDialogueCharacter:
+			case doubleDialogueParenthetical:
+			case doubleDialogue:
+				continue;
+				break;
+			default:
+				printHeight += rect.size.height;
+				
+				if (printHeight > pageHeight) {
+					pages++;
+					double difference = printHeight - pageHeight;
+					printHeight = difference;
+					
+					[self.textView.pageBreaks addObject:[NSNumber numberWithDouble:height - difference]];
+				}
+		}
+		
+		prevLine = line;
+	}
+
+	
+	/*
+	double height = 0;
+	double pageHeight = self.printInfo.paperSize.height;
+	double position = 0;
+	double fontSize = 14;
+	NSInteger pages = 1;
+	
+	[self.textView.pageBreaks removeAllObjects];
+	
+	Line* prevLine;
+	for (Line* line in [self.parser lines]) {
+				
+		if (line.type == empty && prevLine.type == empty) {
+			// Add to position, even if we won't display the element
+			position += fontSize;
+		}
+		else if (line.type == empty && prevLine.type != empty) {
+			height += fontSize;
+			position += fontSize;
+		} else {
+			height += line.height * fontSize;
+			position += line.height * fontSize;
+		}
+		
+		if (height > pageHeight) {
+			height = 0;
+			pages++;
+			
+			NSLog(@"-----------------");
+			
+			// Add line break
+			[self.textView.pageBreaks addObject:[NSNumber numberWithDouble:position]];
+		}
+		
+		NSLog(@"h %f - %@ - %@", height, [line typeAsString], line.string);
+
+		
+		if (line.height > 0) prevLine = line;
+	}
+	 */
+}
 
 #pragma mark - Title page editor
 
@@ -3538,6 +3896,23 @@ static NSString *forceLyricsSymbol = @"~";
 	}
 	
 }
+
+#pragma mark - touchbar buttons
+
+- (IBAction)nextScene:(id)sender {
+	OutlineScene *scene = [self getNextScene];
+	if (scene) {
+		[self scrollToScene:scene];
+	} else if (!scene && [_flatOutline count]) {
+		// We were not inside a scene. Move to next one if possible.
+		[self scrollToScene:[_flatOutline objectAtIndex:0]];
+	}
+}
+- (IBAction)previousScene:(id)sender {
+	OutlineScene *scene = [self getPreviousScene];
+	if (scene) [self scrollToScene:scene];
+}
+
 
 #pragma mark - scroll listeners
 

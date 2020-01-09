@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatOutlineView : NSOutlineView
 
+@property (weak) IBOutlet NSTouchBar *touchBar;
 @property NSInteger currentScene;
 
 @end

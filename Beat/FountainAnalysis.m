@@ -6,6 +6,27 @@
 //  Copyright © 2019 KAPITAN!. All rights reserved.
 //
 
+/*
+ 
+ This module creates an analysis of the Fountain script. It's a bit convoluted.
+ The gender analysis relies on an external dictionary, ie. { "character": "gender" }
+ 
+ Usage:
+ FountainAnalysis *analysis = [[FountainAnalysis init] alloc];
+ [analysis setupScript:lines scenes:scenes];
+ [analysis setupScript:lines scenes:scenes genders:genders];
+ 
+ (lines: NSArray with Line objects, scenes: NSArray with OutlineScene objects, genders: NSDictionary { name: gender })
+ 
+ // Get JSON string for everything
+ NSString *json = [analysis getJSON];
+ 
+ // Get scenes with lines for a certain character
+ NSMutableArray *scenes = [analysis scenesWithCharacter:@"Name" onlyDialogue:YES];
+ 
+ 
+ */
+
 #import <Foundation/Foundation.h>
 #import "FountainAnalysis.h"
 #import "NSString+Whitespace.h"
@@ -23,6 +44,12 @@
 - (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes {
 	_lines = lines;
 	_scenes = scenes;
+}
+
+- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes characterGenders:(NSDictionary *)genders {
+	_lines = lines;
+	_scenes = scenes;
+	_genders = genders;
 }
 
 - (void) createReport {
@@ -122,6 +149,14 @@
 - (NSString*)createJSON {
 	// JSON BEGIN
 	NSMutableString * json = [NSMutableString stringWithString:@"{"];
+	
+	// JSON genders --------------------------------------------
+	
+	[json appendString:@"genders:{"];
+	for (NSString *character in _genders) {
+		[json appendFormat:@"\"%@\": '%@',", character, _genders[character]];
+	}
+	[json appendString:@"},"];
 	
 	// JSON characters --------------------------------------------------------
 	[json appendString:@"characters:{"];

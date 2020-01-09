@@ -7,6 +7,11 @@
 
 //  Relased under GPL
 
+/*
+ 
+ This code is mostly based on Hendrik Noeller's work. It is heavily modified for Beat, and is all the time more reliable.
+ 
+ */
 
 #import "ContinousFountainParser.h"
 #import "Line.h"
@@ -361,6 +366,9 @@
 		
 		line.color = [self colorForHeading:line];
     }
+	
+	// Count visual height for the element (in lines)
+	// [line setElementHeight];
 }
 
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index
@@ -685,10 +693,22 @@
 
 - (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length
 {
+	// Uh, Beat scene coloring (ie. note ranges) messed this unichar array lookup.
+	
     NSUInteger backNumberIndex = NSNotFound;
+	int note = 0;
+	
     for(NSInteger i = length - 1; i >= 0; i--) {
         char c = string[i];
-        if (c == ' ') continue;
+		
+		// Exclude note ranges: [[ Note ]]
+		if (c == ' ') continue;
+		if (c == ']' && note < 2) { note++; continue; }
+		if (c == '[' && note > 0) { note--; continue; }
+		
+		// Inside a note range
+		if (note == 2) continue;
+		
         if (backNumberIndex == NSNotFound) {
             if (c == '#') backNumberIndex = i;
             else break;
@@ -698,6 +718,7 @@
             }
         }
     }
+	
     return NSMakeRange(0, 0);
 }
 
@@ -806,6 +827,12 @@
 	return nil;
 }
 
+/*
+ 
+ This is super inefficient, I guess. Sorry.
+ 
+ */
+
 - (void) createOutline
 {
 	[_outline removeAllObjects];
@@ -844,7 +871,7 @@
 				}
 				
 				NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
-				note =  [note substringWithRange:noteRange];
+				note = [note substringWithRange:noteRange];
 				
 				if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN] == true) {
 					if ([note length] > [@COLOR_PATTERN length] + 1) {
@@ -856,7 +883,7 @@
 			}];
 			
 			if (line.type == heading) {
-				// Check if the scene is omited
+				// Check if the scene is omited (inside omit block: /* */)
 				__block bool omited = false;
 				[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 					//NSString * omitedLine = [line.string substringWithRange:range];

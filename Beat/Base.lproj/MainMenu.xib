@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15702" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14490.70"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15702"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -133,29 +133,48 @@
                                     <action selector="preview:" target="-1" id="Wir-n0-gpi"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Print…" keyEquivalent="p" id="aTl-1u-JFS">
+                                <connections>
+                                    <action selector="printDocument:" target="-1" id="qaZ-4w-aoO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="zwa-xu-33d"/>
+                            <menuItem title="Import" id="G4e-G3-Hfz">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Import" id="xR8-x2-hNB">
+                                    <items>
+                                        <menuItem title="Import Final Draft..." id="bYQ-u3-P9F">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="importFDX:" target="-1" id="5rp-Z5-vYR"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
                             <menuItem title="Export" id="RGT-hK-aoo">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Export" id="o7H-J0-CK2">
                                     <items>
-                                        <menuItem title="PDF…" id="qUE-cb-x1G">
+                                        <menuItem title="PDF" id="qUE-cb-x1G">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportPDF:" target="-1" id="C88-0f-QPn"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="HTML…" id="gFk-1w-5jg">
+                                        <menuItem title="HTML…" hidden="YES" id="gFk-1w-5jg">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportHTML:" target="-1" id="uwn-TO-nla"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="FDX…" id="C9z-84-Cmq">
+                                        <menuItem title="Final Draft" id="C9z-84-Cmq">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportFDX:" target="-1" id="F6e-vG-CJO"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Outline..." id="lAo-B9-uaU">
+                                        <menuItem title="Outline" hidden="YES" id="lAo-B9-uaU">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportOutline:" target="-1" id="HXB-My-Vhk"/>
@@ -165,11 +184,6 @@
                                 </menu>
                                 <connections>
                                     <action selector="export:" target="-1" id="TfW-38-X9Y"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Print…" keyEquivalent="p" id="aTl-1u-JFS">
-                                <connections>
-                                    <action selector="printDocument:" target="-1" id="qaZ-4w-aoO"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -190,6 +204,19 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eOw-SD-I2a"/>
+                            <menuItem title="Previous Scene" keyEquivalent="" id="jdx-FP-GzA">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="previousScene:" target="-1" id="zHh-Aa-XHS"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Next Scene" keyEquivalent="" id="d5r-XM-q5U">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="nextScene:" target="-1" id="24F-yl-Y0s"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Rz1-48-Uiu"/>
                             <menuItem title="Cut" keyEquivalent="x" id="Mrv-cs-HZz">
                                 <connections>
                                     <action selector="cut:" target="-1" id="TYw-Xh-DdI"/>
@@ -398,6 +425,12 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Format" id="O6A-iY-8hf">
                         <items>
+                            <menuItem title="Title Page Editor" id="ce9-gT-GJX">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="editTitlePage:" target="-1" id="xEW-Og-73S"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Add Title Page" id="kNr-WO-rzd">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -532,12 +565,6 @@ DQ
                                     <action selector="showAnalysis:" target="-1" id="Her-fk-4dH"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Title Page Editor" id="ce9-gT-GJX">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="editTitlePage:" target="-1" id="xEW-Og-73S"/>
-                                </connections>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="UNn-da-tvs"/>
                             <menuItem title="Show Scene Numbers" state="on" id="5Rh-Kl-j5e">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -666,17 +693,17 @@ DQ
         </customObject>
         <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Tq0-bd-4zX">
             <windowStyleMask key="styleMask" closable="YES" miniaturizable="YES"/>
-            <rect key="contentRect" x="196" y="240" width="564" height="355"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="contentRect" x="196" y="240" width="564" height="367"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="vpm-hd-eID">
-                <rect key="frame" x="0.0" y="0.0" width="564" height="355"/>
+                <rect key="frame" x="0.0" y="0.0" width="564" height="367"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <box fixedFrame="YES" boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="i7G-pb-vjp">
-                        <rect key="frame" x="0.0" y="39" width="579" height="316"/>
+                        <rect key="frame" x="0.0" y="41" width="579" height="326"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <view key="contentView" ambiguous="YES" id="e6r-ME-W5n">
-                            <rect key="frame" x="0.0" y="0.0" width="579" height="316"/>
+                            <rect key="frame" x="0.0" y="0.0" width="579" height="326"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C6Z-Uz-f8Q">
@@ -707,7 +734,7 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SZP-ku-Ryr">
-                                    <rect key="frame" x="22" y="84" width="202" height="216"/>
+                                    <rect key="frame" x="22" y="94" width="202" height="216"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="B_256" id="TXx-4z-e0c"/>
                                 </imageView>
@@ -715,24 +742,24 @@ DQ
                         </view>
                         <color key="fillColor" red="0.098039215690000001" green="0.1019607843" blue="0.10980392156862745" alpha="1" colorSpace="calibratedRGB"/>
                     </box>
-                    <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="40" horizontalPageScroll="10" verticalLineScroll="40" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Fv5-7P-sl9">
-                        <rect key="frame" x="247" y="39" width="317" height="316"/>
+                    <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="55" horizontalPageScroll="10" verticalLineScroll="55" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Fv5-7P-sl9">
+                        <rect key="frame" x="247" y="41" width="317" height="326"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
-                            <rect key="frame" x="0.0" y="0.0" width="317" height="316"/>
+                            <rect key="frame" x="0.0" y="0.0" width="317" height="326"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="14" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
-                                    <rect key="frame" x="0.0" y="0.0" width="317" height="316"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
+                                    <rect key="frame" x="0.0" y="0.0" width="317" height="326"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="0.0" height="23"/>
                                     <color key="backgroundColor" red="0.1176470588" green="0.1215686275" blue="0.12941176469999999" alpha="1" colorSpace="calibratedRGB"/>
                                     <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                     <color key="gridColor" white="0.18347161091549299" alpha="1" colorSpace="calibratedWhite"/>
                                     <tableColumns>
-                                        <tableColumn width="314" minWidth="16" maxWidth="1000" id="fG0-pM-cZd">
+                                        <tableColumn width="314" minWidth="20" maxWidth="1000" id="fG0-pM-cZd">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="message" size="11"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
@@ -741,7 +768,6 @@ DQ
                                                 <color key="textColor" white="0.78987165178571428" alpha="1" colorSpace="calibratedWhite"/>
                                                 <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>
                                             </textFieldCell>
-                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         </tableColumn>
                                     </tableColumns>
                                     <connections>
@@ -763,7 +789,7 @@ DQ
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O3j-Ar-9mq">
-                        <rect key="frame" x="351" y="7" width="104" height="25"/>
+                        <rect key="frame" x="347" y="8" width="103" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="Browse" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9GZ-Iv-cVZ">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -774,7 +800,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jcl-C2-5kX">
-                        <rect key="frame" x="16" y="7" width="114" height="25"/>
+                        <rect key="frame" x="12" y="8" width="113" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="Tutorial" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="U0e-4t-f7p">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -785,7 +811,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EgL-h8-fPx">
-                        <rect key="frame" x="461" y="7" width="97" height="25"/>
+                        <rect key="frame" x="457" y="8" width="96" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="New" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Lab-Kg-ETM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -796,11 +822,11 @@ DQ
                         </connections>
                     </button>
                     <popUpButton hidden="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4MG-VJ-Mc8">
-                        <rect key="frame" x="138" y="8" width="157" height="23"/>
+                        <rect key="frame" x="133" y="9" width="157" height="23"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="roundTextured" title="Tutorial &amp; Templates" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" autoenablesItems="NO" selectedItem="yd0-pY-Koc" id="iQD-AK-x7E">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="menu"/>
+                            <font key="font" metaFont="system"/>
                             <menu key="menu" autoenablesItems="NO" id="A8c-hW-dnP">
                                 <items>
                                     <menuItem title="Tutorial &amp; Templates" hidden="YES" id="yd0-pY-Koc"/>
@@ -812,7 +838,7 @@ DQ
                     </popUpButton>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="698" y="335.5"/>
+            <point key="canvasLocation" x="698" y="329.5"/>
         </window>
         <customObject id="F4J-ev-lWW" customClass="DataSource">
             <connections>
@@ -852,7 +878,7 @@ DQ
                                                     <fragment content="Test">
                                                         <attributes>
                                                             <color key="NSColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                            <font key="NSFont" size="12" name="Helvetica"/>
+                                                            <font key="NSFont" metaFont="user"/>
                                                             <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0" allowsDefaultTighteningForTruncation="NO"/>
                                                         </attributes>
                                                     </fragment>
@@ -890,7 +916,7 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bYE-jw-Ser">
-                                    <rect key="frame" x="14" y="16" width="131" height="15"/>
+                                    <rect key="frame" x="14" y="16" width="131" height="12"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Released under GPL license" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="KfW-I1-8kS">
                                         <font key="font" size="10" name="HelveticaNeue"/>
                                         <color key="textColor" white="0.2770926339" alpha="1" colorSpace="calibratedWhite"/>
