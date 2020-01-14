@@ -46,7 +46,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>4208</string>
+	<string>4285</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
@@ -61,13 +61,52 @@
 	<string>https://kapitan.fi/beat/xml/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array/>
+			<key>UTTypeDescription</key>
+			<string></string>
+			<key>UTTypeIconFile</key>
+			<string></string>
+			<key>UTTypeIdentifier</key>
+			<string></string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array/>
+				<key>public.mime-type</key>
+				<array/>
+			</dict>
+		</dict>
+	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
 			<key>UTTypeDescription</key>
-			<string></string>
+			<string>Fountain Screenplay</string>
+			<key>UTTypeIconFile</key>
+			<string>BeatDocumentIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>fi.KAPITAN.fountain</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://fountain.io</string>
 			<key>UTTypeTagSpecification</key>
-			<dict/>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>fountain</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>text/plain</string>
+				</array>
+			</dict>
 		</dict>
 	</array>
 </dict>

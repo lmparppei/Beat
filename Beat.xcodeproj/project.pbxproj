@@ -27,7 +27,28 @@
 		B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */; };
 		B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */; };
 		B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
+		B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
+		B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
+		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
+		B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62ADC7823CCCE560015563A /* PreviewViewController.m */; };
+		B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B62ADC7A23CCCE560015563A /* PreviewViewController.xib */; };
+		B62ADC8123CCCE560015563A /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B62ADC8F23CCE20D0015563A /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC8E23CCE20D0015563A /* QuickLook.framework */; };
+		B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC8E23CCE20D0015563A /* QuickLook.framework */; };
+		B62ADC9423CCE46C0015563A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B62ADC7D23CCCE560015563A /* Info.plist */; };
+		B62ADC9523CCEF0F0015563A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B61E19E1D6A7000489C4 /* WebKit.framework */; };
+		B62ADC9623CCF0110015563A /* FNScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65819E1E8CA000489C4 /* FNScript.m */; };
+		B62ADC9723CCF0250015563A /* FastFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65019E1E8CA000489C4 /* FastFountainParser.m */; };
+		B62ADC9823CCF0270015563A /* FNElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65219E1E8CA000489C4 /* FNElement.m */; };
+		B62ADC9923CCF02A0015563A /* FNPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65619E1E8CA000489C4 /* FNPaginator.m */; };
+		B62ADC9A23CCF02E0015563A /* FountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65A19E1E8CA000489C4 /* FountainParser.m */; };
+		B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65C19E1E8CA000489C4 /* FountainRegexes.m */; };
+		B62ADC9C23CCF0430015563A /* FountainWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65E19E1E8CA000489C4 /* FountainWriter.m */; };
+		B62ADC9E23CCF7790015563A /* NSString+Whitespace.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7102218B389005B8447 /* NSString+Whitespace.m */; };
+		B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
+		B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
+		B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B6482F7922195BEC00175927 /* NCRAutocompleteTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */; };
 		B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B64E1B2D227B08B2008DF194 /* CenteredClipView.m */; };
 		B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
@@ -87,9 +108,27 @@
 			remoteGlobalIDString = B138B57219E1C973000489C4;
 			remoteInfo = Writer;
 		};
+		B62ADC7F23CCCE560015563A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B138B56B19E1C973000489C4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B62ADC7223CCCE560015563A;
+			remoteInfo = fountainQuickLook;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		B62ADC8223CCCE560015563A /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B62ADC8123CCCE560015563A /* fountainQuickLook.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B6F4A2D0221EE96D0065D9CB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -150,8 +189,20 @@
 		B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold.ttf"; sourceTree = "<group>"; };
 		B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Italic.ttf"; sourceTree = "<group>"; };
 		B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime.ttf"; sourceTree = "<group>"; };
+		B6055CEB23CDBA3800F7D54C /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
+		B6055CEC23CDBA3800F7D54C /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		B624C144234BDE7100C438C7 /* BeatOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatOutlineView.h; path = Writer/BeatOutlineView.h; sourceTree = SOURCE_ROOT; };
 		B624C145234BDE7100C438C7 /* BeatOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatOutlineView.m; path = Writer/BeatOutlineView.m; sourceTree = SOURCE_ROOT; };
+		B62ADC7323CCCE560015563A /* fountainQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fountainQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B62ADC7423CCCE560015563A /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		B62ADC7723CCCE560015563A /* PreviewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreviewViewController.h; sourceTree = "<group>"; };
+		B62ADC7823CCCE560015563A /* PreviewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PreviewViewController.m; sourceTree = "<group>"; };
+		B62ADC7B23CCCE560015563A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/PreviewViewController.xib; sourceTree = "<group>"; };
+		B62ADC7D23CCCE560015563A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B62ADC7E23CCCE560015563A /* fountainQuickLook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fountainQuickLook.entitlements; sourceTree = "<group>"; };
+		B62ADC8E23CCE20D0015563A /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		B645A97D23CD03CC00F13710 /* NSString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Regex.h"; path = "Beat/NSString+Regex/NSString+Regex.h"; sourceTree = SOURCE_ROOT; };
+		B645A97E23CD03CC00F13710 /* NSString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Regex.m"; path = "Beat/NSString+Regex/NSString+Regex.m"; sourceTree = SOURCE_ROOT; };
 		B6482F7722195BEC00175927 /* NCRAutocompleteTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NCRAutocompleteTextView.h; path = Beat/NCRTextField/NCRAutocompleteTextView.h; sourceTree = SOURCE_ROOT; };
 		B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NCRAutocompleteTextView.m; path = Beat/NCRTextField/NCRAutocompleteTextView.m; sourceTree = SOURCE_ROOT; };
 		B64E1B2D227B08B2008DF194 /* CenteredClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CenteredClipView.m; path = Beat/CenteredClipView/CenteredClipView.m; sourceTree = SOURCE_ROOT; };
@@ -228,6 +279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */,
+				B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */,
 				B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */,
 				B138B61F19E1D6A7000489C4 /* WebKit.framework in Frameworks */,
 			);
@@ -237,6 +289,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B62ADC7023CCCE560015563A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */,
+				B62ADC8F23CCE20D0015563A /* QuickLook.framework in Frameworks */,
+				B62ADC9523CCEF0F0015563A /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +336,8 @@
 				B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */,
 				B6632B322317107300100A44 /* NSMutableString+Regex.h */,
 				B6632B33231710CF00100A44 /* NSMutableString+Regex.m */,
+				B645A97D23CD03CC00F13710 /* NSString+Regex.h */,
+				B645A97E23CD03CC00F13710 /* NSString+Regex.m */,
 			);
 			name = Parsing;
 			sourceTree = "<group>";
@@ -287,8 +351,10 @@
 				B138B58C19E1C974000489C4 /* WriterTests */,
 				B138B64E19E1E8CA000489C4 /* Fountain */,
 				B138B66119E1E8CA000489C4 /* RegexKitLite */,
+				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
 				B6B270652380224E00B05C8F /* LCS */,
 				B1F04ED31C88AC99001C4D27 /* CourierPrime */,
+				B62ADC7623CCCE560015563A /* fountainQuickLook */,
 				B138B62419E1D8A4000489C4 /* Frameworks */,
 				B138B57419E1C973000489C4 /* Products */,
 				B67D1E512265D57400644CB1 /* Beat-Bridging-Header.h */,
@@ -301,6 +367,7 @@
 			children = (
 				B138B57319E1C973000489C4 /* Beat.app */,
 				B138B58919E1C974000489C4 /* BeatTests.xctest */,
+				B62ADC7323CCCE560015563A /* fountainQuickLook.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -373,9 +440,11 @@
 		B138B62419E1D8A4000489C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B62ADC8E23CCE20D0015563A /* QuickLook.framework */,
 				B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */,
 				B138B62019E1D6FA000489C4 /* Cocoa.framework */,
 				B138B61E19E1D6A7000489C4 /* WebKit.framework */,
+				B62ADC7423CCCE560015563A /* Quartz.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -440,6 +509,15 @@
 			path = CourierPrime;
 			sourceTree = "<group>";
 		};
+		B6055CEA23CDBA3800F7D54C /* RegExCategories */ = {
+			isa = PBXGroup;
+			children = (
+				B6055CEB23CDBA3800F7D54C /* RegExCategories.m */,
+				B6055CEC23CDBA3800F7D54C /* RegExCategories.h */,
+			);
+			path = RegExCategories;
+			sourceTree = "<group>";
+		};
 		B610CFDD23ACB70B00636634 /* OutlineView */ = {
 			isa = PBXGroup;
 			children = (
@@ -447,6 +525,18 @@
 				B624C145234BDE7100C438C7 /* BeatOutlineView.m */,
 			);
 			name = OutlineView;
+			sourceTree = "<group>";
+		};
+		B62ADC7623CCCE560015563A /* fountainQuickLook */ = {
+			isa = PBXGroup;
+			children = (
+				B62ADC7723CCCE560015563A /* PreviewViewController.h */,
+				B62ADC7823CCCE560015563A /* PreviewViewController.m */,
+				B62ADC7A23CCCE560015563A /* PreviewViewController.xib */,
+				B62ADC7D23CCCE560015563A /* Info.plist */,
+				B62ADC7E23CCCE560015563A /* fountainQuickLook.entitlements */,
+			);
+			path = fountainQuickLook;
 			sourceTree = "<group>";
 		};
 		B6482F7622195BD300175927 /* NCRTextView */ = {
@@ -566,10 +656,12 @@
 				B138B57119E1C973000489C4 /* Resources */,
 				B6F4A2D0221EE96D0065D9CB /* CopyFiles */,
 				B6B6358E2222C8C8003159AF /* ShellScript */,
+				B62ADC8223CCCE560015563A /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B62ADC8023CCCE560015563A /* PBXTargetDependency */,
 			);
 			name = Beat;
 			productName = Writer;
@@ -593,6 +685,23 @@
 			productName = WriterTests;
 			productReference = B138B58919E1C974000489C4 /* BeatTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B62ADC7223CCCE560015563A /* fountainQuickLook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B62ADC8523CCCE560015563A /* Build configuration list for PBXNativeTarget "fountainQuickLook" */;
+			buildPhases = (
+				B62ADC6F23CCCE560015563A /* Sources */,
+				B62ADC7023CCCE560015563A /* Frameworks */,
+				B62ADC7123CCCE560015563A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = fountainQuickLook;
+			productName = fountainQuickLook;
+			productReference = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -623,6 +732,11 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = B138B57219E1C973000489C4;
 					};
+					B62ADC7223CCCE560015563A = {
+						CreatedOnToolsVersion = 11.3;
+						DevelopmentTeam = GV6F4CSRVF;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = B138B56E19E1C973000489C4 /* Build configuration list for PBXProject "Beat" */;
@@ -640,6 +754,7 @@
 			targets = (
 				B138B57219E1C973000489C4 /* Beat */,
 				B138B58819E1C974000489C4 /* BeatTests */,
+				B62ADC7223CCCE560015563A /* fountainQuickLook */,
 			);
 		};
 /* End PBXProject section */
@@ -682,6 +797,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B62ADC7123CCCE560015563A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62ADC9423CCE46C0015563A /* Info.plist in Resources */,
+				B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -718,6 +842,7 @@
 				B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
+				B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */,
 				B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
@@ -732,6 +857,7 @@
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
 				B138B66A19E1E8CA000489C4 /* FountainParser.m in Sources */,
+				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6482F7922195BEC00175927 /* NCRAutocompleteTextView.m in Sources */,
 				B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */,
 				B138B66919E1E8CA000489C4 /* FNScript.m in Sources */,
@@ -758,6 +884,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B62ADC6F23CCCE560015563A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B62ADC9A23CCF02E0015563A /* FountainParser.m in Sources */,
+				B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */,
+				B62ADC9823CCF0270015563A /* FNElement.m in Sources */,
+				B62ADC9623CCF0110015563A /* FNScript.m in Sources */,
+				B62ADC9923CCF02A0015563A /* FNPaginator.m in Sources */,
+				B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */,
+				B62ADC9C23CCF0430015563A /* FountainWriter.m in Sources */,
+				B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */,
+				B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */,
+				B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */,
+				B62ADC9E23CCF7790015563A /* NSString+Whitespace.m in Sources */,
+				B62ADC9723CCF0250015563A /* FastFountainParser.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -766,9 +911,22 @@
 			target = B138B57219E1C973000489C4 /* Beat */;
 			targetProxy = B138B58A19E1C974000489C4 /* PBXContainerItemProxy */;
 		};
+		B62ADC8023CCCE560015563A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B62ADC7223CCCE560015563A /* fountainQuickLook */;
+			targetProxy = B62ADC7F23CCCE560015563A /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		B62ADC7A23CCCE560015563A /* PreviewViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B62ADC7B23CCCE560015563A /* Base */,
+			);
+			name = PreviewViewController.xib;
+			sourceTree = "<group>";
+		};
 		B69A928D2319254200FE6A3E /* About.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1001,6 +1159,61 @@
 			};
 			name = Release;
 		};
+		B62ADC8323CCCE560015563A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = fountainQuickLook/fountainQuickLook.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = GV6F4CSRVF;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = fountainQuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B62ADC8423CCCE560015563A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = fountainQuickLook/fountainQuickLook.entitlements;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = GV6F4CSRVF;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = fountainQuickLook/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1027,6 +1240,15 @@
 			buildConfigurations = (
 				B138B59719E1C974000489C4 /* Debug */,
 				B138B59819E1C974000489C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B62ADC8523CCCE560015563A /* Build configuration list for PBXNativeTarget "fountainQuickLook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B62ADC8323CCCE560015563A /* Debug */,
+				B62ADC8423CCCE560015563A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

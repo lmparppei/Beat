@@ -71,6 +71,7 @@
 {
     self.filename = nil;
     FastFountainParser *parser = [[FastFountainParser alloc] initWithString:string];
+	
     self.elements = parser.elements;
     self.titlePage = parser.titlePage;
 }

@@ -23,9 +23,22 @@
 //  IN THE SOFTWARE.
 //
 
+/*
+ 
+ A note from the author of Beat:
+ 
+ I have migrated from RegexKitLite to RegExCategories by bendytree. Hopefully everything works and I didn't break anything.
+ 
+ The same operation should be done to all supporting Fountain files, but right now I'm not up for the task, unfortunately. RegexKitLite is a mess and hasn't been updated in over 10 years. I managed to modernize its spinlocks and stuff, but that alone made me realize that it might be antiquated technology.
+
+ */
+
 #import "FastFountainParser.h"
 #import "FNElement.h"
-#import "RegexKitLite.h"
+//#import "RegexKitLite.h"
+
+// Migration away from regexkitlite
+#import "RegExCategories.h"
 
 static NSString * const kInlinePattern = @"^([^\\t\\s][^:]+):\\s*([^\\t\\s].*$)";
 static NSString * const kDirectivePattern = @"^([^\\t\\s][^:]+):([\\t\\s]*$)";
@@ -68,10 +81,19 @@ static NSString * const kContentPattern = @"";
 
 - (void)parseContents:(NSString *)contents
 {
+	// WIP
+	// This is being reworked so that it won't use RegexKitLite.h
+	
     // Trim leading newlines from the document
-    contents = [contents stringByReplacingOccurrencesOfRegex:@"^\\s*" withString:@""];
-    contents = [contents stringByReplacingOccurrencesOfRegex:@"\\r\\n|\\r|\\n" withString:@"\n"];
+
+	//contents = [contents stringByReplacingOccurrencesOfRegex:@"^\\s*" withString:@""];
+	contents = [contents replace:RX(@"^\\s*") with:@""];
+	
+	//contents = [contents stringByReplacingOccurrencesOfRegex:@"\\r\\n|\\r|\\n" withString:@"\n"];
+	contents = [contents replace:RX(@"\\r\\n|\\r|\\n") with:@"\n"];
+	
     contents = [NSString stringWithFormat:@"%@\n\n", contents];
+	
     
     // Find the first newline
     NSRange firstBlankLineRange = [contents rangeOfString:@"\n\n"];
@@ -85,9 +107,9 @@ static NSString * const kContentPattern = @"";
     NSString *openKey = @"";
     NSMutableArray *openValues = [NSMutableArray array];
     NSArray *topLines = [topOfDocument componentsSeparatedByString:@"\n"];
-    
+	
     for (NSString *line in topLines) {
-        if ([line isEqualToString:@""] || [line isMatchedByRegex:kDirectivePattern]) {
+        if ([line isEqualToString:@""] || [line isMatch:RX(kDirectivePattern)]) {
             foundTitlePage = YES;
 			
 			// If a key was open, close it
@@ -98,7 +120,7 @@ static NSString * const kContentPattern = @"";
 				[self.titlePage addObject:dict];
             }
             
-            openKey = [[line stringByMatching:kDirectivePattern capture:1] lowercaseString];
+            openKey = [[line firstMatch:RX(kDirectivePattern)] lowercaseString];
 			
 			if ([openKey isEqualToString:@"author"]) {
                 openKey = @"authors";
@@ -107,8 +129,9 @@ static NSString * const kContentPattern = @"";
 				openKey = @"contact";
 			}
         }
-        else if ([line isMatchedByRegex:kInlinePattern]) {
+        else if ([line isMatch:RX(kInlinePattern)]) {
             foundTitlePage = YES;
+			
             // If a key was open we want to close it
             if (![openKey isEqualToString:@""]) {
                 NSDictionary *dict = @{openKey: openValues};
@@ -117,8 +140,9 @@ static NSString * const kContentPattern = @"";
                 openValues = [NSMutableArray array];
             }
             
-            NSString *key = [[line stringByMatching:kInlinePattern capture:1] lowercaseString];
-            NSString *value = [line stringByMatching:kInlinePattern capture:2];
+			RxMatch *match = [line firstMatchWithDetails:RX(kInlinePattern)];
+            NSString *key = [((RxMatchGroup*)match.groups[1]).value lowercaseString];
+			NSString *value = ((RxMatchGroup*)match.groups[2]).value;
 				
             if ([key isEqualToString:@"author"]) {
                 key = @"authors";
@@ -211,7 +235,7 @@ static NSString * const kContentPattern = @"";
         
 		
         // Need to check for "empty" lines within dialogue -- denoted by two spaces inside a dialogue block
-        if (([line isMatchedByRegex:@"^\\s{2}$"]) && isInsideDialogueBlock) {
+        if (([line isMatch:RX(@"^\\s{2}$")]) && isInsideDialogueBlock) {
             newlinesBefore = 0;
             // Check to see if the previous element was a dialogue
             NSUInteger lastIndex = [self.elements count] - 1;
@@ -230,7 +254,7 @@ static NSString * const kContentPattern = @"";
             continue;
         }
         
-        if (([line isMatchedByRegex:@"^\\s{2,}$"])) {
+        if (([line isMatch:RX(@"^\\s{2,}$")])) {
             FNElement *element = [FNElement elementOfType:@"Action" text:line];
             [self.elements addObject:element];
             newlinesBefore = 0;
@@ -245,8 +269,8 @@ static NSString * const kContentPattern = @"";
         }
         
         // Open Boneyard            
-        if ([line isMatchedByRegex:@"^\\/\\*"]) {
-            if ([line isMatchedByRegex:@"\\*\\/\\s*$"]) {
+        if ([line isMatch:RX(@"^\\/\\*")]) {
+            if ([line isMatch:RX(@"\\*\\/\\s*$")]) {
                 NSString *text = [[line stringByReplacingOccurrencesOfString:@"/*" withString:@""] stringByReplacingOccurrencesOfString:@"*/" withString:@""];
                 isCommentBlock = NO;
                 FNElement *element = [FNElement elementOfType:@"Boneyard" text:text];
@@ -261,9 +285,9 @@ static NSString * const kContentPattern = @"";
         }
         
         // Close Boneyard
-        if ([line isMatchedByRegex:@"\\*\\/\\s*$"]) {
+        if ([line isMatch:RX(@"\\*\\/\\s*$")]) {
             NSString *text = [line stringByReplacingOccurrencesOfString:@"*/" withString:@""];
-            if (!text || [text isMatchedByRegex:@"^\\s*$"]) {
+            if (!text || [text isMatch:RX(@"^\\s*$")]) {
                 [commentText appendString:[text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
             }
             isCommentBlock = NO;
@@ -282,7 +306,7 @@ static NSString * const kContentPattern = @"";
         }
         
         // Page Breaks -- three or more '=' signs
-        if ([line isMatchedByRegex:@"^={3,}\\s*$"]) {
+        if ([line isMatch:RX(@"^={3,}\\s*$")]) {
             FNElement *element = [FNElement elementOfType:@"Page Break" text:line];
             [self.elements addObject:element];
             newlinesBefore = 0;
@@ -291,7 +315,10 @@ static NSString * const kContentPattern = @"";
         
         // Synopsis -- a single '=' at the start of the line
         if ([[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] > 0 && [[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] characterAtIndex:0] == '=') {
-            NSRange markupRange = [line rangeOfRegex:@"^\\s*={1}"];
+            
+			//NSRange markupRange = [line rangeOfRegex:@"^\\s*={1}"];
+			NSRange markupRange = [line firstMatchWithDetails:RX(@"^\\s*={1}")].range;
+			
             NSString *text = [line stringByReplacingCharactersInRange:markupRange withString:@""];
             FNElement *element = [FNElement elementOfType:@"Synopsis" text:text];
             [self.elements addObject:element];
@@ -299,7 +326,7 @@ static NSString * const kContentPattern = @"";
         }
         
         // Comment -- double brackets [[Comment]]
-        if (newlinesBefore > 0 && [line isMatchedByRegex:@"^\\s*\\[{2}\\s*([^\\]\\n])+\\s*\\]{2}\\s*$"]) {
+        if (newlinesBefore > 0 && [line isMatch:RX(@"^\\s*\\[{2}\\s*([^\\]\\n])+\\s*\\]{2}\\s*$")]) {
             NSString *text = [[[line stringByReplacingOccurrencesOfString:@"[[" withString:@""] stringByReplacingOccurrencesOfString:@"]]" withString:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             FNElement *element = [FNElement elementOfType:@"Comment" text:text];
             [self.elements addObject:element];
@@ -311,7 +338,7 @@ static NSString * const kContentPattern = @"";
             newlinesBefore = 0;
             
             // Get the depth of the section
-            NSRange markupRange = [line rangeOfRegex:@"^\\s*#+"];
+            NSRange markupRange = [line firstMatchWithDetails:RX(@"^\\s*#+")].range;
             NSUInteger depth = markupRange.length;
             
             // Cleanse the line
@@ -333,9 +360,9 @@ static NSString * const kContentPattern = @"";
             NSString *sceneNumber = nil;
             NSString *text = nil;
             // Check for scene numbers
-            if ([line isMatchedByRegex:@"#([^\\n#]*?)#\\s*$"]) {
-                sceneNumber = [line stringByMatching:@"#([^\\n#]*?)#\\s*$" capture:1];
-                text = [line stringByReplacingOccurrencesOfRegex:@"#([^\\n#]*?)#\\s*$" withString:@""];
+            if ([line isMatch:RX(@"#([^\\n#]*?)#\\s*$")]) {
+                sceneNumber = [line firstMatch:RX(@"#([^\\n#]*?)#\\s*$")];
+                text = [line replace:RX(@"#([^\\n#]*?)#\\s*$") with:@""];
                 text = [[text substringFromIndex:1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             }
             else {
@@ -351,14 +378,16 @@ static NSString * const kContentPattern = @"";
         }
         
         // Scene Headings
-        if (newlinesBefore > 0 && [line isMatchedByRegex:@"^(INT|EXT|EST|(I|INT)\\.?\\/(E|EXT)\\.?)[\\.\\-\\s][^\\n]+$" options:RKLCaseless inRange:NSMakeRange(0, line.length) error:nil]) {
+		Rx* sceneHeading = [Rx rx:@"^(INT|EXT|EST|(I|INT)\\.?\\/(E|EXT)\\.?)[\\.\\-\\s][^\\n]+$" ignoreCase:YES];
+		
+        if (newlinesBefore > 0 && [line isMatch:sceneHeading]) {
             newlinesBefore = 0;
             NSString *sceneNumber = nil;
             NSString *text = nil;
             // Check for scene numbers
-            if ([line isMatchedByRegex:@"#([^\\n#]*?)#\\s*$"]) {
-                sceneNumber = [line stringByMatching:@"#([^\\n#]*?)#\\s*$" capture:1];
-                text = [line stringByReplacingOccurrencesOfRegex:@"#([^\\n#]*?)#\\s*$" withString:@""];
+            if ([line isMatch:RX(@"#([^\\n#]*?)#\\s*$")]) {
+                sceneNumber = [line firstMatch:RX(@"#([^\\n#]*?)#\\s*$")];
+                text = [line replace:RX(@"#([^\\n#]*?)#\\s*$") with:@""];
             }
             else {
                 text = line;
@@ -375,14 +404,14 @@ static NSString * const kContentPattern = @"";
         // Transitions
         // We need to trim leading whitespace from the line because whitespace at the end of the line
         // nullifies Transitions.
-        if ([line isMatchedByRegex:@"[^a-z]*TO:$"]) {
+        if ([line isMatch:RX(@"[^a-z]*TO:$"])) {
             newlinesBefore = 0;
             FNElement *element = [FNElement elementOfType:@"Transition" text:line];
             [self.elements addObject:element];
             continue;
         }
         
-        NSString *lineWithTrimmedLeading = [line stringByReplacingOccurrencesOfRegex:@"^\\s*" withString:@""];
+        NSString *lineWithTrimmedLeading = [line replace:RX(@"^\\s*") with:@""];
         NSSet *transitions = [NSSet setWithArray:@[@"FADE OUT.", @"CUT TO BLACK.", @"FADE TO BLACK."]];
         if ([transitions containsObject:lineWithTrimmedLeading]) {
             newlinesBefore = 0;
@@ -414,7 +443,7 @@ static NSString * const kContentPattern = @"";
         }
         
         // Character
-        if (newlinesBefore > 0 && [line isMatchedByRegex:@"^[^a-z]+(\\(cont'd\\))?$"]) {
+        if (newlinesBefore > 0 && [line isMatch:RX(@"^[^a-z]+(\\(cont'd\\))?$")]) {
             // look ahead to see if the next line is blank
             NSUInteger nextIndex = index + 1;
             if (nextIndex < [lines count]) {
@@ -423,9 +452,9 @@ static NSString * const kContentPattern = @"";
                     newlinesBefore = 0;
                     FNElement *element = [FNElement elementOfType:@"Character" text:line];
                     
-                    if ([line isMatchedByRegex:@"\\^\\s*$"]) {
+                    if ([line isMatch:RX(@"\\^\\s*$")]) {
                         element.isDualDialogue = YES;
-                        element.elementText = [element.elementText stringByReplacingOccurrencesOfRegex:@"\\s*\\^\\s*$" withString:@""];
+                        element.elementText = [element.elementText replace:RX(@"\\s*\\^\\s*$") with:@""];
                         BOOL foundPreviousCharacter = NO;
                         NSInteger index = [self.elements count] - 1;
                         while ((index >= 0) && !foundPreviousCharacter) {
@@ -448,7 +477,7 @@ static NSString * const kContentPattern = @"";
         // Dialogue and Parentheticals
         if (isInsideDialogueBlock) {
             // Find out which type of element we have
-            if (newlinesBefore == 0 && [line isMatchedByRegex:@"^\\s*\\("]) {
+            if (newlinesBefore == 0 && [line isMatch:RX(@"^\\s*\\(")]) {
                 FNElement *element = [FNElement elementOfType:@"Parenthetical" text:line];
                 [self.elements addObject:element];
                 continue;

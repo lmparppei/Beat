@@ -170,6 +170,7 @@
         if (i > 1 && [element.elementType isEqualToString:@"Character"] && [element.elementText isMatchedByRegex:DUAL_DIALOGUE_PATTERN]) {
             element.isDualDialogue = YES;
             
+			NSLog(@"ok");
             // clean the ^ mark
             element.elementText = [element.elementText stringByReplacingOccurrencesOfRegex:@"\\s*\\^$" withString:@""];
             

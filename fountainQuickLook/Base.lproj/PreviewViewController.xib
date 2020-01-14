@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15702" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15702"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="15702"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="PreviewViewController">
+            <connections>
+                <outlet property="view" destination="c22-O7-iKe" id="NRM-P4-wb6"/>
+                <outlet property="webView" destination="GuR-Ac-Za6" id="bHy-SB-0Ub"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="c22-O7-iKe" userLabel="Preview View">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="631"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <wkWebView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GuR-Ac-Za6">
+                    <rect key="frame" x="0.0" y="0.0" width="480" height="631"/>
+                    <wkWebViewConfiguration key="configuration">
+                        <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                        <wkPreferences key="preferences"/>
+                    </wkWebViewConfiguration>
+                </wkWebView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="GuR-Ac-Za6" secondAttribute="bottom" id="D7m-53-qlu"/>
+                <constraint firstItem="GuR-Ac-Za6" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" id="K8N-ec-AO3"/>
+                <constraint firstItem="GuR-Ac-Za6" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" id="ctb-bS-P6g"/>
+                <constraint firstAttribute="trailing" secondItem="GuR-Ac-Za6" secondAttribute="trailing" id="gi6-Nc-BAz"/>
+            </constraints>
+            <point key="canvasLocation" x="139" y="-25.5"/>
+        </customView>
+    </objects>
+</document>
