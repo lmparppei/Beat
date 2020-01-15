@@ -44,7 +44,7 @@ As of 1.1.0, the app is finally pretty stable and has remained very minimalistic
 
 Some future considerations:
 
-* Removing all stuff having to do with the ancient Fountain open source stuff, including references to RegexKitLite
+* Fixing the ancient Fountain open source stuff, incl. removing references to RegexKitLite
 * Show pages in edit view (probably not, though)
 * Have Beat only allow happy endings (somewhat limiting)
 * Making the world a better place (not enough coding skills)
