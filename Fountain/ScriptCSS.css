@@ -25,6 +25,7 @@ IN THE SOFTWARE.
 	-webkit-user-select: none;
 	box-sizing: border-box;
 }
+
 html {
 	margin: 0;
 	padding: 0;
@@ -41,10 +42,10 @@ article {
 	margin: 0;
 }
 section {
-	
 	margin-right: auto;
 	margin-left: auto;
 	
+	max-width: 100%;
 }
 p {
 	margin: 1.3em auto;
@@ -220,4 +221,31 @@ section {
 	margin: 1rem auto 1rem auto;
 	padding: 2rem 80px 6rem 110px;
 	border: solid 1px #ccc;
+}
+@media screen and (max-width: 500px) {
+	body {
+		background-color: #f0f0f0;
+		font-size: .3em;
+	}
+	section {
+		border: none;
+		padding: 0;
+		margin: 0;
+		min-height: 0;
+	}
+	.character {
+		width: 35%;
+		
+	}
+	.dialogue {
+		width: 60%;
+	}
+	#script-title * {
+		margin: 0;
+		padding: 1em 0 1em 0;
+	}
+	#script-title .versionInfo, #script-title .info {
+		position: relative;
+		margin: 0;
+	}
 }

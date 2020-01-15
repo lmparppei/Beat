@@ -13,7 +13,7 @@ There is an iOS version on the way, scheduled for release in mid-2020. It won't 
 I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
 
 
-## Latest release: Beat 1.1.0h
+## Latest release: Beat 1.1.0i
 
 **Features**
 * Minimalistic UI that stays out of the way
@@ -44,6 +44,7 @@ As of 1.1.0, the app is finally pretty stable and has remained very minimalistic
 
 Some future considerations:
 
+* Removing all stuff having to do with the ancient Fountain open source stuff, including references to RegexKitLite
 * Show pages in edit view (probably not, though)
 * Have Beat only allow happy endings (somewhat limiting)
 * Making the world a better place (not enough coding skills)

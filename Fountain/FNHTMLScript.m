@@ -64,7 +64,8 @@
 #import "FNPaginator.h"
 
 // FUCK YOU REGEXKITLITE.H
- #import "RegexKitLite.h"
+//#import "RegexKitLite.h"
+#import "RegExCategories.h"
 
 @interface FNHTMLScript ()
 
@@ -194,13 +195,13 @@
 
 - (NSString *)formatString: (NSMutableString *)string {
 	
-	[string replaceOccurrencesOfRegex:BOLD_ITALIC_UNDERLINE_PATTERN withString:@"<strong><em><u>$2</strong></em></u>"];
-	[string replaceOccurrencesOfRegex:BOLD_ITALIC_PATTERN withString:@"<strong><em>$2</strong></em>"];
-	[string replaceOccurrencesOfRegex:BOLD_UNDERLINE_PATTERN withString:@"<strong><u>$2</u></strong>"];
-	[string replaceOccurrencesOfRegex:ITALIC_UNDERLINE_PATTERN withString:@"<em><u>$2</em></u>"];
-	[string replaceOccurrencesOfRegex:BOLD_PATTERN withString:@"<strong>$2</strong>"];
-	[string replaceOccurrencesOfRegex:ITALIC_PATTERN withString:@"<em>$2</em>"];
-	[string replaceOccurrencesOfRegex:UNDERLINE_PATTERN withString:@"<u>$2</u>"];
+	[string replace:RX(BOLD_ITALIC_UNDERLINE_PATTERN) with:@"<strong><em><u>$2</strong></em></u>"];
+	[string replace:RX(BOLD_ITALIC_PATTERN) with:@"<strong><em>$2</strong></em>"];
+	[string replace:RX(BOLD_UNDERLINE_PATTERN) with:@"<strong><u>$2</u></strong>"];
+	[string replace:RX(ITALIC_UNDERLINE_PATTERN) with:@"<em><u>$2</em></u>"];
+	[string replace:RX(BOLD_PATTERN) with:@"<strong>$2</strong>"];
+	[string replace:RX(ITALIC_PATTERN) with:@"<em>$2</em>"];
+	[string replace:RX(UNDERLINE_PATTERN) with:@"<u>$2</u>"];
 	
 	return string;
 }
@@ -443,15 +444,15 @@
             }
             
             if ([element.elementType isEqualToString:@"Character"]) {
-                [text replaceOccurrencesOfRegex:@"^@" withString:@""];
+                [text replace:RX(@"^@") with:@""];
             }
             
             if ([element.elementType isEqualToString:@"Scene Heading"]) {
-                [text replaceOccurrencesOfRegex:@"^\\." withString:@""];
+                [text replace:RX(@"^\\.") with:@""];
             }
             
             if ([element.elementType isEqualToString:@"Lyrics"]) {
-                [text replaceOccurrencesOfRegex:@"^~" withString:@""];
+                [text replace:RX(@"^~") with:@""];
 				if (!isLyrics) {
 					beginBlock = true;
 					isLyrics = true;
@@ -466,18 +467,18 @@
 			}
             
             if ([element.elementType isEqualToString:@"Action"]) {
-                [text replaceOccurrencesOfRegex:@"^\\!" withString:@""];
+                [text replace:RX(@"^\\!") with:@""];
             }
             
-            [text replaceOccurrencesOfRegex:BOLD_ITALIC_UNDERLINE_PATTERN withString:@"<strong><em><u>$2</strong></em></u>"];
-            [text replaceOccurrencesOfRegex:BOLD_ITALIC_PATTERN withString:@"<strong><em>$2</strong></em>"];
-            [text replaceOccurrencesOfRegex:BOLD_UNDERLINE_PATTERN withString:@"<strong><u>$2</u></strong>"];
-            [text replaceOccurrencesOfRegex:ITALIC_UNDERLINE_PATTERN withString:@"<em><u>$2</em></u>"];
-            [text replaceOccurrencesOfRegex:BOLD_PATTERN withString:@"<strong>$2</strong>"];
-            [text replaceOccurrencesOfRegex:ITALIC_PATTERN withString:@"<em>$2</em>"];
-            [text replaceOccurrencesOfRegex:UNDERLINE_PATTERN withString:@"<u>$2</u>"];
+            [text replace:RX(BOLD_ITALIC_UNDERLINE_PATTERN) with:@"<strong><em><u>$2</strong></em></u>"];
+            [text replace:RX(BOLD_ITALIC_PATTERN) with:@"<strong><em>$2</strong></em>"];
+            [text replace:RX(BOLD_UNDERLINE_PATTERN) with:@"<strong><u>$2</u></strong>"];
+            [text replace:RX(ITALIC_UNDERLINE_PATTERN) with:@"<em><u>$2</em></u>"];
+            [text replace:RX(BOLD_PATTERN) with:@"<strong>$2</strong>"];
+            [text replace:RX(ITALIC_PATTERN) with:@"<em>$2</em>"];
+            [text replace:RX(UNDERLINE_PATTERN) with:@"<u>$2</u>"];
             
-            [text replaceOccurrencesOfRegex:@"\\[{2}(.*?)\\]{2}" withString:@""];
+            [text replace:RX(@"\\[{2}(.*?)\\]{2}") with:@""];
             
             //Find newlines and replace them with <br/>
             text = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"] mutableCopy];

@@ -29,6 +29,8 @@
 		B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
 		B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
+		B615E5E823CE00FB00E61C54 /* FNHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65419E1E8CA000489C4 /* FNHTMLScript.m */; };
+		B615E5E923CE022F00E61C54 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
 		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
 		B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62ADC7823CCCE560015563A /* PreviewViewController.m */; };
@@ -801,6 +803,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B615E5E923CE022F00E61C54 /* ScriptCSS.css in Resources */,
 				B62ADC9423CCE46C0015563A /* Info.plist in Resources */,
 				B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */,
 			);
@@ -889,6 +892,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B62ADC9A23CCF02E0015563A /* FountainParser.m in Sources */,
+				B615E5E823CE00FB00E61C54 /* FNHTMLScript.m in Sources */,
 				B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */,
 				B62ADC9823CCF0270015563A /* FNElement.m in Sources */,
 				B62ADC9623CCF0110015563A /* FNScript.m in Sources */,

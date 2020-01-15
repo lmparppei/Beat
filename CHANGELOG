@@ -1,4 +1,10 @@
 
+## Beat 1.1 release
+
+* Rewritten some of the open source Fountain stuff which still used the old RegexKitLite library. A lot of work still remains.
+* Quick Look extension!
+
+
 ## 1.1.0i
 
 * Script analysis has character genders (not the most inclusive implementation yet, unfortunately)
@@ -92,7 +98,7 @@
 ## 1.0.8
 
 * Major change: I'll start updating this changelog
-* Beat now uses a customized RegexKitLite.h, as OSSpinLock is deprecated in macOS 10.12+
+* Beat now uses a customized RegexKitLite, as OSSpinLock is deprecated in macOS 10.12+
 * PDF/printing layout is better now. It still uses the old FNHTMLScript and FNPaginate code, but they are customized. Longer action paragraphs will now break apart between pages. Dialogue blocks should also behave in a more consistent way.
 * Omitted scenes no longer retain their scene number. They are still formatted correctly, though.
 * New flat array structure for outline elements - just after I replaced it with the multi-level structure. The whole outline logic should be rewritten, but for now, I'll be using these parallel structures.

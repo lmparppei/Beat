@@ -40,7 +40,8 @@
 #import "FNPaginator.h"
 #import "FNScript.h"
 #import "FNElement.h"
-#import "RegexKitLite.h"
+//#import "RegexKitLite.h"
+#import "RegExCategories.h"
 
 @interface FNPaginator ()
 
@@ -198,7 +199,7 @@
 			}
 			
 			// Fix to get styling to show up in PDFs. I have no idea.
-			if (![element.elementText isMatchedByRegex:@" $"]) {
+			if (![element.elementText isMatch:RX(@" $")]) {
 				element.elementText = [NSString stringWithFormat:@"%@%@", element.elementText, @""];
 			}
 			

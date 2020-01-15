@@ -14,6 +14,7 @@
 
 @interface PreviewViewController () <QLPreviewingController>
 @property (nonatomic) IBOutlet WKWebView *webView;
+@property (nonatomic) IBOutlet WebView *webView2;
 @end
 
 @implementation PreviewViewController
@@ -41,20 +42,25 @@
 */
 
 - (void)preparePreviewOfFileAtURL:(NSURL *)url completionHandler:(void (^)(NSError * _Nullable))handler {
+	NSLog(@"prepare");
 	// Read contents into file and then parse into FNHTMLScript
 	NSError *error;
 	NSString *file = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
 
+	CGFloat width = self.view.frame.size.width;
+	bool smallView = NO;
+	if (width < 400) smallView = YES;
+	
 	if (!error) {
-		
-		//NSLog(@"%@", file.className);
-		FNScript *script = [[FNScript alloc] initWithString:@"\ntest\ntest 2\nINT."];
-		//FNHTMLScript *htmlScript;
-		/*
+		FNScript *script = [[FNScript alloc] initWithString:file];
+		FNHTMLScript *htmlScript;
 		htmlScript = [[FNHTMLScript alloc] initWithScript:script];
-			
-		[self.webView loadHTMLString:[htmlScript html] baseURL:nil];
-		 */
+		
+		NSString *htmlString = [htmlScript html];
+		if (smallView) htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<body>" withString:@"<body class='small'>"];
+
+		//[self.webView loadHTMLString:[htmlScript html] baseURL:nil];
+		[[self.webView2 mainFrame] loadHTMLString:htmlString baseURL:nil];
 	}
 	
 	
@@ -65,7 +71,8 @@
     // Call the completion handler so Quick Look knows that the preview is fully loaded.
     // Quick Look will display a loading spinner while the completion handler is not called.
     
-    handler(nil);
+    //
+	handler(nil);
 }
 
 @end
