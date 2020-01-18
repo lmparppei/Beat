@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "DynamicColor.h"
 
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
@@ -18,6 +19,7 @@
 - (IBAction)toggleDarkPopup:(id)sender;
 //@property (weak) id <NCRAutocompleteTableViewDelegate> delegate;
 @property NSMutableArray* masks;
+@property (nonatomic) DynamicColor* marginColor;
 @property NSMutableArray* pageBreaks;
 @property CGFloat zoomLevel;
 @end

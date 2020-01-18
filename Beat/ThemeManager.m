@@ -94,6 +94,9 @@
 	NSArray* backgroundValuesLight = [[themes objectAtIndex:0] objectForKey:@"Background"];
 	NSArray* backgroundValuesDark = [[themes objectAtIndex:1] objectForKey:@"Background"];
 	
+	NSArray* marginValuesLight = [[themes objectAtIndex:0] objectForKey:@"Margin"];
+	NSArray* marginValuesDark = [[themes objectAtIndex:1] objectForKey:@"Margin"];
+	
 	NSArray* selectionValuesLight = [[themes objectAtIndex:0] objectForKey:@"Selection"];
 	NSArray* selectionValuesDark = [[themes objectAtIndex:1] objectForKey:@"Selection"];
 	
@@ -115,16 +118,13 @@
 	NSArray* outlineHighlightLight =  [[themes objectAtIndex:0] objectForKey:@"OutlineHighlight"];
 	NSArray* outlineHighlightDark =  [[themes objectAtIndex:1] objectForKey:@"OutlineHighlight"];
 
-	
-	// NSArray* marginValues = [dict objectForKey:@"Margin"];
-	
 	theme.backgroundColor = [self dynamicColorFromArray:backgroundValuesLight darkArray:backgroundValuesDark];
 	theme.textColor = [self dynamicColorFromArray:textValuesLight darkArray:textValuesDark];
 	theme.selectionColor = [self dynamicColorFromArray:selectionValuesLight darkArray:selectionValuesDark];
 	theme.invisibleTextColor = [self dynamicColorFromArray:invisibleTextValuesLight darkArray:invisibleTextValuesDark];
 	theme.caretColor = [self dynamicColorFromArray:caretValuesLight darkArray:caretValuesDark];
 	theme.commentColor = [self dynamicColorFromArray:commentValuesLight darkArray:commentValuesDark];
-	// theme.marginColor = [self dynamicColorFromArray:selectionValuesLight darkArray:selectionValuesDark];
+	theme.marginColor = [self dynamicColorFromArray:marginValuesLight darkArray:marginValuesDark];
 
 	// Outline settings
 	theme.outlineBackground = [self dynamicColorFromArray:outlineBackgroundLight darkArray:outlineBackgroundDark];

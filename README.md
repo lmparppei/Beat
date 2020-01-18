@@ -38,7 +38,7 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 
 ### State of development
 
-Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP.
+Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP. 
 
 As of 1.1.0, the app is finally pretty stable and has remained very minimalistic.
 
@@ -52,12 +52,9 @@ Some future considerations:
 
 ### How can you help?
 
-Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer. When I started the project, my understanding of Objective-C was little to none, and it shows. Though my code has been getting gradually better, there are still silly things going on. Any help and feedback is appreciated.
+Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer. When I started the project, my understanding of Objective-C was little to none, and it shows. Though my code has been getting gradually better, there are still silly things going on. Help, donations and feedback are highly appreciated! If you are here just to steal some code, the best stuff can be found under Parsing, Fountain and User Interface folders in the project. 
 
 At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetaeva and Charles Bukowski. All apologies.
-
-Bug reports, some donations and feedback help, but I'd be happy if someone could help with zooming and rearranging the code.
-
 
 Lauri-Matti Parppei  
 KAPITAN!  

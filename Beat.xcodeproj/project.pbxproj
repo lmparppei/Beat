@@ -315,8 +315,6 @@
 				B13111861CB289ED00D07A0C /* Theme.h */,
 				B6D2B7082218B320005B8447 /* Theme.m */,
 				B6D2B7232218B4A0005B8447 /* Themes.plist */,
-				B6CF7D0C2328D77F0045702C /* DynamicColor.h */,
-				B6CF7D0D2328D77F0045702C /* DynamicColor.m */,
 			);
 			name = Themes;
 			sourceTree = "<group>";
@@ -377,7 +375,6 @@
 		B138B57519E1C973000489C4 /* Beat */ = {
 			isa = PBXGroup;
 			children = (
-				B667796223C5D10B0029D508 /* User Interface */,
 				B1E7FF511BC4555B008E2B99 /* Writer.entitlements */,
 				B138B57A19E1C973000489C4 /* Document.h */,
 				B6D2B7122218B39A005B8447 /* Document.m */,
@@ -390,6 +387,7 @@
 				B6D2B72D2218B589005B8447 /* Document.xib */,
 				B6D2B72F2218B589005B8447 /* MainMenu.xib */,
 				B69A928D2319254200FE6A3E /* About.xib */,
+				B667796223C5D10B0029D508 /* User Interface */,
 				B667796623C5D1D20029D508 /* Import */,
 				B13111851CB2893F00D07A0C /* Themes */,
 				B6907E39233FE16200741071 /* Analysis */,
@@ -564,6 +562,8 @@
 				B6952C94232B89BE00448B57 /* ScrollView.m */,
 				B1B62A3819E3402F009F6E23 /* ColorView.h */,
 				B6D2B70C2218B359005B8447 /* ColorView.m */,
+				B6CF7D0C2328D77F0045702C /* DynamicColor.h */,
+				B6CF7D0D2328D77F0045702C /* DynamicColor.m */,
 			);
 			name = "User Interface";
 			sourceTree = "<group>";

@@ -1,7 +1,9 @@
 /*
  
- Original code by Paulo Andrade
- Public domain?
+ Original code © Paulo Andrade
+ Modified for Beat by Lauri-Matti Parppei
+ 
+ No license information available, so I'm guessing this is public domain
  
  */
 
@@ -16,7 +18,6 @@
 @interface DynamicColor ()
 @property (nonatomic, strong) NSColor *aquaColor;
 @property (nonatomic, strong, nullable) NSColor *darkAquaColor;
-
 @property (nonatomic, strong, readonly) NSColor *effectiveColor;
 
 @end

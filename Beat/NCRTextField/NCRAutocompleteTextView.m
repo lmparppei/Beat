@@ -1,6 +1,6 @@
 //
 //  NCRAutocompleteTextView.m
-//  Modified for Beat
+//  Heavily modified for Beat
 //
 //  Copyright (c) 2014 Null Creature. All rights reserved.
 //  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
@@ -131,7 +131,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier
 {
     if ([identifier isEqualToString:ColorPickerItemIdentifier]) {
-		NSLog(@"jes");
+		// What?
 	}
 	return nil;
 }
@@ -175,6 +175,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				//return; // Skip default behavior (nah, we don't need two returns?)
 			}
 /*
+		// We don't want to close autocomplete on space, because scene headings etc. are long
 		case 49:
 			// Space
 			if (self.autocompletePopover.isShown) {
@@ -356,31 +357,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Rects for masking, page breaks etc.
 
+- (void)setMarginColor:(DynamicColor *)newColor {
+	_marginColor = newColor;
+}
+
+// The thing is, we should (and need to) draw the PAPER instead of the margins to avoid having ugly scroll bars.
+// Should this be done in some other element, set drawBackground:NO for our textView?
+
 - (void)drawRect:(NSRect)dirtyRect {
 	[NSGraphicsContext saveGraphicsState];
 	[super drawRect:dirtyRect];
 	[NSGraphicsContext restoreGraphicsState];
-	
-	// Draw page margins
-	if (self.frame.size.width > 1000) {
-		// Multiply background color to make for a darker margin
-		NSColor *fillColor = self.backgroundColor;
-		fillColor = [fillColor colorWithAlphaComponent:0.3];
-		[fillColor setFill];
-		
-		CGFloat marginWidth = self.textContainerInset.width - 120;
-		CGFloat modifier = 1 / _zoomLevel;
-		
-		NSRect marginLeft = NSMakeRect(0, 0, marginWidth, self.frame.size.height);
-		NSRect marginRight = NSMakeRect((self.frame.size.width - marginWidth) * modifier, 0, marginWidth, self.frame.size.height);
-		
-		[NSGraphicsContext saveGraphicsState];
-		NSRectFillUsingOperation(marginLeft, NSCompositingOperationMultiply);
-		NSRectFillUsingOperation(marginRight, NSCompositingOperationMultiply);
-		
-		[NSGraphicsContext restoreGraphicsState];
-	}
-	
+
 	// An array of NSRanges which are used to mask parts of the text.
 	// Used to hide irrelevant parts when filtering scenes.
 	if ([_masks count]) {

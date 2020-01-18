@@ -27,11 +27,13 @@
 
 /*
  
- N.B. Much of this code has its origins in Writer by Hendrik Noeller. As I started this project, I had close to zero knowledge on Objective-C, and it really shows.
+ N.B.
  
  Beat has been cooked up by using lots of trial and error, and this file has become a 2900-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. Some structures (such as themes) are legacy from Writer, and have since been replaced with totally different approach. Their names and complimentary methods still linger around.
  
- You can find some *very* shady stuff, such as ThemeManager and zoomLevel & zoomModifier, which are scattered around here and there with no real purpose. I built some very convoluted UI code around the legacy of the original Writer app. I have since made it much more sensible, but dismantling my weird solutions is still WIP.
+ About a third of the code has its origins in Writer by Hendrik Noeller. As I started this project, I had close to zero knowledge on Objective-C, and it really shows.
+ 
+ You can find some *very* shady stuff, such as ThemeManager and zoomLevel & zoomModifier, which are scattered around here and there with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer, and though I have since made it much more sensible, dismantling my weird solutions is still WIP.
  
  Anyway, may this be of some use to you, dear friend.
  
@@ -59,6 +61,8 @@
 #import <WebKit/WebKit.h>
 #import <Foundation/Foundation.h>
 #import "Document.h"
+#import "ScrollView.h"
+#import "NCRAutocompleteTextView.h"
 #import "FNScript.h"
 #import "FNHTMLScript.h"
 #import "FDXInterface.h"
@@ -85,19 +89,18 @@
 
 // Text view
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
-@property (weak) IBOutlet NSScrollView *textScrollView;
+@property (weak) IBOutlet ScrollView *textScrollView;
 @property (weak) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSTimer * scrollTimer;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
 
-// Outline
+// Outline view
 @property (weak) IBOutlet BeatOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (weak) NSArray *draggedNodes;
 @property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
 @property (nonatomic) NSMutableArray *flatOutline;
-@property (nonatomic) NSMutableArray *filteredOutline;
 @property (weak) IBOutlet NSButton *outlineButton;
 @property (weak) IBOutlet NSSearchField *outlineSearchField;
 @property (weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
@@ -105,17 +108,26 @@
 @property (nonatomic) NSMutableArray *outlineClosedSections;
 @property (weak) IBOutlet NSMenu *colorMenu;
 @property BOOL outlineEdit;
+
+// Outline view filtering
+@property (nonatomic) NSMutableArray *filteredOutline;
 @property (nonatomic) IBOutlet NSBox *filterView;
 @property (nonatomic) IBOutlet NSLayoutConstraint *filterViewHeight;
-@property (nonatomic) NSMutableArray *colorFilters;
 @property (nonatomic) IBOutlet NSPopUpButton *characterBox;
 @property (nonatomic) SceneFiltering *filters;
 @property (nonatomic) IBOutlet NSButton *resetColorFilterButton;
 @property (nonatomic) IBOutlet NSButton *resetCharacterFilterButton;
 
 // Fuck you macOS & Apple. For two things, particulary:
+//
 // 1) IBOutletCollection is iOS-only
-// 2) This computer (and my phone and everything else) is made in subhuman conditions in some sweatshop in China, just to add to your fucking sky-high profits. You are the most profitable company operating in our current monetary and economic system. EQUALITY AND FREEDOM FOR EVERYONE.
+// 2) This computer (and my phone and everything else) is made in
+//    subhuman conditions in some sweatshop in China, just to add
+//    to your fucking sky-high profits.
+//
+//    You are the most profitable company operating in our current monetary
+//    and economic system. EQUALITY AND FREEDOM FOR EVERYONE. FUCK YOU, APPLE.
+
 @property (nonatomic) IBOutlet ColorCheckbox *redCheck;
 @property (nonatomic) IBOutlet ColorCheckbox *blueCheck;
 @property (nonatomic) IBOutlet ColorCheckbox *greenCheck;
@@ -239,16 +251,21 @@
 
 // Theme settings
 @property (strong, nonatomic) ThemeManager* themeManager;
-@property (nonatomic) bool nightMode;
+@property (nonatomic) bool nightMode; // THE HOUSE IS BLACK.
 
 @end
 
 
 // Uh. Refer to fontSize / zooming functions to make sense of this stuff.
 // This spaghetti should be fixed ASAP.
+
 #define DEFAULT_ZOOM 16
 #define FONT_SIZE_MODIFIER 0.028
 #define ZOOM_MODIFIER 40
+
+// Some fixes for convoluted UI stuff
+#define FONT_SIZE 17.92 // used to be DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER
+#define DOCUMENT_WIDTH 640 // DEFAULT_ZOOM * ZOOM_MODIFIER;
 
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
 #define DEFAULT_MAGNIFY 1.1
@@ -262,6 +279,30 @@
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 #define FLATOUTLINE YES
+
+
+// DOCUMENT LAYOUT SETTINGS
+
+#define TEXT_INSET_TOP 40
+
+#define INITIAL_WIDTH 900
+#define INITIAL_HEIGHT 700
+
+#define DD_CHARACTER_INDENT_P 0.56
+#define DD_PARENTHETICAL_INDENT_P 0.50
+#define DOUBLE_DIALOGUE_INDENT_P 0.40
+#define DD_RIGHT 650
+#define DD_RIGHT_P .95
+
+#define TITLE_INDENT .15
+
+#define CHARACTER_INDENT_P 0.36
+#define PARENTHETICAL_INDENT_P 0.27
+#define DIALOGUE_INDENT_P 0.164
+#define DIALOGUE_RIGHT_P 0.74
+
+#define TREE_VIEW_WIDTH 350
+#define TIMELINE_VIEW_HEIGHT 120
 
 
 @implementation Document
@@ -303,29 +344,6 @@
 	[super close];
 }
 
-#define TEXT_INSET_SIDE 80
-#define TEXT_INSET_TOP 40
-
-#define INITIAL_WIDTH 900
-#define INITIAL_HEIGHT 700
-#define DOCUMENT_WIDTH 610
-
-#define DD_CHARACTER_INDENT_P 0.56
-#define DD_PARENTHETICAL_INDENT_P 0.50
-#define DOUBLE_DIALOGUE_INDENT_P 0.40
-#define DD_RIGHT 650
-#define DD_RIGHT_P .95
-
-#define TITLE_INDENT .15
-
-#define CHARACTER_INDENT_P 0.36
-#define PARENTHETICAL_INDENT_P 0.27
-#define DIALOGUE_INDENT_P 0.164
-#define DIALOGUE_RIGHT_P 0.74
-
-#define TREE_VIEW_WIDTH 350
-#define TIMELINE_VIEW_HEIGHT 120
-
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
 	
@@ -338,10 +356,9 @@
 	/// Hide the welcome screen
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
-	// Get zoom level & font size. This is pretty fucked up now, as from 1.1.0 onwards zooming is done by scaling.
-	// If you are wondering, read more nearby the setZoom method. Lol.
-	_zoomLevel = DEFAULT_ZOOM;
-	_documentWidth = DEFAULT_ZOOM * ZOOM_MODIFIER;
+	// Revised layout code for 1.1.0 release
+	// _zoomLevel = DEFAULT_ZOOM;
+	_documentWidth = DOCUMENT_WIDTH;
 	[self setZoom];
 
     //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
@@ -407,10 +424,9 @@
 	[self loadSelectedTheme:false];
 	_nightMode = [self isDark];
 	
-	// Background fill
-	//self.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
-	self.outlineBackgroundView.fillColor = self.themeManager.theme.outlineBackground;
-	self.backgroundView.fillColor = self.themeManager.theme.backgroundColor;
+	// Background fill - WIP: MOVE UNDER THEME LOADING
+	self.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
+	self.textScrollView.backgroundColor = self.themeManager.theme.backgroundColor;
 	
 	// Initialize drag & drop for outline view
 	//[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, NSPasteboardTypeString]];
@@ -465,9 +481,8 @@
 	// Setup touch bar colors
 	[self initColorPicker];
 	
-	// Init filtering
+	// Init scene filtering
 	_filters = [[SceneFiltering alloc] init];
-	_colorFilters = [NSMutableArray array];
 	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
@@ -516,10 +531,12 @@
 }
 - (void) updateLayout {
 	[self setMinimumWindowSize];
+	
 	CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
 	if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
 		self.textView.textContainerInset = NSMakeSize(width, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		self.textScrollView.insetWidth = self.textView.textContainerInset.width;
 	}
 	
 	[self ensureLayout];
@@ -544,8 +561,6 @@
  I have finally rebuilt the zooming. I have tried all sorts of tricks from magnification to other weird stuff, such as 3rd party libraries for scaling the NSScrollView. Everything was terrible and caused even more problems. I'm not too familiar with Cocoa and/or Objective-C, but if I understand correctly, the best way would be having a custom NSView inside the NSScrollView and then to magnify the scroll view. NSTextView's layout manager would then handle displaying the text in those custom views.
  
  I still have no help and I'm working alone. Until that changes, I guess this won't get any better. :-)
- 
- The problem here is that we have multiple keys that set font size document width, etc. and out of legacy reasons, they are scattered around the code. Maybe some day I have the time to fix everything, but for now, we're using duct-tape approach.
  
  What matters most is how well you walk through the fire.
  
@@ -635,29 +650,22 @@
 	[self updateLayout];
 }
 
-- (IBAction)increaseFontSize:(id)sender
-{
-	[self zoom:true];
-}
-
-- (IBAction)decreaseFontSize:(id)sender
-{
-	[self zoom:false];
-}
-
-
-- (IBAction)resetFontSize:(id)sender
-{
+// Old method names. Should be fixed.
+- (IBAction)increaseFontSize:(id)sender { [self zoom:true]; }
+- (IBAction)decreaseFontSize:(id)sender { [self zoom:false]; }
+- (IBAction)resetFontSize:(id)sender {
 	_magnification = 1.1;
 	[self setScaleFactor:_magnification adjustPopup:false];
 	[self updateLayout];
 }
 
+#pragma mark - Window settings
 // Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
 + (BOOL)autosavesInPlace {
     return NO;
 }
 
+// I have no idea what these are or do.
 - (NSString *)windowNibName {
     return @"Document";
 }
@@ -1350,8 +1358,8 @@
 			
 			// [paragraphStyle setAlignment:NSTextAlignmentCenter];
 			
-			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
@@ -1366,11 +1374,11 @@
 			// We'll indent title page blocks a bit more
 			
 			if ([line.string rangeOfString:@":"].location != NSNotFound) {
-				[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
-				[paragraphStyle setHeadIndent:TITLE_INDENT * ZOOM_MODIFIER * _zoomLevel];
+				[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
+				[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
 			} else {
-				[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * 1.25 * ZOOM_MODIFIER * _zoomLevel];
-				[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * ZOOM_MODIFIER * _zoomLevel];
+				[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * 1.25 * DOCUMENT_WIDTH];
+				[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * DOCUMENT_WIDTH];
 			}
 
 			
@@ -1390,48 +1398,48 @@
 			
 		} else if (line.type == character) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
-			[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setHeadIndent:CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
 
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == parenthetical) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
-			[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setHeadIndent:PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == dialogue) {
-			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == doubleDialogueCharacter) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
-			[paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setTailIndent:DD_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == doubleDialogueParenthetical) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
-			[paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setTailIndent:DD_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == doubleDialogue) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-			[paragraphStyle setFirstLineHeadIndent:DOUBLE_DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setHeadIndent:DOUBLE_DIALOGUE_INDENT_P * ZOOM_MODIFIER * _zoomLevel];
-			[paragraphStyle setTailIndent:DD_RIGHT_P * ZOOM_MODIFIER * _zoomLevel];
+			[paragraphStyle setFirstLineHeadIndent:DOUBLE_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:DOUBLE_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
@@ -1586,7 +1594,13 @@
 {
 	// Beat used to have font-based "zoom", legacy of Writer. I tried thousands of weird tricks to fix and circumvent it until I figured out how to use scaleUnitToSize.
 	// Font size was finally determined by this weird equation. I have no idea what I was thinking about, but for now, this is how we set our font size...... everything is proportially sized, and it shouldn't be too hard to just use constants for these in the future. But, for now, until I have the time and energy, we're stuck with this stuff. Read more nearby setZoom.
-	_fontSize = DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
+	
+	// Old way
+	// _fontSize = DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
+	
+	// New way :-)
+	_fontSize = FONT_SIZE;
+	
 	return _fontSize;
 }
 
@@ -2208,8 +2222,9 @@ static NSString *forceLyricsSymbol = @"~";
 - (IBAction)toggleNightMode:(id)sender {
 	[(ApplicationDelegate *)[NSApp delegate] toggleDarkMode];
 	
-	[_masterView setNeedsDisplayInRect:[_masterView frame]];
 	[self.thisWindow setViewsNeedDisplay:true];
+	
+	[self.masterView setNeedsDisplayInRect:[_masterView frame]];
 	[self.backgroundView setNeedsDisplay:true];
 	[self.textView setNeedsDisplay:true];
 	[self.textScrollView setNeedsDisplay:true];
@@ -2254,6 +2269,8 @@ static NSString *forceLyricsSymbol = @"~";
 	[[NSUserDefaults standardUserDefaults] setBool:self.printSceneNumbers forKey:PRINT_SCENE_NUMBERS_KEY];
 }
 
+// Some weirdness because of the Writer legacy. Writer had real themes, and this function loaded the selected theme for every open window. We only have day/night, but the method names remain.
+// WIP: Rename, conform + stylize this part
 - (void)loadSelectedTheme:(bool)forAll
 {
 	NSArray* openDocuments;
@@ -2261,9 +2278,11 @@ static NSString *forceLyricsSymbol = @"~";
 	else openDocuments = @[self];
 	
     for (Document* doc in openDocuments) {
-        NSTextView *textView = doc.textView;
+        NCRAutocompleteTextView *textView = doc.textView;
 		
 		[textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
+		[doc.textScrollView setMarginColor:[self.themeManager currentMarginColor]];
+		
         [textView setSelectedTextAttributes:@{
 											  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
 											  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
@@ -2277,12 +2296,6 @@ static NSString *forceLyricsSymbol = @"~";
 		
 		// Set global background
 		doc.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
-		
-		//NSBox *leftMargin = doc.leftMargin;
-		//NSBox *rightMargin = doc.rightMargin;
-		
-		//[leftMargin setFillColor:[self.themeManager currentMarginColor]];
-		//[rightMargin setFillColor:[self.themeManager currentMarginColor]];
     }
 }
 
@@ -2744,11 +2757,9 @@ static NSString *forceLyricsSymbol = @"~";
 
 /*
  
- Color rontext menu, WIP.
+ Color context menu
  
- The same menu is used for both outline and timeline. Because clickedRow is set all the time (?)
- Regexes hurt my brain, and they do so even more in Objective-C, so maybe I'll just search for ranges whenever I decide to do this.
- Also, in principle it should be possible to enter custom colors in hex. Such as [[COLOR #d00dd]].
+ Note: self.timelineClickedScene keeps track if a scene was clicked on the timeline. The reason for this is that we use the same menu for both outline and timeline views. NSOutlineView's clickedRow property seems to be always set, so we'll always check first if something was clicked on the timeline.
 
 */
 
@@ -2788,7 +2799,7 @@ static NSString *forceLyricsSymbol = @"~";
 			_colorPicker = picker;
 			picker.colorList = [[NSColorList alloc] init];
 
-			[picker.colorList setColor:NSColor.blackColor forKey:@"none"];
+			[picker.colorList setColor:NSColor.blackColor forKey:@"none"]; // THE HOUSE IS BLACK.
 			[picker.colorList setColor:[self colors][@"red"] forKey:@"red"];
 			[picker.colorList setColor:[self colors][@"blue"] forKey:@"blue"];
 			[picker.colorList setColor:[self colors][@"green"] forKey:@"green"];
@@ -2810,7 +2821,7 @@ static NSString *forceLyricsSymbol = @"~";
 		}
 	}
 	
-	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) pickedColor = @"none";
+	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) pickedColor = @"none"; // THE HOUSE IS BLACK.
 	
 	_currentScene = [self getCurrentScene];
 	if (!_currentScene) return;
@@ -2992,7 +3003,7 @@ static NSString *forceLyricsSymbol = @"~";
 - (void) refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
 	
 	if ([self isDark]) {
-		[_cardView evaluateJavaScript:@"nightModeOn();" completionHandler:nil];
+		[_cardView evaluateJavaScript:@"nightModeOn();" completionHandler:nil]; // THE HOUSE IS BLACK.
 	} else {
 		[_cardView evaluateJavaScript:@"nightModeOff();" completionHandler:nil];
 	}
@@ -3530,8 +3541,6 @@ static NSString *forceLyricsSymbol = @"~";
 
 #pragma mark - Advanced Filtering
 
-// WIP
-
 - (IBAction)toggleFilterView:(id)sender {
 	NSButton *button = (NSButton*)sender;
 	
@@ -3550,10 +3559,8 @@ static NSString *forceLyricsSymbol = @"~";
 		
 	if (button.state == NSControlStateValueOn) {
 		// Apply color filter
-		[self addColorFilter:button.colorName];
         [_filters addColorFilter:button.colorName];
 	} else {
-		[self removeColorFilter:button.colorName];
         [_filters removeColorFilter:button.colorName];
 	}
 	
@@ -3564,19 +3571,7 @@ static NSString *forceLyricsSymbol = @"~";
 	[self reloadOutline];
 	[self maskScenes];
 }
-- (void)addColorFilter:(NSString*)color {
-	NSInteger index = [_colorFilters indexOfObject:color];
-	if (index == NSNotFound) {
-		[_colorFilters addObject:color];
-	}
-}
-- (void)removeColorFilter:(NSString*)color {
-	NSInteger index = [_colorFilters indexOfObject:color];
-	
-	if (index != NSNotFound) {
-		[_colorFilters removeObjectAtIndex:index];
-	}
-}
+
 - (IBAction)resetColorFilters:(id)sender {
     [_filters.colors removeAllObjects];
     
