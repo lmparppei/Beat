@@ -452,9 +452,19 @@
         line.numberOfPreceedingFormattingCharacters = 1;
         return synopse;
     }
+	
+	// '.' forces a heading. Because our American friends love to shoot their guns like we Finnish people love our booze, screenwriters might start dialogue blocks with such "words" as '.44'
+	// So, let's NOT return a scene heading IF the previous line is not empty OR is a character OR is a parenthetical...
     if (firstChar == '.' && length >= 2 && [string characterAtIndex:1] != '.') {
-        line.numberOfPreceedingFormattingCharacters = 1;
-        return heading;
+		Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
+		if (preceedingLine) {
+			if (preceedingLine.type == character) return dialogue;
+			if (preceedingLine.type == parenthetical) return dialogue;
+			if ([preceedingLine.string length] > 0) return action;
+		}
+		
+		line.numberOfPreceedingFormattingCharacters = 1;
+		return heading;
     }
 	
 

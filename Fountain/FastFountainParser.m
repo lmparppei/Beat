@@ -359,16 +359,17 @@ static NSString * const kContentPattern = @"";
             newlinesBefore = 0;
             NSString *sceneNumber = nil;
             NSString *text = nil;
+			
             // Check for scene numbers
             if ([line isMatch:RX(@"#([^\\n#]*?)#\\s*$")]) {
-                sceneNumber = [line firstMatch:RX(@"#([^\\n#]*?)#\\s*$")];
+				sceneNumber = [[line firstMatch:RX(@"#([^\\n#]*?)#\\s*$")] stringByReplacingOccurrencesOfString:@"#" withString:@""];
                 text = [line replace:RX(@"#([^\\n#]*?)#\\s*$") with:@""];
                 text = [[text substringFromIndex:1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             }
             else {
                 text = [[line substringFromIndex:1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             }
-            
+
             FNElement *element = [FNElement elementOfType:@"Scene Heading" text:text];  
             if (sceneNumber) {
                 element.sceneNumber = sceneNumber;
@@ -384,15 +385,16 @@ static NSString * const kContentPattern = @"";
             newlinesBefore = 0;
             NSString *sceneNumber = nil;
             NSString *text = nil;
+			
             // Check for scene numbers
             if ([line isMatch:RX(@"#([^\\n#]*?)#\\s*$")]) {
-                sceneNumber = [line firstMatch:RX(@"#([^\\n#]*?)#\\s*$")];
+                sceneNumber = [[line firstMatch:RX(@"#([^\\n#]*?)#\\s*$")] stringByReplacingOccurrencesOfString:@"#" withString:@""];
                 text = [line replace:RX(@"#([^\\n#]*?)#\\s*$") with:@""];
             }
             else {
                 text = line;
             }
-            
+			
             FNElement *element = [FNElement elementOfType:@"Scene Heading" text:text];
             if (sceneNumber) {
                 element.sceneNumber = sceneNumber;

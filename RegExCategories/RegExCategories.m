@@ -1,5 +1,6 @@
 //
 //  RegExCategories.m
+//	Modified for Beat
 //
 //  https://github.com/bendytree/Objective-C-RegEx-Categories
 //
@@ -7,6 +8,7 @@
 //  The MIT License (MIT)
 // 
 //  Copyright (c) 2013 Josh Wright <@BendyTree>
+//	Parts copyright © 2020 KAPITAN! / Lauri-Matti Parppei
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +28,11 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 //
+
+//	PLEASE NOTE:
+//	This is a HARD-CODED and pretty bad capture block replacement support for Beat.
+//	Do NOT reuse this code anywhere else without reviewing it or you might run into trouble.
+
 
 #import "RegExCategories.h"
 
@@ -99,11 +106,33 @@
     return pieces;
 }
 
+// How do I add mutable string support?
 - (NSString*) replace:(NSString*)string with:(NSString*)replacement
 {
+	// This is a HARD-CODED capture block replacement support for Beat.
+	// Do NOT use this code anywhere else without review. You have been warned.
+	// Replacement string can have $1-$9, so **test** replaced with <b>$2</b> can become <b>test</b>
+	
+	// Never stop the madness and here we go again.
+
+	if ([string isMatch:self] && [replacement isMatch:RX(@"\\$")]) {
+		RxMatch* match = [self firstMatchWithDetails:string];
+		RxMatchGroup *master = match.groups[0];
+		
+		NSArray *matches = [replacement matches:RX(@"\\$([1-9])")];
+		for (NSString *key in matches) {
+			NSInteger groupNumber = [[key substringFromIndex:1] integerValue];
+			RxMatchGroup *group = match.groups[groupNumber];
+			replacement = [replacement stringByReplacingOccurrencesOfString:key withString:group.value];
+		}
+
+		return [string stringByReplacingOccurrencesOfString:master.value withString:replacement];
+	}
+	
     return [self stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:replacement];
 }
 
+// NOTE: Block replacement DOES NOT support capture group replacement
 - (NSString*) replace:(NSString*)string withBlock:(NSString*(^)(NSString* match))replacer
 {
     //no replacer? just return
@@ -126,6 +155,7 @@
     return result;
 }
 
+// NOTE: Block replacement DOES NOT support capture group replacement
 - (NSString*) replace:(NSString *)string withDetailsBlock:(NSString*(^)(RxMatch* match))replacer
 {
     //no replacer? just return

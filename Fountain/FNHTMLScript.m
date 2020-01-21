@@ -31,13 +31,9 @@
  There are certain differences:
  
  - the English language default "written by" has been removed: [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
- 
  - HTML output links to either screen or print CSS depending on the target format. Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
- 
  - And - as I'm writing this, some functions in RegexKitLite.h have been deprecated in macOS 10.12+. Fair enough - it was apparently last updated in 2010.
- 
  I hadn't  made any films then. In 2010, I was young, madly in love and had dreams and aspirations. I had just recently started my studies in a film school.
- 
  In 9 years, I figured back then, I'd be making films that really communicated the pain I had gone through. My films would reach out to other lonely people, confined in their gloomy tomb, assured of their doom.
  
  Well.
@@ -54,6 +50,12 @@
  
  What can I say. STOP WASTING YOUR LIFE AND GO FUCK YOURSELF.
 
+ 
+ UPDATE 21th Jan 2020:
+ 
+ References to RegexKitLite hvae been removed. Totally.
+ 
+ It has resulted in some pretty strange solutions, and self-customizing a Regex library, but for now it works - also on modern systems.
  
 */
 
@@ -193,15 +195,15 @@
     return css;
 }
 
-- (NSString *)formatString: (NSMutableString *)string {
+- (NSString *)formatString: (NSString *)string {
 	
-	[string replace:RX(BOLD_ITALIC_UNDERLINE_PATTERN) with:@"<strong><em><u>$2</strong></em></u>"];
-	[string replace:RX(BOLD_ITALIC_PATTERN) with:@"<strong><em>$2</strong></em>"];
-	[string replace:RX(BOLD_UNDERLINE_PATTERN) with:@"<strong><u>$2</u></strong>"];
-	[string replace:RX(ITALIC_UNDERLINE_PATTERN) with:@"<em><u>$2</em></u>"];
-	[string replace:RX(BOLD_PATTERN) with:@"<strong>$2</strong>"];
-	[string replace:RX(ITALIC_PATTERN) with:@"<em>$2</em>"];
-	[string replace:RX(UNDERLINE_PATTERN) with:@"<u>$2</u>"];
+	string = [string replace:RX(BOLD_ITALIC_UNDERLINE_PATTERN) with:@"<strong><em><u>$2</strong></em></u>"];
+	string = [string replace:RX(BOLD_ITALIC_PATTERN) with:@"<strong><em>$2</strong></em>"];
+	string = [string replace:RX(BOLD_UNDERLINE_PATTERN) with:@"<strong><u>$2</u></strong>"];
+	string = [string replace:RX(ITALIC_UNDERLINE_PATTERN) with:@"<em><u>$2</em></u>"];
+	string = [string replace:RX(BOLD_PATTERN) with:@"<strong>$2</strong>"];
+	string = [string replace:RX(ITALIC_PATTERN) with:@"<em>$2</em>"];
+	string = [string replace:RX(UNDERLINE_PATTERN) with:@"<u>$2</u>"];
 	
 	return string;
 }
@@ -444,15 +446,15 @@
             }
             
             if ([element.elementType isEqualToString:@"Character"]) {
-                [text replace:RX(@"^@") with:@""];
+                [text setString:[text replace:RX(@"^@") with:@""]];
             }
             
             if ([element.elementType isEqualToString:@"Scene Heading"]) {
-                [text replace:RX(@"^\\.") with:@""];
+                [text setString:[text replace:RX(@"^\\.") with:@""]];
             }
             
             if ([element.elementType isEqualToString:@"Lyrics"]) {
-                [text replace:RX(@"^~") with:@""];
+                [text setString:[text replace:RX(@"^~") with:@""]];
 				if (!isLyrics) {
 					beginBlock = true;
 					isLyrics = true;
@@ -467,18 +469,18 @@
 			}
             
             if ([element.elementType isEqualToString:@"Action"]) {
-                [text replace:RX(@"^\\!") with:@""];
+                [text setString:[text replace:RX(@"^\\!") with:@""]];
             }
             
-            [text replace:RX(BOLD_ITALIC_UNDERLINE_PATTERN) with:@"<strong><em><u>$2</strong></em></u>"];
-            [text replace:RX(BOLD_ITALIC_PATTERN) with:@"<strong><em>$2</strong></em>"];
-            [text replace:RX(BOLD_UNDERLINE_PATTERN) with:@"<strong><u>$2</u></strong>"];
-            [text replace:RX(ITALIC_UNDERLINE_PATTERN) with:@"<em><u>$2</em></u>"];
-            [text replace:RX(BOLD_PATTERN) with:@"<strong>$2</strong>"];
-            [text replace:RX(ITALIC_PATTERN) with:@"<em>$2</em>"];
-            [text replace:RX(UNDERLINE_PATTERN) with:@"<u>$2</u>"];
+            [text setString:[text replace:RX(BOLD_ITALIC_UNDERLINE_PATTERN) with:@"<strong><em><u>$2</strong></em></u>"]];
+            [text setString:[text replace:RX(BOLD_ITALIC_PATTERN) with:@"<strong><em>$2</strong></em>"]];
+            [text setString:[text replace:RX(BOLD_UNDERLINE_PATTERN) with:@"<strong><u>$2</u></strong>"]];
+            [text setString:[text replace:RX(ITALIC_UNDERLINE_PATTERN) with:@"<em><u>$2</em></u>"]];
+            [text setString:[text replace:RX(BOLD_PATTERN) with:@"<strong>$2</strong>"]];
+            [text setString:[text replace:RX(ITALIC_PATTERN) with:@"<em>$2</em>"]];
+            [text setString:[text replace:RX(UNDERLINE_PATTERN) with:@"<u>$2</u>"]];
             
-            [text replace:RX(@"\\[{2}(.*?)\\]{2}") with:@""];
+            [text setString:[text replace:RX(@"\\[{2}(.*?)\\]{2}") with:@""]];
             
             //Find newlines and replace them with <br/>
             text = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"] mutableCopy];
