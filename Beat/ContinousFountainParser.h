@@ -6,7 +6,7 @@
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "Line.h"
 #import "OutlineScene.h"
 @class OutlineScene;

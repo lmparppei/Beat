@@ -32,10 +32,10 @@
 		B615E5E823CE00FB00E61C54 /* FNHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65419E1E8CA000489C4 /* FNHTMLScript.m */; };
 		B615E5E923CE022F00E61C54 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
+		B625F13E24327DE300873F62 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
 		B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62ADC7823CCCE560015563A /* PreviewViewController.m */; };
 		B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B62ADC7A23CCCE560015563A /* PreviewViewController.xib */; };
-		B62ADC8123CCCE560015563A /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B62ADC8F23CCE20D0015563A /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC8E23CCE20D0015563A /* QuickLook.framework */; };
 		B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC8E23CCE20D0015563A /* QuickLook.framework */; };
 		B62ADC9523CCEF0F0015563A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B61E19E1D6A7000489C4 /* WebKit.framework */; };
@@ -109,7 +109,7 @@
 			remoteGlobalIDString = B138B57219E1C973000489C4;
 			remoteInfo = Writer;
 		};
-		B62ADC7F23CCCE560015563A /* PBXContainerItemProxy */ = {
+		B625F13F24327DE400873F62 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B138B56B19E1C973000489C4 /* Project object */;
 			proxyType = 1;
@@ -119,13 +119,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		B62ADC8223CCCE560015563A /* Embed App Extensions */ = {
+		B625F14124327DE400873F62 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				B62ADC8123CCCE560015563A /* fountainQuickLook.appex in Embed App Extensions */,
+				B625F13E24327DE300873F62 /* fountainQuickLook.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -657,12 +657,12 @@
 				B138B57119E1C973000489C4 /* Resources */,
 				B6F4A2D0221EE96D0065D9CB /* CopyFiles */,
 				B6B6358E2222C8C8003159AF /* ShellScript */,
-				B62ADC8223CCCE560015563A /* Embed App Extensions */,
+				B625F14124327DE400873F62 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				B62ADC8023CCCE560015563A /* PBXTargetDependency */,
+				B625F14024327DE400873F62 /* PBXTargetDependency */,
 			);
 			name = Beat;
 			productName = Writer;
@@ -913,10 +913,10 @@
 			target = B138B57219E1C973000489C4 /* Beat */;
 			targetProxy = B138B58A19E1C974000489C4 /* PBXContainerItemProxy */;
 		};
-		B62ADC8023CCCE560015563A /* PBXTargetDependency */ = {
+		B625F14024327DE400873F62 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B62ADC7223CCCE560015563A /* fountainQuickLook */;
-			targetProxy = B62ADC7F23CCCE560015563A /* PBXContainerItemProxy */;
+			targetProxy = B625F13F24327DE400873F62 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1076,7 +1076,7 @@
 				INFOPLIST_FILE = Beat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = "1.1.0i beta";
+				MARKETING_VERSION = "1.1.0j beta";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -1107,7 +1107,7 @@
 				INFOPLIST_FILE = Beat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = "1.1.0i beta";
+				MARKETING_VERSION = "1.1.0j beta";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

@@ -87,6 +87,10 @@
 // Window
 @property (weak) NSWindow *thisWindow;
 
+// Autosave
+@property (nonatomic) bool autosave;
+@property (weak) NSTimer *autosaveTimer;
+
 // Text view
 @property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
 @property (weak) IBOutlet ScrollView *textScrollView;
@@ -259,9 +263,14 @@
 // Uh. Refer to fontSize / zooming functions to make sense of this stuff.
 // This spaghetti should be fixed ASAP.
 
+#define APP_NAME @"Beat"
+
 #define DEFAULT_ZOOM 16
 #define FONT_SIZE_MODIFIER 0.028
 #define ZOOM_MODIFIER 40
+
+#define AUTOSAVE_INTERVAL 1.0
+#define AUTOSAVE_INPLACE_INTERVAL 60.0
 
 // Some fixes for convoluted UI stuff
 #define FONT_SIZE 17.92 // used to be DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER
@@ -339,6 +348,9 @@
 	self.currentScene = nil;
 	self.currentLine = nil;
 	
+	if (_autosaveTimer) [self.autosaveTimer invalidate];
+	self.autosaveTimer = nil;
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document close" object:nil];
 	
 	[super close];
@@ -399,6 +411,7 @@
 	// Set first responder to the text field to focus it on startup
 	[aController.window makeFirstResponder:self.textView];
 	[self.textView setEditable:YES];
+	
 	
 	// Read default settings
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
@@ -483,9 +496,13 @@
 	
 	// Init scene filtering
 	_filters = [[SceneFiltering alloc] init];
+
+	// Custom autosave
+	[self initAutosave];
 	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
+
 	
 	// That's about it. The rest is even messier.
 	
@@ -501,6 +518,11 @@
 		[self.textView setNeedsDisplay:true];
 		
 		[self updateSceneNumberLabels];
+		
+		// Set up recovery file saving
+		[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
+		[self scheduleAutosaving];
+		[self setDisplayName:@"jahas"];
 	});
 }
 - (void)setFileURL:(NSURL *)fileURL {
@@ -519,6 +541,11 @@
 	 }
 }
 
+- (NSString *)displayName {
+	if (![self fileURL]) return @"loldemort";
+	
+	return [super displayName];
+}
 
 # pragma mark - Window interactions
 
@@ -664,6 +691,11 @@
 + (BOOL)autosavesInPlace {
     return NO;
 }
+
++ (BOOL)autosavesDrafts {
+	return YES;
+}
+
 
 // I have no idea what these are or do.
 - (NSString *)windowNibName {
@@ -1349,7 +1381,6 @@
 		
 		// This won't format empty lines for some reason: [paragraphStyle setLineHeightMultiple:1.05];
 		
-		
 		// Handle title page block
 		if (line.type == titlePageTitle  ||
 			line.type == titlePageAuthor ||
@@ -1454,7 +1485,7 @@
 		}
 	}
 	
-	//Remove all former paragraph styles and overwrite fonts
+	// Remove all former paragraph styles and overwrite fonts
 	if (!fontOnly) {
 		[textStorage removeAttribute:NSParagraphStyleAttributeName range:range];
 		
@@ -1484,7 +1515,7 @@
 		[self.textView setTypingAttributes:attributes];
 	}
 	
-	//Add in bold, underline, italic and all that other good stuff. it looks like a lot of code, but the content is only executed for every formatted block. for unformatted text, this just whizzes by
+	//Add in bold, underline, italic and all that other good stuff. it looks like a lot of code, but the content is only executed for every formatted block. For unformatted text, this just whizzes by.
 	
 	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSUInteger symbolLength = 1;
@@ -1568,7 +1599,8 @@
 - (NSFont*)courier
 {
     if (!_courier) {
-        _courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
+        //_courier = [NSFont fontWithName:@"Andale Mono" size:[self fontSize]];
+		_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
     }
     return _courier;
 }
@@ -2138,6 +2170,8 @@ static NSString *forceLyricsSymbol = @"~";
             [menuItem.submenu addItem:noThingPleaseSaveItem];
         }
         return YES;
+	} else if ([menuItem.title isEqualToString:@"Autosave"]) {
+		if (_autosave) menuItem.state = NSOnState; else menuItem.state = NSOffState;
 	} else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
         NSArray* words = [[self getText] componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         NSString* visibleCharacters = [words componentsJoinedByString:@""];
@@ -3908,7 +3942,115 @@ static NSString *forceLyricsSymbol = @"~";
 	if (scene) [self scrollToScene:scene];
 }
 
+#pragma mark - Autosave
 
+/*
+
+ Beat has two kinds of autosave: recovery & saving in place.
+ 
+ Autosave provided by NSDocument is used to saving drafts and
+ recovery files, while the custom autosave (enabled by the
+ user and triggered once a minute) just saves the file.
+ 
+ Recovery happens in ApplicationDelegate when launching the app
+ 
+ */
+
+- (IBAction)toggleAutosave:(id)sender {
+	if (_autosave) {
+		_autosave = NO;
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"Autosave"];
+	} else {
+		_autosave = YES;
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"Autosave"];
+	}
+}
+
+// Custom autosave in place
+- (void) autosaveInPlace {
+	// Don't autosave if it's an untitled document
+	if (self.fileURL == nil) return;
+	
+	if (_autosave && self.documentEdited) {
+		[self saveDocument:nil];
+	}
+}
+
+- (NSURL *)autosavedContentsFileURL {
+	NSURL *autosavePath = [self appDataPath:@"Autosave"];
+	autosavePath = [autosavePath URLByAppendingPathComponent:[self fileNameString]];
+	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
+
+	return autosavePath;
+}
+- (NSURL*)autosavePath {
+	return [self appDataPath:@"Autosave"];
+}
+- (NSURL*)appDataPath:(NSString*)subPath {
+	NSString* pathComponent = APP_NAME;
+	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
+	
+    NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+                                                                          NSUserDomainMask,
+                                                                          YES);
+	NSString* appSupportDir = [searchPaths firstObject];
+	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
+	
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+    if (![fileManager fileExistsAtPath:appSupportDir]) {
+        [fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+	
+	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
+}
+
+- (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
+	self.autosavedContentsFileURL = [self autosavedContentsFileURL];
+
+	[super autosaveDocumentWithDelegate:delegate didAutosaveSelector:didAutosaveSelector contextInfo:contextInfo];
+	
+	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
+	[self scheduleAutosaving];
+}
+- (BOOL)hasUnautosavedChanges {
+	// Always return YES if the file is a draft
+	if (self.fileURL == nil) return YES;
+	else { return [super hasUnautosavedChanges]; }
+}
+
+- (void) initAutosave {
+ 	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
+	
+	// Set default if not set
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"Autosave"]) {
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"Autosave"];
+	}
+	
+	NSString *autosaving = [[NSUserDefaults standardUserDefaults] objectForKey:@"Autosave"];
+	if ([autosaving isEqualToString:@"YES"]) _autosave = YES; else _autosave = NO;
+}
+
+- (void)saveDocumentAs:(id)sender {
+	NSLog(@"what");
+	
+	// Delete old drafts when saving under a new name
+	NSString *previousName = self.fileNameString;
+	
+	[super saveDocumentAs:sender];
+	
+	NSURL *url = [self appDataPath:@"Autosave"];
+	url = [url URLByAppendingPathComponent:previousName];
+	url = [url URLByAppendingPathExtension:@"fountain"];
+	
+	NSLog(@"url %@", url);
+	
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	if ([fileManager fileExistsAtPath:url.path]) {
+		[fileManager removeItemAtURL:url error:nil];
+	}
+}
 #pragma mark - scroll listeners
 
 /* Listen to scrolling of the view. Listen to the birds. Listen to wind blowing all your dreams away, to make space for new ones to rise, when the spring comes. */

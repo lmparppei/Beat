@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15702" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15702"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -113,11 +113,10 @@
                                     <action selector="revertDocumentToSaved:" target="-1" id="iJ3-Pv-kwq"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Share" id="tZ7-Ir-m78">
+                            <menuItem title="Autosave" id="eZ7-I2-Df6">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Share" id="u2H-KZ-IwH"/>
                                 <connections>
-                                    <action selector="share:" target="-1" id="x1b-hY-qBr"/>
+                                    <action selector="toggleAutosave:" target="-1" id="UJw-ny-khR"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
@@ -184,6 +183,14 @@
                                 </menu>
                                 <connections>
                                     <action selector="export:" target="-1" id="TfW-38-X9Y"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="wN5-Sx-8eI"/>
+                            <menuItem title="Share" id="tZ7-Ir-m78">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Share" id="u2H-KZ-IwH"/>
+                                <connections>
+                                    <action selector="share:" target="-1" id="x1b-hY-qBr"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -789,7 +796,7 @@ DQ
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O3j-Ar-9mq">
-                        <rect key="frame" x="347" y="8" width="103" height="25"/>
+                        <rect key="frame" x="347.5" y="8" width="103" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="Browse" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9GZ-Iv-cVZ">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -800,7 +807,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jcl-C2-5kX">
-                        <rect key="frame" x="12" y="8" width="113" height="25"/>
+                        <rect key="frame" x="12.5" y="8" width="113" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="Tutorial" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="U0e-4t-f7p">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -811,7 +818,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EgL-h8-fPx">
-                        <rect key="frame" x="457" y="8" width="96" height="25"/>
+                        <rect key="frame" x="457.5" y="8" width="96" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="New" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Lab-Kg-ETM">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -848,7 +855,7 @@ DQ
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="blg-LD-9vu">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <rect key="contentRect" x="196" y="240" width="534" height="317"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="2zn-ZX-4dS">
                 <rect key="frame" x="0.0" y="0.0" width="534" height="317"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -864,15 +871,15 @@ DQ
                                     <rect key="frame" x="210" y="0.0" width="324" height="317"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="eFV-ne-twe">
-                                        <rect key="frame" x="0.0" y="0.0" width="309" height="317"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="324" height="317"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <textView ambiguous="YES" editable="NO" drawsBackground="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" linkDetection="YES" textCompletion="NO" smartInsertDelete="YES" id="X7u-6E-wyW">
-                                                <rect key="frame" x="0.0" y="0.0" width="299" height="317"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="314" height="317"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <size key="minSize" width="299" height="317"/>
+                                                <size key="minSize" width="314" height="317"/>
                                                 <size key="maxSize" width="325" height="10000000"/>
                                                 <attributedString key="textStorage">
                                                     <fragment content="Test">
@@ -893,7 +900,7 @@ DQ
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                     <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="0da-TB-O2I">
-                                        <rect key="frame" x="309" y="0.0" width="15" height="317"/>
+                                        <rect key="frame" x="308" y="0.0" width="16" height="317"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>

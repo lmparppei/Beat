@@ -6,7 +6,7 @@
 //  Copyright © 2019 KAPITAN!. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "OutlineScene.h"
 #import "ContinousFountainParser.h"
 

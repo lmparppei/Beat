@@ -37,6 +37,7 @@
         _lines = [[NSMutableArray alloc] init];
 		_outline = [[NSMutableArray alloc] init];
         _changedIndices = [[NSMutableArray alloc] init];
+
         [self parseText:string];
     }
     
@@ -132,7 +133,7 @@
         [self incrementLinePositionsFromIndex:lineIndex+2 amount:1];
         
         return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(lineIndex, 2)];
-    } else {
+    } else {   
         NSArray* pieces = @[[line.string substringToIndex:indexInLine],
                             character,
                             [line.string substringFromIndex:indexInLine]];
@@ -365,10 +366,7 @@
         }
 		
 		line.color = [self colorForHeading:line];
-    }
-	
-	// Count visual height for the element (in lines)
-	// [line setElementHeight];
+    }	
 }
 
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index
@@ -741,7 +739,7 @@
 
 		NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
 		note =  [note substringWithRange:noteRange];
-		
+        
 		if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN] == true) {
 			if ([note length] > [@COLOR_PATTERN length] + 1) {
 				NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];

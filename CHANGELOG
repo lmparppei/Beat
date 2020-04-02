@@ -1,8 +1,14 @@
 
 ## Beat 1.1 release
 
-* Rewritten some of the open source Fountain stuff which still used the old RegexKitLite library. A lot of work still remains.
+* Soon!
+
+## Beat 1.1.0j
+
+* Some of the legacy open source Fountain stuff, which still use the old RegexKitLite library, has been rewritten. A lot of work still remains.
 * Quick Look extension!
+* Autosave
+* If the app crashes, unsaved documents can be recovered
 
 
 ## 1.1.0i

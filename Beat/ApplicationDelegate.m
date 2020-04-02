@@ -45,13 +45,85 @@
 	return NO;
 }
 
--(void) awakeFromNib {
+- (void) awakeFromNib {
 	NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
 	NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
 	
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
 	[versionField setStringValue:versionString];
 	[aboutVersionField setStringValue:versionString];
+}
+
+- (void)applicationWillFinishLaunching:(NSNotification *)notification {
+	[self checkAutosavedFiles];
+}
+
+- (void)checkAutosavedFiles {
+	// We will run this operation in another thread, so that the app can start and opening recovered documents won't mess up any other logic built into the app. Thanks for calling it logic, though.
+	
+	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+		__block NSFileManager *fileManager = [NSFileManager defaultManager];
+		
+		NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleNameKey];
+		NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+		NSString* appSupportDir = [searchPaths firstObject];
+		appSupportDir = [appSupportDir stringByAppendingPathComponent:appName];
+		appSupportDir = [appSupportDir stringByAppendingPathComponent:@"Autosave"];
+		
+		NSArray *files = [fileManager contentsOfDirectoryAtPath:appSupportDir error:nil];
+		
+		for (NSString *file in files) {
+			if (![file.pathExtension isEqualToString:@"fountain"]) continue;
+			
+			__block NSString *filename = [NSString stringWithString:file];
+			
+			dispatch_async(dispatch_get_main_queue(), ^(void){
+				NSAlert *alert = [[NSAlert alloc] init];
+				alert.messageText = [NSString stringWithFormat:@"%@", filename];
+				alert.informativeText = @"An unsaved script was found. Do you want to recover the latest autosaved version of this file?";
+				[alert addButtonWithTitle:@"Recover"];
+				[alert addButtonWithTitle:@"Cancel"];
+
+				NSModalResponse response = [alert runModal];
+
+				if (response == NSAlertFirstButtonReturn) {
+					NSURL *recoverURL = [NSURL fileURLWithPath:appSupportDir];
+					recoverURL = [recoverURL URLByAppendingPathComponent:file];
+					
+					NSString *recoveredFilename = [[[filename stringByDeletingPathExtension] stringByAppendingString:@" (Recovered)"] stringByAppendingString:@".fountain"];
+					
+					NSSavePanel *saveDialog = [NSSavePanel savePanel];
+					[saveDialog setAllowedFileTypes:@[@"Fountain"]];
+					[saveDialog setNameFieldStringValue:recoveredFilename];
+					
+					[saveDialog beginWithCompletionHandler:^(NSInteger result) {
+						if (result == NSFileHandlingPanelOKButton) {
+
+							NSError *error;
+							[fileManager moveItemAtPath:[appSupportDir stringByAppendingPathComponent:file] toPath:saveDialog.URL.path error:&error];
+							
+							[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:saveDialog.URL display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+							}];
+							if (error) {
+								NSAlert *alert = [[NSAlert alloc] init];
+								alert.messageText = [NSString stringWithFormat:@"Error recovering %@", filename];
+								alert.informativeText = @"The file could not be recovered, but don't worry, it is still safe. Restart Beat and try to recover into another location.";
+								alert.alertStyle = NSAlertStyleWarning;
+								[alert runModal];
+							}
+						} else {
+							// If the user really doesn't want to spare this file, let's fucking delete it FOREVER!!!
+							[fileManager removeItemAtPath:[appSupportDir stringByAppendingPathComponent:filename] error:nil];
+						}
+					}];
+				} else {
+					// Again, if REST IN PEACE, motherfucker!!!
+					[fileManager removeItemAtPath:[appSupportDir stringByAppendingPathComponent:filename] error:nil];
+				}
+				
+			});
+		}
+	});
 }
 
 - (IBAction)showReference:(id)sender
