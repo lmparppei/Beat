@@ -18,6 +18,13 @@
 
 @implementation ScrollView
 
+#define HIDE_INTERVAL 5.0
+
+- (instancetype)init {
+	_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(hideButtons) userInfo:nil repeats:NO];
+	return [super init];
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
 	[NSGraphicsContext saveGraphicsState];
     [super drawRect:dirtyRect];
@@ -43,12 +50,36 @@
 		[NSGraphicsContext saveGraphicsState];
 		NSRectFillUsingOperation(marginLeft, NSCompositingOperationSourceOver);
 		NSRectFillUsingOperation(marginRight, NSCompositingOperationSourceOver);
-		
 		[NSGraphicsContext restoreGraphicsState];
 	}
 }
 
-// Listen to find bar open/close and move the buttons accordingly
+- (void)shouldHideButtons:(NSTimer *) timer {
+	NSEvent *event = timer.userInfo;
+	
+	// Don't hide the toolbar buttons if the mouse is in the upper section of the window
+	if (event.locationInWindow.y < _outlineButton.frame.origin.y - 5) [self hideButtons];
+	else return;
+}
+- (void)hideButtons {
+	[[_outlineButton animator] setAlphaValue:0.0];
+	[[_cardsButton animator] setAlphaValue:0.0];
+	[[_timelineButton animator] setAlphaValue:0.0];
+}
+- (void)showButtons {
+	[[_outlineButton animator] setAlphaValue:1.0];
+	[[_cardsButton animator] setAlphaValue:1.0];
+	[[_timelineButton animator] setAlphaValue:1.0];
+}
+
+- (void)mouseMoved:(NSEvent *)event {
+	[self showButtons];
+	[_mouseMoveTimer invalidate];
+	
+	_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(shouldHideButtons:) userInfo:event repeats:NO];
+}
+
+// Listen to find bar open/close and move the outline / card view buttons accordingly
 - (void)setFindBarVisible:(BOOL)findBarVisible {
 	[super setFindBarVisible:findBarVisible];
 	

@@ -1,12 +1,13 @@
 //
-//  NCRAutocompleteTextView.m
+//	BeatTextView.m
+//  Based on NCRAutocompleteTextView.m
 //  Heavily modified for Beat
 //
 //  Copyright (c) 2014 Null Creature. All rights reserved.
 //  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import "NCRAutocompleteTextView.h"
+#import "BeatTextView.h"
 #import "DynamicColor.h"
 
 #define MAX_RESULTS 10
@@ -58,7 +59,7 @@
 static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalog.colorPicker";
 
 #pragma mark - Autocompleting
-@interface NCRAutocompleteTextView ()
+@interface BeatTextView ()
 @property (weak) IBOutlet NSTouchBar *touchBar;
 
 @property (nonatomic, strong) NSPopover *autocompletePopover;
@@ -73,7 +74,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @end
 
-@implementation NCRAutocompleteTextView
+@implementation BeatTextView
 
 - (void)awakeFromNib {
 	self.pageBreaks = [NSMutableArray array];
@@ -361,9 +362,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_marginColor = newColor;
 }
 
-// The thing is, we should (and need to) draw the PAPER instead of the margins to avoid having ugly scroll bars.
-// Should this be done in some other element, set drawBackground:NO for our textView?
 
+// To mask out stuff we don't want to see when filtering scenes
 - (void)drawRect:(NSRect)dirtyRect {
 	[NSGraphicsContext saveGraphicsState];
 	[super drawRect:dirtyRect];

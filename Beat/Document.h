@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
-#import "NCRAutocompleteTextView.h"
+#import "BeatTextView.h"
 
 @interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NCRAutocompleteTableViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler>
 	//NSCollectionViewDataSource, NSCollectionViewDelegate

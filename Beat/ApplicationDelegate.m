@@ -222,7 +222,7 @@
 	[alert addButtonWithTitle:@"Continue"];
 	[alert setMessageText:@"Final Draft Import"];
 	//[alert setInformativeText:@“NSWarningAlertStyle \r Do you want to continue with delete of selected records"];
-	[alert setInformativeText:@"NOTE: This feature is still under development. Basic elements (such as dialogue, actions, transitions) will import correctly, but you should double-check the results. Sorry for any inconvience!"];
+	[alert setInformativeText:@"NOTE: This feature is still under development. Basic elements (such as dialogue, actions, transitions) will import correctly, but you should double-check the results. Sorry for any inconvenience!"];
 	[alert setAlertStyle:NSAlertStyleWarning];
 	
 	[alert beginSheetModalForWindow:NSApp.windows[0] completionHandler:^(NSInteger result) {

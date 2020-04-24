@@ -61,7 +61,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1100" height="661"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -84,7 +84,7 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="800" height="541"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="NCRAutocompleteTextView">
+                                                    <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
                                                         <rect key="frame" x="0.0" y="0.0" width="785" height="541"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -121,7 +121,10 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <connections>
+                                                <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Bvs-MS-k7k"/>
+                                                <outlet property="outlineButton" destination="ULq-c1-qrj" id="CuS-Gp-cWK"/>
                                                 <outlet property="outlineButtonY" destination="S8n-vU-Ues" id="vM9-Nj-Iyl"/>
+                                                <outlet property="timelineButton" destination="SU7-uh-HJD" id="cka-oG-7P8"/>
                                             </connections>
                                         </scrollView>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uRk-cB-Qej">
@@ -135,7 +138,7 @@
                                             </wkWebViewConfiguration>
                                         </wkWebView>
                                         <button toolTip="Show Outline" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
-                                            <rect key="frame" x="315" y="630" width="24" height="19"/>
+                                            <rect key="frame" x="315" y="628" width="24" height="21"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="24" id="26U-Jf-0Uo"/>
                                             </constraints>
@@ -149,10 +152,10 @@
                                             </connections>
                                         </button>
                                         <button toolTip="Show Cards" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZL1-eS-Zb2" userLabel="Cards Button">
-                                            <rect key="frame" x="1050" y="630" width="24" height="19"/>
+                                            <rect key="frame" x="1051" y="628" width="27" height="21"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="24" id="Afx-Wj-98R"/>
-                                                <constraint firstAttribute="height" constant="19" id="ufE-00-HmI"/>
+                                                <constraint firstAttribute="width" constant="27" id="Afx-Wj-98R"/>
+                                                <constraint firstAttribute="height" constant="21" id="ufE-00-HmI"/>
                                             </constraints>
                                             <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -496,17 +499,34 @@
                                                 <constraint firstItem="RaS-3C-d5c" firstAttribute="top" secondItem="yra-qv-1lk" secondAttribute="top" id="zMt-tT-dcR"/>
                                             </constraints>
                                         </customView>
+                                        <button toolTip="Show Cards" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SU7-uh-HJD" userLabel="Cards Button">
+                                            <rect key="frame" x="1015" y="628" width="27" height="22"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="22" id="820-HN-xnq"/>
+                                                <constraint firstAttribute="width" constant="27" id="FnC-U4-MhE"/>
+                                            </constraints>
+                                            <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="3LY-u6-Jq0">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <accessibility description="Card view"/>
+                                            <connections>
+                                                <action selector="toggleTimeline:" target="-2" id="h1e-AW-X20"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="Mky-48-wwA" firstAttribute="leading" secondItem="yra-qv-1lk" secondAttribute="trailing" id="0N2-40-dnA"/>
                                         <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="2sf-fb-9XP"/>
-                                        <constraint firstAttribute="trailing" secondItem="ZL1-eS-Zb2" secondAttribute="trailing" constant="26" id="3ED-YM-88R"/>
+                                        <constraint firstAttribute="trailing" secondItem="ZL1-eS-Zb2" secondAttribute="trailing" constant="22" id="3ED-YM-88R"/>
                                         <constraint firstAttribute="trailing" secondItem="uRk-cB-Qej" secondAttribute="trailing" id="6IE-bj-H3u"/>
                                         <constraint firstItem="ZL1-eS-Zb2" firstAttribute="baseline" secondItem="ULq-c1-qrj" secondAttribute="baseline" id="7mc-U1-G75"/>
                                         <constraint firstItem="uRk-cB-Qej" firstAttribute="top" secondItem="Mky-48-wwA" secondAttribute="bottom" id="Bxb-gc-vdT"/>
+                                        <constraint firstItem="ZL1-eS-Zb2" firstAttribute="leading" secondItem="SU7-uh-HJD" secondAttribute="trailing" constant="9" id="DQp-Bm-gX0"/>
                                         <constraint firstItem="yra-qv-1lk" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="Djf-2R-13M"/>
                                         <constraint firstAttribute="bottom" secondItem="uRk-cB-Qej" secondAttribute="bottom" id="EIK-TP-NFv"/>
                                         <constraint firstItem="uRk-cB-Qej" firstAttribute="leading" secondItem="Qth-9B-jWR" secondAttribute="leading" id="L3a-wY-rAJ"/>
+                                        <constraint firstItem="SU7-uh-HJD" firstAttribute="baseline" secondItem="ZL1-eS-Zb2" secondAttribute="baseline" id="LDJ-rc-op1"/>
                                         <constraint firstItem="ZL1-eS-Zb2" firstAttribute="top" secondItem="ULq-c1-qrj" secondAttribute="top" id="Lgt-MR-HCD"/>
                                         <constraint firstItem="uRk-cB-Qej" firstAttribute="top" secondItem="yra-qv-1lk" secondAttribute="bottom" id="OY9-Sv-5gn"/>
                                         <constraint firstItem="ULq-c1-qrj" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" constant="12" id="S8n-vU-Ues"/>
@@ -518,11 +538,11 @@
                             </tabViewItem>
                             <tabViewItem label="Render" identifier="2" id="Ycm-en-OeX" userLabel="Render Tab">
                                 <view key="view" id="ECs-3D-rzc">
-                                    <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <webView translatesAutoresizingMaskIntoConstraints="NO" id="Vil-EQ-uOZ">
-                                            <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
                                             <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" loadsImagesAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
                                                 <nil key="identifier"/>
                                             </webPreferences>
@@ -539,11 +559,11 @@
                             </tabViewItem>
                             <tabViewItem label="Cards" identifier="3" id="798-ya-EGc" userLabel="Cards Tab">
                                 <view key="view" id="fPc-ie-Xae">
-                                    <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ja-Hc-I6Z">
-                                            <rect key="frame" x="0.0" y="0.0" width="1050" height="661"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
                                             <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat">
                                                 <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                                 <wkPreferences key="preferences"/>
@@ -648,7 +668,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="794" height="505"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="Rnd-rQ-nX0">
                 <rect key="frame" x="0.0" y="0.0" width="794" height="505"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -686,7 +706,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="407" height="406"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="8h1-uw-OWJ">
                 <rect key="frame" x="0.0" y="0.0" width="407" height="406"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1143,6 +1163,7 @@ Gw
         <image name="NSTouchBarGoUpTemplate" width="16" height="30"/>
         <image name="OutlineIcon" width="370" height="370"/>
         <image name="OutlineIcon_white" width="512" height="512"/>
+        <image name="TimelineIcon" width="512" height="512"/>
         <image name="TimelineIcon_white" width="512" height="512"/>
     </resources>
 </document>

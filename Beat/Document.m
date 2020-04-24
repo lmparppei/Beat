@@ -29,11 +29,11 @@
  
  N.B.
  
- Beat has been cooked up by using lots of trial and error, and this file has become a 2900-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. Some structures (such as themes) are legacy from Writer, and have since been replaced with totally different approach. Their names and complimentary methods still linger around.
+ Beat has been cooked up by using lots of trial and error, and this file has become a 4000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. Some structures (such as themes) are legacy from Writer, and have since been replaced with totally different approach. Their names and complimentary methods still linger around.
  
  About a third of the code has its origins in Writer by Hendrik Noeller. As I started this project, I had close to zero knowledge on Objective-C, and it really shows.
  
- You can find some *very* shady stuff, such as ThemeManager and zoomLevel & zoomModifier, which are scattered around here and there with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer, and though I have since made it much more sensible, dismantling my weird solutions is still WIP.
+ You can find some *very* shady stuff, such as ThemeManager, lying around here and there with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
  Anyway, may this be of some use to you, dear friend.
  
@@ -62,7 +62,7 @@
 #import <Foundation/Foundation.h>
 #import "Document.h"
 #import "ScrollView.h"
-#import "NCRAutocompleteTextView.h"
+#import "BeatTextView.h"
 #import "FNScript.h"
 #import "FNHTMLScript.h"
 #import "FDXInterface.h"
@@ -92,7 +92,7 @@
 @property (weak) NSTimer *autosaveTimer;
 
 // Text view
-@property (unsafe_unretained) IBOutlet NCRAutocompleteTextView *textView;
+@property (unsafe_unretained) IBOutlet BeatTextView *textView;
 @property (weak) IBOutlet ScrollView *textScrollView;
 @property (weak) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSTimer * scrollTimer;
@@ -130,7 +130,13 @@
 //    to your fucking sky-high profits.
 //
 //    You are the most profitable company operating in our current monetary
-//    and economic system. EQUALITY AND FREEDOM FOR EVERYONE. FUCK YOU, APPLE.
+//    and economic system. EQUALITY, WELFARE AND FREEDOM FOR EVERYONE.
+//    FUCK YOU, APPLE.
+
+//    2020 edit: FUCK YOU EVEN MORE, fucking capitalist motherfuckers for
+//    allowing SLAVE LABOUR in your subcontracting factories, you fucking
+//    pieces of human garbage!!! Go fuck yourself, Apple.
+//    So, on to the code:
 
 @property (nonatomic) IBOutlet ColorCheckbox *redCheck;
 @property (nonatomic) IBOutlet ColorCheckbox *blueCheck;
@@ -269,7 +275,7 @@
 #define FONT_SIZE_MODIFIER 0.028
 #define ZOOM_MODIFIER 40
 
-#define AUTOSAVE_INTERVAL 1.0
+#define AUTOSAVE_INTERVAL 10.0
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
 // Some fixes for convoluted UI stuff
@@ -288,9 +294,11 @@
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 #define FLATOUTLINE YES
+// The whole outline thing should be rewritten ASAP
 
 
 // DOCUMENT LAYOUT SETTINGS
+// The 0.?? values represent percentages of view width
 
 #define TEXT_INSET_TOP 40
 
@@ -351,6 +359,7 @@
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
 	
+	// ApplicationDelegate will show welcome screen when no documents are open
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document close" object:nil];
 	
 	[super close];
@@ -363,9 +372,8 @@
 	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, 350)];
 	
     // Add any code here that needs to be executed once the windowController has loaded the document's window.
-    //    aController.window.titleVisibility = NSWindowTitleHidden; //Makes the title and toolbar unified by hiding the title
 	
-	/// Hide the welcome screen
+	// Hide the welcome screen
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
 	// Revised layout code for 1.1.0 release
@@ -373,7 +381,7 @@
 	_documentWidth = DOCUMENT_WIDTH;
 	[self setZoom];
 
-    //Set the width programmatically since w've got the outline visible in IB to work on it, but don't want it visible on launch
+    // Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
     NSWindow *window = aController.window;
     NSRect newFrame = NSMakeRect(window.frame.origin.x,
                                  window.frame.origin.y,
@@ -382,7 +390,7 @@
     [window setFrame:newFrame display:YES];
 	
 	// Accept mouse moved events... nah
-	// [aController.window setAcceptsMouseMovedEvents:YES];
+	[aController.window setAcceptsMouseMovedEvents:YES];
 	
 	// Outline view setup
     self.outlineViewVisible = false;
@@ -442,7 +450,6 @@
 	self.textScrollView.backgroundColor = self.themeManager.theme.backgroundColor;
 	
 	// Initialize drag & drop for outline view
-	//[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, NSPasteboardTypeString]];
 	[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self.outlineView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
 
@@ -503,14 +510,12 @@
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 
-	
-	// That's about it. The rest is even messier.
-	
 	// Can I come over, I need to rest
 	// lay down for a while, disconnect
 	// the night was so long, the day even longer
 	// lay down for a while, recollect
 }
+
 - (void) afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self updateLayout];
@@ -522,9 +527,9 @@
 		// Set up recovery file saving
 		[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
 		[self scheduleAutosaving];
-		[self setDisplayName:@"jahas"];
 	});
 }
+
 - (void)setFileURL:(NSURL *)fileURL {
 	NSString *oldName = [NSString stringWithString:[self fileNameString]];
 	[super setFileURL:fileURL];
@@ -532,7 +537,7 @@
 						 
     // The file was renamed
 	 if (![newName isEqualToString:oldName] && [oldName length] > 0) {
-		 // Set gender data
+		 // Set gender data --- though I guess this is unnecessary?
 		 /*
 		 NSDictionary *genderData = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:oldName];
 		 [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] setValue:genderData forKey:newName];
@@ -542,8 +547,7 @@
 }
 
 - (NSString *)displayName {
-	if (![self fileURL]) return @"loldemort";
-	
+	if (![self fileURL]) return @"Untitled";
 	return [super displayName];
 }
 
@@ -556,6 +560,7 @@
 - (void)windowDidResize:(NSNotification *)notification {
 	[self updateLayout];
 }
+
 - (void) updateLayout {
 	[self setMinimumWindowSize];
 	
@@ -658,6 +663,7 @@
 	_scaleFactor = newScaleFactor;
 	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
 }
+
 - (void) scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
 {
 	CGFloat scaler = newScale / oldScale;
@@ -698,6 +704,7 @@
 
 
 // I have no idea what these are or do.
+
 - (NSString *)windowNibName {
     return @"Document";
 }
@@ -800,7 +807,6 @@
             [fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
-    
 }
 
 - (IBAction)exportOutline:(id)sender
@@ -1029,6 +1035,7 @@
 	// Draw masks again if text did change
 	if ([_filteredOutline count]) [self maskScenes];
 }
+
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
@@ -1185,33 +1192,22 @@
 }
 
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-	
+
 	NSMutableArray *matches = [NSMutableArray array];
 	NSMutableArray *search = [NSMutableArray array];
 	
+	// Choose which array to search
+	if (_currentLine.type == character) search = _characterNames;
+	else if (_currentLine.type == heading) search = _sceneHeadings;
 	
-	if (_currentLine.type == character) {
-		// We'll cache this elsewhere
-		//[self collectCharacterNames];
-		search = _characterNames;
-	}
-	else if (_currentLine.type == heading) {
-		// We'll cache this elsewhere
-		// [self collectHeadings];
-		search = _sceneHeadings;
-	}
-	
+	// Find matching lines for the partially typed line
 	for (NSString *string in search) {
-		//NSString * stringToComplete = [[textView string] substringWithRange:charRange];
-		//if ([string rangeOfString:stringToComplete options:NSAnchoredSearch].location != NSNotFound) [matches addObject:string];
-		
 		if ([string rangeOfString:[[textView string] substringWithRange:charRange] options:NSAnchoredSearch range:NSMakeRange(0, [string length])].location != NSNotFound) {
 			[matches addObject:string];
 		}
 	}
 	
 	[matches sortUsingSelector:@selector(compare:)];
-	
 	return matches;
 }
 
@@ -1226,10 +1222,10 @@
 	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
 	
 	[self applyFormatChanges];
-	[self formattAllLines];
+	[self formatAllLines];
 }
 
-- (void)formattAllLines
+- (void)formatAllLines
 {
 	for (Line* line in self.parser.lines) {
 		[self formatLineOfScreenplay:line onlyFormatFont:NO];
@@ -1254,19 +1250,6 @@
 	
     [self.parser.changedIndices removeAllObjects];
 }
-- (void)reformatScript
-{
-	// This function is used to perform lookback when loading the script. The thing is, Fountain files should be parsed from bottom to top, as otherwise we really won't know the meaning of some lines.
-	
-	// Beat relies on Hendrik Noeller's work on Continuous Fountain Parser, which parses the file in a linear manner. This works just fine most of the time, but in Beat, formatting methods have been updated to take next and previous lines into consideration.
-	
-	// Unfortunately, this also means having to parse the whole file two times when loading.
-	
-	// Set all indices as changed
-	[self.parser resetParsing];
-	// Format everything again
-	[self applyFormatChanges];
-}
 
 - (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly
 {
@@ -1286,6 +1269,8 @@
 	// We'll perform a lookback to see that we didn't mistake some uppercase for character cues.
 	// I really have NO FUCKING IDEA what's going on in here.
 	// Still I managed to get it to work.
+	
+	/// And basically, this is the part where I lost any hope for having an iOS version. The loopback system here is quite convoluted and simultaneously relies on both the parser and interface. Interface SHOULD NOT handle this recursion, but that would require an overhaul of the parser. And I'm not strong enough.
 	
 	if (!recursive) {
 		NSInteger index = [[self.parser lines] indexOfObject:line];
@@ -1339,14 +1324,13 @@
 		}
 	}
 	
+	// Let's do the real formatting now
 	NSTextStorage *textStorage = [self.textView textStorage];
-	
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
 	
-	NSMutableParagraphStyle *lineHeight = [[NSMutableParagraphStyle alloc]init];
-	
 	// This doesn't format empty lines for some reason: [lineHeight setLineHeightMultiple:1.05];
-	[attributes setObject:lineHeight forKey:NSParagraphStyleAttributeName];
+	//NSMutableParagraphStyle *lineHeight = [[NSMutableParagraphStyle alloc]init];
+	//[attributes setObject:lineHeight forKey:NSParagraphStyleAttributeName];
 	
 	// Format according to style
 	if ((line.type == heading && [line.string characterAtIndex:0] != '.') ||
@@ -2312,7 +2296,7 @@ static NSString *forceLyricsSymbol = @"~";
 	else openDocuments = @[self];
 	
     for (Document* doc in openDocuments) {
-        NCRAutocompleteTextView *textView = doc.textView;
+        BeatTextView *textView = doc.textView;
 		
 		[textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
 		[doc.textScrollView setMarginColor:[self.themeManager currentMarginColor]];
@@ -2323,7 +2307,7 @@ static NSString *forceLyricsSymbol = @"~";
 		}];
         [textView setTextColor:[self.themeManager currentTextColor]];
         [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
-        [doc formattAllLines];
+        [doc formatAllLines];
 		
 		NSOutlineView *outlineView = doc.outlineView;
 		[outlineView setBackgroundColor:self.themeManager.theme.outlineBackground];

@@ -6,14 +6,14 @@ Read more: https://kapitan.fi/beat/
 
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and about a third of the code still originates from his work, especially within the magnificent continuous Fountain parser.
 
-This started as a personal project as I needed a simple, multi-window and lightweight screenwriting application for my own films, preferrably using Fountain files. The ones that existed were weird, expensive and/or cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations, of course.
+This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. The Fountain screenwriting apps that existed were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations and quirks, though.
 
-There is an iOS version on the way, scheduled for release in mid-2020. It won't be free (very cheap though), but a big chunk of its code is still under GPL. Parts of Beat are under MIT license.
+There is a working iOS prototype, but its development is on hiatus right now, as I'm working on my own films. The mobile version won't be free, but a big chunk of its code is still under GPL. 
 
-I am an artist and a filmmaker, so my programming skills are somewhat limited. I'm open to any suggestions, improvements, feedback and collaboration.
+I not a real programmer but an artist and a filmmaker, and it really shows in the code. I'm open to any suggestions, improvements, feedback and collaboration.
 
 
-## Latest release: Beat 1.1.0i
+## Latest release: Beat 1.1.0j
 
 **Features**
 * Minimalistic UI that stays out of the way
@@ -30,7 +30,8 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 * Autocomplete characters and scene headings
 * Color-coded scenes
 * Analysis view, with line count per character, amount lines by gender, scene locations, etc.
-* Faster and more stable than before
+* Fountain Quicklook in Finder
+* Autosave & script backups in case of crashes 
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 
@@ -38,23 +39,23 @@ I am an artist and a filmmaker, so my programming skills are somewhat limited. I
 
 ### State of development
 
-Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP. 
+Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP. As of 1.1.0, the app is getting more and more stable.
 
-As of 1.1.0, the app is finally pretty stable and has remained very minimalistic.
-
-Some future considerations:
+Some future milestones & considerations:
 
 * Fixing the ancient Fountain open source stuff, incl. removing references to RegexKitLite
-* Show pages in edit view (probably not, though)
+* Show pages in edit view (this might turn out to be a bigger problem than expected)
 * Have Beat only allow happy endings (somewhat limiting)
 * Making the world a better place (not enough coding skills)
 * Planting some trees to fight climate change (WIP)
 
-### How can you help?
+### Can I help?
 
-Well, I'm not sure, but please do. As stated above, the person behind this project is not a real programmer. When I started the project, my understanding of Objective-C was little to none, and it shows. Though my code has been getting gradually better, there are still silly things going on. Help, donations and feedback are highly appreciated! If you are here just to steal some code, the best stuff can be found under Parsing, Fountain and User Interface folders in the project. 
+Please do! As stated above, the person behind this project is not a real programmer. When I started the project, my understanding of Objective-C was little to none, and it shows. Though my code has been getting better, there are still silly things going on. Help, donations and feedback are highly appreciated! 
 
-At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetaeva and Charles Bukowski. All apologies.
+If you are here just to steal some code for your own Fountain editor, the best stuff can be found under Parsing, Fountain and User Interface folders in the project. Note that most of the code is under GPL, so you need to share your derivative work publicly. Interface elements are mostly unde MIT license. 
+
+At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva and Charles Bukowski. All apologies.
 
 Lauri-Matti Parppei  
 KAPITAN!  

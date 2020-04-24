@@ -1,9 +1,10 @@
 //
-//  NCRAutocompleteTextView.m
+//	BeatTextView.m
+//  Based on NCRAutocompleteTextView.m
 //  Modified for Beat
 //
-//  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //  Copyright (c) 2014 Null Creature. All rights reserved.
+//  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
@@ -15,7 +16,7 @@
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index;
 @end
 
-@interface NCRAutocompleteTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
+@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 //@property (weak) id <NCRAutocompleteTableViewDelegate> delegate;
 @property NSMutableArray* masks;

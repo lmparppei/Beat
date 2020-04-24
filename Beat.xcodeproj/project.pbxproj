@@ -50,7 +50,7 @@
 		B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
 		B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
-		B6482F7922195BEC00175927 /* NCRAutocompleteTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */; };
+		B6482F7922195BEC00175927 /* BeatTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* BeatTextView.m */; };
 		B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B64E1B2D227B08B2008DF194 /* CenteredClipView.m */; };
 		B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
 		B667796523C5D1CB0029D508 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B667796423C5D1CB0029D508 /* FDXImport.m */; };
@@ -204,8 +204,8 @@
 		B62ADC8E23CCE20D0015563A /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		B645A97D23CD03CC00F13710 /* NSString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Regex.h"; path = "Beat/NSString+Regex/NSString+Regex.h"; sourceTree = SOURCE_ROOT; };
 		B645A97E23CD03CC00F13710 /* NSString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Regex.m"; path = "Beat/NSString+Regex/NSString+Regex.m"; sourceTree = SOURCE_ROOT; };
-		B6482F7722195BEC00175927 /* NCRAutocompleteTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NCRAutocompleteTextView.h; path = Beat/NCRTextField/NCRAutocompleteTextView.h; sourceTree = SOURCE_ROOT; };
-		B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NCRAutocompleteTextView.m; path = Beat/NCRTextField/NCRAutocompleteTextView.m; sourceTree = SOURCE_ROOT; };
+		B6482F7722195BEC00175927 /* BeatTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatTextView.h; path = Beat/NCRTextField/BeatTextView.h; sourceTree = SOURCE_ROOT; };
+		B6482F7822195BEC00175927 /* BeatTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatTextView.m; path = Beat/NCRTextField/BeatTextView.m; sourceTree = SOURCE_ROOT; };
 		B64E1B2D227B08B2008DF194 /* CenteredClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CenteredClipView.m; path = Beat/CenteredClipView/CenteredClipView.m; sourceTree = SOURCE_ROOT; };
 		B64E1B2F227B08D8008DF194 /* CenteredClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CenteredClipView.h; path = Beat/CenteredClipView/CenteredClipView.h; sourceTree = SOURCE_ROOT; };
 		B6632B322317107300100A44 /* NSMutableString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+Regex.h"; path = "Beat/NSMutableString+Regex.h"; sourceTree = SOURCE_ROOT; };
@@ -538,13 +538,13 @@
 			path = fountainQuickLook;
 			sourceTree = "<group>";
 		};
-		B6482F7622195BD300175927 /* NCRTextView */ = {
+		B6482F7622195BD300175927 /* BeatTextView */ = {
 			isa = PBXGroup;
 			children = (
-				B6482F7722195BEC00175927 /* NCRAutocompleteTextView.h */,
-				B6482F7822195BEC00175927 /* NCRAutocompleteTextView.m */,
+				B6482F7722195BEC00175927 /* BeatTextView.h */,
+				B6482F7822195BEC00175927 /* BeatTextView.m */,
 			);
-			name = NCRTextView;
+			name = BeatTextView;
 			sourceTree = "<group>";
 		};
 		B667796223C5D10B0029D508 /* User Interface */ = {
@@ -553,7 +553,7 @@
 				B66FC99F2276EADC00C0265D /* CardView */,
 				B610CFDD23ACB70B00636634 /* OutlineView */,
 				B6D872B1232567C40050ED2D /* Timeline */,
-				B6482F7622195BD300175927 /* NCRTextView */,
+				B6482F7622195BD300175927 /* BeatTextView */,
 				B6B417CC2359E2FC00AD3F4D /* TitlePageEditor */,
 				B67BD6DF23B4BBE400A99C9C /* ColorCheckbox.h */,
 				B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */,
@@ -859,7 +859,7 @@
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
 				B138B66A19E1E8CA000489C4 /* FountainParser.m in Sources */,
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
-				B6482F7922195BEC00175927 /* NCRAutocompleteTextView.m in Sources */,
+				B6482F7922195BEC00175927 /* BeatTextView.m in Sources */,
 				B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */,
 				B138B66919E1E8CA000489C4 /* FNScript.m in Sources */,
 				B138B66519E1E8CA000489C4 /* FastFountainParser.m in Sources */,
