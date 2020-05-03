@@ -97,7 +97,7 @@
                                     <action selector="performClose:" target="-1" id="HmO-Ls-i7Q"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
+                            <menuItem title="Save" keyEquivalent="s" id="pxx-59-PXV">
                                 <connections>
                                     <action selector="saveDocument:" target="-1" id="teZ-XB-qJY"/>
                                 </connections>
@@ -155,7 +155,7 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Export" id="o7H-J0-CK2">
                                     <items>
-                                        <menuItem title="PDF" id="qUE-cb-x1G">
+                                        <menuItem title="Create PDF..." id="qUE-cb-x1G">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportPDF:" target="-1" id="C88-0f-QPn"/>
@@ -167,7 +167,7 @@
                                                 <action selector="exportHTML:" target="-1" id="uwn-TO-nla"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Final Draft" id="C9z-84-Cmq">
+                                        <menuItem title="Export Final Draft (FDX) File..." id="C9z-84-Cmq">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportFDX:" target="-1" id="F6e-vG-CJO"/>

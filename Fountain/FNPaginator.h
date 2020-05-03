@@ -2,6 +2,7 @@
 //  FNPaginator.h
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
+//	Parts copyright © KAPITAN! / Lauri-Matti Parppei
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -45,8 +46,9 @@
 
 // Helper methods
 + (CGFloat)spaceBeforeForElement:(FNElement *)element;
-+ (NSInteger)leftMarginForElement:(FNElement *)element;
+//+ (NSInteger)leftMarginForElement:(FNElement *)element;
 + (NSInteger)widthForElement:(FNElement *)element;
-+ (NSInteger)heightForString:(NSString *)string font:(QUQFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(NSInteger)lineHeight;
++ (NSInteger)widthForElementType:(NSString *)type;
++ (NSInteger)heightForString:(NSString *)string font:(QUQFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
 
 @end

@@ -22,6 +22,8 @@
 
 - (instancetype)init {
 	_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(hideButtons) userInfo:nil repeats:NO];
+	
+	_buttonDefaultY = _outlineButtonY.constant;
 	return [super init];
 }
 
@@ -37,20 +39,21 @@
 	NSRectFill(NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height));
 	[NSGraphicsContext restoreGraphicsState];
 	
-	// Draw margins
-	if (self.frame.size.width > 1000) {
+	// Draw margins if they don't fall outside the viewport
+	if (self.frame.size.width > 800) {
 		[_marginColor setFill];
 		
-		CGFloat modifier = 1 / self.magnification;
-		CGFloat marginWidth = _insetWidth - 120;
-		
-		NSRect marginLeft = NSMakeRect(0, 0, marginWidth, self.frame.size.height);
-		NSRect marginRight = NSMakeRect((self.frame.size.width - marginWidth) * modifier, 0, marginWidth + 200, self.frame.size.height);
-		
-		[NSGraphicsContext saveGraphicsState];
-		NSRectFillUsingOperation(marginLeft, NSCompositingOperationSourceOver);
-		NSRectFillUsingOperation(marginRight, NSCompositingOperationSourceOver);
-		[NSGraphicsContext restoreGraphicsState];
+		CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel;
+		if (marginWidth > 0) {
+			// Set margin boxes
+			NSRect marginLeft = NSMakeRect(0, 0, marginWidth, self.frame.size.height);
+			NSRect marginRight = NSMakeRect((self.frame.size.width - marginWidth), 0, marginWidth, self.frame.size.height);
+			
+			[NSGraphicsContext saveGraphicsState];
+			NSRectFillUsingOperation(marginLeft, NSCompositingOperationSourceOver);
+			NSRectFillUsingOperation(marginRight, NSCompositingOperationSourceOver);
+			[NSGraphicsContext restoreGraphicsState];
+		}
 	}
 }
 
@@ -82,18 +85,24 @@
 // Listen to find bar open/close and move the outline / card view buttons accordingly
 - (void)setFindBarVisible:(BOOL)findBarVisible {
 	[super setFindBarVisible:findBarVisible];
-	
 	CGFloat height = [self findBarView].frame.size.height;
 	
+	// Save original constant
+	if (_buttonDefaultY == 0) _buttonDefaultY = _outlineButtonY.constant;
+	
 	if (!findBarVisible) {
-		_outlineButtonY.constant -= height;
+		_outlineButtonY.constant = _buttonDefaultY;
 	} else {
 		_outlineButtonY.constant += height;
-	}	
+	}
 }
 
 - (void) findBarViewDidChangeHeight {
-	
+	if (self.findBarVisible) {
+		CGFloat height = [self findBarView].frame.size.height;
+		_outlineButtonY.constant = _buttonDefaultY + height;
+	}
+	//CGFloat height = [self findBarView].frame.size.height;
 }
 
 

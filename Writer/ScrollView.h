@@ -17,11 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSButton *outlineButton;
 @property IBOutlet NSButton *cardsButton;
 @property IBOutlet NSButton *timelineButton;
-
 @property IBOutlet NSLayoutConstraint *outlineButtonY;
 
 @property (nonatomic) DynamicColor *marginColor;
 @property (nonatomic) CGFloat insetWidth;
+@property (nonatomic) CGFloat buttonDefaultY;
+@property (nonatomic) CGFloat magnificationLevel;
 @property (nonatomic) NSTimer *mouseMoveTimer;
 
 @end

@@ -444,6 +444,18 @@
     }
     if (firstChar == '#') {
         line.numberOfPreceedingFormattingCharacters = 1;
+		
+		// Thanks, Jacob Relkin
+		NSUInteger len = [string length];
+		NSInteger depth = 0;
+
+		char character;
+		for (int c = 0; c < len; c++) {
+			character = [string characterAtIndex:c];
+			if (character == '#') depth++; else break;
+		}
+		
+		line.sectionDepth = depth;
         return section;
     }
     if (firstChar == '=' && (length >= 2 ? [string characterAtIndex:1] != '=' : YES)) {

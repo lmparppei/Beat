@@ -76,8 +76,8 @@ body > p:first-child {
 }
 
 .dialogue {
-	margin: 0 auto;
-	width: 310px;
+	margin: 0 0 0 15%;
+	width: 260px;
 }
 
 .parenthetical {
@@ -86,7 +86,7 @@ body > p:first-child {
 }
 
 .scene-heading {
-	margin-top: 2.6em;
+	margin-top: 2.2em;
 	font-weight: bold;
 	position: relative;
 	padding-right: 40px;
@@ -248,4 +248,8 @@ section {
 		position: relative;
 		margin: 0;
 	}
+}
+
+.debug {
+	display: none;
 }

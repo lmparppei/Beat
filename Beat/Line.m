@@ -28,12 +28,15 @@
 }
 
 // See if whole block is omited
+// Btw, this is me writing from the future. I love you, past me!!!
 - (bool)omited {
 	__block NSUInteger omitLength = 0;
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		omitLength += range.length;
 	}];
-		
+			
+	// This return YES also for empty lines, which SHOULD NOT be a problem for anything, but yeah, we could check it:
+	//if (omitLength == [self.string length] && self.type != empty) {
 	if (omitLength == [self.string length]) {
 		return true;
 	} else {

@@ -1,7 +1,25 @@
 
-## Beat 1.1 release
+## Beat 1.1 r2
 
-* Soon!
+* Fixed bug with pagination failing if there was an empty line after scene heading
+* Fixed bugs with caret positioning while editing dialogue
+* Fixed a bug which caused view buttons to disappear when using find/replace
+* Fixed bugs with scene masking when filtering scenes
+* New feature: Section heading markers
+
+
+## Beat 1.1r
+
+* Minor UI tweaks
+* Completely rewritten pagination
+* Experimental live pagination prototype
+
+
+## Beat 1.1.0k
+
+* Fixed some critical pagination issues
+* Fixed a bug with paper sizing
+
 
 ## Beat 1.1.0j
 

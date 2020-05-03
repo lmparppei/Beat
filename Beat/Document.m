@@ -29,15 +29,21 @@
  
  N.B.
  
- Beat has been cooked up by using lots of trial and error, and this file has become a 4000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. Some structures (such as themes) are legacy from Writer, and have since been replaced with totally different approach. Their names and complimentary methods still linger around.
+ Beat has been cooked up by using lots of trial and error, and this file has become a 4000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a third of the code has its origins in Writer, an open source Fountain by Hendrik Noeller.
  
- About a third of the code has its origins in Writer by Hendrik Noeller. As I started this project, I had close to zero knowledge on Objective-C, and it really shows.
+ Some structures (such as themes) are legacy from Writer, and while they have since been replaced with a totally different approach, their names and complimentary methods still linger around. You can find some *very* shady stuff, such as ThemeManager, lying around here and there with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
- You can find some *very* shady stuff, such as ThemeManager, lying around here and there with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
+ As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg.
+ 
+ Beat is released under GNU General Public License, so all of this code will remain open forever, even if I make a commercial version to finance the development. I started developing the app to overcome some PTSD symptoms and to combat creative block. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
  
  Anyway, may this be of some use to you, dear friend.
+ The abandoned git repository will be my monument when I'm gone.
  
  Lauri-Matti Parppei
+ Helsinki
+ Finland
+ 
  
  = = = = = = = = = = = = = = = = = = = = = = = =
  
@@ -56,6 +62,7 @@
  And in the hollow of my ink-stained palms
  swallows will make their nest.
   
+ 
 */
 
 #import <WebKit/WebKit.h>
@@ -81,6 +88,7 @@
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
 #import "FDXImport.h"
+#import "LivePagination.h"
 
 @interface Document ()
 
@@ -98,6 +106,8 @@
 @property (nonatomic) NSTimer * scrollTimer;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
+@property (nonatomic) LivePagination *pagination;
+@property (nonatomic) NSMutableArray *sectionMarkers;
 
 // Outline view
 @property (weak) IBOutlet BeatOutlineView *outlineView;
@@ -316,7 +326,7 @@
 #define CHARACTER_INDENT_P 0.36
 #define PARENTHETICAL_INDENT_P 0.27
 #define DIALOGUE_INDENT_P 0.164
-#define DIALOGUE_RIGHT_P 0.74
+#define DIALOGUE_RIGHT_P 0.72
 
 #define TREE_VIEW_WIDTH 350
 #define TIMELINE_VIEW_HEIGHT 120
@@ -420,6 +430,8 @@
 	[aController.window makeFirstResponder:self.textView];
 	[self.textView setEditable:YES];
 	
+	// Pagination
+	_pagination = [[LivePagination alloc] init];
 	
 	// Read default settings
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
@@ -439,7 +451,7 @@
 	} else {
 		self.showSceneNumberLabels = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_SCENE_LABELS_KEY];
 	}
-	
+		
 	//Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
 	self.themeManager = [ThemeManager sharedManager];
 	[self loadSelectedTheme:false];
@@ -523,6 +535,7 @@
 		[self.textView setNeedsDisplay:true];
 		
 		[self updateSceneNumberLabels];
+		[self updateSectionMarkers];
 		
 		// Set up recovery file saving
 		[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
@@ -565,10 +578,14 @@
 	[self setMinimumWindowSize];
 	
 	CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
+	
 	if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
 		self.textView.textContainerInset = NSMakeSize(width, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+
 		self.textScrollView.insetWidth = self.textView.textContainerInset.width;
+		self.textScrollView.magnificationLevel = _magnification;
+		[self.textScrollView setNeedsDisplay:YES]; // Force redraw if needed
 	}
 	
 	[self ensureLayout];
@@ -607,7 +624,7 @@
 	
 	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	if (zoomIn) {
-		if (_magnification < 1.6) _magnification += 0.09;
+		if (_magnification < 1.2) _magnification += 0.09;
 	} else {
 		if (_magnification > 0.9) _magnification -= 0.09;
 	}
@@ -629,12 +646,14 @@
 		NSRect clipFrame = _textClipView.frame;
 		clipFrame.size.height = _textClipView.superview.frame.size.height;
 		_textClipView.frame = clipFrame;
+		
+		[[NSUserDefaults standardUserDefaults] setFloat:_magnification forKey:MAGNIFYLEVEL_KEY];
 	}
 }
 
 - (void)ensureLayout {
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
-	[self.textView setNeedsDisplay:true];
+	[self.textView setNeedsDisplay:YES];
 	[self updateSceneNumberLabels];
 }
 
@@ -675,8 +694,16 @@
 }
 
 - (void) setZoom {
+	if (![[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY]) {
+		_magnification = DEFAULT_MAGNIFY;
+	} else {
+		_magnification = [[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY];
+		
+		// Some limits for magnification, if something changes between app versions
+		if (_magnification < .7 || _magnification > 1.19) _magnification = DEFAULT_MAGNIFY;
+	}
+	
 	_scaleFactor = 1.0;
-	_magnification = 1.1;
 	[self setScaleFactor:_magnification adjustPopup:false];
 	//[self setScaleFactor:_magnification adjustPopup:false];
 
@@ -738,7 +765,7 @@
         self.contentBuffer = text;
     } else {
         [self.textView setString:text];
-        [self updateWebView];
+        //[self updateWebView];
     }
 	[self updateSceneNumberLabels];
 }
@@ -921,14 +948,15 @@
 	
 	// To avoid some graphical glitches
 	[self updateSceneNumberLabels];
-	[self.textView setNeedsDisplay:YES];
+	//[self.textView setNeedsDisplay:YES];
+	[self ensureLayout];
 }
 - (IBAction)redoEdit:(id)sender {
 	[self.undoManager redo];
 	if (_cardsVisible) [self refreshCards:YES];
 	
 	// To avoid some graphical glitches
-	[self.textView setNeedsDisplay:YES];
+	[self ensureLayout];
 }
 
 # pragma mark - Text manipulation
@@ -981,11 +1009,10 @@
 		[self.textView setAutomaticTextCompletionEnabled:NO];
 	}
 
-	/*
-	// Maybe pagination should happen in the parser, after all?
-	[self paginate];
-	*/
-	
+	// WIP
+	// [self paginate];
+	[self updateSectionMarkers];
+		
     return YES;
 }
 
@@ -1049,8 +1076,10 @@
 		}
 		
 		// So... uh. For some reason, _currentScene can get messed up after reloading the outline, so that's why we checked the timeline position first.
-		[self getCurrentScene];
-		if (_outlineViewVisible) [self reloadOutline];
+		if (_outlineViewVisible) {
+			[self getCurrentScene];
+			[self reloadOutline];
+		}
 		
 		if (_outlineViewVisible && _currentScene) {
 			// Alright, we have some conditions for this.
@@ -1270,7 +1299,7 @@
 	// I really have NO FUCKING IDEA what's going on in here.
 	// Still I managed to get it to work.
 	
-	/// And basically, this is the part where I lost any hope for having an iOS version. The loopback system here is quite convoluted and simultaneously relies on both the parser and interface. Interface SHOULD NOT handle this recursion, but that would require an overhaul of the parser. And I'm not strong enough.
+	/// And basically, this is the part where I officially lost any hope for having an iOS version. The loopback system here is quite convoluted and simultaneously relies on both the parser and interface. I guess interface SHOULD NOT handle this recursion, but that would require an overhaul of the parser. And I'm not strong enough.
 	
 	if (!recursive) {
 		NSInteger index = [[self.parser lines] indexOfObject:line];
@@ -1296,7 +1325,6 @@
 				// If next line contains text, we will reformat it too
 				if (index + 1 < [self.parser.lines count] && [line.string length] > 0) {
 					Line *nextLine = [self.parser.lines objectAtIndex:index+1];
-
 					if ([nextLine.string length] > 0) {
 						if (nextLine.type != dialogue && nextLine.type != parenthetical) nextLine.type = dialogue;
 						[self formatLineOfScreenplay:nextLine onlyFormatFont:NO recursive:YES];
@@ -1305,8 +1333,9 @@
 				
 				// Next part is terrible. Let me explain.
 				
-				// If the line currently parsed is EMPTY and we are NOT editing the line before or the current line, we'll take a step back and reformat it as action.
-				// This is unreliable at times, but 70% of the time it works OK.
+				// If the line currently parsed is EMPTY and we are NOT editing the line before or
+				// the current line, we'll take a step back and reformat it as action.
+				// This is sometimes unreliable, but 70% of the time it works pretty OK.
 				
 				else if ([line.string length] == 0) {
 					NSRange previousLineRange = NSMakeRange(preceedingLine.position, [preceedingLine.string length]);
@@ -1463,12 +1492,29 @@
 				NSColor* commentColor = [self.themeManager currentCommentColor];
 				[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
 			}
-			// Bold section headings
-			if (line.type == section) [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
+			// Bold section headings for first-level sections
+			if (line.type == section) {
+				if (line.sectionDepth < 2) [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
+			}
 			if (line.type == synopse) [attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
+		} else if (line.type == empty) {
+			// Just to make sure
+			NSInteger index = [_parser.lines indexOfObject:line];
+			
+			Line* preceedingLine;
+			
+			if (index > 1) {
+				preceedingLine = [_parser.lines objectAtIndex:index - 1];
+				if ([preceedingLine.string length] < 1) {
+					[paragraphStyle setFirstLineHeadIndent:0];
+					[paragraphStyle setHeadIndent:0];
+					[paragraphStyle setTailIndent:0];
+					[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+				}
+			}
 		}
 	}
-	
+		
 	// Remove all former paragraph styles and overwrite fonts
 	if (!fontOnly) {
 		[textStorage removeAttribute:NSParagraphStyleAttributeName range:range];
@@ -1494,8 +1540,28 @@
 		}
 	}
 	
-	if ([line.string length] == 0) {
+	// INPUT ATTRIBUTES FOR CARET / CURSOR
+	if ([line.string length] == 0 && !recursive) {
 		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
+		
+		Line* previousLine;
+		NSInteger lineIndex = [_parser.lines indexOfObject:line];
+		if (lineIndex > 0) previousLine = [_parser.lines objectAtIndex:lineIndex - 1];
+		
+		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+
+		// Keep dialogue input for character blocks
+		if ((previousLine.type == dialogue || previousLine.type == character || previousLine.type == parenthetical)
+			&& [previousLine.string length]) {
+			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
+		} else {
+			[paragraphStyle setFirstLineHeadIndent:0];
+			[paragraphStyle setHeadIndent:0];
+			[paragraphStyle setTailIndent:0];
+		}
+		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		[self.textView setTypingAttributes:attributes];
 	}
 	
@@ -1726,7 +1792,7 @@ static NSString *forceLyricsSymbol = @"~";
 	NSMutableString *fullText = [NSMutableString stringWithString:@""];
 	
 	NSUInteger sceneCount = 1; // Track scene amount
-
+	
 	Line *previousLine;
 	
 	for (Line *line in [self.parser lines]) {
@@ -1734,8 +1800,11 @@ static NSString *forceLyricsSymbol = @"~";
 		
 		// If the heading already has a forced number, skip it
 		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
-			[fullText appendFormat:@"%@ #%lu#\n", cleanedLine, sceneCount];
-			sceneCount++;
+			// Check if the scene heading is omited
+			if (![line omited]) {
+				[fullText appendFormat:@"%@ #%lu#\n", cleanedLine, sceneCount];
+				sceneCount++;
+			}
 		} else {
 			[fullText appendFormat:@"%@\n", cleanedLine];
 		}
@@ -2300,6 +2369,7 @@ static NSString *forceLyricsSymbol = @"~";
 		
 		[textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
 		[doc.textScrollView setMarginColor:[self.themeManager currentMarginColor]];
+		[doc.textView setMarginColor:[self.themeManager currentMarginColor]];
 		
         [textView setSelectedTextAttributes:@{
 											  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
@@ -2638,6 +2708,7 @@ static NSString *forceLyricsSymbol = @"~";
 {
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		[self scrollToScene:item];
+		[_thisWindow makeFirstResponder:_textView];
 	}
 	return NO;
 }
@@ -3649,34 +3720,97 @@ static NSString *forceLyricsSymbol = @"~";
 	[self.parser createOutline];
 	if (![_filteredOutline count]) {
 		[self.textView.masks removeAllObjects];
-		[self.textView setNeedsDisplay:YES];
+		[self ensureLayout];
 		return;
 	}
 	
 	// Mask scenes that didn't match our filter
-	NSMutableArray* masks = [NSMutableArray array];
+	__block NSMutableArray* masks = [NSMutableArray array];
 	[self.textView.masks removeAllObjects];
-	
+
 	// Create flat outline if we don't have one
 	if (![_flatOutline count]) _flatOutline = [self getOutlineItems];
 	
-	for (OutlineScene* scene in _flatOutline) {
-		// Ignore this scene if it's contained in filtered scenes
-		if ([_filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) continue;
-		
-		NSRange sceneRange = NSMakeRange([scene sceneStart], [scene sceneLength]);
+	// Do this in another thread
+	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+		for (OutlineScene* scene in self.flatOutline) {
+			// Ignore this scene if it's contained in filtered scenes
+			if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) continue;
+			
+			NSRange sceneRange = NSMakeRange([scene sceneStart], [scene sceneLength]);
 
-		// Add scene ranges to TextView's masks
-		NSValue* rangeValue = [NSValue valueWithRange:sceneRange];
-		[masks addObject:rangeValue];
-	}
-	self.textView.masks = masks;
-	
-	[self.textView setNeedsDisplay:YES];
+			// Add scene ranges to TextView's masks
+			NSValue* rangeValue = [NSValue valueWithRange:sceneRange];
+			[masks addObject:rangeValue];
+		}
+		
+		dispatch_async(dispatch_get_main_queue(), ^(void){
+			self.textView.masks = masks;
+			[self ensureLayout];
+		});
+	});
 }
 
 
 #pragma mark - Pagination
+
+- (void)updateSectionMarkers {
+	[self updateSectionMarkersFromIndex:-1];
+}
+- (void)updateSectionMarkersFromIndex:(NSInteger)fromIndex {
+	if (fromIndex < 0) fromIndex = 0;
+	
+	__block NSMutableArray *sections = [NSMutableArray array];
+	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+		for (NSInteger i = fromIndex; i < self.parser.lines.count; i++) {
+			Line* line = [self.parser.lines objectAtIndex:i];
+			if (line.type == section) [sections addObject:[self.parser.lines objectAtIndex:i]];
+		}
+		
+		dispatch_async(dispatch_get_main_queue(), ^(void){
+			NSMutableArray *sectionRects = [NSMutableArray array];
+			
+			for (Line* line in sections) {
+
+				// Don't draw breaks for less-important sections
+				if (line.sectionDepth > 2) continue;
+				
+				NSRange characterRange = NSMakeRange(line.position, [line.string length]);
+				NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+				NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
+
+				// If the next line is something we care about, include it in the rect for a nicer display
+				// If next line is NOT EMPTY, don't add the rect at all.
+				NSInteger index = [self.parser.lines indexOfObject:line];
+				if (index < self.parser.lines.count) {
+					bool moreSections = NO;
+					
+					Line* previousLine;
+					Line* nextLine = [self.parser.lines objectAtIndex:index + 1];
+					
+					if (index > 0) previousLine = [self.parser.lines objectAtIndex:index - 1];
+					
+					if ((nextLine.type == synopse || nextLine.type == section) && [previousLine.string length] < 1) {
+						characterRange = NSMakeRange(nextLine.position, [nextLine.string length]);
+						glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+						NSRect nextRect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
+						
+						rect.size.height += nextRect.size.height;
+						moreSections = YES;
+						
+						[sectionRects addObject:[NSValue valueWithRect:rect]];
+					}
+					else if ((nextLine == empty || ![nextLine.string length]) && [previousLine.string length] < 1 ) {
+						[sectionRects addObject:[NSValue valueWithRect:rect]];
+					}
+				}
+			}
+			
+			[self.textView updateSections:sectionRects];
+			[self ensureLayout];
+		});
+	});
+}
 
 /*
  
@@ -3684,101 +3818,48 @@ static NSString *forceLyricsSymbol = @"~";
  - this probably will never make it into the main branch
  - this is a complete waste of time
  
- Right now, all my ideas are very CPU-inefficient and useless. The thing is, I should probably make a custom object that acts as NSTextView with a custom NSLayoutManager. I really don't know how to do it, especially as I don't want comments etc. to count to page heights. 
-
  */
 
 - (void)paginate {
-	[self.textView.pageBreaks removeAllObjects];
 	
-	double height = 0;
-	double printHeight = 0;
-	double pageHeight = self.printInfo.paperSize.height - 24;
-	NSInteger pages = 0;
-	
-	Line* prevLine;
-	
-	for (Line* line in self.parser.lines) {
-		NSRange characterRange = NSMakeRange(line.position, [line.string length]);
-		NSRange glyphRange = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-		NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:glyphRange inTextContainer:[self.textView textContainer]];
-		
-		// Add the rect height to TOTAL HEIGHT.
-		height += rect.size.height;
-	
-		if (prevLine.type == empty && line.type == empty) continue;
-		else if ([line omited]) continue;
-		
-		// Don't add invisible elements to print height
-		switch (line.type) {
-			case titlePageTitle:
-			case titlePageAuthor:
-			case titlePageCredit:
-			case titlePageSource:
-			case titlePageContact:
-			case titlePageDraftDate:
-			case titlePageUnknown:
-			case doubleDialogueCharacter:
-			case doubleDialogueParenthetical:
-			case doubleDialogue:
-				continue;
-				break;
-			default:
-				printHeight += rect.size.height;
+	// !!! Pagination should have some sort of starting index, so that we can only update affected pages !!!
+	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+		self.pagination.paperSize = CGSizeMake(self.printInfo.paperSize.width, self.printInfo.paperSize.height);
 				
-				if (printHeight > pageHeight) {
-					pages++;
-					double difference = printHeight - pageHeight;
-					printHeight = difference;
-					
-					[self.textView.pageBreaks addObject:[NSNumber numberWithDouble:height - difference]];
+		// Send parsed lines for pagination, which results in an array of y coordinates
+		__block NSArray *pageBreaks = [self.pagination paginate:self.parser.lines];
+		
+		dispatch_async(dispatch_get_main_queue(), ^(void){
+			// Update UI in main thread
+			NSMutableArray *breakPositions = [NSMutableArray array];
+			
+			for (NSDictionary *pageBreak in pageBreaks) {
+				CGFloat lineHeight = 20;
+				
+				Line *line = pageBreak[@"line"];
+				CGFloat position = [pageBreak[@"position"] floatValue];
+				
+				NSRange characterRange = NSMakeRange(line.position, [line.string length]);
+				NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+				
+				NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
+				
+				CGFloat y;
+				
+				// We return -1 for elements that should have page break after them
+				if (position >= 0) {
+					if (position != 0) position = (round(position / lineHeight) - 1) * lineHeight;
+					y = rect.origin.y + position;
 				}
-		}
-		
-		prevLine = line;
-	}
-
-	
-	/*
-	double height = 0;
-	double pageHeight = self.printInfo.paperSize.height;
-	double position = 0;
-	double fontSize = 14;
-	NSInteger pages = 1;
-	
-	[self.textView.pageBreaks removeAllObjects];
-	
-	Line* prevLine;
-	for (Line* line in [self.parser lines]) {
+				else y = rect.origin.y + rect.size.height;
 				
-		if (line.type == empty && prevLine.type == empty) {
-			// Add to position, even if we won't display the element
-			position += fontSize;
-		}
-		else if (line.type == empty && prevLine.type != empty) {
-			height += fontSize;
-			position += fontSize;
-		} else {
-			height += line.height * fontSize;
-			position += line.height * fontSize;
-		}
-		
-		if (height > pageHeight) {
-			height = 0;
-			pages++;
+				[breakPositions addObject:[NSNumber numberWithFloat:y]];
+			}
 			
-			NSLog(@"-----------------");
-			
-			// Add line break
-			[self.textView.pageBreaks addObject:[NSNumber numberWithDouble:position]];
-		}
-		
-		NSLog(@"h %f - %@ - %@", height, [line typeAsString], line.string);
-
-		
-		if (line.height > 0) prevLine = line;
-	}
-	 */
+			[self.textView setPageBreaks:breakPositions];
+			[self ensureLayout];
+		});
+	});
 }
 
 #pragma mark - Title page editor
@@ -3787,19 +3868,6 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	FNScript* script = [[FNScript alloc] initWithString:[self getText]];
 
-/*
-	// Get parsed title page
-	NSMutableDictionary *titlePage = [NSMutableDictionary dictionary];
-	for (NSDictionary *dict in script.titlePage) {
-		NSLog(@"%@", dict.allKeys[0]);
-		//[titlePage addEntriesFromDictionary:dict];
-	}
-
-	NSLog(@"---------");
-	for (NSString *key in titlePage) {
-		NSLog(@"%@", key);
-	}
-*/
 	// List of applicable fields
 	NSDictionary* fields = @{
 							 @"title":_titleField,

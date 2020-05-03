@@ -18,8 +18,11 @@
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
+- (void)updateSections:(NSArray*)sections;
 //@property (weak) id <NCRAutocompleteTableViewDelegate> delegate;
+
 @property NSMutableArray* masks;
+@property NSArray* sections;
 @property (nonatomic) DynamicColor* marginColor;
 @property NSMutableArray* pageBreaks;
 @property CGFloat zoomLevel;

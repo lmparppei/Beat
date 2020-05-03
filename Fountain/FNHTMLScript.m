@@ -163,9 +163,10 @@
 		NSString *viewScript = [NSString stringWithFormat:@"<script>var el = document.getElementById('scene-%@'); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' });</script>", _currentScene];
 		[html appendString:viewScript];
 	}
-	
+	// For debug purposes
+	[html appendString:@"<script>var z = document.querySelectorAll('p'); for (var x of z) { x.innerHTML = x.innerHTML + '<span class=\"debug\">' + x.clientWidth + ' x ' + x.clientHeight + '</span>'; }</script>\n"];
 	[html appendString:@"</body>\n"];
-    [html appendString:@"</html>"];        
+    [html appendString:@"</html>"];
     return html;
 }
 
@@ -351,6 +352,7 @@
 		[body appendFormat:@"<section>"];
 		
 		int index = (int)pageIndex+1;
+		int elementCount = 0;
 		
         if (self.customPage) {
             if ([self.customPage integerValue] == 0) {
@@ -411,6 +413,13 @@
                 continue;
             }
 			
+			// Stop dual dialogue block if it's still open
+			if ([element.elementType isEqualToString:@"Character"] && dualDialogueCharacterCount >= 2) {
+				[body appendString:@"</div></div>\n"];
+				dualDialogueCharacterCount = 0;
+			}
+			
+			// Catch dual dialogue
             if ([element.elementType isEqualToString:@"Character"] && element.isDualDialogue) {
                 dualDialogueCharacterCount++;
                 if (dualDialogueCharacterCount == 1) {
@@ -490,6 +499,7 @@
                 if (element.isCentered) {
                     [additionalClasses appendString:@" center"];
                 }
+				if (elementCount == 0) [additionalClasses appendString:@" first"];
 				
 				// If this line isn't part of a larger block, output it as paragraph
 				if (!beginBlock && !isLyrics) {
@@ -511,11 +521,13 @@
 					isLyrics = false;
 				}
 			}
+			
+			elementCount++;
         }
 		//if (!pageBreak) [body appendFormat:@"</section>"];
 		[body appendFormat:@"</section>"];
     }
-
+	
     return body;
 }
 

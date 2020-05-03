@@ -9,6 +9,7 @@
 
 #import "BeatTextView.h"
 #import "DynamicColor.h"
+#import "Line.h"
 
 #define MAX_RESULTS 10
 
@@ -124,6 +125,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// BEAT BEAT BEAT
 	self.masks = [NSMutableArray array];
+	self.sections = [NSArray array];
 }
 
 - (NSTouchBar*)makeTouchBar {
@@ -365,6 +367,19 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 // To mask out stuff we don't want to see when filtering scenes
 - (void)drawRect:(NSRect)dirtyRect {
+	NSGraphicsContext *context = [NSGraphicsContext currentContext];
+	[context saveGraphicsState];
+
+	for (NSValue* value in _sections) {
+		[self.marginColor setFill];
+		NSRect sectionRect = [value rectValue];
+		CGFloat width = self.frame.size.width - self.textContainerInset.width * 2 + 390;
+		NSRect rect = NSMakeRect(self.textContainerInset.width - 130, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
+		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
+	}
+		
+	[context restoreGraphicsState];
+	
 	[NSGraphicsContext saveGraphicsState];
 	[super drawRect:dirtyRect];
 	[NSGraphicsContext restoreGraphicsState];
@@ -378,9 +393,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			[fillColor setFill];
 			
 			NSRect rect = [self.layoutManager boundingRectForGlyphRange:value.rangeValue inTextContainer:self.textContainer];
-			rect.origin.x = 0;
-			rect.origin.y += self.textContainerInset.height - 12; // You say: never hardcode a value, but YOU DON'T KNOW ME, DO YOU!!!
-			rect.size.width = self.frame.size.width;
+			rect.origin.x = self.textContainerInset.width;
+			// You say: never hardcode a value, but YOU DON'T KNOW ME, DO YOU!!!
+			rect.origin.y += self.textContainerInset.height - 12;
+			rect.size.width = self.textContainer.size.width;
 			
 			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 		}
@@ -389,62 +405,30 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	/*
 	NSGraphicsContext *context = [NSGraphicsContext currentContext];
 	[context saveGraphicsState];
-
+	
+	NSInteger pageNumber = 1;
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
+
+		
+		//NSFont* font = [NSFont fontWithName:@"Arial" size:6];
+		NSString *page = [@(pageNumber) stringValue];
+		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page];
+		[attrStr drawAtPoint:CGPointMake(self.textContainerInset.width - 150, [pageBreakPosition doubleValue] + self.textContainerInset.height)];
+
 		NSColor* fillColor = NSColor.grayColor;
 		[fillColor setFill];
-		
-		NSRect rect = NSMakeRect(0, [pageBreakPosition doubleValue], self.frame.size.width, 1);
+				
+		NSRect rect = NSMakeRect(self.textContainerInset.width - 130, [pageBreakPosition doubleValue] + self.textContainerInset.height, self.frame.size.width - self.textContainerInset.width * 2 + 260, 1);
 		NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
+		
+		pageNumber++;
 	}
 	[context restoreGraphicsState];
 	*/
-	 
-	/*
-	 
-	 WIP
-	 
-	 Test for graphical page breaks while editing.
-	 
-	 Trouble is, page length etc. should be calculated while parsing. Some elements do not print (section, synopses) and page breaks can be forced, too.
-	 
-	 ---
-	
-	 NSLayoutManager *manager = self.textContainer.layoutManager;
-	 NSRange glyphRange = [manager glyphRangeForTextContainer:self.textContainer];
-	 
-	 CGFloat pagePosition = 0;
-	 NSInteger pages = 1;
-	 CGFloat pageBreak = 600;
-
-	 NSMutableArray *pageBreaks = [NSMutableArray array];
-	 NSGraphicsContext *context = [NSGraphicsContext currentContext];
-
-	 for (NSInteger glyphIndex = glyphRange.location; glyphIndex < NSMaxRange(glyphRange); glyphIndex++) {
-		 
-		 NSRect lineFragmentRect = [manager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:NULL];
-		 CGFloat position = lineFragmentRect.origin.y;
-		 pagePosition = position - (pages - 1) * pageBreak;
-		 
-		 if (pagePosition > pageBreak) {
-			 pages++;
-			 [pageBreaks addObject:[NSNumber numberWithFloat:position]];
-		 }
-	 }
-
-	 [context saveGraphicsState];
-
-	 for (NSNumber *pageBreakPosition in pageBreaks) {
-		 NSColor* fillColor = NSColor.grayColor;
-		 [fillColor setFill];
-		 
-		 NSRect rect = NSMakeRect(0, [pageBreakPosition floatValue], 500, 1);
-		 NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
-	 }
-	 [context restoreGraphicsState];
-	 */
-	 
 }
 
+- (void)updateSections:(NSArray *)sections {
+	_sections = sections;
+}
 
 @end
