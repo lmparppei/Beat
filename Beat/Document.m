@@ -1391,6 +1391,7 @@
 
 	if (!fontOnly) {
 		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+//		[paragraphStyle setParagraphSpacing:0];
 		
 		// This won't format empty lines for some reason: [paragraphStyle setLineHeightMultiple:1.05];
 		
@@ -1488,15 +1489,22 @@
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == section || line.type == synopse) {
+			// Stylize sections & synopses
+			
 			if (self.themeManager) {
 				NSColor* commentColor = [self.themeManager currentCommentColor];
 				[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
 			}
+			
 			// Bold section headings for first-level sections
 			if (line.type == section) {
+				//[paragraphStyle setParagraphSpacing:50];
 				if (line.sectionDepth < 2) [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
+				[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			}
+			
 			if (line.type == synopse) [attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
+			
 		} else if (line.type == empty) {
 			// Just to make sure
 			NSInteger index = [_parser.lines indexOfObject:line];
@@ -2031,11 +2039,13 @@ static NSString *forceLyricsSymbol = @"~";
         
         indexOfLineBeginning--;
     }
+	
     NSRange firstCharacterRange;
-    //If the cursor resides in an empty line
-    //Which either happens because the beginning of the line is the end of the document
-    //Or is indicated by the next character being a newline
-    //The range for the first charate in line needs to be an empty string
+	
+    // If the cursor resides in an empty line
+    // (because the beginning of the line is the end of the document or is indicated by the next character being a newline)
+    // The range for the first charater in line needs to be an empty string
+	
     if (indexOfLineBeginning == [[self getText] length]) {
         firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
     } else if ([[[self getText] substringWithRange:NSMakeRange(indexOfLineBeginning, 1)] isEqualToString:@"\n"]){
@@ -2045,11 +2055,11 @@ static NSString *forceLyricsSymbol = @"~";
     }
     NSString *firstCharacter = [[self getText] substringWithRange:firstCharacterRange];
     
-    //If the line is already forced to the desired type, remove the force
+    // If the line is already forced to the desired type, remove the force
     if ([firstCharacter isEqualToString:symbol]) {
-        [self replaceCharactersInRange:firstCharacterRange withString:@""];
+		[self replaceString:firstCharacter withString:@"" atIndex:firstCharacterRange.location];
     } else {
-        //If the line is not forced to the desirey type, check if it is forced to be something else
+        // If the line is not forced to the desired type, check if it is forced to be something else
         BOOL otherForce = NO;
         
         NSArray *allForceSymbols = @[forceActionSymbol, forceCharacterSymbol, forceHeadingSymbol, forceLyricsSymbol, forcetransitionLineSymbol];
@@ -2064,9 +2074,9 @@ static NSString *forceLyricsSymbol = @"~";
         //If the line is forced to be something else, replace that force with the new force
         //If not, insert the new character before the first one
         if (otherForce) {
-            [self replaceCharactersInRange:firstCharacterRange withString:symbol];
+            [self replaceString:firstCharacter withString:symbol atIndex:firstCharacterRange.location];
         } else {
-            [self replaceCharactersInRange:firstCharacterRange withString:[symbol stringByAppendingString:firstCharacter]];
+			[self addString:symbol atIndex:firstCharacterRange.location];
         }
     }
 }
@@ -2396,6 +2406,8 @@ static NSString *forceLyricsSymbol = @"~";
 		_printPreview = YES;
     } else {
         [self setSelectedTabViewTab:0];
+		[self updateLayout];
+		[self ensureLayout];
 		_printPreview = NO;
     }
 	[self updateSceneNumberLabels];
@@ -3774,15 +3786,17 @@ static NSString *forceLyricsSymbol = @"~";
 
 				// Don't draw breaks for less-important sections
 				if (line.sectionDepth > 2) continue;
-				
 				NSRange characterRange = NSMakeRange(line.position, [line.string length]);
+				
 				NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+				
 				NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
 
 				// If the next line is something we care about, include it in the rect for a nicer display
 				// If next line is NOT EMPTY, don't add the rect at all.
 				NSInteger index = [self.parser.lines indexOfObject:line];
-				if (index < self.parser.lines.count) {
+				
+				if (index < self.parser.lines.count - 1) {
 					bool moreSections = NO;
 					
 					Line* previousLine;
