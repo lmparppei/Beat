@@ -51,10 +51,4 @@ typedef NS_ENUM(NSInteger, FNParserType) {
 - (BOOL)writeToFile:(NSString *)path;
 - (BOOL)writeToURL:(NSURL *)url;
 
-// These methods are here so you can use the old parser. You should move away from the old parser ASAP.
-- (id)initWithFile:(NSString *)path parser:(FNParserType)parserType;
-- (id)initWithString:(NSString *)string parser:(FNParserType)parserType;
-- (void)loadFile:(NSString *)path parser:(FNParserType)parserType;
-- (void)loadString:(NSString *)string parser:(FNParserType)parserType;
-
 @end

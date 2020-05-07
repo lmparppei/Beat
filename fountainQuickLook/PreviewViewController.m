@@ -42,7 +42,7 @@
 */
 
 - (void)preparePreviewOfFileAtURL:(NSURL *)url completionHandler:(void (^)(NSError * _Nullable))handler {
-	NSLog(@"prepare");
+
 	// Read contents into file and then parse into FNHTMLScript
 	NSError *error;
 	NSString *file = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
@@ -55,10 +55,10 @@
 		FNScript *script = [[FNScript alloc] initWithString:file];
 		FNHTMLScript *htmlScript;
 		htmlScript = [[FNHTMLScript alloc] initWithScript:script];
-		
+				
 		NSString *htmlString = [htmlScript html];
 		if (smallView) htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<body>" withString:@"<body class='small'>"];
-
+		
 		//[self.webView loadHTMLString:[htmlScript html] baseURL:nil];
 		[[self.webView2 mainFrame] loadHTMLString:htmlString baseURL:nil];
 	}

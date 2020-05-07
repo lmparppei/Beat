@@ -11,6 +11,10 @@
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate> {
 	IBOutlet NSWindow* _startModal;
 	IBOutlet NSWindow* _aboutModal;
+	
+	IBOutlet NSWindow* acknowledgementsModal;
+	IBOutlet NSTextView* acknowledgementsTextView;
+	
 	IBOutlet NSOutlineView* recentFiles;
 	IBOutlet NSTextField* versionField;
 	

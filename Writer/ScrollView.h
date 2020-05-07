@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat magnificationLevel;
 @property (nonatomic) NSTimer *mouseMoveTimer;
 
+@property (nonatomic) NSArray *editorButtons;
+
 @end
 
 NS_ASSUME_NONNULL_END

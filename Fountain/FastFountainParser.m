@@ -102,7 +102,7 @@ static NSString * const kContentPattern = @"";
     // ----------------------------------------------------------------------
     // TITLE PAGE
     // ----------------------------------------------------------------------
-    // Is the stuff at the top of the document the title page?
+    // Is there stuff at the top of the document the title page?
     BOOL foundTitlePage = NO;
     NSString *openKey = @"";
     NSMutableArray *openValues = [NSMutableArray array];
@@ -121,6 +121,9 @@ static NSString * const kContentPattern = @"";
             }
             
             openKey = [[line firstMatch:RX(kDirectivePattern)] lowercaseString];
+			// Clean up the key
+			openKey = [openKey stringByReplacingOccurrencesOfString:@":" withString:@""];
+			openKey = [openKey stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 			
 			if ([openKey isEqualToString:@"author"]) {
                 openKey = @"authors";
@@ -137,7 +140,8 @@ static NSString * const kContentPattern = @"";
                 NSDictionary *dict = @{openKey: openValues};
                 [self.titlePage addObject:dict];
                 openKey = @"";
-                openValues = [NSMutableArray array];
+                //openValues = [NSMutableArray array];
+				[openValues removeAllObjects];
             }
             
 			RxMatch *match = [line firstMatchWithDetails:RX(kInlinePattern)];

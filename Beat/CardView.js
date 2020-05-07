@@ -209,8 +209,9 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	scenes = [];
 	debugElement.innerHTML = '';
 
-	for (let data in cards) {
-		let card = cards[data];
+	if (cards.length < 1) html += "<div id='noData'><h2>No scenes</h2><p>When you write some scenes, they will be visible as cards in this view</p></div>";
+	
+	for (let card of cards) {
 		if (!card.name) { continue; }
 		
 		index++;

@@ -26,4 +26,5 @@
 @property (nonatomic) DynamicColor* marginColor;
 @property NSMutableArray* pageBreaks;
 @property CGFloat zoomLevel;
+
 @end

@@ -282,15 +282,7 @@
 			*/
 			
 
-			var defaultData = 
-				{characters:{'DON PRICE': 14,'WILBUR FREELY': 4,'JOSEPHINE': 46,'YOUNG EDWARD': 1,'RUTHIE': 2,'VARIOUS TOWNFOLK': 1,'SANDRA': 59,'LITTLE GIRL': 1,'LITTLE BRAVE': 1,'MAYOR': 3,'WOMANS VOICE': 1,'NURSE': 1,'GIRL': 1,'SON': 3,'DR. BENNETT': 15,'EDWARD AND WILL': 1,'KID': 1,'TELLER WOMAN': 3,'JING': 5,'A VOICE': 1,'VOICE': 1,'SHEPHARD': 1,'PING': 12,'BEAMEN': 14,'SHARECROPPER': 1,'KARL': 13,'YOUNG DR. BENNETT': 2,'AMOS': 25,'SOME FARMER': 1,'STUDENT': 1,'EDWARD': 293,'MILDRED': 5,'ZACKY': 5,'A GIRLS VOICE': 1,'THE CROWD': 1,'WILL': 141,'HOT-BLOODED SHOTGUN TOTER': 1,'ADULT EDWARD': 3,'WILLS DATE': 1,'NORTHER WINSLOW': 16,'JENNY': 58,'A DEEP VOICE': 1,'CASHIER': 1,'A MANS VOICE': 1,'THE MAN': 1,'JUMP LEADER': 1,'YOUNG WILL': 2,'MANS VOICE': 1},
-					genders: { "EDWARD": "male", "JOSEPHINE": "female", 'GIRL': 'female', 'MAYOR': 'male', 'RUTHIE': 'female', 'SANDRA': 'female', 'DON PRICE': 'male', 'JENNY': 'female', 'STUDENT': 'other', 'NORTHER WINSLOW': 'other' },
-					scenes: {
-						'interior': 100,
-						'other': 10,
-						'exterior': 80
-					}
-				};
+			var defaultData = {};
 
 			var characterTable = document.getElementById('characters');
 			var sceneBar = document.getElementById('sceneBar');
@@ -328,13 +320,17 @@
 			var characterLines = {};
 
 			function refresh (data) {
-				characterGender = data.genders;
-				characterLines = data.characters;
+				
+				if (!data.characterLines) {
+					characterTable.innerHTML = "<tr><td>No dialogue</td><td><td></td></tr>";
+				} else {
+					characterGender = data.genders;
+					characterLines = data.characters;
 
-				getCharacterData(data.characters);
+					getCharacterData(data.characters);
+					getGenderStatistics();
+				}
 				getSceneData(data.scenes);
-
-				getGenderStatistics();
 			}
 
 			function setGender(name, gender) {

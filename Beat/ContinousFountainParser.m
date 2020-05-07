@@ -857,9 +857,11 @@
 {
 	[_outline removeAllObjects];
 	
-	NSUInteger sections = 0;
 	NSUInteger result = 0;
 	NSUInteger sceneNumber = 1;
+
+	// We will store a section depth to adjust depth for scenes that come after a section
+	NSUInteger sectionDepth = 0;
 	
 	OutlineScene *previousScene;
 	OutlineScene *currentScene;
@@ -874,7 +876,16 @@
 			
 			item.string = line.string;
 			item.type = line.type;
+			item.omited = line.omited;
 			item.line = line;
+			
+			if (item.type == section) {
+				// Save section depth
+				sectionDepth = line.sectionDepth;
+				item.sectionDepth = sectionDepth;
+			} else {
+				item.sectionDepth = sectionDepth;
+			}
 			
 			// Remove formatting characters from the outline item string if needed
 			if ([item.string characterAtIndex:0] == '#' && [item.string length] > 1) {
@@ -883,6 +894,7 @@
 			if ([item.string characterAtIndex:0] == '=' && [item.string length] > 1) {
 				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
 			}
+			
 			// Check if this heading contains a note. We can use notes to have colors etc. in the headings.
 			[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 								NSString * note = [line.string substringWithRange:range];
@@ -925,39 +937,59 @@
 			// Get in / out points
 			item.sceneStart = line.position;
 			
+			// If this scene is omited, we need to figure out where the omission starts from.
+			if (item.omited) {
+				NSUInteger index = [self.lines indexOfObject:line];
+				while (index > 0) {
+					index--;
+					Line* previousLine = [self.lines objectAtIndex:index];
+					
+					// So, this is kind of brute force, but here's my rationalization:
+					// a) The scene heading is already omited
+					// b) Somewhere before there NEEDS to be a line which starts the omission
+					// c) I mean, if there is omission INSIDE omission, the user can/should blame themself?
+					if ([previousLine.string rangeOfString:@OMIT_OPEN_PATTERN].location != NSNotFound) {
+						item.sceneStart = previousLine.position;
+						
+						// Shorten the previous scene accordingly
+						if (previousScene) {
+							previousScene.sceneLength = item.sceneStart - previousLine.position;
+						}
+						break;
+					// So, what did I say about blaming the user?
+					// I remembered that I have myself sometimes omited several scenes at once, so if we come across a scene heading while going through the lines, let's just reset and tell the previous scene that its omission is unterminated. We need this information for swapping the scenes around.
+					// btw, I have really learned to code
+					// in a shady way
+					// but what does it count...
+						// the only thing that matters is how you walk through the fire
+					} else if (previousLine.type == heading) {
+						item.sceneStart = line.position;
+						item.noOmitIn = YES;
+						if (previousScene) previousScene.noOmitOut = YES;
+					}
+				}
+			}
+			
+			
 			if (previousScene) {
 				previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
 			}
 			
 			// Set previous scene to point to the current one
 			previousScene = item;
-			
-			// If there are no sections, add the item as high-level object
-			if ((line.type == heading || line.type == synopse) && sections == 0) {
-				result ++;
-				[_outline addObject: item];
-			} else if (line.type == section) {
-				result++;
-				sections++;
-				
-				[_outline addObject: item];
-			} else {				
-				// Let's add this as a child to the section
-				NSUInteger index = result - 1;
-				[[[_outline objectAtIndex:index] scenes] addObject: item];
-			}
+
+			result++;
+			[_outline addObject:item];
 		}
 		
 		// As the loop has completed, let's set the length for last outline item.
-		// This is pretty sketchy I guess.
 		if (line == [self.lines lastObject]) {
-			//previousScene.sceneLength = line.position - previousScene.sceneStart + [line.string length];
 			currentScene.sceneLength = line.position + [line.string length] - currentScene.sceneStart;
 		}
 	}
 }
 
-// Deprecated
+// Deprecated (why though?)
 - (NSInteger)outlineItemIndex:(Line*)item {
 	return [self.lines indexOfObject:item];
 }

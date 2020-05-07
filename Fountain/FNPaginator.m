@@ -25,6 +25,10 @@
 
 /*
  
+ WORK IN PROGRESS:
+ - Check for stylization when pages are broken (italics, bolds etc.)
+	This could be done with an instance of ContinuousFountainParser, because FNElement does not have any sort of knowledge of style ranges
+ 
  Fountain pagination. This is still based on the original Fountain repository file, but totally rewritten from ground up for Beat during COVID-19 isolation.
  
  Original Fountain repository pagination code was totally convoluted had many obvious bugs and stuff that really didn't work in many places. I went out of my way to make my own pagination engine, just to end up with something almost as convoluted.
@@ -32,7 +36,7 @@
  Maybe it was an important journey - I learned how this actually works and got to spend a nice day coding in my bathrobe. I had two feature scripts that required my attention, but yeah. This is duct-taped together to give somewhat acceptable pagination results when using European page sizes, and now also splits paragraphs into parts.
  
  It doesn't matter - I have the chance to spend my days doing something I'm intrigued by, and probably it makes it less likely that I'll get dementia or other memory-related illness later in life. I don't know.
-
+ 
  This might have been pretty unhelpful for anyone stumbling upon this file  some day.
  Try to make something out of it.
  I might be gone but the code lives on.
@@ -114,6 +118,7 @@
 - (NSUInteger)numberOfPages
 {
 	// Make sure some kind of pagination has been run before you try to return a value.
+	
 	if ([self.pages count] == 0) {
 		[self paginate];
 	}
@@ -130,7 +135,7 @@
 		
 		if (debug) NSLog(@"Papersize: %f - maxheight %lu", pageSize.height, oneInchBuffer);
 		
-		QUQFont *font = [QUQFont fontWithName:@"Courier Prime" size:12];
+		NSFont *font = [NSFont fontWithName:@"Courier" size:12];
 		//NSInteger lineHeight = font.pointSize * 1.1;
 		CGFloat lineHeight = 13;
 		
@@ -146,7 +151,7 @@
 		NSInteger maxElements = [self.script.elements count];
 		
 		NSInteger previousDualDialogueBlockHeight = -1;
-
+		
 		NSSet *dialogueBlockTypes = [NSSet setWithObjects:@"Dialogue", @"Parenthetical", nil];
 		
 		// walk through the elements array
@@ -170,7 +175,6 @@
 			
 			// catch page breaks immediately
 			if ([element.elementType isEqualToString:@"Page Break"]) {
-
 				// close the open page
 				[currentPage addObject:element];
 				[self.pages addObject:currentPage];
@@ -258,15 +262,15 @@
 				} while (j < maxElements && [dialogueBlockTypes containsObject:nextElement.elementType]);
 				
 				if (element.isDualDialogue && previousDualDialogueBlockHeight < 0) {
-					NSLog(@"DUAL: first");
+					if (debug) NSLog(@"DUAL: first");
 					previousDualDialogueBlockHeight = dialogueBlockHeight;
 				}
 				else if (element.isDualDialogue && previousDualDialogueBlockHeight > 0) {
 					if (previousDualDialogueBlockHeight < dialogueBlockHeight) {
-						NSLog(@"DUAL: higher // new %lu vs. prev %lu", dialogueBlockHeight, previousDualDialogueBlockHeight);
+						if (debug) NSLog(@"DUAL: higher // new %lu vs. prev %lu", dialogueBlockHeight, previousDualDialogueBlockHeight);
 						dialogueBlockHeight = dialogueBlockHeight - previousDualDialogueBlockHeight;
 					} else {
-						NSLog(@"DUAL: lower // new %lu vs. prev %lu", dialogueBlockHeight, previousDualDialogueBlockHeight);
+						if (debug) NSLog(@"DUAL: lower // new %lu vs. prev %lu", dialogueBlockHeight, previousDualDialogueBlockHeight);
 						dialogueBlockHeight = 0;
 					}
 				} else {
@@ -289,8 +293,8 @@
 				if (debug) NSLog(@"--- break: %@ (overflow %f) - %f remains on page (at %lu/%lu)", element.elementText, overflow, fullHeight - fabs(overflow), currentY, maxPageHeight);
 
 				// How many rows remain on page
-				NSInteger rows = fabs(overflow) / 12;
-				if (rows == 0) rows = 1;
+				//NSInteger rows = fabs(overflow) / 12;
+				//if (rows == 0) rows = 1;
 				
 				// If it fits, just squeeze it on this page
 				if (fabs(overflow) < lineHeight * 1.5) {
@@ -550,7 +554,7 @@
 					currentPage = [NSMutableArray array];
 				}
 				
-				blockHeight = 0;
+				//blockHeight = 0;
 				currentY = 0;
 			}
 			
@@ -649,7 +653,7 @@
  in their docs, but we have to do this because getting the size of the layout box (Apple's recommended
  method) doesn't take into account line height, so text won't display correctly when we try and print.
  */
-+ (NSInteger)heightForString:(NSString *)string font:(QUQFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight
++ (NSInteger)heightForString:(NSString *)string font:(NSFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight
 {
 	/*
 	 This method won't work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance

@@ -21,10 +21,14 @@
 #define HIDE_INTERVAL 5.0
 
 - (instancetype)init {
-	_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(hideButtons) userInfo:nil repeats:NO];
-	
-	_buttonDefaultY = _outlineButtonY.constant;
 	return [super init];
+}
+
+- (void)awakeFromNib {
+	_buttonDefaultY = _outlineButtonY.constant;
+	
+	// Save buttons for later use
+	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -66,13 +70,14 @@
 }
 - (void)hideButtons {
 	[[_outlineButton animator] setAlphaValue:0.0];
-	[[_cardsButton animator] setAlphaValue:0.0];
-	[[_timelineButton animator] setAlphaValue:0.0];
+	for (NSButton *button in _editorButtons) {
+		[[button animator] setAlphaValue:0.0];
+	}
 }
 - (void)showButtons {
-	[[_outlineButton animator] setAlphaValue:1.0];
-	[[_cardsButton animator] setAlphaValue:1.0];
-	[[_timelineButton animator] setAlphaValue:1.0];
+	for (NSButton *button in _editorButtons) {
+		[[button animator] setAlphaValue:1.0];
+	}
 }
 
 - (void)mouseMoved:(NSEvent *)event {

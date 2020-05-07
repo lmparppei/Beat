@@ -41,6 +41,7 @@
 
 + (NSArray *)parseBodyOfString:(NSString *)string
 {
+	NSLog(@"parsing from FNParser: parseBodyOfString");
     NSMutableString *scriptContent = [NSMutableString stringWithString:[self bodyOfString:string]];
     
     // Three-pass parsing method. 
@@ -209,6 +210,8 @@
 
 + (NSArray *)parseTitlePageOfString:(NSString *)string
 {
+	NSLog(@"parsing from FNParser: parseTitlePageOfString");
+	
     NSMutableString *rawTitlePage = [NSMutableString stringWithString:[self titlePageOfString:string]];
     NSMutableArray *contents = [NSMutableArray array];
     
@@ -271,6 +274,7 @@
 
 + (NSArray *)parseTitlePageOfFile:(NSString *)path
 {
+	NSLog(@"parsing from FNParser");
     NSError  *error = nil;
     NSString *fileContents  = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
     if (error) {
@@ -284,6 +288,7 @@
 // Extract the body content from the string.
 + (NSString *)bodyOfString:(NSString *)string
 {
+	NSLog(@"parsing from FNParser: bodyOfString");
     NSMutableString *body = [NSMutableString stringWithString:string];
     [body replaceOccurrencesOfRegex:@"^\\n+" withString:@""];
     
@@ -308,6 +313,7 @@
 // Extract the title page content from the string.
 + (NSString *)titlePageOfString:(NSString *)string
 {
+	NSLog(@"parsing from FNParser: titlePageOfString");
     NSMutableString *body = [NSMutableString stringWithString:string];
     [body replaceOccurrencesOfRegex:@"^\\n+" withString:@""];
     

@@ -10,6 +10,10 @@
 #import "BeatTextView.h"
 #import "DynamicColor.h"
 #import "Line.h"
+#import "ScrollView.h"
+
+// This helps to create some sense of easeness
+#define MARGIN_CONSTANT 10
 
 #define MAX_RESULTS 10
 
@@ -364,7 +368,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_marginColor = newColor;
 }
 
-
 // To mask out stuff we don't want to see when filtering scenes
 - (void)drawRect:(NSRect)dirtyRect {
 	NSGraphicsContext *context = [NSGraphicsContext currentContext];
@@ -373,8 +376,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	for (NSValue* value in _sections) {
 		[self.marginColor setFill];
 		NSRect sectionRect = [value rectValue];
-		CGFloat width = self.frame.size.width - self.textContainerInset.width * 2 + 390;
-		NSRect rect = NSMakeRect(self.textContainerInset.width - 130, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
+		CGFloat width = self.frame.size.width;
+		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
 		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
 	}
 		
@@ -425,6 +428,26 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	[context restoreGraphicsState];
 	*/
+}
+- (void)mouseMoved:(NSEvent *)event {
+	CGFloat x = event.locationInWindow.x;
+	CGFloat y = event.locationInWindow.y;
+	CGFloat origin = self.enclosingScrollView.frame.origin.x;
+	CGFloat containerWidth = self.frame.size.width - self.textContainerInset.width * _zoomLevel;
+
+	if (x < origin + _zoomLevel * self.textContainerInset.width - MARGIN_CONSTANT ||
+		x > origin + containerWidth + MARGIN_CONSTANT ||
+		y < 0 ||
+		y > self.window.frame.size.height - 22
+		) {
+		[[NSCursor arrowCursor] set];
+	} else {
+		[[NSCursor IBeamCursor] set];
+	}
+}
+
+- (void)mouseExited:(NSEvent *)event {
+	[[NSCursor arrowCursor] set];
 }
 
 - (void)updateSections:(NSArray *)sections {

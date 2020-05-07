@@ -15,12 +15,10 @@
 		B138B66719E1E8CA000489C4 /* FNHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65419E1E8CA000489C4 /* FNHTMLScript.m */; };
 		B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65619E1E8CA000489C4 /* FNPaginator.m */; };
 		B138B66919E1E8CA000489C4 /* FNScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65819E1E8CA000489C4 /* FNScript.m */; };
-		B138B66A19E1E8CA000489C4 /* FountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65A19E1E8CA000489C4 /* FountainParser.m */; };
 		B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65C19E1E8CA000489C4 /* FountainRegexes.m */; };
 		B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65E19E1E8CA000489C4 /* FountainWriter.m */; };
 		B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
 		B138B66E19E1E8CA000489C4 /* License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B138B66219E1E8CA000489C4 /* License.rtf */; };
-		B138B66F19E1E8CA000489C4 /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B66419E1E8CA000489C4 /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B1509A421CB6EBBC00884918 /* WriterFDXTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1509A411CB6EBBC00884918 /* WriterFDXTests.m */; };
 		B1DCC4631CB32C5200438E7F /* WriterThemeManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1DCC4621CB32C5200438E7F /* WriterThemeManagerTests.m */; };
 		B1F04ED81C88ACAD001C4D27 /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */; };
@@ -43,11 +41,11 @@
 		B62ADC9723CCF0250015563A /* FastFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65019E1E8CA000489C4 /* FastFountainParser.m */; };
 		B62ADC9823CCF0270015563A /* FNElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65219E1E8CA000489C4 /* FNElement.m */; };
 		B62ADC9923CCF02A0015563A /* FNPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65619E1E8CA000489C4 /* FNPaginator.m */; };
-		B62ADC9A23CCF02E0015563A /* FountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65A19E1E8CA000489C4 /* FountainParser.m */; };
 		B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65C19E1E8CA000489C4 /* FountainRegexes.m */; };
 		B62ADC9C23CCF0430015563A /* FountainWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65E19E1E8CA000489C4 /* FountainWriter.m */; };
 		B62ADC9E23CCF7790015563A /* NSString+Whitespace.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7102218B389005B8447 /* NSString+Whitespace.m */; };
 		B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
+		B6447CB124616C8400AA4EBC /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6447CB024616C8400AA4EBC /* MasterView.m */; };
 		B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B6482F7922195BEC00175927 /* BeatTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* BeatTextView.m */; };
@@ -65,10 +63,6 @@
 		B69A92962319387B00FE6A3E /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = B69A92952319387B00FE6A3E /* CHANGELOG */; };
 		B69A929C2319609100FE6A3E /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
 		B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */ = {isa = PBXBuildFile; fileRef = B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */; };
-		B6B2706423801FD400B05C8F /* EditDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B2706323801FD400B05C8F /* EditDetector.m */; };
-		B6B2706C2380224E00B05C8F /* LCS.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B270682380224E00B05C8F /* LCS.m */; };
-		B6B2706D2380224E00B05C8F /* NSArray+LongestCommonSubsequence.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B270692380224E00B05C8F /* NSArray+LongestCommonSubsequence.m */; };
-		B6B270712380231E00B05C8F /* NSString+LongestCommonSubsequence.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B270702380231E00B05C8F /* NSString+LongestCommonSubsequence.m */; };
 		B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */; };
 		B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
@@ -203,6 +197,8 @@
 		B62ADC7D23CCCE560015563A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B62ADC7E23CCCE560015563A /* fountainQuickLook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fountainQuickLook.entitlements; sourceTree = "<group>"; };
 		B62ADC8E23CCE20D0015563A /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = Beat/UI/MasterView.h; sourceTree = SOURCE_ROOT; };
+		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = Beat/UI/MasterView.m; sourceTree = SOURCE_ROOT; };
 		B645A97D23CD03CC00F13710 /* NSString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Regex.h"; path = "Beat/NSString+Regex/NSString+Regex.h"; sourceTree = SOURCE_ROOT; };
 		B645A97E23CD03CC00F13710 /* NSString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Regex.m"; path = "Beat/NSString+Regex/NSString+Regex.m"; sourceTree = SOURCE_ROOT; };
 		B6482F7722195BEC00175927 /* BeatTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatTextView.h; path = Beat/NCRTextField/BeatTextView.h; sourceTree = SOURCE_ROOT; };
@@ -228,15 +224,6 @@
 		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = dragula.js; path = Beat/CardView/dragula.js; sourceTree = SOURCE_ROOT; };
 		B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainAnalysis.h; path = Writer/FountainAnalysis.h; sourceTree = SOURCE_ROOT; };
 		B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainAnalysis.m; path = Beat/FountainAnalysis.m; sourceTree = SOURCE_ROOT; };
-		B6B2706223801F2B00B05C8F /* EditDetector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = EditDetector.h; path = Beat/Collaboration/EditDetector.h; sourceTree = SOURCE_ROOT; };
-		B6B2706323801FD400B05C8F /* EditDetector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = EditDetector.m; path = Beat/Collaboration/EditDetector.m; sourceTree = SOURCE_ROOT; };
-		B6B270662380224E00B05C8F /* LCS-Objective-C.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LCS-Objective-C.h"; sourceTree = "<group>"; };
-		B6B270682380224E00B05C8F /* LCS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LCS.m; sourceTree = "<group>"; };
-		B6B270692380224E00B05C8F /* NSArray+LongestCommonSubsequence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+LongestCommonSubsequence.m"; sourceTree = "<group>"; };
-		B6B2706A2380224E00B05C8F /* LCS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LCS.h; sourceTree = "<group>"; };
-		B6B2706E2380226A00B05C8F /* NSArray+LongestCommonSubsequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+LongestCommonSubsequence.h"; sourceTree = "<group>"; };
-		B6B2706F2380231E00B05C8F /* NSString+LongestCommonSubsequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+LongestCommonSubsequence.h"; sourceTree = "<group>"; };
-		B6B270702380231E00B05C8F /* NSString+LongestCommonSubsequence.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+LongestCommonSubsequence.m"; sourceTree = "<group>"; };
 		B6B417C92359E2F700AD3F4D /* TitlePageEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TitlePageEditorDelegate.h; path = Writer/TitlePageEditorDelegate.h; sourceTree = SOURCE_ROOT; };
 		B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TitlePageEditorDelegate.m; path = Writer/TitlePageEditorDelegate.m; sourceTree = SOURCE_ROOT; };
 		B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = BeatDocumentIcon.iconset; path = Beat/Images.xcassets/BeatDocumentIcon.iconset; sourceTree = SOURCE_ROOT; };
@@ -354,7 +341,6 @@
 				B138B64E19E1E8CA000489C4 /* Fountain */,
 				B138B66119E1E8CA000489C4 /* RegexKitLite */,
 				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
-				B6B270652380224E00B05C8F /* LCS */,
 				B1F04ED31C88AC99001C4D27 /* CourierPrime */,
 				B62ADC7623CCCE560015563A /* fountainQuickLook */,
 				B138B62419E1D8A4000489C4 /* Frameworks */,
@@ -380,6 +366,8 @@
 				B1E7FF511BC4555B008E2B99 /* Writer.entitlements */,
 				B138B57A19E1C973000489C4 /* Document.h */,
 				B6D2B7122218B39A005B8447 /* Document.m */,
+				B6447CAF24616C8400AA4EBC /* MasterView.h */,
+				B6447CB024616C8400AA4EBC /* MasterView.m */,
 				B6EA9F4D23BA8E8C00DBE9D0 /* SceneFiltering.h */,
 				B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */,
 				B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */,
@@ -395,7 +383,6 @@
 				B6907E39233FE16200741071 /* Analysis */,
 				B13111911CB2A41B00D07A0C /* Parsing */,
 				B1509A3D1CB5C0B400884918 /* Export */,
-				B6B2706123801EBF00B05C8F /* Collaboration */,
 				B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */,
 				B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */,
 				B68AC7B32219732800E02466 /* Sample files */,
@@ -606,30 +593,6 @@
 				B6907E3A233FE17C00741071 /* analysis.html */,
 			);
 			name = Analysis;
-			sourceTree = "<group>";
-		};
-		B6B2706123801EBF00B05C8F /* Collaboration */ = {
-			isa = PBXGroup;
-			children = (
-				B6B2706223801F2B00B05C8F /* EditDetector.h */,
-				B6B2706323801FD400B05C8F /* EditDetector.m */,
-			);
-			path = Collaboration;
-			sourceTree = "<group>";
-		};
-		B6B270652380224E00B05C8F /* LCS */ = {
-			isa = PBXGroup;
-			children = (
-				B6B2706E2380226A00B05C8F /* NSArray+LongestCommonSubsequence.h */,
-				B6B270662380224E00B05C8F /* LCS-Objective-C.h */,
-				B6B270682380224E00B05C8F /* LCS.m */,
-				B6B270692380224E00B05C8F /* NSArray+LongestCommonSubsequence.m */,
-				B6B2706A2380224E00B05C8F /* LCS.h */,
-				B6B2706F2380231E00B05C8F /* NSString+LongestCommonSubsequence.h */,
-				B6B270702380231E00B05C8F /* NSString+LongestCommonSubsequence.m */,
-			);
-			name = LCS;
-			path = Beat/LCS;
 			sourceTree = "<group>";
 		};
 		B6B417CC2359E2FC00AD3F4D /* TitlePageEditor */ = {
@@ -851,31 +814,26 @@
 				B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */,
 				B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */,
 				B6FB775D245C7FDA000638B2 /* LivePagination.m in Sources */,
+				B6447CB124616C8400AA4EBC /* MasterView.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
-				B138B66F19E1E8CA000489C4 /* RegexKitLite.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinousFountainParser.m in Sources */,
 				B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */,
 				B6D2B71A2218B408005B8447 /* main.m in Sources */,
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
 				B667796523C5D1CB0029D508 /* FDXImport.m in Sources */,
-				B6B2706D2380224E00B05C8F /* NSArray+LongestCommonSubsequence.m in Sources */,
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
-				B138B66A19E1E8CA000489C4 /* FountainParser.m in Sources */,
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6482F7922195BEC00175927 /* BeatTextView.m in Sources */,
 				B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */,
 				B138B66919E1E8CA000489C4 /* FNScript.m in Sources */,
 				B138B66519E1E8CA000489C4 /* FastFountainParser.m in Sources */,
-				B6B2706423801FD400B05C8F /* EditDetector.m in Sources */,
 				B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */,
 				B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */,
-				B6B2706C2380224E00B05C8F /* LCS.m in Sources */,
 				B138B66719E1E8CA000489C4 /* FNHTMLScript.m in Sources */,
 				B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */,
-				B6B270712380231E00B05C8F /* NSString+LongestCommonSubsequence.m in Sources */,
 				B6952C95232B89BE00448B57 /* ScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -895,7 +853,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B62ADC9A23CCF02E0015563A /* FountainParser.m in Sources */,
 				B615E5E823CE00FB00E61C54 /* FNHTMLScript.m in Sources */,
 				B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */,
 				B62ADC9823CCF0270015563A /* FNElement.m in Sources */,

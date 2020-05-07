@@ -694,6 +694,8 @@ DQ
                 <outlet property="_startModal" destination="Tq0-bd-4zX" id="J2s-BT-MWa"/>
                 <outlet property="aboutText" destination="X7u-6E-wyW" id="uWM-jd-W6M"/>
                 <outlet property="aboutVersionField" destination="psH-pS-cqG" id="BGz-D7-NRL"/>
+                <outlet property="acknowledgementsModal" destination="bmt-sL-yPs" id="05M-ol-LMG"/>
+                <outlet property="acknowledgementsTextView" destination="j3Y-oZ-sKT" id="sWP-Kf-qVg"/>
                 <outlet property="recentFiles" destination="2RT-wl-dQJ" id="2Y1-AI-GVM"/>
                 <outlet property="versionField" destination="TYI-Wq-8Wy" id="uXG-1x-yVE"/>
             </connections>
@@ -740,10 +742,10 @@ DQ
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SZP-ku-Ryr">
+                                <imageView focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SZP-ku-Ryr">
                                     <rect key="frame" x="22" y="94" width="202" height="216"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="B_256" id="TXx-4z-e0c"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="B_256" id="TXx-4z-e0c"/>
                                 </imageView>
                             </subviews>
                         </view>
@@ -853,7 +855,7 @@ DQ
             </connections>
         </customObject>
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="blg-LD-9vu">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="534" height="317"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="2zn-ZX-4dS">
@@ -871,15 +873,15 @@ DQ
                                     <rect key="frame" x="210" y="0.0" width="324" height="317"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="eFV-ne-twe">
-                                        <rect key="frame" x="0.0" y="0.0" width="324" height="317"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="309" height="317"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <textView ambiguous="YES" editable="NO" drawsBackground="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" linkDetection="YES" textCompletion="NO" smartInsertDelete="YES" id="X7u-6E-wyW">
-                                                <rect key="frame" x="0.0" y="0.0" width="314" height="317"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="299" height="317"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <size key="minSize" width="314" height="317"/>
+                                                <size key="minSize" width="299" height="317"/>
                                                 <size key="maxSize" width="325" height="10000000"/>
                                                 <attributedString key="textStorage">
                                                     <fragment content="Test">
@@ -900,7 +902,7 @@ DQ
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                     <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="0da-TB-O2I">
-                                        <rect key="frame" x="308" y="0.0" width="16" height="317"/>
+                                        <rect key="frame" x="309" y="0.0" width="15" height="317"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>
@@ -948,6 +950,60 @@ DQ
             <point key="canvasLocation" x="-4" y="561.5"/>
         </window>
         <customObject id="fo0-Pp-nmB" customClass="SUUpdater"/>
+        <window title="Beat Acknowledgements" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titleVisibility="hidden" id="bmt-sL-yPs" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="181" y="118" width="627" height="447"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <view key="contentView" id="1b7-t1-i1A">
+                <rect key="frame" x="0.0" y="0.0" width="627" height="447"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <scrollView appearanceType="aqua" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="DsW-5X-hrl">
+                        <rect key="frame" x="0.0" y="36" width="627" height="411"/>
+                        <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Ff0-z7-5BC">
+                            <rect key="frame" x="0.0" y="0.0" width="612" height="411"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="j3Y-oZ-sKT">
+                                    <rect key="frame" x="0.0" y="0.0" width="612" height="411"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <size key="minSize" width="612" height="411"/>
+                                    <size key="maxSize" width="627" height="10000000"/>
+                                    <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                </textView>
+                            </subviews>
+                        </clipView>
+                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="ZEG-ML-P7U">
+                            <rect key="frame" x="-100" y="-100" width="225" height="15"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="of8-CO-Cy4">
+                            <rect key="frame" x="612" y="0.0" width="15" height="411"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
+                    <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="emu-9g-OTx">
+                        <rect key="frame" x="518" y="1" width="107" height="32"/>
+                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="V3Z-Ts-yrN">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="DsW-5X-hrl" firstAttribute="top" secondItem="1b7-t1-i1A" secondAttribute="top" id="GYT-Lc-Rwf"/>
+                    <constraint firstAttribute="bottom" secondItem="emu-9g-OTx" secondAttribute="bottom" constant="8" id="QXY-Jx-SuB"/>
+                    <constraint firstItem="DsW-5X-hrl" firstAttribute="leading" secondItem="1b7-t1-i1A" secondAttribute="leading" id="iMq-kz-TLg"/>
+                    <constraint firstAttribute="trailing" secondItem="emu-9g-OTx" secondAttribute="trailing" constant="8" id="o3H-t8-k5C"/>
+                    <constraint firstAttribute="trailing" secondItem="DsW-5X-hrl" secondAttribute="trailing" id="tvg-qP-WVL"/>
+                    <constraint firstItem="emu-9g-OTx" firstAttribute="top" secondItem="DsW-5X-hrl" secondAttribute="bottom" constant="7" id="vd9-vO-yzi"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="42.5" y="1038.5"/>
+        </window>
     </objects>
     <resources>
         <image name="B_256" width="256" height="256"/>

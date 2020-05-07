@@ -139,8 +139,7 @@
 
 - (NSString*)getJSON {
 	if (![_lines count] || ![_scenes count]) {
-		NSLog(@"You forgot to setup the analyzer by [FountainAnalysis setupScript:...])");
-		return nil;
+		return @"genders:{ }";
 	}
 	[self createReport];
 	return [self createJSON];

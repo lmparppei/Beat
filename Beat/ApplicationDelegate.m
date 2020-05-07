@@ -16,7 +16,8 @@
 
 - (instancetype) init {	
 	// This might be a silly implementation, but ..... well.
-	// Let's close the welcome screen if any sort of document has been opened
+	// Let's close the welcome screen if any sort of document has been opene
+
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		if (self->_startModal && [self->_startModal isVisible]) {
 			[self closeStartModal];
@@ -27,6 +28,7 @@
 		
 		if ([openDocuments count] == 1 && self->_startModal && ![self->_startModal isVisible]) {
 			//[self showStartModal];
+			
 			[self->_startModal setIsVisible:true];
 			[self->recentFiles deselectAll:nil];
 			[self->recentFiles reloadData];
@@ -52,6 +54,11 @@
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
 	[versionField setStringValue:versionString];
 	[aboutVersionField setStringValue:versionString];
+	
+	[self->_startModal becomeKeyWindow];
+	[self->_startModal setAcceptsMouseMovedEvents:YES];
+	[self->_startModal setMovable:YES];
+	[self->_startModal setMovableByWindowBackground:YES];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
@@ -87,8 +94,8 @@
 				NSModalResponse response = [alert runModal];
 
 				if (response == NSAlertFirstButtonReturn) {
-					NSURL *recoverURL = [NSURL fileURLWithPath:appSupportDir];
-					recoverURL = [recoverURL URLByAppendingPathComponent:file];
+					//NSURL *recoverURL = [NSURL fileURLWithPath:appSupportDir];
+					//recoverURL = [recoverURL URLByAppendingPathComponent:file];
 					
 					NSString *recoveredFilename = [[[filename stringByDeletingPathExtension] stringByAppendingString:@" (Recovered)"] stringByAppendingString:@".fountain"];
 					
@@ -213,6 +220,10 @@
 	
 	NSString * rtfFile = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"rtf"];
 	[aboutText readRTFDFromFile:rtfFile];
+}
+
+- (IBAction)showAcknowledgements:(id) sender {
+	[self->acknowledgementsModal setIsVisible:YES];
 }
 
 - (IBAction)importFDX:(id)sender

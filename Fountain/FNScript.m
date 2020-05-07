@@ -24,7 +24,7 @@
 
 #import "FNScript.h"
 #import "FNElement.h"
-#import "FountainParser.h"
+//#import "FountainParser.h"
 #import "FountainWriter.h"
 #import "FastFountainParser.h"
 
@@ -119,54 +119,6 @@
 - (NSString *)description
 {
     return [FountainWriter documentFromScript:self];
-}
-
-#pragma mark - Legacy parser methods
-
-- (id)initWithFile:(NSString *)path parser:(FNParserType)parserType
-{
-    self = [self init];
-    if (self) {
-        [self loadFile:path parser:parserType];
-    }
-    return self;
-}
-
-- (id)initWithString:(NSString *)string parser:(FNParserType)parserType
-{
-    self = [self init];
-    if (self) {
-        [self loadString:string parser:parserType];
-    }
-    return self;
-}
-
-- (void)loadString:(NSString *)string parser:(FNParserType)parserType
-{
-    self.filename = nil;
-    if (parserType == FNParserTypeRegex) {
-        self.elements = [FountainParser parseBodyOfString:string];
-        self.titlePage = [FountainParser parseTitlePageOfString:string];
-    }
-    else {
-        FastFountainParser *parser = [[FastFountainParser alloc] initWithString:string];
-        self.elements = parser.elements;
-        self.titlePage = parser.titlePage;
-    }
-}
-
-- (void)loadFile:(NSString *)path parser:(FNParserType)parserType
-{
-    self.filename = [path lastPathComponent];
-    if (parserType == FNParserTypeRegex) {
-        self.elements = [FountainParser parseBodyOfFile:path];
-        self.titlePage = [FountainParser parseTitlePageOfFile:path];
-    }
-    else {
-        FastFountainParser *parser = [[FastFountainParser alloc] initWithFile:path];
-        self.elements = parser.elements;
-        self.titlePage = parser.titlePage;
-    }
 }
 
 @end

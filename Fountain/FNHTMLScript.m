@@ -212,7 +212,7 @@
 - (NSString *)bodyForScript
 {
     NSMutableString *body = [NSMutableString string];
-    
+	
     // Add title page
     NSMutableDictionary *titlePage = [NSMutableDictionary dictionary];
     for (NSDictionary *dict in self.script.titlePage) {
@@ -341,8 +341,9 @@
     
     FNPaginator *paginator = [[FNPaginator alloc] initWithScript:self.script document:self.document];
     NSUInteger maxPages = [paginator numberOfPages];
+
 	_numberOfPages = maxPages;
-	
+		
 	bool pageBreak = false;
 	
     for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {

@@ -89,6 +89,7 @@
 #import "SceneFiltering.h"
 #import "FDXImport.h"
 #import "LivePagination.h"
+#import "MasterView.h"
 
 @interface Document ()
 
@@ -163,7 +164,7 @@
 @property (unsafe_unretained) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet ColorView *backgroundView; // Master background
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
-@property (weak) IBOutlet NSView *masterView; // View which contains every other view
+@property (weak) IBOutlet MasterView *masterView; // View which contains every other view
 
 
 // Analysis
@@ -328,8 +329,12 @@
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.72
 
-#define TREE_VIEW_WIDTH 350
+#define TREE_VIEW_WIDTH 330
 #define TIMELINE_VIEW_HEIGHT 120
+
+#define OUTLINE_SECTION_SIZE 13.0
+#define OUTLINE_SYNOPSE_SIZE 12.0
+#define OUTLINE_SCENE_SIZE 11.5
 
 
 @implementation Document
@@ -399,8 +404,10 @@
                                  _documentWidth * 1.5);
     [window setFrame:newFrame display:YES];
 	
-	// Accept mouse moved events... nah
+	// Accept mouse moved events + set window object to master view
 	[aController.window setAcceptsMouseMovedEvents:YES];
+	self.masterView.parentWindow = aController.window;
+	self.masterView.styleMask = aController.window.styleMask;
 	
 	// Outline view setup
     self.outlineViewVisible = false;
@@ -520,27 +527,23 @@
 	[self initAutosave];
 	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
-	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
+	//[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 
 	// Can I come over, I need to rest
 	// lay down for a while, disconnect
 	// the night was so long, the day even longer
 	// lay down for a while, recollect
+	
 }
-
-- (void) afterLoad {
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[self updateLayout];
-		[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
-		[self.textView setNeedsDisplay:true];
-		
-		[self updateSceneNumberLabels];
-		[self updateSectionMarkers];
-		
-		// Set up recovery file saving
-		[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
-		[self scheduleAutosaving];
-	});
+-(void)awakeFromNib {
+	[self updateLayout];
+	
+	[self updateSceneNumberLabels];
+	[self updateSectionMarkers];
+	
+	// Set up recovery file saving
+	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
+	[self scheduleAutosaving];
 }
 
 - (void)setFileURL:(NSURL *)fileURL {
@@ -651,9 +654,13 @@
 	}
 }
 
+- (void)ensureCaret {
+	[self.textView updateInsertionPointStateAndRestartTimer:YES];
+}
 - (void)ensureLayout {
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 	[self.textView setNeedsDisplay:YES];
+		
 	[self updateSceneNumberLabels];
 }
 
@@ -829,8 +836,6 @@
     [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
             NSString* fdxString = [FDXInterface fdxFromString:[self getText]];
-			NSLog(@"%@", fdxString);
-			NSLog(@"%@", saveDialog.URL);
             [fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
@@ -885,7 +890,11 @@
 		// Found the current scene. Let's cache the result just in case
 		if (NSLocationInRange(position, range)) {
 			_currentScene = scene;
-			self.outlineView.currentScene = index;
+			if ([_filteredOutline count] < 1) {
+				self.outlineView.currentScene = index;
+			} else {
+				self.outlineView.currentScene = [_filteredOutline indexOfObject:scene];
+			}
 			
 			// Also, update touch bar color if needed (omg this is cool)
 			if (scene.color) {
@@ -1123,9 +1132,13 @@
 	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
 }
 
-// We need a method to be able to undo scene reordering.
+
 - (void)moveString:(NSString*)string withRange:(NSRange)range newRange:(NSRange)newRange
 {
+	// Soooooo... just to let the future version of me to know:
+	// OutlineScene has the info if its omission  was left unterminated or doesn't even start.
+	// You should really use that info here somehow... you know, add /* and */... every hero's journey is paved with string index and NSRange magic
+	
 	// Delete the string and add it again to its new position
 	[self replaceCharactersInRange:range withString:@""];
 	[self replaceCharactersInRange:newRange withString:string];
@@ -1391,7 +1404,10 @@
 
 	if (!fontOnly) {
 		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-//		[paragraphStyle setParagraphSpacing:0];
+		
+		// Some experiments for section headers
+		//[paragraphStyle setParagraphSpacing:0];
+		//[paragraphStyle setParagraphSpacingBefore:0];
 		
 		// This won't format empty lines for some reason: [paragraphStyle setLineHeightMultiple:1.05];
 		
@@ -1498,7 +1514,24 @@
 			
 			// Bold section headings for first-level sections
 			if (line.type == section) {
-				//[paragraphStyle setParagraphSpacing:50];
+				/*
+				 // Experiments for section headers
+				NSInteger lineIndex = [_parser.lines indexOfObject:line];
+				bool sectionBefore = NO;
+				bool sectionAfter = NO;
+				if (lineIndex < _parser.lines.count - 1 && lineIndex > 1) {
+					if ([(Line*)[_parser.lines objectAtIndex:lineIndex - 1] type] == section)  sectionBefore = YES;
+					if ([(Line*)[_parser.lines objectAtIndex:lineIndex + 1] type] == section) sectionAfter = YES;
+					
+					[self formatLineOfScreenplay:[_parser.lines objectAtIndex:lineIndex - 1] onlyFormatFont:NO recursive:YES];
+					[self formatLineOfScreenplay:[_parser.lines objectAtIndex:lineIndex + 1] onlyFormatFont:NO recursive:YES];
+				}
+
+				
+				if (!sectionBefore) [paragraphStyle setParagraphSpacingBefore:15];
+				if (!sectionAfter) [paragraphStyle setParagraphSpacing:15];
+				 */
+				
 				if (line.sectionDepth < 2) [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
 				[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			}
@@ -1543,6 +1576,7 @@
 		[textStorage addAttributes:attributes range:range];
 	} else {
 		if (range.location + 1 < [textStorage.string length]) {
+
 			range = NSMakeRange(range.location, range.length + 1);
 			[textStorage addAttributes:attributes range:range];
 		}
@@ -1800,9 +1834,7 @@ static NSString *forceLyricsSymbol = @"~";
 	NSMutableString *fullText = [NSMutableString stringWithString:@""];
 	
 	NSUInteger sceneCount = 1; // Track scene amount
-	
-	Line *previousLine;
-	
+		
 	for (Line *line in [self.parser lines]) {
 		NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet: NSCharacterSet.whitespaceCharacterSet];
 		
@@ -1816,8 +1848,6 @@ static NSString *forceLyricsSymbol = @"~";
 		} else {
 			[fullText appendFormat:@"%@\n", cleanedLine];
 		}
-		
-		previousLine = line;
 	}
 	
 	return fullText;
@@ -2151,11 +2181,6 @@ static NSString *forceLyricsSymbol = @"~";
 								  window.frame.size.height);
 			[window setFrame:newFrame display:YES];
 		} else {
-			newFrame = NSMakeRect(window.frame.origin.x - offset,
-								  window.frame.origin.y,
-								  window.frame.size.width,
-								  window.frame.size.height);
-			
 			CGFloat width = (window.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
 			
 			[self.textView setTextContainerInset:NSMakeSize(width, TEXT_INSET_TOP)];
@@ -2405,9 +2430,10 @@ static NSString *forceLyricsSymbol = @"~";
         [self setSelectedTabViewTab:1];
 		_printPreview = YES;
     } else {
-        [self setSelectedTabViewTab:0];
+		[self setSelectedTabViewTab:0];
 		[self updateLayout];
-		[self ensureLayout];
+		[self ensureCaret];
+		
 		_printPreview = NO;
     }
 	[self updateSceneNumberLabels];
@@ -2457,33 +2483,27 @@ static NSString *forceLyricsSymbol = @"~";
 	NSMutableArray * scenes = [[NSMutableArray alloc] init];
 	for (OutlineScene * scene in [self.parser outline]) {
 		if (scene.type == heading) [scenes addObject:scene];
-		
+		/*
+		// NOPE. Deprecated.
 		if ([scene.scenes count]) {
 			for (OutlineScene * subscene in scene.scenes) {
 				if (subscene.type == heading) [scenes addObject:subscene];
 			}
 		}
+		*/
 	}
 	
 	return scenes;
 }
 
-// NOTE: This returns a FLAT outline.
 - (NSMutableArray *) getOutlineItems {
+	// For some reason we can't check the original array (memory/thread reasons?)
+	// so we'll make a copy out of all the items
 	NSMutableArray * outlineItems = [NSMutableArray array];
-	
-	// WIP
 	for (OutlineScene * scene in [self.parser outline]) {
 		[outlineItems addObject:scene];
-		
-		if ([scene.scenes count]) {
-			for (OutlineScene * subscene in scene.scenes) {
-				[outlineItems addObject:subscene];
-			}
-		}
 	}
 	
-	_flatOutline = outlineItems;
 	return outlineItems;
 }
 
@@ -2579,6 +2599,21 @@ static NSString *forceLyricsSymbol = @"~";
 		NSUInteger sceneNumberLength = 0;
 		bool currentScene = false;
 
+		// Check that this scene is not omited from the screenplay
+		bool omited = line.line.omited;
+		
+		// Create padding for entry
+		NSString *padding = @"";
+		NSString *paddingSpace = @"    ";
+		padding = [@"" stringByPaddingToLength:(line.sectionDepth * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
+		
+		// Section padding is slightly smaller
+		if (line.type == section) {
+			if (line.sectionDepth > 1) padding = [@"" stringByPaddingToLength:((line.sectionDepth - 1) * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
+			else padding = @"";
+		}
+		
+		
 		// The outline elements will be formatted as rich text,
 		// which is apparently VERY CUMBERSOME in Cocoa/Objective-C.
 		NSMutableString *rawString = [NSMutableString stringWithString:line.string];
@@ -2592,7 +2627,6 @@ static NSString *forceLyricsSymbol = @"~";
 		if ([resultString length] == 0) return resultString;
 		
 		// Remove any formatting
-		
         if (line.type == heading) {
 			if (_currentScene.string) {
 				if (_currentScene == line) currentScene = true;
@@ -2611,21 +2645,42 @@ static NSString *forceLyricsSymbol = @"~";
 				string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
 			}
 			
+			// Looking at this a year after starting the project, finding out it's convoluted and deciding not to do anything about it
 			if (line.sceneNumber) {
-				NSString *sceneHeader = [NSString stringWithFormat:@"    %@.", line.sceneNumber];
-                string = [NSString stringWithFormat:@"%@ %@", sceneHeader, [string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""]];
-				resultString = [[NSMutableAttributedString alloc] initWithString:string];
+				// Clean up forced scene number from the string
+				string = [string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
+								
+				NSString *sceneHeader;
+				if (!omited) {
+					sceneHeader = [NSString stringWithFormat:@" %@%@.", padding, line.sceneNumber];
+					string = [NSString stringWithFormat:@"%@ %@", sceneHeader, string];
+				} else {
+					// If scene is omited, put it in brackets
+					sceneHeader = [NSString stringWithFormat:@" %@", padding];
+					string = [NSString stringWithFormat:@"%@(%@)", sceneHeader, string];
+				}
+				
+				NSFont *font = [NSFont systemFontOfSize:OUTLINE_SCENE_SIZE];
+				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
+				
+				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
 				sceneNumberLength = [sceneHeader length];
 				
 				// Scene number will be displayed in a slightly darker shade
-				[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
-				[resultString addAttribute:NSForegroundColorAttributeName value:[self colors][@"darkGray"] range:NSMakeRange([sceneHeader length], [resultString length] - [sceneHeader length])];
+				if (!omited) {
+					[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
+					[resultString addAttribute:NSForegroundColorAttributeName value:[self colors][@"darkGray"] range:NSMakeRange([sceneHeader length], [resultString length] - [sceneHeader length])];
+				}
+				// If it's omited, make it totally gray
+				else {
+					[resultString addAttribute:NSForegroundColorAttributeName value:[self colors][@"veryDarkGray"] range:NSMakeRange(0, [resultString length])];
+				}
 				
 				// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
 				if (currentScene) {
 					[resultString addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:NSMakeRange(0, [resultString length])];
 				}
-				
+								
 				// Lines without RTF formatting have uneven leading, so let's fix that.
 				[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0,[resultString length])];
 				
@@ -2647,9 +2702,10 @@ static NSString *forceLyricsSymbol = @"~";
                 while (string.length && [string characterAtIndex:0] == ' ') {
                     string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
                 }
-                string = [@"  " stringByAppendingString:string];
+				string = [NSString stringWithFormat:@" %@%@", padding, string];
+                //string = [@"  " stringByAppendingString:string];
 				
-				NSFont *font = [NSFont systemFontOfSize:13.0f];
+				NSFont *font = [NSFont systemFontOfSize:OUTLINE_SECTION_SIZE];
 				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 				
 				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
@@ -2665,18 +2721,20 @@ static NSString *forceLyricsSymbol = @"~";
         if (line.type == section) {
             NSString* string = rawString;
             if ([string length] > 0) {
+				
                 //Remove "#"
-                if ([string characterAtIndex:0] == '#') {
+				while ([string characterAtIndex:0] == '#' && [string length] > 1) {
                     string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
                 }
+				
                 //Remove leading whitespace
                 while (string.length && [string characterAtIndex:0] == ' ') {
                     string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
                 }
 				
-				string = [@"" stringByAppendingString:string];
+				string = [NSString stringWithFormat:@"%@%@", padding, string];
 				
-				NSFont *font = [NSFont systemFontOfSize:13.0f];
+				NSFont *font = [NSFont systemFontOfSize:OUTLINE_SECTION_SIZE];
 				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 
 				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
@@ -2690,8 +2748,8 @@ static NSString *forceLyricsSymbol = @"~";
             }
         }
 
-		if (line.color) {
-			
+		// Don't color omited scenes
+		if (line.color && !omited) {
 			//NSMutableAttributedString * color = [[NSMutableAttributedString alloc] initWithString:@" ⬤" attributes:nil];
 			NSString *colorString = [line.color lowercaseString];
 			NSColor *colorName = [self colors][colorString];
@@ -2814,6 +2872,11 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (void) moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
 	// FOLLOWING CODE IS A MESS. Dread lightly.
+	// Thanks for the heads up, past me, but I'll just dive right in
+	
+	// ... or not.
+	// NOTE FROM BEAT 1.1 r4:
+	// The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
 
 	NSMutableArray *outline = [self getOutlineItems];
 	
@@ -2832,9 +2895,9 @@ static NSString *forceLyricsSymbol = @"~";
 	NSString *textToMove = [[self getText] substringWithRange:range];
 
 	// Count the index.
-	NSInteger moveToIndex = 0;
-	if (!moveToEnd) moveToIndex = beforeScene.sceneStart;
-	else moveToIndex = [[self getText] length];
+	//NSInteger moveToIndex = 0;
+	//if (!moveToEnd) moveToIndex = beforeScene.sceneStart;
+	//else moveToIndex = [[self getText] length];
 	
 	NSRange newRange;
 	
@@ -3021,7 +3084,8 @@ static NSString *forceLyricsSymbol = @"~";
 			 @"teal": [self colorWithRed:12 green:224 blue:227], // gotta have teal & orange
 			 @"orange": [self colorWithRed:255 green:161 blue:13],
 			 @"brown": [self colorWithRed:169 green:106 blue:7],
-			 @"darkGray": [self colorWithRed:170 green:170 blue:170]
+			 @"darkGray": [self colorWithRed:170 green:170 blue:170],
+			 @"veryDarkGray": [self colorWithRed:100 green:100 blue:100]
     };
 }
 - (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
@@ -3046,6 +3110,7 @@ static NSString *forceLyricsSymbol = @"~";
 		
 		[self setSelectedTabViewTab:0];
 		[self updateLayout];
+		[self ensureCaret];
 	}
 }
 
@@ -3077,6 +3142,8 @@ static NSString *forceLyricsSymbol = @"~";
 
 // This might be pretty shitty solution for my problem but whatever
 - (OutlineScene *) findSceneByLine: (Line *) line {
+/*
+	// This crap has been deprecated
 	for (OutlineScene * scene in [self.parser outline]) {
 		if (line == scene.line) return scene;
 		
@@ -3085,6 +3152,10 @@ static NSString *forceLyricsSymbol = @"~";
 				if (line == subScene.line) return subScene;
 			}
 		}
+	}
+*/
+	for (OutlineScene * scene in [self.parser outline]) {
+		if (line == scene.line) return scene;
 	}
 	
 	return nil;
@@ -3117,12 +3188,6 @@ static NSString *forceLyricsSymbol = @"~";
 		json = [json stringByAppendingFormat:@"{"];
 		json = [json stringByAppendingString:[self getJSONCard:scene selected:[self isSceneSelected:scene]]];
 		json = [json stringByAppendingFormat:@"},"];
-		
-		if ([scene.scenes count] > 0) {
-			for (OutlineScene * subScene in scene.scenes) {
-				json = [json stringByAppendingFormat:@"{ %@ },", [self getJSONCard:subScene selected:[self isSceneSelected:subScene]]];
-			}
-		}
 	}
 	json = [json stringByAppendingString:@"]"];
 	
@@ -3181,7 +3246,10 @@ static NSString *forceLyricsSymbol = @"~";
 	if (selected) {
 		status =  @"'selected': 'yes'";
 	}
-	
+	if (scene.omited) {
+		status = [status stringByAppendingString:@", 'omited': 'yes'"];
+	}
+		
 	if (scene.type == section) {
 		return [NSString stringWithFormat:@"'type': 'section', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
 	} else if (scene.type == synopse) {
@@ -3743,24 +3811,19 @@ static NSString *forceLyricsSymbol = @"~";
 	// Create flat outline if we don't have one
 	if (![_flatOutline count]) _flatOutline = [self getOutlineItems];
 	
-	// Do this in another thread
-	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-		for (OutlineScene* scene in self.flatOutline) {
-			// Ignore this scene if it's contained in filtered scenes
-			if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) continue;
-			
-			NSRange sceneRange = NSMakeRange([scene sceneStart], [scene sceneLength]);
+	for (OutlineScene* scene in _flatOutline) {
+		// Ignore this scene if it's contained in filtered scenes
+		if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) continue;
+		NSRange sceneRange = NSMakeRange([scene sceneStart], [scene sceneLength]);
 
-			// Add scene ranges to TextView's masks
-			NSValue* rangeValue = [NSValue valueWithRange:sceneRange];
-			[masks addObject:rangeValue];
-		}
+		// Add scene ranges to TextView's masks
+		NSValue* rangeValue = [NSValue valueWithRange:sceneRange];
+		[masks addObject:rangeValue];
+	}
 		
-		dispatch_async(dispatch_get_main_queue(), ^(void){
-			self.textView.masks = masks;
-			[self ensureLayout];
-		});
-	});
+	self.textView.masks = masks;
+	[self ensureLayout];
+
 }
 
 
@@ -3796,9 +3859,7 @@ static NSString *forceLyricsSymbol = @"~";
 				// If next line is NOT EMPTY, don't add the rect at all.
 				NSInteger index = [self.parser.lines indexOfObject:line];
 				
-				if (index < self.parser.lines.count - 1) {
-					bool moreSections = NO;
-					
+				if (index < self.parser.lines.count - 1) {				
 					Line* previousLine;
 					Line* nextLine = [self.parser.lines objectAtIndex:index + 1];
 					
@@ -3810,7 +3871,6 @@ static NSString *forceLyricsSymbol = @"~";
 						NSRect nextRect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
 						
 						rect.size.height += nextRect.size.height;
-						moreSections = YES;
 						
 						[sectionRects addObject:[NSValue valueWithRect:rect]];
 					}
@@ -3897,11 +3957,10 @@ static NSString *forceLyricsSymbol = @"~";
 	_customFields = [NSMutableArray array];
 	
 	if ([script.titlePage count] > 0) {
-
 		// This is a shitty approach, but what can you say. When copying the dictionary, the order of entries gets messed up, so we need to uh...
 		for (NSDictionary *dict in script.titlePage) {
 			NSString *key = [dict.allKeys objectAtIndex:0];
-
+			
 			if ([fields objectForKey:key]) {
 				NSMutableString *values = [NSMutableString string];
 				
@@ -4098,8 +4157,6 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 - (void)saveDocumentAs:(id)sender {
-	NSLog(@"what");
-	
 	// Delete old drafts when saving under a new name
 	NSString *previousName = self.fileNameString;
 	
@@ -4108,8 +4165,6 @@ static NSString *forceLyricsSymbol = @"~";
 	NSURL *url = [self appDataPath:@"Autosave"];
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
-	
-	NSLog(@"url %@", url);
 	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	

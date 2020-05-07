@@ -20,5 +20,11 @@
 @property NSString * color;
 @property NSUInteger sceneStart;
 @property NSUInteger sceneLength;
+@property NSInteger sectionDepth;
+
+@property bool omited;
+@property bool noOmitIn;
+@property bool noOmitOut;
+
 @property (strong) Line * line; // Is this overkill regarding memory? Isn't this just a pointer?
 @end
