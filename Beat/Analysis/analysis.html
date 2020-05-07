@@ -320,8 +320,7 @@
 			var characterLines = {};
 
 			function refresh (data) {
-				
-				if (!data.characterLines) {
+				if (!data.characters) {
 					characterTable.innerHTML = "<tr><td>No dialogue</td><td><td></td></tr>";
 				} else {
 					characterGender = data.genders;
@@ -504,13 +503,15 @@
 					chartColors.exterior,
 					chartColors.unspecified,
 				];
+				window.webkit.messageHandlers.setGender.postMessage( JSON.stringify(data) + " / " + JSON.stringify(colors));
+											
 				console.log(data);
 				drawChart(sceneCanvas, data, colors);
 
 				sceneLegend.innerHTML = 
 					"<h3>Locations</h3>" +
-					"<span class='textBlue'>Interior " + scenes.interior + "</span>"+
-					"<span class='textMagenta'>Exterior " + scenes.exterior + "</span>"+
+					"<span class='textMagenta'>Interior " + scenes.interior + "</span>"+
+					"<span class='textBlue'>Exterior " + scenes.exterior + "</span>"+
 					"<span class='textGray'>Other " + scenes.other + "</span>";
 
 			}

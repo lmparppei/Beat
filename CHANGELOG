@@ -1,14 +1,18 @@
 
 ## Beat 1.1 r4
 
+Bug fixes:
 * Fixed a bug with filtered outline not showing the currently edited scene
-* Dismantling some weird thread stuff
+* Fixed bug with Fountain QuickLook
+* Fixed bugs with the Title Page Editor
+* Fixed a bug with pointers on the editor buttons (has been there since first version) 
+* Fixed bugs with margin sizes in full screen mode
+
 * Simplifying outline structure back to how it was
 * UI and usability tweaks
 * Single omited scenes now keep intact if moved
-* Fixed bug with Fountain QuickLook
-* Fixed bugs with the Title Page Editor
 * Overall cleaning for App Store release
+* Got rid of the ugly be/at icon
 
 
 ## Beat 1.1 r3

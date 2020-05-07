@@ -512,6 +512,7 @@
 	// Setup analysis
 	[self setupAnalysis];
 	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
+	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"debugData"];
 	
 	// Apply format changes to the changed region (which is the whole document) and mark document loading as done
 	[self applyFormatChanges];
@@ -527,13 +528,18 @@
 	[self initAutosave];
 	
 	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
-	//[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
+	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 
 	// Can I come over, I need to rest
 	// lay down for a while, disconnect
 	// the night was so long, the day even longer
 	// lay down for a while, recollect
 	
+}
+-(void)afterLoad {
+	[self updateLayout];
+	[self updateSectionMarkers];
+	[self updateSceneNumberLabels];
 }
 -(void)awakeFromNib {
 	[self updateLayout];
@@ -3287,6 +3293,8 @@ static NSString *forceLyricsSymbol = @"~";
 		[self toggleCards:nil];
 		return;
 	}
+	
+	NSLog(@"M: %@", message.body);
 	
 	if ([message.name isEqualToString:@"jumpToScene"]) {
 		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];

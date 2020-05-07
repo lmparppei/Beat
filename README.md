@@ -13,7 +13,7 @@ There is a working iOS prototype, but its development is on hiatus right now, as
 I not a real programmer but an artist and a filmmaker, and it really shows in the code. I'm open to any suggestions, improvements, feedback and collaboration.
 
 
-## Latest release: Beat 1.1.0 r2
+## Latest release: Beat 1.1.0 r4
 
 **Features**
 * Minimalistic UI that stays out of the way

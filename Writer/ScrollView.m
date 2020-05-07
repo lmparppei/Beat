@@ -47,7 +47,10 @@
 	if (self.frame.size.width > 800) {
 		[_marginColor setFill];
 		
-		CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel;
+		CGFloat offset = 0;
+		if ([self isFullscreen]) offset = self.frame.origin.x;
+		CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel - offset / 2;
+		
 		if (marginWidth > 0) {
 			// Set margin boxes
 			NSRect marginLeft = NSMakeRect(0, 0, marginWidth, self.frame.size.height);
@@ -59,6 +62,9 @@
 			[NSGraphicsContext restoreGraphicsState];
 		}
 	}
+}
+- (bool)isFullscreen {
+	return (([self.window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 - (void)shouldHideButtons:(NSTimer *) timer {
