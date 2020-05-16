@@ -4,14 +4,14 @@ A simple and elegant screenwriting app for macOS, using the plain-text Fountain 
 
 Read more: https://kapitan.fi/beat/
 
-This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. The Fountain screenwriting apps that existed were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations and quirks, though.
+This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. All other existing screenwriting apps were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations. To make up forthose, Beat some **very** useful features, such as powerful outlining tools, scene coloring and filtering. 
 
 There is a working iOS prototype, but its development is on hiatus right now, as I'm working on my own films. I not a real programmer but an artist and a filmmaker, and it really shows in the code. I'm open to any suggestions, improvements, feedback and collaboration. 
 
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and some code still originates from his work, especially within the magnificent continuous Fountain parser.
 
 
-## Latest release: Beat 1.1.0 r4
+## Latest release: Beat 1.1.0 r6
 
 **Features**
 * Minimalistic UI that stays out of the way
