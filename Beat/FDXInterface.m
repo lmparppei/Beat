@@ -83,7 +83,14 @@
     if (line.type == centered) {
         [result appendFormat:@"    <Paragraph Alignment=\"Center\" Type=\"%@\">\n", paragraphType];
     } else {
-        [result appendFormat:@"    <Paragraph Type=\"%@\">\n", paragraphType];
+		// Add scene number if it's a heading
+		if (line.type == heading) {
+			// Strip possible scene number
+			if (line.sceneNumber) line.string = [line.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
+			[result appendFormat:@"    <Paragraph Number=\"%@\" Type=\"%@\">\n", line.sceneNumber, paragraphType];
+		} else {
+			[result appendFormat:@"    <Paragraph Type=\"%@\">\n", paragraphType];
+		}
     }
     
     //Append content

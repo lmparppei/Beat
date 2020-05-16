@@ -90,6 +90,11 @@
 #import "FDXImport.h"
 #import "LivePagination.h"
 #import "MasterView.h"
+#import "WebPrinter.h"
+#import "SceneCards.h"
+#import "RegExCategories.h"
+#import "TouchBarTimeline.h"
+#import "MarginView.h"
 
 @interface Document ()
 
@@ -103,12 +108,14 @@
 // Text view
 @property (unsafe_unretained) IBOutlet BeatTextView *textView;
 @property (weak) IBOutlet ScrollView *textScrollView;
+@property (weak) IBOutlet MarginView *marginView;
 @property (weak) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSTimer * scrollTimer;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
 @property (nonatomic) LivePagination *pagination;
 @property (nonatomic) NSMutableArray *sectionMarkers;
+@property (nonatomic) bool newScene;
 
 // Outline view
 @property (weak) IBOutlet BeatOutlineView *outlineView;
@@ -174,6 +181,7 @@
 @property (nonatomic) NSMutableDictionary *characterGenders;
 
 // Card view
+@property (nonatomic) SceneCards *sceneCards;
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
 @property (nonatomic) bool cardsVisible;
 
@@ -184,6 +192,7 @@
 @property (nonatomic) NSInteger timelineClickedScene;
 @property (nonatomic) NSInteger timelineSelection;
 @property (nonatomic) bool timelineVisible;
+@property (nonatomic) IBOutlet TouchBarTimeline *touchbarTimeline;
 
 
 // Margin views, unused for now
@@ -274,24 +283,23 @@
 @property (strong, nonatomic) ThemeManager* themeManager;
 @property (nonatomic) bool nightMode; // THE HOUSE IS BLACK.
 
+// Debug flags
+@property (nonatomic) bool debug;
+
 @end
 
 
 // Uh. Refer to fontSize / zooming functions to make sense of this stuff.
-// This spaghetti should be fixed ASAP.
-
 #define APP_NAME @"Beat"
 
 #define DEFAULT_ZOOM 16
-#define FONT_SIZE_MODIFIER 0.028
-#define ZOOM_MODIFIER 40
+#define ZOOM_MODIFIER 40 // Still used by labels, should be fixed when possible
 
 #define AUTOSAVE_INTERVAL 10.0
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
-// Some fixes for convoluted UI stuff
-#define FONT_SIZE 17.92 // used to be DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER
-#define DOCUMENT_WIDTH 640 // DEFAULT_ZOOM * ZOOM_MODIFIER;
+#define FONT_SIZE 17.92
+#define DOCUMENT_WIDTH 640
 
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
 #define DEFAULT_MAGNIFY 1.1
@@ -302,16 +310,19 @@
 #define FONTSIZE_KEY @"Fontsize"
 #define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
 
+#define DARKMODE_KEY @"Dark Mode"
+
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 #define FLATOUTLINE YES
-// The whole outline thing should be rewritten ASAP
 
+#define SNIPPET_LENGTH 190
 
 // DOCUMENT LAYOUT SETTINGS
 // The 0.?? values represent percentages of view width
 
 #define TEXT_INSET_TOP 40
+#define LINE_HEIGHT 1.025
 
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
@@ -358,7 +369,7 @@
 	if ([_characterGenders count] > 0) [self saveGenders];
 	
 	// This stuff is here to fix some strange memory issues.
-	// it might be unnecessary, but maybe it isn't bad to unset the most memory-consuming variables anyway?
+	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
 	self.textView = nil;
 	self.parser = nil;
 	self.outlineView = nil;
@@ -370,6 +381,7 @@
 	self.themeManager = nil;
 	self.currentScene = nil;
 	self.currentLine = nil;
+	self.sceneCards = nil;
 	
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
@@ -414,8 +426,7 @@
     self.outlineViewWidth.constant = 0;
 
 	// TextView setup
-    self.textView.textContainer.widthTracksTextView = false;
-	self.textView.textContainer.heightTracksTextView = false;
+	[self setupTextView];
 	
 	[[self.textScrollView documentView] setPostsBoundsChangedNotifications:YES];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
@@ -463,11 +474,7 @@
 	self.themeManager = [ThemeManager sharedManager];
 	[self loadSelectedTheme:false];
 	_nightMode = [self isDark];
-	
-	// Background fill - WIP: MOVE UNDER THEME LOADING
-	self.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
-	self.textScrollView.backgroundColor = self.themeManager.theme.backgroundColor;
-	
+		
 	// Initialize drag & drop for outline view
 	[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self.outlineView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
@@ -481,7 +488,6 @@
     }
 	
 	// Outline view setup
-	self.outlineClosedSections = [[NSMutableArray alloc] init];
 	self.filteredOutline = [[NSMutableArray alloc] init];
 	[self hideFilterView];
 	
@@ -499,6 +505,7 @@
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
+	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"printCards"];
 	[self setupCards];
 	
 	// Timeline webkit
@@ -514,8 +521,8 @@
 	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
 	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"debugData"];
 	
-	// Apply format changes to the changed region (which is the whole document) and mark document loading as done
-	[self applyFormatChanges];
+	// Apply initial formating and set the document loading to be done
+	[self applyInitialFormating];
 	_documentIsLoading = NO;
 	
 	// Setup touch bar colors
@@ -523,7 +530,7 @@
 	
 	// Init scene filtering
 	_filters = [[SceneFiltering alloc] init];
-
+	
 	// Custom autosave
 	[self initAutosave];
 	
@@ -540,6 +547,7 @@
 	[self updateLayout];
 	[self updateSectionMarkers];
 	[self updateSceneNumberLabels];
+	[self ensureCaret];
 }
 -(void)awakeFromNib {
 	[self updateLayout];
@@ -592,12 +600,20 @@
 		self.textView.textContainerInset = NSMakeSize(width, TEXT_INSET_TOP);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
 
+		// WIP: UPDATE THIS PART FOR MARGIN VIEW IF NEEDED
+		
 		self.textScrollView.insetWidth = self.textView.textContainerInset.width;
+		self.marginView.insetWidth = self.textView.textContainerInset.width;
+		
 		self.textScrollView.magnificationLevel = _magnification;
+		self.marginView.magnificationLevel = _magnification;
+		
 		[self.textScrollView setNeedsDisplay:YES]; // Force redraw if needed
+		[self.marginView setNeedsDisplay:YES]; // Force redraw if needed
 	}
 	
 	[self ensureLayout];
+	[self ensureCaret];	
 }
 
 - (void) setMinimumWindowSize {
@@ -633,9 +649,9 @@
 	
 	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	if (zoomIn) {
-		if (_magnification < 1.2) _magnification += 0.09;
+		if (_magnification < 1.2) _magnification += 0.04;
 	} else {
-		if (_magnification > 0.9) _magnification -= 0.09;
+		if (_magnification > 0.8) _magnification -= 0.04;
 	}
 
 	// If magnification did change, scale the view
@@ -653,11 +669,17 @@
 		
 		// For some reason, clip view might get the wrong height after magnifying. No idea what's going on.
 		NSRect clipFrame = _textClipView.frame;
-		clipFrame.size.height = _textClipView.superview.frame.size.height;
+		clipFrame.size.height = _textClipView.superview.frame.size.height * _magnification;
 		_textClipView.frame = clipFrame;
+				
+		[self ensureLayout];
 		
 		[[NSUserDefaults standardUserDefaults] setFloat:_magnification forKey:MAGNIFYLEVEL_KEY];
 	}
+	
+	[self updateLayout];
+	[self ensureLayout];
+	[self ensureCaret];
 }
 
 - (void)ensureCaret {
@@ -775,12 +797,13 @@
 - (void)setText:(NSString *)text
 {
     if (!self.textView) {
-        self.contentBuffer = text;
+        // View is not ready yet, set text to buffer
+		self.contentBuffer = text;
     } else {
+		// Set text on screen
         [self.textView setString:text];
-        //[self updateWebView];
+		[self updateSceneNumberLabels];
     }
-	[self updateSceneNumberLabels];
 }
 
 - (IBAction)printDocument:(id)sender
@@ -841,7 +864,7 @@
     [saveDialog setNameFieldStringValue:[self fileNameString]];
     [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
-            NSString* fdxString = [FDXInterface fdxFromString:[self getText]];
+            NSString* fdxString = [FDXInterface fdxFromString:[self preprocessSceneNumbers]];
             [fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
@@ -887,7 +910,9 @@
 }
 - (OutlineScene*)getCurrentScene {
 	NSInteger position = [self.textView selectedRange].location;
-	
+	return [self getCurrentSceneWithPosition:position];
+}
+- (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
 	NSInteger index = 0;
 	
 	for (OutlineScene *scene in [self getOutlineItems]) {
@@ -976,14 +1001,26 @@
 
 # pragma mark - Text manipulation
 
+- (void)setupTextView {
+	self.textView.textContainer.widthTracksTextView = false;
+	self.textView.textContainer.heightTracksTextView = false;
+	
+	
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
+	[self.textView setDefaultParagraphStyle:paragraphStyle];
+}
+
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
     //If something is being inserted, check whether it is a "(" or a "[[" and auto close it
     if (self.matchParentheses) {
         if (affectedCharRange.length == 0) {
             if ([replacementString isEqualToString:@"("]) {
-                [self addString:@")" atIndex:affectedCharRange.location];
-                [self.textView setSelectedRange:affectedCharRange];
+				if (_currentLine.type != character) {
+					[self addString:@")" atIndex:affectedCharRange.location];
+					[self.textView setSelectedRange:affectedCharRange];
+				}
                 
             } else if ([replacementString isEqualToString:@"["]) {
                 if (affectedCharRange.location != 0) {
@@ -1006,6 +1043,16 @@
             }
         }
     }
+	
+	// Add an extra line break after scenes
+	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0) {
+		if (_currentLine.type == heading && !_newScene) {
+			_newScene = YES;
+			[self addString:@"\n" atIndex:affectedCharRange.location];
+		} else {
+			_newScene = NO;
+		}
+	}
 
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
 	
@@ -1025,16 +1072,16 @@
 	}
 
 	// WIP
-	// [self paginate];
+	//[self paginate];
 	[self updateSectionMarkers];
 		
     return YES;
 }
 
-// Never used
 - (Line*)getCurrentLine {
-	NSInteger position = [self cursorLocation].location;
-
+	return [self getLineAt:[self cursorLocation].location];
+}
+- (Line*)getLineAt:(NSInteger)position {
 	for (Line* line in self.parser.lines) {
 		if (position >= line.position && position <= line.position + [line.string length]) return line;
 	}
@@ -1082,40 +1129,57 @@
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 
+	_currentLine = [self getCurrentLine];
+	_flatOutline = [self getOutlineItems];
+	
+	__block NSInteger position = self.textView.selectedRange.location;
+	_currentScene = [self getCurrentSceneWithPosition:position];
+
 	// Locate current scene & reload outline without building it in parser
 	if ((_outlineViewVisible || _timelineVisible) && !_outlineEdit) {
-		
 		[self getCurrentScene];
-		if (_timelineVisible && _currentScene) {
-			[self findOnTimeline:_currentScene];
-		}
-		
-		// So... uh. For some reason, _currentScene can get messed up after reloading the outline, so that's why we checked the timeline position first.
-		if (_outlineViewVisible) {
-			[self getCurrentScene];
-			[self reloadOutline];
-		}
-		
-		if (_outlineViewVisible && _currentScene) {
-			// Alright, we have some conditions for this.
-			// We need to check if the outline was filtered AND if the current scene is within the filtered scenes.
-			// Else, just hop to current scene.
-			if ([_filteredOutline count]) {
-				if ([_filteredOutline containsObject:_currentScene]) {
-					[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-						context.allowsImplicitAnimation = YES;
-						[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
-					} completionHandler:NULL];
-				}
-			} else {
-				// [self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
-				//[[self.outlineView animator] scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
-				[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-					context.allowsImplicitAnimation = YES;
-					[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
-				} completionHandler:NULL];
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+			
+			if (self.timelineVisible && self.currentScene) {
+				NSInteger sceneIndex = [self.flatOutline indexOfObject:self.currentScene];
+				[self findOnTimeline:sceneIndex];
 			}
-		}
+			
+			// So... uh. For some reason, _currentScene can get messed up after reloading the outline, so that's why we checked the timeline position first.
+			if (self.outlineViewVisible) {
+				// SOS this needs to be fixed
+				// [self getCurrentScene];
+				// _currentScene = [self getCurrentSceneWithPosition:position];
+
+				dispatch_async(dispatch_get_main_queue(), ^(void){
+					[self reloadOutline];
+				});
+			}
+			
+			if (self.outlineViewVisible && self.currentScene) {
+				// Alright, we have some conditions for this.
+				// We need to check if the outline was filtered AND if the current scene is within the filtered scenes.
+				// Else, just hop to current scene.
+				if ([self.filteredOutline count]) {
+					if ([self.filteredOutline containsObject:self.currentScene]) {
+						dispatch_async(dispatch_get_main_queue(), ^(void){
+							[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
+								context.allowsImplicitAnimation = YES;
+							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
+							} completionHandler:NULL];
+						});
+					}
+				} else {
+					dispatch_async(dispatch_get_main_queue(), ^(void){
+						[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
+							context.allowsImplicitAnimation = YES;
+							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
+						} completionHandler:NULL];
+					});
+				}
+			}
+			
+		});
 	}
 }
 
@@ -1167,6 +1231,13 @@
 - (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
 {
 	return NSMakeRange(range->location + position, range->length);
+}
+- (NSString*)lastCharacter:(NSString*)string {
+	if (string.length < 1) return nil;
+	else if (string.length == 1) return string;
+	else {
+		return [string substringFromIndex:string.length - 1];
+	}
 }
 
 
@@ -1234,7 +1305,13 @@
 	[_sceneHeadings removeAllObjects];
 	for (Line *line in [self.parser lines]) {
 		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
-			[_sceneHeadings addObject:[line.string uppercaseString]];
+			
+			// If the heading has a color set, strip the color
+			if ([line.string rangeOfString:@"[[COLOR"].location != NSNotFound) {
+				[_sceneHeadings addObject:[[line.string uppercaseString] substringToIndex:[line.string rangeOfString:@"[[COLOR"].location]];
+			} else {
+				[_sceneHeadings addObject:[line.string uppercaseString]];
+			}
 		}
 	}
 }
@@ -1299,14 +1376,49 @@
     [self.parser.changedIndices removeAllObjects];
 }
 
-- (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly
-{
-	[self formatLineOfScreenplay:line onlyFormatFont:fontOnly recursive:false];
+-(void)applyInitialFormating {
+	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
+	NSInteger index = 0;
+	
+	Line* preceedingLine;
+	Line* lineBeforeThat;
+	
+	NSInteger max = self.parser.lines.count;
+	
+	for (Line* line in self.parser.lines) {
+		
+		// This is a quick & dirty fix for misinterpreted character cues
+		if (index + 1 < max) {
+			if (line.type == character) {
+				Line* nextLine = [self.parser.lines objectAtIndex:index + 1];
+				if (nextLine.string.length < 1 || (nextLine.type != parenthetical && nextLine.type != dialogue)) {
+					line.type = action;
+				}
+			}
+		}
+		
+		[self formatLineOfScreenplay:line onlyFormatFont:NO recursive:YES firstTime:NO];
+		index++;
+		
+		// Set preceeding lines
+		lineBeforeThat = preceedingLine;
+		preceedingLine = line;
+	}
+	[_parser.changedIndices removeAllObjects];
 }
 
-- (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly recursive:(bool)recursive
+- (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly
 {
-	_currentLine = line;
+	[self formatLineOfScreenplay:line onlyFormatFont:fontOnly recursive:NO firstTime:NO];
+}
+
+- (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly recursive:(bool)recursive {
+	[self formatLineOfScreenplay:line onlyFormatFont:fontOnly recursive:recursive firstTime:NO];
+}
+
+- (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly recursive:(bool)recursive firstTime:(bool)firstTime
+{
+	if (!recursive && !firstTime) _currentLine = line;
 	
 	NSUInteger begin = line.position;
 	NSUInteger length = [line.string length];
@@ -1316,11 +1428,11 @@
 	
 	// We'll perform a lookback to see that we didn't mistake some uppercase for character cues.
 	// I really have NO FUCKING IDEA what's going on in here.
-	// Still I managed to get it to work.
+	// I managed to get it working, but it's really, really inefficient
 	
 	/// And basically, this is the part where I officially lost any hope for having an iOS version. The loopback system here is quite convoluted and simultaneously relies on both the parser and interface. I guess interface SHOULD NOT handle this recursion, but that would require an overhaul of the parser. And I'm not strong enough.
 	
-	if (!recursive) {
+	if (!recursive && !firstTime) { // skip for recursive lookbacks & first time formating
 		NSInteger index = [[self.parser lines] indexOfObject:line];
 		if (index - 2 >= 0) {
 			Line* preceedingLine = [[self.parser lines] objectAtIndex:index-1];
@@ -1377,8 +1489,6 @@
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
 	
 	// This doesn't format empty lines for some reason: [lineHeight setLineHeightMultiple:1.05];
-	//NSMutableParagraphStyle *lineHeight = [[NSMutableParagraphStyle alloc]init];
-	//[attributes setObject:lineHeight forKey:NSParagraphStyleAttributeName];
 	
 	// Format according to style
 	if ((line.type == heading && [line.string characterAtIndex:0] != '.') ||
@@ -1410,12 +1520,13 @@
 
 	if (!fontOnly) {
 		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-		
+
 		// Some experiments for section headers
 		//[paragraphStyle setParagraphSpacing:0];
 		//[paragraphStyle setParagraphSpacingBefore:0];
 		
-		// This won't format empty lines for some reason: [paragraphStyle setLineHeightMultiple:1.05];
+		[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
+		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		
 		// Handle title page block
 		if (line.type == titlePageTitle  ||
@@ -1512,7 +1623,6 @@
 			
 		} else if (line.type == section || line.type == synopse) {
 			// Stylize sections & synopses
-			
 			if (self.themeManager) {
 				NSColor* commentColor = [self.themeManager currentCommentColor];
 				[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
@@ -1543,7 +1653,7 @@
 			}
 			
 			if (line.type == synopse) [attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
-			
+		
 		} else if (line.type == empty) {
 			// Just to make sure
 			NSInteger index = [_parser.lines indexOfObject:line];
@@ -1692,12 +1802,17 @@
 	}
 }
 
-# pragma  mark Fonts
+- (bool)caretOnLine:(Line*)line {
+	if (self.textView.selectedRange.location >= line.position && self.textView.selectedRange.location <= line.position + [line.string length]) return YES;
+	else return NO;
+}
+
+
+# pragma  mark - Fonts
 
 - (NSFont*)courier
 {
     if (!_courier) {
-        //_courier = [NSFont fontWithName:@"Andale Mono" size:[self fontSize]];
 		_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
     }
     return _courier;
@@ -1722,15 +1837,7 @@
 // This is here for legacy reasons
 - (NSUInteger)fontSize
 {
-	// Beat used to have font-based "zoom", legacy of Writer. I tried thousands of weird tricks to fix and circumvent it until I figured out how to use scaleUnitToSize.
-	// Font size was finally determined by this weird equation. I have no idea what I was thinking about, but for now, this is how we set our font size...... everything is proportially sized, and it shouldn't be too hard to just use constants for these in the future. But, for now, until I have the time and energy, we're stuck with this stuff. Read more nearby setZoom.
-	
-	// Old way
-	// _fontSize = DEFAULT_ZOOM * FONT_SIZE_MODIFIER * ZOOM_MODIFIER;
-	
-	// New way :-)
 	_fontSize = FONT_SIZE;
-	
 	return _fontSize;
 }
 
@@ -1750,6 +1857,7 @@ static NSString *forceActionSymbol = @"!";
 static NSString *forceCharacterSymbol = @"@";
 static NSString *forcetransitionLineSymbol = @">";
 static NSString *forceLyricsSymbol = @"~";
+static NSString *forceDualDialogueSymbol = @"^";
 
 - (NSString*)titlePage
 {
@@ -1769,6 +1877,55 @@ static NSString *forceLyricsSymbol = @"~";
             [self addString:[self titlePage] atIndex:0];
         }
     }
+}
+
+- (IBAction)dualDialogue:(id)sender {
+	_currentLine = [self getCurrentLine];
+	
+	// Current line is character
+	if (_currentLine.type == character) {
+		// We won't allow making a first dialogue block dual, let's see if there is another block of dialogue
+		NSInteger index = [_parser.lines indexOfObject:_currentLine] - 1;
+		bool previousDialogueFound = NO;
+		
+		while (index >= 0) {
+			Line* previousLine = [_parser.lines objectAtIndex:index];
+			if (previousLine.type == character) { previousDialogueFound = YES; break; }
+			if ((previousLine.type == action && previousLine.string.length > 0) || previousLine.type == heading) break;
+			index--;
+		}
+		
+		if (previousDialogueFound) [self addString:forceDualDialogueSymbol atIndex:_currentLine.position + _currentLine.string.length];
+	
+	// if it's already a dual dialogue cue, remove the symbol
+	} else if (_currentLine.type == doubleDialogueCharacter) {
+		NSRange range = [_currentLine.string rangeOfString:forceDualDialogueSymbol];
+		// Remove symbol
+		[self removeString:forceDualDialogueSymbol atIndex:_currentLine.position + range.location];
+		
+	// Dialogue block. Find the character cue and add/remove dual dialogue symbol
+	} else if (_currentLine.type == dialogue ||
+			   _currentLine.type == doubleDialogue ||
+			   _currentLine.type == parenthetical ||
+			   _currentLine.type == doubleDialogueParenthetical) {
+		NSInteger index = [_parser.lines indexOfObject:_currentLine] - 1;
+		while (index >= 0) {
+			Line* previousLine = [_parser.lines objectAtIndex:index];
+
+			if (previousLine.type == character) {
+				// Add
+				[self addString:forceDualDialogueSymbol atIndex:previousLine.position + previousLine.string.length];
+				break;
+			}
+			if (previousLine.type == doubleDialogueCharacter) {
+				// Remove
+				NSRange range = [previousLine.string rangeOfString:forceDualDialogueSymbol];
+				[self removeString:forceDualDialogueSymbol atIndex:previousLine.position + range.location];
+				break;
+			}
+			index--;
+		}
+	}
 }
 
 - (IBAction)addPageBreak:(id)sender
@@ -1854,6 +2011,16 @@ static NSString *forceLyricsSymbol = @"~";
 		} else {
 			[fullText appendFormat:@"%@\n", cleanedLine];
 		}
+		
+		// Add a line break after the scene heading if it doesn't have one
+		// If the user relies on this feature, it breaks the file's compatibility with other Fountain editors, but they have no one else to blame than themselves I guess. And my friendliness and hospitality allowing them to break the syntax.
+		if (line.type == heading && line != [self.parser.lines lastObject]) {
+			NSInteger lineIndex = [self.parser.lines indexOfObject:line];
+			if ([(Line*)[self.parser.lines objectAtIndex:lineIndex + 1] type] != empty) {
+				[fullText appendFormat:@"\n"];
+			}
+		}
+		
 	}
 	
 	return fullText;
@@ -2009,6 +2176,14 @@ static NSString *forceLyricsSymbol = @"~";
     }
 }
 
+- (void) forceElement:(NSString*)element {
+	if ([element isEqualToString:@"Action"]) [self forceAction:self];
+	else if ([element isEqualToString:@"Scene Heading"]) [self forceHeading:self];
+	else if ([element isEqualToString:@"Character"]) [self forceCharacter:self];
+	else if ([element isEqualToString:@"Lyrics"]) [self forceLyrics:self];
+	else if ([element isEqualToString:@"Transition"]) [self forceTransition:self];
+}
+
 - (IBAction)forceHeading:(id)sender
 {
     //Check if the currently selected tab is the one for editing
@@ -2039,9 +2214,8 @@ static NSString *forceLyricsSymbol = @"~";
     }
 }
 
-- (IBAction)forcetransitionLine:(id)sender
+- (IBAction)forceTransition:(id)sender
 {
-    
     //Check if the currently selected tab is the one for editing
     if ([self selectedTabViewTab] == 0) {
         //Retreiving the cursor location
@@ -2272,6 +2446,9 @@ static NSString *forceLyricsSymbol = @"~";
         if ([visibleCharacters length] == 0) {
             return NO;
         }
+	} else if ([menuItem.title isEqualToString:@"Dual Dialogue"]) {
+		if (_currentLine.type == character || _currentLine.type == dialogue || _currentLine.type == parenthetical ||
+			_currentLine.type == doubleDialogueCharacter || _currentLine.type == doubleDialogueParenthetical || _currentLine.type == doubleDialogue) return YES; else return NO;
 	} else if ([menuItem.title isEqualToString:@"Automatically Match Parentheses"]) {
         if (self.matchParentheses) {
             [menuItem setState:NSOnState];
@@ -2356,6 +2533,7 @@ static NSString *forceLyricsSymbol = @"~";
 	[self.backgroundView setNeedsDisplay:true];
 	[self.textView setNeedsDisplay:true];
 	[self.textScrollView setNeedsDisplay:true];
+	[self.marginView setNeedsDisplay:true];
 	
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 	
@@ -2402,29 +2580,37 @@ static NSString *forceLyricsSymbol = @"~";
 - (void)loadSelectedTheme:(bool)forAll
 {
 	NSArray* openDocuments;
+	
 	if (forAll) openDocuments = [[NSApplication sharedApplication] orderedDocuments];
 	else openDocuments = @[self];
 	
     for (Document* doc in openDocuments) {
         BeatTextView *textView = doc.textView;
 		
+		// Set textView stuff
 		[textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
 		[doc.textScrollView setMarginColor:[self.themeManager currentMarginColor]];
 		[doc.textView setMarginColor:[self.themeManager currentMarginColor]];
-		
         [textView setSelectedTextAttributes:@{
 											  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
 											  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
 		}];
         [textView setTextColor:[self.themeManager currentTextColor]];
         [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
-        [doc formatAllLines];
+        
+		// Optimization: we don't need to re-render all lines, because DynamicColor knows which color it should display
+		// [doc formatAllLines];
 		
-		NSOutlineView *outlineView = doc.outlineView;
-		[outlineView setBackgroundColor:self.themeManager.theme.outlineBackground];
+		// Outline background
+		//[doc.outlineView setBackgroundColor:self.themeManager.theme.outlineBackground];
 		
 		// Set global background
 		doc.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
+		
+		// Margins are drawn in a separate view
+		doc.marginView.backgroundColor = self.themeManager.theme.backgroundColor;
+		doc.marginView.marginColor = self.themeManager.theme.marginColor;
+
     }
 }
 
@@ -2547,44 +2733,28 @@ static NSString *forceLyricsSymbol = @"~";
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
-	if (FLATOUTLINE) {
-		// If we have a search term, let's use the filtered array
-		if ([_filters activeFilters]) {
-			return [_filteredOutline count];
-		} else {
-			return [[self getOutlineItems] count];
-		}
+	// If we have a search term, let's use the filtered array
+	if ([_filters activeFilters]) {
+		return [_filteredOutline count];
+	} else {
+		return [[self getOutlineItems] count];
 	}
+
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
 {
-	if (FLATOUTLINE) {
-		// If there is a search term, let's search the filtered array
-		if ([_filters activeFilters]) {
-			return [_filteredOutline objectAtIndex:index];
-		} else {
-			return [[self getOutlineItems] objectAtIndex:index];
-		}
-	}
-	
-	/*
-	if (!item) {
-		return [[self.parser outline] objectAtIndex:index];
+	// If there is a search term, let's search the filtered array
+	if ([_filters activeFilters]) {
+		return [_filteredOutline objectAtIndex:index];
 	} else {
-		return [[item scenes] objectAtIndex:index];
+		return [[self getOutlineItems] objectAtIndex:index];
 	}
-	 */
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
-	if (FLATOUTLINE) return NO;
-	
-	if ([[item scenes] count] > 0) {
-		return YES;
-	}
-	else { return NO; }
+	return NO;
 }
 
 /*
@@ -2856,21 +3026,6 @@ static NSString *forceLyricsSymbol = @"~";
 	[self filterOutline];
 	[self.outlineView reloadData];
 	
-	/*
-	// DEPRECATED
-	 
-	// Expand all
-	[self.outlineView expandItem:nil expandChildren:true];
-	
-	// Then let's close the ones that the user had closed
-	for (int i = 0; i < [[self.parser outline] count]; i++) {
-		id item = [self.outlineView itemAtRow:i];
-		if ([_outlineClosedSections containsObject:[item string]]) {
-			[self.outlineView collapseItem:item];
-		}
-	}
-	 */
-	
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
 	[self updateSceneNumberLabels];
@@ -3121,49 +3276,17 @@ static NSString *forceLyricsSymbol = @"~";
 }
 
 // Some day, we'll move all this stuff to another file. It won't be soon.
+// (Thanks, past me. It's happening now.)
 
 - (void) setupCards {
-	NSError *error = nil;
-	
-	NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"CardCSS.css" ofType:@""];
-	NSString *css = [NSString stringWithContentsOfFile:cssPath encoding:NSUTF8StringEncoding error:&error];
-	
-	NSString *jsPath = [[NSBundle mainBundle] pathForResource:@"CardView.js" ofType:@""];
-	NSString *javaScript = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:&error];
-	
-	NSString *dragulaPath = [[NSBundle mainBundle] pathForResource:@"dragula.js" ofType:@""];
-	NSString *dragula = [NSString stringWithContentsOfFile:dragulaPath encoding:NSUTF8StringEncoding error:&error];
-
-	NSString* content = [NSString stringWithFormat:@"<html><head><style>%@</style>", css];
-	content = [content stringByAppendingFormat:@"<script>%@</script>", dragula];
-	content = [content stringByAppendingFormat:@"</head><body>"];
-	
-	// Spinner
-	content = [content stringByAppendingFormat:@"<div id='wait'><div class='lds-spinner'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>"];
-	
-	content = [content stringByAppendingString:@"<div id='close'>✕</div><div id='debug'></div><div id='container'>"];
-	content = [content stringByAppendingFormat:@"</div><script>%@</script></body></html>", javaScript];
-	[_cardView loadHTMLString:content baseURL:nil];
+	_sceneCards = [[SceneCards alloc] initWithWebView:_cardView];
 }
 
 // This might be pretty shitty solution for my problem but whatever
 - (OutlineScene *) findSceneByLine: (Line *) line {
-/*
-	// This crap has been deprecated
-	for (OutlineScene * scene in [self.parser outline]) {
-		if (line == scene.line) return scene;
-		
-		if ([scene.scenes count] > 0) {
-			for (OutlineScene * subScene in scene.scenes) {
-				if (line == subScene.line) return subScene;
-			}
-		}
-	}
-*/
 	for (OutlineScene * scene in [self.parser outline]) {
 		if (line == scene.line) return scene;
 	}
-	
 	return nil;
 }
 
@@ -3177,43 +3300,26 @@ static NSString *forceLyricsSymbol = @"~";
 	// Just refresh cards, no change index
 	[self refreshCards:alreadyVisible changed:-1];
 }
-
+- (NSArray*)getCards {
+	NSMutableArray *array = [NSMutableArray array];
+	for (OutlineScene * scene in [self.parser outline]) {
+		[array addObject: [self getJSONCard:scene selected:[self isSceneSelected:scene]]];
+	}
+	return [NSArray arrayWithArray:array];
+}
+- (void) printCards {
+	[_sceneCards printCards:[self getSceneCards] printInfo:self.printInfo];
+}
 - (void) refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
-	
+	// Change style in card view if needed
 	if ([self isDark]) {
 		[_cardView evaluateJavaScript:@"nightModeOn();" completionHandler:nil]; // THE HOUSE IS BLACK.
 	} else {
 		[_cardView evaluateJavaScript:@"nightModeOff();" completionHandler:nil];
 	}
-	
-	NSString * json = @"[";
-	
-	// Let's go through the two-level outline
-	// Should fix this back to the flat outline too, I guess.
-	for (OutlineScene * scene in [self.parser outline]) {
-		json = [json stringByAppendingFormat:@"{"];
-		json = [json stringByAppendingString:[self getJSONCard:scene selected:[self isSceneSelected:scene]]];
-		json = [json stringByAppendingFormat:@"},"];
-	}
-	json = [json stringByAppendingString:@"]"];
-	
-	NSString * jsCode;
-	
-	// The card view will scroll to current scene by default.
-	// If the cards are already visible, we'll tell it not to scroll.
-	
-	if (alreadyVisible && changedIndex > -1) {
-		// Already visible, changed index
-		jsCode = [NSString stringWithFormat:@"createCards(%@, true, %lu);", json, changedIndex];
-	} else if (alreadyVisible && changedIndex < 0) {
-		// Already visible, no index
-		jsCode = [NSString stringWithFormat:@"createCards(%@, true);", json];
-	} else {
-		// Fresh new view
-		jsCode = [NSString stringWithFormat:@"createCards(%@);", json];
-	}
-	
-	[_cardView evaluateJavaScript:jsCode completionHandler:nil];
+	// Create JSON cards array and update the scene cards view
+	NSArray *cards = [self getCards];
+	[_sceneCards showCards:cards alreadyVisible:alreadyVisible changedIndex:changedIndex];
 }
 - (bool) isSceneSelected: (OutlineScene *) scene {
 	NSUInteger position = [self.textView selectedRange].location;
@@ -3234,19 +3340,58 @@ static NSString *forceLyricsSymbol = @"~";
 	
 	return NO;
 }
-- (NSString *) getJSONCard:(OutlineScene *) scene selected:(bool)selected {
-	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
+- (NSArray *) getSceneCards {
+	NSMutableArray *sceneCards = [NSMutableArray array];
+	for (OutlineScene *scene in [self getOutlineItems]) {
+		NSDictionary *sceneCard = @{
+			@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
+			@"title": (scene.string) ? scene.string : @"",
+			@"snippet": [self snippet:scene],
+			@"type": [scene.line typeAsString]
+		};
+		[sceneCards addObject:sceneCard];
+	}
 	
-	NSUInteger sceneIndex = [[self getOutlineItems] indexOfObject:scene];
+	return sceneCards;
+}
+- (NSString *) snippet:(OutlineScene *)scene {
+	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
 	
 	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
 	NSUInteger lineIndex = index + 2;
 	NSString * snippet = @"";
+	
+	// Get first paragraph
 	if (lineIndex < [[self.parser lines] count]) {
 		// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading
 		Line* snippetLine = [[self.parser lines] objectAtIndex:lineIndex];
-		if (snippetLine.type != heading) snippet = [[[self.parser lines] objectAtIndex:lineIndex] string];
+		if (snippetLine.type != heading && snippetLine.type != synopse && snippetLine.type != section && !snippetLine.omited) snippet = [[[self.parser lines] objectAtIndex:lineIndex] string];
 	}
+	
+	// If it's longer than we want, split into sentences
+	if ([snippet length] > SNIPPET_LENGTH) {
+		NSMutableArray *sentences = [NSMutableArray arrayWithArray:[snippet matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
+		NSString *result = @"";
+		
+		// If there are no real sentences in the paragraph, just cut it and add ... after the text
+		if (sentences.count < 1) return [[snippet substringToIndex:SNIPPET_LENGTH - 3] stringByAppendingString:@"..."];
+
+		// Add as many sentences as possible
+		for (NSString *sentence in sentences) {
+			result = [result stringByAppendingString:sentence];
+			if ([result length] > SNIPPET_LENGTH || [result length] > SNIPPET_LENGTH - 15) break;
+		}
+		
+		if ([result length]) snippet = result; else snippet = @"";
+	}
+	
+	return snippet;
+}
+- (NSString *) getJSONCard:(OutlineScene *) scene selected:(bool)selected {
+	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
+	
+	NSUInteger sceneIndex = [[self getOutlineItems] indexOfObject:scene];
+	NSString *snippet = [self snippet:scene];
 	
 	NSString * status = @"'selected': ''";
 	if (selected) {
@@ -3293,9 +3438,7 @@ static NSString *forceLyricsSymbol = @"~";
 		[self toggleCards:nil];
 		return;
 	}
-	
-	NSLog(@"M: %@", message.body);
-	
+		
 	if ([message.name isEqualToString:@"jumpToScene"]) {
 		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
 		[self scrollToScene:scene];
@@ -3308,6 +3451,10 @@ static NSString *forceLyricsSymbol = @"~";
 		[self toggleCards:nil];
 		
 		return;
+	}
+	
+	if ([message.name isEqualToString:@"printCards"]) {
+		[self printCards];
 	}
 	
 	// Context menu for timeline
@@ -3579,7 +3726,7 @@ static NSString *forceLyricsSymbol = @"~";
 				if (scene.type == synopse) type = @"synopsis";
 				if (scene.type == section) type = @"section";
 				
-				[jsonData appendFormat:@"{ text: \"%@\", type: '%@' },", [self JSONString:scene.string], type];
+				[jsonData appendFormat:@"{ \"text\": \"%@\", \"type\": '%@' },", [self JSONString:scene.string], type];
 			}
 			else if (scene.type == heading) {
 				//[self JSONString:scene.string]
@@ -3651,7 +3798,7 @@ static NSString *forceLyricsSymbol = @"~";
 				NSString *selectedValue = @"false";
 				if (selected) selectedValue = @"true";
 				
-				[jsonData appendFormat:@"{ text: \"%@\", sceneLength: %lu, sceneIndex: %lu, sceneNumber: '%@', color: '%@', selected: %@ },", [self JSONString:scene.string], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
+				[jsonData appendFormat:@"{ \"text\": \"%@\", \"sceneLength\": %lu, \"sceneIndex\": %lu, \"sceneNumber\": \"%@\", \"color\": \"%@\", \"selected\": %@ },", [self JSONString:scene.string], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
 			}
 		}
 		[jsonData appendString:@"]"];
@@ -3659,15 +3806,17 @@ static NSString *forceLyricsSymbol = @"~";
 		NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(%@);", jsonData];
 		
 		dispatch_async(dispatch_get_main_queue(), ^(void){
+			// WIP - has to check if it's visible
+			// [self->_touchbarTimeline reload:jsonData];
 			[self->_timelineView evaluateJavaScript:evalString completionHandler:nil];
 		});
 	});
 }
-- (void) findOnTimeline: (OutlineScene *) scene {
-	NSUInteger index = [[self getOutlineItems] indexOfObject:scene];
-	
-	NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", index];
-	[_timelineView evaluateJavaScript:evalString completionHandler:nil];
+- (void) findOnTimeline: (NSInteger) sceneIndex {
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", sceneIndex];
+		[self.timelineView evaluateJavaScript:evalString completionHandler:nil];
+	});
 }
 
 

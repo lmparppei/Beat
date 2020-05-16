@@ -10,6 +10,7 @@
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
 
+
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
 - (NSImage *)textView:(NSTextView *)textView imageForCompletion:(NSString *)word;
@@ -27,4 +28,8 @@
 @property NSMutableArray* pageBreaks;
 @property CGFloat zoomLevel;
 
+@end
+
+@protocol BeatTextViewDelegate <NSTextViewDelegate>
+- (void)test;
 @end

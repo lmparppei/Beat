@@ -6,6 +6,7 @@ var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange',
 var scenes,
 	container,
 	closeButton,
+	printButton,
 	contextMenu;
 
 var drake;
@@ -24,10 +25,19 @@ function init () {
 	container = document.getElementById('container');
 	wait = document.getElementById('wait');
 
+	printButton = document.getElementById('print');
+	printButton.onclick = function () {
+		// This is a janky implementation but I don't care right now
+		var html = "<html>" + document.getElementsByTagName('html')[0].innerHTML + "</html>";
+		window.webkit.messageHandlers.printCards.postMessage(html);
+	}
+	
 	closeButton = document.getElementById('close');
 	closeButton.onclick = function () {
 		window.webkit.messageHandlers.cardClick.postMessage('exit');
 	}
+	
+	
 	
 	document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
 	

@@ -70,7 +70,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @property (nonatomic, strong) NSPopover *autocompletePopover;
 @property (nonatomic, weak) NSTableView *autocompleteTableView;
 @property (nonatomic, strong) NSArray *matches;
+
 @property (nonatomic) bool nightMode;
+@property (nonatomic) bool forceElementMenu;
+
 // Used to highlight typed characters and insert text
 @property (nonatomic, copy) NSString *substring;
 // Used to keep track of when the insert cursor has moved so we
@@ -152,11 +155,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			// Delete
 			[self.autocompletePopover close];
 			shouldComplete = NO;
+			_forceElementMenu = NO;  // reset just in case
+			
 			break;
 		case 53:
 			// Esc
 			if (self.autocompletePopover.isShown)
 				[self.autocompletePopover close];
+			
+			_forceElementMenu = NO;  // reset just in case
 			return; // Skip default behavior
 		case 125:
 			// Down
@@ -178,8 +185,27 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		case 48:
 			// Return or tab
 			if (self.autocompletePopover.isShown) {
-				[self insert:self];
-				//return; // Skip default behavior (nah, we don't need two returns?)
+				// Check whether to force an element or to just autocomplete
+				if (_forceElementMenu) {
+					[self force:self];
+					return; // skip default
+				} else {
+					[self insert:self];
+				}
+				
+				
+			}
+			else if (theEvent.modifierFlags) {
+				NSUInteger flags = [theEvent modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
+				
+				// Alt was pressed && autocomplete is not visible
+				if (flags == NSEventModifierFlagOption && ![self.autocompletePopover isShown]) {
+					_forceElementMenu = YES;
+					self.automaticTextCompletionEnabled = YES;
+
+					[self forceElement:self];
+					return; // Skip defaut behavior
+				}
 			}
 /*
 		// We don't want to close autocomplete on space, because scene headings etc. are long
@@ -214,6 +240,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	 */
 }
 
+- (void)force:(id)sender {
+	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
+		if ([self.delegate respondsToSelector:@selector(forceElement:)]) {
+			[(id)self.delegate forceElement:[self.matches objectAtIndex:self.autocompleteTableView.selectedRow]];
+		}
+	}
+	[self.autocompletePopover close];
+	_forceElementMenu = NO;
+}
+
 - (void)insert:(id)sender {
 	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
 		NSString *string = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
@@ -232,6 +268,35 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// If selection moves by more than just one character, hide autocomplete
 		[self.autocompletePopover close];
 	}
+}
+
+- (void)forceElement:(id)sender {
+	NSInteger location = self.selectedRange.location;
+	self.matches = @[@"Action", @"Scene Heading", @"Character", @"Lyrics"];
+	
+	self.lastPos = self.selectedRange.location;
+	[self.autocompleteTableView reloadData];
+	
+	NSInteger index = 0;
+	
+	[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
+	[self.autocompleteTableView scrollRowToVisible:index];
+	
+	NSInteger numberOfRows = MIN(self.autocompleteTableView.numberOfRows, MAX_RESULTS);
+	CGFloat height = (self.autocompleteTableView.rowHeight + self.autocompleteTableView.intercellSpacing.height) * numberOfRows + 2 * POPOVER_PADDING;
+	NSRect frame = NSMakeRect(0, 0, POPOVER_WIDTH, height);
+	[self.autocompleteTableView.enclosingScrollView setFrame:NSInsetRect(frame, POPOVER_PADDING, POPOVER_PADDING)];
+	[self.autocompletePopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
+	
+	self.substring = [self.string substringWithRange:NSMakeRange(location, 0)];
+	
+	NSRect rect = [self firstRectForCharacterRange:NSMakeRange(location, 0) actualRange:NULL];
+	rect = [self.window convertRectFromScreen:rect];
+	rect = [self convertRect:rect fromView:nil];
+	
+	rect.size.width = 5;
+	
+	[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
 }
 
 - (void)complete:(id)sender {
@@ -376,7 +441,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	for (NSValue* value in _sections) {
 		[self.marginColor setFill];
 		NSRect sectionRect = [value rectValue];
-		CGFloat width = self.frame.size.width;
+		CGFloat width = self.frame.size.width * 1 / _zoomLevel;
 		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
 		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
 	}
@@ -405,34 +470,44 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
-	/*
-	NSGraphicsContext *context = [NSGraphicsContext currentContext];
 	[context saveGraphicsState];
 	
 	NSInteger pageNumber = 1;
+	
+	CGFloat factor = 1 / _zoomLevel;
+	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 100);
+	CGFloat width = self.frame.size.width * factor - self.textContainerInset.width * 2 + 290;
+	
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
-
-		
-		//NSFont* font = [NSFont fontWithName:@"Arial" size:6];
+		NSFont* font = [NSFont fontWithName:@"Courier" size:16];
 		NSString *page = [@(pageNumber) stringValue];
-		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page];
-		[attrStr drawAtPoint:CGPointMake(self.textContainerInset.width - 150, [pageBreakPosition doubleValue] + self.textContainerInset.height)];
+		page = [page stringByAppendingString:@"."];
+		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font }];
 
-		NSColor* fillColor = NSColor.grayColor;
+		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition doubleValue] + self.textContainerInset.height + 5)];
+		
+		NSColor* fillColor = _marginColor;
 		[fillColor setFill];
 				
-		NSRect rect = NSMakeRect(self.textContainerInset.width - 130, [pageBreakPosition doubleValue] + self.textContainerInset.height, self.frame.size.width - self.textContainerInset.width * 2 + 260, 1);
+		NSRect rect = NSMakeRect(self.textContainerInset.width - 130, [pageBreakPosition doubleValue] + self.textContainerInset.height, width, 2);
 		NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 		
 		pageNumber++;
 	}
 	[context restoreGraphicsState];
-	*/
+	
 }
 - (void)mouseMoved:(NSEvent *)event {
+	// So, apparently only one view can catch mouseMoved events (?)
+	// so we will manually transfer the mouse event to the superview (ScrollView)
+	[(ScrollView*)[[self superview] superview] mouseMoved:event];
+
 	CGFloat x = event.locationInWindow.x;
 	CGFloat y = event.locationInWindow.y;
-	CGFloat origin = self.enclosingScrollView.frame.origin.x;
+	
+	// This view is enclosed by multiple views (clip / scroll / margin)
+	CGFloat origin = self.superview.superview.superview.frame.origin.x;
+	
 	CGFloat containerWidth = self.frame.size.width - self.textContainerInset.width * _zoomLevel;
 
 	if (x < origin + _zoomLevel * self.textContainerInset.width - MARGIN_CONSTANT ||

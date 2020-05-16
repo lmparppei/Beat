@@ -32,7 +32,7 @@ THE SOFTWARE.
 #import <WebKit/WebKit.h>
 #import "BeatTextView.h"
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NCRAutocompleteTableViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler>
 	//NSCollectionViewDataSource, NSCollectionViewDelegate
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
@@ -40,5 +40,10 @@ THE SOFTWARE.
 
 - (NSString*)getText;
 - (NSString*)fileNameString;
+
+// Make some of the actions available for text view
+- (IBAction)forceAction:(id)sender;
+- (IBAction)forceHeading:(id)sender;
+- (IBAction)forceCharacter:(id)sender;
 
 @end

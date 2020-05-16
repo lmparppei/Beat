@@ -31,9 +31,9 @@
 			</array>
 			<key>Text</key>
 			<array>
-				<integer>40</integer>
-				<integer>40</integer>
-				<integer>40</integer>
+				<integer>45</integer>
+				<integer>45</integer>
+				<integer>45</integer>
 			</array>
 			<key>InvisibleText</key>
 			<array>
@@ -71,9 +71,9 @@
 			<string>Night</string>
 			<key>Margin</key>
 			<array>
-				<integer>10</integer>
-				<integer>10</integer>
-				<integer>10</integer>
+				<integer>15</integer>
+				<integer>15</integer>
+				<integer>15</integer>
 			</array>
 			<key>Background</key>
 			<array>

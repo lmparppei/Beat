@@ -1,4 +1,40 @@
 
+## Beat 1.1 r6
+
+* All sorts of stuff
+* Wrote this changelog drunk
+* Bugs with match parentheses have been worked out
+* Optimized document loading
+
+
+## Beat 1.1 r6
+
+* Added Force Element menu that can be accessed while typing (option-Enter)
+* Bug fixes for disappearing elements
+
+
+### About the Upcoming App Store Release
+
+Beat is is under GPL and will remain so. However, to pay for costs of hosting and development, there will be a Pro version available on the App Store.
+
+The only difference between free and paid versions is the extra content: manual & some templates. Source code for the whole application will still be freely available, but actual built updates to the free version will not be as frequent. All the code providing the copyrighted bonus content is found right here in the source.
+
+
+## Beat 1.1 r5
+
+* Fixed a bug with zooming in not displaying the whole document before the user types in something
+* Outline cards can now be printed
+* Outline card excerpts are more compact
+* FDX export now includes support for scene numbers
+* FDX import now has better support for Final Draft 11 quirks and no longer adds extra line breaks
+* Two line breaks are now automatically added after a scene heading
+* All remaining references to RegexKitLite have been removed, code is fully modernized now
+* Smaller zoom steps
+* Overall optimization & multithreading
+* Dual Dialogue menu item & keyboard shortcut
+* Light mode can now be enabled even if OS in dark mode
+
+
 ## Beat 1.1 r4
 
 Bug fixes:

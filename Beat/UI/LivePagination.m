@@ -17,7 +17,7 @@
 	self = [super init];
 	
 	_font = [NSFont fontWithName:@"Courier" size:12];
-	_lineHeight = _font.pointSize;
+	_lineHeight = [FNPaginator lineHeight];
 	
 	return self;
 }
@@ -39,7 +39,7 @@
 		NSInteger maxElements = [lines count];
 		
 		NSInteger oneInchBuffer = 72;
-		NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.30);
+		NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.1);
 		
 		// Look for title page ...
 		bool titlePage = NO;
@@ -115,9 +115,9 @@
 			
 			CGFloat spaceBefore = 0;
 			if (position > 0) {
-				if (line.type == heading) spaceBefore = _lineHeight * 2.5;
+				if (line.type == heading) spaceBefore = [FNPaginator spaceBeforeForLine:line];
 				else if (line.type == dialogue || line.type == parenthetical) spaceBefore = 0;
-				else spaceBefore = _lineHeight * 1.1;
+				else spaceBefore = _lineHeight;
 			}
 			
 
@@ -130,7 +130,6 @@
 				// Page headings are moved to the next page in case of a page break, so push in the previous element
 				if (line.type == heading || line.type == character) {
 					[result addObject:[self makePageBreakFor:previousLine at:-1.0]];
-					NSLog(@"- - - heading %@ // %f // %lu", line.string, position, maxPageHeight);
 					position = 0;
 				}
 				else if (line.type == dialogue) {
@@ -156,9 +155,7 @@
 					position = 0;
 				}
 				else {
-					
 					// Add line element to the page break array
-					NSLog(@"- - - break %@ // %f // %lu", line.string, position, maxPageHeight);
 					[result addObject:[self makePageBreakFor:line at:position + blockHeight - maxPageHeight]];
 					
 					//NSLog(@"---- cut at: %@", line.string);

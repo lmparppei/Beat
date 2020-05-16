@@ -12,6 +12,8 @@
 @implementation ApplicationDelegate
 @synthesize recentFiles;
 
+#define DARKMODE_KEY @"Dark Mode"
+
 #pragma mark - Help
 
 - (instancetype) init {	
@@ -40,6 +42,10 @@
 		//}
 	}];
 	
+	// Check for pro version content
+	NSString* proContentPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
+	if (proContentPath) _proMode = YES;
+		
 	return self;
 }
 
@@ -54,6 +60,10 @@
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
 	[versionField setStringValue:versionString];
 	[aboutVersionField setStringValue:versionString];
+	
+	if (_proMode) {
+		[self->menuManual setHidden:NO];
+	}
 	
 	[self->_startModal becomeKeyWindow];
 	[self->_startModal setAcceptsMouseMovedEvents:YES];
@@ -165,25 +175,88 @@
 		[self->_startModal setIsVisible:true];
 	}
 	
-	_darkMode = false;
+	_darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:DARKMODE_KEY];
+	
+	// If the OS is set to dark mode, we'll force it
 	if (@available(macOS 10.14, *)) {
 		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
 			_darkMode = true;
+		} else {
+			if (_darkMode) _forceDarkMode = YES;
 		}
 	}
 }
+
+#pragma mark - Dark mode stuff
+
+// This is a spaghetti but seems to work for now
+
+- (bool)isForcedDarkMode {
+	if (![self OSisDark]) return _forceDarkMode;
+	return NO;
+}
+- (bool)isForcedLightMode {
+	if ([self OSisDark]) return _forceLightMode;
+	return NO;
+}
 - (bool)isDark {
+	// Uh... if OS set to dark mode, Beat is forced to use it too
 	if (@available(macOS 10.14, *)) {
-		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		NSAppearance *appearance = [NSApp effectiveAppearance];
+		if (appearance == nil) appearance = [NSAppearance currentAppearance];
+		
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			if (!_forceLightMode) return YES; else return NO;
+		} else {
+			if (!_forceDarkMode) return NO; else return YES;
+		}
+	}
+	if (_forceDarkMode) return YES;
+	
+	return _darkMode;
+}
+- (bool)OSisDark {
+	if (@available(macOS 10.14, *)) {
+		NSAppearance *appearance = [NSApp effectiveAppearance];
+		if (!appearance) appearance = [NSAppearance currentAppearance];
+		
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
 			return true;
 		}
 	}
+	return NO;
+}
+- (void) toggleDarkMode {
+	_darkMode = ![self isDark];
 	
-	return _darkMode;
+	// OS is in dark mode, so we need to force the light mode
+	if ([self OSisDark]) {
+		if (!_darkMode) _forceLightMode = YES;
+		else _forceLightMode = NO;
+	}
+	// And vice versa
+	else if (![self OSisDark]) {
+		if (_darkMode) _forceDarkMode = YES;
+		else _forceDarkMode = NO;
+	}
+	
+	[[NSUserDefaults standardUserDefaults] setBool:_darkMode forKey:DARKMODE_KEY];
+}
+
+#pragma mark - Fountain syntax references & help
+
+- (IBAction)showManual:(id)sender {
+	//[[NSBundle mainBundle] loadNibNamed:@"BeatManual" owner:self topLevelObjects:nil];
+	[self->manualWindow setIsVisible:true];
+	
+	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
+	NSLog(@"path %@", htmlPath);
+	[self->manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
+	//[aboutText readRTFDFromFile:rtfFile];
 }
 
 - (IBAction)showFountainSyntax:(id)sender
@@ -200,19 +273,22 @@
 {
     [self openURLInWebBrowser:@"https://kapitan.fi/beat/"];
 }
+- (IBAction)showBeatSource:(id)sender
+{
+    [self openURLInWebBrowser:@"https://github.com/lmparppei/beat/"];
+}
 
 - (void)openURLInWebBrowser:(NSString*)urlString
 {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:urlString]];
 }
 
+#pragma mark - Misc UI
+
 // Close welcome screen
 - (IBAction)closeStartModal
 {
 	[_startModal close];
-}
-- (void) toggleDarkMode {
-	_darkMode = !_darkMode;
 }
 
 - (IBAction)showAboutScreen:(id) sender {
@@ -226,51 +302,33 @@
 	[self->acknowledgementsModal setIsVisible:YES];
 }
 
+#pragma mark - Import FDX
+
 - (IBAction)importFDX:(id)sender
 {
-	/*
-	NSAlert *alert = [[NSAlert alloc] init];
-	[alert addButtonWithTitle:@"Continue"];
-	[alert setMessageText:@"Final Draft Import"];
-	//[alert setInformativeText:@“NSWarningAlertStyle \r Do you want to continue with delete of selected records"];
-	[alert setInformativeText:@"NOTE: This feature is still under development. Basic elements (such as dialogue, actions, transitions) will import correctly, but you should double-check the results. Sorry for any inconvenience!"];
-	[alert setAlertStyle:NSAlertStyleWarning];
-	
-	[alert beginSheetModalForWindow:NSApp.windows[0] completionHandler:^(NSInteger result) {
-*/
-		NSOpenPanel *openDialog = [NSOpenPanel openPanel];
-		[openDialog setAllowedFileTypes:@[@"fdx"]];
-	
-		[openDialog beginWithCompletionHandler:^(NSInteger result) {
-			if (result == NSFileHandlingPanelOKButton) {
-				
-				__block FDXImport *fdxImport;
-				fdxImport = [[FDXImport alloc] initWithURL:openDialog.URL completion:^(void) {
-					if ([fdxImport.script count] > 0) {
-						NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
-						NSError *error;
-						
-						[[fdxImport scriptAsString] writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
-						
-						if (!error) {
-							dispatch_async(dispatch_get_main_queue(), ^(void){
-								[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
-							});
-						}
-					}
-				}];
-								
-				//[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:YES displayName:@"Tutorial" error:nil];
-/*
-				[[fdxImport scriptAsString] writeToURL:tempURL atomically:YES encoding:NSUTF8StringEncoding error:&error];
+	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
+	[openDialog setAllowedFileTypes:@[@"fdx"]];
 
-				[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
-				NSLog(@"jaa? %@", tempURL);
-*/
-				
-			}
-		}];
-	//}];
+	[openDialog beginWithCompletionHandler:^(NSInteger result) {
+		if (result == NSFileHandlingPanelOKButton) {
+			
+			__block FDXImport *fdxImport;
+			fdxImport = [[FDXImport alloc] initWithURL:openDialog.URL completion:^(void) {
+				if ([fdxImport.script count] > 0) {
+					NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
+					NSError *error;
+					
+					[[fdxImport scriptAsString] writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
+					
+					if (!error) {
+						dispatch_async(dispatch_get_main_queue(), ^(void){
+							[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+						});
+					}
+				}
+			}];
+		}
+	}];
 }
 
 - (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix
@@ -293,5 +351,106 @@
 
     return result;
 }
+
+/*
+ // Some experiments in hacking the MM Scheduling .sex file format
+- (IBAction)hackSex:(id)sender {
+	NSString * sexFile = [[NSBundle mainBundle] pathForResource:@"mms.sex" ofType:@""];
+
+	NSData * contents = [NSData dataWithContentsOfFile:sexFile];
+	//NSString *string = [[NSString alloc] initWithData:contents encoding:NSISOLatin1StringEncoding];
+	
+	const char* fileBytes = (const char*)[contents bytes];
+	NSUInteger length = [contents length];
+	NSUInteger index;
+
+	NSMutableString *string = [NSMutableString string];
+	
+	bool heading = NO;
+	bool text = NO;
+	
+	for (index = 0; index<length; index++)
+	{
+		char aByte = fileBytes[index];
+		
+		if (fileBytes[index] == 0){
+			[string appendString:[NSString stringWithFormat:@" "]];
+		}
+		else if (fileBytes[index] == 1) {
+			// Start of heading
+			[string appendString:[NSString stringWithFormat:@"["]];
+			heading = YES;
+		}
+		else if (fileBytes[index] == 2) {
+			// Start of text
+			[string appendString:[NSString stringWithFormat:@"{"]];
+			text = YES;
+		}
+		else if (fileBytes[index] == 3) {
+			// End of text
+			[string appendString:[NSString stringWithFormat:@"}"]];
+			text = NO;
+		}
+		else if (fileBytes[index] == 4) {
+			[string appendString:[NSString stringWithFormat:@"]"]];
+			heading = NO;
+			text = NO;
+		}
+		else if (fileBytes[index] == 10) {
+			// Newline
+			[string appendString:[NSString stringWithFormat:@""]];
+		}
+		else if (fileBytes[index] == 12) {
+			// New page
+			NSLog(@"new page");
+			[string appendString:[NSString stringWithFormat:@""]];
+			heading = NO;
+			text = NO;
+		}
+		else if (fileBytes[index] == 20) {
+			NSLog(@"device control");
+			[string appendString:[NSString stringWithFormat:@"/"]];
+		}
+		else if (fileBytes[index] == 16) {
+			NSLog(@"data link escape");
+			[string appendString:[NSString stringWithFormat:@"\\"]];
+		}
+
+		else if (fileBytes[index] == 8) {
+			// Backspace
+			[string appendString:[NSString stringWithFormat:@""]];
+		}
+		else if (fileBytes[index] == 9) {
+			[string appendString:[NSString stringWithFormat:@"\t"]];
+		}
+		else if (fileBytes[index] == 32) {
+			// Normal space
+			[string appendString:[NSString stringWithFormat:@" "]];
+		}
+		else if (fileBytes[index] == -123) {
+			// Scandic Ö
+			[string appendString:[NSString stringWithFormat:@"Ö"]];
+		}
+		else if (fileBytes[index] == -128) {
+			// Scandic Ä
+			[string appendString:[NSString stringWithFormat:@"Ä"]];
+		}
+
+		else if (fileBytes[index] == '#') {
+			[string appendString:[NSString stringWithFormat:@"#"]];
+		}
+		else {
+			[string appendString:[NSString stringWithFormat:@"%c", aByte]];
+		}
+		
+		NSLog(@"char %c / %i", aByte, fileBytes[index]);
+		
+	}
+	
+	
+	NSLog(@"content %@", string);
+}
+ */
+
 
 @end

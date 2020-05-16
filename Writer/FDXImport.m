@@ -36,9 +36,10 @@
 		_elementText = [[NSMutableString alloc] init];
 		_script = [NSMutableArray array];
 		_titlePage = NO;
+		_dualDialogue = -1;
 
 		// Thank you, RIPtutorial
-		//Fetch xml data
+		// Fetch xml data
 		NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 		
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
@@ -58,14 +59,17 @@
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict{
-    
+	_lastFoundElement = elementName;
 	if ([elementName isEqualToString:@"Content"]) {
 		_contentFound = YES;
 	}
-	if ([elementName isEqualToString:@"TitlePage"]) {
+	else if ([elementName isEqualToString:@"DualDialogue"]) {
+		_dualDialogue = 1;
+	}
+	else if ([elementName isEqualToString:@"TitlePage"]) {
 		_titlePage = YES;
 	}
-	if ([elementName isEqualToString:@"Paragraph"]) {
+	else if ([elementName isEqualToString:@"Paragraph"]) {
 		_activeElement = attributeDict[@"Type"];
 		_alignment = attributeDict[@"Alignment"];
 		_style = attributeDict[@"Style"];
@@ -75,13 +79,47 @@
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string{
 	if (_contentFound && !_titlePage) {
-		[_elementText appendString:[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+		string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
+		
+		// This is a trick by FD to kill FDX import/export from other apps, I guess?
+		
+		if ([_lastFoundElement isEqualToString:@"Text"]) {
+			//if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
+			[_elementText appendString:string];
+		}
+		else [_elementText appendString:[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+		
+		// Save the string for later use
+		_lastFoundString = string;
+	}
+}
+
+- (bool)isFirstCharacterSpace:(NSString*)string {
+	if (string.length > 0) {
+		if ([[string substringWithRange:NSMakeRange(0, 1)] isEqualToString:@" "]) return YES;
+		else return NO;
+	} else {
+		return NO;
+	}
+}
+- (bool)isLastCharacterSpace:(NSString*)string {
+	if (string.length > 1) {
+		if ([[string substringWithRange:NSMakeRange(string.length - 1, 1)] isEqualToString:@" "]) return YES;
+		else return NO;
+	} else {
+		if ([string isEqualToString:@" "]) return YES;
+		else return NO;
 	}
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName{
-    
-	if([elementName isEqualToString:@"Paragraph"]) {
+	
+	// Reset last found element if needed
+	if ([elementName isEqualToString:@"Text"]) _lastFoundElement = @"";
+	// Reset dual dialogue
+	else if ([elementName isEqualToString:@"DualDialogue"]) _dualDialogue = -1;
+	// Go on
+	else if ([elementName isEqualToString:@"Paragraph"]) {
 		NSString *result = [NSString stringWithFormat:@"%@", _elementText];
 		
 		// Add empty rows before required elements.
@@ -108,11 +146,16 @@
 				result = [NSString stringWithFormat:@".%@", result];
 			}
 		}
-		if ([_activeElement isEqualToString:@"Lyrics"]) {
+		else if ([_activeElement isEqualToString:@"Lyrics"]) {
 			result = [NSString stringWithFormat:@"~%@~", result];
 		}
 		if ([_activeElement isEqualToString:@"Character"]) {
-			result = [result uppercaseString];
+			if (_dualDialogue > 0) _dualDialogue++;
+			if (_dualDialogue == 3) {
+				result = [result stringByAppendingString:@" ^"];
+				_dualDialogue = -1;
+			}
+			else result = [result uppercaseString];
 		}
 		else if ([_activeElement isEqualToString:@"Transition"]) {
 			result = [NSString stringWithFormat:@"> %@", [result uppercaseString]];
@@ -125,7 +168,13 @@
 		}
 		
 		// Add object
-		[_script addObject:[NSString stringWithString:result]];
+		if ([result isEqualToString:@""] && [_lastAddedLine isEqualToString:@""]) {
+			// Do nothing for now
+		} else {
+			[_script addObject:[NSString stringWithString:result]];
+			_lastAddedLine = result;
+		}
+		_elementText = [NSMutableString string];
 	}
 	
 	// Start & end sections

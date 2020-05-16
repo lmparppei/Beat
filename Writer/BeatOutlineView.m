@@ -14,7 +14,7 @@
 	[super drawRect:dirtyRect];
 }
 - (void)drawBackgroundInClipRect:(NSRect)clipRect {
-	[super drawBackgroundInClipRect:clipRect];
+	//[super drawBackgroundInClipRect:clipRect];
 
 	if (_currentScene) {
 		NSRect rect = [self rectOfRow:_currentScene];

@@ -24,6 +24,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Line.h"
 
 #if TARGET_OS_IPHONE
     #define QUQFont UIFont
@@ -45,7 +46,9 @@
 - (NSArray *)pageAtIndex:(NSUInteger)index;
 
 // Helper methods
++ (CGFloat)lineHeight;
 + (CGFloat)spaceBeforeForElement:(FNElement *)element;
++ (CGFloat)spaceBeforeForLine:(Line *)line;
 //+ (NSInteger)leftMarginForElement:(FNElement *)element;
 + (NSInteger)widthForElement:(FNElement *)element;
 + (NSInteger)widthForElementType:(NSString *)type;

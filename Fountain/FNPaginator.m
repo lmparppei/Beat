@@ -51,6 +51,9 @@
 #import "FNScript.h"
 #import "FNElement.h"
 #import "RegExCategories.h"
+#import "Line.h"
+
+#define LINE_HEIGHT 13
 
 @interface FNPaginator ()
 
@@ -137,7 +140,7 @@
 		
 		NSFont *font = [NSFont fontWithName:@"Courier" size:12];
 		//NSInteger lineHeight = font.pointSize * 1.1;
-		CGFloat lineHeight = 13;
+		CGFloat lineHeight = LINE_HEIGHT;
 		
 		CGFloat spaceBefore;
 		CGFloat elementWidth;
@@ -599,6 +602,9 @@
 	if (i < self.script.elements.count) return YES; else return NO;
 }
 
++ (CGFloat)lineHeight {
+	return LINE_HEIGHT;
+}
 + (CGFloat)spaceBeforeForElement:(FNElement *)element
 {
 	CGFloat spaceBefore = 0;
@@ -612,7 +618,7 @@
 	}
 	else if ([set containsObject:type]) {
 		//spaceBefore = 1.1;
-		spaceBefore = 13;
+		spaceBefore = LINE_HEIGHT;
 	}
 	
 	return spaceBefore;
@@ -691,6 +697,17 @@
 	// calculate the height
 	NSInteger height = numberOfLines * lineHeight;
 	return height;
+}
+
+#pragma mark - Beat helper methods
+
++ (CGFloat)spaceBeforeForLine:(Line*)line {
+	if (line.type == heading) return [self spaceBeforeForElement:[FNElement elementOfType:@"Scene Heading" text:line.string]];
+	else if (line.type == character) return LINE_HEIGHT;
+	else if (line.type == dialogue) return 0;
+	else if (line.type == parenthetical) return 0;
+	else if (line.type == action) return LINE_HEIGHT;
+	else return LINE_HEIGHT;
 }
 
 @end

@@ -8,8 +8,7 @@
 
 /*
  
- This is a subclass for drawing margins behind the view and
- to move some UI elements out of the way of the find bar
+ This is a subclass for moving some UI elements out of the way of the find bar
  
  */
 
@@ -18,7 +17,7 @@
 
 @implementation ScrollView
 
-#define HIDE_INTERVAL 5.0
+#define HIDE_INTERVAL 7.0
 
 - (instancetype)init {
 	return [super init];
@@ -29,39 +28,16 @@
 	
 	// Save buttons for later use
 	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton];
+	
+	// Setup timer
+	//_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(shouldHideButtons:) userInfo:nil repeats:NO];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-	[NSGraphicsContext saveGraphicsState];
     [super drawRect:dirtyRect];
-	[NSGraphicsContext restoreGraphicsState];
-	
-	// Draw background (we have drawBackground se as NO, as otherwise the margins didn't work.)
-	// I can't get my head around this so let's just do the background manually.
-	[NSGraphicsContext saveGraphicsState];
-	[self.backgroundColor setFill];
-	NSRectFill(NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height));
-	[NSGraphicsContext restoreGraphicsState];
-	
-	// Draw margins if they don't fall outside the viewport
-	if (self.frame.size.width > 800) {
-		[_marginColor setFill];
-		
-		CGFloat offset = 0;
-		if ([self isFullscreen]) offset = self.frame.origin.x;
-		CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel - offset / 2;
-		
-		if (marginWidth > 0) {
-			// Set margin boxes
-			NSRect marginLeft = NSMakeRect(0, 0, marginWidth, self.frame.size.height);
-			NSRect marginRight = NSMakeRect((self.frame.size.width - marginWidth), 0, marginWidth, self.frame.size.height);
-			
-			[NSGraphicsContext saveGraphicsState];
-			NSRectFillUsingOperation(marginLeft, NSCompositingOperationSourceOver);
-			NSRectFillUsingOperation(marginRight, NSCompositingOperationSourceOver);
-			[NSGraphicsContext restoreGraphicsState];
-		}
-	}
+}
+- (bool)isFullSize {
+	return (([self.window styleMask] & NSWindowStyleMaskFullSizeContentView) == NSWindowStyleMaskFullSizeContentView);
 }
 - (bool)isFullscreen {
 	return (([self.window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
@@ -75,12 +51,22 @@
 	else return;
 }
 - (void)hideButtons {
-	[[_outlineButton animator] setAlphaValue:0.0];
+	if ([self isFullSize]) {
+		[[[[self.window standardWindowButton:NSWindowCloseButton] superview] animator] setAlphaValue:0];
+		[self.window setTitlebarAppearsTransparent:YES];
+	}
+	
+	
 	for (NSButton *button in _editorButtons) {
 		[[button animator] setAlphaValue:0.0];
 	}
+	
 }
 - (void)showButtons {
+	if ([self isFullSize]) {
+		[[[[self.window standardWindowButton:NSWindowCloseButton] superview] animator] setAlphaValue:1];
+		[self.window setTitlebarAppearsTransparent:NO];
+	}
 	for (NSButton *button in _editorButtons) {
 		[[button animator] setAlphaValue:1.0];
 	}

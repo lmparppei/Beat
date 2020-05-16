@@ -63,7 +63,10 @@
 {
 	// Modification for Beat. Load dark scheme if the app is set into dark mode.
 	if (NSApp) {
-		if ([(ApplicationDelegate*)[NSApp delegate] isDark]) {
+		if ([(ApplicationDelegate*)[NSApp delegate] isForcedLightMode]) {
+			if (self.aquaColor != nil) return self.aquaColor;
+		}
+		else if ([(ApplicationDelegate*)[NSApp delegate] isForcedDarkMode]) {
 			if (self.darkAquaColor != nil) return self.darkAquaColor;
 		}
 	}
