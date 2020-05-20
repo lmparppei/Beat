@@ -3,7 +3,7 @@
 //	Modified for Beat
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
-//  Parts copyright © 2019 Lauri-Matti Parppei / KAPITAN!
+//  Parts copyright © 2019-2020 Lauri-Matti Parppei / KAPITAN!
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -31,31 +31,47 @@
  There are certain differences:
  
  - the English language default "written by" has been removed: [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
- - HTML output links to either screen or print CSS depending on the target format. Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
- - And - as I'm writing this, some functions in RegexKitLite.h have been deprecated in macOS 10.12+. Fair enough - it was apparently last updated in 2010.
- I hadn't  made any films then. In 2010, I was young, madly in love and had dreams and aspirations. I had just recently started my studies in a film school.
- In 9 years, I figured back then, I'd be making films that really communicated the pain I had gone through. My films would reach out to other lonely people, confined in their gloomy tomb, assured of their doom.
+ - HTML output links to either screen or print CSS depending on the target format.
+   Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
+ - And - as I'm writing this, some functions in RegexKitLite.h have been deprecated in macOS 10.12+.
+   Fair enough - it was apparently last updated in 2010.
  
- Well.
+   Back then, I hadn't made any films. In 2010, I was young, madly in love and had dreams and aspirations.
+   I had just recently started my studies in a film school.
+   In 9 years, I figured back then, I'd be making films that really communicated the pain I had gone through.
+   My films would reach out to other lonely people, confined in their gloomy tomb, assured of their doom.
  
- Instead, I'm reading about fucking C enumerators and OS spin locks to be able to build my own fucking software, which - mind you - ran just fine a few weeks ago.
+   Well.
  
- Hence, I tried to replace the deprecated spin locks of RegexKitLite.h with modern ones. It was about to destroy my inner child. I just wanted to write nice films, I wasn't planning on fucking learning any motherfucking C!!!!!!
+   Instead, I'm reading about fucking C enumerators and OS spin locks to be able to build my own fucking software,
+   which - mind you - ran just fine a few weeks ago.
  
- SO, if you are reading this: Beat now relies on a customized RegexKitLite, which might work or not. It could crash systems all around the world. It could consume your computer's soul and kill any glimpse of hope.
+   Hence, I tried to replace the deprecated spin locks of RegexKitLite.h with modern ones.
+   It was about to destroy my inner child. I just wanted to write nice films, I wasn't planning on fucking
+   learning any motherfucking C!!!!!!
  
- I could have spent these hours with my dear friends, my lover or just watching flowers grow and maybe talking to them. Or even writing my film. I didn't. Here I am, typing this message to some random fucker who, for whatever reason, decides to take a look at my horrible code sometime in the future.
+   SO, if you are reading this: Beat now relies on a customized RegexKitLite, which might work or not.
+   It could crash systems all around the world. It could consume your computer's soul and kill any glimpse of hope.
  
- Probably it's me, though.
+   I could have spent these hours with my dear friends, my lover or just watching flowers grow and maybe talking to them.
+   Or even writing my film. I didn't. Here I am, typing this message to some random fucker who, for whatever reason,
+   decides to take a look at my horrible code sometime in the future.
  
- What can I say. STOP WASTING YOUR LIFE AND GO FUCK YOURSELF.
+   Probably it's me, though.
+ 
+   What can I say. STOP WASTING YOUR LIFE AND GO FUCK YOURSELF.
 
+ ---
  
  UPDATE 21th Jan 2020:
+ References to RegexKitLite have been removed. Totally.
+ It has resulted in some pretty strange solutions, and self-customizing a Regex library,
+ but for now it works - also on modern systems.
  
- References to RegexKitLite hvae been removed. Totally.
- 
- It has resulted in some pretty strange solutions, and self-customizing a Regex library, but for now it works - also on modern systems.
+ UPDATE 17th May 2020:
+ This could be rewritten to conform with our Line* class instead of FNElement / FNScript.
+ I also stumbled upon the message written above, and omg past me, I'd send you some hugs and kisses
+ if I could, but I'm writing this amidst the COVID-19 pandemic so I have to keep my distance.
  
 */
 
@@ -159,12 +175,8 @@
     [html appendString:self.bodyText];
 	[html appendString:@"</section>\n</article>\n"];
 	
-	if (_currentScene) {
-		NSString *viewScript = [NSString stringWithFormat:@"<script>var el = document.getElementById('scene-%@'); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' });</script>", _currentScene];
-		[html appendString:viewScript];
-	}
-	// For debug purposes
-	[html appendString:@"<script>var z = document.querySelectorAll('p'); for (var x of z) { x.innerHTML = x.innerHTML + '<span class=\"debug\">' + x.clientWidth + ' x ' + x.clientHeight + '</span>'; }</script>\n"];
+	[html appendString:@"<script>function scrollToScene(scene) { console.log('fuck'); var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>"];
+	[html appendString:@"<script name='scrolling'></script>"];
 	[html appendString:@"</body>\n"];
     [html appendString:@"</html>"];
     return html;
@@ -212,7 +224,7 @@
 - (NSString *)bodyForScript
 {
     NSMutableString *body = [NSMutableString string];
-	
+
     // Add title page
     NSMutableDictionary *titlePage = [NSMutableDictionary dictionary];
     for (NSDictionary *dict in self.script.titlePage) {
@@ -223,7 +235,7 @@
         [body appendString:@"<section id='script-title' class='page'>"];
 		
 		[body appendFormat:@"<div class='mainTitle'>"];
-        
+		
         // Title
         if (titlePage[@"title"]) {
             NSArray *obj = titlePage[@"title"];
@@ -238,9 +250,10 @@
         else {
             [body appendFormat:@"<p class='%@'>%@</p>", @"title", @"Untitled"];
         }
-        
-        // Credit
-        if (titlePage[@"credit"] || titlePage[@"authors"]) {
+
+		// Credit
+		// Added support for "author" (without the plural)
+        if (titlePage[@"credit"] || titlePage[@"authors"] || titlePage[@"author"]) {
             if (titlePage[@"credit"]) {
                 NSArray *obj = titlePage[@"credit"];
                 NSMutableString *values = [NSMutableString string];
@@ -263,6 +276,15 @@
                 }
                 [body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self formatString:values]];
 				[titlePage removeObjectForKey:@"authors"];
+            }
+			else if (titlePage[@"author"]) {
+                NSArray *obj = titlePage[@"author"];
+                NSMutableString *values = [NSMutableString string];
+                for (NSString *val in obj) {
+                    [values appendFormat:@"%@<br>", val];
+                }
+                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self formatString:values]];
+				[titlePage removeObjectForKey:@"author"];
             }
             else {
                 [body appendFormat:@"<p class='%@'>%@</p>", @"authors", @""];
@@ -323,6 +345,7 @@
 		for (NSString* key in titlePage) {
 			NSArray *obj = titlePage[key];
 			NSMutableString *values = [NSMutableString string];
+
 			for (NSString *val in obj) {
 				[values appendFormat:@"%@<br>", val];
 			}

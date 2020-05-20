@@ -34,6 +34,10 @@
 		B6146B27246A91420029DBD9 /* printview.png in Resources */ = {isa = PBXBuildFile; fileRef = B6146B21246A91420029DBD9 /* printview.png */; };
 		B615E5E823CE00FB00E61C54 /* FNHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65419E1E8CA000489C4 /* FNHTMLScript.m */; };
 		B615E5E923CE022F00E61C54 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
+		B61875A52471BEDA00FB7646 /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B61875A42471BEDA00FB7646 /* BeatPreview.m */; };
+		B61875A62471BEDA00FB7646 /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B61875A42471BEDA00FB7646 /* BeatPreview.m */; };
+		B61B693D2472DEE800DCDBFA /* FountainPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B693C2472DEE800DCDBFA /* FountainPaginator.m */; };
+		B61B693E2472DEE800DCDBFA /* FountainPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B693C2472DEE800DCDBFA /* FountainPaginator.m */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
 		B625F13E24327DE300873F62 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
@@ -305,6 +309,10 @@
 		B6146B1F246A91420029DBD9 /* outline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = outline.png; sourceTree = "<group>"; };
 		B6146B20246A91420029DBD9 /* analysis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = analysis.png; sourceTree = "<group>"; };
 		B6146B21246A91420029DBD9 /* printview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = printview.png; sourceTree = "<group>"; };
+		B61875A32471BEDA00FB7646 /* BeatPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = Beat/BeatPreview.h; sourceTree = SOURCE_ROOT; };
+		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/BeatPreview.m; sourceTree = SOURCE_ROOT; };
+		B61B693B2472DEE800DCDBFA /* FountainPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainPaginator.h; path = Beat/FountainTools/FountainPaginator.h; sourceTree = SOURCE_ROOT; };
+		B61B693C2472DEE800DCDBFA /* FountainPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainPaginator.m; path = Beat/FountainTools/FountainPaginator.m; sourceTree = SOURCE_ROOT; };
 		B624C144234BDE7100C438C7 /* BeatOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatOutlineView.h; path = Writer/BeatOutlineView.h; sourceTree = SOURCE_ROOT; };
 		B624C145234BDE7100C438C7 /* BeatOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatOutlineView.m; path = Writer/BeatOutlineView.m; sourceTree = SOURCE_ROOT; };
 		B62ADC7323CCCE560015563A /* fountainQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fountainQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -450,6 +458,8 @@
 		B13111911CB2A41B00D07A0C /* Parsing */ = {
 			isa = PBXGroup;
 			children = (
+				B61875A32471BEDA00FB7646 /* BeatPreview.h */,
+				B61875A42471BEDA00FB7646 /* BeatPreview.m */,
 				B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */,
 				B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */,
 				B6D6E5F7221B305300A1C9BE /* OutlineScene.h */,
@@ -590,6 +600,8 @@
 				B138B65419E1E8CA000489C4 /* FNHTMLScript.m */,
 				B138B65519E1E8CA000489C4 /* FNPaginator.h */,
 				B138B65619E1E8CA000489C4 /* FNPaginator.m */,
+				B61B693B2472DEE800DCDBFA /* FountainPaginator.h */,
+				B61B693C2472DEE800DCDBFA /* FountainPaginator.m */,
 				B6D2B7352218B6A7005B8447 /* FNScript.h */,
 				B138B65819E1E8CA000489C4 /* FNScript.m */,
 				B138B65919E1E8CA000489C4 /* FountainParser.h */,
@@ -1068,6 +1080,7 @@
 				B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */,
 				B69EF55124659FC000C5B78C /* SceneCards.m in Sources */,
 				B138B66619E1E8CA000489C4 /* FNElement.m in Sources */,
+				B61875A52471BEDA00FB7646 /* BeatPreview.m in Sources */,
 				B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */,
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
@@ -1101,6 +1114,7 @@
 				B138B66919E1E8CA000489C4 /* FNScript.m in Sources */,
 				B138B66519E1E8CA000489C4 /* FastFountainParser.m in Sources */,
 				B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */,
+				B61B693D2472DEE800DCDBFA /* FountainPaginator.m in Sources */,
 				B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */,
 				B138B66719E1E8CA000489C4 /* FNHTMLScript.m in Sources */,
 				B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */,
@@ -1171,9 +1185,11 @@
 				B6F49CF7246D66B0006D88D4 /* Line.m in Sources */,
 				B6F49CF8246D66B0006D88D4 /* TitlePageEditorDelegate.m in Sources */,
 				B6EB516D246E7F36009014AB /* TouchBarTimeline.m in Sources */,
+				B61B693E2472DEE800DCDBFA /* FountainPaginator.m in Sources */,
 				B6F49CF9246D66B0006D88D4 /* WebPrinter.m in Sources */,
 				B6F49CFA246D66B0006D88D4 /* NSString+Regex.m in Sources */,
 				B6F49CFB246D66B0006D88D4 /* BeatTextView.m in Sources */,
+				B61875A62471BEDA00FB7646 /* BeatPreview.m in Sources */,
 				B6F49CFC246D66B0006D88D4 /* FountainRegexes.m in Sources */,
 				B6F49CFD246D66B0006D88D4 /* FNScript.m in Sources */,
 				B6F49CFE246D66B0006D88D4 /* FastFountainParser.m in Sources */,
@@ -1353,7 +1369,7 @@
 				INFOPLIST_FILE = Beat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = "1.1 r6";
+				MARKETING_VERSION = "1.1 r7";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -1384,7 +1400,7 @@
 				INFOPLIST_FILE = Beat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = "1.1 r6";
+				MARKETING_VERSION = "1.1 r7";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -1513,7 +1529,7 @@
 				INFOPLIST_FILE = "Beat copy-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = "1.1 r6";
+				MARKETING_VERSION = "1.1 r7";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -1544,7 +1560,7 @@
 				INFOPLIST_FILE = "Beat copy-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = "1.1 r6";
+				MARKETING_VERSION = "1.1 r7";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

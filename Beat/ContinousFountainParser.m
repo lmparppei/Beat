@@ -3,13 +3,20 @@
 //  Writer / Beat
 //
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
+//  Parts copyright © 2019-2020 Lauri-Matti Parppei. All rights reserved.
 
 //  Relased under GPL
 
 /*
  
  This code is mostly based on Hendrik Noeller's work. It is heavily modified for Beat, and is all the time more reliable.
+ 
+ Main differences include:
+ - double-checking for all-caps actions mistaken for character cues
+ - recursive logic for lookback / lookforward
+ - title page parsing (mostly for preview purposes)
+ - new data structure called OutlineScene, which contains scene name and length, as well as a reference to original line
+ - overall tweaks to parsing here and there
  
  */
 
@@ -37,7 +44,8 @@
         _lines = [[NSMutableArray alloc] init];
 		_outline = [[NSMutableArray alloc] init];
         _changedIndices = [[NSMutableArray alloc] init];
-
+		_titlePage = [[NSMutableArray alloc] init];
+		
         [self parseText:string];
     }
     
@@ -48,19 +56,28 @@
 {
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
     
-    NSUInteger positon = 0; //To track at which position every line begins
+    NSUInteger position = 0; //To track at which position every line begins
     
+	Line *previousLine;
+	
     for (NSString *rawLine in lines) {
         NSInteger index = [self.lines count];
-        Line* line = [[Line alloc] initWithString:rawLine position:positon];
+        Line* line = [[Line alloc] initWithString:rawLine position:position];
         [self parseTypeAndFormattingForLine:line atIndex:index];
         
+		// Quick fix for mistaking an ALL CAPS action to character cue
+		if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
+			previousLine.type = [self parseLineType:previousLine atIndex:index - 1 recursive:NO currentlyEditing:NO];
+			if (previousLine.type == character) previousLine.type = action;
+		}
+		
         //Add to lines array
         [self.lines addObject:line];
         //Mark change in buffered changes
         [self.changedIndices addObject:@(index)];
         
-        positon += [rawLine length] + 1; // +1 for newline character
+        position += [rawLine length] + 1; // +1 for newline character
+		previousLine = line;
     }
     _changeInOutline = YES;
 }
@@ -254,9 +271,9 @@
                 currentLine.type == character ||            //if the line became anythign to
                 currentLine.type == parenthetical ||        //do with dialogue, it might cause
                 currentLine.type == dialogue ||             //the next lines to be dialogue
-                currentLine.type == doubleDialogueCharacter ||
-                currentLine.type == doubleDialogueParenthetical ||
-                currentLine.type == doubleDialogue ||
+                currentLine.type == dualDialogueCharacter ||
+                currentLine.type == dualDialogueParenthetical ||
+                currentLine.type == dualDialogue ||
                 currentLine.type == empty ||                //If the line became empty, it might
                                                             //enable the next on to be a heading
                                                             //or character
@@ -272,11 +289,11 @@
                 nextLine.type == synopse ||
                 nextLine.type == heading ||                 //If the next line is a heading or
                 nextLine.type == character ||               //character or anything dialogue
-                nextLine.type == doubleDialogueCharacter || //related, it might not be anymore
+                nextLine.type == dualDialogueCharacter || //related, it might not be anymore
                 nextLine.type == parenthetical ||
                 nextLine.type == dialogue ||
-                nextLine.type == doubleDialogueParenthetical ||
-                nextLine.type == doubleDialogue ||
+                nextLine.type == dualDialogueParenthetical ||
+                nextLine.type == dualDialogue ||
                 nextLine.omitIn != currentLine.omitOut) { //If the next line expected the end
                                                             //of the last line to end or not end
                                                             //with an open omit other than the
@@ -442,9 +459,11 @@
         line.numberOfPreceedingFormattingCharacters = 1;
         return transitionLine;
     }
+	if (firstChar == '>' && lastChar == '<') {
+        //line.numberOfPreceedingFormattingCharacters = 1;
+        return centered;
+    }
     if (firstChar == '#') {
-        line.numberOfPreceedingFormattingCharacters = 1;
-		
 		// Thanks, Jacob Relkin
 		NSUInteger len = [string length];
 		NSInteger depth = 0;
@@ -456,6 +475,7 @@
 		}
 		
 		line.sectionDepth = depth;
+		line.numberOfPreceedingFormattingCharacters = depth;
         return section;
     }
     if (firstChar == '=' && (length >= 2 ? [string characterAtIndex:1] != '=' : YES)) {
@@ -508,10 +528,21 @@
 		// - search for ":"
 		// - extract key
 		NSRange firstColonRange = [string rangeOfString:@":"];
-		if (firstColonRange.length != 0) {
+		
+		if (firstColonRange.length != 0 && firstColonRange.location != 0) {
 			NSUInteger firstColonIndex = firstColonRange.location;
 			
 			NSString* key = [[string substringToIndex:firstColonIndex] lowercaseString];
+			
+			NSString* value = @"";
+			if (string.length > firstColonIndex + 1) value = [string substringFromIndex:firstColonIndex + 1];
+			
+			// Store title page data
+			NSDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] };
+			[_titlePage addObject:titlePageData];
+			
+			// Set this key as open
+			if (value.length < 1) _openTitlePageKey = key; else _openTitlePageKey = nil;
 			
 			if ([key isEqualToString:@"title"]) {
 				return titlePageTitle;
@@ -523,12 +554,17 @@
 				return titlePageSource;
 			} else if ([key isEqualToString:@"contact"]) {
 				return titlePageContact;
+			} else if ([key isEqualToString:@"contacts"]) {
+				return titlePageContact;
+			} else if ([key isEqualToString:@"contact info"]) {
+				return titlePageContact;
 			} else if ([key isEqualToString:@"draft date"]) {
 				return titlePageDraftDate;
 			} else {
 				return titlePageUnknown;
 			}
 		} else {
+			// This is an additional line
 			/*
 			 if (length >= 2 && [[string substringToIndex:2] isEqualToString:@"  "]) {
 			 line.numberOfPreceedingFormattingCharacters = 2;
@@ -537,6 +573,11 @@
 			 line.numberOfPreceedingFormattingCharacters = 1;
 			 return preceedingLine.type;
 			 } */
+			if (_openTitlePageKey) {
+				NSMutableDictionary* dict = [_titlePage lastObject];
+				[(NSMutableArray*)dict[_openTitlePageKey] addObject:line.string];
+			}
+			
 			return preceedingLine.type;
 		}
 		
@@ -568,7 +609,23 @@
         if (length >= 3 && [string containsOnlyUppercase] && !containsOnlyWhitespace) {
             // A character line ending in ^ is a double dialogue character
             if (lastChar == '^') {
-                return doubleDialogueCharacter;
+				
+				// PLEASE NOTE:
+				// nextElementIsDualDialogue is ONLY used while staticly parsing for printing,
+				// and SHOULD NOT be used anywhere else, as it won't be updated.
+				NSUInteger i = index - 1;
+				while (i >= 0) {
+					Line *prevLine = [self.lines objectAtIndex:i];
+
+					if (prevLine.type == character) {
+						prevLine.nextElementIsDualDialogue = YES;
+						break;
+					}
+					if (prevLine.type == heading) break;
+					i--;
+				}
+				
+                return dualDialogueCharacter;
             } else {
 				// It is possible that this IS NOT A CHARACTER anyway, so let's see.
 				// WIP
@@ -604,12 +661,12 @@
 					return action;
 				}
             }
-        } else if (preceedingLine.type == doubleDialogueCharacter || preceedingLine.type == doubleDialogue || preceedingLine.type == doubleDialogueParenthetical) {
+        } else if (preceedingLine.type == dualDialogueCharacter || preceedingLine.type == dualDialogue || preceedingLine.type == dualDialogueParenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
             if (firstChar == '(' && lastChar == ')') {
-                return doubleDialogueParenthetical;
+                return dualDialogueParenthetical;
             } else {
-                return doubleDialogue;
+                return dualDialogue;
             }
         } else if (preceedingLine.type == section) {
             return section;
@@ -1023,6 +1080,20 @@
     //Cut off the last newline
     result = [result substringToIndex:result.length - 1];
     return result;
+}
+
+// This returns a pure string with no comments or invisible elements
+- (NSString *)cleanedString {
+	NSString * result = @"";
+	
+	for (Line* line in self.lines) {
+		// Skip invisible elements
+		if (line.type == section || line.type == synopse || line.omited || line.isTitlePage) continue;
+		
+		result = [result stringByAppendingFormat:@"%@\n", line.cleanedString];
+	}
+	
+	return result;
 }
 
 @end

@@ -5,6 +5,7 @@
 //  Based on Writer, copyright © 2016 Hendrik Noeller
 
 /*
+ 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
@@ -22,6 +23,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
+ 
  */
 
 
@@ -29,13 +31,13 @@
  
  N.B.
  
- Beat has been cooked up by using lots of trial and error, and this file has become a 4000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a third of the code has its origins in Writer, an open source Fountain by Hendrik Noeller.
+ Beat has been cooked up by using lots of trial and error, and this file has become a 4400-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain by Hendrik Noeller.
  
  Some structures (such as themes) are legacy from Writer, and while they have since been replaced with a totally different approach, their names and complimentary methods still linger around. You can find some *very* shady stuff, such as ThemeManager, lying around here and there with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
  As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg.
  
- Beat is released under GNU General Public License, so all of this code will remain open forever, even if I make a commercial version to finance the development. I started developing the app to overcome some PTSD symptoms and to combat creative block. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
+ Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. I started developing the app to overcome some PTSD symptoms while combating creative block. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
  
  Anyway, may this be of some use to you, dear friend.
  The abandoned git repository will be my monument when I'm gone.
@@ -43,6 +45,7 @@
  Lauri-Matti Parppei
  Helsinki
  Finland
+ 2019-2020
  
  
  = = = = = = = = = = = = = = = = = = = = = = = =
@@ -69,8 +72,9 @@
 #import <Foundation/Foundation.h>
 #import "Document.h"
 #import "ScrollView.h"
-#import "BeatTextView.h"
+//#import "BeatTextView.h"
 #import "FNScript.h"
+#import "FNElement.h"
 #import "FNHTMLScript.h"
 #import "FDXInterface.h"
 #import "OutlineExtractor.h"
@@ -95,6 +99,7 @@
 #import "RegExCategories.h"
 #import "TouchBarTimeline.h"
 #import "MarginView.h"
+#import "BeatPreview.h"
 
 @interface Document ()
 
@@ -107,9 +112,9 @@
 
 // Text view
 @property (unsafe_unretained) IBOutlet BeatTextView *textView;
-@property (weak) IBOutlet ScrollView *textScrollView;
-@property (weak) IBOutlet MarginView *marginView;
-@property (weak) IBOutlet NSClipView *textClipView;
+@property (nonatomic, weak) IBOutlet ScrollView *textScrollView;
+@property (nonatomic, weak) IBOutlet MarginView *marginView;
+@property (nonatomic, weak) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSTimer * scrollTimer;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
@@ -133,12 +138,12 @@
 
 // Outline view filtering
 @property (nonatomic) NSMutableArray *filteredOutline;
-@property (nonatomic) IBOutlet NSBox *filterView;
+@property (weak) IBOutlet NSBox *filterView;
 @property (nonatomic) IBOutlet NSLayoutConstraint *filterViewHeight;
 @property (nonatomic) IBOutlet NSPopUpButton *characterBox;
 @property (nonatomic) SceneFiltering *filters;
-@property (nonatomic) IBOutlet NSButton *resetColorFilterButton;
-@property (nonatomic) IBOutlet NSButton *resetCharacterFilterButton;
+@property (weak) IBOutlet NSButton *resetColorFilterButton;
+@property (weak) IBOutlet NSButton *resetCharacterFilterButton;
 
 // Fuck you macOS & Apple. For two things, particulary:
 //
@@ -156,49 +161,50 @@
 //    pieces of human garbage!!! Go fuck yourself, Apple.
 //    So, on to the code:
 
-@property (nonatomic) IBOutlet ColorCheckbox *redCheck;
-@property (nonatomic) IBOutlet ColorCheckbox *blueCheck;
-@property (nonatomic) IBOutlet ColorCheckbox *greenCheck;
-@property (nonatomic) IBOutlet ColorCheckbox *orangeCheck;
-@property (nonatomic) IBOutlet ColorCheckbox *cyanCheck;
-@property (nonatomic) IBOutlet ColorCheckbox *brownCheck;
-@property (nonatomic) IBOutlet ColorCheckbox *magentaCheck;
-@property (nonatomic) IBOutlet ColorCheckbox *pinkCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *redCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *blueCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *greenCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *orangeCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *cyanCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *brownCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *magentaCheck;
+@property (nonatomic, weak) IBOutlet ColorCheckbox *pinkCheck;
 
 
 // Views
-@property (unsafe_unretained) IBOutlet WebView *webView; // Print preview
-@property (unsafe_unretained) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
+@property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet ColorView *backgroundView; // Master background
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
 @property (weak) IBOutlet MasterView *masterView; // View which contains every other view
 
+// Print preview
+@property (weak) IBOutlet WebView *webView; // Print preview
+@property (weak) IBOutlet WKWebView *printWebView; // Print preview
+@property (nonatomic) NSString *htmlString;
+@property (nonatomic) bool previewUpdated;
+@property (nonatomic) bool previewCanceled;
+@property (nonatomic) NSTimer *previewTimer;
+
 
 // Analysis
 @property (weak) IBOutlet NSPanel *analysisPanel;
-@property (unsafe_unretained) IBOutlet WKWebView *analysisView;
+@property (weak) IBOutlet WKWebView *analysisView;
 @property (strong, nonatomic) FountainAnalysis* analysis;
 @property (nonatomic) NSMutableDictionary *characterGenders;
 
 // Card view
 @property (nonatomic) SceneCards *sceneCards;
-@property (unsafe_unretained) IBOutlet WKWebView *cardView;
+@property (weak) IBOutlet WKWebView *cardView;
 @property (nonatomic) bool cardsVisible;
 
 
 // Timeline view
-@property (unsafe_unretained) IBOutlet WKWebView *timelineView;
+@property (weak) IBOutlet WKWebView *timelineView;
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
 @property (nonatomic) NSInteger timelineClickedScene;
 @property (nonatomic) NSInteger timelineSelection;
 @property (nonatomic) bool timelineVisible;
 @property (nonatomic) IBOutlet TouchBarTimeline *touchbarTimeline;
-
-
-// Margin views, unused for now
-@property (unsafe_unretained) IBOutlet NSBox *leftMargin;
-@property (unsafe_unretained) IBOutlet NSBox *rightMargin;
-
 
 // Scene number labels
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
@@ -246,7 +252,7 @@
 @property (nonatomic) NSUInteger dialogueIndentRight;
 @property (nonatomic) NSUInteger ddCharacterIndent;
 @property (nonatomic) NSUInteger ddParentheticalIndent;
-@property (nonatomic) NSUInteger doubleDialogueIndent;
+@property (nonatomic) NSUInteger dualDialogueIndent;
 @property (nonatomic) NSUInteger ddRight;
 
 
@@ -329,7 +335,7 @@
 
 #define DD_CHARACTER_INDENT_P 0.56
 #define DD_PARENTHETICAL_INDENT_P 0.50
-#define DOUBLE_DIALOGUE_INDENT_P 0.40
+#define DUAL_DIALOGUE_INDENT_P 0.40
 #define DD_RIGHT 650
 #define DD_RIGHT_P .95
 
@@ -367,6 +373,7 @@
 - (void) close {
 	// Save the gender list, if needed
 	if ([_characterGenders count] > 0) [self saveGenders];
+	[self saveCaret];
 	
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
@@ -382,10 +389,17 @@
 	self.currentScene = nil;
 	self.currentLine = nil;
 	self.sceneCards = nil;
+	self.analysis = nil;
+	self.pagination = nil;
+	self.filters = nil;
+	self.printView = nil;
+	self.sceneCards = nil;
+	self.flatOutline = nil;
+	self.filteredOutline = nil;
 	
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
-	
+		
 	// ApplicationDelegate will show welcome screen when no documents are open
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document close" object:nil];
 	
@@ -428,10 +442,13 @@
 	// TextView setup
 	[self setupTextView];
 	
+	
 	[[self.textScrollView documentView] setPostsBoundsChangedNotifications:YES];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willUndo:) name:NSUndoManagerWillUndoChangeNotification object:self.textView];
 	
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
 	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
@@ -508,6 +525,9 @@
 	[self.cardView.configuration.userContentController addScriptMessageHandler:self name:@"printCards"];
 	[self setupCards];
 	
+	// Print preview setup
+	[self setupPreview];
+	
 	// Timeline webkit
 	[self setupTimeline];
 	self.timelineVisible = false;
@@ -534,7 +554,7 @@
 	// Custom autosave
 	[self initAutosave];
 	
-	// Let's set a timer for 200ms. This should update the scene number labels after letting the text render.
+	// Let's set a timer for 100ms. This should update the scene number labels after letting the text render.
 	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
 
 	// Can I come over, I need to rest
@@ -547,7 +567,10 @@
 	[self updateLayout];
 	[self updateSectionMarkers];
 	[self updateSceneNumberLabels];
+	
+	[self loadCaret];
 	[self ensureCaret];
+	[self updatePreview];
 }
 -(void)awakeFromNib {
 	[self updateLayout];
@@ -688,7 +711,7 @@
 - (void)ensureLayout {
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 	[self.textView setNeedsDisplay:YES];
-		
+
 	[self updateSceneNumberLabels];
 }
 
@@ -893,6 +916,69 @@
     return fileName;
 }
 
+
+- (void)cancelPreview {
+	_previewCanceled = YES;
+}
+
+- (void)updatePreview  {
+	[self updatePreviewAndUI:NO];
+}
+- (void)updatePreviewAndUI:(bool)updateUI {
+	// WORK IN PROGRESS // WIP WIP WIP
+	// Update preview in background
+	
+	/*
+	 
+	 We really should write a super-fast subclass for converting Line* structure into FNScript and not have it inside Document.m.
+	 To be honest, having this sort of system-on-a-system makes things kind of convoluted and messy, but I'm just too lazy to fix it right now.
+	 It would be nice to have dedicated classes for converting our own parsed data into HTML.
+	 
+	 BTW, by using some convoluted magic we could find the pagination from here?
+	 
+	 */
+	
+	[_previewTimer invalidate];
+	self.previewUpdated = NO;
+	self.previewCanceled = YES;
+	
+	// Wait 1 second after writing has ended to build preview
+	// If there is no preview present, do it immediately
+	CGFloat previewWait = 1.5;
+	if (_htmlString.length < 1) previewWait = 0;
+	
+	_previewTimer = [NSTimer scheduledTimerWithTimeInterval:previewWait repeats:NO block:^(NSTimer * _Nonnull timer) {
+			
+		self.previewCanceled = NO;
+		
+		self.currentScene = [self getCurrentScene];
+
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){ 
+			
+			NSString *rawString = [self preprocessSceneNumbers];
+			FNScript *script = [BeatPreview createPreview:rawString];
+			
+			if (self.previewCanceled == YES) return;
+
+			FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self scene:self.currentScene.sceneNumber];
+			self.htmlString = htmlScript.html;
+			self.previewUpdated = YES;
+			
+			NSLog(@"done updating preview");
+			
+			if (updateUI || self.printPreview) {
+				__block NSString *html = [htmlScript html];
+				dispatch_async(dispatch_get_main_queue(), ^(void){
+					//[[self.webView mainFrame] loadHTMLString:html baseURL:nil];
+					NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene(%@);</script>", self.currentScene.sceneNumber];
+					html = [html stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
+					[self.printWebView loadHTMLString:html baseURL:nil];
+				});
+			}
+		});
+	}];
+}
+
 - (void)updateWebView
 {
 	FNScript *script = [[FNScript alloc] initWithString:[self preprocessSceneNumbers]];
@@ -906,7 +992,9 @@
 		htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self];
 	}
 	
-    [[self.webView mainFrame] loadHTMLString:[htmlScript html] baseURL:nil];
+    //[[self.webView mainFrame] loadHTMLString:[htmlScript html] baseURL:nil];
+	[self.printWebView loadHTMLString:[htmlScript html] baseURL:nil];
+	
 }
 - (OutlineScene*)getCurrentScene {
 	NSInteger position = [self.textView selectedRange].location;
@@ -979,10 +1067,14 @@
 		return nil;
 	}
 }
+- (IBAction)showInfo:(id)sender {
+	[self.textView showInfo:self];
+}
 
 # pragma mark - Undo
 
 - (IBAction)undoEdit:(id)sender {
+	
 	[self.undoManager undo];
 	if (_cardsVisible) [self refreshCards:YES];
 	
@@ -998,6 +1090,41 @@
 	// To avoid some graphical glitches
 	[self ensureLayout];
 }
+- (void)willUndo:(NSEvent*)event {
+	NSLog(@"just???");
+}
+
+- (void)saveCaret {
+	[self saveDocumentSetting:@"Caret Position" value:[NSNumber numberWithInteger:self.textView.selectedRange.location]];
+}
+- (void)loadCaret {
+	NSInteger position = [(NSNumber*)[self getDocumentSetting:@"Caret Position"] integerValue];
+	if (position < self.textView.string.length && position >= 0) {
+		[self.textView setSelectedRange:NSMakeRange(position, 0)];
+		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
+	}
+}
+
+- (id)getDocumentSetting:(NSString*)settingName {
+	if ([self.fileNameString isEqualToString:@"Untitled"]) return nil;
+	NSDictionary *documentSettings = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"Document Settings"];
+	NSDictionary *settings = [documentSettings objectForKey:self.fileNameString];
+	return [settings objectForKey:settingName];
+}
+- (void)saveDocumentSetting:(NSString*)settingName value:(id)object {
+	if ([self.fileNameString isEqualToString:@"Untitled"]) return;
+	
+	NSMutableDictionary *documentSettings = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"Document Settings"]];
+
+	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithDictionary:[documentSettings objectForKey:[self fileNameString]]];
+	if (settings && object != nil) {
+		[settings setObject:object forKey:settingName];
+		[documentSettings setObject:settings forKey:[self fileNameString]];
+	}
+	
+	[[NSUserDefaults standardUserDefaults] setValue:documentSettings forKey:@"Document Settings"];
+}
+
 
 # pragma mark - Text manipulation
 
@@ -1013,6 +1140,26 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
+	// Backspace / deletion for scene headings
+	if (self.undoManager.isRedoing) {
+		NSLog(@"is redoing %@", replacementString);
+	}
+	
+	if (replacementString.length < 1 && affectedCharRange.length > 0) {
+		Line * affectedLine = [self getLineAt:affectedCharRange.location];
+		__block Line * otherLine = [self getLineAt:affectedCharRange.location + affectedCharRange.length];
+		
+		if (affectedLine != otherLine && otherLine.string.length > 0) {
+			if (affectedLine.type == heading && otherLine.type != heading) {
+				__block NSString *undoString = otherLine.string;
+				
+				[self.undoManager registerUndoWithTarget:self handler:^(id _Nonnull target) {
+					[self replaceCharactersInRange:NSMakeRange(otherLine.position, otherLine.string.length + 1) withString:undoString];
+				}];
+			}
+		}
+	}
+	
     //If something is being inserted, check whether it is a "(" or a "[[" and auto close it
     if (self.matchParentheses) {
         if (affectedCharRange.length == 0) {
@@ -1074,7 +1221,9 @@
 	// WIP
 	//[self paginate];
 	[self updateSectionMarkers];
-		
+	
+	_previewUpdated = NO;
+	
     return YES;
 }
 
@@ -1104,6 +1253,8 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
+	if (![self.undoManager isUndoRegistrationEnabled]) [self.undoManager enableUndoRegistration];
+	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 
@@ -1120,6 +1271,9 @@
 	
 	[self.parser numberOfOutlineItems];
 	[self updateSceneNumberLabels];
+	
+	// Update preview screen
+	[self updatePreview];
 	
 	// Draw masks again if text did change
 	if ([_filteredOutline count]) [self maskScenes];
@@ -1239,6 +1393,62 @@
 		return [string substringFromIndex:string.length - 1];
 	}
 }
+- (IBAction)toLowerCase:(id)sender {
+	if (_textView.selectedRange.length == 0) return;
+	
+	NSInteger position = _textView.selectedRange.location;
+	
+	NSString *string = [_textView.string substringWithRange:_textView.selectedRange];
+	NSString *lowerCase = [string lowercaseString];
+	[self replaceString:string withString:lowerCase atIndex:position];
+	
+	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:lowerCase withString:string atIndex:position];
+}
+
+- (IBAction)toUpperCase:(id)sender {
+	if (_textView.selectedRange.length == 0) return;
+	
+	NSInteger position = _textView.selectedRange.location;
+	
+	NSString *string = [_textView.string substringWithRange:_textView.selectedRange];
+	NSString *uppercase = [string uppercaseString];
+	[self replaceString:string withString:uppercase atIndex:position];
+	
+	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:uppercase withString:string atIndex:position];
+}
+
+- (IBAction)toSentenceCase:(id)sender {
+	if (_textView.selectedRange.length == 0) return;
+	
+	NSInteger position = _textView.selectedRange.location;
+	NSString *string = [_textView.string substringWithRange:_textView.selectedRange];
+	
+	NSString *lowerCase = [string lowercaseString];
+	
+	NSUInteger length = [lowerCase length];
+	unichar buffer[length + 1];
+
+	[lowerCase getCharacters:buffer range:NSMakeRange(0, length)];
+
+	NSMutableString *result = [NSMutableString string];
+	
+	bool newSentence = YES;
+	for(int i = 0; i < length; i++) {
+		char chr = buffer[i];
+		
+		if (newSentence && chr != ' ' && chr != '\n') {
+			chr = [[[NSString stringWithFormat:@"%c", chr] uppercaseString] characterAtIndex: 0];
+			newSentence = NO;
+		}
+		
+		if (chr == '.' || chr == '?' || chr == '!' || chr == ':') newSentence = YES;
+		
+		[result appendFormat:@"%c", chr];
+	}
+	
+	[self replaceString:string withString:result atIndex:_textView.selectedRange.location];
+	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:result withString:string atIndex:position];
+}
 
 
 # pragma mark - Autocomplete
@@ -1265,7 +1475,7 @@
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
 		
 	for (Line *line in [self.parser lines]) {
-		if (line.type == character && line != _currentLine && ![_characterNames containsObject:line.string]) {
+		if ((line.type == character || line.type == dualDialogueCharacter) && line != _currentLine && ![_characterNames containsObject:line.string]) {
 			// Don't add this line if it's just a character with cont'd, vo, or something we'll add automatically
 			if ([line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound) continue;
 			
@@ -1392,7 +1602,9 @@
 			if (line.type == character) {
 				Line* nextLine = [self.parser.lines objectAtIndex:index + 1];
 				if (nextLine.string.length < 1 || (nextLine.type != parenthetical && nextLine.type != dialogue)) {
-					line.type = action;
+					line.type = [self.parser parseLineType:line atIndex:index recursive:NO];
+					// If it's not a forced element but really a mistaken character cue, return action
+					if (line.type == character) line.type = action;
 				}
 			}
 		}
@@ -1495,8 +1707,10 @@
 		(line.type == transitionLine && [line.string characterAtIndex:0] != '>')) {
 		//Make uppercase, and then reapply cursor position, because they'd get lost otherwise
 		NSArray<NSValue*>* selectedRanges = self.textView.selectedRanges;
-		[textStorage replaceCharactersInRange:range
-								   withString:[[textStorage.string substringWithRange:range] uppercaseString]];
+		
+		//[textStorage replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
+		[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
+		
 		[self.textView setSelectedRanges:selectedRanges];
 	}
 	if (line.type == heading) {
@@ -1597,7 +1811,7 @@
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
-		} else if (line.type == doubleDialogueCharacter) {
+		} else if (line.type == dualDialogueCharacter) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
 			[paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
@@ -1605,7 +1819,7 @@
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
-		} else if (line.type == doubleDialogueParenthetical) {
+		} else if (line.type == dualDialogueParenthetical) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
 			[paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
@@ -1613,10 +1827,10 @@
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
-		} else if (line.type == doubleDialogue) {
+		} else if (line.type == dualDialogue) {
 			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-			[paragraphStyle setFirstLineHeadIndent:DOUBLE_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
-			[paragraphStyle setHeadIndent:DOUBLE_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
+			[paragraphStyle setHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
 			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
@@ -1769,7 +1983,7 @@
 							range:[self globalRangeFromLocalRange:&closeSymbolRange
 												 inLineAtPosition:line.position]];
 	}];
-	
+
 	if (!fontOnly) {
 		[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 			NSUInteger symbolLength = 1;
@@ -1799,6 +2013,13 @@
 								range:[self globalRangeFromLocalRange:&range
 													 inLineAtPosition:line.position]];
 		}];
+		
+		// Format force characters
+		if (line.numberOfPreceedingFormattingCharacters > 0 && line.string.length > 0) {
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+								range:NSMakeRange(line.position, line.numberOfPreceedingFormattingCharacters)];
+			
+		}
 	}
 }
 
@@ -1898,16 +2119,16 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if (previousDialogueFound) [self addString:forceDualDialogueSymbol atIndex:_currentLine.position + _currentLine.string.length];
 	
 	// if it's already a dual dialogue cue, remove the symbol
-	} else if (_currentLine.type == doubleDialogueCharacter) {
+	} else if (_currentLine.type == dualDialogueCharacter) {
 		NSRange range = [_currentLine.string rangeOfString:forceDualDialogueSymbol];
 		// Remove symbol
 		[self removeString:forceDualDialogueSymbol atIndex:_currentLine.position + range.location];
 		
 	// Dialogue block. Find the character cue and add/remove dual dialogue symbol
 	} else if (_currentLine.type == dialogue ||
-			   _currentLine.type == doubleDialogue ||
+			   _currentLine.type == dualDialogue ||
 			   _currentLine.type == parenthetical ||
-			   _currentLine.type == doubleDialogueParenthetical) {
+			   _currentLine.type == dualDialogueParenthetical) {
 		NSInteger index = [_parser.lines indexOfObject:_currentLine] - 1;
 		while (index >= 0) {
 			Line* previousLine = [_parser.lines objectAtIndex:index];
@@ -1917,7 +2138,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 				[self addString:forceDualDialogueSymbol atIndex:previousLine.position + previousLine.string.length];
 				break;
 			}
-			if (previousLine.type == doubleDialogueCharacter) {
+			if (previousLine.type == dualDialogueCharacter) {
 				// Remove
 				NSRange range = [previousLine.string rangeOfString:forceDualDialogueSymbol];
 				[self removeString:forceDualDialogueSymbol atIndex:previousLine.position + range.location];
@@ -1998,7 +2219,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	NSUInteger sceneCount = 1; // Track scene amount
 		
-	for (Line *line in [self.parser lines]) {
+	// Make a copy of the array if this is called in a background thread
+	NSArray *lines = [NSArray arrayWithArray:[self.parser lines]];
+	for (Line *line in lines) {
 		NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet: NSCharacterSet.whitespaceCharacterSet];
 		
 		// If the heading already has a forced number, skip it
@@ -2014,9 +2237,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 		
 		// Add a line break after the scene heading if it doesn't have one
 		// If the user relies on this feature, it breaks the file's compatibility with other Fountain editors, but they have no one else to blame than themselves I guess. And my friendliness and hospitality allowing them to break the syntax.
-		if (line.type == heading && line != [self.parser.lines lastObject]) {
-			NSInteger lineIndex = [self.parser.lines indexOfObject:line];
-			if ([(Line*)[self.parser.lines objectAtIndex:lineIndex + 1] type] != empty) {
+		if (line.type == heading && line != [lines lastObject]) {
+			NSInteger lineIndex = [lines indexOfObject:line];
+			if ([(Line*)[lines objectAtIndex:lineIndex + 1] type] != empty) {
 				[fullText appendFormat:@"\n"];
 			}
 		}
@@ -2448,7 +2671,7 @@ static NSString *forceDualDialogueSymbol = @"^";
         }
 	} else if ([menuItem.title isEqualToString:@"Dual Dialogue"]) {
 		if (_currentLine.type == character || _currentLine.type == dialogue || _currentLine.type == parenthetical ||
-			_currentLine.type == doubleDialogueCharacter || _currentLine.type == doubleDialogueParenthetical || _currentLine.type == doubleDialogue) return YES; else return NO;
+			_currentLine.type == dualDialogueCharacter || _currentLine.type == dualDialogueParenthetical || _currentLine.type == dualDialogue) return YES; else return NO;
 	} else if ([menuItem.title isEqualToString:@"Automatically Match Parentheses"]) {
         if (self.matchParentheses) {
             [menuItem setState:NSOnState];
@@ -2617,18 +2840,34 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (IBAction)preview:(id)sender
 {
     if ([self selectedTabViewTab] == 0) {
-        [self updateWebView];
-        
+		// Do a synchronous refersh of the preview if the preview is not available
+         // if (!_previewUpdated) [self updateWebView]
+		// [self updateWebView];
+		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
+		else {
+			// So uh... yeah. Fuck commenting my code at this point.
+			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene('%@');</script>", self.currentScene.sceneNumber];
+			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
+			[self.printWebView loadHTMLString:_htmlString baseURL:nil];
+			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
+			
+			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToScene(%@);", _currentScene.sceneNumber] completionHandler:nil];
+		}
+		//[[[self webView] mainFrame] loadHTMLString:_htmlString baseURL:nil];
+		//[self.printWebView loadHTMLString:_htmlString baseURL:nil];
+	
         [self setSelectedTabViewTab:1];
 		_printPreview = YES;
     } else {
 		[self setSelectedTabViewTab:0];
 		[self updateLayout];
 		[self ensureCaret];
-		
-		_printPreview = NO;
     }
 	[self updateSceneNumberLabels];
+}
+- (void)setupPreview {
+	
+	[_printWebView loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
 }
 - (void)cancelOperation:(id) sender
 {
@@ -3085,6 +3324,12 @@ static NSString *forceDualDialogueSymbol = @"^";
  Color context menu
  
  Note: self.timelineClickedScene keeps track if a scene was clicked on the timeline. The reason for this is that we use the same menu for both outline and timeline views. NSOutlineView's clickedRow property seems to be always set, so we'll always check first if something was clicked on the timeline.
+ 
+ You are still young
+ and free
+ (in a way, anyway)
+ don't let it
+ waste away.
 
 */
 
@@ -3225,7 +3470,19 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return;
 }
 
+- (void) contextMenu:(NSString*)context {
+	// Let's take a moment to marvel at the beauty of objective-c code:
+	NSPoint localPosition = [_timelineView convertPoint:[_thisWindow convertPointFromScreen:[NSEvent mouseLocation]] fromView:nil];
+	[_colorMenu popUpMenuPositioningItem:_colorMenu.itemArray[0] atLocation:localPosition inView:_timelineView];
+}
 
+/*
+ 
+ I'm very good with plants
+ while my friends are away
+ they let me keep the soil moist.
+ 
+ */
 
 #pragma mark - Colors
 
@@ -3290,7 +3547,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return nil;
 }
 
-
 - (void) refreshCards {
 	// Refresh cards assuming the view isn't visible
 	[self refreshCards:NO changed:-1];
@@ -3302,8 +3558,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 - (NSArray*)getCards {
 	NSMutableArray *array = [NSMutableArray array];
-	for (OutlineScene * scene in [self.parser outline]) {
-		[array addObject: [self getJSONCard:scene selected:[self isSceneSelected:scene]]];
+	for (OutlineScene * scene in [self getOutlineItems]) {
+		if (!scene.omited) [array addObject: [self getJSONCard:scene selected:[self isSceneSelected:scene]]];
 	}
 	return [NSArray arrayWithArray:array];
 }
@@ -3432,7 +3688,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return [NSString stringWithString:s];
 }
 
-/* JavaScript call listener */
+
+#pragma mark - JavaScript message listeners
+
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
 	if ([message.body  isEqual: @"exit"]) {
 		[self toggleCards:nil];
@@ -3512,13 +3770,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 		}
 	}
 }
-- (void) contextMenu:(NSString*)context {
-	// Let's take a moment to marvel at the beauty of objective-c code:
-	NSPoint localPosition = [_timelineView convertPoint:[_thisWindow convertPointFromScreen:[NSEvent mouseLocation]] fromView:nil];
-	
-	[_colorMenu popUpMenuPositioningItem:_colorMenu.itemArray[0] atLocation:localPosition inView:_timelineView];
-}
-
 
 #pragma mark - Scene numbering for NSTextView
 
@@ -3706,6 +3957,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	else [self.timelineView evaluateJavaScript:@"setStyle('light');" completionHandler:nil];
 }
 - (void) reloadTimeline {
+	NSLog(@"updating timeline");
+	
 	__block OutlineScene *currentScene = [self getCurrentScene];
 	__block NSMutableArray *scenes = [self getOutlineItems];
 	
@@ -3721,6 +3974,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 		bool previousLineEmpty = false;
 		
 		for (OutlineScene *scene in scenes) {
+			if (scene.omited) continue;
+			
 			if (scene.type == synopse || scene.type == section) {
 				NSString *type;
 				if (scene.type == synopse) type = @"synopsis";
@@ -3731,15 +3986,14 @@ static NSString *forceDualDialogueSymbol = @"^";
 			else if (scene.type == heading) {
 				//[self JSONString:scene.string]
 				
-				NSInteger length = 2; // A scene heading is 2 beats
+				NSInteger length = 1;
 
 				NSInteger position = [[self.parser lines] indexOfObject:scene.line];
 				NSInteger index = 0;
 				
 				bool selected = false;
 				if (currentScene) {
-					if (scene.line == currentScene.line) {
-						
+					if (scene.line == currentScene.line && scene.sceneNumber == currentScene.sceneNumber) {
 						selected = true;
 					}
 				}
@@ -3787,7 +4041,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 					}
 					
 					if (line.type == action) {
-						length += (lineLength + charsPerLine - 1) / charsPerLine;
+						NSInteger actionLength = (lineLength + charsPerLine - 1) / charsPerLine;
+						if (actionLength == 0) actionLength = 1;
+						length += actionLength;
 					}
 			
 				}
@@ -3983,6 +4239,13 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 }
 
+/*
+ 
+ 5am
+ out again
+ triangle walks
+ 
+ */
 
 #pragma mark - Pagination
 

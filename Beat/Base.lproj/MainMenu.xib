@@ -218,6 +218,37 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eOw-SD-I2a"/>
+                            <menuItem title="Show Text Properties" keyEquivalent="i" id="r8I-XP-gc2">
+                                <connections>
+                                    <action selector="showInfo:" target="-1" id="OZ4-AM-83P"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Convert Case" id="IqE-QG-XKl">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Convert Case" id="ml9-Kr-Idu">
+                                    <items>
+                                        <menuItem title="Sentence case" id="ht4-rE-LMg">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toSentenceCase:" target="-1" id="moy-p1-JDk"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="UPPERCASE" id="G2N-g4-IaQ">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toUpperCase:" target="-1" id="Hwc-mM-1Gt"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="lowercase" id="p6M-Gn-xqx">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="toLowerCase:" target="-1" id="VKd-tR-wsh"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Twe-tk-qY1"/>
                             <menuItem title="Previous Scene" keyEquivalent="" id="jdx-FP-GzA">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
@@ -730,8 +761,8 @@ DQ
                 <outlet property="versionField" destination="TYI-Wq-8Wy" id="uXG-1x-yVE"/>
             </connections>
         </customObject>
-        <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Tq0-bd-4zX">
-            <windowStyleMask key="styleMask" closable="YES" miniaturizable="YES"/>
+        <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="Tq0-bd-4zX">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="564" height="367"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="vpm-hd-eID">
@@ -781,14 +812,14 @@ DQ
                         </view>
                         <color key="fillColor" red="0.098039215690000001" green="0.1019607843" blue="0.10980392156862745" alpha="1" colorSpace="calibratedRGB"/>
                     </box>
-                    <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="55" horizontalPageScroll="10" verticalLineScroll="55" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Fv5-7P-sl9">
+                    <scrollView focusRingType="none" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="55" horizontalPageScroll="10" verticalLineScroll="55" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Fv5-7P-sl9">
                         <rect key="frame" x="247" y="41" width="317" height="326"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                             <rect key="frame" x="0.0" y="0.0" width="317" height="326"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
+                                <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                     <rect key="frame" x="0.0" y="0.0" width="317" height="326"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="0.0" height="23"/>
@@ -796,7 +827,7 @@ DQ
                                     <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                     <color key="gridColor" white="0.18347161091549299" alpha="1" colorSpace="calibratedWhite"/>
                                     <tableColumns>
-                                        <tableColumn width="314" minWidth="20" maxWidth="1000" id="fG0-pM-cZd">
+                                        <tableColumn editable="NO" width="314" minWidth="20" maxWidth="1000" id="fG0-pM-cZd">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -878,11 +909,7 @@ DQ
             </view>
             <point key="canvasLocation" x="698" y="329.5"/>
         </window>
-        <customObject id="F4J-ev-lWW" customClass="DataSource">
-            <connections>
-                <outlet property="_startModal" destination="Tq0-bd-4zX" id="VfJ-73-UBZ"/>
-            </connections>
-        </customObject>
+        <customObject id="F4J-ev-lWW" customClass="DataSource"/>
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="blg-LD-9vu">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="534" height="317"/>

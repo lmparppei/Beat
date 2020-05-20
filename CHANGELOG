@@ -1,11 +1,16 @@
 
-## Beat 1.1 r6
+## Beat 1.1 r7
 
 * All sorts of stuff
 * Wrote this changelog drunk
 * Bugs with match parentheses have been worked out
 * Optimized document loading
-
+* Optimized preview building --- which might stil be a bit buggy
+* Experiments with live pagination
+* Force symbols are now formated (@, !, ~, etc.)
+* Fixed quirks with scene heading editing
+* Timeline View no longer scrolls randomly if the scene is already in view
+* Caret position is saved per document
 
 ## Beat 1.1 r6
 

@@ -59,11 +59,18 @@
 	_interiorScenes = 0;
 	_exteriorScenes = 0;
 	_otherScenes = 0;
+	_words = 0;
+	_glyphs = 0;
 	
 	NSInteger lineIndex = -1;
 	
 	for (Line* line in _lines) {
 		lineIndex += 1;
+		
+		if (!line.isInvisible && line.string.length) {
+			_glyphs += [line.cleanedString length];
+			_words += [[line.cleanedString componentsSeparatedByString:@" "] count];
+		}
 		
 		if (line.type == character) {
 			// Because we are sending the lines array from the continuous parser, we need to double check certain things
@@ -138,7 +145,7 @@
 }
 
 - (NSString*)getJSON {
-	if (![_lines count] || ![_scenes count]) {
+	if (![_lines count]) {
 		return @"genders:{ }";
 	}
 	[self createReport];
@@ -172,7 +179,9 @@
 	[json appendString:@"},"];
 	
 	// JSON scenes --------------------------------------------------------
-	[json appendFormat:@"scenes:{ interior: %lu, exterior: %lu, other: %lu }", _interiorScenes, _exteriorScenes, _otherScenes];
+	[json appendFormat:@"scenes:{ interior: %lu, exterior: %lu, other: %lu },", _interiorScenes, _exteriorScenes, _otherScenes];
+	// JSON statistics --------------------------------------------------------
+	[json appendFormat:@"statistics:{ words: %lu, glyphs: %lu }", _words, _glyphs];
 	
 	// JSON END
 	[json appendString:@"}"];

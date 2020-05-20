@@ -24,9 +24,9 @@
                                @"\n"
                                @"  <Content>\n" mutableCopy];
     
-    bool inDoubleDialogue = NO;
+    bool inDualDialogue = NO;
     for (int i = 0; i < [parser.lines count]; i++) {
-        inDoubleDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDoubleDialogue:inDoubleDialogue];
+        inDualDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDualDialogue:inDualDialogue];
     }
     
     [result appendString:@"  </Content>\n"];
@@ -46,19 +46,19 @@
     return result;
 }
 
-+ (bool)appendLineAtIndex:(NSUInteger)index fromLines:(NSArray*)lines toString:(NSMutableString*)result inDoubleDialogue:(bool)inDoubleDialogue//In python: like write_paragraph but also calcualtes caller arguments
++ (bool)appendLineAtIndex:(NSUInteger)index fromLines:(NSArray*)lines toString:(NSMutableString*)result inDualDialogue:(bool)inDualDialogue//In python: like write_paragraph but also calcualtes caller arguments
 {
     Line* line = lines[index];
     NSString* paragraphType = [self typeAsFDXString:line.type];
     if (paragraphType.length == 0) {
         //Ignore if no type is known
-        return inDoubleDialogue;
+        return inDualDialogue;
     }
     
     
     
     //If no double dialogue is currently in action, and a dialogue should be printed, check if it is followed by double dialogue so both can be wrapped in a double dialogue
-    if (!inDoubleDialogue && line.type == character) {
+    if (!inDualDialogue && line.type == character) {
         for (NSUInteger i = index + 1; i < [lines count]; i++) {
             Line* futureLine = lines[i];
             if (futureLine.type == parenthetical ||
@@ -66,12 +66,12 @@
                 futureLine.type == empty) {
                 continue;
             }
-            if (futureLine.type == doubleDialogueCharacter) {
-                inDoubleDialogue = YES;
+            if (futureLine.type == dualDialogueCharacter) {
+                inDualDialogue = YES;
             }
             break;
         }
-        if (inDoubleDialogue) {
+        if (inDualDialogue) {
             [result appendString:@"    <Paragraph>\n"];
             [result appendString:@"      <DualDialogue>\n"];
         }
@@ -102,7 +102,7 @@
     
     
     //If a double dialogue is currently in action, check wether it needs to be closed after this
-    if (inDoubleDialogue) {
+    if (inDualDialogue) {
         if (index < [lines count] - 1) {
             //If the following line doesn't have anything to do with dialogue, end double dialogue
             Line* nextLine = lines[index+1];
@@ -110,22 +110,22 @@
                 nextLine.type != character &&
                 nextLine.type != parenthetical &&
                 nextLine.type != dialogue &&
-                nextLine.type != doubleDialogueCharacter &&
-                nextLine.type != doubleDialogueParenthetical &
-                nextLine.type != doubleDialogue) {
-                inDoubleDialogue = NO;
+                nextLine.type != dualDialogueCharacter &&
+                nextLine.type != dualDialogueParenthetical &
+                nextLine.type != dualDialogue) {
+                inDualDialogue = NO;
                 [result appendString:@"      </DualDialogue>\n"];
                 [result appendString:@"    </Paragraph>\n"];
             }
         } else {
             //If the line is the last line, it's also time to close the dual dialogue tag
-            inDoubleDialogue = NO;
+            inDualDialogue = NO;
             [result appendString:@"      </DualDialogue>\n"];
             [result appendString:@"    </Paragraph>\n"];
         }
     }
     
-    return inDoubleDialogue;
+    return inDualDialogue;
 }
 
 #define BOLD_PATTERN_LENGTH 2
@@ -229,7 +229,7 @@
     }
     
     //Remove the " ^" from double dialogue character
-    if (line.type == doubleDialogueCharacter) {
+    if (line.type == dualDialogueCharacter) {
         [string replaceCharactersInRange:NSMakeRange(string.length - 1, 1) withString:@""];
         while ([string characterAtIndex:string.length - 1] == ' ') {
             [string replaceCharactersInRange:NSMakeRange(string.length - 1, 1) withString:@""];
@@ -348,11 +348,11 @@
             return @"Parenthetical";
         case dialogue:
             return @"Dialogue";
-        case doubleDialogueCharacter:
+        case dualDialogueCharacter:
             return @"Character";
-        case doubleDialogueParenthetical:
+        case dualDialogueParenthetical:
             return @"Parenthetical";
-        case doubleDialogue:
+        case dualDialogue:
             return @"Dialogue";
         case transitionLine:
             return @"Transition";
@@ -362,6 +362,8 @@
             return @"";
         case centered:
             return @"Action";
+		case more:
+			return @"More";
     }
 }
 

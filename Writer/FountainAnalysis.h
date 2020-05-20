@@ -22,6 +22,8 @@
 @property NSInteger interiorScenes;
 @property NSInteger exteriorScenes;
 @property NSInteger otherScenes;
+@property NSInteger words;
+@property NSInteger glyphs;
 
 - (NSString*) getJSON;
 - (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes;

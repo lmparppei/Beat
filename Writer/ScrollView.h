@@ -19,13 +19,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSButton *timelineButton;
 @property IBOutlet NSLayoutConstraint *outlineButtonY;
 
-@property (nonatomic) DynamicColor *marginColor;
+@property (nonatomic, weak) DynamicColor *marginColor;
 @property (nonatomic) CGFloat insetWidth;
 @property (nonatomic) CGFloat buttonDefaultY;
 @property (nonatomic) CGFloat magnificationLevel;
 @property (nonatomic) NSTimer *mouseMoveTimer;
 
-@property (nonatomic) NSArray *editorButtons;
+@property (nonatomic, weak) NSArray *editorButtons;
 
 @end
 

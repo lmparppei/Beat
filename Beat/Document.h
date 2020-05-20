@@ -32,6 +32,9 @@ THE SOFTWARE.
 #import <WebKit/WebKit.h>
 #import "BeatTextView.h"
 
+// Forward declaration to make parser available for text view
+@class BeatTextView;
+
 @interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler>
 	//NSCollectionViewDataSource, NSCollectionViewDelegate
 

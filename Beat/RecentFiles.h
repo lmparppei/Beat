@@ -7,7 +7,6 @@
 //
 
 @interface DataSource : NSDocument <NSOutlineViewDataSource>{
-	IBOutlet NSWindow* _startModal;
 }
 @property id selectedRow;
 @end

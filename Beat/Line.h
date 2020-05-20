@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FNElement.h"
 
 typedef enum : NSUInteger {
     empty = 0,
@@ -24,13 +25,14 @@ typedef enum : NSUInteger {
     character,
     parenthetical,
     dialogue,
-    doubleDialogueCharacter,
-    doubleDialogueParenthetical,
-    doubleDialogue,
+    dualDialogueCharacter,
+    dualDialogueParenthetical,
+    dualDialogue,
     transitionLine,
     lyrics,
     pageBreak,
     centered,
+	more
 } LineType;
 
 
@@ -52,13 +54,23 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* omitedRanges;
 @property bool omitIn; //wether the line terminates an unfinished omit
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
+@property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
+- (Line*)initWithString:(NSString*)string type:(LineType)type;
+- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position;
 - (NSString*)toString;
 - (NSString*)typeAsString;
+- (NSString*)typeAsFountainString;
+- (NSString*)cleanedString;
 - (bool)omited;
+- (bool)isTitlePage;
+- (bool)isInvisible;
+- (bool)isDialogueElement;
 
-//- (NSInteger)rowsForLine;
-//- (void)setElementHeight;
++ (Line*)withString:(NSString*)string type:(LineType)type;
+
+// This is a method for converting Line to FNElement
+- (FNElement*)fountainElement;
 
 @end

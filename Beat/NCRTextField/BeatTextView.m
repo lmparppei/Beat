@@ -11,6 +11,8 @@
 #import "DynamicColor.h"
 #import "Line.h"
 #import "ScrollView.h"
+#import "ContinousFountainParser.h"
+#import "FountainPaginator.h"
 
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
@@ -67,6 +69,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @interface BeatTextView ()
 @property (weak) IBOutlet NSTouchBar *touchBar;
 
+@property (nonatomic, strong) NSPopover *infoPopover;
+@property (nonatomic, strong) NSTextView *infoTextView;
+
 @property (nonatomic, strong) NSPopover *autocompletePopover;
 @property (nonatomic, weak) NSTableView *autocompleteTableView;
 @property (nonatomic, strong) NSArray *matches;
@@ -117,22 +122,122 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[contentView addSubview:tableScrollView];
 	
 	NSViewController *contentViewController = [[NSViewController alloc] init];
-	[contentViewController setView:contentView];
+	[contentViewController setView:contentView];;
 	
+	// Autocomplete popover
 	self.autocompletePopover = [[NSPopover alloc] init];
 	self.autocompletePopover.appearance = [NSAppearance appearanceNamed:POPOVER_APPEARANCE];
 	
 	self.autocompletePopover.animates = NO;
 	self.autocompletePopover.contentViewController = contentViewController;
 	
+	// Info popover
+	self.infoPopover = [[NSPopover alloc] init];
+
 	self.matches = [NSMutableArray array];
-	self.lastPos = -1;
+	NSView *infoContentView = [[NSView alloc] initWithFrame:NSZeroRect];
+	_infoTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
+	[_infoTextView setEditable:NO];
+	[_infoTextView setDrawsBackground:NO];
+	[_infoTextView setRichText:NO];
+	[_infoTextView setUsesRuler:NO];
+	[_infoTextView setSelectable:NO];
+	[_infoTextView setTextContainerInset:NSMakeSize(8, 8)];
 	
+	[infoContentView addSubview:_infoTextView];
+	NSViewController *infoViewController = [[NSViewController alloc] init];
+	[infoViewController setView:infoContentView];;
+
+	self.infoPopover.contentViewController = infoViewController;
+
+	self.lastPos = -1;
+		
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:nil];
 	
 	// BEAT BEAT BEAT
 	self.masks = [NSMutableArray array];
 	self.sections = [NSArray array];
+}
+
+- (void)closePopovers {
+	[_infoPopover close];
+	[_autocompletePopover close];
+	_forceElementMenu = NO;
+}
+
+- (IBAction)showInfo:(id)sender {
+	bool wholeDocument = NO;
+	NSRange range;
+	if (self.selectedRange.length == 0) {
+		wholeDocument = YES;
+		range = NSMakeRange(0, self.string.length);
+	} else {
+		range = self.selectedRange;
+	}
+		
+	NSInteger words = 0;
+	NSArray *lines = [[self.string substringWithRange:range] componentsSeparatedByString:@"\n"];
+	NSInteger symbols = [[self.string substringWithRange:range] length];
+	
+	for (NSString *line in lines) {
+		for (NSString *word in [line componentsSeparatedByString:@" "]) {
+			if (word.length > 0) words += 1;
+		}
+		
+	}
+	[_infoTextView setString:@""];
+	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
+	
+	NSString *infoString = [NSString stringWithFormat:@"Words: %lu\nCharacters: %lu", words, symbols];
+
+	// Get number of pages - WIP
+	if (wholeDocument) {
+		// Some day
+		/*
+		ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:self.string];
+		NSSize paperSize = [[[[self.window windowController] document] printInfo] paperSize];
+		FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:parser.lines paperSize:CGSizeMake(paperSize.width, paperSize.height)];
+		infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", paginator.numberOfPages];
+		 */
+	}
+	
+	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
+	[attributes setObject:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]] forKey:NSFontAttributeName];
+	
+	
+	if (wholeDocument) infoString = [NSString stringWithFormat:@"Document\n%@", infoString];
+	else infoString = [NSString stringWithFormat:@"Selection\n%@", infoString];
+	_infoTextView.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
+	_infoTextView.string = infoString;
+	[_infoTextView.textStorage addAttributes:attributes range:NSMakeRange(0, [infoString rangeOfString:@"\n"].location)];
+		
+	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
+	NSRect result = [_infoTextView.layoutManager usedRectForTextContainer:_infoTextView.textContainer];
+	
+	NSRect frame = NSMakeRect(0, 0, 200, result.size.height + 16);
+	[self.infoPopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
+	[self.infoTextView setFrame:NSMakeRect(0, 0, NSWidth(frame), NSHeight(frame))];
+	
+	self.substring = [self.string substringWithRange:NSMakeRange(range.location, 0)];
+	
+	NSRect rect;
+	if (!wholeDocument) {
+		rect = [self firstRectForCharacterRange:NSMakeRange(range.location, 0) actualRange:NULL];
+	} else {
+		NSLog(@"whole");
+		rect = [self firstRectForCharacterRange:NSMakeRange(self.selectedRange.location, 0) actualRange:NULL];
+	}
+	rect = [self.window convertRectFromScreen:rect];
+	rect = [self convertRect:rect fromView:nil];
+	rect.size.width = 5;
+	
+	[self.infoPopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
+	[self.window makeFirstResponder:self];
+}
+
+- (void)mouseDown:(NSEvent *)event {
+	[self closePopovers];
+	[super mouseDown:event];
 }
 
 - (NSTouchBar*)makeTouchBar {
@@ -153,17 +258,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	switch (theEvent.keyCode) {
 		case 51:
 			// Delete
-			[self.autocompletePopover close];
+			[self closePopovers];
 			shouldComplete = NO;
-			_forceElementMenu = NO;  // reset just in case
 			
 			break;
 		case 53:
 			// Esc
-			if (self.autocompletePopover.isShown)
-				[self.autocompletePopover close];
-			
-			_forceElementMenu = NO;  // reset just in case
+			if (self.autocompletePopover.isShown || self.infoPopover.isShown) [self closePopovers];
+		
 			return; // Skip default behavior
 		case 125:
 			// Down
@@ -217,6 +319,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			break;
 */
 	}
+	
+	if (self.infoPopover.isShown) [self closePopovers];
+	
 	[super keyDown:theEvent];
 	if (shouldComplete) {
 		if (self.automaticTextCompletionEnabled) {

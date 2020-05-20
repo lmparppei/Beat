@@ -12,8 +12,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MarginView : NSView
-@property (nonatomic) DynamicColor *backgroundColor;
-@property (nonatomic) DynamicColor *marginColor;
+@property (nonatomic, weak) DynamicColor *backgroundColor;
+@property (nonatomic, weak) DynamicColor *marginColor;
 @property (nonatomic) CGFloat insetWidth;
 @property (nonatomic) CGFloat magnificationLevel;
 @end

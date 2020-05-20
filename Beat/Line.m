@@ -7,9 +7,14 @@
 //
 
 #import "Line.h"
+#import "FNElement.h"
 #define LINE_HEIGHT 12
 
 @implementation Line
+
++ (Line*)withString:(NSString*)string type:(LineType)type {
+	return [[Line alloc] initWithString:string type:type];
+}
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position
 {
@@ -20,6 +25,25 @@
         _position = position;
     }
     return self;
+}
+
+// For non-continuous parsing
+- (Line*)initWithString:(NSString *)string type:(LineType)type {
+	self = [super init];
+	if (self) {
+		_string = string;
+		_type = type;
+	}
+	return self;
+}
+- (Line*)initWithString:(NSString *)string type:(LineType)type position:(NSUInteger)position {
+	self = [super init];
+	if (self) {
+		_string = string;
+		_type = type;
+		_position = position;
+	}
+	return self;
 }
 
 - (NSString *)toString
@@ -44,74 +68,36 @@
 	}
 }
 
-/*
- 
- attempts at something
- 
-- (void)setElementHeight
-{
-	// This returns an approximated height of an element to count page transitions
+- (NSString*)cleanedString {
+	// Return empty string for invisible blocks
+	if (self.type == section || self.type == synopse || self.omited) return @"";
 	
-	switch (self.type) {
-		case empty:
-			self.height = 1;
-		
-		// Here we need to account for word wrapping.
-		case heading:
-			self.height = [self rowsForLine:false] * 1.5; break;
-		case lyrics:
-		case centered:
-		case transitionLine:
-		case action:
-			self.height = [self rowsForLine:false]; break;
-		case character:
-			self.height = [self rowsForLine:true]; break;
-		case parenthetical:
-			self.height = [self rowsForLine:true]; break;
-		case dialogue:
-			self.height = [self rowsForLine:true]; break;
-		case doubleDialogueCharacter:
-		case doubleDialogueParenthetical:
-		case doubleDialogue:
-		default:
-			self.height = 0; break;
-	}
-}
-
-- (NSInteger) rowsForLine:(bool)dialogue {
-	// This is a VERY simplified screenplay row height counter for monospace fonts
-	NSInteger max = 57;
-	if (dialogue) max = 35;
-
-	__block NSString *line = self.string;
+	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
+	__block NSUInteger offset = 0;
 	
-	// Remove omited characters
-	__block NSUInteger omitLength = 0;
+	// Remove any omitted ranges
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		omitLength += range.length;
-		line = [line stringByReplacingCharactersInRange:range withString:@""];
+		[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
+		offset -= range.length;
 	}];
 	
-	if (line.length == 0) {
-		return 0;
+	// Remove markup characters
+	if (self.string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
+		string = [NSMutableString stringWithString:[string substringFromIndex:self.numberOfPreceedingFormattingCharacters]];
 	}
-	
-	NSInteger rows = 0;
-	NSInteger rowLength = 0;
-	
-	NSArray *words = [line componentsSeparatedByString:@" "];
-	for (NSString *word in words) {
-		rowLength += [word length] + 1;
-		if (rowLength > max) {
-			rows++;
-			rowLength = [word length];
-		}
-	}
-	if (rows == 0) rows = 1; else rows++;
 
-	return rows;
+	if (self.type == centered) {
+		string = [NSMutableString stringWithString:[string substringFromIndex:1]];
+		string = [NSMutableString stringWithString:[string substringToIndex:string.length - 1]];
+	}
+	
+	// Clean up scene headings
+	if (self.type == heading && self.sceneNumber) {
+		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
+	}
+	
+	return string;
 }
-*/
  
 - (NSString*)typeAsString
 {
@@ -146,11 +132,11 @@
             return @"Parenthetical";
         case dialogue:
             return @"Dialogue";
-        case doubleDialogueCharacter:
+        case dualDialogueCharacter:
             return @"DD Character";
-        case doubleDialogueParenthetical:
+        case dualDialogueParenthetical:
             return @"DD Parenthetical";
-        case doubleDialogue:
+        case dualDialogue:
             return @"Double Dialogue";
         case transitionLine:
             return @"Transition";
@@ -160,7 +146,106 @@
             return @"Page Break";
         case centered:
             return @"Centered";
+		case more:
+			return @"More";
     }
+}
+
+- (bool)isTitlePage {
+	NSArray *titlePageElements = @[@"Title Page Title", @"Title Page Author", @"Title Page Credit", @"Title Page Source", @"Title Page Contact", @"Title Page Draft Date", @"Title Page Unknown"];
+	
+	if ([titlePageElements containsObject:self.typeAsString]) return YES; else return NO;
+}
+- (bool)isInvisible {
+	if (self.omited ||
+		self.type == section ||
+		self.type == synopse ||
+		self.isTitlePage) return YES;
+	else return NO;
+}
+
+// Helper method which returns a Fountain script element
+// This bridges ContinuousFountainParser with FNParser.
+// Will be deprecated once modules for printing & pagination have been replaced with custom Beat stuff (WIP)
+- (FNElement*)fountainElement {
+	// Return empty object for title page data
+	if ([self isTitlePage]) return nil;
+	
+	FNElement *element = [[FNElement alloc] init];
+	element.elementType = [self typeAsFountainString];
+	
+	if (self.type == centered) {
+		element.elementType = @"Action";
+		element.isCentered = YES;
+	}
+	
+	// NOTE: parsing this correctly in FNHTMLScript requires the previous character to be set as dual too
+	if (self.type == dualDialogueCharacter) element.isDualDialogue = YES;
+
+	// Set content and clean up notes & omits
+	element.elementText = [self cleanedString];
+	
+	// Set scene number
+	if (self.sceneNumber) element.sceneNumber = self.sceneNumber;
+	
+	return element;
+}
+
+// This returns the type as an FNElement compliant string
+- (NSString*)typeAsFountainString
+{
+    switch (self.type) {
+        case empty:
+            return @"Empty";
+        case section:
+            return @"Section";
+        case synopse:
+            return @"Synopse";
+        case titlePageTitle:
+            return @"Title Page Title";
+        case titlePageAuthor:
+            return @"Title Page Author";
+        case titlePageCredit:
+            return @"Title Page Credit";
+        case titlePageSource:
+            return @"Title Page Source";
+        case titlePageContact:
+            return @"Title Page Contact";
+        case titlePageDraftDate:
+            return @"Title Page Draft Date";
+        case titlePageUnknown:
+            return @"Title Page Unknown";
+        case heading:
+            return @"Scene Heading";
+        case action:
+            return @"Action";
+        case character:
+            return @"Character";
+        case parenthetical:
+            return @"Parenthetical";
+        case dialogue:
+            return @"Dialogue";
+        case dualDialogueCharacter:
+            return @"Character";
+        case dualDialogueParenthetical:
+            return @"Parenthetical";
+        case dualDialogue:
+            return @"Dialogue";
+        case transitionLine:
+            return @"Transition";
+        case lyrics:
+            return @"Lyrics";
+        case pageBreak:
+            return @"Page Break";
+        case centered:
+            return @"Centered";
+		case more:
+			return @"More";
+    }
+}
+- (bool)isDialogueElement {
+	if (self.type == dialogue || self.type == parenthetical || self.type == character || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogue) return YES;
+	else return NO;
 }
 
 @end

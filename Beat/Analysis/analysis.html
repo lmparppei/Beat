@@ -68,7 +68,11 @@
 			section h2 {
 				text-align: center;
 			}
-
+			#documentInfo p {
+				margin-top: 0;
+				text-align: center;
+				font-size: .7em;
+			}
 			table td {
 				font-size: .7em;
 				padding: .35rem .25rem .35rem .25rem;
@@ -264,6 +268,10 @@
 						<div id='genderLegend' class='donutLegend'></div>
 					</div>
 				</section>
+				
+				<section>
+					<div id='documentInfo'>asdf</div>
+				</section>
 
 			</div>
 		</div>
@@ -292,6 +300,9 @@
 
 			var genderLegend = document.getElementById('genderLegend');
 			var genderCanvas = document.getElementById('genderCanvas');
+			
+			var documentInfo = document.getElementById('documentInfo');
+			documentInfo.innerHTML = "Testiii";
 
 			// An object containing the character gender data
 			var characterGender = {};
@@ -320,6 +331,8 @@
 			var characterLines = {};
 
 			function refresh (data) {
+				getDocumentInfo(data.statistics);
+				
 				if (!data.characters) {
 					characterTable.innerHTML = "<tr><td>No dialogue</td><td><td></td></tr>";
 				} else {
@@ -330,6 +343,7 @@
 					getGenderStatistics();
 				}
 				getSceneData(data.scenes);
+
 			}
 
 			function setGender(name, gender) {
@@ -358,6 +372,10 @@
 				}
 			}
 
+			function getDocumentInfo (statistics) {
+				documentInfo.innerHTML = "<p><b>" + statistics.words + "</b> words<br><b>" + statistics.glyphs + "</b> characters</p>";
+			}
+		
 			function getGenderStatistics () {
 				resetGenderStatistics();
 				

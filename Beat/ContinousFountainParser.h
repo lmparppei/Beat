@@ -16,6 +16,9 @@
 @property (nonatomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
 @property (nonatomic) NSMutableArray *changedIndices; //Stores every line that needs to be formatted according to the type
 @property (nonatomic) NSMutableArray *outline;
+@property (nonatomic) NSMutableArray *titlePage;
+@property (nonatomic) bool hasTitlePage;
+@property (nonatomic) NSString *openTitlePageKey;
 
 //Parsing methods
 - (ContinousFountainParser*)initWithString:(NSString*)string;
@@ -36,12 +39,16 @@
 - (NSUInteger)positionAtLine:(NSUInteger)line;
 - (NSString*)sceneNumberAtLine:(NSUInteger)line;
 
+//Convenience Methods for Other Stuff
+- (NSString*)cleanedString;
+
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;
 - (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view
 - (NSInteger)outlineItemIndex:(Line*)item;
 //- (OutlineScene*) getOutlineForLine:(Line*)line;
 - (OutlineScene*) getOutlineForLine:(Line*)line;
+
 
 - (NSString*)description;
 @end

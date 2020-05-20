@@ -18,11 +18,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-NS_ASSUME_NONNULL_BEGIN
 IB_DESIGNABLE
 @interface ColorCheckbox : NSButton
 @property (nonatomic, readonly) IBInspectable NSColor *itemColor;
 @property (nonatomic, readonly) IBInspectable NSString *colorName;
 @end
-
-NS_ASSUME_NONNULL_END

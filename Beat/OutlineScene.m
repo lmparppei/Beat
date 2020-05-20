@@ -15,7 +15,6 @@
 - (id)init
 {
 	if ((self = [super init]) == nil) { return nil; }
-	_scenes = [[NSMutableArray alloc] init];
 	
 	return self;
 }

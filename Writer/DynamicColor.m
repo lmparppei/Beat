@@ -19,7 +19,6 @@
 @property (nonatomic, strong) NSColor *aquaColor;
 @property (nonatomic, strong, nullable) NSColor *darkAquaColor;
 @property (nonatomic, strong, readonly) NSColor *effectiveColor;
-
 @end
 
 @implementation DynamicColor

@@ -5,7 +5,6 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="16002"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16096"/>
         <plugIn identifier="com.apple.WebKit2IBPlugin" version="16096"/>
-        <plugIn identifier="com.apple.WebKitIBPlugin" version="16096"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
@@ -41,6 +40,7 @@
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
                 <outlet property="outlineViewWidth" destination="fOS-W7-FHd" id="Clh-sz-KY9"/>
                 <outlet property="pinkCheck" destination="X9R-Ze-hyZ" id="O2g-Ue-hZv"/>
+                <outlet property="printWebView" destination="ddy-rn-xRJ" id="nMo-II-Kfi"/>
                 <outlet property="redCheck" destination="dCo-x8-fiM" id="7vC-UG-dQ0"/>
                 <outlet property="resetCharacterFilterButton" destination="rNr-qe-M65" id="0cW-Ts-JPc"/>
                 <outlet property="resetColorFilterButton" destination="Xyx-ug-UXG" id="ZkW-PJ-GEe"/>
@@ -53,7 +53,6 @@
                 <outlet property="timelineViewHeight" destination="JRc-lw-lna" id="0zf-6f-BrV"/>
                 <outlet property="titleField" destination="3Hv-Hl-EuX" id="gN4-Lv-mpW"/>
                 <outlet property="titlePagePanel" destination="vXu-Dv-TW5" id="SUm-VK-456"/>
-                <outlet property="webView" destination="Vil-EQ-uOZ" id="hkl-cc-bIl"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -549,19 +548,19 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <webView translatesAutoresizingMaskIntoConstraints="NO" id="Vil-EQ-uOZ">
+                                        <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ddy-rn-xRJ">
                                             <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
-                                            <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO" loadsImagesAutomatically="NO" allowsAnimatedImages="NO" allowsAnimatedImageLooping="NO">
-                                                <nil key="identifier"/>
-                                            </webPreferences>
-                                        </webView>
+                                            <wkWebViewConfiguration key="configuration">
+                                                <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                                <wkPreferences key="preferences" javaScriptCanOpenWindowsAutomatically="NO"/>
+                                            </wkWebViewConfiguration>
+                                        </wkWebView>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="Vil-EQ-uOZ" firstAttribute="leading" secondItem="ECs-3D-rzc" secondAttribute="leading" id="Gcx-Ok-nYn"/>
-                                        <constraint firstAttribute="bottom" secondItem="Vil-EQ-uOZ" secondAttribute="bottom" id="I4p-Yj-SK0"/>
-                                        <constraint firstAttribute="centerX" secondItem="Vil-EQ-uOZ" secondAttribute="centerX" id="XL5-It-09b"/>
-                                        <constraint firstItem="Vil-EQ-uOZ" firstAttribute="top" secondItem="ECs-3D-rzc" secondAttribute="top" id="wI2-zh-sTV"/>
-                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="Vil-EQ-uOZ" secondAttribute="trailing" id="zw4-Yu-AhX"/>
+                                        <constraint firstAttribute="trailing" secondItem="ddy-rn-xRJ" secondAttribute="trailing" id="3mh-Ie-YxY"/>
+                                        <constraint firstItem="ddy-rn-xRJ" firstAttribute="leading" secondItem="ECs-3D-rzc" secondAttribute="leading" id="Hhv-54-e6O"/>
+                                        <constraint firstItem="ddy-rn-xRJ" firstAttribute="top" secondItem="ECs-3D-rzc" secondAttribute="top" id="R2k-AH-Ebn"/>
+                                        <constraint firstAttribute="bottom" secondItem="ddy-rn-xRJ" secondAttribute="bottom" id="RZp-6n-yZC"/>
                                     </constraints>
                                 </view>
                             </tabViewItem>
@@ -679,15 +678,14 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rni-cY-faX" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="794" height="505"/>
+            <rect key="contentRect" x="196" y="132" width="794" height="560"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="Rnd-rQ-nX0">
-                <rect key="frame" x="0.0" y="0.0" width="794" height="505"/>
+                <rect key="frame" x="0.0" y="0.0" width="794" height="560"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <wkWebView wantsLayer="YES" fixedFrame="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QXx-h6-RNu">
-                        <rect key="frame" x="0.0" y="39" width="794" height="466"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                    <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QXx-h6-RNu">
+                        <rect key="frame" x="0.0" y="39" width="794" height="521"/>
                         <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat Analysis">
                             <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                             <wkPreferences key="preferences"/>
@@ -710,9 +708,13 @@
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="hDv-QM-8UZ" secondAttribute="trailing" constant="10" id="Ghf-q0-RwY"/>
                     <constraint firstAttribute="bottom" secondItem="hDv-QM-8UZ" secondAttribute="bottom" constant="10" id="Ix2-fH-Whd"/>
+                    <constraint firstAttribute="trailing" secondItem="QXx-h6-RNu" secondAttribute="trailing" id="Nt1-hA-Eag"/>
+                    <constraint firstItem="QXx-h6-RNu" firstAttribute="top" secondItem="Rnd-rQ-nX0" secondAttribute="top" id="RZ7-Uy-ffm"/>
+                    <constraint firstItem="hDv-QM-8UZ" firstAttribute="top" secondItem="QXx-h6-RNu" secondAttribute="bottom" constant="8" id="ilO-Ei-ri1"/>
+                    <constraint firstItem="QXx-h6-RNu" firstAttribute="leading" secondItem="Rnd-rQ-nX0" secondAttribute="leading" id="q8M-5N-G0v"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="1235" y="141.5"/>
+            <point key="canvasLocation" x="1235" y="169"/>
         </window>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="vXu-Dv-TW5" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
@@ -1065,6 +1067,7 @@ Gw
                     <viewController key="viewController" id="1lb-pf-av9">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kVd-IJ-8g1">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="OutlineIcon_white" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OS4-Pc-U6L">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1079,6 +1082,7 @@ Gw
                     <viewController key="viewController" id="2hM-bM-hIJ">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q8P-yB-ZHg">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="CardsIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="b8j-5x-Bvp">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1093,6 +1097,7 @@ Gw
                     <viewController key="viewController" id="s2w-pc-SMc">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LJ9-op-UOF">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="TimelineIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ysm-8B-b7r">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1108,6 +1113,7 @@ Gw
                     <viewController key="viewController" id="4Ye-z8-Rbe">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EX8-3T-2S9">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoUpTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w9h-KQ-O8T">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1122,6 +1128,7 @@ Gw
                     <viewController key="viewController" id="f5E-6W-jOD">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zLo-23-u8a">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoDownTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TaB-Om-lXF">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>

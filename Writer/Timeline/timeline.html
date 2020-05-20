@@ -265,7 +265,8 @@
 				}
 				zoomSlider.max = totalLength * .5;
 				zoomSlider.oninput(null);
-
+				intoView(selectedScene);
+								   
 				var scenes = document.querySelectorAll('.scene');
 				scenes.forEach(function (scene) {
 					scene.oncontextmenu = function (e) {
@@ -275,16 +276,31 @@
 				});
 			}
 
+			function intoView (selectedScene) {
+				if (!selectedScene) return;
+				
+				var scene = document.getElementById(selectedScene);
+				var settings = { block: "center", inline: "center", behavior: "smooth" };
+				
+				if (scene.offsetLeft > window.scrollX && scene.offsetLeft <=  window.scrollX + window.innerWidth) {
+					// In view
+				} else {
+					scene.scrollIntoView(settings);
+				}
+			};
+								   
 			zoomSlider.oninput = function (e) {
 				var value = 100 + parseInt(this.value);
-
+				
 				container.style.width = value + "%";
 
-				var settings = { block: "center", inline: "center" };
+				var settings = { block: "center", inline: "center", behavior: "smooth" };
 
-				if (selectedScene) {
+				if (selectedScene && e != null) {
 					var scene = document.getElementById(selectedScene);
 					scene.scrollIntoView(settings);
+					
+					//window.scrollTo(originalX * value, 0);
 				}
 			}
 
