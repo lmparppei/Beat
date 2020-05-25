@@ -71,6 +71,13 @@
 			if (previousLine.type == character) previousLine.type = action;
 		}
 		
+		// Quick fix for recognizing split paragraphs
+		// FOR NON-CONTINUOUS PARSING ONLY
+		if (line.type == action &&
+			line.string.length > 0 &&
+			previousLine.type == action &&
+			previousLine.string.length > 0) line.isSplitParagraph = YES;
+		
         //Add to lines array
         [self.lines addObject:line];
         //Mark change in buffered changes

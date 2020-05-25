@@ -52,8 +52,7 @@
 
 @property (strong, nonatomic) NSDocument *document;
 @property (strong, nonatomic) NSArray *script;
-@property (strong, nonatomic) NSMutableArray *pages;
-@property (strong, nonatomic) NSMutableArray *pageBreaks;
+
 @property (nonatomic) bool livePagination;
 
 @end
@@ -100,7 +99,7 @@
 		// run pagination
 		[self paginateForSize:paperSize];
 	} else if (self.paperSize.height > 0) {
-		[self paginateForSize:_paperSize];
+		[self paginateForSize:self.paperSize];
 	} else {
 		// US letter paper size is 8.5 x 11 (in pixels)
 		CGSize letterPaperSize = CGSizeMake(612, 792);
@@ -136,7 +135,7 @@
 }
 
 - (void)logPageBreak {
-	NSLog(@" - - - - pagebreak");
+	//NSLog(@" - - - - pagebreak");
 }
 
 - (void)paginateForSize:(CGSize)pageSize
@@ -145,13 +144,13 @@
 		bool debug = NO;
 		
 		// Reset page breaks
+		//_pageBreaks = [NSMutableArray array];
+		
 		_pageBreaks = [NSMutableArray array];
 		
 		NSInteger oneInchBuffer = 72;
 		NSInteger maxPageHeight =  pageSize.height - round(oneInchBuffer * 1.1);
 				
-		if (debug) NSLog(@"Papersize: %f - maxheight %lu", pageSize.height, oneInchBuffer);
-		
 		BeatFont *font = [BeatFont fontWithName:@"Courier" size:12];
 		//NSInteger lineHeight = font.pointSize * 1.1;
 		CGFloat lineHeight = LINE_HEIGHT;
@@ -168,7 +167,7 @@
 		NSInteger maxElements = [self.script count];
 		
 		NSInteger previousDualDialogueBlockHeight = -1;
-				
+
 		// walk through the elements array
 		for (NSInteger i = 0; i < maxElements; i++) {
 			// We need to copy this here, not to fuck anything
@@ -182,7 +181,8 @@
 			// Skip invisible elements
 			if (element.isInvisible || element.type == empty) continue;
 			
-			NSLog(@" %@: %@", element.typeAsString, element.string);
+			// If this is the FIRST page, add the break
+			if (_pageBreaks.count == 0) [self pageBreak:element position:0];
 			
 			// Reset Y if the page is empty
 			if ([currentPage count] == 0) currentY = initialY;
@@ -193,7 +193,7 @@
 				[currentPage addObject:element];
 				[self.pages addObject:currentPage];
 
-				[self logPageBreak];
+				[self pageBreak:element position:-1];
 				
 				// reset currentPage and the currentY value
 				currentPage = [NSMutableArray array];
@@ -203,7 +203,7 @@
 			}
 			
 			// get spaceBefore, the leftMargin, and the elementWidth
-			spaceBefore         = [FountainPaginator spaceBeforeForElement:element];
+			spaceBefore         = [FountainPaginator spaceBeforeForLine:element];
 			elementWidth        = [FountainPaginator widthForElement:element];
 			
 			// get the height of the text
@@ -246,7 +246,7 @@
 					j++;
 				}
 				NSInteger height = [FountainPaginator elementHeight:nextElement font:font lineHeight:lineHeight];
-				fullHeight += [FountainPaginator spaceBeforeForElement:nextElement] + height;
+				fullHeight += [FountainPaginator spaceBeforeForLine:nextElement] + height;
 				
 				if (nextElement) [tmpElements addObject:nextElement];
 				//NSLog(@"/ full height: %lu", fullHeight);
@@ -305,7 +305,8 @@
 					[currentPage addObjectsFromArray:tmpElements];
 					[_pages addObject:currentPage];
 					
-					[self logPageBreak];
+					// Add page break for live pagination (-1 means the break is AFTER the element)
+					[self pageBreak:[tmpElements lastObject] position:-1];
 					
 					currentPage = [NSMutableArray array];
 					currentY = 0;
@@ -314,10 +315,10 @@
 				
 				// Find out the spiller
 				Line *spillerElement;
-
+				
 				bool handled = NO;
 				
-				//Scene heading / action paragraph
+				// Scene heading / action paragraph
 				if (element.type == heading || element.type == action) {
 					bool headingBlock = NO;
 
@@ -331,7 +332,7 @@
 					
 					// Some duct tape :----)
 					if (headingBlock) {
-						// Push to next page for stylistical reasons
+						// Push to next page if it would be only 1 line or something
 						if (fullHeight - fabs(overflow) < lineHeight * 3
 							&& fabs(overflow) > lineHeight * 2) {
 							handled = YES;
@@ -343,9 +344,9 @@
 					NSInteger space = maxPageHeight - currentY;
 					
 					//if (headingBlock) limit = lineHeight + blockHeight;
-
+					
 					if (fabs(overflow) > limit && space > limit * 2 && !handled) {
-						if (debug) NSLog(@"split across pages");
+						//if (debug) NSLog(@"split across pages (%f) %@", overflow, spillerElement.string);
 						NSArray *words = [spillerElement.cleanedString componentsSeparatedByString:@" "];
 						NSInteger space = maxPageHeight - currentY;
 						
@@ -371,8 +372,6 @@
 							}
 						}
 						
-						// Add page break info (for live pagination if in use)
-						[self.pageBreaks addObject:[self pageBreak:spillerElement position:breakPosition]];
 						
 						Line *prePageBreak = [Line withString:retain type:action];
 						Line *postPageBreak = [Line withString:split type:action];
@@ -385,7 +384,8 @@
 								[currentPage addObject:prePageBreak];
 								[_pages addObject:currentPage];
 								
-								[self logPageBreak];
+								// Add page break for live pagination
+								[self pageBreak:spillerElement position:breakPosition];
 								
 								currentPage = [NSMutableArray array];
 								[currentPage addObject:postPageBreak];
@@ -395,7 +395,8 @@
 							else {
 								[_pages addObject:currentPage];
 								
-								[self logPageBreak];
+								// Page break for live pagination
+								[self pageBreak:spillerElement position:breakPosition];
 								
 								currentPage = [NSMutableArray array];
 								[currentPage addObject:element];
@@ -406,7 +407,8 @@
 							[currentPage addObject:prePageBreak];
 							[_pages addObject:currentPage];
 							
-							[self logPageBreak];
+							// Add page break info (for live pagination if in use)
+							[self pageBreak:spillerElement position:breakPosition];
 							
 							currentPage = [NSMutableArray array];
 							[currentPage addObject:postPageBreak];
@@ -416,9 +418,10 @@
 						continue;
 						
 					} else {
-						if (debug) NSLog(@"throw on next: %@", element);
+						if (debug) NSLog(@"throw on next: %@", element.string);
 						
-						[self logPageBreak];
+						// Add page break info (for live pagination if in use)
+						[self pageBreak:element position:0];
 						
 						// Close page and reset
 						[_pages addObject:currentPage];
@@ -441,13 +444,13 @@
 						else { dialogueHeight += h; }
 					}
 					
-					// If we got stuck in parenthetical, throw the whole block on the next page
+					// If we got stuck in first parenthetical, throw the whole block on the next page
 					if (spillerElement.type == parenthetical && blockIndex < 2) {
 						[_pages addObject:currentPage];
 						currentPage = [NSMutableArray array];
 						
 						// Add page break info
-						[self.pageBreaks addObject:[self pageBreak:element position:0]];
+						[self pageBreak:element position:0];
 					}
 				
 					// Squeeze this element on current page
@@ -456,13 +459,12 @@
 						[currentPage addObjectsFromArray:tmpElements];
 						[_pages addObject:currentPage];
 						
-						[self logPageBreak];
-						
 						currentPage = [NSMutableArray array];
 						currentY = 0;
 						
 						// Add page break info (for live pagination if in use)
-						[self.pageBreaks addObject:[self pageBreak:spillerElement position:-1]];
+						[self pageBreak:spillerElement position:-1];
+
 
 						continue; // Don't let the loop take care of the tmp buffer here
 					}
@@ -476,6 +478,7 @@
 							NSString *text = @"";
 							NSString *retain = @"";
 							NSString *split = @"";
+							CGFloat breakPosition = 0;
 							
 							for (NSString *sentence in sentences) {
 								text = [text stringByAppendingFormat:@" %@", sentence];
@@ -488,6 +491,7 @@
 								if (debug) NSLog(@"remaining space: %lu", space);
 
 								if (h < space) {
+									breakPosition = h;
 									retain = [retain stringByAppendingFormat:@" %@", sentence];
 								} else {
 									split = [split stringByAppendingFormat:@" %@", sentence];
@@ -509,8 +513,9 @@
 								[currentPage addObject:preDialogue];
 								[currentPage addObject:preMore];
 								[self.pages addObject:currentPage];
-								
-								[self logPageBreak];
+
+								// Add page break
+								[self pageBreak:spillerElement position:breakPosition];
 								
 								currentPage = [NSMutableArray array];
 
@@ -535,20 +540,21 @@
 								// Don't let this loop handle the buffer
 								continue;
 							} else {
+								// Nothing to retain, move whole block on next page
 								[_pages addObject:currentPage];
 								currentPage = [NSMutableArray array];
-								[self logPageBreak];
+								[self pageBreak:element position:0];
 							}
 
 						} else {
-							// Parenthetical spills
+							// Parenthetical spills, but it's not SECOND element, rather than somewhere else in the block
 							if (spillerElement.type == parenthetical && blockIndex > 1) {
 								// Add the preceeding elements
 								for (NSInteger d = 0; d < blockIndex; d++) {
 									Line *dElement = tmpElements[d];
 									[currentPage addObject:dElement];
 								}
-								
+																
 								// Add (more) after the dialogue
 								[currentPage addObject:[Line withString:@"(MORE)" type:more]];
 								[_pages addObject:currentPage];
@@ -570,7 +576,8 @@
 									[currentPage addObject:dElement];
 								}
 								
-								[self logPageBreak];
+								// Add page break for live pagination
+								[self pageBreak:spillerElement position:0];
 								
 								// Don't let the loop take care of the buffered elements
 								continue;
@@ -583,26 +590,23 @@
 						[_pages addObject:currentPage];
 						currentPage = [NSMutableArray array];
 						
-						[self logPageBreak];
-
+						[self pageBreak:spillerElement position:0];
 					}
 				}
 				else if (element.type == action) {
 					[_pages addObject:currentPage];
 					currentPage = [NSMutableArray array];
 					
-					[self logPageBreak];
+					[self pageBreak:spillerElement position:-1];
 
 				} else {
 					// Whatever, let's just push this element on the next page
 					[_pages addObject:currentPage];
 					currentPage = [NSMutableArray array];
 					
-					[self logPageBreak];
-
+					[self pageBreak:spillerElement position:0];
 				}
 				
-				//blockHeight = 0;
 				currentY = 0;
 			}
 			
@@ -612,7 +616,7 @@
 				
 				if (previousDualDialogueBlockHeight < 0) {
 					currentY += h;
-					if ([currentPage count] > 0) { currentY += [FountainPaginator spaceBeforeForElement:el]; }
+					if ([currentPage count] > 0) { currentY += [FountainPaginator spaceBeforeForLine:el]; }
 				} else {
 					// If this is double dialogue, let's add dialogue block height.
 					// If this one was higher, its height difference is added on top of the previous
@@ -663,10 +667,6 @@
 	}
 	
 	return spaceBefore;
-}
-
-+ (NSInteger)widthForElementType:(Line*)line {
-	return [FountainPaginator widthForElement:[[Line alloc] initWithString:@"" type:line.type]];
 }
 
 + (CGFloat)elementHeight:(Line *)element font:(BeatFont*)font lineHeight:(CGFloat)lineHeight {
@@ -736,21 +736,26 @@
 	}
 	
 	// calculate the height
-	NSInteger height = numberOfLines * lineHeight;
-	return height;
+	return numberOfLines * lineHeight;
 }
-- (NSDictionary*)pageBreak:(Line*)line position:(CGFloat)position {
-	return @{ @"line": line, @"position": [NSNumber numberWithFloat:position] };
+- (void)pageBreak:(Line*)line position:(CGFloat)position {
+	//NSLog(@"pageBreak - %@: %@ (%f)", line.typeAsString, line.string, position);
+	NSNumber *value = [NSNumber numberWithFloat:position];
+	if (value) [_pageBreaks addObject:@{ @"line": line, @"position": value }];
+	else { NSLog(@"no value: %@", line); }
 }
 
 #pragma mark - Beat helper methods
 
 + (CGFloat)spaceBeforeForLine:(Line*)line {
-	
-	if (line.type == heading) return [self spaceBeforeForElement:line];
-	else if (line.type == character) return LINE_HEIGHT;
+	if (line.isSplitParagraph) return 0;
+	else if (line.type == heading) return 33;
+	else if (line.type == character || line.type == dualDialogueCharacter) return LINE_HEIGHT;
 	else if (line.type == dialogue) return 0;
 	else if (line.type == parenthetical) return 0;
+	else if (line.type == dualDialogue) return 0;
+	else if (line.type == dualDialogueParenthetical) return 0;
+	else if (line.type == transitionLine) return LINE_HEIGHT;
 	else if (line.type == action) return LINE_HEIGHT;
 	else return LINE_HEIGHT;
 }

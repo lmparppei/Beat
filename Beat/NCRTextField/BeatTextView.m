@@ -90,7 +90,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @implementation BeatTextView
 
 - (void)awakeFromNib {
-	self.pageBreaks = [NSMutableArray array];
+	self.pageBreaks = [NSArray array];
 	
 	// Make a table view with 1 column and enclosing scroll view. It doesn't
 	// matter what the frames are here because they are set when the popover
@@ -580,22 +580,29 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSInteger pageNumber = 1;
 	
 	CGFloat factor = 1 / _zoomLevel;
-	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 100);
+	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 155 * factor);
 	CGFloat width = self.frame.size.width * factor - self.textContainerInset.width * 2 + 290;
 	
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
+
 		NSFont* font = [NSFont fontWithName:@"Courier" size:16];
 		NSString *page = [@(pageNumber) stringValue];
-		page = [page stringByAppendingString:@"."];
-		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font }];
-
-		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition doubleValue] + self.textContainerInset.height + 5)];
 		
-		NSColor* fillColor = _marginColor;
-		[fillColor setFill];
-				
-		NSRect rect = NSMakeRect(self.textContainerInset.width - 130, [pageBreakPosition doubleValue] + self.textContainerInset.height, width, 2);
-		NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
+		// Do we want the dot after page number?
+		// page = [page stringByAppendingString:@"."];
+		
+		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: NSColor.grayColor }];
+		
+		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
+		
+		// Draw separator only from the second page onwards
+		if (pageNumber > 1) {
+			NSColor* fillColor = _marginColor;
+			[fillColor setFill];
+					
+			NSRect rect = NSMakeRect(self.textContainerInset.width - 130, [pageBreakPosition floatValue] + self.textContainerInset.height, width, 2);
+			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
+		}
 		
 		pageNumber++;
 	}

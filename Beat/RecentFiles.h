@@ -6,7 +6,7 @@
 //  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
-@interface DataSource : NSDocument <NSOutlineViewDataSource>{
+@interface DataSource : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource> {
 }
 @property id selectedRow;
 @end

@@ -17,6 +17,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
+#import "RecentFiles.h"
 
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate> {
 	IBOutlet NSWindow* _startModal;
@@ -38,7 +39,7 @@
 }
 
 @property (strong, nonatomic) NSWindow *_startModalWindow;
-@property (strong, nonatomic) NSOutlineView *recentFiles;
+@property (nonatomic) DataSource *dataSource;
 @property (nonatomic) bool darkMode;
 @property (nonatomic) bool forceLightMode;
 @property (nonatomic) bool forceDarkMode;

@@ -92,7 +92,8 @@
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
 #import "FDXImport.h"
-#import "LivePagination.h"
+//#import "LivePagination.h"
+#import "FountainPaginator.h"
 #import "MasterView.h"
 #import "WebPrinter.h"
 #import "SceneCards.h"
@@ -115,12 +116,13 @@
 @property (nonatomic, weak) IBOutlet ScrollView *textScrollView;
 @property (nonatomic, weak) IBOutlet MarginView *marginView;
 @property (nonatomic, weak) IBOutlet NSClipView *textClipView;
-@property (nonatomic) NSTimer * scrollTimer;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
-@property (nonatomic) LivePagination *pagination;
+@property (nonatomic) FountainPaginator *paginator;
+@property (nonatomic) NSTimer *paginationTimer;
 @property (nonatomic) NSMutableArray *sectionMarkers;
 @property (nonatomic) bool newScene;
+@property (nonatomic) bool showPageNumbers;
 
 // Outline view
 @property (weak) IBOutlet BeatOutlineView *outlineView;
@@ -172,14 +174,14 @@
 
 
 // Views
-@property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
+@property (unsafe_unretained) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet ColorView *backgroundView; // Master background
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
 @property (weak) IBOutlet MasterView *masterView; // View which contains every other view
 
 // Print preview
-@property (weak) IBOutlet WebView *webView; // Print preview
-@property (weak) IBOutlet WKWebView *printWebView; // Print preview
+@property (unsafe_unretained) IBOutlet WebView *webView; // Print preview
+@property (unsafe_unretained) IBOutlet WKWebView *printWebView; // Print preview
 @property (nonatomic) NSString *htmlString;
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) bool previewCanceled;
@@ -188,23 +190,29 @@
 
 // Analysis
 @property (weak) IBOutlet NSPanel *analysisPanel;
-@property (weak) IBOutlet WKWebView *analysisView;
+@property (unsafe_unretained) IBOutlet WKWebView *analysisView;
 @property (strong, nonatomic) FountainAnalysis* analysis;
 @property (nonatomic) NSMutableDictionary *characterGenders;
 
 // Card view
 @property (nonatomic) SceneCards *sceneCards;
-@property (weak) IBOutlet WKWebView *cardView;
+@property (unsafe_unretained) IBOutlet WKWebView *cardView;
 @property (nonatomic) bool cardsVisible;
 
 
 // Timeline view
-@property (weak) IBOutlet WKWebView *timelineView;
+@property (unsafe_unretained) IBOutlet WKWebView *timelineView;
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
 @property (nonatomic) NSInteger timelineClickedScene;
 @property (nonatomic) NSInteger timelineSelection;
 @property (nonatomic) bool timelineVisible;
 @property (nonatomic) IBOutlet TouchBarTimeline *touchbarTimeline;
+
+
+// Margin views, unused for now
+@property (unsafe_unretained) IBOutlet NSBox *leftMargin;
+@property (unsafe_unretained) IBOutlet NSBox *rightMargin;
+
 
 // Scene number labels
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
@@ -390,7 +398,7 @@
 	self.currentLine = nil;
 	self.sceneCards = nil;
 	self.analysis = nil;
-	self.pagination = nil;
+	self.paginator = nil;
 	self.filters = nil;
 	self.printView = nil;
 	self.sceneCards = nil;
@@ -465,8 +473,8 @@
 	[aController.window makeFirstResponder:self.textView];
 	[self.textView setEditable:YES];
 	
-	// Pagination
-	_pagination = [[LivePagination alloc] init];
+	// Live Pagination
+	_paginator = [[FountainPaginator alloc] init];
 	
 	// Read default settings
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
@@ -571,13 +579,9 @@
 	[self loadCaret];
 	[self ensureCaret];
 	[self updatePreview];
+	[self paginate];
 }
--(void)awakeFromNib {
-	[self updateLayout];
-	
-	[self updateSceneNumberLabels];
-	[self updateSectionMarkers];
-	
+-(void)awakeFromNib {	
 	// Set up recovery file saving
 	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
@@ -934,8 +938,6 @@
 	 To be honest, having this sort of system-on-a-system makes things kind of convoluted and messy, but I'm just too lazy to fix it right now.
 	 It would be nice to have dedicated classes for converting our own parsed data into HTML.
 	 
-	 BTW, by using some convoluted magic we could find the pagination from here?
-	 
 	 */
 	
 	[_previewTimer invalidate];
@@ -963,9 +965,7 @@
 			FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self scene:self.currentScene.sceneNumber];
 			self.htmlString = htmlScript.html;
 			self.previewUpdated = YES;
-			
-			NSLog(@"done updating preview");
-			
+						
 			if (updateUI || self.printPreview) {
 				__block NSString *html = [htmlScript html];
 				dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -1145,7 +1145,7 @@
 		NSLog(@"is redoing %@", replacementString);
 	}
 	
-	if (replacementString.length < 1 && affectedCharRange.length > 0) {
+	if (replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
 		Line * affectedLine = [self getLineAt:affectedCharRange.location];
 		__block Line * otherLine = [self getLineAt:affectedCharRange.location + affectedCharRange.length];
 		
@@ -1219,7 +1219,8 @@
 	}
 
 	// WIP
-	//[self paginate];
+	[self paginate];
+	
 	[self updateSectionMarkers];
 	
 	_previewUpdated = NO;
@@ -1231,8 +1232,16 @@
 	return [self getLineAt:[self cursorLocation].location];
 }
 - (Line*)getLineAt:(NSInteger)position {
-	for (Line* line in self.parser.lines) {
-		if (position >= line.position && position <= line.position + [line.string length]) return line;
+	// Let's make a copy of the parser array so it's not mutated while iterated
+	// I'm not sure if this is needde, byt we have so many background tasks going on
+	// right now, that I'm a bit afraid of crashes :---)
+	NSArray * lines = [NSArray arrayWithArray:self.parser.lines];
+	for (Line* line in lines) {
+		if (line && line.position && line.string) {
+			if (position >= line.position && position <= line.position + line.string.length) {
+				return line;
+			}
+		}
 	}
 	return nil;
 }
@@ -1867,7 +1876,15 @@
 			}
 			
 			if (line.type == synopse) [attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
-		
+		} else if (line.type == action) {
+			// Take note if this is a paragraph split into two
+			NSInteger index = [_parser.lines indexOfObject:line];
+			if (index > 0) {
+				Line* preceedingLine = [_parser.lines objectAtIndex:index-1];
+				if (preceedingLine.type == action && preceedingLine.string.length > 0) {
+					line.isSplitParagraph = YES;
+				}
+			}
 		} else if (line.type == empty) {
 			// Just to make sure
 			NSInteger index = [_parser.lines indexOfObject:line];
@@ -4239,16 +4256,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 }
 
-/*
- 
- 5am
- out again
- triangle walks
- 
- */
-
-#pragma mark - Pagination
-
 - (void)updateSectionMarkers {
 	[self updateSectionMarkersFromIndex:-1];
 }
@@ -4307,6 +4314,17 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 /*
+
+5am
+out again
+triangle walks
+
+*/
+
+
+#pragma mark - Pagination
+
+/*
  
  Let's make a couple of things clear:
  - this probably will never make it into the main branch
@@ -4314,46 +4332,76 @@ static NSString *forceDualDialogueSymbol = @"^";
  
  */
 
-- (void)paginate {
+
+- (NSArray*)onlyPrintableElements:(NSArray*)lines {
+	NSMutableArray *result = [NSMutableArray array];
+	for (Line* line in lines) {
+		if (line.type != empty) [result addObject:line];
+	}
+	return result;
 	
-	// !!! Pagination should have some sort of starting index, so that we can only update affected pages !!!
-	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-		self.pagination.paperSize = CGSizeMake(self.printInfo.paperSize.width, self.printInfo.paperSize.height);
-				
-		// Send parsed lines for pagination, which results in an array of y coordinates
-		__block NSArray *pageBreaks = [self.pagination paginate:self.parser.lines];
+}
+- (void)paginate {
+	/*
+	 
+	 WIP!!!
+	 - have the paginator be retained in memory to only perform pagination according to changed indices
+	 
+	 */
+	
+	// Null the timer so we don't have too many of these operations queued
+	[_paginationTimer invalidate];
+	
+	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
+
+		// !!! Pagination should have some sort of starting index, so that we can only update affected pages !!!
 		
-		dispatch_async(dispatch_get_main_queue(), ^(void){
-			// Update UI in main thread
-			NSMutableArray *breakPositions = [NSMutableArray array];
+		// Make a copy of the array for thread-safety
+		__block NSArray *lines = [NSArray arrayWithArray:self.parser.lines];
+		
+		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
+			FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:[self onlyPrintableElements:lines] paperSize:self.printInfo.paperSize];
+			[paginator numberOfPages];
 			
-			for (NSDictionary *pageBreak in pageBreaks) {
-				CGFloat lineHeight = 20;
+			__block NSArray *pageBreaks = paginator.pageBreaks;
+			
+			dispatch_async(dispatch_get_main_queue(), ^(void){
+				// Update UI in main thread
 				
-				Line *line = pageBreak[@"line"];
-				CGFloat position = [pageBreak[@"position"] floatValue];
+				NSMutableArray *breakPositions = [NSMutableArray array];
 				
-				NSRange characterRange = NSMakeRange(line.position, [line.string length]);
-				NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-				
-				NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
-				
-				CGFloat y;
-				
-				// We return -1 for elements that should have page break after them
-				if (position >= 0) {
-					if (position != 0) position = (round(position / lineHeight) - 1) * lineHeight;
-					y = rect.origin.y + position;
+				for (NSDictionary *pageBreak in pageBreaks) {
+					CGFloat lineHeight = 20;
+					
+					Line *line = pageBreak[@"line"];
+					CGFloat position = [pageBreak[@"position"] floatValue];
+					
+					NSRange characterRange = NSMakeRange(line.position, [line.string length]);
+					NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+					
+					NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
+					
+					CGFloat y;
+					
+					// We return -1 for elements that should have page break after them
+					if (position >= 0) {
+						if (position != 0) position = (round(position / lineHeight) - 1) * lineHeight;
+						y = rect.origin.y + position - FONT_SIZE; // y is calculated from BOTTOM of line, so make it match its tow
+					}
+					else y = rect.origin.y + rect.size.height;
+					
+					[breakPositions addObject:[NSNumber numberWithFloat:y]];
 				}
-				else y = rect.origin.y + rect.size.height;
 				
-				[breakPositions addObject:[NSNumber numberWithFloat:y]];
-			}
-			
-			[self.textView setPageBreaks:breakPositions];
-			[self ensureLayout];
+				//[self.textView setPageBreaks:pageBreaks];
+				self.textView.pageBreaks = breakPositions;
+
+				//[self ensureLayout];
+				[self.textView setNeedsDisplay:YES];
+			});
 		});
-	});
+	}];
 }
 
 #pragma mark - Title page editor

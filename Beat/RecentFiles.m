@@ -81,9 +81,6 @@
  
 	return fileResult;
 }
-- (IBAction)newDocument:(id)sender {
-	[[NSDocumentController sharedDocumentController] newDocument:nil];
-}
 
 - (void)outlineView:(NSOutlineView *)outlineView didClickTableColumn:(NSTableColumn *)tableColumn {
 	

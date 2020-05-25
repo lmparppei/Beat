@@ -54,7 +54,6 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* omitedRanges;
 @property bool omitIn; //wether the line terminates an unfinished omit
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
-@property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
 - (Line*)initWithString:(NSString*)string type:(LineType)type;
@@ -64,13 +63,18 @@ typedef enum : NSUInteger {
 - (NSString*)typeAsFountainString;
 - (NSString*)cleanedString;
 - (bool)omited;
-- (bool)isTitlePage;
-- (bool)isInvisible;
-- (bool)isDialogueElement;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
 
 // This is a method for converting Line to FNElement
 - (FNElement*)fountainElement;
+
+// Note: Following stuff is intended ONLY for non-continuous parsing
+- (bool)isTitlePage;
+- (bool)isInvisible;
+- (bool)isDialogueElement;
+@property bool isSplitParagraph;
+@property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
+
 
 @end

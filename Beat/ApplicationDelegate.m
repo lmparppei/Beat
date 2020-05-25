@@ -8,9 +8,9 @@
 
 #import "ApplicationDelegate.h"
 #import "FDXImport.h"
+#import "RecentFiles.h"
 
 @implementation ApplicationDelegate
-@synthesize recentFiles;
 
 #define DARKMODE_KEY @"Dark Mode"
 
@@ -19,7 +19,10 @@
 - (instancetype) init {	
 	// This might be a silly implementation, but ..... well.
 	// Let's close the welcome screen if any sort of document has been opene
-
+	_dataSource = [[DataSource alloc] init];
+	self->recentFiles.dataSource = _dataSource;
+	[self->recentFiles reloadData];
+	
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		if (self->_startModal && [self->_startModal isVisible]) {
 			[self closeStartModal];
@@ -350,6 +353,10 @@
     CFRelease(uuid);
 
     return result;
+}
+
+- (IBAction)newDocument:(id)sender {
+	[[NSDocumentController sharedDocumentController] newDocument:nil];
 }
 
 /*

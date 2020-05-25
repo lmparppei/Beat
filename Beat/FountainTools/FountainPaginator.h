@@ -22,6 +22,8 @@
 
 @property (nonatomic, readonly) NSUInteger numberOfPages;
 @property (nonatomic) CGSize paperSize;
+@property (strong, nonatomic) NSMutableArray *pages;
+@property (strong, nonatomic) NSMutableArray *pageBreaks;
 
 - (id)initWithScript:(NSArray*)elements;
 - (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;
@@ -36,7 +38,6 @@
 + (CGFloat)spaceBeforeForLine:(Line *)line;
 //+ (NSInteger)leftMarginForElement:(FNElement *)element;
 + (NSInteger)widthForElement:(Line *)element;
-+ (NSInteger)widthForElementType:(NSString *)type;
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
 
 @end
