@@ -24,20 +24,19 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  
- */
-
-
-/*
+ 
  
  N.B.
  
- Beat has been cooked up by using lots of trial and error, and this file has become a 4400-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain by Hendrik Noeller.
+ Beat has been cooked up by using lots of trial and error, and this file has become something like 5000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain editor by Hendrik Noeller. I am a filmmaker and musician, with no real coding experience prior to this project.
  
- Some structures (such as themes) are legacy from Writer, and while they have since been replaced with a totally different approach, their names and complimentary methods still linger around. You can find some *very* shady stuff, such as ThemeManager, lying around here and there with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
+ Some structures are legacy from Writer and original Fountain repository, and while most have since been replaced with a totally different approach, some variable names and complimentary methods still linger around. You can find some *very* shady stuff lying around here and there, with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
  As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg.
  
- Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. I started developing the app to overcome some PTSD symptoms while combating creative block. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
+ I originally started the project to combat creative block while overcoming some PTSD symptoms. The struggle still continues every day, but coding is a nice way of escaping those feelings. If you are in an abusive relationship, leave RIGHT NOW. The other person will not get better, or at least it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file. Still, I'm glad to say that things are turning for better.
+ 
+ Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
  
  Anyway, may this be of some use to you, dear friend.
  The abandoned git repository will be my monument when I'm gone.
@@ -72,7 +71,6 @@
 #import <Foundation/Foundation.h>
 #import "Document.h"
 #import "ScrollView.h"
-//#import "BeatTextView.h"
 #import "FNScript.h"
 #import "FNElement.h"
 #import "FNHTMLScript.h"
@@ -92,7 +90,6 @@
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
 #import "FDXImport.h"
-//#import "LivePagination.h"
 #import "FountainPaginator.h"
 #import "MasterView.h"
 #import "WebPrinter.h"
@@ -158,9 +155,10 @@
 //    and economic system. EQUALITY, WELFARE AND FREEDOM FOR EVERYONE.
 //    FUCK YOU, APPLE.
 
-//    2020 edit: FUCK YOU EVEN MORE, fucking capitalist motherfuckers for
+//    2020 edit: FUCK YOU EVEN MORE, fucking capitalist motherfuckers, for
 //    allowing SLAVE LABOUR in your subcontracting factories, you fucking
-//    pieces of human garbage!!! Go fuck yourself, Apple.
+//    pieces of human garbage!!! Go fuck yourself, Apple. Fucking evil corp!!!
+
 //    So, on to the code:
 
 @property (nonatomic, weak) IBOutlet ColorCheckbox *redCheck;
@@ -171,7 +169,6 @@
 @property (nonatomic, weak) IBOutlet ColorCheckbox *brownCheck;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *magentaCheck;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *pinkCheck;
-
 
 // Views
 @property (unsafe_unretained) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
@@ -187,7 +184,6 @@
 @property (nonatomic) bool previewCanceled;
 @property (nonatomic) NSTimer *previewTimer;
 
-
 // Analysis
 @property (weak) IBOutlet NSPanel *analysisPanel;
 @property (unsafe_unretained) IBOutlet WKWebView *analysisView;
@@ -199,7 +195,6 @@
 @property (unsafe_unretained) IBOutlet WKWebView *cardView;
 @property (nonatomic) bool cardsVisible;
 
-
 // Timeline view
 @property (unsafe_unretained) IBOutlet WKWebView *timelineView;
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
@@ -208,21 +203,17 @@
 @property (nonatomic) bool timelineVisible;
 @property (nonatomic) IBOutlet TouchBarTimeline *touchbarTimeline;
 
-
 // Margin views, unused for now
 @property (unsafe_unretained) IBOutlet NSBox *leftMargin;
 @property (unsafe_unretained) IBOutlet NSBox *rightMargin;
-
 
 // Scene number labels
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
 @property (nonatomic) bool showSceneNumberLabels;
 
-
 // Content buffer
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
-
 
 // Fonts
 @property (strong, nonatomic) NSFont *courier;
@@ -234,12 +225,10 @@
 @property (nonatomic) NSUInteger zoomLevel;
 @property (nonatomic) NSUInteger zoomCenter;
 
-
 // Magnification
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) CGFloat scaleFactor;
 @property (nonatomic) CGFloat scale;
-
 
 // Printing
 @property (nonatomic) bool printPreview;
@@ -247,10 +236,8 @@
 @property (nonatomic) bool printSceneNumbers;
 @property (strong, nonatomic) PrintView *printView; //To keep the asynchronously working print data generator in memory
 
-
 // Some settings for edit view behaviour
 @property (nonatomic) bool matchParentheses;
-
 
 // View sizing
 @property (nonatomic) NSUInteger documentWidth;
@@ -263,11 +250,9 @@
 @property (nonatomic) NSUInteger dualDialogueIndent;
 @property (nonatomic) NSUInteger ddRight;
 
-
 // Current line / scene
 @property (nonatomic) Line *currentLine;
 @property (nonatomic) OutlineScene *currentScene;
-
 
 // Autocompletion
 @property (nonatomic) NSString *cachedText;
@@ -302,11 +287,8 @@
 
 @end
 
-
-// Uh. Refer to fontSize / zooming functions to make sense of this stuff.
 #define APP_NAME @"Beat"
 
-#define DEFAULT_ZOOM 16
 #define ZOOM_MODIFIER 40 // Still used by labels, should be fixed when possible
 
 #define AUTOSAVE_INTERVAL 10.0
@@ -315,21 +297,24 @@
 #define FONT_SIZE 17.92
 #define DOCUMENT_WIDTH 640
 
+// Magnifying stuff
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
 #define DEFAULT_MAGNIFY 1.1
 #define MAGNIFY YES
 
+// User preferences key names
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
+#define SHOW_PAGENUMBERS_KEY @"Show Page Numbers"
 #define SHOW_SCENE_LABELS_KEY @"Show Scene Number Labels"
 #define FONTSIZE_KEY @"Fontsize"
 #define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
-
 #define DARKMODE_KEY @"Dark Mode"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
 #define FLATOUTLINE YES
 
+// Length of scene excerpt in cards
 #define SNIPPET_LENGTH 190
 
 // DOCUMENT LAYOUT SETTINGS
@@ -426,7 +411,6 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
 	// Revised layout code for 1.1.0 release
-	// _zoomLevel = DEFAULT_ZOOM;
 	_documentWidth = DOCUMENT_WIDTH;
 	[self setZoom];
 
@@ -474,13 +458,19 @@
 	[self.textView setEditable:YES];
 	
 	// Live Pagination
-	_paginator = [[FountainPaginator alloc] init];
+	_paginator = [[FountainPaginator alloc] initForLivePagination:nil paperSize:self.printInfo.paperSize];
 	
 	// Read default settings
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
         self.matchParentheses = NO;
     } else {
         self.matchParentheses = [[NSUserDefaults standardUserDefaults] boolForKey:MATCH_PARENTHESES_KEY];
+    }
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_PAGENUMBERS_KEY]) {
+        self.showPageNumbers = NO;
+    } else {
+        self.matchParentheses = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
     }
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:PRINT_SCENE_NUMBERS_KEY]) {
@@ -579,9 +569,9 @@
 	[self loadCaret];
 	[self ensureCaret];
 	[self updatePreview];
-	[self paginate];
+	[self paginateFromIndex:0 sync:YES];
 }
--(void)awakeFromNib {	
+-(void)awakeFromNib {
 	// Set up recovery file saving
 	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
@@ -715,7 +705,7 @@
 - (void)ensureLayout {
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 	[self.textView setNeedsDisplay:YES];
-
+	
 	[self updateSceneNumberLabels];
 }
 
@@ -815,6 +805,16 @@
 
 
 # pragma mark - Text I/O
+
+- (void)setupTextView {
+	self.textView.textContainer.widthTracksTextView = false;
+	self.textView.textContainer.heightTracksTextView = false;
+	
+	
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
+	[self.textView setDefaultParagraphStyle:paragraphStyle];
+}
 
 - (NSString *)getText
 {
@@ -918,11 +918,6 @@
         fileName = [fileName substringToIndex:lastDotIndex];
     } 
     return fileName;
-}
-
-
-- (void)cancelPreview {
-	_previewCanceled = YES;
 }
 
 - (void)updatePreview  {
@@ -1128,14 +1123,12 @@
 
 # pragma mark - Text manipulation
 
-- (void)setupTextView {
-	self.textView.textContainer.widthTracksTextView = false;
-	self.textView.textContainer.heightTracksTextView = false;
-	
-	
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[self.textView setDefaultParagraphStyle:paragraphStyle];
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+{
+    if ([self textView:self.textView shouldChangeTextInRange:range replacementString:string]) {
+        [self.textView replaceCharactersInRange:range withString:string];
+        [self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
+    }
 }
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
@@ -1219,7 +1212,7 @@
 	}
 
 	// WIP
-	[self paginate];
+	[self paginateFromIndex:affectedCharRange.location sync:NO];
 	
 	[self updateSectionMarkers];
 	
@@ -1255,7 +1248,6 @@
 			
 			[self.parser createOutline];
 			[self updateSceneNumberLabels];
-
 		}
 	}
 }
@@ -2032,10 +2024,9 @@
 		}];
 		
 		// Format force characters
-		if (line.numberOfPreceedingFormattingCharacters > 0 && line.string.length > 0) {
+		if (line.numberOfPreceedingFormattingCharacters > 0 && line.string.length >= line.numberOfPreceedingFormattingCharacters) {
 			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
 								range:NSMakeRange(line.position, line.numberOfPreceedingFormattingCharacters)];
-			
 		}
 	}
 }
@@ -2301,7 +2292,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self updateSceneNumberLabels];
 }
 
-
 - (IBAction)makeItalic:(id)sender
 {
     //Check if the currently selected tab is the one for editing
@@ -2531,16 +2521,7 @@ static NSString *forceDualDialogueSymbol = @"^";
     }
 }
 
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
-{
-    if ([self textView:self.textView shouldChangeTextInRange:range replacementString:string]) {
-        [self.textView replaceCharactersInRange:range withString:string];
-        [self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
-    }
-}
-
-
-#pragma mark - User Interaction
+#pragma mark - User Interface (some of it)
 
 - (IBAction)toggleOutlineView:(id)sender
 {
@@ -2707,6 +2688,15 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if ([self selectedTabViewTab] != 0) {
 			return NO;
 		}
+	} else if ([menuItem.title isEqualToString:@"Show Page Numbers"]) {
+		if (self.showPageNumbers) {
+			[menuItem setState:NSOnState];
+		} else {
+			[menuItem setState:NSOffState];
+		}
+		if ([self selectedTabViewTab] != 0) {
+			return NO;
+		}
 	} else if ([menuItem.title isEqualToString:@"Print Automatic Scene Numbers"]) {
 		if (self.printSceneNumbers) {
 			[menuItem setState:NSOnState];
@@ -2803,6 +2793,17 @@ static NSString *forceDualDialogueSymbol = @"^";
         doc.matchParentheses = !doc.matchParentheses;
     }
     [[NSUserDefaults standardUserDefaults] setBool:self.matchParentheses forKey:MATCH_PARENTHESES_KEY];
+}
+
+- (IBAction)togglePageNumbers:(id)sender {
+	self.showPageNumbers = !self.showPageNumbers;
+	[[NSUserDefaults standardUserDefaults] setBool:self.showPageNumbers forKey:SHOW_PAGENUMBERS_KEY];
+	
+	if (self.showPageNumbers) [self paginateFromIndex:0 sync:YES];
+	else {
+		self.textView.pageBreaks = nil;
+		[self.textView setNeedsDisplay:YES];
+	}
 }
 
 - (IBAction)togglePrintSceneNumbers:(id)sender
@@ -2976,7 +2977,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (void)searchOutline {
 	// Don't search if it's only spaces
 	if ([_outlineSearchField.stringValue containsOnlyWhitespace] || [_outlineSearchField.stringValue length] < 1) {
-		//[_filteredOutline removeAllObjects];
         [_filters byText:@""];
 	}
 	
@@ -3790,7 +3790,24 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 #pragma mark - Scene numbering for NSTextView
 
-/* The following section is memory-intesive. Would like to see it fixed somehow. */
+/*
+
+ This is intensive and silly. Instead of creating labels, we could just send an index/pixel position + scene number to BeatTextView and have it draw the scene numbers?
+ 
+ Like this:
+ NSMutableArray *sceneNumbers = [NSMutableArray array];
+ 
+ for (OutlineScene *scene in scenes) {
+	// Find out position here
+	NSDictionary *sceneNumber = @{ @"position": [NSNumber numberWithFloat:float], @"sceneNumber": sceneNumber };
+ }
+ 
+ [sceneNumbers addObject:sceneNumber];
+ _textView.sceneNumbers = sceneNumbers
+ 
+ I'm pretty sure that would be 100% faster.
+ 
+ */
 
 - (NSTextField *) createLabel: (OutlineScene *) scene {
 	NSTextField * label;
@@ -3819,8 +3836,41 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 
-// This kind of works but might make things a bit slow. I'm not sure.
-// Well, at least this is something that Slugline and Logline STILL can't do. :---)
+/*
+// An alternative way of handling scene numbers.
+// Gives some performance advantage at times, but it's so insignificant that maybe it's not worth all the hassle.
+- (void)refreshSceneNumbers {
+	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
+	if (![[self.parser outline] count]) {
+		[self.parser createOutline];
+	}
+	
+	NSMutableArray *sceneNumbers = [NSMutableArray array];
+	for (OutlineScene * scene in [self getScenes]) {
+		// We'll wrap this in an autorelease pool, not sure if it helps or not :-)
+		@autoreleasepool {
+			
+			NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
+			NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+			NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
+				
+			NSMutableDictionary *sceneNumber = [NSMutableDictionary dictionaryWithDictionary:@{
+				@"sceneNumber": scene.sceneNumber,
+				@"rect": [NSNumber valueWithRect:rect]
+			}];
+			
+			if (![scene.color isEqualToString:@""] && scene.color != nil) {
+				NSString *colorName = [scene.color lowercaseString];
+				[sceneNumber setValue:colorName forKey:@"color"];
+			}
+			
+			[sceneNumbers addObject:sceneNumber];
+		}
+	}
+	
+	self.textView.sceneNumbers = sceneNumbers;
+}
+ */
 
 - (void) updateSceneNumberLabels {
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
@@ -4335,36 +4385,66 @@ triangle walks
 
 - (NSArray*)onlyPrintableElements:(NSArray*)lines {
 	NSMutableArray *result = [NSMutableArray array];
+	Line* previousLine;
 	for (Line* line in lines) {
-		if (line.type != empty) [result addObject:line];
+		// Make a copy of the line so we don't fuck up the current parse
+		if (line.type != empty && !line.omited) {
+			[result addObject:[line clone]];
+			previousLine = line;
+		}
+		
 	}
 	return result;
 	
 }
 - (void)paginate {
+	[self paginateFromIndex:0 sync:NO];
+}
+- (void)paginateFromIndex:(NSInteger)index sync:(bool)sync {
+	if (!self.showPageNumbers) return;
+	
 	/*
 	 
 	 WIP!!!
 	 - have the paginator be retained in memory to only perform pagination according to changed indices
 	 
+	 It should work like this:
+	 - Check range of changed indices
+	 - Find on which page the changed ranges are (roughly, even if we start from previous page it still saves CPU time)
+	 - Tell the paginator to start pagination over from some page
+	   -> see which elements are newly created (split) on that page and start from that y and Line element
+	 - Other pages and page breaks remain intact
+	 - Recreate page breaks for BeatTextView
+	 
+	 The above is already implemented, but doesn't work. Lol.
+	 
+	 
 	 */
 	
 	// Null the timer so we don't have too many of these operations queued
 	[_paginationTimer invalidate];
+	NSInteger wait = 0.5;
+	if (sync) wait = 0;
 	
-	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
-
-		// !!! Pagination should have some sort of starting index, so that we can only update affected pages !!!
-		
+	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
 		// Make a copy of the array for thread-safety
 		__block NSArray *lines = [NSArray arrayWithArray:self.parser.lines];
 		
 		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
-			FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:[self onlyPrintableElements:lines] paperSize:self.printInfo.paperSize];
-			[paginator numberOfPages];
+			// FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:[self onlyPrintableElements:lines] paperSize:self.printInfo.paperSize];
+			// [paginator paginate];
 			
-			__block NSArray *pageBreaks = paginator.pageBreaks;
+			//NSDate *paginationStart = [NSDate date];
+			self.paginator.paperSize = self.printInfo.paperSize;
+			//[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
+			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
+			
+			//NSDate *paginationFinish = [NSDate date];
+			//NSTimeInterval executionTime = [paginationStart timeIntervalSinceDate:paginationFinish];
+			//NSLog(@"pagination time = %f", executionTime);
+			
+			__block NSArray *pageBreaks = self.paginator.pageBreaks;
 			
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				// Update UI in main thread
@@ -4372,9 +4452,11 @@ triangle walks
 				NSMutableArray *breakPositions = [NSMutableArray array];
 				
 				for (NSDictionary *pageBreak in pageBreaks) {
-					CGFloat lineHeight = 20;
+					CGFloat lineHeight = 13; // Line height from pagination
+					CGFloat UIlineHeight = 20;
 					
 					Line *line = pageBreak[@"line"];
+
 					CGFloat position = [pageBreak[@"position"] floatValue];
 					
 					NSRange characterRange = NSMakeRange(line.position, [line.string length]);
@@ -4386,8 +4468,9 @@ triangle walks
 					
 					// We return -1 for elements that should have page break after them
 					if (position >= 0) {
-						if (position != 0) position = (round(position / lineHeight) - 1) * lineHeight;
-						y = rect.origin.y + position - FONT_SIZE; // y is calculated from BOTTOM of line, so make it match its tow
+						if (position != 0) position = round(position / lineHeight) * UIlineHeight;
+						//y = rect.origin.y + position - FONT_SIZE; // y is calculated from BOTTOM of line, so make it match its tow
+						y =  rect.origin.y + position;
 					}
 					else y = rect.origin.y + rect.size.height;
 					
@@ -4402,6 +4485,29 @@ triangle walks
 			});
 		});
 	}];
+}
+
+- (NSInteger)numberOfPages {
+	// If pagination is not on, create temporary paginator
+	if (!self.showPageNumbers) {
+		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:[self onlyPrintableElements:self.parser.lines] paperSize:self.printInfo.paperSize];
+		return paginator.numberOfPages;
+	} else {
+		return self.paginator.numberOfPages;
+	}
+}
+- (NSInteger)getPageNumber:(NSInteger)location {
+	NSInteger page = 0;
+	
+	// If we don't have pagination turned on, create temporary paginator
+	if (!self.showPageNumbers) {
+		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:[self onlyPrintableElements:self.parser.lines] paperSize:self.printInfo.paperSize];
+		[paginator paginate];
+		return [paginator pageNumberFor:location];
+	} else {
+		return [self.paginator pageNumberFor:location];
+	}
+	return page;
 }
 
 #pragma mark - Title page editor

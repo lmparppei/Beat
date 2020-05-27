@@ -15,6 +15,22 @@
 + (Line*)withString:(NSString*)string type:(LineType)type {
 	return [[Line alloc] initWithString:string type:type];
 }
+- (Line*)clone {
+	Line* newLine = [Line withString:self.string type:self.type];
+	newLine.position = self.position;
+	
+	newLine.isSplitParagraph = self.isSplitParagraph;
+	newLine.numberOfPreceedingFormattingCharacters = self.numberOfPreceedingFormattingCharacters;
+	
+	if (self.italicRanges.count) newLine.italicRanges = [self.italicRanges copy];
+	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
+	if (self.noteRanges.count) newLine.noteRanges = [self.noteRanges copy];
+	if (self.omitedRanges.count) newLine.omitedRanges = [self.omitedRanges copy];
+	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
+	if (self.color) newLine.color = [NSString stringWithString:self.color];
+	
+	return newLine;
+}
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position
 {

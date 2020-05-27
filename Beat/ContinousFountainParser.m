@@ -64,7 +64,7 @@
         NSInteger index = [self.lines count];
         Line* line = [[Line alloc] initWithString:rawLine position:position];
         [self parseTypeAndFormattingForLine:line atIndex:index];
-        
+		
 		// Quick fix for mistaking an ALL CAPS action to character cue
 		if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
 			previousLine.type = [self parseLineType:previousLine atIndex:index - 1 recursive:NO currentlyEditing:NO];
@@ -72,7 +72,6 @@
 		}
 		
 		// Quick fix for recognizing split paragraphs
-		// FOR NON-CONTINUOUS PARSING ONLY
 		if (line.type == action &&
 			line.string.length > 0 &&
 			previousLine.type == action &&
@@ -137,6 +136,7 @@
 {
     NSUInteger lineIndex = [self lineIndexAtPosition:position];
     Line* line = self.lines[lineIndex];
+	
     NSUInteger indexInLine = position - line.position;
 	
 	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = true;
@@ -157,11 +157,11 @@
         [self incrementLinePositionsFromIndex:lineIndex+2 amount:1];
         
         return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(lineIndex, 2)];
-    } else {   
+    } else {
         NSArray* pieces = @[[line.string substringToIndex:indexInLine],
                             character,
                             [line.string substringFromIndex:indexInLine]];
-        
+		
         line.string = [pieces componentsJoinedByString:@""];
         [self incrementLinePositionsFromIndex:lineIndex+1 amount:1];
         
@@ -174,8 +174,11 @@
 {
     NSUInteger lineIndex = [self lineIndexAtPosition:position];
     Line* line = self.lines[lineIndex];
-    NSUInteger indexInLine = position - line.position;
-    
+
+	NSUInteger indexInLine = position - line.position;
+
+	if (indexInLine > line.string.length) indexInLine = line.string.length;
+	
     if (indexInLine == [line.string length]) {
         //Get next line an put together
         if (lineIndex == [self.lines count] - 1) {
@@ -192,7 +195,7 @@
         return [[NSIndexSet alloc] initWithIndex:lineIndex];
     } else {
         NSArray* pieces = @[[line.string substringToIndex:indexInLine],
-                            [line.string substringFromIndex:indexInLine+1]];
+                            [line.string substringFromIndex:indexInLine + 1]];
         
         line.string = [pieces componentsJoinedByString:@""];
         [self decrementLinePositionsFromIndex:lineIndex+1 amount:1];
@@ -251,6 +254,7 @@
     
     //Correct type on this line
     Line* currentLine = self.lines[index];
+	
     LineType oldType = currentLine.type;
     bool oldOmitOut = currentLine.omitOut;
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
@@ -335,7 +339,7 @@
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
 {
     line.type = [self parseLineType:line atIndex:index];
-    
+	
     NSUInteger length = line.string.length;
     unichar charArray[length];
     [line.string getCharacters:charArray];
@@ -422,7 +426,6 @@
 		Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 		
 		if (preceedingLine.type == character || preceedingLine.type == parenthetical || preceedingLine.type == dialogue) {
-			
 			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty. OMG IT WORKS!
 			if ([preceedingLine.string length] > 0) {
 				// If preceeded by character cue, return dialogue
@@ -448,7 +451,10 @@
     if (containsOnlyWhitespace && !twoSpaces) {
         return empty;
     }
-    
+	
+	// Reset to zero to avoid strange formatting issues
+	line.numberOfPreceedingFormattingCharacters = 0;
+	
     //Check for forces (the first character can force a line type)
     if (firstChar == '!') {
         line.numberOfPreceedingFormattingCharacters = 1;
@@ -878,19 +884,6 @@
 
 - (NSUInteger)numberOfOutlineItems
 {
-	/*
-	// This is the old way. Outline used to be only Line objects.
-	 
-	NSUInteger result = 0;
-	for (Line* line in self.lines) {
-		
-		if (line.type == section || line.type == synopse || line.type == heading) {
-			result++;
-		}
-	}
-	return result;
-	 */
-	
 	[self createOutline];
 	return [_outline count];
 }

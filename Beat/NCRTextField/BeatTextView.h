@@ -25,6 +25,7 @@
 //@property (weak) id <NCRAutocompleteTableViewDelegate> delegate;
 
 @property NSMutableArray* masks;
+@property NSArray* sceneNumbers;
 @property NSArray* sections;
 @property (nonatomic, weak) DynamicColor* marginColor;
 @property NSArray* pageBreaks;

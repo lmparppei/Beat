@@ -74,6 +74,7 @@
 		B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF54D2465925C00C5B78C /* WebPrinter.m */; };
 		B69EF55124659FC000C5B78C /* SceneCards.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF55024659FC000C5B78C /* SceneCards.m */; };
 		B69EF5532465AA2000C5B78C /* CardPrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B69EF5522465AA2000C5B78C /* CardPrintCSS.css */; };
+		B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */; };
 		B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
@@ -354,6 +355,8 @@
 		B69EF54F24659FC000C5B78C /* SceneCards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneCards.h; path = Beat/CardView/SceneCards.h; sourceTree = SOURCE_ROOT; };
 		B69EF55024659FC000C5B78C /* SceneCards.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneCards.m; path = Beat/CardView/SceneCards.m; sourceTree = SOURCE_ROOT; };
 		B69EF5522465AA2000C5B78C /* CardPrintCSS.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = CardPrintCSS.css; path = Beat/CardView/CardPrintCSS.css; sourceTree = SOURCE_ROOT; };
+		B6A0392C247DC4FE0005DA6C /* BeatColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatColors.h; path = Beat/UI/BeatColors.h; sourceTree = SOURCE_ROOT; };
+		B6A0392D247DC4FE0005DA6C /* BeatColors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatColors.m; path = Beat/UI/BeatColors.m; sourceTree = SOURCE_ROOT; };
 		B6B417C92359E2F700AD3F4D /* TitlePageEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TitlePageEditorDelegate.h; path = Writer/TitlePageEditorDelegate.h; sourceTree = SOURCE_ROOT; };
 		B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TitlePageEditorDelegate.m; path = Writer/TitlePageEditorDelegate.m; sourceTree = SOURCE_ROOT; };
 		B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = BeatDocumentIcon.iconset; path = Beat/Images.xcassets/BeatDocumentIcon.iconset; sourceTree = SOURCE_ROOT; };
@@ -749,6 +752,8 @@
 				B6CF7D0D2328D77F0045702C /* DynamicColor.m */,
 				B6EB516A246E7F33009014AB /* TouchBarTimeline.h */,
 				B6EB516B246E7F33009014AB /* TouchBarTimeline.m */,
+				B6A0392C247DC4FE0005DA6C /* BeatColors.h */,
+				B6A0392D247DC4FE0005DA6C /* BeatColors.m */,
 			);
 			name = "User Interface";
 			sourceTree = "<group>";
@@ -1097,6 +1102,7 @@
 				B6447CB124616C8400AA4EBC /* MasterView.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
+				B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinousFountainParser.m in Sources */,
 				B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */,

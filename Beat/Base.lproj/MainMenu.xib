@@ -624,6 +624,12 @@ DQ
                                     <action selector="toggleSceneLabels:" target="-1" id="VCW-6l-TxD"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Show Page Numbers" id="0AX-bH-bVJ">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="togglePageNumbers:" target="-1" id="gOF-Zo-GAW"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="oCK-Ga-Hr1"/>
                             <menuItem title="Dark Mode" id="onG-wT-V8z">
                                 <modifierMask key="keyEquivalentModifierMask"/>

@@ -23,14 +23,22 @@
 @property (nonatomic, readonly) NSUInteger numberOfPages;
 @property (nonatomic) CGSize paperSize;
 @property (strong, nonatomic) NSMutableArray *pages;
+
+// For live pagination
 @property (strong, nonatomic) NSMutableArray *pageBreaks;
+@property (strong, nonatomic) NSMutableArray *pageInfo;
 
 - (id)initWithScript:(NSArray*)elements;
+- (id)initForLivePagination:(NSArray*)elements paperSize:(CGSize)paperSize;
 - (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;
 - (id)initWithScript:(NSArray*)elements paperSize:(CGSize)paperSize;
+
+- (void)livePaginationFor:(NSArray*)script fromIndex:(NSInteger)index;
 - (void)paginate;
 - (void)paginateForSize:(CGSize)pageSize;
 - (NSArray *)pageAtIndex:(NSUInteger)index;
+
+- (NSInteger)pageNumberFor:(NSInteger)location;
 
 // Helper methods
 + (CGFloat)lineHeight;

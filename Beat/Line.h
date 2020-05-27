@@ -69,6 +69,9 @@ typedef enum : NSUInteger {
 // This is a method for converting Line to FNElement
 - (FNElement*)fountainElement;
 
+// Copy element
+- (Line*)clone;
+
 // Note: Following stuff is intended ONLY for non-continuous parsing
 - (bool)isTitlePage;
 - (bool)isInvisible;

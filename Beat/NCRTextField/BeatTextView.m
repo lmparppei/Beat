@@ -7,12 +7,27 @@
 //  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
+/*
+ 
+ This NSTextView subclass is used to provide the additional editor features:
+ - auto-completion (filled by methods from Document)
+ - force line type (set in this class)
+ - draw masks (array of masks provided by Document)
+ - draw page breaks (array of breaks with y position provided by Document/FountainPaginator)
+ 
+ Document acts as delegate, so its methods are accessible from this class too, see forcing elements.
+ 
+ Auto-completion function is based on NCRAutoCompleteTextView.
+ 
+ */
+
 #import "BeatTextView.h"
 #import "DynamicColor.h"
 #import "Line.h"
 #import "ScrollView.h"
 #import "ContinousFountainParser.h"
 #import "FountainPaginator.h"
+#import "BeatColors.h"
 
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
@@ -24,8 +39,6 @@
 #define HIGHLIGHT_RADIUS 0.0
 #define INTERCELL_SPACING NSMakeSize(20.0, 3.0)
 
-//#define WORD_BOUNDARY_CHARS [[NSCharacterSet alphanumericCharacterSet] invertedSet]
-//#define WORD_BOUNDARY_CHARS [[NSCharacterSet alphanumericCharacterSet] invertedSet]
 #define WORD_BOUNDARY_CHARS [NSCharacterSet newlineCharacterSet]
 #define POPOVER_WIDTH 300.0
 #define POPOVER_PADDING 0.0
@@ -190,15 +203,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSString *infoString = [NSString stringWithFormat:@"Words: %lu\nCharacters: %lu", words, symbols];
 
-	// Get number of pages - WIP
+	// Get number of pages / page number for selection
 	if (wholeDocument) {
-		// Some day
-		/*
-		ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:self.string];
-		NSSize paperSize = [[[[self.window windowController] document] printInfo] paperSize];
-		FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:parser.lines paperSize:CGSizeMake(paperSize.width, paperSize.height)];
-		infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", paginator.numberOfPages];
-		 */
+		NSInteger pages = [self numberOfPages];
+		if (pages > 0) infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", pages];
+	} else {
+		NSInteger page = [self getPageNumber:self.selectedRange.location];
+		if (page > 0) infoString = [infoString stringByAppendingFormat:@"\nPage: %lu", page];
 	}
 	
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
@@ -224,7 +235,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (!wholeDocument) {
 		rect = [self firstRectForCharacterRange:NSMakeRange(range.location, 0) actualRange:NULL];
 	} else {
-		NSLog(@"whole");
 		rect = [self firstRectForCharacterRange:NSMakeRange(self.selectedRange.location, 0) actualRange:NULL];
 	}
 	rect = [self.window convertRectFromScreen:rect];
@@ -353,6 +363,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	[self.autocompletePopover close];
 	_forceElementMenu = NO;
+}
+- (NSInteger)getPageNumber:(NSInteger)location {
+	if ([self.delegate respondsToSelector:@selector(getPageNumber:)]) {
+		return [(id)self.delegate getPageNumber:location];
+	}
+	return 0;
+}
+- (NSInteger)numberOfPages {
+	if ([self.delegate respondsToSelector:@selector(numberOfPages)]) {
+		return [(id)self.delegate numberOfPages];
+	}
+	return 0;
 }
 
 - (void)insert:(id)sender {
@@ -538,15 +560,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_marginColor = newColor;
 }
 
-// To mask out stuff we don't want to see when filtering scenes
 - (void)drawRect:(NSRect)dirtyRect {
 	NSGraphicsContext *context = [NSGraphicsContext currentContext];
+	CGFloat factor = 1 / _zoomLevel;
+	
 	[context saveGraphicsState];
 
+	// Mask outs scenes we don't want to see when filtering scenes
 	for (NSValue* value in _sections) {
 		[self.marginColor setFill];
 		NSRect sectionRect = [value rectValue];
-		CGFloat width = self.frame.size.width * 1 / _zoomLevel;
+		CGFloat width = self.frame.size.width * factor;
 		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
 		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
 	}
@@ -575,17 +599,48 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
+	NSFont* font = [NSFont fontWithName:@"Courier Prime" size:17];
+	
+	/*
+	// Alternative scnene numbering system. Gives some performance advantage, but it
+	// might be too insignificant to dismantle the already-working, convoluted scheme, though.
+	// best: 0.005467 sec vs 0.009747 sec
+	// worst: 0.007510 sec vs 0.006489 sec
+	 
+	CGFloat sceneNumberPosition = (self.textContainerInset.width - 50) * factor;
+	
+	[context saveGraphicsState];
+	for (NSDictionary *sceneNumber in _sceneNumbers) {
+		NSString *number = sceneNumber[@"sceneNumber"];
+		NSRect rect = [sceneNumber[@"rect"] rectValue];
+		
+		NSAttributedString* attrStr;
+		
+		if (sceneNumber[@"color"]) {
+			attrStr = [[NSAttributedString alloc] initWithString:number attributes:@{
+				NSFontAttributeName: font,
+				NSForegroundColorAttributeName: [BeatColors.colors valueForKey:sceneNumber[@"color"]]
+			}];
+		} else {
+			attrStr = [[NSAttributedString alloc] initWithString:number attributes:@{
+				NSFontAttributeName: font,
+				NSForegroundColorAttributeName: NSColor.blackColor
+			}];
+		}
+
+		[attrStr drawAtPoint:CGPointMake(sceneNumberPosition, rect.origin.y + self.textContainerInset.height)];
+	}
+	[context restoreGraphicsState];
+	*/
+	
 	[context saveGraphicsState];
 	
 	NSInteger pageNumber = 1;
-	
-	CGFloat factor = 1 / _zoomLevel;
 	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 155 * factor);
 	CGFloat width = self.frame.size.width * factor - self.textContainerInset.width * 2 + 290;
 	
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
 
-		NSFont* font = [NSFont fontWithName:@"Courier" size:16];
 		NSString *page = [@(pageNumber) stringValue];
 		
 		// Do we want the dot after page number?

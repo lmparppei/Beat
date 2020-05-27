@@ -41,9 +41,16 @@
 	
 		// This is a paragraph with a line break,
 		// so append the line to the previous one
-		if (line.type == action && previousLine.type == action) {
+		if (line.type == action && line.isSplitParagraph && [parser.lines indexOfObject:line] > 0) {
 			FNElement *previousElement = [script.elements objectAtIndex:script.elements.count - 1];
+
 			previousElement.elementText = [previousElement.elementText stringByAppendingFormat:@"\n%@", line.cleanedString];
+			continue;
+		}
+		
+		if (line.type == dialogue && line.string.length < 1) {
+			line.type = empty;
+			previousLine = line;
 			continue;
 		}
 		
