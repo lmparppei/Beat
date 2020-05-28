@@ -34,5 +34,5 @@
 @end
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate>
-- (void)test;
+
 @end

@@ -49,3 +49,18 @@
 }
 
 @end
+/*
+ 
+ kun mä kasvan isoksi
+ haluan puutarhan
+ ja pienen veneen
+ 
+ istutan metsän talon ympärille
+ tutustun sen eläimiin
+ ja yritän oppia niiltä jotain
+ 
+ kuten piiloutumisen taidon
+ tai no sen mä opin
+ jo lapsena jossakin
+ 
+ */

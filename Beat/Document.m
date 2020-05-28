@@ -95,9 +95,11 @@
 #import "WebPrinter.h"
 #import "SceneCards.h"
 #import "RegExCategories.h"
-#import "TouchBarTimeline.h"
+#import "TouchTimelineView.h"
+#import "TouchTimelinePopover.h"
 #import "MarginView.h"
 #import "BeatPreview.h"
+#import "BeatColors.h"
 
 @interface Document ()
 
@@ -201,11 +203,10 @@
 @property (nonatomic) NSInteger timelineClickedScene;
 @property (nonatomic) NSInteger timelineSelection;
 @property (nonatomic) bool timelineVisible;
-@property (nonatomic) IBOutlet TouchBarTimeline *touchbarTimeline;
-
-// Margin views, unused for now
-@property (unsafe_unretained) IBOutlet NSBox *leftMargin;
-@property (unsafe_unretained) IBOutlet NSBox *rightMargin;
+@property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
+@property (nonatomic, weak) IBOutlet NSTouchBar *timelineBar;
+@property (nonatomic, weak) IBOutlet TouchTimelineView *touchbarTimeline;
+@property (unsafe_unretained) IBOutlet TouchTimelinePopover *touchbarTimelineButton;
 
 // Scene number labels
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
@@ -295,7 +296,7 @@
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
 #define FONT_SIZE 17.92
-#define DOCUMENT_WIDTH 640
+#define DOCUMENT_WIDTH 620
 
 // Magnifying stuff
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -534,6 +535,10 @@
 	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"timelineContext"];
 	_timelineClickedScene = -1;
 	
+	// Touchbar timeline
+	self.touchbarTimeline.delegate = self;
+	self.touchbarTimelineButton.delegate = self;
+	
 	// Setup analysis
 	[self setupAnalysis];
 	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
@@ -559,7 +564,6 @@
 	// lay down for a while, disconnect
 	// the night was so long, the day even longer
 	// lay down for a while, recollect
-	
 }
 -(void)afterLoad {
 	[self updateLayout];
@@ -1012,8 +1016,8 @@
 			
 			// Also, update touch bar color if needed (omg this is cool)
 			if (scene.color) {
-				if ([self colors][[scene.color lowercaseString]]) {
-					[_colorPicker setColor:[self colors][[scene.color lowercaseString]]];
+				if ([BeatColors color:[scene.color lowercaseString]]) {
+					[_colorPicker setColor:[BeatColors color:[scene.color lowercaseString]]];
 				}
 			}
 			
@@ -1066,6 +1070,18 @@
 	[self.textView showInfo:self];
 }
 
+/*
+
+ FREE ABORTIONS.
+ 
+ CLEAN WATER.
+ 
+ DESTROY NUCLEAR.
+
+ DESTROY BORING.
+
+*/
+
 # pragma mark - Undo
 
 - (IBAction)undoEdit:(id)sender {
@@ -1084,9 +1100,6 @@
 	
 	// To avoid some graphical glitches
 	[self ensureLayout];
-}
-- (void)willUndo:(NSEvent*)event {
-	NSLog(@"just???");
 }
 
 - (void)saveCaret {
@@ -1120,6 +1133,16 @@
 	[[NSUserDefaults standardUserDefaults] setValue:documentSettings forKey:@"Document Settings"];
 }
 
+
+/*
+ 
+ and in a darkened underpass
+ I thought, oh god, my chance has come at last
+ but then
+ a strange fear gripped me
+ and I just couldn't ask
+ 
+ */
 
 # pragma mark - Text manipulation
 
@@ -1199,8 +1222,7 @@
 	// Fire up autocomplete and create cached lists of scene headings / character names
 	if (_currentLine.type == character) {
 		if (![_characterNames count]) [self collectCharacterNames];
-		[self.textView setAutomaticTextCompletionEnabled:YES];
-	
+		[self.textView setAutomaticTextCompletionEnabled:YES];	
 	} else if (_currentLine.type == heading) {
 		if (![_sceneHeadings count]) [self collectHeadings];
 		[self.textView setAutomaticTextCompletionEnabled:YES];
@@ -1266,6 +1288,7 @@
 		[self.parser createOutline];
 		if (self.outlineViewVisible) [self reloadOutline];
 		if (self.timelineVisible) [self reloadTimeline];
+		if (self.timelineBar.visible) [self reloadTouchTimeline];
 	}
 	
 	[self applyFormatChanges];
@@ -1289,6 +1312,8 @@
 	
 	__block NSInteger position = self.textView.selectedRange.location;
 	_currentScene = [self getCurrentSceneWithPosition:position];
+
+	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_flatOutline indexOfObject:_currentScene]];
 
 	// Locate current scene & reload outline without building it in parser
 	if ((_outlineViewVisible || _timelineVisible) && !_outlineEdit) {
@@ -1376,6 +1401,7 @@
 	
 	[self reloadOutline];
 	if (_timelineVisible) [self reloadTimeline];
+	if (self.timelineBar.visible) [self reloadTouchTimeline];
 }
 
 - (NSRange)cursorLocation
@@ -1720,7 +1746,7 @@
 		
 		//If the scene as a color, let's color it!
 		if (![line.color isEqualToString:@""]) {
-			NSColor* headingColor = [self colors][[line.color lowercaseString]];
+			NSColor* headingColor = [BeatColors color:[line.color lowercaseString]];
 			if (headingColor != nil) [attributes setObject:headingColor forKey:NSForegroundColorAttributeName];
 		}
 	
@@ -2035,6 +2061,16 @@
 	if (self.textView.selectedRange.location >= line.position && self.textView.selectedRange.location <= line.position + [line.string length]) return YES;
 	else return NO;
 }
+
+/*
+ 
+ saanko jäädä yöksi, mun tarvii levätä
+ ennen kuin se alkaa taas
+ saanko jäädä yöksi, mun tarvii levätä
+ en mä voi mennä enää kotiinkaan
+ enkä tiedä onko mulla sellaista ollenkaan
+ 
+ */
 
 
 # pragma  mark - Fonts
@@ -3101,11 +3137,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 				// Scene number will be displayed in a slightly darker shade
 				if (!omited) {
 					[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
-					[resultString addAttribute:NSForegroundColorAttributeName value:[self colors][@"darkGray"] range:NSMakeRange([sceneHeader length], [resultString length] - [sceneHeader length])];
+					[resultString addAttribute:NSForegroundColorAttributeName value:[BeatColors color:@"darkGray"] range:NSMakeRange([sceneHeader length], [resultString length] - [sceneHeader length])];
 				}
 				// If it's omited, make it totally gray
 				else {
-					[resultString addAttribute:NSForegroundColorAttributeName value:[self colors][@"veryDarkGray"] range:NSMakeRange(0, [resultString length])];
+					[resultString addAttribute:NSForegroundColorAttributeName value:[BeatColors color:@"veryDarkGray"] range:NSMakeRange(0, [resultString length])];
 				}
 				
 				// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
@@ -3184,7 +3220,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if (line.color && !omited) {
 			//NSMutableAttributedString * color = [[NSMutableAttributedString alloc] initWithString:@" ⬤" attributes:nil];
 			NSString *colorString = [line.color lowercaseString];
-			NSColor *colorName = [self colors][colorString];
+			NSColor *colorName = [BeatColors color:colorString];
 			
 			// If we found a suitable color, let's add it
 			if (colorName != nil) {
@@ -3384,17 +3420,18 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if ([item.className isEqualTo:@"NSColorPickerTouchBarItem"]) {
 			NSColorPickerTouchBarItem *picker = (NSColorPickerTouchBarItem*)item;
 			_colorPicker = picker;
+			picker.showsAlpha = NO;
 			picker.colorList = [[NSColorList alloc] init];
 
 			[picker.colorList setColor:NSColor.blackColor forKey:@"none"]; // THE HOUSE IS BLACK.
-			[picker.colorList setColor:[self colors][@"red"] forKey:@"red"];
-			[picker.colorList setColor:[self colors][@"blue"] forKey:@"blue"];
-			[picker.colorList setColor:[self colors][@"green"] forKey:@"green"];
-			[picker.colorList setColor:[self colors][@"cyan"] forKey:@"cyan"];
-			[picker.colorList setColor:[self colors][@"orange"] forKey:@"orange"];
-			[picker.colorList setColor:[self colors][@"pink"] forKey:@"pink"];
-			[picker.colorList setColor:[self colors][@"gray"] forKey:@"gray"];
-			[picker.colorList setColor:[self colors][@"magenta"] forKey:@"magenta"];
+			[picker.colorList setColor:[BeatColors color:@"red"] forKey:@"red"];
+			[picker.colorList setColor:[BeatColors color:@"blue"] forKey:@"blue"];
+			[picker.colorList setColor:[BeatColors color:@"green"] forKey:@"green"];
+			[picker.colorList setColor:[BeatColors color:@"cyan"] forKey:@"cyan"];
+			[picker.colorList setColor:[BeatColors color:@"orange"] forKey:@"orange"];
+			[picker.colorList setColor:[BeatColors color:@"pink"] forKey:@"pink"];
+			[picker.colorList setColor:[BeatColors color:@"gray"] forKey:@"gray"];
+			[picker.colorList setColor:[BeatColors color:@"magenta"] forKey:@"magenta"];
 		}
 	}
 }
@@ -3403,7 +3440,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSString *pickedColor;
 
 	for (NSString *color in [self colors]) {
-		if ([_colorPicker.color isEqualTo:[self colors][color]]) {
+		if ([_colorPicker.color isEqualTo:[BeatColors color:color]]) {
 			pickedColor = color;
 		}
 	}
@@ -3441,6 +3478,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		OutlineScene *scene = item;
 		[self setColor:color forScene:scene];
 		if (_timelineClickedScene >= 0) [self reloadTimeline];
+		if (self.timelineBar.visible) [self reloadTouchTimeline];
 	}
 	_timelineClickedScene = -1;
 }
@@ -3542,6 +3580,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		// Reload outline + timeline in case there were any changes in outline
 		if (_outlineViewVisible) [self reloadOutline];
 		if (_timelineVisible) [self reloadTimeline];
+		if (self.timelineBar.visible) [self reloadTouchTimeline];
 		
 		[self setSelectedTabViewTab:0];
 		[self updateLayout];
@@ -3919,7 +3958,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 				[label setFont:self.courier];
 				if (![scene.color isEqualToString:@""] && scene.color != nil) {
 					NSString *color = [scene.color lowercaseString];
-					[label setTextColor:[self colors][color]];
+					[label setTextColor:[BeatColors color:color]];
 				} else {
 					[label setTextColor:self.themeManager.currentTextColor];
 				}
@@ -3986,10 +4025,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (IBAction)toggleTimeline:(id)sender
 {
-	// There is a KNOWN BUG here.
-	// For some reason, the textview jumps into strange position when timeline is toggled and scroll position is towards the end.
-	// It has to do with scaling, I guess, but I have no idea how to fix it.
-	
 	_timelineVisible = !_timelineVisible;
 	
 	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
@@ -4008,7 +4043,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 		
 		[self.textScrollView.contentView scrollToPoint:scrollPosition];
 	}
-	
 	//[self.textScrollView.contentView scrollToPoint:scrollPosition];
 }
 
@@ -4024,8 +4058,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	else [self.timelineView evaluateJavaScript:@"setStyle('light');" completionHandler:nil];
 }
 - (void) reloadTimeline {
-	NSLog(@"updating timeline");
-	
 	__block OutlineScene *currentScene = [self getCurrentScene];
 	__block NSMutableArray *scenes = [self getOutlineItems];
 	
@@ -4142,6 +4174,20 @@ static NSString *forceDualDialogueSymbol = @"^";
 	});
 }
 
+#pragma mark - TouchBar Timeline
+
+- (void) reloadTouchTimeline {
+	[_touchbarTimeline setData:[self getOutlineItems]];
+}
+- (void)didSelectTouchTimelineItem:(NSInteger)index {
+	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
+	[self scrollToScene:scene];
+}
+- (void) touchPopoverDidShow {
+	[self reloadTouchTimeline];
+}
+- (void) touchPopoverDidHide {
+}
 
 #pragma mark - Analysis
 
@@ -4435,15 +4481,9 @@ triangle walks
 			// FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:[self onlyPrintableElements:lines] paperSize:self.printInfo.paperSize];
 			// [paginator paginate];
 			
-			//NSDate *paginationStart = [NSDate date];
 			self.paginator.paperSize = self.printInfo.paperSize;
-			//[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
-			
-			//NSDate *paginationFinish = [NSDate date];
-			//NSTimeInterval executionTime = [paginationStart timeIntervalSinceDate:paginationFinish];
-			//NSLog(@"pagination time = %f", executionTime);
-			
+						
 			__block NSArray *pageBreaks = self.paginator.pageBreaks;
 			
 			dispatch_async(dispatch_get_main_queue(), ^(void){

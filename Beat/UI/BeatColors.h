@@ -7,11 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DynamicColor.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatColors : NSObject
-+ (NSDictionary*)color:(NSString*)name;
++ (NSColor*)color:(NSString*)name;
 + (NSDictionary*)colors;
 @end
 

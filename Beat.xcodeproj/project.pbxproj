@@ -38,6 +38,8 @@
 		B61875A62471BEDA00FB7646 /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B61875A42471BEDA00FB7646 /* BeatPreview.m */; };
 		B61B693D2472DEE800DCDBFA /* FountainPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B693C2472DEE800DCDBFA /* FountainPaginator.m */; };
 		B61B693E2472DEE800DCDBFA /* FountainPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B693C2472DEE800DCDBFA /* FountainPaginator.m */; };
+		B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62392B0247FD351008E61D0 /* TouchTimelineView.m */; };
+		B62392B2247FD351008E61D0 /* TouchTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62392B0247FD351008E61D0 /* TouchTimelineView.m */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
 		B625F13E24327DE300873F62 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
@@ -77,6 +79,8 @@
 		B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */; };
 		B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */; };
+		B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
+		B6CE0BD0247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
 		B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* ApplicationDelegate.m */; };
 		B6D2B7092218B320005B8447 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
@@ -102,8 +106,6 @@
 		B6D872B3232567C40050ED2D /* timeline.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D872B2232567C40050ED2D /* timeline.html */; };
 		B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS.css */; };
 		B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */; };
-		B6EB516C246E7F33009014AB /* TouchBarTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB516B246E7F33009014AB /* TouchBarTimeline.m */; };
-		B6EB516D246E7F36009014AB /* TouchBarTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB516B246E7F33009014AB /* TouchBarTimeline.m */; };
 		B6EB5170246E9621009014AB /* MarginView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB516F246E9621009014AB /* MarginView.m */; };
 		B6F49CDD246D66B0006D88D4 /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
 		B6F49CDE246D66B0006D88D4 /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
@@ -314,6 +316,8 @@
 		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/BeatPreview.m; sourceTree = SOURCE_ROOT; };
 		B61B693B2472DEE800DCDBFA /* FountainPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainPaginator.h; path = Beat/FountainTools/FountainPaginator.h; sourceTree = SOURCE_ROOT; };
 		B61B693C2472DEE800DCDBFA /* FountainPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainPaginator.m; path = Beat/FountainTools/FountainPaginator.m; sourceTree = SOURCE_ROOT; };
+		B62392AF247FD351008E61D0 /* TouchTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchTimelineView.h; path = Beat/UI/TouchTimelineView.h; sourceTree = SOURCE_ROOT; };
+		B62392B0247FD351008E61D0 /* TouchTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TouchTimelineView.m; path = Beat/UI/TouchTimelineView.m; sourceTree = SOURCE_ROOT; };
 		B624C144234BDE7100C438C7 /* BeatOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatOutlineView.h; path = Writer/BeatOutlineView.h; sourceTree = SOURCE_ROOT; };
 		B624C145234BDE7100C438C7 /* BeatOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatOutlineView.m; path = Writer/BeatOutlineView.m; sourceTree = SOURCE_ROOT; };
 		B62ADC7323CCCE560015563A /* fountainQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fountainQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -361,6 +365,8 @@
 		B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TitlePageEditorDelegate.m; path = Writer/TitlePageEditorDelegate.m; sourceTree = SOURCE_ROOT; };
 		B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = BeatDocumentIcon.iconset; path = Beat/Images.xcassets/BeatDocumentIcon.iconset; sourceTree = SOURCE_ROOT; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecentFiles.h; path = ../Beat/RecentFiles.h; sourceTree = "<group>"; };
+		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = Beat/UI/TouchTimelinePopover.h; sourceTree = SOURCE_ROOT; };
+		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = Beat/UI/TouchTimelinePopover.m; sourceTree = SOURCE_ROOT; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
 		B6D2B7062218B308005B8447 /* ApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationDelegate.m; path = Beat/ApplicationDelegate.m; sourceTree = SOURCE_ROOT; };
@@ -392,8 +398,6 @@
 		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
 		B6EA9F4D23BA8E8C00DBE9D0 /* SceneFiltering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneFiltering.h; path = Beat/Filtering/SceneFiltering.h; sourceTree = SOURCE_ROOT; };
 		B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneFiltering.m; path = Beat/Filtering/SceneFiltering.m; sourceTree = SOURCE_ROOT; };
-		B6EB516A246E7F33009014AB /* TouchBarTimeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchBarTimeline.h; sourceTree = "<group>"; };
-		B6EB516B246E7F33009014AB /* TouchBarTimeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchBarTimeline.m; sourceTree = "<group>"; };
 		B6EB516E246E9621009014AB /* MarginView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MarginView.h; path = Beat/UI/MarginView.h; sourceTree = SOURCE_ROOT; };
 		B6EB516F246E9621009014AB /* MarginView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MarginView.m; path = Beat/UI/MarginView.m; sourceTree = SOURCE_ROOT; };
 		B6F49D2E246D66B0006D88D4 /* Beat Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -750,10 +754,10 @@
 				B6D2B70C2218B359005B8447 /* ColorView.m */,
 				B6CF7D0C2328D77F0045702C /* DynamicColor.h */,
 				B6CF7D0D2328D77F0045702C /* DynamicColor.m */,
-				B6EB516A246E7F33009014AB /* TouchBarTimeline.h */,
-				B6EB516B246E7F33009014AB /* TouchBarTimeline.m */,
 				B6A0392C247DC4FE0005DA6C /* BeatColors.h */,
 				B6A0392D247DC4FE0005DA6C /* BeatColors.m */,
+				B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */,
+				B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */,
 			);
 			name = "User Interface";
 			sourceTree = "<group>";
@@ -811,6 +815,8 @@
 		B6D872B1232567C40050ED2D /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				B62392AF247FD351008E61D0 /* TouchTimelineView.h */,
+				B62392B0247FD351008E61D0 /* TouchTimelineView.m */,
 				B6D872B2232567C40050ED2D /* timeline.html */,
 			);
 			name = Timeline;
@@ -1108,11 +1114,12 @@
 				B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */,
 				B6EB5170246E9621009014AB /* MarginView.m in Sources */,
 				B6D2B71A2218B408005B8447 /* main.m in Sources */,
+				B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */,
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
 				B667796523C5D1CB0029D508 /* FDXImport.m in Sources */,
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
+				B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
-				B6EB516C246E7F33009014AB /* TouchBarTimeline.m in Sources */,
 				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6482F7922195BEC00175927 /* BeatTextView.m in Sources */,
@@ -1168,6 +1175,7 @@
 				B6F49CE0246D66B0006D88D4 /* FNElement.m in Sources */,
 				B6F49CE1246D66B0006D88D4 /* FDXInterface.m in Sources */,
 				B6F49CE2246D66B0006D88D4 /* BeatOutlineView.m in Sources */,
+				B62392B2247FD351008E61D0 /* TouchTimelineView.m in Sources */,
 				B6F49CE3246D66B0006D88D4 /* Document.m in Sources */,
 				B6F49CE4246D66B0006D88D4 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6F49CE5246D66B0006D88D4 /* ApplicationDelegate.m in Sources */,
@@ -1178,6 +1186,7 @@
 				B6F49CEA246D66B0006D88D4 /* PrintView.m in Sources */,
 				B6F49CEB246D66B0006D88D4 /* RegExCategories.m in Sources */,
 				B6F49CEC246D66B0006D88D4 /* DynamicColor.m in Sources */,
+				B6CE0BD0247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B6F49CED246D66B0006D88D4 /* LivePagination.m in Sources */,
 				B6F49CEE246D66B0006D88D4 /* MasterView.m in Sources */,
 				B6F49CEF246D66B0006D88D4 /* OutlineExtractor.m in Sources */,
@@ -1190,7 +1199,6 @@
 				B6F49CF6246D66B0006D88D4 /* FDXImport.m in Sources */,
 				B6F49CF7246D66B0006D88D4 /* Line.m in Sources */,
 				B6F49CF8246D66B0006D88D4 /* TitlePageEditorDelegate.m in Sources */,
-				B6EB516D246E7F36009014AB /* TouchBarTimeline.m in Sources */,
 				B61B693E2472DEE800DCDBFA /* FountainPaginator.m in Sources */,
 				B6F49CF9246D66B0006D88D4 /* WebPrinter.m in Sources */,
 				B6F49CFA246D66B0006D88D4 /* NSString+Regex.m in Sources */,

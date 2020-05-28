@@ -7,7 +7,11 @@
 //
 
 /*
-	This is the data source for welcome screen "recent files" outline view.
+ 
+ This is the data source for welcome screen "recent files" outline view.
+ I wrote this before I had any idea about how subclasses or delegates work,
+ hence the silly class name etc.
+ 
 */
 
 #import <Cocoa/Cocoa.h>

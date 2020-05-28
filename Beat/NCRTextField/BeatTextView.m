@@ -697,3 +697,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 @end
+/*
+ 
+ hyvä että ilmoitit aikeistasi
+ olimme taas kahdestaan liikennepuistossa
+ hyvä ettei kumpikaan itkisi
+ jos katoaisit matkoille vuosiksi
+
+ niin, kyllä elämä jatkuu ilman sua
+ matkusta vain rauhassa
+ me pärjäämme ilman sua.
+ vaikka tuntuiskin
+ tyhjältä.
+ 
+ */
