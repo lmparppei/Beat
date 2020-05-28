@@ -76,6 +76,7 @@ typedef enum : NSUInteger {
 - (bool)isTitlePage;
 - (bool)isInvisible;
 - (bool)isDialogueElement;
+- (bool)isDualDialogueElement;
 @property bool isSplitParagraph;
 @property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
 

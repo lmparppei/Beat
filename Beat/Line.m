@@ -260,7 +260,11 @@
     }
 }
 - (bool)isDialogueElement {
-	if (self.type == dialogue || self.type == parenthetical || self.type == character || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogue) return YES;
+	if (self.type == parenthetical || self.type == dialogue) return YES;
+	else return NO;
+}
+- (bool)isDualDialogueElement {
+	if (self.type == dualDialogueParenthetical || self.type == dualDialogue) return YES;
 	else return NO;
 }
 

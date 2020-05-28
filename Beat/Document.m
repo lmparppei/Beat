@@ -4432,16 +4432,38 @@ triangle walks
 - (NSArray*)onlyPrintableElements:(NSArray*)lines {
 	NSMutableArray *result = [NSMutableArray array];
 	Line* previousLine;
+	
+	bool hasDualDialogue = NO;
 	for (Line* line in lines) {
 		// Make a copy of the line so we don't fuck up the current parse
 		if (line.type != empty && !line.omited) {
 			[result addObject:[line clone]];
+			if (line.type == dualDialogueCharacter) hasDualDialogue = YES;
 			previousLine = line;
 		}
-		
 	}
-	return result;
 	
+	// Perform quick & dirty fix for missing dual dialogue info
+	if (hasDualDialogue) {
+		for (Line* line in result) {
+			if (line.type == dualDialogueCharacter) {
+				NSInteger index = [result indexOfObject:line] - 1;
+				while (index >= 0) {
+					Line *preceedingLine = [result objectAtIndex:index];
+					if (preceedingLine.type == character) {
+						preceedingLine.nextElementIsDualDialogue = YES;
+						break;
+					}
+					
+					// Break on action or scene heading
+					if (preceedingLine.type == action || preceedingLine.type == heading) break;
+					index--;
+				}
+			}
+		}
+	}
+	
+	return result;
 }
 - (void)paginate {
 	[self paginateFromIndex:0 sync:NO];
@@ -4485,6 +4507,8 @@ triangle walks
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
 						
 			__block NSArray *pageBreaks = self.paginator.pageBreaks;
+			
+			NSArray *test = [self onlyPrintableElements:self.parser.lines];
 			
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				// Update UI in main thread

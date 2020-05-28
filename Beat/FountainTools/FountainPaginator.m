@@ -366,6 +366,11 @@ That you have escaped.
 			
 			// Handle character. Get whole block.
 			else if ((element.type == character || element.type == dualDialogueCharacter) && [self elementExists:i + 1]) {
+				if (element.nextElementIsDualDialogue) NSLog(@"next is dual for %@", element.string);
+				
+				bool isDualDialogue = NO;
+				if (element.type == dualDialogueCharacter) isDualDialogue = YES;
+				
 				Line *nextElement;
 				NSInteger j = i; // Next item index
 				
@@ -373,13 +378,17 @@ That you have escaped.
 				
 				if ([currentPage count]) dialogueBlockHeight = spaceBefore; else dialogueBlockHeight = 0;
 				
+				// Catch elements in the dialogue block, single or dual
 				do {
 					dialogueBlockHeight += [FountainPaginator elementHeight:nextElement font:font lineHeight:lineHeight];
 					[tmpElements addObject:nextElement];
 					
 					j++;
 					if (j < maxElements) nextElement = (self.script)[j];
-				} while (j < maxElements && [nextElement isDialogueElement]);
+				} while (j < maxElements && (
+					([nextElement isDialogueElement] && !isDualDialogue) ||
+					([nextElement isDualDialogueElement] && isDualDialogue)
+				));
 
 				// Check if there is an upcoming dual dialogue block
 				if (element.nextElementIsDualDialogue) {
