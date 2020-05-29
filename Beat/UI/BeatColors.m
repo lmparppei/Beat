@@ -39,8 +39,12 @@
 		return color;
 	} else {
 		NSString *hexColor = [NSString stringWithString:name];
-		if (name.length > 1 && [name characterAtIndex:0] == '#') hexColor = [hexColor substringFromIndex: 1];
-		return [BeatColors colorWithHexColorString:hexColor];
+		if (name.length == 7 && [name characterAtIndex:0] == '#') {
+			hexColor = [hexColor substringFromIndex: 1];
+			return [BeatColors colorWithHexColorString:hexColor];
+		}
+		
+		return nil;
 	}
 
 }

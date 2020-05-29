@@ -440,9 +440,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willUndo:) name:NSUndoManagerWillUndoChangeNotification object:self.textView];
-	
+		
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
 	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
 	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
@@ -1226,7 +1224,6 @@
 	} else if (_currentLine.type == heading) {
 		if (![_sceneHeadings count]) [self collectHeadings];
 		[self.textView setAutomaticTextCompletionEnabled:YES];
-	
 	} else {
 		[_characterNames removeAllObjects];
 		[_sceneHeadings removeAllObjects];
@@ -1734,7 +1731,7 @@
 		(line.type == transitionLine && [line.string characterAtIndex:0] != '>')) {
 		//Make uppercase, and then reapply cursor position, because they'd get lost otherwise
 		NSArray<NSValue*>* selectedRanges = self.textView.selectedRanges;
-		
+
 		//[textStorage replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
 		[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
 		
@@ -4507,9 +4504,7 @@ triangle walks
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
 						
 			__block NSArray *pageBreaks = self.paginator.pageBreaks;
-			
-			NSArray *test = [self onlyPrintableElements:self.parser.lines];
-			
+						
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				// Update UI in main thread
 				

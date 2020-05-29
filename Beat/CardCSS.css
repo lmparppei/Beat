@@ -251,7 +251,8 @@ section {
 .card.orange p { color: white; }
 /* .orange h3 { color: rgb(255, 161, 13); } */
 
-.brown .sceneNumber, .brown.selected .sceneNumber, .color.brown { background-color: rgb(169, 106, 7); color: white; }
+.card.brown .sceneNumber, .brown.selected .sceneNumber, .color.brown { background-color: rgb(169, 106, 7); color: white; }
+.card.brown p { color: white; }
 /* .brown h3 { color: rgb(169, 106, 7); } */
 
 #noData {
@@ -347,7 +348,6 @@ section {
 	position: absolute;
 	top: 0; left: 0; right: 0; bottom: 0;
 	width: 100%; height: 100%;
-	/* background: linear-gradient(0deg, #cccccc 5%, rgba(204,204,204,0) 30%); */
 	z-index: 100;
 }
 .nightMode .card:after {
@@ -383,15 +383,12 @@ section {
 	font-weight: normal;
 	text-transform: none;
 }
-.card.selected {
-	background-color: white;
+.card.selected, .card.colord.selected {
+	background-color: white !important;
 	box-shadow: 0 0 5px #0085ca;
 	border: solid 4px #0085ca;
 }
 .card.selected p { color: #222; }
-.card.selected:after {
-	background: linear-gradient(0deg, white 5%, rgba(255,255,255,0) 30%);
-}
 .nightMode .card.selected {
 	background-color: #101010;
 }

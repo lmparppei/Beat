@@ -266,6 +266,11 @@
 {
     [self openURLInWebBrowser:@"http://www.fountain.io/syntax#section-overview"];
 }
+- (IBAction)showSupport:(id)sender
+{
+    [self openURLInWebBrowser:@"http://www.kapitan.fi/beat/support.html"];
+}
+
 
 - (IBAction)showFountainWebsite:(id)sender
 {

@@ -365,9 +365,7 @@ That you have escaped.
 			}
 			
 			// Handle character. Get whole block.
-			else if ((element.type == character || element.type == dualDialogueCharacter) && [self elementExists:i + 1]) {
-				if (element.nextElementIsDualDialogue) NSLog(@"next is dual for %@", element.string);
-				
+			else if ((element.type == character || element.type == dualDialogueCharacter) && [self elementExists:i + 1]) {				
 				bool isDualDialogue = NO;
 				if (element.type == dualDialogueCharacter) isDualDialogue = YES;
 				

@@ -42,6 +42,8 @@
 		B62392B2247FD351008E61D0 /* TouchTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62392B0247FD351008E61D0 /* TouchTimelineView.m */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
 		B625F13E24327DE300873F62 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A89B424806C8D0065A2BC /* FlatButton.swift */; };
+		B62A89B624806D190065A2BC /* FlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A89B424806C8D0065A2BC /* FlatButton.swift */; };
 		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
 		B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62ADC7823CCCE560015563A /* PreviewViewController.m */; };
 		B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B62ADC7A23CCCE560015563A /* PreviewViewController.xib */; };
@@ -68,6 +70,10 @@
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
 		B6907E3B233FE17C00741071 /* analysis.html in Resources */ = {isa = PBXBuildFile; fileRef = B6907E3A233FE17C00741071 /* analysis.html */; };
+		B69154652480EB7E002393D1 /* RoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154642480EB7E002393D1 /* RoundedButton.m */; };
+		B69154662480EB7E002393D1 /* RoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154642480EB7E002393D1 /* RoundedButton.m */; };
+		B69154692480F68E002393D1 /* BeatRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154682480F68E002393D1 /* BeatRoundedButton.m */; };
+		B691546A2480F68E002393D1 /* BeatRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154682480F68E002393D1 /* BeatRoundedButton.m */; };
 		B6952C95232B89BE00448B57 /* ScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6952C94232B89BE00448B57 /* ScrollView.m */; };
 		B69A928C231915E900FE6A3E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B69A928B231915E900FE6A3E /* README.md */; };
 		B69A92962319387B00FE6A3E /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = B69A92952319387B00FE6A3E /* CHANGELOG */; };
@@ -320,6 +326,7 @@
 		B62392B0247FD351008E61D0 /* TouchTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TouchTimelineView.m; path = Beat/UI/TouchTimelineView.m; sourceTree = SOURCE_ROOT; };
 		B624C144234BDE7100C438C7 /* BeatOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatOutlineView.h; path = Writer/BeatOutlineView.h; sourceTree = SOURCE_ROOT; };
 		B624C145234BDE7100C438C7 /* BeatOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatOutlineView.m; path = Writer/BeatOutlineView.m; sourceTree = SOURCE_ROOT; };
+		B62A89B424806C8D0065A2BC /* FlatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FlatButton.swift; path = Beat/UI/FlatButton.swift; sourceTree = SOURCE_ROOT; };
 		B62ADC7323CCCE560015563A /* fountainQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fountainQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B62ADC7423CCCE560015563A /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		B62ADC7723CCCE560015563A /* PreviewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreviewViewController.h; sourceTree = "<group>"; };
@@ -347,6 +354,10 @@
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = CardCSS.css; path = Beat/CardCSS.css; sourceTree = SOURCE_ROOT; };
 		B68AC7B42219733900E02466 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Tutorial.fountain; path = "Sample files/Tutorial.fountain"; sourceTree = SOURCE_ROOT; };
 		B6907E3A233FE17C00741071 /* analysis.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = analysis.html; path = Beat/Analysis/analysis.html; sourceTree = SOURCE_ROOT; };
+		B69154632480EB7E002393D1 /* RoundedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RoundedButton.h; path = Beat/UI/RoundedButton.h; sourceTree = SOURCE_ROOT; };
+		B69154642480EB7E002393D1 /* RoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RoundedButton.m; path = Beat/UI/RoundedButton.m; sourceTree = SOURCE_ROOT; };
+		B69154672480F68E002393D1 /* BeatRoundedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatRoundedButton.h; path = Writer/BeatRoundedButton.h; sourceTree = SOURCE_ROOT; };
+		B69154682480F68E002393D1 /* BeatRoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatRoundedButton.m; path = Writer/BeatRoundedButton.m; sourceTree = SOURCE_ROOT; };
 		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = Writer/ScrollView.h; sourceTree = SOURCE_ROOT; };
 		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = Writer/ScrollView.m; sourceTree = SOURCE_ROOT; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -758,6 +769,11 @@
 				B6A0392D247DC4FE0005DA6C /* BeatColors.m */,
 				B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */,
 				B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */,
+				B62A89B424806C8D0065A2BC /* FlatButton.swift */,
+				B69154632480EB7E002393D1 /* RoundedButton.h */,
+				B69154642480EB7E002393D1 /* RoundedButton.m */,
+				B69154672480F68E002393D1 /* BeatRoundedButton.h */,
+				B69154682480F68E002393D1 /* BeatRoundedButton.m */,
 			);
 			name = "User Interface";
 			sourceTree = "<group>";
@@ -1093,6 +1109,7 @@
 				B138B66619E1E8CA000489C4 /* FNElement.m in Sources */,
 				B61875A52471BEDA00FB7646 /* BeatPreview.m in Sources */,
 				B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */,
+				B69154652480EB7E002393D1 /* RoundedButton.m in Sources */,
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
@@ -1109,12 +1126,14 @@
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
 				B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */,
+				B69154692480F68E002393D1 /* BeatRoundedButton.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinousFountainParser.m in Sources */,
 				B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */,
 				B6EB5170246E9621009014AB /* MarginView.m in Sources */,
 				B6D2B71A2218B408005B8447 /* main.m in Sources */,
 				B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */,
+				B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */,
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
 				B667796523C5D1CB0029D508 /* FDXImport.m in Sources */,
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
@@ -1170,7 +1189,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6F49CDD246D66B0006D88D4 /* OutlineScene.m in Sources */,
+				B691546A2480F68E002393D1 /* BeatRoundedButton.m in Sources */,
 				B6F49CDE246D66B0006D88D4 /* ColorCheckbox.m in Sources */,
+				B69154662480EB7E002393D1 /* RoundedButton.m in Sources */,
 				B6F49CDF246D66B0006D88D4 /* SceneCards.m in Sources */,
 				B6F49CE0246D66B0006D88D4 /* FNElement.m in Sources */,
 				B6F49CE1246D66B0006D88D4 /* FDXInterface.m in Sources */,
@@ -1207,6 +1228,7 @@
 				B6F49CFC246D66B0006D88D4 /* FountainRegexes.m in Sources */,
 				B6F49CFD246D66B0006D88D4 /* FNScript.m in Sources */,
 				B6F49CFE246D66B0006D88D4 /* FastFountainParser.m in Sources */,
+				B62A89B624806D190065A2BC /* FlatButton.swift in Sources */,
 				B6F49CFF246D66B0006D88D4 /* NSMutableString+Regex.m in Sources */,
 				B6F49D00246D66B0006D88D4 /* FountainWriter.m in Sources */,
 				B6F49D01246D66B0006D88D4 /* FNHTMLScript.m in Sources */,
@@ -1392,7 +1414,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Beat-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1422,13 +1444,14 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Beat-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
 		B138B59719E1C974000489C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1453,6 +1476,7 @@
 		B138B59819E1C974000489C4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -1552,7 +1576,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Beat-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1582,7 +1606,7 @@
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Beat-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

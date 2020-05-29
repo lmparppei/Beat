@@ -233,13 +233,28 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		var status = '';
 		var color = '';
 		var changed = '';
+		var customStyles = 0;
 
 		if (card.selected == "yes") {
 			status = ' selected';
 			selected = index;
 		}
-		if (card.color != "") {
-			color = ' colored ' + card.color;
+		if (String(card.color) != "") {
+			if (String(card.color).substring(0,1) == "#") {
+				// lol
+				var customColor = String(card.color).substring(1);
+				var style = document.createElement('style');
+				
+				customStyles++;
+				var customStyleName = "customStyle" + customStyles.count;
+				
+				style.innerHTML = ".card."+customStyleName+", ."+customStyleName+".selected .sceneNumber { background-color: #"+customColor+"; color: white; } .card."+customStyleName+" p { color: #000; }";
+				document.head.appendChild(style);
+				
+				color = ' colored ' + customStyleName;
+			} else {
+				color = ' colored ' + card.color;
+			}
 		}
 		if (index == changedIndex) {
 			changed = ' indexChanged ';

@@ -35,7 +35,6 @@
 
 - (void)livePaginationFor:(NSArray*)script fromIndex:(NSInteger)index;
 - (void)paginate;
-- (void)paginateForSize:(CGSize)pageSize;
 - (NSArray *)pageAtIndex:(NSUInteger)index;
 
 - (NSInteger)pageNumberFor:(NSInteger)location;

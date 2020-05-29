@@ -636,8 +636,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[context saveGraphicsState];
 	
 	NSInteger pageNumber = 1;
-	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 155 * factor);
-	CGFloat width = self.frame.size.width * factor - self.textContainerInset.width * 2 + 290;
+	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 155);
+	//CGFloat width = self.frame.size.width * factor - self.textContainerInset.width * 2 + 290;
 	
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
 
@@ -650,6 +650,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
 		
+		/*
+		// Actually, let's not draw the separators at all?
+		 
 		// Draw separator only from the second page onwards
 		if (pageNumber > 1) {
 			NSColor* fillColor = _marginColor;
@@ -658,6 +661,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			NSRect rect = NSMakeRect(self.textContainerInset.width - 130, [pageBreakPosition floatValue] + self.textContainerInset.height, width, 2);
 			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 		}
+		*/
 		
 		pageNumber++;
 	}

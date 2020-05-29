@@ -65,7 +65,7 @@
 		 }];
 		 
 		 if (scene.color) {
-			 DynamicColor *color = [BeatColors color:[scene.color lowercaseString]];
+			 NSColor *color = [BeatColors color:[scene.color lowercaseString]];
 			 if (color) [item setValue:color forKey:@"color"];
 			 else [item setValue:NSColor.grayColor forKey:@"color"];
 		 }
@@ -88,7 +88,7 @@
         _scrollPosition = 0;
     }
     
-    // Drawing code here.
+    // beziering code here.
     NSGraphicsContext *context = [NSGraphicsContext currentContext];
     [context saveGraphicsState];
     
