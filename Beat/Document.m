@@ -469,7 +469,7 @@
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_PAGENUMBERS_KEY]) {
         self.showPageNumbers = NO;
     } else {
-        self.matchParentheses = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
+        self.showPageNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
     }
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:PRINT_SCENE_NUMBERS_KEY]) {
@@ -556,22 +556,22 @@
 	[self initAutosave];
 	
 	// Let's set a timer for 100ms. This should update the scene number labels after letting the text render.
-	[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
-
-	// Can I come over, I need to rest
-	// lay down for a while, disconnect
-	// the night was so long, the day even longer
-	// lay down for a while, recollect
+	//[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
+	
+	// Maybe that's not required anymore?
+	[self afterLoad];
 }
 -(void)afterLoad {
-	[self updateLayout];
-	[self updateSectionMarkers];
-	[self updateSceneNumberLabels];
-	
-	[self loadCaret];
-	[self ensureCaret];
-	[self updatePreview];
-	[self paginateFromIndex:0 sync:YES];
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		[self updateLayout];
+		[self updateSectionMarkers];
+		[self updateSceneNumberLabels];
+		
+		[self loadCaret];
+		[self ensureCaret];
+		[self updatePreview];
+		[self paginateFromIndex:0 sync:YES];
+	});
 }
 -(void)awakeFromNib {
 	// Set up recovery file saving
@@ -594,11 +594,15 @@
 		  */
 	 }
 }
-
 - (NSString *)displayName {
 	if (![self fileURL]) return @"Untitled";
 	return [super displayName];
 }
+
+// Can I come over, I need to rest
+// lay down for a while, disconnect
+// the night was so long, the day even longer
+// lay down for a while, recollect
 
 # pragma mark - Window interactions
 
@@ -952,17 +956,16 @@
 		
 		self.currentScene = [self getCurrentScene];
 
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){ 
-			
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 			NSString *rawString = [self preprocessSceneNumbers];
 			FNScript *script = [BeatPreview createPreview:rawString];
 			
 			if (self.previewCanceled == YES) return;
-
+			
 			FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self scene:self.currentScene.sceneNumber];
 			self.htmlString = htmlScript.html;
 			self.previewUpdated = YES;
-						
+
 			if (updateUI || self.printPreview) {
 				__block NSString *html = [htmlScript html];
 				dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -1217,19 +1220,23 @@
 
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
 	
-	// Fire up autocomplete and create cached lists of scene headings / character names
-	if (_currentLine.type == character) {
-		if (![_characterNames count]) [self collectCharacterNames];
-		[self.textView setAutomaticTextCompletionEnabled:YES];	
-	} else if (_currentLine.type == heading) {
-		if (![_sceneHeadings count]) [self collectHeadings];
-		[self.textView setAutomaticTextCompletionEnabled:YES];
-	} else {
-		[_characterNames removeAllObjects];
-		[_sceneHeadings removeAllObjects];
-		[self.textView setAutomaticTextCompletionEnabled:NO];
+	// Fire up autocomplete at the end of string and
+	// create cached lists of scene headings / character names
+	if (_textView.selectedRange.location == _currentLine.position + _currentLine.string.length - 1) {
+		if (_currentLine.type == character) {
+			if (![_characterNames count]) [self collectCharacterNames];
+			[self.textView setAutomaticTextCompletionEnabled:YES];
+		} else if (_currentLine.type == heading) {
+			if (![_sceneHeadings count]) [self collectHeadings];
+			[self.textView setAutomaticTextCompletionEnabled:YES];
+		} else {
+			[_characterNames removeAllObjects];
+			[_sceneHeadings removeAllObjects];
+			[self.textView setAutomaticTextCompletionEnabled:NO];
+		}
 	}
 
+		
 	// WIP
 	[self paginateFromIndex:affectedCharRange.location sync:NO];
 	
@@ -1554,6 +1561,9 @@
 
 	NSMutableArray *matches = [NSMutableArray array];
 	NSMutableArray *search = [NSMutableArray array];
+
+	// We need to get current line here for some reason, indexes are wrong otherwise
+	_currentLine = [self getCurrentLine];
 	
 	// Choose which array to search
 	if (_currentLine.type == character) search = _characterNames;
@@ -2884,7 +2894,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 		// Margins are drawn in a separate view
 		doc.marginView.backgroundColor = self.themeManager.theme.backgroundColor;
 		doc.marginView.marginColor = self.themeManager.theme.marginColor;
-
     }
 }
 
@@ -2913,6 +2922,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		[self setSelectedTabViewTab:0];
 		[self updateLayout];
 		[self ensureCaret];
+		_printPreview = NO;
     }
 	[self updateSceneNumberLabels];
 }
@@ -3667,14 +3677,18 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
 	
 	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
-	NSUInteger lineIndex = index + 2;
+	NSUInteger lineIndex = index + 1;
 	NSString * snippet = @"";
 	
 	// Get first paragraph
-	if (lineIndex < [[self.parser lines] count]) {
+	while (lineIndex < [[self.parser lines] count]) {
 		// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading
 		Line* snippetLine = [[self.parser lines] objectAtIndex:lineIndex];
-		if (snippetLine.type != heading && snippetLine.type != synopse && snippetLine.type != section && !snippetLine.omited) snippet = [[[self.parser lines] objectAtIndex:lineIndex] string];
+		if (snippetLine.type != heading && snippetLine.type != synopse && snippetLine.type != section && !snippetLine.omited) {
+			snippet = [[[self.parser lines] objectAtIndex:lineIndex] string];
+			break;
+		}
+		lineIndex++;
 	}
 	
 	// If it's longer than we want, split into sentences
@@ -3931,7 +3945,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		[self createAllLabels];
 	} else {
 		NSUInteger index = 0;
-		
+
 		for (OutlineScene * scene in [self getScenes]) {
 			// We'll wrap this in an autorelease pool, not sure if it helps or not :-)
 			@autoreleasepool {
@@ -3983,7 +3997,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return;
 }
 - (void) createAllLabels {
-	for (OutlineScene * scene in [self getScenes]) {
+	for (OutlineScene * scene in [self getOutlineItems]) {
 		[self createLabel:scene];
 	}
 }
@@ -3994,17 +4008,14 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[_sceneNumberLabels removeAllObjects];
 }
 - (IBAction) toggleSceneLabels: (id) sender {
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	
-	for (Document* doc in openDocuments) {
-		doc.showSceneNumberLabels = !doc.showSceneNumberLabels;
-		if (!doc.showSceneNumberLabels) {
-			[doc deleteAllLabels];
-		} else {
-			[doc updateSceneNumberLabels];
-		}
-	}
+	self.showSceneNumberLabels = !self.showSceneNumberLabels;
 	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
+	
+	if (self.showSceneNumberLabels) {
+		[self updateSceneNumberLabels];
+		[self ensureLayout];
+	}
+	else [self deleteAllLabels];
 }
 
 #pragma mark - Timeline + chronometry
@@ -4017,6 +4028,8 @@ static NSString *forceDualDialogueSymbol = @"^";
  Characters per line: ca 58
  Lines per page: ca 55 -> 1 minute
  Dialogue multiplier: 1,64 (meaning, how much more dialogue takes space)
+ 
+ 
  
 */
 

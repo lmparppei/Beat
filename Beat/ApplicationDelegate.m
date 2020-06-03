@@ -12,13 +12,21 @@
 
 @implementation ApplicationDelegate
 
+#define DEVELOPMENT NO
 #define DARKMODE_KEY @"Dark Mode"
+#define LATEST_VERSION_KEY @"Latest Version"
 
 #pragma mark - Help
 
 - (instancetype) init {	
+	
+	return [super init];
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{	
 	// This might be a silly implementation, but ..... well.
-	// Let's close the welcome screen if any sort of document has been opene
+	// Let's close the welcome screen if any sort of document has been opened
 	_dataSource = [[DataSource alloc] init];
 	self->recentFiles.dataSource = _dataSource;
 	[self->recentFiles reloadData];
@@ -48,8 +56,42 @@
 	// Check for pro version content
 	NSString* proContentPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
 	if (proContentPath) _proMode = YES;
-		
-	return self;
+	
+	//[NSApplication.sharedApplication setAutomaticCustomizeTouchBarMenuItemEnabled:YES];
+	[NSApplication sharedApplication].automaticCustomizeTouchBarMenuItemEnabled = YES;
+	
+	// Only open splash screen if no documents were opened by default
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	if ([openDocuments count] == 0 && self->_startModal && ![self->_startModal isVisible]) {
+		[self->_startModal setIsVisible:true];
+	}
+	
+	_darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:DARKMODE_KEY];
+	
+	// If the OS is set to dark mode, we'll force it
+	if (@available(macOS 10.14, *)) {
+		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			_darkMode = true;
+		} else {
+			if (_darkMode) _forceDarkMode = YES;
+		}
+	}
+	
+	[self checkVersion];
+}
+
+-(void)checkVersion {
+	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
+	NSInteger currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
+	
+	if (latestVersion == 0 || currentVersion > latestVersion) {
+		[[NSUserDefaults standardUserDefaults] setValue:[NSString stringWithFormat:@"%lu", currentVersion] forKey:LATEST_VERSION_KEY];
+		// [self showPatchNotes:nil];
+	} else {
+		// Up to date
+	}
 }
 
 - (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
@@ -167,30 +209,6 @@
 	if (flag) return NO; else return YES;
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-	//[NSApplication.sharedApplication setAutomaticCustomizeTouchBarMenuItemEnabled:YES];
-	[NSApplication sharedApplication].automaticCustomizeTouchBarMenuItemEnabled = YES; 
-	
-	// Only open splash screen if no documents were opened by default
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	if ([openDocuments count] == 0 && self->_startModal && ![self->_startModal isVisible]) {
-		[self->_startModal setIsVisible:true];
-	}
-	
-	_darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:DARKMODE_KEY];
-	
-	// If the OS is set to dark mode, we'll force it
-	if (@available(macOS 10.14, *)) {
-		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
-		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
-		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			_darkMode = true;
-		} else {
-			if (_darkMode) _forceDarkMode = YES;
-		}
-	}
-}
 
 #pragma mark - Dark mode stuff
 
@@ -252,9 +270,18 @@
 
 #pragma mark - Fountain syntax references & help
 
+- (IBAction)showPatchNotes:(id)sender {
+	self->manualWindow.title = @"Patch Notes";
+	
+	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"Patch Notes" ofType:@"html"];
+	[self->manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
+	[self->manualWindow setIsVisible:true];
+}
+
 - (IBAction)showManual:(id)sender {
 	//[[NSBundle mainBundle] loadNibNamed:@"BeatManual" owner:self topLevelObjects:nil];
 	[self->manualWindow setIsVisible:true];
+	self->manualWindow.title = @"Beat Manual";
 	
 	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
 	NSLog(@"path %@", htmlPath);

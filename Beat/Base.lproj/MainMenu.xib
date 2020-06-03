@@ -809,7 +809,7 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <imageView focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SZP-ku-Ryr">
-                                    <rect key="frame" x="30" y="89" width="202" height="186"/>
+                                    <rect key="frame" x="21" y="78" width="220" height="203"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="B_256" id="TXx-4z-e0c"/>
                                 </imageView>
@@ -861,7 +861,7 @@ DQ
                                     </scroller>
                                 </scrollView>
                                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bvh-bI-vIn" customClass="BeatRoundedButton">
-                                    <rect key="frame" x="-3" y="298" width="92" height="32"/>
+                                    <rect key="frame" x="0.0" y="296" width="92" height="32"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="80" id="kEC-I8-qvE"/>
                                     </constraints>
@@ -880,10 +880,10 @@ DQ
                                 </button>
                             </subviews>
                             <constraints>
-                                <constraint firstItem="bvh-bI-vIn" firstAttribute="leading" secondItem="e6r-ME-W5n" secondAttribute="leading" constant="3" id="53w-mR-oUH"/>
+                                <constraint firstItem="bvh-bI-vIn" firstAttribute="leading" secondItem="e6r-ME-W5n" secondAttribute="leading" constant="6" id="53w-mR-oUH"/>
                                 <constraint firstAttribute="trailing" secondItem="Fv5-7P-sl9" secondAttribute="trailing" id="Gfu-kF-z0L"/>
                                 <constraint firstAttribute="bottom" secondItem="Fv5-7P-sl9" secondAttribute="bottom" id="Mpv-Rx-bQJ"/>
-                                <constraint firstItem="bvh-bI-vIn" firstAttribute="top" secondItem="e6r-ME-W5n" secondAttribute="top" constant="2" id="Tt2-Pp-uSS"/>
+                                <constraint firstItem="bvh-bI-vIn" firstAttribute="top" secondItem="e6r-ME-W5n" secondAttribute="top" constant="4" id="Tt2-Pp-uSS"/>
                                 <constraint firstItem="Fv5-7P-sl9" firstAttribute="top" secondItem="e6r-ME-W5n" secondAttribute="top" id="Wnn-vV-UBe"/>
                             </constraints>
                         </view>

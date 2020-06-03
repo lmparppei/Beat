@@ -382,6 +382,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSString *string = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
 		NSInteger beginningOfWord = self.selectedRange.location - self.substring.length;
 		NSRange range = NSMakeRange(beginningOfWord, self.substring.length);
+		
 		if ([self shouldChangeTextInRange:range replacementString:string]) {
 			[self replaceCharactersInRange:range withString:string];
 			[self didChangeText];

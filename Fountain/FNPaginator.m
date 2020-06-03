@@ -669,7 +669,7 @@
 	if ([string length] < 1) return lineHeight;
 	
 	// set up the layout manager
-	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
+	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font }];
 	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
 #if TARGET_OS_IPHONE
 	NSTextContainer *textContainer = [[NSTextContainer alloc] init];

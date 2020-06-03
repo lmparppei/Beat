@@ -1,12 +1,11 @@
 
-## Beat 1.1 r7
+## Beat 1.2
 
 * All sorts of stuff
-* Wrote this changelog drunk
 * Bugs with match parentheses have been worked out
 * Optimized document loading
 * Optimized preview building
-* Experiments with live pagination
+* Live pagination (View → Show Page Numbers)
 * Force symbols are now formated (@, !, ~, etc.)
 * Fixed quirks with scene heading editing
 * Timeline View no longer scrolls randomly if the scene is already in view

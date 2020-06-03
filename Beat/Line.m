@@ -8,7 +8,6 @@
 
 #import "Line.h"
 #import "FNElement.h"
-#define LINE_HEIGHT 12
 
 @implementation Line
 

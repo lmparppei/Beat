@@ -14,7 +14,6 @@
 #define FORWARD( PROP, TYPE ) \
 - (TYPE)PROP { return [self.effectiveColor PROP]; }
 
-
 @interface DynamicColor ()
 @property (nonatomic, strong) NSColor *aquaColor;
 @property (nonatomic, strong, nullable) NSColor *darkAquaColor;
@@ -60,6 +59,9 @@
 
 - (NSColor *)effectiveColor
 {
+	// Don't allow calls to this class from anywhere else than main thread
+	if (![NSThread mainThread]) return self.aquaColor;
+	
 	// Modification for Beat. Load dark scheme if the app is set into dark mode.
 	if (NSApp) {
 		if ([(ApplicationDelegate*)[NSApp delegate] isForcedLightMode]) {
@@ -70,17 +72,18 @@
 		}
 	}
 	
-    if (@available(macOS 10.14, *)) {
-        NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
-        
-        NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
-        
-        if (self.darkAquaColor != nil && [appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-            return self.darkAquaColor;
-        }
-    }
+	if (@available(macOS 10.14, *)) {
+		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		
+		if (self.darkAquaColor != nil && [appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			return self.darkAquaColor;
+		}
+	}
 
-    return self.aquaColor;
+	return self.aquaColor;
+
 }
 
 FORWARD(colorSpace, NSColorSpace *)

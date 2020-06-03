@@ -30,6 +30,7 @@
 @property (nonatomic, weak) DynamicColor* marginColor;
 @property NSArray* pageBreaks;
 @property CGFloat zoomLevel;
+@property NSInteger autocompleteIndex;
 
 @end
 

@@ -1,0 +1,269 @@
+<!doctype html>
+<!--[if lt IE 9]><html class="ie"><![endif]-->
+<!--[if gte IE 9]><!--><html><!--<![endif]-->
+	<head>
+		<meta charset="utf-8"/>
+		
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+		<title>Beat</title>
+
+		<style type="text/css">
+			body {
+				margin: 0rem;
+				background-color: #f5f5f5;
+				color: #3b3b3b;
+				font-size: .925em;
+
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+			}
+
+			section {
+				background-color: #fefefe;
+				max-width: 38rem;
+				min-width: 20rem;
+				margin-left: auto;
+				margin-right: auto;
+				margin-bottom: 3em;
+				padding: 1.8rem 1.8rem 2rem 1.8rem;
+			}
+
+			h1, h2, h3, p, ul, ol, blockquote, dl {
+				margin-left: 2rem;
+				margin-right: 2rem;
+			}
+
+			h1 {
+				margin-top: .25em;
+				margin-bottom: 1rem;
+				font-weight: 300;
+				font-size: 2.4em;
+			}
+
+			h2 {
+				margin-top: 2em;
+				font-family: Courier, monospace;
+				font-weight: normal;
+			}
+
+			h3 {
+				margin-top: 1.5em;
+				font-size: 1.1em;
+			}
+			p {
+				line-height: 1.4em;
+				margin-bottom: .75em;
+				margin-top: 0;
+			}
+
+			a:link, a:active, a:visited {
+				color: #0075ee;
+			}
+
+			ol li a:hover {
+				color: black;
+			}
+			ol a:link, ol a:visited {
+				text-decoration: none;
+				color: #555;
+
+			}
+			ul a:link, ul a:visited {
+				text-decoration: none;
+				color: #888;
+			}
+
+			ol {
+				padding-left: 2rem;
+			}
+
+			dl {
+				width: 100%;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+			}
+			.forcedElements dd { font-family: Courier, monospace; }
+			dt, dd { width: 50%; margin: .25em 0 .25em 0; padding: 0;}
+			dd { width: 15%; color: #888; }
+			dt { width: 85%; }
+			img { max-width: 100%; height: auto; }
+			.image { margin-bottom: .75em; }
+
+			.shortcut {
+				font-family: Helvetica, sans-serif;
+				color: #888;
+			}
+			h2 .shortcut {
+				font-size: 80%;
+			}
+
+			.image.right {
+				margin-left: 1rem;
+				margin-bottom: 1rem;
+				max-width: 40%;
+				float: right;
+			}
+
+			.example {
+				margin: 1rem auto 1rem auto;
+				padding: 2rem;
+				font-family: courier, monospace;
+				font-size: 1em;
+				min-height: 1.2em;
+				background-color: #f7f7f7;
+
+				white-space: pre-wrap;
+			}
+			
+			.bold {
+				font-weight: bold;
+				text-transform: uppercase;
+			}
+
+			#dialogue {
+				min-height: 2.3em;
+			}
+			#parentheses {
+				min-height: 4.5em;
+			}
+
+			.inset {
+				padding-left: 25%;
+				text-indent: 6em;
+			}
+
+			.parenthesesInset span {
+				padding-left: 3em;
+			}
+
+			#stylization { min-height: 2.3em; }
+			.makeItalic .fItalic {
+				font-style: italic;
+			}
+			.makeItalic .symbol { color: gray; }
+			.makeBold .symbol2 { color: gray; }
+			.makeBold .fBold { font-weight: bold; }
+
+			#underlineFormating { min-height: 1.2em; }
+			.makeUnderline { text-decoration: underline; }
+
+			.centered { text-align: center; }
+			.rightAlign { display: block; text-align: right; }
+			.transition { text-align: right; }
+
+			#storyOutlining {
+				color: #666;
+			}
+			#dualDialogue {
+				padding-left: 15%;
+			}
+
+			#bigFish {
+				min-height: 5.8em;
+			}
+			.fauxCharacter {
+				display: inline-block;
+				text-indent: 14em;
+			}
+			.fauxCharacter2 {
+				display: inline-block;
+				text-indent: 14em;
+			}
+			.firstFaux .fauxCharacter { text-indent: 0; }
+			.secondFaux .fauxCharacter2 { text-indent: 0; }
+
+			.caret {
+				position: absolute;
+				width: 1px;
+				height: 1.2em;
+				margin-left: .1em;
+				margin-bottom: -.25em;
+				background-color: black;
+				display: inline-block;
+				animation: caretAnimation 1s linear infinite;
+			}
+			@keyframes caretAnimation {
+			  0% { opacity: 0; }
+			  1% { opacity: 1; }
+			  50% { opacity: 1; }
+			  51% { opacity: 0; }
+			  100% { opacity: 0; }
+			}
+
+
+			/* Table of contents */
+			.toc {
+				margin-top: 3rem;
+			}
+
+			.omit {
+				color: gray;
+			}
+
+
+
+			/*
+			MAIN CONTAINER
+			*/
+
+			#mainContainer {
+				display: flex;
+				justify-content: center;
+			}
+			#menu, #page {
+				padding: 1rem;
+			}
+			#menu {
+				width: auto;
+				max-width: 14rem;
+				min-width: 12rem;
+				position: relative;
+				flex: 1;
+			}
+			#menu #menuToc {
+				padding: 1rem;
+				position: fixed;
+			}
+			#menu ul, #menu ol, .toc ul {
+				margin: 0;
+				padding: 0;
+			}
+			#menu ul, .toc ul {
+				padding-left: 1em;
+			}
+			#menu li, .toc li {
+				margin: .25em 0 .25em 0;
+			}
+			#menu ol li, .toc ol li { margin: .75em 0 .75em 0; }
+			#menu ol ul li, .toc ol ul li { margin: .2em 0 .2em 0; }
+
+			@media screen and (max-width: 850px) {
+				#menu {
+					display: none;
+				}
+			}
+
+		</style>
+		<!--[if lt IE 9]>
+			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+	<body lang="fi">
+		<div id='mainContainer'>
+			<div id='page'>
+				<section>
+					<h1>Welcome to Beat</h1>
+					<p>This manual will guide you through Beat's basic functions. The app should easy to learn, but some of its best features can be easily missed.</p>
+
+				</section>
+			</div>
+		</div>
+
+	</body>
+
+</html>

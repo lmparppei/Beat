@@ -29,8 +29,8 @@
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
-	NSArray *array = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
-	return [array count];
+	NSArray *files = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
+	return [files count];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
@@ -44,14 +44,18 @@
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
 	// Feast your eyes on the beauty of Objective-C!
-
 	NSURL *fileUrl = item;
 	NSDate *fileDate;
 	NSError *error;
 	NSString *date = @"";
-	
+		
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.lineSpacing = 1;
+	
+	NSArray *files = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
+	
+	bool selected = NO;
+	if ([files indexOfObject:item] == outlineView.selectedRow) { selected = YES; }
 	
 	NSMutableAttributedString *fileResult = [[NSMutableAttributedString alloc] initWithString:[[item URLByDeletingPathExtension] lastPathComponent] attributes:@{
 		NSParagraphStyleAttributeName: paragraphStyle,
@@ -70,7 +74,7 @@
 	}
 	
 	NSColor *dateColor = NSColor.grayColor;
-	if (self.selectedRow == item) {
+	if (selected) {
 		dateColor = NSColor.lightGrayColor;
 	}
 	
