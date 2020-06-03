@@ -1,4 +1,10 @@
 
+## Beat 1.2 r2
+
+* Character name autocomplete fixed
+* Weird asynchronous UI calls fixed
+
+
 ## Beat 1.2
 
 * All sorts of stuff
