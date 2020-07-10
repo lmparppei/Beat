@@ -4,7 +4,7 @@ A simple and elegant screenwriting app for macOS, using the plain-text Fountain 
 
 Read more: https://kapitan.fi/beat/
 
-This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. All other existing screenwriting apps were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations. To make up forthose, Beat some **very** useful features, such as powerful outlining tools, scene coloring and filtering. 
+This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. All other existing screenwriting apps were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations. To make up for those, Beat some **very** useful features, such as powerful outlining tools, scene coloring and filtering. 
 
 There is a working iOS prototype, but its development is on hiatus right now, as I'm working on my own films. I not a real programmer but an artist and a filmmaker, and it really shows in the code. I'm open to any suggestions, improvements, feedback and collaboration. 
 
@@ -42,13 +42,6 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 
 Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP. As of 1.1.0, the app is getting more and more stable.
 
-Some future milestones & considerations:
-
-* Fixing the ancient Fountain open source stuff, incl. removing references to RegexKitLite
-* Show pages in edit view (this might turn out to be a bigger problem than expected)
-* Have Beat only allow happy endings (somewhat limiting)
-* Making the world a better place (not enough coding skills)
-* Planting some trees to fight climate change (WIP)
 
 ### Can I help?
 
