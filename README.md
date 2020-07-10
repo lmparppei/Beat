@@ -21,7 +21,9 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 * Final Draft import / export
 * PDF export
 * Title page editor
+* Super-fast print preview
 * Automatic scene numbering in edit view – with forced scene number recognition
+* Page numbering while editing
 * Outline list view, with sections and synopses, scene reordering and filtering
 * Outline card view, with sections & synopses
 * Timeline view with sections & synopses
@@ -30,6 +32,7 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 * Analysis view, with line count per character, amount lines by gender, scene locations, etc.
 * Fountain Quicklook in Finder
 * Autosave & script backups in case of crashes 
+* Automatic paragraphs & tab key for auto character cue
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 
