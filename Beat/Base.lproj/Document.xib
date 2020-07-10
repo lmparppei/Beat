@@ -64,7 +64,7 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" animationBehavior="default" tabbingMode="disallowed" id="xOd-HO-29H" userLabel="Window">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
-            <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
+            <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES" fullScreenDisallowsTiling="YES"/>
             <rect key="contentRect" x="384" y="326" width="1100" height="661"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="gIp-Ho-8D9" customClass="MasterView">
@@ -86,6 +86,89 @@
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="Sy0-kF-Tby" customClass="MarginView">
                                             <rect key="frame" x="330" y="120" width="770" height="541"/>
                                             <subviews>
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="MJt-fS-Zk9" userLabel="Button View">
+                                                    <rect key="frame" x="15" y="506" width="740" height="22"/>
+                                                    <subviews>
+                                                        <button toolTip="Show Outline" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
+                                                            <rect key="frame" x="0.0" y="1" width="24" height="21"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <buttonCell key="cell" type="square" alternateTitle="Show Outline View (⌘D)" bezelStyle="shadowlessSquare" image="OutlineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
+                                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                <font key="font" metaFont="system"/>
+                                                            </buttonCell>
+                                                            <accessibility description="Outline view"/>
+                                                            <connections>
+                                                                <action selector="toggleOutlineView:" target="-2" id="itM-sD-VVq"/>
+                                                            </connections>
+                                                        </button>
+                                                        <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6aa-Mu-dRU">
+                                                            <rect key="frame" x="642" y="0.0" width="98" height="22"/>
+                                                            <subviews>
+                                                                <button toolTip="Show Cards" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DOv-x4-OK1" userLabel="Preview Button">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="28" height="22"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="28" id="ARQ-yA-xpr"/>
+                                                                        <constraint firstAttribute="height" constant="22" id="VOb-Dg-kfx"/>
+                                                                    </constraints>
+                                                                    <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Card view"/>
+                                                                    <connections>
+                                                                        <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button toolTip="Show Timeline" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SU7-uh-HJD" userLabel="Timeline Button">
+                                                                    <rect key="frame" x="36" y="0.0" width="27" height="22"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="22" id="HOY-DG-jmy"/>
+                                                                        <constraint firstAttribute="width" constant="27" id="b71-M1-uqs"/>
+                                                                    </constraints>
+                                                                    <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="3LY-u6-Jq0">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Show Timeline"/>
+                                                                    <connections>
+                                                                        <action selector="toggleTimeline:" target="-2" id="h1e-AW-X20"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button toolTip="Show Index Cards" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZL1-eS-Zb2" userLabel="Cards Button">
+                                                                    <rect key="frame" x="71" y="0.0" width="27" height="22"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="width" constant="27" id="bZt-3Q-vzN"/>
+                                                                        <constraint firstAttribute="height" constant="22" id="wqs-J9-YHI"/>
+                                                                    </constraints>
+                                                                    <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Show Card View"/>
+                                                                    <connections>
+                                                                        <action selector="toggleCards:" target="-2" id="bmu-cy-63o"/>
+                                                                    </connections>
+                                                                </button>
+                                                            </subviews>
+                                                            <visibilityPriorities>
+                                                                <integer value="1000"/>
+                                                                <integer value="1000"/>
+                                                                <integer value="1000"/>
+                                                            </visibilityPriorities>
+                                                            <customSpacing>
+                                                                <real value="3.4028234663852886e+38"/>
+                                                                <real value="3.4028234663852886e+38"/>
+                                                                <real value="3.4028234663852886e+38"/>
+                                                            </customSpacing>
+                                                        </stackView>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="trailing" secondItem="6aa-Mu-dRU" secondAttribute="trailing" id="bZb-71-6wj"/>
+                                                        <constraint firstAttribute="bottom" secondItem="6aa-Mu-dRU" secondAttribute="bottom" id="hi4-BI-H2l"/>
+                                                        <constraint firstItem="6aa-Mu-dRU" firstAttribute="top" secondItem="MJt-fS-Zk9" secondAttribute="top" id="ka5-lJ-Sxd"/>
+                                                        <constraint firstAttribute="height" constant="22" id="rj3-bF-JTS"/>
+                                                    </constraints>
+                                                </customView>
                                                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA" customClass="ScrollView">
                                                     <rect key="frame" x="0.0" y="0.0" width="770" height="541"/>
                                                     <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" copiesOnScroll="NO" id="sxN-R8-PHt">
@@ -121,22 +204,27 @@
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="NLv-wd-O2O">
-                                                        <rect key="frame" x="754" y="0.0" width="16" height="518"/>
+                                                        <rect key="frame" x="754" y="0.0" width="16" height="0.0"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <connections>
                                                         <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Bvs-MS-k7k"/>
                                                         <outlet property="outlineButton" destination="ULq-c1-qrj" id="CuS-Gp-cWK"/>
-                                                        <outlet property="outlineButtonY" destination="S8n-vU-Ues" id="vM9-Nj-Iyl"/>
+                                                        <outlet property="outlineButtonY" destination="429-50-Dar" id="p4k-AE-LcW"/>
+                                                        <outlet property="previewButton" destination="DOv-x4-OK1" id="9jU-o9-8xZ"/>
                                                         <outlet property="timelineButton" destination="SU7-uh-HJD" id="cka-oG-7P8"/>
                                                     </connections>
                                                 </scrollView>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstItem="MJt-fS-Zk9" firstAttribute="leading" secondItem="Sy0-kF-Tby" secondAttribute="leading" constant="15" id="1bY-sQ-sPS"/>
+                                                <constraint firstItem="MJt-fS-Zk9" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" constant="13" id="429-50-Dar"/>
                                                 <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" id="6p2-Ph-c18"/>
                                                 <constraint firstItem="Mky-48-wwA" firstAttribute="leading" secondItem="Sy0-kF-Tby" secondAttribute="leading" id="aih-1T-aD8"/>
                                                 <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="fLW-R3-ygb"/>
+                                                <constraint firstItem="MJt-fS-Zk9" firstAttribute="centerX" secondItem="Mky-48-wwA" secondAttribute="centerX" id="siH-iz-DSU"/>
                                                 <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="x4A-3a-CZV"/>
+                                                <constraint firstAttribute="trailing" secondItem="MJt-fS-Zk9" secondAttribute="trailing" constant="15" id="yAr-gB-qyX"/>
                                             </constraints>
                                         </customView>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uRk-cB-Qej">
@@ -149,50 +237,6 @@
                                                 <wkPreferences key="preferences"/>
                                             </wkWebViewConfiguration>
                                         </wkWebView>
-                                        <button toolTip="Show Outline" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULq-c1-qrj">
-                                            <rect key="frame" x="345" y="624" width="24" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="24" id="26U-Jf-0Uo"/>
-                                            </constraints>
-                                            <buttonCell key="cell" type="square" alternateTitle="Show Outline View (⌘D)" bezelStyle="shadowlessSquare" image="OutlineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <accessibility description="Outline view"/>
-                                            <connections>
-                                                <action selector="toggleOutlineView:" target="-2" id="itM-sD-VVq"/>
-                                            </connections>
-                                        </button>
-                                        <button toolTip="Show Cards" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZL1-eS-Zb2" userLabel="Cards Button">
-                                            <rect key="frame" x="1051" y="624" width="27" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="27" id="Afx-Wj-98R"/>
-                                                <constraint firstAttribute="height" constant="21" id="ufE-00-HmI"/>
-                                            </constraints>
-                                            <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <accessibility description="Card view"/>
-                                            <connections>
-                                                <action selector="toggleCards:" target="-2" id="bmu-cy-63o"/>
-                                            </connections>
-                                        </button>
-                                        <button toolTip="Show Cards" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SU7-uh-HJD" userLabel="Timeline Button">
-                                            <rect key="frame" x="1015" y="624" width="27" height="22"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="22" id="820-HN-xnq"/>
-                                                <constraint firstAttribute="width" constant="27" id="FnC-U4-MhE"/>
-                                            </constraints>
-                                            <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="3LY-u6-Jq0">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                            <accessibility description="Card view"/>
-                                            <connections>
-                                                <action selector="toggleTimeline:" target="-2" id="h1e-AW-X20"/>
-                                            </connections>
-                                        </button>
                                         <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="yra-qv-1lk" customClass="ColorView">
                                             <rect key="frame" x="0.0" y="120" width="330" height="541"/>
                                             <subviews>
@@ -447,7 +491,7 @@
                                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                         </tableHeaderCell>
                                                                         <textFieldCell key="dataCell" refusesFirstResponder="YES" allowsUndo="NO" title="Text Cell" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="zgD-aV-dKT">
-                                                                            <font key="font" metaFont="label" size="12"/>
+                                                                            <font key="font" metaFont="controlContent"/>
                                                                             <color key="textColor" red="0.80841159326424872" green="0.80841159326424872" blue="0.80841159326424872" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                             <color key="backgroundColor" name="Background"/>
                                                                         </textFieldCell>
@@ -528,18 +572,11 @@
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="Sy0-kF-Tby" secondAttribute="trailing" id="13T-jw-kT7"/>
-                                        <constraint firstAttribute="trailing" secondItem="ZL1-eS-Zb2" secondAttribute="trailing" constant="22" id="3ED-YM-88R"/>
                                         <constraint firstAttribute="trailing" secondItem="uRk-cB-Qej" secondAttribute="trailing" id="6IE-bj-H3u"/>
-                                        <constraint firstItem="ZL1-eS-Zb2" firstAttribute="baseline" secondItem="ULq-c1-qrj" secondAttribute="baseline" id="7mc-U1-G75"/>
-                                        <constraint firstItem="ZL1-eS-Zb2" firstAttribute="leading" secondItem="SU7-uh-HJD" secondAttribute="trailing" constant="9" id="DQp-Bm-gX0"/>
                                         <constraint firstItem="yra-qv-1lk" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="Djf-2R-13M"/>
                                         <constraint firstAttribute="bottom" secondItem="uRk-cB-Qej" secondAttribute="bottom" id="EIK-TP-NFv"/>
                                         <constraint firstItem="uRk-cB-Qej" firstAttribute="leading" secondItem="Qth-9B-jWR" secondAttribute="leading" id="L3a-wY-rAJ"/>
-                                        <constraint firstItem="SU7-uh-HJD" firstAttribute="baseline" secondItem="ZL1-eS-Zb2" secondAttribute="baseline" id="LDJ-rc-op1"/>
-                                        <constraint firstItem="ZL1-eS-Zb2" firstAttribute="top" secondItem="ULq-c1-qrj" secondAttribute="top" id="Lgt-MR-HCD"/>
                                         <constraint firstItem="uRk-cB-Qej" firstAttribute="top" secondItem="yra-qv-1lk" secondAttribute="bottom" id="OY9-Sv-5gn"/>
-                                        <constraint firstItem="ULq-c1-qrj" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" constant="16" id="S8n-vU-Ues"/>
-                                        <constraint firstItem="ULq-c1-qrj" firstAttribute="leading" secondItem="yra-qv-1lk" secondAttribute="trailing" constant="15" id="TyL-eL-abJ"/>
                                         <constraint firstItem="yra-qv-1lk" firstAttribute="leading" secondItem="Qth-9B-jWR" secondAttribute="leading" id="YQ6-nJ-rQi"/>
                                         <constraint firstItem="uRk-cB-Qej" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="bottom" id="s2j-gC-Qyv"/>
                                         <constraint firstItem="Sy0-kF-Tby" firstAttribute="top" secondItem="Qth-9B-jWR" secondAttribute="top" id="uUG-Kq-CgG"/>
@@ -549,7 +586,7 @@
                             </tabViewItem>
                             <tabViewItem label="Render" identifier="2" id="Ycm-en-OeX" userLabel="Render Tab">
                                 <view key="view" id="ECs-3D-rzc">
-                                    <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1125" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ddy-rn-xRJ">
@@ -570,7 +607,7 @@
                             </tabViewItem>
                             <tabViewItem label="Cards" identifier="3" id="798-ya-EGc" userLabel="Cards Tab">
                                 <view key="view" id="fPc-ie-Xae">
-                                    <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1125" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ja-Hc-I6Z">
@@ -679,7 +716,7 @@
             <point key="canvasLocation" x="-515" y="88"/>
         </menu>
         <userDefaultsController representsSharedInstance="YES" id="ho8-td-WxP"/>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rni-cY-faX" customClass="NSPanel">
+        <window title="Analysis Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rni-cY-faX" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="794" height="560"/>
@@ -720,7 +757,7 @@
             </view>
             <point key="canvasLocation" x="1235" y="169"/>
         </window>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="vXu-Dv-TW5" customClass="NSPanel">
+        <window title="Title Page Editor" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="vXu-Dv-TW5" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="132" width="407" height="406"/>
@@ -908,7 +945,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="71" id="drl-vd-iFy"/>
                                         </constraints>
-                                        <textFieldCell key="cell" lineBreakMode="charWrapping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="44k-iL-CRT">
+                                        <textFieldCell key="cell" lineBreakMode="charWrapping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="E-mail, phone, ..." drawsBackground="YES" id="44k-iL-CRT">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -943,7 +980,7 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="71" id="bZe-Az-RNd"/>
                                         </constraints>
-                                        <textFieldCell key="cell" lineBreakMode="charWrapping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="h0P-uF-B6K">
+                                        <textFieldCell key="cell" lineBreakMode="charWrapping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="Anything noteworthy" drawsBackground="YES" id="h0P-uF-B6K">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1034,36 +1071,6 @@ Gw
             </view>
             <point key="canvasLocation" x="1926" y="92"/>
         </window>
-        <stackView distribution="fill" orientation="horizontal" alignment="centerY" spacing="31" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="LFZ-Zk-rrE">
-            <rect key="frame" x="0.0" y="0.0" width="367" height="22"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1jQ-zh-ykz">
-                    <rect key="frame" x="-2" y="3" width="70" height="16"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Script Title" id="1cl-LC-fb1">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Wao-7m-8eM">
-                    <rect key="frame" x="97" y="1" width="270" height="21"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Script Title" drawsBackground="YES" id="q4H-R3-1J6">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
-            </subviews>
-            <visibilityPriorities>
-                <integer value="1000"/>
-                <integer value="1000"/>
-            </visibilityPriorities>
-            <customSpacing>
-                <real value="3.4028234663852886e+38"/>
-                <real value="3.4028234663852886e+38"/>
-            </customSpacing>
-        </stackView>
         <customObject id="ORa-G1-ope" customClass="TitlePageEditorDelegate"/>
         <touchBar id="FXM-lH-N3d" userLabel="Outline Touch Bar">
             <touchBarItems>
@@ -1164,22 +1171,90 @@ Gw
             </touchBarItems>
             <point key="canvasLocation" x="-259" y="-468"/>
         </touchBar>
-        <popUpButton verticalHuggingPriority="750" id="k8R-5j-iHB">
-            <rect key="frame" x="0.0" y="0.0" width="100" height="26"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Dz0-3S-Rhw" id="SXx-GT-Nfn">
-                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                <font key="font" metaFont="system"/>
-                <menu key="menu" id="M3L-NI-ceG">
-                    <items>
-                        <menuItem title="Item 1" state="on" id="Dz0-3S-Rhw"/>
-                        <menuItem title="Item 2" id="Iuz-mc-Amr"/>
-                        <menuItem title="Item 3" id="8VI-CT-3NE"/>
-                    </items>
-                </menu>
-            </popUpButtonCell>
-            <point key="canvasLocation" x="-379" y="295"/>
-        </popUpButton>
+        <window title="Title Page Editor" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="ZJr-TT-b6y" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" utility="YES" nonactivatingPanel="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="181" y="118" width="469" height="614"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <view key="contentView" id="Zvz-MB-ykH">
+                <rect key="frame" x="0.0" y="0.0" width="469" height="614"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box fixedFrame="YES" boxType="custom" borderType="line" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="ufH-J7-02y">
+                        <rect key="frame" x="20" y="20" width="429" height="574"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <view key="contentView" id="Ouh-eZ-8ul">
+                            <rect key="frame" x="1" y="1" width="427" height="572"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uye-7c-fQ7">
+                                    <rect key="frame" x="-2" y="352" width="431" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="center" placeholderString="Script Title" usesSingleLineMode="YES" id="l7Q-k4-1zI">
+                                        <font key="font" size="10" name="Courier"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <outlet property="delegate" destination="ORa-G1-ope" id="AWe-lN-ndH"/>
+                                    </connections>
+                                </textField>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HSQ-iN-ykr">
+                                    <rect key="frame" x="-2" y="318" width="431" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="center" placeholderString="Written by..." usesSingleLineMode="YES" id="FOf-Lp-VzN">
+                                        <font key="font" size="10" name="Courier"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <outlet property="delegate" destination="ORa-G1-ope" id="9cD-J3-HKy"/>
+                                    </connections>
+                                </textField>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kDH-kC-Cha">
+                                    <rect key="frame" x="-2" y="284" width="431" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="center" placeholderString="Firstname Lastname" usesSingleLineMode="YES" id="iKO-ov-y21">
+                                        <font key="font" size="10" name="Courier"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <outlet property="delegate" destination="ORa-G1-ope" id="qOK-jS-8QL"/>
+                                    </connections>
+                                </textField>
+                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iI2-a1-IQ8">
+                                    <rect key="frame" x="22" y="23" width="183" height="53"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" lineBreakMode="charWrapping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" alignment="left" placeholderString="E-mail, phone, ..." id="MaL-vh-dDs">
+                                        <font key="font" size="10" name="Courier"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <outlet property="delegate" destination="ORa-G1-ope" id="BY4-QA-b3H"/>
+                                    </connections>
+                                </textField>
+                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Reb-1U-YYV">
+                                    <rect key="frame" x="209" y="23" width="200" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" alignment="right" placeholderString="Draft Date" usesSingleLineMode="YES" id="5F3-q5-vNJ">
+                                        <font key="font" size="10" name="Courier"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <outlet property="delegate" destination="ORa-G1-ope" id="54F-Gn-Xbh"/>
+                                    </connections>
+                                </textField>
+                            </subviews>
+                        </view>
+                        <color key="fillColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </box>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="2431.5" y="199"/>
+        </window>
     </objects>
     <resources>
         <image name="CardsIcon" width="370" height="370"/>
@@ -1198,9 +1273,10 @@ Gw
         <image name="NSTouchBarGoUpTemplate" width="16" height="30"/>
         <image name="OutlineIcon" width="370" height="370"/>
         <image name="OutlineIcon_white" width="512" height="512"/>
+        <image name="PreviewIcon" width="370" height="370"/>
         <image name="TimelineIcon" width="512" height="512"/>
         <image name="TimelineIcon_white" width="512" height="512"/>
-        <image name="ToolbarTimeline_white" width="512" height="512"/>
+        <image name="ToolbarTimeline_white" width="512" height="300"/>
         <namedColor name="Background">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -93,16 +93,16 @@ NSString * const CENTERED_TEXT_PATTERN          = @"^>[^<>\\n]+<";
 
 #pragma mark - Styling for FDX
 
-NSString * const BOLD_ITALIC_UNDERLINE_PATTERN  = @"(_\\*{3}|\\*{3}_)([^<>]+)(_\\*{3}|\\*{3}_)";
-NSString * const BOLD_ITALIC_PATTERN            = @"(\\*{3})([^<>]+)(\\*{3})";
-NSString * const BOLD_UNDERLINE_PATTERN         = @"(_\\*{2}|\\*{2}_)([^<>]+)(_\\*{2}|\\*{2}_)";
-NSString * const ITALIC_UNDERLINE_PATTERN       = @"(_\\*{1}|\\*{1}_)([^<>]+)(_\\*{1}|\\*{1}_)";
+NSString * const BOLD_ITALIC_UNDERLINE_PATTERN  = @"(?<!\\\\)(_\\*{3}|\\*{3}_)([^<>]+)(_\\*{3}|\\*{3}_)";
+NSString * const BOLD_ITALIC_PATTERN            = @"(?<!\\\\)(\\*{3})([^<>]+)(\\*{3})";
+NSString * const BOLD_UNDERLINE_PATTERN         = @"(?<!\\\\)(_\\*{2}|\\*{2}_)([^<>]+)(_\\*{2}|\\*{2}_)";
+NSString * const ITALIC_UNDERLINE_PATTERN       = @"(?<!\\\\)(_\\*{1}|\\*{1}_)([^<>]+)(_\\*{1}|\\*{1}_)";
 //NSString * const BOLD_PATTERN                   = @"(\\*{2})([^<>]+)(\\*{2})";
 //NSString * const ITALIC_PATTERN                 = @"(?<!\\\\)(\\*{1})([^<>]+)(\\*{1})";
 //NSString * const UNDERLINE_PATTERN              = @"(_)([^<>_]+)(_)";
-NSString* const BOLD_PATTERN                    = @"(\\*{2})(.+?)(\\*{2})";
-NSString* const ITALIC_PATTERN                  = @"(\\*)(.+?)(\\*)";
-NSString* const UNDERLINE_PATTERN               = @"(_)(.+?)(_)";
+NSString* const BOLD_PATTERN                    = @"(?<!\\\\)(\\*{2})(.+?)(\\*{2})";
+NSString* const ITALIC_PATTERN                  = @"(?<!\\\\)(\\*)(.+?)(\\*)";
+NSString* const UNDERLINE_PATTERN               = @"(?<!\\\\)(_)(.+?)(_)";
 
 #pragma mark - Styling templates
 

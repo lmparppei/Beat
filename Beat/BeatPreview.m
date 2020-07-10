@@ -19,8 +19,74 @@
 #import "Line.h"
 #import "ContinousFountainParser.h"
 #import "OutlineScene.h"
+#import "BeatHTMLScript.h"
 
 @implementation BeatPreview
+
++ (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene {
+	// Continuous parser is much faster than the normal Fountain parser
+	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText];
+	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
+		@"script": [NSMutableArray array],
+		@"title page": [NSMutableArray array]
+	}];
+	NSMutableArray *elements = [NSMutableArray array];
+	
+	Line *previousLine;
+	
+	for (Line *line in parser.lines) {
+		// Skip over certain elements
+		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
+			if (line.type == empty) previousLine = line;
+			continue;
+		}
+	
+		// This is a paragraph with a line break,
+		// so append the line to the previous one
+		if (line.type == action && line.isSplitParagraph && [parser.lines indexOfObject:line] > 0) {
+			Line *previousLine = [elements objectAtIndex:elements.count - 1];
+
+			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.cleanedString];
+			continue;
+		}
+		
+		if (line.type == dialogue && line.string.length < 1) {
+			line.type = empty;
+			previousLine = line;
+			continue;
+		}
+
+		[elements addObject:line];
+				
+		// If this is dual dialogue character cue,
+		// we need to search for the previous one too
+		if (line.isDualDialogueElement) {
+			bool previousCharacterFound = NO;
+			NSInteger i = elements.count - 2; // Go for previous element
+			while (i > 0) {
+				Line *previousLine = [elements objectAtIndex:i];
+				
+				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
+				
+				if (previousLine.type == character ) {
+					previousLine.nextElementIsDualDialogue = YES;
+					previousCharacterFound = YES;
+					break;
+				}
+				i--;
+			}
+		}
+		
+		previousLine = line;
+	}
+	
+	// Set script data
+	[script setValue:parser.titlePage forKey:@"title page"];
+	[script setValue:elements forKey:@"script"];
+
+	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document scene:scene];
+	return html.html;
+}
 
 + (FNScript*) createPreview:(NSString*)rawText {
 	// Continuous parser is much faster than the normal Fountain parser
@@ -58,7 +124,7 @@
 		if (element) {
 			script.elements = [script.elements arrayByAddingObject:element];
 		}
-		
+				
 		// If this is dual dialogue character cue,
 		// we need to search for the previous one too
 		if (element.isDualDialogue) {
@@ -79,6 +145,7 @@
 				element.isDualDialogue = NO;
 			}
 		}
+		
 		previousLine = line;
 	}
 	

@@ -180,7 +180,7 @@
                                                 <action selector="exportFDX:" target="-1" id="F6e-vG-CJO"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Outline" hidden="YES" id="lAo-B9-uaU">
+                                        <menuItem title="Export Outline..." id="lAo-B9-uaU">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportOutline:" target="-1" id="HXB-My-Vhk"/>
@@ -506,9 +506,15 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Pfc-pX-Eb8"/>
-                            <menuItem title="Force Scene Heading" keyEquivalent="H" id="zQH-Oq-iw8">
+                            <menuItem title="Force Element..." id="zQH-Oq-iw8">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                            </menuItem>
+                            <menuItem title="Force Scene Heading" keyEquivalent="H" id="WPf-Ao-Wcs">
                                 <connections>
-                                    <action selector="forceHeading:" target="-1" id="f1W-J4-4us"/>
+                                    <action selector="forceHeading:" target="-1" id="zCQ-22-brK"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Force Action" keyEquivalent="A" id="Oob-ml-0qq">
@@ -583,64 +589,63 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="NmP-5j-KWS"/>
-                            <menuItem title="Automatically Match Parentheses" state="on" id="s7C-kV-oq3">
+                            <menuItem title="Match Parentheses" state="on" id="s7C-kV-oq3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleMatchParentheses:" target="-1" id="Bhq-on-LD2"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Automatic Paragraph Breaks" state="on" id="6Wc-Ky-Bx7">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleAutoLineBreaks:" target="-1" id="hOj-eO-cgP"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="View" id="xxc-nD-Db8">
+                <menuItem title="View" id="tYD-GA-KC2">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="View" systemMenu="window" id="thH-mK-W2j">
+                    <menu key="submenu" title="View" id="Rpw-TR-9FQ">
                         <items>
-                            <menuItem title="Show Outline" keyEquivalent="d" id="lzi-aW-JnK">
+                            <menuItem title="Show Outline" keyEquivalent="d" id="Nj4-Id-nHQ">
                                 <connections>
-                                    <action selector="toggleOutlineView:" target="-1" id="hfv-oK-lJK"/>
+                                    <action selector="toggleOutlineView:" target="-1" id="aFX-A5-v4a"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Cards" keyEquivalent="D" id="bIu-r5-n8u">
+                            <menuItem title="Show Cards" keyEquivalent="D" id="ab0-W3-2f9">
                                 <connections>
-                                    <action selector="toggleCards:" target="-1" id="PBR-rE-qT9"/>
+                                    <action selector="toggleCards:" target="-1" id="W45-hd-uTy"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Timeline" keyEquivalent="t" id="olz-Dr-GNm">
+                            <menuItem title="Show Timeline" keyEquivalent="t" id="tMJ-KE-ZTw">
                                 <connections>
-                                    <action selector="toggleTimeline:" target="-1" id="hmI-el-P9K"/>
+                                    <action selector="toggleTimeline:" target="-1" id="fm3-Tp-UB7"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Analysis" id="sOB-Nk-Cq9">
+                            <menuItem title="Screenplay Analysis" keyEquivalent="A" id="TCn-De-Kk7">
+                                <connections>
+                                    <action selector="showAnalysis:" target="-1" id="fsX-Fc-sal"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="gAO-mF-B8i"/>
+                            <menuItem title="Show Scene Numbers" state="on" id="V7o-Tn-OF3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="showAnalysis:" target="-1" id="Her-fk-4dH"/>
+                                    <action selector="toggleSceneLabels:" target="-1" id="TFS-Qz-xVG"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="UNn-da-tvs"/>
-                            <menuItem title="Show Scene Numbers" state="on" id="5Rh-Kl-j5e">
+                            <menuItem title="Show Page Numbers" id="FCU-0n-nVu">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="toggleSceneLabels:" target="-1" id="VCW-6l-TxD"/>
+                                    <action selector="togglePageNumbers:" target="-1" id="gdh-dA-GH1"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Page Numbers" id="0AX-bH-bVJ">
+                            <menuItem isSeparatorItem="YES" id="tVJ-xa-3TK"/>
+                            <menuItem title="Dark Mode" id="8a1-24-Jc9">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="togglePageNumbers:" target="-1" id="gOF-Zo-GAW"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="oCK-Ga-Hr1"/>
-                            <menuItem title="Dark Mode" id="onG-wT-V8z">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleNightMode:" target="-1" id="2ed-nN-Bwt"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Enter full screen" keyEquivalent="f" id="NJj-Ow-1UU">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                                <connections>
-                                    <action selector="toggleFullScreen:" target="-1" id="20F-LW-XZo"/>
+                                    <action selector="toggleNightMode:" target="-1" id="9SW-xS-Tmx"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -650,6 +655,12 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">
                         <items>
+                            <menuItem title="Enter full screen" keyEquivalent="f" id="NJj-Ow-1UU">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="toggleFullScreen:" target="-1" id="20F-LW-XZo"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Zoom" id="2bU-pu-Jv0">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Zoom" id="xgR-jy-OLL">
@@ -674,19 +685,6 @@ DQ
                                 </menu>
                                 <connections>
                                     <action selector="zoom:" target="-1" id="hGt-8H-RSC"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Theme" hidden="YES" enabled="NO" id="SdI-kP-vhN">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" id="RAa-ji-vvT"/>
-                                <connections>
-                                    <action selector="themes:" target="-1" id="fv6-OV-M7K"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Live Preview" hidden="YES" id="lYw-08-5AI">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleLivePreview:" target="-1" id="dod-fg-QA1"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eu3-7i-yIM"/>
@@ -718,6 +716,12 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showReference:" target="vEX-2F-hcj" id="qax-XK-0yN"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Patch Notes" id="jMf-Y4-igF">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showPatchNotes:" target="vEX-2F-hcj" id="m7r-sq-wm8"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="gy8-Q9-fNE"/>
@@ -817,7 +821,7 @@ DQ
                                     <rect key="frame" x="262" y="0.0" width="317" height="328"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
@@ -965,7 +969,7 @@ DQ
             <point key="canvasLocation" x="705.5" y="329.5"/>
         </window>
         <customObject id="F4J-ev-lWW" customClass="DataSource"/>
-        <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" id="blg-LD-9vu">
+        <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="blg-LD-9vu">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="534" height="317"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
@@ -1081,22 +1085,23 @@ DQ
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="j3Y-oZ-sKT">
-                                    <rect key="frame" x="0.0" y="0.0" width="627" height="411"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="467" height="391"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <size key="minSize" width="627" height="411"/>
+                                    <size key="minSize" width="467" height="391"/>
                                     <size key="maxSize" width="627" height="10000000"/>
                                     <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
                             </subviews>
                         </clipView>
+                        <edgeInsets key="contentInsets" left="80" right="80" top="20" bottom="0.0"/>
                         <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="ZEG-ML-P7U">
                             <rect key="frame" x="-100" y="-100" width="225" height="15"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="of8-CO-Cy4">
-                            <rect key="frame" x="611" y="0.0" width="16" height="411"/>
+                            <rect key="frame" x="531" y="20" width="16" height="391"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
@@ -1122,61 +1127,57 @@ DQ
             </view>
             <point key="canvasLocation" x="42.5" y="1038.5"/>
         </window>
-        <window title="Manual" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" id="1ik-5P-fZf">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
+        <window title="Manual" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="1ik-5P-fZf">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="884" height="655"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="MHa-am-ziY">
                 <rect key="frame" x="0.0" y="0.0" width="884" height="655"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="k5d-q9-hmF">
-                        <rect key="frame" x="841" y="624" width="45" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSGoForwardTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="08x-YW-c5k">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="goForward:" target="rpg-Vq-jhx" id="1W6-Ah-Pz2"/>
-                        </connections>
-                    </button>
                     <wkWebView wantsLayer="YES" allowsBackForwardNavigationGestures="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rpg-Vq-jhx">
-                        <rect key="frame" x="0.0" y="0.0" width="884" height="627"/>
+                        <rect key="frame" x="0.0" y="0.0" width="884" height="655"/>
                         <wkWebViewConfiguration key="configuration">
                             <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                             <wkPreferences key="preferences"/>
                         </wkWebViewConfiguration>
                     </wkWebView>
-                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rgs-v8-bNy">
-                        <rect key="frame" x="805" y="624" width="45" height="32"/>
-                        <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSGoBackTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="IWY-9A-kWe">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="goBack:" target="rpg-Vq-jhx" id="guH-l7-Obi"/>
-                        </connections>
-                    </button>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="k5d-q9-hmF" firstAttribute="leading" secondItem="rgs-v8-bNy" secondAttribute="trailing" constant="3" id="6cZ-2B-to2"/>
-                    <constraint firstItem="k5d-q9-hmF" firstAttribute="top" secondItem="MHa-am-ziY" secondAttribute="top" constant="3" id="Gyg-j3-VHf"/>
-                    <constraint firstItem="rgs-v8-bNy" firstAttribute="baseline" secondItem="k5d-q9-hmF" secondAttribute="baseline" id="JUi-9u-rtM"/>
-                    <constraint firstItem="rpg-Vq-jhx" firstAttribute="top" secondItem="k5d-q9-hmF" secondAttribute="bottom" constant="4" id="KUl-hc-Xls"/>
-                    <constraint firstItem="rgs-v8-bNy" firstAttribute="leading" secondItem="MHa-am-ziY" secondAttribute="leading" constant="811" id="XL4-lo-2Ax"/>
-                    <constraint firstItem="rpg-Vq-jhx" firstAttribute="leading" secondItem="MHa-am-ziY" secondAttribute="leading" id="ZAK-55-AgF"/>
-                    <constraint firstAttribute="bottom" secondItem="rpg-Vq-jhx" secondAttribute="bottom" id="i4t-Yg-zIJ"/>
-                    <constraint firstAttribute="trailing" secondItem="k5d-q9-hmF" secondAttribute="trailing" constant="4" id="mRO-30-6uV"/>
-                    <constraint firstAttribute="trailing" secondItem="rpg-Vq-jhx" secondAttribute="trailing" id="xyh-WI-3QC"/>
+                    <constraint firstAttribute="trailing" secondItem="rpg-Vq-jhx" secondAttribute="trailing" id="CQY-1a-oNw"/>
+                    <constraint firstAttribute="bottom" secondItem="rpg-Vq-jhx" secondAttribute="bottom" id="Vw9-8a-LkE"/>
+                    <constraint firstItem="rpg-Vq-jhx" firstAttribute="top" secondItem="MHa-am-ziY" secondAttribute="top" id="iwi-dq-k6P"/>
+                    <constraint firstItem="rpg-Vq-jhx" firstAttribute="leading" secondItem="MHa-am-ziY" secondAttribute="leading" id="xyl-x0-NqD"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="1192" y="-315"/>
+            <toolbar key="toolbar" implicitIdentifier="011A4750-CC8E-4FA4-887E-728FAE31755B" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="small" id="cgC-1R-WxL">
+                <allowedToolbarItems>
+                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="Ls2-uM-nV1"/>
+                    <toolbarItem implicitItemIdentifier="77CDEB4C-1617-4229-980D-0A18E9651288" label="" paletteLabel="Back" image="NSGoBackTemplate" id="XRW-hV-8TP">
+                        <nil key="toolTip"/>
+                        <size key="minSize" width="35" height="25"/>
+                        <size key="maxSize" width="127" height="25"/>
+                        <button key="view" hidden="YES" verticalHuggingPriority="750" id="ohK-Td-97R">
+                            <rect key="frame" x="0.0" y="14" width="127" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSGoBackTemplate" imagePosition="overlaps" alignment="center" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BfS-CF-8wu">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="message" size="11"/>
+                            </buttonCell>
+                        </button>
+                    </toolbarItem>
+                </allowedToolbarItems>
+                <defaultToolbarItems>
+                    <toolbarItem reference="Ls2-uM-nV1"/>
+                    <toolbarItem reference="XRW-hV-8TP"/>
+                </defaultToolbarItems>
+            </toolbar>
+            <point key="canvasLocation" x="1192" y="-320"/>
         </window>
     </objects>
     <resources>
         <image name="B_256" width="256" height="256"/>
         <image name="NSGoBackTemplate" width="9" height="12"/>
-        <image name="NSGoForwardTemplate" width="9" height="12"/>
     </resources>
 </document>

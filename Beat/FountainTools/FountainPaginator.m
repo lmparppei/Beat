@@ -624,6 +624,7 @@ That you have escaped.
 									Line *preBreak = [Line withString:[tmpElements[d] cleanedString] type:[(Line*)tmpElements[d] type]];
 									[currentPage addObject:preBreak];
 								}
+								
 								// Add on the previous page
 								Line *preDialogue = [[Line alloc] initWithString:retain type:dialogue];
 								Line *preMore = [[Line alloc] initWithString:@"(MORE)" type:more];

@@ -21,6 +21,7 @@
  */
 
 #import "ContinousFountainParser.h"
+#import "RegExCategories.h"
 #import "Line.h"
 #import "NSString+Whitespace.h"
 #import "NSMutableIndexSet+Lowest.h"
@@ -28,6 +29,9 @@
 
 @interface  ContinousFountainParser ()
 @property (nonatomic) BOOL changeInOutline;
+@property (nonatomic) Line *editedLine;
+@property (nonatomic) Line *lastEditedLine;
+@property (nonatomic) NSUInteger editedIndex;
 @end
 
 @implementation ContinousFountainParser
@@ -57,7 +61,8 @@
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
     
     NSUInteger position = 0; //To track at which position every line begins
-    
+	NSUInteger sceneIndex = -1;
+	
 	Line *previousLine;
 	
     for (NSString *rawLine in lines) {
@@ -69,6 +74,12 @@
 		if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
 			previousLine.type = [self parseLineType:previousLine atIndex:index - 1 recursive:NO currentlyEditing:NO];
 			if (previousLine.type == character) previousLine.type = action;
+		}
+		
+		// For a quick scene index lookup
+		if (line.type == heading || line.type == synopse || line.type == section) {
+			sceneIndex++;
+			line.sceneIndex = sceneIndex;
 		}
 		
 		// Quick fix for recognizing split paragraphs
@@ -98,10 +109,13 @@
 	}
 }
 
-#pragma mark Continuous Parsing
+#pragma mark - Continuous Parsing
 
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
+	_lastEditedLine = nil;
+	_editedIndex = -1;
+
     NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
     if (range.length == 0) { //Addition
         for (int i = 0; i < string.length; i++) {
@@ -110,17 +124,22 @@
                                                       atPosition:range.location+i]];
         }
     } else if ([string length] == 0) { //Removal
-        for (int i = 0; i < range.length; i++) {
-            [changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
-        }
+		// Reset edits
+		//if (range.length < 200) {
+			for (int i = 0; i < range.length; i++) {
+				[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
+			}
+		//} else {
+			// This should be implemented ASAP
+			//[changedIndices addIndexes:[self parseChunkRemovalAt:range]];
+		//}
+		
     } else { //Replacement
-//        [self parseChangeInRange:range withString:@""];
-        //First remove
+		//First remove
         for (int i = 0; i < range.length; i++) {
             [changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
         }
-//        [self parseChangeInRange:NSMakeRange(range.location, 0)
-//                      withString:string];
+
         // Then add
         for (int i = 0; i < string.length; i++) {
             NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
@@ -134,9 +153,9 @@
 
 - (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position
 {
-    NSUInteger lineIndex = [self lineIndexAtPosition:position];
-    Line* line = self.lines[lineIndex];
-	
+	NSUInteger lineIndex = [self lineIndexAtPosition:position];
+	Line* line = self.lines[lineIndex];
+
     NSUInteger indexInLine = position - line.position;
 	
 	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = true;
@@ -170,9 +189,163 @@
     }
 }
 
+- (NSString*)rawText {
+	NSMutableString *string = [NSMutableString string];
+	for (Line* line in self.lines) {
+		if (line != self.lines.lastObject) [string appendFormat:@"%@\n", line.string];
+		else [string appendFormat:@"%@", line.string];
+	}
+	return string;
+}
+
+// VERY MUCH WIP!!!
+- (NSIndexSet*)parseChunkRemovalAt:(NSRange)range {
+	NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
+	
+	NSString *stringToRemove = [[self rawText] substringWithRange:range];
+	NSInteger lineBreaks = [stringToRemove componentsSeparatedByString:@"\n"].count - 1;
+	
+	if (lineBreaks > 1) {
+		// If there are 2+ line breaks, optimize the operation
+		NSInteger lineIndex = [self lineIndexAtPosition:range.location];
+		Line *firstLine = self.lines[lineIndex];
+		
+		// Change in outline
+		if (firstLine.type == heading || firstLine.type == section || firstLine.type == synopse) _changeInOutline = YES;
+		
+		NSUInteger indexInLine = range.location - firstLine.position;
+		
+		NSString *retain = [firstLine.string substringToIndex:indexInLine];
+		NSInteger nextIndex = lineIndex + 1;
+		
+		NSInteger offset = firstLine.string.length - retain.length;
+		
+		for (NSInteger i = 1; i <= lineBreaks; i++) {
+			Line* nextLine = self.lines[nextIndex];
+			
+			if (nextLine.type == heading || nextLine.type == section || nextLine.type == synopse) {
+				_changeInOutline = YES;
+			}
+			
+			if (i < lineBreaks) {
+				NSLog(@"remove: %@", nextLine.string);
+				[self.lines removeObjectAtIndex:nextIndex];
+				offset += nextLine.string.length + 1;
+			} else {
+				// This is the last line in the array
+				NSInteger indexInNextLine = range.location + range.length - nextLine.position;
+				NSLog(@"index in %@: %lu", nextLine.string, indexInNextLine);
+				
+				NSInteger nextLineLength = nextLine.string.length - indexInNextLine;
+				firstLine.string = [retain stringByAppendingString:[nextLine.string substringWithRange:NSMakeRange(indexInNextLine, nextLineLength)]];
+				
+				// Remove the last line
+				[self.lines removeObjectAtIndex:nextIndex];
+				offset += indexInNextLine;
+			}
+		}
+		[self decrementLinePositionsFromIndex:nextIndex amount:offset];
+										
+		[changedIndices addIndex:lineIndex];
+		[changedIndices addIndex:lineIndex + 1];
+		
+		NSLog(@"----- result -----");
+		for (Line* line in self.lines) {
+			NSLog(@"   (%lu): %@", line.position, line.string);
+		}
+		
+	} else {
+		// Do it normally
+		for (int i = 0; i < range.length; i++) {
+			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
+		}
+	}
+	
+	/*
+	NSString *string = [[self rawText] substringWithRange:range];
+
+	NSInteger breaks = [[string componentsSeparatedByString:@"\n"] count]-1;
+	
+	NSInteger length = range.length;
+	NSLog(@"start: loc %lu length %lu", range.location, length);
+	
+	if (breaks > 1) {
+		// We will go through the changed indices, but jump ahead whenever needed
+		
+		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\n" options:NSRegularExpressionCaseInsensitive error:nil];
+		NSArray *matches = [regex matchesInString:[self rawText] options:0 range:range];
+		// We SHOULD get an array of line breaks, and using them we can parse the edits.
+		// First we remove all the lines that get removed
+		NSLog(@"matches: %lu", matches.count);
+		NSInteger pos = -1;
+		
+		for (NSTextCheckingResult *match in matches) {
+			// Remove everything else but the last line
+			if (matches.lastObject != match) {
+				if (pos < 0) pos = match.range.location;
+				NSUInteger lineIndex = [self lineIndexAtPosition:pos + 1];
+				
+				// Don't handle the last line
+				if (lineIndex == self.lines.count - 1) break;
+				
+				Line *lineToRemove = self.lines[lineIndex];
+				NSLog(@"line to remove: %@", lineToRemove.string);
+				
+				length -= lineToRemove.string.length + 1; // +1 for \n
+				NSLog(@" ---- %lu", length);
+				
+				[self.lines removeObjectAtIndex:lineIndex];
+				[self decrementLinePositionsFromIndex:lineIndex amount:1];
+				[changedIndices addIndex:lineIndex];
+				
+				pos += lineToRemove.string.length;
+			} else {
+				NSLog(@"reached end");
+			}
+		}
+		
+		NSString *rawText = [self rawText];
+		if (length > rawText.length) length = rawText.length;
+		
+		for (int i = 0; i < length; i++) {
+			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
+		}
+		
+	} else {
+		// Do it normally
+		for (int i = 0; i < range.length; i++) {
+			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
+		}
+	}
+ */
+	
+	return changedIndices;
+}
 - (NSIndexSet*)parseCharacterRemovedAtPosition:(NSUInteger)position
 {
-    NSUInteger lineIndex = [self lineIndexAtPosition:position];
+	/*
+	 
+	 I have struggled to make this faster.
+	 The solution (for now) is to cache the result of lineIndexAtPosition,
+	 but it's not the ideal workaround. You can find a failed attempt at removing
+	 larger chunks of text above. That method totally messes up the line indexes.
+	 
+	 Creating the temporary strings here might be the problem, though.
+	 If I could skip those steps, iterating character by character might not be
+	 that heavy of an operation. We could have @property NSRange affectedRange
+	 and have this method check itself against that. If we'll be removing the next
+	 character, too, don't bother appending any strings anywhere.
+	 
+	 */
+	
+	// Get index for current line
+	NSUInteger lineIndex;
+		
+	if (_editedIndex >= self.lines.count || _editedIndex < 0) {
+		_editedIndex = [self lineIndexAtPosition:position];
+	}
+	
+	lineIndex = _editedIndex;
     Line* line = self.lines[lineIndex];
 
 	NSUInteger indexInLine = position - line.position;
@@ -180,15 +353,17 @@
 	if (indexInLine > line.string.length) indexInLine = line.string.length;
 	
     if (indexInLine == [line.string length]) {
-        //Get next line an put together
+        //Get next line and put together
         if (lineIndex == [self.lines count] - 1) {
-            return nil; //Removed newline at end of document without there being an empty line - should never happen but be sure...
+            return nil; //Removed newline at end of document without there being an empty line - should never happen but to be sure...
         }
+		
         Line* nextLine = self.lines[lineIndex+1];
         line.string = [line.string stringByAppendingString:nextLine.string];
         if (nextLine.type == heading || nextLine.type == section || nextLine.type == synopse) {
             _changeInOutline = YES;
         }
+		
         [self.lines removeObjectAtIndex:lineIndex+1];
         [self decrementLinePositionsFromIndex:lineIndex+1 amount:1];
         
@@ -207,10 +382,27 @@
 
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position
 {
+	// First check the line we edited last
+	bool wouldReturnMatch = NO;
+	NSUInteger match = -1;
+	
+	if (_lastEditedLine) {
+		if (_lastEditedLine.position > position &&
+			position < _lastEditedLine.string.length + _lastEditedLine.position) {
+			match = [self.lines indexOfObject:_lastEditedLine] - 1;
+			if (match < self.lines.count && match >= 0) {
+				wouldReturnMatch = YES;
+				return match;
+			}
+		}
+	}
+	
     for (int i = 0; i < [self.lines count]; i++) {
         Line* line = self.lines[i];
         
         if (line.position > position) {
+			_lastEditedLine = line;
+						
             return i-1;
         }
     }
@@ -230,8 +422,10 @@
 {
     for (; index < [self.lines count]; index++) {
         Line* line = self.lines[index];
-        
+		NSInteger position = line.position;
         line.position -= amount;
+		
+		// NSLog(@"%lu -> %lu / %@", position, line.position, line.string);
     }
 }
 
@@ -699,11 +893,21 @@
     NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
     
     for (int i = 0;;i++) {
-        if (i > lastIndex) break;
-        if ([excludes containsIndex:i]) continue;
+		if (i > lastIndex) break;
+		
+        // If this index is contained in the omit character indexes, skip
+		if ([excludes containsIndex:i]) continue;
+		
+		// No range is currently inspected
         if (rangeBegin == -1) {
             bool match = YES;
             for (int j = 0; j < delimLength; j++) {
+				// Check for escape character (like \*)
+				if (i > 0 && string[j + i - 1] == '\\') {
+					match = NO;
+					break;
+				}
+				
                 if (string[j+i] != startString[j]) {
                     match = NO;
                     break;
@@ -713,6 +917,7 @@
                 rangeBegin = i;
                 i += delimLength - 1;
             }
+		// We have found a range
         } else {
             bool match = YES;
             for (int j = 0; j < delimLength; j++) {

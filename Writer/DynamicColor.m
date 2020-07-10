@@ -60,10 +60,14 @@
 - (NSColor *)effectiveColor
 {
 	// Don't allow calls to this class from anywhere else than main thread
-	if (![NSThread mainThread]) return self.aquaColor;
+	if (![NSThread isMainThread]) {
+		return self.aquaColor;
+	}
 	
 	// Modification for Beat. Load dark scheme if the app is set into dark mode.
 	if (NSApp) {
+		if (![NSThread mainThread]) return self.aquaColor;
+		
 		if ([(ApplicationDelegate*)[NSApp delegate] isForcedLightMode]) {
 			if (self.aquaColor != nil) return self.aquaColor;
 		}

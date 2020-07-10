@@ -206,6 +206,7 @@ hr {
 	border-bottom: 1px solid #ccc;
 }
 .dual-dialogue {
+	margin-top: 1.1em;
 	overflow: hidden;
 }
 .dual-dialogue .dual-dialogue-left,
@@ -216,8 +217,9 @@ hr {
 }
 .dual-dialogue p {
 	width: auto;
-	margin-left: 5%;
+	margin-left: 0;
 }
+.dual-dialogue .dual-dialogue-left p { margin-right: 2%; }
 .dual-dialogue .character {
 	text-align: center;
 	padding-left: 0px;

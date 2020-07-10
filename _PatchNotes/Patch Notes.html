@@ -12,7 +12,7 @@
 		<style type="text/css">
 			body {
 				margin: 0rem;
-				background-color: #f5f5f5;
+				background-color: #fefefe;
 				color: #3b3b3b;
 				font-size: .925em;
 
@@ -27,35 +27,44 @@
 				margin-left: auto;
 				margin-right: auto;
 				margin-bottom: 3em;
-				padding: 1.8rem 1.8rem 2rem 1.8rem;
+				padding: 1rem 1rem 1.5rem 1rem;
 			}
 
 			h1, h2, h3, p, ul, ol, blockquote, dl {
-				margin-left: 2rem;
-				margin-right: 2rem;
+				margin-left: 1rem;
+				margin-right: 1rem;
 			}
 
 			h1 {
 				margin-top: .25em;
-				margin-bottom: 1rem;
+				margin-bottom: .5rem;
 				font-weight: 300;
 				font-size: 2.4em;
 			}
 
 			h2 {
-				margin-top: 2em;
+				margin-top: 2.5rem;
+				font-size: 1.25em;
 				font-family: Courier, monospace;
-				font-weight: normal;
+				font-weight: bold;
 			}
 
 			h3 {
 				margin-top: 1.5em;
 				font-size: 1.1em;
 			}
-			p {
-				line-height: 1.4em;
+
+			p, li {
+				line-height: 1.5em;
 				margin-bottom: .75em;
 				margin-top: 0;
+			}
+			ul {
+				padding-left: 1.5rem;
+			}
+			li {
+				padding: 0;
+				margin: .15em 0 .15em 0;
 			}
 
 			a:link, a:active, a:visited {
@@ -175,7 +184,10 @@
 			}
 			.firstFaux .fauxCharacter { text-indent: 0; }
 			.secondFaux .fauxCharacter2 { text-indent: 0; }
-
+			
+			.example hr { height: 1em; border: 0; background: transparent; }
+			#autoParagraphs { min-height: 6.15rem; }
+			
 			.caret {
 				position: absolute;
 				width: 1px;
@@ -203,7 +215,6 @@
 			.omit {
 				color: gray;
 			}
-
 
 
 			/*
@@ -257,13 +268,71 @@
 		<div id='mainContainer'>
 			<div id='page'>
 				<section>
-					<h1>Welcome to Beat</h1>
-					<p>This manual will guide you through Beat's basic functions. The app should easy to learn, but some of its best features can be easily missed.</p>
-
+					<h1>Welcome to Beat 1.3!</h1>
+					<h2>What's New?</h2>
+					<ul>
+						<li>This window, shown after update</li>
+						<li>You can now use <b>TAB</b> to force a character cue</li>
+						<li>Super-fast preview (and a quick icon + UI enhancements)</li>
+						<li>Lots of bug fixes</li>
+						<li>Automatic paragraphs (these can be turned off in the <b>Format</b> menu)</li>
+					</ul>
+					
+					<h2>New Dialogue Input</h2>
+					<p>Press <b>Tab</b> to automatically switch to dialogue input. No need to press shift while typing in a character name anymore.</p>
+					<div id='dialogue' class='example'></div>
+					
+					<h2>Automatic Paragraphs</h2>
+					<p>Pressing <b>Return</b> now automatically creates two line breaks while writing scene headings, actions or dialogue.</p>
+					<div id='autoParagraphs' class='example'></div>
+					
+					<h2>Page Numbering While Writing</h2>
+					<p>I still don't want to switch into a WYSIWYG approach, as Beat aims to focus on writing rather than layout.
+					But, to ease the pain of some users, page numbering can be turned on while writing by toggling <b>View → Page Numbering</b>.</p>
+					
+					<h2>Super-Fast Preview</h2>
+					<p>Previews used to be very slow in Beat, but this has been fixed. You can now easily access the print preview from the top-right eye icon.</p>
+					
+					<h2>Support Button</h2>
+					<p>Development is done on spare time and using my own resources, so any price from a cup of good coffee (5€) up to a vegan burger (15€) or a used Maserati (around 150&nbsp;000€) helps to keep the project alive. Thanks to all who already sent me some loose change!</p>
+					
+					<h2>Feedback</h2>
+					<p>If you want to send feedback, love letters or just discuss screenwriting, either DM me on Twitter (<b>@beatScreenplay</b>) or send an e-mail to <b>beat@kapitan.fi</b>. If there is enough interest, I could create a Discord for fellow Beat users, to have interesting exchanges about writing and/or using a buggy computer program created by a misinformed artist.</p>
 				</section>
 			</div>
 		</div>
 
+		<script>
+			/*
+
+			TextAnimation © Lauri-Matti Parppei 2020
+			Created for BEAT manual
+
+			*/
+
+			const textAnimation=function(t){t.waitAt||(t.waitAt={});const e=document.getElementById(t.container),n=t.text,i=t.wait;let s=t.speed;s||(s=150);let a=0,o=0,r=0,c="",l=-1,f=!1,d=[];this.addClass=function(t){d.push(t),e.classList.add(t)},setInterval(function(){if(l>=n.length&&(f=!0),f)++a>=i&&function(){c="",e.innerHTML="",a=0,r=0,l=-1,f=!1;for(const t of d)e.classList.remove(t);d=[]}();else{if(t.events[l-r]&&t.events[l-r](),t.waitAt[l-r]&&o>0&&(o=t.waitAt[l-r]),o>0)return void o--;o=-1;let i=n[++l];if("<"==i){for(c+=i;">"!=i&&l<n.length;)i=n[++l],c+=i,r++;return}n[l]&&(c+=n[l],t.caret?e.innerHTML=c+caret:e.innerHTML=c,l==n.length-1&&(f=!0))}},s)};
+			const caret = "<div class='caret'></div>";
+			
+			var dialogueAnimation = new textAnimation({ text:"<span></span>CHARACTER\nWelcome to Beat!",
+				wait: 15,
+				container: "dialogue",
+				caret: caret,
+				waitAt: { 1: 5, 1: 5 },
+				events: {
+					1: function () { dialogueAnimation.addClass('inset'); }
+				}
+			});
+			var autoParagraphAnimation = new textAnimation({ text:"This is an Action. Let's press Enter.<hr />Now we're here. Press Shift-Enter for a single line break.\nLike this.",
+				wait: 15,
+				container: "autoParagraphs",
+				caret: caret,
+				speed: 100,
+				events: {
+
+				}
+			});
+			
+		</script>
 	</body>
 
 </html>

@@ -1,6 +1,6 @@
 //
-//  FNHTMLScript.m
-//	Modified for Beat
+//  BeatHTMLScript.m
+//	Modified for Beat from FNHTMLScript
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
 //  Parts copyright © 2019-2020 Lauri-Matti Parppei / KAPITAN!
@@ -75,17 +75,16 @@
  
 */
 
-#import "FNHTMLScript.h"
-#import "FNScript.h"
-#import "FNElement.h"
+#import "BeatHTMLScript.h"
+#import "Line.h"
 #import "FountainRegexes.h"
-#import "FNPaginator.h"
+#import "FountainPaginator.h"
 
 // FUCK YOU REGEXKITLITE.H
 //#import "RegexKitLite.h"
 #import "RegExCategories.h"
 
-@interface FNHTMLScript ()
+@interface BeatHTMLScript ()
 
 @property (readonly, copy, nonatomic) NSString *cssText;
 @property (copy, nonatomic) NSString *bodyText;
@@ -94,58 +93,61 @@
 
 @end
 
-@implementation FNHTMLScript
+@implementation BeatHTMLScript
 
-- (id)initWithScript:(FNScript *)aScript
-{
+- (id)initWithScript:(NSDictionary*) script {
     self = [super init];
     if (self) {
-        _script = aScript;
+        _script = script[@"script"];
+		_titlePage = script[@"title page"];
         _font = [QUQFont fontWithName:@"Courier" size:12];
     }
     return self;
 }
 
-- (id)initWithScript:(FNScript *)aScript print:(bool)print {
+- (id)initWithScript:(NSDictionary *)script print:(bool)print {
 	self = [super init];
 	if (self) {
-		_script = aScript;
-		_font = [QUQFont fontWithName:@"Courier" size:12];
+        _script = script[@"script"];
+		_titlePage = script[@"title page"];
+        _font = [QUQFont fontWithName:@"Courier" size:12];
 		_print = print;
 	}
 	return self;
 }
 
-- (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument
+- (id)initWithScript:(NSArray *)script document:(NSDocument*)aDocument
 {
     self = [super init];
     if (self) {
-        _script = aScript;
+        _script = script;
         _font = [QUQFont fontWithName:@"Courier" size:12];
         _document = aDocument;
     }
     return self;
 }
 
-- (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument scene:(NSString*)aScene
+- (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene
 {
 	self = [super init];
 	if (self) {
-		_script = aScript;
-		_font = [QUQFont fontWithName:@"Courier" size:12];
-		_document = aDocument;
-		_currentScene = aScene;
+        _script = script[@"script"];
+		_titlePage = script[@"title page"];
+        _font = [QUQFont fontWithName:@"Courier" size:12];
+		_document = document;
+		_currentScene = scene;
 	}
 	return self;
 }
 
-- (id)initWithScript:(FNScript *)aScript document:(NSDocument*)aDocument print:(bool)print
+- (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document print:(bool)print
 {
 	self = [super init];
 	if (self) {
-		_script = aScript;
-		_font = [QUQFont fontWithName:@"Courier" size:12];
-		_document = aDocument;
+        _script = script[@"script"];
+		_titlePage = script[@"title page"];
+        _font = [QUQFont fontWithName:@"Courier" size:12];
+		_document = document;
 		_print = print;
 	}
 	return self;
@@ -164,18 +166,22 @@
     NSMutableString *html = [NSMutableString string];
     [html appendString:@"<!DOCTYPE html>\n"];
     [html appendString:@"<html>\n"];
-    [html appendString:@"<head>\n"];
+    [html appendString:@"<head><title>Print Preview</title>\n"];
 	[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.2'/>\n"];
 	
     [html appendString:@"<style type='text/css'>\n"];
     [html appendString:self.cssText];
     [html appendString:@"</style>\n"];
     [html appendString:@"</head>\n"];
-    [html appendString:@"<body>\n<article>\n"];
+	[html appendString:@"<body>"];
+	[html appendString:@"<article>\n"];
+	if (!_print) [html appendString:@"<div id='close' class='ui' onclick='closePreview();'>✕</div>"];
     [html appendString:self.bodyText];
 	[html appendString:@"</section>\n</article>\n"];
 	
-	[html appendString:@"<script>function scrollToScene(scene) { console.log('fuck'); var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>"];
+	[html appendString:@"<script>function scrollToScene(scene) { var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>"];
+	[html appendString:@"<script>function selectScene(e) { window.webkit.messageHandlers.selectSceneFromScript.postMessage(e.getAttribute('sceneIndex')); }</script>"];
+	[html appendString:@"<script>function closePreview () { window.webkit.messageHandlers.closePrintPreview.postMessage('close'); } </script>"];
 	[html appendString:@"<script name='scrolling'></script>"];
 	[html appendString:@"</body>\n"];
     [html appendString:@"</html>"];
@@ -222,6 +228,7 @@
 	string = [string stringByReplacingOccurrencesOfString:@"\\_" withString:@"_"];
 	string = [string stringByReplacingOccurrencesOfString:@"\\@" withString:@"@"];
 	string = [string stringByReplacingOccurrencesOfString:@"\\**" withString:@"**"];
+
 	
 	return string;
 }
@@ -232,10 +239,12 @@
 
     // Add title page
     NSMutableDictionary *titlePage = [NSMutableDictionary dictionary];
-    for (NSDictionary *dict in self.script.titlePage) {
+    
+	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
     
+	 
     if ([titlePage count] > 0) {
         [body appendString:@"<section id='script-title' class='page'>"];
 		
@@ -364,14 +373,13 @@
     }
     
     NSInteger dualDialogueCharacterCount = 0;
-    NSSet *dialogueTypes = [NSSet setWithObjects:@"Character", @"Dialogue", @"Parenthetical", nil];
     NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
-    
-    FNPaginator *paginator = [[FNPaginator alloc] initWithScript:self.script document:self.document];
+	
+	FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:_script document:_document];
     NSUInteger maxPages = [paginator numberOfPages];
-
+	
 	_numberOfPages = maxPages;
-		
+
 	bool pageBreak = false;
 	
     for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
@@ -411,10 +419,10 @@
 		// We need to catch lyrics not to make them fill up a paragraph
 		bool isLyrics = false;
 		
-        for (FNElement *element in elementsOnPage) {
+        for (Line *line in elementsOnPage) {
 			bool beginBlock = false;
 			
-            if ([ignoringTypes containsObject:element.elementType]) {
+			if ([ignoringTypes containsObject:line.typeAsFountainString]) {
 				
 				// Close possible blocks
 				if (isLyrics) {
@@ -426,11 +434,7 @@
                 continue;
             }
 			
-
-            if ([element.elementType isEqualToString:@"Page Break"]) {
-                //[body appendString:@"</section>\n<section>\n"];
-				// [body appendString:@"</section>\n"];
-
+			if ([line.typeAsFountainString isEqualToString:@"Page Break"]) {
 				// Close possible blocks
 				if (isLyrics) {
 					// Close lyrics block
@@ -442,56 +446,50 @@
                 continue;
             }
 			
-			// Stop dual dialogue block if it's still open
-			if ([element.elementType isEqualToString:@"Character"] && dualDialogueCharacterCount >= 2) {
+			// NEEDS TO BE DEBUGGED
+			 
+			// Stop dual dialogue
+			if (dualDialogueCharacterCount == 2 &&
+				!(line.type == dualDialogueParenthetical ||
+				 line.type == dualDialogue)) {
 				[body appendString:@"</div></div>\n"];
 				dualDialogueCharacterCount = 0;
 			}
 			
 			// Catch dual dialogue
-            if ([element.elementType isEqualToString:@"Character"] && element.isDualDialogue) {
-                dualDialogueCharacterCount++;
-                if (dualDialogueCharacterCount == 1) {
-                    [body appendString:@"<div class='dual-dialogue'>\n"];
-                    [body appendString:@"<div class='dual-dialogue-left'>\n"];
-                }
-                else if (dualDialogueCharacterCount == 2) {
+			if (line.type == character && line.nextElementIsDualDialogue) {
+				dualDialogueCharacterCount++;
+				[body appendString:@"<div class='dual-dialogue'>\n"];
+				[body appendString:@"<div class='dual-dialogue-left'>\n"];
+            }
+			
+			if (line.type == dualDialogueCharacter && dualDialogueCharacterCount == 1) {
+				dualDialogueCharacterCount++;
                     [body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
-				} else if (dualDialogueCharacterCount == 3) {
-					[body appendString:@"</div></div>\n"];
-					dualDialogueCharacterCount = 0;
-				}
-            }
-            
-            if (dualDialogueCharacterCount >= 2 && ![dialogueTypes containsObject:element.elementType]) {
-                dualDialogueCharacterCount = 0;
-                [body appendString:@"</div>\n</div>\n"];
-            }
+			}
             
             NSMutableString *text = [NSMutableString string];            
-            if ([element.elementType isEqualToString:@"Scene Heading"] && element.sceneNumber) {
-                [text appendFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", element.sceneNumber, element.sceneNumber];
-                [text appendString:element.elementText];
-                [text appendFormat:@"<span class='scene-number-right'>%@</span>", element.sceneNumber];
+			if (line.type == heading && line.sceneNumber) {
+                [text appendFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, line.sceneNumber];
+				[text appendString:line.cleanedString];
+				[text appendFormat:@"<span class='scene-number-right'>%@</span>", line.sceneNumber];
             }
             else {
-                [text appendString:element.elementText];
+                [text appendString:line.string];
             }
-            
-            if ([element.elementType isEqualToString:@"Character"] && element.isDualDialogue) {
-                // Remove any carets
+			
+			// Remove any formatting symbols
+			// (these should be caught by Line methods, though)
+			if (line.type == dualDialogueCharacter) {
                 [text replaceOccurrencesOfString:@"^" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, text.length)];
             }
             
-            if ([element.elementType isEqualToString:@"Character"]) {
-                [text setString:[text replace:RX(@"^@") with:@""]];
-            }
-            
-            if ([element.elementType isEqualToString:@"Scene Heading"]) {
+			if (line.type == heading) {
                 [text setString:[text replace:RX(@"^\\.") with:@""]];
+				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
             }
             
-            if ([element.elementType isEqualToString:@"Lyrics"]) {
+			if (line.type == lyrics) {
                 [text setString:[text replace:RX(@"^~") with:@""]];
 				if (!isLyrics) {
 					beginBlock = true;
@@ -506,31 +504,31 @@
 				}
 			}
             
-            if ([element.elementType isEqualToString:@"Action"]) {
+			if (line.type == action) {
                 [text setString:[text replace:RX(@"^\\!") with:@""]];
             }
             
-			// Format the string as HTML
+			// Format string for HTML
 			[text setString:[self format:text]];
             [text setString:[text replace:RX(@"\\[{2}(.*?)\\]{2}") with:@""]];
-
+            
             //Find newlines and replace them with <br/>
             text = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"] mutableCopy];
             
             if (![text isEqualToString:@""]) {
                 NSMutableString *additionalClasses = [NSMutableString string];
-                if (element.isCentered) {
+				if (line.centered) {
                     [additionalClasses appendString:@" center"];
                 }
 				if (elementCount == 0) [additionalClasses appendString:@" first"];
 				
 				// If this line isn't part of a larger block, output it as paragraph
 				if (!beginBlock && !isLyrics) {
-					[body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
+					[body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
 				} else {
 					if (beginBlock) {
 						// Begin new block
-						[body appendFormat:@"<p class='%@%@'>%@<br>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
+						[body appendFormat:@"<p class='%@%@'>%@<br>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
 					} else {
 						// Continue the block
 						[body appendFormat:@"%@<br>\n", text];

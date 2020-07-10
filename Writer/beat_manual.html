@@ -596,14 +596,17 @@ PAN TO:</div>
 						*/
 
 						const textAnimation = function (data) {
+							if (!data.waitAt) data.waitAt = {};
+							
 							const container  = document.getElementById(data.container);
 							const text = data.text;
 							const wait = data.wait;
-							
+														
 							let speed = data.speed;
 							if (!speed) speed = 150;
 
 							let waiting = 0;
+							let waitAt = 0;
 							let skipped = 0;
 
 							let _that = this;
@@ -639,7 +642,14 @@ PAN TO:</div>
 								if (!done) {
 									// Run any possible events first
 									if (data.events[index - skipped]) data.events[index - skipped]();
-
+									if (data.waitAt[index - skipped] && waitAt > 0) waitAt = data.waitAt[index - skipped];
+									
+									if (waitAt > 0) {
+										waitAt--;
+										return;
+									} else {
+										waitAt = -1;
+									}
 
 									index++;
 									let character = text[index];

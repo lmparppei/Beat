@@ -251,6 +251,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (NSTouchBar*)makeTouchBar {
+	[NSApp setAutomaticCustomizeTouchBarMenuItemEnabled:NO];
+	
+	if (@available(macOS 10.15, *)) {
+		NSTouchBar.automaticCustomizeTouchBarMenuItemEnabled = NO;
+	}
+	
 	return _touchBar;
 }
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier
@@ -293,19 +299,32 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				return; // Skip default behavior
 			}
 			break;
-		case 36:
 		case 48:
-			// Return or tab
+			// Tab
+			if (_forceElementMenu) {
+				[self force:self];
+				return; // skip default
+			} else if (self.autocompletePopover.isShown) {
+				[self insert:self];
+				return; // don't insert a line-break after tab key
+			} else {
+				// Call delegate to handle tab press
+				if ([self.delegate respondsToSelector:@selector(handleTabPress)]) {
+					[(id)self.delegate handleTabPress];
+					return; // skip default
+				}
+			}
+			break;
+		case 36:
+			// Return
 			if (self.autocompletePopover.isShown) {
 				// Check whether to force an element or to just autocomplete
 				if (_forceElementMenu) {
 					[self force:self];
 					return; // skip default
-				} else {
+				} else if (self.autocompletePopover.isShown) {
 					[self insert:self];
 				}
-				
-				
 			}
 			else if (theEvent.modifierFlags) {
 				NSUInteger flags = [theEvent modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
@@ -339,6 +358,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 }
+
+// Phantom methods
+- (void)handleTabPress { }
+
 
 // Beat customization
 - (IBAction)toggleDarkPopup:(id)sender {
@@ -567,11 +590,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	[context saveGraphicsState];
 
-	// Mask outs scenes we don't want to see when filtering scenes
+	self.textContainer.exclusionPaths = [NSArray array];
+	
+	// Section header backgrounds
 	for (NSValue* value in _sections) {
 		[self.marginColor setFill];
 		NSRect sectionRect = [value rectValue];
 		CGFloat width = self.frame.size.width * factor;
+
 		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
 		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
 	}

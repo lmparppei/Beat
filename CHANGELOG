@@ -1,4 +1,20 @@
 
+## Beat 1.3 
+
+* Fixed memory issues
+* Double-line breaks after scene headings, paragraphs and dialogue
+* Index card view fixes
+* Rebuilt, super-fast HTML preview 
+* Parsing optimized a bit
+* Automatic paragraphs
+* Fixed some minor bugs with printing & PDF export
+* Escaping formating characters finally works
+* Updated tutorial
+* Preview icon
+* Tab now switches into dialogue input mode
+* ... too many to mention
+
+
 ## Beat 1.2 r2
 
 * Character name autocomplete fixed

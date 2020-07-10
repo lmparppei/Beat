@@ -190,11 +190,14 @@ hr {
 	width: 50%;
 	float: left;
 }
+.dual-dialogue .dual-dialogue-right { margin-left: auto; margin-right: 0; }
 .dual-dialogue p {
+	margin-left: 0;
 	width: auto;
 }
 .dual-dialogue .character {
 	text-align: center;
+	margin-top: 0;
 	padding-left: 40px;
 }
 .dual-dialogue .parenthetical {
@@ -222,6 +225,42 @@ section {
 	padding: 2rem 80px 6rem 110px;
 	border: solid 1px #ccc;
 }
+
+a:link, a:visited, a:active {
+	color: black;
+	text-decoration: none;
+}
+a:hover {
+	background-color: #ddd;
+}
+
+#close {
+	position: fixed;
+	z-index: 999;
+
+	right: .6rem;
+	top: .6rem;
+
+	content: '╳';
+	font-family: helvetica, sans-serif;
+	font-weight: bold;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	width: 2rem;
+	height: 2rem;
+	background-color: rgba(0,0,0,.9);
+	color: #eee;
+
+	border-radius: 50%;
+	cursor: default;
+}
+#close:hover {
+	color: white;
+}
+
 @media screen and (max-width: 500px) {
 	body {
 		background-color: #f0f0f0;

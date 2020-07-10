@@ -17,12 +17,17 @@
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index;
 @end
 
+@protocol BeatTextViewDelegate <NSTextViewDelegate>
+- (void) forceCharacterInput;
+- (void) cancelCharacterInput;
+- (void) handleTabPress;
+- (NSInteger)getPageNumber:(NSInteger)location;
+@end
+
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
 - (void)updateSections:(NSArray*)sections;
-
-//@property (weak) id <NCRAutocompleteTableViewDelegate> delegate;
 
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;
@@ -31,9 +36,5 @@
 @property NSArray* pageBreaks;
 @property CGFloat zoomLevel;
 @property NSInteger autocompleteIndex;
-
-@end
-
-@protocol BeatTextViewDelegate <NSTextViewDelegate>
 
 @end

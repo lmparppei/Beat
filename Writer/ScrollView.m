@@ -27,7 +27,7 @@
 	_buttonDefaultY = _outlineButtonY.constant;
 	
 	// Save buttons for later use
-	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton];
+	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton, _previewButton];
 	
 	// Setup timer
 	//_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(shouldHideButtons:) userInfo:nil repeats:NO];
@@ -45,9 +45,9 @@
 
 - (void)shouldHideButtons:(NSTimer *) timer {
 	NSEvent *event = timer.userInfo;
-	
+
 	// Don't hide the toolbar buttons if the mouse is in the upper section of the window
-	if (event.locationInWindow.y < _outlineButton.frame.origin.y - 5) [self hideButtons];
+	if (event.locationInWindow.y < self.window.frame.size.height - 35) [self hideButtons];
 	else return;
 }
 - (void)hideButtons {
@@ -55,7 +55,6 @@
 		[[[[self.window standardWindowButton:NSWindowCloseButton] superview] animator] setAlphaValue:0];
 		[self.window setTitlebarAppearsTransparent:YES];
 	}
-	
 	
 	for (NSButton *button in _editorButtons) {
 		[[button animator] setAlphaValue:0.0];

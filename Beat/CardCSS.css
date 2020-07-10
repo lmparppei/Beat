@@ -221,8 +221,8 @@ section {
 .card.pink p { color: #333; }
 /* .pink h3 { color: rgb(250,111,193); } */
 
-.card.magenta, .magenta.selected .sceneNumber, .color.magenta { background-color: rgb(236,0,140); color: #333; }
-.card.magenta p { color: #333; }
+.card.magenta, .magenta.selected .sceneNumber, .color.magenta { background-color: rgb(236,0,140); color: white; }
+.card.magenta p { color: white; }
 /* .magenta h3 { color: rgb(236,0,140); } */
 
 .card.gray, .gray.selected .sceneNumber, .color.gray { background-color: gray; color: white; }

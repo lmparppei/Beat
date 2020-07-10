@@ -18,13 +18,17 @@
 
 #pragma mark - Help
 
-- (instancetype) init {	
-	
+- (instancetype) init {
 	return [super init];
 }
 
+- (void)applicationWillFinishLaunching:(NSNotification *)notification {
+	[self checkAutosavedFiles];
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{	
+{
+
 	// This might be a silly implementation, but ..... well.
 	// Let's close the welcome screen if any sort of document has been opened
 	_dataSource = [[DataSource alloc] init];
@@ -88,7 +92,7 @@
 	
 	if (latestVersion == 0 || currentVersion > latestVersion) {
 		[[NSUserDefaults standardUserDefaults] setValue:[NSString stringWithFormat:@"%lu", currentVersion] forKey:LATEST_VERSION_KEY];
-		// [self showPatchNotes:nil];
+		[self showPatchNotes:nil];
 	} else {
 		// Up to date
 	}
@@ -114,10 +118,6 @@
 	[self->_startModal setAcceptsMouseMovedEvents:YES];
 	[self->_startModal setMovable:YES];
 	[self->_startModal setMovableByWindowBackground:YES];
-}
-
-- (void)applicationWillFinishLaunching:(NSNotification *)notification {
-	[self checkAutosavedFiles];
 }
 
 - (void)checkAutosavedFiles {
@@ -272,6 +272,15 @@
 
 - (IBAction)showPatchNotes:(id)sender {
 	self->manualWindow.title = @"Patch Notes";
+	
+	CGFloat width = 550;
+	CGFloat height = 700;
+	[self->manualWindow setFrame:NSMakeRect(
+										  (NSScreen.mainScreen.frame.size.width - width) / 2,
+										  (NSScreen.mainScreen.frame.size.height - height) / 2,
+										  width, height
+										  )
+						 display:YES];
 	
 	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"Patch Notes" ofType:@"html"];
 	[self->manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];

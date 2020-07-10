@@ -83,6 +83,14 @@
 	}
 }
 
+- (bool)centered {
+	if (self.string.length < 2) return NO;
+
+	if ([self.string characterAtIndex:0] == '>' &&
+		[self.string characterAtIndex:self.string.length - 1] == '<') return YES;
+	else return NO;
+}
+
 - (NSString*)cleanedString {
 	// Return empty string for invisible blocks
 	if (self.type == section || self.type == synopse || self.omited) return @"";
@@ -92,6 +100,9 @@
 	
 	// Remove any omitted ranges
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.location + range.length > string.length) {
+			range = NSMakeRange(range.location, string.length - range.location);
+		}
 		[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
 		offset -= range.length;
 	}];
@@ -112,6 +123,10 @@
 	}
 	
 	return string;
+}
+- (NSString*)stripSceneNumber {
+	NSString *result = [self.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, self.string.length)];
+	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
  
 - (NSString*)typeAsString
@@ -178,6 +193,32 @@
 		self.isTitlePage) return YES;
 	else return NO;
 }
+-(bool)isBoldedAt:(NSInteger)index {
+	__block bool inRange = NO;
+	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSLog(@"range: %lu / %lu", range.location, range.length);
+		if (NSLocationInRange(index, range)) inRange = YES;
+	}];
+	
+	return inRange;
+}
+-(bool)isItalicAt:(NSInteger)index {
+	__block bool inRange = NO;
+	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (NSLocationInRange(index, range)) inRange = YES;
+	}];
+	
+	return inRange;
+}
+
+-(bool)isUnderlinedAt:(NSInteger)index {
+	__block bool inRange = NO;
+	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (NSLocationInRange(index, range)) inRange = YES;
+	}];
+	
+	return inRange;
+}
 
 // Helper method which returns a Fountain script element
 // This bridges ContinuousFountainParser with FNParser.
@@ -206,7 +247,8 @@
 	return element;
 }
 
-// This returns the type as an FNElement compliant string
+// This returns the type as an FNElement compliant string,
+// for convoluted backwards compatibility reasons :----)
 - (NSString*)typeAsFountainString
 {
     switch (self.type) {

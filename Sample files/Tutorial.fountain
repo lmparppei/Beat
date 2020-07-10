@@ -1,7 +1,7 @@
 Title: Beat Tutorial
 Credit: Written by
 Author: KAPITAN!
-Draft date: Version 2, 01.09.2019
+Draft date: Version 2, 8.7.2020
 Contact:
 beat@kapitan.fi
 www.kapitan.fi/beat
@@ -18,31 +18,35 @@ Try it out yourself!
 
 EXT. PARK - DAY
 
-The same is true with dialogue. Just type in CHARACTER NAME and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue.
+The same is true with dialogue. Just type in CHARACTER NAME (all caps) and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue. 
+
+Try it out!
 
 CHARACTER
-(gently nodding their head)
-This is your first dialogue block.
+Hello. This is your first dialogue block.
 
 CHARACTER 2
-Hello.
+(gently nodding their head)
+Well done.
 
-Try it out. After one empty line break the format will change back to action.
+You can also press Tab to force a character cue and not worry about writing in all caps.
+
+After one empty line break the format will change back to action. Beat automatically adds two line-breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks).
 
 You can also use transitions just by typing them out, like this:
 
 CUT TO:
 
-Well, that was easy. You should be able to write a full screenplay by using just that stuff. Now, let's get more technical.
+Well, that was easy. You should be able to write a full screenplay by using those elements. Now, let's get more technical!
 
 
 /*
 
 This is a note. It won't be printed or exported, don't worry. This way, you can add longer comments and omit scenes.
 
-Oh by the way - title page info you see at the beginning of this file will be printed out as a very nice title page. You can add the title page stuff from Format -> Add title page
+Oh, and check out the print preview, either by clicking on the eye icon, File → Toggle preview, or by pressing ⌘⌥P)
 
-Check out the print preview, File -> Toggle preview. (or alt-cmd-P)
+Title page info you see at the beginning of this file will be printed out as a very nice title page. You can add the title page stuff from Format → Add title page or use Format → Title Page Editor
 
 */
 
@@ -51,7 +55,14 @@ Check out the print preview, File -> Toggle preview. (or alt-cmd-P)
 
 = This is a synopse. Let's get a bit more technical.
 
-/* Sections and synopses won't be printed, but they help you structure your script. Take a look at the outline view (cmd-D) how the structure is laid out! */
+INT. TUNNEL - NIGHT 
+
+You can use sections and synopses (as above) to help structure your story. They won't be printed out, don't worry.
+
+Take a look at the outline view (top-left icon or ⌘D) and see how the structure is laid out! Index Card View (top-right card icon or ⌘⇧D) is a useful tool for visualizing and laying out your story beats.
+
+
+= Stylizing your script
 
 INT./EXT. BEACH HOUSE - NIGHT
 
@@ -59,15 +70,20 @@ Text formatting can be done with the usual commands used in any software, (cmd-B
 
 Basically, text formatting works so that anything inside dual apostrophes is **bolded**, inside single apostrophes in *italic*. You can also _underline_ stuff.
 
-If you have to use those characters in your text, we need to get a bit more technical. You need to use escape character \. Like this: \* or \_ ... but you probably won't need to.
+Every element also has a way of forcing it. Take a look at the Format menu. Elements can be quickly forced by pressing ⌥↩ (alt-enter). Try it now!
 
-Every element also has a way of forcing it. Take a look at the Format menu. This is how you make your own, strange transitions:
+This is how you make your own, strange transitions:
 
 > SLOW, SURPRISINGLY LONG CROSSFADE TO:
 
+
+= Dual dialogue & other special elements
+
 INT. BAR - NIGHT [[COLOR BLUE]]
 
-Double dialogue is written with the ^ symbol after a character. Like this:
+You can set the color for your scene just by typing it out as above, or by right-clicking a scene either in any of the other views (Outline, Index Cards, Timeline).
+
+Double dialogue can be written by adding a ^ symbol after character name.
 
 CHARACTER
 Hello, have you heard about Beat?
@@ -76,17 +92,15 @@ CHARACTER 2 ^
 (interrupting)
 Leave me alone.
 
-That's about it. Edit this file and try out stuff.
-
-There are certain power user features. You can set the color for your scene just by typing it out (this scene has a blue dot next to it in outline), which won't print out. This feature is still in development, so it might work so-and-so at times.
-
 Here's some lyrics:
 
-~if you come to my house, friend
+~”if you come to my house, friend
 ~bring me a lamp and a window I can look through
-~at the crowd in the happy alley.” 
+~at the crowd in the happy alley.”
 
-You can find more information about the Fountain language at http://www.fountain.io/
+That's about it. Edit this file and try out stuff.
+
+You can find more information about the Fountain markup language at http://www.fountain.io/
 
 > FADE OUT
 

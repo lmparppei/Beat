@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSButton *outlineButton;
 @property IBOutlet NSButton *cardsButton;
 @property IBOutlet NSButton *timelineButton;
+@property IBOutlet NSButton *previewButton;
+
 @property IBOutlet NSLayoutConstraint *outlineButtonY;
 
 @property (nonatomic, weak) DynamicColor *marginColor;

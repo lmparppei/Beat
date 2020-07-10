@@ -44,6 +44,7 @@ typedef enum : NSUInteger {
 @property NSUInteger numberOfPreceedingFormattingCharacters;
 @property NSUInteger sectionDepth;
 @property NSString* sceneNumber;
+@property NSInteger sceneIndex;
 @property NSString* color;
 //@property double height;
 
@@ -63,6 +64,7 @@ typedef enum : NSUInteger {
 - (NSString*)typeAsFountainString;
 - (NSString*)cleanedString;
 - (bool)omited;
+- (bool)centered;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
 
@@ -72,11 +74,19 @@ typedef enum : NSUInteger {
 // Copy element
 - (Line*)clone;
 
+// Helper
+- (bool)isBoldedAt:(NSInteger)index;
+- (bool)isItalicAt:(NSInteger)index;
+- (bool)isUnderlinedAt:(NSInteger)index;
+
 // Note: Following stuff is intended ONLY for non-continuous parsing
 - (bool)isTitlePage;
 - (bool)isInvisible;
 - (bool)isDialogueElement;
 - (bool)isDualDialogueElement;
+
+- (NSString*)stripSceneNumber;
+
 @property bool isSplitParagraph;
 @property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
 
