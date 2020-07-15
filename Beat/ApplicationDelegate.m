@@ -92,7 +92,7 @@
 	
 	if (latestVersion == 0 || currentVersion > latestVersion) {
 		[[NSUserDefaults standardUserDefaults] setValue:[NSString stringWithFormat:@"%lu", currentVersion] forKey:LATEST_VERSION_KEY];
-		[self showPatchNotes:nil];
+		//[self showPatchNotes:nil];
 	} else {
 		// Up to date
 	}

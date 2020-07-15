@@ -51,7 +51,7 @@
 //@property (nonatomic) NSTextField * versionField;
 
 - (IBAction)closeStartModal;
-- (IBAction)showPatchNotes;
+- (IBAction)showPatchNotes:(id)sender;
 
 - (bool)isDark;
 - (void)toggleDarkMode;

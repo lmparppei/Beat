@@ -100,6 +100,7 @@
 #import "MarginView.h"
 #import "BeatPreview.h"
 #import "BeatColors.h"
+#import "BeatTimer.h"
 
 @interface Document ()
 
@@ -288,6 +289,9 @@
 // Theme settings
 @property (strong, nonatomic) ThemeManager* themeManager;
 @property (nonatomic) bool nightMode; // THE HOUSE IS BLACK.
+
+// Timer
+@property IBOutlet BeatTimer *beatTimer;
 
 // Debug flags
 @property (nonatomic) bool debug;
@@ -966,7 +970,6 @@
 	if (_htmlString.length < 1 || updateUI) previewWait = 0;
 	
 	_previewTimer = [NSTimer scheduledTimerWithTimeInterval:previewWait repeats:NO block:^(NSTimer * _Nonnull timer) {
-			
 		self.previewCanceled = NO;
 		
 		self.currentScene = [self getCurrentScene];
@@ -976,15 +979,6 @@
 			
 			__block NSString *html = [BeatPreview createNewPreview:rawString of:self scene:self.currentScene.sceneNumber];
 			self.htmlString = html;
-			
-			/*
-			FNScript *script = [BeatPreview createPreview:rawString];
-			
-			if (self.previewCanceled == YES) return;
-			
-			FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self scene:self.currentScene.sceneNumber];
-			self.htmlString = htmlScript.html;
-			 */
 			
 			self.previewUpdated = YES;
 
@@ -1343,6 +1337,9 @@
 		}
 	}
 	
+
+	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+
 	if (processDoubleBreak) {
 		// This is here to fix a formating bug error with dialogue.
 		// If the caret is at the end of the document, we need to parse one step behind
@@ -1350,12 +1347,19 @@
 
 		if (_currentLine.type == dialogue) {
 			if ([self cursorLocation].location == [self getText].length) {
-				[self.parser parseChangeInRange:NSMakeRange(affectedCharRange.location - 1, 1) withString:@"\n"];
+				
+				@try {
+					[self.parser parseChangeInRange:NSMakeRange(affectedCharRange.location, 1) withString:@"\n"];
+				}
+				@catch (NSException *e) {
+					NSLog(@"error");
+				}
+				@finally {
+					[self resetCaret];
+				}
 			}
 		}
 	}
-
-	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
 	
 	// Fire up autocomplete at the end of string and
 	// create cached lists of scene headings / character names
@@ -4403,7 +4407,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 				if (scene.type == synopse) type = @"synopsis";
 				if (scene.type == section) type = @"section";
 				
-				[jsonData appendFormat:@"{ \"text\": \"%@\", \"type\": '%@' },", [self JSONString:scene.string], type];
+				[jsonData appendFormat:@"{ \"text\": '\"'%@\", \"type\": '%@' },", [self fixQuotations:[self JSONString:scene.string]], type];
 			}
 			else if (scene.type == heading) {
 				//[self JSONString:scene.string]
@@ -4476,7 +4480,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 				NSString *selectedValue = @"false";
 				if (selected) selectedValue = @"true";
 				
-				[jsonData appendFormat:@"{ \"text\": \"%@\", \"sceneLength\": %lu, \"sceneIndex\": %lu, \"sceneNumber\": \"%@\", \"color\": \"%@\", \"selected\": %@ },", [self JSONString:scene.string], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
+				[jsonData appendFormat:@"{ \"text\": \"%@\", \"sceneLength\": %lu, \"sceneIndex\": %lu, \"sceneNumber\": \"%@\", \"color\": \"%@\", \"selected\": %@ },", [self fixQuotations:[self JSONString:scene.line.cleanedString]], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
 			}
 		}
 		[jsonData appendString:@"]"];
@@ -4489,6 +4493,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 			[self->_timelineView evaluateJavaScript:evalString completionHandler:nil];
 		});
 	});
+}
+- (NSString*)fixQuotations: (NSString*)string {
+	return [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
 }
 - (void) findOnTimeline: (NSInteger) sceneIndex {
 	dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -5008,6 +5015,12 @@ triangle walks
 		[self replaceString:oldTitlePage withString:titlePage atIndex:0];
 	}
 	
+}
+
+#pragma mark - Timer
+
+- (IBAction)showTimer:(id)sender {
+	[_beatTimer showTimer];
 }
 
 #pragma mark - touchbar buttons

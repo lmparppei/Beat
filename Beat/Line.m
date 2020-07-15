@@ -8,11 +8,15 @@
 
 #import "Line.h"
 #import "FNElement.h"
+#import "RegExCategories.h"
 
 @implementation Line
 
 + (Line*)withString:(NSString*)string type:(LineType)type {
 	return [[Line alloc] initWithString:string type:type];
+}
++ (NSArray*)markupCharacters {
+	return @[@".", @"@", @"~", @"!"];
 }
 - (Line*)clone {
 	Line* newLine = [Line withString:self.string type:self.type];
@@ -100,16 +104,28 @@
 	
 	// Remove any omitted ranges
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.location + range.length > string.length) {
-			range = NSMakeRange(range.location, string.length - range.location);
+		if (range.location - offset + range.length > string.length) {
+			range = NSMakeRange(range.location, string.length - range.location - offset);
 		}
-		[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
-		offset -= range.length;
+		
+		@try {
+			[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
+		}
+		@catch (NSException* exception) {
+			NSLog(@"Cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
+		}
+		@finally {
+			offset -= range.length;
+		}
 	}];
 	
 	// Remove markup characters
 	if (self.string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
-		string = [NSMutableString stringWithString:[string substringFromIndex:self.numberOfPreceedingFormattingCharacters]];
+		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
+		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
+ 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
+		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
+		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
 	}
 
 	if (self.type == centered) {

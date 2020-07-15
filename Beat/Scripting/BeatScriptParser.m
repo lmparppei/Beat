@@ -19,6 +19,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "BeatScriptParser.h"
 #import "Line.h"
 #import "OutlineScene.h"
@@ -27,6 +28,8 @@
 @property (nonatomic) NSString *script;
 @property (weak) NSArray *lines;
 @property (weak) NSArray *scenes;
+@property (nonatomic) JSVirtualMachine *vm;
+@property (nonatomic) JSContext *context;
 @end
 
 @implementation BeatScriptParser
@@ -45,6 +48,12 @@
 	_script = script;
 	_lines = lines;
 	_scenes = scenes;
+	
+	_vm = [[JSVirtualMachine alloc] init];
+	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
+	
+	NSString *js = @"return 'hello';";
+	NSLog(@"result: %@", [_context evaluateScript:js]);
 	
 	return self;
 }

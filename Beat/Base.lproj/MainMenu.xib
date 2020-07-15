@@ -651,6 +651,19 @@ DQ
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Tools" hidden="YES" id="h9m-JI-q3y">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Tools" id="T42-tx-tAb">
+                        <items>
+                            <menuItem title="Set Timer..." id="ite-qD-YVS">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showTimer:" target="-1" id="ucF-GX-SkT"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
                 <menuItem title="Window" id="aUF-d1-5bR">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Window" systemMenu="window" id="Td7-aD-5lo">

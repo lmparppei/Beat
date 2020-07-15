@@ -190,8 +190,10 @@
 		<section id='timeline'></section>
 
 		<script>
-			var data = [{text: "1. näytös", type: 'section' },{ text: "INT. PAULIN KOTI - PÄIVÄ", sceneLength: 14, sceneIndex: 2 },{ text: "INT. AUTO - PÄIVÄ", sceneLength: 30, sceneIndex: 3 },{ text: "INT. PAULIN HUONE - AAMU", sceneLength: 55, sceneIndex: 4 },{ text: "INT. KYLPYHUONE - PÄIVÄ", color: "red", sceneLength: 7, sceneIndex: 5 },{ text: "INT. PAULIN HUONE - PÄIVÄ", sceneLength: 11, sceneIndex: 6 },{ text: "INT. KEITTIÖ - PÄIVÄ", sceneLength: 11, sceneIndex: 7 },{ text: "INT. AUTO - ILTAPÄIVÄ", sceneLength: 13, sceneIndex: 8 },{ text: "INT. RUOKAKAUPPA - ILTA", sceneLength: 11, sceneIndex: 9 },{ text: "EXT. AUTOMARKETIN PIHA - ILTA", sceneLength: 31, sceneIndex: 10 },{ text: "INT. PAULIN HUONE - PÄIVÄ", sceneLength: 9, sceneIndex: 11 }];
+			//var data = [{text: "1. näytös", type: 'section' },{ text: "INT. PAULIN KOTI - PÄIVÄ", sceneLength: 14, sceneIndex: 2 },{ text: "INT. AUTO - PÄIVÄ", sceneLength: 30, sceneIndex: 3 },{ text: "INT. PAULIN HUONE - AAMU", sceneLength: 55, sceneIndex: 4 },{ text: "INT. KYLPYHUONE - PÄIVÄ", color: "red", sceneLength: 7, sceneIndex: 5 },{ text: "INT. PAULIN HUONE - PÄIVÄ", sceneLength: 11, sceneIndex: 6 },{ text: "INT. KEITTIÖ - PÄIVÄ", sceneLength: 11, sceneIndex: 7 },{ text: "INT. AUTO - ILTAPÄIVÄ", sceneLength: 13, sceneIndex: 8 },{ text: "INT. RUOKAKAUPPA - ILTA", sceneLength: 11, sceneIndex: 9 },{ text: "EXT. AUTOMARKETIN PIHA - ILTA", sceneLength: 31, sceneIndex: 10 },{ text: "INT. PAULIN HUONE - PÄIVÄ", sceneLength: 9, sceneIndex: 11 }];
 
+			var data = [];
+			
 			var totalLength = 0;
 			
 			var container = document.getElementById("timeline");
@@ -237,6 +239,7 @@
 
 				for (var d in data) {
 					var scene = data[d];
+					scene.text = scene.text.replace(/[\\]+/g,'');
 					if (scene.type == "section") {
 						container.innerHTML += "<div class='section'><h2>" + scene.text + "</h2></div>";
 					}

@@ -488,7 +488,9 @@
                 [text setString:[text replace:RX(@"^\\.") with:@""]];
 				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
             }
-            
+            if (line.type == character) {
+				[text setString:[text replace:RX(@"^@") with:@""]];
+			}
 			if (line.type == lyrics) {
                 [text setString:[text replace:RX(@"^~") with:@""]];
 				if (!isLyrics) {
