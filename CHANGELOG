@@ -1,4 +1,9 @@
 
+## Beat 1.3b
+
+* Fixed an app-crashing bug happening when iterating through omitted ranges
+* Fixed a bug with the JavaScript Timeline (which should be abolished anyway, tbh)
+
 ## Beat 1.3 
 
 * Fixed memory issues

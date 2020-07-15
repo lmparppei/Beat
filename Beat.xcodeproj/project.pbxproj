@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B131119A1CB2BA7900D07A0C /* WriterParserPerformance.m in Sources */ = {isa = PBXBuildFile; fileRef = B13111991CB2BA7900D07A0C /* WriterParserPerformance.m */; };
-		B138B59019E1C974000489C4 /* WriterParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B58F19E1C974000489C4 /* WriterParserTests.m */; };
 		B138B61F19E1D6A7000489C4 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B61E19E1D6A7000489C4 /* WebKit.framework */; };
 		B138B66519E1E8CA000489C4 /* FastFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65019E1E8CA000489C4 /* FastFountainParser.m */; };
 		B138B66619E1E8CA000489C4 /* FNElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65219E1E8CA000489C4 /* FNElement.m */; };
@@ -18,9 +16,6 @@
 		B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65C19E1E8CA000489C4 /* FountainRegexes.m */; };
 		B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65E19E1E8CA000489C4 /* FountainWriter.m */; };
 		B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
-		B138B66E19E1E8CA000489C4 /* License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B138B66219E1E8CA000489C4 /* License.rtf */; };
-		B1509A421CB6EBBC00884918 /* WriterFDXTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1509A411CB6EBBC00884918 /* WriterFDXTests.m */; };
-		B1DCC4631CB32C5200438E7F /* WriterThemeManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1DCC4621CB32C5200438E7F /* WriterThemeManagerTests.m */; };
 		B1F04ED81C88ACAD001C4D27 /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */; };
 		B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */; };
 		B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */; };
@@ -66,15 +61,7 @@
 		B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
 		B667796523C5D1CB0029D508 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B667796423C5D1CB0029D508 /* FDXImport.m */; };
 		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
-		B670E1E524BF5EA4006375BA /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B138B58E19E1C974000489C4 /* Info.plist */; };
-		B670E1E624BF5F11006375BA /* FDXInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70E2218B377005B8447 /* FDXInterface.m */; };
-		B670E1E724BF5F29006375BA /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
-		B670E1E824BF5F37006375BA /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70A2218B342005B8447 /* Line.m */; };
-		B670E1E924BF5F3A006375BA /* NSString+Whitespace.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7102218B389005B8447 /* NSString+Whitespace.m */; };
-		B670E1EA24BF5F3F006375BA /* NSMutableIndexSet+Lowest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */; };
-		B670E1EB24BF5F43006375BA /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
-		B670E1EC24BF5F49006375BA /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
-		B670E1ED24BF5F54006375BA /* BeatScriptParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */; };
+		B670E20924BF689A006375BA /* BeatTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B670E20824BF689A006375BA /* BeatTests.m */; };
 		B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
@@ -124,7 +111,6 @@
 		B6D2B7312218B589005B8447 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72D2218B589005B8447 /* Document.xib */; };
 		B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72F2218B589005B8447 /* MainMenu.xib */; };
 		B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
-		B6D4A70D24BDA2930010F85B /* ContinousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7162218B3BC005B8447 /* ContinousFountainParser.m */; };
 		B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
 		B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D74A6C24817518001E5AF4 /* Patch Notes.html */; };
 		B6D872B3232567C40050ED2D /* timeline.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D872B2232567C40050ED2D /* timeline.html */; };
@@ -189,7 +175,6 @@
 		B6F49D14246D66B0006D88D4 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
 		B6F49D15246D66B0006D88D4 /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = B69A92952319387B00FE6A3E /* CHANGELOG */; };
 		B6F49D16246D66B0006D88D4 /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS.css */; };
-		B6F49D17246D66B0006D88D4 /* License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B138B66219E1E8CA000489C4 /* License.rtf */; };
 		B6F49D18246D66B0006D88D4 /* DocumentIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */; };
 		B6F49D19246D66B0006D88D4 /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B6F49D1A246D66B0006D88D4 /* cards.png in Resources */ = {isa = PBXBuildFile; fileRef = B6146B1D246A91420029DBD9 /* cards.png */; };
@@ -214,19 +199,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		B138B58A19E1C974000489C4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = B138B56B19E1C973000489C4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B138B57219E1C973000489C4;
-			remoteInfo = Writer;
-		};
 		B625F13F24327DE400873F62 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B138B56B19E1C973000489C4 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = B62ADC7223CCCE560015563A;
 			remoteInfo = fountainQuickLook;
+		};
+		B670E20B24BF689A006375BA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B138B56B19E1C973000489C4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B138B57219E1C973000489C4;
+			remoteInfo = Beat;
 		};
 		B6F49CDB246D66B0006D88D4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -288,14 +273,10 @@
 		B131118B1CB2A41800D07A0C /* ContinousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContinousFountainParser.h; path = ../Beat/ContinousFountainParser.h; sourceTree = "<group>"; };
 		B131118D1CB2A41800D07A0C /* NSString+Whitespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Whitespace.h"; path = "../Beat/NSString+Whitespace.h"; sourceTree = "<group>"; };
 		B13111921CB2A42300D07A0C /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Line.h; path = ../Beat/Line.h; sourceTree = "<group>"; };
-		B13111991CB2BA7900D07A0C /* WriterParserPerformance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriterParserPerformance.m; sourceTree = "<group>"; };
 		B131119B1CB2C6B300D07A0C /* NSMutableIndexSet+Lowest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableIndexSet+Lowest.h"; path = "../Beat/NSMutableIndexSet+Lowest.h"; sourceTree = "<group>"; };
 		B138B57319E1C973000489C4 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B138B57719E1C973000489C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Beat/Info.plist; sourceTree = "<group>"; };
 		B138B57A19E1C973000489C4 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Document.h; path = ../Beat/Document.h; sourceTree = "<group>"; };
-		B138B58919E1C974000489C4 /* BeatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B138B58E19E1C974000489C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B138B58F19E1C974000489C4 /* WriterParserTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WriterParserTests.m; sourceTree = "<group>"; };
 		B138B61E19E1D6A7000489C4 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		B138B62019E1D6FA000489C4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B138B64F19E1E8CA000489C4 /* FastFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastFountainParser.h; sourceTree = "<group>"; };
@@ -315,15 +296,10 @@
 		B138B65E19E1E8CA000489C4 /* FountainWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainWriter.m; sourceTree = "<group>"; };
 		B138B65F19E1E8CA000489C4 /* QUQFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QUQFont.h; sourceTree = "<group>"; };
 		B138B66019E1E8CA000489C4 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScriptCSS.css; sourceTree = "<group>"; };
-		B138B66219E1E8CA000489C4 /* License.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = License.rtf; sourceTree = "<group>"; };
-		B138B66319E1E8CA000489C4 /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
-		B138B66419E1E8CA000489C4 /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
 		B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationDelegate.h; path = ../Beat/ApplicationDelegate.h; sourceTree = "<group>"; };
 		B1509A3E1CB5C0C500884918 /* FDXInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FDXInterface.h; path = ../Beat/FDXInterface.h; sourceTree = "<group>"; };
-		B1509A411CB6EBBC00884918 /* WriterFDXTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriterFDXTests.m; sourceTree = "<group>"; };
 		B1B62A3819E3402F009F6E23 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorView.h; sourceTree = "<group>"; };
 		B1D0B84919E31B86005252E4 /* PrintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrintView.h; path = ../Beat/PrintView.h; sourceTree = "<group>"; };
-		B1DCC4621CB32C5200438E7F /* WriterThemeManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriterThemeManagerTests.m; sourceTree = "<group>"; };
 		B1E7FF511BC4555B008E2B99 /* Writer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Writer.entitlements; sourceTree = "<group>"; };
 		B1EC6B9C1CE3B33200B48CDB /* OutlineExtractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineExtractor.h; path = ../Beat/OutlineExtractor.h; sourceTree = "<group>"; };
 		B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold Italic.ttf"; sourceTree = "<group>"; };
@@ -368,9 +344,11 @@
 		B667796323C5D1CB0029D508 /* FDXImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FDXImport.h; path = Writer/FDXImport.h; sourceTree = SOURCE_ROOT; };
 		B667796423C5D1CB0029D508 /* FDXImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FDXImport.m; path = Writer/FDXImport.m; sourceTree = SOURCE_ROOT; };
 		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CardView.js; path = Beat/CardView.js; sourceTree = SOURCE_ROOT; };
+		B670E20624BF689A006375BA /* BeatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BeatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B670E20824BF689A006375BA /* BeatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTests.m; sourceTree = "<group>"; };
+		B670E20A24BF689A006375BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B67BD6DF23B4BBE400A99C9C /* ColorCheckbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColorCheckbox.h; sourceTree = "<group>"; };
 		B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ColorCheckbox.m; sourceTree = "<group>"; };
-		B67D1E512265D57400644CB1 /* Beat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-Bridging-Header.h"; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = CardCSS.css; path = Beat/CardCSS.css; sourceTree = SOURCE_ROOT; };
 		B68AC7B42219733900E02466 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Tutorial.fountain; path = "Sample files/Tutorial.fountain"; sourceTree = SOURCE_ROOT; };
 		B6907E3A233FE17C00741071 /* analysis.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = analysis.html; path = Beat/Analysis/analysis.html; sourceTree = SOURCE_ROOT; };
@@ -425,7 +403,6 @@
 		B6D2B7232218B4A0005B8447 /* Themes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Themes.plist; path = Beat/Themes.plist; sourceTree = SOURCE_ROOT; };
 		B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Big-Fish.fountain"; path = "Sample files/Big-Fish.fountain"; sourceTree = SOURCE_ROOT; };
 		B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DocumentIcon.icns; sourceTree = SOURCE_ROOT; };
-		B6D2B7292218B50A005B8447 /* Reference.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Reference.fountain; path = "Sample files/Reference.fountain"; sourceTree = SOURCE_ROOT; };
 		B6D2B72B2218B51D005B8447 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; name = Credits.rtf; path = Beat/Credits.rtf; sourceTree = SOURCE_ROOT; };
 		B6D2B72E2218B589005B8447 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/Document.xib; sourceTree = SOURCE_ROOT; };
 		B6D2B7302218B589005B8447 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
@@ -461,13 +438,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B138B58619E1C974000489C4 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B62ADC7023CCCE560015563A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -475,6 +445,13 @@
 				B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */,
 				B62ADC8F23CCE20D0015563A /* QuickLook.framework in Frameworks */,
 				B62ADC9523CCEF0F0015563A /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B670E20324BF689A006375BA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -536,15 +513,13 @@
 				B69A928B231915E900FE6A3E /* README.md */,
 				B69A92952319387B00FE6A3E /* CHANGELOG */,
 				B138B57519E1C973000489C4 /* Beat */,
-				B138B58C19E1C974000489C4 /* WriterTests */,
 				B138B64E19E1E8CA000489C4 /* Fountain */,
-				B138B66119E1E8CA000489C4 /* RegexKitLite */,
 				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
 				B1F04ED31C88AC99001C4D27 /* CourierPrime */,
 				B62ADC7623CCCE560015563A /* fountainQuickLook */,
+				B670E20724BF689A006375BA /* BeatTests */,
 				B138B62419E1D8A4000489C4 /* Frameworks */,
 				B138B57419E1C973000489C4 /* Products */,
-				B67D1E512265D57400644CB1 /* Beat-Bridging-Header.h */,
 				B6F49D2F246D66B0006D88D4 /* Beat copy-Info.plist */,
 			);
 			sourceTree = "<group>";
@@ -554,9 +529,9 @@
 			isa = PBXGroup;
 			children = (
 				B138B57319E1C973000489C4 /* Beat.app */,
-				B138B58919E1C974000489C4 /* BeatTests.xctest */,
 				B62ADC7323CCCE560015563A /* fountainQuickLook.appex */,
 				B6F49D2E246D66B0006D88D4 /* Beat Pro.app */,
+				B670E20624BF689A006375BA /* BeatTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -609,26 +584,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		B138B58C19E1C974000489C4 /* WriterTests */ = {
-			isa = PBXGroup;
-			children = (
-				B1509A411CB6EBBC00884918 /* WriterFDXTests.m */,
-				B1DCC4621CB32C5200438E7F /* WriterThemeManagerTests.m */,
-				B13111991CB2BA7900D07A0C /* WriterParserPerformance.m */,
-				B138B58F19E1C974000489C4 /* WriterParserTests.m */,
-				B138B58D19E1C974000489C4 /* Supporting Files */,
-			);
-			path = WriterTests;
-			sourceTree = "<group>";
-		};
-		B138B58D19E1C974000489C4 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				B138B58E19E1C974000489C4 /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		B138B62419E1D8A4000489C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -670,16 +625,6 @@
 				B138B66019E1E8CA000489C4 /* ScriptCSS.css */,
 			);
 			path = Fountain;
-			sourceTree = "<group>";
-		};
-		B138B66119E1E8CA000489C4 /* RegexKitLite */ = {
-			isa = PBXGroup;
-			children = (
-				B138B66219E1E8CA000489C4 /* License.rtf */,
-				B138B66319E1E8CA000489C4 /* RegexKitLite.h */,
-				B138B66419E1E8CA000489C4 /* RegexKitLite.m */,
-			);
-			path = RegexKitLite;
 			sourceTree = "<group>";
 		};
 		B1509A3D1CB5C0B400884918 /* Export */ = {
@@ -843,10 +788,18 @@
 			name = CardView;
 			sourceTree = "<group>";
 		};
+		B670E20724BF689A006375BA /* BeatTests */ = {
+			isa = PBXGroup;
+			children = (
+				B670E20824BF689A006375BA /* BeatTests.m */,
+				B670E20A24BF689A006375BA /* Info.plist */,
+			);
+			path = BeatTests;
+			sourceTree = "<group>";
+		};
 		B68AC7B32219732800E02466 /* Sample files */ = {
 			isa = PBXGroup;
 			children = (
-				B6D2B7292218B50A005B8447 /* Reference.fountain */,
 				B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */,
 			);
 			name = "Sample files";
@@ -913,24 +866,6 @@
 			productReference = B138B57319E1C973000489C4 /* Beat.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B138B58819E1C974000489C4 /* BeatTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B138B59619E1C974000489C4 /* Build configuration list for PBXNativeTarget "BeatTests" */;
-			buildPhases = (
-				B138B58519E1C974000489C4 /* Sources */,
-				B138B58619E1C974000489C4 /* Frameworks */,
-				B138B58719E1C974000489C4 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B138B58B19E1C974000489C4 /* PBXTargetDependency */,
-			);
-			name = BeatTests;
-			productName = WriterTests;
-			productReference = B138B58919E1C974000489C4 /* BeatTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		B62ADC7223CCCE560015563A /* fountainQuickLook */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B62ADC8523CCCE560015563A /* Build configuration list for PBXNativeTarget "fountainQuickLook" */;
@@ -947,6 +882,24 @@
 			productName = fountainQuickLook;
 			productReference = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		B670E20524BF689A006375BA /* BeatTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B670E20D24BF689A006375BA /* Build configuration list for PBXNativeTarget "BeatTests" */;
+			buildPhases = (
+				B670E20224BF689A006375BA /* Sources */,
+				B670E20324BF689A006375BA /* Frameworks */,
+				B670E20424BF689A006375BA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B670E20C24BF689A006375BA /* PBXTargetDependency */,
+			);
+			name = BeatTests;
+			productName = BeatTests;
+			productReference = B670E20624BF689A006375BA /* BeatTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		B6F49CD9246D66B0006D88D4 /* Beat Pro */ = {
 			isa = PBXNativeTarget;
@@ -992,16 +945,16 @@
 							};
 						};
 					};
-					B138B58819E1C974000489C4 = {
-						CreatedOnToolsVersion = 6.0.1;
-						DevelopmentTeam = GV6F4CSRVF;
-						ProvisioningStyle = Automatic;
-						TestTargetID = B138B57219E1C973000489C4;
-					};
 					B62ADC7223CCCE560015563A = {
 						CreatedOnToolsVersion = 11.3;
 						DevelopmentTeam = GV6F4CSRVF;
 						ProvisioningStyle = Automatic;
+					};
+					B670E20524BF689A006375BA = {
+						CreatedOnToolsVersion = 11.5;
+						DevelopmentTeam = GV6F4CSRVF;
+						ProvisioningStyle = Automatic;
+						TestTargetID = B138B57219E1C973000489C4;
 					};
 					B6F49CD9246D66B0006D88D4 = {
 						DevelopmentTeam = GV6F4CSRVF;
@@ -1023,8 +976,8 @@
 			targets = (
 				B138B57219E1C973000489C4 /* Beat */,
 				B6F49CD9246D66B0006D88D4 /* Beat Pro */,
-				B138B58819E1C974000489C4 /* BeatTests */,
 				B62ADC7223CCCE560015563A /* fountainQuickLook */,
+				B670E20524BF689A006375BA /* BeatTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1048,7 +1001,6 @@
 				B69A92962319387B00FE6A3E /* CHANGELOG in Resources */,
 				B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */,
-				B138B66E19E1E8CA000489C4 /* License.rtf in Resources */,
 				B6D2B7282218B4DC005B8447 /* DocumentIcon.icns in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B6146B23246A91420029DBD9 /* cards.png in Resources */,
@@ -1066,20 +1018,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B138B58719E1C974000489C4 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B670E1E524BF5EA4006375BA /* Info.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B62ADC7123CCCE560015563A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				B615E5E923CE022F00E61C54 /* ScriptCSS.css in Resources */,
 				B62ADC7C23CCCE560015563A /* PreviewViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B670E20424BF689A006375BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1101,7 +1052,6 @@
 				B6F49D14246D66B0006D88D4 /* dragula.js in Resources */,
 				B6F49D15246D66B0006D88D4 /* CHANGELOG in Resources */,
 				B6F49D16246D66B0006D88D4 /* PrintCSS.css in Resources */,
-				B6F49D17246D66B0006D88D4 /* License.rtf in Resources */,
 				B6F49D18246D66B0006D88D4 /* DocumentIcon.icns in Resources */,
 				B6F49D19246D66B0006D88D4 /* CardView.js in Resources */,
 				B6F49D1A246D66B0006D88D4 /* cards.png in Resources */,
@@ -1210,26 +1160,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B138B58519E1C974000489C4 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B670E1E624BF5F11006375BA /* FDXInterface.m in Sources */,
-				B670E1EC24BF5F49006375BA /* NSString+Regex.m in Sources */,
-				B670E1E824BF5F37006375BA /* Line.m in Sources */,
-				B670E1ED24BF5F54006375BA /* BeatScriptParser.m in Sources */,
-				B670E1E724BF5F29006375BA /* OutlineScene.m in Sources */,
-				B138B59019E1C974000489C4 /* WriterParserTests.m in Sources */,
-				B6D4A70D24BDA2930010F85B /* ContinousFountainParser.m in Sources */,
-				B670E1EB24BF5F43006375BA /* NSMutableString+Regex.m in Sources */,
-				B670E1EA24BF5F3F006375BA /* NSMutableIndexSet+Lowest.m in Sources */,
-				B670E1E924BF5F3A006375BA /* NSString+Whitespace.m in Sources */,
-				B1509A421CB6EBBC00884918 /* WriterFDXTests.m in Sources */,
-				B131119A1CB2BA7900D07A0C /* WriterParserPerformance.m in Sources */,
-				B1DCC4631CB32C5200438E7F /* WriterThemeManagerTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B62ADC6F23CCCE560015563A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1246,6 +1176,14 @@
 				B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */,
 				B62ADC9E23CCF7790015563A /* NSString+Whitespace.m in Sources */,
 				B62ADC9723CCF0250015563A /* FastFountainParser.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B670E20224BF689A006375BA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B670E20924BF689A006375BA /* BeatTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1308,15 +1246,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		B138B58B19E1C974000489C4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B138B57219E1C973000489C4 /* Beat */;
-			targetProxy = B138B58A19E1C974000489C4 /* PBXContainerItemProxy */;
-		};
 		B625F14024327DE400873F62 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B62ADC7223CCCE560015563A /* fountainQuickLook */;
 			targetProxy = B625F13F24327DE400873F62 /* PBXContainerItemProxy */;
+		};
+		B670E20C24BF689A006375BA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B138B57219E1C973000489C4 /* Beat */;
+			targetProxy = B670E20B24BF689A006375BA /* PBXContainerItemProxy */;
 		};
 		B6F49CDA246D66B0006D88D4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1480,7 +1418,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Beat-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -1511,54 +1449,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Beat-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		B138B59719E1C974000489C4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = GV6F4CSRVF;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = WriterTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Beat.app/Contents/MacOS/Beat";
-			};
-			name = Debug;
-		};
-		B138B59819E1C974000489C4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = GV6F4CSRVF;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = WriterTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "fi.KAPITAN.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Beat.app/Contents/MacOS/Beat";
 			};
 			name = Release;
 		};
@@ -1614,6 +1506,59 @@
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		B670E20E24BF689A006375BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = GV6F4CSRVF;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BeatTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Beat.app/Contents/MacOS/Beat";
+			};
+			name = Debug;
+		};
+		B670E20F24BF689A006375BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = GV6F4CSRVF;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BeatTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Beat.app/Contents/MacOS/Beat";
 			};
 			name = Release;
 		};
@@ -1699,20 +1644,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B138B59619E1C974000489C4 /* Build configuration list for PBXNativeTarget "BeatTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B138B59719E1C974000489C4 /* Debug */,
-				B138B59819E1C974000489C4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		B62ADC8523CCCE560015563A /* Build configuration list for PBXNativeTarget "fountainQuickLook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B62ADC8323CCCE560015563A /* Debug */,
 				B62ADC8423CCCE560015563A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B670E20D24BF689A006375BA /* Build configuration list for PBXNativeTarget "BeatTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B670E20E24BF689A006375BA /* Debug */,
+				B670E20F24BF689A006375BA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
