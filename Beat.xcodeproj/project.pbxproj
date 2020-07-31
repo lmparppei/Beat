@@ -14,7 +14,6 @@
 		B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65619E1E8CA000489C4 /* FNPaginator.m */; };
 		B138B66919E1E8CA000489C4 /* FNScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65819E1E8CA000489C4 /* FNScript.m */; };
 		B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65C19E1E8CA000489C4 /* FountainRegexes.m */; };
-		B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65E19E1E8CA000489C4 /* FountainWriter.m */; };
 		B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
 		B1F04ED81C88ACAD001C4D27 /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */; };
 		B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */; };
@@ -50,7 +49,6 @@
 		B62ADC9823CCF0270015563A /* FNElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65219E1E8CA000489C4 /* FNElement.m */; };
 		B62ADC9923CCF02A0015563A /* FNPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65619E1E8CA000489C4 /* FNPaginator.m */; };
 		B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65C19E1E8CA000489C4 /* FountainRegexes.m */; };
-		B62ADC9C23CCF0430015563A /* FountainWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65E19E1E8CA000489C4 /* FountainWriter.m */; };
 		B62ADC9E23CCF7790015563A /* NSString+Whitespace.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7102218B389005B8447 /* NSString+Whitespace.m */; };
 		B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
 		B6447CB124616C8400AA4EBC /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6447CB024616C8400AA4EBC /* MasterView.m */; };
@@ -58,10 +56,20 @@
 		B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B6482F7922195BEC00175927 /* BeatTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* BeatTextView.m */; };
 		B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B64E1B2D227B08B2008DF194 /* CenteredClipView.m */; };
+		B662FC0924C22167003EF967 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0824C22167003EF967 /* OSFImport.m */; };
+		B662FC0A24C22167003EF967 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0824C22167003EF967 /* OSFImport.m */; };
+		B662FC0C24C2239A003EF967 /* OSFTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0B24C2239A003EF967 /* OSFTest.m */; };
+		B662FC0D24C2248C003EF967 /* BeatHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */; };
+		B662FC1024C228E6003EF967 /* document.xml in Resources */ = {isa = PBXBuildFile; fileRef = B662FC0F24C228E6003EF967 /* document.xml */; };
+		B662FC1124C228E6003EF967 /* document.xml in Resources */ = {isa = PBXBuildFile; fileRef = B662FC0F24C228E6003EF967 /* document.xml */; };
 		B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
+		B663680424CE1CE1009A1693 /* BeatTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B663680224CE1CCF009A1693 /* BeatTest.m */; };
+		B663680524CE1E64009A1693 /* BeatTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B663680224CE1CCF009A1693 /* BeatTest.m */; };
 		B667796523C5D1CB0029D508 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B667796423C5D1CB0029D508 /* FDXImport.m */; };
 		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B670E20924BF689A006375BA /* BeatTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B670E20824BF689A006375BA /* BeatTests.m */; };
+		B670E21524BF6AF3006375BA /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70A2218B342005B8447 /* Line.m */; };
+		B670E21624BF6AFE006375BA /* FNElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65219E1E8CA000489C4 /* FNElement.m */; };
 		B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
@@ -154,7 +162,6 @@
 		B6F49CFD246D66B0006D88D4 /* FNScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65819E1E8CA000489C4 /* FNScript.m */; };
 		B6F49CFE246D66B0006D88D4 /* FastFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65019E1E8CA000489C4 /* FastFountainParser.m */; };
 		B6F49CFF246D66B0006D88D4 /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
-		B6F49D00246D66B0006D88D4 /* FountainWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65E19E1E8CA000489C4 /* FountainWriter.m */; };
 		B6F49D01246D66B0006D88D4 /* FNHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65419E1E8CA000489C4 /* FNHTMLScript.m */; };
 		B6F49D02246D66B0006D88D4 /* RecentFiles.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B71F2218B459005B8447 /* RecentFiles.m */; };
 		B6F49D03246D66B0006D88D4 /* ScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6952C94232B89BE00448B57 /* ScrollView.m */; };
@@ -292,8 +299,6 @@
 		B138B65A19E1E8CA000489C4 /* FountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainParser.m; sourceTree = "<group>"; };
 		B138B65B19E1E8CA000489C4 /* FountainRegexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FountainRegexes.h; sourceTree = "<group>"; };
 		B138B65C19E1E8CA000489C4 /* FountainRegexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainRegexes.m; sourceTree = "<group>"; };
-		B138B65D19E1E8CA000489C4 /* FountainWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FountainWriter.h; sourceTree = "<group>"; };
-		B138B65E19E1E8CA000489C4 /* FountainWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainWriter.m; sourceTree = "<group>"; };
 		B138B65F19E1E8CA000489C4 /* QUQFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QUQFont.h; sourceTree = "<group>"; };
 		B138B66019E1E8CA000489C4 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScriptCSS.css; sourceTree = "<group>"; };
 		B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationDelegate.h; path = ../Beat/ApplicationDelegate.h; sourceTree = "<group>"; };
@@ -339,8 +344,14 @@
 		B6482F7822195BEC00175927 /* BeatTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatTextView.m; path = Beat/NCRTextField/BeatTextView.m; sourceTree = SOURCE_ROOT; };
 		B64E1B2D227B08B2008DF194 /* CenteredClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CenteredClipView.m; path = Beat/CenteredClipView/CenteredClipView.m; sourceTree = SOURCE_ROOT; };
 		B64E1B2F227B08D8008DF194 /* CenteredClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CenteredClipView.h; path = Beat/CenteredClipView/CenteredClipView.h; sourceTree = SOURCE_ROOT; };
+		B662FC0724C22167003EF967 /* OSFImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OSFImport.h; path = Beat/Import/OSFImport.h; sourceTree = SOURCE_ROOT; };
+		B662FC0824C22167003EF967 /* OSFImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OSFImport.m; path = Beat/Import/OSFImport.m; sourceTree = SOURCE_ROOT; };
+		B662FC0B24C2239A003EF967 /* OSFTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OSFTest.m; sourceTree = "<group>"; };
+		B662FC0F24C228E6003EF967 /* document.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = document.xml; sourceTree = "<group>"; };
 		B6632B322317107300100A44 /* NSMutableString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+Regex.h"; path = "Beat/NSMutableString+Regex.h"; sourceTree = SOURCE_ROOT; };
 		B6632B33231710CF00100A44 /* NSMutableString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSMutableString+Regex.m"; path = "Beat/NSMutableString+Regex.m"; sourceTree = SOURCE_ROOT; };
+		B663680124CE1CCF009A1693 /* BeatTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTest.h; path = BeatTests/BeatTest.h; sourceTree = SOURCE_ROOT; };
+		B663680224CE1CCF009A1693 /* BeatTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTest.m; path = BeatTests/BeatTest.m; sourceTree = SOURCE_ROOT; };
 		B667796323C5D1CB0029D508 /* FDXImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FDXImport.h; path = Writer/FDXImport.h; sourceTree = SOURCE_ROOT; };
 		B667796423C5D1CB0029D508 /* FDXImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FDXImport.m; path = Writer/FDXImport.m; sourceTree = SOURCE_ROOT; };
 		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CardView.js; path = Beat/CardView.js; sourceTree = SOURCE_ROOT; };
@@ -618,8 +629,6 @@
 				B138B65A19E1E8CA000489C4 /* FountainParser.m */,
 				B138B65B19E1E8CA000489C4 /* FountainRegexes.h */,
 				B138B65C19E1E8CA000489C4 /* FountainRegexes.m */,
-				B138B65D19E1E8CA000489C4 /* FountainWriter.h */,
-				B138B65E19E1E8CA000489C4 /* FountainWriter.m */,
 				B138B65F19E1E8CA000489C4 /* QUQFont.h */,
 				B6E067CF222D7C4100CE425A /* PrintCSS.css */,
 				B138B66019E1E8CA000489C4 /* ScriptCSS.css */,
@@ -769,6 +778,8 @@
 			children = (
 				B667796323C5D1CB0029D508 /* FDXImport.h */,
 				B667796423C5D1CB0029D508 /* FDXImport.m */,
+				B662FC0724C22167003EF967 /* OSFImport.h */,
+				B662FC0824C22167003EF967 /* OSFImport.m */,
 			);
 			name = Import;
 			sourceTree = "<group>";
@@ -791,8 +802,11 @@
 		B670E20724BF689A006375BA /* BeatTests */ = {
 			isa = PBXGroup;
 			children = (
+				B663680124CE1CCF009A1693 /* BeatTest.h */,
+				B663680224CE1CCF009A1693 /* BeatTest.m */,
 				B670E20824BF689A006375BA /* BeatTests.m */,
 				B670E20A24BF689A006375BA /* Info.plist */,
+				B662FC0B24C2239A003EF967 /* OSFTest.m */,
 			);
 			path = BeatTests;
 			sourceTree = "<group>";
@@ -800,6 +814,7 @@
 		B68AC7B32219732800E02466 /* Sample files */ = {
 			isa = PBXGroup;
 			children = (
+				B662FC0F24C228E6003EF967 /* document.xml */,
 				B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */,
 			);
 			name = "Sample files";
@@ -988,6 +1003,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1F04ED81C88ACAD001C4D27 /* Courier Prime Bold Italic.ttf in Resources */,
+				B662FC1024C228E6003EF967 /* document.xml in Resources */,
 				B6146B27246A91420029DBD9 /* printview.png in Resources */,
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
@@ -1039,6 +1055,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6F49D0A246D66B0006D88D4 /* Courier Prime Bold Italic.ttf in Resources */,
+				B662FC1124C228E6003EF967 /* document.xml in Resources */,
 				B6F49D0B246D66B0006D88D4 /* printview.png in Resources */,
 				B6F49D0C246D66B0006D88D4 /* Courier Prime Bold.ttf in Resources */,
 				B6F49D0D246D66B0006D88D4 /* Courier Prime Italic.ttf in Resources */,
@@ -1119,6 +1136,7 @@
 				B69C8C6524A12765007B55A7 /* BeatHTMLScript.m in Sources */,
 				B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */,
 				B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */,
+				B663680524CE1E64009A1693 /* BeatTest.m in Sources */,
 				B138B66819E1E8CA000489C4 /* FNPaginator.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
@@ -1146,6 +1164,7 @@
 				B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
 				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
+				B662FC0924C22167003EF967 /* OSFImport.m in Sources */,
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6482F7922195BEC00175927 /* BeatTextView.m in Sources */,
 				B138B66B19E1E8CA000489C4 /* FountainRegexes.m in Sources */,
@@ -1153,7 +1172,6 @@
 				B138B66519E1E8CA000489C4 /* FastFountainParser.m in Sources */,
 				B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */,
 				B61B693D2472DEE800DCDBFA /* FountainPaginator.m in Sources */,
-				B138B66C19E1E8CA000489C4 /* FountainWriter.m in Sources */,
 				B138B66719E1E8CA000489C4 /* FNHTMLScript.m in Sources */,
 				B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */,
 				B6952C95232B89BE00448B57 /* ScrollView.m in Sources */,
@@ -1170,7 +1188,6 @@
 				B62ADC9623CCF0110015563A /* FNScript.m in Sources */,
 				B62ADC9923CCF02A0015563A /* FNPaginator.m in Sources */,
 				B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */,
-				B62ADC9C23CCF0430015563A /* FountainWriter.m in Sources */,
 				B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */,
 				B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */,
@@ -1183,6 +1200,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B662FC0C24C2239A003EF967 /* OSFTest.m in Sources */,
+				B670E21624BF6AFE006375BA /* FNElement.m in Sources */,
+				B670E21524BF6AF3006375BA /* Line.m in Sources */,
+				B663680424CE1CE1009A1693 /* BeatTest.m in Sources */,
 				B670E20924BF689A006375BA /* BeatTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1204,6 +1225,7 @@
 				B6F49CE4246D66B0006D88D4 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6F49CE5246D66B0006D88D4 /* ApplicationDelegate.m in Sources */,
 				B6F49CE6246D66B0006D88D4 /* CenteredClipView.m in Sources */,
+				B662FC0D24C2248C003EF967 /* BeatHTMLScript.m in Sources */,
 				B6F49CE7246D66B0006D88D4 /* FountainAnalysis.m in Sources */,
 				B6F49CE8246D66B0006D88D4 /* FNPaginator.m in Sources */,
 				B6F49CE9246D66B0006D88D4 /* Theme.m in Sources */,
@@ -1218,6 +1240,7 @@
 				B6F49CF1246D66B0006D88D4 /* ThemeManager.m in Sources */,
 				B6F49CF2246D66B0006D88D4 /* ContinousFountainParser.m in Sources */,
 				B6F49CF3246D66B0006D88D4 /* SceneFiltering.m in Sources */,
+				B662FC0A24C22167003EF967 /* OSFImport.m in Sources */,
 				B6F49CF4246D66B0006D88D4 /* main.m in Sources */,
 				B6F49CF5246D66B0006D88D4 /* ColorView.m in Sources */,
 				B6BBF3D124AC811600503EFB /* BeatScriptParser.m in Sources */,
@@ -1235,7 +1258,6 @@
 				B6F49CFE246D66B0006D88D4 /* FastFountainParser.m in Sources */,
 				B62A89B624806D190065A2BC /* FlatButton.swift in Sources */,
 				B6F49CFF246D66B0006D88D4 /* NSMutableString+Regex.m in Sources */,
-				B6F49D00246D66B0006D88D4 /* FountainWriter.m in Sources */,
 				B6F49D01246D66B0006D88D4 /* FNHTMLScript.m in Sources */,
 				B6D26BE624B9ED830041402B /* BeatTimer.m in Sources */,
 				B6F49D02246D66B0006D88D4 /* RecentFiles.m in Sources */,
@@ -1524,6 +1546,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = GV6F4CSRVF;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeatTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
@@ -1547,10 +1573,15 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = GV6F4CSRVF;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BeatTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
@@ -1558,6 +1589,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Beat.app/Contents/MacOS/Beat";
 			};
 			name = Release;

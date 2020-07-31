@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="16097"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.2"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="16097.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -856,11 +856,6 @@ DQ
                                                         </textFieldCell>
                                                     </tableColumn>
                                                 </tableColumns>
-                                                <connections>
-                                                    <action trigger="doubleAction" selector="doubleClickDocument:" target="F4J-ev-lWW" id="kJ8-s2-RMV"/>
-                                                    <outlet property="dataSource" destination="F4J-ev-lWW" id="khJ-wf-el3"/>
-                                                    <outlet property="delegate" destination="F4J-ev-lWW" id="2JW-Tg-V2b"/>
-                                                </connections>
                                             </outlineView>
                                         </subviews>
                                         <color key="backgroundColor" red="0.1764705882352941" green="0.1803921568627451" blue="0.18823529411764706" alpha="1" colorSpace="calibratedRGB"/>
@@ -981,7 +976,6 @@ DQ
             </view>
             <point key="canvasLocation" x="705.5" y="329.5"/>
         </window>
-        <customObject id="F4J-ev-lWW" customClass="DataSource"/>
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="blg-LD-9vu">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="534" height="317"/>

@@ -175,13 +175,11 @@
     [html appendString:@"</head>\n"];
 	[html appendString:@"<body>"];
 	[html appendString:@"<article>\n"];
-	if (!_print) [html appendString:@"<div id='close' class='ui' onclick='closePreview();'>✕</div>"];
+	if (!_print) [html appendString:[self previewUI]];
     [html appendString:self.bodyText];
 	[html appendString:@"</section>\n</article>\n"];
 	
-	[html appendString:@"<script>function scrollToScene(scene) { var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>"];
-	[html appendString:@"<script>function selectScene(e) { window.webkit.messageHandlers.selectSceneFromScript.postMessage(e.getAttribute('sceneIndex')); }</script>"];
-	[html appendString:@"<script>function closePreview () { window.webkit.messageHandlers.closePrintPreview.postMessage('close'); } </script>"];
+	[html appendString:[self previewJS]];
 	[html appendString:@"<script name='scrolling'></script>"];
 	[html appendString:@"</body>\n"];
     [html appendString:@"</html>"];
@@ -552,6 +550,28 @@
     }
 	
     return body;
+}
+
+- (NSString*)previewUI {
+	return @"" \
+	"<div id='close' class='ui' onclick='closePreview();'>✕</div>" \
+	
+	//"<div class='left'>" \
+	//    "<div id='zoomIn' class='ui' onclick='zoomIn();'>+</div>" \
+		"<div id='zoomOut' class='ui' onclick='zoomOut();'>-</div>" \
+	// "</div>"
+	"";
+}
+
+- (NSString*)previewJS {
+	return @"" \
+	"<script>function scrollToScene(scene) { var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>" \
+	"<script>var zoomLevel = 100;" \
+		"function zoomIn() { if (zoomLevel < 200) { zoomLevel += 10; document.body.style.zoom = zoomLevel + '%'; } }" \
+		"function zoomOut() { if (zoomLevel > 50) { zoomLevel -= 10;  document.body.style.zoom = zoomLevel + '%'; } }" \
+	"</script>" \
+	"<script>function selectScene(e) { window.webkit.messageHandlers.selectSceneFromScript.postMessage(e.getAttribute('sceneIndex')); }</script>" \
+	"<script>function closePreview () { window.webkit.messageHandlers.closePrintPreview.postMessage('close'); } </script>";
 }
 
 @end

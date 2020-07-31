@@ -9,12 +9,13 @@
 
 /*
  
- This code is mostly based on Hendrik Noeller's work. It is heavily modified for Beat, and is all the time more reliable.
+ This code is mostly based on Hendrik Noeller's work.
+ It is heavily modified for Beat, and is all the time more reliable.
  
  Main differences include:
  - double-checking for all-caps actions mistaken for character cues
- - recursive logic for lookback / lookforward
- - title page parsing (mostly for preview purposes)
+ - convoluted recursive logic for lookback / lookforward
+ - title page parsing (mostly for preview & export purposes)
  - new data structure called OutlineScene, which contains scene name and length, as well as a reference to original line
  - overall tweaks to parsing here and there
  
@@ -100,7 +101,6 @@
 }
 
 // This sets EVERY INDICE as changed.
-// Used to perform lookback when loading a screenplay.
 - (void)resetParsing {
 	NSInteger index = 0;
 	while (index < [self.lines count]) {
@@ -111,6 +111,21 @@
 
 #pragma mark - Continuous Parsing
 
+/*
+ 
+ Note for future me:
+ 
+ I have somewhat revised the original parsing system, which parsed changes by
+ always removing single characters in a loop, even with longer text blocks.
+ 
+ I optimized the logic so that if the change includes full lines (either removed or added)
+ they are removed or added as whole, rather than character-by-character. This is why
+ there are two different methods for parsing the changes, and the other one is still used
+ for parsing single-character edits. parseAddition/parseRemovalAt methods fall back to
+ them when needed.
+ 
+ */
+
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
 	_lastEditedLine = nil;
@@ -118,42 +133,128 @@
 
     NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
     if (range.length == 0) { //Addition
+		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
+		/*
         for (int i = 0; i < string.length; i++) {
             NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
             [changedIndices addIndexes:[self parseCharacterAdded:character
                                                       atPosition:range.location+i]];
         }
+		 */
     } else if ([string length] == 0) { //Removal
-		// Reset edits
-		//if (range.length < 200) {
-			for (int i = 0; i < range.length; i++) {
-				[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
-			}
-		//} else {
-			// This should be implemented ASAP
-			//[changedIndices addIndexes:[self parseChunkRemovalAt:range]];
-		//}
+//		for (int i = 0; i < range.length; i++) {
+//			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
+//		}
+
+		[changedIndices addIndexes:[self parseRemovalAt:range]];
 		
     } else { //Replacement
+//        for (int i = 0; i < range.length; i++) {
+//            [changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
+//        }
+		
 		//First remove
-        for (int i = 0; i < range.length; i++) {
-            [changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
-        }
+		[changedIndices addIndexes:[self parseRemovalAt:range]];
 
         // Then add
-        for (int i = 0; i < string.length; i++) {
-            NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
-            [changedIndices addIndexes:[self parseCharacterAdded:character
-                                                      atPosition:range.location+i]];
-        }
+		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
+		
+//        for (int i = 0; i < string.length; i++) {
+//            NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
+//            [changedIndices addIndexes:[self parseCharacterAdded:character
+//                                                      atPosition:range.location+i]];
+//        }
     }
     
     [self correctParsesInLines:changedIndices];
 }
 
+- (NSIndexSet*)parseAddition:(NSString*)string  atPosition:(NSUInteger)position
+{
+	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
+	
+	// Get the line where into which we are adding characters
+	NSUInteger lineIndex = [self lineIndexAtPosition:position];
+	Line* line = self.lines[lineIndex];
+	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = true;
+	
+    NSUInteger indexInLine = position - line.position;
+	
+	// If the added string is a multi-line block, we need to optimize the addition.
+	// Else, just parse it character-by-character.
+	if ([string rangeOfString:@"\n"].location != NSNotFound && string.length > 1) {
+		// Split the original line into two
+		NSString *head = [line.string substringToIndex:indexInLine];
+		NSString *tail = (indexInLine + 1 < line.string.length) ? [line.string substringFromIndex:indexInLine] : @"";
+				
+		// Split the text block into pieces
+		NSArray *newLines = [string componentsSeparatedByString:@"\n"];
+		
+		// Add the first line
+		[changedIndices addIndex:lineIndex];
+		
+		/*
+		NSLog(@"----- original -----");
+		for (Line* line in self.lines) {
+			NSLog(@"   (%lu): %@", line.position, line.string);
+		}
+		 */
+		
+		NSInteger offset = line.position;
+
+		[self decrementLinePositionsFromIndex:lineIndex + 1 amount:tail.length];
+		
+		// Go through the new lines
+		for (NSInteger i = 0; i < newLines.count; i++) {
+			NSString *newLine = newLines[i];
+		
+			// First line
+			if (i == 0) {
+				head = [head stringByAppendingString:newLine];
+				line.string = head;
+				[self incrementLinePositionsFromIndex:lineIndex + 1 amount:newLine.length + 1];
+				offset += head.length + 1;
+				//NSLog(@"first line: %@", line.string);
+			} else {
+				Line *addedLine;
+				
+				if ([newLines lastObject] == newLine) {
+					tail = [newLine stringByAppendingString:tail];
+					addedLine = [[Line alloc] initWithString:tail position:offset];
+				} else {
+					addedLine = [[Line alloc] initWithString:newLine position:offset];
+				}
+				//NSLog(@"add line:  %@", addedLine.string);
+				
+				[self.lines insertObject:addedLine atIndex:lineIndex + i];
+				[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:newLine.length + 1];
+				offset += newLine.length + 1;
+
+			}
+		}
+		
+		[changedIndices addIndexesInRange:NSMakeRange(lineIndex, newLines.count)];
+	} else {
+        for (int i = 0; i < string.length; i++) {
+            NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
+			[changedIndices addIndexes:[self parseCharacterAdded:character
+                                                      atPosition:position+i]];
+        }
+	}
+	
+	
+	return changedIndices;
+}
+
 - (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position
 {
-	NSUInteger lineIndex = [self lineIndexAtPosition:position];
+	NSUInteger lineIndex;
+	
+	if (_editedIndex >= self.lines.count || _editedIndex < 0) {
+		_editedIndex = [self lineIndexAtPosition:position];
+	}
+	
+	lineIndex = _editedIndex;
 	Line* line = self.lines[lineIndex];
 
     NSUInteger indexInLine = position - line.position;
@@ -189,6 +290,7 @@
     }
 }
 
+// Return the whole document as single string
 - (NSString*)rawText {
 	NSMutableString *string = [NSMutableString string];
 	for (Line* line in self.lines) {
@@ -198,8 +300,7 @@
 	return string;
 }
 
-// VERY MUCH WIP!!!
-- (NSIndexSet*)parseChunkRemovalAt:(NSRange)range {
+- (NSIndexSet*)parseRemovalAt:(NSRange)range {
 	NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
 	
 	NSString *stringToRemove = [[self rawText] substringWithRange:range];
@@ -217,8 +318,9 @@
 		
 		NSString *retain = [firstLine.string substringToIndex:indexInLine];
 		NSInteger nextIndex = lineIndex + 1;
-		
-		NSInteger offset = firstLine.string.length - retain.length;
+				
+		// +1 for line break
+		NSInteger offset = firstLine.string.length - retain.length + 1;
 		
 		for (NSInteger i = 1; i <= lineBreaks; i++) {
 			Line* nextLine = self.lines[nextIndex];
@@ -228,16 +330,24 @@
 			}
 			
 			if (i < lineBreaks) {
-				NSLog(@"remove: %@", nextLine.string);
+				// NSLog(@"remove: %@", nextLine.string);
 				[self.lines removeObjectAtIndex:nextIndex];
 				offset += nextLine.string.length + 1;
 			} else {
 				// This is the last line in the array
 				NSInteger indexInNextLine = range.location + range.length - nextLine.position;
-				NSLog(@"index in %@: %lu", nextLine.string, indexInNextLine);
 				
 				NSInteger nextLineLength = nextLine.string.length - indexInNextLine;
-				firstLine.string = [retain stringByAppendingString:[nextLine.string substringWithRange:NSMakeRange(indexInNextLine, nextLineLength)]];
+				
+				NSString *nextLineString;
+				
+				if (indexInNextLine + nextLineLength > 0) {
+					nextLineString = [nextLine.string substringWithRange:NSMakeRange(indexInNextLine, nextLineLength)];
+				} else {
+					nextLineString = @"";
+				}
+				
+				firstLine.string = [retain stringByAppendingString:nextLineString];
 				
 				// Remove the last line
 				[self.lines removeObjectAtIndex:nextIndex];
@@ -247,78 +357,20 @@
 		[self decrementLinePositionsFromIndex:nextIndex amount:offset];
 										
 		[changedIndices addIndex:lineIndex];
-		[changedIndices addIndex:lineIndex + 1];
 		
+		/*
 		NSLog(@"----- result -----");
 		for (Line* line in self.lines) {
 			NSLog(@"   (%lu): %@", line.position, line.string);
 		}
-		
+		*/
 	} else {
 		// Do it normally
 		for (int i = 0; i < range.length; i++) {
 			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
 		}
 	}
-	
-	/*
-	NSString *string = [[self rawText] substringWithRange:range];
 
-	NSInteger breaks = [[string componentsSeparatedByString:@"\n"] count]-1;
-	
-	NSInteger length = range.length;
-	NSLog(@"start: loc %lu length %lu", range.location, length);
-	
-	if (breaks > 1) {
-		// We will go through the changed indices, but jump ahead whenever needed
-		
-		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\n" options:NSRegularExpressionCaseInsensitive error:nil];
-		NSArray *matches = [regex matchesInString:[self rawText] options:0 range:range];
-		// We SHOULD get an array of line breaks, and using them we can parse the edits.
-		// First we remove all the lines that get removed
-		NSLog(@"matches: %lu", matches.count);
-		NSInteger pos = -1;
-		
-		for (NSTextCheckingResult *match in matches) {
-			// Remove everything else but the last line
-			if (matches.lastObject != match) {
-				if (pos < 0) pos = match.range.location;
-				NSUInteger lineIndex = [self lineIndexAtPosition:pos + 1];
-				
-				// Don't handle the last line
-				if (lineIndex == self.lines.count - 1) break;
-				
-				Line *lineToRemove = self.lines[lineIndex];
-				NSLog(@"line to remove: %@", lineToRemove.string);
-				
-				length -= lineToRemove.string.length + 1; // +1 for \n
-				NSLog(@" ---- %lu", length);
-				
-				[self.lines removeObjectAtIndex:lineIndex];
-				[self decrementLinePositionsFromIndex:lineIndex amount:1];
-				[changedIndices addIndex:lineIndex];
-				
-				pos += lineToRemove.string.length;
-			} else {
-				NSLog(@"reached end");
-			}
-		}
-		
-		NSString *rawText = [self rawText];
-		if (length > rawText.length) length = rawText.length;
-		
-		for (int i = 0; i < length; i++) {
-			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
-		}
-		
-	} else {
-		// Do it normally
-		for (int i = 0; i < range.length; i++) {
-			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
-		}
-	}
- */
-	
 	return changedIndices;
 }
 - (NSIndexSet*)parseCharacterRemovedAtPosition:(NSUInteger)position
@@ -422,10 +474,7 @@
 {
     for (; index < [self.lines count]; index++) {
         Line* line = self.lines[index];
-		NSInteger position = line.position;
         line.position -= amount;
-		
-		// NSLog(@"%lu -> %lu / %@", position, line.position, line.string);
     }
 }
 

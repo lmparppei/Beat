@@ -25,7 +25,6 @@
 #import "FNScript.h"
 #import "FNElement.h"
 //#import "FountainParser.h"
-#import "FountainWriter.h"
 #import "FastFountainParser.h"
 
 @implementation FNScript
@@ -74,51 +73,6 @@
 	
     self.elements = parser.elements;
     self.titlePage = parser.titlePage;
-}
-
-
-- (NSString *)stringFromDocument
-{
-    return [FountainWriter documentFromScript:self];
-}
-
-- (NSString *)stringFromTitlePage
-{
-    return [FountainWriter titlePageFromScript:self];
-}
-
-- (NSString *)stringFromBody
-{
-    return [FountainWriter bodyFromScript:self];
-}
-
-- (BOOL)writeToFile:(NSString *)path
-{
-    // Get the document
-    NSString *document = [FountainWriter documentFromScript:self];
-    NSError *error = nil;
-    BOOL success = [document writeToFile:path atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    if (!success) {
-        // Your error handling code goes here
-    }
-    return success;
-}
-
-- (BOOL)writeToURL:(NSURL *)url
-{
-    // Get the document
-    NSString *document = [FountainWriter documentFromScript:self];
-    NSError *error = nil;
-    BOOL success = [document writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:&error];
-    if (!success) {
-        // Your error handling code goes here
-    }
-    return success;
-}
-
-- (NSString *)description
-{
-    return [FountainWriter documentFromScript:self];
 }
 
 @end

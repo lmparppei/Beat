@@ -54,7 +54,7 @@
 
 @interface FountainPaginator ()
 
-@property (strong, nonatomic) NSDocument *document;
+@property (weak, nonatomic) NSDocument *document;
 @property (strong, nonatomic) NSArray *script;
 
 // WIP

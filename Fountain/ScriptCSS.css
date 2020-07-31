@@ -50,7 +50,7 @@ section {
 p {
 	margin: 1.3em auto;
 	word-wrap: break-word;
-	padding: 0 10px;
+	padding: 0 0px 0 10px;
 }
 body > p:first-child {
 	margin-top: 0;
@@ -122,7 +122,7 @@ body > p:first-child {
 	justify-content: center;
 	flex-direction: column;
 	flex: 1;
-	margin-bottom: 6rem;
+	margin-bottom: 6em;
 }
 #script-title .title {
     text-align: center;
@@ -138,12 +138,12 @@ body > p:first-child {
 #script-title p.source {
     text-align: center;
 	padding: 0;
-	margin: 0 0 .5rem 0;
+	margin: 0 0 .5em 0;
 }
 #script-title .versionInfo {
 	position: absolute;
-	bottom: 3rem;
-	right: 4rem;
+	bottom: 3em;
+	right: 4em;
 
 	width: 40%;
 
@@ -153,8 +153,8 @@ body > p:first-child {
 }
 #script-title .info {
 	position: absolute;
-	bottom: 3rem;
-	left: 4rem;
+	bottom: 3em;
+	left: 4em;
 
 	width: 40%;
 
@@ -163,11 +163,11 @@ body > p:first-child {
 }
 #script-title .info p {
 	padding: 0;
-	margin: 0 0 .5rem 0;
+	margin: 0 0 .5em 0;
 }
 #script-title .versionInfo p {
 	padding: 0;
-	margin: 0 0 .5rem 0;
+	margin: 0 0 .5em 0;
 }
 
 #script-title p.notes {
@@ -221,8 +221,8 @@ section {
 	background-color: #f0f0f0;
 	width: 630px;
 	min-height: 820px;
-	margin: 1rem auto 1rem auto;
-	padding: 2rem 80px 6rem 110px;
+	margin: 1em auto 1em auto;
+	padding: 2em 80px 6em 110px;
 	border: solid 1px #ccc;
 }
 
@@ -234,7 +234,7 @@ a:hover {
 	background-color: #ddd;
 }
 
-#close {
+#close, #zoomIn, #zoomOut {
 	position: fixed;
 	z-index: 999;
 
@@ -253,6 +253,8 @@ a:hover {
 	height: 2rem;
 	background-color: rgba(0,0,0,.9);
 	color: #eee;
+	
+	font-size: 1rem;
 
 	border-radius: 50%;
 	cursor: default;
@@ -260,6 +262,8 @@ a:hover {
 #close:hover {
 	color: white;
 }
+#zoomIn { right: auto; left: .6em; }
+#zoomOut { right: auto; left: .6em; top: 4em; }
 
 @media screen and (max-width: 500px) {
 	body {

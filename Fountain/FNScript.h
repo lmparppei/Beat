@@ -44,11 +44,4 @@ typedef NS_ENUM(NSInteger, FNParserType) {
 - (void)loadFile:(NSString *)path;
 - (void)loadString:(NSString *)string;
 
-- (NSString *)stringFromDocument;
-- (NSString *)stringFromTitlePage;
-- (NSString *)stringFromBody;
-
-- (BOOL)writeToFile:(NSString *)path;
-- (BOOL)writeToURL:(NSURL *)url;
-
 @end

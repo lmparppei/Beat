@@ -9,6 +9,13 @@
 #import "ApplicationDelegate.h"
 #import "FDXImport.h"
 #import "RecentFiles.h"
+#import "OSFImport.h"
+
+#import "BeatTest.h"
+
+@interface ApplicationDelegate ()
+@property (nonatomic) RecentFiles *recentFilesSource;
+@end
 
 @implementation ApplicationDelegate
 
@@ -23,36 +30,36 @@
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
-	[self checkAutosavedFiles];
+	[self checkAutosavedFiles];	
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	_recentFilesSource = [[RecentFiles alloc] init];
+	self.recentFiles.dataSource = _recentFilesSource;
+	self.recentFiles.delegate = _recentFilesSource;
+	[self.recentFiles setDoubleAction:@selector(doubleClickDocument)];
+	[self.recentFiles reloadData];
 
-	// This might be a silly implementation, but ..... well.
 	// Let's close the welcome screen if any sort of document has been opened
-	_dataSource = [[DataSource alloc] init];
-	self->recentFiles.dataSource = _dataSource;
-	[self->recentFiles reloadData];
-	
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		if (self->_startModal && [self->_startModal isVisible]) {
+		if (self.startModal && [self.startModal isVisible]) {
 			[self closeStartModal];
 		}
 	}];
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
 		
-		if ([openDocuments count] == 1 && self->_startModal && ![self->_startModal isVisible]) {
+		if ([openDocuments count] == 1 && self.startModal && ![self.startModal isVisible]) {
 			//[self showStartModal];
 			
-			[self->_startModal setIsVisible:true];
-			[self->recentFiles deselectAll:nil];
-			[self->recentFiles reloadData];
+			[self.startModal setIsVisible:true];
+			[self.recentFiles deselectAll:nil];
+			[self.recentFiles reloadData];
 		}
 	}];
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Show about screen" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		//if (self->_startModal && [self->_startModal isVisible]) {
+		//if (self.startModal && [self.startModal isVisible]) {
 		//	[self closeStartModal];
 		//}
 	}];
@@ -66,8 +73,8 @@
 	
 	// Only open splash screen if no documents were opened by default
 	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	if ([openDocuments count] == 0 && self->_startModal && ![self->_startModal isVisible]) {
-		[self->_startModal setIsVisible:true];
+	if ([openDocuments count] == 0 && self.startModal && ![self.startModal isVisible]) {
+		[self.startModal setIsVisible:true];
 	}
 	
 	_darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:DARKMODE_KEY];
@@ -85,7 +92,9 @@
 	
 	[self checkVersion];
 }
-
+-(void)doubleClickDocument {
+	[_recentFilesSource doubleClickDocument:nil];
+}
 -(void)checkVersion {
 	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
 	NSInteger currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
@@ -107,17 +116,17 @@
 	NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
 	
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
-	[versionField setStringValue:versionString];
-	[aboutVersionField setStringValue:versionString];
+	[_versionField setStringValue:versionString];
+	[_aboutVersionField setStringValue:versionString];
 	
 	if (_proMode) {
-		[self->menuManual setHidden:NO];
+		[self.menuManual setHidden:NO];
 	}
 	
-	[self->_startModal becomeKeyWindow];
-	[self->_startModal setAcceptsMouseMovedEvents:YES];
-	[self->_startModal setMovable:YES];
-	[self->_startModal setMovableByWindowBackground:YES];
+	[self.startModal becomeKeyWindow];
+	[self.startModal setAcceptsMouseMovedEvents:YES];
+	[self.startModal setMovable:YES];
+	[self.startModal setMovableByWindowBackground:YES];
 }
 
 - (void)checkAutosavedFiles {
@@ -271,11 +280,11 @@
 #pragma mark - Fountain syntax references & help
 
 - (IBAction)showPatchNotes:(id)sender {
-	self->manualWindow.title = @"Patch Notes";
+	self.manualWindow.title = @"Patch Notes";
 	
 	CGFloat width = 550;
 	CGFloat height = 700;
-	[self->manualWindow setFrame:NSMakeRect(
+	[self.manualWindow setFrame:NSMakeRect(
 										  (NSScreen.mainScreen.frame.size.width - width) / 2,
 										  (NSScreen.mainScreen.frame.size.height - height) / 2,
 										  width, height
@@ -283,18 +292,18 @@
 						 display:YES];
 	
 	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"Patch Notes" ofType:@"html"];
-	[self->manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
-	[self->manualWindow setIsVisible:true];
+	[self.manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
+	[self.manualWindow setIsVisible:true];
 }
 
 - (IBAction)showManual:(id)sender {
 	//[[NSBundle mainBundle] loadNibNamed:@"BeatManual" owner:self topLevelObjects:nil];
-	[self->manualWindow setIsVisible:true];
-	self->manualWindow.title = @"Beat Manual";
+	[self.manualWindow setIsVisible:true];
+	self.manualWindow.title = @"Beat Manual";
 	
 	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
 	NSLog(@"path %@", htmlPath);
-	[self->manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
+	[self.manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
 	//[aboutText readRTFDFromFile:rtfFile];
 }
 
@@ -336,14 +345,14 @@
 }
 
 - (IBAction)showAboutScreen:(id) sender {
-	[self->_aboutModal setIsVisible:true];
+	[self.aboutModal setIsVisible:true];
 	
 	NSString * rtfFile = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"rtf"];
-	[aboutText readRTFDFromFile:rtfFile];
+	[_aboutText readRTFDFromFile:rtfFile];
 }
 
 - (IBAction)showAcknowledgements:(id) sender {
-	[self->acknowledgementsModal setIsVisible:YES];
+	[self.acknowledgementsModal setIsVisible:YES];
 }
 
 #pragma mark - Import FDX

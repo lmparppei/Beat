@@ -6,7 +6,8 @@
 //  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
-@interface DataSource : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource> {
+@interface RecentFiles : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource> {
 }
 @property id selectedRow;
+- (IBAction)doubleClickDocument:(id)sender;
 @end

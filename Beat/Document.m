@@ -147,8 +147,8 @@
 // Outline view filtering
 @property (nonatomic) NSMutableArray *filteredOutline;
 @property (weak) IBOutlet NSBox *filterView;
-@property (nonatomic) IBOutlet NSLayoutConstraint *filterViewHeight;
-@property (nonatomic) IBOutlet NSPopUpButton *characterBox;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *filterViewHeight;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
 @property (nonatomic) SceneFiltering *filters;
 @property (weak) IBOutlet NSButton *resetColorFilterButton;
 @property (weak) IBOutlet NSButton *resetCharacterFilterButton;
@@ -186,8 +186,8 @@
 @property (weak) IBOutlet MasterView *masterView; // View which contains every other view
 
 // Print preview
-@property (unsafe_unretained) IBOutlet WebView *webView; // Print preview
-@property (unsafe_unretained) IBOutlet WKWebView *printWebView; // Print preview
+@property (weak) IBOutlet WebView *webView; // Print preview
+@property (weak) IBOutlet WKWebView *printWebView; // Print preview
 @property (nonatomic) NSString *htmlString;
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) bool previewCanceled;
@@ -195,17 +195,17 @@
 
 // Analysis
 @property (weak) IBOutlet NSPanel *analysisPanel;
-@property (unsafe_unretained) IBOutlet WKWebView *analysisView;
+@property (weak) IBOutlet WKWebView *analysisView;
 @property (strong, nonatomic) FountainAnalysis* analysis;
 @property (nonatomic) NSMutableDictionary *characterGenders;
 
 // Card view
 @property (nonatomic) SceneCards *sceneCards;
-@property (unsafe_unretained) IBOutlet WKWebView *cardView;
+@property (weak) IBOutlet WKWebView *cardView;
 @property (nonatomic) bool cardsVisible;
 
 // Timeline view
-@property (unsafe_unretained) IBOutlet WKWebView *timelineView;
+@property (weak) IBOutlet WKWebView *timelineView;
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
 @property (nonatomic) NSInteger timelineClickedScene;
 @property (nonatomic) NSInteger timelineSelection;
@@ -1306,7 +1306,6 @@
 					// No shift down, add two breaks afer a scene heading
 					_newScene = YES;
 					[self addString:@"\n" atIndex:affectedCharRange.location];
-				
 				} else if (_currentLine.type == action) {
 					NSUInteger currentIndex = [self.parser.lines indexOfObject:_currentLine];
 					
@@ -1326,38 +1325,29 @@
 				} else if (_currentLine.type == dialogue) {
 					_newScene = YES;
 					[self addString:@"\n" atIndex:affectedCharRange.location];
+					processDoubleBreak = YES;
 				} else {
 					// Nothing applies, go on
 					_newScene = NO;
 				}
 			} else {
-				if (_newScene) processDoubleBreak = YES;
+				//if (_newScene) processDoubleBreak = YES;
 				_newScene = NO;
 			}
 		}
 	}
 	
-
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
 
 	if (processDoubleBreak) {
-		// This is here to fix a formating bug error with dialogue.
+		// This is here to fix a formating error with dialogue.
 		// If the caret is at the end of the document, we need to parse one step behind
 		// to correctly format the extra line break we just added.
-
-		if (_currentLine.type == dialogue) {
-			if ([self cursorLocation].location == [self getText].length) {
-				
-				@try {
-					[self.parser parseChangeInRange:NSMakeRange(affectedCharRange.location, 1) withString:@"\n"];
-				}
-				@catch (NSException *e) {
-					NSLog(@"error");
-				}
-				@finally {
-					[self resetCaret];
-				}
-			}
+		@try {
+			[self.parser parseChangeInRange:NSMakeRange(affectedCharRange.location + 1, 1) withString:@"\n"];
+		}
+		@catch (NSException *e) {
+			NSLog(@"out of bounds: %@", _currentLine.string);
 		}
 	}
 	
@@ -4341,8 +4331,14 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 /*
  
- This is a simple attempt at measuring scene lengths. It is not scientific.
- I'm counting beats, and about 55 beats equal 1 minute.
+ This timeline uses JavaScript. I was very inexperienced while making this, so yeah.
+ Obviously, it would be faster, safer and actually easier to build a NSView for displaying
+ the timeline. The TouchBar timeline is lightning-fast and responsive, but I'm unable to
+ implement reliable zooming etc. for now. Probably both of these views could run on the same
+ codebase.
+ 
+ There is also a simple attempt at measuring temporal scene lengths.
+ It is not scientific. I'm counting beats, and about 55 beats equal 1 minute.
  
  Characters per line: ca 58
  Lines per page: ca 55 -> 1 minute
@@ -4384,39 +4380,37 @@ static NSString *forceDualDialogueSymbol = @"^";
 	if ([self isDark]) [self.timelineView evaluateJavaScript:@"setStyle('dark');" completionHandler:nil];
 	else [self.timelineView evaluateJavaScript:@"setStyle('light');" completionHandler:nil];
 }
+
 - (void) reloadTimeline {
-	__block OutlineScene *currentScene = [self getCurrentScene];
+	__block OutlineScene *currentScene;
 	__block NSMutableArray *scenes = [self getOutlineItems];
+	
+	// If we are at the end of the document, last scene is being edited
+	if ([self cursorLocation].location == self.textView.string.length) currentScene = [scenes lastObject];
+	else currentScene = [self getCurrentScene];
 	
 	// Let's build the timeline in another thread, to not slow down your writing
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		NSInteger charsPerLine = 57;
-		NSInteger charsPerDialogue = 35;
-		
-		CGFloat totalLengthInSeconds = 0.0;
+		CGFloat totalLength = 0.0;
 		
 		NSMutableString *jsonData = [NSMutableString stringWithString:@"["];
-		
-		bool previousLineEmpty = false;
-		
+				
 		for (OutlineScene *scene in scenes) {
 			if (scene.omited) continue;
 			
+			NSDictionary *json;
+			
+			// Build a dictionary according to outline item type
 			if (scene.type == synopse || scene.type == section) {
-				NSString *type;
-				if (scene.type == synopse) type = @"synopsis";
-				if (scene.type == section) type = @"section";
-				
-				[jsonData appendFormat:@"{ \"text\": '\"'%@\", \"type\": '%@' },", [self fixQuotations:[self JSONString:scene.string]], type];
-			}
-			else if (scene.type == heading) {
-				//[self JSONString:scene.string]
-				
-				NSInteger length = 1;
+				json = @{
+					@"text": scene.string ? scene.string : @"",
+					@"type": scene.line.type == synopse ? @"synopsis" : @"section"
+				};
+			} else if (scene.type == heading) {
+				NSInteger beats = [self chronometryFor:scene];
+				totalLength += round((CGFloat)beats / 52 * 60);
 
-				NSInteger position = [[self.parser lines] indexOfObject:scene.line];
-				NSInteger index = 0;
-				
+				// Check if this scene is currently edited
 				bool selected = false;
 				if (currentScene) {
 					if (scene.line == currentScene.line && scene.sceneNumber == currentScene.sceneNumber) {
@@ -4424,64 +4418,19 @@ static NSString *forceDualDialogueSymbol = @"^";
 					}
 				}
 				
-				// Loop the lines until next scene
-				while (position + index + 1 < [[self.parser lines] count]) {
-					index++;
-					Line* line = [[self.parser lines] objectAtIndex:position + index];
-					
-					// Break away when next scene is encountered
-					if (line.type == heading) break;
-					
-					// Don't count in synopses or sections
-					if (line.type == synopse || line.type == section) continue;
-					
-					// Empty row equals 1 beat
-					if ([line.string isEqualToString:@""]) {
-						if (previousLineEmpty) continue;
-						
-						previousLineEmpty = true;
-						length += 1;
-						continue;
-					} else {
-						previousLineEmpty = false;
-					}
-
-					NSInteger lineLength = [line.string length];
-					
-					// We need to take omitted ranges into consideration, so they won't add up to scene lengths
-					__block NSUInteger omitLength = 0;
-					[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-						omitLength += range.length;
-					}];
-					if (lineLength - omitLength >= 0) lineLength -= omitLength;
-					
-					// Character cue and parenthetical add 1 beat each
-					if (line.type == character || line.type == parenthetical) {
-						length += 1;
-						continue;
-					}
-					
-					if (line.type == dialogue) {
-						length += (lineLength + charsPerDialogue - 1) / charsPerDialogue;
-						continue;
-					}
-					
-					if (line.type == action) {
-						NSInteger actionLength = (lineLength + charsPerLine - 1) / charsPerLine;
-						if (actionLength == 0) actionLength = 1;
-						length += actionLength;
-					}
-			
-				}
-				
-				CGFloat seconds = round((CGFloat)length / 52 * 60);
-				totalLengthInSeconds += seconds;
-				
-				NSString *selectedValue = @"false";
-				if (selected) selectedValue = @"true";
-				
-				[jsonData appendFormat:@"{ \"text\": \"%@\", \"sceneLength\": %lu, \"sceneIndex\": %lu, \"sceneNumber\": \"%@\", \"color\": \"%@\", \"selected\": %@ },", [self fixQuotations:[self JSONString:scene.line.cleanedString]], length, [scenes indexOfObject:scene], scene.sceneNumber, [scene.color lowercaseString], selectedValue];
+				// Remember to guard for nil values here!
+				json = @{
+					@"text": scene.line.cleanedString ? scene.line.cleanedString : @"",
+					@"sceneNumber": scene.sceneNumber ? scene.sceneNumber : @"",
+					@"sceneLength": [NSNumber numberWithInteger:beats],
+					@"sceneIndex": [NSNumber numberWithInteger:[scenes indexOfObject:scene]],
+					@"color": scene.color.length ? [scene.color lowercaseString] : @"",
+					@"selected": [NSNumber numberWithBool:selected]
+				};
 			}
+			NSData *data = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:nil];
+			NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+			[jsonData appendFormat:@"%@,", result];
 		}
 		[jsonData appendString:@"]"];
 		
@@ -4502,6 +4451,69 @@ static NSString *forceDualDialogueSymbol = @"^";
 		NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", sceneIndex];
 		[self.timelineView evaluateJavaScript:evalString completionHandler:nil];
 	});
+}
+
+- (NSInteger)chronometryFor:(OutlineScene*)scene {
+	// Arbitrary values
+	NSInteger charsPerLine = 57;
+	NSInteger charsPerDialogue = 35;
+	
+	NSInteger length = 1;
+	NSInteger position = [[self.parser lines] indexOfObject:scene.line];
+	NSInteger index = 0;
+	
+	bool previousLineEmpty = false;
+	
+	// Loop the lines until next scene
+	while (position + index + 1 < [[self.parser lines] count]) {
+		index++;
+		Line* line = [[self.parser lines] objectAtIndex:position + index];
+		
+		// Break away when next scene is encountered
+		if (line.type == heading) break;
+		
+		// Don't count in synopses or sections
+		if (line.type == synopse || line.type == section) continue;
+		
+		// Empty row equals 1 beat
+		if ([line.string isEqualToString:@""]) {
+			if (previousLineEmpty) continue;
+			
+			previousLineEmpty = true;
+			length += 1;
+			continue;
+		} else {
+			previousLineEmpty = false;
+		}
+
+		NSInteger lineLength = [line.string length];
+		
+		// We need to take omitted ranges into consideration, so they won't add up to scene lengths
+		__block NSUInteger omitLength = 0;
+		[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+			omitLength += range.length;
+		}];
+		if (lineLength - omitLength >= 0) lineLength -= omitLength;
+		
+		// Character cue and parenthetical add 1 beat each
+		if (line.type == character || line.type == parenthetical) {
+			length += 1;
+			continue;
+		}
+		
+		if (line.type == dialogue) {
+			length += (lineLength + charsPerDialogue - 1) / charsPerDialogue;
+			continue;
+		}
+		
+		if (line.type == action) {
+			NSInteger actionLength = (lineLength + charsPerLine - 1) / charsPerLine;
+			if (actionLength == 0) actionLength = 1;
+			length += actionLength;
+		}
+	}
+	
+	return length;
 }
 
 #pragma mark - TouchBar Timeline

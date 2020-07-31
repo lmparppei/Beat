@@ -19,7 +19,7 @@
 
 #pragma mark - Recent files
 
-@implementation DataSource
+@implementation RecentFiles
 
 - (IBAction)doubleClickDocument:(id)sender {
 	void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {

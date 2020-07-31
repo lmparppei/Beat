@@ -1,22 +1,23 @@
 //
-//  BeatTests.m
+//  OSFTest.m
 //  BeatTests
 //
-//  Created by Lauri-Matti Parppei on 15.7.2020.
+//  Created by Lauri-Matti Parppei on 17.7.2020.
 //  Copyright © 2020 KAPITAN!. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
-#import "../Beat/Scripting/BeatScriptParser.h"
+#import "../Beat/Import/OSFImport.h"
 
-@interface BeatTests : XCTestCase
+@interface OSFTest : XCTestCase
 
 @end
 
-@implementation BeatTests
+@implementation OSFTest
 
 - (void)setUp {
     // Put setup code here. This method is called before the invocation of each test method in the class.
+
 }
 
 - (void)tearDown {
@@ -26,6 +27,7 @@
 - (void)testExample {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
+	NSLog(@"test");
 }
 
 - (void)testPerformanceExample {
