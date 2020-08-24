@@ -33,6 +33,11 @@
 + (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
 	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
 }
++ (NSColor *) randomColor {
+	NSArray * colors = [BeatColors attributeKeys];
+	NSUInteger index = arc4random_uniform((uint32_t)(colors.count - 1));
+	return [BeatColors valueForKey:colors[index]];
+}
 + (NSColor *) color:(NSString*)name {
 	DynamicColor *color = [BeatColors.colors valueForKey:name];
 	if (color) {

@@ -51,6 +51,7 @@ p {
 	margin: 1.3em auto;
 	word-wrap: break-word;
 	padding: 0 0px 0 10px;
+	white-space: pre-wrap;
 }
 body > p:first-child {
 	margin-top: 0;
@@ -117,6 +118,7 @@ body > p:first-child {
 	align-items: center;
 	flex-direction: column;
 }
+#script-title * { white-space: pre-wrap; }
 #script-title .mainTitle {
 	display: flex;
 	justify-content: center;
@@ -128,22 +130,27 @@ body > p:first-child {
     text-align: center;
     margin: 1.3em 0;
     text-transform: uppercase;
+	white-space: pre-wrap;
 }
 #script-title .credit {
     text-align: center;
+	white-space: pre-wrap;
 }
 #script-title .authors {
     text-align: center;
+	white-space: pre-wrap;
 }
 #script-title p.source {
     text-align: center;
 	padding: 0;
 	margin: 0 0 .5em 0;
+	white-space: pre-wrap;
 }
 #script-title .versionInfo {
 	position: absolute;
 	bottom: 3em;
 	right: 4em;
+	white-space: pre-wrap;
 
 	width: 40%;
 

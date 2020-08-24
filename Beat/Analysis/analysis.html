@@ -73,6 +73,8 @@
 				text-align: center;
 				font-size: .7em;
 			}
+
+			table { width: 100%; }
 			table td {
 				font-size: .7em;
 				padding: .35rem .25rem .35rem .25rem;
@@ -89,15 +91,21 @@
 				width: 100%;
 			}
 
-			.linesBar {
+			.linesBar, .statsBar {
 				width: 50%;
 			}
-			.linesNumber {
+			.linesNumber, .statsNumber {
 				width: 10%;
 				text-align: right;
 				color: #999;
 				padding-right: 1rem;
 			}
+			.statsNumber { width: auto; }
+			.statsBar {
+				width: 60%;
+			}
+			.unimportant { opacity: .5; }
+
 			.bar {
 				color: #eee;
 				background-color: rgb(0,129,239);
@@ -250,14 +258,6 @@
 
 			<div class='column right'>
 				
-				<section>
-					<div style='display: none;' id='sceneBar'></div>
-					
-					<div class='donutChart'>
-						<canvas class='donutCanvas' id='sceneCanvas' width="180" height="180"></canvas>
-						<div id='sceneLegend' class='donutLegend'></div>
-					</div>
-				</section>
 				<!--
 				<p class='legend'><span class='box interior'></span> interior &nbsp; <span class='box exterior'></span> exterior  &nbsp; <span class='box other'></span> other</p>
 				-->
@@ -268,6 +268,22 @@
 						<div id='genderLegend' class='donutLegend'></div>
 					</div>
 				</section>
+
+				<section>
+					<div style='display: none;' id='sceneBar'></div>
+					
+					<div class='donutChart'>
+						<canvas class='donutCanvas' id='sceneCanvas' width="180" height="180"></canvas>
+						<div id='sceneLegend' class='donutLegend'></div>
+					</div>
+				</section>
+				
+				<section>
+					<table id='tods' cellspacing='0'>
+					</table>
+				</section>
+				
+				<!-- todo: days of time -->
 				
 				<section>
 					<div id='documentInfo'>asdf</div>
@@ -289,10 +305,11 @@
 			}
 			*/
 			
-
+			var debugData;
 			var defaultData = {};
 
 			var characterTable = document.getElementById('characters');
+			var todTable = document.getElementById('tods');
 			var sceneBar = document.getElementById('sceneBar');
 			
 			var sceneLegend = document.getElementById('sceneLegend');
@@ -302,7 +319,6 @@
 			var genderCanvas = document.getElementById('genderCanvas');
 			
 			var documentInfo = document.getElementById('documentInfo');
-			documentInfo.innerHTML = "Testiii";
 
 			// An object containing the character gender data
 			var characterGender = {};
@@ -331,6 +347,7 @@
 			var characterLines = {};
 
 			function refresh (data) {
+				debugData = data;
 				getDocumentInfo(data.statistics);
 				
 				if (!data.characters) {
@@ -343,7 +360,7 @@
 					getGenderStatistics();
 				}
 				getSceneData(data.scenes);
-
+				getTODData(data.tods);
 			}
 
 			function setGender(name, gender) {
@@ -499,6 +516,47 @@
 					"</td>" +
 					"</tr>";
 				}
+			}
+											
+			function getTODData(tods) {				
+				let sortedTods = [];
+
+				for (let tod in tods) {
+				    sortedTods.push([tod, tods[tod]]);
+				}
+
+				sortedTods.sort(function(a, b) {
+				    return a[1] - b[1];
+				});
+
+				sortedTods.reverse();
+
+				let html = '';
+				let total = 0;
+
+				// Calculate total number of scenes
+				for (const value of sortedTods) {
+					total += value[1];
+				}
+
+				// Print out
+				for (const value of sortedTods) {
+					let percent = Math.floor(100 * (value[1] / total));
+
+					let maxWidth = sortedTods[0][1];
+					let width = (value[1] / maxWidth) * 100;
+					
+					// If the TOD in the cue is present in only 1 percent of all cues, it's probably something unimportant, so don't list it.
+					if (percent > 0) {
+						let extraClass = '';
+						if (percent < 5) extraClass = 'unimportant';
+
+					 	html += "<tr class='" + extraClass +"'><td class='name'>" + value[0] + "</td><td class='statsBar'><div class='bar' style='width: " + width + "%;'>&nbsp;</div></td><td class='statsNumber'>" + value[1] + "</td></tr>";
+					 }
+					 	
+				}
+
+				todTable.innerHTML = html;
 			}
 
 			function getSceneData(scenes) {

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="16002"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="16097"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.2"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="16097.2"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
@@ -732,14 +732,14 @@
         <window title="Analysis Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rni-cY-faX" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="794" height="560"/>
+            <rect key="contentRect" x="196" y="132" width="794" height="669"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="Rnd-rQ-nX0">
-                <rect key="frame" x="0.0" y="0.0" width="794" height="560"/>
+                <rect key="frame" x="0.0" y="0.0" width="794" height="669"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QXx-h6-RNu">
-                        <rect key="frame" x="0.0" y="39" width="794" height="521"/>
+                        <rect key="frame" x="0.0" y="39" width="794" height="630"/>
                         <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat Analysis">
                             <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                             <wkPreferences key="preferences"/>
@@ -771,7 +771,7 @@ DQ
                     <constraint firstItem="QXx-h6-RNu" firstAttribute="leading" secondItem="Rnd-rQ-nX0" secondAttribute="leading" id="q8M-5N-G0v"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="1235" y="169"/>
+            <point key="canvasLocation" x="1235" y="223.5"/>
         </window>
         <window title="Title Page Editor" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="vXu-Dv-TW5" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
@@ -1360,7 +1360,7 @@ Gw
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="1172" y="664"/>
+            <point key="canvasLocation" x="921" y="806"/>
         </window>
     </objects>
     <resources>

@@ -77,10 +77,16 @@
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		omitLength += range.length;
 	}];
-			
-	// This return YES also for empty lines, which SHOULD NOT be a problem for anything, but yeah, we could check it:
+	
+	// Also take notes into account here
+	__block NSUInteger noteLength = 0;
+	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		noteLength += range.length;
+	}];
+	
+	// This returns YES also for empty lines, which SHOULD NOT be a problem for anything, but yeah, we could check it:
 	//if (omitLength == [self.string length] && self.type != empty) {
-	if (omitLength == [self.string length]) {
+	if (omitLength + noteLength == [self.string length]) {
 		return true;
 	} else {
 		return false;
@@ -102,7 +108,30 @@
 	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
 	__block NSUInteger offset = 0;
 	
-	// Remove any omitted ranges
+	// To remove any omitted ranges, we need to combine the index sets
+	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
+	[indexes addIndexes:self.omitedRanges];
+	[indexes addIndexes:self.noteRanges];
+	
+	[indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSLog(@"range: %lu -> %lu", range.location, range.length);
+		
+		if (range.location - offset + range.length > string.length) {
+			range = NSMakeRange(range.location, string.length - range.location - offset);
+		}
+		
+		@try {
+			[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
+		}
+		@catch (NSException* exception) {
+			NSLog(@"cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
+		}
+		@finally {
+			offset += range.length;
+		}
+	}];
+	
+	/*
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.location - offset + range.length > string.length) {
 			range = NSMakeRange(range.location, string.length - range.location - offset);
@@ -112,12 +141,12 @@
 			[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
 		}
 		@catch (NSException* exception) {
-			NSLog(@"Cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
+			NSLog(@"Omit cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
 		}
 		@finally {
 			offset -= range.length;
 		}
-	}];
+	}]; */
 	
 	// Remove markup characters
 	if (self.string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
@@ -134,6 +163,7 @@
 	}
 	
 	// Clean up scene headings
+	// Note that the scene number can still be read from the element itself (.sceneNumber) when needed.
 	if (self.type == heading && self.sceneNumber) {
 		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
 	}

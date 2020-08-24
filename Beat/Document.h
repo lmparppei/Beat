@@ -33,11 +33,12 @@ THE SOFTWARE.
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
 #import "TouchTimelinePopover.h"
+#import "ContinousFountainParser.h"
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate>
 	//NSCollectionViewDataSource, NSCollectionViewDelegate
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;

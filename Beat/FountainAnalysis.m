@@ -30,13 +30,36 @@
 #import <Foundation/Foundation.h>
 #import "FountainAnalysis.h"
 #import "NSString+Whitespace.h"
+#import "RegExCategories.h"
+
+// lol
+#define LATER @[@"LATER", @"MYÖHEMMIN", @"SPÄTER", @"SENARE", @"PLUS TARD", @"ENSUITE", @"LUEGO", @"SENERE", @"SEINERE", @"SEINNA", @"BERANDUAGO", @"DESPRÉS", @"PÄRAST", @"HILJEM", @"TAGANTJÄRELE", @"SEURAAVAKSI", @"PÄRASTPOOLE", @"VĒLĀK", @"VĖLIAU", @"PÓŹNIEJ"]
+
+@interface FountainAnalysis ()
+
+@property NSMutableArray * characters;
+@property NSMutableArray * lines;
+@property NSMutableArray * scenes;
+@property NSDictionary * genders;
+@property NSMutableDictionary * TOD;
+@property NSMutableDictionary<NSString *, NSNumber *>* characterLines;
+
+@property NSInteger interiorScenes;
+@property NSInteger exteriorScenes;
+@property NSInteger otherScenes;
+@property NSInteger words;
+@property NSInteger glyphs;
+
+@end
 
 @implementation FountainAnalysis
 
 - (id)init
 {
 	if ((self = [super init]) == nil) { return nil; }
-	_characterLines = [[NSMutableDictionary alloc] init];
+	
+	_characterLines = [NSMutableDictionary dictionary];
+	_TOD = [NSMutableDictionary dictionary];
 	
 	return self;
 }
@@ -111,6 +134,38 @@
 		}
 		
 		if (line.type == heading) {
+			// Map the times of day
+			NSRange todRange = [line.string rangeOfString:@"- " options:NSBackwardsSearch];
+			
+			if (todRange.location + 2 < line.string.length) {
+				NSString *tod = [line.string substringFromIndex:todRange.location + 2];
+				
+				// Replace things like [STORY] and [[COLOR RED]], NIGHT (PRESENT DAY)
+				tod = [tod replace:RX(@"\\[(.*)\\]") with:@""];
+				tod = [tod replace:RX(@"\\((.*)\\)") with:@""];
+				
+				// This is PRETTY SHADY. Basically, we have an array with some quick translations of the word 'later'.
+				// Then, we'll iterate through them and remove anything that might be indicate the scene happening "later"
+				// than the previous one. If there is a god, have mercy on me.
+				for (NSString *later in LATER) {
+					tod = [tod stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@" / %@", later] withString:@""];
+					tod = [tod stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@" - %@", later] withString:@""];
+					tod = [tod stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@", %@", later] withString:@""];
+				}
+				
+				tod = [tod stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+				
+				// See if anything is left
+				if (tod.length > 1) {
+					if (!_TOD[tod]) {
+						[_TOD setValue:[NSNumber numberWithInt:1] forKey:tod];
+					} else {
+						NSInteger i = [(NSNumber*)[_TOD valueForKey:tod] integerValue];
+						[_TOD setValue:[NSNumber numberWithInteger:i + 1] forKey:tod];
+					}
+				}
+			}
+			
 			// Count int/ext. Following stuff is shady as hell. Here's a Charles Bukowski quote to ease the pain:
 			
 			// Sometimes you climb out of bed in the morning and you think,
@@ -142,8 +197,10 @@
 			}
 		}
 	}
+	
+	NSLog(@"times of day: %@", _TOD);
 }
-
+	
 - (NSString*)getJSON {
 	if (![_lines count]) {
 		return @"genders:{ }";
@@ -180,6 +237,9 @@
 	
 	// JSON scenes --------------------------------------------------------
 	[json appendFormat:@"scenes:{ interior: %lu, exterior: %lu, other: %lu },", _interiorScenes, _exteriorScenes, _otherScenes];
+	// JSON times of day --------------------------------------------------------
+	NSData *tods = [NSJSONSerialization dataWithJSONObject:_TOD options:NSJSONWritingPrettyPrinted error:nil];
+	[json appendFormat:@"tods:%@,", [[NSString alloc] initWithData:tods encoding:NSUTF8StringEncoding]];
 	// JSON statistics --------------------------------------------------------
 	[json appendFormat:@"statistics:{ words: %lu, glyphs: %lu }", _words, _glyphs];
 	

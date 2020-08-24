@@ -19,6 +19,8 @@
  - new data structure called OutlineScene, which contains scene name and length, as well as a reference to original line
  - overall tweaks to parsing here and there
  
+ The file and class are still called Continous, instead of Continuous, because I haven't had the time and willpower to fix Hendrik's small typo. Also, singular synopsis lines are called 'synopse' for some reason. :-)
+ 
  */
 
 #import "ContinousFountainParser.h"
@@ -169,6 +171,29 @@
     [self correctParsesInLines:changedIndices];
 }
 
+- (void)ensurePositions {
+	// This is a method to fix anything that might get broken :-)
+
+	NSInteger previousPosition = 0;
+	NSInteger previousLength = 0;
+	NSInteger offset = 0;
+	
+	bool fixed = NO;
+	
+	for (Line * line in self.lines) {
+		if (line.position > previousPosition + previousLength + offset && !fixed) {
+			NSLog(@"🔴 [FIXING] %lu-%lu   %@", line.position, line.string.length, line.string);
+			offset -= line.position - (previousPosition + previousLength);
+			fixed = YES;
+		}
+		
+		line.position += offset;
+				
+		previousLength = line.string.length + 1;
+		previousPosition = line.position;
+	}
+}
+
 - (NSIndexSet*)parseAddition:(NSString*)string  atPosition:(NSUInteger)position
 {
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
@@ -185,51 +210,57 @@
 	if ([string rangeOfString:@"\n"].location != NSNotFound && string.length > 1) {
 		// Split the original line into two
 		NSString *head = [line.string substringToIndex:indexInLine];
-		NSString *tail = (indexInLine + 1 < line.string.length) ? [line.string substringFromIndex:indexInLine] : @"";
-				
+		NSString *tail = (indexInLine + 1 <= line.string.length) ? [line.string substringFromIndex:indexInLine] : @"";
+		
+		/*
+		NSLog(@"===== len %lu", string.length);
+		NSInteger indx = 0;
+		for (int i = 0; i < string.length; i++) {
+			unichar chr = [string characterAtIndex:i];
+			if (chr == '\n') printf("\\n\n"); else printf("%c", chr);
+			indx = i;
+		}
+		NSLog(@"===== total %lu", indx);
+		*/
+		 
 		// Split the text block into pieces
 		NSArray *newLines = [string componentsSeparatedByString:@"\n"];
 		
 		// Add the first line
 		[changedIndices addIndex:lineIndex];
-		
-		/*
-		NSLog(@"----- original -----");
-		for (Line* line in self.lines) {
-			NSLog(@"   (%lu): %@", line.position, line.string);
-		}
-		 */
-		
+
 		NSInteger offset = line.position;
 
 		[self decrementLinePositionsFromIndex:lineIndex + 1 amount:tail.length];
-		
+				
 		// Go through the new lines
 		for (NSInteger i = 0; i < newLines.count; i++) {
 			NSString *newLine = newLines[i];
 		
-			// First line
 			if (i == 0) {
+				// First line
 				head = [head stringByAppendingString:newLine];
 				line.string = head;
 				[self incrementLinePositionsFromIndex:lineIndex + 1 amount:newLine.length + 1];
 				offset += head.length + 1;
-				//NSLog(@"first line: %@", line.string);
 			} else {
 				Line *addedLine;
 				
-				if ([newLines lastObject] == newLine) {
+				if (i == newLines.count - 1) {
+					// Handle adding the last line a bit differently
 					tail = [newLine stringByAppendingString:tail];
 					addedLine = [[Line alloc] initWithString:tail position:offset];
+
+					[self.lines insertObject:addedLine atIndex:lineIndex + i];
+					[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:addedLine.string.length];
+					offset += newLine.length + 1;
 				} else {
 					addedLine = [[Line alloc] initWithString:newLine position:offset];
+					
+					[self.lines insertObject:addedLine atIndex:lineIndex + i];
+					[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:addedLine.string.length + 1];
+					offset += newLine.length + 1;
 				}
-				//NSLog(@"add line:  %@", addedLine.string);
-				
-				[self.lines insertObject:addedLine atIndex:lineIndex + i];
-				[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:newLine.length + 1];
-				offset += newLine.length + 1;
-
 			}
 		}
 		
@@ -242,8 +273,24 @@
         }
 	}
 	
+	[self report];
 	
 	return changedIndices;
+}
+
+- (void)report {
+	NSInteger lastPos = 0;
+	NSInteger lastLen = 0;
+	for (Line* line in self.lines) {
+		NSString *error = @"";
+		if (lastPos + lastLen != line.position) error = @" 🔴 ERROR";
+		
+		if (error.length > 0) {
+			NSLog(@"   (%lu -> %lu): %@ (%lu) %@ (%lu/%lu)", line.position, line.position + line.string.length + 1, line.string, line.string.length, error, lastPos, lastLen);
+		}
+		lastLen = line.string.length + 1;
+		lastPos = line.position;
+	}
 }
 
 - (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position
@@ -357,20 +404,15 @@
 		[self decrementLinePositionsFromIndex:nextIndex amount:offset];
 										
 		[changedIndices addIndex:lineIndex];
-		
-		/*
-		NSLog(@"----- result -----");
-		for (Line* line in self.lines) {
-			NSLog(@"   (%lu): %@", line.position, line.string);
-		}
-		*/
 	} else {
 		// Do it normally
 		for (int i = 0; i < range.length; i++) {
 			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
 		}
 	}
-
+	
+	[self report];
+	
 	return changedIndices;
 }
 - (NSIndexSet*)parseCharacterRemovedAtPosition:(NSUInteger)position
@@ -640,6 +682,21 @@
     }	
 }
 
+/*
+
+Update 2020-08:
+The recursive madness I built should be dismantled and replaced with delegation.
+
+An example of a clean and nice delegate method can be seen when handling scene headings,
+and the same logic should apply everywhere: Oh, an empty line: Did we parse the line before
+as a character cue, well, let's not, and then send that information to the UI side of things.
+
+It might be slightly less optimal in some cases, but would save us from this terrible, terrible
+and incomprehensible system of recursion.
+
+*/
+
+
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index
 {
 	return [self parseLineType:line atIndex:index recursive:NO currentlyEditing:NO];
@@ -764,7 +821,19 @@
                 [firstChars isEqualToString:@"ext"] ||
                 [firstChars isEqualToString:@"est"] ||
                 [firstChars isEqualToString:@"i/e"]) {
-                return heading;
+				if (length < 4) return heading;
+				// If the line is just "internal" or "estoy aqui", it should NOT be a scene heading
+				else {
+					char nextChar = [string characterAtIndex:3];
+					if (nextChar == '.' || nextChar == ' ') return heading;
+					else {
+						if (line.type == heading) {
+							// Signal change
+							
+							[self.delegate headingChangedToActionAt:line];
+						}
+					}
+				}
             }
         }
     }
@@ -904,7 +973,7 @@
         return centered;
     }
 
-    //If it's just usual text, see if it might be (double) dialogue or a parenthetical, or seciton/synopsis
+    //If it's just usual text, see if it might be (double) dialogue or a parenthetical, or section/synopsis
     if (preceedingLine) {
         if (preceedingLine.type == character || preceedingLine.type == dialogue || preceedingLine.type == parenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
@@ -924,11 +993,16 @@
             } else {
                 return dualDialogue;
             }
-        } else if (preceedingLine.type == section) {
+        }
+		/*
+		// I beg to disagree with this.
+		// This is not a part of the Fountain syntax definition, if I'm correct.
+		else if (preceedingLine.type == section) {
             return section;
         } else if (preceedingLine.type == synopse) {
             return synopse;
         }
+		*/
     }
     
     return action;

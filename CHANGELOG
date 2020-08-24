@@ -1,4 +1,13 @@
 
+## Beat 1.4
+
+* Optimized parsing for large chunks of text
+* Fixed some bugs with character input
+* Code cleanup
+* Typewriter mode
+* New layout for sections (let's see how people react to this :-)
+* Fixed bugs with undoing paragraphs
+
 ## Beat 1.3b
 
 * Fixed an app-crashing bug happening when iterating through omitted ranges

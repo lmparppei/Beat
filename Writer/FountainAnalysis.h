@@ -13,18 +13,6 @@
 @interface FountainAnalysis : NSObject
 {
 }
-@property NSMutableArray * characters;
-@property NSMutableArray * lines;
-@property NSMutableArray * scenes;
-@property NSDictionary * genders;
-@property NSMutableDictionary<NSString *, NSNumber *>* characterLines;
-
-@property NSInteger interiorScenes;
-@property NSInteger exteriorScenes;
-@property NSInteger otherScenes;
-@property NSInteger words;
-@property NSInteger glyphs;
-
 - (NSString*) getJSON;
 - (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes;
 - (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes characterGenders:(NSDictionary*)genders;

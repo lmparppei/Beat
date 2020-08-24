@@ -28,7 +28,7 @@
  
  N.B.
  
- Beat has been cooked up by using lots of trial and error, and this file has become something like 5000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain editor by Hendrik Noeller. I am a filmmaker and musician, with no real coding experience prior to this project.
+ Beat has been cooked up by using lots of trial and error, and this file has become an over-5000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain editor by Hendrik Noeller. I am a filmmaker and musician, with no real coding experience prior to this project.
  
  Some structures are legacy from Writer and original Fountain repository, and while most have since been replaced with a totally different approach, some variable names and complimentary methods still linger around. You can find some *very* shady stuff lying around here and there, with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
@@ -129,6 +129,9 @@
 @property (nonatomic) bool characterInput;
 @property (nonatomic) Line* characterInputForLine;
 @property (nonatomic) NSDictionary *postEditAction;
+@property (nonatomic) bool typewriterMode;
+@property (nonatomic) CGFloat textInsetY;
+@property (nonatomic) NSMutableArray *recentCharacters;
 
 // Outline view
 @property (weak) IBOutlet BeatOutlineView *outlineView;
@@ -228,6 +231,10 @@
 @property (strong, nonatomic) NSFont *boldCourier;
 @property (strong, nonatomic) NSFont *italicCourier;
 
+@property (strong, nonatomic) NSFont *sectionFont;
+@property (strong, nonatomic) NSMutableDictionary *sectionFonts;
+@property (strong, nonatomic) NSFont *synopsisFont;
+
 // Weird stuff which... uh. Forget about it for now.
 @property (nonatomic) NSUInteger fontSize;
 @property (nonatomic) NSUInteger zoomLevel;
@@ -305,6 +312,7 @@
 #define AUTOSAVE_INTERVAL 10.0
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
+#define SECTION_FONT_SIZE 20.0 // base value for section sizes
 #define FONT_SIZE 17.92
 #define DOCUMENT_WIDTH 620
 
@@ -321,6 +329,7 @@
 #define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
 #define DARKMODE_KEY @"Dark Mode"
 #define AUTOMATIC_LINEBREAKS_KEY @"Automatic Line Breaks"
+#define TYPERWITER_KEY @"Typewriter Mode"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
@@ -454,8 +463,9 @@
 		
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
 	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
+	self.textInsetY = TEXT_INSET_TOP;
 	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-	self.textView.textContainerInset = NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, TEXT_INSET_TOP);
+	self.textView.textContainerInset = NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, _textInsetY);
 	
 	// Set textView style
 	[self.textView setFont:[self courier]];
@@ -481,6 +491,12 @@
         self.autoLineBreaks = YES;
     } else {
         self.autoLineBreaks = [[NSUserDefaults standardUserDefaults] boolForKey:AUTOMATIC_LINEBREAKS_KEY];
+    }
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:TYPERWITER_KEY]) {
+        self.typewriterMode = NO;
+    } else {
+        self.typewriterMode = [[NSUserDefaults standardUserDefaults] boolForKey:TYPERWITER_KEY];
     }
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_PAGENUMBERS_KEY]) {
@@ -530,6 +546,7 @@
 	self.sceneHeadings = [[NSMutableArray alloc] init];
 	
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
+	self.parser.delegate = self;
 	self.analysis = [[FountainAnalysis alloc] init];
 
 	// CardView webkit
@@ -632,11 +649,18 @@
 	
 	CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
 	
+	// Set global variable for top inset, if it's unset
+	// For typewriter mode, we set the top & bottom bounds a bit differently
+	if (self.typewriterMode) {
+		_textInsetY = (self.textClipView.frame.size.height / 2 - self.fontSize / 2) * (1 + (1 - _magnification));
+		NSLog(@"text inset %f", _textInsetY);
+	} else {
+		_textInsetY = TEXT_INSET_TOP;
+	}
+	
 	if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
-		self.textView.textContainerInset = NSMakeSize(width, TEXT_INSET_TOP);
+		self.textView.textContainerInset = NSMakeSize(width, _textInsetY);
 		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-
-		// WIP: UPDATE THIS PART FOR MARGIN VIEW IF NEEDED
 		
 		self.textScrollView.insetWidth = self.textView.textContainerInset.width;
 		self.marginView.insetWidth = self.textView.textContainerInset.width;
@@ -651,6 +675,7 @@
 	[self ensureLayout];
 	[self ensureCaret];	
 }
+
 
 - (void) setMinimumWindowSize {
 	if (!_outlineViewVisible) {
@@ -1179,10 +1204,8 @@
 }
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
-{
+{	
 	// Check for character input trouble
-	// (some day)
-	
 	if (_characterInput) {
 		_currentLine = [self getCurrentLine];
 		
@@ -1198,11 +1221,20 @@
 		}
 	}
 	
-	// Backspace / deletion for scene headings.
+	// Also, if it's an enter key and we are handling a CHARACTER
+	if ([replacementString isEqualToString:@"\n"] && _currentLine.type == character) {
+		// Check here if the character was recently used and somehow put it on top of the autocomplete list
+	}
+	
+	// Backspace / deletion handling for some special case scenarios
 	// Implementing some undoing weirdness, which works, kind-of.
+	
 	if (replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
-		Line * affectedLine = [self getLineAt:affectedCharRange.location];
 		
+		if ([self.undoManager isRedoing]) NSLog(@"redoing heading: %@", replacementString);
+		
+		Line * affectedLine = [self getLineAt:affectedCharRange.location];
+
 		if (affectedLine.type == character && _characterInput && affectedLine.string.length == 0) {
 			affectedLine.type = action;
 			[self cancelCharacterInput];
@@ -1210,23 +1242,32 @@
 		
 		__block Line * otherLine = [self getLineAt:affectedCharRange.location + affectedCharRange.length];
 		
-		if (otherLine.string.length > 0 && affectedLine.type == heading && otherLine.type != heading) {
-			__block NSString *undoString = [otherLine.string stringByAppendingString:@"\n"];
-			NSLog(@"Affected: %@ / undo: %@", affectedLine.string, undoString);
-			
-			NSInteger position = otherLine.position;
-			NSInteger length = undoString.length + 1;
-			
-			if (position + length > [self getText].length) {
-				NSLog(@"attempting to fix");
-				length = undoString.length;
+		if (otherLine.string.length > 0) {
+			if (affectedLine.type == heading && otherLine.type != heading) {
+				__block NSString *undoString = [otherLine.string stringByAppendingString:@"\n"];
+				NSLog(@"Affected: %@ / undo: %@", affectedLine.string, undoString);
+				
+				NSInteger position = otherLine.position;
+				NSInteger length = undoString.length + 1;
+				
+				if (position + length > [self getText].length) {
+					NSLog(@"attempting to fix");
+					length = undoString.length;
+				}
+				
+				[self.undoManager beginUndoGrouping];
+				[self.undoManager registerUndoWithTarget:self handler:^(id _Nonnull target) {
+					[self replaceCharactersInRange:NSMakeRange(position, length) withString:undoString];
+				}];
+				[self.undoManager endUndoGrouping];
 			}
-			
-			[self.undoManager beginUndoGrouping];
-			[self.undoManager registerUndoWithTarget:self handler:^(id _Nonnull target) {
-				[self replaceCharactersInRange:NSMakeRange(position, length) withString:undoString];
-			}];
-			[self.undoManager endUndoGrouping];
+			else if (_characterInput && otherLine.type != empty) {
+				// delete key was pressed at the end of line and the app would make the next line uppercase
+				// let's avoid that
+				if (affectedCharRange.location == _currentLine.string.length + 1) {
+					[self cancelCharacterInput];
+				}
+			}
 		}
 	}
 	
@@ -1278,7 +1319,7 @@
 	bool processDoubleBreak = NO;
 
 	// Enter key
-	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0) {
+	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && ![self.undoManager isUndoing]) {
 		// Process line break after a forced character input
 		if (_characterInput && _characterInputForLine) {
 			// Don't go out of range
@@ -1295,15 +1336,15 @@
 			}
 		}
 		
-		// Process double breaks
-		if (self.autoLineBreaks && ![self.undoManager isRedoing]) {
-			// A new double break is added
-			
-			// A new double-break hasn't been added, current line is not empty and shift is not pressed
+		// Process double breaks after some elements
+		if (self.autoLineBreaks) {
 			// Test if we should add a new line
+			// (We are not in the process of adding a dual line break and shift is not pressed)
 			if (!_newScene && _currentLine.string.length > 0 && !([NSEvent modifierFlags ] & NSEventModifierFlagShift)) {
-				if (_currentLine.type == heading ) {
-					// No shift down, add two breaks afer a scene heading
+				if (_currentLine.type == heading ||
+					_currentLine.type == section ||
+					_currentLine.type == synopse) {
+					// No shift down, add two breaks afer a scene heading, heading and synopsis
 					_newScene = YES;
 					[self addString:@"\n" atIndex:affectedCharRange.location];
 				} else if (_currentLine.type == action) {
@@ -1337,8 +1378,18 @@
 		}
 	}
 	
+	if (_characterInput) replacementString = [replacementString uppercaseString];
+	
+	//if ([self.undoManager isUndoing]) [self.parser ensurePositions];
+	
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-
+	
+	//if ([self.undoManager isUndoing]) [self.parser ensurePositions];
+	
+	_currentLine = [self getCurrentLine];
+	
+	// NSLog(@"[%@]\t \t%lu/%lu %@", _currentLine.typeAsString, _currentLine.position, _currentLine.string.length, _currentLine.string);
+	
 	if (processDoubleBreak) {
 		// This is here to fix a formating error with dialogue.
 		// If the caret is at the end of the document, we need to parse one step behind
@@ -1381,7 +1432,6 @@
 	self.autoLineBreaks = !self.autoLineBreaks;
 	[[NSUserDefaults standardUserDefaults] setBool:self.autoLineBreaks forKey:AUTOMATIC_LINEBREAKS_KEY];
 }
-
 
 - (Line*)getCurrentLine {
 	NSInteger location = [self cursorLocation].location;
@@ -1459,12 +1509,13 @@
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 
+	
 	// We REALLY REALLY should make some sort of cache for these
 	_flatOutline = [self getOutlineItems];
 	_currentLine = [self getCurrentLine];
-
 	
 	// Reset forced character input
+	// WIP: Process the change at that line anyway?
 	if (_characterInputForLine != _currentLine) _characterInput = NO;
 	
 	__block NSInteger position = self.textView.selectedRange.location;
@@ -1523,6 +1574,8 @@
 			
 		});
 	}
+
+	if (self.typewriterMode) [self typewriterScroll];
 }
 
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index
@@ -1667,9 +1720,11 @@
 		if ((line.type == character || line.type == dualDialogueCharacter) && line != _currentLine && ![_characterNames containsObject:line.string]) {
 			// Don't add this line if it's just a character with cont'd, vo, or something we'll add automatically
 			if ([line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound) continue;
-			
+						
             NSString *character = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+			
 			[_characterNames addObject:character];
+		
 			
 			// Add automatic CONT'D suffixes
 			[_characterNames addObject:[NSString stringWithFormat:@"%@ (CONT'D)", character]];
@@ -1683,16 +1738,16 @@
             
             // Trim any useless whitespace
             character = [NSString stringWithString:[character stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-            if (![characterList containsObject:character]) {
+            
+			if (![characterList containsObject:character]) {
                 // Add character to the filter box
                 [_characterBox addItemWithTitle:character];
                 
-                // Add character to the pure list
+				// Add character to the pure list
                 [characterList addObject:character];
             }
 		}
 	}
-    
     // There was a character selected in the filtering menu, so select it again
     if ([selectedCharacter length]) {
         for (NSMenuItem *item in _characterBox.itemArray) {
@@ -1739,7 +1794,10 @@
 }
 
 - (void) handleTabPress {
-//	NSLog(@"tab");
+	// Don't allow this to happen twice
+	if (_characterInput) return;
+	
+	NSLog(@"tab");
 	// Default behaviour: add tab
 	// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
 
@@ -1752,7 +1810,10 @@
 		
 		if (index > 0) {
 			Line* previousLine = [self.parser.lines objectAtIndex:index - 1];
-			if (previousLine.type == empty) {
+			NSLog(@" --- previous: %@ (%@)", previousLine.string, previousLine.typeAsString);
+			if (previousLine.type == empty ||
+				(previousLine.type == action && previousLine.string.length == 0)) {
+				NSLog(@" ------ force!!!");
 				[self forceCharacterInput];
 			}
 		}
@@ -1763,6 +1824,9 @@
 }
 
 - (void) forceCharacterInput {
+	// Don't allow this to happen twice
+	if (_characterInput) return;
+	
 	if (!_currentLine) return;
 	
 	_currentLine.type = character;
@@ -1770,12 +1834,20 @@
 	
 	_characterInput = YES;
 	
+	// Format the line (if mid-screenplay)
+	[self formatLineOfScreenplay:_currentLine onlyFormatFont:NO];
+
+	// Set typing attributes (just in case, and if at the end)
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
+	
+	 
 	[self.textView setTypingAttributes:attributes];
+	NSLog(@"yeah");
 }
 - (void) cancelCharacterInput {
 	_characterInput = NO;
@@ -1787,6 +1859,20 @@
 	[paragraphStyle setFirstLineHeadIndent:0];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	[self.textView setTypingAttributes:attributes];
+}
+
+- (void)addRecentCharacter:(NSString*)name {
+	// Init array if needed
+	if (_recentCharacters == nil) _recentCharacters = [NSMutableArray array];
+	
+	// Remove any suffixes
+	name = [name replace:RX(@"\\((.*)\\)") with:@""];
+	name = [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	
+	if ([_recentCharacters indexOfObject:name] != NSNotFound) {
+		[_recentCharacters removeObject:name];
+		[_recentCharacters insertObject:name atIndex:0];
+	}
 }
 
 
@@ -1889,6 +1975,7 @@
 	// I managed to get it working, but it's really, really inefficient
 	
 	/// And basically, this is the part where I officially lost any hope for having an iOS version. The loopback system here is quite convoluted and simultaneously relies on both the parser and interface. I guess interface SHOULD NOT handle this recursion, but that would require an overhaul of the parser. And I'm not strong enough.
+	/// Update 2020-08: The solution to this problem could be delegation. The parser should just send a message here when we need to reformat something. I'm waiting for my partner to arrive at the summer house on a bus, maybe I'll implement it while waiting for her.
 	
 	if (!recursive && !firstTime) { // skip for recursive lookbacks & first time formating
 		NSInteger index = [[self.parser lines] indexOfObject:line];
@@ -1968,25 +2055,30 @@
 		
 		[self.textView setSelectedRanges:selectedRanges];
 	}
+	
 	if (line.type == heading) {
-		//Set Font to bold
+		// Format heading
+		// Set Font to bold
 		[attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
 		
-		//If the scene as a color, let's color it!
+		// If the scene as a color, let's color it!
 		if (![line.color isEqualToString:@""]) {
 			NSColor* headingColor = [BeatColors color:[line.color lowercaseString]];
 			if (headingColor != nil) [attributes setObject:headingColor forKey:NSForegroundColorAttributeName];
 		}
 	
 	} else if (line.type == pageBreak) {
-		//Set Font to bold
+		// Format page break
+		// Set Font to bold
 		[attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
 		
 	} else if (line.type == lyrics) {
-		//Set Font to italic
+		// Format lyrics
+		// Set Font to italic
 		[attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
 	}
 
+	// Format other stuff, such as indents and colors
 	if (!fontOnly) {
 		NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
 
@@ -2032,19 +2124,17 @@
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
 		} else if (line.type == transitionLine) {
-			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+			// Transitions
 			[paragraphStyle setAlignment:NSTextAlignmentRight];
-			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == centered || line.type == lyrics) {
-			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+			// Lyrics & centered text
 			[paragraphStyle setAlignment:NSTextAlignmentCenter];
-			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == character) {
-			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+			// Character cue
 			[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
@@ -2052,7 +2142,7 @@
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == parenthetical) {
-			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
+			// Parenthetical after character
 			[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
@@ -2060,6 +2150,7 @@
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == dialogue) {
+			// Dialogue block
 			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
@@ -2067,7 +2158,6 @@
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == dualDialogueCharacter) {
-			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
 			[paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
@@ -2075,7 +2165,6 @@
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == dualDialogueParenthetical) {
-			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init] ;
 			[paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
@@ -2083,7 +2172,6 @@
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
 		} else if (line.type == dualDialogue) {
-			//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
 			[paragraphStyle setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
 			[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
@@ -2092,36 +2180,44 @@
 			
 		} else if (line.type == section || line.type == synopse) {
 			// Stylize sections & synopses
-			if (self.themeManager) {
-				NSColor* commentColor = [self.themeManager currentCommentColor];
-				[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
-			}
-			
+
 			// Bold section headings for first-level sections
 			if (line.type == section) {
-				/*
-				 // Experiments for section headers
-				NSInteger lineIndex = [_parser.lines indexOfObject:line];
-				bool sectionBefore = NO;
-				bool sectionAfter = NO;
-				if (lineIndex < _parser.lines.count - 1 && lineIndex > 1) {
-					if ([(Line*)[_parser.lines objectAtIndex:lineIndex - 1] type] == section)  sectionBefore = YES;
-					if ([(Line*)[_parser.lines objectAtIndex:lineIndex + 1] type] == section) sectionAfter = YES;
+				
+				[paragraphStyle setParagraphSpacingBefore:20];
+				
+				CGFloat size = SECTION_FONT_SIZE;
+				
+				if (line.sectionDepth == 1) {
+					// Cyan headings for top-level sections
+					NSColor* sectionColor = [self colors][@"blue"];
+					[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
+					[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
+				} else {
+					// And gray for others
+					NSColor* sectionColor = [self.themeManager currentCommentColor];
+					[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 					
-					[self formatLineOfScreenplay:[_parser.lines objectAtIndex:lineIndex - 1] onlyFormatFont:NO recursive:YES];
-					[self formatLineOfScreenplay:[_parser.lines objectAtIndex:lineIndex + 1] onlyFormatFont:NO recursive:YES];
+					// Also, make lower sections s
+					size = size - line.sectionDepth;
+					if (size < 15) size = 15.0;
+					
+					[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 				}
-
 				
-				if (!sectionBefore) [paragraphStyle setParagraphSpacingBefore:15];
-				if (!sectionAfter) [paragraphStyle setParagraphSpacing:15];
-				 */
-				
-				if (line.sectionDepth < 2) [attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
 				[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			}
 			
-			if (line.type == synopse) [attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
+			if (line.type == synopse) {
+				// Color synopses with comment color
+				if (self.themeManager) {
+					NSColor* synopsisColor = [self.themeManager currentCommentColor];
+					[attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
+				}
+				
+				[attributes setObject:[self synopsisFont] forKey:NSFontAttributeName];
+			}
+			
 		} else if (line.type == action) {
 			// Take note if this is a paragraph split into two
 			NSInteger index = [_parser.lines indexOfObject:line];
@@ -2285,6 +2381,21 @@
 	}
 }
 
+#pragma mark - Parser delegation
+
+
+- (void)headingChangedToActionAt:(Line*)line {
+	// The parser has changed a presumed line element back into action/something else,
+	// but the Line element should still have the original string value intact.
+	
+	// The parser is way ahead of the textView here, so we need to take it into account with text ranges, as
+	// the last character has not been added into view yet. This signal has come right from parser level.
+	
+	[self.textView.textStorage replaceCharactersInRange:NSMakeRange(line.position, line.string.length - 1) withString:[line.string substringToIndex:line.string.length - 1]];
+}
+
+#pragma mark - Caret methods
+
 - (void)resetCaret {
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
@@ -2337,6 +2448,39 @@
         _italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:[self fontSize]];
     }
     return _italicCourier;
+}
+
+- (NSFont*)sectionFont
+{
+	if (!_sectionFont) {
+		_sectionFont = [NSFont boldSystemFontOfSize:17.0];
+	}
+	return _sectionFont;
+}
+
+- (NSFont*)sectionFontWithSize:(CGFloat)size
+{
+	// Init dictionary if it's unset
+	if (!_sectionFonts) _sectionFonts = [NSMutableDictionary dictionary];
+	
+	// We'll store fonts of varying sizes on the go, because why not?
+	// No, really, why shouldn't we?
+	NSString *sizeKey = [NSString stringWithFormat:@"%f", size];
+	if (!_sectionFonts[sizeKey]) {
+		[_sectionFonts setValue:[NSFont boldSystemFontOfSize:size] forKey:sizeKey];
+	}
+	
+	return (NSFont*)_sectionFonts[sizeKey];
+}
+
+- (NSFont*)synopsisFont
+{
+	if (!_synopsisFont) {
+		_synopsisFont = [NSFont systemFontOfSize:15.5];
+		NSFontManager *fontManager = [[NSFontManager alloc] init];
+		_synopsisFont = [fontManager convertFont:_synopsisFont toHaveTrait:NSFontItalicTrait];
+	}
+	return _synopsisFont;
 }
 
 // This is here for legacy reasons
@@ -2497,6 +2641,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 // Preprocessing was apparently a bottleneck. Redone in 1.1.0f
 - (NSString*) preprocessSceneNumbers
 {
+	// This is horrible shit and should be fixed ASAP
+	
 	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
 	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
 	NSMutableString *fullText = [NSMutableString stringWithString:@""];
@@ -2506,7 +2652,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// Make a copy of the array if this is called in a background thread
 	NSArray *lines = [NSArray arrayWithArray:[self.parser lines]];
 	for (Line *line in lines) {
-		NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet: NSCharacterSet.whitespaceCharacterSet];
+		NSString *cleanedLine = [line.cleanedString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 		
 		// If the heading already has a forced number, skip it
 		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
@@ -2844,7 +2990,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		} else {
 			// We need a bit different settings if the app is fullscreen
 			CGFloat width = ((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth * _magnification / 2) / _magnification;
-			[self.textView setTextContainerInset:NSMakeSize(width, TEXT_INSET_TOP)];
+			[self.textView setTextContainerInset:NSMakeSize(width, _textInsetY)];
 			[self updateSceneNumberLabels];
 		}
     } else {
@@ -2864,7 +3010,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		} else {
 			CGFloat width = (window.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
 			
-			[self.textView setTextContainerInset:NSMakeSize(width, TEXT_INSET_TOP)];
+			[self.textView setTextContainerInset:NSMakeSize(width, _textInsetY)];
 			[self updateSceneNumberLabels];
 		}
     }
@@ -2992,6 +3138,15 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if ([self selectedTabViewTab] != 0) {
 			return NO;
 		}
+	} else if ([menuItem.title isEqualToString:@"Typewriter Mode"]) {
+		if (self.typewriterMode) {
+			[menuItem setState:NSOnState];
+		} else {
+			[menuItem setState:NSOffState];
+		}
+		if ([self selectedTabViewTab] != 0) {
+			return NO;
+		}
 	} else if ([menuItem.title isEqualToString:@"Print Automatic Scene Numbers"]) {
 		if (self.printSceneNumbers) {
 			[menuItem setState:NSOnState];
@@ -3081,9 +3236,50 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return [(ApplicationDelegate *)[NSApp delegate] isDark];
 }
 
+// Typewriter mode
+- (IBAction)toggleTypewriterMode:(id)sender {
+	self.typewriterMode = !self.typewriterMode;
+	[[NSUserDefaults standardUserDefaults] setBool:self.typewriterMode forKey:TYPERWITER_KEY];
+	
+	[self updateLayout];
+}
+- (void)typewriterScroll {
+	if (self.textView.needsLayout) [self.textView layout];
+
+	// So, we'll try to center the caret.
+	// Trouble is, line heights get fucked up for some reason. This probably needs some sort of hack :-(
+	
+	NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:self.textView.selectedRange actualCharacterRange:nil];
+	NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
+
+	CGFloat scrollY = (rect.origin.y - self.fontSize / 2 - 10) * _magnification;
+	/*
+	// Fix some silliness
+	CGFloat boundsY = self.textClipView.bounds.size.height + self.textClipView.bounds.origin.y;
+	CGFloat maxY = self.textView.frame.size.height;
+	CGFloat pixelsToBottom = maxY - boundsY;
+	if (pixelsToBottom < self.fontSize * _magnification * 0.5 && pixelsToBottom > 0) {
+		scrollY -= 5 * _magnification;
+	}
+	NSLog(@"bounds - max = %f", maxY - boundsY);
+	*/
+	
+	// Calculate container height with insets
+	CGFloat containerHeight = [_textView.layoutManager usedRectForTextContainer:_textView.textContainer].size.height;
+	containerHeight = containerHeight * _magnification + _textInsetY * 2 * _magnification;
+		
+	CGFloat delta = fabs(scrollY - self.textClipView.bounds.origin.y);
+	
+	if (scrollY < containerHeight && delta > self.fontSize * _magnification) {
+		//scrollY = containerHeight - _textClipView.frame.size.height;
+		[[self.textClipView animator] setBoundsOrigin:NSMakePoint(0, scrollY)];
+	}
+}
+
+
 - (IBAction)toggleMatchParentheses:(id)sender
 {
-    NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
     
     for (Document* doc in openDocuments) {
         doc.matchParentheses = !doc.matchParentheses;
@@ -3236,14 +3432,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSMutableArray * scenes = [[NSMutableArray alloc] init];
 	for (OutlineScene * scene in [self.parser outline]) {
 		if (scene.type == heading) [scenes addObject:scene];
-		/*
-		// NOPE. Deprecated.
-		if ([scene.scenes count]) {
-			for (OutlineScene * subscene in scene.scenes) {
-				if (subscene.type == heading) [scenes addObject:subscene];
-			}
-		}
-		*/
 	}
 	
 	return scenes;
@@ -3664,6 +3852,14 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self moveString:textToMove withRange:range newRange:newRange];
 }
 
+/*
+ 
+ you say: it's gonna happen soon
+ well, when exactly do you mean????
+ see, I've already waited too long
+ and most of my life is gone
+ 
+ */
 
 #pragma mark - Outline/timeline context menu, including setting colors
 
@@ -4166,6 +4362,11 @@ static NSString *forceDualDialogueSymbol = @"^";
  
  I'm pretty sure that would be 100% faster.
  
+ 
+ ... update about a year later (2020-03):
+ The performance boost is marginal, if done using drawRect.
+ What we should do is use CALayer, but it's beyond my skill level & powers for now.
+ 
  */
 
 - (NSTextField *) createLabel: (OutlineScene *) scene {
@@ -4178,7 +4379,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		
 		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
 		NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-		rect.origin.y += TEXT_INSET_TOP;
+		rect.origin.y += _textInsetY;
 		rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
 		rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER - rect.size.width;
 	}
@@ -4196,8 +4397,10 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 
 /*
+ 
 // An alternative way of handling scene numbers.
 // Gives some performance advantage at times, but it's so insignificant that maybe it's not worth all the hassle.
+ 
 - (void)refreshSceneNumbers {
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	if (![[self.parser outline] count]) {
@@ -4272,7 +4475,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 				rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
 				rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width + 10;
 				
-				rect.origin.y += TEXT_INSET_TOP;
+				rect.origin.y += _textInsetY;
 
 				label.frame = rect;
 				[label setFont:self.courier];
@@ -4515,6 +4718,16 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	return length;
 }
+
+/*
+ 
+ nyt tulevaisuus
+ on musta aukko
+ nyt tulevaisuus
+ on musta aukko
+ 
+ */
+
 
 #pragma mark - TouchBar Timeline
 
@@ -4914,6 +5127,61 @@ triangle walks
 	return page;
 }
 
+/*
+ 
+ mä haluun sut edelleen
+ haluun sun kanssa perheen
+ haluun nähdä miten lapset kasvaa
+ haluun kukkii ja rakkautta
+ 
+ haluun kasvaa sun mukana
+ haluun rypistyy ja harmaantua
+ haluun uupuu ja kaljuuntua
+ ja pysyy sun rinnalla
+ 
+ mut et voi lyödä mua enää
+ et saa lyödä mua enää
+ et uhata polttaa mun kotia
+ et enää nimitellä ja haukkua
+ 
+ koska haluun sut edelleen
+ haluun sun kanssa perheen
+ haluun herätä sun läheltä
+ sanoo etten mee pois ikinä
+ 
+ keitän sulle aamuisin kahvia
+ hoidan aina meidän lapsia
+ pidän huolta niistä kasveista
+ kun sä oot taas matkoilla
+ 
+ sanon joka päivä et oot ihana
+ teen sulle upeita ruokia
+ mut et saa heittää niitä lattioille
+ etkä kuumaa kahvii mun kasvoille...
+ 
+ et saa lyödä mua enää
+ et saa lyödä mua enää
+ et tuhota mun kotia
+ ei enää huutoo ja uhkailua
+ 
+ mut mä haluun sut koska
+ tiedän mitä oot sisältä
+ haluut vaan kontrollii, haluut varmuutta
+ ja lupaan auttaa sua aina ja ihan kaikessa
+ 
+ mut ei väkivaltaa enää
+ ei väkivaltaa enää
+ ehkä seuraavan kerran
+ et nää mua enää ikinä
+ 
+ ja mä odotan
+ odotan
+ odotan
+ niin kauan kuin haluat
+ 
+ 
+ */
+
 #pragma mark - Title page editor
 
 - (IBAction)editTitlePage:(id)sender {
@@ -5026,8 +5294,11 @@ triangle walks
 
 		[self replaceString:oldTitlePage withString:titlePage atIndex:0];
 	}
-	
 }
+
+/*
+	
+ */
 
 #pragma mark - Timer
 

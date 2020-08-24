@@ -11,7 +11,16 @@
 #import "OutlineScene.h"
 @class OutlineScene;
 
+@protocol ContinuousFountainParserDelegate <NSObject>
+
+- (void)headingChangedToActionAt:(Line*)line;
+
+@end
+
 @interface ContinousFountainParser : NSObject
+// A new structure to avoid having thousands of loopbacks & recursion.
+// Slowly being implemented into the code.
+@property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
 
 @property (nonatomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
 @property (nonatomic) NSMutableArray *changedIndices; //Stores every line that needs to be formatted according to the type
@@ -27,6 +36,7 @@
 - (void)parseText:(NSString*)text;
 - (void)resetParsing;
 - (void)createOutline;
+- (void)ensurePositions;
 
 // Parselinetype is available for some testing
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive;

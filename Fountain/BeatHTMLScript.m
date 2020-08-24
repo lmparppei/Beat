@@ -473,7 +473,7 @@
 				[text appendFormat:@"<span class='scene-number-right'>%@</span>", line.sceneNumber];
             }
             else {
-                [text appendString:line.string];
+				[text appendString:line.cleanedString];
             }
 			
 			// Remove any formatting symbols
@@ -528,10 +528,11 @@
 				} else {
 					if (beginBlock) {
 						// Begin new block
-						[body appendFormat:@"<p class='%@%@'>%@<br>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
+						[body appendFormat:@"<p class='%@%@'>%@<br>", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
 					} else {
 						// Continue the block
-						[body appendFormat:@"%@<br>\n", text];
+						// note: we can't use \n after the lines to make it more easy read, because we want to preserve the white space
+						[body appendFormat:@"%@<br>", text];
 					}
 				}
 			} else {

@@ -530,10 +530,10 @@
 				} else {
 					if (beginBlock) {
 						// Begin new block
-						[body appendFormat:@"<p class='%@%@'>%@<br>\n", [self htmlClassForType:element.elementType], additionalClasses, text];
+						[body appendFormat:@"<p class='%@%@'>%@<br>", [self htmlClassForType:element.elementType], additionalClasses, text];
 					} else {
 						// Continue the block
-						[body appendFormat:@"%@<br>\n", text];
+						[body appendFormat:@"%@<br>", text];
 					}
 				}
 			} else {
