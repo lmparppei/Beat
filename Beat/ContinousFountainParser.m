@@ -35,6 +35,11 @@
 @property (nonatomic) Line *editedLine;
 @property (nonatomic) Line *lastEditedLine;
 @property (nonatomic) NSUInteger editedIndex;
+
+// Title page parsing
+@property (nonatomic) NSString *openTitlePageKey;
+@property (nonatomic) NSString *previousTitlePageKey;
+
 @end
 
 @implementation ContinousFountainParser
@@ -537,9 +542,9 @@
         }
     }
     
-    //Correct type on this line
     Line* currentLine = self.lines[index];
 	
+	//Correct type on this line
     LineType oldType = currentLine.type;
     bool oldOmitOut = currentLine.omitOut;
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
@@ -550,18 +555,12 @@
     }
     
     [self.changedIndices addObject:@(index)];
-    
+    	
     if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut) {
         //If there is a next element, check if it might need a reparse because of a change in type or omit out
         if (index < [self.lines count] - 1) {
             Line* nextLine = self.lines[index+1];
-            if (currentLine.type == titlePageTitle ||       //if the line became a title page,
-                currentLine.type == titlePageCredit ||      //it may cause the next one to be
-                currentLine.type == titlePageAuthor ||      //a title page
-                currentLine.type == titlePageDraftDate ||
-                currentLine.type == titlePageContact ||
-                currentLine.type == titlePageSource ||
-                currentLine.type == titlePageUnknown ||
+			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
                 currentLine.type == section ||
                 currentLine.type == synopse ||
                 currentLine.type == character ||            //if the line became anythign to
@@ -679,7 +678,16 @@
         }
 		
 		line.color = [self colorForHeading:line];
-    }	
+    }
+	
+	if (line.isTitlePage) {
+		if ([line.string rangeOfString:@":"].location != NSNotFound && line.string.length > 0) {
+			// If the title doesn't begin with \t or space, format it as key name	
+			if ([line.string characterAtIndex:0] != ' ' &&
+				[line.string characterAtIndex:0] != '\t' ) line.titleRange = NSMakeRange(0, [line.string rangeOfString:@":"].location + 1);
+			else line.titleRange = NSMakeRange(0, 0);
+		}
+	}
 }
 
 /*
@@ -860,14 +868,16 @@ and incomprehensible system of recursion.
 			NSString* key = [[string substringToIndex:firstColonIndex] lowercaseString];
 			
 			NSString* value = @"";
+			// Trim the value
 			if (string.length > firstColonIndex + 1) value = [string substringFromIndex:firstColonIndex + 1];
+			value = [value stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 			
 			// Store title page data
 			NSDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] };
 			[_titlePage addObject:titlePageData];
 			
-			// Set this key as open
-			if (value.length < 1) _openTitlePageKey = key; else _openTitlePageKey = nil;
+			// Set this key as open (in case there are additional title page lines)
+			_openTitlePageKey = key;
 			
 			if ([key isEqualToString:@"title"]) {
 				return titlePageTitle;

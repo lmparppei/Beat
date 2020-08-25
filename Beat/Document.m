@@ -2093,25 +2093,17 @@
 		if (line.type == titlePageTitle  ||
 			line.type == titlePageAuthor ||
 			line.type == titlePageCredit ||
-			line.type == titlePageSource) {
+			line.type == titlePageSource ||
 			
-			// [paragraphStyle setAlignment:NSTextAlignmentCenter];
+			line.type == titlePageUnknown ||
+			line.type == titlePageContact ||
+			line.type == titlePageDraftDate) {
 			
 			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
 			[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			
-			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		} else if (line.type == titlePageUnknown ||
-				   line.type == titlePageContact ||
-				   line.type == titlePageDraftDate) {
-			
-			//NSColor* commentColor = [self.themeManager currentCommentColor];
-			//[attributes setObject:commentColor forKey:NSForegroundColorAttributeName];
-			
-			/* WORK IN PROGRESS */
-			// We'll indent title page blocks a bit more
-			
+			// Indent lines following a first-level title page element a bit more
 			if ([line.string rangeOfString:@":"].location != NSNotFound) {
 				[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
 				[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
@@ -2120,9 +2112,8 @@
 				[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * DOCUMENT_WIDTH];
 			}
 
-			
 			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-
+			
 		} else if (line.type == transitionLine) {
 			// Transitions
 			[paragraphStyle setAlignment:NSTextAlignmentRight];
@@ -2342,6 +2333,11 @@
 							range:[self globalRangeFromLocalRange:&closeSymbolRange
 												 inLineAtPosition:line.position]];
 	}];
+	
+	if (line.isTitlePage && line.titleRange.length > 0) {
+		NSRange titleRange = line.titleRange;
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentCommentColor range:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
+	}
 
 	if (!fontOnly) {
 		[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -4172,8 +4168,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	while (lineIndex < [[self.parser lines] count]) {
 		// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading
 		Line* snippetLine = [[self.parser lines] objectAtIndex:lineIndex];
-		if (snippetLine.type != heading && snippetLine.type != synopse && snippetLine.type != section && !snippetLine.omited) {
-			snippet = [[[self.parser lines] objectAtIndex:lineIndex] string];
+		if (snippetLine.type != heading && snippetLine.type != synopse && snippetLine.type != section && !(snippetLine.omited && !snippetLine.note)) {
+			snippet = [[[self.parser lines] objectAtIndex:lineIndex] stripFormattingCharacters];
 			break;
 		}
 		lineIndex++;

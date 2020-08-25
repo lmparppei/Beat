@@ -9,6 +9,13 @@
 #import "Line.h"
 #import "FNElement.h"
 #import "RegExCategories.h"
+#import "FountainRegexes.h"
+
+#define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]"]
+
+#define ITALIC_PATTERN @"*"
+#define BOLD_PATTERN @"**"
+#define UNDERLINE_PATTERN @"_"
 
 @implementation Line
 
@@ -93,6 +100,17 @@
 	}
 }
 
+- (bool)note {
+	// This should be used only in conjuction with .omited to check that, yeah, it's omited but it's a note:
+	// if (line.omited && !line.note) ...
+	if (self.string.length >= 2) {
+		if ([[self.string substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"[["]) return YES;
+		else return NO;
+	} else {
+		return NO;
+	}
+}
+
 - (bool)centered {
 	if (self.string.length < 2) return NO;
 
@@ -114,8 +132,6 @@
 	[indexes addIndexes:self.noteRanges];
 	
 	[indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSLog(@"range: %lu -> %lu", range.location, range.length);
-		
 		if (range.location - offset + range.length > string.length) {
 			range = NSMakeRange(range.location, string.length - range.location - offset);
 		}
@@ -170,6 +186,27 @@
 	
 	return string;
 }
+
+- (NSString*)stripFormattingCharacters {
+	NSMutableString *string = [NSMutableString stringWithString:self.string];
+
+	// Remove force characters
+	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
+		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
+		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
+ 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
+		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
+		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
+	}
+	
+	// Replace formatting characters
+	for (NSString* formattingCharacters in FORMATTING_CHARACTERS) {
+		[string setString:[string stringByReplacingOccurrencesOfString:formattingCharacters withString:@""]];
+	}
+	
+	return string;
+}
+
 - (NSString*)stripSceneNumber {
 	NSString *result = [self.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, self.string.length)];
 	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -228,9 +265,14 @@
 }
 
 - (bool)isTitlePage {
-	NSArray *titlePageElements = @[@"Title Page Title", @"Title Page Author", @"Title Page Credit", @"Title Page Source", @"Title Page Contact", @"Title Page Draft Date", @"Title Page Unknown"];
-	
-	if ([titlePageElements containsObject:self.typeAsString]) return YES; else return NO;
+	if (self.type == titlePageTitle ||
+		self.type == titlePageCredit ||
+		self.type == titlePageAuthor ||
+		self.type == titlePageDraftDate ||
+		self.type == titlePageContact ||
+		self.type == titlePageSource ||
+		self.type == titlePageUnknown) return YES;
+	else return NO;
 }
 - (bool)isInvisible {
 	if (self.omited ||
@@ -242,7 +284,6 @@
 -(bool)isBoldedAt:(NSInteger)index {
 	__block bool inRange = NO;
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSLog(@"range: %lu / %lu", range.location, range.length);
 		if (NSLocationInRange(index, range)) inRange = YES;
 	}];
 	
@@ -266,10 +307,11 @@
 	return inRange;
 }
 
-// Helper method which returns a Fountain script element
-// This bridges ContinuousFountainParser with FNParser.
-// Will be deprecated once modules for printing & pagination have been replaced with custom Beat stuff (WIP)
 - (FNElement*)fountainElement {
+	// Helper method which returns a Fountain script element
+	// This bridges ContinuousFountainParser with FNParser.
+	// Will be deprecated once modules for printing & pagination have been replaced with custom Beat stuff (WIP)
+
 	// Return empty object for title page data
 	if ([self isTitlePage]) return nil;
 	
@@ -293,11 +335,12 @@
 	return element;
 }
 
-// This returns the type as an FNElement compliant string,
-// for convoluted backwards compatibility reasons :----)
 - (NSString*)typeAsFountainString
 {
-    switch (self.type) {
+	// This returns the type as an FNElement compliant string,
+	// for convoluted backwards compatibility reasons :----)
+
+	switch (self.type) {
         case empty:
             return @"Empty";
         case section:

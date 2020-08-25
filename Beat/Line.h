@@ -53,6 +53,7 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* underlinedRanges;
 @property NSMutableIndexSet* noteRanges;
 @property NSMutableIndexSet* omitedRanges;
+@property NSRange titleRange;
 @property bool omitIn; //wether the line terminates an unfinished omit
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
 
@@ -64,6 +65,7 @@ typedef enum : NSUInteger {
 - (NSString*)typeAsFountainString;
 - (NSString*)cleanedString;
 - (bool)omited;
+- (bool)note;
 - (bool)centered;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
@@ -86,6 +88,7 @@ typedef enum : NSUInteger {
 - (bool)isDualDialogueElement;
 
 - (NSString*)stripSceneNumber;
+- (NSString*)stripFormattingCharacters;
 
 @property bool isSplitParagraph;
 @property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing

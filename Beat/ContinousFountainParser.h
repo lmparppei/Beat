@@ -27,7 +27,6 @@
 @property (nonatomic) NSMutableArray *outline;
 @property (nonatomic) NSMutableArray *titlePage;
 @property (nonatomic) bool hasTitlePage;
-@property (nonatomic) NSString *openTitlePageKey;
 
 //Parsing methods
 - (ContinousFountainParser*)initWithString:(NSString*)string;
