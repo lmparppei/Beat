@@ -13,8 +13,9 @@
 
 @protocol ContinuousFountainParserDelegate <NSObject>
 
+- (NSRange)selectedRange;
 - (void)headingChangedToActionAt:(Line*)line;
-
+- (void)actionChangedToHeadingAt:(Line*)line;
 @end
 
 @interface ContinousFountainParser : NSObject
@@ -26,6 +27,7 @@
 @property (nonatomic) NSMutableArray *changedIndices; //Stores every line that needs to be formatted according to the type
 @property (nonatomic) NSMutableArray *outline;
 @property (nonatomic) NSMutableArray *titlePage;
+@property (nonatomic) NSMutableArray *storylines;
 @property (nonatomic) bool hasTitlePage;
 
 //Parsing methods
@@ -49,6 +51,7 @@
 - (NSString*)sceneNumberAtLine:(NSUInteger)line;
 
 //Convenience Methods for Other Stuff
+- (Line*)lineAtPosition:(NSInteger)position;
 - (NSString*)cleanedString;
 
 //Convenience Methods for Outlineview data

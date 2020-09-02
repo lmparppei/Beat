@@ -1,0 +1,47 @@
+Title: Outlining Tutorial
+Credit: 
+Author: Lauri-Matti Parppei
+Source: 
+Draft date: 29.8.2020
+Contact:
+beat@kapitan.fi
+www.kapitan.fi/beat/
+
+
+# Outlining Tutorial
+
+/* This is a quick tutorial on how to quickly outline stories in Beat, introducing you to the more advanced features. */
+
+INT. LIBRARY - MORNING
+
+By default, the index card view shows an automatically created snippet. It's usually the first action paragraph in the scene. It's not ideal when at the outlining stage, so it's easy to set up your own index card content.
+
+
+INT. SCHOOL ROOM - DAY
+
+= A synopsis line will be displayed as the scene's content in the index card view. These lines don't print out in the final screenplay.
+
+
+EXT. SCHOOL YARD - DAY
+
+[[You can also use a note, whichever you prefer.]]
+
+
+EXT. BEACH - NIGHT [[COLOR RED]]
+
+= Setting a color for your scenes makes it easier to distinguish them from each other. Colors can be used to follow storylines, or just as markers. For example: Does a scene need work, is it maybe unimportant, or does it mark a big change for a character?
+
+Did you know that you can filter scenes by their color in the **Outline View** (⌘D)?
+
+
+INT. BEDROOM - NIGHT [[STORYLINE MAIN]] [[COLOR BLUE]]
+
+The storyline feature is still a work-in-progress, but you can test it out manually. 
+
+
+INT. BEDROOM - MORNING [[STORYLINE MAIN, SUBPLOT]]
+
+Scenes can belong to multiple storylines, too. They line out nicely in the Timeline View.
+
+
+

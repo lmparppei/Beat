@@ -31,6 +31,7 @@
 #import "FNScript.h"
 #import "FNPaginator.h"
 #import "FNHTMLScript.h"
+#import "BeatPreview.h"
 #import "FNElement.h"
 @interface PrintView () <WebFrameLoadDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
@@ -54,6 +55,7 @@
 		FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:document print:true];
 		htmlScript.forRendering = @YES;
 		
+		NSString *htmlString = [BeatPreview createPrint:document.preprocessedText document:document];
 		CGSize paperSize = CGSizeMake(document.printInfo.paperSize.width, document.printInfo.paperSize.height);
 		
 		WebView *pageWebView = [[WebView alloc] init];
@@ -63,7 +65,8 @@
 		
 		_webView = pageWebView;
 		
-		[pageWebView.mainFrame loadHTMLString:[htmlScript html] baseURL:nil];
+		//[pageWebView.mainFrame loadHTMLString:[htmlScript html] baseURL:nil];
+		[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
 		//pageWebView.frame = NSMakeRect(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);
 		
 		self.frame = CGRectMake(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);

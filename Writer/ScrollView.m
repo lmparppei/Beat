@@ -72,6 +72,8 @@
 }
 
 - (void)mouseMoved:(NSEvent *)event {
+	[super mouseMoved:event];
+	
 	[self showButtons];
 	[_mouseMoveTimer invalidate];
 	

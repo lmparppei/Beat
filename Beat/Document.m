@@ -38,6 +38,8 @@
  
  Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
  
+ Still, this is an anti-capitalist venture. There is no ethical consumption under capitalism.
+ 
  Anyway, may this be of some use to you, dear friend.
  The abandoned git repository will be my monument when I'm gone.
  
@@ -67,6 +69,7 @@
  
 */
 
+#import <Python/Python.h>
 #import <WebKit/WebKit.h>
 #import <Foundation/Foundation.h>
 #import "Document.h"
@@ -171,7 +174,7 @@
 //    allowing SLAVE LABOUR in your subcontracting factories, you fucking
 //    pieces of human garbage!!! Go fuck yourself, Apple. Fucking evil corp!!!
 
-//    So, on to the code:
+//    So, back to the code:
 
 @property (nonatomic, weak) IBOutlet ColorCheckbox *redCheck;
 @property (nonatomic, weak) IBOutlet ColorCheckbox *blueCheck;
@@ -590,6 +593,10 @@
 	
 	// Maybe that's not required anymore?
 	[self afterLoad];
+}
+
+-(void)mouseMove:(NSEvent*)event {
+	NSLog(@"mouse move");
 }
 -(void)afterLoad {
 	dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -1045,7 +1052,7 @@
 	
 	for (OutlineScene *scene in [self getOutlineItems]) {
 		NSRange range = NSMakeRange(scene.sceneStart, scene.sceneLength);
-		
+
 		// Found the current scene. Let's cache the result just in case
 		if (NSLocationInRange(position, range)) {
 			_currentScene = scene;
@@ -1074,9 +1081,10 @@
 }
 
 - (OutlineScene*)getPreviousScene {
-	if ([_flatOutline count] == 0) {
+	// Build outline if needed
+	if (_flatOutline.count == 0) {
 		_flatOutline = [self getOutlineItems];
-		if ([_flatOutline count] == 0) return nil;
+		if (_flatOutline.count == 0) return nil;
 	}
 	
 	_currentScene = [self getCurrentScene];
@@ -1091,17 +1099,23 @@
 	}
 }
 - (OutlineScene*)getNextScene {
-	if ([_flatOutline count] == 0) {
+	// Build outline if needed
+	if (_flatOutline.count == 0) {
 		_flatOutline = [self getOutlineItems];
-		if ([_flatOutline count] == 0) return nil;
+		if (_flatOutline.count == 0) return nil;
 	}
 	
-	_currentScene = [self getCurrentScene];
-	if (!_currentScene) return nil;
+	NSInteger position = self.selectedRange.location;
+	_currentScene = [self getCurrentSceneWithPosition:position];
 
+	if (_currentScene == nil) return nil;
+	
+	// If we are at the beginning of the script, return the first scene
+	if (!_currentScene && position < [(OutlineScene*)[_flatOutline firstObject] sceneStart]) return [_flatOutline firstObject];
+	
 	NSInteger index = [_flatOutline indexOfObject:_currentScene];
-
-	if (index >= 0 && (index + 1) < [_flatOutline count]) {
+	
+	if (index >= 0 && index + 1 < _flatOutline.count) {
 		return [_flatOutline objectAtIndex:index + 1];
 	} else {
 		return nil;
@@ -1230,9 +1244,7 @@
 	// Implementing some undoing weirdness, which works, kind-of.
 	
 	if (replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
-		
-		if ([self.undoManager isRedoing]) NSLog(@"redoing heading: %@", replacementString);
-		
+				
 		Line * affectedLine = [self getLineAt:affectedCharRange.location];
 
 		if (affectedLine.type == character && _characterInput && affectedLine.string.length == 0) {
@@ -1244,14 +1256,17 @@
 		
 		if (otherLine.string.length > 0) {
 			if (affectedLine.type == heading && otherLine.type != heading) {
+				if (self.undoManager.isRedoing) NSLog(@"Redoing");
+				if (self.undoManager.isUndoing) NSLog(@"Undoing");
+				
 				__block NSString *undoString = [otherLine.string stringByAppendingString:@"\n"];
 				NSLog(@"Affected: %@ / undo: %@", affectedLine.string, undoString);
 				
 				NSInteger position = otherLine.position;
-				NSInteger length = undoString.length + 1;
+				NSInteger length = undoString.length;
 				
 				if (position + length > [self getText].length) {
-					NSLog(@"attempting to fix");
+					NSLog(@"attempting to fix length");
 					length = undoString.length;
 				}
 				
@@ -1276,11 +1291,9 @@
         if (affectedCharRange.length == 0) {
             if ([replacementString isEqualToString:@"("]) {
 				if (_currentLine.type != character) {
-					NSLog(@"jeps");
 					[self addString:@")" atIndex:affectedCharRange.location];
 					[self.textView setSelectedRange:affectedCharRange];
 				}
-                
             } else if ([replacementString isEqualToString:@"["]) {
                 if (affectedCharRange.location != 0) {
                     unichar characterBefore = [[self.textView string] characterAtIndex:affectedCharRange.location-1];
@@ -2373,12 +2386,22 @@
 		if (line.numberOfPreceedingFormattingCharacters > 0 && line.string.length >= line.numberOfPreceedingFormattingCharacters) {
 			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
 								range:NSMakeRange(line.position, line.numberOfPreceedingFormattingCharacters)];
+		} else if (line.type == centered && line.string.length > 1) {
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+			range:NSMakeRange(line.position, 1)];
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+								range:NSMakeRange(line.position + line.string.length - 1, 1)];
 		}
 	}
 }
 
 #pragma mark - Parser delegation
 
+// WIP: This behaviour should be heavily expanded
+
+- (NSRange)selectedRange {
+	return self.textView.selectedRange;
+}
 
 - (void)headingChangedToActionAt:(Line*)line {
 	// The parser has changed a presumed line element back into action/something else,
@@ -2386,8 +2409,20 @@
 	
 	// The parser is way ahead of the textView here, so we need to take it into account with text ranges, as
 	// the last character has not been added into view yet. This signal has come right from parser level.
-	
 	[self.textView.textStorage replaceCharactersInRange:NSMakeRange(line.position, line.string.length - 1) withString:[line.string substringToIndex:line.string.length - 1]];
+}
+
+- (void)actionChangedToHeadingAt:(Line*)line {
+	// The parser changed a line with some text already on it into a scene heading, for example by by typing int. at the start of a line.
+	NSRange range = NSMakeRange(line.position, line.string.length - 1);
+	NSString *string = [self.textView.textStorage.string substringWithRange:range];
+	
+	[self.undoManager beginUndoGrouping];
+	[self.undoManager registerUndoWithTarget:self handler:^(id _Nonnull target) {
+		[self replaceCharactersInRange:range withString:string];
+		[self.textView setSelectedRange:NSMakeRange(range.location, 0)];
+	}];
+	[self.undoManager endUndoGrouping];
 }
 
 #pragma mark - Caret methods
@@ -2648,7 +2683,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// Make a copy of the array if this is called in a background thread
 	NSArray *lines = [NSArray arrayWithArray:[self.parser lines]];
 	for (Line *line in lines) {
-		NSString *cleanedLine = [line.cleanedString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+		//NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+		NSString *cleanedLine = [NSString stringWithString:line.string];
 		
 		// If the heading already has a forced number, skip it
 		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
@@ -2966,15 +3002,21 @@ static NSString *forceDualDialogueSymbol = @"^";
 		NSRect newFrame;
 		
 		if (![self isFullscreen]) {
-			
 			CGFloat newWidth = window.frame.size.width + TREE_VIEW_WIDTH + offset;
 			CGFloat newX = window.frame.origin.x - TREE_VIEW_WIDTH / 2;
 			CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
 			
 			// Ensure the main document won't go out of screen bounds when opening the sidebar
+			if (newWidth > screenWidth) {
+				newWidth = screenWidth * .9;
+				newX = screenWidth / 2 - newWidth / 2;
+			}
+			
 			if (newX + newWidth > screenWidth) {
 				newX = newX - (newX + newWidth - screenWidth);
-			} else if (newX < 0) {
+			}
+			
+			if (newX < 0) {
 				newX = 0;
 			}
 			
@@ -4076,7 +4118,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 // Some day, we'll move all this stuff to another file. It won't be soon.
-// (Thanks, past me. It's happening now.)
+// (Thanks, past me. It's happening now. Slowly.)
 
 - (void) setupCards {
 	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
@@ -4106,7 +4148,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (NSArray*)getCards {
 	NSMutableArray *array = [NSMutableArray array];
 	for (OutlineScene * scene in [self getOutlineItems]) {
-		if (!scene.omited) [array addObject: [self getJSONCard:scene selected:[self isSceneSelected:scene]]];
+		if (!scene.omited && scene.type != synopse) [array addObject: [self getJSONCard:scene selected:[self isSceneSelected:scene]]];
 	}
 	return [NSArray arrayWithArray:array];
 }
@@ -4146,13 +4188,15 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (NSArray *) getSceneCards {
 	NSMutableArray *sceneCards = [NSMutableArray array];
 	for (OutlineScene *scene in [self getOutlineItems]) {
-		NSDictionary *sceneCard = @{
-			@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
-			@"title": (scene.string) ? scene.string : @"",
-			@"snippet": [self snippet:scene],
-			@"type": [scene.line typeAsString]
-		};
-		[sceneCards addObject:sceneCard];
+		if (scene.line.type != synopse) {
+			NSDictionary *sceneCard = @{
+				@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
+				@"title": (scene.string) ? scene.string : @"",
+				@"snippet": [self snippet:scene],
+				@"type": [scene.line typeAsString]
+			};
+			[sceneCards addObject:sceneCard];
+		}
 	}
 	
 	return sceneCards;
@@ -4165,10 +4209,12 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSString * snippet = @"";
 	
 	// Get first paragraph
+	// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading.
+	// Also, we'll use SYNOPSIS line as the snippet in case it's the first line
 	while (lineIndex < [[self.parser lines] count]) {
-		// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading
+			
 		Line* snippetLine = [[self.parser lines] objectAtIndex:lineIndex];
-		if (snippetLine.type != heading && snippetLine.type != synopse && snippetLine.type != section && !(snippetLine.omited && !snippetLine.note)) {
+		if (snippetLine.type != heading && snippetLine.type != section && !(snippetLine.omited && !snippetLine.note)) {
 			snippet = [[[self.parser lines] objectAtIndex:lineIndex] stripFormattingCharacters];
 			break;
 		}
@@ -4391,17 +4437,15 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return label;
 }
 
-
-/*
  
-// An alternative way of handling scene numbers.
+// An alternative way of handling scene numbers, again.
 // Gives some performance advantage at times, but it's so insignificant that maybe it's not worth all the hassle.
- 
+// The idea is to use CATextLayer instead of the subviews
+ /*
+
 - (void)refreshSceneNumbers {
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
-	if (![[self.parser outline] count]) {
-		[self.parser createOutline];
-	}
+	if (self.parser.outline.count == 0)[self.parser createOutline];
 	
 	NSMutableArray *sceneNumbers = [NSMutableArray array];
 	for (OutlineScene * scene in [self getScenes]) {
@@ -4428,9 +4472,13 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	self.textView.sceneNumbers = sceneNumbers;
 }
- */
+*/
+ 
 
 - (void) updateSceneNumberLabels {
+	// New way
+	// [self refreshSceneNumbers];
+	
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	
 	if (![[self.parser outline] count]) {
@@ -4497,12 +4545,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 					[self.sceneNumberLabels removeObject:label];
 					[label removeFromSuperview];
 				}
-				
 			}
 		}
 	}
-	
-	return;
 }
 - (void) createAllLabels {
 	for (OutlineScene * scene in [self getOutlineItems]) {
@@ -4529,6 +4574,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 #pragma mark - Timeline + chronometry
 
 /*
+ // WIP: MAKE A CLASS & DELEGATE
  
  This timeline uses JavaScript. I was very inexperienced while making this, so yeah.
  Obviously, it would be faster, safer and actually easier to build a NSView for displaying
@@ -4642,6 +4688,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		});
 	});
 }
+// MAKE CATEGORY
 - (NSString*)fixQuotations: (NSString*)string {
 	return [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
 }
@@ -4652,6 +4699,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	});
 }
 
+// WIP: MOVE THIS SOMEWHERE
 - (NSInteger)chronometryFor:(OutlineScene*)scene {
 	// Arbitrary values
 	NSInteger charsPerLine = 57;

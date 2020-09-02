@@ -216,7 +216,7 @@
                                                         <outlet property="timelineButton" destination="SU7-uh-HJD" id="cka-oG-7P8"/>
                                                     </connections>
                                                 </scrollView>
-                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="hjj-OY-sw5" customClass="BeatTimerView">
+                                                <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hjj-OY-sw5" customClass="BeatTimerView">
                                                     <rect key="frame" x="725" y="15" width="30" height="30"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="30" id="96V-gq-ibs"/>
@@ -485,13 +485,13 @@
                                                         <constraint firstAttribute="height" constant="75" id="kY3-98-q76"/>
                                                     </constraints>
                                                 </box>
-                                                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="27" horizontalPageScroll="10" verticalLineScroll="27" verticalPageScroll="10" hasHorizontalScroller="NO" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
+                                                <scrollView appearanceType="darkAqua" borderType="none" autohidesScrollers="YES" horizontalLineScroll="27" horizontalPageScroll="10" verticalLineScroll="27" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
                                                     <rect key="frame" x="0.0" y="110" width="330" height="431"/>
                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                         <rect key="frame" x="0.0" y="0.0" width="330" height="431"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
-                                                            <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="16" indentationPerLevel="2" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
+                                                            <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="16" indentationPerLevel="2" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                 <rect key="frame" x="0.0" y="0.0" width="330" height="431"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <size key="intercellSpacing" width="0.0" height="11"/>
@@ -523,11 +523,11 @@
                                                         <edgeInsets key="contentInsets" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
                                                     </clipView>
                                                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="588-za-5AR">
-                                                        <rect key="frame" x="-100" y="-100" width="238" height="15"/>
+                                                        <rect key="frame" x="-100" y="-100" width="330" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="xfH-R6-4X6">
-                                                        <rect key="frame" x="-100" y="-100" width="15" height="102"/>
+                                                        <rect key="frame" x="314" y="0.0" width="16" height="431"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                 </scrollView>

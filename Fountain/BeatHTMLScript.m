@@ -390,14 +390,15 @@
 		
         if (self.customPage) {
             if ([self.customPage integerValue] == 0) {
-                if ([self.forRendering boolValue]) {
+				if (self.print) {
                     [body appendFormat:@"<p class='page-break-render'></p>\n"];
                 } else {
                     [body appendFormat:@"<p class='page-break'></p>\n"];
                 }
             } else {
-                if ([self.forRendering boolValue]) {
+                if (self.print) {
 					// I don't understand this part. For some reason certain elements are cut off the page and have a random page number there when rendering. So, as a rational and solution-oriented person, I just removed the page number altogether if this happens.
+					// - Lauri-Matti
 					if (index < 2) {
                     	[body appendFormat:@"<p class='page-break-render'>%d.</p>\n", [self.customPage intValue]];
 					}
@@ -406,7 +407,7 @@
                 }
             }
         } else {
-            if ([self.forRendering boolValue]) {
+            if (self.print) {
                 [body appendFormat:@"<p class='page-break-render'>%d.</p>\n", (int)pageIndex+1];
             } else {
                 [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
@@ -416,6 +417,7 @@
 		// We need to catch lyrics not to make them fill up a paragraph
 		bool isLyrics = false;
 		
+	
         for (Line *line in elementsOnPage) {
 			bool beginBlock = false;
 			
@@ -483,7 +485,7 @@
             
 			if (line.type == heading) {
                 [text setString:[text replace:RX(@"^\\.") with:@""]];
-				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
+				if (!_print) [text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
             }
             if (line.type == character) {
 				[text setString:[text replace:RX(@"^@") with:@""]];
@@ -516,7 +518,7 @@
             
             if (![text isEqualToString:@""]) {
                 NSMutableString *additionalClasses = [NSMutableString string];
-				if (line.centered) {
+				if (line.type == centered) {
                     [additionalClasses appendString:@" center"];
                 }
 				if (elementCount == 0) [additionalClasses appendString:@" first"];

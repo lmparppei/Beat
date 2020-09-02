@@ -12,11 +12,8 @@
  A pagination class for removing the FNElement layer altogether.
  This is very loosely based on the original FNPaginator code, with heavy
  modifications to the whole logic behind it, and rewritten to use the
- Line class driving ContinuousFountainParser. The implementation (still in use)
- leans on converting Line to FNElement.
- 
- To get this into production app still needs rewriting FNHTMLScript to support Beat.
- 
+ Line class driving ContinuousFountainParser.
+  
  Original Fountain repository pagination code was totally convoluted and had
  many obvious bugs and stuff that really didn't work in many places.
  I went out of my way to make my own pagination engine, just to end up with
@@ -32,16 +29,16 @@
  intrigued by, and probably it makes it less likely that I'll get dementia or
  other memory-related illness later in life. I don't know.
  
- The current iteration has live pagination stuff built in. The idea is to have
- the class be retained, and to only paginate from changed indices. I've made
- some experiments to allow that, but for now it does not work at all.
+ The current iteration has live pagination stuff built in. The goal is to have
+ the class only paginate from changed indices. I've made some experiments to allow
+ that, but for now it does not work at all.
  
  This might have been pretty unhelpful for anyone stumbling upon this file some day.
  Try to make something out of it.
 
  
- "Remember the flight
- the bird is mortal"
+ Remember the flight
+ the bird may die
  (Forough Farrokhzad)
  
  */
@@ -492,6 +489,10 @@ That you have escaped.
 							}
 						}
 						
+						// Trim split text
+						retain = [retain stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+						split = [split stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+						
 						// Let's create character indexes for these virtual elements, too
 						Line *prePageBreak = [Line withString:retain type:action];
 						prePageBreak.position = spillerElement.position;
@@ -617,6 +618,10 @@ That you have escaped.
 									split = [split stringByAppendingFormat:@" %@", sentence];
 								}
 							}
+							
+							// Trim split text
+							retain = [retain stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+							split = [split stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 							
 							// If we have something to retain, do it, otherwise just break to next page
 							if ([retain length] > 0) {

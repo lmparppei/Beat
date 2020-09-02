@@ -122,7 +122,60 @@
 - (NSString*)cleanedString {
 	// Return empty string for invisible blocks
 	if (self.type == section || self.type == synopse || self.omited) return @"";
+		
+	NSMutableString *string = [NSMutableString stringWithString:[self stripInvisible]];
 	
+	// Remove markup characters
+	if (self.string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
+		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
+		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
+ 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
+		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
+		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
+	}
+
+	if (self.type == centered) {
+		// Let's not clean any formatting characters in case they are cleaned already.
+		if (self.string.length > 0 && [string characterAtIndex:0] == '>') {
+			string = [NSMutableString stringWithString:[string substringFromIndex:1]];
+			string = [NSMutableString stringWithString:[string substringToIndex:string.length - 1]];
+		}
+	}
+	
+	// Clean up scene headings
+	// Note that the scene number can still be read from the element itself (.sceneNumber) when needed.
+	if (self.type == heading && self.sceneNumber) {
+		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
+	}
+	
+	return string;
+}
+
+- (NSString*)stripFormattingCharacters {
+	NSMutableString *string = [NSMutableString stringWithString:self.string];
+
+	if (self.numberOfPreceedingFormattingCharacters > 0 && self.string.length >= self.numberOfPreceedingFormattingCharacters) {
+		[string setString:[string substringFromIndex:self.numberOfPreceedingFormattingCharacters]];
+	}
+	
+	// Remove force characters
+	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
+		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
+		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
+ 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
+		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
+		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
+	}
+	
+	// Replace formatting characters
+	for (NSString* formattingCharacters in FORMATTING_CHARACTERS) {
+		[string setString:[string stringByReplacingOccurrencesOfString:formattingCharacters withString:@""]];
+	}
+
+	
+	return string;
+}
+- (NSString*)stripInvisible {
 	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
 	__block NSUInteger offset = 0;
 	
@@ -146,63 +199,6 @@
 			offset += range.length;
 		}
 	}];
-	
-	/*
-	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.location - offset + range.length > string.length) {
-			range = NSMakeRange(range.location, string.length - range.location - offset);
-		}
-		
-		@try {
-			[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
-		}
-		@catch (NSException* exception) {
-			NSLog(@"Omit cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
-		}
-		@finally {
-			offset -= range.length;
-		}
-	}]; */
-	
-	// Remove markup characters
-	if (self.string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
-		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
-		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
- 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
-		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
-		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
-	}
-
-	if (self.type == centered) {
-		string = [NSMutableString stringWithString:[string substringFromIndex:1]];
-		string = [NSMutableString stringWithString:[string substringToIndex:string.length - 1]];
-	}
-	
-	// Clean up scene headings
-	// Note that the scene number can still be read from the element itself (.sceneNumber) when needed.
-	if (self.type == heading && self.sceneNumber) {
-		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
-	}
-	
-	return string;
-}
-
-- (NSString*)stripFormattingCharacters {
-	NSMutableString *string = [NSMutableString stringWithString:self.string];
-
-	// Remove force characters
-	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
-		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
-		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
- 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
-		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
-		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
-	}
-	
-	// Replace formatting characters
-	for (NSString* formattingCharacters in FORMATTING_CHARACTERS) {
-		[string setString:[string stringByReplacingOccurrencesOfString:formattingCharacters withString:@""]];
-	}
 	
 	return string;
 }

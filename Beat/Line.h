@@ -46,6 +46,7 @@ typedef enum : NSUInteger {
 @property NSString* sceneNumber;
 @property NSInteger sceneIndex;
 @property NSString* color;
+@property NSArray* storylines;
 //@property double height;
 
 @property NSMutableIndexSet* boldRanges;
@@ -64,6 +65,7 @@ typedef enum : NSUInteger {
 - (NSString*)typeAsString;
 - (NSString*)typeAsFountainString;
 - (NSString*)cleanedString;
+- (NSString*)stripInvisible;
 - (bool)omited;
 - (bool)note;
 - (bool)centered;
@@ -92,6 +94,5 @@ typedef enum : NSUInteger {
 
 @property bool isSplitParagraph;
 @property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
-
 
 @end

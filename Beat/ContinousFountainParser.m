@@ -9,17 +9,41 @@
 
 /*
  
- This code is mostly based on Hendrik Noeller's work.
+ This code is still mostly based on Hendrik Noeller's work.
  It is heavily modified for Beat, and is all the time more reliable.
  
  Main differences include:
  - double-checking for all-caps actions mistaken for character cues
- - convoluted recursive logic for lookback / lookforward
+ - convoluted recursive logic for lookback / lookforward (should be dismantled)
  - title page parsing (mostly for preview & export purposes)
  - new data structure called OutlineScene, which contains scene name and length, as well as a reference to original line
  - overall tweaks to parsing here and there
+ - parsing large chunks of text is optimized
  
  The file and class are still called Continous, instead of Continuous, because I haven't had the time and willpower to fix Hendrik's small typo. Also, singular synopsis lines are called 'synopse' for some reason. :-)
+ 
+ 
+ Future Considerations:
+ 
+ DELEGATION
+ 
+ For now, correcting some faulty interpretation of the Fountain format
+ (like all-caps action lines mistaken for character cues) is done in the
+ Document class. This should be fixed in order to be able to make porting
+ Beat to iOS easier.
+ 
+ Document should act as a delegate for the parser, and there is already one
+ implementation in action, changing heading into action. In the same way, we
+ should tell the UI to change the character cue line into action, rather than
+ the UI making the decision itself and parsing the changes recursively, as
+ it happens now.
+ 
+ This is a big, big structural change for my skill level, and requires a lot
+ of work and time, which I don't have right now. However, implementing delegation
+ would make the Countinuous Parser more reliable and the code much easier to debug.
+ 
+ Lauri-Matti Parppei
+ 2020
  
  */
 
@@ -53,10 +77,11 @@
     self = [super init];
     
     if (self) {
-        _lines = [[NSMutableArray alloc] init];
-		_outline = [[NSMutableArray alloc] init];
-        _changedIndices = [[NSMutableArray alloc] init];
-		_titlePage = [[NSMutableArray alloc] init];
+        _lines = [NSMutableArray array];
+		_outline = [NSMutableArray array];
+        _changedIndices = [NSMutableArray array];
+		_titlePage = [NSMutableArray array];
+		_storylines = [NSMutableArray array];
 		
         [self parseText:string];
     }
@@ -598,6 +623,25 @@
             }
         }
     }
+	
+	
+	if (currentLine.string.length > 0 && index > 1) {
+		// Check for all-caps action lines mistaken for character cues
+		
+		//Line* lineBeforeThat = [self.lines objectAtIndex:index - 2];
+		//Line* preceedingLine = [self.lines objectAtIndex:index - 1];
+		
+		// NSLog(@"Cursor: %lu // Line: %@ (%lu-%lu)", _delegate.selectedRange.location, currentLine.string, currentLine.position, currentLine.position + currentLine.string.length);
+		
+		/*
+		NSLog(@"current: %@  //  %@ (%@) - %@ (%@)", currentLine.string, lineBeforeThat.string, lineBeforeThat.typeAsString, preceedingLine.string, preceedingLine.typeAsString);
+		
+		if (preceedingLine.string.length == 0 && lineBeforeThat.type == character) {
+			NSLog(@"to action: %@", lineBeforeThat.string);
+		}
+		 */
+		 
+	}
 }
 
 
@@ -618,7 +662,7 @@
 #define OMIT_PATTERN_LENGTH 2
 
 #define COLOR_PATTERN "color"
-#define STORYLINE_PATTERN "storyline"
+#define STORYLINE_PATTERN "storyline" // wtf is this, past me?
 
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
 {
@@ -678,7 +722,13 @@
         }
 		
 		line.color = [self colorForHeading:line];
+		line.storylines = [self storylinesForHeading:line];
     }
+	
+	// set color for outline elements
+	if (line.type == heading || line.type == section || line.type == synopse) {
+		line.color = [self colorForHeading:line];
+	}
 	
 	if (line.isTitlePage) {
 		if ([line.string rangeOfString:@":"].location != NSNotFound && line.string.length > 0) {
@@ -822,22 +872,32 @@ and incomprehensible system of recursion.
 	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 	
     //Check for scene headings (lines beginning with "INT", "EXT", "EST",  "I/E"). "INT./EXT" and "INT/EXT" are also inside the spec, but already covered by "INT".
-    if (preceedingLine.type == empty || [preceedingLine.string length] == 0 || line.position == 0) {
+	if (preceedingLine.type == empty ||
+		[preceedingLine.string length] == 0 ||
+		line.position == 0 ||
+		[preceedingLine.string isEqualToString:@"*/"] ||
+		[preceedingLine.string isEqualToString:@"/*"]) {
         if (length >= 3) {
             NSString* firstChars = [[string substringToIndex:3] lowercaseString];
+			
             if ([firstChars isEqualToString:@"int"] ||
                 [firstChars isEqualToString:@"ext"] ||
                 [firstChars isEqualToString:@"est"] ||
                 [firstChars isEqualToString:@"i/e"]) {
+				
+				// If it's just under 4 characters, return heading
 				if (length < 4) return heading;
-				// If the line is just "internal" or "estoy aqui", it should NOT be a scene heading
 				else {
 					char nextChar = [string characterAtIndex:3];
-					if (nextChar == '.' || nextChar == ' ') return heading;
-					else {
+					if (nextChar == '.' || nextChar == ' ') {
+						// Line begins with int. or ext. etc.
+						// Signal change into the document to make undo work correctly
+						if (line.type != heading) [self.delegate actionChangedToHeadingAt:line];
+						return heading;
+					} else {
+						// If the line is just "internal" or "estoy aqui", it should NOT be a scene heading
 						if (line.type == heading) {
-							// Signal change
-							
+							// Signal change to action
 							[self.delegate headingChangedToActionAt:line];
 						}
 					}
@@ -1171,6 +1231,30 @@ and incomprehensible system of recursion.
 
 	return color;
 }
+- (NSArray *)storylinesForHeading:(Line *)line {
+	__block NSMutableArray *storylines = [NSMutableArray array];
+	
+	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSString * note = [line.string substringWithRange:range];
+
+		NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
+		note =  [note substringWithRange:noteRange];
+        
+		if ([note localizedCaseInsensitiveContainsString:@STORYLINE_PATTERN] == true) {
+			if ([note length] > [@STORYLINE_PATTERN length] + 1) {
+				NSRange storylineRange = [note rangeOfString:@STORYLINE_PATTERN options:NSCaseInsensitiveSearch];
+				NSString *storylineString = [note substringWithRange:NSMakeRange(storylineRange.length, [note length] - storylineRange.length)];
+				
+				NSArray *components = [storylineString componentsSeparatedByString:@","];
+				for (NSString* string in components) {
+					[storylines addObject:[string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
+				}
+			}
+		}
+	}];
+	
+	return storylines;
+}
 
 
 
@@ -1217,7 +1301,6 @@ and incomprehensible system of recursion.
     }
 }
 
-
 #pragma mark - Outline Dat
 
 - (NSUInteger)numberOfOutlineItems
@@ -1242,15 +1325,10 @@ and incomprehensible system of recursion.
 	return nil;
 }
 
-/*
- 
- This is super inefficient, I guess. Sorry.
- 
- */
-
 - (void) createOutline
 {
 	[_outline removeAllObjects];
+	[_storylines removeAllObjects];
 	
 	NSUInteger result = 0;
 	NSUInteger sceneNumber = 1;
@@ -1261,18 +1339,36 @@ and incomprehensible system of recursion.
 	OutlineScene *previousScene;
 	OutlineScene *currentScene;
 	
+	// This is for allowing us to include synopses INSIDE scenes when needed
+	OutlineScene *sceneBlock;
+	Line *previousLine;
+	
 	for (Line* line in self.lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
 			
-			OutlineScene *item;
-			item = [[OutlineScene alloc] init];
-
+			// When handling synopses, we might want to move them alongside with scenes
+			if (line.type == synopse) {
+				
+			}
+			
+			// Create an outline item
+			OutlineScene *item = [[OutlineScene alloc] init];
+			
 			currentScene = item;
 			
 			item.string = line.string;
 			item.type = line.type;
 			item.omited = line.omited;
 			item.line = line;
+			item.storylines = line.storylines;
+			item.color = line.color;
+			item.string = line.stripInvisible;
+						
+			// Add storylines to the storyline bank
+			// btw: this is a fully speculative feature, no idea if it'll be used
+			for (NSString* storyline in item.storylines) {
+				if (![_storylines containsObject:storyline]) [_storylines addObject:storyline];
+			}
 			
 			if (item.type == section) {
 				// Save section depth
@@ -1290,37 +1386,13 @@ and incomprehensible system of recursion.
 				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
 			}
 			
-			// Check if this heading contains a note. We can use notes to have colors etc. in the headings.
-			[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-								NSString * note = [line.string substringWithRange:range];
-				if (range.location) {
-					item.string = [line.string substringWithRange:NSMakeRange(0, range.location - 1)];
-				}
-				
-				NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
-				note = [note substringWithRange:noteRange];
-				
-				if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN] == true) {
-					if ([note length] > [@COLOR_PATTERN length] + 1) {
-						NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];
-						item.color = [note substringWithRange:NSMakeRange(colorRange.length, [note length] - colorRange.length)];
-						item.color = [item.color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-					}
-				}
-			}];
-			
 			if (line.type == heading) {
-				// Check if the scene is omited (inside omit block: /* */)
-				__block bool omited = false;
-				[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-					//NSString * omitedLine = [line.string substringWithRange:range];
-					if (range.location == 0) omited = true;
-				}];
-			
+				// Check if the scene is omitted
+				// If the scene is omited, let's not increment scene number for it.
+				// However, if the scene has a forced number, we'll maintain it
 				if (line.sceneNumber) { item.sceneNumber = line.sceneNumber; }
 				else {
-					// If the scene is omited, let's not increment scene number for it.
-					if (!omited) {
+					if (!line.omited) {
 						item.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
 						sceneNumber++;
 					} else {
@@ -1337,18 +1409,18 @@ and incomprehensible system of recursion.
 				NSUInteger index = [self.lines indexOfObject:line];
 				while (index > 0) {
 					index--;
-					Line* previousLine = [self.lines objectAtIndex:index];
+					Line* previous = [self.lines objectAtIndex:index];
 					
 					// So, this is kind of brute force, but here's my rationalization:
 					// a) The scene heading is already omited
 					// b) Somewhere before there NEEDS to be a line which starts the omission
 					// c) I mean, if there is omission INSIDE omission, the user can/should blame themself?
-					if ([previousLine.string rangeOfString:@OMIT_OPEN_PATTERN].location != NSNotFound) {
-						item.sceneStart = previousLine.position;
+					if ([previous.string rangeOfString:@OMIT_OPEN_PATTERN].location != NSNotFound) {
+						item.sceneStart = previous.position;
 						
 						// Shorten the previous scene accordingly
 						if (previousScene) {
-							previousScene.sceneLength = item.sceneStart - previousLine.position;
+							previousScene.sceneLength = item.sceneStart - previous.position;
 						}
 						break;
 					// So, what did I say about blaming the user?
@@ -1357,7 +1429,7 @@ and incomprehensible system of recursion.
 					// in a shady way
 					// but what does it count...
 						// the only thing that matters is how you walk through the fire
-					} else if (previousLine.type == heading) {
+					} else if (previous.type == heading) {
 						item.sceneStart = line.position;
 						item.noOmitIn = YES;
 						if (previousScene) previousScene.noOmitOut = YES;
@@ -1365,9 +1437,31 @@ and incomprehensible system of recursion.
 				}
 			}
 			
-			
 			if (previousScene) {
-				previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
+				
+				// If this is a synopsis line, it might need to be included in the previous scene length (for moving them around)
+				
+				if (item.type == synopse) {
+					
+					if (previousLine.type == heading) {
+						// This synopse belongs into a block, so don't set the length for previous scene
+						sceneBlock = previousScene;
+					} else {
+						// Act normally
+						previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
+					}
+					 
+				} else {
+					if (sceneBlock) {
+						// Reset scene block
+						sceneBlock.sceneLength = item.sceneStart - sceneBlock.sceneStart;
+						sceneBlock = nil;
+					} else {
+						previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
+					}
+				}
+				
+				//previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
 			}
 			
 			// Set previous scene to point to the current one
@@ -1376,6 +1470,9 @@ and incomprehensible system of recursion.
 			result++;
 			[_outline addObject:item];
 		}
+		
+		// Done. Set the previous line.
+		if (line.type != empty) previousLine = line;
 		
 		// As the loop has completed, let's set the length for last outline item.
 		if (line == [self.lines lastObject]) {
@@ -1432,6 +1529,13 @@ and incomprehensible system of recursion.
 	}
 	
 	return result;
+}
+
+- (Line*)lineAtPosition:(NSInteger)position {
+	for (Line* line in self.lines) {
+		if (position >= line.position && position < line.position + line.string.length + 1) return line;
+	}
+	return nil;
 }
 
 @end

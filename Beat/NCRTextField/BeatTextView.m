@@ -21,6 +21,7 @@
  
  */
 
+#import <QuartzCore/QuartzCore.h>
 #import "BeatTextView.h"
 #import "DynamicColor.h"
 #import "Line.h"
@@ -94,9 +95,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 // Used to highlight typed characters and insert text
 @property (nonatomic, copy) NSString *substring;
+
 // Used to keep track of when the insert cursor has moved so we
 // can close the popover. See didChangeSelection:
 @property (nonatomic, assign) NSInteger lastPos;
+
+// New scene numbering system
+@property (nonatomic) NSMutableArray *sceneNumberLabels;
 
 @end
 
@@ -339,7 +344,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				}
 			}
 /*
-		// We don't want to close autocomplete on space, because scene headings etc. are long
+		// To allow autocompletion of scene headings, we don't want to close autocomplete on space key
 		case 49:
 			// Space
 			if (self.autocompletePopover.isShown) {
@@ -482,7 +487,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.matches = [self completionsForPartialWordRange:substringRange indexOfSelectedItem:&index];
 	
 	if (self.matches.count > 0) {
-		
+
 		// Beat customization: if we have only one possible match and it's the same the user has already typed, close it
 		if (self.matches.count == 1) {
 			NSString *match = [self.matches objectAtIndex:0];
@@ -584,6 +589,74 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_marginColor = newColor;
 }
 
+/*
+ 
+ // Alternative scene numbering system. Gives some performance advantage, but it might be too insignificant to dismantle the already-working, convoluted scheme, though.
+
+- (void)updateSceneNumbers {
+	// This is pretty fast, but I'm not sure. Still kind of hard to figure out.
+	if (_sceneNumberLabels.count == 0) _sceneNumberLabels = [NSMutableArray array];
+	
+	NSInteger difference = _sceneNumberLabels.count - _sceneNumbers.count;
+
+	// There are extra scene number labels, remove them from superlayer
+	if (difference > 0) {
+		for (NSInteger i = 0; i <= difference; i++) {
+			[_sceneNumberLabels.lastObject removeFromSuperlayer];
+			[_sceneNumberLabels removeLastObject];
+		}
+	}
+	
+	// Begin moving layers
+	[CATransaction begin];
+	[CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
+	
+	NSInteger index = 0;
+	for (NSDictionary *sceneNumber in _sceneNumbers) {
+		NSString *number = sceneNumber[@"sceneNumber"];
+		
+		// Create frame
+		NSRect rect = [sceneNumber[@"rect"] rectValue];
+		rect.size.width = 90;
+		rect.origin.y += self.textContainerInset.height;
+		CGFloat factor = 1 / self.enclosingScrollView.magnification;
+		rect.origin.x += (self.textContainerInset.width - 140) * factor;
+		
+		// Color
+		NSColor *color;
+		if (sceneNumber[@"color"]) [BeatColors.colors valueForKey:sceneNumber[@"color"]];
+		else color = NSColor.blackColor;
+			
+		// Retrieve or create layer
+		CATextLayer *label;
+		if (_sceneNumberLabels.count > index) {
+			label = [_sceneNumberLabels objectAtIndex:index];
+			[label setString:number];
+			[label setFrame:rect];
+			[label setForegroundColor:color.CGColor];
+		} else {
+			label = [CATextLayer layer];
+			[label setShouldRasterize:YES];
+			[label setFont:@"Courier Prime"];
+			[label setRasterizationScale:4.0];
+			[label setFontSize:17.2];
+			[label setAlignmentMode:kCAAlignmentRight];
+			
+			[self.layer addSublayer:label];
+			[_sceneNumberLabels addObject:label];
+		}
+		
+		[label setContentsScale:self.enclosingScrollView.magnification];
+		[label setFrame:rect];
+		[label setString:number];
+		[label setForegroundColor:color.CGColor];
+			
+		index++;
+	}
+	[CATransaction commit];
+}
+*/
+ 
 - (void)drawRect:(NSRect)dirtyRect {
 	NSGraphicsContext *context = [NSGraphicsContext currentContext];
 	CGFloat factor = 1 / _zoomLevel;
@@ -601,7 +674,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
 		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
 	}
-		
+	
 	[context restoreGraphicsState];
 	
 	[NSGraphicsContext saveGraphicsState];
@@ -628,37 +701,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSFont* font = [NSFont fontWithName:@"Courier Prime" size:17];
 	
-	/*
-	// Alternative scnene numbering system. Gives some performance advantage, but it
-	// might be too insignificant to dismantle the already-working, convoluted scheme, though.
-	// best: 0.005467 sec vs 0.009747 sec
-	// worst: 0.007510 sec vs 0.006489 sec
-	 
-	CGFloat sceneNumberPosition = (self.textContainerInset.width - 50) * factor;
-	
-	[context saveGraphicsState];
-	for (NSDictionary *sceneNumber in _sceneNumbers) {
-		NSString *number = sceneNumber[@"sceneNumber"];
-		NSRect rect = [sceneNumber[@"rect"] rectValue];
-		
-		NSAttributedString* attrStr;
-		
-		if (sceneNumber[@"color"]) {
-			attrStr = [[NSAttributedString alloc] initWithString:number attributes:@{
-				NSFontAttributeName: font,
-				NSForegroundColorAttributeName: [BeatColors.colors valueForKey:sceneNumber[@"color"]]
-			}];
-		} else {
-			attrStr = [[NSAttributedString alloc] initWithString:number attributes:@{
-				NSFontAttributeName: font,
-				NSForegroundColorAttributeName: NSColor.blackColor
-			}];
-		}
-
-		[attrStr drawAtPoint:CGPointMake(sceneNumberPosition, rect.origin.y + self.textContainerInset.height)];
-	}
-	[context restoreGraphicsState];
-	*/
+	// New scene numbering system, waiting for better times
+	// [self updateSceneNumbers];
 	
 	[context saveGraphicsState];
 	
@@ -698,7 +742,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)mouseMoved:(NSEvent *)event {
 	// So, apparently only one view can catch mouseMoved events (?)
 	// so we will manually transfer the mouse event to the superview (ScrollView)
-	[(ScrollView*)[[self superview] superview] mouseMoved:event];
+	[(ScrollView*)self.superview.superview mouseMoved:event];
 
 	CGFloat x = event.locationInWindow.x;
 	CGFloat y = event.locationInWindow.y;

@@ -13,6 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatPreview : NSObject
++ (NSString*) createPrint:(NSString*)rawText document:(NSDocument*)document;
 + (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene;
 + (FNScript*) createPreview:(NSString*)rawText;
 @end

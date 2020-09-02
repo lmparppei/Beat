@@ -23,6 +23,74 @@
 
 @implementation BeatPreview
 
++ (NSString*) createPrint:(NSString*)rawText document:(NSDocument*)document {
+	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText];
+	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
+		@"script": [NSMutableArray array],
+		@"title page": [NSMutableArray array]
+	}];
+	NSMutableArray *elements = [NSMutableArray array];
+
+	Line *previousLine;
+	
+	for (Line *line in parser.lines) {
+		// Skip over certain elements
+		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
+			if (line.type == empty) previousLine = line;
+			continue;
+		}
+	
+		// This is a paragraph with a line break,
+		// so append the line to the previous one
+		
+		// NOTE: This should be changed so that there is a possibility of having no-margin elements
+		// Just needs some parser-level work.
+		
+		if (line.type == action && line.isSplitParagraph && [parser.lines indexOfObject:line] > 0) {
+			Line *previousLine = [elements objectAtIndex:elements.count - 1];
+
+			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.cleanedString];
+			continue;
+		}
+		
+		if (line.type == dialogue && line.string.length < 1) {
+			line.type = empty;
+			previousLine = line;
+			continue;
+		}
+
+		[elements addObject:line];
+				
+		// If this is dual dialogue character cue,
+		// we need to search for the previous one too, just in cae
+		if (line.isDualDialogueElement) {
+			bool previousCharacterFound = NO;
+			NSInteger i = elements.count - 2; // Go for previous element
+			while (i > 0) {
+				Line *previousLine = [elements objectAtIndex:i];
+				
+				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
+				
+				if (previousLine.type == character ) {
+					previousLine.nextElementIsDualDialogue = YES;
+					previousCharacterFound = YES;
+					break;
+				}
+				i--;
+			}
+		}
+		
+		previousLine = line;
+	}
+	
+	// Set script data
+	[script setValue:parser.titlePage forKey:@"title page"];
+	[script setValue:elements forKey:@"script"];
+
+	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document print:YES];
+	return html.html;
+}
+
 + (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene {
 	// Continuous parser is much faster than the normal Fountain parser
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText];

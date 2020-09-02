@@ -16,8 +16,25 @@
 - (instancetype)init {
 	//_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(hideTitleBar) userInfo:nil repeats:NO];
 	_titleBarVisible = YES;
+	
 	return [super init];
 }
+
+-(void)awakeFromNib {
+	[self.window setAcceptsMouseMovedEvents:YES];
+	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
+
+	[self addTrackingArea:trackingArea];
+    //[self.master setAcceptsMouseMovedEvents:YES];
+	//[self.masterView addTrackingArea:trackingArea];
+	//[self.masterView setPostsBoundsChangedNotifications:YES];
+}
+
+-(void)mouseMoved:(NSEvent *)event {
+
+}
+
+
 /*
 // Some other day
  

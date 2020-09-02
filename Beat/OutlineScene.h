@@ -18,6 +18,7 @@
 @property LineType type;
 @property NSString * sceneNumber;
 @property NSString * color;
+@property NSArray * storylines;
 @property NSUInteger sceneStart;
 @property NSUInteger sceneLength;
 @property NSInteger sectionDepth;
