@@ -33,11 +33,14 @@ You can also press Tab to force a character cue and not worry about writing in a
 
 After one empty line break the format will change back to action. Beat automatically adds two line-breaks after certain elements, unless you tell it not to (Format → Automatic Paragraph Breaks).
 
-You can also use transitions just by typing them out, like this:
+You can also use transitions just by typing out something in all-caps and ending it with a colon, like this:
 
 CUT TO:
 
-Well, that was easy. You should be able to write a full screenplay by using those elements. Now, let's get more technical!
+Well, that was easy. You should be able to write a full screenplay by using those elements. 
+
+Now, if you dare, let's get more technical!
+
 
 
 /*
@@ -53,7 +56,7 @@ Title page info you see at the beginning of this file will be printed out as a v
 
 # This is a new section
 
-= This is a synopse. Let's get a bit more technical.
+= This is a synopsis line. Let's get a bit more technical.
 
 INT. TUNNEL - NIGHT 
 
@@ -62,24 +65,28 @@ You can use sections and synopses (as above) to help structure your story. They 
 Take a look at the outline view (top-left icon or ⌘D) and see how the structure is laid out! Index Card View (top-right card icon or ⌘⇧D) is a useful tool for visualizing and laying out your story beats.
 
 
-= Stylizing your script
-
 INT./EXT. BEACH HOUSE - NIGHT
 
-Text formatting can be done with the usual commands used in any software, (cmd-B, cmd-I etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
+[[Stylizing your script. If you use a note as the first paragraph, it will show up as the description of this scene the index card view.]]
 
-Basically, text formatting works so that anything inside dual apostrophes is **bolded**, inside single apostrophes in *italic*. You can also _underline_ stuff.
+Text formatting can be done with the usual commands used in any software, (⌘B, ⌘I etc.). Because **Beat** uses Fountain markup language, some strange characters will show up on the screen, but don't you worry. *They won't print out*.
+
+Basically, text formatting works so that anything inside dual apostrophes is **bolded** and single apostrophes make it *italic*. You can also _underline_ stuff.
 
 Every element also has a way of forcing it. Take a look at the Format menu. Elements can be quickly forced by pressing ⌥↩ (alt-enter). Try it now!
 
-This is how you make your own, strange transitions:
+Centering text is done using surrounding it with > and <.
 
-> SLOW, SURPRISINGLY LONG CROSSFADE TO:
+>Centered text<
+
+Transitions can be forced (⌘⇧T):
+
+> Forced, surprisingly slow transition...
 
 
 = Dual dialogue & other special elements
 
-INT. BAR - NIGHT [[COLOR BLUE]]
+EXT. STREET - NIGHT [[COLOR BLUE]]
 
 You can set the color for your scene just by typing it out as above, or by right-clicking a scene either in any of the other views (Outline, Index Cards, Timeline).
 
@@ -92,6 +99,9 @@ CHARACTER 2 ^
 (interrupting)
 Leave me alone.
 
+
+INT. NIGHT CLUB - NIGHT [[COLOR RED]]
+
 Here's some lyrics:
 
 ~”if you come to my house, friend
@@ -99,6 +109,8 @@ Here's some lyrics:
 ~at the crowd in the happy alley.”
 
 That's about it. Edit this file and try out stuff.
+
+If you ever mess up something, you can use automatic reformatting by selecting the text and pressing (⌘R), or by reformatting everything through the Format menu.
 
 You can find more information about the Fountain markup language at http://www.fountain.io/
 
