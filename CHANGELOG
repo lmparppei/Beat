@@ -4,14 +4,20 @@
 * Optimized parsing for large chunks of text
 * Fixed some bugs with character input
 * Code cleanup
-* Typewriter mode
-* New layout for sections (let's see how people react to this :-)
+* Typewriter mode (might be a bit buggy for now)
+* New layout for sections and synopsis lines (let's see how people react to this :-)
 * Fixed bugs with undoing paragraphs
+* Finally fixed bugs with undoing headings
+* Fixed a bug with notes taking up print space
+* Some code cleanup
+* Early experiments with the new Timeline class for replacing the weird JavaScript version :---) 
+
 
 ## Beat 1.3b
 
 * Fixed an app-crashing bug happening when iterating through omitted ranges
 * Fixed a bug with the JavaScript Timeline (which should be abolished anyway, tbh)
+
 
 ## Beat 1.3 
 

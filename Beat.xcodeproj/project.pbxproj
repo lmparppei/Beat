@@ -127,6 +127,10 @@
 		B6E3246B24B519630001273F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3246624B515670001273F /* AppKit.framework */; };
 		B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */; };
 		B6EB5170246E9621009014AB /* MarginView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB516F246E9621009014AB /* MarginView.m */; };
+		B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F360AA250127C1001ACAEE /* BeatTimeline.m */; };
+		B6F360AC250127C7001ACAEE /* BeatTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F360AA250127C1001ACAEE /* BeatTimeline.m */; };
+		B6F360C62501447C001ACAEE /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B6F360C52501447C001ACAEE /* B_256_logo.png */; };
+		B6F360C72501447C001ACAEE /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B6F360C52501447C001ACAEE /* B_256_logo.png */; };
 		B6F49CDD246D66B0006D88D4 /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
 		B6F49CDE246D66B0006D88D4 /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B6F49CDF246D66B0006D88D4 /* SceneCards.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF55024659FC000C5B78C /* SceneCards.m */; };
@@ -429,6 +433,9 @@
 		B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneFiltering.m; path = Beat/Filtering/SceneFiltering.m; sourceTree = SOURCE_ROOT; };
 		B6EB516E246E9621009014AB /* MarginView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MarginView.h; path = Beat/UI/MarginView.h; sourceTree = SOURCE_ROOT; };
 		B6EB516F246E9621009014AB /* MarginView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MarginView.m; path = Beat/UI/MarginView.m; sourceTree = SOURCE_ROOT; };
+		B6F360A9250127C1001ACAEE /* BeatTimeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimeline.h; path = Beat/UI/BeatTimeline.h; sourceTree = SOURCE_ROOT; };
+		B6F360AA250127C1001ACAEE /* BeatTimeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimeline.m; path = Beat/UI/BeatTimeline.m; sourceTree = SOURCE_ROOT; };
+		B6F360C52501447C001ACAEE /* B_256_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = B_256_logo.png; path = _PatchNotes/B_256_logo.png; sourceTree = SOURCE_ROOT; };
 		B6F49D2E246D66B0006D88D4 /* Beat Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6F49D2F246D66B0006D88D4 /* Beat copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Beat copy-Info.plist"; path = "/Users/lmp/Koodaus/Beat 1.0b/Beat copy-Info.plist"; sourceTree = "<absolute>"; };
 		B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
@@ -548,6 +555,7 @@
 		B138B57519E1C973000489C4 /* Beat */ = {
 			isa = PBXGroup;
 			children = (
+				B6F360C52501447C001ACAEE /* B_256_logo.png */,
 				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
 				B1E7FF511BC4555B008E2B99 /* Writer.entitlements */,
 				B138B57A19E1C973000489C4 /* Document.h */,
@@ -737,6 +745,7 @@
 		B667796223C5D10B0029D508 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				B6F360A825012719001ACAEE /* BeatTimeline */,
 				B66FC99F2276EADC00C0265D /* CardView */,
 				B610CFDD23ACB70B00636634 /* OutlineView */,
 				B6D872B1232567C40050ED2D /* Timeline */,
@@ -856,6 +865,15 @@
 			name = Timeline;
 			path = Writer/Timeline;
 			sourceTree = SOURCE_ROOT;
+		};
+		B6F360A825012719001ACAEE /* BeatTimeline */ = {
+			isa = PBXGroup;
+			children = (
+				B6F360A9250127C1001ACAEE /* BeatTimeline.h */,
+				B6F360AA250127C1001ACAEE /* BeatTimeline.m */,
+			);
+			name = BeatTimeline;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -1025,6 +1043,7 @@
 				B6146B26246A91420029DBD9 /* analysis.png in Resources */,
 				B69A928C231915E900FE6A3E /* README.md in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
+				B6F360C62501447C001ACAEE /* B_256_logo.png in Resources */,
 				B6D872B3232567C40050ED2D /* timeline.html in Resources */,
 				B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */,
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
@@ -1077,6 +1096,7 @@
 				B6F49D1D246D66B0006D88D4 /* analysis.png in Resources */,
 				B6F49D1E246D66B0006D88D4 /* README.md in Resources */,
 				B6F49D1F246D66B0006D88D4 /* Document.xib in Resources */,
+				B6F360C72501447C001ACAEE /* B_256_logo.png in Resources */,
 				B6F49D20246D66B0006D88D4 /* timeline.html in Resources */,
 				B6F49D21246D66B0006D88D4 /* Images.xcassets in Resources */,
 				B6F49D22246D66B0006D88D4 /* Themes.plist in Resources */,
@@ -1132,6 +1152,7 @@
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
+				B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */,
 				B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */,
 				B69C8C6524A12765007B55A7 /* BeatHTMLScript.m in Sources */,
 				B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */,
@@ -1258,6 +1279,7 @@
 				B6F49CFE246D66B0006D88D4 /* FastFountainParser.m in Sources */,
 				B62A89B624806D190065A2BC /* FlatButton.swift in Sources */,
 				B6F49CFF246D66B0006D88D4 /* NSMutableString+Regex.m in Sources */,
+				B6F360AC250127C7001ACAEE /* BeatTimeline.m in Sources */,
 				B6F49D01246D66B0006D88D4 /* FNHTMLScript.m in Sources */,
 				B6D26BE624B9ED830041402B /* BeatTimer.m in Sources */,
 				B6F49D02246D66B0006D88D4 /* RecentFiles.m in Sources */,

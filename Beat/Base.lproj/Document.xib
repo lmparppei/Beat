@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="16002"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.2"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="16097.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.3"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="16097.3"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
@@ -50,6 +50,7 @@
                 <outlet property="textClipView" destination="sxN-R8-PHt" id="cYv-gE-6zc"/>
                 <outlet property="textScrollView" destination="Mky-48-wwA" id="w22-2t-KE1"/>
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
+                <outlet property="timeline" destination="DRJ-R4-eLG" id="INL-4K-2A6"/>
                 <outlet property="timelineBar" destination="23S-cr-Vy0" id="Vm9-rS-IhX"/>
                 <outlet property="timelineView" destination="uRk-cB-Qej" id="HYs-GX-9q7"/>
                 <outlet property="timelineViewHeight" destination="JRc-lw-lna" id="0zf-6f-BrV"/>
@@ -250,6 +251,10 @@
                                                 <wkPreferences key="preferences"/>
                                             </wkWebViewConfiguration>
                                         </wkWebView>
+                                        <customView hidden="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DRJ-R4-eLG" customClass="BeatTimeline">
+                                            <rect key="frame" x="0.0" y="36" width="1100" height="84"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </customView>
                                         <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="yra-qv-1lk" customClass="ColorView">
                                             <rect key="frame" x="0.0" y="120" width="330" height="541"/>
                                             <subviews>

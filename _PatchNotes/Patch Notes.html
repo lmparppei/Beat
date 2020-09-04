@@ -14,7 +14,7 @@
 				margin: 0rem;
 				background-color: #fefefe;
 				color: #3b3b3b;
-				font-size: .925em;
+				font-size: .9em;
 
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -27,8 +27,14 @@
 				margin-left: auto;
 				margin-right: auto;
 				margin-bottom: 3em;
-				padding: 1rem 1rem 1.5rem 1rem;
+				padding: .8rem .8rem 1.2rem .8rem;
 			}
+			
+			.logo { max-height: 5rem; margin: 0 auto 1rem auto; text-align: center; }
+			.logo img { max-height: 5rem; width: auto; }
+		
+			#intro section { background: transparent; padding-bottom: 0; }
+			#intro { background-color: #f5f5f5; }
 
 			h1, h2, h3, p, ul, ol, blockquote, dl {
 				margin-left: 1rem;
@@ -40,6 +46,7 @@
 				margin-bottom: .5rem;
 				font-weight: 300;
 				font-size: 2.4em;
+				text-align: center;
 			}
 
 			h2 {
@@ -223,6 +230,7 @@
 
 			#mainContainer {
 				display: flex;
+				flex-direction: column;
 				justify-content: center;
 			}
 			#menu, #page {
@@ -266,21 +274,33 @@
 
 	<body lang="fi">
 		<div id='mainContainer'>
-			<div id='page'>
+			<div id='intro'>
 				<section>
+					<div class='logo'><img src='B_256_logo.png' alt='b'></div>
 					<h1>Welcome to Beat 1.4 beta!</h1>
 					<h2>What's New?</h2>
 					<ul>
 						<li>Lots of optimization and bug fixes</li>
 						<li>Typewriter Mode</li>
+						<li>New printing engine &mdash; super fast and more reliable</li>
 						<li>New section & synopsis layout</li>
+						<li>Fixes to undoing scene headings</li>
 					</ul>
+				</section>
+			</div>
+			<div>
+				<section>
 					
 					<h2>Typewriter Mode</h2>
 					<p>Keeps the caret and selection at the center of the screen. You can access it by toggling <b>View → Typewriter Mode</b> on.</p>
 					
 					<h2>New Section Layout</h2>
 					<p>Sections and synopsis markers now use the system font to make them stand out from the actual script.</p>
+					
+					<h2>Changes to Synopsis Logic</h2>
+					<p>When a line with the synopsis marker is the <b>first</b> paragraph of a scene, the synopsis text will be displayed
+					as preview in the Index Card View. If the scene is dragged around, the synopsis will move along with it.</p>
+					<div class='example'><b>INT. SCENE HEADING</b><br><br><em>= This line will be displayed on the index card</em></div>
 					
 					<!--
 					<h2>New Dialogue Input</h2>
@@ -316,6 +336,7 @@
 
 			*/
 
+		/*
 			const textAnimation=function(t){t.waitAt||(t.waitAt={});const e=document.getElementById(t.container),n=t.text,i=t.wait;let s=t.speed;s||(s=150);let a=0,o=0,r=0,c="",l=-1,f=!1,d=[];this.addClass=function(t){d.push(t),e.classList.add(t)},setInterval(function(){if(l>=n.length&&(f=!0),f)++a>=i&&function(){c="",e.innerHTML="",a=0,r=0,l=-1,f=!1;for(const t of d)e.classList.remove(t);d=[]}();else{if(t.events[l-r]&&t.events[l-r](),t.waitAt[l-r]&&o>0&&(o=t.waitAt[l-r]),o>0)return void o--;o=-1;let i=n[++l];if("<"==i){for(c+=i;">"!=i&&l<n.length;)i=n[++l],c+=i,r++;return}n[l]&&(c+=n[l],t.caret?e.innerHTML=c+caret:e.innerHTML=c,l==n.length-1&&(f=!0))}},s)};
 			const caret = "<div class='caret'></div>";
 			
@@ -337,6 +358,7 @@
 
 				}
 			});
+		 */
 			
 		</script>
 	</body>

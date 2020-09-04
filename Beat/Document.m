@@ -104,6 +104,7 @@
 #import "BeatPreview.h"
 #import "BeatColors.h"
 #import "BeatTimer.h"
+#import "BeatTimeline.h"
 
 @interface Document ()
 
@@ -220,6 +221,8 @@
 @property (nonatomic, weak) IBOutlet NSTouchBar *timelineBar;
 @property (nonatomic, weak) IBOutlet TouchTimelineView *touchbarTimeline;
 @property (unsafe_unretained) IBOutlet TouchTimelinePopover *touchbarTimelineButton;
+
+@property (weak) IBOutlet BeatTimeline *timeline;
 
 // Scene number labels
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
@@ -4627,6 +4630,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 - (void) reloadTimeline {
+	// Maybe just rebuild this from ground up so it could be done like this:
+	[_timeline reload:[self getOutlineItems]];
+	
 	__block OutlineScene *currentScene;
 	__block NSMutableArray *scenes = [self getOutlineItems];
 	
