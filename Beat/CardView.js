@@ -225,6 +225,10 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		if (!card.name) { continue; }
 		
 		index++;
+		
+		// Don't show synopsis lines
+		if (card.type == 'synopse') card.invisible = true;
+		
 		card.sceneIndex = index;
 
 		// Let's save the data to scenes array for later use
@@ -235,7 +239,7 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		var changed = '';
 		var customStyles = 0;
 
-		if (card.selected == "yes") {
+		if (card.selected) {
 			status = ' selected';
 			selected = index;
 		}
@@ -263,7 +267,8 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		if (card.type == 'section') {
 			html += "<h2 sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
 		} else if (card.type == 'synopse') {
-			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div sceneIndex='" + card.sceneIndex + "' pos='"+card.position+"' class='synopse'><h3>" + card.name + "</h3></div></div>"
+			// Hidden
+			html += "<div sceneIndex='" + card.sceneIndex + "' style='display: none;'></div>";
 		} else {
 			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div lineIndex='" + 
 					card.lineIndex + "' pos='" + card.position + "' " +

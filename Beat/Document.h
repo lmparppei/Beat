@@ -34,12 +34,12 @@ THE SOFTWARE.
 #import "TouchTimelineView.h"
 #import "TouchTimelinePopover.h"
 #import "ContinousFountainParser.h"
+#import "SceneCards.h"
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate>
-	//NSCollectionViewDataSource, NSCollectionViewDelegate
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
@@ -48,6 +48,7 @@ THE SOFTWARE.
 - (NSString*)fileNameString;
 
 // Make some of the actions available for text view
+// (wtf btw, why aren't we using these through delegation?)
 - (IBAction)forceAction:(id)sender;
 - (IBAction)forceHeading:(id)sender;
 - (IBAction)forceCharacter:(id)sender;

@@ -1622,11 +1622,17 @@
 	
 	// Delete the string and add it again to its new position
 	[self replaceCharactersInRange:range withString:@""];
-	[self replaceCharactersInRange:newRange withString:string];
+	
+	if (newRange.location > self.textView.string.length) newRange = NSMakeRange(self.textView.string.length - 1, 0);
+	//[self replaceCharactersInRange:newRange withString:string];
+	[self addString:string atIndex:newRange.location];
+	
+	return;
 	
 	// Create new ranges for undoing the operation
 	NSRange undoRange = NSMakeRange(newRange.location, range.length);
 	NSRange undoNewRange = NSMakeRange(range.location, 0);
+	
 	[[[self undoManager] prepareWithInvocationTarget:self] moveString:string withRange:undoRange newRange:undoNewRange];
 	[[self undoManager] setActionName:@"Move Scene"];
 	
@@ -1863,7 +1869,6 @@
 	
 	 
 	[self.textView setTypingAttributes:attributes];
-	NSLog(@"yeah");
 }
 - (void) cancelCharacterInput {
 	_characterInput = NO;
@@ -2418,6 +2423,10 @@
 - (void)actionChangedToHeadingAt:(Line*)line {
 	// The parser changed a line with some text already on it into a scene heading, for example by by typing int. at the start of a line.
 	NSRange range = NSMakeRange(line.position, line.string.length - 1);
+	
+	// This can happen when moving strings, ignore
+	if (range.location + range.length > self.textView.string.length) return;
+	
 	NSString *string = [self.textView.textStorage.string substringWithRange:range];
 	
 	[self.undoManager beginUndoGrouping];
@@ -3854,7 +3863,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// ... or not.
 	// NOTE FROM BEAT 1.1 r4:
 	// The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
-
+	
 	NSMutableArray *outline = [self getOutlineItems];
 	
 	bool moveToEnd = false;
@@ -3864,8 +3873,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 	
 	// Scene before which this scene will be moved, if not moved to the end
-	OutlineScene *beforeScene;
-	if (!moveToEnd) beforeScene = [outline objectAtIndex:to];
+	OutlineScene *previousScene;
+	if (!moveToEnd) previousScene = [outline objectAtIndex:to];
 	
 	// On to the very dangerous stuff :-) fuck me :----)
 	NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
@@ -3881,14 +3890,14 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// Different ranges depending on to which direction the scene was moved
 	if (from < to) {
 		if (!moveToEnd) {
-			newRange = NSMakeRange(beforeScene.sceneStart - sceneToMove.sceneLength, 0);
+			newRange = NSMakeRange(previousScene.sceneStart - sceneToMove.sceneLength, 0);
 		} else {
 			newRange = NSMakeRange([[self getText] length] - sceneToMove.sceneLength, 0);
 		}
 	} else {
-		newRange = NSMakeRange(beforeScene.sceneStart, 0);
+		newRange = NSMakeRange(previousScene.sceneStart, 0);
 	}
-	
+
 	// We move the string itself in an easily undoable method
 	[self moveString:textToMove withRange:range newRange:newRange];
 }
@@ -4100,6 +4109,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 #pragma mark - Card view
 
+// Delegate method for cards, but can be reused elsewhere too
+- (NSArray*)lines {
+	return self.parser.lines;
+}
+
 - (IBAction) toggleCards: (id)sender {
 	if ([self selectedTabViewTab] != 2) {
 		_cardsVisible = YES;
@@ -4120,15 +4134,15 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 }
 
-// Some day, we'll move all this stuff to another file. It won't be soon.
-// (Thanks, past me. It's happening now. Slowly.)
-
 - (void) setupCards {
+	// Set up index card view
 	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
 	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
 	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
 	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"printCards"];
+	
 	_sceneCards = [[SceneCards alloc] initWithWebView:_cardView];
+	_sceneCards.delegate = self;
 }
 
 // This might be pretty shitty solution for my problem but whatever
@@ -4145,18 +4159,13 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 - (void) refreshCards:(BOOL)alreadyVisible {
-	// Just refresh cards, no change index
+	// Just refresh cards, no change in index
 	[self refreshCards:alreadyVisible changed:-1];
 }
-- (NSArray*)getCards {
-	NSMutableArray *array = [NSMutableArray array];
-	for (OutlineScene * scene in [self getOutlineItems]) {
-		if (!scene.omited && scene.type != synopse) [array addObject: [self getJSONCard:scene selected:[self isSceneSelected:scene]]];
-	}
-	return [NSArray arrayWithArray:array];
-}
+
 - (void) printCards {
-	[_sceneCards printCards:[self getSceneCards] printInfo:self.printInfo];
+	[_sceneCards printCardsWithInfo:self.printInfo];
+	//[_sceneCards printCards:[self getSceneCards] printInfo:self.printInfo];
 }
 - (void) refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
 	// Change style in card view if needed
@@ -4165,127 +4174,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	} else {
 		[_cardView evaluateJavaScript:@"nightModeOff();" completionHandler:nil];
 	}
-	// Create JSON cards array and update the scene cards view
-	NSArray *cards = [self getCards];
-	[_sceneCards showCards:cards alreadyVisible:alreadyVisible changedIndex:changedIndex];
-}
-- (bool) isSceneSelected: (OutlineScene *) scene {
-	NSUInteger position = [self.textView selectedRange].location;
-	
-	NSMutableArray *scenes = [self getScenes];
-	NSUInteger index = [scenes indexOfObject:scene];
-	NSUInteger nextIndex = index + 1;
-	
-	if (nextIndex < [scenes count]) {
-		OutlineScene *nextScene = [scenes objectAtIndex:index+1];
-
-		if (position >= scene.line.position && position < nextScene.line.position) {
-			return YES;
-		}
-	} else {
-		if (position >= scene.line.position) return YES;
-	}
-	
-	return NO;
-}
-- (NSArray *) getSceneCards {
-	NSMutableArray *sceneCards = [NSMutableArray array];
-	for (OutlineScene *scene in [self getOutlineItems]) {
-		if (scene.line.type != synopse) {
-			NSDictionary *sceneCard = @{
-				@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
-				@"title": (scene.string) ? scene.string : @"",
-				@"snippet": [self snippet:scene],
-				@"type": [scene.line typeAsString]
-			};
-			[sceneCards addObject:sceneCard];
-		}
-	}
-	
-	return sceneCards;
-}
-- (NSString *) snippet:(OutlineScene *)scene {
-	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
-	
-	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
-	NSUInteger lineIndex = index + 1;
-	NSString * snippet = @"";
-	
-	// Get first paragraph
-	// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading.
-	// Also, we'll use SYNOPSIS line as the snippet in case it's the first line
-	while (lineIndex < [[self.parser lines] count]) {
-			
-		Line* snippetLine = [[self.parser lines] objectAtIndex:lineIndex];
-		if (snippetLine.type != heading && snippetLine.type != section && !(snippetLine.omited && !snippetLine.note)) {
-			snippet = [[[self.parser lines] objectAtIndex:lineIndex] stripFormattingCharacters];
-			break;
-		}
-		lineIndex++;
-	}
-	
-	// If it's longer than we want, split into sentences
-	if ([snippet length] > SNIPPET_LENGTH) {
-		NSMutableArray *sentences = [NSMutableArray arrayWithArray:[snippet matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
-		NSString *result = @"";
 		
-		// If there are no real sentences in the paragraph, just cut it and add ... after the text
-		if (sentences.count < 1) return [[snippet substringToIndex:SNIPPET_LENGTH - 3] stringByAppendingString:@"..."];
-
-		// Add as many sentences as possible
-		for (NSString *sentence in sentences) {
-			result = [result stringByAppendingString:sentence];
-			if ([result length] > SNIPPET_LENGTH || [result length] > SNIPPET_LENGTH - 15) break;
-		}
-		
-		if ([result length]) snippet = result; else snippet = @"";
-	}
-	
-	return snippet;
-}
-- (NSString *) getJSONCard:(OutlineScene *) scene selected:(bool)selected {
-	NSUInteger index = [[self.parser lines] indexOfObject:scene.line];
-	
-	NSUInteger sceneIndex = [[self getOutlineItems] indexOfObject:scene];
-	NSString *snippet = [self snippet:scene];
-	
-	NSString * status = @"'selected': ''";
-	if (selected) {
-		status =  @"'selected': 'yes'";
-	}
-	if (scene.omited) {
-		status = [status stringByAppendingString:@", 'omited': 'yes'"];
-	}
-		
-	if (scene.type == section) {
-		return [NSString stringWithFormat:@"'type': 'section', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
-	} else if (scene.type == synopse) {
-		return [NSString stringWithFormat:@"'type': 'synopse', 'name': '%@', 'position': '%lu'", [self JSONString:scene.string], scene.line.position];
-	} else {
-		return [NSString stringWithFormat:@"'sceneNumber': '%@', 'name': '%@', 'snippet': '%@', 'position': '%lu', 'color': '%@', 'lineIndex': %lu, 'sceneIndex': %lu, %@",
-				[self JSONString:scene.sceneNumber],
-				[self JSONString:scene.string],
-				[self JSONString:snippet],
-				scene.line.position,
-				[scene.color lowercaseString],
-				index,
-				sceneIndex,
-				status];
-	}
-}
-
--(NSString *)JSONString:(NSString *)aString {
-	NSMutableString *s = [NSMutableString stringWithString:aString];
-	[s replaceOccurrencesOfString:@"\'" withString:@"\\\'" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"\"" withString:@"\\\"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"\"" withString:@"\\\"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"/" withString:@"\\/" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"\n" withString:@"\\n" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"\b" withString:@"\\b" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"\f" withString:@"\\f" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"\r" withString:@"\\r" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	[s replaceOccurrencesOfString:@"\t" withString:@"\\t" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
-	return [NSString stringWithString:s];
+	[_sceneCards reloadCardsWithVisibility:alreadyVisible changed:changedIndex];
 }
 
 
