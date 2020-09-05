@@ -38,6 +38,8 @@
  
  Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
  
+ I am in the process of modularizing the code so that it could be ported more easily to iOS.
+ 
  Still, this is an anti-capitalist venture. There is no ethical consumption under capitalism.
  
  Anyway, may this be of some use to you, dear friend.
@@ -74,9 +76,6 @@
 #import <Foundation/Foundation.h>
 #import "Document.h"
 #import "ScrollView.h"
-#import "FNScript.h"
-#import "FNElement.h"
-#import "FNHTMLScript.h"
 #import "FDXInterface.h"
 #import "OutlineExtractor.h"
 #import "PrintView.h"
@@ -366,7 +365,7 @@
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.72
 
-#define TREE_VIEW_WIDTH 330
+#define TREE_VIEW_WIDTH 320
 #define TIMELINE_VIEW_HEIGHT 120
 
 #define OUTLINE_SECTION_SIZE 13.0
@@ -689,10 +688,9 @@
 
 - (void) setMinimumWindowSize {
 	if (!_outlineViewVisible) {
-		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 200, 400)];
+		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150, 400)];
 	} else {
-		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 200 + _outlineView.frame.size
-											   .width, 400)];
+		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150 + _outlineView.frame.size.width, 400)];
 	}
 }
 
@@ -921,7 +919,7 @@
 	
 	self.printView = [[PrintView alloc] initWithDocument:self toPDF:YES toPrint:YES];
 }
-
+/*
 - (IBAction)exportHTML:(id)sender
 {
 	if (self.printSceneNumbers) {
@@ -943,6 +941,7 @@
         }
     }];
 }
+ */
 
 - (IBAction)exportFDX:(id)sender
 {
@@ -1029,23 +1028,6 @@
 	}];
 }
 
-- (void)updateWebView
-{
-	FNScript *script = [[FNScript alloc] initWithString:[self preprocessSceneNumbers]];
-	FNHTMLScript *htmlScript;
-	OutlineScene *currentScene = [self getCurrentScene];
-	
-	// Let's see if we have a scene selected
-	if (currentScene) {
-		htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self scene:currentScene.sceneNumber];
-	} else {
-		htmlScript = [[FNHTMLScript alloc] initWithScript:script document:self];
-	}
-	
-    //[[self.webView mainFrame] loadHTMLString:[htmlScript html] baseURL:nil];
-	[self.printWebView loadHTMLString:[htmlScript html] baseURL:nil];
-	
-}
 - (OutlineScene*)getCurrentScene {
 	NSInteger position = [self.textView selectedRange].location;
 	return [self getCurrentSceneWithPosition:position];
@@ -1613,21 +1595,51 @@
 	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
 }
 
+- (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
+	NSString *stringToMove = [self.getText substringWithRange:range];
+	
+	NSInteger length = self.getText.length;
+	if (position > length) position = length;
+	
+	[self replaceCharactersInRange:range withString:@""];
+	
+	NSInteger newPosition = position;
+	if (range.location < position) {
+		newPosition = position - range.length;
+	}
+	if (newPosition < 0) newPosition = 0;
+	
+	[self replaceCharactersInRange:NSMakeRange(newPosition, 0) withString:stringToMove];
+	
+	NSRange undoingRange;
+	NSInteger undoPosition;
+		
+	if (range.location > position) {
+		undoPosition = range.location + stringToMove.length;
+		undoingRange = NSMakeRange(position, stringToMove.length);
+	} else {
+		undoingRange = NSMakeRange(newPosition, stringToMove.length);
+		undoPosition = range.location;
+	}
+	
+	[[[self undoManager] prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition];
+	[[self undoManager] setActionName:@"Move Scene"];
+}
 
+/*
+ // Old implementation which seems to have undoing bugs
 - (void)moveString:(NSString*)string withRange:(NSRange)range newRange:(NSRange)newRange
 {
 	// Soooooo... just to let the future version of me to know:
 	// OutlineScene has the info if its omission  was left unterminated or doesn't even start.
-	// You should really use that info here somehow... you know, add /* and */... every hero's journey is paved with string index and NSRange magic
-	
+	// You should really use that info here somehow... you know... every hero's journey is paved with string index and NSRange magic. (Maybe don't allow moving them, in that case?)
+		
 	// Delete the string and add it again to its new position
 	[self replaceCharactersInRange:range withString:@""];
 	
+	// Don't go out of range
 	if (newRange.location > self.textView.string.length) newRange = NSMakeRange(self.textView.string.length - 1, 0);
-	//[self replaceCharactersInRange:newRange withString:string];
-	[self addString:string atIndex:newRange.location];
-	
-	return;
+	[self replaceCharactersInRange:newRange withString:string];
 	
 	// Create new ranges for undoing the operation
 	NSRange undoRange = NSMakeRange(newRange.location, range.length);
@@ -1640,6 +1652,7 @@
 	if (_timelineVisible) [self reloadTimeline];
 	if (self.timelineBar.visible) [self reloadTouchTimeline];
 }
+*/
 
 - (NSRange)cursorLocation
 {
@@ -3014,10 +3027,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 		NSRect newFrame;
 		
 		if (![self isFullscreen]) {
+			// Some weird magic to keep the window in screen
 			CGFloat newWidth = window.frame.size.width + TREE_VIEW_WIDTH + offset;
 			CGFloat newX = window.frame.origin.x - TREE_VIEW_WIDTH / 2;
 			CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
-			
+						
 			// Ensure the main document won't go out of screen bounds when opening the sidebar
 			if (newWidth > screenWidth) {
 				newWidth = screenWidth * .9;
@@ -3400,8 +3414,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 {
     if ([self selectedTabViewTab] == 0) {
 		// Do a synchronous refersh of the preview if the preview is not available
-         // if (!_previewUpdated) [self updateWebView]
-		// [self updateWebView];
 		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
 		else {
 			// So uh... yeah. Fuck commenting my code at this point.
@@ -3873,8 +3885,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 	
 	// Scene before which this scene will be moved, if not moved to the end
-	OutlineScene *previousScene;
-	if (!moveToEnd) previousScene = [outline objectAtIndex:to];
+	OutlineScene *sceneAfter;
+	if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
 	
 	// On to the very dangerous stuff :-) fuck me :----)
 	NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
@@ -3890,16 +3902,22 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// Different ranges depending on to which direction the scene was moved
 	if (from < to) {
 		if (!moveToEnd) {
-			newRange = NSMakeRange(previousScene.sceneStart - sceneToMove.sceneLength, 0);
+			newRange = NSMakeRange(sceneAfter.sceneStart - sceneToMove.sceneLength, 0);
 		} else {
 			newRange = NSMakeRange([[self getText] length] - sceneToMove.sceneLength, 0);
 		}
 	} else {
-		newRange = NSMakeRange(previousScene.sceneStart, 0);
+		newRange = NSMakeRange(sceneAfter.sceneStart, 0);
 	}
 
 	// We move the string itself in an easily undoable method
-	[self moveString:textToMove withRange:range newRange:newRange];
+	//[self moveString:textToMove withRange:range newRange:newRange];
+	
+	if (!moveToEnd) {
+		[self moveStringFrom:range to:sceneAfter.sceneStart];
+	} else {
+		[self moveStringFrom:range to:self.getText.length];
+	}
 }
 
 /*
@@ -4188,7 +4206,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 	
 	if ([message.name isEqualToString:@"closePrintPreview"]) {
-		NSLog(@"wat");
 		[self preview:nil];
 		return;
 	}
@@ -4512,6 +4529,10 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSString *content = [NSString stringWithContentsOfFile:timelinePath encoding:NSUTF8StringEncoding error:nil];
 
 	[_timelineView loadHTMLString:content baseURL:nil];
+	
+	// New timeline
+	_timeline.delegate = self;
+	
 	[self updateTimelineStyle];
 }
 - (void) updateTimelineStyle {
@@ -4520,11 +4541,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 - (void) reloadTimeline {
-	// Maybe just rebuild this from ground up so it could be done like this:
-	[_timeline reload:[self getOutlineItems]];
+	// New native timeline system waiting to be completed
+	// [_timeline reload:[self getOutlineItems]];
 	
 	__block OutlineScene *currentScene;
-	__block NSMutableArray *scenes = [self getOutlineItems];
+	__block NSArray *scenes = [self getOutlineItems];
 	
 	// If we are at the end of the document, last scene is being edited
 	if ([self cursorLocation].location == self.textView.string.length) currentScene = [scenes lastObject];
@@ -5126,7 +5147,8 @@ triangle walks
 
 - (IBAction)editTitlePage:(id)sender {
 	
-	FNScript* script = [[FNScript alloc] initWithString:[self getText]];
+	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
+	//FNScript* script = [[FNScript alloc] initWithString:[self getText]];
 
 	// List of applicable fields
 	NSDictionary* fields = @{
@@ -5142,9 +5164,9 @@ triangle walks
 	// Clear custom fields
 	_customFields = [NSMutableArray array];
 	
-	if ([script.titlePage count] > 0) {
+	if ([parser.titlePage count] > 0) {
 		// This is a shitty approach, but what can you say. When copying the dictionary, the order of entries gets messed up, so we need to uh...
-		for (NSDictionary *dict in script.titlePage) {
+		for (NSDictionary *dict in parser.titlePage) {
 			NSString *key = [dict.allKeys objectAtIndex:0];
 			
 			if ([fields objectForKey:key]) {

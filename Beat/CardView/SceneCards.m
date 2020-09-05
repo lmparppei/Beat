@@ -9,10 +9,11 @@
 /*
  
  This module prints out both the screen and print versions of the scene cards.
- Some of the stuff is still handled in Document.m, because I ran out of energy.
  Note that WebPrinter IS NOT agnostic or reusable anywhere, it's specifically
  customized for use with scene cards and has forced landscape paper orientation.
 
+ This is a very undocumented piece of code.
+ 
  */
 
 #import "SceneCards.h"
@@ -30,7 +31,6 @@
 @implementation SceneCards
 
 - (instancetype) initWithWebView:(WKWebView *)webView {
-
 	_cardView = webView;
 	_webPrinter = [[WebPrinter alloc] init];
 	// BTW, we need to retain the webPrinter in memory, because it acts as delegate and ARC seems to remove references to its properties, causing a crash. Remember to release if needed.
@@ -40,6 +40,7 @@
 }
 
 - (void) screenView {
+	// Create the HTML
 	NSError *error = nil;
 	
 	NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"CardCSS.css" ofType:@""];
@@ -65,104 +66,7 @@
 	
 	[_cardView loadHTMLString:content baseURL:nil];
 }
-/*
-- (void) showCards:(NSArray*)cards alreadyVisible:(bool)alreadyVisible changedIndex:(NSInteger)changedIndex {
-		
-	NSString * jsCode;
-	
-	// The card view will scroll to current scene by default.
-	// If the cards are already visible, we'll tell it not to scroll.
-	NSString *json = @"[";
-	for (NSString *card in cards) {
-		json = [json stringByAppendingFormat:@"{ %@ },", card];
-	}
-	json = [json stringByAppendingString:@"]"];
-	
-	if (alreadyVisible && changedIndex > -1) {
-		// Already visible, changed index
-		jsCode = [NSString stringWithFormat:@"createCards(%@, true, %lu);", json, changedIndex];
-	} else if (alreadyVisible && changedIndex < 0) {
-		// Already visible, no index
-		jsCode = [NSString stringWithFormat:@"createCards(%@, true);", json];
-	} else {
-		// Fresh new view
-		jsCode = [NSString stringWithFormat:@"createCards(%@);", json];
-	}
-	
-	[_cardView evaluateJavaScript:jsCode completionHandler:nil];
-}
-*/
 
-- (void)printCards:(NSArray *)cards printInfo:(NSPrintInfo *)printInfo {
-	NSWindow *window = NSApp.mainWindow;
-	if (!window) window = NSApp.windows.firstObject;
-	
-	NSError *error = nil;
-	
-	// A4 842px
-			
-	NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"CardPrintCSS.css" ofType:@""];
-	NSString *css = [NSString stringWithContentsOfFile:cssPath encoding:NSUTF8StringEncoding error:&error];
-	
-	NSMutableArray *htmlCards = [NSMutableArray array];
-	
-	for (NSDictionary *scene in cards) {
-		NSString * type = scene[@"type"];
-		NSString *card = @"";
-		if ([type isEqualToString:@"Heading"]) {
-			card = [NSString stringWithFormat:
-							  @"<div class='cardContainer'>"
-								"<div class='card'>"
-									"<div class='header'>"
-										"<div class='sceneNumber'>%@</div> <h3>%@</h3>"
-									"</div>"
-									"<p>%@</p>"
-								"</div>"
-							"</div>", scene[@"sceneNumber"], scene[@"title"], scene[@"snippet"]];
-		} else {
-			// Do something
-		}
-		if ([card length]) [htmlCards addObject:card];
-	}
-	
-	if (htmlCards.count < 1) {
-        NSAlert* alert = [[NSAlert alloc] init];
-        alert.messageText = @"No Printable Cards";
-        alert.informativeText = @"You have no scenes set up in the script. Scene cards don't include section headers and synopses.";
-		alert.alertStyle = NSAlertStyleWarning;
-        [alert beginSheetModalForWindow:window completionHandler:nil];
-		return;
-	}
-	
-	NSMutableString *html = [NSMutableString stringWithFormat:@""];
-	
-	//NSInteger cardsPerRow = round((printInfo.paperSize.width - 20) / 165);
-	NSInteger cardsPerRow = 3;
-	// Orientation is LANDSCAPE
-	NSInteger maxRows = round((printInfo.paperSize.width - 20) / 165);
-		
-	NSInteger cardsOnRow = 0;
-	NSInteger rows = 0;
-	
-	for (NSString *card in htmlCards) {
-		[html appendString:card];
-		cardsOnRow++;
-		
-		if (cardsOnRow >= cardsPerRow) {
-			cardsOnRow = 0;
-			rows++;
-		}
-		if (rows >= maxRows) {
-			[html appendString:@"</section><div class='pageBreak'></div><section>"];
-			rows = 0;
-			cardsOnRow = 0;
-		}
-	}
-	
-	NSString* content = [NSString stringWithFormat:@"<html><head><style>%@</style></head><body><div id='container'><section>%@</section></div></body></html>", css, html];
-		
-	[_webPrinter printHtml:content printInfo:printInfo];
-}
 
 /*
 
@@ -179,7 +83,6 @@
 	NSError *error;
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_cards options:NSJSONWritingPrettyPrinted error:&error];
 	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-	NSLog(@"json %@", json);
 	
 	NSString *jsCode;
 	
@@ -194,12 +97,13 @@
 		jsCode = [NSString stringWithFormat:@"createCards(%@);", json];
 	}
 	
-	NSLog(@"NEW JS: %@", jsCode);
 	[_cardView evaluateJavaScript:jsCode completionHandler:nil];
 }
 
 - (NSArray *) getSceneCards {
 	// Returns an array of dictionaries containing the card data
+	// Remember to set up the delegate
+	
 	NSMutableArray *sceneCards = [NSMutableArray array];
 	NSInteger index = 0;
 
@@ -207,11 +111,11 @@
 		if (scene.line.type != synopse) {
 			NSDictionary *sceneCard = @{
 				@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
-				@"name": (scene.string) ? scene.string : @"",
-				@"title": (scene.string) ? scene.string : @"", // for weird backwards compatibility stuff
+				@"name": (scene.string) ? scene.line.stripFormattingCharacters : @"",
+				@"title": (scene.string) ? scene.line.stripFormattingCharacters : @"", // for weird backwards compatibility stuff
 				@"color": (scene.color) ? [scene.color lowercaseString] : @"",
 				@"snippet": [self snippet:scene],
-				@"type": [scene.line typeAsString],
+				@"type": [[scene.line typeAsString] lowercaseString],
 				@"sceneIndex": [NSNumber numberWithInteger:index],
 				@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
 				@"position": [NSNumber numberWithInteger:scene.sceneStart],
@@ -275,26 +179,29 @@
 	return snippet;
 }
 
-
 - (void)printCardsWithInfo:(NSPrintInfo *)printInfo {
+	// This creates a HTML document for printing out the index cards
+	
 	NSWindow *window = NSApp.mainWindow;
 	if (!window) window = NSApp.windows.firstObject;
 	
 	NSError *error = nil;
 	
 	// A4 842px
-			
+
 	NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"CardPrintCSS.css" ofType:@""];
 	NSString *css = [NSString stringWithContentsOfFile:cssPath encoding:NSUTF8StringEncoding error:&error];
 	
 	NSMutableArray *htmlCards = [NSMutableArray array];
 	
+	// Retrieve cards through the delegate and put them into a dictionary
 	_cards = [self getSceneCards];
 	
+	// Create separate html snippets from all the cards
 	for (NSDictionary *scene in _cards) {
 		NSString * type = scene[@"type"];
 		NSString *card = @"";
-		if ([type isEqualToString:@"Heading"]) {
+		if ([type isEqualToString:@"heading"]) {
 			card = [NSString stringWithFormat:
 							  @"<div class='cardContainer'>"
 								"<div class='card'>"
@@ -305,7 +212,7 @@
 								"</div>"
 							"</div>", scene[@"sceneNumber"], scene[@"name"], scene[@"snippet"]];
 		} else {
-			// Do something
+			// Do something if you want to add cards for sections etc.
 		}
 		if ([card length]) [htmlCards addObject:card];
 	}
@@ -323,7 +230,8 @@
 	
 	//NSInteger cardsPerRow = round((printInfo.paperSize.width - 20) / 165);
 	NSInteger cardsPerRow = 3;
-	// Orientation is LANDSCAPE
+
+	// Orientation is ALWAYS LANDSCAPE
 	NSInteger maxRows = round((printInfo.paperSize.width - 20) / 165);
 		
 	NSInteger cardsOnRow = 0;
@@ -345,9 +253,31 @@
 	}
 	
 	NSString* content = [NSString stringWithFormat:@"<html><head><style>%@</style></head><body><div id='container'><section>%@</section></div></body></html>", css, html];
-		
+	
+	// Load up the HTML into a web view and print it out
 	[_webPrinter printHtml:content printInfo:printInfo];
 }
 
+- (NSString *)HTMLstring:(NSString*)string {
+	string = [string stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
+	string = [string stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"];
+	return string;
+}
+
+/*
+ 
+ i leave home at seven
+ under a heavy sky
+ i ride my bike up
+ i ride my bike down
+ 
+ november smoke
+ and my toes go numb
+ a new color on the globe
+ it goes from white to red
+ a little voice in my head says:
+ oh, oh
+ 
+ */
 
 @end

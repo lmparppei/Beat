@@ -7,10 +7,12 @@
 //
 
 #import <WebKit/WebKit.h>
-#import "PreviewViewController.h"
 #import <Quartz/Quartz.h>
-#import "FNScript.h"
-#import "FNHTMLScript.h"
+
+#import "PreviewViewController.h"
+
+#import "ContinousFountainParser.h"
+#import "BeatPreview.h"
 
 @interface PreviewViewController () <QLPreviewingController>
 @property (nonatomic) IBOutlet WKWebView *webView;
@@ -52,15 +54,8 @@
 	if (width < 400) smallView = YES;
 	
 	if (!error) {
-		FNScript *script = [[FNScript alloc] initWithString:file];
-		FNHTMLScript *htmlScript;
-		htmlScript = [[FNHTMLScript alloc] initWithScript:script];
-				
-		NSString *htmlString = [htmlScript html];
-		if (smallView) htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<body>" withString:@"<body class='small'>"];
-		
-		//[self.webView loadHTMLString:[htmlScript html] baseURL:nil];
-		[[self.webView2 mainFrame] loadHTMLString:htmlString baseURL:nil];
+		NSString *html = [BeatPreview createQuickLook:file];
+		[[self.webView2 mainFrame] loadHTMLString:html baseURL:nil];
 	}
 	
 	

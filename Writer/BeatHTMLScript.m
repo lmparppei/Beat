@@ -26,14 +26,21 @@
 
 /*
  
- N.B. This version of FNHTMLScript.m is customized for Beat. It still outputs HTML for printing out screenplays.
+ This piece of code outputs the screenplay as HTML. It is based on FNHTMLScript.m.
+ It now natively uses the Beat data structure (Line*) and the Continuous Fountain Parser
+ instead of the old, open source Fountain stuff. It's now about 10 times faster and more reliable.
+  
+ Note that HTML output links to either screen or print CSS depending on the target format.
+ Print & PDF versions rely on PrintCSS.css and preview mode uses ScriptCSS.css.
  
- There are certain differences:
+ The old open source stuff was very, very dated, and in late 2019 I ran into pretty
+ big problems, which had to do with computer architecture stuff and I was ill prepared
+ that my little programming project would require understanding of that. The code
+ used a library, RegexKitLite, and I had to rewrite everything referring to it.
  
- - the English language default "written by" has been removed: [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
- - HTML output links to either screen or print CSS depending on the target format.
-   Print & PDF versions rely on PrintCSS.css and preview mode uses a modified ScriptCSS.css.
- - And - as I'm writing this, some functions in RegexKitLite.h have been deprecated in macOS 10.12+.
+ I saved the rant below from those days:
+ 
+ - As I'm writing this, some functions in RegexKitLite.h have been deprecated in macOS 10.12+.
    Fair enough - it was apparently last updated in 2010.
  
    Back then, I hadn't made any films. In 2010, I was young, madly in love and had dreams and aspirations.
@@ -73,6 +80,11 @@
  I also stumbled upon the message written above, and omg past me, I'd send you some hugs and kisses
  if I could, but I'm writing this amidst the COVID-19 pandemic so I have to keep my distance.
  
+ UPDATE 4th September 2020:
+ I implemented the idea presented above. It now works like a charm and is a lot faster.
+ At first, it was used only for the previews, but now every single reference to the old
+ Fountain stuff has been removed!
+ 
 */
 
 #import "BeatHTMLScript.h"
@@ -90,6 +102,7 @@
 @property (copy, nonatomic) NSString *bodyText;
 @property (nonatomic) NSInteger numberOfPages;
 @property (nonatomic) NSString *currentScene;
+@property (nonatomic) bool quickLook;
 
 @end
 
@@ -136,6 +149,19 @@
         _font = [QUQFont fontWithName:@"Courier" size:12];
 		_document = document;
 		_currentScene = scene;
+	}
+	return self;
+}
+
+- (id)initWithScript:(NSDictionary *)script quickLook:(bool)quickLook {
+	self = [super init];
+	if (self) {
+        _script = script[@"script"];
+		_titlePage = script[@"title page"];
+        _font = [QUQFont fontWithName:@"Courier" size:12];
+		_document = nil;
+		_currentScene = nil;
+		_quickLook = quickLook;
 	}
 	return self;
 }
@@ -485,7 +511,7 @@
             
 			if (line.type == heading) {
                 [text setString:[text replace:RX(@"^\\.") with:@""]];
-				if (!_print) [text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
+				if (!_print && !_quickLook) [text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
             }
             if (line.type == character) {
 				[text setString:[text replace:RX(@"^@") with:@""]];
@@ -555,6 +581,8 @@
 }
 
 - (NSString*)previewUI {
+	if (_quickLook) return @"";
+	
 	return @"" \
 	"<div id='close' class='ui' onclick='closePreview();'>✕</div>" \
 	
@@ -577,3 +605,39 @@
 }
 
 @end
+
+/*
+ 
+ Li Po crumbles his poems
+ sets them on
+ fire
+ floats them down the
+ river.
+ 
+ 'what have you done?' I
+ ask him.
+ 
+ Li passes the
+ bottle: 'they are
+ going to end
+ no matter what
+ happens...
+ 
+ I drink to his knowledge
+ pass the bottle back
+ 
+ sit tightly upon my poems
+ which I have
+ jammed halfway up my crotch
+ 
+ I help him burn
+ some more of his poems
+ 
+ it floats well
+ down
+ the river
+ lighting up the night
+ as good words
+ shoul.
+ 
+ */

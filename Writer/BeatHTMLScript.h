@@ -48,6 +48,7 @@
 - (id)initWithScript:(NSDictionary *)script;
 - (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document;
 - (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene;
+- (id)initWithScript:(NSDictionary *)script quickLook:(bool)quickLook;
 - (id)initWithScript:(NSDictionary *)script print:(bool)print;
 - (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document print:(bool)print;
 

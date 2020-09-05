@@ -4,10 +4,11 @@
 //
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//
+//  Parts copyright © 2019-2020 KAPITAN! / Lauri-Matti Parppei. All Rights reserved.
+
+//  Heavily modified for Beat
 
 #import "Line.h"
-#import "FNElement.h"
 #import "RegExCategories.h"
 #import "FountainRegexes.h"
 
@@ -301,34 +302,6 @@
 	}];
 	
 	return inRange;
-}
-
-- (FNElement*)fountainElement {
-	// Helper method which returns a Fountain script element
-	// This bridges ContinuousFountainParser with FNParser.
-	// Will be deprecated once modules for printing & pagination have been replaced with custom Beat stuff (WIP)
-
-	// Return empty object for title page data
-	if ([self isTitlePage]) return nil;
-	
-	FNElement *element = [[FNElement alloc] init];
-	element.elementType = [self typeAsFountainString];
-	
-	if (self.type == centered) {
-		element.elementType = @"Action";
-		element.isCentered = YES;
-	}
-	
-	// NOTE: parsing this correctly in FNHTMLScript requires the previous character to be set as dual too
-	if (self.type == dualDialogueCharacter) element.isDualDialogue = YES;
-
-	// Set content and clean up notes & omits
-	element.elementText = [self cleanedString];
-	
-	// Set scene number
-	if (self.sceneNumber) element.sceneNumber = self.sceneNumber;
-	
-	return element;
 }
 
 - (NSString*)typeAsFountainString

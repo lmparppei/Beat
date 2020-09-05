@@ -28,11 +28,8 @@
  */
 
 #import "PrintView.h"
-#import "FNScript.h"
-#import "FNPaginator.h"
-#import "FNHTMLScript.h"
 #import "BeatPreview.h"
-#import "FNElement.h"
+
 @interface PrintView () <WebFrameLoadDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
 @property (weak, nonatomic) Document *document;
@@ -50,13 +47,7 @@
 		_finishedWebViews = 0;
 		_document = document;
 		
-		//Create a script from the Document
-		FNScript *script = [[FNScript alloc] initWithString:document.preprocessedText];
-		FNHTMLScript *htmlScript = [[FNHTMLScript alloc] initWithScript:script document:document print:true];
-		htmlScript.forRendering = @YES;
-		
 		NSString *htmlString = [BeatPreview createPrint:document.preprocessedText document:document];
-		CGSize paperSize = CGSizeMake(document.printInfo.paperSize.width, document.printInfo.paperSize.height);
 		
 		WebView *pageWebView = [[WebView alloc] init];
 		pageWebView.frameLoadDelegate = self;
@@ -65,11 +56,10 @@
 		
 		_webView = pageWebView;
 		
-		//[pageWebView.mainFrame loadHTMLString:[htmlScript html] baseURL:nil];
 		[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
-		//pageWebView.frame = NSMakeRect(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);
-		
-		self.frame = CGRectMake(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);
+
+		// Why was this used in Writer?
+		// self.frame = CGRectMake(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);
 	}
 	return self;
 }

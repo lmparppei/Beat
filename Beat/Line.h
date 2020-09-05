@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FNElement.h"
 
 typedef enum : NSUInteger {
     empty = 0,
@@ -71,9 +70,6 @@ typedef enum : NSUInteger {
 - (bool)centered;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
-
-// This is a method for converting Line to FNElement
-- (FNElement*)fountainElement;
 
 // Copy element
 - (Line*)clone;

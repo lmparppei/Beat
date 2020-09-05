@@ -22,6 +22,8 @@
 #import "OutlineScene.h"
 #import "BeatColors.h"
 
+#define PADDING 8.0
+
 @protocol BeatTimelineDelegate
 - (NSRange)selectedRange;
 - (NSArray*)getOutline;
@@ -33,6 +35,7 @@
 @property CGFloat playheadPosition;
 @property CGFloat scrollPosition;
 @property NSInteger selectedItem;
+@property CGFloat magnification;
 
 @end
 
@@ -49,21 +52,21 @@
 	
 	// Calculate length
 	bool hasSections = NO;
-    for (NSDictionary *item in _items) {
+    for (OutlineScene *scene in _outline) {
 		// Skip some elements
-		if (item[@"invisible"]) continue;
-		else if ([item[@"type"] isEqualToString:@"Synopse"]) continue;
+		if (scene.omited) continue;
+		else if (scene.type == synopse) continue;
 		
-		if ([item[@"type"] isEqualToString:@"Section"]) hasSections = YES;
-        if ([item[@"type"] isEqualToString:@"Heading"]) totalLength += [item[@"length"] intValue];
+		if (scene.type == section) hasSections = YES;
+		if (scene.type == heading) totalLength += scene.sceneLength;
     }
     
-	CGFloat width = self.frame.size.width - self.items.count;
+	CGFloat width = self.frame.size.width - self.items.count - PADDING * 4;
 	CGFloat height = self.frame.size.height * 50;
 	if (height > 30) height = 30;
 	
-	CGFloat factor = width / totalLength;
-	CGFloat x = 0;
+	CGFloat factor = (width) / totalLength;
+	CGFloat x = PADDING;
 	
 	// Make the scenes be centered in the frame
 	CGFloat yPosition = (self.frame.size.height - height) / 2;
@@ -71,28 +74,43 @@
 	if (hasSections) { }
 	
 	NSFont *sceneFont = [NSFont systemFontOfSize:10];
-    NSMutableDictionary *previousItem = nil;
+    //NSMutableDictionary *previousItem = nil;
+	OutlineScene *previousScene;
     
-    for (NSMutableDictionary *item in self.items) {
-		if (item[@"invisible"]) continue;
+    for (OutlineScene *scene in self.outline) {
+		if (scene.omited) continue;
 		
-        if ([item[@"type"] isEqualToString:@"Heading"]) {
-            CGFloat width = [item[@"length"] intValue] * factor;
+		if (scene.type == heading) {
+			bool selected = NO;
+			NSInteger selection = self.delegate.selectedRange.location;
+			if (selection >= scene.sceneStart && selection < scene.sceneStart + scene.sceneLength) selected = YES;
+			
+			CGFloat width = scene.sceneLength * factor;
             NSRect rect = NSMakeRect(x, yPosition / 2, width, height);
-            
 			NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:0.5 yRadius:0.5];
 			
-			DynamicColor *color = item[@"color"];
+			NSColor *color = [BeatColors colors][scene.color];
+			NSLog(@"color %@", color);
+			if (color == nil) color = NSColor.darkGrayColor;
+			
+			NSColor *textColor = NSColor.lightGrayColor;
+			
+			if (selected) {
+				textColor = color;
+				color = NSColor.whiteColor;
+			}
+			
+			
+			
 			NSGradient *gradient = [[NSGradient alloc] initWithColors:@[color, [color colorWithAlphaComponent:0.9]]];
 			[gradient drawInBezierPath:path angle:-90];
 			
-            [item setValue:[NSNumber numberWithFloat:x] forKey:@"start"];
-            if (previousItem) [previousItem setValue:[NSNumber numberWithFloat:x - 1] forKey:@"end"];
+            //[item setValue:[NSNumber numberWithFloat:x] forKey:@"start"];
+            //if (previousItem) [previousItem setValue:[NSNumber numberWithFloat:x - 1] forKey:@"end"];
             
 			// Show text
-			if (width > 30) {
-				NSColor *textColor = NSColor.lightGrayColor;
-				NSString *label = item[@"name"];
+			if (width > 20) {
+				NSString *label = [NSString stringWithFormat:@"%@ %@", scene.sceneNumber, scene.string];
 				NSRect textRect = NSMakeRect(x + 5, yPosition + 5 , width - 8, 10);
 				NSDictionary *attributes = @{ NSForegroundColorAttributeName: textColor, NSFontAttributeName: sceneFont };
 				
@@ -101,16 +119,16 @@
 			
             x += width + 1;
         }
-        else if ([item[@"type"] isEqualToString:@"Section"]){
+		else if (scene.type == section){
             NSRect rect = NSMakeRect(x, 0, 1, self.frame.size.height);
             NSColor *color = NSColor.lightGrayColor;
             [color setFill];
             NSRectFill(rect);
-			[item setValue:[NSNumber numberWithFloat:x] forKey:@"start"];
 			
-            if (previousItem) [previousItem setValue:[NSNumber numberWithFloat:x - 1] forKey:@"end"];
+			//[item setValue:[NSNumber numberWithFloat:x] forKey:@"start"];
+            //if (previousItem) [previousItem setValue:[NSNumber numberWithFloat:x - 1] forKey:@"end"];
             
-            NSAttributedString *title = [[NSAttributedString alloc] initWithString:item[@"name"] attributes:@{
+			NSAttributedString *title = [[NSAttributedString alloc] initWithString:scene.string attributes:@{
                 NSFontAttributeName: [NSFont labelFontOfSize:7],
                 NSForegroundColorAttributeName: NSColor.whiteColor
             }];
@@ -119,11 +137,11 @@
             x += 2;
         }
         
-        previousItem = item;
+        previousScene = scene;
     }
     // Set end location for last item
     // (now known as previous, as the iteration has ended)
-    [previousItem setValue:[NSNumber numberWithFloat:x] forKey:@"end"];
+    // [previousItem setValue:[NSNumber numberWithFloat:x] forKey:@"end"];
     
 	CGFloat magnification = 1.0;
 	
@@ -139,8 +157,11 @@
 }
 
 -(void)awakeFromNib {
-	self.wantsLayer = YES;
-	[self.layer setBackgroundColor:NSColor.blackColor.CGColor];
+	[self setFrame:NSMakeRect(0, 0, self.superview.frame.size.width, self.superview.frame.size.height)];
+	[self.enclosingScrollView.documentView setFrame:self.frame];
+	
+	self.enclosingScrollView.documentView.wantsLayer = YES;
+	[self.enclosingScrollView.documentView.layer setBackgroundColor:NSColor.blackColor.CGColor];
 	
     _scrollPosition = 0;
 	_playheadPosition = 0;
@@ -151,29 +172,25 @@
 -(BOOL)isFlipped { return YES; }
 
 - (void)reload:(NSArray*)scenes {
-	_outline = scenes;
+	_outline = [NSArray arrayWithArray:scenes];
 
-	_items = [NSMutableArray array];
-     for (OutlineScene *scene in _outline) {
-		 NSMutableDictionary *item = [NSMutableDictionary dictionaryWithDictionary:@{
-            @"name": scene.string,
-            @"length": [NSNumber numberWithInteger:scene.sceneLength],
-            @"type": scene.line.typeAsString,
-			@"item": scene
-		 }];
-		 
-		 if (scene.color) {
-			 NSColor *color = [BeatColors color:[scene.color lowercaseString]];
-			 if (color) [item setValue:color forKey:@"color"];
-			 else [item setValue:NSColor.darkGrayColor forKey:@"color"];
-		 }
-		 else [item setValue:NSColor.grayColor forKey:@"color"];
-		 
-		 if (scene.omited) [item setValue:@"YES" forKey:@"invisible"];
-		 
-		 [_items addObject:item];
-     }
-	
+	[self setNeedsDisplay:YES];
+}
+- (void)refresh {
+	// Set selected scene
+}
+
+- (IBAction)magnify:(id)sender {
+	_magnification = [(NSSlider*)sender doubleValue];
+	NSLog(@"mag : %f", _magnification);
+	[self magnifyTo:_magnification];
+}
+- (void)magnifyTo:(CGFloat)magnify {
+	_magnification = magnify;
+	NSRect frame = self.enclosingScrollView.frame;
+	frame.size.width *= magnify;
+	[self setFrame:frame];
+	[self.enclosingScrollView.documentView setFrame:frame];
 	[self setNeedsDisplay:YES];
 }
 

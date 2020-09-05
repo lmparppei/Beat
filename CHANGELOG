@@ -11,7 +11,7 @@
 * Fixed a bug with notes taking up print space
 * Some code cleanup
 * Early experiments with the new Timeline class for replacing the weird JavaScript version :---) 
-
+* Delegation and modularization
 
 ## Beat 1.3b
 

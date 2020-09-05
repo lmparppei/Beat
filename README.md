@@ -11,11 +11,11 @@ There is a working iOS prototype, but its development is on hiatus right now, as
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and some code still originates from his work, especially within the magnificent continuous Fountain parser.
 
 
-## Latest release: Beat 1.3
+## Latest release: Beat 1.4
 
 **Features**
-* Minimalistic UI that stays out of the way
-* Automatic screenplay formatting, no need for shortcuts or hotkeys
+* Minimalistic UI with as little distractions as possible
+* Smart, automatic screenplay formatting
 * Dark mode for the children of the night
 * Full support for Fountain syntax
 * Final Draft import / export
@@ -29,7 +29,7 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 * Timeline view with sections & synopses
 * Autocomplete characters and scene headings
 * Color-coded scenes
-* Analysis view, with line count per character, amount lines by gender, scene locations, etc.
+* Analysis view, with line count per character, amount of lines by gender, scene locations, etc.
 * Fountain Quicklook in Finder
 * Autosave & script backups in case of crashes 
 * Automatic paragraphs & tab key for auto character cue

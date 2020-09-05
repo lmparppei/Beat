@@ -37,8 +37,6 @@ function init () {
 		window.webkit.messageHandlers.cardClick.postMessage('exit');
 	}
 	
-	
-	
 	document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
 	
 	// Init context menut
@@ -265,7 +263,9 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		}
 
 		if (card.type == 'section') {
-			html += "<h2 sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
+			let depth = card.depth;
+			if (card.depth > 3) depth = 3;
+			html += "<h2 class='depth-" +depth+ "' sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
 		} else if (card.type == 'synopse') {
 			// Hidden
 			html += "<div sceneIndex='" + card.sceneIndex + "' style='display: none;'></div>";

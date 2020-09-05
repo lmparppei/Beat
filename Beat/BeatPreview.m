@@ -14,8 +14,6 @@
  */
 
 #import "BeatPreview.h"
-#import "FNScript.h"
-#import "FNElement.h"
 #import "Line.h"
 #import "ContinousFountainParser.h"
 #import "OutlineScene.h"
@@ -91,7 +89,16 @@
 	return html.html;
 }
 
++ (NSString*) createQuickLook:(NSString*)rawText {
+	return [self createNewPreview:rawText of:nil scene:nil quickLook:YES];
+}
++ (NSString*) createNewPreview:(NSString*)rawText {
+	return [self createNewPreview:rawText of:nil scene:nil];
+}
 + (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene {
+	return [self createNewPreview:rawText of:document scene:scene quickLook:NO];
+}
++ (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene quickLook:(bool)quickLook {
 	// Continuous parser is much faster than the normal Fountain parser
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText];
 	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -151,76 +158,14 @@
 	// Set script data
 	[script setValue:parser.titlePage forKey:@"title page"];
 	[script setValue:elements forKey:@"script"];
-
-	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document scene:scene];
-	return html.html;
-}
-
-+ (FNScript*) createPreview:(NSString*)rawText {
-	// Continuous parser is much faster than the normal Fountain parser
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText];
-	//FNScript *script = [[FNScript alloc] initWithString:rawString];
 	
-	FNScript *script = [[FNScript alloc] init];
-	script.elements = [NSArray array];
-	
-	Line *previousLine;
-	
-	for (Line *line in parser.lines) {
-		// Skip over certain elements
-		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
-			if (line.type == empty) previousLine = line;
-			continue;
-		}
-	
-		// This is a paragraph with a line break,
-		// so append the line to the previous one
-		if (line.type == action && line.isSplitParagraph && [parser.lines indexOfObject:line] > 0) {
-			FNElement *previousElement = [script.elements objectAtIndex:script.elements.count - 1];
-
-			previousElement.elementText = [previousElement.elementText stringByAppendingFormat:@"\n%@", line.cleanedString];
-			continue;
-		}
-		
-		if (line.type == dialogue && line.string.length < 1) {
-			line.type = empty;
-			previousLine = line;
-			continue;
-		}
-		
-		FNElement *element = [line fountainElement];
-		if (element) {
-			script.elements = [script.elements arrayByAddingObject:element];
-		}
-				
-		// If this is dual dialogue character cue,
-		// we need to search for the previous one too
-		if (element.isDualDialogue) {
-			bool previousCharacterFound = NO;
-			NSInteger i = script.elements.count - 2; // Go for previous element
-			while (i > 0) {
-				FNElement *previousElement = [script.elements objectAtIndex:i];
-				if ([previousElement.elementType isEqualToString:@"Character"]) {
-					previousElement.isDualDialogue = YES;
-					previousCharacterFound = YES;
-					break;
-				}
-				i--;
-			}
-			
-			// If there was no previous character, just reset
-			if (!previousCharacterFound) {
-				element.isDualDialogue = NO;
-			}
-		}
-		
-		previousLine = line;
+	if (quickLook) {
+		BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script quickLook:YES];
+		return html.html;
+	} else {
+		BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document scene:scene];
+		return html.html;
 	}
-	
-	// Set title page data
-	script.titlePage = parser.titlePage;
-	
-	return script;
 }
 
 /*

@@ -100,8 +100,30 @@
 		CGFloat height = [self findBarView].frame.size.height;
 		_outlineButtonY.constant = _buttonDefaultY + height;
 	}
-	//CGFloat height = [self findBarView].frame.size.height;
 }
 
+/*
+
+ suljetaan
+ ovet meidän takana
+ näiltä kauheita vuosilta
+ eikä katsota taa
+ 
+ maalataan
+ kasvot sinisellä savella
+ kuoritaan pois kuollutta ihoa
+ en sano sun nimeäs
+ enää koskaan
+ 
+ en sano sun nimeäs
+ enää koskaan
+ 
+ kukaan meistä ei aio sanoa
+ sun nimeäs enää
+ 
+ sä et lyö mua enää
+ sä et lyö mua enää.
+ 
+ */
 
 @end

@@ -8,14 +8,13 @@
 
 #import <Cocoa/Cocoa.h>
 #import "OutlineScene.h"
-#import "FNScript.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatPreview : NSObject
 + (NSString*) createPrint:(NSString*)rawText document:(NSDocument*)document;
-+ (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene;
-+ (FNScript*) createPreview:(NSString*)rawText;
++ (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument* _Nullable)document scene:(NSString* _Nullable)scene;
++ (NSString*) createQuickLook:(NSString*)rawText;
 @end
 
 NS_ASSUME_NONNULL_END

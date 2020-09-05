@@ -172,4 +172,14 @@
 	return list;
 }
 
+/*
+ 
+ jag vill spola tillbaka
+ Super 8
+ vi måste få ett lyckligare slut
+ gör Super 8 -moll
+ till Technicolor Gold
+ 
+ */
+
 @end

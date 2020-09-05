@@ -10,11 +10,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatTimeline : NSView
+@protocol BeatTimelineDelegate <NSObject>
+
+- (NSRange)selectedRange;
+- (NSArray*)getOutline;
+
+@end
+
+@interface BeatTimeline : NSView 
 
 @property (nonatomic) NSArray* outline;
-- (void)reload:(NSArray*)scenes;
+@property (nonatomic) id<BeatTimelineDelegate> delegate;
 
+- (void)reload:(NSArray*)scenes;
 @end
 
 NS_ASSUME_NONNULL_END

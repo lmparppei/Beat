@@ -50,7 +50,7 @@
                 <outlet property="textClipView" destination="sxN-R8-PHt" id="cYv-gE-6zc"/>
                 <outlet property="textScrollView" destination="Mky-48-wwA" id="w22-2t-KE1"/>
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
-                <outlet property="timeline" destination="DRJ-R4-eLG" id="INL-4K-2A6"/>
+                <outlet property="timeline" destination="IU0-KE-xoj" id="pZe-FK-JpT"/>
                 <outlet property="timelineBar" destination="23S-cr-Vy0" id="Vm9-rS-IhX"/>
                 <outlet property="timelineView" destination="uRk-cB-Qej" id="HYs-GX-9q7"/>
                 <outlet property="timelineViewHeight" destination="JRc-lw-lna" id="0zf-6f-BrV"/>
@@ -251,10 +251,6 @@
                                                 <wkPreferences key="preferences"/>
                                             </wkWebViewConfiguration>
                                         </wkWebView>
-                                        <customView hidden="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DRJ-R4-eLG" customClass="BeatTimeline">
-                                            <rect key="frame" x="0.0" y="36" width="1100" height="84"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        </customView>
                                         <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="yra-qv-1lk" customClass="ColorView">
                                             <rect key="frame" x="0.0" y="120" width="330" height="541"/>
                                             <subviews>
@@ -421,7 +417,7 @@
                                                                 <rect key="frame" x="12" y="14" width="56" height="14"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Character" id="NLd-GN-ebP">
-                                                                    <font key="font" metaFont="message" size="11"/>
+                                                                    <font key="font" metaFont="controlContent" size="11"/>
                                                                     <color key="textColor" red="0.4290917205" green="0.4269779682" blue="0.43120547279999999" alpha="0.80900638199999997" colorSpace="custom" customColorSpace="displayP3"/>
                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -457,7 +453,7 @@
                                                                 <rect key="frame" x="12" y="39" width="33" height="14"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Color" id="pXN-uS-1oE">
-                                                                    <font key="font" metaFont="message" size="11"/>
+                                                                    <font key="font" metaFont="controlContent" size="11"/>
                                                                     <color key="textColor" red="0.4290917205" green="0.4269779682" blue="0.43120547279999999" alpha="0.80900638199999997" colorSpace="custom" customColorSpace="displayP3"/>
                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
@@ -1366,6 +1362,54 @@ Gw
                 </subviews>
             </view>
             <point key="canvasLocation" x="921" y="806"/>
+        </window>
+        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="cW6-yI-jF8" userLabel="New Timeline test">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="179" y="218" width="671" height="97"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <view key="contentView" id="FNf-mC-0Y5">
+                <rect key="frame" x="0.0" y="0.0" width="671" height="97"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="agr-0p-nWQ">
+                        <rect key="frame" x="-1" y="-1" width="673" height="99"/>
+                        <clipView key="contentView" id="h7L-IC-IAC">
+                            <rect key="frame" x="0.0" y="0.0" width="673" height="99"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <view id="IU0-KE-xoj" customClass="BeatTimeline">
+                                    <rect key="frame" x="0.0" y="0.0" width="658" height="84"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                            </subviews>
+                        </clipView>
+                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="xCM-Ux-hTd">
+                            <rect key="frame" x="0.0" y="83" width="673" height="16"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="I6x-dO-bms">
+                            <rect key="frame" x="-100" y="-100" width="16" height="117"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
+                    <slider verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ymo-HJ-gTs">
+                        <rect key="frame" x="546" y="9" width="112" height="19"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <sliderCell key="cell" continuous="YES" refusesFirstResponder="YES" state="on" alignment="left" minValue="1" maxValue="3" doubleValue="1" tickMarkPosition="above" sliderType="linear" id="04k-Kv-67A"/>
+                        <connections>
+                            <action selector="magnify:" target="IU0-KE-xoj" id="9p2-pD-Qif"/>
+                        </connections>
+                    </slider>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="agr-0p-nWQ" firstAttribute="top" secondItem="FNf-mC-0Y5" secondAttribute="top" constant="-1" id="9EI-u2-Tob"/>
+                    <constraint firstItem="agr-0p-nWQ" firstAttribute="centerY" secondItem="FNf-mC-0Y5" secondAttribute="centerY" id="Gqe-Up-M3R"/>
+                    <constraint firstItem="agr-0p-nWQ" firstAttribute="centerX" secondItem="FNf-mC-0Y5" secondAttribute="centerX" id="LOY-9g-sZs"/>
+                    <constraint firstItem="agr-0p-nWQ" firstAttribute="leading" secondItem="FNf-mC-0Y5" secondAttribute="leading" constant="-1" id="sdJ-dH-qKn"/>
+                </constraints>
+            </view>
+            <point key="canvasLocation" x="-187" y="637"/>
         </window>
     </objects>
     <resources>
