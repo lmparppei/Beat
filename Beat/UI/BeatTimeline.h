@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol BeatTimelineDelegate <NSObject>
 
 - (NSRange)selectedRange;
-- (NSArray*)getOutline;
+- (NSMutableArray*)getOutlineItems;
 
 @end
 

@@ -41,5 +41,24 @@
     }
     
 }
+/*
+- (CGSize)intrinsicContentSize
+{
+	// Now, if we hide the view,
+    if (self.isHidden) {
+		return CGSizeMake(0.0f, NSViewNoIntrinsicMetric);
+    } else {
+        return [super intrinsicContentSize];
+    }
+}
+
+- (void)setHidden:(BOOL)hidden
+{
+    [super setHidden:hidden];
+
+	[self updateConstraintsForSubtreeIfNeeded];
+	[self layoutSubtreeIfNeeded];
+}
+ */
 
 @end

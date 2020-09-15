@@ -94,7 +94,7 @@
 	
 	// This returns YES also for empty lines, which SHOULD NOT be a problem for anything, but yeah, we could check it:
 	//if (omitLength == [self.string length] && self.type != empty) {
-	if (omitLength + noteLength == [self.string length]) {
+	if (omitLength + noteLength >= [self.string length]) {
 		return true;
 	} else {
 		return false;
@@ -186,6 +186,28 @@
 	[indexes addIndexes:self.noteRanges];
 	
 	[indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.location - offset + range.length > string.length) {
+			range = NSMakeRange(range.location, string.length - range.location - offset);
+		}
+		
+		@try {
+			[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
+		}
+		@catch (NSException* exception) {
+			NSLog(@"cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
+		}
+		@finally {
+			offset += range.length;
+		}
+	}];
+	
+	return string;
+}
+- (NSString*)stripNotes {
+	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
+	__block NSUInteger offset = 0;
+	
+	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.location - offset + range.length > string.length) {
 			range = NSMakeRange(range.location, string.length - range.location - offset);
 		}

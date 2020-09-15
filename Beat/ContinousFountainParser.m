@@ -1356,14 +1356,15 @@ and incomprehensible system of recursion.
 			
 			currentScene = item;
 			
-			item.string = line.string;
 			item.type = line.type;
 			item.omited = line.omited;
 			item.line = line;
 			item.storylines = line.storylines;
 			item.color = line.color;
-			item.string = line.stripInvisible;
-						
+			
+			if (!item.omited) item.string = line.stripInvisible;
+			else item.string = line.stripNotes;
+			
 			// Add storylines to the storyline bank
 			// btw: this is a fully speculative feature, no idea if it'll be used
 			for (NSString* storyline in item.storylines) {
@@ -1378,12 +1379,14 @@ and incomprehensible system of recursion.
 				item.sectionDepth = sectionDepth;
 			}
 			
-			// Remove formatting characters from the outline item string if needed
-			if ([item.string characterAtIndex:0] == '#' && [item.string length] > 1) {
-				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-			}
-			if ([item.string characterAtIndex:0] == '=' && [item.string length] > 1) {
-				item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+			if (item.string.length > 0) {
+				// Remove formatting characters from the outline item string if needed
+				if ([item.string characterAtIndex:0] == '#' && [item.string length] > 1) {
+					item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+				}
+				if ([item.string characterAtIndex:0] == '=' && [item.string length] > 1) {
+					item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
+				}
 			}
 			
 			if (line.type == heading) {

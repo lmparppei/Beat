@@ -87,6 +87,7 @@ typedef enum : NSUInteger {
 
 - (NSString*)stripSceneNumber;
 - (NSString*)stripFormattingCharacters;
+- (NSString*)stripNotes;
 
 @property bool isSplitParagraph;
 @property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing

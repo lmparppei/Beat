@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SceneCardDelegate <NSObject>
 
 - (NSRange)selectedRange;
-- (NSArray*)getOutlineItems;
+- (NSMutableArray*)getOutlineItems;
 - (NSArray*)lines;
 
 @end

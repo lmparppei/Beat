@@ -125,6 +125,7 @@
 @property (nonatomic) NSTimer *paginationTimer;
 @property (nonatomic) NSMutableArray *sectionMarkers;
 @property (nonatomic) bool newScene;
+@property (nonatomic) bool moving;
 @property (nonatomic) bool sceneHeadingEdited;
 @property (nonatomic) bool sceneHeadingUndoString;
 @property (nonatomic) bool showPageNumbers;
@@ -365,7 +366,7 @@
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.72
 
-#define TREE_VIEW_WIDTH 320
+#define TREE_VIEW_WIDTH 330
 #define TIMELINE_VIEW_HEIGHT 120
 
 #define OUTLINE_SECTION_SIZE 13.0
@@ -441,17 +442,16 @@
 	[self setZoom];
 
     // Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
-    NSWindow *window = aController.window;
-    NSRect newFrame = NSMakeRect(window.frame.origin.x,
-                                 window.frame.origin.y,
+    NSRect newFrame = NSMakeRect(_thisWindow.frame.origin.x,
+                                 _thisWindow.frame.origin.y,
                                  _documentWidth * 1.7,
                                  _documentWidth * 1.5);
-    [window setFrame:newFrame display:YES];
+    [_thisWindow setFrame:newFrame display:YES];
 	
 	// Accept mouse moved events + set window object to master view
-	[aController.window setAcceptsMouseMovedEvents:YES];
-	self.masterView.parentWindow = aController.window;
-	self.masterView.styleMask = aController.window.styleMask;
+	[_thisWindow setAcceptsMouseMovedEvents:YES];
+	self.masterView.parentWindow = _thisWindow;
+	self.masterView.styleMask = _thisWindow.styleMask;
 	
 	// Outline view setup
     self.outlineViewVisible = false;
@@ -470,7 +470,7 @@
 	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
 	self.textInsetY = TEXT_INSET_TOP;
 	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-	self.textView.textContainerInset = NSMakeSize(window.frame.size.width / 2 - _documentWidth / 2, _textInsetY);
+	self.textView.textContainerInset = NSMakeSize(_thisWindow.frame.size.width / 2 - _documentWidth / 2, _textInsetY);
 	
 	// Set textView style
 	[self.textView setFont:[self courier]];
@@ -486,6 +486,8 @@
 	_paginator = [[FountainPaginator alloc] initForLivePagination:nil paperSize:self.printInfo.paperSize];
 	
 	// Read default settings
+	// This is ugly but whatever
+	
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
         self.matchParentheses = YES;
     } else {
@@ -521,7 +523,7 @@
 	} else {
 		self.showSceneNumberLabels = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_SCENE_LABELS_KEY];
 	}
-		
+	
 	//Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
 	self.themeManager = [ThemeManager sharedManager];
 	[self loadSelectedTheme:false];
@@ -590,10 +592,7 @@
 	// Custom autosave
 	[self initAutosave];
 	
-	// Let's set a timer for 100ms. This should update the scene number labels after letting the text render.
-	//[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(afterLoad) userInfo:nil repeats:NO];
-	
-	// Maybe that's not required anymore?
+	// I don't know why we need to do this
 	[self afterLoad];
 }
 
@@ -601,6 +600,7 @@
 	NSLog(@"mouse move");
 }
 -(void)afterLoad {
+	// We'll send an asynchronous call (for some reason this is required) after loading to correctly display everything
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[self updateLayout];
 		[self updateSectionMarkers];
@@ -637,6 +637,7 @@
 	if (![self fileURL]) return @"Untitled";
 	return [super displayName];
 }
+
 
 // Can I come over, I need to rest
 // lay down for a while, disconnect
@@ -823,6 +824,27 @@
 	[self updateLayout];
 }
 
+/*
+ 
+ Man up
+ Sit down
+ Chin up
+ Pipe down
+ Socks up
+ Don't cry
+ Drink up
+ Just lie
+
+ Grow some balls he said
+ Grow some balls
+ 
+ This is why
+ you never
+ see your father cry.
+ 
+ */
+
+
 #pragma mark - Window settings
 // Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
 + (BOOL)autosavesInPlace {
@@ -833,9 +855,7 @@
 	return YES;
 }
 
-
 // I have no idea what these are or do.
-
 - (NSString *)windowNibName {
     return @"Document";
 }
@@ -919,29 +939,6 @@
 	
 	self.printView = [[PrintView alloc] initWithDocument:self toPDF:YES toPrint:YES];
 }
-/*
-- (IBAction)exportHTML:(id)sender
-{
-	if (self.printSceneNumbers) {
-		self.preprocessedText = [self preprocessSceneNumbers];
-	} else {
-		self.preprocessedText = [self getText];
-	}
-	
-    NSSavePanel *saveDialog = [NSSavePanel savePanel];
-    [saveDialog setAllowedFileTypes:@[@"html"]];
-    [saveDialog setRepresentedFilename:[self lastComponentOfFileName]];
-    [saveDialog setNameFieldStringValue:[self fileNameString]];
-    [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
-        if (result == NSFileHandlingPanelOKButton) {
-            FNScript* fnScript = [[FNScript alloc] initWithString: self.preprocessedText];
-            FNHTMLScript* htmlScript = [[FNHTMLScript alloc] initWithScript:fnScript];
-            NSString* htmlString = [htmlScript html];
-            [htmlString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
-        }
-    }];
-}
- */
 
 - (IBAction)exportFDX:(id)sender
 {
@@ -978,14 +975,6 @@
     } 
     return fileName;
 }
-
-/*
- 
- A word about the preview system:
- We are creating a FNScript through a class called BeatPreview, which
- parses the script and converts the Line elements into FNElements.
- 
- */
 
 - (void)updatePreview  {
 	[self updatePreviewAndUI:NO];
@@ -1203,7 +1192,7 @@
 }
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
-{	
+{
 	// Check for character input trouble
 	if (_characterInput) {
 		_currentLine = [self getCurrentLine];
@@ -1229,7 +1218,7 @@
 	// Implementing some undoing weirdness, which works, kind-of.
 	
 	if (replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
-				
+		
 		Line * affectedLine = [self getLineAt:affectedCharRange.location];
 
 		if (affectedLine.type == character && _characterInput && affectedLine.string.length == 0) {
@@ -1378,15 +1367,9 @@
 	
 	if (_characterInput) replacementString = [replacementString uppercaseString];
 	
-	//if ([self.undoManager isUndoing]) [self.parser ensurePositions];
-	
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-	
-	//if ([self.undoManager isUndoing]) [self.parser ensurePositions];
-	
+		
 	_currentLine = [self getCurrentLine];
-	
-	// NSLog(@"[%@]\t \t%lu/%lu %@", _currentLine.typeAsString, _currentLine.position, _currentLine.string.length, _currentLine.string);
 	
 	if (processDoubleBreak) {
 		// This is here to fix a formating error with dialogue.
@@ -1423,7 +1406,7 @@
 	[self updateSectionMarkers];
 	
 	_previewUpdated = NO;
-	
+		
     return YES;
 }
 - (IBAction)toggleAutoLineBreaks:(id)sender {
@@ -1437,8 +1420,8 @@
 	return [self getLineAt:location];
 }
 - (Line*)getLineAt:(NSInteger)position {
-	// Let's make a copy of the parser array so it's not mutated while iterated
-	// I'm not sure if this is needde, byt we have so many background tasks going on
+	// Let's make a copy of the parser array so it's not mutated while iterated.
+	// I'm not sure if this is needed, but we have so many background tasks going on
 	// right now, that I'm a bit afraid of crashes :---)
 	NSArray * lines = [NSArray arrayWithArray:self.parser.lines];
 	for (Line* line in lines) {
@@ -1469,6 +1452,7 @@
 	if (![self.undoManager isUndoRegistrationEnabled]) [self.undoManager enableUndoRegistration];
 	
 	if (_postEditAction) {
+		NSLog(@"post edit %@", _postEditAction);
 		NSInteger index = [_postEditAction[@"index"] integerValue];
 		NSString *string = _postEditAction[@"string"];
 		_postEditAction = nil;
@@ -1596,9 +1580,11 @@
 }
 
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
-	NSString *stringToMove = [self.getText substringWithRange:range];
+	_moving = YES;
 	
+	NSString *stringToMove = [self.getText substringWithRange:range];
 	NSInteger length = self.getText.length;
+	
 	if (position > length) position = length;
 	
 	[self replaceCharactersInRange:range withString:@""];
@@ -1624,6 +1610,8 @@
 	
 	[[[self undoManager] prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition];
 	[[self undoManager] setActionName:@"Move Scene"];
+	
+	_moving = NO;
 }
 
 /*
@@ -1727,6 +1715,10 @@
 	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:result withString:string atIndex:position];
 }
 
+// There is no shortage of ugliness in the world.
+// If a person closed their eyes to it,
+// there would be even more.
+
 
 # pragma mark - Autocomplete
 
@@ -1734,10 +1726,19 @@
 - (void) collectCharacterNames {
     /*
      
-     So let me elaborate a bit. This is currently two systems upon each other...
-     Other use is to collect character cues for autocompletion. There, it doesn't really matter if we have strange stuff after names, because different languages can use their own abbreviations.
+     So let me elaborate a bit. This is currently two systems upon each
+	 other and two separate lists of character names are stored.
+	 
+     Other use is to collect character cues for autocompletion.
+	 There, it doesn't really matter if we have strange stuff after names,
+	 because different languages can use their own abbreviations.
      
-     Characters are also collected for the filtering feature, so we will just strip away everything after the name, and hope for the best. That's why we have two separate lists of names.
+     Characters are also collected for the filtering feature, so we will
+	 just strip away everything after the name (such as V.O. or O.S.), and
+	 hope for the best.
+	 
+	 NB: We need some sort of a system to organize autocomplete hits
+	 according to the character's line count.
      
      */
     
@@ -1836,9 +1837,8 @@
 	// Default behaviour: add tab
 	// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
 
-
-	// One sweet day
-	 
+	
+	// Force character if the line is suitable
 	_currentLine = [self getCurrentLine];
 	if (_currentLine.type == empty) {
 		NSInteger index = [self.parser.lines indexOfObject:_currentLine];
@@ -1931,14 +1931,6 @@
 	
 	[self updateSceneNumberLabels];
 }
-
-- (void)refontAllLines
-{
-    for (Line* line in self.parser.lines) {
-        [self formatLineOfScreenplay:line onlyFormatFont:NO];
-    }
-}
-
 - (void)applyFormatChanges
 {
     for (NSNumber* index in self.parser.changedIndices) {
@@ -2009,7 +2001,7 @@
 	// I managed to get it working, but it's really, really inefficient
 	
 	/// And basically, this is the part where I officially lost any hope for having an iOS version. The loopback system here is quite convoluted and simultaneously relies on both the parser and interface. I guess interface SHOULD NOT handle this recursion, but that would require an overhaul of the parser. And I'm not strong enough.
-	/// Update 2020-08: The solution to this problem could be delegation. The parser should just send a message here when we need to reformat something. I'm waiting for my partner to arrive at the summer house on a bus, maybe I'll implement it while waiting for her.
+	/// Update 2020-08: The solution to this problem is delegation. The parser should just send a message here when we need to reformat something. I'm waiting for my partner to arrive at the summer house on a bus, maybe I'll implement it while waiting for her.
 	
 	if (!recursive && !firstTime) { // skip for recursive lookbacks & first time formating
 		NSInteger index = [[self.parser lines] indexOfObject:line];
@@ -2017,8 +2009,8 @@
 			Line* preceedingLine = [[self.parser lines] objectAtIndex:index-1];
 			Line* lineBeforeThat = [[self.parser lines] objectAtIndex:index-2];
 			
+			// NOTE: We should be able to check this through delegation
 			bool currentlyEditing = false;
-			
 			if (cursor >= range.location && cursor <= (range.location + range.length)) {
 				currentlyEditing = YES;
 			}
@@ -2083,8 +2075,7 @@
 		(line.type == transitionLine && [line.string characterAtIndex:0] != '>')) {
 		//Make uppercase, and then reapply cursor position, because they'd get lost otherwise
 		NSArray<NSValue*>* selectedRanges = self.textView.selectedRanges;
-
-		//[textStorage replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
+		
 		[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
 		
 		[self.textView setSelectedRanges:selectedRanges];
@@ -2215,7 +2206,7 @@
 				
 				if (line.sectionDepth == 1) {
 					// Cyan headings for top-level sections
-					NSColor* sectionColor = [self colors][@"blue"];
+					NSColor* sectionColor = self.themeManager.currentTextColor;
 					[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 					[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 				} else {
@@ -2434,6 +2425,8 @@
 }
 
 - (void)actionChangedToHeadingAt:(Line*)line {
+	if (_moving) return;
+	
 	// The parser changed a line with some text already on it into a scene heading, for example by by typing int. at the start of a line.
 	NSRange range = NSMakeRange(line.position, line.string.length - 1);
 	
@@ -2441,7 +2434,7 @@
 	if (range.location + range.length > self.textView.string.length) return;
 	
 	NSString *string = [self.textView.textStorage.string substringWithRange:range];
-	
+
 	[self.undoManager beginUndoGrouping];
 	[self.undoManager registerUndoWithTarget:self handler:^(id _Nonnull target) {
 		[self replaceCharactersInRange:range withString:string];
@@ -3021,6 +3014,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 		[self collectCharacterNames]; // For filtering
 		
 		[self.outlineView expandItem:nil expandChildren:true];
+		
+		self.outlineView.enclosingScrollView.hasVerticalRuler = YES;
         [self.outlineViewWidth setConstant:TREE_VIEW_WIDTH];
 		
 		NSWindow *window = self.windowControllers[0].window;
@@ -3059,7 +3054,13 @@ static NSString *forceDualDialogueSymbol = @"^";
 		}
     } else {
 		// Hide outline
-		[self.outlineViewWidth setConstant:0];
+		
+		// This fixes autolayout errors when a mouse is connected
+		self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
+		
+		CGFloat newWidth = self.outlineViewWidth.constant - TREE_VIEW_WIDTH;
+		[self.outlineViewWidth setConstant:newWidth];
+
 		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
 		
@@ -3394,13 +3395,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		}];
         [textView setTextColor:[self.themeManager currentTextColor]];
         [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
-        
-		// Optimization: we don't need to re-render all lines, because DynamicColor knows which color it should display
-		// [doc formatAllLines];
-		
-		// Outline background
-		//[doc.outlineView setBackgroundColor:self.themeManager.theme.outlineBackground];
-		
+				
 		// Set global background
 		doc.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
 		
@@ -4904,7 +4899,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 					
 					if (index > 0) previousLine = [self.parser.lines objectAtIndex:index - 1];
 					
-					if ((nextLine.type == synopse || nextLine.type == section) && [previousLine.string length] < 1) {
+					if ((nextLine.type == synopse) && ([previousLine.string length] < 1 || previousLine.type == section) ) {
 						characterRange = NSMakeRange(nextLine.position, [nextLine.string length]);
 						glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 						NSRect nextRect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
@@ -4913,7 +4908,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 						
 						[sectionRects addObject:[NSValue valueWithRect:rect]];
 					}
-					else if ((nextLine == empty || ![nextLine.string length]) && [previousLine.string length] < 1 ) {
+					else if ((nextLine == empty || ![nextLine.string length] || nextLine.type == section) && [previousLine.string length] < 1 ) {
 						[sectionRects addObject:[NSValue valueWithRect:rect]];
 					}
 				}

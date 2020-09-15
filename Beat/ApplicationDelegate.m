@@ -19,7 +19,7 @@
 
 @implementation ApplicationDelegate
 
-#define DEVELOPMENT NO
+#define DEVELOPMENT YES
 #define DARKMODE_KEY @"Dark Mode"
 #define LATEST_VERSION_KEY @"Latest Version"
 
