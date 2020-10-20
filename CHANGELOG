@@ -1,4 +1,11 @@
 
+## Beat 1.4.2
+
+* Code cleanup & delegation
+* Resizable Outline View
+* Pagination fixes (more to come)	
+
+
 ## Beat 1.4
 
 * Optimized parsing for large chunks of text
@@ -12,6 +19,7 @@
 * Some code cleanup
 * Early experiments with the new Timeline class for replacing the weird JavaScript version :---) 
 * Delegation and modularization
+
 
 ## Beat 1.3b
 

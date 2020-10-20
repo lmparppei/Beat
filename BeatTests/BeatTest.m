@@ -13,6 +13,8 @@
 #import "ContinousFountainParser.h"
 #import "Line.h"
 
+#import "BeatComparison.h"
+
 @implementation BeatTest
 
 - (instancetype)init
@@ -25,15 +27,26 @@
 }
 
 - (void) test {
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:[self testString]];
-	[parser parseChangeInRange:NSMakeRange(7, 30) withString:@""];
+	
 }
 
 - (NSString*)testString {
+	return @"INT. TESTI\n\n" \
+	"Jotain tavaraa tässä.\n" \
+	"Tätä riviä ei ole uudessa?\n" \
+	"Jotain vielä lisää tässä on.\n\n" \
+	"HAHMO\n" \
+	"Dialogia.\n\n" \
+	"Jotain muuta.";
+}
+
+- (NSString*)testString2 {
 	return @"INT. TESTI\n" \
 	"\n" \
 	"Jotain tavaraa tässä.\n" \
+	"Tämäkin on uusi.\n" \
 	"Jotain vielä lisää tässä on.\n\n"
+	"Täs muuten kolmas rivi lol.\n\n"
 	"HAHMO\n" \
 	"Dialogia.\n\n" \
 	"Jotain muuta.";

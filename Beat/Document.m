@@ -45,6 +45,14 @@
  Anyway, may this be of some use to you, dear friend.
  The abandoned git repository will be my monument when I'm gone.
  
+ You who will emerge from the flood
+ In which we have gone under
+ Remember
+ When you speak of our failings
+ The dark time too
+ Which you have escaped.
+ 
+ 
  Lauri-Matti Parppei
  Helsinki
  Finland
@@ -104,11 +112,14 @@
 #import "BeatColors.h"
 #import "BeatTimer.h"
 #import "BeatTimeline.h"
+#import "TKSplitHandle.h"
+#import "BeatComparison.h"
 
 @interface Document ()
 
 // Window
 @property (weak) NSWindow *thisWindow;
+@property (weak) IBOutlet TKSplitHandle *splitHandle;
 
 // Autosave
 @property (nonatomic) bool autosave;
@@ -225,9 +236,9 @@
 @property (weak) IBOutlet BeatTimeline *timeline;
 
 // Scene number labels
+@property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
-@property (nonatomic) bool showSceneNumberLabels;
 
 // Content buffer
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
@@ -247,15 +258,14 @@
 @property (nonatomic) NSUInteger zoomCenter;
 
 // Magnification
-@property (nonatomic) CGFloat magnification;
 @property (nonatomic) CGFloat scaleFactor;
 @property (nonatomic) CGFloat scale;
 
 // Printing
 @property (nonatomic) bool printPreview;
 @property (nonatomic, readwrite) NSString *preprocessedText;
-@property (nonatomic) bool printSceneNumbers;
 @property (strong, nonatomic) PrintView *printView; //To keep the asynchronously working print data generator in memory
+@property (weak) IBOutlet BeatComparison *comparison;
 
 // Some settings for edit view behaviour
 @property (nonatomic) bool matchParentheses;
@@ -312,6 +322,9 @@
 @end
 
 #define APP_NAME @"Beat"
+
+// Tests for the future
+#define SPLITVIEW YES
 
 #define ZOOM_MODIFIER 40 // Still used by labels, should be fixed when possible
 
@@ -412,7 +425,6 @@
 	self.analysis = nil;
 	self.paginator = nil;
 	self.filters = nil;
-	self.printView = nil;
 	self.sceneCards = nil;
 	self.flatOutline = nil;
 	self.filteredOutline = nil;
@@ -439,8 +451,13 @@
 	
 	// Revised layout code for 1.1.0 release
 	_documentWidth = DOCUMENT_WIDTH;
+	_textView.documentWidth = _documentWidth;
 	[self setZoom];
 
+	// Split view
+	_splitHandle.bottomOrLeftMinSize = 270;
+	_splitHandle.delegate = self;
+	
     // Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
     NSRect newFrame = NSMakeRect(_thisWindow.frame.origin.x,
                                  _thisWindow.frame.origin.y,
@@ -448,14 +465,21 @@
                                  _documentWidth * 1.5);
     [_thisWindow setFrame:newFrame display:YES];
 	
+	/*
 	// Accept mouse moved events + set window object to master view
 	[_thisWindow setAcceptsMouseMovedEvents:YES];
 	self.masterView.parentWindow = _thisWindow;
 	self.masterView.styleMask = _thisWindow.styleMask;
+	 */
 	
 	// Outline view setup
-    self.outlineViewVisible = false;
-    self.outlineViewWidth.constant = 0;
+	if (SPLITVIEW) {
+		self.outlineViewVisible = NO;
+		[_splitHandle collapseBottomOrLeftView];
+	} else {
+		self.outlineViewVisible = false;
+		self.outlineViewWidth.constant = 0;
+	}
 
 	// TextView setup
 	[self setupTextView];
@@ -469,8 +493,12 @@
 	// Window frame will be the same as text frame width at startup (outline is not visible by default)
 	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
 	self.textInsetY = TEXT_INSET_TOP;
-	self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-	self.textView.textContainerInset = NSMakeSize(_thisWindow.frame.size.width / 2 - _documentWidth / 2, _textInsetY);
+	self.textView.textInsetY = TEXT_INSET_TOP;
+	self.textView.zoomDelegate = self;
+	[self.textView setInsets];
+	//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+	//self.textView.textContainerInset = NSMakeSize(_thisWindow.frame.size.width / 2 - _documentWidth / 2, _textInsetY);
+	
 	
 	// Set textView style
 	[self.textView setFont:[self courier]];
@@ -653,7 +681,6 @@
 - (void)windowDidResize:(NSNotification *)notification {
 	[self updateLayout];
 }
-
 - (void) updateLayout {
 	[self setMinimumWindowSize];
 	
@@ -661,25 +688,29 @@
 	
 	// Set global variable for top inset, if it's unset
 	// For typewriter mode, we set the top & bottom bounds a bit differently
+	// (this math must be wrong, now that I'm lookign at it, but won't fix it yet)
 	if (self.typewriterMode) {
 		_textInsetY = (self.textClipView.frame.size.height / 2 - self.fontSize / 2) * (1 + (1 - _magnification));
-		NSLog(@"text inset %f", _textInsetY);
+		self.textView.textInsetY = _textInsetY;
 	} else {
 		_textInsetY = TEXT_INSET_TOP;
+		self.textView.textInsetY = TEXT_INSET_TOP;
 	}
 	
 	if (width < 9000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
-		self.textView.textContainerInset = NSMakeSize(width, _textInsetY);
-		self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		//self.textView.textContainerInset = NSMakeSize(width, _textInsetY);
+		//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
+		[_textView setInsets];
 		
 		self.textScrollView.insetWidth = self.textView.textContainerInset.width;
 		self.marginView.insetWidth = self.textView.textContainerInset.width;
-		
+
+		// I mean wtf??? Why is this so elaborate?
 		self.textScrollView.magnificationLevel = _magnification;
 		self.marginView.magnificationLevel = _magnification;
 		
-		[self.textScrollView setNeedsDisplay:YES]; // Force redraw if needed
-		[self.marginView setNeedsDisplay:YES]; // Force redraw if needed
+		[self.textScrollView setNeedsDisplay:YES];
+		[self.marginView setNeedsDisplay:YES];
 	}
 	
 	[self ensureLayout];
@@ -688,6 +719,7 @@
 
 
 - (void) setMinimumWindowSize {
+	// This are arbitratry values. Sorry, anyone reading this.
 	if (!_outlineViewVisible) {
 		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150, 400)];
 	} else {
@@ -751,14 +783,13 @@
 	[self ensureLayout];
 	[self ensureCaret];
 }
-
+- (CGFloat)magnification { return _magnification; }
 - (void)ensureCaret {
 	[self.textView updateInsertionPointStateAndRestartTimer:YES];
 }
 - (void)ensureLayout {
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 	[self.textView setNeedsDisplay:YES];
-	
 	[self updateSceneNumberLabels];
 }
 
@@ -786,6 +817,9 @@
 	}
 	_scaleFactor = newScaleFactor;
 	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
+	
+	// Set minimum size for text view when Outline view size is dragged
+	self.splitHandle.topOrRightMinSize = _documentWidth * _magnification;
 }
 
 - (void) scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
@@ -798,6 +832,7 @@
 	[lm ensureLayoutForTextContainer:tc];
 }
 
+// This resets the zoom to the saved setting
 - (void) setZoom {
 	if (![[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY]) {
 		_magnification = DEFAULT_MAGNIFY;
@@ -920,12 +955,16 @@
 		alert.alertStyle = NSAlertStyleWarning;
         [alert beginSheetModalForWindow:self.windowControllers[0].window completionHandler:nil];
     } else {
+		/*
 		if (self.printSceneNumbers) {
 			self.preprocessedText = [self preprocessSceneNumbers];
 		} else {
 			self.preprocessedText = [self.getText copy];
 		}
-        self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO toPrint:YES];
+		 */
+        //self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO toPrint:YES];
+		self.printView = [[PrintView alloc] initWithDocument:self script:self.parser.lines operation:BeatToPrint compareWith:nil];
+		//+ (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript;
     }
 }
 
@@ -937,7 +976,8 @@
 		self.preprocessedText = [self.getText copy];
 	}
 	
-	self.printView = [[PrintView alloc] initWithDocument:self toPDF:YES toPrint:YES];
+	self.printView = [[PrintView alloc] initWithDocument:self script:self.parser.lines operation:BeatToPDF compareWith:nil];
+	//self.printView = [[PrintView alloc] initWithDocument:self toPDF:YES toPrint:YES];
 }
 
 - (IBAction)exportFDX:(id)sender
@@ -964,6 +1004,38 @@
             [outlineString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
+}
+
+- (IBAction)printWithComparison:(id)sender {
+	_comparison.window = _thisWindow;
+	_comparison.document = self;
+	_comparison.currentScript = self.parser.lines;
+	
+	_preprocessedText = [self preprocessSceneNumbers];
+	
+	[_comparison open:nil];
+	
+	/*
+	// Print with comparison markers
+	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
+	
+	[openDialog setAllowedFileTypes:@[@"fountain"]];
+	[openDialog beginSheetModalForWindow:self.thisWindow completionHandler:^(NSModalResponse result) {
+		if (result == NSFileHandlingPanelOKButton) {
+			NSError *error;
+			NSURL *previousVersionURL = openDialog.URL;
+			NSString *previousVersion = [NSString stringWithContentsOfURL:previousVersionURL encoding:NSUTF8StringEncoding error:&error];
+			
+			if (self.printSceneNumbers) {
+				self.preprocessedText = [self preprocessSceneNumbers];
+			} else {
+				self.preprocessedText = [self.getText copy];
+			}
+			
+			self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO toPrint:YES compareWith:previousVersion];
+		}
+	}];
+	 */
 }
 
 - (NSString*)fileNameString
@@ -1000,7 +1072,7 @@
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 			NSString *rawString = [self preprocessSceneNumbers];
 			
-			__block NSString *html = [BeatPreview createNewPreview:rawString of:self scene:self.currentScene.sceneNumber];
+			__block NSString *html = [BeatPreview createNewPreview:rawString of:self scene:self.currentScene.sceneNumber sceneNumbers:self.printSceneNumbers type:BeatPrintPreview];
 			self.htmlString = html;
 			
 			self.previewUpdated = YES;
@@ -1862,6 +1934,8 @@
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
+	// If no line is selected, return
+	_currentLine = [self getCurrentLine];
 	if (!_currentLine) return;
 	
 	_currentLine.type = character;
@@ -1880,7 +1954,6 @@
 	[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	
-	 
 	[self.textView setTypingAttributes:attributes];
 }
 - (void) cancelCharacterInput {
@@ -1947,23 +2020,8 @@
 	
 	Line* preceedingLine;
 	Line* lineBeforeThat;
-	
-	NSInteger max = self.parser.lines.count;
-	
+		
 	for (Line* line in self.parser.lines) {
-		
-		// This is a quick & dirty fix for misinterpreted character cues
-		if (index + 1 < max) {
-			if (line.type == character) {
-				Line* nextLine = [self.parser.lines objectAtIndex:index + 1];
-				if (nextLine.string.length < 1 || (nextLine.type != parenthetical && nextLine.type != dialogue)) {
-					line.type = [self.parser parseLineType:line atIndex:index recursive:NO];
-					// If it's not a forced element but really a mistaken character cue, return action
-					if (line.type == character) line.type = action;
-				}
-			}
-		}
-		
 		[self formatLineOfScreenplay:line onlyFormatFont:NO recursive:YES firstTime:NO];
 		index++;
 		
@@ -1985,6 +2043,8 @@
 
 - (void)formatLineOfScreenplay:(Line*)line onlyFormatFont:(bool)fontOnly recursive:(bool)recursive firstTime:(bool)firstTime
 {
+	// NB: the recursive logic has been stripped out
+	
 	// Don't go out of range
 	if (line.position + line.string.length > self.textView.string.length) return;
 
@@ -1993,17 +2053,10 @@
 	NSUInteger begin = line.position;
 	NSUInteger length = [line.string length];
 	NSRange range = NSMakeRange(begin, length);
-	
-	NSUInteger cursor = [self cursorLocation].location;
-	
-	// We'll perform a lookback to see that we didn't mistake some uppercase for character cues.
-	// I really have NO FUCKING IDEA what's going on in here.
-	// I managed to get it working, but it's really, really inefficient
-	
-	/// And basically, this is the part where I officially lost any hope for having an iOS version. The loopback system here is quite convoluted and simultaneously relies on both the parser and interface. I guess interface SHOULD NOT handle this recursion, but that would require an overhaul of the parser. And I'm not strong enough.
-	/// Update 2020-08: The solution to this problem is delegation. The parser should just send a message here when we need to reformat something. I'm waiting for my partner to arrive at the summer house on a bus, maybe I'll implement it while waiting for her.
-	
-	if (!recursive && !firstTime) { // skip for recursive lookbacks & first time formating
+
+	/*
+	if (!firstTime) { // skip for recursive lookbacks & first time formating
+
 		NSInteger index = [[self.parser lines] indexOfObject:line];
 		if (index - 2 >= 0) {
 			Line* preceedingLine = [[self.parser lines] objectAtIndex:index-1];
@@ -2015,7 +2068,12 @@
 				currentlyEditing = YES;
 			}
 
-			if ([preceedingLine.string length] == 0 && lineBeforeThat.type == character && currentlyEditing) {
+			// If preceeding line is EMPTY and the line before that is a CHARACTER CUE, and we are currently editing
+			// the line we are formating, we'll change the preceeding lines' type
+			
+			if (preceedingLine.string.length == 0 &&
+				lineBeforeThat.type == character &&
+				currentlyEditing) {
 				lineBeforeThat.type = [self.parser parseLineType:lineBeforeThat atIndex:index - 2 recursive:YES currentlyEditing:currentlyEditing];
 				[self formatLineOfScreenplay:lineBeforeThat onlyFormatFont:NO recursive:YES];
 				
@@ -2039,7 +2097,7 @@
 				// the current line, we'll take a step back and reformat it as action.
 				// This is sometimes unreliable, but 70% of the time it works pretty OK.
 				
-				else if ([line.string length] == 0) {
+				else if (line.string.length == 0) {
 					NSRange previousLineRange = NSMakeRange(preceedingLine.position, [preceedingLine.string length]);
 					
 					if ((cursor >= previousLineRange.location && cursor <= previousLineRange.location + previousLineRange.length) || currentlyEditing) {
@@ -2052,8 +2110,11 @@
 				}
 			}
 			
+			
 		}
 	}
+	*/
+	
 	
 	// Let's do the real formatting now
 	NSTextStorage *textStorage = [self.textView textStorage];
@@ -2063,11 +2124,16 @@
 	if (_characterInput) {
 		line.type = character;
 		
-		NSArray<NSValue*>* selectedRanges = self.textView.selectedRanges;
+		NSRange selectedRange = self.textView.selectedRange;
 		
-		[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
-		line.string = [line.string uppercaseString];
-		[self.textView setSelectedRanges:selectedRanges];
+		// Only do this if we are REALLY typing at this location
+		// Foolproof fix for a strange, rare bug which changes multiple
+		// lines into character cues and the user is unable to undo the changes
+		if (range.location + range.length <= selectedRange.location) {
+			[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
+			line.string = [line.string uppercaseString];
+			[self.textView setSelectedRange:selectedRange];
+		}
 	}
 	
 	// Format according to style
@@ -2086,7 +2152,7 @@
 		// Set Font to bold
 		[attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
 		
-		// If the scene as a color, let's color it!
+		// If the scene has a color, let's color it!
 		if (![line.color isEqualToString:@""]) {
 			NSColor* headingColor = [BeatColors color:[line.color lowercaseString]];
 			if (headingColor != nil) [attributes setObject:headingColor forKey:NSForegroundColorAttributeName];
@@ -2310,6 +2376,16 @@
 		}
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		[self.textView setTypingAttributes:attributes];
+	}
+	
+	//Format scene number as invisible
+	if (line.sceneNumberRange.length > 0) {
+		NSRange sceneNumberRange = NSMakeRange(line.sceneNumberRange.location - 1, line.sceneNumberRange.length + 2);
+		// Don't go out of range, please, please
+		if (sceneNumberRange.location + sceneNumberRange.length <= line.string.length && sceneNumberRange.location >= 0) {
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+								range:[self globalRangeFromLocalRange:&sceneNumberRange inLineAtPosition:line.position]];
+		}
 	}
 	
 	//Add in bold, underline, italic and all that other good stuff. it looks like a lot of code, but the content is only executed for every formatted block. For unformatted text, this just whizzes by.
@@ -2727,7 +2803,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 				[fullText appendFormat:@"\n"];
 			}
 		}
-		
 	}
 	
 	return fullText;
@@ -2912,9 +2987,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (IBAction)forceCharacter:(id)sender
 {
-    //Check if the currently selected tab is the one for editing
+    // Check if the currently selected tab is the one for editing
     if ([self selectedTabViewTab] == 0) {
-        //Retreiving the cursor location
         NSRange cursorLocation = [self cursorLocation];
         [self forceLineType:cursorLocation symbol:forceCharacterSymbol];
     }
@@ -3001,8 +3075,70 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (IBAction)toggleOutlineView:(id)sender
 {
-	// Animations removed in 1.1.0. They were slow and ugly.
+	self.outlineViewVisible = !self.outlineViewVisible;
 	
+	if (SPLITVIEW) {
+		if (_outlineViewVisible) {
+			// Show outline
+			[self reloadOutline];
+			[self collectCharacterNames]; // For filtering
+			
+			self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
+			
+			if (![self isFullscreen]) {
+				CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
+				CGFloat newWidth = _thisWindow.frame.size.width + sidebarWidth;
+				CGFloat newX = _thisWindow.frame.origin.x - sidebarWidth / 2;
+				CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
+							
+				// Ensure the main document won't go out of screen bounds when opening the sidebar
+				if (newWidth > screenWidth) {
+					newWidth = screenWidth * .9;
+					newX = screenWidth / 2 - newWidth / 2;
+				}
+				
+				if (newX + newWidth > screenWidth) {
+					newX = newX - (newX + newWidth - screenWidth);
+				}
+				
+				if (newX < 0) {
+					newX = 0;
+				}
+				
+				NSRect newFrame = NSMakeRect(newX,
+											 _thisWindow.frame.origin.y,
+											 newWidth,
+											 _thisWindow.frame.size.height);
+				[_thisWindow setFrame:newFrame display:YES];
+			}
+			
+			// Show sidebar
+			[_splitHandle restoreBottomOrLeftView];
+		} else {
+			// Hide outline
+			self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
+			
+			if (![self isFullscreen]) {
+				CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
+				CGFloat newX = _thisWindow.frame.origin.x + sidebarWidth / 2;
+				NSRect newFrame = NSMakeRect(newX,
+											 _thisWindow.frame.origin.y,
+											 _thisWindow.frame.size.width - sidebarWidth,
+											 _thisWindow.frame.size.height);
+
+				[_thisWindow setFrame:newFrame display:YES];
+			}
+			
+			[_splitHandle collapseBottomOrLeftView];
+		}
+		
+		// Fix layout
+		[_thisWindow layoutIfNeeded];
+
+		[self updateLayout];
+	}
+	
+	/*
     self.outlineViewVisible = !self.outlineViewVisible;
 	
 	NSUInteger offset = 20;
@@ -3018,13 +3154,13 @@ static NSString *forceDualDialogueSymbol = @"^";
 		self.outlineView.enclosingScrollView.hasVerticalRuler = YES;
         [self.outlineViewWidth setConstant:TREE_VIEW_WIDTH];
 		
-		NSWindow *window = self.windowControllers[0].window;
+		//NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
 		
 		if (![self isFullscreen]) {
 			// Some weird magic to keep the window in screen
-			CGFloat newWidth = window.frame.size.width + TREE_VIEW_WIDTH + offset;
-			CGFloat newX = window.frame.origin.x - TREE_VIEW_WIDTH / 2;
+			CGFloat newWidth = _thisWindow.frame.size.width + TREE_VIEW_WIDTH + offset;
+			CGFloat newX = _thisWindow.frame.origin.x - TREE_VIEW_WIDTH / 2;
 			CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
 						
 			// Ensure the main document won't go out of screen bounds when opening the sidebar
@@ -3042,13 +3178,13 @@ static NSString *forceDualDialogueSymbol = @"^";
 			}
 			
 			newFrame = NSMakeRect(newX,
-										 window.frame.origin.y,
+										 _thisWindow.frame.origin.y,
 										 newWidth,
-										 window.frame.size.height);
-			[window setFrame:newFrame display:YES];
+										 _thisWindow.frame.size.height);
+			[_thisWindow setFrame:newFrame display:YES];
 		} else {
 			// We need a bit different settings if the app is fullscreen
-			CGFloat width = ((window.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth * _magnification / 2) / _magnification;
+			CGFloat width = ((_thisWindow.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth * _magnification / 2) / _magnification;
 			[self.textView setTextContainerInset:NSMakeSize(width, _textInsetY)];
 			[self updateSceneNumberLabels];
 		}
@@ -3061,19 +3197,18 @@ static NSString *forceDualDialogueSymbol = @"^";
 		CGFloat newWidth = self.outlineViewWidth.constant - TREE_VIEW_WIDTH;
 		[self.outlineViewWidth setConstant:newWidth];
 
-		NSWindow *window = self.windowControllers[0].window;
 		NSRect newFrame;
 		
-		CGFloat newX = window.frame.origin.x + TREE_VIEW_WIDTH / 2;
+		CGFloat newX = _thisWindow.frame.origin.x + TREE_VIEW_WIDTH / 2;
 		
 		if (![self isFullscreen]) {
 			newFrame = NSMakeRect(newX,
-								  window.frame.origin.y,
-								  window.frame.size.width - TREE_VIEW_WIDTH - offset,
-								  window.frame.size.height);
-			[window setFrame:newFrame display:YES];
+								  _thisWindow.frame.origin.y,
+								  _thisWindow.frame.size.width - TREE_VIEW_WIDTH - offset,
+								  _thisWindow.frame.size.height);
+			[_thisWindow setFrame:newFrame display:YES];
 		} else {
-			CGFloat width = (window.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
+			CGFloat width = (_thisWindow.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
 			
 			[self.textView setTextContainerInset:NSMakeSize(width, _textInsetY)];
 			[self updateSceneNumberLabels];
@@ -3081,6 +3216,7 @@ static NSString *forceDualDialogueSymbol = @"^";
     }
 	
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
+	*/
 }
 
 //Empty function, which needs to exists to make the share access the validateMenuItems function
@@ -3091,7 +3227,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 {
 	// Special conditions for other than normal edit view
 	if ([self selectedTabViewTab] != 0) {
-		if ([self selectedTabViewTab] == 1 && [menuItem.title isEqualToString:@"Toggle Preview"]) {
+		if ([self selectedTabViewTab] == 1 && [menuItem.title isEqualToString:@"Show Preview"]) {
 			[menuItem setState:NSOnState];
 			return YES;
 		}
@@ -3885,7 +4021,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	// On to the very dangerous stuff :-) fuck me :----)
 	NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
-	NSString *textToMove = [[self getText] substringWithRange:range];
+	//NSString *textToMove = [[self getText] substringWithRange:range];
 
 	// Count the index.
 	//NSInteger moveToIndex = 0;
@@ -4177,7 +4313,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 - (void) printCards {
-	[_sceneCards printCardsWithInfo:self.printInfo];
+	[_sceneCards printCardsWithInfo:[self.printInfo copy]];
 	//[_sceneCards printCards:[self getSceneCards] printInfo:self.printInfo];
 }
 - (void) refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
@@ -4498,6 +4634,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (IBAction)toggleTimeline:(id)sender
 {
+	NSLog(@"height %f", self.outlineBackgroundView.frame.size.height);
+	
 	_timelineVisible = !_timelineVisible;
 	
 	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
@@ -4982,6 +5120,11 @@ triangle walks
 - (void)paginateFromIndex:(NSInteger)index sync:(bool)sync {
 	if (!self.showPageNumbers) return;
 	
+	// __block NSArray *lines = [NSArray arrayWithArray:self.parser.lines];
+	
+	// Reset page size (just in case)
+	self.paginator.paperSize = self.printInfo.paperSize;
+	
 	/*
 	 
 	 WIP!!!
@@ -4998,11 +5141,16 @@ triangle walks
 	 The above is already implemented, but doesn't work. Lol.
 	 
 	 
+	 Idea for rewrite:
+	 Set up a delegate for live pagination. It has a timer and a method for checking whethe
+	 the text has changed. If it has, it will repaginate the document. OR even better, use
+	 changed indices from the parser.
+	 
 	 */
 	
 	// Null the timer so we don't have too many of these operations queued
 	[_paginationTimer invalidate];
-	NSInteger wait = 0.5;
+	NSInteger wait = 1.0;
 	if (sync) wait = 0;
 	
 	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
@@ -5011,14 +5159,14 @@ triangle walks
 		
 		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
-			// FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:[self onlyPrintableElements:lines] paperSize:self.printInfo.paperSize];
-			// [paginator paginate];
-			
-			self.paginator.paperSize = self.printInfo.paperSize;
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
 						
 			__block NSArray *pageBreaks = self.paginator.pageBreaks;
-						
+			
+			// Don't do nothing if the page break array is nil
+			// This SHOULD mean that pagination was canceled
+			if (pageBreaks == nil) return;
+			
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				// Update UI in main thread
 				
@@ -5149,7 +5297,8 @@ triangle walks
 	NSDictionary* fields = @{
 							 @"title":_titleField,
 							 @"credit":_creditField,
-							 @"authors":_authorField,
+							 @"author":_authorField,
+							 @"authors":_authorField, // override if "authors" is present
 							 @"source":_sourceField,
 							 @"draft date":_dateField,
 							 @"contact":_contactField,
@@ -5384,6 +5533,16 @@ triangle walks
 		[fileManager removeItemAtURL:url error:nil];
 	}
 }
+
+#pragma mark - split view listener
+
+- (void)splitViewDidResize {
+	[self updateLayout];
+}
+- (void)leftViewDidShow {
+	[self reloadOutline];
+}
+
 #pragma mark - scroll listeners
 
 /* Listen to scrolling of the view. Listen to the birds. Listen to wind blowing all your dreams away, to make space for new ones to rise, when the spring comes. */

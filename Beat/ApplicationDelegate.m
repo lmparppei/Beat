@@ -9,7 +9,6 @@
 #import "ApplicationDelegate.h"
 #import "FDXImport.h"
 #import "RecentFiles.h"
-#import "OSFImport.h"
 
 #import "BeatTest.h"
 
@@ -35,6 +34,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	//BeatTest *test = [[BeatTest alloc] init];
+	
 	_recentFilesSource = [[RecentFiles alloc] init];
 	self.recentFiles.dataSource = _recentFilesSource;
 	self.recentFiles.delegate = _recentFilesSource;

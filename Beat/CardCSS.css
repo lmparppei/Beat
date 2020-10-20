@@ -229,6 +229,14 @@ section {
 .card.magenta p { color: white; }
 /* .magenta h3 { color: rgb(236,0,140); } */
 
+.card.orange, .orange.selected .sceneNumber, .color.orange { background-color: rgb(255, 161, 13); }
+.card.orange p { color: #333; }
+/* .orange h3 { color: rgb(255, 161, 13); } */
+
+.card.brown, .brown.selected .sceneNumber, .color.brown { background-color: rgb(169, 106, 7); color: white; }
+.card.brown p { color: white; }
+/* .brown h3 { color: rgb(169, 106, 7); } */
+
 .card.gray, .gray.selected .sceneNumber, .color.gray { background-color: gray; color: white; }
 .card.gray p { color: white; }
 /* .magenta h3 { color: gray; } */
@@ -236,9 +244,6 @@ section {
 .card.purple, .purple.selected .sceneNumber, .color.purple { background-color: rgb(181, 32, 218); color: white; }
 .card.purple p { color: white; }
 /* .purple h3 { color: rgb(181, 32, 218); } */
-
-/* .prince .sceneNumber, .prince.selected .sceneNumber, .color.prince { background-color: rgb(181, 32, 218); color: white; } */
-/* .prince h3 { color: rgb(181, 32, 218); } */
 
 .card.yellow, .yellow.selected .sceneNumber, .color.yellow { background-color: rgb(255, 162, 0); color: #333; }
 .card.yellow p { color: #333; }
@@ -251,13 +256,6 @@ section {
 .teal .sceneNumber, .teal.selected .sceneNumber, .color.teal { background-color: rgb(12, 224, 227); color: white; }
 /* .teal h3 { color: rgb(12, 224, 227); } */
 
-.card.orange, .orange.selected .sceneNumber, .color.orange { background-color: rgb(255, 161, 13); color: white; }
-.card.orange p { color: white; }
-/* .orange h3 { color: rgb(255, 161, 13); } */
-
-.card.brown .sceneNumber, .brown.selected .sceneNumber, .color.brown { background-color: rgb(169, 106, 7); color: white; }
-.card.brown p { color: white; }
-/* .brown h3 { color: rgb(169, 106, 7); } */
 
 #noData {
 	position: absolute;

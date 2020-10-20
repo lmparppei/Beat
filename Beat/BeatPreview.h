@@ -9,12 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import "OutlineScene.h"
 
-NS_ASSUME_NONNULL_BEGIN
+typedef enum : NSUInteger {
+	BeatPrintPreview = 0,
+	BeatQuickLookPreview,
+	BeatComparisonPreview
+} BeatPreviewType;
 
 @interface BeatPreview : NSObject
-+ (NSString*) createPrint:(NSString*)rawText document:(NSDocument*)document;
-+ (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument* _Nullable)document scene:(NSString* _Nullable)scene;
++ (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene sceneNumbers:(bool)sceneNumbers type:(BeatPreviewType)previewType;
 + (NSString*) createQuickLook:(NSString*)rawText;
 @end
-
-NS_ASSUME_NONNULL_END

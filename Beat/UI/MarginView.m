@@ -5,6 +5,7 @@
 //  Created by Lauri-Matti Parppei on 15.5.2020.
 //  Copyright © 2020 KAPITAN!. All rights reserved.
 //
+//  This draws a "paper" view under BeatTextView.
 
 #import "MarginView.h"
 #import "DynamicColor.h"
@@ -24,13 +25,11 @@
 	 NSRectFill(NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height));
 	 [NSGraphicsContext restoreGraphicsState];
 	 
-	 // Draw margins if they don't fall outside the viewport
+	 // Draw margins if they don't fall outsid(e/ish) the viewport
 	 if (self.frame.size.width > 800) {
 		 [_marginColor setFill];
 		 
-		 CGFloat offset = 0;
-		 if ([self isFullscreen]) offset = self.frame.origin.x;
-		 CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel - offset / 2;
+		 CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel;
 		 
 		 if (marginWidth > 0) {
 			 // Set margin boxes

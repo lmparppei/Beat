@@ -103,7 +103,7 @@
 @property (nonatomic) NSInteger numberOfPages;
 @property (nonatomic) NSString *currentScene;
 @property (nonatomic) bool quickLook;
-
+@property (nonatomic) bool comparison;
 @end
 
 @implementation BeatHTMLScript
@@ -166,6 +166,20 @@
 	return self;
 }
 
+- (id)initForComparisonWithScript:(NSDictionary *)script {
+	self = [super init];
+	if (self) {
+		_script = script[@"script"];
+		_titlePage = script[@"title page"];
+		_font = [QUQFont fontWithName:@"Courier" size:12];
+		_document = nil;
+		_currentScene = nil;
+		_comparison = YES;
+	}
+	return self;
+}
+
+
 - (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document print:(bool)print
 {
 	self = [super init];
@@ -188,6 +202,9 @@
     if (!self.bodyText) {
         self.bodyText = [self bodyForScript];
     }
+	NSString *bodyClasses = @"";
+	if (self.quickLook) bodyClasses = [bodyClasses stringByAppendingString:@" quickLook"];
+	else if (self.comparison) bodyClasses = [bodyClasses stringByAppendingString:@" comparison"];
     
     NSMutableString *html = [NSMutableString string];
     [html appendString:@"<!DOCTYPE html>\n"];
@@ -199,7 +216,7 @@
     [html appendString:self.cssText];
     [html appendString:@"</style>\n"];
     [html appendString:@"</head>\n"];
-	[html appendString:@"<body>"];
+	[html appendFormat:@"<body class='%@'>", bodyClasses];
 	[html appendString:@"<article>\n"];
 	if (!_print) [html appendString:[self previewUI]];
     [html appendString:self.bodyText];
@@ -544,10 +561,14 @@
             
             if (![text isEqualToString:@""]) {
                 NSMutableString *additionalClasses = [NSMutableString string];
+				
 				if (line.type == centered) {
                     [additionalClasses appendString:@" center"];
                 }
 				if (elementCount == 0) [additionalClasses appendString:@" first"];
+				
+				// Mark as changed, if comparing against another file
+				if (line.changed) [additionalClasses appendString:@" changed"];
 				
 				// If this line isn't part of a larger block, output it as paragraph
 				if (!beginBlock && !isLyrics) {

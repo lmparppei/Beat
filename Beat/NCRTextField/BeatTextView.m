@@ -172,9 +172,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:nil];
 	
-	// BEAT BEAT BEAT
+	// Arrays for special elements
 	self.masks = [NSMutableArray array];
 	self.sections = [NSArray array];
+	
+	[self resetCursorRects];
 }
 
 - (void)closePopovers {
@@ -740,19 +742,35 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 }
 - (void)mouseMoved:(NSEvent *)event {
-	// So, apparently only one view can catch mouseMoved events (?)
-	// so we will manually transfer the mouse event to the superview (ScrollView)
-	[(ScrollView*)self.superview.superview mouseMoved:event];
 
-	CGFloat x = event.locationInWindow.x;
+	NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+	NSPoint superviewPoint = [self.enclosingScrollView convertPoint:event.locationInWindow fromView:nil];
+	//CGFloat x = event.locationInWindow.x;
 	CGFloat y = event.locationInWindow.y;
 	
+	
+	if ((point.x > self.textContainerInset.width &&
+		 point.x < self.frame.size.width * (1 / _zoomLevel) - self.textContainerInset.width) &&
+		 y < self.window.frame.size.height - 22 &&
+		 superviewPoint.y < self.enclosingScrollView.frame.size.height
+		) {
+		//[NSCursor.IBeamCursor set];
+		[super mouseMoved:event];
+	} else if (point.x > 10) {
+		[NSCursor.arrowCursor set];
+	}
+	
+	
+	/*
 	// This view is enclosed by multiple views (clip / scroll / margin)
 	CGFloat origin = self.superview.superview.superview.frame.origin.x;
-	
+	 
 	CGFloat containerWidth = self.frame.size.width - self.textContainerInset.width * _zoomLevel;
 
-	if (x < origin + _zoomLevel * self.textContainerInset.width - MARGIN_CONSTANT ||
+	if (x >= origin && x <= origin + 10) {
+		[[NSCursor resizeLeftRightCursor] set];
+	}
+	else if (x < origin + _zoomLevel * self.textContainerInset.width - MARGIN_CONSTANT ||
 		x > origin + containerWidth + MARGIN_CONSTANT ||
 		y < 0 ||
 		y > self.window.frame.size.height - 22
@@ -761,14 +779,30 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	} else {
 		[[NSCursor IBeamCursor] set];
 	}
+	 */
 }
 
 - (void)mouseExited:(NSEvent *)event {
-	[[NSCursor arrowCursor] set];
+	//[[NSCursor arrowCursor] set];
 }
 
 - (void)updateSections:(NSArray *)sections {
 	_sections = sections;
+}
+
+- (void)scaleUnitSquareToSize:(NSSize)newUnitSize {
+	[super scaleUnitSquareToSize:newUnitSize];
+}
+
+- (void)setInsets {
+	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.zoomDelegate.magnification / 2) / self.zoomDelegate.magnification;
+	self.textContainerInset = NSMakeSize(width, _textInsetY);
+	self.textContainer.size = NSMakeSize(_documentWidth, self.textContainer.size.height);
+	[self resetCursorRects];
+}
+
+-(void)resetCursorRects {
+	[super resetCursorRects];
 }
 
 @end

@@ -54,6 +54,7 @@ section {
 
 	/* padding: 2.5cm 2.5cm 2.5cm 3.9cm; */
 	page-break-after: always;
+	overflow: visible;
 }
 p {
 	position: relative;
@@ -158,6 +159,22 @@ body > p:first-child {
 	align-items: center;
 
 	position: relative;
+}
+
+.changed::before {
+	position: absolute;
+	display: block;
+	
+	left: -10px;
+	width: 1em;
+	height: 100%;
+	z-index: 999;
+	
+	content: '* * * * * * * * *';
+	overflow: hidden;
+}
+.dialogue.changed::before {
+	left: -90px;
 }
 
 #script-title .title {

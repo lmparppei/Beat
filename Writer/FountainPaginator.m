@@ -9,7 +9,7 @@
 /*
  
  WORK IN PROGRESS.
- A pagination class for removing the FNElement layer altogether.
+
  This is very loosely based on the original FNPaginator code, with heavy
  modifications to the whole logic behind it, and rewritten to use the
  Line class driving ContinuousFountainParser.
@@ -31,7 +31,14 @@
  
  The current iteration has live pagination stuff built in. The goal is to have
  the class only paginate from changed indices. I've made some experiments to allow
- that, but for now it does not work at all.
+ that, but for now it does not work at all. Though live pagination runs in another
+ thread, there is no way of cancelling an ongoing pagination, so there might be
+ many of them overlapping.
+ 
+ We could store an array of dictionaries, which contain the pagination positions,
+ as in @{ page: @5, position: @1234 }, but the trouble is that we split elements
+ across pages. Splitting TRIES to take the positions into account, but works
+ so and so.
  
  This might have been pretty unhelpful for anyone stumbling upon this file some day.
  Try to make something out of it.
@@ -53,6 +60,9 @@
 
 @property (weak, nonatomic) NSDocument *document;
 @property (strong, nonatomic) NSArray *script;
+@property (nonatomic) NSTimer *timer;
+@property (nonatomic) NSString *textCache;
+@property bool paginating;
 
 // WIP
 @property (nonatomic) bool livePagination;
@@ -80,6 +90,17 @@
 	}
 	return self;
 }
+
+- (id)initLivePagination:(id<BeatPaginatorDelegate>)delegate {
+	self = [super init];
+	if (self) {
+		_delegate = delegate;
+		return self;
+	} else {
+		return nil;
+	}
+}
+
 - (id)initForLivePagination:(NSArray *)elements paperSize:(CGSize)paperSize {
 	self = [super init];
 	if (self) {
@@ -102,14 +123,108 @@
 	return self;
 }
 
-// NOTE NOTE NOTE: NOT WORKING
+// Experimental new live pagination
+
+// WIP: here we could have the changed indices
+- (void)livePaginateFrom:(NSInteger)index {
+	@synchronized (self) {
+		// Check if the text has changed
+		NSString *string = _delegate.getText;
+		NSUInteger lengthDiff = ABS(string.length - _textCache.length);
+		
+		if (lengthDiff > 0) {
+			_textCache = _delegate.getText;
+
+			// We need to create a copy of the array so it won't be mutated while iterating
+			self.script = [NSArray arrayWithArray:self.delegate.lines];
+			[self paginateFromIndex:index currentPage:nil];
+		}
+	}
+}
+
 - (void)livePaginationFor:(NSArray*)script fromIndex:(NSInteger)index {
+
+	// NSLog(@"index %lu", index);
+
+	// Normal pagination
+	_paginating = NO;
 	@synchronized (self) {
 		self.script = script;
+		_paginating = YES;
 		[self paginateFromIndex:0 currentPage:nil];
 	}
 	
+	// Another try
+	// This finds an element where we can SAFELY start to repaginate
+	// Because we use the Fountain format, which can have a lot of invisible stuff, normal WYSIWYG approach does not work. That's the reason we are doing this cumbersome "magic".
+	// This one DOES work but is WIP.
+	
 	/*
+	NSInteger pageNumber = 0;
+	Line* firstElement;
+	
+	for (NSMutableArray *page in _pages) {
+		for (Line *line in page) {
+			if (index >= line.position && index <= line.position + line.string.length) {
+				NSLog(@"found: (%lu / %lu-%lu) %@ ", index, line.position, line.position + line.string.length, line.string);
+				
+				// This position is NOT safe for page break, so let's look for another one
+				if (line.unsafeForPageBreak) {
+					NSLog(@"... it's unsafe, look for another one");
+					
+					NSInteger lineIndex = [page indexOfObject:line] - 1;
+					if (lineIndex >= 0) {
+						while (lineIndex >= 0) {
+							Line* previousLine = page[lineIndex];
+							
+							if (!previousLine.unsafeForPageBreak) {
+								// This element is safe to start the pagination from
+								firstElement = previousLine;
+								break;
+							}
+						}
+						
+						// We didn't find a safe line, so we'll skip back to the previous page...
+						pageNumber--;
+						if (pageNumber < 0) {
+							// Just start from the beginning
+							pageNumber = 0;
+							break;
+						}
+						
+						lineIndex = [(NSArray*)_pages[pageNumber] count] - 1;
+						
+						// Do it again
+						while (lineIndex >= 0) {
+							Line* previousLine = page[lineIndex];
+							
+							if (!previousLine.unsafeForPageBreak) {
+								// This element is safe to start the pagination from
+								firstElement = previousLine;
+								break;
+							}
+						}
+						
+						break;
+					}
+				} else {
+					firstElement = line;
+					break;
+				}
+			}			
+		}
+		
+		if (firstElement) break;
+		
+		// Increment page number
+		pageNumber++;
+	}
+	NSLog(@" ----> result:  %@", firstElement.string);
+	NSLog(@" ....  on page %lu of %lu", pageNumber, _pages.count);
+	*/
+	
+	/*
+	// NOTE NOTE NOTE: NOT WORKING
 	 
 	if (index == 0 || self.pages.count == 0) {
 		@synchronized (self) {
@@ -198,12 +313,14 @@
 }
 
 /*
-You, who shall resurface following the flood
+
+ You, who shall resurface following the flood
 In which we have perished,
 Contemplate —
 When you speak of our weaknesses,
 Also the dark time
 That you have escaped.
+ 
 */
 
 
@@ -240,6 +357,7 @@ That you have escaped.
 		_pages = [NSMutableArray array];
 		_pageBreaks = [NSMutableArray array];
 		currentPage = [NSMutableArray array];
+		 
 
 /*
 		// For those who come after
@@ -248,19 +366,28 @@ That you have escaped.
 			_pageBreaks = [NSMutableArray array];
 			currentPage = [NSMutableArray array];
 		} else {
-			// Retain the previous pages if we have a page index set
+			// Retain the previous pages if we have a changed index set
 			// NOTE: This is something written for the very distant future, not at all usable now
-			if (self.pages.count > 1) _pageBreaks = [NSMutableArray arrayWithArray:[self.pageBreaks subarrayWithRange:NSMakeRange(0, self.pages.count)]];
-			else _pageBreaks = [NSMutableArray array];
+		
 			
-			if (currentPage) {
-				NSInteger i = 0;
-				for (Line* line in currentPage) {
-					if (i > 0) currentY += [FountainPaginator spaceBeforeForLine:line];
-					currentY += [FountainPaginator elementHeight:line font:font lineHeight:LINE_HEIGHT];
-					i++;
-				}
-			}
+//			NSArray *currentPage;
+//			if (pageNumber > 0) {
+//				_pageBreaks = [NSMutableArray arrayWithArray:[self.pageBreaks subarrayWithRange:NSMakeRange(0, pageNumber)]];
+//				currentPage = [_pages objectAtIndex:pageNumber];
+//			} else _pageBreaks = [NSMutableArray array];
+//
+//
+//
+//
+//			if (currentPage) {
+//				NSInteger i = 0;
+//				for (Line* line in currentPage) {
+//					if (i > 0) currentY += [FountainPaginator spaceBeforeForLine:line];
+//					currentY += [FountainPaginator elementHeight:line font:font lineHeight:LINE_HEIGHT];
+//					i++;
+//				}
+//			}
+//
 		}
 */
 		
@@ -275,6 +402,12 @@ That you have escaped.
 
 		// walk through the elements array
 		for (NSInteger i = fromIndex; i < maxElements; i++) {
+			if (!_paginating && _livePagination) {
+				// An experiment in canceling background-thread pagination
+				[self cancel];
+				return;
+			}
+			
 			// We need to copy this here, not to fuck anything
 			Line *element  = (self.script)[i];
 			
@@ -494,10 +627,13 @@ That you have escaped.
 						split = [split stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 						
 						// Let's create character indexes for these virtual elements, too
-						Line *prePageBreak = [Line withString:retain type:action];
+						Line *prePageBreak = [Line withString:retain type:action pageSplit:YES];
 						prePageBreak.position = spillerElement.position;
-						Line *postPageBreak = [Line withString:split type:action];
+						prePageBreak.changed = spillerElement.changed; // Inherit changes
+						
+						Line *postPageBreak = [Line withString:split type:action pageSplit:YES];
 						postPageBreak.position = prePageBreak.position + prePageBreak.string.length;
+						postPageBreak.changed = spillerElement.changed; // Inherit changes
 												
 						// If it's a heading we need special rules
 						if (headingBlock) {
@@ -552,7 +688,7 @@ That you have escaped.
 					}
 				}
 				
-				#pragma mark Split character
+				#pragma mark Split dialogue
 				else if (element.type == character) {
 					// Figure out which element in dialogue block went over the page limit
 					NSInteger dialogueHeight = 0;
@@ -626,17 +762,19 @@ That you have escaped.
 							// If we have something to retain, do it, otherwise just break to next page
 							if ([retain length] > 0) {
 								for (NSInteger d = 0; d < blockIndex; d++) {
-									Line *preBreak = [Line withString:[tmpElements[d] cleanedString] type:[(Line*)tmpElements[d] type]];
+									Line *preBreak = [Line withString:[tmpElements[d] cleanedString] type:[(Line*)tmpElements[d] type]  pageSplit:YES];
 									[currentPage addObject:preBreak];
 								}
 								
 								// Add on the previous page
-								Line *preDialogue = [[Line alloc] initWithString:retain type:dialogue];
-								Line *preMore = [[Line alloc] initWithString:@"(MORE)" type:more];
+								Line *preDialogue = [Line withString:retain type:dialogue pageSplit:YES];
+								Line *preMore = [Line withString:@"(MORE)" type:more pageSplit:YES];
 								
 								// These are the same, to inform live pagination where we are in the document
 								preDialogue.position = spillerElement.position;
 								preMore.position = spillerElement.position;
+								// Also inherit change status
+								preDialogue.changed = spillerElement.changed;
 								
 								[currentPage addObject:preDialogue];
 								[currentPage addObject:preMore];
@@ -644,12 +782,18 @@ That you have escaped.
 
 								// Add page break
 								[self pageBreak:spillerElement position:breakPosition];
+								spillerElement.unsafeForPageBreak = YES;
 								
 								currentPage = [NSMutableArray array];
 
 								// Add the remaining stuff on the next page
-								Line *postCue = [Line withString:[element.cleanedString stringByAppendingString:@" (CONT'D)"] type:character];
-								Line *postDialogue = [Line withString:split type:dialogue];
+								Line *postCue = [Line withString:[element.cleanedString stringByAppendingString:@" (CONT'D)"] type:character pageSplit:YES];
+								Line *postDialogue = [Line withString:split type:dialogue pageSplit:YES];
+								
+								// Inherit changes
+								postCue.changed = spillerElement.changed;
+								postDialogue.changed = spillerElement.changed;
+								
 								// Position indexes for live pagination
 								postCue.position = preDialogue.position + preDialogue.string.length;
 								postDialogue.position = postCue.position;
@@ -665,7 +809,8 @@ That you have escaped.
 								if (blockIndex + 1 > [tmpElements count]) continue;
 								NSInteger position = postDialogue.position + postDialogue.string.length;
 								for (NSInteger d = blockIndex + 1; d < [tmpElements count]; d++) {
-									Line *postBreak = [[Line alloc] initWithString:[tmpElements[d] cleanedString] type:[(Line*)tmpElements[d] type]];
+									Line *postBreak = [[Line alloc] initWithString:[tmpElements[d] cleanedString] type:[(Line*)tmpElements[d] type] pageSplit:YES];
+									postBreak.changed = [tmpElements[d] changed];
 									postBreak.position = position; // String index from file
 									position += postBreak.string.length;
 									currentY += [FountainPaginator elementHeight:postBreak font:font lineHeight:lineHeight];
@@ -693,11 +838,11 @@ That you have escaped.
 								}
 																
 								// Add (more) after the dialogue
-								[currentPage addObject:[Line withString:@"(MORE)" type:more]];
+								[currentPage addObject:[Line withString:@"(MORE)" type:more pageSplit:YES]];
 								[_pages addObject:currentPage];
 								currentPage = [NSMutableArray array];
 								
-								Line* postCue = [[Line alloc] initWithString:[element.cleanedString stringByAppendingString:@" (CONT'D)"] type:character];
+								Line* postCue = [[Line alloc] initWithString:[element.cleanedString stringByAppendingString:@" (CONT'D)"] type:character pageSplit:YES];
 								[currentPage addObject:postCue];
 								[currentPage addObject:spillerElement];
 								
@@ -883,7 +1028,6 @@ That you have escaped.
 	if (value && line) {
 		[_pageBreaks addObject:@{ @"line": line, @"position": value }];
 	}
-	else { NSLog(@"no value: %@", line); }
 }
 
 - (NSInteger)pageNumberFor:(NSInteger)location {
@@ -914,5 +1058,20 @@ That you have escaped.
 	else return LINE_HEIGHT;
 }
 
+- (void)cancel {
+	self.pages = nil;
+}
 
 @end
+
+/*
+
+on niin yksinkertaista
+uskotella olevansa päivä joka ei milloinkaan laske
+olla kaukaisten hailakkain vuorten takaa nouseva säteinen paiste
+on niin vaikeaa
+myöntää olevansa vain satunnainen kuiskaus
+olla päivänkajo joka aina likempänä kuin aamua
+  on hiipuvaa iltaa
+
+*/

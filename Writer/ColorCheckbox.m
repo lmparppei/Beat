@@ -17,14 +17,36 @@
  */
 
 #import "ColorCheckbox.h"
+#import <QuartzCore/QuartzCore.h>
 IB_DESIGNABLE
 
 @implementation ColorCheckbox
 static CGFloat size = 12;
 
-- (void)drawRect:(NSRect)dirtyRect {
-    //[super drawRect:dirtyRect];
+-(void)awakeFromNib {
+	
+	/*
+	// Alternative, layer-based drawing prototype
+	self.wantsLayer = YES;
+	
+	CAShapeLayer *layer = [CAShapeLayer layer];
+	
+	// Draw the circle
+	CGRect rect = CGRectMake(0, 0, size, size);
+	CGPathRef path = CGPathCreateWithEllipseInRect(rect, nil);
+	
+	layer.path = path;
+	layer.fillColor = [_itemColor colorWithAlphaComponent:0.5].CGColor;
+	self.layer = layer;
+	 */
+}
 
+-(void)mouseUp:(NSEvent *)event {
+	[super mouseUp:event];
+	NSLog(@"mouseup");
+}
+
+- (void)drawRect:(NSRect)dirtyRect {
 	/*
 	// A reminder
 	#if !TARGET_INTERFACE_BUILDER

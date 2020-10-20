@@ -28,26 +28,80 @@
  */
 
 #import "PrintView.h"
-#import "BeatPreview.h"
+#import "BeatPrint.h"
 
 @interface PrintView () <WebFrameLoadDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
 @property (weak, nonatomic) Document *document;
 @property (weak, nonatomic) WebView *webView;
 @property bool pdf;
+@property bool preview;
+
+@property (nonatomic) NSString *string;
 @end
+
 @implementation PrintView
 
-- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print
-{
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript {
+	return [self initWithDocument:document script:lines operation:mode compareWith:oldScript delegate:nil];
+}
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id)delegate {
 	self = [super init];
-	self.pdf = pdf;
-	if (self) {
+
+	self.delegate = delegate;
 		
+	if (mode == BeatToPDF) self.pdf = YES;
+	else if (mode == BeatToPreview) {
+		self.preview = YES;
+		self.pdf = YES;
+	}
+
+	if (self) {
 		_finishedWebViews = 0;
 		_document = document;
 		
-		NSString *htmlString = [BeatPreview createPrint:document.preprocessedText document:document];
+		NSMutableString *rawText;
+		
+		if (lines.count) {
+			rawText = [NSMutableString string];
+			for (Line* line in lines) {
+				[rawText appendFormat:@"%@\n", line.string];
+			}
+		} else {
+			rawText = [NSMutableString stringWithString:[document getText]];
+		}
+		
+		NSString *htmlString = [BeatPrint createPrint:rawText document:document compareWith:oldScript];
+		
+		WebView *pageWebView = [[WebView alloc] init];
+		pageWebView.frameLoadDelegate = self;
+		pageWebView.mainFrame.frameView.allowsScrolling = NO;
+		[self addSubview:pageWebView];
+		
+		_webView = pageWebView;
+		
+		[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
+
+		// Why was this used in Writer?
+		// self.frame = CGRectMake(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);
+	}
+	
+	return self;
+}
+/*
+ - (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print preview:(bool)preview
+{
+	self = [super init];
+	
+	self.pdf = pdf;
+	self.preview = preview;
+	
+	if (self) {
+
+		_finishedWebViews = 0;
+		_document = document;
+		
+		NSString *htmlString = [BeatPrint createPrint:document.preprocessedText document:document compareWith:nil];
 		
 		WebView *pageWebView = [[WebView alloc] init];
 		pageWebView.frameLoadDelegate = self;
@@ -63,6 +117,7 @@
 	}
 	return self;
 }
+*/
 
 - (BOOL)knowsPageRange:(NSRangePointer)range
 {
@@ -91,6 +146,27 @@
 		}
 		// Export PDF
 		else {
+			// Just export a temporary PDF
+			if (_preview) {
+				NSPrintInfo *printInfo = [self.document.printInfo copy];
+				
+				NSURL *tempURL = [NSURL fileURLWithPath:[self pathForTemporaryFileWithPrefix:@"pdf"]];
+				
+				[printInfo.dictionary addEntriesFromDictionary:@{
+																 NSPrintJobDisposition: NSPrintSaveJob,
+																 NSPrintJobSavingURL: tempURL
+																 }];
+				
+				NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+				
+				printOperation.showsPrintPanel = NO;
+				printOperation.showsProgressPanel = YES;
+				
+				[printOperation runOperation];
+				[self.delegate didFinishPreviewAt:tempURL];
+				return;
+			}
+			
 			NSSavePanel *saveDialog = [NSSavePanel savePanel];
 			[saveDialog setAllowedFileTypes:@[@"pdf"]];
 			[saveDialog setNameFieldStringValue:[self.document fileNameString]];
@@ -111,6 +187,7 @@
 					printOperation.showsProgressPanel = YES;
 					
 					[printOperation runOperation];
+					
 				}
 			}];
 			
@@ -150,5 +227,25 @@
 	}
 }
 
+- (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
+{
+	NSString *  result;
+	CFUUIDRef   uuid;
+	CFStringRef uuidStr;
+
+	uuid = CFUUIDCreate(NULL);
+	assert(uuid != NULL);
+
+	uuidStr = CFUUIDCreateString(NULL, uuid);
+	assert(uuidStr != NULL);
+
+	result = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@", prefix, uuidStr]];
+	assert(result != nil);
+
+	CFRelease(uuidStr);
+	CFRelease(uuid);
+
+	return result;
+}
 
 @end

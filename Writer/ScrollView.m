@@ -8,7 +8,8 @@
 
 /*
  
- This is a subclass for moving some UI elements out of the way of the find bar
+ This is a subclass for moving some UI elements out of the way of the find bar,
+ and also hiding the UI button bar when the mouse is not moved.
  
  */
 
@@ -28,9 +29,10 @@
 	
 	// Save buttons for later use
 	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton, _previewButton];
-	
-	// Setup timer
-	//_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(shouldHideButtons:) userInfo:nil repeats:NO];
+		
+	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
+	[self.window setAcceptsMouseMovedEvents:YES];
+	[self addTrackingArea:trackingArea];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {

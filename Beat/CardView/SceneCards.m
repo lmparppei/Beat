@@ -180,6 +180,9 @@
 }
 
 - (void)printCardsWithInfo:(NSPrintInfo *)printInfo {
+	// I'm not sure why this fixes a bug with the page sizing
+	printInfo.orientation = NSPaperOrientationPortrait;
+	
 	// This creates a HTML document for printing out the index cards
 	
 	NSWindow *window = NSApp.mainWindow;
@@ -247,6 +250,7 @@
 		}
 		if (rows >= maxRows) {
 			[html appendString:@"</section><div class='pageBreak'></div><section>"];
+
 			rows = 0;
 			cardsOnRow = 0;
 		}

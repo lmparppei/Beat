@@ -6,9 +6,12 @@
 //  Copyright © 2019 KAPITAN!. All rights reserved.
 //
 
+//  wtf is this? (asking honestly after a year, doesn't seem to do anything meaningful)
+
 #import "TitlePageEditorDelegate.h"
 
 @implementation TitlePageEditorDelegate
+
 /*
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];

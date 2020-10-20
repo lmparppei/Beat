@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097.2"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="16097.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="17156"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -127,15 +127,15 @@
                                     <action selector="runPageLayout:" target="-1" id="Din-rz-gC5"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Toggle Preview" keyEquivalent="p" id="sme-b1-Ytt">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="preview:" target="-1" id="Wir-n0-gpi"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Print…" keyEquivalent="p" id="aTl-1u-JFS">
                                 <connections>
                                     <action selector="printDocument:" target="-1" id="qaZ-4w-aoO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Print Compared With..." id="RV1-GC-Hke">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="printWithComparison:" target="-1" id="X7P-Ur-WOA"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="zwa-xu-33d"/>
@@ -623,6 +623,12 @@ DQ
                                     <action selector="toggleTimeline:" target="-1" id="fm3-Tp-UB7"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Show Preview" keyEquivalent="p" id="sme-b1-Ytt">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="preview:" target="-1" id="Wir-n0-gpi"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Screenplay Analysis" keyEquivalent="A" id="TCn-De-Kk7">
                                 <connections>
                                     <action selector="showAnalysis:" target="-1" id="fsX-Fc-sal"/>
@@ -817,7 +823,7 @@ DQ
                                     <rect key="frame" x="7" y="38" width="148" height="15"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="n3L-4Q-7PB">
-                                        <font key="font" metaFont="label" size="12"/>
+                                        <font key="font" metaFont="cellTitle"/>
                                         <color key="textColor" white="0.62776227678571428" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
@@ -938,7 +944,7 @@ DQ
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="roundTextured" title="Tutorial &amp; Templates" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" autoenablesItems="NO" selectedItem="yd0-pY-Koc" id="iQD-AK-x7E">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
+                            <font key="font" metaFont="menu"/>
                             <menu key="menu" autoenablesItems="NO" id="A8c-hW-dnP">
                                 <items>
                                     <menuItem title="Tutorial &amp; Templates" hidden="YES" id="yd0-pY-Koc"/>

@@ -16,9 +16,15 @@
     #import <Cocoa/Cocoa.h>
 #endif
 
-// @class FNScript, FNElement;
+
+@protocol BeatPaginatorDelegate <NSObject>
+- (NSArray*)lines;
+- (NSString*)getText;
+@end
 
 @interface FountainPaginator : NSObject
+
+@property (weak) id<BeatPaginatorDelegate> delegate;
 
 @property (nonatomic, readonly) NSUInteger numberOfPages;
 @property (nonatomic) CGSize paperSize;

@@ -47,6 +47,7 @@ section {
 	
 	max-width: 100%;
 }
+
 p {
 	margin: 1.3em auto;
 	word-wrap: break-word;
@@ -232,6 +233,12 @@ section {
 	padding: 2em 80px 6em 110px;
 	border: solid 1px #ccc;
 }
+.quickLook section {
+	background-color: white;
+}
+.comparison section {
+	padding: 5%;
+}
 
 a:link, a:visited, a:active {
 	color: black;
@@ -273,28 +280,27 @@ a:hover {
 #zoomOut { right: auto; left: .6em; top: 4em; }
 
 @media screen and (max-width: 500px) {
-	body {
-		background-color: #f0f0f0;
+	body.quickLook {
 		font-size: .3em;
 	}
-	section {
+	.quickLook section {
 		border: none;
 		padding: 0;
 		margin: 0;
 		min-height: 0;
 	}
-	.character {
+	.quickLook .character {
 		width: 35%;
 		
 	}
-	.dialogue {
+	.quickLook .dialogue {
 		width: 60%;
 	}
-	#script-title * {
+	.quickLook #script-title * {
 		margin: 0;
 		padding: 1em 0 1em 0;
 	}
-	#script-title .versionInfo, #script-title .info {
+	.quickLook #script-title .versionInfo, .quickLook #script-title .info {
 		position: relative;
 		margin: 0;
 	}

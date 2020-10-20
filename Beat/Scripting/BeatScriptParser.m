@@ -25,38 +25,24 @@
 #import "OutlineScene.h"
 
 @interface BeatScriptParser ()
-@property (nonatomic) NSString *script;
-@property (weak) NSArray *lines;
-@property (weak) NSArray *scenes;
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
 @end
 
 @implementation BeatScriptParser
 
-- (id)performDefaultImplementation {
-    NSString *sTitle = [self directParameter];
-	NSLog(@"param %@", sTitle);
-    return sTitle;
-}
 
-
-- (id)initWithScript:(NSString*)script lines:(NSArray*)lines scenes:(NSArray*)scenes
+- (id)init
 {
 	if ((self = [super init]) == nil) { return nil; }
-	
-	_script = script;
-	_lines = lines;
-	_scenes = scenes;
-	
+		
 	_vm = [[JSVirtualMachine alloc] init];
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
 	
-	NSString *js = @"return 'hello';";
-	NSLog(@"result: %@", [_context evaluateScript:js]);
-	
 	return self;
 }
+
+
 
 /*
  
@@ -96,8 +82,30 @@
  
  */
 
+- (NSMutableArray*)scenes {
+	[self.delegate.parser createOutline];
+	NSArray *scenes = self.delegate.parser.outline;
+	
+	NSMutableArray *result = [NSMutableArray array];
+	
+	for (OutlineScene *scene in scenes) {
+		[result addObject:@{
+			@"type": scene.line.typeAsString,
+			@"string": (scene.string.length) ? scene.string : @"",
+			@"position": [NSNumber numberWithInteger:scene.sceneStart],
+			@"length": [NSNumber numberWithInteger:scene.sceneLength],
+			@"omitted": [NSNumber numberWithBool:scene.omited],
+			@"color": (scene.color.length) ? scene.color : @"",
+			@"sceneNumber": (scene.sceneNumber.length) ? scene.sceneNumber : @""
+		}];
+	}
+	
+	return result;
+}
+
 - (void)runScript {
 
+	/*
 	// We need to make a copy of lines available to JS
 	NSMutableArray *jsonLines = [NSMutableArray array];
 	
@@ -120,6 +128,7 @@
 			[jsonLines addObject:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
 		}
 	}
+	 */
 }
 
 @end

@@ -7,15 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ContinousFountainParser.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatScriptDelegate <NSObject>
-//- (void):(NSInteger)index;
+@protocol BeatScriptingExports <JSExport>
+- (NSMutableArray*)scenes;
 @end
 
-@interface BeatScriptParser : NSScriptCommand
+@protocol BeatScriptingDelegate <NSObject>
+//- (void):(NSInteger)index;
+@property (strong, nonatomic) ContinousFountainParser *parser;
+@end
 
+@interface BeatScriptParser : NSObject <BeatScriptingExports>
+@property (weak) id<BeatScriptingDelegate> delegate;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -41,6 +41,9 @@ section {
 	border: solid 1px black;
 	border-width: 1px 0 0 1px;
 }
+section:last-child {
+	page-break-after: avoid;
+}
 
 h2 {
 	width: 100%;

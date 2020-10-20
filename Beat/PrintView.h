@@ -31,8 +31,21 @@
 #import "Document.h"
 #import <WebKit/WebKit.h>
 
-@interface PrintView : NSView
+typedef enum : NSUInteger {
+	BeatToPDF = 0,
+	BeatToPrint,
+	BeatToPreview,
+} BeatPrintOperation;
 
-- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print;
+@protocol PrintViewDelegate
+- (void) didFinishPreviewAt:(NSURL*)url;
+@end
+
+@interface PrintView : NSView
+@property (weak) id<PrintViewDelegate> delegate;
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript;
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id)delegate;
+//- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print preview:(bool)preview;
+//- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print;
 
 @end

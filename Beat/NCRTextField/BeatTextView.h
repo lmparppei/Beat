@@ -18,23 +18,29 @@
 @end
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate>
-- (void) forceCharacterInput;
-- (void) cancelCharacterInput;
-- (void) handleTabPress;
-- (NSInteger)getPageNumber:(NSInteger)location;
+@property (nonatomic) CGFloat magnification;
+//- (CGFloat) magnification;
+//- (void) forceCharacterInput;
+//- (void) cancelCharacterInput;
+//- (void) handleTabPress;
+//- (NSInteger)getPageNumber:(NSInteger)location;
 @end
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
 - (void)updateSections:(NSArray*)sections;
+- (void)setInsets;
 
+@property CGFloat textInsetY;
+@property (weak) id<BeatTextViewDelegate> zoomDelegate;
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;
 @property NSArray* sections;
 @property (nonatomic, weak) DynamicColor* marginColor;
 @property NSArray* pageBreaks;
 @property CGFloat zoomLevel;
+@property CGFloat documentWidth;
 @property NSInteger autocompleteIndex;
 
 @end

@@ -54,11 +54,13 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* noteRanges;
 @property NSMutableIndexSet* omitedRanges;
 @property NSRange titleRange;
+@property NSRange sceneNumberRange;
 @property bool omitIn; //wether the line terminates an unfinished omit
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
 - (Line*)initWithString:(NSString*)string type:(LineType)type;
+- (Line*)initWithString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position;
 - (NSString*)toString;
 - (NSString*)typeAsString;
@@ -68,8 +70,10 @@ typedef enum : NSUInteger {
 - (bool)omited;
 - (bool)note;
 - (bool)centered;
+- (NSRange)range;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
++ (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
 
 // Copy element
 - (Line*)clone;
@@ -91,5 +95,12 @@ typedef enum : NSUInteger {
 
 @property bool isSplitParagraph;
 @property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
+
+// Properties for pagination
+@property bool unsafeForPageBreak;
+
+// For comparing with another version
+@property bool changed;
+
 
 @end

@@ -21,10 +21,12 @@
 }
 
 -(void)awakeFromNib {
+	/*
 	[self.window setAcceptsMouseMovedEvents:YES];
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 
 	[self addTrackingArea:trackingArea];
+	 */
     //[self.master setAcceptsMouseMovedEvents:YES];
 	//[self.masterView addTrackingArea:trackingArea];
 	//[self.masterView setPostsBoundsChangedNotifications:YES];

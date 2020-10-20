@@ -23,6 +23,9 @@
 + (Line*)withString:(NSString*)string type:(LineType)type {
 	return [[Line alloc] initWithString:string type:type];
 }
++ (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit {
+	return [[Line alloc] initWithString:string type:type pageSplit:YES];
+}
 + (NSArray*)markupCharacters {
 	return @[@".", @"@", @"~", @"!"];
 }
@@ -63,6 +66,15 @@
 	}
 	return self;
 }
+- (Line*)initWithString:(NSString *)string type:(LineType)type pageSplit:(bool)pageSplit {
+	self = [super init];
+	if (self) {
+		_string = string;
+		_type = type;
+		_unsafeForPageBreak = YES;
+	}
+	return self;
+}
 - (Line*)initWithString:(NSString *)string type:(LineType)type position:(NSUInteger)position {
 	self = [super init];
 	if (self) {
@@ -72,6 +84,7 @@
 	}
 	return self;
 }
+
 
 - (NSString *)toString
 {
@@ -324,6 +337,10 @@
 	}];
 	
 	return inRange;
+}
+
+-(NSRange)range {
+	return NSMakeRange(self.position, self.string.length + 1);
 }
 
 - (NSString*)typeAsFountainString

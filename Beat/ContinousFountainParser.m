@@ -714,11 +714,12 @@
                          excludingIndices:nil];
 	
     if (line.type == heading) {
-		NSRange sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
-        if (sceneNumberRange.length == 0) {
+		line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
+        
+		if (line.sceneNumberRange.length == 0) {
             line.sceneNumber = nil;
         } else {
-            line.sceneNumber = [line.string substringWithRange:sceneNumberRange];
+            line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
         }
 		
 		line.color = [self colorForHeading:line];
@@ -774,15 +775,31 @@ and incomprehensible system of recursion.
     NSString* string = line.string;
     NSUInteger length = [string length];
 	
-	// So we need to pull all sorts of tricks out of our sleeve here. Usually Fountain files are parsed from bottom to up, but here we are parsing in a linear manner. That's why we need some extra pointers, which kinda sucks.
+	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
+	
+	// So we need to pull all sorts of tricks out of our sleeve here.
+	// Usually Fountain files are parsed from bottom to up, but here we are parsing in a linear manner.
 	// I have no idea how I got this to work but it does.
+
+	// Check for all-caps actions mistaken for character cues
+	if (self.delegate) {
+		if (preceedingLine.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location + 1, line.range)) {
+			// If the preceeding line is empty, we'll check the line before that, too, to be sure.
+			// This way we can check for false character cues
+			if (index > 1) {
+				Line* lineBeforeThat = (Line*)self.lines[index - 2];
+				if (lineBeforeThat.type == character) {
+					lineBeforeThat.type = action;
+					[self.changedIndices addObject:@(index - 2)];
+				}
+			}
+		}
+	}
 	
     // Check if empty.
     if (length == 0) {
 		// If previous line is part of dialogue block, this line becomes dialogue right away
 		// Else it's just empty.
-		Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
-		
 		if (preceedingLine.type == character || preceedingLine.type == parenthetical || preceedingLine.type == dialogue) {
 			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty. OMG IT WORKS!
 			if ([preceedingLine.string length] > 0) {
@@ -857,7 +874,6 @@ and incomprehensible system of recursion.
 	// '.' forces a heading. Because our American friends love to shoot their guns like we Finnish people love our booze, screenwriters might start dialogue blocks with such "words" as '.44'
 	// So, let's NOT return a scene heading IF the previous line is not empty OR is a character OR is a parenthetical...
     if (firstChar == '.' && length >= 2 && [string characterAtIndex:1] != '.') {
-		Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 		if (preceedingLine) {
 			if (preceedingLine.type == character) return dialogue;
 			if (preceedingLine.type == parenthetical) return dialogue;
@@ -867,10 +883,7 @@ and incomprehensible system of recursion.
 		line.numberOfPreceedingFormattingCharacters = 1;
 		return heading;
     }
-	
-
-	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
-	
+		
     //Check for scene headings (lines beginning with "INT", "EXT", "EST",  "I/E"). "INT./EXT" and "INT/EXT" are also inside the spec, but already covered by "INT".
 	if (preceedingLine.type == empty ||
 		[preceedingLine.string length] == 0 ||
@@ -1004,7 +1017,6 @@ and incomprehensible system of recursion.
         if (length >= 3 && [string containsOnlyUppercase] && !containsOnlyWhitespace) {
             // A character line ending in ^ is a double dialogue character
             if (lastChar == '^') {
-				
 				// PLEASE NOTE:
 				// nextElementIsDualDialogue is ONLY used while staticly parsing for printing,
 				// and SHOULD NOT be used anywhere else, as it won't be updated.
@@ -1301,7 +1313,7 @@ and incomprehensible system of recursion.
     }
 }
 
-#pragma mark - Outline Dat
+#pragma mark - Outline Data
 
 - (NSUInteger)numberOfOutlineItems
 {

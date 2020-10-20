@@ -51,7 +51,7 @@
 - (id)initWithScript:(NSDictionary *)script quickLook:(bool)quickLook;
 - (id)initWithScript:(NSDictionary *)script print:(bool)print;
 - (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document print:(bool)print;
-
+- (id)initForComparisonWithScript:(NSDictionary *)script;
  
 - (NSInteger)pages;
 - (NSString *)html;
