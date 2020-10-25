@@ -955,29 +955,13 @@
 		alert.alertStyle = NSAlertStyleWarning;
         [alert beginSheetModalForWindow:self.windowControllers[0].window completionHandler:nil];
     } else {
-		/*
-		if (self.printSceneNumbers) {
-			self.preprocessedText = [self preprocessSceneNumbers];
-		} else {
-			self.preprocessedText = [self.getText copy];
-		}
-		 */
-        //self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO toPrint:YES];
 		self.printView = [[PrintView alloc] initWithDocument:self script:self.parser.lines operation:BeatToPrint compareWith:nil];
-		//+ (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript;
     }
 }
 
 - (IBAction)exportPDF:(id)sender
 {
-	if (self.printSceneNumbers) {
-		self.preprocessedText = [self preprocessSceneNumbers];
-	} else {
-		self.preprocessedText = [self.getText copy];
-	}
-	
 	self.printView = [[PrintView alloc] initWithDocument:self script:self.parser.lines operation:BeatToPDF compareWith:nil];
-	//self.printView = [[PrintView alloc] initWithDocument:self toPDF:YES toPrint:YES];
 }
 
 - (IBAction)exportFDX:(id)sender
@@ -3227,6 +3211,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 {
 	// Special conditions for other than normal edit view
 	if ([self selectedTabViewTab] != 0) {
+		// If PRINT PREVIEW is enabled
 		if ([self selectedTabViewTab] == 1 && [menuItem.title isEqualToString:@"Show Preview"]) {
 			[menuItem setState:NSOnState];
 			return YES;
@@ -3259,6 +3244,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 		
 		return NO;
 	}
+	
+	// Normal editor view
 	if (_timelineVisible && [menuItem.title isEqualToString:@"Show Timeline"]) {
 		[menuItem setState:NSOnState];
 		return YES;
@@ -3269,9 +3256,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 	if ([menuItem.title isEqualToString:@"Share"]) {
         [menuItem.submenu removeAllItems];
         NSArray *services = @[];
-        if (self.fileURL) {
+		
+		if (self.fileURL) {
+			// This produces an error, but still works. Why?
             services = [NSSharingService sharingServicesForItems:@[self.fileURL]];
-            
+			
             for (NSSharingService *service in services) {
                 NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:service.title action:@selector(shareFromService:) keyEquivalent:@""];
                 item.image = service.image;
@@ -3285,10 +3274,11 @@ static NSString *forceDualDialogueSymbol = @"^";
             noThingPleaseSaveItem.enabled = NO;
             [menuItem.submenu addItem:noThingPleaseSaveItem];
         }
+		
         return YES;
 	} else if ([menuItem.title isEqualToString:@"Autosave"]) {
 		if (_autosave) menuItem.state = NSOnState; else menuItem.state = NSOffState;
-	} else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
+	} else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"Create PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
         NSArray* words = [[self getText] componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         NSString* visibleCharacters = [words componentsJoinedByString:@""];
         if ([visibleCharacters length] == 0) {

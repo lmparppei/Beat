@@ -78,7 +78,7 @@
 		if (line.type == action && line.isSplitParagraph && [parser.lines indexOfObject:line] > 0) {
 			Line *previousLine = [elements objectAtIndex:elements.count - 1];
 
-			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.cleanedString];
+			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.string];
 			continue;
 		}
 		
@@ -115,51 +115,9 @@
 	// Set script data
 	[script setValue:parser.titlePage forKey:@"title page"];
 	[script setValue:elements forKey:@"script"];
-
+	
 	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document print:YES];
 	return html.html;
-}
-
-- (NSString*) preprocessSceneNumbersFor:(NSArray*)lines
-{
-	// This is horrible shit and should be fixed ASAP
-	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
-	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
-	NSMutableString *fullText = [NSMutableString stringWithString:@""];
-	
-	NSUInteger sceneCount = 1; // Track scene amount
-		
-	// Make a copy of the array if this is called in a background thread
-	for (Line *line in lines) {
-		//NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-		NSString *cleanedLine = [NSString stringWithString:line.string];
-		
-		// If the heading already has a forced number, skip it
-		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
-			// Check if the scene heading is omited
-			if (![line omited]) {
-				[fullText appendFormat:@"%@ #%lu#\n", cleanedLine, sceneCount];
-				sceneCount++;
-			} else {
-				// We will still append the heading into the raw text … this is a dirty fix
-				// to keep indexing of scenes intact
-				[fullText appendFormat:@"%@\n", cleanedLine];
-			}
-		} else {
-			[fullText appendFormat:@"%@\n", cleanedLine];
-		}
-		
-		// Add a line break after the scene heading if it doesn't have one
-		// If the user relies on this feature, it breaks the file's compatibility with other Fountain editors, but they have no one else to blame than themselves I guess. And my friendliness and hospitality allowing them to break the syntax.
-		if (line.type == heading && line != [lines lastObject]) {
-			NSInteger lineIndex = [lines indexOfObject:line];
-			if ([(Line*)[lines objectAtIndex:lineIndex + 1] type] != empty) {
-				[fullText appendFormat:@"\n"];
-			}
-		}
-	}
-	
-	return fullText;
 }
 
 @end

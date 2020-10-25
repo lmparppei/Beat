@@ -142,7 +142,7 @@
 	// Remove markup characters
 	if (self.string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
 		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
-		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
+		else if (self.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
  		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
 		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
 		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
@@ -155,30 +155,31 @@
 			string = [NSMutableString stringWithString:[string substringToIndex:string.length - 1]];
 		}
 	}
-	
+
 	// Clean up scene headings
 	// Note that the scene number can still be read from the element itself (.sceneNumber) when needed.
 	if (self.type == heading && self.sceneNumber) {
 		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
 	}
-	
+		
 	return string;
 }
 
 - (NSString*)stripFormattingCharacters {
 	NSMutableString *string = [NSMutableString stringWithString:self.string];
 
-	if (self.numberOfPreceedingFormattingCharacters > 0 && self.string.length >= self.numberOfPreceedingFormattingCharacters) {
-		[string setString:[string substringFromIndex:self.numberOfPreceedingFormattingCharacters]];
-	}
-	
 	// Remove force characters
 	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
 		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
-		else if (self.type == heading) [string setString:[string replace:RX(@"^.") with:@""]];
+		else if (self.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
  		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
 		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
 		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
+		else {
+			if (self.numberOfPreceedingFormattingCharacters > 0 && self.string.length >= self.numberOfPreceedingFormattingCharacters) {
+				[string setString:[string substringFromIndex:self.numberOfPreceedingFormattingCharacters]];
+			}
+		}
 	}
 	
 	// Replace formatting characters
@@ -186,7 +187,6 @@
 		[string setString:[string stringByReplacingOccurrencesOfString:formattingCharacters withString:@""]];
 	}
 
-	
 	return string;
 }
 - (NSString*)stripInvisible {

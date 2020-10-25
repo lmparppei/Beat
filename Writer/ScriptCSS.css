@@ -282,6 +282,7 @@ a:hover {
 @media screen and (max-width: 500px) {
 	body.quickLook {
 		font-size: .3em;
+		background: white;
 	}
 	.quickLook section {
 		border: none;

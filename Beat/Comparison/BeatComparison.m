@@ -15,6 +15,8 @@
  The dark time too
  Which you have escaped.
  
+ 
+ 
  This is a class for comparing two Fountain files against each other, using Google's
  diff-match-patch framework.
  
@@ -28,6 +30,9 @@
  
  It's multiple systems built on top of each other in a messy way, but it works for now.
  Hopefully I don't need to touch it again.
+ 
+ Note that the PrintView (of Writer legacy) has to be retained in memory as it
+ works asynchronously.
  
  */
 
@@ -58,12 +63,21 @@
 
 @implementation BeatComparison
 
-
 - (IBAction)open:(id)sender {
 	[self updatePreview];
 	[self.window beginSheet:_panel completionHandler:nil];
 }
 - (IBAction)close:(id)sender {
+	[self.window endSheet:_panel];
+}
+- (IBAction)print:(id)sender {
+	NSString *oldScript = [NSString stringWithContentsOfURL:_compareWith encoding:NSUTF8StringEncoding error:nil];
+	self.printView = [[PrintView alloc] initWithDocument:_document script:_currentScript operation:BeatToPrint compareWith:oldScript];
+	[self.window endSheet:_panel];
+}
+- (IBAction)pdf:(id)sender {
+	NSString *oldScript = [NSString stringWithContentsOfURL:_compareWith encoding:NSUTF8StringEncoding error:nil];
+	self.printView = [[PrintView alloc] initWithDocument:_document script:_currentScript operation:BeatToPDF compareWith:oldScript];
 	[self.window endSheet:_panel];
 }
 - (IBAction)pickFile:(id)sender {
@@ -72,22 +86,8 @@
 	[openDialog setAllowedFileTypes:@[@"fountain"]];
 	[openDialog beginSheetModalForWindow:self.panel completionHandler:^(NSModalResponse result) {
 		if (result == NSFileHandlingPanelOKButton) {
-			//NSError *error;
-			
 			[self setFile:openDialog.URL];
 			[self updatePreview];
-			
-			//NSString *previousVersion = [NSString stringWithContentsOfURL:previousVersionURL encoding:NSUTF8StringEncoding error:&error];
-			
-			/*
-			if (self.printSceneNumbers) {
-				self.preprocessedText = [self preprocessSceneNumbers];
-			} else {
-				self.preprocessedText = [self.getText copy];
-			}
-			
-			self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO toPrint:YES compareWith:previousVersion];
-			 */
 		}
 	}];
 }
@@ -122,77 +122,16 @@
 	
 	NSInteger additions = 0;
 	NSInteger removals = 0;
+	NSInteger equal = 0;
 	
 	for (Diff *d in diffs) {
-		
 		if (d.operation == DIFF_DELETE) removals += d.text.length;
+		if (d.operation == DIFF_EQUAL) equal += d.text.length;
 		else if (d.operation == DIFF_INSERT) additions += d.text.length;
 	}
 	
-	NSString* report = [NSString stringWithFormat:@"%lu characters added\n%lu characters deleted", additions, removals];
+	NSString* report = [NSString stringWithFormat:@"%lu characters unchanged\n%lu characters added\n%lu characters deleted", equal, additions, removals];
 	[_reportLabel setStringValue:report];
-	
-	/*
-	NSMutableArray *elements = [NSMutableArray array];
-	NSMutableArray *titlePage = [NSMutableArray array];
-	
-	Line *previousLine;
-	
-	for (Line* line in self.currentScript) {
-		if (line.isTitlePage) {
-			[titlePage addObject:line];
-			continue;;
-		}
-		// Skip over certain elements
-		if (line.type == synopse || line.type == section || line.omited) {
-			if (line.type == empty) previousLine = line;
-			continue;
-		}
-	
-		// This is a paragraph with a single line break,
-		// so append the line to the previous one
-		if (line.type == action && line.isSplitParagraph && [self.currentScript indexOfObject:line] > 0) {
-			Line *previousLine = [elements objectAtIndex:elements.count - 1];
-
-			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.cleanedString];
-			continue;
-		}
-		
-		if (line.type == dialogue && line.string.length < 1) {
-			line.type = empty;
-			previousLine = line;
-			continue;
-		}
-
-		[elements addObject:line];
-				
-		// If this is dual dialogue character cue,
-		// we need to search for the previous one too
-		if (line.isDualDialogueElement) {
-			bool previousCharacterFound = NO;
-			NSInteger i = elements.count - 2; // Go for previous element
-			while (i > 0) {
-				Line *previousLine = [elements objectAtIndex:i];
-				
-				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
-				
-				if (previousLine.type == character ) {
-					previousLine.nextElementIsDualDialogue = YES;
-					previousCharacterFound = YES;
-					break;
-				}
-				i--;
-			}
-		}
-		
-		previousLine = line;
-	}
-	
-	NSDictionary *script = @{ @"script": elements, @"title page": titlePage  };
-	
-	NSString *preview = [BeatPreview createNewPreview:script of:nil scene:nil sceneNumbers:NO type:BeatComparisonPreview];
-	[_webView loadHTMLString:preview baseURL:nil];
-	*/
 }
 
 - (void)setFile:(NSURL*)url {

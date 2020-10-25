@@ -709,7 +709,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[context saveGraphicsState];
 	
 	NSInteger pageNumber = 1;
-	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 155);
+	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 170);
 	//CGFloat width = self.frame.size.width * factor - self.textContainerInset.width * 2 + 290;
 	
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
@@ -759,27 +759,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	} else if (point.x > 10) {
 		[NSCursor.arrowCursor set];
 	}
-	
-	
-	/*
-	// This view is enclosed by multiple views (clip / scroll / margin)
-	CGFloat origin = self.superview.superview.superview.frame.origin.x;
-	 
-	CGFloat containerWidth = self.frame.size.width - self.textContainerInset.width * _zoomLevel;
-
-	if (x >= origin && x <= origin + 10) {
-		[[NSCursor resizeLeftRightCursor] set];
-	}
-	else if (x < origin + _zoomLevel * self.textContainerInset.width - MARGIN_CONSTANT ||
-		x > origin + containerWidth + MARGIN_CONSTANT ||
-		y < 0 ||
-		y > self.window.frame.size.height - 22
-		) {
-		[[NSCursor arrowCursor] set];
-	} else {
-		[[NSCursor IBeamCursor] set];
-	}
-	 */
 }
 
 - (void)mouseExited:(NSEvent *)event {

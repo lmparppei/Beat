@@ -54,7 +54,6 @@ section {
 
 	/* padding: 2.5cm 2.5cm 2.5cm 3.9cm; */
 	page-break-after: always;
-	overflow: visible;
 }
 p {
 	position: relative;
@@ -95,7 +94,7 @@ body > p:first-child {
 
 .character, .more {
 	position: relative;
-	margin: 1.1em auto 0 30%;
+	margin: 1.1em auto 0 174px; /* 30% */
 	width: 180px;
 	width: 7cm;
 	padding-bottom: 0;
@@ -108,13 +107,13 @@ body > p:first-child {
 
 .dialogue {
 	position: relative;
-	margin: 0 auto 0 15%;
-	width: 255px;
+	margin: 0 auto 0 95px; /* 15% */
+	width: 280px; /* 255 */
 }
 
 .parenthetical {
 	position: relative;
-	margin: 0 auto;
+	margin: 0 135px;
 	width: 250px;
 }
 
@@ -173,8 +172,19 @@ body > p:first-child {
 	content: '* * * * * * * * *';
 	overflow: hidden;
 }
+.dual-dialogue-right .changed::before {
+	left: auto;
+	right: -10px;
+}
+
 .dialogue.changed::before {
-	left: -90px;
+	left: -105px;
+}
+.parenthetical.changed::before {
+	left: -145px;
+}
+.character.changed::before {
+	left: -184px;
 }
 
 #script-title .title {

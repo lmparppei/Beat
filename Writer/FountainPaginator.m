@@ -967,7 +967,7 @@ That you have escaped.
 		width   = 180;
 	}
 	else if ([type isEqualToString:@"Dialogue"]) {
-		width   = 217;
+		width   = 245; // 217
 	}
 	else if ([type isEqualToString:@"Parenthetical"]) {
 		width   = 210;
