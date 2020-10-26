@@ -35,7 +35,8 @@
 @property (strong, nonatomic) NSMutableArray *pageInfo;
 
 - (id)initWithScript:(NSArray*)elements;
-- (id)initForLivePagination:(NSArray*)elements paperSize:(CGSize)paperSize;
+- (id)initForLivePagination:(NSDocument*)document;
+- (id)initForLivePagination:(NSDocument*)document withElements:(NSArray*)elements;
 - (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;
 - (id)initWithScript:(NSArray*)elements paperSize:(CGSize)paperSize;
 
@@ -50,7 +51,7 @@
 + (CGFloat)spaceBeforeForElement:(Line *)element;
 + (CGFloat)spaceBeforeForLine:(Line *)line;
 //+ (NSInteger)leftMarginForElement:(FNElement *)element;
-+ (NSInteger)widthForElement:(Line *)element;
+- (NSInteger)widthForElement:(Line *)element;
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
 
 @end

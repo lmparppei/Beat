@@ -29,6 +29,14 @@
  intrigued by, and probably it makes it less likely that I'll get dementia or
  other memory-related illness later in life. I don't know.
  
+ I have found the fixed values with goold old trial & error. As we are using a
+ WebView (which is now deprecated, btw, so I'm fucked again) rendering HTML
+ file, the pixel coordinates do not match AT ALL. There is a boolean value
+ to check whether we're paginating on a US Letter or on the only real
+ paper size used by the rest of the world (A4). I should make a print
+ dialog similar to the comparison window in which you could then select
+ the correct paper size.
+ 
  The current iteration has live pagination stuff built in. The goal is to have
  the class only paginate from changed indices. I've made some experiments to allow
  that, but for now it does not work at all. Though live pagination runs in another
@@ -54,7 +62,7 @@
 #import "Line.h"
 #import "RegExCategories.h"
 
-#define LINE_HEIGHT 13
+#define LINE_HEIGHT 12.5
 
 @interface FountainPaginator ()
 
@@ -63,6 +71,7 @@
 @property (nonatomic) NSTimer *timer;
 @property (nonatomic) NSString *textCache;
 @property bool paginating;
+@property bool A4;
 
 // WIP
 @property (nonatomic) bool livePagination;
@@ -101,14 +110,25 @@
 	}
 }
 
-- (id)initForLivePagination:(NSArray *)elements paperSize:(CGSize)paperSize {
+- (id)initForLivePagination:(NSDocument*)document {
+	self = [super init];
+	if (self) {
+		_pages = [NSMutableArray array];
+		_script = [NSArray array];
+		_livePagination = YES;
+		_pageBreaks = [NSMutableArray array];
+		_document = document;
+	}
+	return self;
+}
+- (id)initForLivePagination:(NSDocument*)document withElements:(NSArray*)elements {
 	self = [super init];
 	if (self) {
 		_pages = [NSMutableArray array];
 		_script = elements;
-		_paperSize = paperSize;
 		_livePagination = YES;
 		_pageBreaks = [NSMutableArray array];
+		_document = document;
 	}
 	return self;
 }
@@ -143,9 +163,6 @@
 }
 
 - (void)livePaginationFor:(NSArray*)script fromIndex:(NSInteger)index {
-
-	// NSLog(@"index %lu", index);
-
 	// Normal pagination
 	_paginating = NO;
 	@synchronized (self) {
@@ -211,7 +228,7 @@
 					firstElement = line;
 					break;
 				}
-			}			
+			}
 		}
 		
 		if (firstElement) break;
@@ -331,15 +348,32 @@ That you have escaped.
 {
 	// NSLog(@"paginating from %lu (with %lu elements on page)", fromIndex, currentPage.count);
 	// Default pagination function for US Letter paper size (legacy of Fountain repository)
-	if (_paperSize.height == 0) {
-		if (self.document) {
-			// Get paper size from the document
-			_paperSize = CGSizeMake(self.document.printInfo.paperSize.width, self.document.printInfo.paperSize.height);
-		} else {
-			// US letter paper size is 8.5 x 11 (in pixels)
-			_paperSize = CGSizeMake(612, 792);
-		}
+	
+	_A4 = YES;
+	if (_document.printInfo.paperSize.width > 595) _A4 = NO;
+	
+	CGFloat w = _document.printInfo.paperSize.width - _document.printInfo.leftMargin - _document.printInfo.rightMargin;
+	CGFloat h = _document.printInfo.paperSize.height - _document.printInfo.topMargin - _document.printInfo.bottomMargin;
+	
+	_paperSize = CGSizeMake(w, h);
+	
+	
+	
+	/*
+	if (self.document) {
+		// Get paper size from the document
+		CGFloat w = _document.printInfo.paperSize.width - _document.printInfo.leftMargin - _document.printInfo.rightMargin;
+		CGFloat h = _document.printInfo.paperSize.height - _document.printInfo.topMargin - _document.printInfo.bottomMargin;
+		_paperSize = CGSizeMake(w, h);
+		
+		if (self.livePagination) NSLog(@"live: %f", h);
+		else NSLog(@"print %f", h);
+	} else {
+		NSLog(@"hello");
+		// US letter paper size is 8.5 x 11 (in pixels)
+		_paperSize = CGSizeMake(612, 792);
 	}
+	 */
 	
 	@autoreleasepool {
 		bool debug = NO;
@@ -348,9 +382,11 @@ That you have escaped.
 		NSInteger currentY = initialY;
 		
 		NSInteger oneInchBuffer = 72;
-		NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.1);
+		NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.25);
+		NSLog(@"max page height %lu", maxPageHeight);
 		
 		BeatFont *font = [BeatFont fontWithName:@"Courier" size:12];
+		
 		//NSInteger lineHeight = font.pointSize * 1.1;
 		CGFloat lineHeight = LINE_HEIGHT;
 
@@ -383,7 +419,7 @@ That you have escaped.
 //				NSInteger i = 0;
 //				for (Line* line in currentPage) {
 //					if (i > 0) currentY += [FountainPaginator spaceBeforeForLine:line];
-//					currentY += [FountainPaginator elementHeight:line font:font lineHeight:LINE_HEIGHT];
+//					currentY += [self elementHeight:line font:font lineHeight:LINE_HEIGHT];
 //					i++;
 //				}
 //			}
@@ -446,7 +482,7 @@ That you have escaped.
 			
 			// get spaceBefore, the leftMargin, and the elementWidth
 			spaceBefore         = [FountainPaginator spaceBeforeForLine:element];
-			elementWidth        = [FountainPaginator widthForElement:element];
+			elementWidth        = [self widthForElement:element];
 			
 			// get the height of the text
 			NSInteger blockHeight    = [FountainPaginator heightForString:element.cleanedString font:font maxWidth:elementWidth lineHeight:lineHeight];
@@ -456,6 +492,7 @@ That you have escaped.
 				// height = lineHeight;
 				continue;
 			}
+			
 			NSInteger dialogueBlockHeight = 0;
 			
 			// only add the space before if we're not at the top of the current page
@@ -487,7 +524,7 @@ That you have escaped.
 					nextElement = (self.script)[j];
 					j++;
 				}
-				NSInteger height = [FountainPaginator elementHeight:nextElement font:font lineHeight:lineHeight];
+				NSInteger height = [self elementHeight:nextElement font:font lineHeight:lineHeight];
 				fullHeight += [FountainPaginator spaceBeforeForLine:nextElement] + height;
 				
 				if (nextElement) [tmpElements addObject:nextElement];
@@ -495,7 +532,7 @@ That you have escaped.
 			}
 			
 			// Handle character. Get whole block.
-			else if ((element.type == character || element.type == dualDialogueCharacter) && [self elementExists:i + 1]) {				
+			else if ((element.type == character || element.type == dualDialogueCharacter) && [self elementExists:i + 1]) {
 				bool isDualDialogue = NO;
 				if (element.type == dualDialogueCharacter) isDualDialogue = YES;
 				
@@ -508,7 +545,7 @@ That you have escaped.
 				
 				// Catch elements in the dialogue block, single or dual
 				do {
-					dialogueBlockHeight += [FountainPaginator elementHeight:nextElement font:font lineHeight:lineHeight];
+					dialogueBlockHeight += [self elementHeight:nextElement font:font lineHeight:lineHeight];
 					[tmpElements addObject:nextElement];
 					
 					j++;
@@ -526,7 +563,9 @@ That you have escaped.
 				else if (element.type == dualDialogueCharacter) {
 					// If the previous dialogue block was lower in height than the current one,
 					// we'll substract to get the height difference and add it to the total page height later
-					if (previousDualDialogueBlockHeight < dialogueBlockHeight) dialogueBlockHeight = dialogueBlockHeight - previousDualDialogueBlockHeight;
+					if (previousDualDialogueBlockHeight < dialogueBlockHeight) {
+						dialogueBlockHeight = dialogueBlockHeight - previousDualDialogueBlockHeight;
+					}
 					else dialogueBlockHeight = 0;
 				}
 				else {
@@ -534,11 +573,11 @@ That you have escaped.
 				}
 				
 				fullHeight = dialogueBlockHeight;
-				
 			} else {
 				[tmpElements addObject:element];
 			}
 			
+//			NSLog(@"%@\n            ---  y %lu + %lu = %lu    (mx %lu)", element.string, currentY, fullHeight, currentY + fullHeight, maxPageHeight);
 			
 			// BREAKING ELEMENTS ONTO PAGES
 			// Figure out which element went overboard
@@ -613,7 +652,7 @@ That you have escaped.
 							text = [text stringByAppendingFormat:@" %@", word];
 							// FNElement *tempElement = [FNElement elementOfType:@"Action" text:text];
 							Line *tempElement = [[Line alloc] initWithString:text type:action];
-							NSInteger h = [FountainPaginator elementHeight:tempElement font:font lineHeight:lineHeight];
+							NSInteger h = [self elementHeight:tempElement font:font lineHeight:lineHeight];
 							if (h < space) {
 								breakPosition = h;
 								retain = [retain stringByAppendingFormat:@" %@", word];
@@ -648,7 +687,7 @@ That you have escaped.
 								
 								currentPage = [NSMutableArray array];
 								[currentPage addObject:postPageBreak];
-								currentY = [FountainPaginator elementHeight:postPageBreak font:font lineHeight:lineHeight];
+								currentY = [self elementHeight:postPageBreak font:font lineHeight:lineHeight];
 							}
 							// Nothing remained, move whole scene heading to next page
 							else {
@@ -671,7 +710,7 @@ That you have escaped.
 							
 							currentPage = [NSMutableArray array];
 							[currentPage addObject:postPageBreak];
-							currentY = [FountainPaginator elementHeight:postPageBreak font:font lineHeight:lineHeight];
+							currentY = [self elementHeight:postPageBreak font:font lineHeight:lineHeight];
 						}
 												
 						continue;
@@ -698,7 +737,7 @@ That you have escaped.
 	
 					for (Line *dElement in tmpElements) {
 						blockIndex++;
-						NSInteger h = [FountainPaginator elementHeight:dElement font:font lineHeight:lineHeight];
+						NSInteger h = [self elementHeight:dElement font:font lineHeight:lineHeight];
 						if (currentY + dialogueHeight + h > maxPageHeight) { spillerElement = dElement; break; }
 						else { dialogueHeight += h; }
 					}
@@ -742,7 +781,7 @@ That you have escaped.
 								text = [text stringByAppendingFormat:@" %@", sentence];
 								Line *tempElement = [[Line alloc] initWithString:text type:dialogue];
 								
-								NSInteger h = [FountainPaginator elementHeight:tempElement font:font lineHeight:lineHeight];
+								NSInteger h = [self elementHeight:tempElement font:font lineHeight:lineHeight];
 								
 								// We need to substract other dialogue block heights from here
 								NSInteger space = maxPageHeight - currentY - dialogueHeight;
@@ -802,8 +841,8 @@ That you have escaped.
 								[currentPage addObject:postDialogue];
 								
 								currentY = 0;
-								currentY += [FountainPaginator elementHeight:postCue font:font lineHeight:lineHeight];
-								currentY += [FountainPaginator elementHeight:postDialogue font:font lineHeight:lineHeight];
+								currentY += [self elementHeight:postCue font:font lineHeight:lineHeight];
+								currentY += [self elementHeight:postDialogue font:font lineHeight:lineHeight];
 
 								// Add possible remaining dialogue elements
 								if (blockIndex + 1 > [tmpElements count]) continue;
@@ -813,7 +852,7 @@ That you have escaped.
 									postBreak.changed = [tmpElements[d] changed];
 									postBreak.position = position; // String index from file
 									position += postBreak.string.length;
-									currentY += [FountainPaginator elementHeight:postBreak font:font lineHeight:lineHeight];
+									currentY += [self elementHeight:postBreak font:font lineHeight:lineHeight];
 									
 									[currentPage addObject:postBreak];
 									
@@ -848,13 +887,13 @@ That you have escaped.
 								
 								// Count heights
 								currentY = 0;
-								currentY += [FountainPaginator elementHeight:postCue font:font lineHeight:lineHeight];
-								currentY += [FountainPaginator elementHeight:spillerElement font:font lineHeight:lineHeight];
+								currentY += [self elementHeight:postCue font:font lineHeight:lineHeight];
+								currentY += [self elementHeight:spillerElement font:font lineHeight:lineHeight];
 								
 								// Add the rest of the stuff
 								for (NSInteger d = blockIndex + 1; d < tmpElements.count; d++) {
 									Line *dElement = tmpElements[d];
-									currentY += [FountainPaginator elementHeight:dElement font:font lineHeight:lineHeight];
+									currentY += [self elementHeight:dElement font:font lineHeight:lineHeight];
 									[currentPage addObject:dElement];
 								}
 								
@@ -892,17 +931,37 @@ That you have escaped.
 				currentY = 0;
 			}
 			
+			NSInteger previousDialogueHeight = 0;
+			NSInteger dualDialogueHeight = 0;
+			
 			// Add remaining elements
 			for (Line *el in tmpElements) {
-				NSInteger h = [FountainPaginator elementHeight:el font:font lineHeight:lineHeight];
+				NSInteger h = [self elementHeight:el font:font lineHeight:lineHeight];
 				
-				if (previousDualDialogueBlockHeight < 0) {
+				// Catch dual dialogue
+				if (el.type == character || el.isDialogueElement) {
+					if (el.type == character) previousDialogueHeight = 0;
+					// Save dialogue block height for later use
+					previousDialogueHeight += h;
+					
+					// Append y position
 					currentY += h;
 					if ([currentPage count] > 0) { currentY += [FountainPaginator spaceBeforeForLine:el]; }
+				}
+				else if (el.type == dualDialogueCharacter || el.isDualDialogueElement) {
+					if (el.type == dualDialogueCharacter) dualDialogueHeight = 0;
+					
+					// Add to this block height
+					dualDialogueHeight += h;
+					
+					// If this block is higher, add the height difference only
+					if (dualDialogueHeight > previousDialogueHeight) {
+						currentY += dualDialogueHeight - previousDialogueHeight;
+					}
 				} else {
-					// If this is double dialogue, let's add dialogue block height.
-					// If this one was higher, its height difference is added on top of the previous
-					currentY += dialogueBlockHeight;
+					// Update y position
+					currentY += h;
+					if ([currentPage count] > 0) { currentY += [FountainPaginator spaceBeforeForLine:el]; }
 				}
 				
 				[currentPage addObject:el];
@@ -951,26 +1010,33 @@ That you have escaped.
 	return spaceBefore;
 }
 
-+ (CGFloat)elementHeight:(Line *)element font:(BeatFont*)font lineHeight:(CGFloat)lineHeight {
-	return [FountainPaginator heightForString:element.cleanedString font:font maxWidth:[FountainPaginator widthForElement:element] lineHeight:lineHeight];
+- (CGFloat)elementHeight:(Line *)element font:(BeatFont*)font lineHeight:(CGFloat)lineHeight {
+	return [FountainPaginator heightForString:element.cleanedString font:font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
 }
 
-+ (NSInteger)widthForElement:(Line *)element
+- (NSInteger)widthForElement:(Line *)element
 {
+	// This uses Fountain element keywords to make no difference between dual and normal dialogue etc.
+	
 	NSInteger width = 0;
 	NSString *type  = element.typeAsFountainString;
 	
-	if ([type isEqualToString:@"Action"] || [type isEqualToString:@"General"] || [type isEqualToString:@"Scene Heading"] || [type isEqualToString:@"Transition"]) {
-		width   = 430;
+	if ([type isEqualToString:@"Action"] || [type isEqualToString:@"General"] || [type isEqualToString:@"Transition"]) {
+		width   = 425;
+		if (!_A4) width = 440;
+	}
+	if (element.type == heading) {
+		width = 425 - 32; // Make space for the scene number
+		if (!_A4) width = 440 - 32;
 	}
 	else if ([type isEqualToString:@"Character"]) {
-		width   = 180;
+		width   = 144;
 	}
 	else if ([type isEqualToString:@"Dialogue"]) {
-		width   = 245; // 217
+		width   = 248; // 217
 	}
 	else if ([type isEqualToString:@"Parenthetical"]) {
-		width   = 210;
+		width   = 200;
 	}
 	
 	return width;
@@ -1018,6 +1084,12 @@ That you have escaped.
 	}
 	
 	// calculate the height
+	NSInteger l = string.length;
+	if (l > 30) string = [string substringToIndex:29];
+	
+	//NSLog(@"%@", string);
+	//NSLog(@"-> number of lines: %lu", numberOfLines);
+	
 	return numberOfLines * lineHeight;
 }
 - (void)pageBreak:(Line*)line position:(CGFloat)position {
@@ -1047,7 +1119,7 @@ That you have escaped.
 
 + (CGFloat)spaceBeforeForLine:(Line*)line {
 	if (line.isSplitParagraph) return 0;
-	else if (line.type == heading) return 33;
+	else if (line.type == heading) return LINE_HEIGHT * 2;
 	else if (line.type == character || line.type == dualDialogueCharacter) return LINE_HEIGHT;
 	else if (line.type == dialogue) return 0;
 	else if (line.type == parenthetical) return 0;

@@ -377,7 +377,7 @@
 #define CHARACTER_INDENT_P 0.36
 #define PARENTHETICAL_INDENT_P 0.27
 #define DIALOGUE_INDENT_P 0.164
-#define DIALOGUE_RIGHT_P 0.72
+#define DIALOGUE_RIGHT_P 0.75
 
 #define TREE_VIEW_WIDTH 330
 #define TIMELINE_VIEW_HEIGHT 120
@@ -386,6 +386,10 @@
 #define OUTLINE_SYNOPSE_SIZE 12.0
 #define OUTLINE_SCENE_SIZE 11.5
 
+#define MARGIN_TOP 30
+#define MARGIN_LEFT 50
+#define MARGIN_RIGHT 50
+#define MARGIN_BOTTOM 40
 
 @implementation Document
 
@@ -393,11 +397,6 @@
 
 - (instancetype)init {
     self = [super init];
-    if (self) {
-        self.printInfo.topMargin = 25;
-        self.printInfo.bottomMargin = 55;
-		self.printInfo.paperSize = NSMakeSize(595, 842);
-    }
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
 	
@@ -511,7 +510,7 @@
 	[self.textView setEditable:YES];
 	
 	// Live Pagination
-	_paginator = [[FountainPaginator alloc] initForLivePagination:nil paperSize:self.printInfo.paperSize];
+	_paginator = [[FountainPaginator alloc] initForLivePagination:self];
 	
 	// Read default settings
 	// This is ugly but whatever
@@ -945,9 +944,18 @@
 		[self updateSceneNumberLabels];
     }
 }
-
+- (void)setMargin {
+	[self.printInfo setTopMargin:MARGIN_TOP];
+	[self.printInfo setBottomMargin:MARGIN_BOTTOM];
+	[self.printInfo setLeftMargin:MARGIN_LEFT];
+	[self.printInfo setRightMargin:MARGIN_RIGHT];
+}
 - (IBAction)printDocument:(id)sender
 {
+	[self setMargin];
+	
+	NSLog(@"paper size: %f / %f", self.printInfo.paperSize.width, self.printInfo.paperSize.height);
+	
     if ([[self getText] length] == 0) {
         NSAlert* alert = [[NSAlert alloc] init];
         alert.messageText = @"Can not print an empty document";
@@ -5149,6 +5157,7 @@ triangle walks
 		
 		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
+			[self setMargin];
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
 						
 			__block NSArray *pageBreaks = self.paginator.pageBreaks;
@@ -5201,7 +5210,7 @@ triangle walks
 - (NSInteger)numberOfPages {
 	// If pagination is not on, create temporary paginator
 	if (!self.showPageNumbers) {
-		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:[self onlyPrintableElements:self.parser.lines] paperSize:self.printInfo.paperSize];
+		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
 		return paginator.numberOfPages;
 	} else {
 		return self.paginator.numberOfPages;
@@ -5212,7 +5221,7 @@ triangle walks
 	
 	// If we don't have pagination turned on, create temporary paginator
 	if (!self.showPageNumbers) {
-		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:[self onlyPrintableElements:self.parser.lines] paperSize:self.printInfo.paperSize];
+		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
 		[paginator paginate];
 		return [paginator pageNumberFor:location];
 	} else {

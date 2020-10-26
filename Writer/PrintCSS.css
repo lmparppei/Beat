@@ -28,8 +28,8 @@ html {
 }
 body {
 	color: black;
-	font: .85em 'Courier Prime', 'Courier', serif;
-	line-height: 1.1em;
+	font: .95em 'Courier Prime', 'Courier', serif;
+	line-height: 1.05em;
 	padding: 0;
 	margin: 0;
 }
@@ -43,7 +43,7 @@ article {
 	margin-bottom: 0;
 }
 section {
-	padding: 0 0 0 40px;
+	padding: 0 0 0 60px;
 	/*width: 465px;
 	*/
 	margin-right: auto;
@@ -57,11 +57,13 @@ section {
 }
 p {
 	position: relative;
-	margin: 1.1em auto;
+	margin: 1em auto 0em 0;
 	font-size: 1em;
 	word-wrap: break-word;
 	padding: 0 10px;
 	white-space: pre-wrap;
+	
+	max-width: 550px;
 }
 .debug {
 	display: none;
@@ -94,7 +96,7 @@ body > p:first-child {
 
 .character, .more {
 	position: relative;
-	margin: 1.1em auto 0 174px; /* 30% */
+	margin: 1.1em auto 0 172px; /* 30% */
 	width: 180px;
 	width: 7cm;
 	padding-bottom: 0;
@@ -107,8 +109,8 @@ body > p:first-child {
 
 .dialogue {
 	position: relative;
-	margin: 0 auto 0 95px; /* 15% */
-	width: 280px; /* 255 */
+	margin: 0 auto 0 90px; /* 15% */
+	width: 310px; /* 255 */
 }
 
 .parenthetical {
@@ -118,11 +120,12 @@ body > p:first-child {
 }
 
 .scene-heading {
-	margin-top: 2.4em;
+	margin-top: 2em;
 	font-weight: bold;
 	position: relative;
 	padding-right: 40px;
 	white-space: pre-wrap;
+	margin-left: 0;
 }
 .scene-heading.first {
 	margin-top: 1.1em;
@@ -267,8 +270,9 @@ p.page-break {
 }
 p.page-break-render {
 	text-align: right;
-	padding-top: 20px;
-	margin-top: 10px;
+	padding-top: 0px;
+	margin-top: 0px;
+	margin-bottom: 30px;
 	padding-right: 0px;
 }
 
