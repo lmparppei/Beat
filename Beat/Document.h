@@ -37,11 +37,12 @@ THE SOFTWARE.
 #import "SceneCards.h"
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
+#import "BeatTimer.h"
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;

@@ -7,12 +7,26 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "PrintView.h"
+@class Document;
+
+typedef enum : NSUInteger {
+	BeatA4 = 0,
+	BeatUSLetter
+} BeatPaperSize;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class Document;
-@interface BeatPrint : NSObject
-+ (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString* _Nullable)oldScript;
+@interface BeatPrint : NSObject <PrintViewDelegate>
+@property (weak) Document* document;
+
+- (IBAction)open:(id)sender;
+- (IBAction)openForPDF:(id)sender;
+
+// Move all PrintView values here
+@property (nonatomic) NSString* header;
+
 @end
 
 NS_ASSUME_NONNULL_END

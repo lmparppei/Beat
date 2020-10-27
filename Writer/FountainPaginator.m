@@ -383,7 +383,6 @@ That you have escaped.
 		
 		NSInteger oneInchBuffer = 72;
 		NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.25);
-		NSLog(@"max page height %lu", maxPageHeight);
 		
 		BeatFont *font = [BeatFont fontWithName:@"Courier" size:12];
 		
@@ -576,9 +575,7 @@ That you have escaped.
 			} else {
 				[tmpElements addObject:element];
 			}
-			
-//			NSLog(@"%@\n            ---  y %lu + %lu = %lu    (mx %lu)", element.string, currentY, fullHeight, currentY + fullHeight, maxPageHeight);
-			
+						
 			// BREAKING ELEMENTS ONTO PAGES
 			// Figure out which element went overboard
 			if (currentY + fullHeight > maxPageHeight) {
@@ -1033,7 +1030,7 @@ That you have escaped.
 		width   = 144;
 	}
 	else if ([type isEqualToString:@"Dialogue"]) {
-		width   = 248; // 217
+		width   = 240; // 217
 	}
 	else if ([type isEqualToString:@"Parenthetical"]) {
 		width   = 200;

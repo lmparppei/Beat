@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property IBOutlet NSButton *cardsButton;
 @property IBOutlet NSButton *timelineButton;
 @property IBOutlet NSButton *previewButton;
+@property IBOutlet NSView *timerView;
 
 @property IBOutlet NSLayoutConstraint *outlineButtonY;
 

@@ -59,8 +59,9 @@
 	}
 	
 	for (NSButton *button in _editorButtons) {
-		[[button animator] setAlphaValue:0.0];
+		[button.animator setAlphaValue:0.0];
 	}
+	[_timerView.animator setAlphaValue:0.0];
 	
 }
 - (void)showButtons {
@@ -69,8 +70,9 @@
 		[self.window setTitlebarAppearsTransparent:NO];
 	}
 	for (NSButton *button in _editorButtons) {
-		[[button animator] setAlphaValue:1.0];
+		[button.animator setAlphaValue:1.0];
 	}
+	[_timerView.animator setAlphaValue:1.0];
 }
 
 - (void)mouseMoved:(NSEvent *)event {

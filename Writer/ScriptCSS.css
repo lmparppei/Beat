@@ -33,7 +33,7 @@ html {
 body {
 	background: #333;
 	color: #3e3e3e;
-	font: 12px/1.0em 'Courier', serif;
+	font: 12px/1.0em 'Courier Prime', 'Courier', serif;
 	padding: 0;
 	margin: 0;
 }
@@ -227,11 +227,13 @@ p.page-break-render {
 }
 section {
 	background-color: #f0f0f0;
-	width: 630px;
+	width: 620px;
 	min-height: 820px;
 	margin: 1em auto 1em auto;
-	padding: 2em 80px 6em 110px;
+	padding: 2em 70px 6em 100px;
 	border: solid 1px #ccc;
+	
+	box-shadow: 0 3px 10px #111;
 }
 .quickLook section {
 	background-color: white;

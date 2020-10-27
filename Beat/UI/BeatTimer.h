@@ -9,7 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "BeatTimerView.h"
 
+@protocol BeatTimerDelegate <NSObject>
+- (NSString*) getText;
+@end
+
 @interface BeatTimer : NSObject <BeatTimerViewDelegate>
+@property (weak) id<BeatTimerDelegate> delegate;
 @property IBOutlet BeatTimerView *timerView;
 @property IBOutlet NSPanel *inputPanel;
 @property IBOutlet NSTextField *minutes;
@@ -20,6 +25,9 @@
 @property IBOutlet NSButton *resetButton;
 @property IBOutlet NSButton *pauseButton;
 
+@property NSInteger charactersTyped;
+
+- (bool)running;
 - (void)showTimer;
 - (IBAction)pause:(id)sender;
 

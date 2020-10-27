@@ -36,108 +36,13 @@
  
  */
 
-#import <Cocoa/Cocoa.h>
 #import <DiffMatchPatch/DiffMatchPatch.h>
-#import <WebKit/WebKit.h>
-#import <Quartz/Quartz.h>
 #import "BeatComparison.h"
 
 #import "ContinousFountainParser.h"
 #import "Line.h"
-#import "OutlineScene.h"
-#import "BeatPreview.h"
-#import "PrintView.h"
-
-@interface BeatComparison ()
-@property (weak) IBOutlet NSWindow *panel;
-@property (weak) IBOutlet NSTextField *fileLabel;
-@property (weak) IBOutlet NSTextField *reportLabel;
-@property (nonatomic) IBOutlet WKWebView *webView;
-@property (weak) IBOutlet PDFView *pdfView;
-@property (strong, nonatomic) PrintView *printView;
-
-@property (nonatomic) NSURL *compareWith;
-@property (nonatomic) BeatPreview *preview;
-
-@end
 
 @implementation BeatComparison
-
-- (IBAction)open:(id)sender {
-	[self updatePreview];
-	[self.window beginSheet:_panel completionHandler:nil];
-}
-- (IBAction)close:(id)sender {
-	[self.window endSheet:_panel];
-}
-- (IBAction)print:(id)sender {
-	NSString *oldScript = [NSString stringWithContentsOfURL:_compareWith encoding:NSUTF8StringEncoding error:nil];
-	self.printView = [[PrintView alloc] initWithDocument:_document script:_currentScript operation:BeatToPrint compareWith:oldScript];
-	[self.window endSheet:_panel];
-}
-- (IBAction)pdf:(id)sender {
-	NSString *oldScript = [NSString stringWithContentsOfURL:_compareWith encoding:NSUTF8StringEncoding error:nil];
-	self.printView = [[PrintView alloc] initWithDocument:_document script:_currentScript operation:BeatToPDF compareWith:oldScript];
-	[self.window endSheet:_panel];
-}
-- (IBAction)pickFile:(id)sender {
-	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
-	
-	[openDialog setAllowedFileTypes:@[@"fountain"]];
-	[openDialog beginSheetModalForWindow:self.panel completionHandler:^(NSModalResponse result) {
-		if (result == NSFileHandlingPanelOKButton) {
-			[self setFile:openDialog.URL];
-			[self updatePreview];
-		}
-	}];
-}
-
-- (void) didFinishPreviewAt:(NSURL*)url {
-	// Delegate method to update the PDF preview window
-	
-	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
-	[self.pdfView setDocument:doc];
-	[self.pdfView setScaleFactor:.5];
-}
-
-- (void)updatePreview {
-	// Note: this is asynchronous, so it shouldn't be too heavy on the CPU
-	NSString *oldScript;
-	if (_compareWith != nil) {
-		oldScript = [NSString stringWithContentsOfURL:self.compareWith encoding:NSUTF8StringEncoding error:nil];
-	}
-	
-	
-	self.printView = [[PrintView alloc] initWithDocument:_document script:_currentScript operation:BeatToPreview compareWith:oldScript delegate:self];
-	
-	NSMutableString *newScript = [NSMutableString string];
-	for (Line *line in self.currentScript) {
-		[newScript appendString:line.string];
-		[newScript appendString:@"\n"];
-	}
-	
-	if (!self.compareWith) return;
-	
-	NSArray *diffs = [self diffReportFrom:newScript with:[NSString stringWithContentsOfURL:self.compareWith encoding:NSUTF8StringEncoding error:nil]];
-	
-	NSInteger additions = 0;
-	NSInteger removals = 0;
-	NSInteger equal = 0;
-	
-	for (Diff *d in diffs) {
-		if (d.operation == DIFF_DELETE) removals += d.text.length;
-		if (d.operation == DIFF_EQUAL) equal += d.text.length;
-		else if (d.operation == DIFF_INSERT) additions += d.text.length;
-	}
-	
-	NSString* report = [NSString stringWithFormat:@"%lu characters unchanged\n%lu characters added\n%lu characters deleted", equal, additions, removals];
-	[_reportLabel setStringValue:report];
-}
-
-- (void)setFile:(NSURL*)url {
-	self.compareWith = url;
-	[self.fileLabel setStringValue:url.path.lastPathComponent];
-}
 
 - (NSArray*)diffReportFrom:(NSString*)newScript with:(NSString*)oldScript {
 	DiffMatchPatch *diff = [[DiffMatchPatch alloc] init];
@@ -151,6 +56,29 @@
 	[diff diff_cleanupSemantic:diffs];
 	
 	return diffs;
+}
+
+- (NSDictionary*)changeListFrom:(NSString*)oldScript to:(NSString*)newScript {
+	
+	NSArray *diffs = [self diffReportFrom:newScript with:oldScript];
+	
+	NSInteger additions = 0;
+	NSInteger removals = 0;
+	NSInteger equal = 0;
+	
+	for (Diff *d in diffs) {
+		if (d.operation == DIFF_DELETE) removals += d.text.length;
+		if (d.operation == DIFF_EQUAL) equal += d.text.length;
+		else if (d.operation == DIFF_INSERT) additions += d.text.length;
+	}
+	
+	NSDictionary *changes = @{
+		@"unchanged": [NSNumber numberWithInteger:equal],
+		@"removed": [NSNumber numberWithInteger:removals],
+		@"added": [NSNumber numberWithInteger:additions]
+	};
+	
+	return changes;
 }
 
 - (void)compare:(NSArray*)script with:(NSString*)oldScript {

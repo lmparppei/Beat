@@ -65,6 +65,9 @@
 	[_shapeLayer removeAllAnimations];
 }
 -(void)finish {
+	// Show even if hidden
+	[self.animator setAlphaValue:1.0];
+
 	_finished = YES;
 	[self update];
 }

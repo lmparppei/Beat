@@ -114,6 +114,7 @@
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
 #import "BeatComparison.h"
+#import "BeatPrint.h"
 
 @interface Document ()
 
@@ -199,6 +200,7 @@
 
 // Views
 @property (unsafe_unretained) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
+@property (weak) IBOutlet BeatPrint *printing; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet ColorView *backgroundView; // Master background
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
 @property (weak) IBOutlet MasterView *masterView; // View which contains every other view
@@ -332,8 +334,11 @@
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
 #define SECTION_FONT_SIZE 20.0 // base value for section sizes
-#define FONT_SIZE 17.92
+#define FONT_SIZE 17.92 // 19.5 for Inconsolata
+#define LINE_HEIGHT 1.03 // 1.15 for Inconsolata
+
 #define DOCUMENT_WIDTH 620
+#define TEXT_INSET_TOP 50
 
 // Magnifying stuff
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -359,10 +364,6 @@
 
 // DOCUMENT LAYOUT SETTINGS
 // The 0.?? values represent percentages of view width
-
-#define TEXT_INSET_TOP 40
-#define LINE_HEIGHT 1.03
-
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
 
@@ -588,6 +589,9 @@
 	
 	// Print preview setup
 	[self setupPreview];
+	
+	// Setup printing
+	self.printing.document = self;
 	
 	// Timeline webkit
 	[self setupTimeline];
@@ -950,6 +954,12 @@
 	[self.printInfo setLeftMargin:MARGIN_LEFT];
 	[self.printInfo setRightMargin:MARGIN_RIGHT];
 }
+- (IBAction)openPrintSettings:(id)sender {
+	[self.printing open:self];
+}
+- (IBAction)openPDFExport:(id)sender {
+	[self.printing openForPDF:self];
+}
 - (IBAction)printDocument:(id)sender
 {
 	[self setMargin];
@@ -996,38 +1006,6 @@
             [outlineString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
-}
-
-- (IBAction)printWithComparison:(id)sender {
-	_comparison.window = _thisWindow;
-	_comparison.document = self;
-	_comparison.currentScript = self.parser.lines;
-	
-	_preprocessedText = [self preprocessSceneNumbers];
-	
-	[_comparison open:nil];
-	
-	/*
-	// Print with comparison markers
-	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
-	
-	[openDialog setAllowedFileTypes:@[@"fountain"]];
-	[openDialog beginSheetModalForWindow:self.thisWindow completionHandler:^(NSModalResponse result) {
-		if (result == NSFileHandlingPanelOKButton) {
-			NSError *error;
-			NSURL *previousVersionURL = openDialog.URL;
-			NSString *previousVersion = [NSString stringWithContentsOfURL:previousVersionURL encoding:NSUTF8StringEncoding error:&error];
-			
-			if (self.printSceneNumbers) {
-				self.preprocessedText = [self preprocessSceneNumbers];
-			} else {
-				self.preprocessedText = [self.getText copy];
-			}
-			
-			self.printView = [[PrintView alloc] initWithDocument:self toPDF:NO toPrint:YES compareWith:previousVersion];
-		}
-	}];
-	 */
 }
 
 - (NSString*)fileNameString
@@ -1257,6 +1235,10 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
+	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
+		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
+	}
+	
 	// Check for character input trouble
 	if (_characterInput) {
 		_currentLine = [self getCurrentLine];
@@ -5408,6 +5390,7 @@ triangle walks
 #pragma mark - Timer
 
 - (IBAction)showTimer:(id)sender {
+	_beatTimer.delegate = self;
 	[_beatTimer showTimer];
 }
 

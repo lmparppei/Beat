@@ -22,6 +22,13 @@
 #import "BeatHTMLScript.h"
 #import "BeatComparison.h"
 
+// NOTE NOTE NOTE: These are hard-coded here and in BeatPrint
+// This needs to be fixed
+#define MARGIN_TOP 30
+#define MARGIN_LEFT 50
+#define MARGIN_RIGHT 50
+#define MARGIN_BOTTOM 40
+
 @implementation BeatPreview
 
 + (NSString*) createQuickLook:(NSString*)rawScript {
@@ -37,6 +44,11 @@
 	return [self createNewPreview:rawScript of:document scene:scene sceneNumbers:sceneNumbers type:BeatPrintPreview];
 }
 + (NSString*) createNewPreview:(NSString*)rawScript of:(NSDocument*)document scene:(NSString*)scene sceneNumbers:(bool)sceneNumbers type:(BeatPreviewType)previewType {
+	
+	[document.printInfo setTopMargin:MARGIN_TOP];
+	[document.printInfo setBottomMargin:MARGIN_BOTTOM];
+	[document.printInfo setLeftMargin:MARGIN_LEFT];
+	[document.printInfo setRightMargin:MARGIN_RIGHT];
 	
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawScript];
 	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -99,10 +111,6 @@
 	
 	if (previewType == BeatQuickLookPreview) {
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script quickLook:YES];
-		return html.html;
-	}
-	else if (previewType == BeatComparisonPreview) {
-		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForComparisonWithScript:script];
 		return html.html;
 	} else {
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document scene:scene];

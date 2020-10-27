@@ -11,11 +11,7 @@
 
 @class Document;
 
-@interface BeatComparison : NSObject <PrintViewDelegate>
-@property (weak) NSWindow *window;
-@property (weak) NSArray *currentScript;
-@property (weak) Document *document;
-
+@interface BeatComparison : NSObject
 - (void)compare:(NSArray*)script with:(NSString*)olderFilePath;
-- (IBAction)open:(id)sender;
+- (NSDictionary*)changeListFrom:(NSString*)oldScript to:(NSString*)newScript;
 @end

@@ -11,7 +11,7 @@ There is a working iOS prototype, but its development is on hiatus right now, as
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and some code still originates from his work, especially within the magnificent continuous Fountain parser.
 
 
-## Latest release: Beat 1.4
+## Latest release: Beat 1.5
 
 **Features**
 * Minimalistic UI with as little distractions as possible
@@ -33,6 +33,7 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 * Fountain Quicklook in Finder
 * Autosave & script backups in case of crashes 
 * Automatic paragraphs & tab key for auto character cue
+* Timer with measuring your productivity
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 

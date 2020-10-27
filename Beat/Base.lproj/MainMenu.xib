@@ -121,21 +121,26 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
-                            <menuItem title="Page Setup…" keyEquivalent="P" id="qIS-W8-SiK">
-                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                            <menuItem title="Page Setup…" hidden="YES" id="qIS-W8-SiK">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runPageLayout:" target="-1" id="Din-rz-gC5"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Print…" keyEquivalent="p" id="aTl-1u-JFS">
+                            <menuItem title="Print…" hidden="YES" id="aTl-1u-JFS">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="printDocument:" target="-1" id="qaZ-4w-aoO"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Print Compared With..." id="RV1-GC-Hke">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Print..." keyEquivalent="p" id="30L-NJ-b29">
                                 <connections>
-                                    <action selector="printWithComparison:" target="-1" id="X7P-Ur-WOA"/>
+                                    <action selector="openPrintSettings:" target="-1" id="Be2-OO-k0X"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Create PDF..." keyEquivalent="P" id="qUE-cb-x1G">
+                                <connections>
+                                    <action selector="openPDFExport:" target="-1" id="IUp-n4-Zms"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="zwa-xu-33d"/>
@@ -162,12 +167,6 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Export" id="o7H-J0-CK2">
                                     <items>
-                                        <menuItem title="Create PDF..." id="qUE-cb-x1G">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="exportPDF:" target="-1" id="C88-0f-QPn"/>
-                                            </connections>
-                                        </menuItem>
                                         <menuItem title="HTML…" hidden="YES" id="gFk-1w-5jg">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
@@ -629,11 +628,6 @@ DQ
                                     <action selector="preview:" target="-1" id="Wir-n0-gpi"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Screenplay Analysis" keyEquivalent="A" id="TCn-De-Kk7">
-                                <connections>
-                                    <action selector="showAnalysis:" target="-1" id="fsX-Fc-sal"/>
-                                </connections>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="gAO-mF-B8i"/>
                             <menuItem title="Show Scene Numbers" state="on" id="V7o-Tn-OF3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -663,12 +657,18 @@ DQ
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Tools" hidden="YES" id="h9m-JI-q3y">
+                <menuItem title="Tools" id="h9m-JI-q3y">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Tools" id="T42-tx-tAb">
                         <items>
-                            <menuItem title="Set Timer..." id="ite-qD-YVS">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Screenplay Analysis" keyEquivalent="a" id="TCn-De-Kk7">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="showAnalysis:" target="-1" id="fsX-Fc-sal"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Set Timer..." keyEquivalent="t" id="ite-qD-YVS">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="showTimer:" target="-1" id="ucF-GX-SkT"/>
                                 </connections>
@@ -747,6 +747,12 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showPatchNotes:" target="vEX-2F-hcj" id="m7r-sq-wm8"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Support Beat" id="oNz-fC-tr3">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showSupport:" target="vEX-2F-hcj" id="UCi-i7-OQb"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="gy8-Q9-fNE"/>
@@ -846,7 +852,7 @@ DQ
                                     <rect key="frame" x="262" y="0.0" width="317" height="328"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
@@ -1104,11 +1110,11 @@ DQ
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="j3Y-oZ-sKT">
-                                    <rect key="frame" x="0.0" y="0.0" width="467" height="391"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="452" height="391"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <size key="minSize" width="467" height="391"/>
+                                    <size key="minSize" width="452" height="391"/>
                                     <size key="maxSize" width="627" height="10000000"/>
                                     <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 </textView>

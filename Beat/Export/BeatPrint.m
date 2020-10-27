@@ -8,116 +8,171 @@
 
 /*
  
- This class creates a HTML print from a document.
- Created to avoid using having to embed the diff-match-patch framework into the quicklook plugin.
- 
- What we should do here is to parse the previous file too, then run scene number preprocessing on it (lol) 
+ This class works as an intermediate between PrintView and the Beat document
+ and handles the UI side of printing, too. The printing itself is done in PrintView,
+ which also does all the necessary preprocessing.
  
  */
 
 
+#import <Quartz/Quartz.h>
 #import "BeatPrint.h"
-#import "BeatPreview.h"
-#import "Line.h"
-#import "ContinousFountainParser.h"
-#import "OutlineScene.h"
-#import "BeatHTMLScript.h"
-#import "BeatComparison.h"
+#import "PrintView.h"
+
+#define TITLE_PRINT @"Print"
+#define TITLE_PDF @"Create PDF"
+#define PDF_BUTTON_WHEN_PRINTING @"PDF"
+#define PDF_BUTTON @"Create PDF..."
+
+#define MARGIN_TOP 30
+#define MARGIN_LEFT 50
+#define MARGIN_RIGHT 50
+#define MARGIN_BOTTOM 40
+
+#define PAPER_A4 595, 842
+#define PAPER_USLETTER 612, 792
+
+
+@interface BeatPrint ()
+@property (weak) IBOutlet NSButton* printSceneNumbers;
+@property (weak) IBOutlet NSButton* radioA4;
+@property (weak) IBOutlet NSButton* radioLetter;
+@property (weak) IBOutlet NSWindow* panel;
+@property (weak) IBOutlet NSWindow* window;
+@property (weak) IBOutlet PDFView* pdfView;
+@property (weak) IBOutlet NSButton* printButton;
+@property (weak) IBOutlet NSButton* pdfButton;
+@property (weak) IBOutlet NSTextField* title;
+@property (weak) IBOutlet NSTextField* headerText;
+
+@property (nonatomic) NSString *compareWith;
+
+@property (nonatomic) BeatPaperSize paperSize;
+@property (nonatomic) PrintView *printView;
+@end
 
 @implementation BeatPrint
 
-+ (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript {
-	// Should we show scene numbers?
-	bool sceneNumbering = document.printSceneNumbers;
+- (IBAction)open:(id)sender {
+	// Change panel title
+	[_title setStringValue:TITLE_PRINT];
 	
-	// Parse the input again
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText];
-	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
-		@"script": [NSMutableArray array],
-		@"title page": [NSMutableArray array]
+	// Hide the PDF button and reset keyboard shortcut
+	[_pdfButton setHidden:YES];
+	
+	[_printButton setHidden:NO];
+	[_printButton setKeyEquivalent:@"\r"];
+	[self openPanel];
+}
+- (IBAction)openForPDF:(id)sender {
+	// Change panel title
+	[_title setStringValue:TITLE_PDF];
+	
+	// Hide print button
+	[_printButton setHidden:YES];
+	
+	// Change value for the PDF button
+	[_pdfButton setTitle:PDF_BUTTON];
+	[_pdfButton setHidden:NO];
+	
+	// Set Create PDF as the  default button
+	[_pdfButton setKeyEquivalent:@"\r"];
+	
+	[self openPanel];
+}
+- (void)openPanel {
+	// Remove the previous preview
+	[_pdfView setDocument:nil];
+	
+	// Get setting from document
+	if (_document.printSceneNumbers) [_printSceneNumbers setState:NSOnState];
+	else [_printSceneNumbers setState:NSOffState];
+	
+	// Check the paper size
+	if (_document.printInfo.paperSize.width > 595) [_radioLetter setState:NSOnState];
+	else [_radioA4 setState:NSOnState];
+	
+	[self setMargin];
+	
+	// Show window
+	[self loadPreview];
+	[self.window beginSheet:_panel completionHandler:nil];
+}
+- (IBAction)close:(id)sender {
+	[self.window endSheet:_panel];
+	
+}
+- (IBAction)print:(id)sender {
+	// Set header
+	if (_headerText.stringValue.length > 0) _header = _headerText.stringValue;
+	
+	//NSString *oldScript = [NSString stringWithContentsOfURL:_compareWith encoding:NSUTF8StringEncoding error:nil];
+	self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint compareWith:_compareWith];
+	[self.window endSheet:_panel];
+}
+- (IBAction)pdf:(id)sender {
+	// Set header
+	if (_headerText.stringValue.length > 0) _header = _headerText.stringValue;
+	
+	self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPDF compareWith:_compareWith];
+	[self.window endSheet:_panel];
+}
+
+- (void)loadPreview {
+	// Update PDF preview
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPreview compareWith:self.compareWith delegate:self];
+	});
+}
+
+- (IBAction)pickFileToCompare:(id)sender {
+	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
+	
+	[openDialog setAllowedFileTypes:@[@"fountain", @"beat"]];
+	[openDialog beginSheetModalForWindow:self.panel completionHandler:^(NSModalResponse result) {
+		if (result == NSFileHandlingPanelOKButton) {
+			[self setComparisonFile:openDialog.URL];
+			[self loadPreview];
+		}
 	}];
-	NSMutableArray *elements = [NSMutableArray array];
+}
+- (void) setComparisonFile:(NSURL*)url {
+	_compareWith = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
+}
+- (IBAction)headerTextChange:(id)sender {
+	self.header = _headerText.stringValue;
+	[self loadPreview];
+}
 
-	// See if we want to compare it with something
-	// BeatComparison marks the Line objects as changed
-	if (oldScript) {
-		BeatComparison *comparison = [[BeatComparison alloc] init];
-		[comparison compare:parser.lines with:oldScript];
+- (IBAction)selectPaperSize:(id)sender {
+	BeatPaperSize oldSize = _paperSize;
+	
+	if ([(NSButton*)sender tag] == 1) {
+		// A4
+		_document.printInfo.paperSize = CGSizeMake(PAPER_A4);
+		_paperSize = BeatA4;
+	} else {
+		// US Letter
+		_document.printInfo.paperSize = CGSizeMake(PAPER_USLETTER);
+		_paperSize = BeatUSLetter;
 	}
 	
-	Line *previousLine;
-	
-	NSInteger sceneNumber = 1;
-	
-	for (Line *line in parser.lines) {
-		// Skip over certain elements
-		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
-			if (line.type == empty) previousLine = line;
-			continue;
-		}
-		
-		if (line.type == heading && sceneNumbering) {
-			// If scene numbering is ON, let's strip forced numbers and set correct numbers to the line objects
-			if (line.sceneNumberRange.length > 0) {
-				line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
-				line.string = line.stripSceneNumber;
-			} else {
-				line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-				line.string = line.stripSceneNumber;
-				sceneNumber += 1;
-			}
-		}
-		
-		// This is a paragraph with a line break,
-		// so append the line to the previous one
-		
-		// NOTE: This should be changed so that there is a possibility of having no-margin elements
-		// Just needs some parser-level work.
-		// Later me: no idea what that person was going on about? Care to elaborate?
-		
-		if (line.type == action && line.isSplitParagraph && [parser.lines indexOfObject:line] > 0) {
-			Line *previousLine = [elements objectAtIndex:elements.count - 1];
-
-			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.string];
-			continue;
-		}
-		
-		if (line.type == dialogue && line.string.length < 1) {
-			line.type = empty;
-			previousLine = line;
-			continue;
-		}
-
-		[elements addObject:line];
-				
-		// If this is dual dialogue character cue,
-		// we need to search for the previous one too, just in cae
-		if (line.isDualDialogueElement) {
-			bool previousCharacterFound = NO;
-			NSInteger i = elements.count - 2; // Go for previous element
-			while (i > 0) {
-				Line *previousLine = [elements objectAtIndex:i];
-				
-				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
-				
-				if (previousLine.type == character ) {
-					previousLine.nextElementIsDualDialogue = YES;
-					previousCharacterFound = YES;
-					break;
-				}
-				i--;
-			}
-		}
-		
-		previousLine = line;
+	// Preview needs refreshing
+	if (oldSize != _paperSize) {
+		[self loadPreview];
 	}
-	
-	// Set script data
-	[script setValue:parser.titlePage forKey:@"title page"];
-	[script setValue:elements forKey:@"script"];
-	
-	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document print:YES];
-	return html.html;
+}
+
+- (void)setMargin {
+	[_document.printInfo setTopMargin:MARGIN_TOP];
+	[_document.printInfo setBottomMargin:MARGIN_BOTTOM];
+	[_document.printInfo setLeftMargin:MARGIN_LEFT];
+	[_document.printInfo setRightMargin:MARGIN_RIGHT];
+}
+
+- (void)didFinishPreviewAt:(NSURL *)url {
+	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
+	[_pdfView setDocument:doc];
 }
 
 @end

@@ -110,7 +110,7 @@ body > p:first-child {
 .dialogue {
 	position: relative;
 	margin: 0 auto 0 90px; /* 15% */
-	width: 310px; /* 255 */
+	width: 300px; /* 255 */
 }
 
 .parenthetical {
@@ -167,7 +167,7 @@ body > p:first-child {
 	position: absolute;
 	display: block;
 	
-	left: -10px;
+	left: -60px;
 	width: 1em;
 	height: 100%;
 	z-index: 999;
@@ -181,13 +181,13 @@ body > p:first-child {
 }
 
 .dialogue.changed::before {
-	left: -105px;
+	left: -150px;
 }
 .parenthetical.changed::before {
-	left: -145px;
+	left: -195px;
 }
 .character.changed::before {
-	left: -184px;
+	left: -232px;
 }
 
 #script-title .title {
@@ -275,4 +275,10 @@ p.page-break-render {
 	margin-bottom: 30px;
 	padding-right: 0px;
 }
-
+.header-top {
+	position: absolute;
+	top: 0; bottom: 0; left: 0;
+	width: 90%;
+	background-color: transparent !important;
+	text-align: center;
+}
