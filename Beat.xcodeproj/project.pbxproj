@@ -305,8 +305,8 @@
 		B6146B1F246A91420029DBD9 /* outline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = outline.png; sourceTree = "<group>"; };
 		B6146B20246A91420029DBD9 /* analysis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = analysis.png; sourceTree = "<group>"; };
 		B6146B21246A91420029DBD9 /* printview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = printview.png; sourceTree = "<group>"; };
-		B61875A32471BEDA00FB7646 /* BeatPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = Beat/BeatPreview.h; sourceTree = SOURCE_ROOT; };
-		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/BeatPreview.m; sourceTree = SOURCE_ROOT; };
+		B61875A32471BEDA00FB7646 /* BeatPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = Beat/Export/BeatPreview.h; sourceTree = SOURCE_ROOT; };
+		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/Export/BeatPreview.m; sourceTree = SOURCE_ROOT; };
 		B61B693B2472DEE800DCDBFA /* FountainPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainPaginator.h; path = Writer/FountainPaginator.h; sourceTree = SOURCE_ROOT; };
 		B61B693C2472DEE800DCDBFA /* FountainPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainPaginator.m; path = Writer/FountainPaginator.m; sourceTree = SOURCE_ROOT; };
 		B62392AF247FD351008E61D0 /* TouchTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchTimelineView.h; path = Beat/UI/TouchTimelineView.h; sourceTree = SOURCE_ROOT; };
