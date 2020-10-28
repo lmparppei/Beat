@@ -91,7 +91,6 @@
 #import "ContinousFountainParser.h"
 #import "ThemeManager.h"
 #import "OutlineScene.h"
-#import "CenteredClipView.h"
 #import "DynamicColor.h"
 #import "ApplicationDelegate.h"
 #import "NSString+Whitespace.h"

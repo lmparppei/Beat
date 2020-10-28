@@ -865,7 +865,7 @@ That you have escaped.
 							}
 
 						} else {
-							// Parenthetical spills, but it's not SECOND element, rather than somewhere else in the block
+							// Parenthetical spills, but it's not the SECOND element rather than somewhere else in the block
 							if (spillerElement.type == parenthetical && blockIndex > 1) {
 								// Add the preceeding elements
 								for (NSInteger d = 0; d < blockIndex; d++) {

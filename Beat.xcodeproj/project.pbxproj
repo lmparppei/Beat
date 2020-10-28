@@ -27,6 +27,14 @@
 		B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D12FEB2537A04C0018A88F /* BeatComparison.m */; };
 		B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62392B0247FD351008E61D0 /* TouchTimelineView.m */; };
 		B62392B2247FD351008E61D0 /* TouchTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62392B0247FD351008E61D0 /* TouchTimelineView.m */; };
+		B623BD362549AE7F00201BC9 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B623BD352549AE7F00201BC9 /* Info.plist */; };
+		B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3A2549AEDD00201BC9 /* Outlining.fountain */; };
+		B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3B2549AEDD00201BC9 /* Big-Fish.fountain */; };
+		B623BD3F2549AEDD00201BC9 /* document.xml in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3C2549AEDD00201BC9 /* document.xml */; };
+		B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD432549AF6500201BC9 /* Tutorial.fountain */; };
+		B623BD452549AF6500201BC9 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD432549AF6500201BC9 /* Tutorial.fountain */; };
+		B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B623BD472549AFDA00201BC9 /* B_256_logo.png */; };
+		B623BD492549AFDA00201BC9 /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B623BD472549AFDA00201BC9 /* B_256_logo.png */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
 		B625F13E24327DE300873F62 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A89B424806C8D0065A2BC /* FlatButton.swift */; };
@@ -44,11 +52,8 @@
 		B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B6482F7922195BEC00175927 /* BeatTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* BeatTextView.m */; };
-		B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B64E1B2D227B08B2008DF194 /* CenteredClipView.m */; };
 		B662FC0924C22167003EF967 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0824C22167003EF967 /* OSFImport.m */; };
 		B662FC0A24C22167003EF967 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0824C22167003EF967 /* OSFImport.m */; };
-		B662FC1024C228E6003EF967 /* document.xml in Resources */ = {isa = PBXBuildFile; fileRef = B662FC0F24C228E6003EF967 /* document.xml */; };
-		B662FC1124C228E6003EF967 /* document.xml in Resources */ = {isa = PBXBuildFile; fileRef = B662FC0F24C228E6003EF967 /* document.xml */; };
 		B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
 		B663680524CE1E64009A1693 /* BeatTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B663680224CE1CCF009A1693 /* BeatTest.m */; };
 		B6639DEF2538DD2E00DF87E2 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
@@ -63,7 +68,6 @@
 		B6764B34251367BF00731A36 /* NSArray+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B30251367BF00731A36 /* NSArray+Additions.m */; };
 		B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
-		B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
 		B6907E3B233FE17C00741071 /* analysis.html in Resources */ = {isa = PBXBuildFile; fileRef = B6907E3A233FE17C00741071 /* analysis.html */; };
 		B69154652480EB7E002393D1 /* RoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154642480EB7E002393D1 /* RoundedButton.m */; };
 		B69154662480EB7E002393D1 /* RoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154642480EB7E002393D1 /* RoundedButton.m */; };
@@ -113,7 +117,6 @@
 		B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B71F2218B459005B8447 /* RecentFiles.m */; };
 		B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */; };
 		B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7232218B4A0005B8447 /* Themes.plist */; };
-		B6D2B7282218B4DC005B8447 /* DocumentIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */; };
 		B6D2B72C2218B51D005B8447 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72B2218B51D005B8447 /* Credits.rtf */; };
 		B6D2B7312218B589005B8447 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72D2218B589005B8447 /* Document.xib */; };
 		B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B72F2218B589005B8447 /* MainMenu.xib */; };
@@ -137,8 +140,6 @@
 		B6EB5170246E9621009014AB /* MarginView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB516F246E9621009014AB /* MarginView.m */; };
 		B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F360AA250127C1001ACAEE /* BeatTimeline.m */; };
 		B6F360AC250127C7001ACAEE /* BeatTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F360AA250127C1001ACAEE /* BeatTimeline.m */; };
-		B6F360C62501447C001ACAEE /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B6F360C52501447C001ACAEE /* B_256_logo.png */; };
-		B6F360C72501447C001ACAEE /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B6F360C52501447C001ACAEE /* B_256_logo.png */; };
 		B6F49CDD246D66B0006D88D4 /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
 		B6F49CDE246D66B0006D88D4 /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B6F49CDF246D66B0006D88D4 /* SceneCards.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF55024659FC000C5B78C /* SceneCards.m */; };
@@ -147,7 +148,6 @@
 		B6F49CE3246D66B0006D88D4 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7122218B39A005B8447 /* Document.m */; };
 		B6F49CE4246D66B0006D88D4 /* NSMutableIndexSet+Lowest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */; };
 		B6F49CE5246D66B0006D88D4 /* ApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* ApplicationDelegate.m */; };
-		B6F49CE6246D66B0006D88D4 /* CenteredClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B64E1B2D227B08B2008DF194 /* CenteredClipView.m */; };
 		B6F49CE7246D66B0006D88D4 /* FountainAnalysis.m in Sources */ = {isa = PBXBuildFile; fileRef = B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */; };
 		B6F49CE9246D66B0006D88D4 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
 		B6F49CEA246D66B0006D88D4 /* PrintView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B71D2218B44A005B8447 /* PrintView.m */; };
@@ -188,7 +188,6 @@
 		B6F49D14246D66B0006D88D4 /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
 		B6F49D15246D66B0006D88D4 /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = B69A92952319387B00FE6A3E /* CHANGELOG */; };
 		B6F49D16246D66B0006D88D4 /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS.css */; };
-		B6F49D18246D66B0006D88D4 /* DocumentIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */; };
 		B6F49D19246D66B0006D88D4 /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B6F49D1A246D66B0006D88D4 /* cards.png in Resources */ = {isa = PBXBuildFile; fileRef = B6146B1D246A91420029DBD9 /* cards.png */; };
 		B6F49D1B246D66B0006D88D4 /* analysis.html in Resources */ = {isa = PBXBuildFile; fileRef = B6907E3A233FE17C00741071 /* analysis.html */; };
@@ -201,7 +200,6 @@
 		B6F49D22246D66B0006D88D4 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7232218B4A0005B8447 /* Themes.plist */; };
 		B6F49D23246D66B0006D88D4 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
 		B6F49D24246D66B0006D88D4 /* outline.png in Resources */ = {isa = PBXBuildFile; fileRef = B6146B1F246A91420029DBD9 /* outline.png */; };
-		B6F49D25246D66B0006D88D4 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68AC7B42219733900E02466 /* Tutorial.fountain */; };
 		B6F49D27246D66B0006D88D4 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6F49D30246D66C8006D88D4 /* beat_manual.html in Resources */ = {isa = PBXBuildFile; fileRef = B6146B1B246A91410029DBD9 /* beat_manual.html */; };
 		B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B62019E1D6FA000489C4 /* Cocoa.framework */; };
@@ -272,34 +270,32 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B13111821CB2885200D07A0C /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThemeManager.h; path = ../Beat/ThemeManager.h; sourceTree = "<group>"; };
-		B13111861CB289ED00D07A0C /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = ../Beat/Theme.h; sourceTree = "<group>"; };
-		B131118B1CB2A41800D07A0C /* ContinousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContinousFountainParser.h; path = ../Beat/ContinousFountainParser.h; sourceTree = "<group>"; };
-		B131118D1CB2A41800D07A0C /* NSString+Whitespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Whitespace.h"; path = "../Beat/NSString+Whitespace.h"; sourceTree = "<group>"; };
-		B13111921CB2A42300D07A0C /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Line.h; path = ../Beat/Line.h; sourceTree = "<group>"; };
-		B131119B1CB2C6B300D07A0C /* NSMutableIndexSet+Lowest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableIndexSet+Lowest.h"; path = "../Beat/NSMutableIndexSet+Lowest.h"; sourceTree = "<group>"; };
+		B13111821CB2885200D07A0C /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeManager.h; sourceTree = "<group>"; };
+		B13111861CB289ED00D07A0C /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
+		B131118B1CB2A41800D07A0C /* ContinousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinousFountainParser.h; sourceTree = "<group>"; };
+		B131118D1CB2A41800D07A0C /* NSString+Whitespace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Whitespace.h"; path = "Beat/Categories/NSString+Whitespace.h"; sourceTree = SOURCE_ROOT; };
+		B13111921CB2A42300D07A0C /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
+		B131119B1CB2C6B300D07A0C /* NSMutableIndexSet+Lowest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableIndexSet+Lowest.h"; sourceTree = "<group>"; };
 		B138B57319E1C973000489C4 /* Beat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Beat.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B138B57719E1C973000489C4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../Beat/Info.plist; sourceTree = "<group>"; };
 		B138B57A19E1C973000489C4 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Document.h; path = ../Beat/Document.h; sourceTree = "<group>"; };
 		B138B61E19E1D6A7000489C4 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		B138B62019E1D6FA000489C4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B138B65B19E1E8CA000489C4 /* FountainRegexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FountainRegexes.h; sourceTree = "<group>"; };
 		B138B65C19E1E8CA000489C4 /* FountainRegexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainRegexes.m; sourceTree = "<group>"; };
-		B138B65F19E1E8CA000489C4 /* QUQFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QUQFont.h; sourceTree = "<group>"; };
-		B138B66019E1E8CA000489C4 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScriptCSS.css; sourceTree = "<group>"; };
+		B138B66019E1E8CA000489C4 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = ScriptCSS.css; path = ../Beat/Export/ScriptCSS.css; sourceTree = "<group>"; };
 		B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationDelegate.h; path = ../Beat/ApplicationDelegate.h; sourceTree = "<group>"; };
-		B1509A3E1CB5C0C500884918 /* FDXInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FDXInterface.h; path = ../Beat/FDXInterface.h; sourceTree = "<group>"; };
+		B1509A3E1CB5C0C500884918 /* FDXInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FDXInterface.h; path = ../Beat/Export/FDXInterface.h; sourceTree = "<group>"; };
 		B1B62A3819E3402F009F6E23 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorView.h; sourceTree = "<group>"; };
-		B1D0B84919E31B86005252E4 /* PrintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrintView.h; path = ../Beat/PrintView.h; sourceTree = "<group>"; };
-		B1E7FF511BC4555B008E2B99 /* Writer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Writer.entitlements; sourceTree = "<group>"; };
-		B1EC6B9C1CE3B33200B48CDB /* OutlineExtractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineExtractor.h; path = ../Beat/OutlineExtractor.h; sourceTree = "<group>"; };
+		B1D0B84919E31B86005252E4 /* PrintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrintView.h; path = ../Beat/Export/PrintView.h; sourceTree = "<group>"; };
+		B1E7FF511BC4555B008E2B99 /* Writer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Writer.entitlements; path = ../Writer/Writer.entitlements; sourceTree = "<group>"; };
+		B1EC6B9C1CE3B33200B48CDB /* OutlineExtractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineExtractor.h; path = ../Beat/Export/OutlineExtractor.h; sourceTree = "<group>"; };
 		B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold Italic.ttf"; sourceTree = "<group>"; };
 		B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold.ttf"; sourceTree = "<group>"; };
 		B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Italic.ttf"; sourceTree = "<group>"; };
 		B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime.ttf"; sourceTree = "<group>"; };
 		B6055CEB23CDBA3800F7D54C /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		B6055CEC23CDBA3800F7D54C /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
-		B6146B1B246A91410029DBD9 /* beat_manual.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = beat_manual.html; sourceTree = "<group>"; };
+		B6146B1B246A91410029DBD9 /* beat_manual.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = beat_manual.html; path = Manual/beat_manual.html; sourceTree = "<group>"; };
 		B6146B1D246A91420029DBD9 /* cards.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cards.png; sourceTree = "<group>"; };
 		B6146B1E246A91420029DBD9 /* timeline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = timeline.png; sourceTree = "<group>"; };
 		B6146B1F246A91420029DBD9 /* outline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = outline.png; sourceTree = "<group>"; };
@@ -307,13 +303,20 @@
 		B6146B21246A91420029DBD9 /* printview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = printview.png; sourceTree = "<group>"; };
 		B61875A32471BEDA00FB7646 /* BeatPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = Beat/Export/BeatPreview.h; sourceTree = SOURCE_ROOT; };
 		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/Export/BeatPreview.m; sourceTree = SOURCE_ROOT; };
-		B61B693B2472DEE800DCDBFA /* FountainPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainPaginator.h; path = Writer/FountainPaginator.h; sourceTree = SOURCE_ROOT; };
-		B61B693C2472DEE800DCDBFA /* FountainPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainPaginator.m; path = Writer/FountainPaginator.m; sourceTree = SOURCE_ROOT; };
-		B62392AF247FD351008E61D0 /* TouchTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchTimelineView.h; path = Beat/UI/TouchTimelineView.h; sourceTree = SOURCE_ROOT; };
-		B62392B0247FD351008E61D0 /* TouchTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TouchTimelineView.m; path = Beat/UI/TouchTimelineView.m; sourceTree = SOURCE_ROOT; };
-		B624C144234BDE7100C438C7 /* BeatOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatOutlineView.h; path = Writer/BeatOutlineView.h; sourceTree = SOURCE_ROOT; };
-		B624C145234BDE7100C438C7 /* BeatOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatOutlineView.m; path = Writer/BeatOutlineView.m; sourceTree = SOURCE_ROOT; };
-		B62A89B424806C8D0065A2BC /* FlatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FlatButton.swift; path = Beat/UI/FlatButton.swift; sourceTree = SOURCE_ROOT; };
+		B61B693B2472DEE800DCDBFA /* FountainPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainPaginator.h; path = Beat/Parsing/FountainPaginator.h; sourceTree = SOURCE_ROOT; };
+		B61B693C2472DEE800DCDBFA /* FountainPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainPaginator.m; path = Beat/Parsing/FountainPaginator.m; sourceTree = SOURCE_ROOT; };
+		B62392AF247FD351008E61D0 /* TouchTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchTimelineView.h; sourceTree = "<group>"; };
+		B62392B0247FD351008E61D0 /* TouchTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchTimelineView.m; sourceTree = "<group>"; };
+		B623BD352549AE7F00201BC9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B623BD3A2549AEDD00201BC9 /* Outlining.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Outlining.fountain; sourceTree = "<group>"; };
+		B623BD3B2549AEDD00201BC9 /* Big-Fish.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Big-Fish.fountain"; sourceTree = "<group>"; };
+		B623BD3C2549AEDD00201BC9 /* document.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = document.xml; sourceTree = "<group>"; };
+		B623BD432549AF6500201BC9 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Tutorial.fountain; sourceTree = "<group>"; };
+		B623BD472549AFDA00201BC9 /* B_256_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = B_256_logo.png; sourceTree = "<group>"; };
+		B623BD4D2549B06500201BC9 /* DocumentIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DocumentIcon.icns; sourceTree = "<group>"; };
+		B624C144234BDE7100C438C7 /* BeatOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatOutlineView.h; sourceTree = "<group>"; };
+		B624C145234BDE7100C438C7 /* BeatOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatOutlineView.m; sourceTree = "<group>"; };
+		B62A89B424806C8D0065A2BC /* FlatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FlatButton.swift; path = "Beat/User Interface/FlatButton.swift"; sourceTree = SOURCE_ROOT; };
 		B62ADC7323CCCE560015563A /* fountainQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fountainQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B62ADC7423CCCE560015563A /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		B62ADC7723CCCE560015563A /* PreviewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreviewViewController.h; sourceTree = "<group>"; };
@@ -322,113 +325,106 @@
 		B62ADC7D23CCCE560015563A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B62ADC7E23CCCE560015563A /* fountainQuickLook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fountainQuickLook.entitlements; sourceTree = "<group>"; };
 		B62ADC8E23CCE20D0015563A /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
-		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = Beat/UI/MasterView.h; sourceTree = SOURCE_ROOT; };
-		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = Beat/UI/MasterView.m; sourceTree = SOURCE_ROOT; };
-		B645A97D23CD03CC00F13710 /* NSString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Regex.h"; path = "Beat/NSString+Regex/NSString+Regex.h"; sourceTree = SOURCE_ROOT; };
-		B645A97E23CD03CC00F13710 /* NSString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Regex.m"; path = "Beat/NSString+Regex/NSString+Regex.m"; sourceTree = SOURCE_ROOT; };
+		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = "Beat/User Interface/MasterView.h"; sourceTree = SOURCE_ROOT; };
+		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = "Beat/User Interface/MasterView.m"; sourceTree = SOURCE_ROOT; };
+		B645A97D23CD03CC00F13710 /* NSString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Regex.h"; path = "Beat/Categories/NSString+Regex.h"; sourceTree = SOURCE_ROOT; };
+		B645A97E23CD03CC00F13710 /* NSString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Regex.m"; path = "Beat/Categories/NSString+Regex.m"; sourceTree = SOURCE_ROOT; };
 		B6482F7722195BEC00175927 /* BeatTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatTextView.h; path = Beat/NCRTextField/BeatTextView.h; sourceTree = SOURCE_ROOT; };
 		B6482F7822195BEC00175927 /* BeatTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatTextView.m; path = Beat/NCRTextField/BeatTextView.m; sourceTree = SOURCE_ROOT; };
-		B64E1B2D227B08B2008DF194 /* CenteredClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CenteredClipView.m; path = Writer/CenteredClipView.m; sourceTree = SOURCE_ROOT; };
-		B64E1B2F227B08D8008DF194 /* CenteredClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CenteredClipView.h; path = Writer/CenteredClipView.h; sourceTree = SOURCE_ROOT; };
-		B662FC0724C22167003EF967 /* OSFImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OSFImport.h; path = Beat/Import/OSFImport.h; sourceTree = SOURCE_ROOT; };
-		B662FC0824C22167003EF967 /* OSFImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OSFImport.m; path = Beat/Import/OSFImport.m; sourceTree = SOURCE_ROOT; };
+		B662FC0724C22167003EF967 /* OSFImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSFImport.h; sourceTree = "<group>"; };
+		B662FC0824C22167003EF967 /* OSFImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OSFImport.m; sourceTree = "<group>"; };
 		B662FC0B24C2239A003EF967 /* OSFTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OSFTest.m; sourceTree = "<group>"; };
-		B662FC0F24C228E6003EF967 /* document.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = document.xml; sourceTree = "<group>"; };
-		B6632B322317107300100A44 /* NSMutableString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+Regex.h"; path = "Beat/NSMutableString+Regex.h"; sourceTree = SOURCE_ROOT; };
-		B6632B33231710CF00100A44 /* NSMutableString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSMutableString+Regex.m"; path = "Beat/NSMutableString+Regex.m"; sourceTree = SOURCE_ROOT; };
+		B6632B322317107300100A44 /* NSMutableString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+Regex.h"; path = "Beat/Categories/NSMutableString+Regex.h"; sourceTree = SOURCE_ROOT; };
+		B6632B33231710CF00100A44 /* NSMutableString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSMutableString+Regex.m"; path = "Beat/Categories/NSMutableString+Regex.m"; sourceTree = SOURCE_ROOT; };
 		B663680124CE1CCF009A1693 /* BeatTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTest.h; path = BeatTests/BeatTest.h; sourceTree = SOURCE_ROOT; };
 		B663680224CE1CCF009A1693 /* BeatTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTest.m; path = BeatTests/BeatTest.m; sourceTree = SOURCE_ROOT; };
 		B6639DF82538DF7F00DF87E2 /* BeatPrint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPrint.h; path = Beat/Export/BeatPrint.h; sourceTree = SOURCE_ROOT; };
 		B6639DF92538DF7F00DF87E2 /* BeatPrint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPrint.m; path = Beat/Export/BeatPrint.m; sourceTree = SOURCE_ROOT; };
-		B667796323C5D1CB0029D508 /* FDXImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FDXImport.h; path = Writer/FDXImport.h; sourceTree = SOURCE_ROOT; };
-		B667796423C5D1CB0029D508 /* FDXImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FDXImport.m; path = Writer/FDXImport.m; sourceTree = SOURCE_ROOT; };
-		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = CardView.js; path = Beat/CardView.js; sourceTree = SOURCE_ROOT; };
+		B667796323C5D1CB0029D508 /* FDXImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDXImport.h; sourceTree = "<group>"; };
+		B667796423C5D1CB0029D508 /* FDXImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
+		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CardView.js; sourceTree = "<group>"; };
 		B670E20824BF689A006375BA /* BeatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTests.m; sourceTree = "<group>"; };
 		B670E20A24BF689A006375BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B6764B2D251367BF00731A36 /* TKSplitHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TKSplitHandle.m; sourceTree = "<group>"; };
-		B6764B2E251367BF00731A36 /* NSArray+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Additions.h"; sourceTree = "<group>"; };
-		B6764B2F251367BF00731A36 /* TKSplitHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TKSplitHandle.h; sourceTree = "<group>"; };
-		B6764B30251367BF00731A36 /* NSArray+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Additions.m"; sourceTree = "<group>"; };
+		B6764B2D251367BF00731A36 /* TKSplitHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TKSplitHandle.m; path = "Beat/User Interface/TKSplitHandle/TKSplitHandle.m"; sourceTree = SOURCE_ROOT; };
+		B6764B2E251367BF00731A36 /* NSArray+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSArray+Additions.h"; path = "Beat/User Interface/TKSplitHandle/NSArray+Additions.h"; sourceTree = SOURCE_ROOT; };
+		B6764B2F251367BF00731A36 /* TKSplitHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TKSplitHandle.h; path = "Beat/User Interface/TKSplitHandle/TKSplitHandle.h"; sourceTree = SOURCE_ROOT; };
+		B6764B30251367BF00731A36 /* NSArray+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSArray+Additions.m"; path = "Beat/User Interface/TKSplitHandle/NSArray+Additions.m"; sourceTree = SOURCE_ROOT; };
 		B67BD6DF23B4BBE400A99C9C /* ColorCheckbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColorCheckbox.h; sourceTree = "<group>"; };
 		B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ColorCheckbox.m; sourceTree = "<group>"; };
-		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = CardCSS.css; path = Beat/CardCSS.css; sourceTree = SOURCE_ROOT; };
-		B68AC7B42219733900E02466 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Tutorial.fountain; path = "Sample files/Tutorial.fountain"; sourceTree = SOURCE_ROOT; };
-		B6907E3A233FE17C00741071 /* analysis.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = analysis.html; path = Beat/Analysis/analysis.html; sourceTree = SOURCE_ROOT; };
-		B69154632480EB7E002393D1 /* RoundedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RoundedButton.h; path = Beat/UI/RoundedButton.h; sourceTree = SOURCE_ROOT; };
-		B69154642480EB7E002393D1 /* RoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RoundedButton.m; path = Beat/UI/RoundedButton.m; sourceTree = SOURCE_ROOT; };
-		B69154672480F68E002393D1 /* BeatRoundedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatRoundedButton.h; path = Writer/BeatRoundedButton.h; sourceTree = SOURCE_ROOT; };
-		B69154682480F68E002393D1 /* BeatRoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatRoundedButton.m; path = Writer/BeatRoundedButton.m; sourceTree = SOURCE_ROOT; };
-		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = Writer/ScrollView.h; sourceTree = SOURCE_ROOT; };
-		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = Writer/ScrollView.m; sourceTree = SOURCE_ROOT; };
+		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
+		B6907E3A233FE17C00741071 /* analysis.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = analysis.html; sourceTree = "<group>"; };
+		B69154632480EB7E002393D1 /* RoundedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RoundedButton.h; path = "Beat/User Interface/RoundedButton.h"; sourceTree = SOURCE_ROOT; };
+		B69154642480EB7E002393D1 /* RoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RoundedButton.m; path = "Beat/User Interface/RoundedButton.m"; sourceTree = SOURCE_ROOT; };
+		B69154672480F68E002393D1 /* BeatRoundedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatRoundedButton.h; path = "Beat/User Interface/BeatRoundedButton.h"; sourceTree = SOURCE_ROOT; };
+		B69154682480F68E002393D1 /* BeatRoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatRoundedButton.m; path = "Beat/User Interface/BeatRoundedButton.m"; sourceTree = SOURCE_ROOT; };
+		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = "Beat/User Interface/ScrollView.h"; sourceTree = SOURCE_ROOT; };
+		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = "Beat/User Interface/ScrollView.m"; sourceTree = SOURCE_ROOT; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B69A92952319387B00FE6A3E /* CHANGELOG */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; fileEncoding = 4; path = CHANGELOG; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
-		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = dragula.js; path = Beat/CardView/dragula.js; sourceTree = SOURCE_ROOT; };
-		B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FountainAnalysis.h; path = Writer/FountainAnalysis.h; sourceTree = SOURCE_ROOT; };
-		B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FountainAnalysis.m; path = Beat/FountainAnalysis.m; sourceTree = SOURCE_ROOT; };
-		B69C8C6324A1275B007B55A7 /* BeatHTMLScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatHTMLScript.h; sourceTree = "<group>"; };
-		B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLScript.m; sourceTree = "<group>"; };
-		B69EF54C2465925C00C5B78C /* WebPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WebPrinter.h; path = Beat/CardView/WebPrinter.h; sourceTree = SOURCE_ROOT; };
-		B69EF54D2465925C00C5B78C /* WebPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WebPrinter.m; path = Beat/CardView/WebPrinter.m; sourceTree = SOURCE_ROOT; };
-		B69EF54F24659FC000C5B78C /* SceneCards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneCards.h; path = Beat/CardView/SceneCards.h; sourceTree = SOURCE_ROOT; };
-		B69EF55024659FC000C5B78C /* SceneCards.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneCards.m; path = Beat/CardView/SceneCards.m; sourceTree = SOURCE_ROOT; };
-		B69EF5522465AA2000C5B78C /* CardPrintCSS.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = CardPrintCSS.css; path = Beat/CardView/CardPrintCSS.css; sourceTree = SOURCE_ROOT; };
-		B6A0392C247DC4FE0005DA6C /* BeatColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatColors.h; path = Beat/UI/BeatColors.h; sourceTree = SOURCE_ROOT; };
-		B6A0392D247DC4FE0005DA6C /* BeatColors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatColors.m; path = Beat/UI/BeatColors.m; sourceTree = SOURCE_ROOT; };
-		B6A245DF251766DC0055A034 /* BeatFileImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatFileImport.h; path = Beat/Import/BeatFileImport.h; sourceTree = SOURCE_ROOT; };
-		B6A245E0251766DC0055A034 /* BeatFileImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatFileImport.m; path = Beat/Import/BeatFileImport.m; sourceTree = SOURCE_ROOT; };
+		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
+		B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FountainAnalysis.h; sourceTree = "<group>"; };
+		B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FountainAnalysis.m; sourceTree = "<group>"; };
+		B69C8C6324A1275B007B55A7 /* BeatHTMLScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatHTMLScript.h; path = ../Beat/Export/BeatHTMLScript.h; sourceTree = "<group>"; };
+		B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatHTMLScript.m; path = ../Beat/Export/BeatHTMLScript.m; sourceTree = "<group>"; };
+		B69EF54C2465925C00C5B78C /* WebPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebPrinter.h; sourceTree = "<group>"; };
+		B69EF54D2465925C00C5B78C /* WebPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WebPrinter.m; sourceTree = "<group>"; };
+		B69EF54F24659FC000C5B78C /* SceneCards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneCards.h; sourceTree = "<group>"; };
+		B69EF55024659FC000C5B78C /* SceneCards.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneCards.m; sourceTree = "<group>"; };
+		B69EF5522465AA2000C5B78C /* CardPrintCSS.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = CardPrintCSS.css; sourceTree = "<group>"; };
+		B6A0392C247DC4FE0005DA6C /* BeatColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatColors.h; path = "Beat/User Interface/BeatColors.h"; sourceTree = SOURCE_ROOT; };
+		B6A0392D247DC4FE0005DA6C /* BeatColors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatColors.m; path = "Beat/User Interface/BeatColors.m"; sourceTree = SOURCE_ROOT; };
+		B6A245DF251766DC0055A034 /* BeatFileImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFileImport.h; sourceTree = "<group>"; };
+		B6A245E0251766DC0055A034 /* BeatFileImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFileImport.m; sourceTree = "<group>"; };
 		B6A245E52517D5E80055A034 /* BeatAntilateralThoughts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatAntilateralThoughts.h; path = Beat/Extras/BeatAntilateralThoughts.h; sourceTree = SOURCE_ROOT; };
 		B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatAntilateralThoughts.m; path = Beat/Extras/BeatAntilateralThoughts.m; sourceTree = SOURCE_ROOT; };
-		B6B417C92359E2F700AD3F4D /* TitlePageEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TitlePageEditorDelegate.h; path = Writer/TitlePageEditorDelegate.h; sourceTree = SOURCE_ROOT; };
-		B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TitlePageEditorDelegate.m; path = Writer/TitlePageEditorDelegate.m; sourceTree = SOURCE_ROOT; };
-		B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = BeatDocumentIcon.iconset; path = Beat/Images.xcassets/BeatDocumentIcon.iconset; sourceTree = SOURCE_ROOT; };
+		B6B417C92359E2F700AD3F4D /* TitlePageEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TitlePageEditorDelegate.h; path = "Beat/User Interface/TitlePageEditorDelegate.h"; sourceTree = SOURCE_ROOT; };
+		B6B417CA2359E2F700AD3F4D /* TitlePageEditorDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TitlePageEditorDelegate.m; path = "Beat/User Interface/TitlePageEditorDelegate.m"; sourceTree = SOURCE_ROOT; };
+		B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = BeatDocumentIcon.iconset; path = Beat/Icons/BeatDocumentIcon.iconset; sourceTree = SOURCE_ROOT; };
 		B6BBF3CE24AC811600503EFB /* BeatScriptParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatScriptParser.h; path = Beat/Scripting/BeatScriptParser.h; sourceTree = SOURCE_ROOT; };
 		B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatScriptParser.m; path = Beat/Scripting/BeatScriptParser.m; sourceTree = SOURCE_ROOT; };
-		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecentFiles.h; path = ../Beat/RecentFiles.h; sourceTree = "<group>"; };
-		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = Beat/UI/TouchTimelinePopover.h; sourceTree = SOURCE_ROOT; };
-		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = Beat/UI/TouchTimelinePopover.m; sourceTree = SOURCE_ROOT; };
+		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecentFiles.h; sourceTree = "<group>"; };
+		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = "Beat/User Interface/Timeline/TouchTimelinePopover.h"; sourceTree = SOURCE_ROOT; };
+		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = "Beat/User Interface/Timeline/TouchTimelinePopover.m"; sourceTree = SOURCE_ROOT; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
 		B6D12FE025379FCD0018A88F /* DiffMatchPatch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiffMatchPatch.framework; path = Frameworks/DiffMatchPatch.framework; sourceTree = "<group>"; };
-		B6D12FEA2537A04C0018A88F /* BeatComparison.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatComparison.h; path = Beat/Comparison/BeatComparison.h; sourceTree = SOURCE_ROOT; };
-		B6D12FEB2537A04C0018A88F /* BeatComparison.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatComparison.m; path = Beat/Comparison/BeatComparison.m; sourceTree = SOURCE_ROOT; };
-		B6D26BDF24B9E7350041402B /* BeatTimerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimerView.h; path = Beat/UI/BeatTimerView.h; sourceTree = SOURCE_ROOT; };
-		B6D26BE024B9E7350041402B /* BeatTimerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimerView.m; path = Beat/UI/BeatTimerView.m; sourceTree = SOURCE_ROOT; };
-		B6D26BE324B9ED830041402B /* BeatTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimer.h; path = Beat/UI/BeatTimer.h; sourceTree = SOURCE_ROOT; };
-		B6D26BE424B9ED830041402B /* BeatTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimer.m; path = Beat/UI/BeatTimer.m; sourceTree = SOURCE_ROOT; };
+		B6D12FEA2537A04C0018A88F /* BeatComparison.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatComparison.h; path = Beat/Export/Comparison/BeatComparison.h; sourceTree = SOURCE_ROOT; };
+		B6D12FEB2537A04C0018A88F /* BeatComparison.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatComparison.m; path = Beat/Export/Comparison/BeatComparison.m; sourceTree = SOURCE_ROOT; };
+		B6D26BDF24B9E7350041402B /* BeatTimerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimerView.h; path = "Beat/User Interface/BeatTimer/BeatTimerView.h"; sourceTree = SOURCE_ROOT; };
+		B6D26BE024B9E7350041402B /* BeatTimerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimerView.m; path = "Beat/User Interface/BeatTimer/BeatTimerView.m"; sourceTree = SOURCE_ROOT; };
+		B6D26BE324B9ED830041402B /* BeatTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimer.h; path = "Beat/User Interface/BeatTimer/BeatTimer.h"; sourceTree = SOURCE_ROOT; };
+		B6D26BE424B9ED830041402B /* BeatTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimer.m; path = "Beat/User Interface/BeatTimer/BeatTimer.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B7062218B308005B8447 /* ApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationDelegate.m; path = Beat/ApplicationDelegate.m; sourceTree = SOURCE_ROOT; };
-		B6D2B7082218B320005B8447 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = Beat/Theme.m; sourceTree = SOURCE_ROOT; };
-		B6D2B70A2218B342005B8447 /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Line.m; path = Beat/Line.m; sourceTree = SOURCE_ROOT; };
-		B6D2B70C2218B359005B8447 /* ColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorView.m; path = Writer/ColorView.m; sourceTree = SOURCE_ROOT; };
-		B6D2B70E2218B377005B8447 /* FDXInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FDXInterface.m; path = Beat/FDXInterface.m; sourceTree = SOURCE_ROOT; };
-		B6D2B7102218B389005B8447 /* NSString+Whitespace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Whitespace.m"; path = "Beat/NSString+Whitespace.m"; sourceTree = SOURCE_ROOT; };
+		B6D2B7082218B320005B8447 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = "Beat/User Interface/Themes/Theme.m"; sourceTree = SOURCE_ROOT; };
+		B6D2B70A2218B342005B8447 /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Line.m; path = Beat/Parsing/Line.m; sourceTree = SOURCE_ROOT; };
+		B6D2B70C2218B359005B8447 /* ColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorView.m; path = "Beat/User Interface/ColorView.m"; sourceTree = SOURCE_ROOT; };
+		B6D2B70E2218B377005B8447 /* FDXInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FDXInterface.m; path = Beat/Export/FDXInterface.m; sourceTree = SOURCE_ROOT; };
+		B6D2B7102218B389005B8447 /* NSString+Whitespace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+Whitespace.m"; path = "Beat/Categories/NSString+Whitespace.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B7122218B39A005B8447 /* Document.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Document.m; path = Beat/Document.m; sourceTree = SOURCE_ROOT; };
-		B6D2B7142218B3AD005B8447 /* ThemeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThemeManager.m; path = Beat/ThemeManager.m; sourceTree = SOURCE_ROOT; };
-		B6D2B7162218B3BC005B8447 /* ContinousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContinousFountainParser.m; path = Beat/ContinousFountainParser.m; sourceTree = SOURCE_ROOT; };
-		B6D2B7192218B408005B8447 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Beat/main.m; sourceTree = SOURCE_ROOT; };
-		B6D2B71B2218B430005B8447 /* OutlineExtractor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineExtractor.m; path = Beat/OutlineExtractor.m; sourceTree = SOURCE_ROOT; };
-		B6D2B71D2218B44A005B8447 /* PrintView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PrintView.m; path = Beat/PrintView.m; sourceTree = SOURCE_ROOT; };
-		B6D2B71F2218B459005B8447 /* RecentFiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RecentFiles.m; path = Beat/RecentFiles.m; sourceTree = SOURCE_ROOT; };
-		B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMutableIndexSet+Lowest.m"; path = "Beat/NSMutableIndexSet+Lowest.m"; sourceTree = SOURCE_ROOT; };
-		B6D2B7232218B4A0005B8447 /* Themes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Themes.plist; path = Beat/Themes.plist; sourceTree = SOURCE_ROOT; };
-		B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "Big-Fish.fountain"; path = "Sample files/Big-Fish.fountain"; sourceTree = SOURCE_ROOT; };
-		B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DocumentIcon.icns; sourceTree = SOURCE_ROOT; };
-		B6D2B72B2218B51D005B8447 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; name = Credits.rtf; path = Beat/Credits.rtf; sourceTree = SOURCE_ROOT; };
+		B6D2B7142218B3AD005B8447 /* ThemeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThemeManager.m; path = "Beat/User Interface/Themes/ThemeManager.m"; sourceTree = SOURCE_ROOT; };
+		B6D2B7162218B3BC005B8447 /* ContinousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContinousFountainParser.m; path = Beat/Parsing/ContinousFountainParser.m; sourceTree = SOURCE_ROOT; };
+		B6D2B7192218B408005B8447 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B6D2B71B2218B430005B8447 /* OutlineExtractor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineExtractor.m; path = Beat/Export/OutlineExtractor.m; sourceTree = SOURCE_ROOT; };
+		B6D2B71D2218B44A005B8447 /* PrintView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PrintView.m; path = Beat/Export/PrintView.m; sourceTree = SOURCE_ROOT; };
+		B6D2B71F2218B459005B8447 /* RecentFiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentFiles.m; sourceTree = "<group>"; };
+		B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMutableIndexSet+Lowest.m"; path = "Beat/Categories/NSMutableIndexSet+Lowest.m"; sourceTree = SOURCE_ROOT; };
+		B6D2B7232218B4A0005B8447 /* Themes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Themes.plist; path = "Beat/User Interface/Themes/Themes.plist"; sourceTree = SOURCE_ROOT; };
+		B6D2B72B2218B51D005B8447 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		B6D2B72E2218B589005B8447 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/Document.xib; sourceTree = SOURCE_ROOT; };
 		B6D2B7302218B589005B8447 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
 		B6D2B7332218B5DC005B8447 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Beat/Images.xcassets; sourceTree = SOURCE_ROOT; };
-		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/OutlineScene.m; sourceTree = SOURCE_ROOT; };
-		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/OutlineScene.h; sourceTree = SOURCE_ROOT; };
+		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/Parsing/OutlineScene.m; sourceTree = SOURCE_ROOT; };
+		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/Parsing/OutlineScene.h; sourceTree = SOURCE_ROOT; };
 		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "Patch Notes.html"; path = "_PatchNotes/Patch Notes.html"; sourceTree = SOURCE_ROOT; };
 		B6D872B2232567C40050ED2D /* timeline.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = timeline.html; sourceTree = "<group>"; };
-		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
+		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = PrintCSS.css; path = ../Beat/Export/PrintCSS.css; sourceTree = "<group>"; };
 		B6E3246624B515670001273F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		B6EA9F4D23BA8E8C00DBE9D0 /* SceneFiltering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneFiltering.h; path = Writer/SceneFiltering.h; sourceTree = SOURCE_ROOT; };
-		B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneFiltering.m; path = Writer/SceneFiltering.m; sourceTree = SOURCE_ROOT; };
-		B6EB516E246E9621009014AB /* MarginView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MarginView.h; path = Beat/UI/MarginView.h; sourceTree = SOURCE_ROOT; };
-		B6EB516F246E9621009014AB /* MarginView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MarginView.m; path = Beat/UI/MarginView.m; sourceTree = SOURCE_ROOT; };
-		B6F360A9250127C1001ACAEE /* BeatTimeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimeline.h; path = Beat/UI/BeatTimeline.h; sourceTree = SOURCE_ROOT; };
-		B6F360AA250127C1001ACAEE /* BeatTimeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimeline.m; path = Beat/UI/BeatTimeline.m; sourceTree = SOURCE_ROOT; };
-		B6F360C52501447C001ACAEE /* B_256_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = B_256_logo.png; path = Writer/B_256_logo.png; sourceTree = SOURCE_ROOT; };
+		B6EA9F4D23BA8E8C00DBE9D0 /* SceneFiltering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneFiltering.h; path = "Beat/User Interface/SceneFiltering.h"; sourceTree = SOURCE_ROOT; };
+		B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneFiltering.m; path = "Beat/User Interface/SceneFiltering.m"; sourceTree = SOURCE_ROOT; };
+		B6EB516E246E9621009014AB /* MarginView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MarginView.h; path = "Beat/User Interface/MarginView.h"; sourceTree = SOURCE_ROOT; };
+		B6EB516F246E9621009014AB /* MarginView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MarginView.m; path = "Beat/User Interface/MarginView.m"; sourceTree = SOURCE_ROOT; };
+		B6F360A9250127C1001ACAEE /* BeatTimeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTimeline.h; sourceTree = "<group>"; };
+		B6F360AA250127C1001ACAEE /* BeatTimeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTimeline.m; sourceTree = "<group>"; };
 		B6F49D2E246D66B0006D88D4 /* Beat Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6F49D2F246D66B0006D88D4 /* Beat copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Beat copy-Info.plist"; path = "/Users/lmp/Koodaus/Beat 1.0b/Beat copy-Info.plist"; sourceTree = "<absolute>"; };
 		B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
@@ -483,28 +479,25 @@
 				B6D2B7082218B320005B8447 /* Theme.m */,
 				B6D2B7232218B4A0005B8447 /* Themes.plist */,
 			);
-			name = Themes;
+			path = Themes;
 			sourceTree = "<group>";
 		};
 		B13111911CB2A41B00D07A0C /* Parsing */ = {
 			isa = PBXGroup;
 			children = (
+				B6E5E87E2549A812009CD3AA /* Categories */,
 				B6D6E5F7221B305300A1C9BE /* OutlineScene.h */,
 				B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */,
 				B131118B1CB2A41800D07A0C /* ContinousFountainParser.h */,
 				B6D2B7162218B3BC005B8447 /* ContinousFountainParser.m */,
 				B13111921CB2A42300D07A0C /* Line.h */,
 				B6D2B70A2218B342005B8447 /* Line.m */,
-				B131118D1CB2A41800D07A0C /* NSString+Whitespace.h */,
-				B6D2B7102218B389005B8447 /* NSString+Whitespace.m */,
-				B131119B1CB2C6B300D07A0C /* NSMutableIndexSet+Lowest.h */,
-				B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */,
-				B6632B322317107300100A44 /* NSMutableString+Regex.h */,
-				B6632B33231710CF00100A44 /* NSMutableString+Regex.m */,
-				B645A97D23CD03CC00F13710 /* NSString+Regex.h */,
-				B645A97E23CD03CC00F13710 /* NSString+Regex.m */,
+				B138B65B19E1E8CA000489C4 /* FountainRegexes.h */,
+				B138B65C19E1E8CA000489C4 /* FountainRegexes.m */,
+				B61B693B2472DEE800DCDBFA /* FountainPaginator.h */,
+				B61B693C2472DEE800DCDBFA /* FountainPaginator.m */,
 			);
-			name = Parsing;
+			path = Parsing;
 			sourceTree = "<group>";
 		};
 		B138B56A19E1C973000489C4 = {
@@ -513,9 +506,7 @@
 				B69A928B231915E900FE6A3E /* README.md */,
 				B69A92952319387B00FE6A3E /* CHANGELOG */,
 				B138B57519E1C973000489C4 /* Beat */,
-				B138B64E19E1E8CA000489C4 /* Fountain */,
 				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
-				B1F04ED31C88AC99001C4D27 /* CourierPrime */,
 				B62ADC7623CCCE560015563A /* fountainQuickLook */,
 				B670E20724BF689A006375BA /* BeatTests */,
 				B138B62419E1D8A4000489C4 /* Frameworks */,
@@ -542,14 +533,8 @@
 				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
 				B138B57A19E1C973000489C4 /* Document.h */,
 				B6D2B7122218B39A005B8447 /* Document.m */,
-				B6447CAF24616C8400AA4EBC /* MasterView.h */,
-				B6447CB024616C8400AA4EBC /* MasterView.m */,
 				B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */,
 				B6D2B7062218B308005B8447 /* ApplicationDelegate.m */,
-				B6D2B71F2218B459005B8447 /* RecentFiles.m */,
-				B6C0A5692214C09C00A8B33D /* RecentFiles.h */,
-				B61B693B2472DEE800DCDBFA /* FountainPaginator.h */,
-				B61B693C2472DEE800DCDBFA /* FountainPaginator.m */,
 				B6D2B72D2218B589005B8447 /* Document.xib */,
 				B6D2B72F2218B589005B8447 /* MainMenu.xib */,
 				B6146B15246A8DE20029DBD9 /* PRO */,
@@ -559,26 +544,24 @@
 				B13111911CB2A41B00D07A0C /* Parsing */,
 				B1509A3D1CB5C0B400884918 /* Export */,
 				B6BBF3CD24AC80E800503EFB /* Scripting */,
-				B6D2B7272218B4DC005B8447 /* DocumentIcon.icns */,
-				B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */,
-				B68AC7B32219732800E02466 /* Sample files */,
-				B6D2B7332218B5DC005B8447 /* Images.xcassets */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
-				B13111851CB2893F00D07A0C /* Themes */,
+				B623BD512549B11B00201BC9 /* Fonts */,
+				B6D2B7332218B5DC005B8447 /* Images.xcassets */,
+				B623BD4C2549B03700201BC9 /* Icons */,
+				B68AC7B32219732800E02466 /* Sample files */,
 			);
-			name = Beat;
-			path = Writer;
+			path = Beat;
 			sourceTree = "<group>";
 		};
 		B138B57619E1C973000489C4 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B68AC7B42219733900E02466 /* Tutorial.fountain */,
+				B623BD472549AFDA00201BC9 /* B_256_logo.png */,
+				B623BD352549AE7F00201BC9 /* Info.plist */,
 				B6D2B72B2218B51D005B8447 /* Credits.rtf */,
-				B138B57719E1C973000489C4 /* Info.plist */,
 				B6D2B7192218B408005B8447 /* main.m */,
 			);
-			name = "Supporting Files";
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		B138B62419E1D8A4000489C4 /* Frameworks */ = {
@@ -593,16 +576,6 @@
 				B62ADC7423CCCE560015563A /* Quartz.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		B138B64E19E1E8CA000489C4 /* Fountain */ = {
-			isa = PBXGroup;
-			children = (
-				B138B65B19E1E8CA000489C4 /* FountainRegexes.h */,
-				B138B65C19E1E8CA000489C4 /* FountainRegexes.m */,
-				B138B65F19E1E8CA000489C4 /* QUQFont.h */,
-			);
-			path = Fountain;
 			sourceTree = "<group>";
 		};
 		B1509A3D1CB5C0B400884918 /* Export */ = {
@@ -625,17 +598,6 @@
 				B138B66019E1E8CA000489C4 /* ScriptCSS.css */,
 			);
 			name = Export;
-			sourceTree = "<group>";
-		};
-		B1F04ED31C88AC99001C4D27 /* CourierPrime */ = {
-			isa = PBXGroup;
-			children = (
-				B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */,
-				B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */,
-				B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */,
-				B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */,
-			);
-			path = CourierPrime;
 			sourceTree = "<group>";
 		};
 		B6055CEA23CDBA3800F7D54C /* RegExCategories */ = {
@@ -664,7 +626,8 @@
 				B6146B16246A90B40029DBD9 /* Manual */,
 			);
 			name = PRO;
-			sourceTree = "<group>";
+			path = Pro;
+			sourceTree = SOURCE_ROOT;
 		};
 		B6146B16246A90B40029DBD9 /* Manual */ = {
 			isa = PBXGroup;
@@ -692,7 +655,28 @@
 				B6146B20246A91420029DBD9 /* analysis.png */,
 				B6146B21246A91420029DBD9 /* printview.png */,
 			);
-			path = images;
+			name = images;
+			path = Manual/images;
+			sourceTree = "<group>";
+		};
+		B623BD4C2549B03700201BC9 /* Icons */ = {
+			isa = PBXGroup;
+			children = (
+				B623BD4D2549B06500201BC9 /* DocumentIcon.icns */,
+				B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */,
+			);
+			path = Icons;
+			sourceTree = "<group>";
+		};
+		B623BD512549B11B00201BC9 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */,
+				B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */,
+				B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */,
+				B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		B62ADC7623CCCE560015563A /* fountainQuickLook */ = {
@@ -719,7 +703,11 @@
 		B667796223C5D10B0029D508 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
-				B6F360C52501447C001ACAEE /* B_256_logo.png */,
+				B13111851CB2893F00D07A0C /* Themes */,
+				B6D2B71F2218B459005B8447 /* RecentFiles.m */,
+				B6C0A5692214C09C00A8B33D /* RecentFiles.h */,
+				B6447CAF24616C8400AA4EBC /* MasterView.h */,
+				B6447CB024616C8400AA4EBC /* MasterView.m */,
 				B6764B2C251367BF00731A36 /* TKSplitHandle */,
 				B6F360A825012719001ACAEE /* BeatTimeline */,
 				B66FC99F2276EADC00C0265D /* CardView */,
@@ -739,8 +727,6 @@
 				B6CF7D0D2328D77F0045702C /* DynamicColor.m */,
 				B6A0392C247DC4FE0005DA6C /* BeatColors.h */,
 				B6A0392D247DC4FE0005DA6C /* BeatColors.m */,
-				B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */,
-				B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */,
 				B62A89B424806C8D0065A2BC /* FlatButton.swift */,
 				B69154632480EB7E002393D1 /* RoundedButton.h */,
 				B69154642480EB7E002393D1 /* RoundedButton.m */,
@@ -750,12 +736,11 @@
 				B6D26BE024B9E7350041402B /* BeatTimerView.m */,
 				B6D26BE324B9ED830041402B /* BeatTimer.h */,
 				B6D26BE424B9ED830041402B /* BeatTimer.m */,
-				B64E1B2D227B08B2008DF194 /* CenteredClipView.m */,
-				B64E1B2F227B08D8008DF194 /* CenteredClipView.h */,
 				B6A245E52517D5E80055A034 /* BeatAntilateralThoughts.h */,
 				B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */,
 			);
 			name = "User Interface";
+			path = "../Beat/User Interface";
 			sourceTree = "<group>";
 		};
 		B667796623C5D1D20029D508 /* Import */ = {
@@ -769,6 +754,7 @@
 				B6A245E0251766DC0055A034 /* BeatFileImport.m */,
 			);
 			name = Import;
+			path = ../Beat/Import;
 			sourceTree = "<group>";
 		};
 		B66FC99F2276EADC00C0265D /* CardView */ = {
@@ -783,7 +769,7 @@
 				B69EF54F24659FC000C5B78C /* SceneCards.h */,
 				B69EF55024659FC000C5B78C /* SceneCards.m */,
 			);
-			name = CardView;
+			path = CardView;
 			sourceTree = "<group>";
 		};
 		B670E20724BF689A006375BA /* BeatTests */ = {
@@ -807,16 +793,19 @@
 				B6764B30251367BF00731A36 /* NSArray+Additions.m */,
 			);
 			name = TKSplitHandle;
-			path = Beat/UI/TKSplitHandle;
+			path = "Beat/User Interface/TKSplitHandle";
 			sourceTree = SOURCE_ROOT;
 		};
 		B68AC7B32219732800E02466 /* Sample files */ = {
 			isa = PBXGroup;
 			children = (
-				B662FC0F24C228E6003EF967 /* document.xml */,
-				B6D2B7252218B4CA005B8447 /* Big-Fish.fountain */,
+				B623BD432549AF6500201BC9 /* Tutorial.fountain */,
+				B623BD3C2549AEDD00201BC9 /* document.xml */,
+				B623BD3A2549AEDD00201BC9 /* Outlining.fountain */,
+				B623BD3B2549AEDD00201BC9 /* Big-Fish.fountain */,
 			);
 			name = "Sample files";
+			path = "../Sample files";
 			sourceTree = "<group>";
 		};
 		B6907E39233FE16200741071 /* Analysis */ = {
@@ -827,6 +816,7 @@
 				B6907E3A233FE17C00741071 /* analysis.html */,
 			);
 			name = Analysis;
+			path = ../Beat/Analysis;
 			sourceTree = "<group>";
 		};
 		B6B417CC2359E2FC00AD3F4D /* TitlePageEditor */ = {
@@ -844,7 +834,7 @@
 				B6BBF3CE24AC811600503EFB /* BeatScriptParser.h */,
 				B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */,
 			);
-			name = Scripting;
+			path = Scripting;
 			sourceTree = "<group>";
 		};
 		B6D12FDB25379E880018A88F /* Comparison */ = {
@@ -859,13 +849,30 @@
 		B6D872B1232567C40050ED2D /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */,
+				B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */,
 				B62392AF247FD351008E61D0 /* TouchTimelineView.h */,
 				B62392B0247FD351008E61D0 /* TouchTimelineView.m */,
 				B6D872B2232567C40050ED2D /* timeline.html */,
 			);
-			name = Timeline;
-			path = Writer/Timeline;
-			sourceTree = SOURCE_ROOT;
+			path = Timeline;
+			sourceTree = "<group>";
+		};
+		B6E5E87E2549A812009CD3AA /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				B131118D1CB2A41800D07A0C /* NSString+Whitespace.h */,
+				B6D2B7102218B389005B8447 /* NSString+Whitespace.m */,
+				B131119B1CB2C6B300D07A0C /* NSMutableIndexSet+Lowest.h */,
+				B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */,
+				B6632B322317107300100A44 /* NSMutableString+Regex.h */,
+				B6632B33231710CF00100A44 /* NSMutableString+Regex.m */,
+				B645A97D23CD03CC00F13710 /* NSString+Regex.h */,
+				B645A97E23CD03CC00F13710 /* NSString+Regex.m */,
+			);
+			name = Categories;
+			path = ../Categories;
+			sourceTree = "<group>";
 		};
 		B6F360A825012719001ACAEE /* BeatTimeline */ = {
 			isa = PBXGroup;
@@ -997,7 +1004,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1F04ED81C88ACAD001C4D27 /* Courier Prime Bold Italic.ttf in Resources */,
-				B662FC1024C228E6003EF967 /* document.xml in Resources */,
+				B623BD3F2549AEDD00201BC9 /* document.xml in Resources */,
 				B6146B27246A91420029DBD9 /* printview.png in Resources */,
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
@@ -1011,21 +1018,23 @@
 				B69A92962319387B00FE6A3E /* CHANGELOG in Resources */,
 				B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */,
-				B6D2B7282218B4DC005B8447 /* DocumentIcon.icns in Resources */,
+				B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B6146B23246A91420029DBD9 /* cards.png in Resources */,
 				B6907E3B233FE17C00741071 /* analysis.html in Resources */,
 				B6146B24246A91420029DBD9 /* timeline.png in Resources */,
 				B6146B26246A91420029DBD9 /* analysis.png in Resources */,
+				B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */,
 				B69A928C231915E900FE6A3E /* README.md in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
-				B6F360C62501447C001ACAEE /* B_256_logo.png in Resources */,
 				B6D872B3232567C40050ED2D /* timeline.html in Resources */,
 				B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */,
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,
 				B6146B25246A91420029DBD9 /* outline.png in Resources */,
-				B68AC7B52219733900E02466 /* Tutorial.fountain in Resources */,
+				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
+				B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */,
+				B623BD362549AE7F00201BC9 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1043,7 +1052,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6F49D0A246D66B0006D88D4 /* Courier Prime Bold Italic.ttf in Resources */,
-				B662FC1124C228E6003EF967 /* document.xml in Resources */,
 				B6F49D0B246D66B0006D88D4 /* printview.png in Resources */,
 				B6F49D0C246D66B0006D88D4 /* Courier Prime Bold.ttf in Resources */,
 				B6F49D0D246D66B0006D88D4 /* Courier Prime Italic.ttf in Resources */,
@@ -1057,7 +1065,6 @@
 				B6F49D14246D66B0006D88D4 /* dragula.js in Resources */,
 				B6F49D15246D66B0006D88D4 /* CHANGELOG in Resources */,
 				B6F49D16246D66B0006D88D4 /* PrintCSS.css in Resources */,
-				B6F49D18246D66B0006D88D4 /* DocumentIcon.icns in Resources */,
 				B6F49D19246D66B0006D88D4 /* CardView.js in Resources */,
 				B6F49D1A246D66B0006D88D4 /* cards.png in Resources */,
 				B6F49D1B246D66B0006D88D4 /* analysis.html in Resources */,
@@ -1065,13 +1072,13 @@
 				B6F49D1D246D66B0006D88D4 /* analysis.png in Resources */,
 				B6F49D1E246D66B0006D88D4 /* README.md in Resources */,
 				B6F49D1F246D66B0006D88D4 /* Document.xib in Resources */,
-				B6F360C72501447C001ACAEE /* B_256_logo.png in Resources */,
 				B6F49D20246D66B0006D88D4 /* timeline.html in Resources */,
 				B6F49D21246D66B0006D88D4 /* Images.xcassets in Resources */,
+				B623BD492549AFDA00201BC9 /* B_256_logo.png in Resources */,
+				B623BD452549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B6F49D22246D66B0006D88D4 /* Themes.plist in Resources */,
 				B6F49D23246D66B0006D88D4 /* ScriptCSS.css in Resources */,
 				B6F49D24246D66B0006D88D4 /* outline.png in Resources */,
-				B6F49D25246D66B0006D88D4 /* Tutorial.fountain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1123,7 +1130,6 @@
 				B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */,
 				B6D2B7072218B308005B8447 /* ApplicationDelegate.m in Sources */,
 				B69C8C6524A12765007B55A7 /* BeatHTMLScript.m in Sources */,
-				B64E1B2E227B08B2008DF194 /* CenteredClipView.m in Sources */,
 				B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */,
 				B663680524CE1E64009A1693 /* BeatTest.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
@@ -1205,7 +1211,6 @@
 				B6F49CE3246D66B0006D88D4 /* Document.m in Sources */,
 				B6F49CE4246D66B0006D88D4 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6F49CE5246D66B0006D88D4 /* ApplicationDelegate.m in Sources */,
-				B6F49CE6246D66B0006D88D4 /* CenteredClipView.m in Sources */,
 				B6F49CE7246D66B0006D88D4 /* FountainAnalysis.m in Sources */,
 				B6764B32251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B6639DEF2538DD2E00DF87E2 /* BeatColors.m in Sources */,
@@ -1408,7 +1413,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				INFOPLIST_FILE = Beat/Info.plist;
+				INFOPLIST_FILE = "Beat/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MARKETING_VERSION = 1.5;
@@ -1440,7 +1445,7 @@
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				INFOPLIST_FILE = Beat/Info.plist;
+				INFOPLIST_FILE = "Beat/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MARKETING_VERSION = 1.5;
