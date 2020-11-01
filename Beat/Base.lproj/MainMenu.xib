@@ -569,7 +569,13 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ffW-ny-yDK"/>
-                            <menuItem title="Print Automatic Scene Numbers" state="on" id="p37-Bz-gMZ">
+                            <menuItem title="Start Scene Numbering From..." id="12m-8C-qlE">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showSceneNumberStart:" target="-1" id="MFl-PI-GdS"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Print Automatic Scene Numbers" state="on" hidden="YES" id="p37-Bz-gMZ">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="togglePrintSceneNumbers:" target="-1" id="8bJ-zj-vM7"/>

@@ -5,6 +5,7 @@
 * Pagination problems fixed
 * Compare two different scripts
 * There is still some pagination trouble. I should build the layout engine myself in ObjC and not rely on the completely unreliable HTML stuff. Also, the font size is a bit smaller than in a certain application starting with F. Rest of the letters you can figure out yourself. (fuckoff) A future consideration.
+* Start scene numbering from a custom number 
 
 ## Beat 1.4.2
 

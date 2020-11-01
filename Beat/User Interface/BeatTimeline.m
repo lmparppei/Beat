@@ -8,12 +8,8 @@
 
 /*
  
- Replacement for the JavaScript-based timeline.
- Super fast & efficient.
- 
- I just realized that could have built the Document class so that it would have
- a free-for-all delegate method for retrieving the outline array? How to reference
- to it, if not through a delegate method, though. But is it ok to have duplicate methods?
+ Replacement for the JavaScript-based timeline. Super fast & efficient.
+ This can be wrapped in a PinchScrollView or something similar.
  
  */
 
@@ -23,19 +19,13 @@
 #import "BeatColors.h"
 
 #define PADDING 8.0
-
-@protocol BeatTimelineDelegate
-- (NSRange)selectedRange;
-- (NSArray*)getOutline;
-@end
-
+ 
 @interface BeatTimeline ()
 
 @property NSMutableArray *items;
 @property CGFloat playheadPosition;
 @property CGFloat scrollPosition;
 @property NSInteger selectedItem;
-@property CGFloat magnification;
 
 @end
 
@@ -143,10 +133,8 @@
     // (now known as previous, as the iteration has ended)
     // [previousItem setValue:[NSNumber numberWithFloat:x] forKey:@"end"];
     
-	CGFloat magnification = 1.0;
-	
     if (_playheadPosition >= 0) {
-		NSRect rect = NSMakeRect(_playheadPosition * magnification - _scrollPosition, 0, 2, self.frame.size.height);
+		NSRect rect = NSMakeRect(_playheadPosition - _scrollPosition, 0, 2, self.frame.size.height);
         NSColor *white = NSColor.whiteColor;
         [white setFill];
         NSRectFill(rect);
@@ -178,20 +166,6 @@
 }
 - (void)refresh {
 	// Set selected scene
-}
-
-- (IBAction)magnify:(id)sender {
-	_magnification = [(NSSlider*)sender doubleValue];
-	NSLog(@"mag : %f", _magnification);
-	[self magnifyTo:_magnification];
-}
-- (void)magnifyTo:(CGFloat)magnify {
-	_magnification = magnify;
-	NSRect frame = self.enclosingScrollView.frame;
-	frame.size.width *= magnify;
-	[self setFrame:frame];
-	[self.enclosingScrollView.documentView setFrame:frame];
-	[self setNeedsDisplay:YES];
 }
 
 @end

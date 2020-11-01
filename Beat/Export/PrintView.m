@@ -1,9 +1,9 @@
 //
 //  PrintView.m
-//  Writer / Beat
+//  Beat
 //
-//  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//  Parts copyright © 2019 Lauri-Matti Parppei. All rights reserved.
+//  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
+//  Parts copyright © 2016 Hendrik Noeller. All rights reserved.
 
 //
 
@@ -72,7 +72,7 @@
 			rawText = [NSMutableString stringWithString:[document getText]];
 		}
 		
-		NSString *htmlString = [self createPrint:rawText document:document compareWith:oldScript header:delegate.header];
+		NSString *htmlString = [self createPrint:rawText document:document compareWith:oldScript header:(delegate.header) ? delegate.header : @""];
 		
 		WebView *pageWebView = [[WebView alloc] init];
 		pageWebView.frameLoadDelegate = self;
@@ -91,18 +91,9 @@
 }
 
 - (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript header:(NSString*)header {
-	// Should we show scene numbers?
-	bool sceneNumbering = document.printSceneNumbers;
-	
 	// Parse the input again
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText];
-	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
-		@"script": [NSMutableArray array],
-		@"title page": [NSMutableArray array]
-	}];
+	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText delegate:document];
 		
-	NSMutableArray *elements = [NSMutableArray array];
-
 	// See if we want to compare it with something
 	// BeatComparison marks the Line objects as changed
 	if (oldScript) {
@@ -110,76 +101,11 @@
 		[comparison compare:parser.lines with:oldScript];
 	}
 	
-	Line *previousLine;
-	
-	NSInteger sceneNumber = 1;
-	
-	for (Line *line in parser.lines) {
-		// Skip over certain elements
-		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
-			if (line.type == empty) previousLine = line;
-			continue;
-		}
-		
-		if (line.type == heading && sceneNumbering) {
-			// If scene numbering is ON, let's strip forced numbers and set correct numbers to the line objects
-			if (line.sceneNumberRange.length > 0) {
-				line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
-				line.string = line.stripSceneNumber;
-			} else {
-				line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-				line.string = line.stripSceneNumber;
-				sceneNumber += 1;
-			}
-		}
-		
-		// This is a paragraph with a line break,
-		// so append the line to the previous one
-		
-		// NOTE: This should be changed so that there is a possibility of having no-margin elements
-		// Just needs some parser-level work.
-		// Later me: no idea what that person was going on about? Care to elaborate?
-		
-		if (line.type == action && line.isSplitParagraph && [parser.lines indexOfObject:line] > 0) {
-			Line *previousLine = [elements objectAtIndex:elements.count - 1];
-
-			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.string];
-			continue;
-		}
-		
-		if (line.type == dialogue && line.string.length < 1) {
-			line.type = empty;
-			previousLine = line;
-			continue;
-		}
-
-		[elements addObject:line];
-				
-		// If this is dual dialogue character cue,
-		// we need to search for the previous one too, just in cae
-		if (line.isDualDialogueElement) {
-			bool previousCharacterFound = NO;
-			NSInteger i = elements.count - 2; // Go for previous element
-			while (i > 0) {
-				Line *previousLine = [elements objectAtIndex:i];
-				
-				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
-				
-				if (previousLine.type == character ) {
-					previousLine.nextElementIsDualDialogue = YES;
-					previousCharacterFound = YES;
-					break;
-				}
-				i--;
-			}
-		}
-		
-		previousLine = line;
-	}
-	
 	// Set script data
-	[script setValue:parser.titlePage forKey:@"title page"];
-	[script setValue:elements forKey:@"script"];
+	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
+		@"script": [parser preprocessForPrinting],
+		@"title page": parser.titlePage
+	}];
 
 	// Set header if sent
 	if (header.length) [script setValue:header forKey:@"header"];
@@ -187,38 +113,6 @@
 	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document print:YES];
 	return html.html;
 }
-
-
-/*
- - (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print preview:(bool)preview
-{
-	self = [super init];
-	
-	self.pdf = pdf;
-	self.preview = preview;
-	
-	if (self) {
-
-		_finishedWebViews = 0;
-		_document = document;
-		
-		NSString *htmlString = [BeatPrint createPrint:document.preprocessedText document:document compareWith:nil];
-		
-		WebView *pageWebView = [[WebView alloc] init];
-		pageWebView.frameLoadDelegate = self;
-		pageWebView.mainFrame.frameView.allowsScrolling = NO;
-		[self addSubview:pageWebView];
-		
-		_webView = pageWebView;
-		
-		[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
-
-		// Why was this used in Writer?
-		// self.frame = CGRectMake(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);
-	}
-	return self;
-}
-*/
 
 - (BOOL)knowsPageRange:(NSRangePointer)range
 {
@@ -293,38 +187,6 @@
 			}];
 			
 		}
-		/*
-		[self display];
-		if (self.pdf) {
-			NSSavePanel *saveDialog = [NSSavePanel savePanel];
-			[saveDialog setAllowedFileTypes:@[@"pdf"]];
-			[saveDialog setNameFieldStringValue:[self.document fileNameString]];
-			[saveDialog beginSheetModalForWindow:self.document.windowControllers[0].window completionHandler:^(NSInteger result) {
-				if (result == NSFileHandlingPanelOKButton) {
-					NSPrintInfo *printInfo = [self.document.printInfo copy];
-					[printInfo.dictionary addEntriesFromDictionary:@{
-																	 NSPrintJobDisposition: NSPrintSaveJob,
-																	 NSPrintJobSavingURL: saveDialog.URL
-																	 }];
-					NSPrintOperation* printOperation = [NSPrintOperation printOperationWithView:self printInfo:printInfo];
-					printOperation.showsPrintPanel = NO;
-					printOperation.showsProgressPanel = YES;
-					
-					[printOperation runOperation];
-					
-				}
-			}];
-			
-			
-		} else {
-			NSPrintOperation* printOperation = [NSPrintOperation printOperationWithView:self];
-			printOperation.jobTitle = [[[self.document.fileURL lastPathComponent] componentsSeparatedByString:@"."] firstObject];
-			[printOperation runOperationModalForWindow:((NSWindowController*)self.document.windowControllers[0]).window delegate:nil didRunSelector:nil contextInfo:nil];
-			self.finishedWebViews = 0;
-			self.document = nil;
-		}
-		 */
-		
 	}
 }
 

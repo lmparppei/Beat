@@ -14,6 +14,8 @@
 		B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */; };
 		B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */; };
 		B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
+		B600DD5F254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */; };
+		B600DD60254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */; };
 		B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B6146B23246A91420029DBD9 /* cards.png in Resources */ = {isa = PBXBuildFile; fileRef = B6146B1D246A91420029DBD9 /* cards.png */; };
@@ -293,6 +295,8 @@
 		B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold.ttf"; sourceTree = "<group>"; };
 		B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Italic.ttf"; sourceTree = "<group>"; };
 		B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime.ttf"; sourceTree = "<group>"; };
+		B600DD5D254C22F6006A09D0 /* BeatDocumentSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentSettings.h; sourceTree = "<group>"; };
+		B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentSettings.m; sourceTree = "<group>"; };
 		B6055CEB23CDBA3800F7D54C /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		B6055CEC23CDBA3800F7D54C /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		B6146B1B246A91410029DBD9 /* beat_manual.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = beat_manual.html; path = Manual/beat_manual.html; sourceTree = "<group>"; };
@@ -486,10 +490,10 @@
 			isa = PBXGroup;
 			children = (
 				B6E5E87E2549A812009CD3AA /* Categories */,
-				B6D6E5F7221B305300A1C9BE /* OutlineScene.h */,
-				B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */,
 				B131118B1CB2A41800D07A0C /* ContinousFountainParser.h */,
 				B6D2B7162218B3BC005B8447 /* ContinousFountainParser.m */,
+				B6D6E5F7221B305300A1C9BE /* OutlineScene.h */,
+				B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */,
 				B13111921CB2A42300D07A0C /* Line.h */,
 				B6D2B70A2218B342005B8447 /* Line.m */,
 				B138B65B19E1E8CA000489C4 /* FountainRegexes.h */,
@@ -537,6 +541,7 @@
 				B6D2B7062218B308005B8447 /* ApplicationDelegate.m */,
 				B6D2B72D2218B589005B8447 /* Document.xib */,
 				B6D2B72F2218B589005B8447 /* MainMenu.xib */,
+				B600DD5C254C22CC006A09D0 /* Data Handling */,
 				B6146B15246A8DE20029DBD9 /* PRO */,
 				B667796223C5D10B0029D508 /* User Interface */,
 				B667796623C5D1D20029D508 /* Import */,
@@ -598,6 +603,15 @@
 				B138B66019E1E8CA000489C4 /* ScriptCSS.css */,
 			);
 			name = Export;
+			sourceTree = "<group>";
+		};
+		B600DD5C254C22CC006A09D0 /* Data Handling */ = {
+			isa = PBXGroup;
+			children = (
+				B600DD5D254C22F6006A09D0 /* BeatDocumentSettings.h */,
+				B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */,
+			);
+			path = "Data Handling";
 			sourceTree = "<group>";
 		};
 		B6055CEA23CDBA3800F7D54C /* RegExCategories */ = {
@@ -1155,6 +1169,7 @@
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
 				B667796523C5D1CB0029D508 /* FDXImport.m in Sources */,
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
+				B600DD5F254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */,
 				B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
 				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
@@ -1219,6 +1234,7 @@
 				B6F49CEB246D66B0006D88D4 /* RegExCategories.m in Sources */,
 				B6E47D842502898A00734A8D /* BeatHTMLScript.m in Sources */,
 				B6F49CEC246D66B0006D88D4 /* DynamicColor.m in Sources */,
+				B600DD60254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */,
 				B6CE0BD0247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B6F49CEE246D66B0006D88D4 /* MasterView.m in Sources */,
 				B6F49CEF246D66B0006D88D4 /* OutlineExtractor.m in Sources */,
@@ -1416,7 +1432,7 @@
 				INFOPLIST_FILE = "Beat/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = "1.5 b";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -1448,7 +1464,7 @@
 				INFOPLIST_FILE = "Beat/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.5;
+				MARKETING_VERSION = "1.5 b";
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

@@ -114,6 +114,7 @@
 #import "TKSplitHandle.h"
 #import "BeatComparison.h"
 #import "BeatPrint.h"
+#import "BeatDocumentSettings.h"
 
 @interface Document ()
 
@@ -211,6 +212,7 @@
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) bool previewCanceled;
 @property (nonatomic) NSTimer *previewTimer;
+@property (nonatomic) BeatPreview *preview;
 
 // Analysis
 @property (weak) IBOutlet NSPanel *analysisPanel;
@@ -240,6 +242,10 @@
 @property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
+
+// Scene number settings
+@property (weak) IBOutlet NSPanel *sceneNumberingPanel;
+@property (weak) IBOutlet NSTextField *sceneNumberStartInput;
 
 // Content buffer
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
@@ -284,7 +290,6 @@
 
 // Current line / scene
 @property (nonatomic) Line *currentLine;
-@property (nonatomic) OutlineScene *currentScene;
 
 // Autocompletion
 @property (nonatomic) NSString *cachedText;
@@ -345,6 +350,7 @@
 #define MAGNIFY YES
 
 // User preferences key names
+#define OFFSET_SCENE_NUMBERS_KEY @"Offset Scene Numbers From First Custom Number"
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
 #define SHOW_PAGENUMBERS_KEY @"Show Page Numbers"
 #define SHOW_SCENE_LABELS_KEY @"Show Scene Number Labels"
@@ -514,6 +520,14 @@
 	
 	// Read default settings
 	// This is ugly but whatever
+	
+	/*
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:OFFSET_SCENE_NUMBERS_KEY]) {
+		self.offsetFromFirstCustomSceneNumber = YES;
+	} else {
+		self.offsetFromFirstCustomSceneNumber = [[NSUserDefaults standardUserDefaults] boolForKey:OFFSET_SCENE_NUMBERS_KEY];
+	}
+	*/
 	
     if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
         self.matchParentheses = YES;
@@ -900,13 +914,26 @@
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
     // Insert code here to write your document to data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning nil.
     // You can also choose to override -fileWrapperOfType:error:, -writeToURL:ofType:error:, or -writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-    NSData *dataRepresentation = [[self getText] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *dataRepresentation = [[self createFile] dataUsingEncoding:NSUTF8StringEncoding];
     return dataRepresentation;
+}
+- (NSString*)createFile {
+	return [NSString stringWithFormat:@"%@%@", self.getText, self.documentSettings.getSettingsString];
 }
 
 // Could we integrate FDX import here?
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
-    [self setText:[[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"]];
+	// Read settings
+	if (!_documentSettings) {
+		_documentSettings = [[BeatDocumentSettings alloc] init];
+	}
+	
+	// Load text & remove settings block
+	NSString *text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"];
+	NSRange settingsRange = [_documentSettings readSettingsAndReturnRange:text];
+	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
+    
+	[self setText:text];
     return YES;
 }
 
@@ -944,7 +971,6 @@
     } else {
 		// Set text on screen
         [self.textView setString:text];
-		[self updateSceneNumberLabels];
     }
 }
 - (void)setMargin {
@@ -1037,11 +1063,11 @@
 		self.previewCanceled = NO;
 		
 		self.currentScene = [self getCurrentScene];
-
+		
+		NSString *rawText = [self getText];
+		
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-			NSString *rawString = [self preprocessSceneNumbers];
-			
-			__block NSString *html = [BeatPreview createNewPreview:rawString of:self scene:self.currentScene.sceneNumber sceneNumbers:self.printSceneNumbers type:BeatPrintPreview];
+			__block NSString *html = [self.preview createPreviewFor:rawText type:BeatPrintPreview];
 			self.htmlString = html;
 			
 			self.previewUpdated = YES;
@@ -1262,7 +1288,7 @@
 	// Backspace / deletion handling for some special case scenarios
 	// Implementing some undoing weirdness, which works, kind-of.
 	
-	if (replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
+	if (!self.documentIsLoading && replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
 		
 		Line * affectedLine = [self getLineAt:affectedCharRange.location];
 
@@ -1351,7 +1377,7 @@
 	bool processDoubleBreak = NO;
 
 	// Enter key
-	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && ![self.undoManager isUndoing]) {
+	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && ![self.undoManager isUndoing] && !self.documentIsLoading) {
 		// Process line break after a forced character input
 		if (_characterInput && _characterInputForLine) {
 			// Don't go out of range
@@ -1960,11 +1986,13 @@
 
 // This is a panic button. It replaces the whole document with raw text input.
 - (IBAction) reformatEverything:(id)sender {
+	/*
 	NSString *wholeText = [NSString stringWithString:[self getText]];
-	
 	[self setText:wholeText];
-	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
+	self.parser = [[ContinousFountainParser alloc] initWithString:self.getText delegate:self];
+	 */
 	
+	[self.parser resetParsing];
 	[self applyFormatChanges];
 	[self formatAllLines];
 }
@@ -2465,6 +2493,8 @@
 }
 
 - (void)headingChangedToActionAt:(Line*)line {
+	if (!NSThread.isMainThread) return;
+	
 	// The parser has changed a presumed line element back into action/something else,
 	// but the Line element should still have the original string value intact.
 	
@@ -2474,6 +2504,7 @@
 }
 
 - (void)actionChangedToHeadingAt:(Line*)line {
+	if (!NSThread.isMainThread) return;
 	if (_moving) return;
 	
 	// The parser changed a line with some text already on it into a scene heading, for example by by typing int. at the start of a line.
@@ -2718,7 +2749,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSError *error = nil;
 	NSRegularExpression *sceneNumberPattern = [NSRegularExpression regularExpressionWithPattern: @" (\\#([0-9A-Za-z\\.\\)-]+)\\#)" options: NSRegularExpressionCaseInsensitive error: &error];
 	
-	
 	_sceneNumberLabelUpdateOff = true;
 	for (OutlineScene * scene in [self getScenes]) {
 		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
@@ -2783,12 +2813,46 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (IBAction)lockSceneNumbers:(id)sender
 {
+	NSString *originalText = [NSString  stringWithString:[self getText]];
+	NSMutableString *text = [NSMutableString string];
+	
+	NSInteger sceneNumber = [self.documentSettings getInt:@"Scene Numbering Starts From"];
+	
+	for (Line* line in self.parser.lines) {
+		if (line.type != heading) [text appendFormat:@"%@\n", line.string];
+		else {
+			if (line.sceneNumberRange.length == 0) {
+				[text appendFormat:@"%@ #%lu#\n", line.string, sceneNumber];
+				sceneNumber++;
+			} else {
+				[text appendFormat:@"%@\n", line.string];
+			}
+		}
+	}
+	
+	[self.undoManager disableUndoRegistration];
+	
+	[self.textView replaceCharactersInRange:NSMakeRange(0, self.textView.string.length) withString:text];
+	[self.parser parseText:text];
+	[self applyFormatChanges];
+	
+	[self ensureLayout];
+	[self updateSceneNumberLabels];
+	[self.undoManager enableUndoRegistration];
+	
+	[[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:originalText];
+	
+	[self.parser createOutline];
+	[self updateSceneNumberLabels];
+	
+	/*
 	NSString *rawText = [self getText];
 	
 	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
 	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
 	
 	_sceneNumberLabelUpdateOff = true;
+	
 	for (OutlineScene * scene in [self getScenes]) {
 		if (![testSceneNumber evaluateWithObject: scene.string]) {
 			if (!scene.sceneNumber) { scene.sceneNumber = @""; }
@@ -2802,17 +2866,19 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self updateSceneNumberLabels];
 	
 	[[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:rawText];
+	*/
 }
 
 - (void)undoSceneNumbering:(NSString*)rawText
 {
-	[self setText:rawText];
-	[self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
-	
-	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
+	self.documentIsLoading = YES;
+	[self.textView replaceCharactersInRange:NSMakeRange(0, self.textView.string.length) withString:rawText];
+	[self.parser parseText:rawText];
 	[self applyFormatChanges];
+	self.documentIsLoading = NO;
 	
-	// This is a strange bug
+	[self ensureLayout];
+	[self.parser createOutline];
 	[self updateSceneNumberLabels];
 }
 
@@ -3523,7 +3589,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (IBAction)preview:(id)sender
 {
     if ([self selectedTabViewTab] == 0) {
-		// Do a synchronous refersh of the preview if the preview is not available
+		// Do a synchronous refresh of the preview if the preview is not available
 		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
 		else {
 			// So uh... yeah. Fuck commenting my code at this point.
@@ -3558,6 +3624,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self.printWebView.configuration.userContentController addScriptMessageHandler:self name:@"closePrintPreview"];
 	
 	[_printWebView loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
+	
+	_preview = [[BeatPreview alloc] initWithDocument:self];
 }
 - (void)cancelOperation:(id) sender
 {
@@ -4429,6 +4497,10 @@ static NSString *forceDualDialogueSymbol = @"^";
  The performance boost is marginal, if done using drawRect.
  What we should do is use CALayer, but it's beyond my skill level & powers for now.
  
+ ... update 2020-10:
+ That was kinda useless, too. NSTextField is surprisingly efficient.
+
+ 
  */
 
 - (NSTextField *) createLabel: (OutlineScene *) scene {
@@ -4494,7 +4566,35 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 */
  
-
+- (IBAction)showSceneNumberStart:(id)sender {
+	// Load previous setting
+	if ([_documentSettings getInt:@"Scene Numbering Starts From"] > 0) {
+		[_sceneNumberStartInput setIntegerValue:[_documentSettings getInt:@"Scene Numbering Starts From"]];
+	}
+	[_thisWindow beginSheet:_sceneNumberingPanel completionHandler:nil];
+}
+- (IBAction)closeSceneNumberStart:(id)sender {
+	[_thisWindow endSheet:_sceneNumberingPanel];
+}
+- (IBAction)applySceneNumberStart:(id)sender {
+	if (_sceneNumberStartInput.integerValue > 1) {
+		[_documentSettings setInt:@"Scene Numbering Starts From" as:_sceneNumberStartInput.integerValue];
+	} else {
+		[_documentSettings remove:@"Scene Numbering Starts From"];
+	}
+	
+	// Rebuild outline everywhere
+	[self.parser createOutline];
+	[self reloadOutline];
+	[self reloadTimeline];
+	[self updateSceneNumberLabels];
+	[self updateChangeCount:NSChangeDone];
+	
+	[_thisWindow endSheet:_sceneNumberingPanel];
+}
+- (NSInteger)sceneNumberingStartsFrom {
+	return [self.documentSettings getInt:@"Scene Numbering Starts From"];
+}
 - (void) updateSceneNumberLabels {
 	// New way
 	// [self refreshSceneNumbers];

@@ -43,9 +43,7 @@
 }
 */
 
-- (void)preparePreviewOfFileAtURL:(NSURL *)url completionHandler:(void (^)(NSError * _Nullable))handler {
-	NSLog(@"hello");
-	
+- (void)preparePreviewOfFileAtURL:(NSURL *)url completionHandler:(void (^)(NSError * _Nullable))handler {	
 	// Read contents into file and then parse into FNHTMLScript
 	NSError *error;
 	NSString *file = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
@@ -55,7 +53,10 @@
 	if (width < 400) smallView = YES;
 	
 	if (!error) {
-		NSString *html = [BeatPreview createQuickLook:file];
+		BeatPreview *preview = [[BeatPreview alloc] initWithDocument:nil];
+		NSString *html = [preview createPreviewFor:file type:BeatQuickLookPreview];
+		NSLog(@"html %@", html);
+		
 		[[self.webView2 mainFrame] loadHTMLString:html baseURL:nil];
 	}
 	

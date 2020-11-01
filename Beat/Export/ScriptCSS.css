@@ -237,6 +237,7 @@ section {
 }
 .quickLook section {
 	background-color: white;
+	box-shadow: none;
 }
 .comparison section {
 	padding: 5%;

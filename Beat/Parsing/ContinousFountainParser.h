@@ -9,13 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "Line.h"
 #import "OutlineScene.h"
+#import "BeatDocumentSettings.h"
 @class OutlineScene;
 
 @protocol ContinuousFountainParserDelegate <NSObject>
+@property (nonatomic) bool offsetFromFirstCustomSceneNumber;
+@property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) BeatDocumentSettings *documentSettings;
 
+- (NSInteger)sceneNumberingStartsFrom;
 - (NSRange)selectedRange;
 - (void)headingChangedToActionAt:(Line*)line;
 - (void)actionChangedToHeadingAt:(Line*)line;
+
+
 @end
 
 @interface ContinousFountainParser : NSObject
@@ -31,13 +38,18 @@
 @property (nonatomic) bool hasTitlePage;
 
 //Parsing methods
+- (void)parseText:(NSString*)text;
+- (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;
 - (ContinousFountainParser*)initWithString:(NSString*)string;
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string;
 //- (void)setSceneNumbers:(NSString*)text;
-- (void)parseText:(NSString*)text;
 - (void)resetParsing;
 - (void)createOutline;
 - (void)ensurePositions;
+
+// Preprocess for printing
+- (NSArray*)preprocessForPrinting;
+- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines;
 
 // Parselinetype is available for some testing
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive;

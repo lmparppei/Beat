@@ -349,13 +349,17 @@ That you have escaped.
 	// NSLog(@"paginating from %lu (with %lu elements on page)", fromIndex, currentPage.count);
 	// Default pagination function for US Letter paper size (legacy of Fountain repository)
 	
-	_A4 = YES;
-	if (_document.printInfo.paperSize.width > 595) _A4 = NO;
-	
-	CGFloat w = _document.printInfo.paperSize.width - _document.printInfo.leftMargin - _document.printInfo.rightMargin;
-	CGFloat h = _document.printInfo.paperSize.height - _document.printInfo.topMargin - _document.printInfo.bottomMargin;
-	
-	_paperSize = CGSizeMake(w, h);
+	if (_document) {
+		_A4 = YES;
+		if (_document.printInfo.paperSize.width > 595) _A4 = NO;
+		
+		CGFloat w = _document.printInfo.paperSize.width - _document.printInfo.leftMargin - _document.printInfo.rightMargin;
+		CGFloat h = _document.printInfo.paperSize.height - _document.printInfo.topMargin - _document.printInfo.bottomMargin;
+		
+		_paperSize = CGSizeMake(w, h);
+	} else {
+		_paperSize = CGSizeMake(595, 821);
+	}
 	
 	
 	

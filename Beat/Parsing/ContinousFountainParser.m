@@ -72,25 +72,30 @@
 
 #pragma mark Bulk Parsing
 
-- (ContinousFountainParser*)initWithString:(NSString*)string
-{
-    self = [super init];
-    
-    if (self) {
-        _lines = [NSMutableArray array];
+- (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate {
+	self = [super init];
+	
+	if (self) {
+		_lines = [NSMutableArray array];
 		_outline = [NSMutableArray array];
-        _changedIndices = [NSMutableArray array];
+		_changedIndices = [NSMutableArray array];
 		_titlePage = [NSMutableArray array];
 		_storylines = [NSMutableArray array];
+		_delegate = delegate;
 		
-        [self parseText:string];
-    }
-    
-    return self;
+		[self parseText:string];
+	}
+	
+	return self;
+}
+- (ContinousFountainParser*)initWithString:(NSString*)string
+{
+	return [self initWithString:string delegate:nil];
 }
 
 - (void)parseText:(NSString*)text
 {
+	_lines = [NSMutableArray array];
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
     
     NSUInteger position = 0; //To track at which position every line begins
@@ -782,7 +787,7 @@ and incomprehensible system of recursion.
 	// I have no idea how I got this to work but it does.
 
 	// Check for all-caps actions mistaken for character cues
-	if (self.delegate) {
+	if (self.delegate && NSThread.isMainThread) {
 		if (preceedingLine.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location + 1, line.range)) {
 			// If the preceeding line is empty, we'll check the line before that, too, to be sure.
 			// This way we can check for false character cues
@@ -1343,8 +1348,14 @@ and incomprehensible system of recursion.
 	[_storylines removeAllObjects];
 	
 	NSUInteger result = 0;
-	NSUInteger sceneNumber = 1;
 
+	// Get first scene number
+	NSUInteger sceneNumber = 1;
+	
+	if ([_delegate.documentSettings getInt:@"Scene Numbering Starts From"] > 0) {
+		sceneNumber = [_delegate.documentSettings getInt:@"Scene Numbering Starts From"];
+	}
+	
 	// We will store a section depth to adjust depth for scenes that come after a section
 	NSUInteger sectionDepth = 0;
 	
@@ -1405,13 +1416,26 @@ and incomprehensible system of recursion.
 				// Check if the scene is omitted
 				// If the scene is omited, let's not increment scene number for it.
 				// However, if the scene has a forced number, we'll maintain it
-				if (line.sceneNumber) { item.sceneNumber = line.sceneNumber; }
+				if (line.sceneNumberRange.length > 0) {
+					item.sceneNumber = line.sceneNumber;
+					
+					/*
+					// Also, if the document wants to start the scene numbering from first scene,
+					// let's offset the numbering, IF it returns a valid number
+					if (self.delegate.offsetFromFirstCustomSceneNumber) {
+						NSInteger sceneNumberOffset = [item.sceneNumber integerValue];
+						if (sceneNumberOffset > 0) sceneNumber = sceneNumberOffset + 1;
+					}
+					*/
+				}
 				else {
 					if (!line.omited) {
 						item.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+						line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
 						sceneNumber++;
 					} else {
 						item.sceneNumber = @"";
+						line.sceneNumber = @"";
 					}
 				}
 			}
@@ -1551,6 +1575,90 @@ and incomprehensible system of recursion.
 		if (position >= line.position && position < line.position + line.string.length + 1) return line;
 	}
 	return nil;
+}
+
+- (NSArray*)preprocessForPrinting {
+	[self createOutline];
+	return [self preprocessForPrintingWithLines:self.lines];
+}
+- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines {
+	if (!lines) lines = self.lines;
+	
+	NSMutableArray *elements = [NSMutableArray array];
+	Line *previousLine;
+	
+	NSInteger sceneNumber = 1;
+	if (self.delegate) {
+		sceneNumber = [self.delegate.documentSettings getInt:@"Scene Numbering Starts From"];
+		if (sceneNumber < 1) sceneNumber = 1;
+	}
+	
+	for (Line *line in lines) {
+		// Skip over certain elements
+		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
+			if (line.type == empty) previousLine = line;
+			continue;
+		}
+		
+		// If there is no delegate, show scene numbers. Otherwise, ask the delegate.
+		if (line.type == heading && (self.delegate.printSceneNumbers || !self.delegate)) {
+			if (line.sceneNumberRange.length > 0) {
+				line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
+				line.string = line.stripSceneNumber;
+			} else {
+				line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+				line.string = line.stripSceneNumber;
+				sceneNumber += 1;
+			}
+		}
+		
+		// This is a paragraph with a line break, so append the line to the previous one
+		// A quick explanation for this practice: We generally skip empty lines and instead
+		// calculate margins before elements. This is a legacy of the old Fountain parser,
+		// but is actually somewhat sensitive approach. That's why we join the lines into
+		// one element.
+		
+		if (line.type == action && line.isSplitParagraph && [lines indexOfObject:line] > 0) {
+			Line *previousLine = [elements objectAtIndex:elements.count - 1];
+
+			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.string];
+			if (line.changed) previousLine.changed = YES; // Inherit change status
+			
+			continue;
+		}
+		
+		// Remove misinterpreted dialogue
+		if (line.type == dialogue && line.string.length < 1) {
+			line.type = empty;
+			previousLine = line;
+			continue;
+		}
+
+		[elements addObject:line];
+				
+		// If this is dual dialogue character cue,
+		// we need to search for the previous one too, just in cae
+		if (line.isDualDialogueElement) {
+			bool previousCharacterFound = NO;
+			NSInteger i = elements.count - 2; // Go for previous element
+			while (i > 0) {
+				Line *previousLine = [elements objectAtIndex:i];
+				
+				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
+				
+				if (previousLine.type == character ) {
+					previousLine.nextElementIsDualDialogue = YES;
+					previousCharacterFound = YES;
+					break;
+				}
+				i--;
+			}
+		}
+		
+		previousLine = line;
+	}
+	
+	return elements;
 }
 
 @end

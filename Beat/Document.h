@@ -38,24 +38,32 @@ THE SOFTWARE.
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
 #import "BeatTimer.h"
+#import "BeatDocumentSettings.h"
+#import "BeatPreview.h"
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) bool printSceneNumbers;
 
+// For delegation
+@property (nonatomic) OutlineScene *currentScene;
+
+// Document settings
+@property (nonatomic) BeatDocumentSettings *documentSettings;
+
 - (NSString*)getText;
 - (NSString*)fileNameString;
-
 // Make some of the actions available for text view
 // (wtf btw, why aren't we using these through delegation?)
 - (IBAction)forceAction:(id)sender;
 - (IBAction)forceHeading:(id)sender;
 - (IBAction)forceCharacter:(id)sender;
+- (OutlineScene*)getCurrentScene;
 
 @end
