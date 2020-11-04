@@ -112,7 +112,6 @@
 #import "BeatTimer.h"
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
-#import "BeatComparison.h"
 #import "BeatPrint.h"
 #import "BeatDocumentSettings.h"
 
@@ -272,7 +271,6 @@
 @property (nonatomic) bool printPreview;
 @property (nonatomic, readwrite) NSString *preprocessedText;
 @property (strong, nonatomic) PrintView *printView; //To keep the asynchronously working print data generator in memory
-@property (weak) IBOutlet BeatComparison *comparison;
 
 // Some settings for edit view behaviour
 @property (nonatomic) bool matchParentheses;
@@ -609,7 +607,10 @@
 	// Timeline webkit
 	[self setupTimeline];
 	self.timelineVisible = false;
+	
+	self.timeline.enclosingScrollView.hasHorizontalScroller = NO;
 	self.timelineViewHeight.constant = 0;
+	
 	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"jumpToScene"];
 	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"timelineContext"];
 	_timelineClickedScene = -1;
@@ -918,7 +919,7 @@
     return dataRepresentation;
 }
 - (NSString*)createFile {
-	return [NSString stringWithFormat:@"%@%@", self.getText, self.documentSettings.getSettingsString];
+	return [NSString stringWithFormat:@"%@%@", self.getText, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
 
 // Could we integrate FDX import here?
@@ -1544,6 +1545,8 @@
 		if (self.outlineViewVisible) [self reloadOutline];
 		if (self.timelineVisible) [self reloadTimeline];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
+	} else {
+		if (self.timelineVisible) [_timeline refreshWithDelay];
 	}
 	
 	[self applyFormatChanges];
@@ -1577,27 +1580,29 @@
 	// Select a scene on the TouchBar timeline if it's visible
 	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_flatOutline indexOfObject:_currentScene]];
 
+	if (self.timelineVisible) {
+		NSInteger sceneIndex = [self.flatOutline indexOfObject:self.currentScene];
+		[_timeline scrollToScene:sceneIndex];
+	}
+	
 	// Locate current scene & reload outline without building it in parser
 	// Enter some background thread madness
 	if ((_outlineViewVisible || _timelineVisible) && !_outlineEdit) {
 		[self getCurrentScene];
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-			
+			/*
 			if (self.timelineVisible && self.currentScene) {
 				NSInteger sceneIndex = [self.flatOutline indexOfObject:self.currentScene];
 				[self findOnTimeline:sceneIndex];
 			}
+			*/
 			
 			// So... uh.
 			// Obviously we can't use previously loaded _currentScene because here we're rebuilding the outline,
 			// so that's why we checked the timeline position first.
 			
 			if (self.outlineViewVisible) {
-				// SOS this needs to be fixed
-				// [self getCurrentScene];
-				// _currentScene = [self getCurrentSceneWithPosition:position];
-
-				dispatch_async(dispatch_get_main_queue(), ^(void){
+				dispatch_async(dispatch_get_main_queue(), ^(void) {
 					[self reloadOutline];
 				});
 			}
@@ -1611,7 +1616,7 @@
 						dispatch_async(dispatch_get_main_queue(), ^(void){
 							[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
 								context.allowsImplicitAnimation = YES;
-							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
+							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:self.currentScene]];
 							} completionHandler:NULL];
 						});
 					}
@@ -1619,7 +1624,7 @@
 					dispatch_async(dispatch_get_main_queue(), ^(void){
 						[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
 							context.allowsImplicitAnimation = YES;
-							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:[self getCurrentScene]]];
+							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:self.currentScene]];
 						} completionHandler:NULL];
 					});
 				}
@@ -1812,7 +1817,7 @@
 	 according to the character's line count.
      
      */
-    
+	
 	[_characterNames removeAllObjects];
 	
 	// If there was a character selected in Character Filter Box, save it
@@ -1878,7 +1883,6 @@
 }
 
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-
 	NSMutableArray *matches = [NSMutableArray array];
 	NSMutableArray *search = [NSMutableArray array];
 
@@ -1904,11 +1908,6 @@
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
-	NSLog(@"tab");
-	// Default behaviour: add tab
-	// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
-
-	
 	// Force character if the line is suitable
 	_currentLine = [self getCurrentLine];
 	if (_currentLine.type == empty) {
@@ -1925,7 +1924,8 @@
 		}
 	} else {
 		// Default behaviour: add tab
-		[self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
+		// nope
+		// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
 	}
 }
 
@@ -1990,7 +1990,7 @@
 	NSString *wholeText = [NSString stringWithString:[self getText]];
 	[self setText:wholeText];
 	self.parser = [[ContinousFountainParser alloc] initWithString:self.getText delegate:self];
-	 */
+	*/
 	
 	[self.parser resetParsing];
 	[self applyFormatChanges];
@@ -3631,7 +3631,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 {
 	if (_printPreview) [self preview:nil];
 	if (_cardsVisible) [self toggleCards:nil];
-	//if (_timelineVisible) [self toggleTimeline:nil];
 }
 
 - (NSUInteger)selectedTabViewTab
@@ -4588,6 +4587,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self reloadOutline];
 	[self reloadTimeline];
 	[self updateSceneNumberLabels];
+	[self updateSectionMarkers];
 	[self updateChangeCount:NSChangeDone];
 	
 	[_thisWindow endSheet:_sceneNumberingPanel];
@@ -4713,37 +4713,43 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (IBAction)toggleTimeline:(id)sender
 {
-	NSLog(@"height %f", self.outlineBackgroundView.frame.size.height);
-	
 	_timelineVisible = !_timelineVisible;
 	
 	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
 	
 	if (_timelineVisible) {
-		[self updateTimelineStyle];
-		[self reloadTimeline];
-		self.timelineViewHeight.constant = TIMELINE_VIEW_HEIGHT;
+		//[self updateTimelineStyle];
+		//[self reloadTimeline];
+		//self.timelineViewHeight.constant = TIMELINE_VIEW_HEIGHT;
+		//[_timeline display];
+		[_timeline show];
 		
 		[self ensureLayout];
+		//[self reloadTimeline];
 		
-		[self.textView scrollPoint:scrollPosition];
+		//[self.textView scrollPoint:scrollPosition];
 	} else {
-		self.timelineViewHeight.constant = 0;
-		scrollPosition.y = scrollPosition.y * _magnification;
+		[_timeline hide];
 		
-		[self.textScrollView.contentView scrollToPoint:scrollPosition];
+		//_timeline.enclosingScrollView.hasHorizontalScroller = NO;
+		//scrollPosition.y = scrollPosition.y * _magnification;
+		
+		//[self.textScrollView.contentView scrollToPoint:scrollPosition];
 	}
 	//[self.textScrollView.contentView scrollToPoint:scrollPosition];
 }
 
 - (void) setupTimeline {
+	/*
 	NSString *timelinePath = [[NSBundle mainBundle] pathForResource:@"timeline.html" ofType:@""];
 	NSString *content = [NSString stringWithContentsOfFile:timelinePath encoding:NSUTF8StringEncoding error:nil];
 
 	[_timelineView loadHTMLString:content baseURL:nil];
+	*/
 	
 	// New timeline
 	_timeline.delegate = self;
+	_timeline.heightConstraint = _timelineViewHeight;
 	
 	[self updateTimelineStyle];
 }
@@ -4754,7 +4760,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (void) reloadTimeline {
 	// New native timeline system waiting to be completed
-	// [_timeline reload:[self getOutlineItems]];
+	[self.timeline reload];
+	return;
 	
 	__block OutlineScene *currentScene;
 	__block NSArray *scenes = [self getOutlineItems];
@@ -4902,7 +4909,7 @@ static NSString *forceDualDialogueSymbol = @"^";
  */
 
 
-#pragma mark - TouchBar Timeline
+#pragma mark - Timeline Delegation
 
 - (void) reloadTouchTimeline {
 	[_touchbarTimeline setData:[self getOutlineItems]];
@@ -4915,6 +4922,10 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self reloadTouchTimeline];
 }
 - (void) touchPopoverDidHide {
+}
+- (void)didSelectTimelineItem:(NSInteger)index {
+	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
+	[self scrollToScene:scene];
 }
 
 #pragma mark - Analysis
@@ -5368,6 +5379,8 @@ triangle walks
 
 #pragma mark - Title page editor
 
+// WIP: Move this into separate class
+
 - (IBAction)editTitlePage:(id)sender {
 	
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
@@ -5400,6 +5413,8 @@ triangle walks
 					if ([dict[key] indexOfObject:val] == [dict[key] count] - 1) [values appendFormat:@"%@", val];
 					else [values appendFormat:@"%@\n", val];
 				}
+				// Strip extra line break from multiline values
+				if (values.length > 1 && [values characterAtIndex:0] == '\n') [values setString:[values substringFromIndex:1]];
 				
 				if (![fields[key] isKindOfClass:[NSTextView class]]) [fields[key] setStringValue:values];
 				else [fields[key] setString:values];
@@ -5482,9 +5497,6 @@ triangle walks
 	}
 }
 
-/*
-	
- */
 
 #pragma mark - Timer
 
@@ -5630,8 +5642,6 @@ triangle walks
 - (void)boundsDidChange:(NSNotification*)notification {
 	if (notification.object != [self.textScrollView contentView]) return;
 }
-
-// In other words, this is no longer used.
 
 @end
 

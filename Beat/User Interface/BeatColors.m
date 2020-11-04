@@ -27,7 +27,8 @@
 			 @"orange": [BeatColors colorWithRed:255 green:161 blue:13],
 			 @"brown": [BeatColors colorWithRed:169 green:106 blue:7],
 			 @"darkGray": [BeatColors colorWithRed:170 green:170 blue:170],
-			 @"veryDarkGray": [BeatColors colorWithRed:100 green:100 blue:100]
+			 @"veryDarkGray": [BeatColors colorWithRed:100 green:100 blue:100],
+			 @"backgroundGray": [BeatColors colorWithRed:41 green:42 blue:45]
     };
 }
 + (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
@@ -80,3 +81,17 @@
 }
 
 @end
+/*
+ 
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ palavat runot valaisevat illan
+ 
+ */

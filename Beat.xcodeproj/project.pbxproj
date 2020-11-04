@@ -93,6 +93,10 @@
 		B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */; };
 		B6BBF3D024AC811600503EFB /* BeatScriptParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */; };
 		B6BBF3D124AC811600503EFB /* BeatScriptParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */; };
+		B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
+		B6CB9737254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
+		B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */; };
+		B6CB973C254EEB4000C310CC /* BeatTimelineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */; };
 		B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
 		B6CE0BD0247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
@@ -387,8 +391,12 @@
 		B6BBF3CE24AC811600503EFB /* BeatScriptParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatScriptParser.h; path = Beat/Scripting/BeatScriptParser.h; sourceTree = SOURCE_ROOT; };
 		B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatScriptParser.m; path = Beat/Scripting/BeatScriptParser.m; sourceTree = SOURCE_ROOT; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecentFiles.h; sourceTree = "<group>"; };
-		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = "Beat/User Interface/Timeline/TouchTimelinePopover.h"; sourceTree = SOURCE_ROOT; };
-		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = "Beat/User Interface/Timeline/TouchTimelinePopover.m"; sourceTree = SOURCE_ROOT; };
+		B6CB9734254ED61900C310CC /* HorizontalPinchView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HorizontalPinchView.h; path = Timeline/HorizontalPinchView.h; sourceTree = "<group>"; };
+		B6CB9735254ED61900C310CC /* HorizontalPinchView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HorizontalPinchView.m; path = Timeline/HorizontalPinchView.m; sourceTree = "<group>"; };
+		B6CB9739254EEB4000C310CC /* BeatTimelineItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimelineItem.h; path = Timeline/BeatTimelineItem.h; sourceTree = "<group>"; };
+		B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimelineItem.m; path = Timeline/BeatTimelineItem.m; sourceTree = "<group>"; };
+		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = "Beat/User Interface/TouchTimelinePopover.h"; sourceTree = SOURCE_ROOT; };
+		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = "Beat/User Interface/TouchTimelinePopover.m"; sourceTree = SOURCE_ROOT; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
 		B6D12FE025379FCD0018A88F /* DiffMatchPatch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiffMatchPatch.framework; path = Frameworks/DiffMatchPatch.framework; sourceTree = "<group>"; };
@@ -863,10 +871,6 @@
 		B6D872B1232567C40050ED2D /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
-				B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */,
-				B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */,
-				B62392AF247FD351008E61D0 /* TouchTimelineView.h */,
-				B62392B0247FD351008E61D0 /* TouchTimelineView.m */,
 				B6D872B2232567C40050ED2D /* timeline.html */,
 			);
 			path = Timeline;
@@ -891,8 +895,16 @@
 		B6F360A825012719001ACAEE /* BeatTimeline */ = {
 			isa = PBXGroup;
 			children = (
+				B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */,
+				B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */,
+				B62392AF247FD351008E61D0 /* TouchTimelineView.h */,
+				B62392B0247FD351008E61D0 /* TouchTimelineView.m */,
 				B6F360A9250127C1001ACAEE /* BeatTimeline.h */,
 				B6F360AA250127C1001ACAEE /* BeatTimeline.m */,
+				B6CB9734254ED61900C310CC /* HorizontalPinchView.h */,
+				B6CB9735254ED61900C310CC /* HorizontalPinchView.m */,
+				B6CB9739254EEB4000C310CC /* BeatTimelineItem.h */,
+				B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */,
 			);
 			name = BeatTimeline;
 			sourceTree = "<group>";
@@ -1156,6 +1168,7 @@
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
 				B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */,
 				B69154692480F68E002393D1 /* BeatRoundedButton.m in Sources */,
+				B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */,
 				B6D26BE124B9E7350041402B /* BeatTimerView.m in Sources */,
 				B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
@@ -1178,6 +1191,7 @@
 				B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */,
 				B6E47D8825028A4E00734A8D /* FountainPaginator.m in Sources */,
 				B6A245E1251766DC0055A034 /* BeatFileImport.m in Sources */,
+				B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */,
 				B6764B33251367BF00731A36 /* NSArray+Additions.m in Sources */,
 				B6482F7922195BEC00175927 /* BeatTextView.m in Sources */,
 				B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */,
@@ -1250,6 +1264,7 @@
 				B6BBF3D124AC811600503EFB /* BeatScriptParser.m in Sources */,
 				B6F49CF6246D66B0006D88D4 /* FDXImport.m in Sources */,
 				B6F49CF7246D66B0006D88D4 /* Line.m in Sources */,
+				B6CB973C254EEB4000C310CC /* BeatTimelineItem.m in Sources */,
 				B6764B34251367BF00731A36 /* NSArray+Additions.m in Sources */,
 				B6F49CF8246D66B0006D88D4 /* TitlePageEditorDelegate.m in Sources */,
 				B6D26BE224B9E7350041402B /* BeatTimerView.m in Sources */,
@@ -1257,6 +1272,7 @@
 				B6F49CF9246D66B0006D88D4 /* WebPrinter.m in Sources */,
 				B6F49CFA246D66B0006D88D4 /* NSString+Regex.m in Sources */,
 				B6F49CFB246D66B0006D88D4 /* BeatTextView.m in Sources */,
+				B6CB9737254ED61900C310CC /* HorizontalPinchView.m in Sources */,
 				B61875A62471BEDA00FB7646 /* BeatPreview.m in Sources */,
 				B6F49CFC246D66B0006D88D4 /* FountainRegexes.m in Sources */,
 				B62A89B624806D190065A2BC /* FlatButton.swift in Sources */,

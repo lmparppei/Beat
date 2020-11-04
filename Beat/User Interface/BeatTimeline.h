@@ -7,23 +7,42 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "OutlineScene.h"
+#import "BeatTimelineItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatTimelineDelegate <NSObject>
 
+@property (nonatomic) OutlineScene *currentScene;
+
 - (NSRange)selectedRange;
 - (NSMutableArray*)getOutlineItems;
 - (NSArray*)getOutline; // ???
+- (OutlineScene*)getCurrentScene;
+- (void)didSelectTimelineItem:(NSInteger)index;
 
 @end
 
-@interface BeatTimeline : NSView 
+@interface BeatTimeline : NSView <BeatTimelineItemDelegate>
 
 @property (nonatomic) NSArray* outline;
-@property (nonatomic) id<BeatTimelineDelegate> delegate;
+@property (weak) id<BeatTimelineDelegate> delegate;
+@property (nonatomic) NSColor *backgroundColor;
+@property (nonatomic) OutlineScene *currentScene;
+@property NSLayoutConstraint *heightConstraint;
 
-- (void)reload:(NSArray*)scenes;
+// Storylines
+@property (nonatomic) bool showStorylines;
+@property (nonatomic) NSMutableArray *storylines;
+@property (nonatomic) NSMutableArray *visibleStorylines;
+
+- (void)show;
+- (void)hide;
+- (void)reload;
+- (void)refreshWithDelay;
+- (void)scrollToScene:(NSInteger)index;
+- (CGFloat)playheadPosition;
 @end
 
 NS_ASSUME_NONNULL_END

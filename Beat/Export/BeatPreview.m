@@ -80,6 +80,7 @@
 		@"title page": parser.titlePage
 	}];
 	
+	
 	// Scene numbering should be built into the HTML module rather than elsewhere.
 	if (previewType == BeatQuickLookPreview) {
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script quickLook:YES];

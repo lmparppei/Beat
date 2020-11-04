@@ -18,6 +18,8 @@
 	
 	return self;
 }
-
+- (NSRange)range {
+	return NSMakeRange(self.sceneStart, self.sceneLength);
+}
 
 @end

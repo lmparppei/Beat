@@ -53,7 +53,7 @@
 
 	if (! jsonData) {
 		NSLog(@"%s: error: %@", __func__, error.localizedDescription);
-		return nil;
+		return @"";
 	} else {
 		NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 		return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];

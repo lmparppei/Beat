@@ -29,6 +29,4 @@ typedef enum : NSUInteger {
 - (id) initWithDocument:(id)document;
 - (NSString*) createPreview;
 - (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType;
-+ (NSString*) createNewPreview:(NSString*)rawText of:(NSDocument*)document scene:(NSString*)scene sceneNumbers:(bool)sceneNumbers type:(BeatPreviewType)previewType;
-+ (NSString*) createQuickLook:(NSString*)rawText;
 @end

@@ -17,3 +17,14 @@
 	[super dismissPopover:sender];
 }
 @end
+/*
+ 
+ voi pientä juhlijaa
+ aamu alkaa jo sarastaa
+ kello viisi on
+ 
+ vaellat yössä yksinään
+ väsymys käy jo käpälään
+ et löydä tietä kotiin
+ 
+ */

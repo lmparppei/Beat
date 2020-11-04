@@ -80,7 +80,6 @@
 	
 	[self showButtons];
 	[_mouseMoveTimer invalidate];
-	
 	_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(shouldHideButtons:) userInfo:event repeats:NO];
 }
 

@@ -176,6 +176,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.masks = [NSMutableArray array];
 	self.sections = [NSArray array];
 	
+	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
+	[self.window setAcceptsMouseMovedEvents:YES];
+	[self addTrackingArea:trackingArea];
+	
 	[self resetCursorRects];
 }
 
@@ -748,15 +752,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	//CGFloat x = event.locationInWindow.x;
 	CGFloat y = event.locationInWindow.y;
 	
-	
 	if ((point.x > self.textContainerInset.width &&
 		 point.x < self.frame.size.width * (1 / _zoomLevel) - self.textContainerInset.width) &&
 		 y < self.window.frame.size.height - 22 &&
 		 superviewPoint.y < self.enclosingScrollView.frame.size.height
 		) {
-		//[NSCursor.IBeamCursor set];
 		[super mouseMoved:event];
 	} else if (point.x > 10) {
+		[super mouseMoved:event];
 		[NSCursor.arrowCursor set];
 	}
 }

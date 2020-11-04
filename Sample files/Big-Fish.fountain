@@ -99,7 +99,7 @@ With these two hands, I reached in and snatched that fish out of the river.  I l
 
 
 # Present day
-= Introduce the characters
+= Introducing the characters
 
 
 INT.  TINY PARIS RESTAURANT (LA RUE 14°) - NIGHT (1998)
@@ -692,6 +692,8 @@ How much time does he have left?
 
 SANDRA
 You don't talk about those things.  Not yet.
+
+= Talk in the kitchen
 
 INT.  KITCHEN - DAY
 
@@ -4648,3 +4650,7 @@ The fish passes us with a SPLASH.
 CUT TO BLACK.
 
 > _**THE END**_ <
+
+/* If you're seeing this, you can remove the following stuff - BEAT: {
+
+} END_BEAT */
