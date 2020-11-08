@@ -55,6 +55,8 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* omitedRanges;
 @property NSRange titleRange;
 @property NSRange sceneNumberRange;
+@property NSRange storylineRange;
+
 @property bool omitIn; //wether the line terminates an unfinished omit
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
 

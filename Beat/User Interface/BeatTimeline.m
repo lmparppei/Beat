@@ -26,17 +26,25 @@
 #define DEFAULT_Y 33.0
 #define SECTION_HEADROOM 6.0
 #define PADDING 8.0
+#define BOTTOM_PADDING 10.0
 #define MAXHEIGHT 30.0
-#define STORYLINE_LABELS_WIDTH 60.0
+#define STORYLINE_LABELS_WIDTH 65.0
+#define STORYLINE_HEIGHT 15.0
+
+#define POPOVER_WIDTH 200.0
+#define POPOVER_PADDING 5.0
+#define POPOVER_HEIGHT 28.0
+#define POPOVER_APPEARANCE NSAppearanceNameVibrantDark
 
 @interface BeatTimeline ()
 
 // Interface
 @property (weak) IBOutlet NSPopUpButton *storylinePopup;
+@property (weak) IBOutlet NSLayoutConstraint *localHeightConstraint;
+
+@property CGFloat originalHeight;
 
 @property NSMutableArray *items;
-@property NSInteger selectedItem;
-
 @property NSTimer *refreshTimer;
 
 @property NSInteger totalLength;
@@ -44,6 +52,10 @@
 @property NSMutableArray *scenes;
 @property NSMutableArray *storylineItems;
 @property NSMutableArray *storylineLabels;
+@property NSArray *storylineColors;
+
+@property NSPopover *storylinePopover;
+@property NSTextField *storylineField;
 
 @property CAShapeLayer *playhead;
 @end
@@ -51,7 +63,9 @@
 @implementation BeatTimeline
 
 - (void)awakeFromNib {
-	_selectedItem = -1; // No item selected
+	// No item selected
+	_clickedItem = nil;
+	
 	_items = [NSMutableArray array];
 	_scenes = [NSMutableArray array];
 	
@@ -60,8 +74,10 @@
 	_storylines = [NSMutableArray array];
 	_storylineLabels = [NSMutableArray array];
 	[_storylinePopup setHidden:YES];
+	_storylineColors = @[[BeatColors color:@"blue"], [BeatColors color:@"magenta"], [BeatColors color:@"orange"], [BeatColors color:@"green"], [BeatColors color:@"yellow"]];
 	
 	// Graphical setup
+	_originalHeight = self.localHeightConstraint.constant; // Save the default height from Interface Builder
 	self.wantsLayer = YES;
 	[self.enclosingScrollView setBackgroundColor:[BeatColors color:@"backgroundGray"]];
 	_backgroundColor = [BeatColors color:@"backgroundGray"];
@@ -72,14 +88,33 @@
 	_playhead.fillColor = NSColor.redColor.CGColor;
 	_playhead.path = CGPathCreateWithRect(CGRectMake(1, 1, 1, self.frame.size.height), nil);
 	_playhead.lineWidth = 3;
+	_playhead.position = CGPointMake(-5, self.frame.size.height / 2);
 	
 	[self.layer addSublayer:_playhead];
 	
-	// Storylines test
-	_showStorylines = YES;
-	_visibleStorylines = [NSMutableArray arrayWithArray:@[@"B PLOT"]];
+	// Storylines
+	_visibleStorylines = [NSMutableArray array];
+	
+	// Setup "Add Storyline" popover
+	_storylinePopover = [[NSPopover alloc] init];
+	_storylinePopover.contentViewController = [[NSViewController alloc] init];
+	
+	NSView *storylineView = [[NSView alloc] initWithFrame:NSZeroRect];
+	_storylineField = [[NSTextField alloc] initWithFrame:NSMakeRect(POPOVER_PADDING, POPOVER_PADDING, POPOVER_WIDTH - POPOVER_PADDING * 2, POPOVER_HEIGHT - POPOVER_PADDING * 2)];
+	_storylineField.editable = YES;
+	_storylineField.placeholderString = @"New Storyline Name";
+	_storylineField.bezeled = NO;
+	_storylineField.drawsBackground = NO;
+	[storylineView addSubview:_storylineField];
+	[_storylinePopover.contentViewController setView:storylineView];
+	[_storylinePopover setContentSize:NSMakeSize(POPOVER_WIDTH, POPOVER_HEIGHT)];
+	_storylinePopover.appearance = [NSAppearance appearanceNamed:POPOVER_APPEARANCE];
+	
+	_storylineField.delegate = self;
 	
 	[self updateStorylineLabels];
+	
+	// Create storyline
 }
 
 - (void)refreshWithDelay {
@@ -97,6 +132,8 @@
 }
 
 - (void)updateScenesAndRebuild:(bool)rebuild {
+	_clickedItem = nil;
+	
 	if (rebuild) {
 		_totalLength = 0;
 		_hasSections = NO;
@@ -112,16 +149,21 @@
 			if (scene.omited) continue;
 			else if (scene.type == synopse) continue;
 			
-			if (scene.type == heading) _totalLength += scene.sceneLength;
+			if (scene.type == heading) _totalLength += scene.timeLength;
 			if (scene.type == section) _hasSections = YES;
-			if (scene.storylines.count) hasStorylines = YES;
+			if (scene.storylines.count) {
+				hasStorylines = YES;
+				NSMutableSet *storylines = [NSMutableSet setWithArray:scene.storylines];
+				[storylines intersectSet:[NSSet setWithArray:_visibleStorylines]];
+				storylineBlocks += storylines.count;
+			}
 		}
 		
-		NSInteger diff = self.outline.count + storylineBlocks - self.scenes.count;
+		NSInteger diff = self.outline.count - self.scenes.count;
 		
 		// We need more items
 		if (diff > 0) {
-			for (NSInteger i = 0; i < diff; i++) {
+			for (int i = 0; i < diff; i++) {
 				BeatTimelineItem *item = [[BeatTimelineItem alloc] initWithDelegate:self];
 				[_scenes addObject:item];
 				[self addSubview:item];
@@ -129,13 +171,31 @@
 		}
 		// There are extra items
 		else if (diff < 0) {
-			for (NSInteger i = 0; i < diff; i++) {
-				[_scenes[0] removeFromSuperview];
-				[_scenes removeObjectAtIndex:0];
+			for (NSInteger i = 0; i < -diff; i++) {
+				[_scenes.lastObject removeFromSuperview];
+				[_scenes removeLastObject];
 			}
 		}
 		
-		// Remove storyline items when they are not needed
+		// Do the same for storyline blocks
+		diff = storylineBlocks - self.storylineItems.count;
+		if (diff > 0) {
+			for (int i = 0; i < diff; i++) {
+				BeatTimelineItem *item = [[BeatTimelineItem alloc] initWithDelegate:self];
+				[_storylineItems addObject:item];
+				[self addSubview:item];
+			}
+		}
+		else if (diff < 0) {
+			for (NSInteger i = 0; i < -diff; i++) {
+				[_storylineItems.lastObject removeFromSuperview];
+				[_storylineItems removeLastObject];
+			}
+
+		}
+		
+		
+		// Remove all storyline items when they are not needed
 		if (_visibleStorylines.count == 0 && _storylineItems.count > 0) {
 			for (BeatTimelineItem *item in _storylineItems) {
 				[item removeFromSuperview];
@@ -162,7 +222,7 @@
 	if (_hasSections) yPosition += SECTION_HEADROOM;
 	
 	NSInteger index = 0;
-	NSInteger storylines = 0;
+	NSInteger storylineIndex = 0;
 	
 	OutlineScene *previousScene;
 	BeatTimelineItem *previousItem;
@@ -174,6 +234,7 @@
 	for (OutlineScene *scene in self.outline) {
 		if (scene.omited) continue;
 
+		// Handle regular scenes
 		bool selected = NO;
 		NSInteger selection = self.delegate.selectedRange.location;
 		
@@ -182,45 +243,38 @@
 		NSRect rect;
 		CGFloat width;
 		if (scene.type == heading) {
-			width = scene.sceneLength * factor;
+			width = scene.timeLength * factor;
 			rect = NSMakeRect(x, yPosition, width, height);
 		} else {
 			width = 1;
 			rect = NSMakeRect(x, yPosition, 1, 1);
 		}
 		
+		// Apply the scene data to the representing item
 		BeatTimelineItem *item = _scenes[index];
 		[item setItem:scene rect:rect reset:rebuild];
 		if (item.selected) selectionRect = item.frame;
 		
+		
 		// Show storylines
+		// Much more sensible approach would be to really create timelines by a track, but whatever.
+		// The track y positions should still maybe be set while creating the labels. That way,
+		// we would have the exact and correct y position to match the label.
 		if (scene.type == heading && scene.storylines.count && _visibleStorylines.count) {
-			// Create the needed items
-			for (NSString *storyline in scene.storylines) {
-				if ([_visibleStorylines containsObject:storyline.uppercaseString]) {
-					storylines++;
+			int storylineTrack = 0;
+			
+			// Go through the storylines in this scene
+			for (NSString *storyline in _visibleStorylines) {
+				if ([scene.storylines containsObject:storyline.uppercaseString]) {
+					BeatTimelineItem *storylineItem = _storylineItems[storylineIndex];
 					
-					if (storylines > _storylineItems.count || _storylineItems.count == 0) {
-						// Create new
-						BeatTimelineItem *storylineItem = [[BeatTimelineItem alloc] initWithDelegate:self];
-						[self addSubview:storylineItem];
-						[storylineItem setItem:scene rect:rect reset:rebuild storyline:YES];
-						[_storylineItems addObject:storylineItem];
-					} else {
-						// Reuse old items
-						BeatTimelineItem *storylineItem = _storylineItems[storylines - 1];
-						[storylineItem setItem:scene rect:rect reset:rebuild storyline:YES];
-					}
+					// We will adjust the frame a bit
+					rect.origin.y = yPosition + 10 + STORYLINE_HEIGHT * 2 + STORYLINE_HEIGHT * storylineTrack;
+					[storylineItem setItem:scene rect:rect reset:rebuild storyline:YES forceColor:_storylineColors[storylineTrack % _storylineColors.count]];
+					
+					storylineIndex++;
 				}
-				
-				// Remove unused items
-				if (storylines > _storylineItems.count - 1) {
-					NSInteger diff = _storylineItems.count - storylines;
-					for (int i = 0; i < diff; i++) {
-						[[_storylineItems lastObject] removeFromSuperview];
-						[_storylineItems removeLastObject];
-					}
-				}
+				storylineTrack++;
 			}
 			
 		}
@@ -286,8 +340,11 @@
 		index++;
 	}
 		
-	// Move playhead to the selected position
+	// Move playhead to the selected position + disable core animation
+	[CATransaction begin];
+	[CATransaction setValue:(id)kCFBooleanTrue					 forKey:kCATransactionDisableActions];
 	if (!NSIsEmptyRect(selectionRect)) [self movePlayhead:selectionRect];
+	[CATransaction commit];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -314,9 +371,13 @@
 	
 	if (!NSIsEmptyRect(selectionRect)) {
 		NSRect bounds = self.enclosingScrollView.contentView.bounds;
-		bounds.origin.x = selectionRect.origin.x - ((self.enclosingScrollView.frame.size.width - selectionRect.size.width) / 2);
+		
+		// If the scene is not in view, scroll it into center
+		if (!NSLocationInRange(selectionRect.origin.x, NSMakeRange(bounds.origin.x, bounds.size.width))) {
+			bounds.origin.x = selectionRect.origin.x - ((self.enclosingScrollView.frame.size.width - selectionRect.size.width) / 2);
 
-		[self.enclosingScrollView.contentView.animator setBoundsOrigin:bounds.origin];
+			[self.enclosingScrollView.contentView.animator setBoundsOrigin:bounds.origin];
+		}
 	}
 	
 	[self movePlayhead:selectionRect];
@@ -352,6 +413,15 @@
 	
 	[self updateScenesAndRebuild:YES];
 	[self updateStorylines];
+}
+
+-(void)mouseUp:(NSEvent *)event {
+	[super mouseUp:event];
+	
+	if (_storylinePopover.isShown) {
+		[_storylinePopover close];
+		_storylineField.stringValue = @"";
+	}
 }
 
 #pragma mark - Storyline handling
@@ -398,6 +468,7 @@
 		[_visibleStorylines addObject:item.title.uppercaseString];
 	}
 	
+	[self desiredHeight];
 	[self updateStorylineLabels];
 	[self updateScenesAndRebuild:YES];
 }
@@ -409,7 +480,7 @@
 	[_storylineLabels removeAllObjects];
 
 	for (int i = 0; i < _visibleStorylines.count; i++) {
-		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 60, 12)];
+		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, STORYLINE_LABELS_WIDTH + 5, 12)];
 		textField.editable = NO;
 		textField.bezeled = NO;
 		textField.drawsBackground = NO;
@@ -426,7 +497,7 @@
 		textField.stringValue = _visibleStorylines[i];
 		
 		NSRect frame = textField.frame;
-		frame.origin.y = DEFAULT_Y + 30 + i * 20 + 5;
+		frame.origin.y = DEFAULT_Y + 30 + i * STORYLINE_HEIGHT + 5;
 		if (_hasSections) frame.origin.y += SECTION_HEADROOM;
 		textField.frame = frame;
 	}
@@ -435,7 +506,7 @@
 #pragma mark - Sizing + frame
 
 - (void)show {
-	_heightConstraint.constant = [self desiredHeight];
+	[self desiredHeight];
 	[self reload];
 	self.enclosingScrollView.hasHorizontalScroller = YES;
 	[self setNeedsLayout:YES];
@@ -445,11 +516,68 @@
 	_heightConstraint.constant = 0;
 }
 
-- (CGFloat)desiredHeight {
+- (void)desiredHeight {
 	CGFloat height = DEFAULT_HEIGHT;
-	if (_visibleStorylines) height += 20 * _visibleStorylines.count;
 	
-	return height;
+	if (_visibleStorylines.count > 0) {
+		height += BOTTOM_PADDING + 20 * (_visibleStorylines.count - 1);
+		_localHeightConstraint.constant = _originalHeight + BOTTOM_PADDING + (_visibleStorylines.count - 1) * STORYLINE_HEIGHT;
+	} else {
+		_localHeightConstraint.constant = _originalHeight;
+	}
+	
+	_heightConstraint.constant = height;
+	[self setNeedsDisplay:YES];
+}
+
+- (void)didClickItem:(OutlineScene*)scene {
+	NSLog(@"click on %@", scene.string);
+}
+
+#pragma mark - Delegate methods
+
+- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
+	[_delegate addStoryline:storyline to:scene];
+}
+- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
+	[_delegate removeStoryline:storyline from:scene];
+}
+
+- (void)newStorylineFor:(OutlineScene*)scene item:(id)item {
+	if (self.storylinePopover.isShown) [self.storylinePopover close];
+	
+	BeatTimelineItem *sceneItem = item;
+	[self.storylinePopover showRelativeToRect:sceneItem.frame ofView:sceneItem preferredEdge:NSRectEdgeMaxY];
+	[self.storylinePopover showRelativeToRect:sceneItem.frame ofView:self preferredEdge:NSRectEdgeMinY];
+	
+	[self.window makeFirstResponder:self.storylineField];
+}
+
+
+#pragma mark - TextField delegation
+
+- (BOOL)control:(NSControl *)control textView:(NSTextView *)fieldEditor doCommandBySelector:(SEL)commandSelector
+{
+	NSLog(@"Selector method is (%@)", NSStringFromSelector( commandSelector ) );
+	if (commandSelector == @selector(insertNewline:)) {
+		NSString *storyline = _storylineField.stringValue.uppercaseString;
+		
+		if (_clickedItem) {
+			[_delegate addStoryline:storyline to:_clickedItem];
+		}
+		[_storylinePopover close];
+		_storylineField.stringValue = @""; // Empty the string
+		_clickedItem = nil;
+	}
+	else if (commandSelector == @selector(insertTab:) ||
+			   commandSelector == @selector(cancelOperation:)) {
+		[_storylinePopover close];
+		_storylineField.stringValue = @""; // Empty the string
+		_clickedItem = nil;
+	}
+	// return YES if the action was handled; otherwise NO
+	
+	return YES;
 }
 
 @end

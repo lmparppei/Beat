@@ -21,10 +21,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray*)getOutline; // ???
 - (OutlineScene*)getCurrentScene;
 - (void)didSelectTimelineItem:(NSInteger)index;
+- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
+- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 
 @end
 
-@interface BeatTimeline : NSView <BeatTimelineItemDelegate>
+@interface BeatTimeline : NSView <BeatTimelineItemDelegate, NSTextFieldDelegate>
+
+@property (nonatomic) IBOutlet NSMenu *sceneMenu;
 
 @property (nonatomic) NSArray* outline;
 @property (weak) id<BeatTimelineDelegate> delegate;
@@ -33,9 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSLayoutConstraint *heightConstraint;
 
 // Storylines
-@property (nonatomic) bool showStorylines;
 @property (nonatomic) NSMutableArray *storylines;
 @property (nonatomic) NSMutableArray *visibleStorylines;
+@property (nonatomic) OutlineScene * _Nullable clickedItem;
 
 - (void)show;
 - (void)hide;
@@ -43,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)refreshWithDelay;
 - (void)scrollToScene:(NSInteger)index;
 - (CGFloat)playheadPosition;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -609,7 +609,7 @@
 	self.timelineVisible = false;
 	
 	self.timeline.enclosingScrollView.hasHorizontalScroller = NO;
-	self.timelineViewHeight.constant = 0;
+	[_timeline hide];
 	
 	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"jumpToScene"];
 	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"timelineContext"];
@@ -1690,34 +1690,6 @@
 	_moving = NO;
 }
 
-/*
- // Old implementation which seems to have undoing bugs
-- (void)moveString:(NSString*)string withRange:(NSRange)range newRange:(NSRange)newRange
-{
-	// Soooooo... just to let the future version of me to know:
-	// OutlineScene has the info if its omission  was left unterminated or doesn't even start.
-	// You should really use that info here somehow... you know... every hero's journey is paved with string index and NSRange magic. (Maybe don't allow moving them, in that case?)
-		
-	// Delete the string and add it again to its new position
-	[self replaceCharactersInRange:range withString:@""];
-	
-	// Don't go out of range
-	if (newRange.location > self.textView.string.length) newRange = NSMakeRange(self.textView.string.length - 1, 0);
-	[self replaceCharactersInRange:newRange withString:string];
-	
-	// Create new ranges for undoing the operation
-	NSRange undoRange = NSMakeRange(newRange.location, range.length);
-	NSRange undoNewRange = NSMakeRange(range.location, 0);
-	
-	[[[self undoManager] prepareWithInvocationTarget:self] moveString:string withRange:undoRange newRange:undoNewRange];
-	[[self undoManager] setActionName:@"Move Scene"];
-	
-	[self reloadOutline];
-	if (_timelineVisible) [self reloadTimeline];
-	if (self.timelineBar.visible) [self reloadTouchTimeline];
-}
-*/
-
 - (NSRange)cursorLocation
 {
 	return [[self.textView selectedRanges][0] rangeValue];
@@ -2054,68 +2026,6 @@
 	NSUInteger begin = line.position;
 	NSUInteger length = [line.string length];
 	NSRange range = NSMakeRange(begin, length);
-
-	/*
-	if (!firstTime) { // skip for recursive lookbacks & first time formating
-
-		NSInteger index = [[self.parser lines] indexOfObject:line];
-		if (index - 2 >= 0) {
-			Line* preceedingLine = [[self.parser lines] objectAtIndex:index-1];
-			Line* lineBeforeThat = [[self.parser lines] objectAtIndex:index-2];
-			
-			// NOTE: We should be able to check this through delegation
-			bool currentlyEditing = false;
-			if (cursor >= range.location && cursor <= (range.location + range.length)) {
-				currentlyEditing = YES;
-			}
-
-			// If preceeding line is EMPTY and the line before that is a CHARACTER CUE, and we are currently editing
-			// the line we are formating, we'll change the preceeding lines' type
-			
-			if (preceedingLine.string.length == 0 &&
-				lineBeforeThat.type == character &&
-				currentlyEditing) {
-				lineBeforeThat.type = [self.parser parseLineType:lineBeforeThat atIndex:index - 2 recursive:YES currentlyEditing:currentlyEditing];
-				[self formatLineOfScreenplay:lineBeforeThat onlyFormatFont:NO recursive:YES];
-				
-				preceedingLine.type = [self.parser parseLineType:preceedingLine atIndex:index - 2 recursive:YES currentlyEditing:currentlyEditing];
-				[self formatLineOfScreenplay:preceedingLine onlyFormatFont:NO recursive:YES];
-			}
-			
-			if (preceedingLine.type == character) {
-				// If next line contains text, we will reformat it too
-				if (index + 1 < [self.parser.lines count] && [line.string length] > 0) {
-					Line *nextLine = [self.parser.lines objectAtIndex:index+1];
-					if ([nextLine.string length] > 0) {
-						if (nextLine.type != dialogue && nextLine.type != parenthetical) nextLine.type = dialogue;
-						[self formatLineOfScreenplay:nextLine onlyFormatFont:NO recursive:YES];
-					}
-				}
-				
-				// Next part is terrible. Let me explain.
-				
-				// If the line currently parsed is EMPTY and we are NOT editing the line before or
-				// the current line, we'll take a step back and reformat it as action.
-				// This is sometimes unreliable, but 70% of the time it works pretty OK.
-				
-				else if (line.string.length == 0) {
-					NSRange previousLineRange = NSMakeRange(preceedingLine.position, [preceedingLine.string length]);
-					
-					if ((cursor >= previousLineRange.location && cursor <= previousLineRange.location + previousLineRange.length) || currentlyEditing) {
-						// Do nothing
-					} else {
-						// Reset the line type
-						preceedingLine.type = [self.parser parseLineType:preceedingLine atIndex:index - 2 recursive:YES];
-						[self formatLineOfScreenplay:preceedingLine onlyFormatFont:NO recursive:YES];
-					}
-				}
-			}
-			
-			
-		}
-	}
-	*/
-	
 	
 	// Let's do the real formatting now
 	NSTextStorage *textStorage = [self.textView textStorage];
@@ -3176,86 +3086,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 		[self updateLayout];
 	}
-	
-	/*
-    self.outlineViewVisible = !self.outlineViewVisible;
-	
-	NSUInteger offset = 20;
-	if ([self isFullscreen]) offset = 0;
-	
-    if (self.outlineViewVisible) {
-		// Show outline
-		[self reloadOutline];
-		[self collectCharacterNames]; // For filtering
-		
-		[self.outlineView expandItem:nil expandChildren:true];
-		
-		self.outlineView.enclosingScrollView.hasVerticalRuler = YES;
-        [self.outlineViewWidth setConstant:TREE_VIEW_WIDTH];
-		
-		//NSWindow *window = self.windowControllers[0].window;
-		NSRect newFrame;
-		
-		if (![self isFullscreen]) {
-			// Some weird magic to keep the window in screen
-			CGFloat newWidth = _thisWindow.frame.size.width + TREE_VIEW_WIDTH + offset;
-			CGFloat newX = _thisWindow.frame.origin.x - TREE_VIEW_WIDTH / 2;
-			CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
-						
-			// Ensure the main document won't go out of screen bounds when opening the sidebar
-			if (newWidth > screenWidth) {
-				newWidth = screenWidth * .9;
-				newX = screenWidth / 2 - newWidth / 2;
-			}
-			
-			if (newX + newWidth > screenWidth) {
-				newX = newX - (newX + newWidth - screenWidth);
-			}
-			
-			if (newX < 0) {
-				newX = 0;
-			}
-			
-			newFrame = NSMakeRect(newX,
-										 _thisWindow.frame.origin.y,
-										 newWidth,
-										 _thisWindow.frame.size.height);
-			[_thisWindow setFrame:newFrame display:YES];
-		} else {
-			// We need a bit different settings if the app is fullscreen
-			CGFloat width = ((_thisWindow.frame.size.width - TREE_VIEW_WIDTH) / 2 - _documentWidth * _magnification / 2) / _magnification;
-			[self.textView setTextContainerInset:NSMakeSize(width, _textInsetY)];
-			[self updateSceneNumberLabels];
-		}
-    } else {
-		// Hide outline
-		
-		// This fixes autolayout errors when a mouse is connected
-		self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
-		
-		CGFloat newWidth = self.outlineViewWidth.constant - TREE_VIEW_WIDTH;
-		[self.outlineViewWidth setConstant:newWidth];
-
-		NSRect newFrame;
-		
-		CGFloat newX = _thisWindow.frame.origin.x + TREE_VIEW_WIDTH / 2;
-		
-		if (![self isFullscreen]) {
-			newFrame = NSMakeRect(newX,
-								  _thisWindow.frame.origin.y,
-								  _thisWindow.frame.size.width - TREE_VIEW_WIDTH - offset,
-								  _thisWindow.frame.size.height);
-			[_thisWindow setFrame:newFrame display:YES];
-		} else {
-			CGFloat width = (_thisWindow.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
-			
-			[self.textView setTextContainerInset:NSMakeSize(width, _textInsetY)];
-			[self updateSceneNumberLabels];
-		}
-    }
-	
-	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
-	*/
 }
 
 //Empty function, which needs to exists to make the share access the validateMenuItems function
@@ -3463,8 +3293,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self.marginView setNeedsDisplay:true];
 	
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
-	
-	[self updateTimelineStyle];
 	
 	[self.textView setNeedsDisplay:true];
 	
@@ -4067,12 +3895,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	// On to the very dangerous stuff :-) fuck me :----)
 	NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
-	//NSString *textToMove = [[self getText] substringWithRange:range];
-
-	// Count the index.
-	//NSInteger moveToIndex = 0;
-	//if (!moveToEnd) moveToIndex = beforeScene.sceneStart;
-	//else moveToIndex = [[self getText] length];
 	
 	NSRange newRange;
 	
@@ -4112,7 +3934,8 @@ static NSString *forceDualDialogueSymbol = @"^";
  
  Color context menu
  
- Note: self.timelineClickedScene keeps track if a scene was clicked on the timeline. The reason for this is that we use the same menu for both outline and timeline views. NSOutlineView's clickedRow property seems to be always set, so we'll always check first if something was clicked on the timeline.
+ Note: Some weird stuff can linger around here and there from the old JavaScript-based timeline.
+ The context menu checks in a clunky way if the selected item is coming from Outline view or the Timeline before making the changes.
  
  You are still young
  and free
@@ -4206,6 +4029,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	if ([self.outlineView clickedRow] > -1) {
 		item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
+	} else if (_timeline.clickedItem) {
+		item = _timeline.clickedItem;
 	} else if (_timelineSelection > -1) {
 		item = [[self getOutlineItems] objectAtIndex:_timelineSelection];
 	}
@@ -4216,6 +4041,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if (_timelineClickedScene >= 0) [self reloadTimeline];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
 	}
+	
+	_timeline.clickedItem = nil;
 	_timelineClickedScene = -1;
 }
 - (void) setColor:(NSString *) color forScene:(OutlineScene *) scene {
@@ -4259,6 +4086,47 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 
 	return;
+}
+
+- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
+	if (scene.storylines.count > 0) {
+		// Check if the storyline was already there
+		if (![scene.storylines containsObject:storyline]) {
+			NSArray *storylines = [scene.storylines arrayByAddingObject:storyline];
+			[self setStorylines:storylines for:scene];
+		}
+	} else {
+		[self setStorylines:@[storyline] for:scene];
+	}
+}
+- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
+	if (scene.storylines.count > 0) {
+		// Is the storyline there really?
+		if ([scene.storylines containsObject:storyline]) {
+			NSMutableArray *storylines = [NSMutableArray arrayWithArray:scene.storylines];
+			[storylines removeObject:storyline];
+			[self setStorylines:storylines for:scene];
+		}
+	}
+}
+- (void)setStorylines:(NSArray*)storylines for:(OutlineScene*)scene {
+	// Create storyline list
+	NSString *storylineString = [NSString stringWithFormat:@"[[STORYLINE %@]]", [storylines componentsJoinedByString:@", "]];
+	
+	// New storyline
+	if (scene.storylines.count == 0 && storylines.count) {
+		[self addString:[NSString stringWithFormat:@" %@", storylineString] atIndex:scene.line.position + scene.line.string.length];
+	}
+	// Remove all storylines
+	else if (scene.storylines.count && storylines.count == 0) {
+		[self removeString:[scene.line.string substringWithRange:scene.line.storylineRange] atIndex:scene.line.position + scene.line.storylineRange.location];
+	}
+	// Add storyline
+	else if (scene.storylines.count && storylines.count) {
+		[self replaceString:[scene.line.string substringWithRange:scene.line.storylineRange]
+				 withString:storylineString
+					atIndex:scene.line.position + scene.line.storylineRange.location];
+	}
 }
 
 - (void) contextMenu:(NSString*)context {
@@ -4714,115 +4582,26 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (IBAction)toggleTimeline:(id)sender
 {
 	_timelineVisible = !_timelineVisible;
-	
-	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
-	
+		
 	if (_timelineVisible) {
-		//[self updateTimelineStyle];
-		//[self reloadTimeline];
-		//self.timelineViewHeight.constant = TIMELINE_VIEW_HEIGHT;
-		//[_timeline display];
 		[_timeline show];
 		
 		[self ensureLayout];
-		//[self reloadTimeline];
-		
-		//[self.textView scrollPoint:scrollPosition];
 	} else {
 		[_timeline hide];
-		
-		//_timeline.enclosingScrollView.hasHorizontalScroller = NO;
-		//scrollPosition.y = scrollPosition.y * _magnification;
-		
-		//[self.textScrollView.contentView scrollToPoint:scrollPosition];
 	}
-	//[self.textScrollView.contentView scrollToPoint:scrollPosition];
 }
 
 - (void) setupTimeline {
-	/*
-	NSString *timelinePath = [[NSBundle mainBundle] pathForResource:@"timeline.html" ofType:@""];
-	NSString *content = [NSString stringWithContentsOfFile:timelinePath encoding:NSUTF8StringEncoding error:nil];
-
-	[_timelineView loadHTMLString:content baseURL:nil];
-	*/
-	
 	// New timeline
 	_timeline.delegate = self;
 	_timeline.heightConstraint = _timelineViewHeight;
-	
-	[self updateTimelineStyle];
-}
-- (void) updateTimelineStyle {
-	if ([self isDark]) [self.timelineView evaluateJavaScript:@"setStyle('dark');" completionHandler:nil];
-	else [self.timelineView evaluateJavaScript:@"setStyle('light');" completionHandler:nil];
 }
 
 - (void) reloadTimeline {
 	// New native timeline system waiting to be completed
 	[self.timeline reload];
 	return;
-	
-	__block OutlineScene *currentScene;
-	__block NSArray *scenes = [self getOutlineItems];
-	
-	// If we are at the end of the document, last scene is being edited
-	if ([self cursorLocation].location == self.textView.string.length) currentScene = [scenes lastObject];
-	else currentScene = [self getCurrentScene];
-	
-	// Let's build the timeline in another thread, to not slow down your writing
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		CGFloat totalLength = 0.0;
-		
-		NSMutableString *jsonData = [NSMutableString stringWithString:@"["];
-				
-		for (OutlineScene *scene in scenes) {
-			if (scene.omited) continue;
-			
-			NSDictionary *json;
-			
-			// Build a dictionary according to outline item type
-			if (scene.type == synopse || scene.type == section) {
-				json = @{
-					@"text": scene.string ? scene.string : @"",
-					@"type": scene.line.type == synopse ? @"synopsis" : @"section"
-				};
-			} else if (scene.type == heading) {
-				NSInteger beats = [self chronometryFor:scene];
-				totalLength += round((CGFloat)beats / 52 * 60);
-
-				// Check if this scene is currently edited
-				bool selected = false;
-				if (currentScene) {
-					if (scene.line == currentScene.line && scene.sceneNumber == currentScene.sceneNumber) {
-						selected = true;
-					}
-				}
-				
-				// Remember to guard for nil values here!
-				json = @{
-					@"text": scene.line.cleanedString ? scene.line.cleanedString : @"",
-					@"sceneNumber": scene.sceneNumber ? scene.sceneNumber : @"",
-					@"sceneLength": [NSNumber numberWithInteger:beats],
-					@"sceneIndex": [NSNumber numberWithInteger:[scenes indexOfObject:scene]],
-					@"color": scene.color.length ? [scene.color lowercaseString] : @"",
-					@"selected": [NSNumber numberWithBool:selected]
-				};
-			}
-			NSData *data = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:nil];
-			NSString *result = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-			[jsonData appendFormat:@"%@,", result];
-		}
-		[jsonData appendString:@"]"];
-		
-		NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(%@);", jsonData];
-		
-		dispatch_async(dispatch_get_main_queue(), ^(void){
-			// WIP - has to check if it's visible
-			// [self->_touchbarTimeline reload:jsonData];
-			[self->_timelineView evaluateJavaScript:evalString completionHandler:nil];
-		});
-	});
 }
 // MAKE CATEGORY
 - (NSString*)fixQuotations: (NSString*)string {
@@ -4927,6 +4706,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
 	[self scrollToScene:scene];
 }
+
+- (nonnull NSArray *)getOutline {
+	return [self getOutlineItems];
+}
+
 
 #pragma mark - Analysis
 
@@ -5164,6 +4948,9 @@ triangle walks
  Let's make a couple of things clear:
  - this probably will never make it into the main branch
  - this is a complete waste of time
+ 
+ Update 2020-11-07:
+ It's in the main branch
  
  */
 

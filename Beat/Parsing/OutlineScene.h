@@ -30,5 +30,6 @@
 @property (strong) Line * line; // Is this overkill regarding memory? Isn't this just a pointer?
 
 - (NSRange)range;
+- (NSInteger)timeLength;
 
 @end

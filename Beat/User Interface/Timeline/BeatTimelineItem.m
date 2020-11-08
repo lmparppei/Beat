@@ -36,6 +36,12 @@
 	if (self) {
 		_delegate = delegate;
 		
+		if (self.enclosingScrollView.menu) {
+			self.menu = self.enclosingScrollView.menu;
+		} else {
+			self.menu = self.delegate.sceneMenu;
+		}
+		
 		// Setup layer
 		_textLayer = [CATextLayer layer];
 		_textLayer.wrapped = NO;
@@ -55,9 +61,9 @@
 	return self;
 }
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset {
-	[self setItem:scene rect:rect reset:reset storyline:NO];
+	[self setItem:scene rect:rect reset:reset storyline:NO forceColor:nil];
 }
-- (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline {
+- (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor {
 	_representedItem = scene;
 	
 	/*
@@ -85,6 +91,10 @@
 		else self.text = scene.string;
 	}
 	
+	if (forcedColor) {
+		self.color = forcedColor;
+	}
+	
 	self.wantsLayer = YES;
 	
 	if (_type == TimelineScene) {
@@ -96,7 +106,7 @@
 		_textLayer.position = CGPointMake(self.frame.size.width / 2 + TEXT_PADDING, 23);
 		_textLayer.backgroundColor = NSColor.clearColor.CGColor;
 
-		_textLayer.foregroundColor = NSColor.lightGrayColor.CGColor;
+		_textLayer.foregroundColor = [BeatColors color:@"lightGray"].CGColor;
 		self.layer.backgroundColor = self.color.CGColor;
 		
 		if (self.frame.size.width > 40) {
@@ -170,13 +180,14 @@
 	}
 	else if (_type == TimelineStoryline) {
 		if (reset) {
-			self.layer.backgroundColor = [BeatColors color:@"blue"].CGColor;
+			// The timeline track color is forced
+			self.layer.backgroundColor = self.color.CGColor;
 			self.layer.opacity = 1.0;
 			
 			_textLayer.string = @"";
 			
 			self.frame = rect;
-			self.frame = NSMakeRect(rect.origin.x, rect.origin.y + 40, rect.size.width, 2);
+			self.frame = NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width, 2);
 		} else {
 			NSRect frame = self.frame;
 			frame.origin.x = rect.origin.x;
@@ -230,7 +241,7 @@
 	self.layer.backgroundColor = self.color.CGColor;
 	self.layer.opacity = UNSELECTED_ALPHA;
 	if (self.representedItem.color.length > 0) self.textLayer.foregroundColor = NSColor.whiteColor.CGColor;
-	else self.textLayer.foregroundColor = NSColor.lightGrayColor.CGColor;
+	else self.textLayer.foregroundColor = [BeatColors color:@"lightGray"].CGColor;
 }
 
 -(void)mouseUp:(NSEvent *)event {
@@ -248,6 +259,46 @@
 	if (self.type == TimelineScene) self.layer.opacity = 0.8;
 }
 - (BOOL)isFlipped { return YES; }
+
+#pragma mark - Context Menu
+
+
+-(NSMenu *)menuForEvent:(NSEvent *)event {
+	_delegate.clickedItem = self.representedItem;
+
+	NSMenu *menu = [self.menu copy];
+	[menu addItem:NSMenuItem.separatorItem];
+	
+	// List Storylines
+	for (NSString *storyline in _delegate.storylines) {
+		[menu addItemWithTitle:storyline action:@selector(addStoryline:) keyEquivalent:@""];
+		
+		// Set on state
+		if ([self.representedItem.storylines containsObject:storyline]) {
+			[menu.itemArray.lastObject setState:NSOnState];
+		}
+	}
+	
+	[menu addItemWithTitle:@"Add Storyline..." action:@selector(newStoryline) keyEquivalent:@""];
+
+	
+	return menu;
+}
+
+- (void)addStoryline:(id)sender {
+	NSString *storyline = [(NSMenuItem*)sender title];
+	
+	if ([self.representedItem.storylines containsObject:storyline]) {
+		[_delegate removeStoryline:storyline from:_representedItem];
+	} else {
+		[_delegate addStoryline:storyline to:_representedItem];
+	}
+}
+- (void)newStoryline {
+	_delegate.clickedItem = self.representedItem;
+	[_delegate newStorylineFor:self.representedItem item:self];
+}
+
 
 @end
 /*

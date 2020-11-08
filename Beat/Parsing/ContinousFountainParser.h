@@ -13,7 +13,6 @@
 @class OutlineScene;
 
 @protocol ContinuousFountainParserDelegate <NSObject>
-@property (nonatomic) bool offsetFromFirstCustomSceneNumber;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) BeatDocumentSettings *documentSettings;
 

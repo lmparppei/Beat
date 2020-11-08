@@ -746,7 +746,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 }
 - (void)mouseMoved:(NSEvent *)event {
-
 	NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
 	NSPoint superviewPoint = [self.enclosingScrollView convertPoint:event.locationInWindow fromView:nil];
 	//CGFloat x = event.locationInWindow.x;

@@ -26,6 +26,7 @@
 			 @"teal": [BeatColors colorWithRed:12 green:224 blue:227], // gotta have teal & orange
 			 @"orange": [BeatColors colorWithRed:255 green:161 blue:13],
 			 @"brown": [BeatColors colorWithRed:169 green:106 blue:7],
+			 @"lightGray": [BeatColors colorWithRed:220 green:220 blue:220],
 			 @"darkGray": [BeatColors colorWithRed:170 green:170 blue:170],
 			 @"veryDarkGray": [BeatColors colorWithRed:100 green:100 blue:100],
 			 @"backgroundGray": [BeatColors colorWithRed:41 green:42 blue:45]

@@ -45,6 +45,9 @@
  Lauri-Matti Parppei
  2020
  
+ 
+ Update 2020-11-07: Delegation is now implemented
+ 
  */
 
 #import "ContinousFountainParser.h"
@@ -1258,13 +1261,25 @@ and incomprehensible system of recursion.
 		note =  [note substringWithRange:noteRange];
         
 		if ([note localizedCaseInsensitiveContainsString:@STORYLINE_PATTERN] == true) {
+			// Make sure it is really a storyline block with space & all
 			if ([note length] > [@STORYLINE_PATTERN length] + 1) {
+				line.storylineRange = range; // Save for editor use
+				
+				// Only the storylines
 				NSRange storylineRange = [note rangeOfString:@STORYLINE_PATTERN options:NSCaseInsensitiveSearch];
+			
 				NSString *storylineString = [note substringWithRange:NSMakeRange(storylineRange.length, [note length] - storylineRange.length)];
 				
+				// Check that the user didn't mistype it "storylines"
+				if (storylineString.length > 2) {
+					NSString *firstChrs = [storylineString.uppercaseString substringToIndex:2];
+					if ([firstChrs isEqualToString:@"S "]) storylineString = [storylineString substringFromIndex:2];
+				}
+				
 				NSArray *components = [storylineString componentsSeparatedByString:@","];
+				// Make uppercase & trim
 				for (NSString* string in components) {
-					[storylines addObject:[string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
+					[storylines addObject:[string.uppercaseString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
 				}
 			}
 		}

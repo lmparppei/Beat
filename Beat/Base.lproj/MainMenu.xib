@@ -998,7 +998,7 @@ DQ
                     <constraint firstItem="i7G-pb-vjp" firstAttribute="top" secondItem="vpm-hd-eID" secondAttribute="top" id="zZK-de-F5m"/>
                 </constraints>
             </view>
-            <point key="canvasLocation" x="705.5" y="329.5"/>
+            <point key="canvasLocation" x="718" y="325"/>
         </window>
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="blg-LD-9vu">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>

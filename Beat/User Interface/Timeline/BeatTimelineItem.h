@@ -21,7 +21,13 @@ typedef enum : NSInteger {
 @protocol BeatTimelineItemDelegate <NSObject>
 @property (nonatomic) NSColor *backgroundColor;
 @property (nonatomic) OutlineScene *currentScene;
+@property (nonatomic) IBOutlet NSMenu *sceneMenu;
+@property (nonatomic) OutlineScene *clickedItem;
+@property (nonatomic) NSMutableArray *storylines;
 - (void)didSelectItem:(id)item;
+- (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
+- (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
+- (void)newStorylineFor:(OutlineScene*)scene item:(id)item;
 @end
 
 @interface BeatTimelineItem : NSView
@@ -29,7 +35,7 @@ typedef enum : NSInteger {
 @property (nonatomic) bool selected;
 - (id)initWithDelegate:(id<BeatTimelineItemDelegate>)delegate;
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset;
-- (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline;
+- (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor;
 - (void)select;
 - (void)deselect;
 @end
