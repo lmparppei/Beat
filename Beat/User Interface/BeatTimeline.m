@@ -10,6 +10,13 @@
  
  Replacement for the JavaScript-based timeline. Super fast & efficient.
  This can be wrapped in a PinchScrollView or something similar.
+
+ Some weirdness:
+ 
+ - BeatTimelineItem asks its delegate (this class) to select itself. The timeline THEN
+   selects it through [item select].
+ - Items handle their own context menu and take care of setting their storyline.
+   For colors, however, the action is connected into this class.
  
  */
 
@@ -41,12 +48,10 @@
 // Interface
 @property (weak) IBOutlet NSPopUpButton *storylinePopup;
 @property (weak) IBOutlet NSLayoutConstraint *localHeightConstraint;
-
 @property CGFloat originalHeight;
-
-@property NSMutableArray *items;
 @property NSTimer *refreshTimer;
 
+// Timeline data
 @property NSInteger totalLength;
 @property bool hasSections;
 @property NSMutableArray *scenes;
@@ -54,9 +59,11 @@
 @property NSMutableArray *storylineLabels;
 @property NSArray *storylineColors;
 
+// Storyline UI
 @property NSPopover *storylinePopover;
 @property NSTextField *storylineField;
 
+// Playhead layer
 @property CAShapeLayer *playhead;
 @end
 
@@ -66,8 +73,8 @@
 	// No item selected
 	_clickedItem = nil;
 	
-	_items = [NSMutableArray array];
 	_scenes = [NSMutableArray array];
+	_selectedItems = [NSMutableArray array];
 	
 	// Storyline elements
 	_storylineItems = [NSMutableArray array];
@@ -119,12 +126,17 @@
 
 - (void)refreshWithDelay {
 	// Refresh timeline at an interval and cancel if any changes are made before refresh.
+	
+	// Let's not, for now.
+	
+	/*
 	[_refreshTimer invalidate];
 	
 	_refreshTimer = [NSTimer scheduledTimerWithTimeInterval:2.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
 		self.outline = [self.delegate getOutlineItems];
 		[self updateScenesAndRebuild:YES];
 	}];
+	*/
 }
 
 - (void)updateScenes {
@@ -135,8 +147,10 @@
 	_clickedItem = nil;
 	
 	if (rebuild) {
+		[self deselectAll];
 		_totalLength = 0;
 		_hasSections = NO;
+		NSInteger scenes = 0;
 		
 		bool hasStorylines = NO;
 		
@@ -157,9 +171,11 @@
 				[storylines intersectSet:[NSSet setWithArray:_visibleStorylines]];
 				storylineBlocks += storylines.count;
 			}
+			
+			scenes++;
 		}
-		
-		NSInteger diff = self.outline.count - self.scenes.count;
+				
+		NSInteger diff = scenes - self.scenes.count;
 		
 		// We need more items
 		if (diff > 0) {
@@ -172,8 +188,9 @@
 		// There are extra items
 		else if (diff < 0) {
 			for (NSInteger i = 0; i < -diff; i++) {
-				[_scenes.lastObject removeFromSuperview];
-				[_scenes removeLastObject];
+				BeatTimelineItem *item = _scenes.lastObject;
+				[item removeFromSuperview];
+				[_scenes removeObject:item];
 			}
 		}
 		
@@ -194,13 +211,16 @@
 
 		}
 		
-		
 		// Remove all storyline items when they are not needed
-		if (_visibleStorylines.count == 0 && _storylineItems.count > 0) {
+		if ((storylineBlocks == 0 && _visibleStorylines.count) ||
+			(_visibleStorylines.count == 0 && _storylineItems.count > 0)) {
 			for (BeatTimelineItem *item in _storylineItems) {
 				[item removeFromSuperview];
 			}
+			
 			[_storylineItems removeAllObjects];
+			[self removeStorylineLabels];
+			[_visibleStorylines removeAllObjects];
 		}
 	}
 	
@@ -217,7 +237,6 @@
 	CGFloat factor = width / _totalLength;
 
 	// Make the scenes be centered in the frame
-	//CGFloat yPosition = (self.frame.size.height - height) / 2;
 	CGFloat yPosition = DEFAULT_Y;
 	if (_hasSections) yPosition += SECTION_HEADROOM;
 	
@@ -254,7 +273,6 @@
 		BeatTimelineItem *item = _scenes[index];
 		[item setItem:scene rect:rect reset:rebuild];
 		if (item.selected) selectionRect = item.frame;
-		
 		
 		// Show storylines
 		// Much more sensible approach would be to really create timelines by a track, but whatever.
@@ -342,7 +360,7 @@
 		
 	// Move playhead to the selected position + disable core animation
 	[CATransaction begin];
-	[CATransaction setValue:(id)kCFBooleanTrue					 forKey:kCATransactionDisableActions];
+	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
 	if (!NSIsEmptyRect(selectionRect)) [self movePlayhead:selectionRect];
 	[CATransaction commit];
 }
@@ -355,17 +373,31 @@
 	if (_visibleStorylines) [self updateStorylineLabels];
 }
 - (void)scrollToScene:(NSInteger)index {
-	if (index >= _outline.count || index == NSNotFound) return;
-	
 	[self deselectAll];
 	
 	NSRect selectionRect = NSZeroRect;
-	OutlineScene *selectedScene = [_outline objectAtIndex:index];
-	for (BeatTimelineItem *item in self.scenes) {
-		if (item.representedItem == selectedScene) {
+	
+	if (index >= _outline.count || index == NSNotFound) {
+		// See if the caret is at the end
+		if (_delegate.caretAtEnd) {
+			BeatTimelineItem *item = _scenes.lastObject;
 			[item select];
+			[_selectedItems setArray:@[item]];
 			selectionRect = item.frame;
-			break;
+		} else {
+			return;
+		}
+	} else {
+		OutlineScene *selectedScene = [_outline objectAtIndex:index];
+
+		// Else go through the elements as usual
+		for (BeatTimelineItem *item in self.scenes) {
+			if (item.representedItem == selectedScene) {
+				[item select];
+				[_selectedItems setArray:@[item]];
+				selectionRect = item.frame;
+				break;
+			}
 		}
 	}
 	
@@ -395,15 +427,56 @@
 }
 
 - (void)deselectAll {
+	[_selectedItems removeAllObjects];
 	for (BeatTimelineItem *item in self.scenes) {
 		[item deselect];
 	}
 }
+- (void)deselect:(id)item {
+	[(BeatTimelineItem*)item deselect];
+	[_selectedItems removeObject:item];
+}
 
-// A timeline item was clicked, call delegate and jump to the scene
-- (void)didSelectItem:(id)item {
+// A _single_ timeline item was clicked. It calls its delegate (this class) and we jump to the scene
+- (void)setSelected:(id)item {
+	// Reset array
+	[self deselectAll];
+	[_selectedItems setArray:@[item]];
+	
+	[(BeatTimelineItem*)item select];
 	NSInteger index = [_outline indexOfObject:[(BeatTimelineItem*)item representedItem]];
 	if (index != NSNotFound) [_delegate didSelectTimelineItem:index];
+}
+// Multiple timeline items were selected using CMD. Called by the item.
+- (void)addSelected:(id)item {
+	// Add to array
+	[_selectedItems addObject:item];
+	[(BeatTimelineItem*)item select];
+}
+// A range of items was selected using shift key.
+- (void)selectTo:(id)item {
+	BeatTimelineItem *selectedItem = item;
+	NSInteger lastIndex = [_scenes indexOfObject:_selectedItems.firstObject];
+	NSInteger index = [_scenes indexOfObject:selectedItem];
+	
+	NSInteger from;
+	NSInteger to;
+	
+	if (lastIndex < index) {
+		from = lastIndex + 1;
+		to = index;
+	} else {
+		from = index;
+		to = lastIndex - 1;
+	}
+	
+	for (NSInteger i = from; i <= to; i++) {
+		BeatTimelineItem *scene = self.scenes[i];
+		if (scene.type == TimelineScene && ![_selectedItems containsObject:scene]) {
+			[_selectedItems addObject:scene];
+			[scene select];
+		}
+	}
 }
 
 - (BOOL)isFlipped { return YES; }
@@ -418,6 +491,7 @@
 -(void)mouseUp:(NSEvent *)event {
 	[super mouseUp:event];
 	
+	// Close "add storyline" popover
 	if (_storylinePopover.isShown) {
 		[_storylinePopover close];
 		_storylineField.stringValue = @"";
@@ -473,11 +547,15 @@
 	[self updateScenesAndRebuild:YES];
 }
 
-- (void)updateStorylineLabels {
+- (void)removeStorylineLabels {
 	for (NSTextField *label in _storylineLabels) {
 		[label removeFromSuperview];
 	}
 	[_storylineLabels removeAllObjects];
+}
+
+- (void)updateStorylineLabels {
+	[self removeStorylineLabels];
 
 	for (int i = 0; i < _visibleStorylines.count; i++) {
 		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, STORYLINE_LABELS_WIDTH + 5, 12)];
@@ -530,17 +608,30 @@
 	[self setNeedsDisplay:YES];
 }
 
-- (void)didClickItem:(OutlineScene*)scene {
-	NSLog(@"click on %@", scene.string);
-}
+#pragma mark - Color controls
+
 
 #pragma mark - Delegate methods
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
-	[_delegate addStoryline:storyline to:scene];
+	if (_selectedItems.count <= 1) [_delegate addStoryline:storyline to:scene];
+	else {
+		// Multiple items selected
+		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
+		for (BeatTimelineItem* item in selected) {
+			[_delegate addStoryline:storyline to:item.representedItem];
+		}
+	}
 }
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	[_delegate removeStoryline:storyline from:scene];
+	if (_selectedItems.count <= 1) [_delegate removeStoryline:storyline from:scene];
+	else {
+		// Multiple items selected
+		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
+		for (BeatTimelineItem* item in selected) {
+			[_delegate removeStoryline:storyline from:item.representedItem];
+		}
+	}
 }
 
 - (void)newStorylineFor:(OutlineScene*)scene item:(id)item {
@@ -553,31 +644,50 @@
 	[self.window makeFirstResponder:self.storylineField];
 }
 
+- (void)setSceneColor:(NSString*)color for:(OutlineScene*)scene {
+	if (_selectedItems.count <= 1) [_delegate setColor:color forScene:scene];
+	else {
+		// Multiple items selected
+		NSArray *selected = [NSArray arrayWithArray:_selectedItems];
+		for (BeatTimelineItem* item in selected) {
+			[_delegate setColor:color forScene:item.representedItem];
+		}
+	}
+}
+
 
 #pragma mark - TextField delegation
 
 - (BOOL)control:(NSControl *)control textView:(NSTextView *)fieldEditor doCommandBySelector:(SEL)commandSelector
 {
-	NSLog(@"Selector method is (%@)", NSStringFromSelector( commandSelector ) );
 	if (commandSelector == @selector(insertNewline:)) {
 		NSString *storyline = _storylineField.stringValue.uppercaseString;
 		
 		if (_clickedItem) {
-			[_delegate addStoryline:storyline to:_clickedItem];
+			if (_selectedItems.count <= 1) [_delegate addStoryline:storyline to:_clickedItem];
+			else {
+				NSArray *selected = [NSArray arrayWithArray:_selectedItems];
+				for (BeatTimelineItem* item in selected) {
+					[_delegate addStoryline:storyline to:item.representedItem];
+				}
+			}
 		}
+		
 		[_storylinePopover close];
 		_storylineField.stringValue = @""; // Empty the string
 		_clickedItem = nil;
+		return YES;
 	}
 	else if (commandSelector == @selector(insertTab:) ||
 			   commandSelector == @selector(cancelOperation:)) {
 		[_storylinePopover close];
 		_storylineField.stringValue = @""; // Empty the string
 		_clickedItem = nil;
+		return YES;
 	}
-	// return YES if the action was handled; otherwise NO
 	
-	return YES;
+	// return YES if the action was handled; otherwise NO
+	return NO;
 }
 
 @end

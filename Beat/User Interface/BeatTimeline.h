@@ -23,12 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didSelectTimelineItem:(NSInteger)index;
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
-
+- (void) setColor:(NSString *) color forScene:(OutlineScene *) scene;
+- (bool)caretAtEnd;
 @end
 
 @interface BeatTimeline : NSView <BeatTimelineItemDelegate, NSTextFieldDelegate>
 
 @property (nonatomic) IBOutlet NSMenu *sceneMenu;
+
+@property (nonatomic) NSMutableArray<BeatTimelineItem*> *selectedItems;
 
 @property (nonatomic) NSArray* outline;
 @property (weak) id<BeatTimelineDelegate> delegate;

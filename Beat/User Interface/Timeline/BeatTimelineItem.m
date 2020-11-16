@@ -24,7 +24,6 @@
 @property (nonatomic) NSColor *color;
 @property (nonatomic) CATextLayer *textLayer;
 @property (weak) id<BeatTimelineItemDelegate> delegate;
-@property (nonatomic) BeatTimelineItemType type;
 @end
 
 @implementation BeatTimelineItem
@@ -65,12 +64,7 @@
 }
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor {
 	_representedItem = scene;
-	
-	/*
-	if (_delegate.currentScene == scene) _selected = YES;
-	else _selected = NO;
-	*/
-	
+		
 	if (reset) {
 		if (storyline) _type = TimelineStoryline;
 		else if (scene.type == heading) _type = TimelineScene;
@@ -231,7 +225,6 @@
 	self.layer.opacity = 1.0;
 }
 -(void)deselect {
-	// Do nothing
 	if (self.type != TimelineScene) return;
 	if (!_selected) return;
 	
@@ -246,7 +239,20 @@
 
 -(void)mouseUp:(NSEvent *)event {
 	// Only allow clicking if this is a scene
-	if (self.type == TimelineScene) [_delegate didSelectItem:self];
+	if (self.type == TimelineScene) {
+		
+		// Cmd pressed while selecting
+		if (NSEvent.modifierFlags == NSEventModifierFlagCommand) {
+			if (!self.selected) [_delegate addSelected:self];
+			else [_delegate deselect:self];
+		}
+		else if (NSEvent.modifierFlags == NSEventModifierFlagShift) {
+			[_delegate selectTo:self];
+		}
+		else {
+			[_delegate setSelected:self];
+		}
+	}
 }
 
 #pragma mark - Some hover effects
@@ -269,13 +275,32 @@
 	NSMenu *menu = [self.menu copy];
 	[menu addItem:NSMenuItem.separatorItem];
 	
+    for (NSMenuItem *menuItem in menu.itemArray) {
+        [menuItem setAction:@selector(setSceneColor:)];
+    }
+    
 	// List Storylines
 	for (NSString *storyline in _delegate.storylines) {
 		[menu addItemWithTitle:storyline action:@selector(addStoryline:) keyEquivalent:@""];
 		
-		// Set on state
-		if ([self.representedItem.storylines containsObject:storyline]) {
-			[menu.itemArray.lastObject setState:NSOnState];
+		
+		if (self.delegate.selectedItems.count > 1) {
+			// Check state of multiple items
+			NSInteger mutual = 0;
+			
+			for (BeatTimelineItem *item in self.delegate.selectedItems) {
+				if ([item.representedItem.storylines containsObject:storyline]) mutual++;
+			}
+			
+			if (mutual == self.delegate.selectedItems.count) [menu.itemArray.lastObject setState:NSOnState];
+			else if (mutual > 0) [menu.itemArray.lastObject setState:NSMixedState];
+			else [menu.itemArray.lastObject setState:NSOffState];
+			
+		} else {
+			// Set on state for the clicked item
+			if ([self.representedItem.storylines containsObject:storyline]) {
+				[menu.itemArray.lastObject setState:NSOnState];
+			}
 		}
 	}
 	
@@ -288,9 +313,11 @@
 - (void)addStoryline:(id)sender {
 	NSString *storyline = [(NSMenuItem*)sender title];
 	
-	if ([self.representedItem.storylines containsObject:storyline]) {
+	NSMenuItem *menuItem = sender;
+	if (menuItem.state == NSOnState) {
 		[_delegate removeStoryline:storyline from:_representedItem];
-	} else {
+	}
+	else {
 		[_delegate addStoryline:storyline to:_representedItem];
 	}
 }
@@ -299,6 +326,10 @@
 	[_delegate newStorylineFor:self.representedItem item:self];
 }
 
+- (void)setSceneColor:(id)sender {
+    NSString *color = [(NSMenuItem*)sender title].uppercaseString;
+	[_delegate setSceneColor:color for:self.representedItem];
+}
 
 @end
 /*

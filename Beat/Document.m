@@ -1590,13 +1590,7 @@
 	if ((_outlineViewVisible || _timelineVisible) && !_outlineEdit) {
 		[self getCurrentScene];
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-			/*
-			if (self.timelineVisible && self.currentScene) {
-				NSInteger sceneIndex = [self.flatOutline indexOfObject:self.currentScene];
-				[self findOnTimeline:sceneIndex];
-			}
-			*/
-			
+
 			// So... uh.
 			// Obviously we can't use previously loaded _currentScene because here we're rebuilding the outline,
 			// so that's why we checked the timeline position first.
@@ -2400,6 +2394,10 @@
 
 - (NSRange)selectedRange {
 	return self.textView.selectedRange;
+}
+- (bool)caretAtEnd {
+	if (self.textView.selectedRange.location == self.textView.string.length) return YES;
+	else return NO;
 }
 
 - (void)headingChangedToActionAt:(Line*)line {
@@ -4562,13 +4560,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 #pragma mark - Timeline + chronometry
 
 /*
- // WIP: MAKE A CLASS & DELEGATE
  
- This timeline uses JavaScript. I was very inexperienced while making this, so yeah.
- Obviously, it would be faster, safer and actually easier to build a NSView for displaying
- the timeline. The TouchBar timeline is lightning-fast and responsive, but I'm unable to
- implement reliable zooming etc. for now. Probably both of these views could run on the same
- codebase.
+ Timeline has been rewritten to be a native Cocoa class instead of the
+ javascript/webkit mess.
  
  There is also a simple attempt at measuring temporal scene lengths.
  It is not scientific. I'm counting beats, and about 55 beats equal 1 minute.
@@ -4582,13 +4576,28 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (IBAction)toggleTimeline:(id)sender
 {
 	_timelineVisible = !_timelineVisible;
+	
+	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
 		
 	if (_timelineVisible) {
+	
 		[_timeline show];
-		
 		[self ensureLayout];
+
+		// ???
+		// For some reason the NSTextView scrolls into some weird position when the view
+		// height is changed. Restoring scroll position does NOT fix this.
+		//[self.textScrollView.contentView scrollToPoint:scrollPosition];
+
 	} else {
 		[_timeline hide];
+		scrollPosition.y = scrollPosition.y * _magnification;
+		
+		CGFloat y = scrollPosition.y;
+		CGFloat h = self.textScrollView.contentView.bounds.size.height;
+		NSLog(@"y %f  / h %f (full h %f)", y, h, self.textScrollView.documentView.frame.size.height);
+		
+		[self.textScrollView.contentView scrollToPoint:scrollPosition];
 	}
 }
 
@@ -4606,12 +4615,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 // MAKE CATEGORY
 - (NSString*)fixQuotations: (NSString*)string {
 	return [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-}
-- (void) findOnTimeline: (NSInteger) sceneIndex {
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		NSString *evalString = [NSString stringWithFormat:@"refreshTimeline(null, %lu)", sceneIndex];
-		[self.timelineView evaluateJavaScript:evalString completionHandler:nil];
-	});
 }
 
 // WIP: MOVE THIS SOMEWHERE

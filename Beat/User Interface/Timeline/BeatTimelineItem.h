@@ -24,20 +24,31 @@ typedef enum : NSInteger {
 @property (nonatomic) IBOutlet NSMenu *sceneMenu;
 @property (nonatomic) OutlineScene *clickedItem;
 @property (nonatomic) NSMutableArray *storylines;
-- (void)didSelectItem:(id)item;
+@property (nonatomic) NSMutableArray *selectedItems;
+
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 - (void)newStorylineFor:(OutlineScene*)scene item:(id)item;
+- (void)setSceneColor:(NSString*)color for:(OutlineScene*)scene;
+
+// Selection handling
+- (void)setSelected:(id)item;
+- (void)addSelected:(id)item;
+- (void)deselect:(id)item;
+- (void)selectTo:(id)item;
+
 @end
 
 @interface BeatTimelineItem : NSView
 @property (weak) OutlineScene *representedItem;
 @property (nonatomic) bool selected;
+@property (nonatomic) BeatTimelineItemType type;
 - (id)initWithDelegate:(id<BeatTimelineItemDelegate>)delegate;
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset;
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor;
 - (void)select;
 - (void)deselect;
+- (bool)remove;
 @end
 
 NS_ASSUME_NONNULL_END
