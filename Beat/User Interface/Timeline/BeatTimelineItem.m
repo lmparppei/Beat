@@ -64,7 +64,7 @@
 }
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor {
 	_representedItem = scene;
-		
+	
 	if (reset) {
 		if (storyline) _type = TimelineStoryline;
 		else if (scene.type == heading) _type = TimelineScene;
@@ -81,10 +81,11 @@
 		}
 		
 		// Uppercase text for scenes
+
 		if (scene.type == heading) self.text = [scene.line.cleanedString uppercaseString];
 		else self.text = scene.string;
 	}
-	
+
 	if (forcedColor) {
 		self.color = forcedColor;
 	}

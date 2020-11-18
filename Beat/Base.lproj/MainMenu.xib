@@ -148,16 +148,22 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Import" id="xR8-x2-hNB">
                                     <items>
-                                        <menuItem title="TEST IMPORT" hidden="YES" id="7pb-G3-Rqt">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="hackSex:" target="-1" id="8Wa-oP-j55"/>
-                                            </connections>
-                                        </menuItem>
                                         <menuItem title="Import Final Draft..." id="bYQ-u3-P9F">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="importFDX:" target="-1" id="5rp-Z5-vYR"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Import Celtx..." id="7pb-G3-Rqt">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="importCeltx:" target="vEX-2F-hcj" id="EBj-G6-O8a"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Import Highland..." id="aWg-Y0-xdB">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="importHighland:" target="vEX-2F-hcj" id="lkQ-V6-1OJ"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -811,7 +817,7 @@ DQ
         <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="Tq0-bd-4zX">
             <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="579" height="367"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="vpm-hd-eID">
                 <rect key="frame" x="0.0" y="0.0" width="579" height="367"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -858,7 +864,7 @@ DQ
                                     <rect key="frame" x="262" y="0.0" width="317" height="328"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
@@ -926,7 +932,7 @@ DQ
                         <color key="fillColor" red="0.098039215690000001" green="0.1019607843" blue="0.10980392156862745" alpha="1" colorSpace="calibratedRGB"/>
                     </box>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jcl-C2-5kX">
-                        <rect key="frame" x="8.5" y="8" width="113" height="23"/>
+                        <rect key="frame" x="9" y="8" width="112" height="23"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="112" id="6Ov-ir-Tba"/>
                         </constraints>
@@ -939,7 +945,7 @@ DQ
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EgL-h8-fPx">
-                        <rect key="frame" x="474.5" y="8" width="96" height="23"/>
+                        <rect key="frame" x="475" y="8" width="95" height="23"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="95" id="i6b-Zf-MpY"/>
                         </constraints>
@@ -967,7 +973,7 @@ DQ
                         </popUpButtonCell>
                     </popUpButton>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="O3j-Ar-9mq">
-                        <rect key="frame" x="371.5" y="7" width="96" height="25"/>
+                        <rect key="frame" x="372" y="7" width="95" height="25"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="95" id="37P-RW-CXu"/>
                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="95" id="gzo-Gb-roQ"/>
@@ -1003,7 +1009,7 @@ DQ
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="blg-LD-9vu">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="534" height="317"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="2zn-ZX-4dS">
                 <rect key="frame" x="0.0" y="0.0" width="534" height="317"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1018,15 +1024,15 @@ DQ
                                 <scrollView appearanceType="darkAqua" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="ERb-3X-MQJ">
                                     <rect key="frame" x="210" y="0.0" width="324" height="317"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="eFV-ne-twe">
-                                        <rect key="frame" x="0.0" y="0.0" width="324" height="317"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="309" height="317"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <textView editable="NO" drawsBackground="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" linkDetection="YES" textCompletion="NO" smartInsertDelete="YES" id="X7u-6E-wyW">
-                                                <rect key="frame" x="0.0" y="0.0" width="314" height="317"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="299" height="317"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <size key="minSize" width="314" height="317"/>
+                                                <size key="minSize" width="309" height="317"/>
                                                 <size key="maxSize" width="325" height="10000000"/>
                                                 <attributedString key="textStorage">
                                                     <fragment content="Test">
@@ -1104,7 +1110,7 @@ DQ
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="181" y="118" width="627" height="447"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="1b7-t1-i1A">
                 <rect key="frame" x="0.0" y="0.0" width="627" height="447"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1112,15 +1118,15 @@ DQ
                     <scrollView appearanceType="aqua" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="DsW-5X-hrl">
                         <rect key="frame" x="0.0" y="36" width="627" height="411"/>
                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Ff0-z7-5BC">
-                            <rect key="frame" x="0.0" y="0.0" width="627" height="411"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <rect key="frame" x="0.0" y="0.0" width="612" height="411"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="j3Y-oZ-sKT">
-                                    <rect key="frame" x="0.0" y="0.0" width="452" height="391"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="437" height="411"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <size key="minSize" width="452" height="391"/>
+                                    <size key="minSize" width="612" height="411"/>
                                     <size key="maxSize" width="627" height="10000000"/>
                                     <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 </textView>
@@ -1162,7 +1168,7 @@ DQ
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="884" height="655"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="MHa-am-ziY">
                 <rect key="frame" x="0.0" y="0.0" width="884" height="655"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

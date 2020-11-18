@@ -31,48 +31,68 @@
 @property(nonatomic, strong) NSString *lastAddedLine;
 @property(nonatomic, strong) NSString *style;
 @property(nonatomic, strong) NSMutableString *elementText;
-@property(nonatomic, strong) NSMutableArray *script;
+@property(nonatomic, strong) NSMutableArray *scriptLines;
 @property(nonatomic) NSUInteger dualDialogue;
-
 @end
 
 @implementation OSFImport
 
-- (id)initWithURL:(NSURL*)url completion:(void(^)(void))callback
-{
+- (id)initWithData:(NSData*)data {
+	// Parsing with just data does not need a callback, we can do everything in sync
 	self = [super init];
 	if (self) {
-		_elementText = [[NSMutableString alloc] init];
-		_script = [NSMutableArray array];
-		_titlePage = NO;
-		_dualDialogue = -1;
+		[self setup];
+		[self parse:data];
+	}
+	return self;
+}
 
+- (id)initWithURL:(NSURL*)url completion:(void(^)(void))callback
+{
+	// Parsing a URL request needs a completion callback
+	
+	self = [super init];
+	if (self) {
+		[self setup];
+		
 		// Thank you, RIPtutorial
 		// Fetch xml data
 		NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
 		
 		NSURLSessionDataTask *task = [session dataTaskWithRequest:[NSURLRequest requestWithURL:url] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-			
-			self.xmlParser = [[NSXMLParser alloc] initWithData:data];
-			self.xmlParser.delegate = self;
-			if ([self.xmlParser parse]) {
-				//callback();
-				NSLog(@"%@", [self.script componentsJoinedByString:@"\n"]);
-			}
-			
+			// After the data has loaded, parse the file & return to callback
+			[self parse:data];
+			callback();
 		}];
 			
 		[task resume];
-		
 	}
 	return self;
+}
+
+- (void)parse:(NSData*)data {
+	self.xmlParser = [[NSXMLParser alloc] initWithData:data];
+	self.xmlParser.delegate = self;
+	if ([self.xmlParser parse]) {
+		self.script = [self.scriptLines componentsJoinedByString:@"\n"];
+		NSLog(@"%@", [self.scriptLines componentsJoinedByString:@"\n"]);
+	}
+}
+
+- (void)setup {
+	_elementText = [[NSMutableString alloc] init];
+	_scriptLines = [NSMutableArray array];
+	_titlePage = NO;
+	_dualDialogue = -1;
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict{
 	_lastFoundElement = elementName;
 	
-	// So oh my fucking god. Fade In uses lower-case attribute names, while OSF specifies changing case,
-	// ie. sceneNumber vs. scenenumber. So fuck everything, let's create a new dictionary out of the attributes.
+	// So oh my fucking god. Fade In uses (sometimes) lower-case attribute names,
+	// while OSF specifies changing case, ie. sceneNumber and not scenenumber.
+	// So fuck everything, let's create a new dictionary out of the attributes
+	// with lowercase counterparts.
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 	for (id key in attributeDict) {
 		[attributes setValue:[attributeDict objectForKey:key] forKey:[key lowercaseString]];
@@ -95,8 +115,8 @@
 		
 		if (attributes[@"synopsis"]) {
 			// Add synopsis to script
-			[_script addObject:@""];
-			[_script addObject:[NSString stringWithFormat:@"\n= %@", attributes[@"synopsis"]]];
+			[_scriptLines addObject:@""];
+			[_scriptLines addObject:[NSString stringWithFormat:@"\n= %@", attributes[@"synopsis"]]];
 		}
 		
 		if ([_style isEqualToString:@"Character"]) {
@@ -158,14 +178,14 @@
 		NSString *result = [NSString stringWithFormat:@"%@", _elementText];
 		
 		// Add empty rows before required elements.
-		if ([_script count] > 0) {
-			NSString *previousLine = [_script lastObject];
+		if ([_scriptLines count] > 0) {
+			NSString *previousLine = [_scriptLines lastObject];
 			
 			if ([previousLine length] > 0 && [_elementText length] > 0) {
 				if ([_style isEqualToString:@"Character"] ||
 					[_style isEqualToString:@"Scene Heading"] ||
 					[_style isEqualToString:@"Action"]) {
-					[_script addObject:@""];
+					[_scriptLines addObject:@""];
 				}
 			}
 		}
@@ -218,7 +238,7 @@
 		if ([result isEqualToString:@""] && [_lastAddedLine isEqualToString:@""]) {
 			// Do nothing for now
 		} else {
-			[_script addObject:[NSString stringWithString:result]];
+			[_scriptLines addObject:[NSString stringWithString:result]];
 			_lastAddedLine = result;
 		}
 		
@@ -235,8 +255,8 @@
 }
 
 - (NSString*)scriptAsString {
-	if ([_script count]) {
-		return [_script componentsJoinedByString:@"\n"];
+	if ([_scriptLines count]) {
+		return [_scriptLines componentsJoinedByString:@"\n"];
 	}
 	return @"";
 }

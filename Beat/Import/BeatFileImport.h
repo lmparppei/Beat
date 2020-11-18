@@ -11,7 +11,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatFileImport : NSObject
-
+- (void)fdx;
+- (void)celtx;
+- (void)highland;
+- (void)fadeIn;
 @end
 
 NS_ASSUME_NONNULL_END

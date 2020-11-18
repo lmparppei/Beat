@@ -1,3 +1,9 @@
+## Beat 1.6
+
+* New native timeline view, with support for storyline tracking and pinch-zooming
+* Other minor fixes
+* Beat now uses CocoaPods
+
 
 ## Beat 1.5
 

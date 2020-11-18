@@ -161,7 +161,7 @@
 		for (OutlineScene *scene in _outline) {
 			// Skip some elements
 			if (scene.omited) continue;
-			else if (scene.type == synopse) continue;
+			else if (scene.type == synopse) { scenes++; continue; }
 			
 			if (scene.type == heading) _totalLength += scene.timeLength;
 			if (scene.type == section) _hasSections = YES;
@@ -271,6 +271,7 @@
 		
 		// Apply the scene data to the representing item
 		BeatTimelineItem *item = _scenes[index];
+		
 		[item setItem:scene rect:rect reset:rebuild];
 		if (item.selected) selectionRect = item.frame;
 		

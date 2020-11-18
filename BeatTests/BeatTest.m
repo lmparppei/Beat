@@ -13,8 +13,6 @@
 #import "ContinousFountainParser.h"
 #import "Line.h"
 
-#import "BeatComparison.h"
-
 @implementation BeatTest
 
 - (instancetype)init
@@ -27,7 +25,8 @@
 }
 
 - (void) test {
-	
+	//NSURL* url = [NSBundle.mainBundle URLForResource:@"Highland" withExtension:@"highland"];
+	//HighlandImport *import = [[HighlandImport alloc] initWithURL:url];
 }
 
 - (NSString*)testString {

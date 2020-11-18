@@ -1,8 +1,8 @@
 //
-//  OSFImport.h
+//  HighlandImport.h
 //  Beat
 //
-//  Created by Lauri-Matti Parppei on 17.7.2020.
+//  Created by Lauri-Matti Parppei on 18.11.2020.
 //  Copyright © 2020 KAPITAN!. All rights reserved.
 //
 
@@ -10,11 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OSFImport : NSObject
+@interface HighlandImport : NSObject
 @property (nonatomic) NSString *script;
-- (id)initWithURL:(NSURL*)url completion:(void(^)(void))callback;
-- (id)initWithData:(NSData*)data;
-
+- (id)initWithURL:(NSURL*)url;
 @end
 
 NS_ASSUME_NONNULL_END

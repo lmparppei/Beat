@@ -8,9 +8,12 @@
 
 #import "ApplicationDelegate.h"
 #import "FDXImport.h"
+#import "CeltxImport.h"
+#import "HighlandImport.h"
 #import "RecentFiles.h"
 
 #import "BeatTest.h"
+#import "BeatFileImport.h"
 
 @interface ApplicationDelegate ()
 @property (nonatomic) RecentFiles *recentFilesSource;
@@ -29,7 +32,10 @@
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
-	[self checkAutosavedFiles];	
+	[self checkAutosavedFiles];
+	
+	// Run tests
+	//[[BeatTest alloc] init];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -356,10 +362,24 @@
 	[self.acknowledgementsModal setIsVisible:YES];
 }
 
-#pragma mark - Import FDX
+#pragma mark - File Import
+/*
+ 
+ I should make a generic import class with delegation to make this cleaner.
+ 
+ BeatImport *import = [[BeatImport alloc] initWithDelegate:self];
+ [import fdx];
+ [import celtx];
+ [import highland];
+  
+ */
 
 - (IBAction)importFDX:(id)sender
 {
+	BeatFileImport *import = [[BeatFileImport alloc] init];
+	[import fdx];
+	
+	/*
 	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
 	[openDialog setAllowedFileTypes:@[@"fdx"]];
 
@@ -383,6 +403,30 @@
 			}];
 		}
 	}];
+	 */
+}
+- (IBAction)importCeltx:(id)sender
+{
+	BeatFileImport *import = [[BeatFileImport alloc] init];
+	[import celtx];
+}
+- (IBAction)importHighland:(id)sender
+{
+	BeatFileImport *import = [[BeatFileImport alloc] init];
+	[import highland];
+}
+- (IBAction)importFadeIn:(id)sender
+{
+	BeatFileImport *import = [[BeatFileImport alloc] init];
+	[import fadeIn];
+}
+
+- (void)openFileWithContents:(NSString*)string {
+	NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
+	NSError *error;
+	
+	[string writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
+	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
 }
 
 - (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix

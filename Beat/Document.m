@@ -1565,7 +1565,6 @@
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 
-	
 	// We REALLY REALLY should make some sort of cache for these
 	_flatOutline = [self getOutlineItems];
 	_currentLine = [self getCurrentLine];
@@ -1575,6 +1574,7 @@
 	if (_characterInputForLine != _currentLine) _characterInput = NO;
 	
 	__block NSInteger position = self.textView.selectedRange.location;
+	__block OutlineScene *currentScene = [self getCurrentSceneWithPosition:position];
 	_currentScene = [self getCurrentSceneWithPosition:position];
 	
 	// Select a scene on the TouchBar timeline if it's visible
@@ -1586,7 +1586,41 @@
 	}
 	
 	// Locate current scene & reload outline without building it in parser
-	// Enter some background thread madness
+	// Enter some background thread madness (or not in 1.6)
+	if ((_outlineViewVisible) && !_outlineEdit) {
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+			if (self.outlineViewVisible) {
+				dispatch_async(dispatch_get_main_queue(), ^(void) {
+					[self reloadOutline];
+				});
+			}
+		});
+		
+		if (self.outlineViewVisible && currentScene) {
+			// Alright, we have some conditions for this.
+			// We need to check if the outline was filtered AND if the current scene is within the filtered scenes.
+			// Else, just hop to current scene.
+			if ([self.filteredOutline count]) {
+				if ([self.filteredOutline containsObject:currentScene]) {
+					dispatch_async(dispatch_get_main_queue(), ^(void){
+						[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
+							context.allowsImplicitAnimation = YES;
+						[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:currentScene]];
+						} completionHandler:NULL];
+					});
+				}
+			} else {
+				dispatch_async(dispatch_get_main_queue(), ^(void){
+					[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
+						context.allowsImplicitAnimation = YES;
+						[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:currentScene]];
+					} completionHandler:NULL];
+				});
+			}
+		}
+	}
+
+	/*
 	if ((_outlineViewVisible || _timelineVisible) && !_outlineEdit) {
 		[self getCurrentScene];
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
@@ -1626,6 +1660,7 @@
 			
 		});
 	}
+	 */
 
 	if (self.typewriterMode) [self typewriterScroll];
 }
