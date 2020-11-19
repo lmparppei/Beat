@@ -67,6 +67,20 @@
 		B6639DFA2538DF7F00DF87E2 /* BeatPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = B6639DF92538DF7F00DF87E2 /* BeatPrint.m */; };
 		B6639DFB2538DF7F00DF87E2 /* BeatPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = B6639DF92538DF7F00DF87E2 /* BeatPrint.m */; };
 		B667796523C5D1CB0029D508 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B667796423C5D1CB0029D508 /* FDXImport.m */; };
+		B66F46332565ADA0003748DA /* NSString+UriCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46242565AD9F003748DA /* NSString+UriCompatibility.m */; };
+		B66F46342565ADA0003748DA /* NSString+UriCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46242565AD9F003748DA /* NSString+UriCompatibility.m */; };
+		B66F46352565ADA0003748DA /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46262565AD9F003748DA /* NSMutableDictionary+DMPExtensions.m */; };
+		B66F46362565ADA0003748DA /* NSMutableDictionary+DMPExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46262565AD9F003748DA /* NSMutableDictionary+DMPExtensions.m */; };
+		B66F46372565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46282565AD9F003748DA /* NSString+UnicharUtilities.m */; };
+		B66F46382565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46282565AD9F003748DA /* NSString+UnicharUtilities.m */; };
+		B66F46392565ADA0003748DA /* NSString+JavaSubstring.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46292565AD9F003748DA /* NSString+JavaSubstring.m */; };
+		B66F463A2565ADA0003748DA /* NSString+JavaSubstring.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46292565AD9F003748DA /* NSString+JavaSubstring.m */; };
+		B66F463B2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = B66F462A2565AD9F003748DA /* DiffMatchPatchCFUtilities.c */; };
+		B66F463C2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = B66F462A2565AD9F003748DA /* DiffMatchPatchCFUtilities.c */; };
+		B66F463D2565ADA0003748DA /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F462B2565AD9F003748DA /* DiffMatchPatch.m */; };
+		B66F463E2565ADA0003748DA /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F462B2565AD9F003748DA /* DiffMatchPatch.m */; };
+		B66F463F2565ADA0003748DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B66F46312565ADA0003748DA /* InfoPlist.strings */; };
+		B66F46402565ADA0003748DA /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B66F46312565ADA0003748DA /* InfoPlist.strings */; };
 		B66FC99E2276EAD800C0265D /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B2D251367BF00731A36 /* TKSplitHandle.m */; };
 		B6764B32251367BF00731A36 /* TKSplitHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B2D251367BF00731A36 /* TKSplitHandle.m */; };
@@ -110,9 +124,6 @@
 		B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
 		B6CE0BD0247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
-		B6D12FE225379FCD0018A88F /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D12FE025379FCD0018A88F /* DiffMatchPatch.framework */; };
-		B6D12FE525379FF40018A88F /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D12FE025379FCD0018A88F /* DiffMatchPatch.framework */; };
-		B6D12FE625379FF40018A88F /* DiffMatchPatch.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B6D12FE025379FCD0018A88F /* DiffMatchPatch.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6D12FED2537A04C0018A88F /* BeatComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D12FEB2537A04C0018A88F /* BeatComparison.m */; };
 		B6D26BE124B9E7350041402B /* BeatTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE024B9E7350041402B /* BeatTimerView.m */; };
 		B6D26BE224B9E7350041402B /* BeatTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE024B9E7350041402B /* BeatTimerView.m */; };
@@ -286,7 +297,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				B6000DD52562F42E00289676 /* Pods_Beat.framework in CopyFiles */,
-				B6D12FE625379FF40018A88F /* DiffMatchPatch.framework in CopyFiles */,
 				B6F4A2D5221EEDDC0065D9CB /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -377,6 +387,21 @@
 		B6639DF92538DF7F00DF87E2 /* BeatPrint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPrint.m; path = Beat/Export/BeatPrint.m; sourceTree = SOURCE_ROOT; };
 		B667796323C5D1CB0029D508 /* FDXImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDXImport.h; sourceTree = "<group>"; };
 		B667796423C5D1CB0029D508 /* FDXImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
+		B66F46222565AD9F003748DA /* DiffMatchPatchCFUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatchCFUtilities.h; sourceTree = "<group>"; };
+		B66F46232565AD9F003748DA /* NSString+UnicharUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UnicharUtilities.h"; sourceTree = "<group>"; };
+		B66F46242565AD9F003748DA /* NSString+UriCompatibility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UriCompatibility.m"; sourceTree = "<group>"; };
+		B66F46252565AD9F003748DA /* NSString+UriCompatibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+UriCompatibility.h"; sourceTree = "<group>"; };
+		B66F46262565AD9F003748DA /* NSMutableDictionary+DMPExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DMPExtensions.m"; sourceTree = "<group>"; };
+		B66F46272565AD9F003748DA /* DiffMatchPatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch.h; sourceTree = "<group>"; };
+		B66F46282565AD9F003748DA /* NSString+UnicharUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+UnicharUtilities.m"; sourceTree = "<group>"; };
+		B66F46292565AD9F003748DA /* NSString+JavaSubstring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+JavaSubstring.m"; sourceTree = "<group>"; };
+		B66F462A2565AD9F003748DA /* DiffMatchPatchCFUtilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = DiffMatchPatchCFUtilities.c; sourceTree = "<group>"; };
+		B66F462B2565AD9F003748DA /* DiffMatchPatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiffMatchPatch.m; sourceTree = "<group>"; };
+		B66F462C2565AD9F003748DA /* DiffMatchPatch_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiffMatchPatch_Prefix.pch; sourceTree = "<group>"; };
+		B66F462D2565ADA0003748DA /* NSString+JavaSubstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+JavaSubstring.h"; sourceTree = "<group>"; };
+		B66F462E2565ADA0003748DA /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
+		B66F462F2565ADA0003748DA /* MinMaxMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MinMaxMacros.h; sourceTree = "<group>"; };
+		B66F46322565ADA0003748DA /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
 		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CardView.js; sourceTree = "<group>"; };
 		B670E20824BF689A006375BA /* BeatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTests.m; sourceTree = "<group>"; };
 		B670E20A24BF689A006375BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -494,7 +519,6 @@
 				B6E3246724B515670001273F /* AppKit.framework in Frameworks */,
 				B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */,
 				B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */,
-				B6D12FE525379FF40018A88F /* DiffMatchPatch.framework in Frameworks */,
 				B138B61F19E1D6A7000489C4 /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -518,7 +542,6 @@
 				B6F49D06246D66B0006D88D4 /* QuickLook.framework in Frameworks */,
 				B6E3246B24B519630001273F /* AppKit.framework in Frameworks */,
 				B6F49D07246D66B0006D88D4 /* Sparkle.framework in Frameworks */,
-				B6D12FE225379FCD0018A88F /* DiffMatchPatch.framework in Frameworks */,
 				B6F49D08246D66B0006D88D4 /* WebKit.framework in Frameworks */,
 				D1895114F9E8808530D6057D /* Pods_Beat_Pro.framework in Frameworks */,
 			);
@@ -583,6 +606,7 @@
 				B138B62419E1D8A4000489C4 /* Frameworks */,
 				B138B57419E1C973000489C4 /* Products */,
 				A511D304017AD9D4480C6B15 /* Pods */,
+				B66F46212565AD57003748DA /* DiffMatchPatch */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
@@ -657,11 +681,11 @@
 		B1509A3D1CB5C0B400884918 /* Export */ = {
 			isa = PBXGroup;
 			children = (
+				B6D12FDB25379E880018A88F /* Comparison */,
 				B61875A32471BEDA00FB7646 /* BeatPreview.h */,
 				B61875A42471BEDA00FB7646 /* BeatPreview.m */,
 				B6639DF82538DF7F00DF87E2 /* BeatPrint.h */,
 				B6639DF92538DF7F00DF87E2 /* BeatPrint.m */,
-				B6D12FDB25379E880018A88F /* Comparison */,
 				B1D0B84919E31B86005252E4 /* PrintView.h */,
 				B6D2B71D2218B44A005B8447 /* PrintView.m */,
 				B1509A3E1CB5C0C500884918 /* FDXInterface.h */,
@@ -847,6 +871,36 @@
 			);
 			name = Import;
 			path = ../Beat/Import;
+			sourceTree = "<group>";
+		};
+		B66F46212565AD57003748DA /* DiffMatchPatch */ = {
+			isa = PBXGroup;
+			children = (
+				B66F462C2565AD9F003748DA /* DiffMatchPatch_Prefix.pch */,
+				B66F46272565AD9F003748DA /* DiffMatchPatch.h */,
+				B66F462B2565AD9F003748DA /* DiffMatchPatch.m */,
+				B66F462A2565AD9F003748DA /* DiffMatchPatchCFUtilities.c */,
+				B66F46222565AD9F003748DA /* DiffMatchPatchCFUtilities.h */,
+				B66F46302565ADA0003748DA /* English.lproj */,
+				B66F462F2565ADA0003748DA /* MinMaxMacros.h */,
+				B66F462E2565ADA0003748DA /* NSMutableDictionary+DMPExtensions.h */,
+				B66F46262565AD9F003748DA /* NSMutableDictionary+DMPExtensions.m */,
+				B66F462D2565ADA0003748DA /* NSString+JavaSubstring.h */,
+				B66F46292565AD9F003748DA /* NSString+JavaSubstring.m */,
+				B66F46232565AD9F003748DA /* NSString+UnicharUtilities.h */,
+				B66F46282565AD9F003748DA /* NSString+UnicharUtilities.m */,
+				B66F46252565AD9F003748DA /* NSString+UriCompatibility.h */,
+				B66F46242565AD9F003748DA /* NSString+UriCompatibility.m */,
+			);
+			path = DiffMatchPatch;
+			sourceTree = "<group>";
+		};
+		B66F46302565ADA0003748DA /* English.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				B66F46312565ADA0003748DA /* InfoPlist.strings */,
+			);
+			path = English.lproj;
 			sourceTree = "<group>";
 		};
 		B66FC99F2276EADC00C0265D /* CardView */ = {
@@ -1084,7 +1138,7 @@
 		B138B56B19E1C973000489C4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1210;
 				ORGANIZATIONNAME = "KAPITAN!";
 				TargetAttributes = {
 					B138B57219E1C973000489C4 = {
@@ -1118,6 +1172,7 @@
 			knownRegions = (
 				en,
 				Base,
+				English,
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
@@ -1137,6 +1192,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1F04ED81C88ACAD001C4D27 /* Courier Prime Bold Italic.ttf in Resources */,
+				B66F463F2565ADA0003748DA /* InfoPlist.strings in Resources */,
 				B623BD3F2549AEDD00201BC9 /* document.xml in Resources */,
 				B6146B27246A91420029DBD9 /* printview.png in Resources */,
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
@@ -1196,6 +1252,7 @@
 				B6F49D13246D66B0006D88D4 /* MainMenu.xib in Resources */,
 				B6F49D14246D66B0006D88D4 /* dragula.js in Resources */,
 				B6F49D15246D66B0006D88D4 /* CHANGELOG in Resources */,
+				B66F46402565ADA0003748DA /* InfoPlist.strings in Resources */,
 				B6F49D16246D66B0006D88D4 /* PrintCSS.css in Resources */,
 				B6F49D19246D66B0006D88D4 /* CardView.js in Resources */,
 				B6F49D1A246D66B0006D88D4 /* cards.png in Resources */,
@@ -1372,7 +1429,9 @@
 				B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */,
 				B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */,
 				B69EF55124659FC000C5B78C /* SceneCards.m in Sources */,
+				B66F46332565ADA0003748DA /* NSString+UriCompatibility.m in Sources */,
 				B61875A52471BEDA00FB7646 /* BeatPreview.m in Sources */,
+				B66F463D2565ADA0003748DA /* DiffMatchPatch.m in Sources */,
 				B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */,
 				B69154652480EB7E002393D1 /* RoundedButton.m in Sources */,
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
@@ -1383,6 +1442,7 @@
 				B69C8C6524A12765007B55A7 /* BeatHTMLScript.m in Sources */,
 				B6000DCE2562F0B300289676 /* CeltxImport.m in Sources */,
 				B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */,
+				B66F463B2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */,
 				B663680524CE1E64009A1693 /* BeatTest.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
@@ -1390,6 +1450,7 @@
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */,
 				B6FD5D912563B5320037ACBA /* GTMNSString+HTML.m in Sources */,
+				B66F46352565ADA0003748DA /* NSMutableDictionary+DMPExtensions.m in Sources */,
 				B6FD5D932563B5320037ACBA /* HTMLNode.m in Sources */,
 				B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */,
 				B6447CB124616C8400AA4EBC /* MasterView.m in Sources */,
@@ -1398,11 +1459,13 @@
 				B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */,
 				B69154692480F68E002393D1 /* BeatRoundedButton.m in Sources */,
 				B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */,
+				B66F46372565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */,
 				B6D26BE124B9E7350041402B /* BeatTimerView.m in Sources */,
 				B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B6FD5D8F2563B5320037ACBA /* HTMLParser.m in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinousFountainParser.m in Sources */,
+				B66F46392565ADA0003748DA /* NSString+JavaSubstring.m in Sources */,
 				B6EA9F4F23BA8E8C00DBE9D0 /* SceneFiltering.m in Sources */,
 				B6EB5170246E9621009014AB /* MarginView.m in Sources */,
 				B6D2B71A2218B408005B8447 /* main.m in Sources */,
@@ -1506,9 +1569,12 @@
 				B6F49CF8246D66B0006D88D4 /* TitlePageEditorDelegate.m in Sources */,
 				B6D26BE224B9E7350041402B /* BeatTimerView.m in Sources */,
 				B6D12FED2537A04C0018A88F /* BeatComparison.m in Sources */,
+				B66F46342565ADA0003748DA /* NSString+UriCompatibility.m in Sources */,
 				B6F49CF9246D66B0006D88D4 /* WebPrinter.m in Sources */,
+				B66F463E2565ADA0003748DA /* DiffMatchPatch.m in Sources */,
 				B6F49CFA246D66B0006D88D4 /* NSString+Regex.m in Sources */,
 				B6F49CFB246D66B0006D88D4 /* BeatTextView.m in Sources */,
+				B66F463C2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */,
 				B6CB9737254ED61900C310CC /* HorizontalPinchView.m in Sources */,
 				B61875A62471BEDA00FB7646 /* BeatPreview.m in Sources */,
 				B6F49CFC246D66B0006D88D4 /* FountainRegexes.m in Sources */,
@@ -1517,9 +1583,12 @@
 				B6F360AC250127C7001ACAEE /* BeatTimeline.m in Sources */,
 				B6B6C87725650BA4005294FE /* HighlandImport.m in Sources */,
 				B69BFC7A2565336F007A7D2B /* FadeInImport.m in Sources */,
+				B66F46362565ADA0003748DA /* NSMutableDictionary+DMPExtensions.m in Sources */,
 				B6D26BE624B9ED830041402B /* BeatTimer.m in Sources */,
 				B6F49D02246D66B0006D88D4 /* RecentFiles.m in Sources */,
+				B66F463A2565ADA0003748DA /* NSString+JavaSubstring.m in Sources */,
 				B6F49D03246D66B0006D88D4 /* ScrollView.m in Sources */,
+				B66F46382565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1545,6 +1614,14 @@
 				B62ADC7B23CCCE560015563A /* Base */,
 			);
 			name = PreviewViewController.xib;
+			sourceTree = "<group>";
+		};
+		B66F46312565ADA0003748DA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B66F46322565ADA0003748DA /* English */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		B6D2B72D2218B589005B8447 /* Document.xib */ = {
@@ -1588,6 +1665,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1642,6 +1720,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

@@ -36,7 +36,8 @@
  
  */
 
-#import <DiffMatchPatch/DiffMatchPatch.h>
+//#import <DiffMatchPatch/DiffMatchPatch.h>
+#import "DiffMatchPatch.h"
 #import "BeatComparison.h"
 
 #import "ContinousFountainParser.h"
