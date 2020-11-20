@@ -702,20 +702,19 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Zoom" id="xgR-jy-OLL">
                                     <items>
-                                        <menuItem isSeparatorItem="YES" id="c52-PG-mqe"/>
                                         <menuItem title="Zoom In" keyEquivalent="+" id="Vt3-Oc-Iy3">
                                             <connections>
-                                                <action selector="increaseFontSize:" target="-1" id="lZE-WX-ntU"/>
+                                                <action selector="zoomIn:" target="-1" id="yx8-mg-k74"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Zoom Out" keyEquivalent="-" id="LBq-PQ-NGT">
                                             <connections>
-                                                <action selector="decreaseFontSize:" target="-1" id="jGK-5e-gzd"/>
+                                                <action selector="zoomOut:" target="-1" id="vK6-1O-j8j"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Reset Zoom" keyEquivalent="." id="iVC-v6-5CT">
                                             <connections>
-                                                <action selector="resetFontSize:" target="-1" id="Ike-5t-niu"/>
+                                                <action selector="resetZoom:" target="-1" id="b1L-H5-PJj"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -822,7 +821,7 @@ DQ
                 <rect key="frame" x="0.0" y="0.0" width="579" height="367"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <box fixedFrame="YES" boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" id="i7G-pb-vjp">
+                    <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" id="i7G-pb-vjp">
                         <rect key="frame" x="0.0" y="39" width="579" height="328"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <view key="contentView" id="e6r-ME-W5n">
@@ -866,7 +865,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="328"/>
@@ -932,7 +931,7 @@ DQ
                             <action selector="showReference:" target="vEX-2F-hcj" id="ifI-a0-uTd"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" id="EgL-h8-fPx">
+                    <button verticalHuggingPriority="750" id="EgL-h8-fPx">
                         <rect key="frame" x="474.5" y="8" width="96" height="23"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="New" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Lab-Kg-ETM">
@@ -943,7 +942,7 @@ DQ
                             <action selector="newDocument:" target="vEX-2F-hcj" id="PLe-Ek-Ll5"/>
                         </connections>
                     </button>
-                    <popUpButton hidden="YES" verticalHuggingPriority="750" fixedFrame="YES" id="4MG-VJ-Mc8">
+                    <popUpButton hidden="YES" verticalHuggingPriority="750" id="4MG-VJ-Mc8">
                         <rect key="frame" x="133" y="9" width="166" height="23"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <popUpButtonCell key="cell" type="roundTextured" title="Tutorial &amp; Templates" bezelStyle="texturedRounded" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" autoenablesItems="NO" selectedItem="yd0-pY-Koc" id="iQD-AK-x7E">
@@ -988,19 +987,19 @@ DQ
                             <rect key="frame" x="0.0" y="0.0" width="534" height="317"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <scrollView appearanceType="darkAqua" fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" scrollerKnobStyle="dark" id="ERb-3X-MQJ">
+                                <scrollView appearanceType="darkAqua" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" scrollerKnobStyle="dark" id="ERb-3X-MQJ">
                                     <rect key="frame" x="210" y="0.0" width="324" height="317"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="eFV-ne-twe">
                                         <rect key="frame" x="0.0" y="0.0" width="324" height="317"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <textView editable="NO" drawsBackground="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" linkDetection="YES" textCompletion="NO" smartInsertDelete="YES" id="X7u-6E-wyW">
                                                 <rect key="frame" x="0.0" y="0.0" width="314" height="317"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <size key="minSize" width="314" height="317"/>
+                                                <size key="minSize" width="324" height="317"/>
                                                 <size key="maxSize" width="325" height="10000000"/>
                                                 <attributedString key="textStorage">
                                                     <fragment content="Test">
@@ -1075,19 +1074,19 @@ DQ
                 <rect key="frame" x="0.0" y="0.0" width="627" height="447"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <scrollView appearanceType="aqua" fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" id="DsW-5X-hrl">
+                    <scrollView appearanceType="aqua" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" id="DsW-5X-hrl">
                         <rect key="frame" x="0.0" y="35" width="627" height="412"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Ff0-z7-5BC">
                             <rect key="frame" x="0.0" y="0.0" width="627" height="412"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <textView editable="NO" importsGraphics="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="j3Y-oZ-sKT">
-                                    <rect key="frame" x="0.0" y="0.0" width="452" height="392"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="452" height="412"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <size key="minSize" width="452" height="391"/>
+                                    <size key="minSize" width="627" height="412"/>
                                     <size key="maxSize" width="627" height="10000000"/>
                                     <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                 </textView>

@@ -54,6 +54,8 @@
 		B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B138B65C19E1E8CA000489C4 /* FountainRegexes.m */; };
 		B62ADC9E23CCF7790015563A /* NSString+Whitespace.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7102218B389005B8447 /* NSString+Whitespace.m */; };
 		B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
+		B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
+		B6342D6925682D7D0034D54F /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
 		B6447CB124616C8400AA4EBC /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6447CB024616C8400AA4EBC /* MasterView.m */; };
 		B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
@@ -117,6 +119,14 @@
 		B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */; };
 		B6BBF3D024AC811600503EFB /* BeatScriptParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */; };
 		B6BBF3D124AC811600503EFB /* BeatScriptParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */; };
+		B6BE1AD42567B93500F7476A /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD02567B93500F7476A /* Courier Prime Sans Bold.ttf */; };
+		B6BE1AD52567B93500F7476A /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD02567B93500F7476A /* Courier Prime Sans Bold.ttf */; };
+		B6BE1AD62567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD12567B93500F7476A /* Courier Prime Sans Italic.ttf */; };
+		B6BE1AD72567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD12567B93500F7476A /* Courier Prime Sans Italic.ttf */; };
+		B6BE1AD82567B93500F7476A /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */; };
+		B6BE1AD92567B93500F7476A /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */; };
+		B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */; };
+		B6BE1ADB2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */; };
 		B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
 		B6CB9737254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
 		B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */; };
@@ -370,6 +380,8 @@
 		B62ADC7D23CCCE560015563A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B62ADC7E23CCCE560015563A /* fountainQuickLook.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = fountainQuickLook.entitlements; sourceTree = "<group>"; };
 		B62ADC8E23CCE20D0015563A /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		B6342D6525682D7B0034D54F /* OutlineViewItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
+		B6342D6625682D7B0034D54F /* OutlineViewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
 		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = "Beat/User Interface/MasterView.h"; sourceTree = SOURCE_ROOT; };
 		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = "Beat/User Interface/MasterView.m"; sourceTree = SOURCE_ROOT; };
 		B645A97D23CD03CC00F13710 /* NSString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Regex.h"; path = "Beat/Categories/NSString+Regex.h"; sourceTree = SOURCE_ROOT; };
@@ -448,6 +460,10 @@
 		B6B893D5235F09220007C5C1 /* BeatDocumentIcon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = BeatDocumentIcon.iconset; path = Beat/Icons/BeatDocumentIcon.iconset; sourceTree = SOURCE_ROOT; };
 		B6BBF3CE24AC811600503EFB /* BeatScriptParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatScriptParser.h; path = Beat/Scripting/BeatScriptParser.h; sourceTree = SOURCE_ROOT; };
 		B6BBF3CF24AC811600503EFB /* BeatScriptParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatScriptParser.m; path = Beat/Scripting/BeatScriptParser.m; sourceTree = SOURCE_ROOT; };
+		B6BE1AD02567B93500F7476A /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold.ttf"; sourceTree = "<group>"; };
+		B6BE1AD12567B93500F7476A /* Courier Prime Sans Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Italic.ttf"; sourceTree = "<group>"; };
+		B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans.ttf"; sourceTree = "<group>"; };
+		B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold Italic.ttf"; sourceTree = "<group>"; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecentFiles.h; sourceTree = "<group>"; };
 		B6CB9734254ED61900C310CC /* HorizontalPinchView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HorizontalPinchView.h; path = Timeline/HorizontalPinchView.h; sourceTree = "<group>"; };
 		B6CB9735254ED61900C310CC /* HorizontalPinchView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HorizontalPinchView.m; path = Timeline/HorizontalPinchView.m; sourceTree = "<group>"; };
@@ -725,6 +741,8 @@
 				B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */,
 				B624C144234BDE7100C438C7 /* BeatOutlineView.h */,
 				B624C145234BDE7100C438C7 /* BeatOutlineView.m */,
+				B6342D6525682D7B0034D54F /* OutlineViewItem.h */,
+				B6342D6625682D7B0034D54F /* OutlineViewItem.m */,
 			);
 			name = OutlineView;
 			sourceTree = "<group>";
@@ -780,6 +798,10 @@
 		B623BD512549B11B00201BC9 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */,
+				B6BE1AD02567B93500F7476A /* Courier Prime Sans Bold.ttf */,
+				B6BE1AD12567B93500F7476A /* Courier Prime Sans Italic.ttf */,
+				B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */,
 				B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */,
 				B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */,
 				B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */,
@@ -1208,6 +1230,8 @@
 				B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */,
 				B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */,
+				B6BE1AD42567B93500F7476A /* Courier Prime Sans Bold.ttf in Resources */,
+				B6BE1AD62567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B6146B23246A91420029DBD9 /* cards.png in Resources */,
 				B6907E3B233FE17C00741071 /* analysis.html in Resources */,
@@ -1218,8 +1242,10 @@
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
 				B6D872B3232567C40050ED2D /* timeline.html in Resources */,
 				B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */,
+				B6BE1AD82567B93500F7476A /* Courier Prime Sans.ttf in Resources */,
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,
+				B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B6146B25246A91420029DBD9 /* outline.png in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
 				B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */,
@@ -1241,6 +1267,7 @@
 			files = (
 				B6F49D0A246D66B0006D88D4 /* Courier Prime Bold Italic.ttf in Resources */,
 				B6F49D0B246D66B0006D88D4 /* printview.png in Resources */,
+				B6BE1AD72567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */,
 				B6F49D0C246D66B0006D88D4 /* Courier Prime Bold.ttf in Resources */,
 				B6F49D0D246D66B0006D88D4 /* Courier Prime Italic.ttf in Resources */,
 				B6F49D30246D66C8006D88D4 /* beat_manual.html in Resources */,
@@ -1264,10 +1291,13 @@
 				B6F49D20246D66B0006D88D4 /* timeline.html in Resources */,
 				B6F49D21246D66B0006D88D4 /* Images.xcassets in Resources */,
 				B623BD492549AFDA00201BC9 /* B_256_logo.png in Resources */,
+				B6BE1ADB2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B623BD452549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B6F49D22246D66B0006D88D4 /* Themes.plist in Resources */,
 				B6F49D23246D66B0006D88D4 /* ScriptCSS.css in Resources */,
+				B6BE1AD92567B93500F7476A /* Courier Prime Sans.ttf in Resources */,
 				B6F49D24246D66B0006D88D4 /* outline.png in Resources */,
+				B6BE1AD52567B93500F7476A /* Courier Prime Sans Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1477,6 +1507,7 @@
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
 				B600DD5F254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */,
 				B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
+				B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */,
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
 				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
 				B662FC0924C22167003EF967 /* OSFImport.m in Sources */,
@@ -1589,6 +1620,7 @@
 				B66F463A2565ADA0003748DA /* NSString+JavaSubstring.m in Sources */,
 				B6F49D03246D66B0006D88D4 /* ScrollView.m in Sources */,
 				B66F46382565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */,
+				B6342D6925682D7D0034D54F /* OutlineViewItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,7 +2,9 @@
 
 * New native timeline view, with support for storyline tracking and pinch-zooming
 * Other minor fixes
-* Beat now uses CocoaPods
+* Beat now uses CocoaPods (.... for now)
+* DiffMatchPatch modernization for ARC (about time)
+* Many other bug fixes 
 
 
 ## Beat 1.5

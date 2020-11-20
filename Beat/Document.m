@@ -40,7 +40,7 @@
  
  I am in the process of modularizing the code so that it could be ported more easily to iOS.
  
- Still, this is an anti-capitalist venture. There is no ethical consumption under capitalism.
+ Still, this is an anti-capitalist venture. There is no ethical consumption under capitalism. 
  
  Anyway, may this be of some use to you, dear friend.
  The abandoned git repository will be my monument when I'm gone.
@@ -114,6 +114,7 @@
 #import "TKSplitHandle.h"
 #import "BeatPrint.h"
 #import "BeatDocumentSettings.h"
+#import "OutlineViewItem.h"
 
 @interface Document ()
 
@@ -327,8 +328,8 @@
 
 #define APP_NAME @"Beat"
 
-// Tests for the future
-#define SPLITVIEW YES
+#define MIN_WINDOW_HEIGHT 350
+#define MIN_OUTLINE_WIDTH 270
 
 #define ZOOM_MODIFIER 40 // Still used by labels, should be fixed when possible
 
@@ -376,6 +377,7 @@
 #define DD_RIGHT 650
 #define DD_RIGHT_P .95
 
+// Title page element indent
 #define TITLE_INDENT .15
 
 #define CHARACTER_INDENT_P 0.36
@@ -383,13 +385,11 @@
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.75
 
-#define TREE_VIEW_WIDTH 330
-#define TIMELINE_VIEW_HEIGHT 120
-
 #define OUTLINE_SECTION_SIZE 13.0
 #define OUTLINE_SYNOPSE_SIZE 12.0
 #define OUTLINE_SCENE_SIZE 11.5
 
+// Print margin definitions
 #define MARGIN_TOP 30
 #define MARGIN_LEFT 50
 #define MARGIN_RIGHT 50
@@ -397,13 +397,10 @@
 
 @implementation Document
 
-#pragma mark - Document Basics
+#pragma mark - Document Initialization
 
 - (instancetype)init {
     self = [super init];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
-	
     return self;
 }
 - (void) close {
@@ -443,113 +440,86 @@
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
     [super windowControllerDidLoadNib:aController];
-	
 	_thisWindow = aController.window;
-	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, 350)];
-	
-    // Add any code here that needs to be executed once the windowController has loaded the document's window.
 	
 	// Hide the welcome screen
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
-	
-	// Revised layout code for 1.1.0 release
-	_documentWidth = DOCUMENT_WIDTH;
-	_textView.documentWidth = _documentWidth;
-	[self setZoom];
 
-	// Split view
-	_splitHandle.bottomOrLeftMinSize = 270;
-	_splitHandle.delegate = self;
+	// Initialize Theme Manager
+	// (before formatting the content, because we need the colors for formatting!)
+	self.themeManager = [ThemeManager sharedManager];
+	[self loadSelectedTheme:false];
+	_nightMode = [self isDark];
 	
-    // Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
-    NSRect newFrame = NSMakeRect(_thisWindow.frame.origin.x,
-                                 _thisWindow.frame.origin.y,
-                                 _documentWidth * 1.7,
-                                 _documentWidth * 1.5);
-    [_thisWindow setFrame:newFrame display:YES];
+	// Setup views
+	[self setupWindow];
+	[self readSettings];
 	
-	/*
-	// Accept mouse moved events + set window object to master view
-	[_thisWindow setAcceptsMouseMovedEvents:YES];
-	self.masterView.parentWindow = _thisWindow;
-	self.masterView.styleMask = _thisWindow.styleMask;
-	 */
+	// Load font set
+	[self loadSerifFonts];
 	
-	// Outline view setup
-	if (SPLITVIEW) {
-		self.outlineViewVisible = NO;
-		[_splitHandle collapseBottomOrLeftView];
-	} else {
-		self.outlineViewVisible = false;
-		self.outlineViewWidth.constant = 0;
-	}
-
-	// TextView setup
+	// Setup views
 	[self setupTextView];
+	[self setupOutlineView];
+	[self setupCards];
+	[self setupPreview];
+	[self setupTimeline];
+	[self setupTouchTimeline];
+	[self setupAnalysis];
+	[self setupColorPicker];
 	
+	// Initialize arrays
+	self.sceneNumberLabels = [[NSMutableArray alloc] init];
+	self.characterNames = [[NSMutableArray alloc] init];
+	self.sceneHeadings = [[NSMutableArray alloc] init];
 	
-	[[self.textScrollView documentView] setPostsBoundsChangedNotifications:YES];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(boundsDidChange:) name:NSViewBoundsDidChangeNotification object:[self.textScrollView contentView]];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
-		
-	// Window frame will be the same as text frame width at startup (outline is not visible by default)
-	// TextView won't have a frame size before load, so let's use the window width instead to set the insets.
-	self.textInsetY = TEXT_INSET_TOP;
-	self.textView.textInsetY = TEXT_INSET_TOP;
-	self.textView.zoomDelegate = self;
-	[self.textView setInsets];
-	//self.textView.textContainer.size = NSMakeSize(_documentWidth, self.textView.textContainer.size.height);
-	//self.textView.textContainerInset = NSMakeSize(_thisWindow.frame.size.width / 2 - _documentWidth / 2, _textInsetY);
-	
-	
-	// Set textView style
-	[self.textView setFont:[self courier]];
-    [self.textView setAutomaticQuoteSubstitutionEnabled:NO];
-    [self.textView setAutomaticDataDetectionEnabled:NO];
-    [self.textView setAutomaticDashSubstitutionEnabled:NO];
-	
-	// Set first responder to the text field to focus it on startup
-	[aController.window makeFirstResponder:self.textView];
-	[self.textView setEditable:YES];
-	
-	// Live Pagination
-	_paginator = [[FountainPaginator alloc] initForLivePagination:self];
-	
-	// Read default settings
-	// This is ugly but whatever
-	
-	/*
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:OFFSET_SCENE_NUMBERS_KEY]) {
-		self.offsetFromFirstCustomSceneNumber = YES;
-	} else {
-		self.offsetFromFirstCustomSceneNumber = [[NSUserDefaults standardUserDefaults] boolForKey:OFFSET_SCENE_NUMBERS_KEY];
-	}
-	*/
-	
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
-        self.matchParentheses = YES;
+	// Pagination etc.
+	self.paginator = [[FountainPaginator alloc] initForLivePagination:self];
+	self.printing.document = self;
+				
+    //Put any previously loaded data into the text view
+	_documentIsLoading = YES;
+    if (self.contentBuffer) {
+        [self setText:self.contentBuffer];
     } else {
-        self.matchParentheses = [[NSUserDefaults standardUserDefaults] boolForKey:MATCH_PARENTHESES_KEY];
+        [self setText:@""];
     }
+	
+	// Initialize parser
+    self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
+	self.parser.delegate = self;
+	
+	[self applyInitialFormating];
+	self.documentIsLoading = NO;
 
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:AUTOMATIC_LINEBREAKS_KEY]) {
-        self.autoLineBreaks = YES;
-    } else {
-        self.autoLineBreaks = [[NSUserDefaults standardUserDefaults] boolForKey:AUTOMATIC_LINEBREAKS_KEY];
-    }
+	[self initAutosave];
+	[self afterLoad];
+}
+
+- (void)readSettings {
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
+		self.matchParentheses = YES;
+	} else {
+		self.matchParentheses = [[NSUserDefaults standardUserDefaults] boolForKey:MATCH_PARENTHESES_KEY];
+	}
+
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:AUTOMATIC_LINEBREAKS_KEY]) {
+		self.autoLineBreaks = YES;
+	} else {
+		self.autoLineBreaks = [[NSUserDefaults standardUserDefaults] boolForKey:AUTOMATIC_LINEBREAKS_KEY];
+	}
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:TYPERWITER_KEY]) {
-        self.typewriterMode = NO;
-    } else {
-        self.typewriterMode = [[NSUserDefaults standardUserDefaults] boolForKey:TYPERWITER_KEY];
-    }
+		self.typewriterMode = NO;
+	} else {
+		self.typewriterMode = [[NSUserDefaults standardUserDefaults] boolForKey:TYPERWITER_KEY];
+	}
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_PAGENUMBERS_KEY]) {
-        self.showPageNumbers = NO;
-    } else {
-        self.showPageNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
-    }
+		self.showPageNumbers = NO;
+	} else {
+		self.showPageNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
+	}
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:PRINT_SCENE_NUMBERS_KEY]) {
 		self.printSceneNumbers = YES;
@@ -562,88 +532,32 @@
 	} else {
 		self.showSceneNumberLabels = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_SCENE_LABELS_KEY];
 	}
-	
-	//Initialize Theme Manager (before formatting the content, because we need the colors for formatting!)
-	self.themeManager = [ThemeManager sharedManager];
-	[self loadSelectedTheme:false];
-	_nightMode = [self isDark];
-		
-	// Initialize drag & drop for outline view
-	[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
-	[self.outlineView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-
-    //Put any previously loaded data into the text view
-	_documentIsLoading = YES;
-    if (self.contentBuffer) {
-        [self setText:self.contentBuffer];
-    } else {
-        [self setText:@""];
-    }
-	
-	// Outline view setup
-	self.filteredOutline = [[NSMutableArray alloc] init];
-	[self hideFilterView];
-	
-	// Scene number labels
-	self.sceneNumberLabels = [[NSMutableArray alloc] init];
-	
-	// Autocomplete setup
-	self.characterNames = [[NSMutableArray alloc] init];
-	self.sceneHeadings = [[NSMutableArray alloc] init];
-	
-    self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
-	self.parser.delegate = self;
-	self.analysis = [[FountainAnalysis alloc] init];
-
-	// CardView webkit
-	[self setupCards];
-	
-	// Print preview setup
-	[self setupPreview];
-	
-	// Setup printing
-	self.printing.document = self;
-	
-	// Timeline webkit
-	[self setupTimeline];
-	self.timelineVisible = false;
-	
-	self.timeline.enclosingScrollView.hasHorizontalScroller = NO;
-	[_timeline hide];
-	
-	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"jumpToScene"];
-	[self.timelineView.configuration.userContentController addScriptMessageHandler:self name:@"timelineContext"];
-	_timelineClickedScene = -1;
-	
-	// Touchbar timeline
-	self.touchbarTimeline.delegate = self;
-	self.touchbarTimelineButton.delegate = self;
-	
-	// Setup analysis
-	[self setupAnalysis];
-	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
-	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"debugData"];
-	
-	// Apply initial formating and set the document loading to be done
-	[self applyInitialFormating];
-	_documentIsLoading = NO;
-	
-	// Setup touch bar colors
-	[self initColorPicker];
-	
-	// Init scene filtering
-	_filters = [[SceneFiltering alloc] init];
-	
-	// Custom autosave
-	[self initAutosave];
-	
-	// I don't know why we need to do this
-	[self afterLoad];
 }
 
--(void)mouseMove:(NSEvent*)event {
-	NSLog(@"mouse move");
+- (void)setupWindow {
+	// The document width constant is ca. A4 width compared to the font size.
+	// It's used here and there for proportional measurement.
+	
+	_documentWidth = DOCUMENT_WIDTH;
+	_textView.documentWidth = _documentWidth;
+	
+	// Reset zoom
+	[self setZoom];
+
+	// Split view
+	_splitHandle.bottomOrLeftMinSize = MIN_OUTLINE_WIDTH;
+	_splitHandle.delegate = self;
+	[_splitHandle collapseBottomOrLeftView];
+	
+	// Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
+	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, MIN_WINDOW_HEIGHT)];
+	NSRect newFrame = NSMakeRect(_thisWindow.frame.origin.x,
+								 _thisWindow.frame.origin.y,
+								 _documentWidth * 1.7,
+								 _documentWidth * 1.5);
+	[_thisWindow setFrame:newFrame display:YES];
 }
+
 -(void)afterLoad {
 	// We'll send an asynchronous call (for some reason this is required) after loading to correctly display everything
 	dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -657,6 +571,7 @@
 		[self paginateFromIndex:0 sync:YES];
 	});
 }
+
 -(void)awakeFromNib {
 	// Set up recovery file saving
 	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
@@ -747,17 +662,20 @@
 /*
  
  Zooming in / out
-
- This is a mess. I am so sorry for anyone reading this.
- 
- Update 2019/09/06
- I have finally rebuilt the zooming. I have tried all sorts of tricks from magnification to other weird stuff, such as 3rd party libraries for scaling the NSScrollView. Everything was terrible and caused even more problems. I'm not too familiar with Cocoa and/or Objective-C, but if I understand correctly, the best way would be having a custom NSView inside the NSScrollView and then to magnify the scroll view. NSTextView's layout manager would then handle displaying the text in those custom views.
- 
- I still have no help and I'm working alone. Until that changes, I guess this won't get any better. :-)
- 
- What matters most is how well you walk through the fire.
  
  */
+
+- (IBAction)zoomIn:(id)sender {
+	[self zoom:YES];
+}
+- (IBAction)zoomOut:(id)sender {
+	[self zoom:NO];
+}
+- (IBAction)resetZoom:(id)sender {
+	_magnification = DEFAULT_MAGNIFY;
+	[self setScaleFactor:_magnification adjustPopup:false];
+	[self updateLayout];
+}
 
 - (void) zoom: (bool) zoomIn {
 	if (!_scaleFactor) _scaleFactor = _magnification;
@@ -849,8 +767,8 @@
 	[lm ensureLayoutForTextContainer:tc];
 }
 
-// This resets the zoom to the saved setting
 - (void) setZoom {
+	// This resets the zoom to the saved setting
 	if (![[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY]) {
 		_magnification = DEFAULT_MAGNIFY;
 	} else {
@@ -864,15 +782,6 @@
 	[self setScaleFactor:_magnification adjustPopup:false];
 	//[self setScaleFactor:_magnification adjustPopup:false];
 
-	[self updateLayout];
-}
-
-// Old method names. Should be fixed.
-- (IBAction)increaseFontSize:(id)sender { [self zoom:true]; }
-- (IBAction)decreaseFontSize:(id)sender { [self zoom:false]; }
-- (IBAction)resetFontSize:(id)sender {
-	_magnification = DEFAULT_MAGNIFY;
-	[self setScaleFactor:_magnification adjustPopup:false];
 	[self updateLayout];
 }
 
@@ -897,7 +806,8 @@
  */
 
 
-#pragma mark - Window settings
+#pragma mark - Window & data handling
+
 // Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
 + (BOOL)autosavesInPlace {
     return NO;
@@ -950,13 +860,30 @@
 # pragma mark - Text I/O
 
 - (void)setupTextView {
+	self.textView.editable = YES;
+	
 	self.textView.textContainer.widthTracksTextView = false;
 	self.textView.textContainer.heightTracksTextView = false;
 	
-	
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+	// Set textView style
+	self.textView.font = self.courier;
+	self.textView.automaticDataDetectionEnabled = NO;
+	self.textView.automaticQuoteSubstitutionEnabled = NO;
+	self.textView.automaticDashSubstitutionEnabled = NO;
+
+	// Create a default paragraph style for line height
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	[self.textView setDefaultParagraphStyle:paragraphStyle];
+	
+	self.textInsetY = TEXT_INSET_TOP;
+	self.textView.textInsetY = TEXT_INSET_TOP;
+	[self.textView setInsets];
+	
+	self.textView.zoomDelegate = self;
+	
+	// Make the text view first responder
+	[_thisWindow makeFirstResponder:self.textView];
 }
 
 - (NSString *)getText
@@ -2423,6 +2350,42 @@
 	}
 }
 
+#pragma mark - Scrolling
+
+- (void)scrollToScene:(OutlineScene*)scene {
+	NSRange lineRange = NSMakeRange([scene line].position, [scene line].string.length);
+	[self.textView setSelectedRange:lineRange];
+	[self.textView scrollRangeToVisible:lineRange];
+}
+- (void)scrollToRange:(NSRange)range {
+	[self.textView setSelectedRange:range];
+	[self.textView scrollRangeToVisible:range];
+}
+
+/* Helper functions for the imagined scripting module */
+- (void)scrollTo:(NSInteger)location {
+	NSRange range = NSMakeRange(location, 0);
+	[self.textView setSelectedRange:range];
+	[self.textView scrollRangeToVisible:range];
+}
+- (void)scrollToLineIndex:(NSInteger)index {
+	Line *line = [self.parser.lines objectAtIndex:index];
+	if (!line) return;
+	
+	NSRange range = NSMakeRange(line.position, line.string.length);
+	[self.textView setSelectedRange:range];
+	[self.textView scrollRangeToVisible:range];
+}
+- (void)scrollToSceneIndex:(NSInteger)index {
+	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
+	if (!scene) return;
+	
+	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
+	[self.textView setSelectedRange:range];
+	[self.textView scrollRangeToVisible:range];
+}
+
+
 #pragma mark - Parser delegation
 
 // WIP: This behaviour should be heavily expanded
@@ -2498,10 +2461,21 @@
 
 # pragma  mark - Fonts
 
+- (void)loadSerifFonts {
+	_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
+	_boldCourier = [NSFont fontWithName:@"Courier Prime Bold" size:[self fontSize]];
+	_italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:[self fontSize]];
+}
+- (void)loadSansSerifFonts {
+	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
+	_boldCourier = [NSFont fontWithName:@"Courier Prime Sans Bold" size:[self fontSize]];
+	_italicCourier = [NSFont fontWithName:@"Courier Prime Sans Italic" size:[self fontSize]];
+}
+/*
 - (NSFont*)courier
 {
     if (!_courier) {
-		_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
+		_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
     }
     return _courier;
 }
@@ -2509,7 +2483,7 @@
 - (NSFont*)boldCourier
 {
     if (!_boldCourier) {
-        _boldCourier = [NSFont fontWithName:@"Courier Prime Bold" size:[self fontSize]];
+        _boldCourier = [NSFont fontWithName:@"Courier Prime Sans Bold" size:[self fontSize]];
     }
     return _boldCourier;
 }
@@ -2517,11 +2491,12 @@
 - (NSFont*)italicCourier
 {
     if (!_italicCourier) {
-        _italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:[self fontSize]];
+        _italicCourier = [NSFont fontWithName:@"Courier Prime Sans Italic" size:[self fontSize]];
     }
     return _italicCourier;
 }
-
+*/
+ 
 - (NSFont*)sectionFont
 {
 	if (!_sectionFont) {
@@ -2787,29 +2762,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	[self.parser createOutline];
 	[self updateSceneNumberLabels];
-	
-	/*
-	NSString *rawText = [self getText];
-	
-	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
-	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
-	
-	_sceneNumberLabelUpdateOff = true;
-	
-	for (OutlineScene * scene in [self getScenes]) {
-		if (![testSceneNumber evaluateWithObject: scene.string]) {
-			if (!scene.sceneNumber) { scene.sceneNumber = @""; }
-			NSString *sceneNumber = [NSString stringWithFormat:@"%@%@%@", @" #", scene.sceneNumber, @"#"];
-			NSUInteger index = scene.line.position + [scene.string length];
-			[self addString:sceneNumber atIndex:index];
-		}
-	}
-	
-	_sceneNumberLabelUpdateOff = false;
-	[self updateSceneNumberLabels];
-	
-	[[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:rawText];
-	*/
 }
 
 - (void)undoSceneNumbering:(NSString*)rawText
@@ -3059,66 +3011,63 @@ static NSString *forceDualDialogueSymbol = @"^";
 {
 	self.outlineViewVisible = !self.outlineViewVisible;
 	
-	if (SPLITVIEW) {
-		if (_outlineViewVisible) {
-			// Show outline
-			[self reloadOutline];
-			[self collectCharacterNames]; // For filtering
-			
-			self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
-			
-			if (![self isFullscreen]) {
-				CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
-				CGFloat newWidth = _thisWindow.frame.size.width + sidebarWidth;
-				CGFloat newX = _thisWindow.frame.origin.x - sidebarWidth / 2;
-				CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
-							
-				// Ensure the main document won't go out of screen bounds when opening the sidebar
-				if (newWidth > screenWidth) {
-					newWidth = screenWidth * .9;
-					newX = screenWidth / 2 - newWidth / 2;
-				}
-				
-				if (newX + newWidth > screenWidth) {
-					newX = newX - (newX + newWidth - screenWidth);
-				}
-				
-				if (newX < 0) {
-					newX = 0;
-				}
-				
-				NSRect newFrame = NSMakeRect(newX,
-											 _thisWindow.frame.origin.y,
-											 newWidth,
-											 _thisWindow.frame.size.height);
-				[_thisWindow setFrame:newFrame display:YES];
+	if (_outlineViewVisible) {
+		// Show outline
+		[self reloadOutline];
+		[self collectCharacterNames]; // For filtering
+		
+		self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
+		
+		if (![self isFullscreen]) {
+			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
+			CGFloat newWidth = _thisWindow.frame.size.width + sidebarWidth;
+			CGFloat newX = _thisWindow.frame.origin.x - sidebarWidth / 2;
+			CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
+						
+			// Ensure the main document won't go out of screen bounds when opening the sidebar
+			if (newWidth > screenWidth) {
+				newWidth = screenWidth * .9;
+				newX = screenWidth / 2 - newWidth / 2;
 			}
 			
-			// Show sidebar
-			[_splitHandle restoreBottomOrLeftView];
-		} else {
-			// Hide outline
-			self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
-			
-			if (![self isFullscreen]) {
-				CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
-				CGFloat newX = _thisWindow.frame.origin.x + sidebarWidth / 2;
-				NSRect newFrame = NSMakeRect(newX,
-											 _thisWindow.frame.origin.y,
-											 _thisWindow.frame.size.width - sidebarWidth,
-											 _thisWindow.frame.size.height);
-
-				[_thisWindow setFrame:newFrame display:YES];
+			if (newX + newWidth > screenWidth) {
+				newX = newX - (newX + newWidth - screenWidth);
 			}
 			
-			[_splitHandle collapseBottomOrLeftView];
+			if (newX < 0) {
+				newX = 0;
+			}
+			
+			NSRect newFrame = NSMakeRect(newX,
+										 _thisWindow.frame.origin.y,
+										 newWidth,
+										 _thisWindow.frame.size.height);
+			[_thisWindow setFrame:newFrame display:YES];
 		}
 		
-		// Fix layout
-		[_thisWindow layoutIfNeeded];
+		// Show sidebar
+		[_splitHandle restoreBottomOrLeftView];
+	} else {
+		// Hide outline
+		self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
+		
+		if (![self isFullscreen]) {
+			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
+			CGFloat newX = _thisWindow.frame.origin.x + sidebarWidth / 2;
+			NSRect newFrame = NSMakeRect(newX,
+										 _thisWindow.frame.origin.y,
+										 _thisWindow.frame.size.width - sidebarWidth,
+										 _thisWindow.frame.size.height);
 
-		[self updateLayout];
+			[_thisWindow setFrame:newFrame display:YES];
+		}
+		
+		[_splitHandle collapseBottomOrLeftView];
 	}
+	
+	// Fix layout
+	[_thisWindow layoutIfNeeded];
+	[self updateLayout];
 }
 
 //Empty function, which needs to exists to make the share access the validateMenuItems function
@@ -3518,7 +3467,21 @@ static NSString *forceDualDialogueSymbol = @"^";
  
  */
 
-#pragma  mark - Outline data source + delegate
+#pragma  mark - Outline Functions
+
+- (void)setupOutlineView {
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
+	
+	self.filters = [[SceneFiltering alloc] init];
+	self.filteredOutline = [[NSMutableArray alloc] init];
+	[self hideFilterView];
+	
+	// Initialize drag & drop for outline view
+	[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
+	[self.outlineView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
+
+
+}
 
 - (NSUInteger) getNumberOfScenes {
 	NSUInteger result = 0;
@@ -3579,6 +3542,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self maskScenes];
 }
 
+#pragma mark - Outline View data source + delegation
+
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
 	// If we have a search term, let's use the filtered array
@@ -3605,225 +3570,16 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return NO;
 }
 
-/*
- 
- Searching for sunlight there in your room
- Trolling for one light there in the gloom
- You dream of a better day
- alone with the moon
- 
- */
-
 // Outline items
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 { @autoreleasepool {
     if ([item isKindOfClass:[OutlineScene class]]) {
-		
-        OutlineScene* line = item;
-		NSUInteger sceneNumberLength = 0;
-		bool currentScene = false;
-
-		// Check that this scene is not omited from the screenplay
-		bool omited = line.line.omited;
-		
-		// Create padding for entry
-		NSString *padding = @"";
-		NSString *paddingSpace = @"    ";
-		padding = [@"" stringByPaddingToLength:(line.sectionDepth * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
-		
-		// Section padding is slightly smaller
-		if (line.type == section) {
-			if (line.sectionDepth > 1) padding = [@"" stringByPaddingToLength:((line.sectionDepth - 1) * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
-			else padding = @"";
-		}
-		
-		
-		// The outline elements will be formatted as rich text,
-		// which is apparently VERY CUMBERSOME in Cocoa/Objective-C.
-		NSMutableString *rawString = [NSMutableString stringWithString:line.string];
-		
-		// Strip any formatting
-		[rawString replaceOccurrencesOfString:@"*" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [rawString length])];
-		
-		NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:rawString];
-		
-		// If empty, return the empty string
-		if ([resultString length] == 0) return resultString;
-		
-		// Remove any formatting
-        if (line.type == heading) {
-			if (_currentScene.string) {
-				if (_currentScene == line) currentScene = true;
-				if ([line.string isEqualToString:_currentScene.string] && line.sceneNumber == _currentScene.sceneNumber) currentScene = true;
-			}
-			
-			//Replace "INT/EXT" with "I/E" to make the lines match nicely
-			NSString* string = [rawString uppercaseString];
-            string = [string stringByReplacingOccurrencesOfString:@"INT/EXT" withString:@"I/E"];
-            string = [string stringByReplacingOccurrencesOfString:@"INT./EXT" withString:@"I/E"];
-            string = [string stringByReplacingOccurrencesOfString:@"EXT/INT" withString:@"I/E"];
-            string = [string stringByReplacingOccurrencesOfString:@"EXT./INT" withString:@"I/E"];
-			
-			// Remove force scene character
-			if ([string characterAtIndex:0] == '.') {
-				string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-			}
-			
-			// Looking at this a year after starting the project, finding out it's convoluted and deciding not to do anything about it
-			if (line.sceneNumber) {
-				// Clean up forced scene number from the string
-				string = [string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
-								
-				NSString *sceneHeader;
-				if (!omited) {
-					sceneHeader = [NSString stringWithFormat:@" %@%@.", padding, line.sceneNumber];
-					string = [NSString stringWithFormat:@"%@ %@", sceneHeader, string];
-				} else {
-					// If scene is omited, put it in brackets
-					sceneHeader = [NSString stringWithFormat:@" %@", padding];
-					string = [NSString stringWithFormat:@"%@(%@)", sceneHeader, string];
-				}
-				
-				NSFont *font = [NSFont systemFontOfSize:OUTLINE_SCENE_SIZE];
-				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
-				
-				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
-				sceneNumberLength = [sceneHeader length];
-				
-				// Scene number will be displayed in a slightly darker shade
-				if (!omited) {
-					[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
-					[resultString addAttribute:NSForegroundColorAttributeName value:[BeatColors color:@"darkGray"] range:NSMakeRange([sceneHeader length], [resultString length] - [sceneHeader length])];
-				}
-				// If it's omited, make it totally gray
-				else {
-					[resultString addAttribute:NSForegroundColorAttributeName value:[BeatColors color:@"veryDarkGray"] range:NSMakeRange(0, [resultString length])];
-				}
-				
-				// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
-				if (currentScene) {
-					[resultString addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:NSMakeRange(0, [resultString length])];
-				}
-								
-				// Lines without RTF formatting have uneven leading, so let's fix that.
-				[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0,[resultString length])];
-				
-            } else {
-                //return [NSString stringWithFormat:@"  %@", string];
-				resultString = [[NSMutableAttributedString alloc] initWithString:string];
-            }
-			
-			[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
-        }
-        if (line.type == synopse) {
-            NSString* string = rawString;
-            if ([string length] > 0) {
-                //Remove "="
-                if ([string characterAtIndex:0] == '=') {
-                    string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-                }
-                //Remove leading whitespace
-                while (string.length && [string characterAtIndex:0] == ' ') {
-                    string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-                }
-				string = [NSString stringWithFormat:@" %@%@", padding, string];
-                //string = [@"  " stringByAppendingString:string];
-				
-				NSFont *font = [NSFont systemFontOfSize:OUTLINE_SECTION_SIZE];
-				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
-				
-				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
-				
-				// Italic + white color
-				[resultString applyFontTraits:NSItalicFontMask range:NSMakeRange(0,[resultString length])];
-				
-				[resultString addAttribute:NSForegroundColorAttributeName value:self.themeManager.theme.outlineHighlight range:NSMakeRange(0, [resultString length])];
-            } else {
-                resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
-            }
-        }
-        if (line.type == section) {
-            NSString* string = rawString;
-            if ([string length] > 0) {
-				
-                //Remove "#"
-				while ([string characterAtIndex:0] == '#' && [string length] > 1) {
-                    string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-                }
-				
-                //Remove leading whitespace
-                while (string.length && [string characterAtIndex:0] == ' ') {
-                    string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-                }
-				
-				string = [NSString stringWithFormat:@"%@%@", padding, string];
-				
-				NSFont *font = [NSFont systemFontOfSize:OUTLINE_SECTION_SIZE];
-				NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
-
-				resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
-				
-				// Bold + highlight color
-				[resultString addAttribute:NSForegroundColorAttributeName value:self.themeManager.theme.outlineHighlight range:NSMakeRange(0,[resultString length])];
-				
-				[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
-            } else {
-                resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
-            }
-        }
-
-		// Don't color omited scenes
-		if (line.color && !omited) {
-			//NSMutableAttributedString * color = [[NSMutableAttributedString alloc] initWithString:@" ⬤" attributes:nil];
-			NSString *colorString = [line.color lowercaseString];
-			NSColor *colorName = [BeatColors color:colorString];
-			
-			// If we found a suitable color, let's add it
-			if (colorName != nil) {
-				[resultString addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(sceneNumberLength, [resultString length] - sceneNumberLength)];
-				//[color addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(0, 2)];
-				//[resultString appendAttributedString:color];
-			}
-		}
-		
-		return resultString;
+		// Note: OutlineViewItem returns an NSMutableAttributedString
+		return [OutlineViewItem withScene:item currentScene:_currentScene];
     }
     return @"";
 	
 } }
-
-- (void)scrollToScene:(OutlineScene*)scene {
-	NSRange lineRange = NSMakeRange([scene line].position, [scene line].string.length);
-	[self.textView setSelectedRange:lineRange];
-	[self.textView scrollRangeToVisible:lineRange];
-}
-- (void)scrollToRange:(NSRange)range {
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
-}
-
-/* Helper functions for the imagined scripting module */
-- (void)scrollTo:(NSInteger)location {
-	NSRange range = NSMakeRange(location, 0);
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
-}
-- (void)scrollToLineIndex:(NSInteger)index {
-	Line *line = [self.parser.lines objectAtIndex:index];
-	if (!line) return;
-	
-	NSRange range = NSMakeRange(line.position, line.string.length);
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
-}
-- (void)scrollToSceneIndex:(NSInteger)index {
-	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
-	if (!scene) return;
-	
-	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
-}
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
@@ -4007,14 +3763,15 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 }
 
-- (void)initColorPicker {
+- (void)setupColorPicker {
 	for (NSTouchBarItem *item in [self.textView.touchBar templateItems]) {
 		if ([item.className isEqualTo:@"NSColorPickerTouchBarItem"]) {
 			NSColorPickerTouchBarItem *picker = (NSColorPickerTouchBarItem*)item;
+			
 			_colorPicker = picker;
 			picker.showsAlpha = NO;
 			picker.colorList = [[NSColorList alloc] init];
-
+			
 			[picker.colorList setColor:NSColor.blackColor forKey:@"none"]; // THE HOUSE IS BLACK.
 			[picker.colorList setColor:[BeatColors color:@"red"] forKey:@"red"];
 			[picker.colorList setColor:[BeatColors color:@"blue"] forKey:@"blue"];
@@ -4315,13 +4072,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	if ([message.name isEqualToString:@"printCards"]) {
 		[self printCards];
-	}
-	
-	// Context menu for timeline
-	if ([message.name isEqualToString:@"timelineContext"]) {
-		_timelineClickedScene = [message.body integerValue];
-		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:_timelineClickedScene];
-		if (scene) [self contextMenu:scene.string];
 	}
 	
 	// Move scene via card view
@@ -4627,29 +4377,28 @@ static NSString *forceDualDialogueSymbol = @"^";
 	} else {
 		[_timeline hide];
 		scrollPosition.y = scrollPosition.y * _magnification;
-		
-		CGFloat y = scrollPosition.y;
-		CGFloat h = self.textScrollView.contentView.bounds.size.height;
-		NSLog(@"y %f  / h %f (full h %f)", y, h, self.textScrollView.documentView.frame.size.height);
-		
 		[self.textScrollView.contentView scrollToPoint:scrollPosition];
 	}
+}
+
+- (void) setupTouchTimeline {
+	self.touchbarTimeline.delegate = self;
+	self.touchbarTimelineButton.delegate = self;
 }
 
 - (void) setupTimeline {
 	// New timeline
 	_timeline.delegate = self;
 	_timeline.heightConstraint = _timelineViewHeight;
+	self.timeline.enclosingScrollView.hasHorizontalScroller = NO;
+	
+	[_timeline hide];
+	_timelineClickedScene = -1;
 }
 
 - (void) reloadTimeline {
-	// New native timeline system waiting to be completed
 	[self.timeline reload];
 	return;
-}
-// MAKE CATEGORY
-- (NSString*)fixQuotations: (NSString*)string {
-	return [string stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
 }
 
 // WIP: MOVE THIS SOMEWHERE
@@ -4760,7 +4509,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (IBAction)createAnalysis:(id)sender {
 	// Setup analyzer
 	
-	[self.analysis setupScript:[self.parser lines] scenes:[self getOutlineItems] characterGenders:_characterGenders];
+	[self.analysis setupScript:self.parser.lines scenes:[self getOutlineItems] characterGenders:_characterGenders];
 	
 	NSString *jsonString = [self.analysis getJSON];
 	NSString *javascript = [NSString stringWithFormat:@"refresh(%@)", jsonString];
@@ -4768,10 +4517,17 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 - (void) setupAnalysis {
+	// N.B. Genders are saved locally in app preferences (for now)
+	self.analysis = [[FountainAnalysis alloc] init];
+	
 	NSString *analysisPath = [[NSBundle mainBundle] pathForResource:@"analysis.html" ofType:@""];
 	NSString *content = [NSString stringWithContentsOfFile:analysisPath encoding:NSUTF8StringEncoding error:nil];
 	_characterGenders = [NSMutableDictionary dictionaryWithDictionary:[self getGenders]];
 	[_analysisView loadHTMLString:content baseURL:nil];
+	
+	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
+	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"debugData"];
+
 }
 - (IBAction)closeAnalysis:(id)sender {
 	[_thisWindow endSheet:_analysisPanel];
@@ -4781,7 +4537,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[_characterGenders setObject:gender forKey:name];
 }
 - (NSMutableDictionary*) getGenders {
-	// The gender dictionary is saved per FILE
+	// The gender dictionary is saved per FILE into app preferences, not into the files itself :-(
 	return [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:[self fileNameString]];
 }
 - (void) saveGenders {
@@ -4982,13 +4738,12 @@ triangle walks
 #pragma mark - Pagination
 
 /*
+
+ Pagination was a dream of mine which I managed to make happen.
+ Live pagination should still be optimized so that we only paginate
+ from a given index.
  
- Let's make a couple of things clear:
- - this probably will never make it into the main branch
- - this is a complete waste of time
- 
- Update 2020-11-07:
- It's in the main branch
+ What matters most is how well you walk through the fire.
  
  */
 
@@ -5035,13 +4790,11 @@ triangle walks
 - (void)paginateFromIndex:(NSInteger)index sync:(bool)sync {
 	if (!self.showPageNumbers) return;
 	
-	// __block NSArray *lines = [NSArray arrayWithArray:self.parser.lines];
-	
 	// Reset page size (just in case)
 	self.paginator.paperSize = self.printInfo.paperSize;
 	
 	/*
-	 
+
 	 WIP!!!
 	 - have the paginator be retained in memory to only perform pagination according to changed indices
 	 
@@ -5253,9 +5006,7 @@ triangle walks
 			[fields[key] setStringValue:@""];
 		}
 	}
-	
-	//_customFields = [NSMutableDictionary dictionaryWithDictionary:titlePage];
-	
+		
 	// Display
 	[_thisWindow beginSheet:_titlePagePanel completionHandler:nil];
 }
