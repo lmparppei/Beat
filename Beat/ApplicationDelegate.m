@@ -378,32 +378,6 @@
 {
 	BeatFileImport *import = [[BeatFileImport alloc] init];
 	[import fdx];
-	
-	/*
-	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
-	[openDialog setAllowedFileTypes:@[@"fdx"]];
-
-	[openDialog beginWithCompletionHandler:^(NSInteger result) {
-		if (result == NSFileHandlingPanelOKButton) {
-			
-			__block FDXImport *fdxImport;
-			fdxImport = [[FDXImport alloc] initWithURL:openDialog.URL completion:^(void) {
-				if ([fdxImport.script count] > 0) {
-					NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
-					NSError *error;
-					
-					[[fdxImport scriptAsString] writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
-					
-					if (!error) {
-						dispatch_async(dispatch_get_main_queue(), ^(void){
-							[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
-						});
-					}
-				}
-			}];
-		}
-	}];
-	 */
 }
 - (IBAction)importCeltx:(id)sender
 {

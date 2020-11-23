@@ -110,7 +110,7 @@
 	// Set header if sent
 	if (header.length) [script setValue:header forKey:@"header"];
 	
-	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:document print:YES];
+	BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPrint:script document:document];
 	return html.html;
 }
 

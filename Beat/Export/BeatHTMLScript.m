@@ -27,42 +27,48 @@
 /*
  
  This piece of code outputs the screenplay as HTML. It is based on FNHTMLScript.m.
- It now natively uses the Beat data structure (Line*) and the Continuous Fountain Parser
- instead of the old, open source Fountain stuff. It's now about 10 times faster and more reliable.
+ It now natively uses the Beat data structure (Line) and the Continuous Fountain Parser
+ instead of the old, open source Fountain stuff. It's now about 10 times faster and
+ more reliable.
   
  Note that HTML output links to either screen or print CSS depending on the target format.
  Print & PDF versions rely on PrintCSS.css and preview mode uses ScriptCSS.css.
+ Pagination is a bit messy, but generally speaking, it inherits print settings
+ and page size either from the original Document class or defaults to A4.
  
  The old open source stuff was very, very dated, and in late 2019 I ran into pretty
- big problems, which had to do with computer architecture stuff and I was ill prepared
- that my little programming project would require understanding of that. The code
- used a library, RegexKitLite, and I had to rewrite everything referring to it.
+ big problems, which had to do with computer architecture stuff. I was ill prepared
+ for my little programming project requiring any understanding of that. The code
+ used a library called RegexKitLite and I had to rewrite everything referring to it.
  
- I saved the rant below from those days:
+ I saved the rant below from those days, because it's fairly funny and touching:
  
- - As I'm writing this, some functions in RegexKitLite.h have been deprecated in macOS 10.12+.
-   Fair enough - it was apparently last updated in 2010.
+ - As I'm writing this, some functions in RegexKitLite.h have been deprecated in
+   macOS 10.12+. Fair enough - it was apparently last updated in 2010.
  
-   Back then, I hadn't made any films. In 2010, I was young, madly in love and had dreams and aspirations.
-   I had just recently started my studies in a film school.
-   In 9 years, I figured back then, I'd be making films that really communicated the pain I had gone through.
-   My films would reach out to other lonely people, confined in their gloomy tomb, assured of their doom.
+   Back then, I hadn't made any films. In 2010, I was young, madly in love and
+   had dreams and aspirations. I had just recently started my studies in a film school.
+   In 9 years, I figured back then, I'd be making films that really communicated the
+   pain I had gone through. My films would reach out to other lonely people, confined
+   in their gloomy tomb, assured of their doom.
  
    Well.
  
-   Instead, I'm reading about fucking C enumerators and OS spin locks to be able to build my own fucking software,
-   which - mind you - ran just fine a few weeks ago.
+   Instead, I'm reading about fucking C enumerators and OS spin locks to be able to
+   build my own fucking software, which - mind you - ran just fine a few weeks ago.
  
    Hence, I tried to replace the deprecated spin locks of RegexKitLite.h with modern ones.
-   It was about to destroy my inner child. I just wanted to write nice films, I wasn't planning on fucking
-   learning any motherfucking C!!!!!!
+   It was about to destroy my inner child. I just wanted to write nice films, I wasn't
+   planning on fucking learning any motherfucking C!!!!!!
  
-   SO, if you are reading this: Beat now relies on a customized RegexKitLite, which might work or not.
-   It could crash systems all around the world. It could consume your computer's soul and kill any glimpse of hope.
+   SO, if you are reading this: Beat now relies on a customized RegexKitLite, which might
+   work or not. It could crash systems all around the world. It could consume your
+   computer's soul and kill any glimpse of hope.
  
-   I could have spent these hours with my dear friends, my lover or just watching flowers grow and maybe talking to them.
-   Or even writing my film. I didn't. Here I am, typing this message to some random fucker who, for whatever reason,
-   decides to take a look at my horrible code sometime in the future.
+   I could have spent these hours with my dear friends, my lover or just watching flowers
+   grow and maybe talking to them. Or even writing my film. I didn't. Here I am, typing
+   this message to some random fucker who, for whatever reason, decides to take a look at
+   my horrible code sometime in the future.
  
    Probably it's me, though.
  
@@ -85,126 +91,62 @@
  At first, it was used only for the previews, but now every single reference to the old
  Fountain stuff has been removed!
  
+ UPDATE sometime in November 2020:
+ The code has been cleaned up a bit.
+ 
 */
 
 #import "BeatHTMLScript.h"
 #import "Line.h"
 #import "FountainRegexes.h"
 #import "FountainPaginator.h"
-
-// FUCK YOU REGEXKITLITE.H
-//#import "RegexKitLite.h"
 #import "RegExCategories.h"
 
 @interface BeatHTMLScript ()
 
 @property (readonly, copy, nonatomic) NSString *cssText;
-@property (copy, nonatomic) NSString *bodyText;
 @property (nonatomic) NSInteger numberOfPages;
 @property (nonatomic) NSString *currentScene;
 @property (nonatomic) NSString *header;
-@property (nonatomic) bool quickLook;
-@property (nonatomic) bool comparison;
+@property (nonatomic) bool print;
+@property (nonatomic) BeatHTMLOperation operation;
+
 @end
 
 @implementation BeatHTMLScript
 
-- (id)initWithScript:(NSDictionary*) script {
-    self = [super init];
-    if (self) {
-        _script = script[@"script"];
-		_titlePage = script[@"title page"];
-		_header = script[@"header"];
-		
-        _font = [QUQFont fontWithName:@"Courier" size:12];
-    }
-    return self;
-}
-
-- (id)initWithScript:(NSDictionary *)script print:(bool)print {
-	self = [super init];
-	if (self) {
-        _script = script[@"script"];
-		_titlePage = script[@"title page"];
-		_header = script[@"header"];
-		
-        _font = [QUQFont fontWithName:@"Courier" size:12];
-		_print = print;
-	}
-	return self;
-}
-
-- (id)initWithScript:(NSArray *)script document:(NSDocument*)aDocument
+- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene
 {
-    self = [super init];
-    if (self) {
-        _script = script;
-        _font = [QUQFont fontWithName:@"Courier" size:12];
-        _document = aDocument;
-    }
-    return self;
+	return [self initWithScript:script document:document scene:scene operation:ForPreview];
 }
-
-- (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene
+- (id)initForQuickLook:(NSDictionary *)script {
+	return [self initWithScript:script document:nil scene:nil operation:ForQuickLook];
+}
+- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document
 {
-	self = [super init];
-	if (self) {
-        _script = script[@"script"];
-		_titlePage = script[@"title page"];
-		_header = script[@"header"];
-		
-        _font = [QUQFont fontWithName:@"Courier" size:12];
-		_document = document;
-		_currentScene = scene;
-	}
-	return self;
+	return [self initWithScript:script document:document scene:nil operation:ForPrint];
+	
 }
-
-- (id)initWithScript:(NSDictionary *)script quickLook:(bool)quickLook {
+- (id)initWithScript:(NSDictionary*)script document:(NSDocument*)document scene:(NSString*)currentScene operation:(BeatHTMLOperation)operation {
 	self = [super init];
-	if (self) {
-        _script = script[@"script"];
-		_titlePage = script[@"title page"];
-		_header = script[@"header"];
-		
-        _font = [QUQFont fontWithName:@"Courier" size:12];
-		_document = nil;
-		_currentScene = nil;
-		_quickLook = quickLook;
-	}
-	return self;
-}
-
-- (id)initForComparisonWithScript:(NSDictionary *)script {
-	self = [super init];
+	
 	if (self) {
 		_script = script[@"script"];
 		_titlePage = script[@"title page"];
 		_header = script[@"header"];
+		_currentScene = currentScene;
 		
-		_font = [QUQFont fontWithName:@"Courier" size:12];
-		_document = nil;
-		_currentScene = nil;
-		_comparison = YES;
-	}
-	return self;
-}
-
-
-- (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document print:(bool)print
-{
-	self = [super init];
-	if (self) {
-        _script = script[@"script"];
-		_titlePage = script[@"title page"];
-		_header = script[@"header"];
-		
-        _font = [QUQFont fontWithName:@"Courier" size:12];
+		_font = [NSFont fontWithName:@"Courier" size:12];
 		_document = document;
-		_print = print;
+		_operation = operation;
+		
+		if (_operation == ForPrint) _print = YES;
 	}
+	
 	return self;
 }
+
+#pragma mark - HTML content
 
 - (NSInteger)pages {
 	return _numberOfPages + 1;
@@ -212,53 +154,71 @@
 
 - (NSString *)html
 {
-    if (!self.bodyText) {
-        self.bodyText = [self bodyForScript];
-    }
+	NSMutableString *html = [NSMutableString string];
+	[html appendString:[self header]];
+	[html appendString:[self content]];
+	[html appendString:[self footer]];
+
+	return html;
+}
+
+- (NSString *)header {
+	NSMutableString *html = [NSMutableString string];
+	
 	NSString *bodyClasses = @"";
-	if (self.quickLook) bodyClasses = [bodyClasses stringByAppendingString:@" quickLook"];
-	else if (self.comparison) bodyClasses = [bodyClasses stringByAppendingString:@" comparison"];
-    
-    NSMutableString *html = [NSMutableString string];
-    [html appendString:@"<!DOCTYPE html>\n"];
-    [html appendString:@"<html>\n"];
-    [html appendString:@"<head><title>Print Preview</title>\n"];
+	if (_operation == ForQuickLook) bodyClasses = [bodyClasses stringByAppendingString:@" quickLook"];
+
+	[html appendString:@"<!DOCTYPE html>\n"];
+	[html appendString:@"<html>\n"];
+	[html appendString:@"<head><title>Print Preview</title>\n"];
 	[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.2'/>\n"];
 	
-    [html appendString:@"<style type='text/css'>\n"];
-    [html appendString:self.cssText];
-    [html appendString:@"</style>\n"];
-    [html appendString:@"</head>\n"];
+	[html appendString:@"<style type='text/css'>\n"];
+	[html appendString:self.cssText];
+	[html appendString:@"</style>\n"];
+	[html appendString:@"</head>\n"];
 	[html appendFormat:@"<body class='%@'>", bodyClasses];
-	[html appendString:@"<article>\n"];
-	if (!_print) [html appendString:[self previewUI]];
-    [html appendString:self.bodyText];
-	[html appendString:@"</section>\n</article>\n"];
 	
+	return html;
+}
+
+- (NSString *)footer {
+	NSMutableString *html = [NSMutableString string];
 	[html appendString:[self previewJS]];
 	[html appendString:@"<script name='scrolling'></script>"];
 	[html appendString:@"</body>\n"];
-    [html appendString:@"</html>"];
-    return html;
+	[html appendString:@"</html>"];
+
+	return html;
 }
 
-- (NSString *)htmlClassForType:(NSString *)elementType
-{
-    return [[elementType lowercaseString] stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+- (NSString *)content {
+	// N.B. this method can be called alone by itself to return pure content,
+	// as can bodyForScript. Dont' include anything that could break that functionality.
+	
+	if (!self.bodyText) {
+		self.bodyText = [self bodyForScript];
+	}
+
+	NSMutableString *html = [NSMutableString string];
+	[html appendString:@"<article>\n"];
+	if (_operation == ForPreview) [html appendString:[self previewUI]];	// Adds the 'close' button
+	[html appendString:self.bodyText];
+	[html appendString:@"</section>\n</article>\n"]; // Close section, meaning a page
+	
+	return html;
 }
+
 
 - (NSString *)cssText
 {    
-    NSError *error = nil;
-	NSString *css;
-	
-	if (!_print) {
-		NSString *path = [[NSBundle mainBundle] pathForResource:@"ScriptCSS.css" ofType:@""];
-		css = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-	} else {
-		NSString *path = [[NSBundle mainBundle] pathForResource:@"PrintCSS.css" ofType:@""];
-		css = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-	}
+	NSString *cssFile;
+	if (!_print) cssFile = @"ScriptCSS.css";
+	else cssFile = @"PrintCSS.css";
+
+	NSError *error;
+	NSString *path = [[NSBundle mainBundle] pathForResource:cssFile ofType:@""];
+	NSString *css = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
 
 	if (error) {
 		NSLog(@"Couldn't load CSS");
@@ -266,24 +226,6 @@
 	}
 
     return css;
-}
-
-- (NSString*)format:(NSString*) string {
-	string = [RX(BOLD_ITALIC_UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<u><em><strong>$2</strong></em></u>"];
-	string = [RX(BOLD_ITALIC_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<strong><em>$2</em></strong>"];
-	string = [RX(BOLD_UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<strong><u>$2</u></strong>"];
-	string = [RX(ITALIC_UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<u><em>$2</em></u>"];
-	string = [RX(BOLD_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<strong>$2</strong>"];
-	string = [RX(ITALIC_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<em>$2</em>"];
-	string = [RX(UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<u>$2</u>"];
-	
-	// Remove escape characters
-	string = [string stringByReplacingOccurrencesOfString:@"\\*" withString:@"*"];
-	string = [string stringByReplacingOccurrencesOfString:@"\\_" withString:@"_"];
-	string = [string stringByReplacingOccurrencesOfString:@"\\@" withString:@"@"];
-	string = [string stringByReplacingOccurrencesOfString:@"\\**" withString:@"**"];
-
-	return string;
 }
 
 - (NSString *)bodyForScript
@@ -319,7 +261,7 @@
         }
 
 		// Credit
-		// Added support for "author" (without the plural)
+		// Add support for "author" (without the plural)
         if (titlePage[@"credit"] || titlePage[@"authors"] || titlePage[@"author"]) {
             if (titlePage[@"credit"]) {
                 NSArray *obj = titlePage[@"credit"];
@@ -545,7 +487,7 @@
             
 			if (line.type == heading) {
                 [text setString:[text replace:RX(@"^\\.") with:@""]];
-				if (!_print && !_quickLook) [text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
+				if (_operation == ForPreview) [text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
             }
             if (line.type == character) {
 				[text setString:[text replace:RX(@"^@") with:@""]];
@@ -618,17 +560,10 @@
     return body;
 }
 
+#pragma mark - JavaScript functions
+
 - (NSString*)previewUI {
-	if (_quickLook) return @"";
-	
-	return @"" \
-	"<div id='close' class='ui' onclick='closePreview();'>✕</div>" \
-	
-	//"<div class='left'>" \
-	//    "<div id='zoomIn' class='ui' onclick='zoomIn();'>+</div>" \
-		"<div id='zoomOut' class='ui' onclick='zoomOut();'>-</div>" \
-	// "</div>"
-	"";
+	return @"<div id='close' class='ui' onclick='closePreview();'>✕</div>";
 }
 
 - (NSString*)previewJS {
@@ -641,6 +576,32 @@
 	"<script>function selectScene(e) { window.webkit.messageHandlers.selectSceneFromScript.postMessage(e.getAttribute('sceneIndex')); }</script>" \
 	"<script>function closePreview () { window.webkit.messageHandlers.closePrintPreview.postMessage('close'); } </script>";
 }
+
+#pragma mark - Helper methods
+
+- (NSString *)htmlClassForType:(NSString *)elementType
+{
+	return [[elementType lowercaseString] stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+}
+
+- (NSString*)format:(NSString*) string {
+	string = [RX(BOLD_ITALIC_UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<u><em><strong>$2</strong></em></u>"];
+	string = [RX(BOLD_ITALIC_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<strong><em>$2</em></strong>"];
+	string = [RX(BOLD_UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<strong><u>$2</u></strong>"];
+	string = [RX(ITALIC_UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<u><em>$2</em></u>"];
+	string = [RX(BOLD_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<strong>$2</strong>"];
+	string = [RX(ITALIC_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<em>$2</em>"];
+	string = [RX(UNDERLINE_PATTERN) stringByReplacingMatchesInString:string options:0 range:NSMakeRange(0, string.length) withTemplate:@"<u>$2</u>"];
+	
+	// Remove escape characters
+	string = [string stringByReplacingOccurrencesOfString:@"\\*" withString:@"*"];
+	string = [string stringByReplacingOccurrencesOfString:@"\\_" withString:@"_"];
+	string = [string stringByReplacingOccurrencesOfString:@"\\@" withString:@"@"];
+	string = [string stringByReplacingOccurrencesOfString:@"\\**" withString:@"**"];
+
+	return string;
+}
+
 
 @end
 

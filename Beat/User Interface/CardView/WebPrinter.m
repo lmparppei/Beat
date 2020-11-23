@@ -18,16 +18,6 @@
 @implementation WebPrinter
 
 - (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings {
-
-	/*
-    if (!printInfo) {
-        printInfo = [NSPrintInfo sharedPrintInfo];
-        printInfo.topMargin = 5;
-        printInfo.bottomMargin = 5;
-        printInfo.rightMargin = 5;
-        printInfo.leftMargin = 5;
-    }
-	*/
 	_printSettings = [NSPrintInfo sharedPrintInfo];
 	_printSettings.topMargin = 5;
 	

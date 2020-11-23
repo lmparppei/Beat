@@ -34,6 +34,12 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum : NSUInteger {
+	ForPrint = 0,
+	ForPreview,
+	ForQuickLook
+} BeatHTMLOperation;
+
 @interface BeatHTMLScript : NSObject
 
 @property (strong, nonatomic) QUQFont *font;
@@ -42,19 +48,16 @@
 @property (strong, nonatomic) NSDocument *document;
 @property (strong, nonatomic) NSNumber *customPage;
 @property (strong, nonatomic) NSNumber *forRendering;
-@property (nonatomic) bool print;
+@property (copy, nonatomic) NSString *bodyText;
 
-// Why do we need all these inits?
-- (id)initWithScript:(NSDictionary *)script;
-- (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document;
-- (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene;
-- (id)initWithScript:(NSDictionary *)script quickLook:(bool)quickLook;
-- (id)initWithScript:(NSDictionary *)script print:(bool)print;
-- (id)initWithScript:(NSDictionary *)script document:(NSDocument*)document print:(bool)print;
-- (id)initForComparisonWithScript:(NSDictionary *)script;
- 
+- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene;
+- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document;
+- (id)initForQuickLook:(NSDictionary *)script;
+
 - (NSInteger)pages;
 - (NSString *)html;
 - (NSString *)htmlClassForType:(NSString *)elementType;
+- (NSString *)bodyForScript;
+- (NSString *)content; // Returns only the ARTICLE part
 
 @end

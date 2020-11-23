@@ -81,12 +81,11 @@
 	}];
 	
 	
-	// Scene numbering should be built into the HTML module rather than elsewhere.
 	if (previewType == BeatQuickLookPreview) {
-		BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script quickLook:YES];
+		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForQuickLook:script];
 		return html.html;
 	} else {
-		BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script document:_document scene:[(id<BeatPreviewDelegate>)_delegate currentScene].sceneNumber];
+		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPreview:script document:_document scene:[(id<BeatPreviewDelegate>)_delegate currentScene].sceneNumber];
 		return html.html;
 	}
 }

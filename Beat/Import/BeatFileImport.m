@@ -7,9 +7,10 @@
 //
 /*
  
- Generic reader for:
+ Import currently supports:
  - Highland
- - FadeIn
+ - FadeIn (though this is mostly untested)
+ - CeltX
  - FDX
  
  */
@@ -108,3 +109,20 @@
 }
 
 @end
+/*
+ 
+ seisottiin puutarhassa ja katsottiin tähtiä
+ enkä ollut nähnyt linnunrataa
+ niin kirkkaana
+ aikoihin
+ 
+ tunnen itseni pieneksi
+ sinua se pelottaa
+ mutta olen tässä
+ tällä planeetalla
+ näinä atomeina
+ sinun kanssasi
+ tässä puutarhassa
+ tänä yönä.
+ 
+ */

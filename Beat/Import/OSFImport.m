@@ -21,6 +21,7 @@
 @property (nonatomic) NSDictionary *paraProperties;
 
 @property(nonatomic, strong) NSMutableArray *results;
+@property (nonatomic, strong) NSMutableArray *titlePageElements;
 @property(nonatomic, strong) NSMutableString *parsedString;
 @property(nonatomic, strong) NSMutableString *resultScript;
 
@@ -41,7 +42,6 @@
 	// Parsing with just data does not need a callback, we can do everything in sync
 	self = [super init];
 	if (self) {
-		[self setup];
 		[self parse:data];
 	}
 	return self;
@@ -53,8 +53,6 @@
 	
 	self = [super init];
 	if (self) {
-		[self setup];
-		
 		// Thank you, RIPtutorial
 		// Fetch xml data
 		NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
@@ -71,28 +69,29 @@
 }
 
 - (void)parse:(NSData*)data {
+	_elementText = [NSMutableString string];
+	_scriptLines = [NSMutableArray array];
+	_titlePageElements = [NSMutableArray array];
+	_titlePage = NO;
+	_dualDialogue = -1;
+	
 	self.xmlParser = [[NSXMLParser alloc] initWithData:data];
 	self.xmlParser.delegate = self;
 	if ([self.xmlParser parse]) {
-		self.script = [self.scriptLines componentsJoinedByString:@"\n"];
-		NSLog(@"%@", [self.scriptLines componentsJoinedByString:@"\n"]);
+		self.script = [self scriptAsString];
 	}
-}
-
-- (void)setup {
-	_elementText = [[NSMutableString alloc] init];
-	_scriptLines = [NSMutableArray array];
-	_titlePage = NO;
-	_dualDialogue = -1;
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict{
 	_lastFoundElement = elementName;
 	
-	// So oh my fucking god. Fade In uses (sometimes) lower-case attribute names,
-	// while OSF specifies changing case, ie. sceneNumber and not scenenumber.
+	// So oh my fucking god. Fade In uses (sometimes) lower-case
+	// attribute & element names, while OSF specifies changing case,
+	// ie. sceneNumber and not scenenumber.
 	// So fuck everything, let's create a new dictionary out of the attributes
 	// with lowercase counterparts.
+	
+	elementName = elementName.lowercaseString;
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 	for (id key in attributeDict) {
 		[attributes setValue:[attributeDict objectForKey:key] forKey:[key lowercaseString]];
@@ -102,7 +101,7 @@
 		_contentFound = YES;
 		_titlePage = NO;
 	}
-	else if ([elementName isEqualToString:@"titlePage"]) {
+	else if ([elementName isEqualToString:@"titlepage"]) {
 		_titlePage = YES;
 	}
 	else if ([elementName isEqualToString:@"para"]) {
@@ -135,9 +134,8 @@
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string{
-	if (_contentFound && !_titlePage) {
+	if (_contentFound || _titlePage) {
 		string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-		//[_elementText appendString:string];
 		
 		if ([_lastFoundElement isEqualToString:@"text"]) {
 			if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
@@ -169,11 +167,12 @@
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName{
+	elementName = elementName.lowercaseString;
+	
 	if ([elementName isEqualToString:@"text"]) {
 		_lastFoundElement = @"";
 		[_elementText appendString:@" "];
 	}
-	
 	else if ([elementName isEqualToString:@"para"]) {
 		NSString *result = [NSString stringWithFormat:@"%@", _elementText];
 		
@@ -238,7 +237,25 @@
 		if ([result isEqualToString:@""] && [_lastAddedLine isEqualToString:@""]) {
 			// Do nothing for now
 		} else {
-			[_scriptLines addObject:[NSString stringWithString:result]];
+			// For title pages we append the correct param name first
+			if (_titlePage) {
+				if (_paraProperties[@"bookmark"]) {
+					NSString *bookmark = _paraProperties[@"bookmark"];
+					NSString *prefix;
+					if ([bookmark isEqualToString:@"Title"]) prefix = @"Title";
+					else if ([bookmark isEqualToString:@"Author"]) prefix = @"Author";
+					else if ([bookmark isEqualToString:@"Draft"]) prefix = @"Draft date";
+					else if ([bookmark isEqualToString:@"Contact"]) prefix = @"Contact";
+					
+					// Only add KNOWN title page elements
+					if (prefix.length && result.length) {
+						result = [NSString stringWithFormat:@"%@: %@", prefix, result];
+						[_titlePageElements addObject:[NSString stringWithString:result]];
+					}
+				}
+			} else {
+				[_scriptLines addObject:[NSString stringWithString:result]];
+			}
 			_lastAddedLine = result;
 		}
 		
@@ -246,16 +263,22 @@
 	}
 	
 	// Start & end sections
-	if([elementName isEqualToString:@"titlePage"]) {
+	if ([elementName isEqualToString:@"titlepage"]) {
+		// Add a separator line
+		[_titlePageElements addObject:@""];
 		_titlePage = NO;
 	}
-    if([elementName isEqualToString:@"paragraphs"]) {
+    if ([elementName isEqualToString:@"paragraphs"]) {
 		_contentFound = NO;
     }
 }
 
 - (NSString*)scriptAsString {
-	if ([_scriptLines count]) {
+	if (_scriptLines.count) {
+		if (_titlePageElements.count) {
+			_scriptLines = [NSMutableArray arrayWithArray:[_titlePageElements arrayByAddingObjectsFromArray:_scriptLines]];
+		}
+		
 		return [_scriptLines componentsJoinedByString:@"\n"];
 	}
 	return @"";

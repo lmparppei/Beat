@@ -659,11 +659,8 @@
 	}
 }
 
-/*
- 
- Zooming in / out
- 
- */
+
+#pragma mark - Zooming
 
 - (IBAction)zoomIn:(id)sender {
 	[self zoom:YES];
@@ -718,10 +715,13 @@
 	[self ensureLayout];
 	[self ensureCaret];
 }
+
 - (CGFloat)magnification { return _magnification; }
+
 - (void)ensureCaret {
 	[self.textView updateInsertionPointStateAndRestartTimer:YES];
 }
+
 - (void)ensureLayout {
 	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
 	[self.textView setNeedsDisplay:YES];
@@ -787,20 +787,14 @@
 
 /*
  
- Man up
- Sit down
- Chin up
- Pipe down
- Socks up
- Don't cry
- Drink up
- Just lie
-
- Grow some balls he said
- Grow some balls
+ Man up / Sit down / Chin up / Pipe down
+ Socks up /  Don't cry /  Drink up / Just lie
+ Grow some balls he said /  Grow some balls
  
- This is why
- you never
+ I'm a real boy, boy, and I cry
+ I love myself and I want to try
+ 
+ This is why you never
  see your father cry.
  
  */

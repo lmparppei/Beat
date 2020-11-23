@@ -19,11 +19,6 @@
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate>
 @property (nonatomic) CGFloat magnification;
-//- (CGFloat) magnification;
-//- (void) forceCharacterInput;
-//- (void) cancelCharacterInput;
-//- (void) handleTabPress;
-//- (NSInteger)getPageNumber:(NSInteger)location;
 @end
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
