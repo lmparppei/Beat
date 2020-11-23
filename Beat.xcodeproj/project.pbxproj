@@ -614,14 +614,12 @@
 				B69A928B231915E900FE6A3E /* README.md */,
 				B69A92952319387B00FE6A3E /* CHANGELOG */,
 				B138B57519E1C973000489C4 /* Beat */,
-				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
-				B6B6C87E25650CDD005294FE /* TextBundle */,
 				B62ADC7623CCCE560015563A /* fountainQuickLook */,
 				B670E20724BF689A006375BA /* BeatTests */,
 				B138B62419E1D8A4000489C4 /* Frameworks */,
+				B6A61293256C106800E4AF92 /* Libraries */,
 				B138B57419E1C973000489C4 /* Products */,
 				A511D304017AD9D4480C6B15 /* Pods */,
-				B66F46212565AD57003748DA /* DiffMatchPatch */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
@@ -983,6 +981,16 @@
 			);
 			name = Analysis;
 			path = ../Beat/Analysis;
+			sourceTree = "<group>";
+		};
+		B6A61293256C106800E4AF92 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				B66F46212565AD57003748DA /* DiffMatchPatch */,
+				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
+				B6B6C87E25650CDD005294FE /* TextBundle */,
+			);
+			path = Libraries;
 			sourceTree = "<group>";
 		};
 		B6B417CC2359E2FC00AD3F4D /* TitlePageEditor */ = {
