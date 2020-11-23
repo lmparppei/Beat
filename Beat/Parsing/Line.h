@@ -46,7 +46,6 @@ typedef enum : NSUInteger {
 @property NSInteger sceneIndex;
 @property NSString* color;
 @property NSArray* storylines;
-//@property double height;
 
 @property NSMutableIndexSet* boldRanges;
 @property NSMutableIndexSet* italicRanges;
@@ -103,6 +102,5 @@ typedef enum : NSUInteger {
 
 // For comparing with another version
 @property bool changed;
-
 
 @end
