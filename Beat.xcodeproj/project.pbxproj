@@ -473,7 +473,6 @@
 		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = "Beat/User Interface/TouchTimelinePopover.m"; sourceTree = SOURCE_ROOT; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
-		B6D12FE025379FCD0018A88F /* DiffMatchPatch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiffMatchPatch.framework; path = Frameworks/DiffMatchPatch.framework; sourceTree = "<group>"; };
 		B6D12FEA2537A04C0018A88F /* BeatComparison.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatComparison.h; path = Beat/Export/Comparison/BeatComparison.h; sourceTree = SOURCE_ROOT; };
 		B6D12FEB2537A04C0018A88F /* BeatComparison.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatComparison.m; path = Beat/Export/Comparison/BeatComparison.m; sourceTree = SOURCE_ROOT; };
 		B6D26BDF24B9E7350041402B /* BeatTimerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimerView.h; path = "Beat/User Interface/BeatTimer/BeatTimerView.h"; sourceTree = SOURCE_ROOT; };
@@ -680,7 +679,6 @@
 			isa = PBXGroup;
 			children = (
 				B6FD5D962563B5500037ACBA /* libxml2.tbd */,
-				B6D12FE025379FCD0018A88F /* DiffMatchPatch.framework */,
 				B6E3246624B515670001273F /* AppKit.framework */,
 				B62ADC8E23CCE20D0015563A /* QuickLook.framework */,
 				B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */,
