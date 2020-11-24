@@ -83,7 +83,6 @@ typedef enum : NSUInteger {
 - (bool)isBoldedAt:(NSInteger)index;
 - (bool)isItalicAt:(NSInteger)index;
 - (bool)isUnderlinedAt:(NSInteger)index;
-+ (NSString*)removeMarkUpFrom;
 
 // Note: Following stuff is intended ONLY for non-continuous parsing
 - (bool)isTitlePage;

@@ -88,6 +88,12 @@
 		B6764B32251367BF00731A36 /* TKSplitHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B2D251367BF00731A36 /* TKSplitHandle.m */; };
 		B6764B33251367BF00731A36 /* NSArray+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B30251367BF00731A36 /* NSArray+Additions.m */; };
 		B6764B34251367BF00731A36 /* NSArray+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B30251367BF00731A36 /* NSArray+Additions.m */; };
+		B67B95CE256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */; };
+		B67B95CF256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */; };
+		B67B95D0256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */; };
+		B67B95D1256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */; };
+		B67B95D2256DB52000DFECB1 /* BeatSeriesPrinting.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B95CC256DB52000DFECB1 /* BeatSeriesPrinting.m */; };
+		B67B95D3256DB52000DFECB1 /* BeatSeriesPrinting.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B95CC256DB52000DFECB1 /* BeatSeriesPrinting.m */; };
 		B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B6907E3B233FE17C00741071 /* analysis.html in Resources */ = {isa = PBXBuildFile; fileRef = B6907E3A233FE17C00741071 /* analysis.html */; };
@@ -333,13 +339,13 @@
 		B138B62019E1D6FA000489C4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B138B65B19E1E8CA000489C4 /* FountainRegexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FountainRegexes.h; sourceTree = "<group>"; };
 		B138B65C19E1E8CA000489C4 /* FountainRegexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainRegexes.m; sourceTree = "<group>"; };
-		B138B66019E1E8CA000489C4 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = ScriptCSS.css; path = ../Beat/Export/ScriptCSS.css; sourceTree = "<group>"; };
+		B138B66019E1E8CA000489C4 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScriptCSS.css; sourceTree = "<group>"; };
 		B13BC7F11CC5215900E91B8A /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationDelegate.h; path = ../Beat/ApplicationDelegate.h; sourceTree = "<group>"; };
-		B1509A3E1CB5C0C500884918 /* FDXInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FDXInterface.h; path = ../Beat/Export/FDXInterface.h; sourceTree = "<group>"; };
+		B1509A3E1CB5C0C500884918 /* FDXInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FDXInterface.h; sourceTree = "<group>"; };
 		B1B62A3819E3402F009F6E23 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorView.h; sourceTree = "<group>"; };
-		B1D0B84919E31B86005252E4 /* PrintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrintView.h; path = ../Beat/Export/PrintView.h; sourceTree = "<group>"; };
+		B1D0B84919E31B86005252E4 /* PrintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintView.h; sourceTree = "<group>"; };
 		B1E7FF511BC4555B008E2B99 /* Beat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Beat.entitlements; sourceTree = "<group>"; };
-		B1EC6B9C1CE3B33200B48CDB /* OutlineExtractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineExtractor.h; path = ../Beat/Export/OutlineExtractor.h; sourceTree = "<group>"; };
+		B1EC6B9C1CE3B33200B48CDB /* OutlineExtractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineExtractor.h; sourceTree = "<group>"; };
 		B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold Italic.ttf"; sourceTree = "<group>"; };
 		B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold.ttf"; sourceTree = "<group>"; };
 		B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Italic.ttf"; sourceTree = "<group>"; };
@@ -421,6 +427,11 @@
 		B6764B2E251367BF00731A36 /* NSArray+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSArray+Additions.h"; path = "Beat/User Interface/TKSplitHandle/NSArray+Additions.h"; sourceTree = SOURCE_ROOT; };
 		B6764B2F251367BF00731A36 /* TKSplitHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TKSplitHandle.h; path = "Beat/User Interface/TKSplitHandle/TKSplitHandle.h"; sourceTree = SOURCE_ROOT; };
 		B6764B30251367BF00731A36 /* NSArray+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSArray+Additions.m"; path = "Beat/User Interface/TKSplitHandle/NSArray+Additions.m"; sourceTree = SOURCE_ROOT; };
+		B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BeatSeriesPrinting.xib; sourceTree = "<group>"; };
+		B67B95CA256DB52000DFECB1 /* BeatSeriesPrinting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatSeriesPrinting.h; sourceTree = "<group>"; };
+		B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+MoveItem.m"; sourceTree = "<group>"; };
+		B67B95CC256DB52000DFECB1 /* BeatSeriesPrinting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatSeriesPrinting.m; sourceTree = "<group>"; };
+		B67B95CD256DB52000DFECB1 /* NSMutableArray+MoveItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+MoveItem.h"; sourceTree = "<group>"; };
 		B67BD6DF23B4BBE400A99C9C /* ColorCheckbox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColorCheckbox.h; sourceTree = "<group>"; };
 		B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ColorCheckbox.m; sourceTree = "<group>"; };
 		B67F4A5D22762FE600E14FCA /* CardCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = CardCSS.css; sourceTree = "<group>"; };
@@ -438,8 +449,8 @@
 		B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FountainAnalysis.m; sourceTree = "<group>"; };
 		B69BFC762565336C007A7D2B /* FadeInImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FadeInImport.h; sourceTree = "<group>"; };
 		B69BFC772565336C007A7D2B /* FadeInImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FadeInImport.m; sourceTree = "<group>"; };
-		B69C8C6324A1275B007B55A7 /* BeatHTMLScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatHTMLScript.h; path = ../Beat/Export/BeatHTMLScript.h; sourceTree = "<group>"; };
-		B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatHTMLScript.m; path = ../Beat/Export/BeatHTMLScript.m; sourceTree = "<group>"; };
+		B69C8C6324A1275B007B55A7 /* BeatHTMLScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatHTMLScript.h; sourceTree = "<group>"; };
+		B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLScript.m; sourceTree = "<group>"; };
 		B69EF54C2465925C00C5B78C /* WebPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebPrinter.h; sourceTree = "<group>"; };
 		B69EF54D2465925C00C5B78C /* WebPrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WebPrinter.m; sourceTree = "<group>"; };
 		B69EF54F24659FC000C5B78C /* SceneCards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneCards.h; sourceTree = "<group>"; };
@@ -502,7 +513,7 @@
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/Parsing/OutlineScene.h; sourceTree = SOURCE_ROOT; };
 		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "Patch Notes.html"; path = "_PatchNotes/Patch Notes.html"; sourceTree = SOURCE_ROOT; };
 		B6D872B2232567C40050ED2D /* timeline.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = timeline.html; sourceTree = "<group>"; };
-		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = PrintCSS.css; path = ../Beat/Export/PrintCSS.css; sourceTree = "<group>"; };
+		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
 		B6E3246624B515670001273F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B6EA9F4D23BA8E8C00DBE9D0 /* SceneFiltering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneFiltering.h; path = "Beat/User Interface/SceneFiltering.h"; sourceTree = SOURCE_ROOT; };
 		B6EA9F4E23BA8E8C00DBE9D0 /* SceneFiltering.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneFiltering.m; path = "Beat/User Interface/SceneFiltering.m"; sourceTree = SOURCE_ROOT; };
@@ -648,9 +659,9 @@
 				B600DD5C254C22CC006A09D0 /* Data Handling */,
 				B6146B15246A8DE20029DBD9 /* PRO */,
 				B667796223C5D10B0029D508 /* User Interface */,
-				B667796623C5D1D20029D508 /* Import */,
 				B6907E39233FE16200741071 /* Analysis */,
 				B13111911CB2A41B00D07A0C /* Parsing */,
+				B667796623C5D1D20029D508 /* Import */,
 				B1509A3D1CB5C0B400884918 /* Export */,
 				B6BBF3CD24AC80E800503EFB /* Scripting */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
@@ -693,6 +704,7 @@
 		B1509A3D1CB5C0B400884918 /* Export */ = {
 			isa = PBXGroup;
 			children = (
+				B67B95C8256DB52000DFECB1 /* BeatSeriesPrinting */,
 				B6D12FDB25379E880018A88F /* Comparison */,
 				B61875A32471BEDA00FB7646 /* BeatPreview.h */,
 				B61875A42471BEDA00FB7646 /* BeatPreview.m */,
@@ -709,7 +721,7 @@
 				B6E067CF222D7C4100CE425A /* PrintCSS.css */,
 				B138B66019E1E8CA000489C4 /* ScriptCSS.css */,
 			);
-			name = Export;
+			path = Export;
 			sourceTree = "<group>";
 		};
 		B600DD5C254C22CC006A09D0 /* Data Handling */ = {
@@ -960,6 +972,18 @@
 			path = "Beat/User Interface/TKSplitHandle";
 			sourceTree = SOURCE_ROOT;
 		};
+		B67B95C8256DB52000DFECB1 /* BeatSeriesPrinting */ = {
+			isa = PBXGroup;
+			children = (
+				B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */,
+				B67B95CA256DB52000DFECB1 /* BeatSeriesPrinting.h */,
+				B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */,
+				B67B95CC256DB52000DFECB1 /* BeatSeriesPrinting.m */,
+				B67B95CD256DB52000DFECB1 /* NSMutableArray+MoveItem.h */,
+			);
+			path = BeatSeriesPrinting;
+			sourceTree = "<group>";
+		};
 		B68AC7B32219732800E02466 /* Sample files */ = {
 			isa = PBXGroup;
 			children = (
@@ -1027,6 +1051,7 @@
 				B6D12FEB2537A04C0018A88F /* BeatComparison.m */,
 			);
 			name = Comparison;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		B6D872B1232567C40050ED2D /* Timeline */ = {
@@ -1251,6 +1276,7 @@
 				B6BE1AD82567B93500F7476A /* Courier Prime Sans.ttf in Resources */,
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,
+				B67B95CE256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */,
 				B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B6146B25246A91420029DBD9 /* outline.png in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
@@ -1278,6 +1304,7 @@
 				B6F49D0D246D66B0006D88D4 /* Courier Prime Italic.ttf in Resources */,
 				B6F49D30246D66C8006D88D4 /* beat_manual.html in Resources */,
 				B6F49D0E246D66B0006D88D4 /* Courier Prime.ttf in Resources */,
+				B67B95CF256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */,
 				B6F49D0F246D66B0006D88D4 /* BeatDocumentIcon.iconset in Resources */,
 				B6F49D10246D66B0006D88D4 /* CardCSS.css in Resources */,
 				B6F49D11246D66B0006D88D4 /* CardPrintCSS.css in Resources */,
@@ -1471,6 +1498,7 @@
 				B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */,
 				B69154652480EB7E002393D1 /* RoundedButton.m in Sources */,
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
+				B67B95D2256DB52000DFECB1 /* BeatSeriesPrinting.m in Sources */,
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */,
@@ -1493,6 +1521,7 @@
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
 				B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */,
+				B67B95D0256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */,
 				B69154692480F68E002393D1 /* BeatRoundedButton.m in Sources */,
 				B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */,
 				B66F46372565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */,
@@ -1595,6 +1624,7 @@
 				B6F49CF2246D66B0006D88D4 /* ContinousFountainParser.m in Sources */,
 				B6F49CF3246D66B0006D88D4 /* SceneFiltering.m in Sources */,
 				B662FC0A24C22167003EF967 /* OSFImport.m in Sources */,
+				B67B95D1256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */,
 				B6FD5D902563B5320037ACBA /* HTMLParser.m in Sources */,
 				B6F49CF4246D66B0006D88D4 /* main.m in Sources */,
 				B6F49CF5246D66B0006D88D4 /* ColorView.m in Sources */,
@@ -1627,6 +1657,7 @@
 				B6F49D03246D66B0006D88D4 /* ScrollView.m in Sources */,
 				B66F46382565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */,
 				B6342D6925682D7D0034D54F /* OutlineViewItem.m in Sources */,
+				B67B95D3256DB52000DFECB1 /* BeatSeriesPrinting.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -21,7 +21,7 @@
 
 @implementation ApplicationDelegate
 
-#define DEVELOPMENT YES
+#define DEVELOPMENT NO
 #define DARKMODE_KEY @"Dark Mode"
 #define LATEST_VERSION_KEY @"Latest Version"
 
@@ -99,18 +99,14 @@
 	
 	[self checkVersion];
 }
--(void)doubleClickDocument {
-	[_recentFilesSource doubleClickDocument:nil];
-}
 -(void)checkVersion {
 	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
 	NSInteger currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
 	
+	// Show patch notes if it's the first time running Beat
 	if (latestVersion == 0 || currentVersion > latestVersion) {
 		[[NSUserDefaults standardUserDefaults] setValue:[NSString stringWithFormat:@"%lu", currentVersion] forKey:LATEST_VERSION_KEY];
 		if (!DEVELOPMENT) [self showPatchNotes:nil];
-	} else {
-		// Up to date
 	}
 }
 
@@ -137,7 +133,7 @@
 }
 
 - (void)checkAutosavedFiles {
-	// We will run this operation in another thread, so that the app can start and opening recovered documents won't mess up any other logic built into the app. Thanks for calling it logic, though.
+	// We will run this operation in another thread, so that the app can start and opening recovered documents won't mess up any other logic built into the app.
 	
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
 		__block NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -195,7 +191,7 @@
 						}
 					}];
 				} else {
-					// Again, if REST IN PEACE, motherfucker!!!
+					// Remove the autosave
 					[fileManager removeItemAtPath:[appSupportDir stringByAppendingPathComponent:filename] error:nil];
 				}
 				
@@ -228,7 +224,8 @@
 
 #pragma mark - Dark mode stuff
 
-// This is a spaghetti but seems to work for now
+// This is some spaghetti but seems to work for now
+// We have to check if OS is set to dark AND if the user has forced either mode
 
 - (bool)isForcedDarkMode {
 	if (![self OSisDark]) return _forceDarkMode;
@@ -290,7 +287,7 @@
 	self.manualWindow.title = @"Patch Notes";
 	
 	CGFloat width = 550;
-	CGFloat height = 700;
+	CGFloat height = 650;
 	[self.manualWindow setFrame:NSMakeRect(
 										  (NSScreen.mainScreen.frame.size.width - width) / 2,
 										  (NSScreen.mainScreen.frame.size.height - height) / 2,
@@ -304,14 +301,12 @@
 }
 
 - (IBAction)showManual:(id)sender {
-	//[[NSBundle mainBundle] loadNibNamed:@"BeatManual" owner:self topLevelObjects:nil];
 	[self.manualWindow setIsVisible:true];
 	self.manualWindow.title = @"Beat Manual";
 	
 	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
 	NSLog(@"path %@", htmlPath);
 	[self.manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
-	//[aboutText readRTFDFromFile:rtfFile];
 }
 
 - (IBAction)showFountainSyntax:(id)sender
@@ -345,6 +340,11 @@
 
 #pragma mark - Misc UI
 
+// Why is this here? Anyway, a method for the NSOutlineView showing recent files
+-(void)doubleClickDocument {
+	[_recentFilesSource doubleClickDocument:nil];
+}
+
 // Close welcome screen
 - (IBAction)closeStartModal
 {
@@ -363,16 +363,6 @@
 }
 
 #pragma mark - File Import
-/*
- 
- I should make a generic import class with delegation to make this cleaner.
- 
- BeatImport *import = [[BeatImport alloc] initWithDelegate:self];
- [import fdx];
- [import celtx];
- [import highland];
-  
- */
 
 - (IBAction)importFDX:(id)sender
 {
@@ -394,6 +384,8 @@
 	BeatFileImport *import = [[BeatFileImport alloc] init];
 	[import fadeIn];
 }
+
+#pragma mark - Generic methods for opening a plain-text file
 
 - (void)openFileWithContents:(NSString*)string {
 	NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
@@ -428,105 +420,9 @@
 	[[NSDocumentController sharedDocumentController] newDocument:nil];
 }
 
-/*
- // Some experiments in hacking the MM Scheduling .sex file format
-- (IBAction)hackSex:(id)sender {
-	NSString * sexFile = [[NSBundle mainBundle] pathForResource:@"mms.sex" ofType:@""];
-
-	NSData * contents = [NSData dataWithContentsOfFile:sexFile];
-	//NSString *string = [[NSString alloc] initWithData:contents encoding:NSISOLatin1StringEncoding];
-	
-	const char* fileBytes = (const char*)[contents bytes];
-	NSUInteger length = [contents length];
-	NSUInteger index;
-
-	NSMutableString *string = [NSMutableString string];
-	
-	bool heading = NO;
-	bool text = NO;
-	
-	for (index = 0; index<length; index++)
-	{
-		char aByte = fileBytes[index];
-		
-		if (fileBytes[index] == 0){
-			[string appendString:[NSString stringWithFormat:@" "]];
-		}
-		else if (fileBytes[index] == 1) {
-			// Start of heading
-			[string appendString:[NSString stringWithFormat:@"["]];
-			heading = YES;
-		}
-		else if (fileBytes[index] == 2) {
-			// Start of text
-			[string appendString:[NSString stringWithFormat:@"{"]];
-			text = YES;
-		}
-		else if (fileBytes[index] == 3) {
-			// End of text
-			[string appendString:[NSString stringWithFormat:@"}"]];
-			text = NO;
-		}
-		else if (fileBytes[index] == 4) {
-			[string appendString:[NSString stringWithFormat:@"]"]];
-			heading = NO;
-			text = NO;
-		}
-		else if (fileBytes[index] == 10) {
-			// Newline
-			[string appendString:[NSString stringWithFormat:@""]];
-		}
-		else if (fileBytes[index] == 12) {
-			// New page
-			NSLog(@"new page");
-			[string appendString:[NSString stringWithFormat:@""]];
-			heading = NO;
-			text = NO;
-		}
-		else if (fileBytes[index] == 20) {
-			NSLog(@"device control");
-			[string appendString:[NSString stringWithFormat:@"/"]];
-		}
-		else if (fileBytes[index] == 16) {
-			NSLog(@"data link escape");
-			[string appendString:[NSString stringWithFormat:@"\\"]];
-		}
-
-		else if (fileBytes[index] == 8) {
-			// Backspace
-			[string appendString:[NSString stringWithFormat:@""]];
-		}
-		else if (fileBytes[index] == 9) {
-			[string appendString:[NSString stringWithFormat:@"\t"]];
-		}
-		else if (fileBytes[index] == 32) {
-			// Normal space
-			[string appendString:[NSString stringWithFormat:@" "]];
-		}
-		else if (fileBytes[index] == -123) {
-			// Scandic Ö
-			[string appendString:[NSString stringWithFormat:@"Ö"]];
-		}
-		else if (fileBytes[index] == -128) {
-			// Scandic Ä
-			[string appendString:[NSString stringWithFormat:@"Ä"]];
-		}
-
-		else if (fileBytes[index] == '#') {
-			[string appendString:[NSString stringWithFormat:@"#"]];
-		}
-		else {
-			[string appendString:[NSString stringWithFormat:@"%c", aByte]];
-		}
-		
-		NSLog(@"char %c / %i", aByte, fileBytes[index]);
-		
-	}
-	
-	
-	NSLog(@"content %@", string);
+- (IBAction)printEpisodes:(id)sender {
+	NSWindowController *windowController = [[NSWindowController alloc] initWithWindowNibName:@"BeatSeriesPrinting"];
+	[windowController.window makeKeyAndOrderFront:self];
 }
- */
-
 
 @end

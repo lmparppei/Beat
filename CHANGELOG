@@ -4,7 +4,8 @@
 * Other minor fixes
 * Beat now uses CocoaPods (.... for now)
 * DiffMatchPatch modernization for ARC (about time)
-* Many other bug fixes 
+* Many other bug fixes
+* Lots and lots of code cleanup
 
 
 ## Beat 1.5

@@ -100,7 +100,6 @@
 	    
 		// Lines without RTF formatting have uneven leading, so let's fix that.
 		[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0,[resultString length])];
-			
 		[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
 	}
 	else if (line.type == synopse) {
