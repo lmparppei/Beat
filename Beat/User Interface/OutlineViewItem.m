@@ -42,9 +42,8 @@
 		else padding = @"";
 	}
 	
-	
 	// Get the string and strip any formatting
-	NSMutableString *rawString = [NSMutableString stringWithString:scene.line.cleanedString];
+	NSMutableString *rawString = [NSMutableString stringWithString:scene.stringForDisplay];
 	[rawString replaceOccurrencesOfString:@"*" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [rawString length])];
 	
 	NSMutableAttributedString * resultString = [[NSMutableAttributedString alloc] initWithString:rawString];
@@ -148,7 +147,7 @@
 			resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
 			
 			// Bold + highlight color
-			[resultString addAttribute:NSForegroundColorAttributeName value:ThemeManager.sharedManager.theme.outlineHighlight range:NSMakeRange(0,[resultString length])];
+			[resultString addAttribute:NSForegroundColorAttributeName value:ThemeManager.sharedManager.currentOutlineHighlight range:NSMakeRange(0,[resultString length])];
 			
 			[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
 		} else {
@@ -167,6 +166,8 @@
 			[resultString addAttribute:NSForegroundColorAttributeName value:colorName range:NSMakeRange(sceneNumberLength, [resultString length] - sceneNumberLength)];
 		}
 	}
+	
+	if (resultString.length == 0) NSLog(@"problem %@", scene.string);
 	
 	return resultString;
 }

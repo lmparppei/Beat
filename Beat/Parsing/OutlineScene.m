@@ -21,6 +21,9 @@
 - (NSRange)range {
 	return NSMakeRange(self.sceneStart, self.sceneLength);
 }
+- (NSString*)stringForDisplay {
+	return self.line.stringForDisplay;
+}
 -(NSInteger)timeLength {
 	// Welllll... this is a silly implementation, but let's do it.
 	// We'll measure scene length purely by the character length, but let's substract the scene heading length

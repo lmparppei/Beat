@@ -48,7 +48,6 @@ typedef enum : NSInteger {
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor;
 - (void)select;
 - (void)deselect;
-- (bool)remove;
 @end
 
 NS_ASSUME_NONNULL_END

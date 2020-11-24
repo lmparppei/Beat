@@ -24,6 +24,7 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 * Super-fast print preview
 * Automatic scene numbering in edit view – with forced scene number recognition
 * Page numbering while editing
+* Script version comparison with edit markers
 * Outline list view, with sections and synopses, scene reordering and filtering
 * Outline card view, with sections & synopses
 * Timeline view with sections & synopses

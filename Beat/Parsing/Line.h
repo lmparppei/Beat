@@ -83,6 +83,7 @@ typedef enum : NSUInteger {
 - (bool)isBoldedAt:(NSInteger)index;
 - (bool)isItalicAt:(NSInteger)index;
 - (bool)isUnderlinedAt:(NSInteger)index;
++ (NSString*)removeMarkUpFrom;
 
 // Note: Following stuff is intended ONLY for non-continuous parsing
 - (bool)isTitlePage;
@@ -93,6 +94,7 @@ typedef enum : NSUInteger {
 - (NSString*)stripSceneNumber;
 - (NSString*)stripFormattingCharacters;
 - (NSString*)stripNotes;
+- (NSString*)stringForDisplay;
 
 @property bool isSplitParagraph;
 @property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing

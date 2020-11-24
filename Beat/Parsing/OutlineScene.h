@@ -29,6 +29,7 @@
 
 @property (strong) Line * line; // Is this overkill regarding memory? Isn't this just a pointer?
 
+- (NSString*)stringForDisplay;
 - (NSRange)range;
 - (NSInteger)timeLength;
 

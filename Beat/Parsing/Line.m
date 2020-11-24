@@ -133,36 +133,49 @@
 	else return NO;
 }
 
-- (NSString*)cleanedString {
-	// Return empty string for invisible blocks
-	if (self.type == section || self.type == synopse || self.omited) return @"";
-		
-	NSMutableString *string = [NSMutableString stringWithString:[self stripInvisible]];
++ (NSString*)removeMarkUpFrom:(NSString*)rawString line:(Line*)line {
+	NSMutableString *string = [NSMutableString stringWithString:rawString];
 	
-	// Remove markup characters
-	if (self.string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
-		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
-		else if (self.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
- 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
-		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
-		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
+	if (string.length > 0 && line.numberOfPreceedingFormattingCharacters > 0 && line.type != centered) {
+		if (line.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
+		else if (line.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
+		else if (line.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
+		else if (line.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
+		else if (line.type == section) [string setString:[string replace:RX(@"^#") with:@""]];
+		else if (line.type == synopse) [string setString:[string replace:RX(@"^=") with:@""]];
+		else if (line.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
 	}
 
-	if (self.type == centered) {
+	if (line.type == centered) {
 		// Let's not clean any formatting characters in case they are cleaned already.
-		if (self.string.length > 0 && [string characterAtIndex:0] == '>') {
+		if (line.string.length > 0 && [string characterAtIndex:0] == '>') {
 			string = [NSMutableString stringWithString:[string substringFromIndex:1]];
 			string = [NSMutableString stringWithString:[string substringToIndex:string.length - 1]];
 		}
 	}
-
+	
 	// Clean up scene headings
 	// Note that the scene number can still be read from the element itself (.sceneNumber) when needed.
-	if (self.type == heading && self.sceneNumber) {
-		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
+	if (line.type == heading && line.sceneNumber) {
+		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
 	}
-		
+	
+	
 	return string;
+}
+
+- (NSString*)cleanedString {
+	// Return empty string for invisible blocks
+	if (self.type == section || self.type == synopse || self.omited) return @"";
+		
+	NSMutableString *string = [NSMutableString stringWithString:[Line removeMarkUpFrom:[self stripInvisible] line:self]];
+	
+	return string;
+}
+- (NSString*)stringForDisplay {
+	NSString *string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
+	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+
 }
 
 - (NSString*)stripFormattingCharacters {

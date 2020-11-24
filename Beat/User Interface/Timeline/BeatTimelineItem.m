@@ -51,8 +51,6 @@
 		self.wantsLayer = YES;
 		[self.layer addSublayer:_textLayer];
 
-		//[self addSubview:_label];
-		
 		NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 		[self.window setAcceptsMouseMovedEvents:YES];
 		[self addTrackingArea:trackingArea];
@@ -81,122 +79,133 @@
 		}
 		
 		// Uppercase text for scenes
-
-		if (scene.type == heading) self.text = [scene.line.cleanedString uppercaseString];
-		else self.text = scene.string;
+		if (scene.type == heading) self.text = [scene.stringForDisplay uppercaseString];
+		else self.text = scene.stringForDisplay;
 	}
 
-	if (forcedColor) {
-		self.color = forcedColor;
-	}
-	
-	self.wantsLayer = YES;
-	
+	if (forcedColor) self.color = forcedColor;
+		
+	// Reset item styles to match the represented element or update their x position
 	if (_type == TimelineScene) {
-		self.frame = rect;
-		self.layer.opacity = UNSELECTED_ALPHA;
-		
-		_textLayer.fontSize = FONTSIZE_SCENE;
-		_textLayer.bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-		_textLayer.position = CGPointMake(self.frame.size.width / 2 + TEXT_PADDING, 23);
-		_textLayer.backgroundColor = NSColor.clearColor.CGColor;
-
-		_textLayer.foregroundColor = [BeatColors color:@"lightGray"].CGColor;
-		self.layer.backgroundColor = self.color.CGColor;
-		
-		if (self.frame.size.width > 40) {
-			self.textLayer.string = [NSString stringWithFormat:@"%@ %@", scene.sceneNumber, self.text];
-		}
-		else if (self.frame.size.width > 25) {
-			self.textLayer.string = scene.sceneNumber;
-		}
-		else {
-			self.textLayer.string = @"";
-		}
-		
-		[self wantsUpdateLayer];
-		
-		if (scene.color.length) self.textLayer.foregroundColor = NSColor.whiteColor.CGColor;
+		[self setSceneFor:rect];
 	}
 	else if (_type == TimelineSection) {
-		if (reset) {
-			_textLayer.backgroundColor = NSColor.clearColor.CGColor;
-			
-			_textLayer.string = self.text;
-			_textLayer.fontSize = FONTSIZE_SECTION;
-			CGSize size = _textLayer.preferredFrameSize;
-			_textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
-			_textLayer.position = CGPointMake(size.width / 2 + 2, size.height / 2 + 2);
-			
-			if (scene.color.length) {
-				_textLayer.foregroundColor = self.color.CGColor;
-			} else {
-				_textLayer.foregroundColor = self.color.CGColor;
-			}
-			
-			self.layer.backgroundColor = NSColor.clearColor.CGColor;
-			self.layer.opacity = 1.0;
-			
-			self.frame = NSMakeRect(rect.origin.x, 0, size.width + 100, self.superview.superview.superview.frame.size.height);
-		} else {
-			// If not resetting, just set the x position
-			NSRect frame = self.frame;
-			frame.origin.x = rect.origin.x;
-			self.frame = frame;
-		}
+		if (reset) [self setSectionFor:rect];
+		else [self updateSectionPosition:rect];
 	}
 	else if (_type == TimelineSynopsis) {
-		if (reset) {
-			self.layer.backgroundColor = NSColor.clearColor.CGColor;
-			self.layer.opacity = 1.0;
-			
-			_textLayer.backgroundColor = NSColor.clearColor.CGColor;
-			_textLayer.fontSize = FONTSIZE_SYNOPSIS;
-			_textLayer.string = self.text;
-			
-			CGSize size = _textLayer.preferredFrameSize;
-			_textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
-			_textLayer.position = CGPointMake(size.width / 2, size.height / 2);
-			
-			// Get synopsis color if applicable
-			if (scene.color.length) {
-				_textLayer.foregroundColor = self.color.CGColor;
-			} else {
-				_textLayer.foregroundColor = self.color.CGColor;
-			}
-			
-			self.frame = NSMakeRect(rect.origin.x, rect.origin.y - 18, size.width + 10, 13);
-		} else {
-			// If not resetting, just set x position
-			NSRect frame = self.frame;
-			frame.origin.x = rect.origin.x;
-			self.frame = frame;
-		}
+		if (reset) [self setSynopsisFor:rect];
+		else [self updateSynopsisPosition:rect];
 	}
 	else if (_type == TimelineStoryline) {
-		if (reset) {
-			// The timeline track color is forced
-			self.layer.backgroundColor = self.color.CGColor;
-			self.layer.opacity = 1.0;
-			
-			_textLayer.string = @"";
-			
-			self.frame = rect;
-			self.frame = NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width, 2);
-		} else {
-			NSRect frame = self.frame;
-			frame.origin.x = rect.origin.x;
-			frame.size.width = rect.size.width;
-			self.frame = frame;
-		}
+		if (reset) [self setStorylineFor:rect];
+		else [self updateStorylinePosition:rect];
 	}
 	
 	if (self.selected) [self select];
-	
 	[self setNeedsDisplay:YES];
 }
 
-#pragma mark Drawing
+
+#pragma mark - Stylization
+
+- (void)setSceneFor:(NSRect)rect {
+	self.frame = rect;
+	self.layer.opacity = UNSELECTED_ALPHA;
+	
+	_textLayer.fontSize = FONTSIZE_SCENE;
+	_textLayer.bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+	_textLayer.position = CGPointMake(self.frame.size.width / 2 + TEXT_PADDING, 23);
+	_textLayer.backgroundColor = NSColor.clearColor.CGColor;
+
+	_textLayer.foregroundColor = [BeatColors color:@"lightGray"].CGColor;
+	self.layer.backgroundColor = self.color.CGColor;
+	
+	if (self.frame.size.width > 40) {
+		self.textLayer.string = [NSString stringWithFormat:@"%@ %@", _representedItem.sceneNumber, self.text];
+	}
+	else if (self.frame.size.width > 25) {
+		self.textLayer.string = _representedItem.sceneNumber;
+	}
+	else {
+		self.textLayer.string = @"";
+	}
+	
+	// Text is white for scenes with a different background
+	if (_representedItem.color.length) self.textLayer.foregroundColor = NSColor.whiteColor.CGColor;
+}
+
+- (void)setSynopsisFor:(NSRect)rect {
+	self.layer.backgroundColor = NSColor.clearColor.CGColor;
+	self.layer.opacity = 1.0;
+	
+	_textLayer.backgroundColor = NSColor.clearColor.CGColor;
+	_textLayer.fontSize = FONTSIZE_SYNOPSIS;
+	_textLayer.string = self.text;
+	
+	CGSize size = _textLayer.preferredFrameSize;
+	_textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
+	_textLayer.position = CGPointMake(size.width / 2, size.height / 2);
+	
+	// Get synopsis color if applicable
+	if (_representedItem.color.length) {
+		_textLayer.foregroundColor = self.color.CGColor;
+	} else {
+		_textLayer.foregroundColor = self.color.CGColor;
+	}
+	
+	self.frame = NSMakeRect(rect.origin.x, rect.origin.y - 18, size.width + 10, 13);
+}
+- (void)updateSynopsisPosition:(NSRect)rect {
+	NSRect frame = self.frame;
+	frame.origin.x = rect.origin.x;
+	self.frame = frame;
+}
+
+- (void)setSectionFor:(NSRect)rect {
+	_textLayer.backgroundColor = NSColor.clearColor.CGColor;
+	
+	_textLayer.string = self.text;
+	_textLayer.fontSize = FONTSIZE_SECTION;
+	CGSize size = _textLayer.preferredFrameSize;
+	_textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
+	_textLayer.position = CGPointMake(size.width / 2 + 2, size.height / 2 + 2);
+	
+	if (_representedItem.color.length) {
+		_textLayer.foregroundColor = self.color.CGColor;
+	} else {
+		_textLayer.foregroundColor = self.color.CGColor;
+	}
+	
+	self.layer.backgroundColor = NSColor.clearColor.CGColor;
+	self.layer.opacity = 1.0;
+	
+	self.frame = NSMakeRect(rect.origin.x, 0, size.width + 100, self.superview.superview.superview.frame.size.height);
+}
+- (void)updateSectionPosition:(NSRect)rect {
+	NSRect frame = self.frame;
+	frame.origin.x = rect.origin.x;
+	self.frame = frame;
+}
+
+- (void)setStorylineFor:(NSRect)rect {
+	// The timeline track color is forced (see forceColor argument)
+	self.layer.backgroundColor = self.color.CGColor;
+	self.layer.opacity = 1.0;
+	
+	_textLayer.string = @"";
+	
+	self.frame = rect;
+	self.frame = NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width, 2);
+}
+- (void)updateStorylinePosition:(NSRect)rect {
+	NSRect frame = self.frame;
+	frame.origin.x = rect.origin.x;
+	frame.size.width = rect.size.width;
+	self.frame = frame;
+}
+
+#pragma mark - Drawing
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
@@ -267,8 +276,7 @@
 }
 - (BOOL)isFlipped { return YES; }
 
-#pragma mark - Context Menu
-
+#pragma mark - Contextual Menus
 
 -(NSMenu *)menuForEvent:(NSEvent *)event {
 	_delegate.clickedItem = self.representedItem;
