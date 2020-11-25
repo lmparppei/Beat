@@ -14,19 +14,25 @@
 
 #import "BeatSeriesPrinting.h"
 #import "NSMutableArray+MoveItem.h"
+#import "ContinousFountainParser.h"
+#import "BeatHTMLScript.h"
 #import <Cocoa/Cocoa.h>
 
 @interface BeatSeriesPrinting ()
 @property (weak) IBOutlet NSTableView *table;
 @property (nonatomic) NSMutableArray<NSURL*> *urls;
+@property (nonatomic) NSWindowController *windowController;
 @end
 
 @implementation BeatSeriesPrinting
 
 - (void)awakeFromNib {
-    _urls = [NSMutableArray array];
-    [_table registerForDraggedTypes:@[NSPasteboardTypeString, NSPasteboardTypeFileURL]];
+	_urls = [NSMutableArray array];
+	[_table registerForDraggedTypes:@[NSPasteboardTypeString, @"public.file-url"]]; //NSPasteboardTypeURL is only available 10.13->
 }
+
+
+
 
 #pragma mark - Table view data source & delegate
 
@@ -71,7 +77,7 @@
         bool newFilesAdded = NO;
         
         for (NSPasteboardItem *newFile in items) {
-            NSString *urlString = [newFile stringForType:NSPasteboardTypeFileURL];
+            NSString *urlString = [newFile stringForType:@"public.file-url"];
             NSURL *url = [NSURL URLWithString:urlString];
 
             if (![_urls containsObject:url]) {
@@ -151,9 +157,11 @@
 
 -(IBAction)start:(id)sender {
     if (!_urls.count) return;
-    
+	
     NSError *error;
-    
+    	
+	NSString *html = @"";
+	
     for (NSURL *url in _urls) {
         NSString *text = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
         
@@ -162,8 +170,13 @@
             [self alertPanelWithTitle:@"Error opening file" content:[NSString stringWithFormat:@"%@ could not be opened. Other documents will be printed normally.", filename]];
             error = nil;
         } else {
-            NSLog(@"%@", text);
-        }
+			ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:text];
+			NSDictionary *script = [parser scriptForPrinting];
+			BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:script document:nil];
+			
+			if (html.length == 0) html = htmlScript.htmlHeader;
+			html = [html stringByAppendingString:htmlScript.content];
+		}
     }
 }
 

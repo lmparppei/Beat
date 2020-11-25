@@ -64,6 +64,7 @@
 //Convenience Methods for Other Stuff
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSString*)cleanedString;
+- (NSDictionary*)scriptForPrinting;
 
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;

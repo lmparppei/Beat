@@ -88,8 +88,6 @@
 		B6764B32251367BF00731A36 /* TKSplitHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B2D251367BF00731A36 /* TKSplitHandle.m */; };
 		B6764B33251367BF00731A36 /* NSArray+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B30251367BF00731A36 /* NSArray+Additions.m */; };
 		B6764B34251367BF00731A36 /* NSArray+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6764B30251367BF00731A36 /* NSArray+Additions.m */; };
-		B67B95CE256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */; };
-		B67B95CF256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */ = {isa = PBXBuildFile; fileRef = B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */; };
 		B67B95D0256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */; };
 		B67B95D1256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */; };
 		B67B95D2256DB52000DFECB1 /* BeatSeriesPrinting.m in Sources */ = {isa = PBXBuildFile; fileRef = B67B95CC256DB52000DFECB1 /* BeatSeriesPrinting.m */; };
@@ -427,7 +425,6 @@
 		B6764B2E251367BF00731A36 /* NSArray+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSArray+Additions.h"; path = "Beat/User Interface/TKSplitHandle/NSArray+Additions.h"; sourceTree = SOURCE_ROOT; };
 		B6764B2F251367BF00731A36 /* TKSplitHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TKSplitHandle.h; path = "Beat/User Interface/TKSplitHandle/TKSplitHandle.h"; sourceTree = SOURCE_ROOT; };
 		B6764B30251367BF00731A36 /* NSArray+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSArray+Additions.m"; path = "Beat/User Interface/TKSplitHandle/NSArray+Additions.m"; sourceTree = SOURCE_ROOT; };
-		B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BeatSeriesPrinting.xib; sourceTree = "<group>"; };
 		B67B95CA256DB52000DFECB1 /* BeatSeriesPrinting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatSeriesPrinting.h; sourceTree = "<group>"; };
 		B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+MoveItem.m"; sourceTree = "<group>"; };
 		B67B95CC256DB52000DFECB1 /* BeatSeriesPrinting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatSeriesPrinting.m; sourceTree = "<group>"; };
@@ -975,11 +972,10 @@
 		B67B95C8256DB52000DFECB1 /* BeatSeriesPrinting */ = {
 			isa = PBXGroup;
 			children = (
-				B67B95C9256DB52000DFECB1 /* BeatSeriesPrinting.xib */,
 				B67B95CA256DB52000DFECB1 /* BeatSeriesPrinting.h */,
-				B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */,
 				B67B95CC256DB52000DFECB1 /* BeatSeriesPrinting.m */,
 				B67B95CD256DB52000DFECB1 /* NSMutableArray+MoveItem.h */,
+				B67B95CB256DB52000DFECB1 /* NSMutableArray+MoveItem.m */,
 			);
 			path = BeatSeriesPrinting;
 			sourceTree = "<group>";
@@ -1276,7 +1272,6 @@
 				B6BE1AD82567B93500F7476A /* Courier Prime Sans.ttf in Resources */,
 				B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */,
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,
-				B67B95CE256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */,
 				B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B6146B25246A91420029DBD9 /* outline.png in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
@@ -1304,7 +1299,6 @@
 				B6F49D0D246D66B0006D88D4 /* Courier Prime Italic.ttf in Resources */,
 				B6F49D30246D66C8006D88D4 /* beat_manual.html in Resources */,
 				B6F49D0E246D66B0006D88D4 /* Courier Prime.ttf in Resources */,
-				B67B95CF256DB52000DFECB1 /* BeatSeriesPrinting.xib in Resources */,
 				B6F49D0F246D66B0006D88D4 /* BeatDocumentIcon.iconset in Resources */,
 				B6F49D10246D66B0006D88D4 /* CardCSS.css in Resources */,
 				B6F49D11246D66B0006D88D4 /* CardPrintCSS.css in Resources */,
@@ -1836,7 +1830,7 @@
 				INFOPLIST_FILE = "Beat/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.6b;
+				MARKETING_VERSION = 1.6b3;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -1869,7 +1863,7 @@
 				INFOPLIST_FILE = "Beat/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.6b;
+				MARKETING_VERSION = 1.6b3;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

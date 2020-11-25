@@ -155,14 +155,14 @@
 - (NSString *)html
 {
 	NSMutableString *html = [NSMutableString string];
-	[html appendString:[self header]];
+	[html appendString:[self htmlHeader]];
 	[html appendString:[self content]];
 	[html appendString:[self footer]];
 
 	return html;
 }
 
-- (NSString *)header {
+- (NSString *)htmlHeader {
 	NSMutableString *html = [NSMutableString string];
 	
 	NSString *bodyClasses = @"";
@@ -199,7 +199,7 @@
 	if (!self.bodyText) {
 		self.bodyText = [self bodyForScript];
 	}
-
+	
 	NSMutableString *html = [NSMutableString string];
 	[html appendString:@"<article>\n"];
 	if (_operation == ForPreview) [html appendString:[self previewUI]];	// Adds the 'close' button
@@ -238,7 +238,6 @@
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
-    
 	 
     if ([titlePage count] > 0) {
         [body appendString:@"<section id='script-title' class='page'>"];

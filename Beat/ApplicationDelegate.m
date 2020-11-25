@@ -7,13 +7,10 @@
 //	Released under GPL license
 
 #import "ApplicationDelegate.h"
-#import "FDXImport.h"
-#import "CeltxImport.h"
-#import "HighlandImport.h"
 #import "RecentFiles.h"
+#import "BeatFileImport.h"
 
 #import "BeatTest.h"
-#import "BeatFileImport.h"
 
 @interface ApplicationDelegate ()
 @property (nonatomic) RecentFiles *recentFilesSource;
@@ -40,8 +37,6 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	//BeatTest *test = [[BeatTest alloc] init];
-	
 	_recentFilesSource = [[RecentFiles alloc] init];
 	self.recentFiles.dataSource = _recentFilesSource;
 	self.recentFiles.delegate = _recentFilesSource;
@@ -98,6 +93,8 @@
 	}
 	
 	[self checkVersion];
+	
+	[self printEpisodes:nil];
 }
 -(void)checkVersion {
 	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
@@ -421,8 +418,6 @@
 }
 
 - (IBAction)printEpisodes:(id)sender {
-	NSWindowController *windowController = [[NSWindowController alloc] initWithWindowNibName:@"BeatSeriesPrinting"];
-	[windowController.window makeKeyAndOrderFront:self];
 }
 
 @end

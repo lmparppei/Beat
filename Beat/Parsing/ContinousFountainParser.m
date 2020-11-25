@@ -1676,4 +1676,20 @@ and incomprehensible system of recursion.
 	return elements;
 }
 
+#pragma mark - Separate title page & content for printing
+
+- (NSDictionary*)scriptForPrinting {
+	NSMutableArray *titlePage = [NSMutableArray array];
+	NSMutableArray *content = [NSMutableArray array];
+	
+	for (Line *line in self.lines) {
+		if (line.type == empty || line.omited || line.type == section || line.type == synopse) continue;
+		
+		if (line.isTitlePage) [_titlePage addObject:line];
+		else [content addObject:line];
+	}
+	
+	return @{ @"title page": titlePage, @"script": content };
+}
+
 @end
