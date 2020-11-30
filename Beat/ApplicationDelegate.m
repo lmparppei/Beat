@@ -14,6 +14,24 @@
 
 @interface ApplicationDelegate ()
 @property (nonatomic) RecentFiles *recentFilesSource;
+
+@property (weak) IBOutlet NSWindow* startModal;
+@property (weak) IBOutlet NSWindow* aboutModal;
+@property (weak) IBOutlet NSOutlineView* recentFiles;
+
+@property (weak) IBOutlet NSWindow* acknowledgementsModal;
+@property (weak) IBOutlet NSTextView* acknowledgementsTextView;
+
+@property (weak) IBOutlet NSMenuItem *menuManual;
+@property (weak) IBOutlet NSWindow *manualWindow;
+
+@property (weak) IBOutlet NSTextField* versionField;
+@property (weak) IBOutlet NSTextField* aboutVersionField;
+@property (weak) IBOutlet NSTextView* aboutText;
+
+@property (weak) IBOutlet NSWindow *seriesPrintingWindow;
+
+@property (weak) IBOutlet WKWebView *manualView;
 @end
 
 @implementation ApplicationDelegate
@@ -32,7 +50,7 @@
 	[self checkAutosavedFiles];
 	
 	// Run tests
-	//[[BeatTest alloc] init];
+	// [[BeatTest alloc] init];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -93,8 +111,6 @@
 	}
 	
 	[self checkVersion];
-	
-	[self printEpisodes:nil];
 }
 -(void)checkVersion {
 	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
@@ -302,7 +318,6 @@
 	self.manualWindow.title = @"Beat Manual";
 	
 	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
-	NSLog(@"path %@", htmlPath);
 	[self.manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
 }
 
@@ -417,7 +432,17 @@
 	[[NSDocumentController sharedDocumentController] newDocument:nil];
 }
 
+#pragma mark - Episode Printing
+// Sorry, I don't know how to work with window controllers, so this is here :-(
+
 - (IBAction)printEpisodes:(id)sender {
+	//[NSApp runModalForWindow:_seriesPrintingWindow];
+	NSWindowController *windowController = [[NSWindowController alloc] initWithWindow:_seriesPrintingWindow];
+	[windowController showWindow:_seriesPrintingWindow];
+	
+}
+- (IBAction)closePrintEpisodes:(id)sender {
+	[_seriesPrintingWindow close];
 }
 
 @end

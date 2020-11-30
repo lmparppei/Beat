@@ -16,12 +16,17 @@
 #import "NSMutableArray+MoveItem.h"
 #import "ContinousFountainParser.h"
 #import "BeatHTMLScript.h"
+#import "BeatDocumentSettings.h"
+#import "BeatPaperSizing.h"
+#import "PrintView.h"
 #import <Cocoa/Cocoa.h>
 
 @interface BeatSeriesPrinting ()
 @property (weak) IBOutlet NSTableView *table;
 @property (nonatomic) NSMutableArray<NSURL*> *urls;
 @property (nonatomic) NSWindowController *windowController;
+@property (nonatomic) NSDocument *document; // Faux document for paper sizing info
+@property (nonatomic) PrintView *printView;
 @end
 
 @implementation BeatSeriesPrinting
@@ -30,9 +35,6 @@
 	_urls = [NSMutableArray array];
 	[_table registerForDraggedTypes:@[NSPasteboardTypeString, @"public.file-url"]]; //NSPasteboardTypeURL is only available 10.13->
 }
-
-
-
 
 #pragma mark - Table view data source & delegate
 
@@ -155,29 +157,66 @@
     }
 }
 
--(IBAction)start:(id)sender {
+#pragma mark - Print all documents
+
+-(IBAction)print:(id)sender {
     if (!_urls.count) return;
 	
-    NSError *error;
-    	
-	NSString *html = @"";
+	[self printDocuments:NO];
+}
+-(IBAction)createPDF:(id)sender {
+	if (!_urls.count) return;
 	
-    for (NSURL *url in _urls) {
-        NSString *text = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
-        
-        if (error) {
-            NSString *filename = url.path.lastPathComponent;
-            [self alertPanelWithTitle:@"Error opening file" content:[NSString stringWithFormat:@"%@ could not be opened. Other documents will be printed normally.", filename]];
-            error = nil;
-        } else {
-			ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:text];
-			NSDictionary *script = [parser scriptForPrinting];
-			BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:script document:nil];
+	[self printDocuments:YES];
+}
+
+
+- (void)printDocuments:(bool)toPDF {
+	// Create a faux document for delegation
+	self.document = [[NSDocument alloc] init];
+	self.document.printInfo = [BeatPaperSizing setMargins:_document.printInfo];
+	
+	// The operation can be quite heavy, so do it in another thread
+	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+		NSError *error;
+		
+		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:nil];
+		NSString *header = htmlScript.htmlHeader;
+		NSString *footer = htmlScript.htmlFooter;
+		
+		__block NSString *html = header;
+		
+		for (NSURL *url in self.urls) {
+			NSString *text = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
 			
-			if (html.length == 0) html = htmlScript.htmlHeader;
-			html = [html stringByAppendingString:htmlScript.content];
+			if (error) {
+				NSString *filename = url.path.lastPathComponent;
+				[self alertPanelWithTitle:@"Error opening file" content:[NSString stringWithFormat:@"%@ could not be opened. Other documents will be printed normally.", filename]];
+				error = nil;
+			} else {
+				NSString *documentHtml = [self htmlForDocument:text];
+				html = [html stringByAppendingString:documentHtml];
+			}
 		}
-    }
+		
+		html = [html stringByAppendingString:footer];
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			if (toPDF) self.printView = [[PrintView alloc] initWithHTML:html document:self.document operation:BeatToPDF];
+			else self.printView = [[PrintView alloc] initWithHTML:html document:self.document operation:BeatToPrint];
+		});
+	});
+}
+
+
+
+-(NSString*)htmlForDocument:(NSString*)text {
+	BeatDocumentSettings *settings = [[BeatDocumentSettings alloc] init];
+	[settings readSettingsAndReturnRange:text];
+	
+	ContinousFountainParser *parser = [[ContinousFountainParser alloc] staticParsingWithString:text settings:settings];
+	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:[parser scriptForPrinting] document:_document];
+	
+	return htmlScript.content;
 }
 
 -(void)alertPanelWithTitle:(NSString*)title content:(NSString*)content {

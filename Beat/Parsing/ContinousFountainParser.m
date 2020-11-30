@@ -75,7 +75,13 @@
 
 #pragma mark Bulk Parsing
 
+- (ContinousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
+	return [self initWithString:string delegate:nil settings:settings];
+}
 - (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate {
+	return [self initWithString:string delegate:delegate settings:nil];
+}
+- (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings {
 	self = [super init];
 	
 	if (self) {
@@ -85,6 +91,7 @@
 		_titlePage = [NSMutableArray array];
 		_storylines = [NSMutableArray array];
 		_delegate = delegate;
+		_staticDocumentSettings = settings;
 		
 		[self parseText:string];
 	}
@@ -1367,8 +1374,8 @@ and incomprehensible system of recursion.
 	// Get first scene number
 	NSUInteger sceneNumber = 1;
 	
-	if ([_delegate.documentSettings getInt:@"Scene Numbering Starts From"] > 0) {
-		sceneNumber = [_delegate.documentSettings getInt:@"Scene Numbering Starts From"];
+	if ([self.documentSettings getInt:@"Scene Numbering Starts From"] > 0) {
+		sceneNumber = [self.documentSettings getInt:@"Scene Numbering Starts From"];
 	}
 	
 	// We will store a section depth to adjust depth for scenes that come after a section
@@ -1604,7 +1611,7 @@ and incomprehensible system of recursion.
 	
 	NSInteger sceneNumber = 1;
 	if (self.delegate) {
-		sceneNumber = [self.delegate.documentSettings getInt:@"Scene Numbering Starts From"];
+		sceneNumber = [self.documentSettings getInt:@"Scene Numbering Starts From"];
 		if (sceneNumber < 1) sceneNumber = 1;
 	}
 	
@@ -1676,20 +1683,19 @@ and incomprehensible system of recursion.
 	return elements;
 }
 
+#pragma mark - Document settings
+
+- (BeatDocumentSettings*)documentSettings {
+	if (self.delegate) return self.delegate.documentSettings;
+	else if (self.staticDocumentSettings) return self.staticDocumentSettings;
+	else return nil;
+}
+
 #pragma mark - Separate title page & content for printing
 
 - (NSDictionary*)scriptForPrinting {
-	NSMutableArray *titlePage = [NSMutableArray array];
-	NSMutableArray *content = [NSMutableArray array];
-	
-	for (Line *line in self.lines) {
-		if (line.type == empty || line.omited || line.type == section || line.type == synopse) continue;
-		
-		if (line.isTitlePage) [_titlePage addObject:line];
-		else [content addObject:line];
-	}
-	
-	return @{ @"title page": titlePage, @"script": content };
+	// NOTE: Use ONLY for static parsing
+	return @{ @"title page": self.titlePage, @"script": [self preprocessForPrinting] };
 }
 
 @end

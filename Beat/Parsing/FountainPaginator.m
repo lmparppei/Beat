@@ -346,8 +346,7 @@ That you have escaped.
 }
 - (void)paginateFromIndex:(NSInteger)fromIndex currentPage:(NSMutableArray*)currentPage
 {
-	// NSLog(@"paginating from %lu (with %lu elements on page)", fromIndex, currentPage.count);
-	// Default pagination function for US Letter paper size (legacy of Fountain repository)
+	if (!self.script.count) return;
 	
 	if (_document) {
 		_A4 = YES;
@@ -360,8 +359,6 @@ That you have escaped.
 	} else {
 		_paperSize = CGSizeMake(595, 821);
 	}
-	
-	
 	
 	/*
 	if (self.document) {
@@ -397,7 +394,6 @@ That you have escaped.
 		_pageBreaks = [NSMutableArray array];
 		currentPage = [NSMutableArray array];
 		 
-
 /*
 		// For those who come after
 		if (fromIndex == 0 || self.pages.count == 0) {
@@ -435,7 +431,7 @@ That you have escaped.
 				
 		// create a tmp array that will hold elements to be added to the pages
 		NSMutableArray *tmpElements = [NSMutableArray array];
-		NSInteger maxElements = [self.script count];
+		NSInteger maxElements = self.script.count;
 		
 		NSInteger previousDualDialogueBlockHeight = -1;
 

@@ -44,10 +44,7 @@ typedef enum : NSUInteger {
 
 @interface PrintView : NSView
 @property (weak) id<PrintViewDelegate> delegate;
-// WIP: move all these values to the delegate
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript;
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id)delegate;
-//- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print preview:(bool)preview;
-//- (id)initWithDocument:(Document*)document toPDF:(bool)pdf toPrint:(bool)print;
-
+- (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode;
 @end

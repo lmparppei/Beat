@@ -10,10 +10,12 @@
 #import "PrintView.h"
 @class Document;
 
+/*
 typedef enum : NSUInteger {
 	BeatA4 = 0,
 	BeatUSLetter
 } BeatPaperSize;
+ */
 
 NS_ASSUME_NONNULL_BEGIN
 

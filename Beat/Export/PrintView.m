@@ -8,23 +8,19 @@
 //
 
 /*
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
  
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
+ Note: This class still uses the now DEPRECATED WebKit view.
+
+ It can take in either a Document class which acts as a delegate, and
+ then also takes care of HTML conversion etc., or alternatively
+ the HTML can be created beforehand. In that case, make sure the conversion
+ is done using correct paper size to avoid clipping / spilling
  
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ Operations:
+ BeatToPDF -> export PDF file with save as... prompt
+ BeatToPreview -> temporary PDF, URL sent to delegate after finish
+ BeatToPrint -> the screenplay will enter physical world through some ancient technology called "printer"
+
  */
 
 #import "PrintView.h"
@@ -43,6 +39,21 @@
 
 @implementation PrintView
 
+// We know the HTML already (probably we're printing a series)
+- (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode {
+	self = [super init];
+	if (mode == BeatToPDF) self.pdf = YES;
+	
+	if (self) {
+		if (htmlString.length) {
+			_finishedWebViews = 0;
+			_document = (Document*)document;
+			[self printHTML:htmlString];
+		}
+	}
+	
+	return self;
+}
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript {
 	return [self initWithDocument:document script:lines operation:mode compareWith:oldScript delegate:nil];
 }
@@ -50,10 +61,10 @@
 	self = [super init];
 
 	self.delegate = delegate;
-		
+	
 	if (mode == BeatToPDF) self.pdf = YES;
 	else if (mode == BeatToPreview) {
-		self.preview = YES;
+		self.preview = YES; // Preview returns a temporary pdf file to the delegate
 		self.pdf = YES;
 	}
 
@@ -61,33 +72,39 @@
 		_finishedWebViews = 0;
 		_document = document;
 		
-		NSMutableString *rawText;
-		
-		if (lines.count) {
-			rawText = [NSMutableString string];
-			for (Line* line in lines) {
-				[rawText appendFormat:@"%@\n", line.string];
-			}
-		} else {
-			rawText = [NSMutableString stringWithString:[document getText]];
-		}
-		
+		// NOTE: Lines can be nil, in which case this returns the text from delegate/document
+		NSString *rawText = [self getRawTextFor:lines];
 		NSString *htmlString = [self createPrint:rawText document:document compareWith:oldScript header:(delegate.header) ? delegate.header : @""];
 		
-		WebView *pageWebView = [[WebView alloc] init];
-		pageWebView.frameLoadDelegate = self;
-		pageWebView.mainFrame.frameView.allowsScrolling = NO;
-		[self addSubview:pageWebView];
-		
-		_webView = pageWebView;
-		
-		[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
-
-		// Why was this used in Writer?
-		// self.frame = CGRectMake(0, 0, paperSize.width, [htmlScript pages] * paperSize.height);
+		[self printHTML:htmlString];
 	}
 	
 	return self;
+}
+
+- (NSString*)getRawTextFor:(NSArray*)lines {
+	NSMutableString *rawText = [NSMutableString string];
+	
+	if (lines.count) {
+		rawText = [NSMutableString string];
+		for (Line* line in lines) {
+			[rawText appendFormat:@"%@\n", line.string];
+		}
+	} else {
+		if (_document) rawText = [NSMutableString stringWithString:[_document getText]];
+	}
+	return rawText;
+}
+
+- (void)printHTML:(NSString*)htmlString {
+	WebView *pageWebView = [[WebView alloc] init];
+	pageWebView.frameLoadDelegate = self;
+	pageWebView.mainFrame.frameView.allowsScrolling = NO;
+	[self addSubview:pageWebView];
+	
+	_webView = pageWebView;
+	
+	[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
 }
 
 - (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript header:(NSString*)header {
@@ -114,6 +131,8 @@
 	return html.html;
 }
 
+#pragma mark - Actual printing
+
 - (BOOL)knowsPageRange:(NSRangePointer)range
 {
 	range->location = 0;
@@ -134,60 +153,75 @@
 		
 		// Print
 		if (!self.pdf) {
-			NSPrintInfo *printInfo = [self.document.printInfo copy];
-			NSPrintOperation *printOperation = [_webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
-			//[printOperation runOperation];
-			[printOperation runOperationModalForWindow:((NSWindowController*)self.document.windowControllers[0]).window delegate:nil didRunSelector:nil contextInfo:nil];
+			[self printDocument];
 		}
 		// Export PDF
 		else {
 			// Just export a temporary PDF
 			if (_preview) {
-				NSPrintInfo *printInfo = [self.document.printInfo copy];
-				
-				NSURL *tempURL = [NSURL fileURLWithPath:[self pathForTemporaryFileWithPrefix:@"pdf"]];
-				
-				[printInfo.dictionary addEntriesFromDictionary:@{
-																 NSPrintJobDisposition: NSPrintSaveJob,
-																 NSPrintJobSavingURL: tempURL
-																 }];
-				
-				NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
-				
-				printOperation.showsPrintPanel = NO;
-				printOperation.showsProgressPanel = YES;
-				
-				[printOperation runOperation];
-				[self.delegate didFinishPreviewAt:tempURL];
-				return;
+				[self createTemporaryPDF];
+			} else {
+				[self savePDF];
 			}
-			
-			NSSavePanel *saveDialog = [NSSavePanel savePanel];
-			[saveDialog setAllowedFileTypes:@[@"pdf"]];
-			[saveDialog setNameFieldStringValue:[self.document fileNameString]];
-			
-			[saveDialog beginSheetModalForWindow:self.document.windowControllers[0].window completionHandler:^(NSInteger result) {
-				if (result == NSFileHandlingPanelOKButton) {
-					NSPrintInfo *printInfo = [self.document.printInfo copy];
-					
-					[printInfo.dictionary addEntriesFromDictionary:@{
-																	 NSPrintJobDisposition: NSPrintSaveJob,
-																	 NSPrintJobSavingURL: saveDialog.URL
-																	 }];
-					
-					//NSPrintOperation* printOperation = [NSPrintOperation printOperationWithView:self printInfo:printInfo];
-					NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
-					
-					printOperation.showsPrintPanel = NO;
-					printOperation.showsProgressPanel = YES;
-					
-					[printOperation runOperation];
-					
-				}
-			}];
-			
 		}
 	}
+}
+
+- (void)savePDF {
+	NSSavePanel *saveDialog = [NSSavePanel savePanel];
+	[saveDialog setAllowedFileTypes:@[@"pdf"]];
+	[saveDialog setNameFieldStringValue:self.document.fileNameString];
+	
+	[saveDialog beginSheetModalForWindow:self.document.windowControllers[0].window completionHandler:^(NSInteger result) {
+		if (result == NSFileHandlingPanelOKButton) {
+			NSPrintInfo *printInfo = [self.document.printInfo copy];
+			
+			[printInfo.dictionary addEntriesFromDictionary:@{
+															 NSPrintJobDisposition: NSPrintSaveJob,
+															 NSPrintJobSavingURL: saveDialog.URL
+															 }];
+			
+			//NSPrintOperation* printOperation = [NSPrintOperation printOperationWithView:self printInfo:printInfo];
+			NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+			
+			printOperation.showsPrintPanel = NO;
+			printOperation.showsProgressPanel = YES;
+			
+			[printOperation runOperation];
+		}
+	}];
+}
+
+- (void)printDocument {
+	NSPrintInfo *printInfo = [self.document.printInfo copy];
+	NSPrintOperation *printOperation = [_webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	
+	//[printOperation runOperationModalForWindow:((NSWindowController*)self.document.windowControllers[0]).window delegate:nil didRunSelector:nil contextInfo:nil];
+	if (self.document.windowControllers.count) {
+		[printOperation runOperationModalForWindow:((NSWindowController*)self.document.windowControllers[0]).window delegate:nil didRunSelector:nil contextInfo:nil];
+	} else {
+		[printOperation runOperation];
+	}
+	
+}
+
+- (void)createTemporaryPDF {
+	NSPrintInfo *printInfo = [self.document.printInfo copy];
+	
+	NSURL *tempURL = [NSURL fileURLWithPath:[self pathForTemporaryFileWithPrefix:@"pdf"]];
+	
+	[printInfo.dictionary addEntriesFromDictionary:@{
+													 NSPrintJobDisposition: NSPrintSaveJob,
+													 NSPrintJobSavingURL: tempURL
+													 }];
+	
+	NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	
+	printOperation.showsPrintPanel = NO;
+	printOperation.showsProgressPanel = YES;
+	
+	[printOperation runOperation];
+	[self.delegate didFinishPreviewAt:tempURL];
 }
 
 - (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix

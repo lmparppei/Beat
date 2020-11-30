@@ -18,6 +18,7 @@
 #import <Quartz/Quartz.h>
 #import "BeatPrint.h"
 #import "PrintView.h"
+#import "BeatPaperSizing.h"
 
 #define TITLE_PRINT @"Print"
 #define TITLE_PDF @"Create PDF"
@@ -91,8 +92,7 @@
 	// Check the paper size
 	if (_document.printInfo.paperSize.width > 595) [_radioLetter setState:NSOnState];
 	else [_radioA4 setState:NSOnState];
-	
-	[self setMargin];
+	_document.printInfo = [BeatPaperSizing setMargins:_document.printInfo];
 	
 	// Show window
 	[self loadPreview];
@@ -149,11 +149,11 @@
 	
 	if ([(NSButton*)sender tag] == 1) {
 		// A4
-		_document.printInfo.paperSize = CGSizeMake(PAPER_A4);
+		_document.printInfo = [BeatPaperSizing setSize:BeatA4 printInfo:_document.printInfo];
 		_paperSize = BeatA4;
 	} else {
 		// US Letter
-		_document.printInfo.paperSize = CGSizeMake(PAPER_USLETTER);
+		_document.printInfo = [BeatPaperSizing setSize:BeatUSLetter printInfo:_document.printInfo];
 		_paperSize = BeatUSLetter;
 	}
 	
@@ -163,16 +163,10 @@
 	}
 }
 
-- (void)setMargin {
-	[_document.printInfo setTopMargin:MARGIN_TOP];
-	[_document.printInfo setBottomMargin:MARGIN_BOTTOM];
-	[_document.printInfo setLeftMargin:MARGIN_LEFT];
-	[_document.printInfo setRightMargin:MARGIN_RIGHT];
-}
-
 - (void)didFinishPreviewAt:(NSURL *)url {
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
 	[_pdfView setDocument:doc];
 }
+
 
 @end

@@ -36,10 +36,16 @@
 @property (nonatomic) NSMutableArray *storylines;
 @property (nonatomic) bool hasTitlePage;
 
-//Parsing methods
-- (void)parseText:(NSString*)text;
+// For STATIC parsing without a document
+@property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
+
+// Initialization for both CONTINUOUS and STATIC parsing
 - (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;
 - (ContinousFountainParser*)initWithString:(NSString*)string;
+- (ContinousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
+
+//Parsing methods
+- (void)parseText:(NSString*)text;
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string;
 //- (void)setSceneNumbers:(NSString*)text;
 - (void)resetParsing;

@@ -115,6 +115,7 @@
 #import "BeatPrint.h"
 #import "BeatDocumentSettings.h"
 #import "OutlineViewItem.h"
+#import "BeatPaperSizing.h"
 
 @interface Document ()
 
@@ -323,15 +324,12 @@
 
 // Debug flags
 @property (nonatomic) bool debug;
-
 @end
 
 #define APP_NAME @"Beat"
 
 #define MIN_WINDOW_HEIGHT 350
 #define MIN_OUTLINE_WIDTH 270
-
-#define ZOOM_MODIFIER 40 // Still used by labels, should be fixed when possible
 
 #define AUTOSAVE_INTERVAL 10.0
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
@@ -388,12 +386,6 @@
 #define OUTLINE_SECTION_SIZE 13.0
 #define OUTLINE_SYNOPSE_SIZE 12.0
 #define OUTLINE_SCENE_SIZE 11.5
-
-// Print margin definitions
-#define MARGIN_TOP 30
-#define MARGIN_LEFT 50
-#define MARGIN_RIGHT 50
-#define MARGIN_BOTTOM 40
 
 @implementation Document
 
@@ -896,10 +888,7 @@
     }
 }
 - (void)setMargin {
-	[self.printInfo setTopMargin:MARGIN_TOP];
-	[self.printInfo setBottomMargin:MARGIN_BOTTOM];
-	[self.printInfo setLeftMargin:MARGIN_LEFT];
-	[self.printInfo setRightMargin:MARGIN_RIGHT];
+	self.printInfo = [BeatPaperSizing setMargins:self.printInfo];
 }
 - (IBAction)openPrintSettings:(id)sender {
 	[self.printing open:self];
@@ -4158,8 +4147,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
 		NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
 		rect.origin.y += _textInsetY;
-		rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
-		rect.origin.x = self.textView.textContainerInset.width - 2 * ZOOM_MODIFIER - rect.size.width;
+		rect.size.width = 20 * [scene.sceneNumber length];
+		rect.origin.x = self.textView.textContainerInset.width - 80 - rect.size.width;
 	}
 	
 	[label setBezeled:NO];
@@ -4281,8 +4270,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 				NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 				NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
 				
-				rect.size.width = 0.5 * ZOOM_MODIFIER * [scene.sceneNumber length];
-				rect.origin.x = self.textView.textContainerInset.width - ZOOM_MODIFIER - rect.size.width + 10;
+				rect.size.width = 0.5 * 20 * [scene.sceneNumber length];
+				rect.origin.x = self.textView.textContainerInset.width - 40 - rect.size.width + 10;
 				
 				rect.origin.y += _textInsetY;
 

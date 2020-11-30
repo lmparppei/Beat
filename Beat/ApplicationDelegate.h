@@ -12,22 +12,6 @@
 
 @interface ApplicationDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate>
 
-@property (weak) IBOutlet NSWindow* startModal;
-@property (weak) IBOutlet NSWindow* aboutModal;
-
-@property (weak) IBOutlet WKWebView *manualView;
-@property (weak) IBOutlet NSOutlineView* recentFiles;
-
-@property (weak) IBOutlet NSWindow* acknowledgementsModal;
-@property (weak) IBOutlet NSTextView* acknowledgementsTextView;
-
-@property (weak) IBOutlet NSTextField* versionField;
-@property (weak) IBOutlet NSTextField* aboutVersionField;
-@property (weak) IBOutlet NSTextView* aboutText;
-
-@property (weak) IBOutlet NSMenuItem *menuManual;
-@property (weak) IBOutlet NSWindow *manualWindow;
-
 @property (nonatomic) bool darkMode;
 @property (nonatomic) bool forceLightMode;
 @property (nonatomic) bool forceDarkMode;

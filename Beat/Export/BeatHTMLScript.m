@@ -125,8 +125,8 @@
 - (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document
 {
 	return [self initWithScript:script document:document scene:nil operation:ForPrint];
-	
 }
+
 - (id)initWithScript:(NSDictionary*)script document:(NSDocument*)document scene:(NSString*)currentScene operation:(BeatHTMLOperation)operation {
 	self = [super init];
 	
@@ -157,7 +157,7 @@
 	NSMutableString *html = [NSMutableString string];
 	[html appendString:[self htmlHeader]];
 	[html appendString:[self content]];
-	[html appendString:[self footer]];
+	[html appendString:[self htmlFooter]];
 
 	return html;
 }
@@ -182,7 +182,7 @@
 	return html;
 }
 
-- (NSString *)footer {
+- (NSString *)htmlFooter {
 	NSMutableString *html = [NSMutableString string];
 	[html appendString:[self previewJS]];
 	[html appendString:@"<script name='scrolling'></script>"];
@@ -238,7 +238,7 @@
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
-	 
+	
     if ([titlePage count] > 0) {
         [body appendString:@"<section id='script-title' class='page'>"];
 		

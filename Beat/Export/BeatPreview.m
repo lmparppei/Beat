@@ -35,7 +35,6 @@
 
 @implementation BeatPreview
 
-// It's about time to make this a retained fucking class
 - (id) initWithDocument:(id)document {
 	self = [super init];
 	if (self) {
@@ -46,6 +45,7 @@
 }
 - (NSString*) createPreview {
 	if (self.delegate) {
+		// Just make a delegate method for this, for fuck's sake
 		[_document.printInfo setTopMargin:MARGIN_TOP];
 		[_document.printInfo setBottomMargin:MARGIN_BOTTOM];
 		[_document.printInfo setLeftMargin:MARGIN_LEFT];
@@ -75,12 +75,8 @@
 	}
 	
 	// Create a script dict required by the HTML module
-	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
-		@"script": [parser preprocessForPrinting],
-		@"title page": parser.titlePage
-	}];
-	
-	
+	NSDictionary *script = [parser scriptForPrinting];
+
 	if (previewType == BeatQuickLookPreview) {
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForQuickLook:script];
 		return html.html;

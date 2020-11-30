@@ -55,8 +55,6 @@
 	if (!error) {
 		BeatPreview *preview = [[BeatPreview alloc] initWithDocument:nil];
 		NSString *html = [preview createPreviewFor:file type:BeatQuickLookPreview];
-		NSLog(@"html %@", html);
-		
 		[[self.webView2 mainFrame] loadHTMLString:html baseURL:nil];
 	}
 	
@@ -67,8 +65,6 @@
     
     // Call the completion handler so Quick Look knows that the preview is fully loaded.
     // Quick Look will display a loading spinner while the completion handler is not called.
-    
-    //
 	handler(nil);
 }
 

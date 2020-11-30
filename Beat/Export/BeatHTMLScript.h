@@ -60,5 +60,6 @@ typedef enum : NSUInteger {
 - (NSString *)bodyForScript;
 - (NSString *)content; // Returns only the ARTICLE part
 - (NSString *)htmlHeader;
+- (NSString *)htmlFooter;
 
 @end
