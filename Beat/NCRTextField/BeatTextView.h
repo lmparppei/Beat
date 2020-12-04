@@ -9,7 +9,8 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
-
+#import "ContinousFountainParser.h"
+#import "ThemeManager.h"
 
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
@@ -19,6 +20,12 @@
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate>
 @property (nonatomic) CGFloat magnification;
+@property (nonatomic, readonly) ContinousFountainParser *parser;
+@property (readonly) NSFont *courier;
+@property (readonly) NSFont *boldCourier;
+@property (readonly) NSFont *italicCourier;
+@property (readonly) ThemeManager* themeManager;
+- (NSMutableArray*)getOutlineItems;
 @end
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
@@ -26,6 +33,10 @@
 - (IBAction)showInfo:(id)sender;
 - (void)updateSections:(NSArray*)sections;
 - (void)setInsets;
+
+// Scene Numbering
+- (void) updateSceneNumberLabels;
+- (void) deleteSceneNumberLabels;
 
 @property CGFloat textInsetY;
 @property (weak) id<BeatTextViewDelegate> zoomDelegate;

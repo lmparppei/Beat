@@ -492,14 +492,14 @@
                                                                         <action selector="toggleTimeline:" target="-2" id="h1e-AW-X20"/>
                                                                     </connections>
                                                                 </button>
-                                                                <button toolTip="Show Cards" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button">
+                                                                <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button">
                                                                     <rect key="frame" x="660" y="0.0" width="27" height="22"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                         <font key="font" metaFont="system"/>
                                                                     </buttonCell>
-                                                                    <accessibility description="Card view"/>
+                                                                    <accessibility description="Show Print Preview"/>
                                                                     <connections>
                                                                         <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
                                                                     </connections>
@@ -511,7 +511,7 @@
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                         <font key="font" metaFont="system"/>
                                                                     </buttonCell>
-                                                                    <accessibility description="Show Card View"/>
+                                                                    <accessibility description="Show Index Cards"/>
                                                                     <connections>
                                                                         <action selector="toggleCards:" target="-2" id="bmu-cy-63o"/>
                                                                     </connections>

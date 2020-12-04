@@ -60,11 +60,11 @@
 @property NSArray *storylineColors;
 
 // Storyline UI
-@property NSPopover *storylinePopover;
-@property NSTextField *storylineField;
+@property (nonatomic) NSPopover *storylinePopover;
+@property (nonatomic) NSTextField *storylineField;
 
 // Playhead layer
-@property CAShapeLayer *playhead;
+@property (nonatomic) CAShapeLayer *playhead;
 @end
 
 @implementation BeatTimeline

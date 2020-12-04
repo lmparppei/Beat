@@ -1363,7 +1363,10 @@ and incomprehensible system of recursion.
 	}
 	return nil;
 }
-
+- (NSArray*) outlineItems {
+	[self createOutline];
+	return self.outline;
+}
 - (void) createOutline
 {
 	[_outline removeAllObjects];
@@ -1556,6 +1559,23 @@ and incomprehensible system of recursion.
     return NO;
 }
 
+#pragma mark - Convenience
+
+- (NSInteger)numberOfScenes {
+	NSInteger scenes = 0;
+	for (Line *line in self.lines) {
+		if (line.type == heading) scenes++;
+	}
+	return scenes;
+}
+- (NSMutableArray *) getScenes {
+	NSMutableArray * scenes = [NSMutableArray array];
+	for (OutlineScene * scene in [self outline]) {
+		if (scene.type == heading) [scenes addObject:scene];
+	}
+	
+	return scenes;
+}
 
 #pragma mark - Utility
 

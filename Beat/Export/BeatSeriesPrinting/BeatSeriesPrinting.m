@@ -32,7 +32,6 @@
 @implementation BeatSeriesPrinting
 
 - (void)awakeFromNib {
-	_urls = [NSMutableArray array];
 	[_table registerForDraggedTypes:@[NSPasteboardTypeString, @"public.file-url"]]; //NSPasteboardTypeURL is only available 10.13->
 }
 
@@ -71,6 +70,8 @@
     }
 }
 - (BOOL)tableView:(NSTableView *)tableView acceptDrop:(id<NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation {
+	if (!_urls) _urls = [NSMutableArray array];
+		
     NSArray *items = info.draggingPasteboard.pasteboardItems;
     if (!items.count) return NO;
     
@@ -135,6 +136,8 @@
 # pragma mark - UI functions
 
 -(IBAction)removeFile:(id)sender {
+	if (!_urls) _urls = [NSMutableArray array];
+	
     NSInteger index = _table.selectedRow;
     
     if (index >= 0) {
@@ -144,6 +147,8 @@
     }
 }
 -(IBAction)addFiles:(id)sender {
+	if (!_urls) _urls = [NSMutableArray array];
+	
     NSOpenPanel *dialog = [NSOpenPanel openPanel];
     dialog.allowsMultipleSelection = YES;
     dialog.allowedFileTypes = @[@"fountain"];

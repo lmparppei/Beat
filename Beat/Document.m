@@ -251,11 +251,6 @@
 // Content buffer
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
 
-// Fonts
-@property (strong, nonatomic) NSFont *courier;
-@property (strong, nonatomic) NSFont *boldCourier;
-@property (strong, nonatomic) NSFont *italicCourier;
-
 @property (strong, nonatomic) NSFont *sectionFont;
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
 @property (strong, nonatomic) NSFont *synopsisFont;
@@ -1450,7 +1445,6 @@
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
 	if (changeInOutline) {
-		// This builds outline in the parser. Weird method name, I know.
 		[self.parser createOutline];
 		if (self.outlineViewVisible) [self reloadOutline];
 		if (self.timelineVisible) [self reloadTimeline];
@@ -2651,7 +2645,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSRegularExpression *sceneNumberPattern = [NSRegularExpression regularExpressionWithPattern: @" (\\#([0-9A-Za-z\\.\\)-]+)\\#)" options: NSRegularExpressionCaseInsensitive error: &error];
 	
 	_sceneNumberLabelUpdateOff = true;
-	for (OutlineScene * scene in [self getScenes]) {
+	for (OutlineScene * scene in [self.parser getScenes]) {
 		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
 			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, [scene.line.string length])];
 			if ([results count]) {
@@ -3466,31 +3460,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 }
 
-- (NSUInteger) getNumberOfScenes {
-	NSUInteger result = 0;
-	for (Line * line in [self.parser lines]) {
-		if (line.type == heading) result++;
-	}
-	return result;
-}
-
-- (NSMutableArray *) getScenes {
-	NSMutableArray * scenes = [[NSMutableArray alloc] init];
-	for (OutlineScene * scene in [self.parser outline]) {
-		if (scene.type == heading) [scenes addObject:scene];
-	}
-	
-	return scenes;
-}
-
 - (NSMutableArray *) getOutlineItems {
-	// For some reason we can't check the original array (memory/thread reasons?)
-	// so we'll make a copy out of all the items
-	NSMutableArray * outlineItems = [NSMutableArray array];
-	for (OutlineScene * scene in [self.parser outline]) {
-		[outlineItems addObject:scene];
-	}
-	
+	// Make a copy of the outline to avoid threading issues
+	NSMutableArray * outlineItems = [NSMutableArray arrayWithArray:self.parser.outlineItems];
 	return outlineItems;
 }
 
@@ -4108,97 +4080,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 #pragma mark - Scene numbering for NSTextView
 
-/*
-
- This is intensive and silly. Instead of creating labels, we could just send an index/pixel position + scene number to BeatTextView and have it draw the scene numbers?
- 
- Like this:
- NSMutableArray *sceneNumbers = [NSMutableArray array];
- 
- for (OutlineScene *scene in scenes) {
-	// Find out position here
-	NSDictionary *sceneNumber = @{ @"position": [NSNumber numberWithFloat:float], @"sceneNumber": sceneNumber };
- }
- 
- [sceneNumbers addObject:sceneNumber];
- _textView.sceneNumbers = sceneNumbers
- 
- I'm pretty sure that would be 100% faster.
- 
- 
- ... update about a year later (2020-03):
- The performance boost is marginal, if done using drawRect.
- What we should do is use CALayer, but it's beyond my skill level & powers for now.
- 
- ... update 2020-10:
- That was kinda useless, too. NSTextField is surprisingly efficient.
-
- 
- */
-
-- (NSTextField *) createLabel: (OutlineScene *) scene {
-	NSTextField * label;
-	label = [[NSTextField alloc] init];
-	
-	if (scene != nil) {
-		NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
-		NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-		
-		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
-		NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-		rect.origin.y += _textInsetY;
-		rect.size.width = 20 * [scene.sceneNumber length];
-		rect.origin.x = self.textView.textContainerInset.width - 80 - rect.size.width;
-	}
-	
-	[label setBezeled:NO];
-	[label setSelectable:NO];
-	[label setDrawsBackground:NO];
-	[label setFont:self.courier];
-	[label setAlignment:NSTextAlignmentRight];
-	[self.textView addSubview:label];
-	
-	[self.sceneNumberLabels addObject:label];
-	return label;
-}
-
- 
-// An alternative way of handling scene numbers, again.
-// Gives some performance advantage at times, but it's so insignificant that maybe it's not worth all the hassle.
-// The idea is to use CATextLayer instead of the subviews
- /*
-
-- (void)refreshSceneNumbers {
-	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
-	if (self.parser.outline.count == 0)[self.parser createOutline];
-	
-	NSMutableArray *sceneNumbers = [NSMutableArray array];
-	for (OutlineScene * scene in [self getScenes]) {
-		// We'll wrap this in an autorelease pool, not sure if it helps or not :-)
-		@autoreleasepool {
-			
-			NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
-			NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-			NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-				
-			NSMutableDictionary *sceneNumber = [NSMutableDictionary dictionaryWithDictionary:@{
-				@"sceneNumber": scene.sceneNumber,
-				@"rect": [NSNumber valueWithRect:rect]
-			}];
-			
-			if (![scene.color isEqualToString:@""] && scene.color != nil) {
-				NSString *colorName = [scene.color lowercaseString];
-				[sceneNumber setValue:colorName forKey:@"color"];
-			}
-			
-			[sceneNumbers addObject:sceneNumber];
-		}
-	}
-	
-	self.textView.sceneNumbers = sceneNumbers;
-}
-*/
- 
 - (IBAction)showSceneNumberStart:(id)sender {
 	// Load previous setting
 	if ([_documentSettings getInt:@"Scene Numbering Starts From"] > 0) {
@@ -4230,90 +4111,10 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return [self.documentSettings getInt:@"Scene Numbering Starts From"];
 }
 - (void) updateSceneNumberLabels {
-	// New way
-	// [self refreshSceneNumbers];
-	
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
-	
-	if (![[self.parser outline] count]) {
-		[self.parser createOutline];
-	}
-	
-	NSInteger numberOfScenes = [self getNumberOfScenes];
-	NSInteger numberOfLabels = [self.sceneNumberLabels count];
-	NSInteger difference = numberOfScenes - numberOfLabels;
-	
-	// Create missing labels for new scenes
-	if (difference > 0 && [self.sceneNumberLabels count]) {
-		for (NSUInteger d = 0; d < difference; d++) {
-			[self createLabel:nil];
-		}
-	}
-	
-	// Create labels if none are present
-	if (![self.sceneNumberLabels count]) {
-		[self createAllLabels];
-	} else {
-		NSUInteger index = 0;
-
-		for (OutlineScene * scene in [self getScenes]) {
-			// We'll wrap this in an autorelease pool, not sure if it helps or not :-)
-			@autoreleasepool {
-				if (index >= [self.sceneNumberLabels count]) break;
-				
-				NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
-				
-				label = [self.sceneNumberLabels objectAtIndex:index];
-				if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
-				
-				NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
-				NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-				NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-				
-				rect.size.width = 0.5 * 20 * [scene.sceneNumber length];
-				rect.origin.x = self.textView.textContainerInset.width - 40 - rect.size.width + 10;
-				
-				rect.origin.y += _textInsetY;
-
-				label.frame = rect;
-				[label setFont:self.courier];
-				if (![scene.color isEqualToString:@""] && scene.color != nil) {
-					NSString *color = [scene.color lowercaseString];
-					[label setTextColor:[BeatColors color:color]];
-				} else {
-					[label setTextColor:self.themeManager.currentTextColor];
-				}
-			
-				index++;
-			}
-		}
-
-		// Remove unused labels from the end of the array.
-		if (difference < 0) {
-			for (NSInteger d = 0; d > difference; d--) {
-				// Let's just do a double check to reduce the chance of errors
-				if ([self.sceneNumberLabels count] > [self.sceneNumberLabels count] - 1) {
-					NSTextField * label = [self.sceneNumberLabels objectAtIndex:[self.sceneNumberLabels count] - 1];
-				
-					//[label performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:NO];
-					[self.sceneNumberLabels removeObject:label];
-					[label removeFromSuperview];
-				}
-			}
-		}
-	}
+	[self.textView updateSceneNumberLabels];
 }
-- (void) createAllLabels {
-	for (OutlineScene * scene in [self getOutlineItems]) {
-		[self createLabel:scene];
-	}
-}
-- (void) deleteAllLabels {
-	for (NSTextField * label in _sceneNumberLabels) {
-		[label removeFromSuperview];
-	}
-	[_sceneNumberLabels removeAllObjects];
-}
+
 - (IBAction) toggleSceneLabels: (id) sender {
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
 	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
@@ -4322,7 +4123,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		[self updateSceneNumberLabels];
 		[self ensureLayout];
 	}
-	else [self deleteAllLabels];
+	else [self.textView deleteSceneNumberLabels];
 }
 
 #pragma mark - Timeline + chronometry

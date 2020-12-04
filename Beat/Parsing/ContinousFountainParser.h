@@ -50,6 +50,7 @@
 //- (void)setSceneNumbers:(NSString*)text;
 - (void)resetParsing;
 - (void)createOutline;
+- (NSArray*)outlineItems;
 - (void)ensurePositions;
 
 // Preprocess for printing
@@ -71,6 +72,8 @@
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSString*)cleanedString;
 - (NSDictionary*)scriptForPrinting;
+- (NSInteger)numberOfScenes;
+- (NSMutableArray *) getScenes;
 
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;

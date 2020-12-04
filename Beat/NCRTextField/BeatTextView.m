@@ -707,15 +707,21 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSFont* font = [NSFont fontWithName:@"Courier Prime" size:17];
 	
-	// New scene numbering system, waiting for better times
-	// [self updateSceneNumbers];
-	
 	[context saveGraphicsState];
 	
 	NSInteger pageNumber = 1;
 	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 170);
-	//CGFloat width = self.frame.size.width * factor - self.textContainerInset.width * 2 + 290;
 	
+	// Don't let page numbers fall out of view
+	if (rightEdge + 40 > self.enclosingScrollView.frame.size.width * factor) {
+		rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 72;
+		
+		// If it's STILL too out
+		if (rightEdge + 50 > self.enclosingScrollView.frame.size.width * factor) {
+			rightEdge = self.enclosingScrollView.frame.size.width * factor - 50;
+		}
+	}
+
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
 
 		NSString *page = [@(pageNumber) stringValue];
@@ -726,25 +732,126 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: NSColor.grayColor }];
 		
 		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
-		
-		/*
-		// Actually, let's not draw the separators at all?
-		 
-		// Draw separator only from the second page onwards
-		if (pageNumber > 1) {
-			NSColor* fillColor = _marginColor;
-			[fillColor setFill];
-					
-			NSRect rect = NSMakeRect(self.textContainerInset.width - 130, [pageBreakPosition floatValue] + self.textContainerInset.height, width, 2);
-			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
-		}
-		*/
-		
+				
 		pageNumber++;
 	}
 	[context restoreGraphicsState];
-	
 }
+
+- (void) updateSceneNumberLabels {
+	// zoomDelegate is a misleading name, it's the Document, really
+	ContinousFountainParser *parser = self.zoomDelegate.parser;
+	if (!parser.outline.count) [parser createOutline];
+	
+	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
+		
+	NSInteger numberOfScenes = parser.numberOfScenes;
+	NSInteger numberOfLabels = self.sceneNumberLabels.count;
+	NSInteger difference = numberOfScenes - numberOfLabels;
+	
+	// Create missing labels for new scenes
+	if (difference > 0 && self.sceneNumberLabels.count) {
+		for (NSUInteger d = 0; d < difference; d++) {
+			[self createLabel:nil];
+		}
+	}
+	
+	// Create labels if none are present
+	if (![self.sceneNumberLabels count]) {
+		[self createAllLabels];
+	} else {
+		NSUInteger index = 0;
+
+		for (OutlineScene * scene in [parser getScenes]) {
+			// We'll wrap this in an autorelease pool, not sure if it helps or not :-)
+			@autoreleasepool {
+				if (index >= [self.sceneNumberLabels count]) break;
+				
+				NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
+				
+				label = [self.sceneNumberLabels objectAtIndex:index];
+				if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
+				
+				NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
+				NSRange range = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+				NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+				
+				rect.size.width = 20 * [scene.sceneNumber length];
+				rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
+				
+				rect.origin.y += _textInsetY;
+
+				label.frame = rect;
+				[label setFont:self.zoomDelegate.courier];
+				if (![scene.color isEqualToString:@""] && scene.color != nil) {
+					NSString *color = [scene.color lowercaseString];
+					[label setTextColor:[BeatColors color:color]];
+				} else {
+					[label setTextColor:self.zoomDelegate.themeManager.currentTextColor];
+				}
+			
+				index++;
+			}
+		}
+
+		// Remove unused labels from the end of the array.
+		if (difference < 0) {
+			for (NSInteger d = 0; d > difference; d--) {
+				// Let's just do a double check to reduce the chance of errors
+				if ([self.sceneNumberLabels count] > [self.sceneNumberLabels count] - 1) {
+					NSTextField * label = [self.sceneNumberLabels objectAtIndex:[self.sceneNumberLabels count] - 1];
+				
+					//[label performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:NO];
+					[self.sceneNumberLabels removeObject:label];
+					[label removeFromSuperview];
+				}
+			}
+		}
+	}
+}
+
+- (NSTextField *) createLabel: (OutlineScene *) scene {
+	NSTextField * label;
+	label = [[NSTextField alloc] init];
+	
+	if (scene != nil) {
+		NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
+		NSRange range = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+		
+		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+		rect.origin.y += _textInsetY;
+		rect.size.width = 20 * [scene.sceneNumber length];
+		rect.origin.x = self.textContainerInset.width - 80 - rect.size.width;
+	}
+	
+	[label setBezeled:NO];
+	[label setSelectable:NO];
+	[label setDrawsBackground:NO];
+	[label setFont:self.zoomDelegate.courier];
+	[label setAlignment:NSTextAlignmentRight];
+	[self addSubview:label];
+	
+	[self.sceneNumberLabels addObject:label];
+	return label;
+}
+
+- (void) createAllLabels {
+	ContinousFountainParser *parser = self.zoomDelegate.parser;
+	
+	for (OutlineScene * scene in parser.outlineItems) {
+		[self createLabel:scene];
+	}
+}
+- (void) deleteSceneNumberLabels {
+	for (NSTextField * label in _sceneNumberLabels) {
+		[label removeFromSuperview];
+	}
+	[_sceneNumberLabels removeAllObjects];
+}
+
+#pragma mark - Mouse events
+
 - (void)mouseMoved:(NSEvent *)event {
 	NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
 	NSPoint superviewPoint = [self.enclosingScrollView convertPoint:event.locationInWindow fromView:nil];

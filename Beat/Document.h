@@ -51,6 +51,11 @@ THE SOFTWARE.
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) bool printSceneNumbers;
 
+// Fonts
+@property (strong, nonatomic) NSFont *courier;
+@property (strong, nonatomic) NSFont *boldCourier;
+@property (strong, nonatomic) NSFont *italicCourier;
+
 // For delegation
 @property (nonatomic) OutlineScene *currentScene;
 
