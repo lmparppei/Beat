@@ -25,11 +25,6 @@
 #define PDF_BUTTON_WHEN_PRINTING @"PDF"
 #define PDF_BUTTON @"Create PDF..."
 
-#define MARGIN_TOP 30
-#define MARGIN_LEFT 50
-#define MARGIN_RIGHT 50
-#define MARGIN_BOTTOM 40
-
 #define PAPER_A4 595, 842
 #define PAPER_USLETTER 612, 792
 

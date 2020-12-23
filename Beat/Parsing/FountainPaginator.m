@@ -61,6 +61,7 @@
 #import "FountainPaginator.h"
 #import "Line.h"
 #import "RegExCategories.h"
+#import "BeatPaperSizing.h"
 
 #define LINE_HEIGHT 12.5
 
@@ -349,11 +350,15 @@ That you have escaped.
 	if (!self.script.count) return;
 	
 	if (_document) {
-		_A4 = YES;
-		if (_document.printInfo.paperSize.width > 595) _A4 = NO;
+		NSPrintInfo *printInfo = [_document.printInfo copy];
+		printInfo = [BeatPaperSizing setMargins:printInfo];
 		
-		CGFloat w = _document.printInfo.paperSize.width - _document.printInfo.leftMargin - _document.printInfo.rightMargin;
-		CGFloat h = _document.printInfo.paperSize.height - _document.printInfo.topMargin - _document.printInfo.bottomMargin;
+		// Check paper size
+		if (printInfo.paperSize.width > 595) _A4 = NO;
+		_A4 = YES;
+
+		CGFloat w = printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin;
+		CGFloat h = printInfo.paperSize.height - printInfo.topMargin - printInfo.bottomMargin;
 		
 		_paperSize = CGSizeMake(w, h);
 	} else {

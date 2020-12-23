@@ -22,13 +22,6 @@
 #import "BeatHTMLScript.h"
 #import "BeatDocumentSettings.h"
 
-// NOTE NOTE NOTE: These are hard-coded here and in BeatPrint
-// This needs to be fixed
-#define MARGIN_TOP 30
-#define MARGIN_LEFT 50
-#define MARGIN_RIGHT 50
-#define MARGIN_BOTTOM 40
-
 @interface BeatPreview ()
 @property (nonatomic, weak) NSDocument *document;
 @end
@@ -45,29 +38,16 @@
 }
 - (NSString*) createPreview {
 	if (self.delegate) {
-		// Just make a delegate method for this, for fuck's sake
-		[_document.printInfo setTopMargin:MARGIN_TOP];
-		[_document.printInfo setBottomMargin:MARGIN_BOTTOM];
-		[_document.printInfo setLeftMargin:MARGIN_LEFT];
-		[_document.printInfo setRightMargin:MARGIN_RIGHT];
-
 		NSString *rawText = [self.delegate getText];
 		return [self createPreviewFor:rawText type:BeatPrintPreview];
 	}
 	return @"";
 }
 - (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType {
-	if (self.document) {
-		[_document.printInfo setTopMargin:MARGIN_TOP];
-		[_document.printInfo setBottomMargin:MARGIN_BOTTOM];
-		[_document.printInfo setLeftMargin:MARGIN_LEFT];
-		[_document.printInfo setRightMargin:MARGIN_RIGHT];
-	}
-	
 	ContinousFountainParser *parser;
 
 	if (_delegate) {
-		// This is probably a normal parser
+		// This is probably a normal parser, because a delegate is present
 		parser = [[ContinousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate];
 	} else {
 		// This is probably a QuickLook preview

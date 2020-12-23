@@ -27,6 +27,7 @@
 }
 
 - (void) test {
+	/*
 	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
 	
 	NSString *string = [self testString];
@@ -35,6 +36,7 @@
 	NSString *script = @"Beat.log(Lines[0].string)";
 	parser.lines = fountainParser.lines;
 	[parser runScriptWithString:script];
+	 */
 }
 
 - (NSString*)testString {

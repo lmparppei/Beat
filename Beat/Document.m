@@ -28,7 +28,7 @@
  
  N.B.
  
- Beat has been cooked up by using lots of trial and error, and this file has become an over-5000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain editor by Hendrik Noeller. I am a filmmaker and musician, with no real coding experience prior to this project.
+ Beat has been cooked up by using lots of trial and error, and this file has become a 5000-line monster.  I've started fixing some of my silliest coding practices, but it's still a WIP. About a quarter of the code has its origins in Writer, an open source Fountain editor by Hendrik Noeller. I am a filmmaker and musician, with no real coding experience prior to this project.
  
  Some structures are legacy from Writer and original Fountain repository, and while most have since been replaced with a totally different approach, some variable names and complimentary methods still linger around. You can find some *very* shady stuff lying around here and there, with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
@@ -884,7 +884,7 @@
     }
 }
 - (void)setMargin {
-	self.printInfo = [BeatPaperSizing setMargins:self.printInfo];
+	NSLog(@"### DEPRECATED. Please remove references to this method.");
 }
 - (IBAction)openPrintSettings:(id)sender {
 	[self.printing open:self];

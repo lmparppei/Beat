@@ -4,6 +4,7 @@
 * "Go to scene number..." action added
 * Edit menu cleanup
 * Autocomplete now suggest the most used characters first
+* Fixed a bug which marked the document as being changed right at load
 
 
 ## Beat 1.6
