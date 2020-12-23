@@ -162,6 +162,16 @@
 		[self loadPreview];
 	}
 }
+- (IBAction)selectSceneNumberPrinting:(id)sender {
+	if (_printSceneNumbers.state == NSOnState) {
+		_document.printSceneNumbers = YES;
+	} else {
+		_document.printSceneNumbers = NO;
+	}
+	
+	[self loadPreview];
+}
+
 
 - (void)didFinishPreviewAt:(NSURL *)url {
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];

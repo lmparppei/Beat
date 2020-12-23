@@ -1568,14 +1568,14 @@ and incomprehensible system of recursion.
 	}
 	return scenes;
 }
-- (NSMutableArray *) getScenes {
-	NSMutableArray * scenes = [NSMutableArray array];
-	for (OutlineScene * scene in [self outline]) {
+- (NSArray*) scenes {
+	NSMutableArray *scenes = [NSMutableArray array];
+	for (OutlineScene *scene in self.outline) {
 		if (scene.type == heading) [scenes addObject:scene];
 	}
-	
 	return scenes;
 }
+
 
 #pragma mark - Utility
 
@@ -1652,6 +1652,8 @@ and incomprehensible system of recursion.
 				line.string = line.stripSceneNumber;
 				sceneNumber += 1;
 			}
+		} else {
+			line.sceneNumber = @"";
 		}
 		
 		// This is a paragraph with a line break, so append the line to the previous one

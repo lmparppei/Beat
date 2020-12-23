@@ -1,3 +1,11 @@
+## Beat 1.6c
+
+* Fixed a bug with the scene numbers printing out no matter what
+* "Go to scene number..." action added
+* Edit menu cleanup
+* Autocomplete now suggest the most used characters first
+
+
 ## Beat 1.6
 
 * New native timeline view, with support for storyline tracking and pinch-zooming

@@ -57,6 +57,7 @@
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript {
 	return [self initWithDocument:document script:lines operation:mode compareWith:oldScript delegate:nil];
 }
+
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id<PrintViewDelegate>)delegate {
 	self = [super init];
 
@@ -110,7 +111,7 @@
 - (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript header:(NSString*)header {
 	// Parse the input again
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText delegate:document];
-		
+
 	// See if we want to compare it with something
 	// BeatComparison marks the Line objects as changed
 	if (oldScript) {

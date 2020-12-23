@@ -38,47 +38,57 @@
 		
 	_vm = [[JSVirtualMachine alloc] init];
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
+
+	[_context setObject:[Line class] forKeyedSubscript:@"Line"];
+	[_context setObject:[OutlineScene class] forKeyedSubscript:@"OutlineScene"];
+	[_context setObject:self forKeyedSubscript:@"Beat"];
 	
 	return self;
 }
 
+- (void)log:(NSString*)string {
+	// If there is a delegate, log into that, but not yet
+	NSLog(@"# %@", string);
+}
 
 
 /*
  
- // Beat functions available for scripting
- beat.newPanel(htmlContent);
- beat.newWindow(htmlContent);
- beat.scrollTo(location);	
- beat.scrollToLine(line);
- beat.scrollToScene(scene);
- beat.setContent(content);
+ // Beat functions which should be available for scripting
+ Beat.scrollTo(location);
+ Beat.scrollToLine(line);
+ Beat.scrollToScene(scene);
+ Beat.setContent(content);
+ Beat.addString(string, position)
+ Beat.removeRange(start, end)
  
+ // Some UI stuff we might need:
+ Beat.inputValue("Input Prompt", "Further Info", completionHandler)
+ Beat.newPanel(htmlContent);
+ ... with a completion handler?
+
+
  // Helper functions to be implemented in JS
- beat.sceneAt(location);
- beat.lineAt(location);
+ Beat.sceneAt(location);
+ Beat.lineAt(location);
  
  // Read-only values
- beat.lines;
- beat.scenes;
- beat.cursorLocation;
- beat.scriptAsString;
+ Lines
+ Scenes
  
  
  Example plugin for finding the longest scene:
  
  let longestScene = { length: 0, scene: null };
- let sceneIndex = -1;
- for (const scene of beat.scenes) {
-	sceneIndex++;
-	if (scene.length > longestScene.length) {
+ 
+ for (const scene of Scenes) {
+	if (scene.sceneLength > longestScene.length) {
 		longestScene.scene = scene;
-		length: scene.length;
+		longestScene.length = scene.sceneLength;
 	}
  }
- if (longestScene.scene) {
-	beat.scrollToScene(scene);
- }
+ 
+ if (longestScene.scene) Beat.scrollToScene(scene);
  
  */
 
@@ -101,6 +111,15 @@
 	}
 	
 	return result;
+}
+
+- (void)runScriptWithString:(NSString*)string {
+	if (_lines) {
+		[_context setObject:_lines forKeyedSubscript:@"Lines"];
+	}
+	
+	JSValue *value = [_context evaluateScript:string];
+	NSLog(@"value %@", value);
 }
 
 - (void)runScript {

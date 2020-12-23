@@ -50,7 +50,7 @@
 	[self checkAutosavedFiles];
 	
 	// Run tests
-	// [[BeatTest alloc] init];
+	 [[BeatTest alloc] init];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification

@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatScriptingExports <JSExport>
-- (NSMutableArray*)scenes;
+- (void)log:(NSString*)string;
 @end
 
 @protocol BeatScriptingDelegate <NSObject>
@@ -22,6 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatScriptParser : NSObject <BeatScriptingExports>
 @property (weak) id<BeatScriptingDelegate> delegate;
+
+- (void)runScriptWithString:(NSString*)string;
+- (void)log:(NSString*)string;
+
+// For testing
+@property NSArray *lines;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

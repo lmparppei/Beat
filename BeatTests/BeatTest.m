@@ -13,6 +13,7 @@
 #import "ContinousFountainParser.h"
 #import "Line.h"
 #import "BeatHTMLScript.h"
+#import "BeatScriptParser.h"
 
 @implementation BeatTest
 
@@ -26,6 +27,14 @@
 }
 
 - (void) test {
+	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
+	
+	NSString *string = [self testString];
+	ContinousFountainParser *fountainParser = [[ContinousFountainParser alloc] initWithString:string];
+		
+	NSString *script = @"Beat.log(Lines[0].string)";
+	parser.lines = fountainParser.lines;
+	[parser runScriptWithString:script];
 }
 
 - (NSString*)testString {

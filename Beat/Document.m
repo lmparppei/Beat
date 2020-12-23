@@ -116,6 +116,7 @@
 #import "BeatDocumentSettings.h"
 #import "OutlineViewItem.h"
 #import "BeatPaperSizing.h"
+#import "BeatModalInput.h"
 
 @interface Document ()
 
@@ -1639,62 +1640,7 @@
 		return [string substringFromIndex:string.length - 1];
 	}
 }
-- (IBAction)toLowerCase:(id)sender {
-	if (_textView.selectedRange.length == 0) return;
-	
-	NSInteger position = _textView.selectedRange.location;
-	
-	NSString *string = [_textView.string substringWithRange:_textView.selectedRange];
-	NSString *lowerCase = [string lowercaseString];
-	[self replaceString:string withString:lowerCase atIndex:position];
-	
-	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:lowerCase withString:string atIndex:position];
-}
 
-- (IBAction)toUpperCase:(id)sender {
-	if (_textView.selectedRange.length == 0) return;
-	
-	NSInteger position = _textView.selectedRange.location;
-	
-	NSString *string = [_textView.string substringWithRange:_textView.selectedRange];
-	NSString *uppercase = [string uppercaseString];
-	[self replaceString:string withString:uppercase atIndex:position];
-	
-	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:uppercase withString:string atIndex:position];
-}
-
-- (IBAction)toSentenceCase:(id)sender {
-	if (_textView.selectedRange.length == 0) return;
-	
-	NSInteger position = _textView.selectedRange.location;
-	NSString *string = [_textView.string substringWithRange:_textView.selectedRange];
-	
-	NSString *lowerCase = [string lowercaseString];
-	
-	NSUInteger length = [lowerCase length];
-	unichar buffer[length + 1];
-
-	[lowerCase getCharacters:buffer range:NSMakeRange(0, length)];
-
-	NSMutableString *result = [NSMutableString string];
-	
-	bool newSentence = YES;
-	for(int i = 0; i < length; i++) {
-		char chr = buffer[i];
-		
-		if (newSentence && chr != ' ' && chr != '\n') {
-			chr = [[[NSString stringWithFormat:@"%c", chr] uppercaseString] characterAtIndex: 0];
-			newSentence = NO;
-		}
-		
-		if (chr == '.' || chr == '?' || chr == '!' || chr == ':') newSentence = YES;
-		
-		[result appendFormat:@"%c", chr];
-	}
-	
-	[self replaceString:string withString:result atIndex:_textView.selectedRange.location];
-	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:result withString:string atIndex:position];
-}
 
 // There is no shortage of ugliness in the world.
 // If a person closed their eyes to it,
@@ -1729,23 +1675,29 @@
 	NSString *selectedCharacter = _characterBox.selectedItem.title;
     
     NSMutableArray *characterList = [NSMutableArray array];
+	NSMutableDictionary *charactersAndLines = [NSMutableDictionary dictionary];
     
 	[_characterBox removeAllItems];
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
 		
 	for (Line *line in [self.parser lines]) {
-		if ((line.type == character || line.type == dualDialogueCharacter) && line != _currentLine && ![_characterNames containsObject:line.string]) {
-			// Don't add this line if it's just a character with cont'd, vo, or something we'll add automatically
+		if ((line.type == character || line.type == dualDialogueCharacter) && line != _currentLine
+			//&& ![_characterNames containsObject:line.string]
+			) {
+			// Don't add this line if it's just a character with cont'd.
+			// We'll account for other things later, such as V.O., O.S. etc.
 			if ([line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound) continue;
 						
             NSString *character = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 			
-			[_characterNames addObject:character];
-		
-			
-			// Add automatic CONT'D suffixes
-			[_characterNames addObject:[NSString stringWithFormat:@"%@ (CONT'D)", character]];
-			            
+			if (charactersAndLines[character]) {
+				NSInteger lines = [charactersAndLines[character] integerValue] + 1;
+				charactersAndLines[character] = [NSNumber numberWithInteger:lines];
+			} else {
+				charactersAndLines[character] = [NSNumber numberWithInteger:1];
+			}
+						            
+			// Remove anything that's NOT a character name
             if ([character rangeOfString:@"("].location != NSNotFound) {
                 NSRange infoRange = [character rangeOfString:@"("];
                 NSRange characterRange = NSMakeRange(0, infoRange.location);
@@ -1765,6 +1717,16 @@
             }
 		}
 	}
+	
+	// Create an ordered list with all the character names. One with the most lines will be the first suggestion.
+	NSArray *characters = [charactersAndLines keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2){
+		return [obj2 compare:obj1];
+	}];
+	for (NSString *character in characters) {
+		[_characterNames addObject:character];
+		[_characterNames addObject:[NSString stringWithFormat:@"%@ (CONT'D)", character]];
+	}
+	
     // There was a character selected in the filtering menu, so select it again
     if ([selectedCharacter length]) {
         for (NSMenuItem *item in _characterBox.itemArray) {
@@ -2329,6 +2291,23 @@
 
 #pragma mark - Scrolling
 
+- (IBAction)goToScene:(id)sender {
+	BeatModalInput *input = [[BeatModalInput alloc] init];
+	[input inputBoxWithMessage:@"Go to scene number..." text:@"" placeholder:@"e.g. 123" forWindow:_thisWindow completion:^(NSString * _Nonnull result) {
+		[self scrollToSceneNumber:result];
+	}];
+}
+
+- (void)scrollToSceneNumber:(NSString*)sceneNumber {
+	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)
+	
+	for (OutlineScene *scene in self.parser.outline) {
+		if ([scene.sceneNumber isEqualTo:sceneNumber]) {
+			[self scrollToScene:scene];
+			return;
+		}
+	}
+}
 - (void)scrollToScene:(OutlineScene*)scene {
 	NSRange lineRange = NSMakeRange([scene line].position, [scene line].string.length);
 	[self.textView setSelectedRange:lineRange];
@@ -2645,7 +2624,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSRegularExpression *sceneNumberPattern = [NSRegularExpression regularExpressionWithPattern: @" (\\#([0-9A-Za-z\\.\\)-]+)\\#)" options: NSRegularExpressionCaseInsensitive error: &error];
 	
 	_sceneNumberLabelUpdateOff = true;
-	for (OutlineScene * scene in [self.parser getScenes]) {
+	for (OutlineScene * scene in self.parser.scenes) {
 		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
 			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, [scene.line.string length])];
 			if ([results count]) {
@@ -3462,7 +3441,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 - (NSMutableArray *) getOutlineItems {
 	// Make a copy of the outline to avoid threading issues
-	NSMutableArray * outlineItems = [NSMutableArray arrayWithArray:self.parser.outlineItems];
+	NSMutableArray * outlineItems = [NSMutableArray arrayWithArray:self.parser.outline];
 	return outlineItems;
 }
 
@@ -3623,7 +3602,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	// ... or not.
 	// NOTE FROM BEAT 1.1 r4:
-	// The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
+    // The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
 	
 	NSMutableArray *outline = [self getOutlineItems];
 	

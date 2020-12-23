@@ -693,7 +693,7 @@
                             </tabViewItem>
                             <tabViewItem label="Cards" identifier="3" id="798-ya-EGc" userLabel="Cards Tab">
                                 <view key="view" id="fPc-ie-Xae">
-                                    <rect key="frame" x="0.0" y="0.0" width="1125" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ja-Hc-I6Z">
@@ -1388,6 +1388,9 @@ DQ
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="selectSceneNumberPrinting:" target="c93-vc-ktH" id="2Dw-rK-2Ie"/>
+                        </connections>
                     </button>
                     <textField verticalHuggingPriority="750" id="96o-Wo-DT8">
                         <rect key="frame" x="417" y="179" width="240" height="21"/>

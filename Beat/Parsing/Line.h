@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 typedef enum : NSUInteger {
     empty = 0,
@@ -34,8 +35,26 @@ typedef enum : NSUInteger {
 	more
 } LineType;
 
+// For the imagined scripting module :-)
+@protocol LineExports <JSExport>
 
-@interface Line : NSObject
+@property NSUInteger position;
+@property NSString* sceneNumber;
+@property NSString* color;
+@property (strong, nonatomic) NSString* string;
+@property LineType type;
+
+- (NSString*)cleanedString;
+- (NSString*)stripFormattingCharacters;
+- (bool)isTitlePage;
+- (bool)isInvisible;
+- (bool)isDialogueElement;
+- (bool)isDualDialogueElement;
+
+@end
+
+
+@interface Line : NSObject <LineExports>
 
 @property LineType type;
 @property (strong, nonatomic) NSString* string;

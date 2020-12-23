@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatPaperSizing : NSObject
 + (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo;
 + (NSPrintInfo*)setSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
-+ (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo;
 @end
 
 NS_ASSUME_NONNULL_END

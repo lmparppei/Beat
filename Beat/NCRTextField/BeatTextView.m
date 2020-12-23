@@ -762,7 +762,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	} else {
 		NSUInteger index = 0;
 
-		for (OutlineScene * scene in [parser getScenes]) {
+		for (OutlineScene * scene in parser.scenes) {
 			// We'll wrap this in an autorelease pool, not sure if it helps or not :-)
 			@autoreleasepool {
 				if (index >= [self.sceneNumberLabels count]) break;
@@ -839,7 +839,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void) createAllLabels {
 	ContinousFountainParser *parser = self.zoomDelegate.parser;
 	
-	for (OutlineScene * scene in parser.outlineItems) {
+	for (OutlineScene * scene in parser.outline) {
 		[self createLabel:scene];
 	}
 }

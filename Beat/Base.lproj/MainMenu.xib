@@ -241,31 +241,6 @@
                                     <action selector="showInfo:" target="-1" id="OZ4-AM-83P"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Convert Case" id="IqE-QG-XKl">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Convert Case" id="ml9-Kr-Idu">
-                                    <items>
-                                        <menuItem title="Sentence case" id="ht4-rE-LMg">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="toSentenceCase:" target="-1" id="moy-p1-JDk"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="UPPERCASE" id="G2N-g4-IaQ">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="toUpperCase:" target="-1" id="Hwc-mM-1Gt"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="lowercase" id="p6M-Gn-xqx">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="toLowerCase:" target="-1" id="VKd-tR-wsh"/>
-                                            </connections>
-                                        </menuItem>
-                                    </items>
-                                </menu>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="Twe-tk-qY1"/>
                             <menuItem title="Previous Scene" keyEquivalent="" id="jdx-FP-GzA">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
@@ -277,6 +252,11 @@
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="nextScene:" target="-1" id="24F-yl-Y0s"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Go To Scene Number..." keyEquivalent="g" id="2Rt-P2-vV4">
+                                <connections>
+                                    <action selector="goToScene:" target="-1" id="iLS-0S-OjL"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Rz1-48-Uiu"/>
