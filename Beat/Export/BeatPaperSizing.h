@@ -16,6 +16,7 @@ typedef enum : NSInteger {
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatPaperSizing : NSObject
++ (NSPrintInfo*)printInfoFor:(BeatPaperSize)size;
 + (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo;
 + (NSPrintInfo*)setSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
 @end

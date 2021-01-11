@@ -15,9 +15,9 @@
 }
 - (void)drawBackgroundInClipRect:(NSRect)clipRect {
 	//[super drawBackgroundInClipRect:clipRect];
-
-	if (_currentScene) {
-		NSRect rect = [self rectOfRow:_currentScene];
+	
+	if (self.currentScene != NSNotFound) {
+		NSRect rect = [self rectOfRow:self.currentScene];
 		
 		NSColor* fillColor = NSColor.grayColor;
 		fillColor = [fillColor colorWithAlphaComponent:0.4];

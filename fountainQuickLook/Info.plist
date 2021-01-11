@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>11207</string>
+	<string>11557</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSExtension</key>
@@ -39,6 +39,6 @@
 		<string>PreviewViewController</string>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2020 KAPITAN!. All rights reserved.</string>
+	<string>Copyright © 2020-2021 KAPITAN!. All rights reserved.</string>
 </dict>
 </plist>

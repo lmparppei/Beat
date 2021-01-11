@@ -677,7 +677,7 @@
 #define OMIT_PATTERN_LENGTH 2
 
 #define COLOR_PATTERN "color"
-#define STORYLINE_PATTERN "storyline" // wtf is this, past me?
+#define STORYLINE_PATTERN "storyline"
 
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
 {

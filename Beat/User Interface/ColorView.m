@@ -39,7 +39,6 @@
         [self.fillColor setFill];
         NSRectFill(dirtyRect);
     }
-    
 }
 /*
 - (CGSize)intrinsicContentSize

@@ -1,10 +1,15 @@
-## Beat 1.6c
+
+## Beat 1.7
 
 * Fixed a bug with the scene numbers printing out no matter what
+* Fixed a bug which caused omitted scenes be invisible in the Outline View
 * "Go to scene number..." action added
 * Edit menu cleanup
 * Autocomplete now suggest the most used characters first
 * Fixed a bug which marked the document as being changed right at load
+* JavaScript Plugin API
+* Print episodes
+* New About screen
 
 
 ## Beat 1.6

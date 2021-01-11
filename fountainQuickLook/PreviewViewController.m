@@ -48,16 +48,20 @@
 	NSError *error;
 	NSString *file = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
 
+
 	CGFloat width = self.view.frame.size.width;
 	bool smallView = NO;
 	if (width < 400) smallView = YES;
+
 	
 	if (!error) {
 		BeatPreview *preview = [[BeatPreview alloc] initWithDocument:nil];
 		NSString *html = [preview createPreviewFor:file type:BeatQuickLookPreview];
 		[[self.webView2 mainFrame] loadHTMLString:html baseURL:nil];
+	} else {
+		[[self.webView2 mainFrame] loadHTMLString:[NSString stringWithFormat:@"<html>%@</html>", error] baseURL:nil];
 	}
-	
+ 
 	
     // Add the supported content types to the QLSupportedContentTypes array in the Info.plist of the extension.
     

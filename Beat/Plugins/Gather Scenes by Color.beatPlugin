@@ -1,0 +1,43 @@
+/*
+
+ Gather Scenes by Color
+ © Lauri-Matti Parppei
+
+ Plugin Type: Tool
+
+*/
+
+let scenes = [];
+let colors = [];
+
+// Gather used colors
+for (const scene of Beat.scenes()) {
+	const color = scene.color.toUpperCase();
+	if (color.length && !colors.includes(color)) colors.push(color);
+}
+
+if (!colors.length) {
+	Beat.alert("No Colors Used", "Add some colors to your scenes first");
+	return;
+}
+
+// Let the user select a color from the list
+let color = Beat.dropdownPrompt("Gather Scenes by Color", "Create a new document containing all the scenes with the selected color.", colors);
+if (!color) return;
+
+
+for (const scene of Beat.scenes()) {
+	if (scene.color.toUpperCase() == color) scenes.push(scene);
+}
+
+const text = Beat.getText();
+let result = "";
+
+for (const scene of scenes) {
+	const sceneText = text.substring(scene.sceneStart, scene.sceneStart + scene.sceneLength) + "\n\n";
+	result += sceneText;
+}
+
+if (result.length == 0) Beat.alert("No Scenes Found", "No scenes with " + color + " were found. Did you mistype it?");
+else Beat.newDocument(result);
+

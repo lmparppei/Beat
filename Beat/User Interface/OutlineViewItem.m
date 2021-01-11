@@ -27,7 +27,7 @@
 	
 	NSUInteger sceneNumberLength = 0;
 	bool currentScene = false;
-
+	
 	// Check that this scene is not omited from the screenplay
 	bool omited = line.omited;
 	
@@ -55,7 +55,7 @@
 		if ([line.string isEqualToString:current.string] && line.sceneNumber == current.sceneNumber) currentScene = true;
 	}
 	
-	// Style the item according to their type
+	// Style the item
 	if (line.type == heading) {
 		//Replace "INT/EXT" with "I/E" to make the lines match nicely
 		NSString* string = [rawString uppercaseString];

@@ -47,4 +47,5 @@ typedef enum : NSUInteger {
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript;
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id)delegate;
 - (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode;
+- (id)initWithHTML:(NSString *)htmlString document:(NSDocument *)document operation:(BeatPrintOperation)mode completion:(void (^)(void))completion;
 @end

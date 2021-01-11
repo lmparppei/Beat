@@ -25,6 +25,8 @@
  THE SOFTWARE.
  
  
+ THIS IS AN ANTI-CAPITALIST VENTURE.
+ No ethical consumption under capitalism.
  
  N.B.
  
@@ -32,16 +34,14 @@
  
  Some structures are legacy from Writer and original Fountain repository, and while most have since been replaced with a totally different approach, some variable names and complimentary methods still linger around. You can find some *very* shady stuff lying around here and there, with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
- As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg.
+ As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg. Some clumsy stuff is still lingering around, unfortunately. I'll keep on fixing those when I have the time.
  
- I originally started the project to combat creative block while overcoming some PTSD symptoms. The struggle still continues every day, but coding is a nice way of escaping those feelings. If you are in an abusive relationship, leave RIGHT NOW. The other person will not get better, or at least it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file. Still, I'm glad to say that things are turning for better.
+ I originally started the project to combat creative block while overcoming some PTSD symptoms. The struggle still continues every day, but coding is a nice way of escaping those feelings. If you are in an abusive relationship, leave RIGHT NOW. The other person will not get better, or at least it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file. Anyway, I'm glad to say that things are constantly turning for the better.
  
  Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
  
  I am in the process of modularizing the code so that it could be ported more easily to iOS.
- 
- Still, this is an anti-capitalist venture. There is no ethical consumption under capitalism. 
- 
+
  Anyway, may this be of some use to you, dear friend.
  The abandoned git repository will be my monument when I'm gone.
  
@@ -118,6 +118,9 @@
 #import "BeatPaperSizing.h"
 #import "BeatModalInput.h"
 
+#import "BeatScriptParser.h"
+#import "BeatPluginManager.h"
+
 @interface Document ()
 
 // Window
@@ -127,6 +130,9 @@
 // Autosave
 @property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
+
+// Plugin support
+@property (strong, nonatomic) BeatPluginManager *pluginManager;
 
 // Text view
 @property (unsafe_unretained) IBOutlet BeatTextView *textView;
@@ -156,7 +162,7 @@
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (weak) NSArray *draggedNodes;
 @property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
-@property (nonatomic) NSMutableArray *flatOutline;
+@property (nonatomic) NSMutableArray *outline;
 @property (weak) IBOutlet NSButton *outlineButton;
 @property (weak) IBOutlet NSSearchField *outlineSearchField;
 @property (weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
@@ -355,7 +361,6 @@
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
-#define FLATOUTLINE YES
 
 // Length of scene excerpt in cards
 #define SNIPPET_LENGTH 190
@@ -392,7 +397,7 @@
     return self;
 }
 - (void) close {
-	// Save the gender list, if needed
+	// Save the gender list & caret position
 	if ([_characterGenders count] > 0) [self saveGenders];
 	[self saveCaret];
 	
@@ -406,7 +411,6 @@
 	self.contentBuffer = nil;
 	self.printView = nil;
 	self.analysis = nil;
-	self.themeManager = nil;
 	self.currentScene = nil;
 	self.currentLine = nil;
 	self.sceneCards = nil;
@@ -414,11 +418,13 @@
 	self.paginator = nil;
 	self.filters = nil;
 	self.sceneCards = nil;
-	self.flatOutline = nil;
+	self.outline = nil;
 	self.filteredOutline = nil;
 	
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 		
 	// ApplicationDelegate will show welcome screen when no documents are open
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document close" object:nil];
@@ -455,6 +461,9 @@
 	[self setupTouchTimeline];
 	[self setupAnalysis];
 	[self setupColorPicker];
+	
+	// Setup plugin management
+	[self setupPlugins];
 	
 	// Initialize arrays
 	self.sceneNumberLabels = [[NSMutableArray alloc] init];
@@ -883,9 +892,6 @@
         [self.textView setString:text];
     }
 }
-- (void)setMargin {
-	NSLog(@"### DEPRECATED. Please remove references to this method.");
-}
 - (IBAction)openPrintSettings:(id)sender {
 	[self.printing open:self];
 }
@@ -894,8 +900,6 @@
 }
 - (IBAction)printDocument:(id)sender
 {
-	[self setMargin];
-	
 	NSLog(@"paper size: %f / %f", self.printInfo.paperSize.width, self.printInfo.paperSize.height);
 	
     if ([[self getText] length] == 0) {
@@ -991,67 +995,45 @@
 	}];
 }
 
+# pragma mark - Scene Data
+
 - (OutlineScene*)getCurrentScene {
 	NSInteger position = [self.textView selectedRange].location;
 	return [self getCurrentSceneWithPosition:position];
 }
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
-	NSInteger index = 0;
+	if (position >= self.getText.length) return self.outline.lastObject;
 	
-	for (OutlineScene *scene in [self getOutlineItems]) {
-		NSRange range = NSMakeRange(scene.sceneStart, scene.sceneLength);
-
-		// Found the current scene. Let's cache the result just in case
-		if (NSLocationInRange(position, range)) {
-			_currentScene = scene;
-			if ([_filteredOutline count] < 1) {
-				self.outlineView.currentScene = index;
-			} else {
-				self.outlineView.currentScene = [_filteredOutline indexOfObject:scene];
+	if (NSLocationInRange(position, self.currentLine.range)) {
+		for (OutlineScene *scene in self.outline) {
+			if (NSLocationInRange(position, scene.range)) {
+				_currentScene = scene;
+				return scene;
 			}
-			
-			// Also, update touch bar color if needed (omg this is cool)
-			if (scene.color) {
-				if ([BeatColors color:[scene.color lowercaseString]]) {
-					[_colorPicker setColor:[BeatColors color:[scene.color lowercaseString]]];
-				}
-			}
-			
-			return scene;
 		}
-		index++;
 	}
-	
 	_currentScene = nil;
-	self.outlineView.currentScene = -1;
-	
 	return nil;
 }
 
 - (OutlineScene*)getPreviousScene {
-	// Build outline if needed
-	if (_flatOutline.count == 0) {
-		_flatOutline = [self getOutlineItems];
-		if (_flatOutline.count == 0) return nil;
-	}
+	NSArray * outline = [self getOutlineItems];
+	if (outline.count == 0) return nil;
 	
 	_currentScene = [self getCurrentScene];
 	if (!_currentScene) return nil;
 	
-	NSInteger index = [_flatOutline indexOfObject:_currentScene];
+	NSInteger index = [outline indexOfObject:_currentScene];
 	
-	if (index - 1 >= 0 && index < [_flatOutline count]) {
-		return [_flatOutline objectAtIndex:index - 1];
+	if (index - 1 >= 0 && index < [outline count]) {
+		return [outline objectAtIndex:index - 1];
 	} else {
 		return nil;
 	}
 }
 - (OutlineScene*)getNextScene {
-	// Build outline if needed
-	if (_flatOutline.count == 0) {
-		_flatOutline = [self getOutlineItems];
-		if (_flatOutline.count == 0) return nil;
-	}
+	NSArray * outline = [self getOutlineItems];
+	if (outline.count == 0) return nil;
 	
 	NSInteger position = self.selectedRange.location;
 	_currentScene = [self getCurrentSceneWithPosition:position];
@@ -1059,18 +1041,15 @@
 	if (_currentScene == nil) return nil;
 	
 	// If we are at the beginning of the script, return the first scene
-	if (!_currentScene && position < [(OutlineScene*)[_flatOutline firstObject] sceneStart]) return [_flatOutline firstObject];
+	if (!_currentScene && position < [(OutlineScene*)outline.firstObject sceneStart]) return outline.firstObject;
 	
-	NSInteger index = [_flatOutline indexOfObject:_currentScene];
+	NSInteger index = [outline indexOfObject:_currentScene];
 	
-	if (index >= 0 && index + 1 < _flatOutline.count) {
-		return [_flatOutline objectAtIndex:index + 1];
+	if (index >= 0 && index + 1 < outline.count) {
+		return [outline objectAtIndex:index + 1];
 	} else {
 		return nil;
 	}
-}
-- (IBAction)showInfo:(id)sender {
-	[self.textView showInfo:self];
 }
 
 /*
@@ -1147,7 +1126,7 @@
  
  */
 
-# pragma mark - Text manipulation
+# pragma mark - Text events
 
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
@@ -1471,104 +1450,58 @@
 	if (_documentIsLoading) return;
 
 	// We REALLY REALLY should make some sort of cache for these
-	_flatOutline = [self getOutlineItems];
+	_outline = [self getOutlineItems];
 	_currentLine = [self getCurrentLine];
 	
 	// Reset forced character input
-	// WIP: Process the change at that line anyway?
 	if (_characterInputForLine != _currentLine) _characterInput = NO;
-	
-	__block NSInteger position = self.textView.selectedRange.location;
-	__block OutlineScene *currentScene = [self getCurrentSceneWithPosition:position];
-	_currentScene = [self getCurrentSceneWithPosition:position];
-	
-	// Select a scene on the TouchBar timeline if it's visible
-	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_flatOutline indexOfObject:_currentScene]];
-
-	if (self.timelineVisible) {
-		NSInteger sceneIndex = [self.flatOutline indexOfObject:self.currentScene];
-		[_timeline scrollToScene:sceneIndex];
-	}
-	
-	// Locate current scene & reload outline without building it in parser
-	// Enter some background thread madness (or not in 1.6)
-	if ((_outlineViewVisible) && !_outlineEdit) {
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-			if (self.outlineViewVisible) {
-				dispatch_async(dispatch_get_main_queue(), ^(void) {
-					[self reloadOutline];
-				});
-			}
-		});
 		
-		if (self.outlineViewVisible && currentScene) {
-			// Alright, we have some conditions for this.
-			// We need to check if the outline was filtered AND if the current scene is within the filtered scenes.
-			// Else, just hop to current scene.
-			if ([self.filteredOutline count]) {
-				if ([self.filteredOutline containsObject:currentScene]) {
-					dispatch_async(dispatch_get_main_queue(), ^(void){
-						[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-							context.allowsImplicitAnimation = YES;
-						[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:currentScene]];
-						} completionHandler:NULL];
-					});
-				}
-			} else {
-				dispatch_async(dispatch_get_main_queue(), ^(void){
-					[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-						context.allowsImplicitAnimation = YES;
-						[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:currentScene]];
-					} completionHandler:NULL];
-				});
-			}
-		}
-	}
-
-	/*
-	if ((_outlineViewVisible || _timelineVisible) && !_outlineEdit) {
-		[self getCurrentScene];
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-
-			// So... uh.
-			// Obviously we can't use previously loaded _currentScene because here we're rebuilding the outline,
-			// so that's why we checked the timeline position first.
-			
-			if (self.outlineViewVisible) {
-				dispatch_async(dispatch_get_main_queue(), ^(void) {
-					[self reloadOutline];
-				});
-			}
-			
-			if (self.outlineViewVisible && self.currentScene) {
-				// Alright, we have some conditions for this.
-				// We need to check if the outline was filtered AND if the current scene is within the filtered scenes.
-				// Else, just hop to current scene.
-				if ([self.filteredOutline count]) {
-					if ([self.filteredOutline containsObject:self.currentScene]) {
-						dispatch_async(dispatch_get_main_queue(), ^(void){
-							[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-								context.allowsImplicitAnimation = YES;
-							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:self.currentScene]];
-							} completionHandler:NULL];
-						});
-					}
-				} else {
-					dispatch_async(dispatch_get_main_queue(), ^(void){
-						[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-							context.allowsImplicitAnimation = YES;
-							[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:self.currentScene]];
-						} completionHandler:NULL];
-					});
-				}
-			}
-			
-		});
-	}
-	 */
+	if (_outlineViewVisible || _timelineVisible) _currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
 
 	if (self.typewriterMode) [self typewriterScroll];
+	
+	[self updateUIwithCurrentScene];
 }
+
+- (void)updateUIwithCurrentScene {
+	__block NSInteger sceneIndex = [self.outline indexOfObject:self.currentScene];
+	
+	// Update Timeline & TouchBar Timeline
+	if (self.timelineVisible) [_timeline scrollToScene:sceneIndex];
+	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_outline indexOfObject:_currentScene]];
+	
+	// Locate current scene & reload outline without building it in parser
+	// I don't know what this is, to be honest
+	if (_outlineViewVisible && !_outlineEdit) {
+		
+		if (self.outlineViewVisible) {
+			dispatch_async(dispatch_get_main_queue(), ^(void) {
+				[self reloadOutline];
+				if (self.currentScene) [self scrollOutlineToCurrentScene:self.currentScene];
+				
+				if (self.filteredOutline.count < 1) {
+					self.outlineView.currentScene = sceneIndex;
+				} else {
+					self.outlineView.currentScene = [self.filteredOutline indexOfObject:self.currentScene];
+				}
+			});
+		}
+	}
+	
+	// Update touch bar color if needed
+	if (_currentScene.color) {
+		if ([BeatColors color:[_currentScene.color lowercaseString]]) {
+			[_colorPicker setColor:[BeatColors color:[_currentScene.color lowercaseString]]];
+		}
+	}
+}
+
+- (IBAction)showInfo:(id)sender {
+	[self.textView showInfo:self];
+}
+
+
+#pragma mark - Text I/O
 
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index
 {
@@ -1581,14 +1514,23 @@
 	[self replaceCharactersInRange:NSMakeRange(index, [string length]) withString:@""];
 	[[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:index];
 }
-
+- (void)replaceRange:(NSRange)range withString:(NSString*)newString {
+	// Replacement method with undo
+	NSString *oldString = [self.textView.string substringWithRange:range];
+	[self replaceCharactersInRange:range withString:newString];
+	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
+}
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
 {
 	NSRange range = NSMakeRange(index, [string length]);
 	[self replaceCharactersInRange:range withString:newString];
 	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
 }
-
+- (void)removeRange:(NSRange)range {
+	NSString *string = [self.getText substringWithRange:range];
+	[self replaceCharactersInRange:range withString:@""];
+	[[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:range.location];
+}
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
 	_moving = YES;
 	
@@ -2348,6 +2290,15 @@
 
 - (NSRange)selectedRange {
 	return self.textView.selectedRange;
+}
+- (void)setSelectedRange:(NSRange)range {
+	@try {
+		[self.textView setSelectedRange:range];
+	}
+	@catch (NSException *e) {
+		NSAlert *alert = [[NSAlert alloc] init];
+		alert.messageText = @"Selection out of range";
+	}
 }
 - (bool)caretAtEnd {
 	if (self.textView.selectedRange.location == self.textView.string.length) return YES;
@@ -3345,6 +3296,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 				
 		// Set global background
 		doc.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
+		//_outlineView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleSourceList;
 		
 		// Margins are drawn in a separate view
 		doc.marginView.backgroundColor = self.themeManager.theme.backgroundColor;
@@ -3435,8 +3387,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// Initialize drag & drop for outline view
 	[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self.outlineView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-
-
 }
 
 - (NSMutableArray *) getOutlineItems {
@@ -3457,7 +3407,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		[_filters resetScenes];
 	}
 
-	for (OutlineScene * scene in _flatOutline) {
+	for (OutlineScene * scene in _outline) {
 		//NSLog(@"%@ - %@", scene.string, [_filters match:scene] ? @"YES" : @"NO");
         if ([_filters match:scene]) [_filteredOutline addObject:scene];
 	}
@@ -3476,7 +3426,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self maskScenes];
 }
 
-#pragma mark - Outline View data source + delegation
+#pragma mark - Outline View data source, delegation & other madness
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
@@ -3486,7 +3436,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	} else {
 		return [[self getOutlineItems] count];
 	}
-
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
@@ -3586,7 +3535,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSPoint scrollPosition = [[self.outlineScrollView contentView] bounds].origin;
 	
 	// Create outline
-	_flatOutline = [self getOutlineItems];
+	_outline = [self getOutlineItems];
 	
 	[self filterOutline];
 	[self.outlineView reloadData];
@@ -3594,6 +3543,22 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
 	[self updateSceneNumberLabels];
+}
+
+- (void)scrollOutlineToCurrentScene:(OutlineScene*)scene {
+	if (!scene) scene = _currentScene;
+	
+	// Check if we have filtering turned on, and do nothing if scene is not in the filter results
+	if (self.filteredOutline.count) {
+		if (![self.filteredOutline containsObject:scene]) return;
+	}
+
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
+			context.allowsImplicitAnimation = YES;
+			[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:scene]];
+		} completionHandler:NULL];
+	});
 }
 
 - (void) moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
@@ -4264,6 +4229,12 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 #pragma mark - Analysis
 
+/*
+ 
+ Oh my fucking god. This should be moved elsewhere ASAP.
+ 
+ */
+
 - (IBAction)showAnalysis:(id)sender {
 	[self createAnalysis:nil];
 	[_thisWindow beginSheet:_analysisPanel completionHandler:nil];
@@ -4415,9 +4386,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self.textView.masks removeAllObjects];
 
 	// Create flat outline if we don't have one
-	if (![_flatOutline count]) _flatOutline = [self getOutlineItems];
+	if (![_outline count]) _outline = [self getOutlineItems];
 	
-	for (OutlineScene* scene in _flatOutline) {
+	for (OutlineScene* scene in _outline) {
 		// Ignore this scene if it's contained in filtered scenes
 		if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) continue;
 		NSRange sceneRange = NSMakeRange([scene sceneStart], [scene sceneLength]);
@@ -4590,7 +4561,6 @@ triangle walks
 		
 		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
-			[self setMargin];
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
 						
 			__block NSArray *pageBreaks = self.paginator.pageBreaks;
@@ -4721,6 +4691,7 @@ triangle walks
 #pragma mark - Title page editor
 
 // WIP: Move this into separate class
+// Do it already, jesus fucking christ
 
 - (IBAction)editTitlePage:(id)sender {
 	
@@ -4850,9 +4821,9 @@ triangle walks
 	OutlineScene *scene = [self getNextScene];
 	if (scene) {
 		[self scrollToScene:scene];
-	} else if (!scene && [_flatOutline count]) {
+	} else if (!scene && [_outline count]) {
 		// We were not inside a scene. Move to next one if possible.
-		[self scrollToScene:[_flatOutline objectAtIndex:0]];
+		[self scrollToScene:[_outline objectAtIndex:0]];
 	}
 }
 - (IBAction)previousScene:(id)sender {
@@ -4895,32 +4866,14 @@ triangle walks
 }
 
 - (NSURL *)autosavedContentsFileURL {
-	NSURL *autosavePath = [self appDataPath:@"Autosave"];
+	NSURL *autosavePath = [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
 	autosavePath = [autosavePath URLByAppendingPathComponent:[self fileNameString]];
 	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
 
 	return autosavePath;
 }
 - (NSURL*)autosavePath {
-	return [self appDataPath:@"Autosave"];
-}
-- (NSURL*)appDataPath:(NSString*)subPath {
-	NSString* pathComponent = APP_NAME;
-	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
-	
-    NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-                                                                          NSUserDomainMask,
-                                                                          YES);
-	NSString* appSupportDir = [searchPaths firstObject];
-	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
-	
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-	
-    if (![fileManager fileExistsAtPath:appSupportDir]) {
-        [fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-	
-	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
+	return [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
 }
 
 - (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
@@ -4955,7 +4908,7 @@ triangle walks
 	
 	[super saveDocumentAs:sender];
 	
-	NSURL *url = [self appDataPath:@"Autosave"];
+	NSURL *url = [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
 	
@@ -4975,11 +4928,20 @@ triangle walks
 	[self reloadOutline];
 }
 
-#pragma mark - scroll listeners
+#pragma mark - Plugin support for documents
 
-/* Listen to scrolling of the view. Listen to the birds. Listen to wind blowing all your dreams away, to make space for new ones to rise, when the spring comes. */
-- (void)boundsDidChange:(NSNotification*)notification {
-	if (notification.object != [self.textScrollView contentView]) return;
+- (void)setupPlugins {
+	_pluginManager = [BeatPluginManager sharedManager];
+}
+- (IBAction)runPlugin:(id)sender {
+	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
+	parser.delegate = self;
+	
+	NSMenuItem *menuItem = (NSMenuItem*)sender;
+	NSString *pluginName = menuItem.title;
+	
+	NSString *script = [_pluginManager scriptForPlugin:pluginName];
+	[parser runScript:script withName:pluginName];
 }
 
 @end

@@ -20,6 +20,11 @@
 
 @implementation BeatPaperSizing
 
++ (NSPrintInfo*)printInfoFor:(BeatPaperSize)size {
+	NSPrintInfo *printInfo = [NSPrintInfo sharedPrintInfo];
+	return [BeatPaperSizing setSize:size printInfo:printInfo];
+}
+
 + (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo {
 	[printInfo setTopMargin:MARGIN_TOP];
 	[printInfo setBottomMargin:MARGIN_BOTTOM];

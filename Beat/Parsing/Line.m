@@ -173,7 +173,10 @@
 	return string;
 }
 - (NSString*)stringForDisplay {
-	NSString *string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
+	NSString *string;// = [Line removeMarkUpFrom:[self stripInvisible] line:self];
+	if (!self.omited) string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
+	else string = [Line removeMarkUpFrom:self.string line:self];
+	
 	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 
 }

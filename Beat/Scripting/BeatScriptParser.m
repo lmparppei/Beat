@@ -20,13 +20,19 @@
 
 #import <Cocoa/Cocoa.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <WebKit/WebKit.h>
 #import "BeatScriptParser.h"
 #import "Line.h"
 #import "OutlineScene.h"
+#import "ApplicationDelegate.h"
+#import <PDFKit/PDFKit.h>
 
 @interface BeatScriptParser ()
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
+@property (nonatomic) NSWindow *sheet;
+@property (nonatomic) JSValue *sheetCallback;
+@property (nonatomic) WKWebView *sheetWebView;
 @end
 
 @implementation BeatScriptParser
@@ -38,6 +44,13 @@
 		
 	_vm = [[JSVirtualMachine alloc] init];
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
+	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
+		NSAlert *alert = [[NSAlert alloc] init];
+		alert.messageText = @"Error running script";
+		alert.informativeText = [NSString stringWithFormat:@"%@", exception];
+		[alert addButtonWithTitle:@"OK"];
+		[alert runModal];
+	}];
 
 	[_context setObject:[Line class] forKeyedSubscript:@"Line"];
 	[_context setObject:[OutlineScene class] forKeyedSubscript:@"OutlineScene"];
@@ -46,108 +59,347 @@
 	return self;
 }
 
-- (void)log:(NSString*)string {
-	// If there is a delegate, log into that, but not yet
-	NSLog(@"# %@", string);
+- (void)openFile:(NSArray*)formats callBack:(JSValue*)callback {
+	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+	openPanel.allowedFileTypes = formats;
+	[openPanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse result) {
+		if (result == NSModalResponseOK) {
+			[openPanel close];
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
+				// some other method calls here
+				[callback callWithArguments:@[openPanel.URL.path]];
+			});
+		} else {
+			[callback callWithArguments:nil];
+		}
+	}];
 }
-
-
-/*
- 
- // Beat functions which should be available for scripting
- Beat.scrollTo(location);
- Beat.scrollToLine(line);
- Beat.scrollToScene(scene);
- Beat.setContent(content);
- Beat.addString(string, position)
- Beat.removeRange(start, end)
- 
- // Some UI stuff we might need:
- Beat.inputValue("Input Prompt", "Further Info", completionHandler)
- Beat.newPanel(htmlContent);
- ... with a completion handler?
-
-
- // Helper functions to be implemented in JS
- Beat.sceneAt(location);
- Beat.lineAt(location);
- 
- // Read-only values
- Lines
- Scenes
- 
- 
- Example plugin for finding the longest scene:
- 
- let longestScene = { length: 0, scene: null };
- 
- for (const scene of Scenes) {
-	if (scene.sceneLength > longestScene.length) {
-		longestScene.scene = scene;
-		longestScene.length = scene.sceneLength;
+- (NSString*)fileToString:(NSString*)path {
+	NSError *error;
+	NSString *result = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+	
+	if (error) {
+		[self alert:@"Error Opening File" withText:@"Error occurred while trying to open the file. Did you give Beat permission to acces it?"];
+		return nil;
+	} else {
+		return result;
 	}
- }
- 
- if (longestScene.scene) Beat.scrollToScene(scene);
- 
- */
-
-- (NSMutableArray*)scenes {
-	[self.delegate.parser createOutline];
-	NSArray *scenes = self.delegate.parser.outline;
+}
+- (NSString*)pdfToString:(NSString*)path {
+	NSMutableString *result = [NSMutableString string];
 	
-	NSMutableArray *result = [NSMutableArray array];
+	PDFDocument *doc = [[PDFDocument alloc] initWithURL:[NSURL fileURLWithPath:path]];
+	if (!doc) return nil;
 	
-	for (OutlineScene *scene in scenes) {
-		[result addObject:@{
-			@"type": scene.line.typeAsString,
-			@"string": (scene.string.length) ? scene.string : @"",
-			@"position": [NSNumber numberWithInteger:scene.sceneStart],
-			@"length": [NSNumber numberWithInteger:scene.sceneLength],
-			@"omitted": [NSNumber numberWithBool:scene.omited],
-			@"color": (scene.color.length) ? scene.color : @"",
-			@"sceneNumber": (scene.sceneNumber.length) ? scene.sceneNumber : @""
-		}];
+	for (int i = 0; i < doc.pageCount; i++) {
+		PDFPage *page = [doc pageAtIndex:i];
+		if (!page) continue;
+		
+		[result appendString:page.string];
 	}
 	
 	return result;
 }
 
+- (void)runScript:(NSString*)string withName:(NSString*)name {
+	_pluginName = name;
+	[self runScriptWithString:string];
+}
 - (void)runScriptWithString:(NSString*)string {
-	if (_lines) {
-		[_context setObject:_lines forKeyedSubscript:@"Lines"];
-	}
+	[self setJSData];
 	
 	JSValue *value = [_context evaluateScript:string];
-	NSLog(@"value %@", value);
+	NSLog(@"result %@", value);
 }
 
-- (void)runScript {
 
-	/*
-	// We need to make a copy of lines available to JS
-	NSMutableArray *jsonLines = [NSMutableArray array];
+#pragma mark - Scripting methods accessible via JS
+
+- (void)log:(NSString*)string {
+	NSLog(@"# %@", string);
+}
+
+- (void)scrollTo:(NSInteger)location {
+	[self.delegate scrollTo:location];
+}
+- (void)scrollToLineIndex:(NSInteger)index {
+	[self.delegate scrollToLineIndex:index];
+}
+- (void)scrollToSceneIndex:(NSInteger)index {
+	[self.delegate scrollToSceneIndex:index];
+}
+- (void)scrollToScene:(OutlineScene*)scene {
+	@try {
+		[self.delegate scrollToScene:scene];
+	}
+	@catch (NSException *e) {
+		[self alert:@"Can't find scene" withText:@"Plugin tried to access an unknown scene"];
+	}
+}
+
+- (void)addString:(NSString*)string toIndex:(NSUInteger)index {
+	[self.delegate addString:string atIndex:index];
+}
+- (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string {
+	NSRange range = NSMakeRange(from, length);
+	@try {
+		[self.delegate replaceRange:range withString:string];
+	}
+	@catch (NSException *e) {
+		[self alert:@"Selection out of range" withText:@"Plugin tried to select something that was out of range. Further errors might ensue."];
+	}
+}
+- (NSRange)selectedRange {
+	return self.delegate.selectedRange;
+}
+- (void)setSelectedRange:(NSInteger)start to:(NSInteger)length {
+	NSRange range = NSMakeRange(start, length);
+	[self.delegate setSelectedRange:range];
+}
+- (NSString*)getText {
+	NSMutableString *string = [NSMutableString string];
 	
-	for (Line* line in _lines) {
+	for (Line* line in self.delegate.parser.lines) {
+		if (line != self.delegate.parser.lines.lastObject) [string appendFormat:@"%@\n", line.string];
+	}
+	
+	return string;
+}
+
+- (void)alert:(NSString*)title withText:(NSString*)info {
+	if ([info isEqualToString:@"undefined"]) info = @"";
+	
+	NSAlert *alert = [self dialog:title withInfo:info];
+	[alert addButtonWithTitle:@"OK"];
+	[alert runModal];
+}
+- (bool)confirm:(NSString*)title withInfo:(NSString*)info {
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = title;
+	alert.informativeText = info;
+	
+	[alert addButtonWithTitle:@"OK"];
+	[alert addButtonWithTitle:@"Cancel"];
+	
+	NSModalResponse response = [alert runModal];
+	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
+		return YES;
+	} else {
+		return NO;
+	}
+}
+- (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText {
+	if ([placeholder isEqualToString:@"undefined"]) placeholder = @"";
+	if ([defaultText isEqualToString:@"undefined"]) defaultText = @"";
+	
+	NSAlert *alert = [self dialog:prompt withInfo:info];
+	[alert addButtonWithTitle:@"OK"];
+	[alert addButtonWithTitle:@"Cancel"];
+	
+	NSRect frame = NSMakeRect(0, 0, 300, 24);
+	NSTextField *inputField = [[NSTextField alloc] initWithFrame:frame];
+	inputField.placeholderString = defaultText;
+	[alert setAccessoryView:inputField];
+	[inputField setStringValue:defaultText];
+	
+	alert.window.initialFirstResponder = inputField;
+	
+	NSModalResponse response = [alert runModal];
+	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
+		return inputField.stringValue;
+	} else {
+		return nil;
+	}
+}
+
+- (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items {
+	NSAlert *alert = [self dialog:prompt withInfo:info];
+	[alert addButtonWithTitle:@"OK"];
+	[alert addButtonWithTitle:@"Cancel"];
+	
+	NSPopUpButton *popup = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0,0, 300, 24)];
+	
+	[popup addItemWithTitle:@"Select..."];
+	
+	for (id item in items) {
+		// Make sure the title becomes a string
+		NSString *title = [NSString stringWithFormat:@"%@", item];
+		[popup addItemWithTitle:title];
+	}
+	[alert setAccessoryView:popup];
+	NSModalResponse response = [alert runModal];
+	
+	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
+		// Return an empty string if the user didn't select anything
+		if ([popup.selectedItem.title isEqualToString:@"Select..."]) return @"";
+		else return popup.selectedItem.title;
+	} else {
+		return nil;
+	}
+}
+
+- (NSAlert*)dialog:(NSString*)title withInfo:(NSString*)info {
+	if ([info isEqualToString:@"undefined"]) info = @"";
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = title;
+	alert.informativeText = info;
+	
+	return alert;
+}
+
+- (void)setUserDefault:(NSString*)settingName setting:(id)value {
+	if (!_pluginName) {
+		[self alert:@"No plugin name" withText:@"You need to specify plugin name before trying to save settings."];
+		return;
+	}
+	
+	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
+	[[NSUserDefaults standardUserDefaults] setValue:value forKey:keyName];
+}
+- (id)getUserDefault:(NSString*)settingName {
+	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
+	id value = [[NSUserDefaults standardUserDefaults] valueForKey:keyName];
+	return value;
+}
+
+#pragma mark - HTML panel magic
+
+- (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback {
+	if (_delegate.thisWindow.attachedSheet) return;
+	
+	if (width <= 0) width = 600;
+	if (width > 800) width = 1000;
+	if (height <= 0) height = 400;
+	if (height > 800) height = 1000;
+	
+	// Load template
+	NSURL *templateURL = [NSBundle.mainBundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
+	NSString *template = [NSString stringWithContentsOfURL:templateURL encoding:NSUTF8StringEncoding error:nil];
+	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
+	
+	NSWindow *panel = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0, width, height + 35) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
+	
+	WKWebView *webView = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 35, width, height)];
+	[webView loadHTMLString:template baseURL:nil];
+	[webView.configuration.userContentController addScriptMessageHandler:self name:@"sendData"];
+	[webView.configuration.userContentController addScriptMessageHandler:self name:@"log"];
+	[panel.contentView addSubview:webView];
+	
+	NSButton *okButton = [[NSButton alloc] initWithFrame:NSMakeRect(width - 90, 8, 90, 20)];
+	okButton.bezelStyle = NSRoundedBezelStyle;
+	[okButton setButtonType:NSMomentaryLightButton];
+	[okButton setTarget:self];
+	[okButton setAction:@selector(fetchHTMLPanelDataAndClose)];
+
+	okButton.title = @"Close";
+	[panel.contentView addSubview:okButton];
+	
+	_sheet = panel;
+	_sheetWebView = webView;
+	_sheetCallback = callback;
+	
+	[self.delegate.thisWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
+		// Run callback here?
+	}];
+}
+- (void)fetchHTMLPanelDataAndClose {
+	[_sheetWebView evaluateJavaScript:@"sendBeatData();" completionHandler:nil];
+	
+	// The sheet will close automatically after that, but run an alert if the sheet didn't close in time
+	// (for both the developer and the user to understand that something isn't working right)
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2), dispatch_get_main_queue(), ^(void){
+		if (self.delegate.thisWindow.attachedSheet == self.sheet && self.delegate.thisWindow.attachedSheet != nil) {
+			[self alert:@"Plugin timed out" withText:@"Something went wrong with receiving data from the plugin"];
+			[self closePanel:nil];
+		}
+	});
+}
+- (void)closePanel:(id)sender {
+	if (self.delegate.thisWindow.attachedSheet) {
+		[self.delegate.thisWindow endSheet:_sheet];
+		_sheet = nil;
+		_sheetWebView = nil;
+	}
+}
+- (void)receiveDataFromHTMLPanel:(NSString*)json {
+	// This method actually closes the HTML panel.
+	// It is called by sending a message to the script parser via webkit message handler,
+	// so this works asynchronously. Keep in mind.
+	
+	if ([json isEqualToString:@"(null)"]) json = @"";
+	
+	if (self.sheetCallback) {
+		NSData *data = [json dataUsingEncoding:NSUTF8StringEncoding];
 		NSError *error;
+		NSDictionary *jsonData = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 		
-		NSDictionary *lineData = @{
-			@"string": line.string,
-			@"position": [NSNumber numberWithUnsignedInteger:line.position],
-			@"color": line.color,
-			@"sceneNumber": line.sceneNumber,
-			@"type": line.typeAsString,
-			@"omited": line.omited ? @"true" : @"false",
-			@"centered": line.centered ? @"true" : @"false"
-		};
-		
-		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:lineData options:NSJSONWritingPrettyPrinted error:&error];
-		if (!jsonData) NSLog(@"Error with JSON serialization: %@", error);
+		if (!error) {
+			[self closePanel:nil];
+			[_sheetCallback callWithArguments:@[jsonData]];
+		}
 		else {
-			[jsonLines addObject:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
+			[self closePanel:nil];
+			[self alert:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
+		}
+		
+		_sheetCallback = nil;
+	} else {
+		[self closePanel:nil];
+	}
+}
+
+#pragma mark - Parser data delegation
+
+- (NSArray*)lines {
+	return self.delegate.parser.lines;
+}
+- (NSArray*)linesForScene:(id)sceneId {
+	NSMutableArray *lines = [NSMutableArray array];
+	OutlineScene *scene = (OutlineScene*)sceneId;
+	
+	@try {
+		NSRange sceneRange = NSMakeRange(scene.sceneStart, scene.sceneLength);
+		
+		for (Line* line in self.delegate.parser.lines) {
+			if (NSLocationInRange(line.position, sceneRange)) [lines addObject:line];
 		}
 	}
-	 */
+	@catch (NSException *e) {
+		[self alert:@"Scene index out of range" withText:@"Plugin tried to access an nonexistent scene"];
+	}
+	return lines;
+}
+
+- (NSArray*)scenes {
+	return self.delegate.parser.scenes;
+}
+- (NSArray*)outline {
+	return self.delegate.parser.outline;
+}
+- (void)parse {
+	[self.delegate.parser createOutline];
+	[self setJSData];
+}
+- (void)newDocument:(NSString*)string {
+	if (string.length) [(ApplicationDelegate*)NSApp.delegate newDocumentWithContents:string];
+	else [[NSDocumentController sharedDocumentController] newDocument:nil];
+}
+
+- (void)setJSData {
+	[_context setObject:self.delegate.parser.lines forKeyedSubscript:@"Lines"];
+	[_context setObject:self.delegate.parser.outline forKeyedSubscript:@"Outline"];
+	[_context setObject:self.delegate.parser.scenes forKeyedSubscript:@"Scenes"];
+}
+
+
+- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
+	if ([message.name isEqualToString:@"log"]) {
+		[self log:message.body];
+	}
+	if ([message.name isEqualToString:@"sendData"]) {
+		[self receiveDataFromHTMLPanel:message.body];
+	}
 }
 
 @end

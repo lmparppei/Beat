@@ -90,7 +90,7 @@
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="ncb-yG-bCM" userLabel="Top view">
                                             <rect key="frame" x="0.0" y="120" width="1100" height="541"/>
                                             <subviews>
-                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Outline view" customClass="ColorView">
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Outline view">
                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="541"/>
                                                     <subviews>
                                                         <box appearanceType="darkAqua" boxType="custom" borderType="none" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="YvO-D4-qDL" userLabel="Filters">

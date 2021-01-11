@@ -14,7 +14,7 @@
 				margin: 0rem;
 				background-color: #fefefe;
 				color: #3b3b3b;
-				font-size: .9em;
+				font-size: .85em;
 
 				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
@@ -50,7 +50,7 @@
 			}
 
 			h2 {
-				margin-top: 2rem;
+				margin-top: 1.5rem;
 				font-size: 1.25em;
 				font-family: "Courier Prime", Courier, monospace;
 				font-weight: normal;
@@ -266,6 +266,24 @@
 				}
 			}
 
+			#goodie {
+				margin-top: 1.5rem;
+				margin-left: -1rem;
+				margin-right: -1rem;
+				
+				padding: 1.5rem;
+				
+				background-color: #303035;
+				color: white;
+			}
+			#goodie h2 {
+				margin-top: 0;
+			}
+		
+			button {
+				line-height: 1.5em;
+			}
+		
 		</style>
 		<!--[if lt IE 9]>
 			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -277,17 +295,29 @@
 			<div id='intro'>
 				<section>
 					<div class='logo'><img src='B_256_logo.png' alt='b'></div>
-					<h1>Welcome to Beat 1.6c!</h1>
+					<h1>Welcome to Beat 1.7!</h1>
+
+					<div id='goodie'>
+						<h3>New Year's Special!</h3>
+						<p>Read the screenplay for <b>Silent as Murderers</b> and watch the resulting short film. Available only in this version of the app.</p>
+						<p><button onclick='openTemplate("Silent as Murderers")'>Open The Screenplay</button></p>
+					</div>
+					
+					<h2>What's New?</h2>
+					<ul>
+						<li>Print multiple episodes at once</li>
+						<li>Plugin Support (more about this later)</li>
+						<li><em>Go To Scene Number...</em> (⌥⌘G) can be found under Edit</li>
+						<li>Page numbers no longer fall out of view on smaller screens</li>
+						<li>Storyline tracking on timeline</li>
+					</ul>
+
 					<h2>Bug Fixes</h2>
 					<ul>
 						<li>Document no longer appears as changed at load</li>
 						<li>Screenplay can now be printed and exported without scene numbers</li>
-					</ul>
-					<h2>What's New?</h2>
-					<ul>
-						<li><em>Go To Scene Number...</em> (⌘G) can be found under Edit</li>
-						<li>Page numbers no longer fall out of view on smaller screens</li>
-						<li>Storyline tracking on timeline</li>
+						<li>Bugs with jumping to next / previous scene are fixed</li>
+						<li>Weird jumping in Outline View should be fixed</li>
 					</ul>
 					<p><b>And hey!</b><br>Follow Beat on Twitter for latest updates on development: <b>@beatScreenplay</b></p>
 				</section>
@@ -295,20 +325,24 @@
 			<div>
 				<section>
 					<h2>Support Beat</h2>
-					<p>Development is done on spare time and using my own resources, so any price from a bag of good coffee in Finland (5€) up to a vegan burger (15€) or a used Maserati (around 150&nbsp;000€) helps to keep the project alive. Thanks to all who already sent me some loose change!</p>
+					<p>Development is done on spare time and using my own resources, so any price from a bag of good coffee in Finland (5€) up to a vegan burger (15€) or a used Maserati (around 150&nbsp;000€) helps to keep the project alive. Thanks to everyone who already sent me some loose change!</p>
+					<h2>Print Episodes</h2>
+					<p>You can now export multiple episodes at once (File → Print Episodes). Drag &amp; drop your Fountain files into the menu and organize them in the correct order. You will get a single PDF with all the episodes at once.</p>
+					
+					<h2>Plugin Support</h2>
+					<p>Users can now write their own extensions for Beat using JavaScript. User-installe plugins can be found at <b>~/Library/Application Support/Beat/Plugins/</b>.</p>
+					<p>Scripting support is still a work in progress. Documentation can be found at http://kapitan.fi/beat/plugins/documentation.html</p>
 
 					<h2>Storylines</h2>
 					<p>Right-click a scene on the Timeline View to tag it with a storyline. You can then track how different storylines are advanced in the course of your script by toggling them using the drop-down on the left-hand side.</p>
 					<p><b>NOTE:</b> This is a <em>highly</em> experimental feature for now.</p>
 
+					
 					<!--
 					<h2>Timer &amp; New Menu Structure</h2>
 					<p>The Screenplay Analysis has been moved under <b>Tools</b>, which will have other useful stuff in the future, too. One such tool is the <b>Timer</b>, which allows you to set an alarm. It also keeps track of your productivity during that time period.</p>
 					<p>I'm also developing a plugin system, which will allow users to write their own extensions to Beat using JavaScript.</p>
 					-->
-					
-					<h2>Anti-Lateral Thoughts</h2>
-					<p>By pressing the light bulb on your TouchBar, you can access a collection of thoughts inspired by <em>Oblique Strategies</em>. Useless and silly.</p>
 					
 					<h2>General Bug Fixes</h2>
 					<p>Thanks to everyone who reported some pretty serious bugs and issues with the app. I've done my best to fix them.</p>
@@ -320,6 +354,10 @@
 		</div>
 
 		<script>
+			function openTemplate (name) {
+				window.webkit.messageHandlers.openTemplate.postMessage(name);
+			}
+			
 			/*
 
 			TextAnimation © Lauri-Matti Parppei 2020

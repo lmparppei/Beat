@@ -32,5 +32,8 @@
 	
 	return length;
 }
+- (NSString*)typeAsString {
+	return self.line.typeAsString;
+}
 
 @end

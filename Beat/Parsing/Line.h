@@ -42,7 +42,6 @@ typedef enum : NSUInteger {
 @property NSString* sceneNumber;
 @property NSString* color;
 @property (strong, nonatomic) NSString* string;
-@property LineType type;
 
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
@@ -50,9 +49,8 @@ typedef enum : NSUInteger {
 - (bool)isInvisible;
 - (bool)isDialogueElement;
 - (bool)isDualDialogueElement;
-
+- (NSString*)typeAsString;
 @end
-
 
 @interface Line : NSObject <LineExports>
 

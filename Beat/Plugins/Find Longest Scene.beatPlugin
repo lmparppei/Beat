@@ -1,0 +1,20 @@
+/*
+ 
+ Find longest scene - a bare-bones Beat plugin example.
+ © Lauri-Matti Parppei
+ 
+ Plugin Type: Tool
+ 
+*/
+
+let longestScene;
+let length = 0;
+
+for (const scene of Beat.scenes()) {
+	if (scene.sceneLength > length) {
+		longestScene = scene;
+		length = scene.sceneLength;
+	}
+}
+
+if (longestScene) Beat.scrollToScene(longestScene);

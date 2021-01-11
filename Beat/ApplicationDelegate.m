@@ -9,14 +9,19 @@
 #import "ApplicationDelegate.h"
 #import "RecentFiles.h"
 #import "BeatFileImport.h"
+#import "BeatPluginManager.h"
+#import "BeatBrowserView.h"
+#import "BeatAboutScreen.h"
+#import "BeatEpisodePrinter.h"
 
 #import "BeatTest.h"
+
+#define APPNAME @"Beat"
 
 @interface ApplicationDelegate ()
 @property (nonatomic) RecentFiles *recentFilesSource;
 
 @property (weak) IBOutlet NSWindow* startModal;
-@property (weak) IBOutlet NSWindow* aboutModal;
 @property (weak) IBOutlet NSOutlineView* recentFiles;
 
 @property (weak) IBOutlet NSWindow* acknowledgementsModal;
@@ -26,12 +31,10 @@
 @property (weak) IBOutlet NSWindow *manualWindow;
 
 @property (weak) IBOutlet NSTextField* versionField;
-@property (weak) IBOutlet NSTextField* aboutVersionField;
-@property (weak) IBOutlet NSTextView* aboutText;
 
-@property (weak) IBOutlet NSWindow *seriesPrintingWindow;
-
-@property (weak) IBOutlet WKWebView *manualView;
+@property (nonatomic) BeatBrowserView *browser;
+@property (nonatomic) BeatAboutScreen *about;
+@property (nonatomic) BeatEpisodePrinter *episodePrinter;
 @end
 
 @implementation ApplicationDelegate
@@ -50,7 +53,7 @@
 	[self checkAutosavedFiles];
 	
 	// Run tests
-	 [[BeatTest alloc] init];
+	//[[BeatTest alloc] init];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -78,17 +81,11 @@
 			[self.recentFiles reloadData];
 		}
 	}];
-	[[NSNotificationCenter defaultCenter] addObserverForName:@"Show about screen" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		//if (self.startModal && [self.startModal isVisible]) {
-		//	[self closeStartModal];
-		//}
-	}];
-	
+		
 	// Check for pro version content
 	NSString* proContentPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
 	if (proContentPath) _proMode = YES;
 	
-	//[NSApplication.sharedApplication setAutomaticCustomizeTouchBarMenuItemEnabled:YES];
 	[NSApplication sharedApplication].automaticCustomizeTouchBarMenuItemEnabled = YES;
 	
 	// Only open splash screen if no documents were opened by default
@@ -110,6 +107,8 @@
 		}
 	}
 	
+	[self setupPlugins];
+	
 	[self checkVersion];
 }
 -(void)checkVersion {
@@ -128,12 +127,10 @@
 }
 
 - (void) awakeFromNib {
-	NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
-	NSString *version = [info objectForKey:@"CFBundleShortVersionString"];
+	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
 	
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
 	[_versionField setStringValue:versionString];
-	[_aboutVersionField setStringValue:versionString];
 	
 	if (_proMode) {
 		[self.menuManual setHidden:NO];
@@ -144,6 +141,8 @@
 	[self.startModal setMovable:YES];
 	[self.startModal setMovableByWindowBackground:YES];
 }
+
+#pragma mark - Autosave
 
 - (void)checkAutosavedFiles {
 	// We will run this operation in another thread, so that the app can start and opening recovered documents won't mess up any other logic built into the app.
@@ -174,9 +173,6 @@
 				NSModalResponse response = [alert runModal];
 
 				if (response == NSAlertFirstButtonReturn) {
-					//NSURL *recoverURL = [NSURL fileURLWithPath:appSupportDir];
-					//recoverURL = [recoverURL URLByAppendingPathComponent:file];
-					
 					NSString *recoveredFilename = [[[filename stringByDeletingPathExtension] stringByAppendingString:@" (Recovered)"] stringByAppendingString:@".fountain"];
 					
 					NSSavePanel *saveDialog = [NSSavePanel savePanel];
@@ -212,23 +208,6 @@
 		}
 	});
 }
-
-- (IBAction)showReference:(id)sender
-{
-    NSURL* referenceFile = [[NSBundle mainBundle] URLForResource:@"Tutorial"
-                                                   withExtension:@"fountain"];
-
-	// Let's copy the tutorial file
-	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:YES displayName:@"Tutorial" error:nil];
-}
-
-- (IBAction)templateBeatSheet:(id)sender {
-	NSURL* referenceFile = [[NSBundle mainBundle] URLForResource:@"Beat Sheet"
-												   withExtension:@"fountain"];
-	// Let's copy the beat sheet file
-	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:referenceFile copying:YES displayName:@"Beat Sheet" error:nil];
-}
-
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)flag {
 	if (flag) return NO; else return YES;
@@ -294,31 +273,57 @@
 	[[NSUserDefaults standardUserDefaults] setBool:_darkMode forKey:DARKMODE_KEY];
 }
 
+#pragma mark - Tutorial and templates
+
+- (IBAction)showReference:(id)sender
+{
+	[self showTemplate:@"Tutorial"];
+}
+
+- (IBAction)templateBeatSheet:(id)sender {
+	[self showTemplate:@"Beat Sheet"];
+}
+
+- (void)showTemplate:(NSString*)name {
+	NSURL *url = [NSBundle.mainBundle URLForResource:name withExtension:@"fountain"];
+	
+	if (url) [[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:url copying:YES displayName:name error:nil];
+	else NSLog(@"can't find template");
+}
+
 #pragma mark - Fountain syntax references & help
 
+-(void)windowWillClose:(NSNotification *)notification {
+	// Dealloc window controllers on close
+	
+	NSWindow* window = notification.object;
+	
+	if (window == _browser.window) {
+		_browser = nil;
+	}
+	else if (window == _episodePrinter.window) {
+		[NSApp stopModal];
+		_episodePrinter = nil;
+	}
+}
+
 - (IBAction)showPatchNotes:(id)sender {
-	self.manualWindow.title = @"Patch Notes";
+	if (!_browser) {
+		_browser = [[BeatBrowserView alloc] init];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_browser.window];
+	}
 	
-	CGFloat width = 550;
-	CGFloat height = 650;
-	[self.manualWindow setFrame:NSMakeRect(
-										  (NSScreen.mainScreen.frame.size.width - width) / 2,
-										  (NSScreen.mainScreen.frame.size.height - height) / 2,
-										  width, height
-										  )
-						 display:YES];
-	
-	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"Patch Notes" ofType:@"html"];
-	[self.manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
-	[self.manualWindow setIsVisible:true];
+	NSURL *url = [NSBundle.mainBundle URLForResource:@"Patch Notes" withExtension:@"html"];
+	[_browser showBrowser:url withTitle:@"Patch Notes" width:550 height:640];
 }
 
 - (IBAction)showManual:(id)sender {
-	[self.manualWindow setIsVisible:true];
-	self.manualWindow.title = @"Beat Manual";
+	if (!_browser) {
+		_browser = [[BeatBrowserView alloc] init];
+	}
 	
-	NSString * htmlPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
-	[self.manualView loadFileURL:[NSURL fileURLWithPath:htmlPath] allowingReadAccessToURL:[NSURL fileURLWithPath:[htmlPath stringByDeletingLastPathComponent] isDirectory:YES]];
+	NSURL *url = [NSBundle.mainBundle URLForResource:@"beat_manual" withExtension:@"html"];
+	[_browser showBrowser:url withTitle:@"(beat manual)" width:600 height:500];
 }
 
 - (IBAction)showFountainSyntax:(id)sender
@@ -364,14 +369,10 @@
 }
 
 - (IBAction)showAboutScreen:(id) sender {
-	[self.aboutModal setIsVisible:true];
-	
-	NSString * rtfFile = [[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"rtf"];
-	[_aboutText readRTFDFromFile:rtfFile];
-}
-
-- (IBAction)showAcknowledgements:(id) sender {
-	[self.acknowledgementsModal setIsVisible:YES];
+	if (!_about) {
+		_about = [[BeatAboutScreen alloc] init];
+	}
+	[_about show];
 }
 
 #pragma mark - File Import
@@ -399,7 +400,7 @@
 
 #pragma mark - Generic methods for opening a plain-text file
 
-- (void)openFileWithContents:(NSString*)string {
+- (void)newDocumentWithContents:(NSString*)string {
 	NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
 	NSError *error;
 	
@@ -430,19 +431,80 @@
 
 - (IBAction)newDocument:(id)sender {
 	[[NSDocumentController sharedDocumentController] newDocument:nil];
+	
 }
+
+#pragma mark - Plugin support
+
+- (void)setupPlugins {
+	NSMenuItem *menuItem = _pluginMenu.itemArray.firstObject;
+	[_pluginMenu removeAllItems];
+	
+	BeatPluginManager *plugins = [[BeatPluginManager alloc] init];
+	
+	for (NSString *pluginName in plugins.pluginNames) {
+		NSMenuItem *item = [menuItem copy];
+		item.title = pluginName;
+		[_pluginMenu addItem:item];
+	}
+}
+
 
 #pragma mark - Episode Printing
 // Sorry, I don't know how to work with window controllers, so this is here :-(
 
 - (IBAction)printEpisodes:(id)sender {
-	//[NSApp runModalForWindow:_seriesPrintingWindow];
-	NSWindowController *windowController = [[NSWindowController alloc] initWithWindow:_seriesPrintingWindow];
-	[windowController showWindow:_seriesPrintingWindow];
-	
+	if (!_episodePrinter) {
+		_episodePrinter = [[BeatEpisodePrinter alloc] init];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_episodePrinter.window];
+	}
+	//[_episodePrinter showWindow:_episodePrinter.window];
+	[NSApp runModalForWindow:_episodePrinter.window];
 }
-- (IBAction)closePrintEpisodes:(id)sender {
-	[_seriesPrintingWindow close];
+ 
+
+#pragma mark - Supporting methods
+
+- (NSURL*)appDataPath:(NSString*)subPath {
+	//NSString* pathComponent = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+	NSString* pathComponent = APPNAME;
+	
+	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
+	
+	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+																		  NSUserDomainMask,
+																		  YES);
+	NSString* appSupportDir = [searchPaths firstObject];
+	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
+	
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	if (![fileManager fileExistsAtPath:appSupportDir]) {
+		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
+	}
+	
+	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
+}
+
+- (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
+{
+	NSString *  result;
+	CFUUIDRef   uuid;
+	CFStringRef uuidStr;
+
+	uuid = CFUUIDCreate(NULL);
+	assert(uuid != NULL);
+
+	uuidStr = CFUUIDCreateString(NULL, uuid);
+	assert(uuidStr != NULL);
+
+	result = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@-%@", prefix, uuidStr]];
+	assert(result != nil);
+
+	CFRelease(uuidStr);
+	CFRelease(uuid);
+
+	return result;
 }
 
 @end

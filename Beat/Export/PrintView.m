@@ -35,12 +35,21 @@
 @property bool preview;
 
 @property (nonatomic) NSString *string;
+
+@property (nonatomic, copy, nullable) void (^completion)(void);
+
 @end
 
 @implementation PrintView
 
 // We know the HTML already (probably we're printing a series)
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript {
+	return [self initWithDocument:document script:lines operation:mode compareWith:oldScript delegate:nil];
+}
 - (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode {
+	return [self initWithHTML:htmlString document:document operation:mode completion:nil];
+}
+- (id)initWithHTML:(NSString *)htmlString document:(NSDocument *)document operation:(BeatPrintOperation)mode completion:(void (^)(void))completion {
 	self = [super init];
 	if (mode == BeatToPDF) self.pdf = YES;
 	
@@ -48,14 +57,12 @@
 		if (htmlString.length) {
 			_finishedWebViews = 0;
 			_document = (Document*)document;
+			_completion = completion;
 			[self printHTML:htmlString];
 		}
 	}
 	
 	return self;
-}
-- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript {
-	return [self initWithDocument:document script:lines operation:mode compareWith:oldScript delegate:nil];
 }
 
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id<PrintViewDelegate>)delegate {
@@ -149,7 +156,8 @@
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
 	self.finishedWebViews = self.finishedWebViews + 1;
-	if (self.finishedWebViews == [self.subviews count]) {
+	
+	if (self.finishedWebViews == self.subviews.count) {
 		[self display];
 		
 		// Print
@@ -158,7 +166,6 @@
 		}
 		// Export PDF
 		else {
-			// Just export a temporary PDF
 			if (_preview) {
 				[self createTemporaryPDF];
 			} else {
@@ -171,26 +178,37 @@
 - (void)savePDF {
 	NSSavePanel *saveDialog = [NSSavePanel savePanel];
 	[saveDialog setAllowedFileTypes:@[@"pdf"]];
-	[saveDialog setNameFieldStringValue:self.document.fileNameString];
 	
-	[saveDialog beginSheetModalForWindow:self.document.windowControllers[0].window completionHandler:^(NSInteger result) {
-		if (result == NSFileHandlingPanelOKButton) {
-			NSPrintInfo *printInfo = [self.document.printInfo copy];
-			
-			[printInfo.dictionary addEntriesFromDictionary:@{
-															 NSPrintJobDisposition: NSPrintSaveJob,
-															 NSPrintJobSavingURL: saveDialog.URL
-															 }];
-			
-			//NSPrintOperation* printOperation = [NSPrintOperation printOperationWithView:self printInfo:printInfo];
-			NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
-			
-			printOperation.showsPrintPanel = NO;
-			printOperation.showsProgressPanel = YES;
-			
-			[printOperation runOperation];
-		}
-	}];
+	// Default filename when printing a single document
+	if ([self.document isKindOfClass:Document.class]) [saveDialog setNameFieldStringValue:self.document.fileNameString];
+	else [saveDialog setNameFieldStringValue:@"Untitled"];
+	
+	// Display sheet for documents, normal modal for other cases
+	if (self.document.windowControllers.count) {
+		[saveDialog beginSheetModalForWindow:self.document.windowControllers[0].window completionHandler:^(NSInteger result) {
+			if (result == NSFileHandlingPanelOKButton) [self exportPDftoURL:saveDialog.URL];
+		}];
+	} else {
+		NSInteger result = [saveDialog runModal];
+		if (result == NSFileHandlingPanelOKButton) [self exportPDftoURL:saveDialog.URL];
+	}
+}
+- (void)exportPDftoURL:(NSURL*)url {
+	NSPrintInfo *printInfo = [self.document.printInfo copy];
+	
+	[printInfo.dictionary addEntriesFromDictionary:@{
+													 NSPrintJobDisposition: NSPrintSaveJob,
+													 NSPrintJobSavingURL: url
+													 }];
+
+	NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	
+	printOperation.showsPrintPanel = NO;
+	printOperation.showsProgressPanel = YES;
+	
+	[printOperation runOperation];
+	
+	if (_completion) _completion();
 }
 
 - (void)printDocument {
@@ -204,6 +222,7 @@
 		[printOperation runOperation];
 	}
 	
+	if (_completion) _completion();
 }
 
 - (void)createTemporaryPDF {
