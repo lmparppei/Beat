@@ -9,7 +9,7 @@ This started as a personal project as I needed a simple, multi-window, lightweig
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.6
+## Latest release: Beat 1.7
 
 **Features**
 * Minimalistic UI with as little distractions as possible
@@ -18,6 +18,7 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 * Extensive support for Fountain syntax
 * Final Draft import / export
 * Title page editor
+* JavaScript plugin API
 * Super-fast print preview
 * Automatic scene numbering in edit view – with forced scene number recognition
 * Page numbering while editing

@@ -1538,7 +1538,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "INFOPLIST=\"${SRCROOT}/Beat/Supporting Files/Info.plist\"\nversionNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"$INFOPLIST\")\nbuildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST\")\nbuildNumber=$(($buildNumber + 2))\n\nINFOPLIST_SHAREEXT=\"${SRCROOT}/fountainQuickLook/Info.plist\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $versionNumber\" \"$INFOPLIST_SHAREEXT\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_SHAREEXT\"\n";
+			shellScript = "INFOPLIST=\"${SRCROOT}/Beat/Supporting Files/Info.plist\"\nversionNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"$INFOPLIST\")\nbuildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST\")\nbuildNumber=$(($buildNumber + 1))\n\nINFOPLIST_SHAREEXT=\"${SRCROOT}/fountainQuickLook/Info.plist\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $versionNumber\" \"$INFOPLIST_SHAREEXT\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_SHAREEXT\"\n";
 		};
 		B6B6358E2222C8C8003159AF /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
