@@ -47,6 +47,10 @@ Beat is under active development when I have the time -- or rather, desperately 
 
 Beat is ready for Big Sur. You need to allow Beat to run from System Preferences → Security → General. Click on the lock and allow Beat.
 
+### Plugin API
+
+Learn more about writing your own plugins: https://kapitan.fi/beat/plugins/documentation.html
+
 ### iOS Version
 
 Some day. A working prototype exists, but its development is on hiatus right now, as I'm working on my own films and things.  
