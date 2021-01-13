@@ -17,10 +17,18 @@ typedef enum : NSInteger {
 	StandalonePlugin
 } BeatPluginType;
 
+@interface BeatPlugin : NSObject
+@property (nonatomic) NSString* name;
+@property (nonatomic) NSString* script;
+@property (nonatomic) NSArray* files;
+@end
+
 @interface BeatPluginManager : NSObject
 + (BeatPluginManager*)sharedManager;
 - (NSArray*)pluginNames;
 - (NSString*)scriptForPlugin:(NSString*)pluginName;
+- (BeatPlugin*)pluginWithName:(NSString*)name;
+- (NSString*)pathForPlugin:(NSString*)pluginName;
 @end
 
 NS_ASSUME_NONNULL_END

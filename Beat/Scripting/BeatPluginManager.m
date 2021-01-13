@@ -22,10 +22,15 @@
 #import "ApplicationDelegate.h"
 #import "RegExCategories.h"
 
+@implementation BeatPlugin
+
+@end
+
 @interface BeatPluginManager ()
 @property (nonatomic) NSDictionary *plugins;
 @property (nonatomic) NSURL *pluginURL;
 @end
+
 @implementation BeatPluginManager
 
 + (BeatPluginManager*)sharedManager
@@ -76,6 +81,47 @@
 }
 - (NSArray*)pluginNames {
 	return [self.plugins.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+}
+
+- (BeatPlugin*)pluginWithName:(NSString*)name {
+	BeatPlugin *plugin = [[BeatPlugin alloc] init];
+	plugin.name = name;
+	
+	NSString *filename = _plugins[name];
+	
+	// Check if it's a plugin folder
+	BOOL isDir = NO;
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && isDir) {
+		// If it's a plugin folder, we have to append the plugin name AGAIN to the path
+		NSString *path = [filename stringByDeletingLastPathComponent];
+		NSString *file = [NSString stringWithFormat:@"%@/%@", filename.lastPathComponent, filename.lastPathComponent];
+		path = [path stringByAppendingPathComponent:file];
+		plugin.script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+		
+		// Also, read the folder contents and allow file access to the plugin
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		NSArray *files = [fileManager contentsOfDirectoryAtPath:path.stringByDeletingLastPathComponent error:nil];
+		NSMutableArray *pluginFiles = [NSMutableArray array];
+		
+		for (NSString* file in files) {
+			// Don't include the plugin script
+			if ([file.lastPathComponent isEqualTo:name]) continue;;
+			[pluginFiles addObject:file];
+		}
+		plugin.files = [NSArray arrayWithArray:pluginFiles];
+	} else {
+		// Get script
+		plugin.script = [NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:nil];
+	}
+	
+	// Make the script a self-running function
+	plugin.script = [NSString stringWithFormat:@"(function(){ %@ })();", plugin.script];
+
+	return plugin;
+}
+
+- (NSString*)pathForPlugin:(NSString*)pluginName {
+	return _plugins[pluginName];
 }
 
 - (NSString*)scriptForPlugin:(NSString*)pluginName {

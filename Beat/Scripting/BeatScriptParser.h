@@ -6,6 +6,7 @@
 //  Copyright © 2020 KAPITAN!. All rights reserved.
 //
 
+#import "BeatPluginManager.h"
 #import <Foundation/Foundation.h>
 #import "ContinousFountainParser.h"
 #import <JavaScriptCore/JavaScriptCore.h>
@@ -29,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString*)fileToString:(NSString*)path;
 - (NSString*)pdfToString:(NSString*)path;
 - (void)parse;
+- (NSString*)assetAsString:(NSString*)filename;
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
@@ -62,8 +64,7 @@ JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width hei
 @property (weak) id<BeatScriptingDelegate> delegate;
 @property (nonatomic) NSString* pluginName;
 
-- (void)runScript:(NSString*)string withName:(NSString*)name;
-- (void)runScriptWithString:(NSString*)string;
+- (void)runPlugin:(BeatPlugin*)plugin;
 - (void)log:(NSString*)string;
 
 @end

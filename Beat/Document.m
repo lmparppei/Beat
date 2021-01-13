@@ -4939,9 +4939,9 @@ triangle walks
 	
 	NSMenuItem *menuItem = (NSMenuItem*)sender;
 	NSString *pluginName = menuItem.title;
-	
-	NSString *script = [_pluginManager scriptForPlugin:pluginName];
-	[parser runScript:script withName:pluginName];
+
+	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
+	[parser runPlugin:plugin];
 }
 
 @end

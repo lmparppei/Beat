@@ -25,6 +25,7 @@
 #import "Line.h"
 #import "OutlineScene.h"
 #import "ApplicationDelegate.h"
+#import "BeatPluginManager.h"
 #import <PDFKit/PDFKit.h>
 
 @interface BeatScriptParser ()
@@ -33,6 +34,7 @@
 @property (nonatomic) NSWindow *sheet;
 @property (nonatomic) JSValue *sheetCallback;
 @property (nonatomic) WKWebView *sheetWebView;
+@property (nonatomic) BeatPlugin *plugin;
 @end
 
 @implementation BeatScriptParser
@@ -58,6 +60,36 @@
 	
 	return self;
 }
+
+#pragma mark - Running Scripts
+
+- (void)runPlugin:(BeatPlugin*)plugin {
+	self.plugin = plugin;
+	_pluginName = plugin.name;
+	
+	[BeatPluginManager.sharedManager pathForPlugin:plugin.name];
+	
+	[self runScript:plugin.script];
+}
+
+- (void)runScript:(NSString*)string {
+	[self setJSData];
+	
+	JSValue *value = [_context evaluateScript:string];
+	NSLog(@"result %@", value);
+}
+
+
+/*
+if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
+	
+} else {
+	[plugins addObject:filepath];
+}
+*/
+
+
+#pragma mark - File i/o
 
 - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback {
 	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
@@ -100,18 +132,13 @@
 	
 	return result;
 }
-
-- (void)runScript:(NSString*)string withName:(NSString*)name {
-	_pluginName = name;
-	[self runScriptWithString:string];
+- (NSString*)assetAsString:(NSString *)filename {
+	if ([_plugin.files containsObject:filename]) {
+		NSString *path = [[BeatPluginManager.sharedManager pathForPlugin:_plugin.name] stringByAppendingPathComponent:filename];
+		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+	}
+	return @"jee";
 }
-- (void)runScriptWithString:(NSString*)string {
-	[self setJSData];
-	
-	JSValue *value = [_context evaluateScript:string];
-	NSLog(@"result %@", value);
-}
-
 
 #pragma mark - Scripting methods accessible via JS
 

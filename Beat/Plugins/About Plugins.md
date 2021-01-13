@@ -1,6 +1,8 @@
 #  Beat Plugin API
 
-Plugins are written in JavaScript and Beat provides a simple API to interact with the app. Scripting support is at a very early and preliminary stage for now (Dec 2020), but might get better. Best way to learn about plugins is by dwelving into `.beatPlugin` files contained within the Beat source on GitHub. This documentation will be updated when I remember and have the time. 
+Plugins are written in JavaScript and Beat provides a simple API to interact with the app. Scripting support is at a very early and preliminary stage for now (Dec 2020), but might get better. Best way to learn about plugins is by dwelving into `.beatPlugin` files contained within the Beat source on GitHub. This documentation will be updated when I remember and have the time.
+
+A plugin can be either a single file (`Plugin.beatPlugin`) or a folder containing a script by the same name (ie. `Plugin.beatPlugin`. Supporting files contained in the folder can then be access by the plugin. 
 
 If anybody ever writes a plugin, *please, please, please* be nice to people and test your code thoroughly before deploying it. Loss of work hurts and it might be completely possible to crash the whole app with plugin code. I'm doing my best to stay backwards-compatible 
 
@@ -45,7 +47,6 @@ For more elaborate inputs it is wiser to use `Beat.htmlPanel()`.
 
 `Beat.getUserDefault("setting name")` – get a value
 `Beat.setUserDefault("setting name", value)` – save a value
-
 
   
 ## Manipulating the Document
@@ -106,6 +107,12 @@ for (const scene of Beat.scenes()) {
 
 ## Advanced
 
+### Folder-type Plugin
+
+Plugin can be just a single script, but sometimes plugins require supporting files. Place the script inside a folder of the same name, for example `Plugin.beatPlugin/Plugin.beatPlugin`. The plugin can then access files inside its folder using `Beat.assetAsString(filename)`.
+
+`let text = Beat.assetAsString('text.txt')` – get plugin asset as string
+
 ### Import Data
 
 `beat.openFile([extensions], function (filePath) { })` – displays an open dialog for an array of extensions and returns a path to the callback
@@ -118,7 +125,7 @@ for (const scene of Beat.scenes()) {
 
 Displays HTML content with preloaded CSS. You can fetch data from here using two ways. Callback function receives an object, which contains keys `data` and `inputData`. 
 
-You can store an object (***note**: only an object*) in `Beat.data` inside your HTML, which will be returned in the callback. You can also use inputs, just add `rel='beat'` to their attributes. The received object will then contain  `inputData` object, which contains every input with their respective name and value (and `checked` value, too). 
+You can store an object (***note**: only an object*) in `Beat.data` inside your HTML, which will be returned in the callback. You can also use inputs, just add `rel='beat'` to their attributes. The received object will then contain  `inputData` object, which contains every input with their respective name and value (and `checked` value, too).
 
 ```
 Beat.htmlPanel(
@@ -136,6 +143,12 @@ Beat.htmlPanel(
 		*/
 	}
 )
+```
+
+Easiest way to use HTML panels is to create a folder-type plugin containing a template:
+```
+let html = Beat.assetAsString("template.html");
+Beat.htmlPanel(html, 500, 300, null);
 ```
 
 Be careful not to overwrite the `Beat` object inside the page, as it can cause the app to be unresponsive to user. Also, only store **an object** in `Beat.data`. You can add your own CSS alongside the HTML if you so will — the current CSS is still under development. Just remember to add `!important` when needed.

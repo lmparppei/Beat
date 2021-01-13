@@ -408,10 +408,17 @@
                 }
             }
         } else {
-            if (self.print) {
-                [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, (int)pageIndex+1];
+			int pageNumber = (int)pageIndex + 1;
+			// Only print page numbers after first page
+			
+			if (self.print) {
+				if (pageNumber > 1)
+					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, (int)pageIndex+1];
+				else
+					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", header];
             } else {
-                [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
+				if (pageNumber > 1) [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
+				else [body appendFormat:@"<p class='page-break'></p>\n"];
             }
         }
 		
