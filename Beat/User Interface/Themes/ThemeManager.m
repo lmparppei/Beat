@@ -11,6 +11,16 @@
  NOTE:
  This has been rewritten to support macOS dark mode and to NOT support multiple themes.
  
+ NOTE IN 2021:
+ This should be rewritten to support multiple themes again, or at least one local custom theme.
+ Either save it to user preferences or in Application Support folder.
+ 
+ The plist could be modified as so:
+ "Default": { color: [light, dark], color: [light, dark] }
+ 
+ This way the user-made plist or NSUserDefault could be loaded using the same method, with
+ the dict containing both light and dark mode values.
+ 
  */
 
 #import "ThemeManager.h"
@@ -58,13 +68,14 @@
 	_plistContents = [NSDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
 }
 
+/*
 - (NSString*)plistFilePath
 {
     NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
                                                                           NSUserDomainMask,
                                                                           YES);
     NSString* applicationSupportDir = searchPaths[0];
-    NSString* appName = @"Writer";
+    NSString* appName = @"Beat";
     NSString* writerAppSupportDir = [applicationSupportDir stringByAppendingPathComponent:appName];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -74,6 +85,7 @@
     
     return [writerAppSupportDir stringByAppendingPathComponent:@"Themes.plist"];
 }
+*/
 
 - (NSString*)bundlePlistFilePath
 {
@@ -86,6 +98,38 @@
 	[self readTheme];
 	return true;
 }
+
+-(void)readCustomTheme {
+	
+}
+
+-(Theme*)loadTheme:(NSDictionary*)values {
+	// Work for the new theme model
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:values];
+	Theme *theme = [[Theme alloc] init];
+	
+	NSArray *keys = @[@"Background", @"Margin", @"Selection", @"Text", @"InvisibleText", @"Caret", @"Comment", @"OutlineBackground", @"OutlineHighlight"];
+	for (NSString *key in keys) {
+		NSString *light = [NSString stringWithFormat:@"%@ Light", key];
+		NSString *dark = [NSString stringWithFormat:@"%@ Dark", key];
+		if (!dict[dark]) dict[dark] = dict[light];
+	}
+	
+	theme.backgroundColor = [self dynamicColorFromArray:values[@"Background Light"] darkArray:values[@"Background Dark"]];
+	theme.textColor = [self dynamicColorFromArray:values[@"Text Light"] darkArray:values[@"Text Dark"]];
+	theme.marginColor = [self dynamicColorFromArray:values[@"Margin Light"] darkArray:values[@"Margin Dark"]];
+	theme.marginColor = [self dynamicColorFromArray:values[@"Margin Light"] darkArray:values[@"Margin Dark"]];
+	theme.selectionColor = [self dynamicColorFromArray:values[@"Selection Light"] darkArray:values[@"Selection Dark"]];
+	theme.commentColor  = [self dynamicColorFromArray:values[@"Comment Light"] darkArray:values[@"Comment Dark"]];
+	theme.commentColor  = [self dynamicColorFromArray:values[@"InvisibleText Light"] darkArray:values[@"InvisibleText Dark"]];
+	theme.caretColor = [self dynamicColorFromArray:values[@"Caret Light"] darkArray:values[@"Caret Dark"]];
+	
+	theme.outlineBackground = [self dynamicColorFromArray:values[@"OutlineBackground Light"] darkArray:values[@"OutlineBackground Dark"]];
+	theme.outlineHighlight = [self dynamicColorFromArray:values[@"OutlineHighlight Light"] darkArray:values[@"OutlineHighlight Dark"]];
+	
+	return theme;
+}
+
 
 -(void)readTheme {
 	Theme* theme = [[Theme alloc] init];
