@@ -15,8 +15,6 @@
 - (TYPE)PROP { return [self.effectiveColor PROP]; }
 
 @interface DynamicColor ()
-@property (nonatomic, strong) NSColor *aquaColor;
-@property (nonatomic, strong, nullable) NSColor *darkAquaColor;
 @property (nonatomic, strong, readonly) NSColor *effectiveColor;
 @end
 

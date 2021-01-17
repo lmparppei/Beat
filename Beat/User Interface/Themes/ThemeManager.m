@@ -28,7 +28,7 @@
 #import "DynamicColor.h"
 
 @interface ThemeManager ()
-@property (strong, nonatomic) NSMutableArray* themes;
+@property (strong, nonatomic) NSMutableDictionary* themes;
 @property (nonatomic) NSUInteger selectedTheme;
 @property (nonatomic) NSDictionary* plistContents;
 @property (nonatomic) Theme* theme;
@@ -58,9 +58,23 @@
     self = [super init];
     if (self) {
 		[self loadThemeFile];
+		
+		[self loadThemes]; // Groundwork for the new system
+		
 		[self readThemeFile:YES];
     }
     return self;
+}
+-(void)loadThemes {
+	_themes = [NSMutableDictionary dictionary];
+	[self loadThemeFile];
+	
+	for (NSDictionary* theme in self.plistContents) {
+		NSString* name = theme[@"Name"];
+		if ([name isEqualToString:@"Default"]) {
+			[_themes setValue:theme forKey:name];
+		}
+	}
 }
 
 - (void)loadThemeFile
@@ -102,30 +116,32 @@
 -(void)readCustomTheme {
 	
 }
+-(Theme*)defaultTheme {
+	Theme *theme = [self loadTheme:self.themes[@"Default"]];
+	return theme;
+}
 
 -(Theme*)loadTheme:(NSDictionary*)values {
 	// Work for the new theme model
-	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:values];
 	Theme *theme = [[Theme alloc] init];
+
+	NSDictionary *lightTheme = values[@"Light"];
+	NSDictionary *darkTheme = values[@"Dark"];
 	
-	NSArray *keys = @[@"Background", @"Margin", @"Selection", @"Text", @"InvisibleText", @"Caret", @"Comment", @"OutlineBackground", @"OutlineHighlight"];
-	for (NSString *key in keys) {
-		NSString *light = [NSString stringWithFormat:@"%@ Light", key];
-		NSString *dark = [NSString stringWithFormat:@"%@ Dark", key];
-		if (!dict[dark]) dict[dark] = dict[light];
-	}
+	if (!darkTheme.count) darkTheme = lightTheme;
 	
-	theme.backgroundColor = [self dynamicColorFromArray:values[@"Background Light"] darkArray:values[@"Background Dark"]];
-	theme.textColor = [self dynamicColorFromArray:values[@"Text Light"] darkArray:values[@"Text Dark"]];
-	theme.marginColor = [self dynamicColorFromArray:values[@"Margin Light"] darkArray:values[@"Margin Dark"]];
-	theme.marginColor = [self dynamicColorFromArray:values[@"Margin Light"] darkArray:values[@"Margin Dark"]];
-	theme.selectionColor = [self dynamicColorFromArray:values[@"Selection Light"] darkArray:values[@"Selection Dark"]];
-	theme.commentColor  = [self dynamicColorFromArray:values[@"Comment Light"] darkArray:values[@"Comment Dark"]];
-	theme.commentColor  = [self dynamicColorFromArray:values[@"InvisibleText Light"] darkArray:values[@"InvisibleText Dark"]];
-	theme.caretColor = [self dynamicColorFromArray:values[@"Caret Light"] darkArray:values[@"Caret Dark"]];
+	theme.backgroundColor = [self dynamicColorFromArray:lightTheme[@"Background"] darkArray:darkTheme[@"Background"]];
+	theme.textColor = [self dynamicColorFromArray:lightTheme[@"Text"] darkArray:darkTheme[@"Text"]];
+	theme.marginColor = [self dynamicColorFromArray:lightTheme[@"Margin"] darkArray:darkTheme[@"Margin"]];
+	theme.selectionColor = [self dynamicColorFromArray:lightTheme[@"Selection"] darkArray:darkTheme[@"Selection"]];
+	theme.commentColor  = [self dynamicColorFromArray:lightTheme[@"Comment"] darkArray:darkTheme[@"Comment"]];
+	theme.commentColor  = [self dynamicColorFromArray:lightTheme[@"InvisibleText"] darkArray:darkTheme[@"InvisibleText"]];
+	theme.caretColor = [self dynamicColorFromArray:lightTheme[@"Caret"] darkArray:darkTheme[@"Caret"]];
+	theme.synopsisTextColor = [self dynamicColorFromArray:lightTheme[@"SynopsisText"] darkArray:darkTheme[@"SynopsisText"]];
+	theme.sectionTextColor = [self dynamicColorFromArray:lightTheme[@"SectionText"] darkArray:darkTheme[@"SectionText"]];
 	
-	theme.outlineBackground = [self dynamicColorFromArray:values[@"OutlineBackground Light"] darkArray:values[@"OutlineBackground Dark"]];
-	theme.outlineHighlight = [self dynamicColorFromArray:values[@"OutlineHighlight Light"] darkArray:values[@"OutlineHighlight Dark"]];
+	theme.outlineBackground = [self dynamicColorFromArray:darkTheme[@"OutlineBackground"] darkArray:darkTheme[@"OutlineBackground"]];
+	theme.outlineHighlight = [self dynamicColorFromArray:darkTheme[@"OutlineHighlight"] darkArray:darkTheme[@"OutlineHighlight"]];
 	
 	return theme;
 }

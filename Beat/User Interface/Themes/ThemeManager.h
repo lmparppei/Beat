@@ -14,6 +14,8 @@
 
 + (ThemeManager*)sharedManager;
 
+- (Theme*)defaultTheme;
+
 //Access the current theme
 - (Theme*) theme;
 - (DynamicColor*) currentBackgroundColor;
