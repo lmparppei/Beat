@@ -38,13 +38,23 @@
 
 @implementation ThemeEditor
 
+- (instancetype)init {
+	return [super initWithWindowNibName:@"ThemeEditor" owner:self];
+}
+
 - (void)windowDidLoad {
     [super windowDidLoad];
     
 	_themeManager = [ThemeManager sharedManager];
 	[self loadDefaults];
-    // Implement this method to handle any initialization after your window controller's window has been loaded from its nib file.
 }
+- (IBAction)cancel:(id)sender {
+	[self.window close];
+}
+- (IBAction)resetToDefault:(id)sender {
+	[self loadDefaults];
+}
+
 - (void)loadDefaults {
 	Theme *defaultTheme = self.themeManager.defaultTheme;
 	[self loadTheme:defaultTheme];

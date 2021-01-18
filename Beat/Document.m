@@ -117,6 +117,7 @@
 #import "OutlineViewItem.h"
 #import "BeatPaperSizing.h"
 #import "BeatModalInput.h"
+#import "ThemeEditor.h"
 
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
@@ -4942,6 +4943,12 @@ triangle walks
 
 	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
 	[parser runPlugin:plugin];
+}
+
+#pragma mark - Color Customization
+
+- (IBAction)customizeColors:(id)sender {
+	[_themeManager showEditor];
 }
 
 @end

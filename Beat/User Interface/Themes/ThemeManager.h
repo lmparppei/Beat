@@ -9,10 +9,15 @@
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
 #import "Theme.h"
+#import "ThemeEditor.h"
 
 @interface ThemeManager : NSObject
 
+@property (nonatomic) ThemeEditor *themeEditor;
+
 + (ThemeManager*)sharedManager;
+
+- (void)showEditor;
 
 - (Theme*)defaultTheme;
 

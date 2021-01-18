@@ -24,13 +24,16 @@
  */
 
 #import "ThemeManager.h"
+#import "ThemeEditor.h"
 #import "Theme.h"
 #import "DynamicColor.h"
+#import "ApplicationDelegate.h"
 
 @interface ThemeManager ()
 @property (strong, nonatomic) NSMutableDictionary* themes;
 @property (nonatomic) NSUInteger selectedTheme;
 @property (nonatomic) NSDictionary* plistContents;
+@property (nonatomic) NSDictionary* customPlistContents;
 @property (nonatomic) Theme* theme;
 
 @property (strong, nonatomic) Theme* fallbackTheme;
@@ -41,6 +44,10 @@
 #define VERSION_KEY @"version"
 #define SELECTED_THEME_KEY @"selectedTheme"
 #define THEMES_KEY @"themes"
+#define USER_THEME_FILE @"Custom Colors.plist"
+
+#define DEFAULT_KEY @"Default"
+#define CUSTOM_KEY @"Custom"
 
 #pragma mark File Loading
 
@@ -57,11 +64,8 @@
 {
     self = [super init];
     if (self) {
-		[self loadThemeFile];
-		
-		[self loadThemes]; // Groundwork for the new system
-		
-		[self readThemeFile:YES];
+		[self loadThemes];
+		[self readTheme];
     }
     return self;
 }
@@ -69,17 +73,38 @@
 	_themes = [NSMutableDictionary dictionary];
 	[self loadThemeFile];
 	
-	for (NSDictionary* theme in self.plistContents) {
+	for (NSDictionary* theme in self.plistContents[THEMES_KEY]) {
 		NSString* name = theme[@"Name"];
-		if ([name isEqualToString:@"Default"]) {
-			[_themes setValue:theme forKey:name];
-		}
+		[_themes setValue:theme forKey:name];
 	}
 }
 
 - (void)loadThemeFile
 {
-	_plistContents = [NSDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
+	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
+		
+	// Read user-created theme file
+	NSURL *userUrl = [(ApplicationDelegate*)NSApp.delegate appDataPath:@""];
+	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
+	
+	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
+	if (customPlist) {
+		NSDictionary *themes = contents[THEMES_KEY];
+		[themes setValue:customPlist forKey:CUSTOM_KEY];
+	}
+	
+	_plistContents = contents;
+}
+
+- (void)saveCustomTheme
+{
+	NSURL *userUrl = [(ApplicationDelegate*)NSApp.delegate appDataPath:@""];
+	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
+	
+	NSDictionary *customTheme = _themes[@"Custom"];
+	if (!customTheme) customTheme = [NSDictionary dictionary];
+	
+	[customTheme writeToFile:userUrl.path atomically:NO];
 }
 
 /*
@@ -107,12 +132,6 @@
                                     ofType:@"plist"];
 }
 
-- (BOOL)readThemeFile:(BOOL)continueOnError
-{
-	[self readTheme];
-	return true;
-}
-
 -(void)readCustomTheme {
 	
 }
@@ -128,6 +147,7 @@
 	NSDictionary *lightTheme = values[@"Light"];
 	NSDictionary *darkTheme = values[@"Dark"];
 	
+	// Fall back to light theme if no dark settings are available
 	if (!darkTheme.count) darkTheme = lightTheme;
 	
 	theme.backgroundColor = [self dynamicColorFromArray:lightTheme[@"Background"] darkArray:darkTheme[@"Background"]];
@@ -135,7 +155,7 @@
 	theme.marginColor = [self dynamicColorFromArray:lightTheme[@"Margin"] darkArray:darkTheme[@"Margin"]];
 	theme.selectionColor = [self dynamicColorFromArray:lightTheme[@"Selection"] darkArray:darkTheme[@"Selection"]];
 	theme.commentColor  = [self dynamicColorFromArray:lightTheme[@"Comment"] darkArray:darkTheme[@"Comment"]];
-	theme.commentColor  = [self dynamicColorFromArray:lightTheme[@"InvisibleText"] darkArray:darkTheme[@"InvisibleText"]];
+	theme.invisibleTextColor  = [self dynamicColorFromArray:lightTheme[@"InvisibleText"] darkArray:darkTheme[@"InvisibleText"]];
 	theme.caretColor = [self dynamicColorFromArray:lightTheme[@"Caret"] darkArray:darkTheme[@"Caret"]];
 	theme.synopsisTextColor = [self dynamicColorFromArray:lightTheme[@"SynopsisText"] darkArray:darkTheme[@"SynopsisText"]];
 	theme.sectionTextColor = [self dynamicColorFromArray:lightTheme[@"SectionText"] darkArray:darkTheme[@"SectionText"]];
@@ -148,49 +168,12 @@
 
 
 -(void)readTheme {
-	Theme* theme = [[Theme alloc] init];
-	NSArray* themes = [_plistContents objectForKey:THEMES_KEY];
-	
-	NSArray* backgroundValuesLight = [[themes objectAtIndex:0] objectForKey:@"Background"];
-	NSArray* backgroundValuesDark = [[themes objectAtIndex:1] objectForKey:@"Background"];
-	
-	NSArray* marginValuesLight = [[themes objectAtIndex:0] objectForKey:@"Margin"];
-	NSArray* marginValuesDark = [[themes objectAtIndex:1] objectForKey:@"Margin"];
-	
-	NSArray* selectionValuesLight = [[themes objectAtIndex:0] objectForKey:@"Selection"];
-	NSArray* selectionValuesDark = [[themes objectAtIndex:1] objectForKey:@"Selection"];
-	
-	NSArray* textValuesLight = [[themes objectAtIndex:0] objectForKey:@"Text"];
-	NSArray* textValuesDark = [[themes objectAtIndex:1] objectForKey:@"Text"];
-	
-	NSArray* invisibleTextValuesLight = [[themes objectAtIndex:0] objectForKey:@"InvisibleText"];
-	NSArray* invisibleTextValuesDark = [[themes objectAtIndex:1] objectForKey:@"InvisibleText"];
-	
-	NSArray* caretValuesLight = [[themes objectAtIndex:0] objectForKey:@"Caret"];
-	NSArray* caretValuesDark = [[themes objectAtIndex:1] objectForKey:@"Caret"];
-	
-	NSArray* commentValuesLight =  [[themes objectAtIndex:0] objectForKey:@"Comment"];
-	NSArray* commentValuesDark =  [[themes objectAtIndex:1] objectForKey:@"Comment"];
-
-	NSArray* outlineBackgroundLight =  [[themes objectAtIndex:0] objectForKey:@"OutlineBackground"];
-	NSArray* outlineBackgroundDark =  [[themes objectAtIndex:1] objectForKey:@"OutlineBackground"];
-	
-	NSArray* outlineHighlightLight =  [[themes objectAtIndex:0] objectForKey:@"OutlineHighlight"];
-	NSArray* outlineHighlightDark =  [[themes objectAtIndex:1] objectForKey:@"OutlineHighlight"];
-
-	theme.backgroundColor = [self dynamicColorFromArray:backgroundValuesLight darkArray:backgroundValuesDark];
-	theme.textColor = [self dynamicColorFromArray:textValuesLight darkArray:textValuesDark];
-	theme.selectionColor = [self dynamicColorFromArray:selectionValuesLight darkArray:selectionValuesDark];
-	theme.invisibleTextColor = [self dynamicColorFromArray:invisibleTextValuesLight darkArray:invisibleTextValuesDark];
-	theme.caretColor = [self dynamicColorFromArray:caretValuesLight darkArray:caretValuesDark];
-	theme.commentColor = [self dynamicColorFromArray:commentValuesLight darkArray:commentValuesDark];
-	theme.marginColor = [self dynamicColorFromArray:marginValuesLight darkArray:marginValuesDark];
-
-	// Outline settings
-	theme.outlineBackground = [self dynamicColorFromArray:outlineBackgroundLight darkArray:outlineBackgroundDark];
-	theme.outlineHighlight =  [self dynamicColorFromArray:outlineHighlightLight darkArray:outlineHighlightDark];
-	
-	_theme = theme;
+	// If there is a customized color scheme, apply it
+	if (_themes[CUSTOM_KEY]) {
+		_theme = [self loadTheme:_themes[CUSTOM_KEY]];
+	} else {
+		_theme = [self loadTheme:_themes[DEFAULT_KEY]];
+	}
 }
 
 - (NSColor*)colorFromArray:(NSArray*)array
@@ -283,6 +266,15 @@
 - (DynamicColor*)currentOutlineBackground
 {
 	return _theme.outlineBackground;
+}
+
+#pragma mark - Show Editor
+
+- (void)showEditor {
+	if (!self.themeEditor) {
+		_themeEditor = [[ThemeEditor alloc] init];
+	}
+	[_themeEditor showWindow:_themeEditor.window];
 }
 
 @end
