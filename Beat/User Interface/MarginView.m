@@ -27,7 +27,7 @@
 	 
 	 // Draw margins if they don't fall outsid(e/ish) the viewport
 	 if (self.frame.size.width > 800) {
-		 [_marginColor setFill];
+		 [self.marginColor setFill];
 		 
 		 CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel;
 		 

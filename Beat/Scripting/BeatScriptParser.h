@@ -12,7 +12,6 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatScriptingExports <JSExport>
 - (void)log:(NSString*)string;
@@ -68,5 +67,3 @@ JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width hei
 - (void)log:(NSString*)string;
 
 @end
-
-NS_ASSUME_NONNULL_END

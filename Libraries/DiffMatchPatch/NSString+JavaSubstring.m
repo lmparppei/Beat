@@ -28,7 +28,7 @@
 - (NSString *)diff_javaSubstringFromStart:(NSUInteger)start toEnd:(NSUInteger)end;
 {
   CFStringRef c = diff_CFStringCreateJavaSubstring((__bridge CFStringRef)self, (CFIndex)start, (CFIndex)end);
-  return (__bridge NSString *)c;
+  return (__bridge_transfer NSString *)c;
 }
 
 @end

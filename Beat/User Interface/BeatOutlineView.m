@@ -7,6 +7,7 @@
 //
 
 #import "BeatOutlineView.h"
+#import "ThemeManager.h"
 
 @implementation BeatOutlineView
 
@@ -19,8 +20,8 @@
 	if (self.currentScene != NSNotFound) {
 		NSRect rect = [self rectOfRow:self.currentScene];
 		
-		NSColor* fillColor = NSColor.grayColor;
-		fillColor = [fillColor colorWithAlphaComponent:0.4];
+		NSColor* fillColor = [[ThemeManager sharedManager] currentOutlineHighlight];
+		//fillColor = [fillColor colorWithAlphaComponent:0.4];
 		[fillColor setFill];
 		
 		NSRectFill(rect);

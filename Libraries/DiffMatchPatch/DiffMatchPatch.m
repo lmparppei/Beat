@@ -435,7 +435,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
 - (NSArray *)diff_halfMatchOfFirstString:(NSString *)text1
                          andSecondString:(NSString *)text2;
 {
-	return (__bridge NSArray *)diff_halfMatchCreate((__bridge CFStringRef)text1, (__bridge CFStringRef)text2, Diff_Timeout);
+	return (__bridge_transfer NSArray *)diff_halfMatchCreate((__bridge CFStringRef)text1, (__bridge CFStringRef)text2, Diff_Timeout);
 }
 
 /**
@@ -452,7 +452,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
                           andShortString:(NSString *)shorttext
                                    index:(NSInteger)index;
 {
-  return ((__bridge  NSArray *)diff_halfMatchICreate((__bridge CFStringRef)longtext, (__bridge CFStringRef)shorttext, (CFIndex)index));
+  return ((__bridge_transfer NSArray *)diff_halfMatchICreate((__bridge CFStringRef)longtext, (__bridge CFStringRef)shorttext, (CFIndex)index));
 }
 
 /**
@@ -506,7 +506,7 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   }
 
   // Check to see if the problem can be split in two.
-  NSArray *hm = (__bridge NSArray *)diff_halfMatchCreate((__bridge CFStringRef)text1, (__bridge CFStringRef)text2, Diff_Timeout);
+  NSArray *hm = (__bridge_transfer NSArray *)diff_halfMatchCreate((__bridge CFStringRef)text1, (__bridge CFStringRef)text2, Diff_Timeout);
   if (hm != nil) {
     // A half-match was found, sort out the return data.
     NSString *text1_a = [hm objectAtIndex:0];
@@ -825,11 +825,11 @@ void splice(NSMutableArray *input, NSUInteger start, NSUInteger count, NSArray *
   [lineArray addObject:@""];
 
   // Allocate 2/3rds of the space for text1, the rest for text2.
-  NSString *chars1 = (__bridge NSString *)diff_linesToCharsMungeCFStringCreate((__bridge CFStringRef)text1,
+  NSString *chars1 = (__bridge_transfer NSString *)diff_linesToCharsMungeCFStringCreate((__bridge CFStringRef)text1,
                                                                       (__bridge CFMutableArrayRef)lineArray,
                                                                       (__bridge CFMutableDictionaryRef)lineHash,
                                                                       40000);
-  NSString *chars2 = (__bridge NSString *)diff_linesToCharsMungeCFStringCreate((__bridge CFStringRef)text2,
+  NSString *chars2 = (__bridge_transfer NSString *)diff_linesToCharsMungeCFStringCreate((__bridge CFStringRef)text2,
                                                                       (__bridge CFMutableArrayRef)lineArray,
                                                                       (__bridge CFMutableDictionaryRef)lineHash,
                                                                       65535);

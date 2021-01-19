@@ -47,12 +47,6 @@
 	// Read contents into file and then parse into FNHTMLScript
 	NSError *error;
 	NSString *file = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
-
-
-	CGFloat width = self.view.frame.size.width;
-	bool smallView = NO;
-	if (width < 400) smallView = YES;
-
 	
 	if (!error) {
 		BeatPreview *preview = [[BeatPreview alloc] initWithDocument:nil];

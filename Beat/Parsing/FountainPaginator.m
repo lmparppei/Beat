@@ -1085,11 +1085,6 @@ That you have escaped.
 		index = NSMaxRange(lineRange);
 	}
 	
-	// calculate the height
-	NSInteger l = string.length;
-	if (l > 30) string = [string substringToIndex:29];
-	
-	//NSLog(@"%@", string);
 	//NSLog(@"-> number of lines: %lu", numberOfLines);
 	
 	return numberOfLines * lineHeight;

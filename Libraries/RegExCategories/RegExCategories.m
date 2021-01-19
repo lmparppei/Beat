@@ -123,9 +123,10 @@
 		for (NSString *key in matches) {
 			NSInteger groupNumber = [[key substringFromIndex:1] integerValue];
 			RxMatchGroup *group = match.groups[groupNumber];
-			replacement = [replacement stringByReplacingOccurrencesOfString:key withString:group.value];
+			if (group.value) replacement = [replacement stringByReplacingOccurrencesOfString:key withString:group.value];
 		}
-
+		
+		if (!master.value) return string;
 		return [string stringByReplacingOccurrencesOfString:master.value withString:replacement];
 	}
 	

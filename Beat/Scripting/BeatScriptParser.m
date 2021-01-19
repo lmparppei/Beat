@@ -121,7 +121,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	NSMutableString *result = [NSMutableString string];
 	
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:[NSURL fileURLWithPath:path]];
-	if (!doc) return nil;
+	if (!doc) return @"";
 	
 	for (int i = 0; i < doc.pageCount; i++) {
 		PDFPage *page = [doc pageAtIndex:i];
@@ -225,7 +225,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	
 	NSRect frame = NSMakeRect(0, 0, 300, 24);
 	NSTextField *inputField = [[NSTextField alloc] initWithFrame:frame];
-	inputField.placeholderString = defaultText;
+	inputField.placeholderString = placeholder;
 	[alert setAccessoryView:inputField];
 	[inputField setStringValue:defaultText];
 	

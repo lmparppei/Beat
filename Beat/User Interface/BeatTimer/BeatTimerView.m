@@ -36,8 +36,9 @@
 		_shapeLayer.lineWidth = 3;
 		_shapeLayer.strokeColor = [[BeatColors color:@"blue"] CGColor];
 		_shapeLayer.fillColor = nil;
-		[_shapeLayer setPath:path];
+		_shapeLayer.path = path;
 		self.layer = _shapeLayer;
+		CGPathRelease(path);
 	}
 	
 	if (!_finished) {

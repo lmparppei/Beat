@@ -374,8 +374,6 @@
 	
 	_numberOfPages = maxPages;
 
-	bool pageBreak = false;
-	
 	NSString *header = (self.header) ? self.header : @"";
 	
     for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
@@ -388,8 +386,7 @@
 		int elementCount = 0;
 		
 		
-		
-        if (self.customPage) {
+        if (self.customPage != nil) {
             if ([self.customPage integerValue] == 0) {
 				if (self.print) {
 					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", header];
@@ -449,7 +446,6 @@
 					isLyrics = false;
 				}
 				
-				pageBreak = true;
                 continue;
             }
 			
@@ -559,7 +555,7 @@
 			
 			elementCount++;
         }
-		//if (!pageBreak) [body appendFormat:@"</section>"];
+
 		[body appendFormat:@"</section>"];
     }
 	

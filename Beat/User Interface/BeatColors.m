@@ -51,7 +51,7 @@
 			return [BeatColors colorWithHexColorString:hexColor];
 		}
 		
-		return nil;
+		return NSColor.blackColor;
 	}
 
 }

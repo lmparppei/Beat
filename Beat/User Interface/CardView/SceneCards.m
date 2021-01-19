@@ -31,12 +31,11 @@
 @implementation SceneCards
 
 - (instancetype) initWithWebView:(WKWebView *)webView {
-	_cardView = webView;
-	_webPrinter = [[WebPrinter alloc] init];
-	// BTW, we need to retain the webPrinter in memory, because it acts as delegate and ARC seems to remove references to its properties, causing a crash. Remember to release if needed.
-	
+	self = [super init];
+	self.cardView = webView;
+	self.webPrinter = [[WebPrinter alloc] init];
 	[self screenView];
-	return [super init];
+	return self;
 }
 
 - (void) screenView {

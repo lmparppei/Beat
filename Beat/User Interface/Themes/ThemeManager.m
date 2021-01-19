@@ -28,13 +28,13 @@
 #import "Theme.h"
 #import "DynamicColor.h"
 #import "ApplicationDelegate.h"
+#import "Document.h"
 
 @interface ThemeManager ()
 @property (strong, nonatomic) NSMutableDictionary* themes;
 @property (nonatomic) NSUInteger selectedTheme;
 @property (nonatomic) NSDictionary* plistContents;
 @property (nonatomic) NSDictionary* customPlistContents;
-@property (nonatomic) Theme* theme;
 
 @property (strong, nonatomic) Theme* fallbackTheme;
 @end
@@ -136,8 +136,11 @@
 	
 }
 -(Theme*)defaultTheme {
-	Theme *theme = [self loadTheme:self.themes[@"Default"]];
+	Theme *theme = [self loadTheme:self.themes[DEFAULT_KEY]];
 	return theme;
+}
+-(void)resetToDefault {
+	_theme = [self loadTheme:self.themes[DEFAULT_KEY]];
 }
 
 -(Theme*)loadTheme:(NSDictionary*)values {
@@ -157,11 +160,14 @@
 	theme.commentColor  = [self dynamicColorFromArray:lightTheme[@"Comment"] darkArray:darkTheme[@"Comment"]];
 	theme.invisibleTextColor  = [self dynamicColorFromArray:lightTheme[@"InvisibleText"] darkArray:darkTheme[@"InvisibleText"]];
 	theme.caretColor = [self dynamicColorFromArray:lightTheme[@"Caret"] darkArray:darkTheme[@"Caret"]];
+	theme.pageNumberColor = [self dynamicColorFromArray:lightTheme[@"PageNumber"] darkArray:darkTheme[@"PageNumber"]];
+	
 	theme.synopsisTextColor = [self dynamicColorFromArray:lightTheme[@"SynopsisText"] darkArray:darkTheme[@"SynopsisText"]];
 	theme.sectionTextColor = [self dynamicColorFromArray:lightTheme[@"SectionText"] darkArray:darkTheme[@"SectionText"]];
 	
 	theme.outlineBackground = [self dynamicColorFromArray:darkTheme[@"OutlineBackground"] darkArray:darkTheme[@"OutlineBackground"]];
 	theme.outlineHighlight = [self dynamicColorFromArray:darkTheme[@"OutlineHighlight"] darkArray:darkTheme[@"OutlineHighlight"]];
+	NSLog(@"outlineh %@", theme.outlineHighlight);
 	
 	return theme;
 }
@@ -219,6 +225,20 @@
 	return _theme;
 }
 
+- (DynamicColor*)backgroundColor { return _theme.backgroundColor; }
+- (DynamicColor*)marginColor { return _theme.marginColor; }
+- (DynamicColor*)selectionColor { return _theme.selectionColor; }
+- (DynamicColor*)textColor { return _theme.textColor; }
+- (DynamicColor*)invisibleTextColor { return _theme.invisibleTextColor; }
+- (DynamicColor*)caretColor { return _theme.caretColor; }
+- (DynamicColor*)commentColor { return _theme.commentColor; }
+- (DynamicColor*)outlineHighlight { return _theme.outlineHighlight; }
+- (DynamicColor*)outlineBackground { return _theme.outlineBackground; }
+- (DynamicColor*)pageNumberColor { return _theme.pageNumberColor; }
+- (DynamicColor*)sectionTextColor { return _theme.sectionTextColor; }
+- (DynamicColor*)synopsisTextColor { return _theme.synopsisTextColor; }
+
+
 - (DynamicColor*)currentBackgroundColor
 {
 	return _theme.backgroundColor;
@@ -268,6 +288,11 @@
 	return _theme.outlineBackground;
 }
 
+- (DynamicColor*)currentPageNumberColor
+{
+	return _theme.pageNumberColor;
+}
+
 #pragma mark - Show Editor
 
 - (void)showEditor {
@@ -275,6 +300,17 @@
 		_themeEditor = [[ThemeEditor alloc] init];
 	}
 	[_themeEditor showWindow:_themeEditor.window];
+}
+
+#pragma mark - Load selected theme for ALL documents
+
+- (void)loadThemeForAllDocuments
+{
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	
+	for (Document* doc in openDocuments) {
+		[doc updateTheme];
+	}
 }
 
 @end

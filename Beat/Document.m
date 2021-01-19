@@ -514,7 +514,7 @@
 	}
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_PAGENUMBERS_KEY]) {
-		self.showPageNumbers = NO;
+		self.showPageNumbers = YES;
 	} else {
 		self.showPageNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
 	}
@@ -1829,16 +1829,9 @@
 	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
 	NSInteger index = 0;
 	
-	Line* preceedingLine;
-	Line* lineBeforeThat;
-		
 	for (Line* line in self.parser.lines) {
 		[self formatLineOfScreenplay:line onlyFormatFont:NO recursive:YES firstTime:NO];
 		index++;
-		
-		// Set preceeding lines
-		lineBeforeThat = preceedingLine;
-		preceedingLine = line;
 	}
 	[_parser.changedIndices removeAllObjects];
 }
@@ -3174,6 +3167,15 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (IBAction)toggleNightMode:(id)sender {
 	[(ApplicationDelegate *)[NSApp delegate] toggleDarkMode];
 	
+	[self updateUIColors];
+	
+	[self.textView toggleDarkPopup:nil];
+	_darkPopup = [self isDark];
+}
+- (bool)isDark {
+	return [(ApplicationDelegate *)[NSApp delegate] isDark];
+}
+- (void)updateUIColors {
 	[self.thisWindow setViewsNeedDisplay:true];
 	
 	[self.masterView setNeedsDisplayInRect:[_masterView frame]];
@@ -3182,7 +3184,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self.textScrollView setNeedsDisplay:true];
 	[self.marginView setNeedsDisplay:true];
 	
-	[[self.textView layoutManager] ensureLayoutForTextContainer:[self.textView textContainer]];
+	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
 	[self.textView setNeedsDisplay:true];
 	
@@ -3192,12 +3194,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 	
 	if (_outlineViewVisible) [self.outlineView setNeedsDisplay:YES];
-	
-	[self.textView toggleDarkPopup:nil];
-	_darkPopup = [self isDark];
-}
-- (bool)isDark {
-	return [(ApplicationDelegate *)[NSApp delegate] isDark];
 }
 
 // Typewriter mode
@@ -3274,6 +3270,32 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 // Some weirdness because of the Writer legacy. Writer had real themes, and this function loaded the selected theme for every open window. We only have day/night, but the method names remain.
 // WIP: Rename, conform + stylize this part
+- (void)updateTheme {
+	[self setThemeFor:self setTextColor:NO];
+}
+- (void)setThemeFor:(Document*)doc setTextColor:(bool)setTextColor {
+	if (!doc) doc = self;
+	
+	[doc.textView setMarginColor:[self.themeManager currentMarginColor]];
+	
+	[doc.textView setSelectedTextAttributes:@{
+										  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
+										  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
+	}];
+	
+	if (setTextColor) [doc.textView setTextColor:[self.themeManager currentTextColor]];
+	[doc.textView setInsertionPointColor:[self.themeManager currentCaretColor]];
+			
+	// Set global background
+	doc.backgroundView.fillColor = self.themeManager.currentOutlineBackground;
+	//_outlineView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleSourceList;
+	
+	// Margins are drawn in a separate view
+	doc.marginView.backgroundColor = self.themeManager.currentBackgroundColor;
+	doc.marginView.marginColor = self.themeManager.currentMarginColor;
+	
+	[doc updateUIColors];
+}
 - (void)loadSelectedTheme:(bool)forAll
 {
 	NSArray* openDocuments;
@@ -3282,26 +3304,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	else openDocuments = @[self];
 	
     for (Document* doc in openDocuments) {
-        BeatTextView *textView = doc.textView;
-		
-		// Set textView stuff
-		[textView setBackgroundColor:[self.themeManager currentBackgroundColor]];
-		[doc.textScrollView setMarginColor:[self.themeManager currentMarginColor]];
-		[doc.textView setMarginColor:[self.themeManager currentMarginColor]];
-        [textView setSelectedTextAttributes:@{
-											  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
-											  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
-		}];
-        [textView setTextColor:[self.themeManager currentTextColor]];
-        [textView setInsertionPointColor:[self.themeManager currentCaretColor]];
-				
-		// Set global background
-		doc.backgroundView.fillColor = self.themeManager.theme.outlineBackground;
-		//_outlineView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleSourceList;
-		
-		// Margins are drawn in a separate view
-		doc.marginView.backgroundColor = self.themeManager.theme.backgroundColor;
-		doc.marginView.marginColor = self.themeManager.theme.marginColor;
+		[self setThemeFor:doc setTextColor:YES];
     }
 }
 
@@ -3585,9 +3588,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 	// On to the very dangerous stuff :-) fuck me :----)
 	NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
 	
-	NSRange newRange;
+	
 	
 	// Different ranges depending on to which direction the scene was moved
+	/*
+	NSRange newRange;
 	if (from < to) {
 		if (!moveToEnd) {
 			newRange = NSMakeRange(sceneAfter.sceneStart - sceneToMove.sceneLength, 0);
@@ -3597,6 +3602,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	} else {
 		newRange = NSMakeRange(sceneAfter.sceneStart, 0);
 	}
+	 */
 
 	// We move the string itself in an easily undoable method
 	//[self moveString:textToMove withRange:range newRange:newRange];
@@ -4485,7 +4491,6 @@ triangle walks
 
 - (NSArray*)onlyPrintableElements:(NSArray*)lines {
 	NSMutableArray *result = [NSMutableArray array];
-	Line* previousLine;
 	
 	bool hasDualDialogue = NO;
 	for (Line* line in lines) {
@@ -4493,7 +4498,6 @@ triangle walks
 		if (line.type != empty && !line.omited) {
 			[result addObject:[line clone]];
 			if (line.type == dualDialogueCharacter) hasDualDialogue = YES;
-			previousLine = line;
 		}
 	}
 	

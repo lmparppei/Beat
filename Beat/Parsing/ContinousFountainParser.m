@@ -522,7 +522,7 @@
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position
 {
 	// First check the line we edited last
-	bool wouldReturnMatch = NO;
+	//bool wouldReturnMatch = NO;
 	NSUInteger match = -1;
 	
 	if (_lastEditedLine) {
@@ -530,7 +530,7 @@
 			position < _lastEditedLine.string.length + _lastEditedLine.position) {
 			match = [self.lines indexOfObject:_lastEditedLine] - 1;
 			if (match < self.lines.count && match >= 0) {
-				wouldReturnMatch = YES;
+				//wouldReturnMatch = YES;
 				return match;
 			}
 		}
@@ -1627,7 +1627,6 @@ and incomprehensible system of recursion.
 	if (!lines) lines = self.lines;
 	
 	NSMutableArray *elements = [NSMutableArray array];
-	Line *previousLine;
 	
 	NSInteger sceneNumber = 1;
 	if (self.delegate) {
@@ -1638,7 +1637,6 @@ and incomprehensible system of recursion.
 	for (Line *line in lines) {
 		// Skip over certain elements
 		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
-			if (line.type == empty) previousLine = line;
 			continue;
 		}
 		
@@ -1674,7 +1672,6 @@ and incomprehensible system of recursion.
 		// Remove misinterpreted dialogue
 		if (line.type == dialogue && line.string.length < 1) {
 			line.type = empty;
-			previousLine = line;
 			continue;
 		}
 
@@ -1683,7 +1680,6 @@ and incomprehensible system of recursion.
 		// If this is dual dialogue character cue,
 		// we need to search for the previous one too, just in cae
 		if (line.isDualDialogueElement) {
-			bool previousCharacterFound = NO;
 			NSInteger i = elements.count - 2; // Go for previous element
 			while (i > 0) {
 				Line *previousLine = [elements objectAtIndex:i];
@@ -1692,14 +1688,11 @@ and incomprehensible system of recursion.
 				
 				if (previousLine.type == character ) {
 					previousLine.nextElementIsDualDialogue = YES;
-					previousCharacterFound = YES;
 					break;
 				}
 				i--;
 			}
 		}
-		
-		previousLine = line;
 	}
 	
 	return elements;

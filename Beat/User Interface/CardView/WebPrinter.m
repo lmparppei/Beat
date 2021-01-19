@@ -48,10 +48,13 @@
 		
         sender.frameLoadDelegate = nil;
 
+		/*
         NSWindow *window = NSApp.mainWindow;
         if (!window) {
             window = NSApp.windows.firstObject;
         }
+		 */
+		
 		NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.frameView.documentView printInfo:printInfo];
 		[printOperation runOperation];
 		//NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.webView printInfo:_printInfo];

@@ -492,6 +492,7 @@ CFStringRef diff_linesToCharsMungeCFStringCreate(CFStringRef text, CFMutableArra
         // Bail out at 65535 because char 65536 == char 0.
         line = diff_CFStringCreateJavaSubstring(text, lineStart, textLength);
         lineEnd = textLength;
+		CFRelease(text);
       }
       CFArrayAppendValue(lineArray, line);
       hash = CFArrayGetCount(lineArray) - 1;

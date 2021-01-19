@@ -73,4 +73,7 @@ THE SOFTWARE.
 - (IBAction)forceCharacter:(id)sender;
 - (OutlineScene*)getCurrentScene;
 
+// Set document colors
+- (void)updateTheme;
+
 @end

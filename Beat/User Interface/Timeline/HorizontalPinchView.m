@@ -40,7 +40,6 @@
 	CGFloat locationInView;
 	
 	if (_timeline.playheadPosition > 0) {
-		locationInScrollView = _timeline.playheadPosition;
 		locationNormalized = _timeline.playheadPosition / self.documentView.frame.size.width;
 		locationInView = self.frame.size.width / 2;
 	} else {

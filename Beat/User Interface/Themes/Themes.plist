@@ -37,6 +37,12 @@
 					<integer>45</integer>
 					<integer>45</integer>
 				</array>
+				<key>PageNumber</key>
+				<array>
+					<integer>80</integer>
+					<integer>80</integer>
+					<integer>80</integer>
+				</array>
 				<key>InvisibleText</key>
 				<array>
 					<integer>170</integer>
@@ -63,9 +69,9 @@
 				</array>
 				<key>OutlineHighlight</key>
 				<array>
-					<integer>230</integer>
-					<integer>230</integer>
-					<integer>230</integer>
+					<integer>50</integer>
+					<integer>50</integer>
+					<integer>50</integer>
 				</array>
 			</dict>
 			<key>Dark</key>
@@ -120,9 +126,15 @@
 				</array>
 				<key>OutlineHighlight</key>
 				<array>
-					<integer>200</integer>
-					<integer>200</integer>
-					<integer>200</integer>
+					<integer>50</integer>
+					<integer>50</integer>
+					<integer>50</integer>
+				</array>
+				<key>PageNumber</key>
+				<array>
+					<integer>80</integer>
+					<integer>80</integer>
+					<integer>80</integer>
 				</array>
 			</dict>
 		</dict>

@@ -90,12 +90,15 @@
 	_backgroundColor = [BeatColors color:@"backgroundGray"];
 		
 	// Setup playhead
+	CGPathRef path = CGPathCreateWithRect(CGRectMake(1, 1, 1, self.frame.size.height), nil);
 	_playhead = [CAShapeLayer layer];
 	_playhead.bounds = CGRectMake(1, 1, 1, self.frame.size.height);
 	_playhead.fillColor = NSColor.redColor.CGColor;
-	_playhead.path = CGPathCreateWithRect(CGRectMake(1, 1, 1, self.frame.size.height), nil);
+	_playhead.path = path;
 	_playhead.lineWidth = 3;
 	_playhead.position = CGPointMake(-5, self.frame.size.height / 2);
+	
+	CGPathRelease(path);
 	
 	[self.layer addSublayer:_playhead];
 	
@@ -151,9 +154,7 @@
 		_totalLength = 0;
 		_hasSections = NO;
 		NSInteger scenes = 0;
-		
-		bool hasStorylines = NO;
-		
+				
 		_currentScene = self.delegate.currentScene;
 		NSInteger storylineBlocks = 0;
 		
@@ -166,7 +167,6 @@
 			if (scene.type == heading) _totalLength += scene.timeLength;
 			if (scene.type == section) _hasSections = YES;
 			if (scene.storylines.count) {
-				hasStorylines = YES;
 				NSMutableSet *storylines = [NSMutableSet setWithArray:scene.storylines];
 				[storylines intersectSet:[NSSet setWithArray:_visibleStorylines]];
 				storylineBlocks += storylines.count;
@@ -418,9 +418,11 @@
 }
 
 - (void)movePlayhead:(NSRect)selectionRect {
+	CGPathRef path = CGPathCreateWithRect(CGRectMake(0, 0, 1, self.frame.size.height), nil);
 	_playhead.bounds = CGRectMake(0, 0, 1, self.frame.size.height);
-	_playhead.path = CGPathCreateWithRect(CGRectMake(0, 0, 1, self.frame.size.height), nil);
+	_playhead.path = path;
 	_playhead.position = CGPointMake(selectionRect.origin.x, self.frame.size.height / 2);
+	CGPathRelease(path);
 }
 
 - (CGFloat)playheadPosition {

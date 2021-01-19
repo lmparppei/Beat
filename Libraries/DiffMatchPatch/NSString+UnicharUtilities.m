@@ -27,7 +27,7 @@
 + (NSString *)diff_stringFromUnichar:(unichar)ch;
 {
   CFStringRef c = CFStringCreateWithCharacters(kCFAllocatorDefault, &ch, 1);
-  return (__bridge NSString *)c;
+  return (__bridge_transfer NSString *)c;
 }
 
 - (NSString *)diff_substringWithCharacterAtIndex:(NSUInteger)anIndex;

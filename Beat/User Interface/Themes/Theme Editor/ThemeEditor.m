@@ -22,6 +22,8 @@
 @property (nonatomic, weak) IBOutlet NSColorWell *selectionDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *invisibleTextLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *invisibleTextDark;
+@property (nonatomic, weak) IBOutlet NSColorWell *pageNumberLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *pageNumberDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *commentLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *commentDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *caretLight;
@@ -48,9 +50,11 @@
 	_themeManager = [ThemeManager sharedManager];
 	[self loadDefaults];
 }
+
 - (IBAction)cancel:(id)sender {
 	[self.window close];
 }
+
 - (IBAction)resetToDefault:(id)sender {
 	[self loadDefaults];
 }
@@ -72,6 +76,8 @@
 	[_invisibleTextDark setColor:theme.invisibleTextColor.darkAquaColor];
 	[_commentLight setColor:theme.commentColor.aquaColor];
 	[_commentDark setColor:theme.commentColor.darkAquaColor];
+	[_pageNumberLight setColor:theme.pageNumberColor.aquaColor];
+	[_pageNumberDark setColor:theme.pageNumberColor.darkAquaColor];
 	[_caretLight setColor:theme.caretColor.aquaColor];
 	[_caretDark setColor:theme.caretColor.darkAquaColor];
 	[_synopsisLight setColor:theme.synopsisTextColor.aquaColor];
@@ -82,6 +88,35 @@
 	[_outlineBackgroundDark setColor:theme.outlineBackground.darkAquaColor];
 	[_outlineHighlightLight setColor:theme.outlineHighlight.aquaColor];
 	[_outlineHighlightDark setColor:theme.outlineHighlight.darkAquaColor];
+	
+	[self.themeManager resetToDefault];
+	[self.themeManager loadThemeForAllDocuments];
+}
+
+-(IBAction)changeColor:(NSColorWell*)sender {
+	Theme *theme = _themeManager.theme;
+	if (sender == _backgroundLight) theme.backgroundColor.aquaColor = sender.color;
+	if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = sender.color;
+	if (sender == _textLight) theme.textColor.aquaColor = sender.color;
+	if (sender == _textDark) theme.textColor.darkAquaColor = sender.color;
+	if (sender == _marginLight) theme.marginColor.aquaColor = sender.color;
+	if (sender == _marginDark) theme.marginColor.darkAquaColor = sender.color;
+	if (sender == _selectionLight) theme.selectionColor.aquaColor = sender.color;
+	if (sender == _selectionDark) theme.selectionColor.darkAquaColor = sender.color;
+	if (sender == _invisibleTextLight) theme.invisibleTextColor.aquaColor = sender.color;
+	if (sender == _invisibleTextDark) theme.invisibleTextColor.darkAquaColor = sender.color;
+	if (sender == _commentLight) theme.commentColor.aquaColor = sender.color;
+	if (sender == _commentDark) theme.commentColor.darkAquaColor = sender.color;
+	if (sender == _caretLight) theme.caretColor.aquaColor = sender.color;
+	if (sender == _caretDark) theme.caretColor.darkAquaColor = sender.color;
+	if (sender == _pageNumberLight) theme.pageNumberColor.aquaColor = sender.color;
+	if (sender == _pageNumberDark) theme.pageNumberColor.darkAquaColor = sender.color;
+	if (sender == _synopsisLight) theme.synopsisTextColor.aquaColor = sender.color;
+	if (sender == _synopsisDark) theme.synopsisTextColor.darkAquaColor = sender.color;
+	if (sender == _sectionLight) theme.sectionTextColor.aquaColor = sender.color;
+	if (sender == _sectionDark) theme.sectionTextColor.darkAquaColor = sender.color;
+	
+	[self.themeManager loadThemeForAllDocuments];
 }
 
 @end

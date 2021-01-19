@@ -14,15 +14,19 @@
 @interface ThemeManager : NSObject
 
 @property (nonatomic) ThemeEditor *themeEditor;
+@property (nonatomic) Theme* theme;
 
 + (ThemeManager*)sharedManager;
 
 - (void)showEditor;
 
 - (Theme*)defaultTheme;
+- (void)loadThemeForAllDocuments;
+- (void)resetToDefault;
 
 //Access the current theme
 - (Theme*) theme;
+
 - (DynamicColor*) currentBackgroundColor;
 - (DynamicColor*) currentSelectionColor;
 - (DynamicColor*) currentTextColor;
@@ -32,5 +36,16 @@
 - (DynamicColor*) currentMarginColor;
 - (DynamicColor*) currentOutlineBackground;
 - (DynamicColor*) currentOutlineHighlight;
-
+- (DynamicColor*)backgroundColor;
+- (DynamicColor*)marginColor;
+- (DynamicColor*)selectionColor;
+- (DynamicColor*)textColor;
+- (DynamicColor*)invisibleTextColor;
+- (DynamicColor*)caretColor;
+- (DynamicColor*)commentColor;
+- (DynamicColor*)outlineHighlight;
+- (DynamicColor*)outlineBackground;
+- (DynamicColor*)pageNumberColor;
+- (DynamicColor*)sectionTextColor;
+- (DynamicColor*)synopsisTextColor;
 @end

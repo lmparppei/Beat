@@ -29,6 +29,7 @@
 #import "ContinousFountainParser.h"
 #import "FountainPaginator.h"
 #import "BeatColors.h"
+#import "ThemeManager.h"
 
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
@@ -668,8 +669,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CGFloat factor = 1 / _zoomLevel;
 	
 	[context saveGraphicsState];
-
-	self.textContainer.exclusionPaths = [NSArray array];
 	
 	// Section header backgrounds
 	for (NSValue* value in _sections) {
@@ -709,6 +708,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	[context saveGraphicsState];
 	
+	DynamicColor *pageNumberColor = [[ThemeManager sharedManager] pageNumberColor];
 	NSInteger pageNumber = 1;
 	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 170);
 	
@@ -716,11 +716,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (rightEdge + 40 > self.enclosingScrollView.frame.size.width * factor) {
 		rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 72;
 		
-		// If it's STILL too out
+		// If it's STILL too far out, compact page numbers even more
 		if (rightEdge + 50 > self.enclosingScrollView.frame.size.width * factor) {
 			rightEdge = self.enclosingScrollView.frame.size.width * factor - 50;
 		}
 	}
+	
 
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
 
@@ -729,7 +730,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// Do we want the dot after page number?
 		// page = [page stringByAppendingString:@"."];
 		
-		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: NSColor.grayColor }];
+		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: pageNumberColor }];
 		
 		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
 				
@@ -768,8 +769,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				if (index >= [self.sceneNumberLabels count]) break;
 				
 				NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
-				
-				label = [self.sceneNumberLabels objectAtIndex:index];
 				if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
 				
 				NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
