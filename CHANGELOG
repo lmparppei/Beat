@@ -1,4 +1,10 @@
 
+## Beat 1.7b
+
+* Some UI optimization (Analysis UI moved to a separate class)
+* Apple Silicon compatibility (updated Sparkle framework)
+* Plugin wrapper support with external file assets 
+
 ## Beat 1.7
 
 * Fixed a bug with the scene numbers printing out no matter what

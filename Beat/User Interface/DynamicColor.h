@@ -9,4 +9,7 @@
 
 - (NSColor *_Nonnull)effectiveColor;
 
+- (BOOL)isEqualToColor:(DynamicColor *_Nonnull)otherColor;
+- (NSArray*_Nonnull)valuesAsRGB;
+
 @end

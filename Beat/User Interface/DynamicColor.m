@@ -198,4 +198,60 @@ FORWARD(localizedColorNameComponent, NSString *)
     return [self.effectiveColor colorWithSystemEffect:systemEffect];
 }
 
+- (BOOL)isEqualToColor:(DynamicColor *)otherColor {
+	CGColorSpaceRef colorSpaceRGB = CGColorSpaceCreateDeviceRGB();
+	
+	NSColor *(^convertColorToRGBSpace)(NSColor*) = ^(NSColor *color) {
+		if (CGColorSpaceGetModel(CGColorGetColorSpace(color.CGColor)) == kCGColorSpaceModelMonochrome) {
+			const CGFloat *oldComponents = CGColorGetComponents(color.CGColor);
+			CGFloat components[4] = {oldComponents[0], oldComponents[0], oldComponents[0], oldComponents[1]};
+			CGColorRef colorRef = CGColorCreate( colorSpaceRGB, components );
+
+			NSColor *color = [NSColor colorWithCGColor:colorRef];
+			CGColorRelease(colorRef);
+			return color;
+		} else
+			return color;
+	};
+	
+	NSColor *lightColor = convertColorToRGBSpace(self.aquaColor);
+	NSColor *darkColor = convertColorToRGBSpace(self.darkAquaColor);
+	
+	NSColor *lightOther = convertColorToRGBSpace(otherColor.aquaColor);
+	NSColor *darkOther = convertColorToRGBSpace(otherColor.darkAquaColor);
+	
+	CGColorSpaceRelease(colorSpaceRGB);
+	
+	if ([lightColor isEqual:lightOther] && [darkColor isEqual:darkOther]) return YES;
+	else return NO;
+}
+
+- (NSArray*)valuesAsRGB {
+	NSColor *light = [self convertToRGB:self.aquaColor];
+	NSColor *dark = [self convertToRGB:self.darkAquaColor];
+	
+	NSArray *result = @[
+		@[ [NSNumber numberWithInt:(light.redComponent * 255)], [NSNumber numberWithInt:(light.greenComponent * 255)], [NSNumber numberWithInt:(light.blueComponent * 255)] ],
+		@[ [NSNumber numberWithInt:(dark.redComponent * 255)], [NSNumber numberWithInt:(dark.greenComponent * 255)], [NSNumber numberWithInt:(dark.blueComponent * 255)] ]
+	];
+	
+	return result;
+}
+
+- (NSColor*)convertToRGB:(NSColor*)color {
+	if (CGColorSpaceGetModel(CGColorGetColorSpace(color.CGColor)) == kCGColorSpaceModelMonochrome) {
+		CGColorSpaceRef colorSpaceRGB = CGColorSpaceCreateDeviceRGB();
+		
+		const CGFloat *oldComponents = CGColorGetComponents(color.CGColor);
+		CGFloat components[4] = {oldComponents[0], oldComponents[0], oldComponents[0], oldComponents[1]};
+		CGColorRef colorRef = CGColorCreate( colorSpaceRGB, components );
+
+		NSColor *color = [NSColor colorWithCGColor:colorRef];
+		CGColorRelease(colorRef);
+		CGColorSpaceRelease(colorSpaceRGB);
+		return color;
+	} else
+		return color;
+}
+
 @end

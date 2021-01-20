@@ -3191,6 +3191,9 @@ static NSString *forceDualDialogueSymbol = @"^";
 		[textField setNeedsDisplay:true];
 	}
 	
+	[self updateSceneNumberLabels];
+	[self updateSectionMarkers];
+	
 	if (_outlineViewVisible) [self.outlineView setNeedsDisplay:YES];
 }
 

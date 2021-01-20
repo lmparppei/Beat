@@ -26,4 +26,6 @@
 
 @property (strong, nonatomic) NSString* name;
 
+- (NSDictionary*)themeAsDictionaryWithName:(NSString*)name;
+
 @end

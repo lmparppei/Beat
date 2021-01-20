@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ThemeEditor : NSWindowController
-
++ (instancetype)sharedEditor;
 @end
 
 NS_ASSUME_NONNULL_END

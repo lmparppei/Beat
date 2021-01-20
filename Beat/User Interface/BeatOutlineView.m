@@ -20,7 +20,7 @@
 	if (self.currentScene != NSNotFound) {
 		NSRect rect = [self rectOfRow:self.currentScene];
 		
-		NSColor* fillColor = [[ThemeManager sharedManager] currentOutlineHighlight];
+		NSColor* fillColor = [[ThemeManager sharedManager] outlineHighlight];
 		//fillColor = [fillColor colorWithAlphaComponent:0.4];
 		[fillColor setFill];
 		

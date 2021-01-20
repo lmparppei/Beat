@@ -40,6 +40,14 @@
 
 @implementation ThemeEditor
 
++ (instancetype)sharedEditor {
+	static ThemeEditor* sharedEditor;
+	if (!sharedEditor) {
+		sharedEditor = [[ThemeEditor alloc] init];
+	}
+	return sharedEditor;
+}
+
 - (instancetype)init {
 	return [super initWithWindowNibName:@"ThemeEditor" owner:self];
 }
@@ -48,7 +56,7 @@
     [super windowDidLoad];
     
 	_themeManager = [ThemeManager sharedManager];
-	[self loadDefaults];
+	[self loadTheme:_themeManager.theme];
 }
 
 - (IBAction)cancel:(id)sender {
@@ -62,6 +70,8 @@
 - (void)loadDefaults {
 	Theme *defaultTheme = self.themeManager.defaultTheme;
 	[self loadTheme:defaultTheme];
+	[self.themeManager resetToDefault];
+	[self.themeManager loadThemeForAllDocuments];
 }
 - (void)loadTheme:(Theme*)theme {
 	[_backgroundLight setColor:theme.backgroundColor.aquaColor];
@@ -89,8 +99,8 @@
 	[_outlineHighlightLight setColor:theme.outlineHighlight.aquaColor];
 	[_outlineHighlightDark setColor:theme.outlineHighlight.darkAquaColor];
 	
-	[self.themeManager resetToDefault];
-	[self.themeManager loadThemeForAllDocuments];
+	//[self.themeManager resetToDefault];
+	//[self.themeManager loadThemeForAllDocuments];
 }
 
 -(IBAction)changeColor:(NSColorWell*)sender {
@@ -116,7 +126,17 @@
 	if (sender == _sectionLight) theme.sectionTextColor.aquaColor = sender.color;
 	if (sender == _sectionDark) theme.sectionTextColor.darkAquaColor = sender.color;
 	
+	if (sender == _outlineHighlightLight) theme.outlineHighlight.aquaColor = sender.color;
+	if (sender == _outlineHighlightDark) theme.outlineHighlight.darkAquaColor = sender.color;
+	if (sender == _outlineBackgroundLight) theme.outlineBackground.aquaColor = sender.color;
+	if (sender == _outlineBackgroundDark) theme.outlineBackground.darkAquaColor = sender.color;
+	
 	[self.themeManager loadThemeForAllDocuments];
+}
+
+- (IBAction)apply:(id)sender {
+	[_themeManager saveTheme];
+	[self.window close];
 }
 
 @end

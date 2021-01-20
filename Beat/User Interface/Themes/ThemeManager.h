@@ -23,6 +23,7 @@
 - (Theme*)defaultTheme;
 - (void)loadThemeForAllDocuments;
 - (void)resetToDefault;
+- (void)saveTheme;
 
 //Access the current theme
 - (Theme*) theme;

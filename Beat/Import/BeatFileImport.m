@@ -26,8 +26,6 @@
 @end
 @implementation BeatFileImport
 
-//- (id)initWithURL:(NSURL*)url completion:(void(^)(void))callback
-
 - (void)openDialogForFormat:(NSString*)extension completion:(void(^)(void))callback {
 	_url = nil;
 	

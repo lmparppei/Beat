@@ -12,14 +12,7 @@
  This has been rewritten to support macOS dark mode and to NOT support multiple themes.
  
  NOTE IN 2021:
- This should be rewritten to support multiple themes again, or at least one local custom theme.
- Either save it to user preferences or in Application Support folder.
- 
- The plist could be modified as so:
- "Default": { color: [light, dark], color: [light, dark] }
- 
- This way the user-made plist or NSUserDefault could be loaded using the same method, with
- the dict containing both light and dark mode values.
+ This has been rewritten to offer limited support for multiple themes.
  
  */
 
@@ -89,23 +82,13 @@
 	
 	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
 	if (customPlist) {
-		NSDictionary *themes = contents[THEMES_KEY];
-		[themes setValue:customPlist forKey:CUSTOM_KEY];
+		NSMutableArray *themes = contents[THEMES_KEY];
+		[themes addObject:customPlist];
 	}
 	
 	_plistContents = contents;
 }
 
-- (void)saveCustomTheme
-{
-	NSURL *userUrl = [(ApplicationDelegate*)NSApp.delegate appDataPath:@""];
-	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
-	
-	NSDictionary *customTheme = _themes[@"Custom"];
-	if (!customTheme) customTheme = [NSDictionary dictionary];
-	
-	[customTheme writeToFile:userUrl.path atomically:NO];
-}
 
 /*
 - (NSString*)plistFilePath
@@ -132,9 +115,6 @@
                                     ofType:@"plist"];
 }
 
--(void)readCustomTheme {
-	
-}
 -(Theme*)defaultTheme {
 	Theme *theme = [self loadTheme:self.themes[DEFAULT_KEY]];
 	return theme;
@@ -161,10 +141,10 @@
 	theme.invisibleTextColor  = [self dynamicColorFromArray:lightTheme[@"InvisibleText"] darkArray:darkTheme[@"InvisibleText"]];
 	theme.caretColor = [self dynamicColorFromArray:lightTheme[@"Caret"] darkArray:darkTheme[@"Caret"]];
 	theme.pageNumberColor = [self dynamicColorFromArray:lightTheme[@"PageNumber"] darkArray:darkTheme[@"PageNumber"]];
-	
+
 	theme.synopsisTextColor = [self dynamicColorFromArray:lightTheme[@"SynopsisText"] darkArray:darkTheme[@"SynopsisText"]];
 	theme.sectionTextColor = [self dynamicColorFromArray:lightTheme[@"SectionText"] darkArray:darkTheme[@"SectionText"]];
-	
+
 	theme.outlineBackground = [self dynamicColorFromArray:darkTheme[@"OutlineBackground"] darkArray:darkTheme[@"OutlineBackground"]];
 	theme.outlineHighlight = [self dynamicColorFromArray:darkTheme[@"OutlineHighlight"] darkArray:darkTheme[@"OutlineHighlight"]];
 
@@ -172,12 +152,59 @@
 }
 
 -(void)readTheme {
-	// If there is a customized color scheme, apply it
-	if (_themes[CUSTOM_KEY]) {
-		_theme = [self loadTheme:_themes[CUSTOM_KEY]];
-	} else {
-		_theme = [self loadTheme:_themes[DEFAULT_KEY]];
+	/*
+	 
+	 My reasoning for the following approach is that adding new customizable values could otherwise
+	 result in null value problems. Here we cross-check existing values against the default theme,
+	 and for customized theme, only the changed values are saved.
+	 
+	 */
+	
+	_theme = [self loadTheme:_themes[DEFAULT_KEY]];
+	
+	Theme *customTheme = [self loadTheme:_themes[CUSTOM_KEY]];
+	if (customTheme) {
+		// Apply any custom values
+		if (customTheme.backgroundColor) _theme.backgroundColor = customTheme.backgroundColor;
+		if (customTheme.textColor) _theme.textColor = customTheme.textColor;
+		if (customTheme.marginColor) _theme.marginColor = customTheme.marginColor;
+		if (customTheme.selectionColor) _theme.selectionColor = customTheme.selectionColor;
+		if (customTheme.commentColor) _theme.commentColor = customTheme.commentColor;
+		if (customTheme.invisibleTextColor) _theme.invisibleTextColor = customTheme.invisibleTextColor;
+		if (customTheme.caretColor) _theme.caretColor = customTheme.caretColor;
+		if (customTheme.pageNumberColor) _theme.pageNumberColor = customTheme.pageNumberColor;
+		if (customTheme.synopsisTextColor) _theme.synopsisTextColor = customTheme.synopsisTextColor;
+		if (customTheme.sectionTextColor) _theme.sectionTextColor = customTheme.sectionTextColor;
+		if (customTheme.outlineBackground) _theme.outlineBackground = customTheme.outlineBackground;
+		if (customTheme.outlineHighlight) _theme.outlineHighlight = customTheme.outlineHighlight;
+		
 	}
+}
+
+-(void)saveTheme {
+	Theme *defaultTheme = [self defaultTheme];
+	
+	Theme *customTheme = [[Theme alloc] init];
+	
+	if (![self.backgroundColor isEqualToColor:defaultTheme.backgroundColor]) customTheme.backgroundColor = self.backgroundColor;
+	if (![self.marginColor isEqualToColor:defaultTheme.marginColor]) customTheme.marginColor = self.marginColor;
+	if (![self.selectionColor isEqualToColor:defaultTheme.selectionColor]) customTheme.selectionColor = self.selectionColor;
+	if (![self.textColor isEqualToColor:defaultTheme.textColor]) customTheme.textColor = self.textColor;
+	if (![self.commentColor isEqualToColor:defaultTheme.commentColor]) customTheme.commentColor = self.commentColor;
+	if (![self.invisibleTextColor isEqualToColor:defaultTheme.invisibleTextColor]) customTheme.invisibleTextColor = self.invisibleTextColor;
+	if (![self.caretColor isEqualToColor:defaultTheme.caretColor]) customTheme.caretColor = self.caretColor;
+	if (![self.pageNumberColor isEqualToColor:defaultTheme.pageNumberColor]) customTheme.pageNumberColor = self.pageNumberColor;
+	if (![self.synopsisTextColor isEqualToColor:defaultTheme.synopsisTextColor]) customTheme.synopsisTextColor = self.synopsisTextColor;
+	if (![self.sectionTextColor isEqualToColor:defaultTheme.sectionTextColor]) customTheme.sectionTextColor = self.sectionTextColor;
+	if (![self.outlineBackground isEqualToColor:defaultTheme.outlineBackground]) customTheme.outlineBackground = self.outlineBackground;
+	if (![self.outlineHighlight isEqualToColor:defaultTheme.outlineHighlight]) customTheme.outlineHighlight = self.outlineHighlight;
+	
+	NSDictionary *themeDict = [customTheme themeAsDictionaryWithName:CUSTOM_KEY];
+	
+	NSURL *userUrl = [(ApplicationDelegate*)NSApp.delegate appDataPath:@""];
+	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
+	
+	[themeDict writeToFile:userUrl.path atomically:NO];
 }
 
 - (NSColor*)colorFromArray:(NSArray*)array
@@ -196,6 +223,8 @@
 }
 
 - (DynamicColor*)dynamicColorFromArray:(NSArray*)lightArray darkArray:(NSArray*)darkArray {
+	if (!lightArray || !darkArray) return nil;
+	
 	NSNumber* redValueLight = lightArray[0];
 	NSNumber* greenValueLight = lightArray[1];
 	NSNumber* blueValueLight = lightArray[2];

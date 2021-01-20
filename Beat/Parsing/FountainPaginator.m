@@ -163,6 +163,13 @@
 	}
 }
 
+/*
+- (NSArray*)findSafeLineFrom:(Line*)line page:(NSMutableArray*)page {
+	NSInteger pageIndex = [_pages indexOfObject:page];
+
+}
+ */
+
 - (void)livePaginationFor:(NSArray*)script fromIndex:(NSInteger)index {
 	// Normal pagination
 	_paginating = NO;
@@ -171,6 +178,26 @@
 		_paginating = YES;
 		[self paginateFromIndex:0 currentPage:nil];
 	}
+	/*
+	 // Start here if you're planning to build on the stuff below
+	@synchronized (self) {
+		self.script = script;
+		_paginating = YES;
+		
+		for (NSMutableArray *page in _pages) {
+			for (Line* line in page) {
+				if (NSLocationInRange(index, line.range)) {
+					NSLog(@"found");
+
+					if (line.unsafeForPageBreak) {
+						
+					}
+				}
+			}
+		}
+		
+	}
+	 */
 	
 	// Another try
 	// This finds an element where we can SAFELY start to repaginate

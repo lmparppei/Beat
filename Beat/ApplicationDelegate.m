@@ -86,8 +86,6 @@
 	NSString* proContentPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
 	if (proContentPath) _proMode = YES;
 	
-	[NSApplication sharedApplication].automaticCustomizeTouchBarMenuItemEnabled = YES;
-	
 	// Only open splash screen if no documents were opened by default
 	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
 	if ([openDocuments count] == 0 && self.startModal && ![self.startModal isVisible]) {
