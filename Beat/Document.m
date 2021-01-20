@@ -224,10 +224,7 @@
 @property (nonatomic) BeatPreview *preview;
 
 // Analysis
-@property (weak) IBOutlet NSPanel *analysisPanel;
-@property (weak) IBOutlet WKWebView *analysisView;
-@property (strong, nonatomic) FountainAnalysis* analysis;
-@property (nonatomic) NSMutableDictionary *characterGenders;
+@property (nonatomic) BeatAnalysisPanel *analysisWindow;
 
 // Card view
 @property (nonatomic) SceneCards *sceneCards;
@@ -398,9 +395,11 @@
     return self;
 }
 - (void) close {
-	// Save the gender list & caret position
-	if ([_characterGenders count] > 0) [self saveGenders];
-	[self saveCaret];
+	// Save the gender list & caret position if the document is saved
+	if (!self.documentEdited) {
+		if ([_characterGenders count] > 0) [self saveGenders];
+		[self saveCaret];
+	}
 	
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
@@ -411,11 +410,10 @@
 	self.thisWindow = nil;
 	self.contentBuffer = nil;
 	self.printView = nil;
-	self.analysis = nil;
+	self.analysisWindow = nil;
 	self.currentScene = nil;
 	self.currentLine = nil;
 	self.sceneCards = nil;
-	self.analysis = nil;
 	self.paginator = nil;
 	self.filters = nil;
 	self.sceneCards = nil;
@@ -3488,8 +3486,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 
 - (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item{
-	//OutlineScene *scene = (OutlineScene *)(((NSTreeNode *)item).representedObject);
-
 	// Don't allow reordering a filtered list
 	if ([_filters activeFilters]) return nil;
 	
@@ -3498,8 +3494,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	NSPasteboardItem *pboardItem = [[NSPasteboardItem alloc] init];
 	[pboardItem setString:scene.string forType: NSPasteboardTypeString];
-	//NSData *data = [NSKeyedArchiver archivedDataWithRootObject:scene];
-	//[pboardItem setValue:scene forType:OUTLINE_DATATYPE];
 	return pboardItem;
 }
 
@@ -3867,6 +3861,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 
 #pragma mark - Card view
+/*
+
+ I'm sorry, but this whole thing should be rewritten.
+ 
+*/
 
 // Delegate method for cards, but can be reused elsewhere too
 - (NSArray*)lines {
@@ -4018,6 +4017,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 			[self setColor:color forScene:scene];
 		}
 	}
+	/*
 	
 	if ([message.name isEqualToString:@"setGender"]) {
 		if ([message.body rangeOfString:@":"].location != NSNotFound) {
@@ -4027,6 +4027,8 @@ static NSString *forceDualDialogueSymbol = @"^";
 			[self setGenderFor:name gender:gender];
 		}
 	}
+	 
+	*/
 }
 
 #pragma mark - Scene numbering for NSTextView
@@ -4236,56 +4238,21 @@ static NSString *forceDualDialogueSymbol = @"^";
 
 #pragma mark - Analysis
 
-/*
- 
- Oh my fucking god. This should be moved elsewhere ASAP.
- 
- */
-
 - (IBAction)showAnalysis:(id)sender {
-	[self createAnalysis:nil];
-	[_thisWindow beginSheet:_analysisPanel completionHandler:nil];
-}
-
-- (IBAction)createAnalysis:(id)sender {
-	// Setup analyzer
-	
-	[self.analysis setupScript:self.parser.lines scenes:[self getOutlineItems] characterGenders:_characterGenders];
-	
-	NSString *jsonString = [self.analysis getJSON];
-	NSString *javascript = [NSString stringWithFormat:@"refresh(%@)", jsonString];
-	[_analysisView evaluateJavaScript:javascript completionHandler:nil];
+	_analysisWindow = [[BeatAnalysisPanel alloc] initWithParser:self.parser delegate:self];
+	[_thisWindow beginSheet:_analysisWindow.window completionHandler:^(NSModalResponse returnCode) {
+		self.analysisWindow = nil;
+	}];
 }
 
 - (void) setupAnalysis {
 	// N.B. Genders are saved locally in app preferences (for now)
-	self.analysis = [[FountainAnalysis alloc] init];
-	
-	NSString *analysisPath = [[NSBundle mainBundle] pathForResource:@"analysis.html" ofType:@""];
-	NSString *content = [NSString stringWithContentsOfFile:analysisPath encoding:NSUTF8StringEncoding error:nil];
-	_characterGenders = [NSMutableDictionary dictionaryWithDictionary:[self getGenders]];
-	[_analysisView loadHTMLString:content baseURL:nil];
-	
-	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
-	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"debugData"];
-
-}
-- (IBAction)closeAnalysis:(id)sender {
-	[_thisWindow endSheet:_analysisPanel];
-}
-
-- (void) setGenderFor:(NSString*)name gender:(NSString*)gender {
-	[_characterGenders setObject:gender forKey:name];
-}
-- (NSMutableDictionary*) getGenders {
-	// The gender dictionary is saved per FILE into app preferences, not into the files itself :-(
-	return [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:[self fileNameString]];
+	_characterGenders = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:[self fileNameString]];
 }
 - (void) saveGenders {
 	// Get gender dictionary, which contains character genders according to FILE NAME
 	// Like this: { @"YourFile.fountain": { @"Name": @"female" } }
 	NSMutableDictionary *genderLists = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"]];
-	
 	[genderLists setObject:_characterGenders forKey:[self fileNameString]];
 	
 	// Save the list
@@ -4417,7 +4384,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	if (fromIndex < 0) fromIndex = 0;
 	
 	__block NSMutableArray *sections = [NSMutableArray array];
-	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
 		for (NSInteger i = fromIndex; i < self.parser.lines.count; i++) {
 			Line* line = [self.parser.lines objectAtIndex:i];
 			if (line.type == section) [sections addObject:[self.parser.lines objectAtIndex:i]];
@@ -4567,7 +4534,7 @@ triangle walks
 		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
-						
+			
 			__block NSArray *pageBreaks = self.paginator.pageBreaks;
 			
 			// Don't do nothing if the page break array is nil

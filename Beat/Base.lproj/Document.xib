@@ -12,8 +12,6 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document">
             <connections>
-                <outlet property="analysisPanel" destination="Rni-cY-faX" id="jnf-t5-nzv"/>
-                <outlet property="analysisView" destination="QXx-h6-RNu" id="rtS-jz-Lvj"/>
                 <outlet property="authorField" destination="iQB-xN-crh" id="A5Z-La-bAn"/>
                 <outlet property="backgroundView" destination="3qa-Wg-PsD" id="is8-W2-FQ7"/>
                 <outlet property="beatTimer" destination="rsQ-wl-KkE" id="pT8-vn-UCc"/>
@@ -805,41 +803,6 @@
             <point key="canvasLocation" x="-571" y="88"/>
         </menu>
         <userDefaultsController representsSharedInstance="YES" id="ho8-td-WxP"/>
-        <window title="Analysis Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Rni-cY-faX" customClass="NSPanel">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
-            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="132" width="794" height="669"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
-            <view key="contentView" id="Rnd-rQ-nX0">
-                <rect key="frame" x="0.0" y="0.0" width="794" height="669"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <subviews>
-                    <wkWebView wantsLayer="YES" allowsLinkPreview="NO" id="QXx-h6-RNu">
-                        <rect key="frame" x="0.0" y="39" width="794" height="630"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
-                        <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat Analysis">
-                            <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                            <wkPreferences key="preferences"/>
-                        </wkWebViewConfiguration>
-                    </wkWebView>
-                    <button verticalHuggingPriority="750" id="hDv-QM-8UZ">
-                        <rect key="frame" x="683" y="3" width="107" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YFk-Wa-PAj">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="closeAnalysis:" target="-2" id="ER9-Ys-sba"/>
-                        </connections>
-                    </button>
-                </subviews>
-            </view>
-            <point key="canvasLocation" x="1235" y="223.5"/>
-        </window>
         <window title="Title Page Editor" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="vXu-Dv-TW5" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>

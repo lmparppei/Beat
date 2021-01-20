@@ -75,6 +75,10 @@
 		B65027F3256EAB5700862A14 /* fountainQuickLook.appex in Resources */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; };
 		B65AC22F25ACE340003A6FB3 /* Silent as Murderers.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B65AC22E25ACE340003A6FB3 /* Silent as Murderers.fountain */; };
 		B65AC23025ACE340003A6FB3 /* Silent as Murderers.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B65AC22E25ACE340003A6FB3 /* Silent as Murderers.fountain */; };
+		B65F02B125B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */; };
+		B65F02B225B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */; };
+		B65F02B325B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B65F02B025B82BF8009E1D04 /* BeatAnalysisPanel.xib */; };
+		B65F02B425B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B65F02B025B82BF8009E1D04 /* BeatAnalysisPanel.xib */; };
 		B662FC0924C22167003EF967 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0824C22167003EF967 /* OSFImport.m */; };
 		B662FC0A24C22167003EF967 /* OSFImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B662FC0824C22167003EF967 /* OSFImport.m */; };
 		B6632B34231710CF00100A44 /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
@@ -446,6 +450,9 @@
 		B6482F7822195BEC00175927 /* BeatTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatTextView.m; path = Beat/NCRTextField/BeatTextView.m; sourceTree = SOURCE_ROOT; };
 		B65027EF256EAAAF00862A14 /* Info Pro.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info Pro.plist"; sourceTree = "<group>"; };
 		B65AC22E25ACE340003A6FB3 /* Silent as Murderers.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Silent as Murderers.fountain"; sourceTree = "<group>"; };
+		B65F02AE25B82BF8009E1D04 /* BeatAnalysisPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatAnalysisPanel.h; sourceTree = "<group>"; };
+		B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatAnalysisPanel.m; sourceTree = "<group>"; };
+		B65F02B025B82BF8009E1D04 /* BeatAnalysisPanel.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatAnalysisPanel.xib; sourceTree = "<group>"; };
 		B662FC0724C22167003EF967 /* OSFImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OSFImport.h; sourceTree = "<group>"; };
 		B662FC0824C22167003EF967 /* OSFImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OSFImport.m; sourceTree = "<group>"; };
 		B662FC0B24C2239A003EF967 /* OSFTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OSFTest.m; sourceTree = "<group>"; };
@@ -1105,6 +1112,9 @@
 				B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */,
 				B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */,
 				B6907E3A233FE17C00741071 /* analysis.html */,
+				B65F02AE25B82BF8009E1D04 /* BeatAnalysisPanel.h */,
+				B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */,
+				B65F02B025B82BF8009E1D04 /* BeatAnalysisPanel.xib */,
 			);
 			name = Analysis;
 			path = ../Beat/Analysis;
@@ -1377,6 +1387,7 @@
 				B6146B27246A91420029DBD9 /* printview.png in Resources */,
 				B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */,
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
+				B65F02B325B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
 				B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
@@ -1458,6 +1469,7 @@
 				B6DF34B6259D0C2A0077041F /* About Plugins.md in Resources */,
 				B6F49D1A246D66B0006D88D4 /* cards.png in Resources */,
 				B6F49D1B246D66B0006D88D4 /* analysis.html in Resources */,
+				B65F02B425B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */,
 				B6F49D1C246D66B0006D88D4 /* timeline.png in Resources */,
 				B6F49D1D246D66B0006D88D4 /* analysis.png in Resources */,
 				B6F49D1E246D66B0006D88D4 /* README.md in Resources */,
@@ -1695,6 +1707,7 @@
 				B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */,
 				B6B417CB2359E2F700AD3F4D /* TitlePageEditorDelegate.m in Sources */,
 				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
+				B65F02B125B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */,
 				B662FC0924C22167003EF967 /* OSFImport.m in Sources */,
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */,
@@ -1784,6 +1797,7 @@
 				B67B95D1256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */,
 				B6FD5D902563B5320037ACBA /* HTMLParser.m in Sources */,
 				B6F49CF4246D66B0006D88D4 /* main.m in Sources */,
+				B65F02B225B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */,
 				B6F49CF5246D66B0006D88D4 /* ColorView.m in Sources */,
 				B6BBF3D124AC811600503EFB /* BeatScriptParser.m in Sources */,
 				B6F49CF6246D66B0006D88D4 /* FDXImport.m in Sources */,

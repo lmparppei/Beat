@@ -167,7 +167,6 @@
 	}
 	
 	if (resultString.length == 0) NSLog(@"problem %@", scene.string);
-	
 	return resultString;
 }
 

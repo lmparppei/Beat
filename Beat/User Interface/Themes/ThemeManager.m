@@ -167,11 +167,9 @@
 	
 	theme.outlineBackground = [self dynamicColorFromArray:darkTheme[@"OutlineBackground"] darkArray:darkTheme[@"OutlineBackground"]];
 	theme.outlineHighlight = [self dynamicColorFromArray:darkTheme[@"OutlineHighlight"] darkArray:darkTheme[@"OutlineHighlight"]];
-	NSLog(@"outlineh %@", theme.outlineHighlight);
-	
+
 	return theme;
 }
-
 
 -(void)readTheme {
 	// If there is a customized color scheme, apply it

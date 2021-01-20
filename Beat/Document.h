@@ -42,11 +42,12 @@ THE SOFTWARE.
 #import "BeatPreview.h"
 #import "BeatScriptParser.h"
 #import "BeatOutlineView.h"
+#import "BeatAnalysisPanel.h"
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatAnalysisDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
@@ -72,6 +73,9 @@ THE SOFTWARE.
 - (IBAction)forceHeading:(id)sender;
 - (IBAction)forceCharacter:(id)sender;
 - (OutlineScene*)getCurrentScene;
+
+// Analysis
+@property (nonatomic) NSMutableDictionary *characterGenders;
 
 // Set document colors
 - (void)updateTheme;

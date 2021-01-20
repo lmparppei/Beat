@@ -197,8 +197,6 @@
 			}
 		}
 	}
-	
-	NSLog(@"times of day: %@", _TOD);
 }
 	
 - (NSString*)getJSON {

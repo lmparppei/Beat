@@ -376,7 +376,7 @@
 
 	NSString *header = (self.header) ? self.header : @"";
 	
-    for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
+	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) { @autoreleasepool {
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
         
         // Print what page we're on -- used for page jumper
@@ -554,7 +554,7 @@
 			}
 			
 			elementCount++;
-        }
+		} }
 
 		[body appendFormat:@"</section>"];
     }
