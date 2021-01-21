@@ -39,7 +39,6 @@
 
 @implementation BeatScriptParser
 
-
 - (id)init
 {
 	if ((self = [super init]) == nil) { return nil; }
@@ -77,6 +76,12 @@
 	
 	JSValue *value = [_context evaluateScript:string];
 	NSLog(@"result %@", value);
+
+	_context = nil;
+	_vm = nil;
+	_sheet = nil;
+	_sheetCallback = nil;
+	_plugin = nil;
 }
 
 
@@ -328,6 +333,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	
 	[self.delegate.thisWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
 		// Run callback here?
+		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
+		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
 	}];
 }
 - (void)fetchHTMLPanelDataAndClose {

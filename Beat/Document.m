@@ -133,13 +133,13 @@
 @property (weak) NSTimer *autosaveTimer;
 
 // Plugin support
-@property (strong, nonatomic) BeatPluginManager *pluginManager;
+@property (assign) BeatPluginManager *pluginManager;
 
 // Text view
-@property (unsafe_unretained) IBOutlet BeatTextView *textView;
-@property (nonatomic, weak) IBOutlet ScrollView *textScrollView;
-@property (nonatomic, weak) IBOutlet MarginView *marginView;
-@property (nonatomic, weak) IBOutlet NSClipView *textClipView;
+@property (unsafe_unretained, nonatomic) IBOutlet BeatTextView *textView;
+@property (unsafe_unretained, nonatomic) IBOutlet ScrollView *textScrollView;
+@property (unsafe_unretained, nonatomic) IBOutlet MarginView *marginView;
+@property (unsafe_unretained, nonatomic) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
 @property (nonatomic) FountainPaginator *paginator;
@@ -175,8 +175,8 @@
 // Outline view filtering
 @property (nonatomic) NSMutableArray *filteredOutline;
 @property (weak) IBOutlet NSBox *filterView;
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint *filterViewHeight;
-@property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
+@property (weak) IBOutlet NSLayoutConstraint *filterViewHeight;
+@property (weak) IBOutlet NSPopUpButton *characterBox;
 @property (nonatomic) SceneFiltering *filters;
 @property (weak) IBOutlet NSButton *resetColorFilterButton;
 @property (weak) IBOutlet NSButton *resetCharacterFilterButton;
@@ -198,14 +198,14 @@
 
 //    So, back to the code:
 
-@property (nonatomic, weak) IBOutlet ColorCheckbox *redCheck;
-@property (nonatomic, weak) IBOutlet ColorCheckbox *blueCheck;
-@property (nonatomic, weak) IBOutlet ColorCheckbox *greenCheck;
-@property (nonatomic, weak) IBOutlet ColorCheckbox *orangeCheck;
-@property (nonatomic, weak) IBOutlet ColorCheckbox *cyanCheck;
-@property (nonatomic, weak) IBOutlet ColorCheckbox *brownCheck;
-@property (nonatomic, weak) IBOutlet ColorCheckbox *magentaCheck;
-@property (nonatomic, weak) IBOutlet ColorCheckbox *pinkCheck;
+@property (weak) IBOutlet ColorCheckbox *redCheck;
+@property (weak) IBOutlet ColorCheckbox *blueCheck;
+@property (weak) IBOutlet ColorCheckbox *greenCheck;
+@property (weak) IBOutlet ColorCheckbox *orangeCheck;
+@property (weak) IBOutlet ColorCheckbox *cyanCheck;
+@property (weak) IBOutlet ColorCheckbox *brownCheck;
+@property (weak) IBOutlet ColorCheckbox *magentaCheck;
+@property (weak) IBOutlet ColorCheckbox *pinkCheck;
 
 // Views
 @property (unsafe_unretained) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
@@ -237,10 +237,10 @@
 @property (nonatomic) NSInteger timelineClickedScene;
 @property (nonatomic) NSInteger timelineSelection;
 @property (nonatomic) bool timelineVisible;
-@property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
-@property (nonatomic, weak) IBOutlet NSTouchBar *timelineBar;
-@property (nonatomic, weak) IBOutlet TouchTimelineView *touchbarTimeline;
-@property (unsafe_unretained) IBOutlet TouchTimelinePopover *touchbarTimelineButton;
+@property (weak) IBOutlet NSTouchBar *touchBar;
+@property (weak) IBOutlet NSTouchBar *timelineBar;
+@property (weak) IBOutlet TouchTimelineView *touchbarTimeline;
+@property (weak) IBOutlet TouchTimelinePopover *touchbarTimelineButton;
 
 @property (weak) IBOutlet BeatTimeline *timeline;
 
@@ -316,11 +316,11 @@
 @property (nonatomic) NSMutableArray *customFields;
 
 // Theme settings
-@property (strong, nonatomic) ThemeManager* themeManager;
+@property (nonatomic) ThemeManager* themeManager;
 @property (nonatomic) bool nightMode; // THE HOUSE IS BLACK.
 
 // Timer
-@property IBOutlet BeatTimer *beatTimer;
+@property (weak) IBOutlet BeatTimer *beatTimer;
 
 // Debug flags
 @property (nonatomic) bool debug;
@@ -339,7 +339,7 @@
 #define LINE_HEIGHT 1.03 // 1.15 for Inconsolata
 
 #define DOCUMENT_WIDTH 620
-#define TEXT_INSET_TOP 50
+#define TEXT_INSET_TOP 60
 
 // Magnifying stuff
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -401,9 +401,26 @@
 		[self saveCaret];
 	}
 	
+	// Avoid retain cycles with WKWebView
+	[self deallocPreview];
+	[self deallocCards];
+	
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
+	[self.previewTimer invalidate];
+	[self.paginationTimer invalidate];
+	self.paginationTimer = nil;
+	[self.beatTimer.timer invalidate];
+	self.beatTimer = nil;
+	
+	// Without this, BeatTextView is retained. I haven't found the reason for now.
+	self.preview = nil;
+	[_textView removeFromSuperview];
+	[_marginView removeFromSuperview];
+	
+	self.textScrollView = nil;
 	self.textView = nil;
+	self.marginView = nil;
 	self.parser = nil;
 	self.outlineView = nil;
 	self.sceneNumberLabels = nil;
@@ -461,6 +478,9 @@
 	[self setupAnalysis];
 	[self setupColorPicker];
 	
+	// Setup layout here first
+	[self setupLayoutWithPagination:NO];
+	
 	// Setup plugin management
 	[self setupPlugins];
 	
@@ -472,7 +492,7 @@
 	// Pagination etc.
 	self.paginator = [[FountainPaginator alloc] initForLivePagination:self];
 	self.printing.document = self;
-				
+	
     //Put any previously loaded data into the text view
 	_documentIsLoading = YES;
     if (self.contentBuffer) {
@@ -487,9 +507,10 @@
 	
 	[self applyInitialFormating];
 	self.documentIsLoading = NO;
-
+	
+	// Ensure layout
+	[self setupLayoutWithPagination:YES];
 	[self initAutosave];
-	[self afterLoad];
 }
 
 - (void)readSettings {
@@ -554,18 +575,17 @@
 	[_thisWindow setFrame:newFrame display:YES];
 }
 
--(void)afterLoad {
-	// We'll send an asynchronous call (for some reason this is required) after loading to correctly display everything
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[self updateLayout];
-		[self updateSectionMarkers];
-		[self updateSceneNumberLabels];
-		
-		[self loadCaret];
-		[self ensureCaret];
-		[self updatePreview];
-		[self paginateFromIndex:0 sync:YES];
-	});
+-(void)setupLayoutWithPagination:(bool)paginate {
+	// Apply layout
+	
+	[self updateLayout];
+	[self updateSectionMarkers];
+	[self updateSceneNumberLabels];
+	
+	[self loadCaret];
+	[self ensureCaret];
+	[self updatePreview];
+	if (paginate) [self paginateFromIndex:0 sync:YES];
 }
 
 -(void)awakeFromNib {
@@ -1182,7 +1202,7 @@
 			[self cancelCharacterInput];
 		}
 		
-		__block Line * otherLine = [self getLineAt:affectedCharRange.location + affectedCharRange.length];
+		Line * otherLine = [self getLineAt:affectedCharRange.location + affectedCharRange.length];
 		
 		if (otherLine.string.length > 0) {
 			if (affectedLine.type == heading && otherLine.type != heading) {
@@ -1434,14 +1454,13 @@
 	
 	[self applyFormatChanges];
 	
-	[self.parser numberOfOutlineItems];
 	[self updateSceneNumberLabels];
 	
 	// Update preview screen
 	[self updatePreview];
 	
 	// Draw masks again if text did change
-	if ([_filteredOutline count]) [self maskScenes];
+	if (_filteredOutline.count) [self maskScenes];
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -2011,16 +2030,16 @@
 				CGFloat size = SECTION_FONT_SIZE;
 				
 				if (line.sectionDepth == 1) {
-					// Cyan headings for top-level sections
-					NSColor* sectionColor = self.themeManager.currentTextColor;
+					// Black for high-level sections
+					NSColor* sectionColor = self.themeManager.sectionTextColor;
 					[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 					[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 				} else {
 					// And gray for others
-					NSColor* sectionColor = [self.themeManager currentCommentColor];
+					NSColor* sectionColor = self.themeManager.commentColor;
 					[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 					
-					// Also, make lower sections s
+					// Also, make lower sections a bit smaller
 					size = size - line.sectionDepth;
 					if (size < 15) size = 15.0;
 					
@@ -2031,9 +2050,8 @@
 			}
 			
 			if (line.type == synopse) {
-				// Color synopses with comment color
 				if (self.themeManager) {
-					NSColor* synopsisColor = [self.themeManager currentCommentColor];
+					NSColor* synopsisColor = self.themeManager.synopsisTextColor;
 					[attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
 				}
 				
@@ -2072,7 +2090,7 @@
 		[textStorage removeAttribute:NSParagraphStyleAttributeName range:range];
 		
 		if (![attributes valueForKey:NSForegroundColorAttributeName]) {
-			[attributes setObject:self.themeManager.currentTextColor forKey:NSForegroundColorAttributeName];
+			[attributes setObject:self.themeManager.textColor forKey:NSForegroundColorAttributeName];
 		}
 		if (![attributes valueForKey:NSUnderlineStyleAttributeName]) {
 			[attributes setObject:@0 forKey:NSUnderlineStyleAttributeName];
@@ -2144,10 +2162,10 @@
 		
 		NSRange openSymbolRange = NSMakeRange(range.location, symbolLength);
 		NSRange closeSymbolRange = NSMakeRange(range.location+range.length-symbolLength, symbolLength);
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 							range:[self globalRangeFromLocalRange:&openSymbolRange
 												 inLineAtPosition:line.position]];
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 							range:[self globalRangeFromLocalRange:&closeSymbolRange
 												 inLineAtPosition:line.position]];
 	}];
@@ -2167,17 +2185,17 @@
 		
 		NSRange openSymbolRange = NSMakeRange(range.location, symbolLength);
 		NSRange closeSymbolRange = NSMakeRange(range.location+range.length-symbolLength, symbolLength);
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 							range:[self globalRangeFromLocalRange:&openSymbolRange
 												 inLineAtPosition:line.position]];
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 							range:[self globalRangeFromLocalRange:&closeSymbolRange
 												 inLineAtPosition:line.position]];
 	}];
 	
 	if (line.isTitlePage && line.titleRange.length > 0) {
 		NSRange titleRange = line.titleRange;
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentCommentColor range:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.commentColor range:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
 	}
 
 	if (!fontOnly) {
@@ -2190,34 +2208,34 @@
 			
 			NSRange openSymbolRange = NSMakeRange(range.location, symbolLength);
 			NSRange closeSymbolRange = NSMakeRange(range.location+range.length-symbolLength, symbolLength);
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 								range:[self globalRangeFromLocalRange:&openSymbolRange
 													 inLineAtPosition:line.position]];
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 								range:[self globalRangeFromLocalRange:&closeSymbolRange
 													 inLineAtPosition:line.position]];
 		}];
 		
 		[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentCommentColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.commentColor
 								range:[self globalRangeFromLocalRange:&range
 													 inLineAtPosition:line.position]];
 		}];
 		
 		[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 								range:[self globalRangeFromLocalRange:&range
 													 inLineAtPosition:line.position]];
 		}];
 		
 		// Format force characters
 		if (line.numberOfPreceedingFormattingCharacters > 0 && line.string.length >= line.numberOfPreceedingFormattingCharacters) {
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 								range:NSMakeRange(line.position, line.numberOfPreceedingFormattingCharacters)];
 		} else if (line.type == centered && line.string.length > 1) {
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 			range:NSMakeRange(line.position, 1)];
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 								range:NSMakeRange(line.position + line.string.length - 1, 1)];
 		}
 	}
@@ -2243,7 +2261,7 @@
 	}
 }
 - (void)scrollToScene:(OutlineScene*)scene {
-	NSRange lineRange = NSMakeRange([scene line].position, [scene line].string.length);
+	NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
 	[self.textView setSelectedRange:lineRange];
 	[self.textView scrollRangeToVisible:lineRange];
 }
@@ -3285,6 +3303,11 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}];
 	
 	if (setTextColor) [doc.textView setTextColor:[self.themeManager currentTextColor]];
+	else {
+		[self.textView setNeedsLayout:YES];
+		[self.textView setNeedsDisplay:YES];
+		[self.textView setNeedsDisplayInRect:self.textView.frame avoidAdditionalLayout:YES];
+	}
 	[doc.textView setInsertionPointColor:[self.themeManager currentCaretColor]];
 			
 	// Set global background
@@ -3349,6 +3372,10 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[_printWebView loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
 	
 	_preview = [[BeatPreview alloc] initWithDocument:self];
+}
+- (void)deallocPreview {
+	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
+	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
 }
 - (void)cancelOperation:(id) sender
 {
@@ -3543,7 +3570,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	// Scroll back to original position after reload
 	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
-	[self updateSceneNumberLabels];
 }
 
 - (void)scrollOutlineToCurrentScene:(OutlineScene*)scene {
@@ -3904,6 +3930,12 @@ static NSString *forceDualDialogueSymbol = @"^";
 	
 	_sceneCards = [[SceneCards alloc] initWithWebView:_cardView];
 	_sceneCards.delegate = self;
+}
+- (void) deallocCards {
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"cardClick"];
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"setColor"];
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"move"];
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"printCards"];
 }
 
 // This might be pretty shitty solution for my problem but whatever
@@ -4359,7 +4391,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	}
 	
 	// Mask scenes that didn't match our filter
-	__block NSMutableArray* masks = [NSMutableArray array];
+	NSMutableArray* masks = [NSMutableArray array];
 	[self.textView.masks removeAllObjects];
 
 	// Create flat outline if we don't have one
@@ -4386,7 +4418,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (void)updateSectionMarkersFromIndex:(NSInteger)fromIndex {
 	if (fromIndex < 0) fromIndex = 0;
 	
-	__block NSMutableArray *sections = [NSMutableArray array];
+	NSMutableArray *sections = [NSMutableArray array];
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
 		for (NSInteger i = fromIndex; i < self.parser.lines.count; i++) {
 			Line* line = [self.parser.lines objectAtIndex:i];
@@ -4532,13 +4564,13 @@ triangle walks
 	
 	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
 		// Make a copy of the array for thread-safety
-		__block NSArray *lines = [NSArray arrayWithArray:self.parser.lines];
+		NSArray *lines = [NSArray arrayWithArray:self.parser.lines];
 		
 		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
 			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] fromIndex:index];
 			
-			__block NSArray *pageBreaks = self.paginator.pageBreaks;
+			NSArray *pageBreaks = self.paginator.pageBreaks;
 			
 			// Don't do nothing if the page break array is nil
 			// This SHOULD mean that pagination was canceled
@@ -4917,6 +4949,8 @@ triangle walks
 
 	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
 	[parser runPlugin:plugin];
+	
+	parser = nil;
 }
 
 #pragma mark - Color Customization

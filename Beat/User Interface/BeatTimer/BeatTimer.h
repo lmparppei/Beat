@@ -15,15 +15,17 @@
 
 @interface BeatTimer : NSObject <BeatTimerViewDelegate>
 @property (weak) id<BeatTimerDelegate> delegate;
-@property IBOutlet BeatTimerView *timerView;
-@property IBOutlet NSPanel *inputPanel;
-@property IBOutlet NSTextField *minutes;
-@property IBOutlet NSTextField *label;
-@property IBOutlet NSWindow *window;
+@property (weak) IBOutlet BeatTimerView *timerView;
+@property (weak) IBOutlet NSPanel *inputPanel;
+@property (weak) IBOutlet NSTextField *minutes;
+@property (weak) IBOutlet NSTextField *label;
+@property (weak) IBOutlet NSWindow *window;
 
-@property IBOutlet NSButton *startButton;
-@property IBOutlet NSButton *resetButton;
-@property IBOutlet NSButton *pauseButton;
+@property (weak) IBOutlet NSButton *startButton;
+@property (weak) IBOutlet NSButton *resetButton;
+@property (weak) IBOutlet NSButton *pauseButton;
+
+@property (nonatomic) NSTimer *timer;
 
 @property NSInteger charactersTyped;
 

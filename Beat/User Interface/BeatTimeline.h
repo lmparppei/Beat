@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatTimeline : NSView <BeatTimelineItemDelegate, NSTextFieldDelegate>
 
-@property (nonatomic) IBOutlet NSMenu *sceneMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *sceneMenu;
 
 @property (nonatomic) NSMutableArray<BeatTimelineItem*> *selectedItems;
 

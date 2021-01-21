@@ -14,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SceneFiltering : NSObject
 
-@property NSString* text;
-@property NSString* character;
-@property NSMutableArray* colors;
+@property (nonatomic) NSString* text;
+@property (nonatomic) NSString* character;
+@property (nonatomic) NSMutableArray* colors;
 @property (weak) NSMutableArray* lines;
 @property (weak) NSMutableArray* scenes;
-@property FountainAnalysis* analysis;
-@property NSMutableArray* filteredScenes;
+@property (nonatomic) FountainAnalysis* analysis;
+@property (nonatomic) NSMutableArray* filteredScenes;
 
 - (void)setScript:(NSMutableArray *)lines scenes:(NSMutableArray *)scenes;
 - (bool)activeFilters;

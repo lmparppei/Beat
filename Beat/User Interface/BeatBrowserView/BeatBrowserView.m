@@ -25,6 +25,9 @@
 - (instancetype) init {
 	return [super initWithWindowNibName:@"BeatBrowserView" owner:self];
 }
+-(void)resetWebView {
+	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openTemplate"];
+}
 
 - (void)setHTML:(NSString*)string {
 	[self.webview loadHTMLString:string baseURL:nil];

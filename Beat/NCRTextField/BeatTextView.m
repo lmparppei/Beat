@@ -82,7 +82,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Autocompleting
 @interface BeatTextView ()
-@property (weak) IBOutlet NSTouchBar *touchBar;
+@property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
 
 @property (nonatomic, strong) NSPopover *infoPopover;
 @property (nonatomic, strong) NSTextView *infoTextView;
@@ -182,6 +182,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self addTrackingArea:trackingArea];
 	
 	[self resetCursorRects];
+}
+-(void)removeFromSuperview {
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[super removeFromSuperview];
 }
 
 - (void)closePopovers {
@@ -595,74 +599,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)setMarginColor:(DynamicColor *)newColor {
 	_marginColor = newColor;
 }
-
-/*
- 
- // Alternative scene numbering system. Gives some performance advantage, but it might be too insignificant to dismantle the already-working, convoluted scheme, though.
-
-- (void)updateSceneNumbers {
-	// This is pretty fast, but I'm not sure. Still kind of hard to figure out.
-	if (_sceneNumberLabels.count == 0) _sceneNumberLabels = [NSMutableArray array];
-	
-	NSInteger difference = _sceneNumberLabels.count - _sceneNumbers.count;
-
-	// There are extra scene number labels, remove them from superlayer
-	if (difference > 0) {
-		for (NSInteger i = 0; i <= difference; i++) {
-			[_sceneNumberLabels.lastObject removeFromSuperlayer];
-			[_sceneNumberLabels removeLastObject];
-		}
-	}
-	
-	// Begin moving layers
-	[CATransaction begin];
-	[CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
-	
-	NSInteger index = 0;
-	for (NSDictionary *sceneNumber in _sceneNumbers) {
-		NSString *number = sceneNumber[@"sceneNumber"];
-		
-		// Create frame
-		NSRect rect = [sceneNumber[@"rect"] rectValue];
-		rect.size.width = 90;
-		rect.origin.y += self.textContainerInset.height;
-		CGFloat factor = 1 / self.enclosingScrollView.magnification;
-		rect.origin.x += (self.textContainerInset.width - 140) * factor;
-		
-		// Color
-		NSColor *color;
-		if (sceneNumber[@"color"]) [BeatColors.colors valueForKey:sceneNumber[@"color"]];
-		else color = NSColor.blackColor;
-			
-		// Retrieve or create layer
-		CATextLayer *label;
-		if (_sceneNumberLabels.count > index) {
-			label = [_sceneNumberLabels objectAtIndex:index];
-			[label setString:number];
-			[label setFrame:rect];
-			[label setForegroundColor:color.CGColor];
-		} else {
-			label = [CATextLayer layer];
-			[label setShouldRasterize:YES];
-			[label setFont:@"Courier Prime"];
-			[label setRasterizationScale:4.0];
-			[label setFontSize:17.2];
-			[label setAlignmentMode:kCAAlignmentRight];
-			
-			[self.layer addSublayer:label];
-			[_sceneNumberLabels addObject:label];
-		}
-		
-		[label setContentsScale:self.enclosingScrollView.magnification];
-		[label setFrame:rect];
-		[label setString:number];
-		[label setForegroundColor:color.CGColor];
-			
-		index++;
-	}
-	[CATransaction commit];
-}
-*/
  
 - (void)drawRect:(NSRect)dirtyRect {
 	NSGraphicsContext *context = [NSGraphicsContext currentContext];
@@ -739,7 +675,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[context restoreGraphicsState];
 }
 
-- (void) updateSceneNumberLabels {
+
+- (void)updateSceneNumberLabels {
+	[self updateSceneNumberLabelsWithTextLabels];
+	//[self updateSceneNumberLabelsWithLayer];
+}
+
+- (void) updateSceneNumberLabelsWithTextLabels {
 	// zoomDelegate is a misleading name, it's the Document, really
 	ContinousFountainParser *parser = self.zoomDelegate.parser;
 	if (!parser.outline.count) [parser createOutline];
@@ -808,6 +750,82 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 }
+
+
+- (void)updateSceneNumberLabelsWithLayer {
+	// Alternative scene numbering system.
+	// Gives some performance advantage, but also takes a bigger hit sometimes.
+
+	self.wantsLayer = YES;
+	if (!self.zoomDelegate.parser.outline.count) [self.zoomDelegate.parser createOutline];
+	
+	// This is pretty fast, but I'm not sure. Still kind of hard to figure out.
+	if (!_sceneNumberLabels.count || !_sceneNumberLabels) _sceneNumberLabels = [NSMutableArray array];
+	
+	NSInteger difference = _sceneNumberLabels.count - self.zoomDelegate.parser.scenes.count;
+
+	// There are extra scene number labels, remove them from superlayer
+	if (difference > 0) {
+		for (NSInteger i = 0; i <= difference; i++) {
+			[_sceneNumberLabels.lastObject removeFromSuperlayer];
+			[_sceneNumberLabels removeLastObject];
+		}
+	}
+	
+	// Begin moving layers
+	[CATransaction begin];
+	[CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
+	
+	NSInteger index = 0;
+	for (OutlineScene* scene in self.zoomDelegate.parser.scenes) {
+		NSString *number = scene.sceneNumber;
+		
+		NSRange characterRange = NSMakeRange(scene.line.position, scene.line.string.length);
+		NSRange range = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+		
+		// Create frame
+		rect.size.width = 90;
+		rect.origin.y += self.textContainerInset.height;
+		CGFloat factor = 1 / self.enclosingScrollView.magnification;
+		rect.origin.x += (self.textContainerInset.width - 140) * factor;
+		
+		
+		// Color
+		NSColor *color;
+		if (scene.color) [BeatColors color:scene.color];
+		else color = ThemeManager.sharedManager.textColor;
+			
+		// Retrieve or create layer
+		CATextLayer *label;
+		if (_sceneNumberLabels.count > index) {
+			label = [_sceneNumberLabels objectAtIndex:index];
+			[label setString:number];
+			[label setFrame:rect];
+			[label setForegroundColor:color.CGColor];
+		} else {
+			label = [CATextLayer layer];
+			[label setShouldRasterize:YES];
+			[label setFont:@"Courier Prime"];
+			[label setRasterizationScale:4.0];
+			[label setFontSize:17.2];
+			[label setAlignmentMode:kCAAlignmentRight];
+			
+			[self.layer addSublayer:label];
+			[_sceneNumberLabels addObject:label];
+		}
+
+		[label setContentsScale:1 / self.enclosingScrollView.magnification];
+		[label setFrame:rect];
+		[label setString:number];
+		[label setForegroundColor:color.CGColor];
+			
+		index++;
+	}
+	[CATransaction commit];
+	[self updateLayer];
+}
+
 
 - (NSTextField *) createLabel: (OutlineScene *) scene {
 	NSTextField * label;

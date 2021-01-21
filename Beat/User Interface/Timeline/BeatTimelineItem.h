@@ -21,7 +21,7 @@ typedef enum : NSInteger {
 @protocol BeatTimelineItemDelegate <NSObject>
 @property (nonatomic) NSColor *backgroundColor;
 @property (nonatomic) OutlineScene *currentScene;
-@property (nonatomic) IBOutlet NSMenu *sceneMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *sceneMenu;
 @property (nonatomic) OutlineScene *clickedItem;
 @property (nonatomic) NSMutableArray *storylines;
 @property (nonatomic) NSMutableArray *selectedItems;

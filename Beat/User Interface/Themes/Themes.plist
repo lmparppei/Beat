@@ -4,8 +4,6 @@
 <dict>
 	<key>version</key>
 	<integer>0</integer>
-	<key>selectedTheme</key>
-	<integer>0</integer>
 	<key>themes</key>
 	<array>
 		<dict>

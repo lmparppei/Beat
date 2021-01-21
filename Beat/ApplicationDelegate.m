@@ -13,6 +13,7 @@
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
+#import <Sparkle/Sparkle.h>
 
 #import "BeatTest.h"
 
@@ -24,11 +25,9 @@
 @property (weak) IBOutlet NSWindow* startModal;
 @property (weak) IBOutlet NSOutlineView* recentFiles;
 
-@property (weak) IBOutlet NSWindow* acknowledgementsModal;
-@property (weak) IBOutlet NSTextView* acknowledgementsTextView;
+@property (weak) IBOutlet SUUpdater *updater;
 
 @property (weak) IBOutlet NSMenuItem *menuManual;
-@property (weak) IBOutlet NSWindow *manualWindow;
 
 @property (weak) IBOutlet NSTextField* versionField;
 
@@ -297,6 +296,7 @@
 	NSWindow* window = notification.object;
 	
 	if (window == _browser.window) {
+		[_browser resetWebView]; // Avoid retain cycle
 		_browser = nil;
 	}
 	else if (window == _episodePrinter.window) {

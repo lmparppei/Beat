@@ -62,6 +62,7 @@
 
 - (IBAction)close:(id)sender {
 	[self.window.sheetParent endSheet:self.window];
+	[_analysisView.configuration.userContentController removeScriptMessageHandlerForName:@"setGender"];
 	self.analysis = nil;
 	self.analysisView = nil;
 }

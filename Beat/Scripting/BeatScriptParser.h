@@ -65,5 +65,4 @@ JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width hei
 
 - (void)runPlugin:(BeatPlugin*)plugin;
 - (void)log:(NSString*)string;
-
 @end

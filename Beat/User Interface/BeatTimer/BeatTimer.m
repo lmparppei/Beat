@@ -18,7 +18,6 @@
 @property (nonatomic) __block NSInteger timeOriginal;
 @property (nonatomic) __block bool paused;
 @property (nonatomic) __block bool done;
-@property (nonatomic) NSTimer *timer;
 @property (nonatomic) NSPopover *popover;
 
 // Store versions to perform check after timer runs out

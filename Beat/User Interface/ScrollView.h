@@ -14,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ScrollView : NSScrollView
 
 // Buttons to hide
-@property IBOutlet NSButton *outlineButton;
-@property IBOutlet NSButton *cardsButton;
-@property IBOutlet NSButton *timelineButton;
-@property IBOutlet NSButton *previewButton;
-@property IBOutlet NSView *timerView;
+@property (weak) IBOutlet NSButton *outlineButton;
+@property (weak) IBOutlet NSButton *cardsButton;
+@property (weak) IBOutlet NSButton *timelineButton;
+@property (weak) IBOutlet NSButton *previewButton;
+@property (weak) IBOutlet NSView *timerView;
 
-@property IBOutlet NSLayoutConstraint *outlineButtonY;
+@property (weak) IBOutlet NSLayoutConstraint *outlineButtonY;
 
 @property (nonatomic, weak) DynamicColor *marginColor;
 @property (nonatomic) CGFloat insetWidth;

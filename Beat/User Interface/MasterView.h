@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSWindowStyleMask styleMask;
 
 @property (nonatomic) bool titleBarVisible;
-@property (nonatomic) IBOutlet NSLayoutConstraint *topContraint;
-@property (nonatomic) IBOutlet NSLayoutConstraint *outlineConstraint;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *topContraint;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineConstraint;
 
 @end
 

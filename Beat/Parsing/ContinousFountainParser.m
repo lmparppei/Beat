@@ -181,36 +181,14 @@
     NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
     if (range.length == 0) { //Addition
 		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
-		/*
-        for (int i = 0; i < string.length; i++) {
-            NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
-            [changedIndices addIndexes:[self parseCharacterAdded:character
-                                                      atPosition:range.location+i]];
-        }
-		 */
     } else if ([string length] == 0) { //Removal
-//		for (int i = 0; i < range.length; i++) {
-//			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
-//		}
-
 		[changedIndices addIndexes:[self parseRemovalAt:range]];
 		
     } else { //Replacement
-//        for (int i = 0; i < range.length; i++) {
-//            [changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
-//        }
-		
 		//First remove
 		[changedIndices addIndexes:[self parseRemovalAt:range]];
-
         // Then add
 		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
-		
-//        for (int i = 0; i < string.length; i++) {
-//            NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
-//            [changedIndices addIndexes:[self parseCharacterAdded:character
-//                                                      atPosition:range.location+i]];
-//        }
     }
     
     [self correctParsesInLines:changedIndices];
@@ -256,17 +234,6 @@
 		// Split the original line into two
 		NSString *head = [line.string substringToIndex:indexInLine];
 		NSString *tail = (indexInLine + 1 <= line.string.length) ? [line.string substringFromIndex:indexInLine] : @"";
-		
-		/*
-		NSLog(@"===== len %lu", string.length);
-		NSInteger indx = 0;
-		for (int i = 0; i < string.length; i++) {
-			unichar chr = [string characterAtIndex:i];
-			if (chr == '\n') printf("\\n\n"); else printf("%c", chr);
-			indx = i;
-		}
-		NSLog(@"===== total %lu", indx);
-		*/
 		 
 		// Split the text block into pieces
 		NSArray *newLines = [string componentsSeparatedByString:@"\n"];
@@ -466,8 +433,7 @@
 	 
 	 I have struggled to make this faster.
 	 The solution (for now) is to cache the result of lineIndexAtPosition,
-	 but it's not the ideal workaround. You can find a failed attempt at removing
-	 larger chunks of text above. That method totally messes up the line indexes.
+	 but it's not the ideal workaround.
 	 
 	 Creating the temporary strings here might be the problem, though.
 	 If I could skip those steps, iterating character by character might not be
@@ -1294,9 +1260,6 @@ and incomprehensible system of recursion.
 	
 	return storylines;
 }
-
-
-
 
 #pragma mark - Data access
 

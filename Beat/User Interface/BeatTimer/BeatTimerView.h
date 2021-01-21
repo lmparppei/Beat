@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatTimerView : NSView
 @property (nonatomic) CGFloat progress;
 @property (nonatomic) bool finished;
-@property IBOutlet id<BeatTimerViewDelegate> delegate;
+@property (weak) IBOutlet id<BeatTimerViewDelegate> delegate;
 -(void)finish;
 -(void)reset;
 -(void)update;
