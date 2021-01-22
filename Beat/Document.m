@@ -246,7 +246,6 @@
 
 // Scene number labels
 @property (nonatomic) bool showSceneNumberLabels;
-@property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
 
 // Scene number settings
@@ -423,7 +422,6 @@
 	self.marginView = nil;
 	self.parser = nil;
 	self.outlineView = nil;
-	self.sceneNumberLabels = nil;
 	self.thisWindow = nil;
 	self.contentBuffer = nil;
 	self.printView = nil;
@@ -485,7 +483,6 @@
 	[self setupPlugins];
 	
 	// Initialize arrays
-	self.sceneNumberLabels = [[NSMutableArray alloc] init];
 	self.characterNames = [[NSMutableArray alloc] init];
 	self.sceneHeadings = [[NSMutableArray alloc] init];
 	
@@ -2611,10 +2608,10 @@ static NSString *forceDualDialogueSymbol = @"^";
 	NSMutableString *fullText = [NSMutableString stringWithString:@""];
 	
 	NSUInteger sceneCount = 1; // Track scene amount
-		
+	
 	// Make a copy of the array if this is called in a background thread
 	NSArray *lines = [NSArray arrayWithArray:[self.parser lines]];
-	for (Line *line in lines) {
+	for (Line *line in lines) { @autoreleasepool {
 		//NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 		NSString *cleanedLine = [NSString stringWithString:line.string];
 		
@@ -2641,7 +2638,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 				[fullText appendFormat:@"\n"];
 			}
 		}
-	}
+	} }
 	
 	return fullText;
 }
@@ -3203,12 +3200,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
 	[self.textView setNeedsDisplay:true];
-	
-	for (NSTextField* textField in self.sceneNumberLabels) {
-		//textField.textColor = self.themeManager.currentTextColor;
-		[textField setNeedsDisplay:true];
-	}
-	
+
 	[self updateSceneNumberLabels];
 	[self updateSectionMarkers];
 	
@@ -4428,7 +4420,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		dispatch_async(dispatch_get_main_queue(), ^(void){
 			NSMutableArray *sectionRects = [NSMutableArray array];
 			
-			for (Line* line in sections) {
+			for (Line* line in sections) { @autoreleasepool {
 
 				// Don't draw breaks for less-important sections
 				if (line.sectionDepth > 2) continue;
@@ -4461,7 +4453,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 						[sectionRects addObject:[NSValue valueWithRect:rect]];
 					}
 				}
-			}
+			} }
 			
 			[self.textView updateSections:sectionRects];
 			[self ensureLayout];
@@ -4581,7 +4573,7 @@ triangle walks
 				
 				NSMutableArray *breakPositions = [NSMutableArray array];
 				
-				for (NSDictionary *pageBreak in pageBreaks) {
+				for (NSDictionary *pageBreak in pageBreaks) { @autoreleasepool {
 					CGFloat lineHeight = 13; // Line height from pagination
 					CGFloat UIlineHeight = 20;
 					
@@ -4605,7 +4597,7 @@ triangle walks
 					else y = rect.origin.y + rect.size.height;
 					
 					[breakPositions addObject:[NSNumber numberWithFloat:y]];
-				}
+				} }
 				
 				//[self.textView setPageBreaks:pageBreaks];
 				self.textView.pageBreaks = breakPositions;

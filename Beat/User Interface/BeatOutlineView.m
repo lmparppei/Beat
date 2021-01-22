@@ -33,3 +33,10 @@
 }
 
 @end
+/*
+ 
+ synnyn uudestaan
+ samaan kehoon
+ uuteen aikaan
+ 
+ */

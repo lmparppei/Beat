@@ -9,10 +9,11 @@
 #import "BeatTimerView.h"
 #import "DynamicColor.h"
 #import "BeatColors.h"
+#import "ScrollView.h"
 #import <QuartzCore/QuartzCore.h>
 
 @interface BeatTimerView ()
-
+@property (nonatomic, weak) IBOutlet ScrollView *parentView;
 @property (nonatomic) bool mouseOver;
 @property (nonatomic) CAShapeLayer *shapeLayer;
 
@@ -64,6 +65,7 @@
 	_shapeLayer.strokeStart = 1;
 	_progress = 1;
 	[_shapeLayer removeAllAnimations];
+	[_parentView timerDidStart];
 }
 -(void)finish {
 	// Show even if hidden

@@ -140,3 +140,72 @@
 }
 
 @end
+/*
+ 
+ in the night
+ I took outside
+ with a steaming cup of tea
+ feeling happy but restless
+ 
+ haven't written a poem in a long time
+ last year fewer than ever
+ i made promises
+ couldn't keep
+ and time---
+ let's not think about time right now
+ 
+ the snow covers the house
+ snow covers my car
+ snow covers the road away from here
+ and until thursday i'm confined here
+ but everything is fine
+ i have food
+ i have wood
+ i'll wake up at 9.00--
+ let's not think about time, but
+ then the sun is rising
+ make some coffee
+ looking outside, straight into the brightness
+ of the fresh snow
+ 
+ the wind is howling
+ it's harded and harder to enjoy things, i think
+ making songs is hard
+ making love feels numb
+ can't remember my home anymore
+ is life different when I get back
+ not sure when---
+ let's not think about time now
+
+ i had a lover
+ their grandfather chopped so much wood
+ that when he'd die, his wife wouldn't
+ need to worry about firewood ever again
+ he died, because it happens
+ and the grandmother had to move into a home
+ but the firewood was still there
+ enough for the future generations
+ to spend their summers in the house
+ i was once there too
+ fucking their grandchild from behind in the night
+ in their old, creaky bed
+ and later that person
+ abused me
+ assaulted me
+ mishandled me
+ and almost destroyed me
+ well
+ let's think about time now
+ i've lived longer than i anticipated
+ i've lived a better life i could have imagined
+ i'll think about time now
+ it stretches in front of me
+ crashes over me
+ i'll let it take me
+ towards new sorrows
+ new joys
+ new waters
+ new ages
+ new hopes. 
+ 
+ */

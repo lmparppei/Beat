@@ -18,7 +18,8 @@
 
 @implementation ScrollView
 
-#define HIDE_INTERVAL 7.0
+#define HIDE_INTERVAL 6.0
+#define TIMER_HIDE_INTERVAL 5.0
 
 - (instancetype)init {
 	return [super init];
@@ -34,6 +35,11 @@
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:trackingArea];
 }
+- (void)removeFromSuperview {
+	[_mouseMoveTimer invalidate];
+	[_timerMouseMoveTimer invalidate];
+	[super removeFromSuperview];
+}
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
@@ -46,12 +52,24 @@
 }
 
 - (void)shouldHideButtons:(NSTimer *) timer {
-	NSEvent *event = timer.userInfo;
+	NSPoint mouseLoc = [NSEvent mouseLocation];
+	NSPoint location = [self convertPoint:mouseLoc toView:nil];
 
 	// Don't hide the toolbar buttons if the mouse is in the upper section of the window
-	if (event.locationInWindow.y < self.window.frame.size.height - 35) [self hideButtons];
+	if (location.y > 35 && location.y > 0) [self hideButtons];
 	else return;
 }
+- (void)shouldHideTimer:(NSTimer *) timer {
+	NSPoint mouseLoc = [NSEvent mouseLocation];
+	NSPoint location = [self convertPoint:mouseLoc toView:nil];
+	
+	if (location.y < self.frame.size.height && location.y > self.frame.size.height - self.timerView.frame.size.height * 2) {
+		return;
+	} else {
+		[self hideTimer];
+	}
+}
+
 - (void)hideButtons {
 	if ([self isFullSize]) {
 		[[[[self.window standardWindowButton:NSWindowCloseButton] superview] animator] setAlphaValue:0];
@@ -61,9 +79,11 @@
 	for (NSButton *button in _editorButtons) {
 		[button.animator setAlphaValue:0.0];
 	}
-	[_timerView.animator setAlphaValue:0.0];
-	
 }
+- (void)hideTimer {
+	[_timerView.animator setAlphaValue:0.0];
+}
+
 - (void)showButtons {
 	if ([self isFullSize]) {
 		[[[[self.window standardWindowButton:NSWindowCloseButton] superview] animator] setAlphaValue:1];
@@ -72,15 +92,32 @@
 	for (NSButton *button in _editorButtons) {
 		[button.animator setAlphaValue:1.0];
 	}
+}
+- (void)showTimer {
 	[_timerView.animator setAlphaValue:1.0];
+}
+- (void)timerDidStart {
+	[self showTimer];
+	[_timerMouseMoveTimer invalidate];
+	_timerMouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:TIMER_HIDE_INTERVAL target:self selector:@selector(shouldHideTimer:) userInfo:nil repeats:NO];
 }
 
 - (void)mouseMoved:(NSEvent *)event {
 	[super mouseMoved:event];
 	
+	// Show upper buttons
 	[self showButtons];
 	[_mouseMoveTimer invalidate];
 	_mouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:HIDE_INTERVAL target:self selector:@selector(shouldHideButtons:) userInfo:event repeats:NO];
+	
+	// Show timer if mouse is at the bottom of the screen
+	NSPoint location = [self convertPoint:event.locationInWindow toView:nil];
+	if (location.y < self.frame.size.height && location.y > self.frame.size.height - self.timerView.frame.size.height * 2) {
+		[self showTimer];
+		[_timerMouseMoveTimer invalidate];
+		_timerMouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:TIMER_HIDE_INTERVAL target:self selector:@selector(shouldHideTimer:) userInfo:event repeats:NO];
+		
+	}
 }
 
 // Listen to find bar open/close and move the outline / card view buttons accordingly
@@ -104,7 +141,7 @@
 		_outlineButtonY.constant = _buttonDefaultY + height;
 	}
 }
-
+@end
 /*
 
  suljetaan
@@ -128,5 +165,3 @@
  sä et lyö mua enää.
  
  */
-
-@end
