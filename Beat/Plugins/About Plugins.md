@@ -15,7 +15,7 @@ There is a sample plugin included at the end to act as a starting point.
 
 ### Writing Plugins
 
-You can use any supported JavaScript features in WebKit, but the script is confined to run inside the app, so you can't access the web, for instance. Scripts run as functions, so they can be terminated any time using `return` when outside any other function scope.
+You can use any supported JavaScript features in WebKit, but the script is confined to run inside the app, so you can't access the web, for instance. Scripts run as functions, so they can be terminated any time using `return` when outside any other function scope. It's also advised to **always** end your scripts using `Beat.end()`, especially when using asynchronous methods. 
 
 Have fun and make something useful!
 
@@ -153,6 +153,8 @@ Beat.htmlPanel(html, 500, 300, null);
 
 Be careful not to overwrite the `Beat` object inside the page, as it can cause the app to be unresponsive to user. Also, only store **an object** in `Beat.data`. You can add your own CSS alongside the HTML if you so will — the current CSS is still under development. Just remember to add `!important` when needed.
 
+**NOTE:** When using asynchronous methods and callbacks in plugins, you **HAVE** to end its execution using `Beat.end()`. Otherwise you might end up draining the user's memory. 
+
 ## Sample Plugin
 
 This plugin doesn't really do anything, just demonstrates some plugin features.
@@ -255,6 +257,7 @@ function openFile() {
 			// In this sample we create a new document with the file contents.
 			// NOTE NOTE NOTE: Never call newDocument while a modal is displayed.
 			Beat.newDocument(content)
+			Beat.end()
 		}
 	)
 }

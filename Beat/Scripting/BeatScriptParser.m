@@ -45,9 +45,10 @@
 		
 	_vm = [[JSVirtualMachine alloc] init];
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
+
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
 		NSAlert *alert = [[NSAlert alloc] init];
-		alert.messageText = @"Error running script";
+		alert.messageText = @"Error Running Script";
 		alert.informativeText = [NSString stringWithFormat:@"%@", exception];
 		[alert addButtonWithTitle:@"OK"];
 		[alert runModal];
@@ -77,13 +78,21 @@
 	JSValue *value = [_context evaluateScript:string];
 	NSLog(@"result %@", value);
 
+	// Kill it if no sheet is present
+	if (!self.sheet) {
+		[self endScript];
+	}
+}
+
+- (void)end { [self endScript]; } // Alias
+- (void)endScript {
+	// Null everything
 	_context = nil;
 	_vm = nil;
 	_sheet = nil;
 	_sheetCallback = nil;
 	_plugin = nil;
 }
-
 
 /*
 if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
@@ -335,6 +344,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		// Run callback here?
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
+		self.sheetWebView = nil;
+		self.sheet = nil;
 	}];
 }
 - (void)fetchHTMLPanelDataAndClose {
@@ -352,8 +363,6 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 - (void)closePanel:(id)sender {
 	if (self.delegate.thisWindow.attachedSheet) {
 		[self.delegate.thisWindow endSheet:_sheet];
-		_sheet = nil;
-		_sheetWebView = nil;
 	}
 }
 - (void)receiveDataFromHTMLPanel:(NSString*)json {
@@ -379,7 +388,10 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		
 		_sheetCallback = nil;
 	} else {
+		// If there was no callback, it marks the end of the script
 		[self closePanel:nil];
+		_context = nil;
+		_vm = nil;
 	}
 }
 

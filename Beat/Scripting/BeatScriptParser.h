@@ -30,6 +30,8 @@
 - (NSString*)pdfToString:(NSString*)path;
 - (void)parse;
 - (NSString*)assetAsString:(NSString*)filename;
+- (void)end;
+- (void)endScript;
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
