@@ -22,6 +22,8 @@
 #import "ApplicationDelegate.h"
 #import "RegExCategories.h"
 
+#define PLUGIN_FOLDER @"Plugins"
+
 @implementation BeatPlugin
 
 @end
@@ -46,7 +48,7 @@
 	self = [super init];
 	
 	if (self) {
-		_pluginURL = [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Plugins"];
+		_pluginURL = [(ApplicationDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
 		[self loadPlugins];
 	}
 	
@@ -155,6 +157,31 @@
 	} else {
 		return GenericPlugin;
 	}
+}
+
+#pragma mark - Provide Menu Items
+
+- (void)pluginMenuItemsFor:(NSMenu*)parentMenu {
+	// The first item is the prototype
+	NSMenuItem *menuItem = parentMenu.itemArray.firstObject;
+	[parentMenu removeAllItems];
+	
+	BeatPluginManager *plugins = [[BeatPluginManager alloc] init];
+	
+	for (NSString *pluginName in plugins.pluginNames) {
+		NSMenuItem *item = [menuItem copy];
+		item.title = pluginName;
+		[parentMenu addItem:item];
+	}
+	
+	[parentMenu addItem:[NSMenuItem separatorItem]];
+	[parentMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Open Plugin Folder..." action:@selector(openPluginFolder) keyEquivalent:@""]];
+	// NB: The selector above is responded by ApplicationDelegate
+}
+
+- (void)openPluginFolder {
+	NSURL *url = [(ApplicationDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	[NSWorkspace.sharedWorkspace openURL:url];
 }
 
 @end

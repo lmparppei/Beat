@@ -10,7 +10,7 @@
 #import <WebKit/WebKit.h>
 #import "RecentFiles.h"
 
-@interface ApplicationDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate>
+@interface ApplicationDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate>
 
 @property (nonatomic) bool darkMode;
 @property (nonatomic) bool forceLightMode;

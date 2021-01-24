@@ -104,8 +104,6 @@
 		}
 	}
 	
-	[self setupPlugins];
-	
 	[self checkVersion];
 }
 -(void)checkVersion {
@@ -434,17 +432,16 @@
 
 #pragma mark - Plugin support
 
-- (void)setupPlugins {
-	NSMenuItem *menuItem = _pluginMenu.itemArray.firstObject;
-	[_pluginMenu removeAllItems];
-	
-	BeatPluginManager *plugins = [[BeatPluginManager alloc] init];
-	
-	for (NSString *pluginName in plugins.pluginNames) {
-		NSMenuItem *item = [menuItem copy];
-		item.title = pluginName;
-		[_pluginMenu addItem:item];
-	}
+- (void)setupPlugins {	
+	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
+	[plugins pluginMenuItemsFor:_pluginMenu];
+}
+-(void)menuWillOpen:(NSMenu *)menu {
+	if (menu == _pluginMenu) [self setupPlugins];
+}
+- (void)openPluginFolder {
+	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
+	[plugins openPluginFolder];
 }
 
 
@@ -459,7 +456,6 @@
 	//[_episodePrinter showWindow:_episodePrinter.window];
 	[NSApp runModalForWindow:_episodePrinter.window];
 }
- 
 
 #pragma mark - Supporting methods
 

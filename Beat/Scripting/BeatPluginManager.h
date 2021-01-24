@@ -6,7 +6,7 @@
 //  Copyright © 2020 KAPITAN!. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +29,8 @@ typedef enum : NSInteger {
 - (NSString*)scriptForPlugin:(NSString*)pluginName;
 - (BeatPlugin*)pluginWithName:(NSString*)name;
 - (NSString*)pathForPlugin:(NSString*)pluginName;
+- (void)pluginMenuItemsFor:(NSMenu*)parentMenu;
+- (void)openPluginFolder;
 @end
 
 NS_ASSUME_NONNULL_END
