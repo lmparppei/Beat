@@ -1,15 +1,21 @@
+# Beat Plugins
+
+This is a collection of open source plugins for [Beat](http://kapitan.fi/beat/).
+
+To install plugins, open Beat and navigate to *Tools → Plugins → Open Plugin Folder...*. Then just drag plugin files into the opened folder.
+
+**NOTE:** Requires Beat 1.7.2 or later.
+
+---
+  
 #  Beat Plugin API
 
-Plugins are written in JavaScript and Beat provides a simple API to interact with the app. Scripting support is at a very early and preliminary stage for now (Dec 2020), but might get better. Best way to learn about plugins is by dwelving into `.beatPlugin` files contained within the Beat source on GitHub. This documentation will be updated when I remember and have the time.
-
-A plugin can be either a single file (`Plugin.beatPlugin`) or a folder containing a script by the same name (ie. `Plugin.beatPlugin`. Supporting files contained in the folder can then be access by the plugin. 
+Plugins are written in JavaScript and Beat provides a simple API to interact with the app. A plugin can be either a single file (`Plugin.beatPlugin`) or a folder containing a script by the same name (ie. `Plugin.beatPlugin`. Supporting files contained in the folder can then be accessed by the plugin. 
 
 If anybody ever writes a plugin, *please, please, please* be nice to people and test your code thoroughly before deploying it. Loss of work hurts and it might be completely possible to crash the whole app with plugin code. I'm doing my best to stay backwards-compatible 
 
 There is a sample plugin included at the end to act as a starting point.
 
----
-  
 
 ## Basics
 
@@ -21,32 +27,32 @@ Have fun and make something useful!
 
 ### Get Screenplay Content
 
-`Beat.lines()` – all line objects in the script
-`Beat.scenes()` – scene objects
-`Beat.outline()` – all outline objects, including synopsis & heading markers
-`Beat.linesForScene(scene)` – lines for a specified scene
-`Beat.getText()` — whole document as string
+`Beat.lines()` – all line objects in the script  
+`Beat.scenes()` – scene objects  
+`Beat.outline()` – all outline objects, including synopsis & heading markers  
+`Beat.linesForScene(scene)` – lines for a specified scene  
+`Beat.getText()` — whole document as string  
 
 ### Navigate Through The Document
 
-`Beat.setSelectedRange(start, length)` – select a range in the document (**always** double-check that the values are in document range)
-`Beat.scrollTo(index)` – scroll to character index
-`Beat.scrollToScene(scene)` – scroll to a scene object
-`Beat.scrollToLine(line)` – scroll to line
+`Beat.setSelectedRange(start, length)` – select a range in the document (**always** double-check that the values are in document range)  
+`Beat.scrollTo(index)` – scroll to character index  
+`Beat.scrollToScene(scene)` – scroll to a scene object  
+`Beat.scrollToLine(line)` – scroll to line  
  
 ### User Interaction
 
-`Beat.alert("Alert title", "Informative Text")` – simple alert box
-`Beat.confirm("Title", "Informative text")` — get user confirmation, returns `true` or `false`
-`Beat.prompt("Title", "Informative Text", "Placeholder string")` – get text input from the user, returns a string
-`Beat.dropdownPrompt("Title", "Informative Text", [value, value, value])` – allow the user to select a value from an array, returns a string 
+`Beat.alert("Alert title", "Informative Text")` – simple alert box  
+`Beat.confirm("Title", "Informative text")` — get user confirmation, returns `true` or `false`  
+`Beat.prompt("Title", "Informative Text", "Placeholder string")` – get text input from the user, returns a string  
+`Beat.dropdownPrompt("Title", "Informative Text", [value, value, value])` – allow the user to select a value from an array, returns a string   
 
-For more elaborate inputs it is wiser to use `Beat.htmlPanel()`. 
+For more elaborate inputs it is wiser to use `Beat.htmlPanel()`.   
 
 ### Save Plugin Defaults
 
-`Beat.getUserDefault("setting name")` – get a value
-`Beat.setUserDefault("setting name", value)` – save a value
+`Beat.getUserDefault("setting name")` – get a value  
+`Beat.setUserDefault("setting name", value)` – save a value  
 
   
 ## Manipulating the Document
@@ -59,14 +65,14 @@ Beat parser uses `Line` and `Scene` objects to store the screenplay content. To 
 
 ### Adding and Removing Content
 
-`Beat.addString(String, index)` – add string at some index
-`Beat.replaceRange(index, length, string)` – replace a range with a string (which can be empty)
-`Beat.parse()` – parse changes you've made and update the lines/scenes arrays
+`Beat.addString(String, index)` – add string at some index  
+`Beat.replaceRange(index, length, string)` – replace a range with a string (which can be empty)  
+`Beat.parse()` – parse changes you've made and update the lines/scenes arrays  
 
 ### Get and Set Selection
 
-`Beat.selectedRange()` – returns a range object with `.location` and `.length` properties
-`Beat.setSelectedRange(location, length)` – set user selection 
+`Beat.selectedRange()` – returns a range object with `.location` and `.length` properties  
+`Beat.setSelectedRange(location, length)` – set user selection  
 
 ### Lines
 
@@ -74,30 +80,30 @@ Beat parser uses `Line` and `Scene` objects to store the screenplay content. To 
 
 Lines array contains all the lines in the script as objects. A line object contains multiple values, including but not limited to:
 
-`line.string` —	string content
-`line.position` — starting index of line
-`line.typeAsString()` — "Heading" / "Action" / "Dialogue" / "Parenthetical" etc.
-`line.isTitlePage()` — true/false
-`line.isInvisible()` — true/false
-`line.cleanedString()` — non-printing stuff removed
+`line.string` —	string content  
+`line.position` — starting index of line  
+`line.typeAsString()` — "Heading" / "Action" / "Dialogue" / "Parenthetical" etc.  
+`line.isTitlePage()` — true/false  
+`line.isInvisible()` — true/false  
+`line.cleanedString()` — non-printing stuff removed  
 
 Iterate through lines:
 ```
-for (const line of Beat.lines()) {
-	// Do something
-}
+for (const line of Beat.lines()) {  
+	// Do something  
+}  
 ```	
 
 ### Scenes
 
-`scene.sceneStart` — starting index
-`scene.sceneLength` — length of the whole scene in characters
-`scene.string` — scene heading (eg. INT. HOUSE - DAY)
-`scene.color` — scene color as string
-`scene.omited()` — true/false
-`scene.typeAsString()` — scene type (heading, section, synopse)
+`scene.sceneStart` — starting index  
+`scene.sceneLength` — length of the whole scene in characters  
+`scene.string` — scene heading (eg. INT. HOUSE - DAY)  
+`scene.color` — scene color as string  
+`scene.omited()` — true/false  
+`scene.typeAsString()` — scene type (heading, section, synopse)  
 	
-Iterate through scenes:
+Iterate through scenes:  
 
 ```
 for (const scene of Beat.scenes()) {
@@ -115,13 +121,13 @@ Plugin can be just a single script, but sometimes plugins require supporting fil
 
 ### Import Data
 
-`beat.openFile([extensions], function (filePath) { })` – displays an open dialog for an array of extensions and returns a path to the callback
-`beat.fileToString(path)` – file contents as string
-`beat.pdfToString(path)` – converts PDF file contents into a string
+`beat.openFile([extensions], function (filePath) { })` – displays an open dialog for an array of extensions and returns a path to the callback  
+`beat.fileToString(path)` – file contents as string  
+`beat.pdfToString(path)` – converts PDF file contents into a string  
 
 ### HTML Panel
 
-`Beat.htmlPanel(htmlContent, width, height, callback)` 
+`Beat.htmlPanel(htmlContent, width, height, callback)`   
 
 Displays HTML content with preloaded CSS. You can fetch data from here using two ways. Callback function receives an object, which contains keys `data` and `inputData`. 
 

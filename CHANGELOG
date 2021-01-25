@@ -4,6 +4,8 @@
 * Icon conforms to Big Sur guidelines
 * Bug fix: Timer hides as intended
 * Timer fades back in only when the mouse cursor is at the bottom-end of the window
+* Plugin memory issues fixed
+* Added the option to open Plugin Folder from within the app
 
 
 ## Beat 1.7.1
