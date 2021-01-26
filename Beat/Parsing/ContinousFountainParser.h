@@ -21,10 +21,17 @@
 - (void)headingChangedToActionAt:(Line*)line;
 - (void)actionChangedToHeadingAt:(Line*)line;
 
-
 @end
 
-@interface ContinousFountainParser : NSObject
+// Plugin compatibility
+@protocol ContinuousFountainParserExports <JSExport>
+@property (nonatomic, readonly) NSMutableArray *lines;
+@property (nonatomic, readonly) NSMutableArray *outline;
+@property (nonatomic, readonly) NSMutableArray *titlePage;
+- (void)parseText:(NSString*)text;
+@end
+
+@interface ContinousFountainParser : NSObject <ContinuousFountainParserExports>
 // A new structure to avoid having thousands of loopbacks & recursion.
 // Slowly being implemented into the code.
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;

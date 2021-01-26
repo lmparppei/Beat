@@ -136,10 +136,10 @@
 @property (assign) BeatPluginManager *pluginManager;
 
 // Text view
-@property (unsafe_unretained, nonatomic) IBOutlet BeatTextView *textView;
-@property (unsafe_unretained, nonatomic) IBOutlet ScrollView *textScrollView;
-@property (unsafe_unretained, nonatomic) IBOutlet MarginView *marginView;
-@property (unsafe_unretained, nonatomic) IBOutlet NSClipView *textClipView;
+@property (weak, nonatomic) IBOutlet BeatTextView *textView;
+@property (weak, nonatomic) IBOutlet ScrollView *textScrollView;
+@property (weak, nonatomic) IBOutlet MarginView *marginView;
+@property (weak, nonatomic) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
 @property (nonatomic) FountainPaginator *paginator;
@@ -208,7 +208,7 @@
 @property (weak) IBOutlet ColorCheckbox *pinkCheck;
 
 // Views
-@property (unsafe_unretained) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
+@property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet BeatPrint *printing; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet ColorView *backgroundView; // Master background
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
@@ -394,6 +394,7 @@
     return self;
 }
 - (void) close {
+	NSLog(@"close");
 	// Save the gender list & caret position if the document is saved
 	if (!self.documentEdited) {
 		if ([_characterGenders count] > 0) [self saveGenders];
@@ -414,12 +415,13 @@
 	
 	// Without this, BeatTextView is retained. I haven't found the reason for now.
 	self.preview = nil;
-	[_textView removeFromSuperview];
-	[_marginView removeFromSuperview];
-	
-	self.textScrollView = nil;
 	self.textView = nil;
-	self.marginView = nil;
+	
+	[self.textScrollView.mouseMoveTimer invalidate];
+	[self.textScrollView.timerMouseMoveTimer invalidate];
+	self.textScrollView.mouseMoveTimer = nil;
+	self.textScrollView.timerMouseMoveTimer = nil;
+	
 	self.parser = nil;
 	self.outlineView = nil;
 	self.thisWindow = nil;
@@ -438,11 +440,10 @@
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
 	
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
 		
 	// ApplicationDelegate will show welcome screen when no documents are open
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document close" object:nil];
-	
+	[NSNotificationCenter.defaultCenter postNotificationName:@"Document close" object:nil];
 	[super close];
 }
 
@@ -692,7 +693,7 @@
 	CGFloat oldMagnification = _magnification;
 	
 	// Save scroll position
-	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
+	NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
 	
 	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	if (zoomIn) {
@@ -1014,20 +1015,32 @@
 # pragma mark - Scene Data
 
 - (OutlineScene*)getCurrentScene {
-	NSInteger position = [self.textView selectedRange].location;
+	NSInteger position = self.textView.selectedRange.location;
 	return [self getCurrentSceneWithPosition:position];
 }
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
-	if (position >= self.getText.length) return self.outline.lastObject;
-	
-	if (NSLocationInRange(position, self.currentLine.range)) {
-		for (OutlineScene *scene in self.outline) {
-			if (NSLocationInRange(position, scene.range)) {
-				_currentScene = scene;
-				return scene;
-			}
-		}
+	if (position >= self.getText.length) {
+		NSLog(@"return last object");
+		return self.outline.lastObject;
 	}
+	
+	NSInteger lastPosition = -1;
+	OutlineScene *lastScene;
+	for (OutlineScene *scene in self.outline) {
+		
+		if (NSLocationInRange(position, scene.range)) {
+			_currentScene = scene;
+			return scene;
+		}
+		else if (position >= lastPosition && position < scene.sceneStart && lastScene) {
+			return lastScene;
+		}
+		
+		lastPosition = scene.sceneStart + scene.sceneLength;
+		lastScene = scene;
+	}
+
+	
 	_currentScene = nil;
 	return nil;
 }
@@ -1048,24 +1061,26 @@
 	}
 }
 - (OutlineScene*)getNextScene {
-	NSArray * outline = [self getOutlineItems];
+	NSArray *outline = [self getOutlineItems];
 	if (outline.count == 0) return nil;
 	
 	NSInteger position = self.selectedRange.location;
-	_currentScene = [self getCurrentSceneWithPosition:position];
-
-	if (_currentScene == nil) return nil;
 	
-	// If we are at the beginning of the script, return the first scene
-	if (!_currentScene && position < [(OutlineScene*)outline.firstObject sceneStart]) return outline.firstObject;
+	Line * currentLine = [self getLineAt:position];
+	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] ;
+	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
 	
-	NSInteger index = [outline indexOfObject:_currentScene];
-	
-	if (index >= 0 && index + 1 < outline.count) {
-		return [outline objectAtIndex:index + 1];
-	} else {
-		return nil;
+	for (NSInteger i = lineIndex + 1; i < self.parser.lines.count; i++) {
+		Line* line = self.parser.lines[i];
+		
+		if (line.type == heading || line.type == section) {
+			for (OutlineScene *scene in outline) {
+				if (scene.line == line) return scene;
+			}
+		}
 	}
+	
+	return nil;
 }
 
 /*
@@ -3368,6 +3383,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (void)deallocPreview {
 	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
 	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
+	self.printWebView.navigationDelegate = nil;
 }
 - (void)cancelOperation:(id) sender
 {
@@ -3561,7 +3577,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[self.outlineView reloadData];
 	
 	// Scroll back to original position after reload
-	[[self.outlineScrollView contentView] scrollPoint:scrollPosition];
+	[self.outlineScrollView.contentView scrollPoint:scrollPosition];
 }
 
 - (void)scrollOutlineToCurrentScene:(OutlineScene*)scene {
@@ -3928,6 +3944,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"setColor"];
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"move"];
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"printCards"];
+	
 }
 
 // This might be pretty shitty solution for my problem but whatever
@@ -4126,7 +4143,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 {
 	_timelineVisible = !_timelineVisible;
 	
-	NSPoint scrollPosition = [[self.textScrollView contentView] documentVisibleRect].origin;
+	NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
 		
 	if (_timelineVisible) {
 	
@@ -4818,11 +4835,9 @@ triangle walks
 
 - (IBAction)nextScene:(id)sender {
 	OutlineScene *scene = [self getNextScene];
+	
 	if (scene) {
 		[self scrollToScene:scene];
-	} else if (!scene && [_outline count]) {
-		// We were not inside a scene. Move to next one if possible.
-		[self scrollToScene:[_outline objectAtIndex:0]];
 	}
 }
 - (IBAction)previousScene:(id)sender {
@@ -4865,13 +4880,28 @@ triangle walks
 }
 
 - (NSURL *)autosavedContentsFileURL {
-	NSURL *autosavePath = [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
+	NSURL *autosavePath = [self autosavePath];
 	autosavePath = [autosavePath URLByAppendingPathComponent:[self fileNameString]];
 	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
 
 	return autosavePath;
 }
 - (NSURL*)autosavePath {
+	NSString* pathComponent = @"Beat/Autosave";
+	
+	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+																		  NSUserDomainMask,
+																		  YES);
+	NSString* appSupportDir = [searchPaths firstObject];
+	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
+	
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	if (![fileManager fileExistsAtPath:appSupportDir]) {
+		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
+	}
+	
+	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
 	return [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
 }
 

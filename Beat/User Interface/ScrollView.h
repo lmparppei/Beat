@@ -9,8 +9,6 @@
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface ScrollView : NSScrollView
 
 // Buttons to hide
@@ -34,5 +32,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)timerDidStart;
 
 @end
-
-NS_ASSUME_NONNULL_END

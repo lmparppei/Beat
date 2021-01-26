@@ -53,6 +53,8 @@
 	
 	// Run tests
 	//[[BeatTest alloc] init];
+	SUUpdater *updater = [[SUUpdater alloc] init];
+	if (updater.automaticallyChecksForUpdates) [updater checkForUpdatesInBackground];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification

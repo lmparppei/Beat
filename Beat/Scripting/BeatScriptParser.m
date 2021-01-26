@@ -105,6 +105,32 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 #pragma mark - File i/o
 
+- (void)saveFile:(NSString*)format callback:(JSValue*)callback {
+	NSSavePanel *savePanel = [NSSavePanel savePanel];
+	savePanel.allowedFileTypes = @[format];
+	[savePanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse returnCode) {
+		if (returnCode == NSModalResponseOK) {
+			[savePanel close];
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
+				[callback callWithArguments:@[savePanel.URL.path]];
+			});
+		} else {
+			[callback callWithArguments:nil];
+		}
+	}];
+}
+- (bool)writeToFile:(NSString*)path content:(NSString*)content {
+	NSError *error;
+	[content writeToFile:path atomically:NO encoding:NSUTF8StringEncoding error:&error];
+	
+	if (error) {
+		[self alert:@"Error Writing File" withText:[NSString stringWithFormat:@"%@", error]];
+		return NO;
+	} else {
+		return YES;
+	}
+}
+
 - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback {
 	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
 	openPanel.allowedFileTypes = formats;

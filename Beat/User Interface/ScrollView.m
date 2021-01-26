@@ -38,6 +38,12 @@
 - (void)removeFromSuperview {
 	[_mouseMoveTimer invalidate];
 	[_timerMouseMoveTimer invalidate];
+	
+	_mouseMoveTimer = nil;
+	_timerMouseMoveTimer = nil;
+	
+	self.documentView = nil;
+	
 	[super removeFromSuperview];
 }
 

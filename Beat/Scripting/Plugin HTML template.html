@@ -73,7 +73,7 @@
 			}
 
 			table { width: 100%; }
-			table td {
+			td {
 				font-size: .9em;
 				padding: .35rem .25rem .35rem .25rem;
 				border-bottom: 1px dotted #ddd;
@@ -154,6 +154,9 @@
 				data: null,
 				log: function(message) {
 					window.webkit.messageHandlers.log.postMessage(message);
+				},
+				closeAndSendData: function() {
+					sendBeatData();
 				}
 			};
 		
