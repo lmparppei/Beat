@@ -9,7 +9,7 @@
 /*
  
  This creates a settings string that can be saved at the end of a Fountain file.
- Kind of stretching the rules of Fountain markup, but this is just an experiment.
+ I recommend using typed setters & getters when possible.
  
  */
 
@@ -22,7 +22,8 @@
 @end
 
 @implementation BeatDocumentSettings
--(id)init {
+-(id)init
+{
 	self = [super init];
 	if (self) {
 		_settings = [NSMutableDictionary dictionary];
@@ -30,24 +31,47 @@
 	return self;
 }
 
-- (void)setBool:(NSString*)key as:(bool)value {
+- (void)setBool:(NSString*)key as:(bool)value
+{
 	[_settings setValue:[NSNumber numberWithBool:value] forKey:key];
 }
-- (void)setInt:(NSString*)key as:(NSInteger)value {
+- (void)setInt:(NSString*)key as:(NSInteger)value
+{
 	[_settings setValue:[NSNumber numberWithInteger:value] forKey:key];
 }
-- (NSInteger)getInt:(NSString *)key {
+- (void)setString:(NSString*)key as:(NSString*)value
+{
+	[_settings setValue:value forKey:key];
+}
+- (void)set:(NSString*)key as:(id)value
+{
+	[_settings setValue:value forKey:key];
+}
+
+- (NSInteger)getInt:(NSString *)key
+{
 	return [(NSNumber*)[_settings valueForKey:key] integerValue];
 }
-- (bool)getBool:(NSString *)key {
+- (bool)getBool:(NSString *)key
+{
 	return [(NSNumber*)[_settings valueForKey:key] boolValue];
 }
-- (void)remove:(NSString *)key {
+- (NSString*)getString:(NSString *) key
+{
+	return (NSString*)_settings[key];
+}
+- (id)get:(NSString*)key
+{
+	return _settings[key];
+}
+- (void)remove:(NSString *)key
+{
 	[_settings removeObjectForKey:key];
 }
 
 
-- (NSString*)getSettingsString {
+- (NSString*)getSettingsString
+{
 	NSError *error;
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_settings options:NSJSONWritingPrettyPrinted error:&error];
 
@@ -59,7 +83,8 @@
 		return [NSString stringWithFormat:@"%@ %@ %@", JSON_MARKER, json, JSON_MARKER_END];
 	}
 }
-- (NSRange)readSettingsAndReturnRange:(NSString*)string {
+- (NSRange)readSettingsAndReturnRange:(NSString*)string
+{
 	NSRange r1 = [string rangeOfString:JSON_MARKER];
 	NSRange r2 = [string rangeOfString:JSON_MARKER_END];
 	NSRange rSub = NSMakeRange(r1.location + r1.length, r2.location - r1.location - r1.length);
@@ -70,10 +95,18 @@
 		NSError *error;
 		
 		NSDictionary *settings = [NSJSONSerialization JSONObjectWithData:settingsData options:kNilOptions error:&error];
-		_settings = [NSMutableDictionary dictionaryWithDictionary:settings];
 		
-		// Return the index where settings start
-		return NSMakeRange(r1.location, r1.length + rSub.length + r2.length);
+		if (!error) {
+			_settings = [NSMutableDictionary dictionaryWithDictionary:settings];
+		
+			// Return the index where settings start
+			return NSMakeRange(r1.location, r1.length + rSub.length + r2.length);
+		} else {
+			// Something went wrong in reading the settings. Just carry on but log a message.
+			NSLog(@"ERROR: Document settings could not be read. %@", error);
+			_settings = [NSMutableDictionary dictionary];
+			return NSMakeRange(0, 0);
+		}
 	}
 	
 	return NSMakeRange(0, 0);

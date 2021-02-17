@@ -1,4 +1,15 @@
 
+## Beat 1.7.4
+
+* Started implementing tagging into Beat. The goal is to be able to ship a tagged FDX straight out of Beat.
+* Fixed a bug which caused document settings not to be saved when using a fresh document 
+
+
+## Beat 1.7.3
+
+* Some bug fixes, can't remember anymore
+
+
 ## Beat 1.7.2
 
 * Icon conforms to Big Sur guidelines

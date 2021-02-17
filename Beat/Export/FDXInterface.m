@@ -7,46 +7,61 @@
 //
 //  Greatly copied from: https://github.com/vilcans/screenplain/blob/master/screenplain/export/fdx.py
 
+/*
+ 
+ Being modified for Beat to support FDX tagging.
+ 
+ We should maybe connect the actual parser parsing the document, instead of parsing the contents again.
+ This way the tagging data could be read straight from the baked line elements instead of playing around
+ with strange offsetting etc.
+ 
+ */
+
+
 #import "FDXInterface.h"
 #import "ContinousFountainParser.h"
 #import "Line.h"
 
 @implementation FDXInterface
 
++ (NSString*)fdxFromString:(NSString*)string tags:(NSArray*)tags
+{
+	ContinousFountainParser* parser = [[ContinousFountainParser alloc] initWithString:string];
+	if ([parser.lines count] == 0) {
+		return @"";
+	}
+	NSMutableString* result = [@"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
+							   @"<FinalDraft DocumentType=\"Script\" Template=\"No\" Version=\"1\">\n"
+							   @"\n"
+							   @"  <Content>\n" mutableCopy];
+	
+	bool inDualDialogue = NO;
+	for (int i = 0; i < [parser.lines count]; i++) {
+		inDualDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDualDialogue:inDualDialogue tags:tags];
+	}
+	
+	[result appendString:@"  </Content>\n"];
+	
+	Line* firstLine = parser.lines[0];
+	if (firstLine.type == titlePageTitle ||
+		firstLine.type == titlePageAuthor ||
+		firstLine.type == titlePageCredit ||
+		firstLine.type == titlePageSource ||
+		firstLine.type == titlePageDraftDate ||
+		firstLine.type == titlePageContact) {
+		[self appendTitlePageFromLines:parser.lines toString:result];
+	}
+	
+	[result appendString:@"</FinalDraft>\n"];
+	
+	return result;
+}
 + (NSString*)fdxFromString:(NSString*)string
 {
-    ContinousFountainParser* parser = [[ContinousFountainParser alloc] initWithString:string];
-    if ([parser.lines count] == 0) {
-        return @"";
-    }
-    NSMutableString* result = [@"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n"
-                               @"<FinalDraft DocumentType=\"Script\" Template=\"No\" Version=\"1\">\n"
-                               @"\n"
-                               @"  <Content>\n" mutableCopy];
-    
-    bool inDualDialogue = NO;
-    for (int i = 0; i < [parser.lines count]; i++) {
-        inDualDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDualDialogue:inDualDialogue];
-    }
-    
-    [result appendString:@"  </Content>\n"];
-    
-    Line* firstLine = parser.lines[0];
-    if (firstLine.type == titlePageTitle ||
-        firstLine.type == titlePageAuthor ||
-        firstLine.type == titlePageCredit ||
-        firstLine.type == titlePageSource ||
-        firstLine.type == titlePageDraftDate ||
-        firstLine.type == titlePageContact) {
-        [self appendTitlePageFromLines:parser.lines toString:result];
-    }
-    
-    [result appendString:@"</FinalDraft>\n"];
-    
-    return result;
+	return [self fdxFromString:string tags:nil];
 }
 
-+ (bool)appendLineAtIndex:(NSUInteger)index fromLines:(NSArray*)lines toString:(NSMutableString*)result inDualDialogue:(bool)inDualDialogue//In python: like write_paragraph but also calcualtes caller arguments
++ (bool)appendLineAtIndex:(NSUInteger)index fromLines:(NSArray*)lines toString:(NSMutableString*)result inDualDialogue:(bool)inDualDialogue tags:(NSArray*)tags
 {
     Line* line = lines[index];
     NSString* paragraphType = [self typeAsFDXString:line.type];
@@ -94,12 +109,10 @@
     }
     
     //Append content
-    [self appendLineContents:line toString:result];
+    [self appendLineContents:line toString:result tags:tags];
     
     //Apend close paragraph
     [result appendString:@"    </Paragraph>\n"];
-    
-    
     
     //If a double dialogue is currently in action, check wether it needs to be closed after this
     if (inDualDialogue) {
@@ -131,7 +144,7 @@
 #define BOLD_PATTERN_LENGTH 2
 #define ITALIC_UNDERLINE_PATTERN_LENGTH 1
 
-+ (void)appendLineContents:(Line*)line toString:(NSMutableString*)result //In python: write_text
++ (void)appendLineContents:(Line*)line toString:(NSMutableString*)result tags:(NSArray*)tags
 {
     //Remove all formatting symbols from the line and the ranges
     NSMutableString* string = [line.string mutableCopy];

@@ -118,6 +118,8 @@
 #import "BeatPaperSizing.h"
 #import "BeatModalInput.h"
 #import "ThemeEditor.h"
+#import "BeatTagging.h"
+#import "BeatFDXExport.h"
 
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
@@ -215,7 +217,6 @@
 @property (weak) IBOutlet MasterView *masterView; // View which contains every other view
 
 // Print preview
-@property (weak) IBOutlet WebView *webView; // Print preview
 @property (weak) IBOutlet WKWebView *printWebView; // Print preview
 @property (nonatomic) NSString *htmlString;
 @property (nonatomic) bool previewUpdated;
@@ -320,6 +321,11 @@
 
 // Timer
 @property (weak) IBOutlet BeatTimer *beatTimer;
+
+// Tagging
+@property (nonatomic) BeatTagging *tagging;
+@property (weak) IBOutlet NSTextView *tagTextView;
+
 
 // Debug flags
 @property (nonatomic) bool debug;
@@ -436,6 +442,7 @@
 	self.sceneCards = nil;
 	self.outline = nil;
 	self.filteredOutline = nil;
+	self.tagging = nil;
 	
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
@@ -453,6 +460,9 @@
 	
 	// Hide the welcome screen
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
+	
+	// Initialize document settings if needed
+	if (!_documentSettings) _documentSettings = [[BeatDocumentSettings alloc] init];
 
 	// Initialize Theme Manager
 	// (before formatting the content, because we need the colors for formatting!)
@@ -462,7 +472,7 @@
 	
 	// Setup views
 	[self setupWindow];
-	[self readSettings];
+	[self readUserSettings];
 	
 	// Load font set
 	[self loadSerifFonts];
@@ -509,9 +519,12 @@
 	// Ensure layout
 	[self setupLayoutWithPagination:YES];
 	[self initAutosave];
+	
+	// Load tags
+	[self setupTagging];
 }
 
-- (void)readSettings {
+- (void)readUserSettings {
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
 		self.matchParentheses = YES;
 	} else {
@@ -833,14 +846,14 @@
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
     // Insert code here to write your document to data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning nil.
     // You can also choose to override -fileWrapperOfType:error:, -writeToURL:ofType:error:, or -writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-    NSData *dataRepresentation = [[self createFile] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *dataRepresentation = [[self createDocumentFile] dataUsingEncoding:NSUTF8StringEncoding];
     return dataRepresentation;
 }
-- (NSString*)createFile {
+- (NSString*)createDocumentFile {
+	// This puts together string content & settings block. It is returned to dataOfType:
 	return [NSString stringWithFormat:@"%@%@", self.getText, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
 
-// Could we integrate FDX import here?
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
 	// Read settings
 	if (!_documentSettings) {
@@ -889,6 +902,7 @@
 	[self.textView setInsets];
 	
 	self.textView.zoomDelegate = self;
+	self.textView.taggingDelegate = self;
 	
 	// Make the text view first responder
 	[_thisWindow makeFirstResponder:self.textView];
@@ -937,13 +951,19 @@
 
 - (IBAction)exportFDX:(id)sender
 {
+	NSArray *tags = self.tagging.individualTags;
+	BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText tags:tags attributedString:self.textView.attributedString];
+	
     NSSavePanel *saveDialog = [NSSavePanel savePanel];
     [saveDialog setAllowedFileTypes:@[@"fdx"]];
     [saveDialog setNameFieldStringValue:[self fileNameString]];
     [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
-            NSString* fdxString = [FDXInterface fdxFromString:[self preprocessSceneNumbers]];
-            [fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
+            //NSString* fdxString = [FDXInterface fdxFromString:[self preprocessSceneNumbers]];
+			// Get tags & export FDX
+			NSArray *tags = self.tagging.individualTags;
+			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText tags:tags attributedString:self.textView.attributedString];
+            [fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
 }
@@ -1020,7 +1040,6 @@
 }
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
 	if (position >= self.getText.length) {
-		NSLog(@"return last object");
 		return self.outline.lastObject;
 	}
 	
@@ -1046,16 +1065,16 @@
 }
 
 - (OutlineScene*)getPreviousScene {
-	NSArray * outline = [self getOutlineItems];
-	if (outline.count == 0) return nil;
+	NSArray * scenes = self.parser.scenes;
+	if (scenes.count == 0) return nil;
 	
 	_currentScene = [self getCurrentScene];
 	if (!_currentScene) return nil;
 	
-	NSInteger index = [outline indexOfObject:_currentScene];
+	NSInteger index = [scenes indexOfObject:_currentScene];
 	
-	if (index - 1 >= 0 && index < [outline count]) {
-		return [outline objectAtIndex:index - 1];
+	if (index - 1 >= 0 && index < scenes.count) {
+		return [scenes objectAtIndex:index - 1];
 	} else {
 		return nil;
 	}
@@ -1177,6 +1196,9 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
+	// Don't allow editing the script while tagging
+	if (_taggingMode) return NO;
+	
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
 	}
@@ -1491,6 +1513,8 @@
 	if (self.typewriterMode) [self typewriterScroll];
 	
 	[self updateUIwithCurrentScene];
+	
+	if (_taggingMode) [self updateTaggingData];
 }
 
 - (void)updateUIwithCurrentScene {
@@ -4093,7 +4117,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 	} else {
 		[_documentSettings remove:@"Scene Numbering Starts From"];
 	}
-	
+		
 	// Rebuild outline everywhere
 	[self.parser createOutline];
 	[self reloadOutline];
@@ -4979,6 +5003,76 @@ triangle walks
 
 - (IBAction)customizeColors:(id)sender {
 	[_themeManager showEditor];
+}
+
+#pragma mark - Tagging
+
+- (void)setupTagging {
+	_tagging = [[BeatTagging alloc] initWithDelegate:self];
+	[_tagging setRanges:[_documentSettings get:@"Tags"]];
+}
+
+- (void)tagRange:(NSRange)range withTag:(BeatTag)tag {
+	// Tag a range with the specified tag.
+	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
+	// So the tagging system basically only relies on the attributes in the NSTextView's rich-text string.
+	
+	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+	
+	if (tag == NoTag) {
+		// Clear tags
+		[self.textView.textStorage removeAttribute:@"BeatTag" range:range];
+		[self.textView.textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
+		[self saveTags];
+	} else {
+		[self.textView.textStorage addAttribute:@"BeatTag" value:@(tag) range:range];
+		
+		NSColor *tagColor = [BeatTagging colorFor:tag];
+		tagColor = [tagColor colorWithAlphaComponent:.6];
+		
+		[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
+		
+		[self saveTags];
+	}
+	
+	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+		[self.textView.textStorage setAttributes:oldAttributes range:range];
+	}];
+}
+- (void)saveTags {
+	NSDictionary *dict = [BeatTagging taggedRangesIn:self.textView.attributedString];
+	[_documentSettings set:@"Tags" as:dict];
+}
+
+- (void)updateTaggingData {
+	[_tagTextView setString:@""];
+}
+
+#pragma mark - Locking The Document
+
+- (void)toggleLock {
+	bool locked = [self.documentSettings getBool:@"Locked"];
+	
+	if (locked) {
+		[self unlock];
+	} else {
+		[self lock];
+	}
+}
+- (bool)screenplayLocked {
+	if ([self.documentSettings getBool:@"Locked"]) return YES;
+	else return NO;
+}
+- (void)lock {
+	self.textView.editable = NO;
+	[self.documentSettings setBool:@"Locked" as:YES];
+}
+- (void)unlock {
+	self.textView.editable = YES;
+	[self.documentSettings setBool:@"Locked" as:NO];
+}
+- (void)updateLockingStatus {
+	// If file is locked, show an indicator that the document CAN'T BE CHANGED.
 }
 
 @end

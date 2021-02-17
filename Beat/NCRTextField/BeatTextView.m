@@ -84,6 +84,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @interface BeatTextView ()
 @property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
 
+@property (nonatomic, strong) NSPopover *taggingPopover;
+
 @property (nonatomic, strong) NSPopover *infoPopover;
 @property (nonatomic, strong) NSTextView *infoTextView;
 
@@ -93,6 +95,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @property (nonatomic) bool nightMode;
 @property (nonatomic) bool forceElementMenu;
+
+@property (nonatomic) BeatTextviewPopupMode popupMode;
 
 // Used to highlight typed characters and insert text
 @property (nonatomic, copy) NSString *substring;
@@ -126,7 +130,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[tableView setHeaderView:nil];
 	[tableView setRefusesFirstResponder:YES];
 	[tableView setTarget:self];
-	[tableView setDoubleAction:@selector(insert:)];
+	[tableView setDoubleAction:@selector(clickPopupItem:)];
 	[tableView addTableColumn:column1];
 	[tableView setDelegate:self];
 	[tableView setDataSource:self];
@@ -192,6 +196,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[_infoPopover close];
 	[_autocompletePopover close];
 	_forceElementMenu = NO;
+	
+	_popupMode = NoPopup;
 }
 
 - (IBAction)showInfo:(id)sender {
@@ -317,14 +323,21 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			break;
 		case 48:
 			// Tab
-			if (_forceElementMenu) {
+			if (_forceElementMenu || _popupMode == ForceElement) {
+				// force element + skip default
 				[self force:self];
-				return; // skip default
-			} else if (self.autocompletePopover.isShown) {
+				return;
+				
+			} else if (_popupMode == Tagging) {
+				// handle tagging + skip default
+				return;
+				
+			} else if (self.autocompletePopover.isShown || _popupMode == Autocomplete) {
 				[self insert:self];
 				return; // don't insert a line-break after tab key
+				
 			} else {
-				// Call delegate to handle tab press
+				// Call delegate to handle normal tab press
 				if ([self.delegate respondsToSelector:@selector(handleTabPress)]) {
 					[(id)self.delegate handleTabPress];
 					return; // skip default
@@ -332,12 +345,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			}
 			break;
 		case 36:
-			// Return
+			// HANDLE RETURN
 			if (self.autocompletePopover.isShown) {
 				// Check whether to force an element or to just autocomplete
-				if (_forceElementMenu) {
+				if (_forceElementMenu || _popupMode == ForceElement) {
 					[self force:self];
 					return; // skip default
+				} else if (_popupMode == Tagging) {
+					[self setTag:self];
+					return;
 				} else if (self.autocompletePopover.isShown) {
 					[self insert:self];
 				}
@@ -346,29 +362,22 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				NSUInteger flags = [theEvent modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
 				
 				// Alt was pressed && autocomplete is not visible
-				if (flags == NSEventModifierFlagOption && ![self.autocompletePopover isShown]) {
+				if (flags == NSEventModifierFlagOption && !self.autocompletePopover.isShown) {
 					_forceElementMenu = YES;
+					_popupMode = ForceElement;
+					
 					self.automaticTextCompletionEnabled = YES;
 
 					[self forceElement:self];
 					return; // Skip defaut behavior
 				}
 			}
-/*
-		// To allow autocompletion of scene headings, we don't want to close autocomplete on space key
-		case 49:
-			// Space
-			if (self.autocompletePopover.isShown) {
-				[self.autocompletePopover close];
-			}
-			break;
-*/
 	}
 	
 	if (self.infoPopover.isShown) [self closePopovers];
 	
 	[super keyDown:theEvent];
-	if (shouldComplete) {
+	if (shouldComplete && self.popupMode != Tagging) {
 		if (self.automaticTextCompletionEnabled) {
 			[self complete:self];
 		}
@@ -377,6 +386,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 // Phantom methods
 - (void)handleTabPress { }
+
+- (void)clickPopupItem:(id)sender {
+	if (_popupMode == Autocomplete)	[self insert:sender];
+	if (_popupMode == Tagging) [self setTag:sender];
+	else [self closePopovers];
+}
 
 
 // Beat customization
@@ -394,15 +409,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	 */
 }
 
-- (void)force:(id)sender {
-	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
-		if ([self.delegate respondsToSelector:@selector(forceElement:)]) {
-			[(id)self.delegate forceElement:[self.matches objectAtIndex:self.autocompleteTableView.selectedRow]];
-		}
-	}
-	[self.autocompletePopover close];
-	_forceElementMenu = NO;
-}
 - (NSInteger)getPageNumber:(NSInteger)location {
 	if ([self.delegate respondsToSelector:@selector(getPageNumber:)]) {
 		return [(id)self.delegate getPageNumber:location];
@@ -435,21 +441,45 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// If selection moves by more than just one character, hide autocomplete
 		[self.autocompletePopover close];
 	}
+	
+	if (self.taggingDelegate.taggingMode) {
+		[self showTaggingOptions];
+	}
+}
+
+#pragma mark - Tagging / Force Element menu
+
+- (void)showTaggingOptions {
+	NSString *selectedString = [self.string substringWithRange:self.selectedRange];
+	
+	// Don't allow line breaks in tagged content. Limit the selection if break is found.
+	if ([selectedString rangeOfString:@"\n"].location != NSNotFound) {
+		[self setSelectedRange:(NSRange){ self.selectedRange.location,  [selectedString rangeOfString:@"\n"].location }];
+	}
+	
+	if (self.selectedRange.length < 1) return;
+	
+	_popupMode = Tagging;
+	[self showPopupWithItems:BeatTagging.styledTags];
 }
 
 - (void)forceElement:(id)sender {
+	_popupMode = ForceElement;
+	[self showPopupWithItems:@[@"Action", @"Scene Heading", @"Character", @"Lyrics"]];
+}
+
+- (void)showPopupWithItems:(NSArray*)items {
 	NSInteger location = self.selectedRange.location;
-	self.matches = @[@"Action", @"Scene Heading", @"Character", @"Lyrics"];
 	
-	self.lastPos = self.selectedRange.location;
+	self.matches = items;
 	[self.autocompleteTableView reloadData];
 	
 	NSInteger index = 0;
-	
 	[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:index] byExtendingSelection:NO];
 	[self.autocompleteTableView scrollRowToVisible:index];
 	
 	NSInteger numberOfRows = MIN(self.autocompleteTableView.numberOfRows, MAX_RESULTS);
+	
 	CGFloat height = (self.autocompleteTableView.rowHeight + self.autocompleteTableView.intercellSpacing.height) * numberOfRows + 2 * POPOVER_PADDING;
 	NSRect frame = NSMakeRect(0, 0, POPOVER_WIDTH, height);
 	[self.autocompleteTableView.enclosingScrollView setFrame:NSInsetRect(frame, POPOVER_PADDING, POPOVER_PADDING)];
@@ -465,6 +495,39 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
 }
+
+- (void)force:(id)sender {
+	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
+		if ([self.delegate respondsToSelector:@selector(forceElement:)]) {
+			[(id)self.delegate forceElement:[self.matches objectAtIndex:self.autocompleteTableView.selectedRow]];
+		}
+	}
+	[self.autocompletePopover close];
+	_forceElementMenu = NO;
+	_popupMode = NoPopup;
+}
+
+- (void)setTag:(id)sender {
+	id tag = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
+	
+	NSString *tagStr;
+	if ([tag isKindOfClass:NSAttributedString.class]) tagStr = [(NSAttributedString*)tag string];
+	else tagStr = tag;
+	
+	// Tag string in the menu is prefixed by "● " or "× " so take them it out
+	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"× " withString:@""];
+	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"● " withString:@""];
+	
+	[self.taggingDelegate tagRange:self.selectedRange withTag:[BeatTagging tagFor:tagStr]];
+	
+	// Deselect
+	self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
+	
+	[self.autocompletePopover close];
+	_popupMode = NoPopup;
+}
+
+#pragma mark - Autocomplete & data source
 
 - (void)complete:(id)sender {
 	NSInteger startOfWord = self.selectedRange.location;
@@ -534,6 +597,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSSize firstCharSize = [firstChar sizeWithAttributes:@{NSFontAttributeName:self.font}];
 		rect.size.width = firstCharSize.width;
 		
+		_popupMode = Autocomplete;
 		[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
 	
 	} else {
@@ -573,7 +637,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		cellView.identifier = @"MyView";
 	}
 	
-	NSMutableAttributedString *as = [[NSMutableAttributedString alloc] initWithString:self.matches[row] attributes:@{NSFontAttributeName:POPOVER_FONT, NSForegroundColorAttributeName:POPOVER_TEXTCOLOR}];
+	
+	NSMutableAttributedString *as;
+	id label = self.matches[row];
+	
+	// If the row item is an attributed string, handle the previous attributes
+	if ([label isKindOfClass:NSAttributedString.class]) {
+		as = [[NSMutableAttributedString alloc] initWithAttributedString:(NSAttributedString*)label];
+		[as addAttribute:NSFontAttributeName value:POPOVER_FONT range:NSMakeRange(0, as.string.length)];
+	} else {
+		as = [[NSMutableAttributedString alloc] initWithString:(NSString*)label attributes:@{NSFontAttributeName:POPOVER_FONT, NSForegroundColorAttributeName:POPOVER_TEXTCOLOR}];
+	}
 	
 	if (self.substring) {
 		NSRange range = [as.string rangeOfString:self.substring options:NSAnchoredSearch|NSCaseInsensitiveSearch];

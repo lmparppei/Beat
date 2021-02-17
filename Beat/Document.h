@@ -47,7 +47,7 @@ THE SOFTWARE.
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatAnalysisDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatAnalysisDelegate, BeatTaggingDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
@@ -79,5 +79,8 @@ THE SOFTWARE.
 
 // Set document colors
 - (void)updateTheme;
+
+// Tagging
+@property (nonatomic) bool taggingMode;
 
 @end

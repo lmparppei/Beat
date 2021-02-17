@@ -145,6 +145,7 @@
 		previousLine = line;
     }
     _changeInOutline = YES;
+	[self createOutline];
 }
 
 // This sets EVERY INDICE as changed.
@@ -1326,11 +1327,11 @@ and incomprehensible system of recursion.
 	}
 	return nil;
 }
-- (NSArray*) outlineItems {
+- (NSArray*)outlineItems {
 	[self createOutline];
 	return self.outline;
 }
-- (void) createOutline
+- (void)createOutline
 {
 	[_outline removeAllObjects];
 	[_storylines removeAllObjects];
@@ -1356,12 +1357,7 @@ and incomprehensible system of recursion.
 	
 	for (Line* line in self.lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
-			
-			// When handling synopses, we might want to move them alongside with scenes
-			if (line.type == synopse) {
-				
-			}
-			
+		
 			// Create an outline item
 			OutlineScene *item = [[OutlineScene alloc] init];
 			
@@ -1467,9 +1463,7 @@ and incomprehensible system of recursion.
 			if (previousScene) {
 				
 				// If this is a synopsis line, it might need to be included in the previous scene length (for moving them around)
-				
 				if (item.type == synopse) {
-					
 					if (previousLine.type == heading) {
 						// This synopse belongs into a block, so don't set the length for previous scene
 						sceneBlock = previousScene;
@@ -1477,7 +1471,6 @@ and incomprehensible system of recursion.
 						// Act normally
 						previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
 					}
-					 
 				} else {
 					if (sceneBlock) {
 						// Reset scene block
@@ -1500,12 +1493,11 @@ and incomprehensible system of recursion.
 		
 		// Done. Set the previous line.
 		if (line.type != empty) previousLine = line;
-		
-		// As the loop has completed, let's set the length for last outline item.
-		if (line == [self.lines lastObject]) {
-			currentScene.sceneLength = line.position + [line.string length] - currentScene.sceneStart;
-		}
 	}
+	
+	OutlineScene *lastScene = _outline.lastObject;
+	Line *lastLine = _lines.lastObject;
+	lastScene.sceneLength = lastLine.position + lastLine.string.length - lastScene.sceneStart;
 }
 
 // Deprecated (why though?)
@@ -1537,6 +1529,22 @@ and incomprehensible system of recursion.
 		if (scene.type == heading) [scenes addObject:scene];
 	}
 	return scenes;
+}
+
+- (NSArray*)linesForScene:(OutlineScene*)scene {
+	NSMutableArray *lines = [NSMutableArray array];
+	
+	@try {
+		NSRange sceneRange = NSMakeRange(scene.sceneStart, scene.sceneLength);
+		
+		for (Line* line in self.lines) {
+			if (NSLocationInRange(line.position, sceneRange)) [lines addObject:line];
+		}
+	}
+	@catch (NSException *e) {
+		NSLog(@"No lines found");
+	}
+	return lines;
 }
 
 

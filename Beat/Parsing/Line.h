@@ -73,6 +73,8 @@ typedef enum : NSUInteger {
 @property NSRange sceneNumberRange;
 @property NSRange storylineRange;
 
+@property NSMutableArray *tags;
+
 @property bool omitIn; //wether the line terminates an unfinished omit
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
 
@@ -117,6 +119,12 @@ typedef enum : NSUInteger {
 
 // Properties for pagination
 @property bool unsafeForPageBreak;
+
+// For FDX export
+- (NSAttributedString*)attributedStringForFDX;
+- (NSIndexSet*)formattingRanges;
+- (NSIndexSet*)contentRanges;
+- (NSString*)characterName;
 
 // For comparing with another version
 @property bool changed;

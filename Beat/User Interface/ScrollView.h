@@ -20,6 +20,8 @@
 
 @property (weak) IBOutlet NSLayoutConstraint *outlineButtonY;
 
+@property (nonatomic) NSView *taggingView;
+
 @property (nonatomic, weak) DynamicColor *marginColor;
 @property (nonatomic) CGFloat insetWidth;
 @property (nonatomic) CGFloat buttonDefaultY;

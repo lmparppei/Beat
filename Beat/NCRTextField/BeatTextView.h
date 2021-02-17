@@ -11,6 +11,14 @@
 #import "DynamicColor.h"
 #import "ContinousFountainParser.h"
 #import "ThemeManager.h"
+#import "BeatTagging.h"
+
+typedef enum : NSInteger {
+	NoPopup = 0,
+	Autocomplete,
+	ForceElement,
+	Tagging
+} BeatTextviewPopupMode;
 
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
@@ -28,6 +36,8 @@
 - (NSMutableArray*)getOutlineItems;
 @end
 
+@protocol BeatTaggingDelegate;
+
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
@@ -40,6 +50,7 @@
 
 @property CGFloat textInsetY;
 @property (weak) id<BeatTextViewDelegate> zoomDelegate;
+@property (weak) id<BeatTaggingDelegate> taggingDelegate;
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;
 @property NSArray* sections;

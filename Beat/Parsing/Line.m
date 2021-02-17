@@ -18,6 +18,11 @@
 #define BOLD_PATTERN @"**"
 #define UNDERLINE_PATTERN @"_"
 
+// For FDX compatibility (not used right now, mostly for reminder)
+#define BOLD_STYLE @"Bold"
+#define ITALIC_STYLE @"Italic"
+#define UNDERLINE_STYLE @"Underline"
+
 @implementation Line
 
 + (Line*)withString:(NSString*)string type:(LineType)type {
@@ -420,6 +425,138 @@
 - (bool)isDualDialogueElement {
 	if (self.type == dualDialogueParenthetical || self.type == dualDialogue) return YES;
 	else return NO;
+}
+- (NSAttributedString*)attributedStringForFDX {
+	// N.B. This is NOT a Cocoa-compatible attributed string. The attributes are used to create a string for FDX conversion.
+	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
+	
+	// Add font stylization
+	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > BOLD_PATTERN.length * 2) {
+			[string addAttribute:@"Style" value:@"Bold" range:range];
+		}
+	}];
+	
+	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > ITALIC_PATTERN.length * 2) {
+			NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:NSMakeRange(0, string.length)];
+			
+			NSString *style;
+			if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,Italic", styles[@"Style"]];
+			else style = @"Italic";
+			
+			[string addAttribute:@"Style" value:style range:range];
+		}
+	}];
+
+	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > UNDERLINE_PATTERN.length * 2) {
+			NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:NSMakeRange(0, string.length)];
+			
+			NSString *style;
+			if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,Underline", styles[@"Style"]];
+			else style = @"Underline";
+			
+			[string addAttribute:@"Style" value:style range:range];
+		}
+	}];
+	
+	// Loop through tags and apply
+	for (NSDictionary *tag in self.tags) {
+		NSString* tagValue = tag[@"tag"];
+		if (!tagValue) continue;
+		
+		NSRange range = [(NSValue*)tag[@"range"] rangeValue];
+		[string addAttribute:@"BeatTag" value:tagValue range:range];
+	}
+	
+	return string;
+}
+
+- (NSIndexSet*)contentRanges
+{
+	// Returns ranges with content ONLY (useful for reconstruction the string with no Fountain stylization)
+	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
+	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
+	
+	NSIndexSet *formattingRanges = [self formattingRanges];
+	[contentRanges removeIndexes:formattingRanges];
+
+	return contentRanges;
+}
+- (NSIndexSet*)formattingRanges
+{
+	// This maps formatting character into an index set.
+	// It could be used anywhere, but for now, it's used to create XML formatting for FDX export.
+	
+	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
+	NSString* string = self.string;
+	
+	// Add force element ranges
+	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
+		unichar c = [string characterAtIndex:0];
+		
+		if ((self.type == character && c == '@') ||
+			(self.type == heading && c == '.') ||
+			(self.type == action && c == '!') ||
+			(self.type == lyrics && c == '~') ||
+			(self.type == section && c == '#') ||
+			(self.type == synopse && c == '#') ||
+			(self.type == transitionLine && c == '>')) {
+			[indices addIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1)]];
+		}
+	}
+	
+	// Add ranges for > and <
+	if (self.type == centered) {
+		[indices addIndex:0];
+		[indices addIndex:self.string.length - 1];
+	}
+	
+	// Scene number range
+	[indices addIndexesInRange:self.sceneNumberRange];
+	
+	// Stylization ranges
+	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, ITALIC_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length, ITALIC_PATTERN.length)];
+	}];
+	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, BOLD_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length, BOLD_PATTERN.length)];
+	}];
+	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, UNDERLINE_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length, UNDERLINE_PATTERN.length)];
+	}];
+	
+	// Add note ranges
+	[indices addIndexes:self.noteRanges];
+		
+	return indices;
+}
+- (NSString*)stripFormatting {
+	// A better version of stripFormattingCharacters
+	NSIndexSet *contentRanges = [self contentRanges];
+	__block NSMutableString *content = [NSMutableString string];
+	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[content appendString:[self.string substringWithRange:range]];
+	}];
+	return content;
+}
+- (NSString*)characterName
+{
+	// This removes any extra suffixes from character name, ie. (V.O.), (CONT'D) etc.
+	if (self.type != character) return nil;
+	
+	// Strip formatting (such as symbols for forcing element types)
+	NSString *name = [self stripFormatting];
+	
+	// Find and remove suffix
+	NSRange suffixRange = [name rangeOfString:@"("];
+	if (suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
+	
+	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
 @end

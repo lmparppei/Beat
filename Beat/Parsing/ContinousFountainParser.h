@@ -59,6 +59,7 @@
 - (void)createOutline;
 - (NSArray*)scenes;
 - (void)ensurePositions;
+- (NSArray*)linesForScene:(OutlineScene*)scene;
 
 // Preprocess for printing
 - (NSArray*)preprocessForPrinting;
