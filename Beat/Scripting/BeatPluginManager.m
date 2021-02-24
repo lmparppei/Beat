@@ -185,3 +185,12 @@
 }
 
 @end
+/*
+ 
+ when it is truly time
+ and if you have been chosen
+ it will do it by
+ itself and it will keep on doing it
+ until you die or it dies in you.
+ 
+ */

@@ -684,6 +684,14 @@ DQ
                                     <action selector="showTimer:" target="-1" id="ucF-GX-SkT"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="oQ7-Kk-dvf"/>
+                            <menuItem title="Tagging Mode" id="Fdy-fO-lco">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Lx9-Tc-HJm"/>
                             <menuItem title="Plugins" id="NOP-V5-Ndq">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Plugins" id="84c-6G-MTc">
@@ -989,6 +997,14 @@ DQ
             <point key="canvasLocation" x="724.5" y="324.5"/>
         </window>
         <customObject id="fo0-Pp-nmB" customClass="SUUpdater"/>
+        <menuItem title="Item" id="393-DA-0z5">
+            <modifierMask key="keyEquivalentModifierMask"/>
+        </menuItem>
+        <box verticalHuggingPriority="750" boxType="separator" id="UFu-51-Hih">
+            <rect key="frame" x="0.0" y="0.0" width="96" height="5"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <point key="canvasLocation" x="76" y="74"/>
+        </box>
     </objects>
     <resources>
         <image name="B_256" width="256" height="256"/>

@@ -9,6 +9,7 @@
 #import "BeatPluginManager.h"
 #import <Foundation/Foundation.h>
 #import "ContinousFountainParser.h"
+#import "BeatTagging.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
 
@@ -32,6 +33,7 @@
 - (NSString*)assetAsString:(NSString*)filename;
 - (void)end;
 - (void)endScript;
+- (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
@@ -52,6 +54,7 @@ JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width hei
 @protocol BeatScriptingDelegate <NSObject>
 @property (strong, nonatomic) ContinousFountainParser *parser;
 @property (weak, readonly) NSWindow *thisWindow;
+@property (weak, readonly) BeatTagging *tagging;
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 - (void)scrollTo:(NSInteger)location;

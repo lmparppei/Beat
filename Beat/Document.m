@@ -325,6 +325,8 @@
 // Tagging
 @property (nonatomic) BeatTagging *tagging;
 @property (weak) IBOutlet NSTextView *tagTextView;
+@property (weak) IBOutlet ColorView *tagView;
+@property (weak) IBOutlet NSLayoutConstraint *tagViewCostraint;
 
 
 // Debug flags
@@ -5008,8 +5010,25 @@ triangle walks
 #pragma mark - Tagging
 
 - (void)setupTagging {
+	[_tagView setFillColor:[BeatColors color:@"backgroundGray"]];
+	
+	[_tagViewCostraint setConstant:0];
+	[_tagging setupTextView:self.tagTextView];
 	_tagging = [[BeatTagging alloc] initWithDelegate:self];
 	[_tagging setRanges:[_documentSettings get:@"Tags"]];
+}
+
+- (IBAction)toggleTagging:(id)sender {
+	_taggingMode = !_taggingMode;
+	
+	if (_taggingMode) {
+		[_tagViewCostraint setConstant:180];
+	} else {
+		[_tagViewCostraint setConstant:0];
+	}
+	
+	[_thisWindow layoutIfNeeded];
+	[self updateLayout];
 }
 
 - (void)tagRange:(NSRange)range withTag:(BeatTag)tag {
@@ -5045,7 +5064,9 @@ triangle walks
 }
 
 - (void)updateTaggingData {
-	[_tagTextView setString:@""];
+	[_tagging setupTextView:self.tagTextView];
+	
+	[_tagTextView.textStorage setAttributedString:[_tagging displayTagsForScene:[self getCurrentScene]]];
 }
 
 #pragma mark - Locking The Document

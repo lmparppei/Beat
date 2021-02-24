@@ -33,6 +33,8 @@
 #import <Cocoa/Cocoa.h>
 #import "BeatTagging.h"
 
+#define UIFontSize 11.0
+
 @interface BeatTagging ()
 @property (nonatomic) OutlineScene *lastScene;
 @end
@@ -59,14 +61,31 @@
 	[styledTags addObject:[[NSAttributedString alloc] initWithString:@"× None"]];
 	
 	for (NSString *tag in tags) {
-		NSColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
-		
-		NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@", tag]];
-		if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
-		[styledTags addObject:string];
+		[styledTags addObject:[self styledTagFor:tag]];
 	}
 	
 	return styledTags;
+}
++ (NSAttributedString*)styledTagFor:(NSString*)tag {
+	NSColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
+	
+	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@", tag]];
+	if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
+	return string;
+}
++ (NSAttributedString*)styledListTagFor:(NSString*)tag color:(NSColor*)textColor {
+	NSColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
+	
+	NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+	paragraph.paragraphSpacing = 3.0;
+	
+	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@\n", tag]];
+	if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
+	[string addAttribute:NSForegroundColorAttributeName value:textColor range:(NSRange){1, string.length - 1}];
+	[string addAttribute:NSFontAttributeName value:[NSFont boldSystemFontOfSize:UIFontSize] range:(NSRange){0, string.length}];
+	[string addAttribute:NSParagraphStyleAttributeName value:paragraph range:(NSRange){0, string.length}];
+	[string addAttribute:@"TagTitle" value:@"Yes" range:(NSRange){0, string.length - 1}];
+	return string;
 }
 + (NSDictionary*)tagColors
 {
@@ -141,11 +160,8 @@
 			
 			NSArray *ranges = @[ @(range.location), @(range.length) ];
 
-			if (tag == CharacterTag) [dict[@"Cast"] addObject:ranges];
-			else if (tag == PropTag) [dict[@"Prop"] addObject:ranges];
-			else if (tag == VFXTag) [dict[@"VFX"] addObject:ranges];
-			else if (tag == AnimalTag) [dict[@"Animal"] addObject:ranges];
-			else if (tag == ExtraTag) [dict[@"Extra"] addObject:ranges];
+			NSString* tagKey = [self keyFor:tag];
+			[dict[tagKey] addObject:ranges];
 		}
 	}];
 	
@@ -281,38 +297,52 @@
 	[BeatTagging bakeTags:[self individualTags] inString:self.delegate.textView.attributedString toLines:self.delegate.parser.lines];
 }
 
-- (NSString*)displayTagsForScene:(OutlineScene*)scene {
+- (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene {
 	NSMutableDictionary *tags = [NSMutableDictionary dictionaryWithDictionary:[self tagsForScene:scene]];
+	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
 	
-	NSMutableString *result = [NSMutableString string];
-	if (tags[@"Cast"]) {
-		[result appendString:@"Cast\n"];
+	[result appendAttributedString:[self boldedString:scene.stringForDisplay color:nil]];
+	[result appendAttributedString:[self str:@"\n\n"]];
+	
+	NSArray *cast = tags[@"Cast"];
+	if (cast.count) {
+		[result appendAttributedString:[BeatTagging styledListTagFor:@"Cast" color:NSColor.whiteColor]];
 		for (NSString *name in (NSArray*)tags[@"Cast"]) {
-			[result appendString:name];
-			[result appendString:@"\n"];
+			[result appendAttributedString:[self str:name]];
+			[result appendAttributedString:[self str:@"\n"]];
 		}
 		
 		tags[@"Cast"] = nil;
-		[result appendString:@"\n"];
+		[result appendAttributedString:[self str:@"\n"]];
 	}
 	
 	for (NSString* tag in tags.allKeys) {
 		NSArray *items = tags[tag];
 		if (items.count) {
-			[result appendString:[items componentsJoinedByString:@"\n"]];
-			[result appendString:@"\n"];
+			[result appendAttributedString:[BeatTagging styledListTagFor:tag color:NSColor.whiteColor]];
+			[result appendAttributedString:[self str:[items componentsJoinedByString:@"\n"]]];
+			[result appendAttributedString:[self str:@"\n\n"]];
 		}
 	}
 	
 	return result;
 }
 
+- (void)setupTextView:(NSTextView*)textView {
+	textView.textContainerInset = (NSSize){ 8, 8 };
+}
+
 // String helpers
+- (NSAttributedString*)str:(NSString*)string {
+	return [self string:string withColor:NSColor.whiteColor];
+}
 - (NSAttributedString*)string:(NSString*)string withColor:(NSColor*)color {
-	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:NSFont.systemFontSize], NSForegroundColorAttributeName: color }];
+	if (!color) color = NSColor.whiteColor;
+	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:UIFontSize], NSForegroundColorAttributeName: color }];
 }
 - (NSAttributedString*)boldedString:(NSString*)string color:(NSColor*)color {
-	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [NSFont boldSystemFontOfSize:NSFont.systemFontSize], NSForegroundColorAttributeName: color }];
+	if (!color) color = NSColor.whiteColor;
+	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [NSFont boldSystemFontOfSize:UIFontSize], NSForegroundColorAttributeName: color }];
 }
 
 @end

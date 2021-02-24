@@ -554,7 +554,7 @@
 	
 	// Find and remove suffix
 	NSRange suffixRange = [name rangeOfString:@"("];
-	if (suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
+	if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
 	
 	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }

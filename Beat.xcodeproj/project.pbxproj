@@ -283,6 +283,8 @@
 		B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B62019E1D6FA000489C4 /* Cocoa.framework */; };
 		B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; };
 		B6F4A2D5221EEDDC0065D9CB /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B6F5420525E2A15900D14E85 /* TagTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F5420425E2A15900D14E85 /* TagTextView.m */; };
+		B6F5420625E2A15900D14E85 /* TagTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F5420425E2A15900D14E85 /* TagTextView.m */; };
 		B6FD5D8F2563B5320037ACBA /* HTMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FD5D872563B5320037ACBA /* HTMLParser.m */; };
 		B6FD5D902563B5320037ACBA /* HTMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FD5D872563B5320037ACBA /* HTMLParser.m */; };
 		B6FD5D912563B5320037ACBA /* GTMNSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FD5D8B2563B5320037ACBA /* GTMNSString+HTML.m */; };
@@ -599,6 +601,8 @@
 		B6F360AA250127C1001ACAEE /* BeatTimeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTimeline.m; sourceTree = "<group>"; };
 		B6F49D2E246D66B0006D88D4 /* Beat Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
+		B6F5420325E2A15900D14E85 /* TagTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TagTextView.h; sourceTree = "<group>"; };
+		B6F5420425E2A15900D14E85 /* TagTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TagTextView.m; sourceTree = "<group>"; };
 		B6FD5D872563B5320037ACBA /* HTMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTMLParser.m; sourceTree = "<group>"; };
 		B6FD5D892563B5320037ACBA /* GTMNSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTMNSString+HTML.h"; sourceTree = "<group>"; };
 		B6FD5D8A2563B5320037ACBA /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
@@ -999,6 +1003,8 @@
 				B61061E92590DB66001947D6 /* BeatModalInput.m */,
 				B6FF56DB25AA5082004E4752 /* BeatBrowserView */,
 				B6C84CA825AA566700BDF974 /* BeatAboutScreen */,
+				B6F5420325E2A15900D14E85 /* TagTextView.h */,
+				B6F5420425E2A15900D14E85 /* TagTextView.m */,
 			);
 			name = "User Interface";
 			path = "../Beat/User Interface";
@@ -1673,6 +1679,7 @@
 				B66F463D2565ADA0003748DA /* DiffMatchPatch.m in Sources */,
 				B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */,
 				B69154652480EB7E002393D1 /* RoundedButton.m in Sources */,
+				B6F5420525E2A15900D14E85 /* TagTextView.m in Sources */,
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
 				B67B95D2256DB52000DFECB1 /* BeatSeriesPrinting.m in Sources */,
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
@@ -1851,6 +1858,7 @@
 				B6F49D02246D66B0006D88D4 /* RecentFiles.m in Sources */,
 				B6916C0125D135930037EF6A /* BeatFDXExport.m in Sources */,
 				B66F463A2565ADA0003748DA /* NSString+JavaSubstring.m in Sources */,
+				B6F5420625E2A15900D14E85 /* TagTextView.m in Sources */,
 				B6F49D03246D66B0006D88D4 /* ScrollView.m in Sources */,
 				B66F46382565ADA0003748DA /* NSString+UnicharUtilities.m in Sources */,
 				B6342D6925682D7D0034D54F /* OutlineViewItem.m in Sources */,

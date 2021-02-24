@@ -52,6 +52,8 @@ typedef enum : NSInteger {
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (void)bakeTags;
 - (NSArray*)individualTags;
+- (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
+- (void)setupTextView:(NSTextView*)textView;
 
 @end
 

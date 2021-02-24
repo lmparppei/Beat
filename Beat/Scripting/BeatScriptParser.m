@@ -26,6 +26,7 @@
 #import "OutlineScene.h"
 #import "ApplicationDelegate.h"
 #import "BeatPluginManager.h"
+#import "BeatTagging.h"
 #import <PDFKit/PDFKit.h>
 
 @interface BeatScriptParser ()
@@ -63,7 +64,8 @@
 
 #pragma mark - Running Scripts
 
-- (void)runPlugin:(BeatPlugin*)plugin {
+- (void)runPlugin:(BeatPlugin*)plugin
+{
 	self.plugin = plugin;
 	_pluginName = plugin.name;
 	
@@ -72,7 +74,8 @@
 	[self runScript:plugin.script];
 }
 
-- (void)runScript:(NSString*)string {
+- (void)runScript:(NSString*)string
+{
 	[self setJSData];
 	
 	JSValue *value = [_context evaluateScript:string];
@@ -85,7 +88,8 @@
 }
 
 - (void)end { [self endScript]; } // Alias
-- (void)endScript {
+- (void)endScript
+{
 	// Null everything
 	_context = nil;
 	_vm = nil;
@@ -105,7 +109,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 #pragma mark - File i/o
 
-- (void)saveFile:(NSString*)format callback:(JSValue*)callback {
+- (void)saveFile:(NSString*)format callback:(JSValue*)callback
+{
 	NSSavePanel *savePanel = [NSSavePanel savePanel];
 	savePanel.allowedFileTypes = @[format];
 	[savePanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse returnCode) {
@@ -119,7 +124,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		}
 	}];
 }
-- (bool)writeToFile:(NSString*)path content:(NSString*)content {
+- (bool)writeToFile:(NSString*)path content:(NSString*)content
+{
 	NSError *error;
 	[content writeToFile:path atomically:NO encoding:NSUTF8StringEncoding error:&error];
 	
@@ -131,7 +137,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	}
 }
 
-- (void)openFile:(NSArray*)formats callBack:(JSValue*)callback {
+- (void)openFile:(NSArray*)formats callBack:(JSValue*)callback
+{
 	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
 	openPanel.allowedFileTypes = formats;
 	[openPanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse result) {
@@ -146,7 +153,9 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		}
 	}];
 }
-- (NSString*)fileToString:(NSString*)path {
+
+- (NSString*)fileToString:(NSString*)path
+{
 	NSError *error;
 	NSString *result = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
 	
@@ -157,7 +166,9 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		return result;
 	}
 }
-- (NSString*)pdfToString:(NSString*)path {
+
+- (NSString*)pdfToString:(NSString*)path
+{
 	NSMutableString *result = [NSMutableString string];
 	
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:[NSURL fileURLWithPath:path]];
@@ -172,7 +183,9 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	
 	return result;
 }
-- (NSString*)assetAsString:(NSString *)filename {
+
+- (NSString*)assetAsString:(NSString *)filename
+{
 	if ([_plugin.files containsObject:filename]) {
 		NSString *path = [[BeatPluginManager.sharedManager pathForPlugin:_plugin.name] stringByAppendingPathComponent:filename];
 		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
@@ -182,20 +195,28 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 #pragma mark - Scripting methods accessible via JS
 
-- (void)log:(NSString*)string {
+- (void)log:(NSString*)string
+{
 	NSLog(@"# %@", string);
 }
 
-- (void)scrollTo:(NSInteger)location {
+- (void)scrollTo:(NSInteger)location
+{
 	[self.delegate scrollTo:location];
 }
-- (void)scrollToLineIndex:(NSInteger)index {
+
+- (void)scrollToLineIndex:(NSInteger)index
+{
 	[self.delegate scrollToLineIndex:index];
 }
-- (void)scrollToSceneIndex:(NSInteger)index {
+
+- (void)scrollToSceneIndex:(NSInteger)index
+{
 	[self.delegate scrollToSceneIndex:index];
 }
-- (void)scrollToScene:(OutlineScene*)scene {
+
+- (void)scrollToScene:(OutlineScene*)scene
+{
 	@try {
 		[self.delegate scrollToScene:scene];
 	}
@@ -204,10 +225,13 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	}
 }
 
-- (void)addString:(NSString*)string toIndex:(NSUInteger)index {
+- (void)addString:(NSString*)string toIndex:(NSUInteger)index
+{
 	[self.delegate addString:string atIndex:index];
 }
-- (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string {
+
+- (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string
+{
 	NSRange range = NSMakeRange(from, length);
 	@try {
 		[self.delegate replaceRange:range withString:string];
@@ -216,14 +240,20 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		[self alert:@"Selection out of range" withText:@"Plugin tried to select something that was out of range. Further errors might ensue."];
 	}
 }
-- (NSRange)selectedRange {
+
+- (NSRange)selectedRange
+{
 	return self.delegate.selectedRange;
 }
-- (void)setSelectedRange:(NSInteger)start to:(NSInteger)length {
+
+- (void)setSelectedRange:(NSInteger)start to:(NSInteger)length
+{
 	NSRange range = NSMakeRange(start, length);
 	[self.delegate setSelectedRange:range];
 }
-- (NSString*)getText {
+
+- (NSString*)getText
+{
 	NSMutableString *string = [NSMutableString string];
 	
 	for (Line* line in self.delegate.parser.lines) {
@@ -233,14 +263,17 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return string;
 }
 
-- (void)alert:(NSString*)title withText:(NSString*)info {
+- (void)alert:(NSString*)title withText:(NSString*)info
+{
 	if ([info isEqualToString:@"undefined"]) info = @"";
 	
 	NSAlert *alert = [self dialog:title withInfo:info];
 	[alert addButtonWithTitle:@"OK"];
 	[alert runModal];
 }
-- (bool)confirm:(NSString*)title withInfo:(NSString*)info {
+
+- (bool)confirm:(NSString*)title withInfo:(NSString*)info
+{
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = title;
 	alert.informativeText = info;
@@ -255,7 +288,9 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		return NO;
 	}
 }
-- (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText {
+
+- (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText
+{
 	if ([placeholder isEqualToString:@"undefined"]) placeholder = @"";
 	if ([defaultText isEqualToString:@"undefined"]) defaultText = @"";
 	
@@ -279,7 +314,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	}
 }
 
-- (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items {
+- (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items
+{
 	NSAlert *alert = [self dialog:prompt withInfo:info];
 	[alert addButtonWithTitle:@"OK"];
 	[alert addButtonWithTitle:@"Cancel"];
@@ -305,7 +341,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	}
 }
 
-- (NSAlert*)dialog:(NSString*)title withInfo:(NSString*)info {
+- (NSAlert*)dialog:(NSString*)title withInfo:(NSString*)info
+{
 	if ([info isEqualToString:@"undefined"]) info = @"";
 
 	NSAlert *alert = [[NSAlert alloc] init];
@@ -315,7 +352,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return alert;
 }
 
-- (void)setUserDefault:(NSString*)settingName setting:(id)value {
+- (void)setUserDefault:(NSString*)settingName setting:(id)value
+{
 	if (!_pluginName) {
 		[self alert:@"No plugin name" withText:@"You need to specify plugin name before trying to save settings."];
 		return;
@@ -324,7 +362,9 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
 	[[NSUserDefaults standardUserDefaults] setValue:value forKey:keyName];
 }
-- (id)getUserDefault:(NSString*)settingName {
+
+- (id)getUserDefault:(NSString*)settingName
+{
 	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
 	id value = [[NSUserDefaults standardUserDefaults] valueForKey:keyName];
 	return value;
@@ -332,7 +372,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 #pragma mark - HTML panel magic
 
-- (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback {
+- (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+{
 	if (_delegate.thisWindow.attachedSheet) return;
 	
 	if (width <= 0) width = 600;
@@ -374,7 +415,9 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		self.sheet = nil;
 	}];
 }
-- (void)fetchHTMLPanelDataAndClose {
+
+- (void)fetchHTMLPanelDataAndClose
+{
 	[_sheetWebView evaluateJavaScript:@"sendBeatData();" completionHandler:nil];
 	
 	// The sheet will close automatically after that, but run an alert if the sheet didn't close in time
@@ -386,12 +429,16 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		}
 	});
 }
-- (void)closePanel:(id)sender {
+
+- (void)closePanel:(id)sender
+{
 	if (self.delegate.thisWindow.attachedSheet) {
 		[self.delegate.thisWindow endSheet:_sheet];
 	}
 }
-- (void)receiveDataFromHTMLPanel:(NSString*)json {
+
+- (void)receiveDataFromHTMLPanel:(NSString*)json
+{
 	// This method actually closes the HTML panel.
 	// It is called by sending a message to the script parser via webkit message handler,
 	// so this works asynchronously. Keep in mind.
@@ -421,12 +468,22 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	}
 }
 
+#pragma mark - Tagging interface
+
+- (NSDictionary*)tagsForScene:(OutlineScene *)scene
+{
+	return [self.delegate.tagging tagsForScene:scene];
+}
+
+
 #pragma mark - Parser data delegation
 
-- (NSArray*)lines {
+- (NSArray*)lines
+{
 	return self.delegate.parser.lines;
 }
-- (NSArray*)linesForScene:(id)sceneId {
+- (NSArray*)linesForScene:(id)sceneId
+{
 	NSMutableArray *lines = [NSMutableArray array];
 	OutlineScene *scene = (OutlineScene*)sceneId;
 	
@@ -443,29 +500,38 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return lines;
 }
 
-- (NSArray*)scenes {
+- (NSArray*)scenes
+{
 	return self.delegate.parser.scenes;
 }
-- (NSArray*)outline {
+
+- (NSArray*)outline
+{
 	return self.delegate.parser.outline;
 }
-- (void)parse {
+
+- (void)parse
+{
 	[self.delegate.parser createOutline];
 	[self setJSData];
 }
-- (void)newDocument:(NSString*)string {
+
+- (void)newDocument:(NSString*)string
+{
 	if (string.length) [(ApplicationDelegate*)NSApp.delegate newDocumentWithContents:string];
 	else [[NSDocumentController sharedDocumentController] newDocument:nil];
 }
 
-- (void)setJSData {
+- (void)setJSData
+{
 	[_context setObject:self.delegate.parser.lines forKeyedSubscript:@"Lines"];
 	[_context setObject:self.delegate.parser.outline forKeyedSubscript:@"Outline"];
 	[_context setObject:self.delegate.parser.scenes forKeyedSubscript:@"Scenes"];
 }
 
 
-- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
+- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
+{
 	if ([message.name isEqualToString:@"log"]) {
 		[self log:message.body];
 	}
@@ -475,3 +541,11 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 }
 
 @end
+/*
+
+ No one is thinking about the flowers
+ no one is thinking about the fish
+ no one wants
+ to believe that the garden is dying
+ 
+ */
