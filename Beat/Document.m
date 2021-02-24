@@ -36,7 +36,7 @@
  
  As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg. Some clumsy stuff is still lingering around, unfortunately. I'll keep on fixing those when I have the time.
  
- I originally started the project to combat creative block while overcoming some PTSD symptoms. The struggle still continues every day, but coding is a nice way of escaping those feelings. If you are in an abusive relationship, leave RIGHT NOW. The other person will not get better, or at least it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file. Anyway, I'm glad to say that things are constantly turning for the better.
+ I originally started the project to combat a creative block, while overcoming some difficult PTSD symptoms. Coding helped to escape those feelings. If you are in an abusive relationship, leave RIGHT NOW. You might love that person, but it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file. Anyway, I'm glad to say that things have turned for the better.
  
  Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
  
@@ -54,9 +54,9 @@
  
  
  Lauri-Matti Parppei
- Helsinki
+ Helsinki/Kokemäki
  Finland
- 2019-2020
+ 2019-2021
  
  
  = = = = = = = = = = = = = = = = = = = = = = = =
@@ -187,16 +187,20 @@
 //
 // 1) IBOutletCollection is iOS-only
 // 2) This computer (and my phone and everything else) is made in
-//    subhuman conditions in some sweatshop in China, just to add
-//    to your fucking sky-high profits.
+//    horrible conditions in some sweatshop in China, just to add
+//    to your fucking sky-high profits, you fucking despicable capitalist fucks.
 //
 //    You are the most profitable company operating in our current monetary
 //    and economic system. EQUALITY, WELFARE AND FREEDOM FOR EVERYONE.
 //    FUCK YOU, APPLE.
-
+//
 //    2020 edit: FUCK YOU EVEN MORE, fucking capitalist motherfuckers, for
-//    allowing SLAVE LABOUR in your subcontracting factories, you fucking
+//    allowing UIGHUR SLAVE LABOUR in your subcontracting factories, you fucking
 //    pieces of human garbage!!! Go fuck yourself, Apple. Fucking evil corp!!!
+//
+//    2021 edit: YOU STILL HAVEN'T FIXED ANY OF THE PROBLEMS STATED ABOVE.
+//	  If you can't make a big enough profit without using slave labour, maybe
+//    you should go FUCK YOURSELVES.
 
 //    So, back to the code:
 
@@ -256,14 +260,10 @@
 // Content buffer
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
 
+@property (nonatomic) NSUInteger fontSize;
 @property (strong, nonatomic) NSFont *sectionFont;
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
 @property (strong, nonatomic) NSFont *synopsisFont;
-
-// Weird stuff which... uh. Forget about it for now.
-@property (nonatomic) NSUInteger fontSize;
-@property (nonatomic) NSUInteger zoomLevel;
-@property (nonatomic) NSUInteger zoomCenter;
 
 // Magnification
 @property (nonatomic) CGFloat scaleFactor;
@@ -472,6 +472,9 @@
 	[self loadSelectedTheme:false];
 	_nightMode = [self isDark];
 	
+	// Load tags (WIP: THIS SHOULD HAPPEN LATER)
+	[self setupTagging];
+	
 	// Setup views
 	[self setupWindow];
 	[self readUserSettings];
@@ -488,7 +491,7 @@
 	[self setupTouchTimeline];
 	[self setupAnalysis];
 	[self setupColorPicker];
-	
+		
 	// Setup layout here first
 	[self setupLayoutWithPagination:NO];
 	
@@ -521,9 +524,6 @@
 	// Ensure layout
 	[self setupLayoutWithPagination:YES];
 	[self initAutosave];
-	
-	// Load tags
-	[self setupTagging];
 }
 
 - (void)readUserSettings {
@@ -3321,7 +3321,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 // Some weirdness because of the Writer legacy. Writer had real themes, and this function loaded the selected theme for every open window. We only have day/night, but the method names remain.
-// WIP: Rename, conform + stylize this part
 - (void)updateTheme {
 	[self setThemeFor:self setTextColor:NO];
 }
@@ -4155,14 +4154,7 @@ static NSString *forceDualDialogueSymbol = @"^";
  
  Timeline has been rewritten to be a native Cocoa class instead of the
  javascript/webkit mess.
- 
- There is also a simple attempt at measuring temporal scene lengths.
- It is not scientific. I'm counting beats, and about 55 beats equal 1 minute.
- 
- Characters per line: ca 58
- Lines per page: ca 55 -> 1 minute
- Dialogue multiplier: 1,64 (meaning, how much more dialogue takes space)
- 
+   
 */
 
 - (IBAction)toggleTimeline:(id)sender
@@ -4208,70 +4200,6 @@ static NSString *forceDualDialogueSymbol = @"^";
 	return;
 }
 
-// WIP: MOVE THIS SOMEWHERE
-- (NSInteger)chronometryFor:(OutlineScene*)scene {
-	// Arbitrary values
-	NSInteger charsPerLine = 57;
-	NSInteger charsPerDialogue = 35;
-	
-	NSInteger length = 1;
-	NSInteger position = [[self.parser lines] indexOfObject:scene.line];
-	NSInteger index = 0;
-	
-	bool previousLineEmpty = false;
-	
-	// Loop the lines until next scene
-	while (position + index + 1 < [[self.parser lines] count]) {
-		index++;
-		Line* line = [[self.parser lines] objectAtIndex:position + index];
-		
-		// Break away when next scene is encountered
-		if (line.type == heading) break;
-		
-		// Don't count in synopses or sections
-		if (line.type == synopse || line.type == section) continue;
-		
-		// Empty row equals 1 beat
-		if ([line.string isEqualToString:@""]) {
-			if (previousLineEmpty) continue;
-			
-			previousLineEmpty = true;
-			length += 1;
-			continue;
-		} else {
-			previousLineEmpty = false;
-		}
-
-		NSInteger lineLength = [line.string length];
-		
-		// We need to take omitted ranges into consideration, so they won't add up to scene lengths
-		__block NSUInteger omitLength = 0;
-		[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-			omitLength += range.length;
-		}];
-		if (lineLength - omitLength >= 0) lineLength -= omitLength;
-		
-		// Character cue and parenthetical add 1 beat each
-		if (line.type == character || line.type == parenthetical) {
-			length += 1;
-			continue;
-		}
-		
-		if (line.type == dialogue) {
-			length += (lineLength + charsPerDialogue - 1) / charsPerDialogue;
-			continue;
-		}
-		
-		if (line.type == action) {
-			NSInteger actionLength = (lineLength + charsPerLine - 1) / charsPerLine;
-			if (actionLength == 0) actionLength = 1;
-			length += actionLength;
-		}
-	}
-	
-	return length;
-}
-
 /*
  
  nyt tulevaisuus
@@ -4279,7 +4207,7 @@ static NSString *forceDualDialogueSymbol = @"^";
  nyt tulevaisuus
  on musta aukko
  
- */
+*/
 
 
 #pragma mark - Timeline Delegation
@@ -4316,7 +4244,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 }
 
 - (void) setupAnalysis {
-	// N.B. Genders are saved locally in app preferences (for now)
+	// N.B. Genders are saved locally in app preferences (for now - this could very well be saved into document settings, too)
 	_characterGenders = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:[self fileNameString]];
 }
 - (void) saveGenders {

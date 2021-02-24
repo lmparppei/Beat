@@ -73,7 +73,7 @@
 - (NSString*)getSettingsString
 {
 	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_settings options:NSJSONWritingPrettyPrinted error:&error];
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_settings options:0 error:&error]; // Do NOT pretty print this to make the block more compact
 
 	if (! jsonData) {
 		NSLog(@"%s: error: %@", __func__, error.localizedDescription);

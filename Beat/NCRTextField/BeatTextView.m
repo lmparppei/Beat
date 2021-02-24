@@ -423,6 +423,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)insert:(id)sender {
+	if (self.popupMode != Autocomplete) return;
+	
 	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
 		NSString *string = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
 		NSInteger beginningOfWord = self.selectedRange.location - self.substring.length;

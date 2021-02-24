@@ -54,7 +54,7 @@ JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width hei
 @protocol BeatScriptingDelegate <NSObject>
 @property (strong, nonatomic) ContinousFountainParser *parser;
 @property (weak, readonly) NSWindow *thisWindow;
-@property (weak, readonly) BeatTagging *tagging;
+@property (readonly) BeatTagging *tagging;
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 - (void)scrollTo:(NSInteger)location;

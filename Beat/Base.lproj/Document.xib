@@ -566,22 +566,22 @@
                                                         <outlet property="topOrRightView" destination="Sy0-kF-Tby" id="dJa-bK-lQ4"/>
                                                     </connections>
                                                 </imageView>
-                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Thg-Wg-JDd" userLabel="Tagging View" customClass="ColorView">
+                                                <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="Thg-Wg-JDd" userLabel="Tagging View" customClass="ColorView">
                                                     <rect key="frame" x="993" y="0.0" width="180" height="541"/>
                                                     <subviews>
-                                                        <scrollView fixedFrame="YES" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" id="aV3-wb-1do">
-                                                            <rect key="frame" x="0.0" y="0.0" width="180" height="541"/>
+                                                        <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" id="aV3-wb-1do">
+                                                            <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BNa-TT-HYu">
-                                                                <rect key="frame" x="0.0" y="0.0" width="180" height="541"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dhb-rg-0uZ">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="180" height="541"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                        <size key="minSize" width="180" height="541"/>
+                                                                        <size key="minSize" width="180" height="507"/>
                                                                         <size key="maxSize" width="240" height="10000000"/>
                                                                         <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                     </textView>
@@ -592,10 +592,28 @@
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                             <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="mjg-be-mxt">
-                                                                <rect key="frame" x="164" y="0.0" width="16" height="541"/>
+                                                                <rect key="frame" x="164" y="0.0" width="16" height="507"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                         </scrollView>
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JKs-8L-Wv0">
+                                                            <rect key="frame" x="28" y="521" width="146" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Tagging" id="Zo3-K1-aDo">
+                                                                <font key="font" size="10" name="HelveticaNeue-Light"/>
+                                                                <color key="textColor" red="0.96462065149999998" green="1" blue="0.98077592769999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                            </textFieldCell>
+                                                        </textField>
+                                                        <box appearanceType="darkAqua" verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="INw-Qi-9UH">
+                                                            <rect key="frame" x="0.0" y="508" width="180" height="5"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        </box>
+                                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vgJ-8J-sjs">
+                                                            <rect key="frame" x="10" y="519" width="17" height="14"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSTouchBarTagIconTemplate" id="eop-Wt-56O"/>
+                                                        </imageView>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="180" id="O0i-Sv-K16"/>
@@ -715,11 +733,11 @@
                             </tabViewItem>
                             <tabViewItem label="Render" identifier="2" id="Ycm-en-OeX" userLabel="Render Tab">
                                 <view key="view" id="ECs-3D-rzc">
-                                    <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ddy-rn-xRJ">
-                                            <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
                                             <wkWebViewConfiguration key="configuration">
                                                 <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                                 <wkPreferences key="preferences" javaScriptCanOpenWindowsAutomatically="NO"/>
@@ -736,11 +754,11 @@
                             </tabViewItem>
                             <tabViewItem label="Cards" identifier="3" id="798-ya-EGc" userLabel="Cards Tab">
                                 <view key="view" id="fPc-ie-Xae">
-                                    <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2ja-Hc-I6Z">
-                                            <rect key="frame" x="0.0" y="0.0" width="1100" height="661"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
                                             <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat">
                                                 <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                                 <wkPreferences key="preferences"/>
@@ -1580,6 +1598,7 @@ Gw
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
         <image name="NSTouchBarGoDownTemplate" width="16" height="30"/>
         <image name="NSTouchBarGoUpTemplate" width="16" height="30"/>
+        <image name="NSTouchBarTagIconTemplate" width="23" height="30"/>
         <image name="OutlineIcon" width="370" height="370"/>
         <image name="OutlineIcon_white" width="512" height="512"/>
         <image name="PreviewIcon" width="370" height="370"/>

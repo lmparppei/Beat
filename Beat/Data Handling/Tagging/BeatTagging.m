@@ -223,7 +223,7 @@
 			if (tag == CharacterTag) string = string.uppercaseString;
 			
 			NSMutableArray *tagArray = (NSMutableArray*)tags[key];
-			if (![tagArray doesContain:string]) {
+			if (![tagArray containsObject:string]) {
 				[tagArray addObject:string];
 			}
 		}
@@ -240,8 +240,8 @@
 	
 	for (Line* line in lines) {
 		if (line.type == character) {
-			NSString *name = line.characterName;
-			if (![tags[@"Cast"] doesContain:name]) [tags[@"Cast"] addObject:name];
+			NSString *name = line.characterName.uppercaseString;
+			if (![(NSMutableArray*)tags[@"Cast"] containsObject:name]) [tags[@"Cast"] addObject:name];
 		}
 	}
 	
@@ -304,6 +304,8 @@
 	[result appendAttributedString:[self boldedString:scene.stringForDisplay color:nil]];
 	[result appendAttributedString:[self str:@"\n\n"]];
 	
+	NSInteger headingLength = result.length;
+	
 	NSArray *cast = tags[@"Cast"];
 	if (cast.count) {
 		[result appendAttributedString:[BeatTagging styledListTagFor:@"Cast" color:NSColor.whiteColor]];
@@ -323,6 +325,10 @@
 			[result appendAttributedString:[self str:[items componentsJoinedByString:@"\n"]]];
 			[result appendAttributedString:[self str:@"\n\n"]];
 		}
+	}
+	
+	if (result.length == headingLength) {
+		[result appendAttributedString:[self string:@"No tagging data. Select a range in the screenplay to start tagging." withColor:NSColor.systemGrayColor]];
 	}
 	
 	return result;

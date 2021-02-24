@@ -89,6 +89,9 @@
 	BeatPlugin *plugin = [[BeatPlugin alloc] init];
 	plugin.name = name;
 	
+	// Uh. Let's reload the plugin array. The user might have installed new ones.
+	
+	[self loadPlugins];
 	NSString *filename = _plugins[name];
 	
 	// Check if it's a plugin folder
@@ -166,9 +169,9 @@
 	NSMenuItem *menuItem = parentMenu.itemArray.firstObject;
 	[parentMenu removeAllItems];
 	
-	BeatPluginManager *plugins = [[BeatPluginManager alloc] init];
+	[self loadPlugins];
 	
-	for (NSString *pluginName in plugins.pluginNames) {
+	for (NSString *pluginName in self.pluginNames) {
 		NSMenuItem *item = [menuItem copy];
 		item.title = pluginName;
 		[parentMenu addItem:item];
