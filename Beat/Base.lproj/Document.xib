@@ -470,12 +470,9 @@
                                                                 <outlet property="timerView" destination="hjj-OY-sw5" id="MrE-Zu-lSD"/>
                                                             </connections>
                                                         </scrollView>
-                                                        <customView hidden="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hjj-OY-sw5" customClass="BeatTimerView">
-                                                            <rect key="frame" x="643" y="15" width="30" height="30"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="30" id="96V-gq-ibs"/>
-                                                                <constraint firstAttribute="height" constant="30" id="S8X-ry-Uwr"/>
-                                                            </constraints>
+                                                        <customView hidden="YES" id="hjj-OY-sw5" customClass="BeatTimerView">
+                                                            <rect key="frame" x="638" y="15" width="30" height="30"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                             <connections>
                                                                 <outlet property="delegate" destination="rsQ-wl-KkE" id="Tuc-ez-Ph4"/>
                                                                 <outlet property="parentView" destination="Mky-48-wwA" id="Jsm-RL-H5c"/>
@@ -549,8 +546,6 @@
                                                         <constraint firstAttribute="trailing" secondItem="MJt-fS-Zk9" secondAttribute="trailing" constant="25" id="MoW-nY-FZ3"/>
                                                         <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" id="Rri-nf-aFA"/>
                                                         <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="VFm-hQ-O9D"/>
-                                                        <constraint firstAttribute="trailing" secondItem="hjj-OY-sw5" secondAttribute="trailing" constant="20" id="VUd-wP-yYh"/>
-                                                        <constraint firstAttribute="bottom" secondItem="hjj-OY-sw5" secondAttribute="bottom" constant="15" id="bvt-He-MHg"/>
                                                         <constraint firstItem="MJt-fS-Zk9" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" constant="15" id="zrM-cS-i7r"/>
                                                     </constraints>
                                                 </customView>
@@ -597,9 +592,9 @@
                                                             </scroller>
                                                         </scrollView>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JKs-8L-Wv0">
-                                                            <rect key="frame" x="28" y="521" width="146" height="14"/>
+                                                            <rect key="frame" x="28" y="520" width="146" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="left" title="Tagging" id="Zo3-K1-aDo">
+                                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Tagging" id="Zo3-K1-aDo">
                                                                 <font key="font" size="10" name="HelveticaNeue-Light"/>
                                                                 <color key="textColor" red="0.96462065149999998" green="1" blue="0.98077592769999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -610,9 +605,9 @@
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         </box>
                                                         <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vgJ-8J-sjs">
-                                                            <rect key="frame" x="10" y="519" width="17" height="14"/>
+                                                            <rect key="frame" x="10" y="519" width="12" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSTouchBarTagIconTemplate" id="eop-Wt-56O"/>
+                                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Tag" id="eop-Wt-56O"/>
                                                         </imageView>
                                                     </subviews>
                                                     <constraints>
@@ -1598,11 +1593,11 @@ Gw
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>
         <image name="NSTouchBarGoDownTemplate" width="16" height="30"/>
         <image name="NSTouchBarGoUpTemplate" width="16" height="30"/>
-        <image name="NSTouchBarTagIconTemplate" width="23" height="30"/>
         <image name="OutlineIcon" width="370" height="370"/>
         <image name="OutlineIcon_white" width="512" height="512"/>
         <image name="PreviewIcon" width="370" height="370"/>
         <image name="Resize" width="50" height="26"/>
+        <image name="Tag" width="256" height="256"/>
         <image name="TimelineIcon" width="512" height="512"/>
         <image name="TimelineIcon_white" width="512" height="512"/>
         <image name="ToolbarTimeline_white" width="512" height="300"/>

@@ -10,10 +10,6 @@
 
 /*
  
- TODO:
- - Remove forced scene numbers
- 
- 
  This implementation relies on a semi-clever hack. I'm converting style ranges (bold, italic, underline)
  created by the parser into custom attributes (ie. "Style": "Bold"). That attributed string can be
  requested from Line objects, along with ranges which contain Fountain markup, and we can use that data
@@ -23,8 +19,7 @@
  convoluted system right now, and baking tags into Line objects requires the original attributed
  string from the editor.
 
- As I'm writing this, screenplay tagging is very, very close to working. It requires some tweaking.
- The logic behind
+ As I'm writing this, screenplay tagging is very, very close to working, but requires some tweaking.
  
  Production tag data is wrapped in <TagData>, followed by <TagCategories>, <TagDefinitions> and <Tags>.
  
@@ -80,6 +75,7 @@
  
  For the individual tag IDs we need to create a random hex number. It doesn't seem to have any logic to it,
  just needs to be formatted like this: ########-####-####-####-############
+ (And now that I'm learning about UUIDs, I'm kind of ashmed of the comment above, ha ha)
  
  Tags can then be attached to the screenplay using <Text TagNumber="1">some nice music</Text>
  
@@ -91,6 +87,8 @@
 #import "BeatFDXExport.h"
 #import "ContinousFountainParser.h"
 #import "BeatTagging.h"
+#import "BeatTag.h"
+#import "TagDefinition.h"
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
 
 static NSDictionary *fdxIds;
@@ -102,7 +100,10 @@ static NSDictionary *fdxIds;
 
 @property (nonatomic) NSMutableDictionary *tagData;
 
-@property (nonatomic) NSMutableString *tagDefinitions;
+@property (nonatomic) NSMutableArray *tagDefinitions;
+@property (nonatomic) NSMutableArray *tagItems;
+
+@property (nonatomic) NSMutableString *tagDefinitionsStr;
 @property (nonatomic) NSMutableString *tagIds;
 @property (nonatomic) NSMutableString *tagsStr;
 @property (nonatomic) NSInteger tagNumber;
@@ -156,14 +157,15 @@ static NSDictionary *fdxIds;
 	});
 	
 	self.parser = [[ContinousFountainParser alloc] initWithString:string];
-	if (attrString && tags.count) [BeatTagging bakeTags:tags inString:attrString toLines:self.parser.lines];
+	if (attrString && tags.count) [BeatTagging bakeAllTagsInString:attrString toLines:self.parser.lines];
 	
-	self.tagNumber = 0;
 	self.tags = [NSArray arrayWithArray:tags];
 	self.tagData = [NSMutableDictionary dictionary];
+
+	self.tagItems = [NSMutableArray array];
+	self.tagDefinitions = [NSMutableArray array];
 	
-	self.tagDefinitions = [NSMutableString string];
-	self.tagIds = [NSMutableString string];
+	self.tagDefinitionsStr = [NSMutableString string];
 	self.tagsStr = [NSMutableString string];
 	
 	[self createFDX];
@@ -229,7 +231,7 @@ static NSDictionary *fdxIds;
 							  @"    </TagCategories>\n"
 							 ];
 		[_result appendString:@"    <TagDefinitions>\n"];
-		[_result appendString:_tagDefinitions];
+		[_result appendString:_tagDefinitionsStr];
 		[_result appendString:@"    </TagDefinitions>\n"];
 		[_result appendString:@"    <Tags>\n"];
 		[_result appendString:_tagsStr];
@@ -555,12 +557,11 @@ static NSDictionary *fdxIds;
 		}
 		
 		// Tags for the current range
-		NSString *tagString = attrs[@"BeatTag"];
+		BeatTag *tag = attrs[@"BeatTag"];
 		NSString *tagAttribute = @"";
-		if (tagString.length) {
-			NSString *tagId = [self createId];
-			
-			NSInteger number = [self addFDXTag:tagString label:text tagId:tagId];
+		
+		if (tag) {
+			NSInteger number = [self addFDXTag:tag];
 			tagAttribute = format(@" TagNumber=\"%lu\"", number);
 		}
 		
@@ -574,71 +575,37 @@ static NSDictionary *fdxIds;
 	return xmlString;
 }
 
-- (NSInteger)addFDXTag:(NSString*)tagName label:(NSString*)text tagId:(NSString*)tagId {
-	/*
-	NSDictionary *existingItems = _tagData[tagName];
-	if (existingItems) {
-		// This tag already exists.
-		if (existingItems[text]) return [(NSNumber*)existingItems[text] integerValue];
+- (NSInteger)addFDXTag:(BeatTag*)tag {
+	if (![_tagItems containsObject:tag]) {
+		[_tagItems addObject:tag];
+		[_tagDefinitions addObject:tag.definition];
+		NSInteger number = [_tagItems indexOfObject:tag] + 1;
+		
+		// Add definition
+		NSDictionary *fdxTag = fdxIds[tag.key];
+	
+		NSString* definition = [NSString stringWithFormat:@"      <TagDefinition CatId=\"%@\" Id=\"%@\" Label=\"%@\" Number=\"%lu\"/>\n", fdxTag[@"id"], tag.defId.lowercaseString, tag.definition.name, number];
+		[_tagDefinitionsStr appendString:definition];
+		
+		// Add the tag itself
+		NSString *tagStr = [NSString stringWithFormat:
+						 @"      <Tag Number=\"%lu\">\n"
+						 @"        <DefId>%@</DefId>\n"
+						 @"      </Tag>\n",
+						 number, tag.defId.lowercaseString
+						];
+		[_tagsStr appendString:tagStr];
+		
+		// Return the number for to be used in the script
+		return number;
+	} else {
+		return [_tagItems indexOfObject:tag] + 1;
 	}
-	 */
-	
-	// Add to the number
-	_tagNumber += 1;
-	
-	NSDictionary *fdxData = fdxIds[tagName];
-	if (!fdxData) {
-		NSLog(@"FDXExport ERROR: No tag data found: %@", tagName);
-		return NSNotFound;
-	}
-
-	// Add definition to list with its category number
-	NSString *catId = fdxData[@"id"];
-	NSString* definition = [NSString stringWithFormat:@"      <TagDefinition CatId=\"%@\" Id=\"%@\" Label=\"%@\" Number=\"%lu\"/>\n", catId, tagId, text, _tagNumber];
-	[_tagDefinitions appendString:definition];
-	
-	// Add the tag itself
-	NSString *tag = [NSString stringWithFormat:
-					 @"      <Tag Number=\"%lu\">\n"
-					 @"        <DefId>%@</DefId>\n"
-					 @"      </Tag>\n",
-					 _tagNumber, tagId
-					];
-	[_tagsStr appendString:tag];
-	
-	return _tagNumber;
 }
 
 - (NSString*)createId {
-	// REWRITE MIGHT BE NEEDED:
-	// Compare to a list of predefined tags (maybe a multi-level dict?) and return the previous ID
-	// if a word is found which matches this current tag. Like Prop / Cloak, but not Costume / Cloak, though.
-	// (... uh, never mind - I'm still unsure how FDX tagging ACTUALLY works)
-	
-	// FDX element IDs look like this:
-	// 216f33fd-fc42-4269-be01-b05b18f815a0
-	
-	// It's not a hash or anything, just random numbers in a fixed sequence. I have no idea what
-	// they're going for here. At least the probability for us hitting the number twice is so
-	// astronomically small that I won't even bother to check if it's already used.
-
-	NSUInteger seq1 = arc4random() % 0xFFFFFFFF;
-	NSUInteger seq2 = arc4random() % 0xFFFF;
-	NSUInteger seq3 = arc4random() % 0xFFFF;
-	NSUInteger seq4 = arc4random() % 0xFFFF;
-	NSUInteger seq5 = arc4random() % 0xFFFFFF;
-	NSUInteger seq6 = arc4random() % 0xFFFFFF;
-	
-	NSString *hex = [NSString stringWithFormat:@"%@-%@-%@-%@-%@%@",
-					 [NSString stringWithFormat:@"%08lX", (unsigned long)seq1].lowercaseString,
-					 [NSString stringWithFormat:@"%04lX", (unsigned long)seq2].lowercaseString,
-					 [NSString stringWithFormat:@"%04lX", (unsigned long)seq3].lowercaseString,
-					 [NSString stringWithFormat:@"%04lX", (unsigned long)seq4].lowercaseString,
-					 [NSString stringWithFormat:@"%06lX", (unsigned long)seq5].lowercaseString,
-					 [NSString stringWithFormat:@"%06lX", (unsigned long)seq6].lowercaseString
-					 ];
-	NSLog(@"random id: %@", hex);
-	return hex;
+	NSUUID *uuid = [NSUUID UUID];
+	return [uuid UUIDString];
 }
 
 @end

@@ -110,7 +110,8 @@
 		_elementText = [NSMutableString string];
 	}
 	else if ([elementName isEqualToString:@"style"]) {
-		_style = (NSString*)attributes[@"basestylename"];
+		if (attributes[@"basestylename"]) _style = (NSString*)attributes[@"basestylename"];
+		if (attributes[@"basestyle"]) _style = (NSString*)attributes[@"basestyle"];
 		
 		if (attributes[@"synopsis"]) {
 			// Add synopsis to script
@@ -180,7 +181,7 @@
 		if ([_scriptLines count] > 0) {
 			NSString *previousLine = [_scriptLines lastObject];
 			
-			if ([previousLine length] > 0 && [_elementText length] > 0) {
+			if (previousLine.length > 0 && _elementText.length > 0) {
 				if ([_style isEqualToString:@"Character"] ||
 					[_style isEqualToString:@"Scene Heading"] ||
 					[_style isEqualToString:@"Action"]) {
@@ -231,6 +232,12 @@
 			else if ([_paraProperties[@"alignment"] isEqualToString:@"center"]) {
 				result = [NSString stringWithFormat:@"> %@ <", result];
 			}
+		}
+		
+		// Add () for parentheticals
+		if ([_style isEqualToString:@"Parenthetical"]) {
+			result = [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+			result = [NSString stringWithFormat:@"(%@)", result];
 		}
 		
 		// Add object

@@ -47,6 +47,10 @@
 		B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B623BD472549AFDA00201BC9 /* B_256_logo.png */; };
 		B623BD492549AFDA00201BC9 /* B_256_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B623BD472549AFDA00201BC9 /* B_256_logo.png */; };
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
+		B625686225ECE2F000A3A244 /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686125ECE2F000A3A244 /* TagDefinition.m */; };
+		B625686325ECE2F000A3A244 /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686125ECE2F000A3A244 /* TagDefinition.m */; };
+		B625686725ECF96100A3A244 /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686625ECF96100A3A244 /* BeatTag.m */; };
+		B625686825ECF96100A3A244 /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686625ECF96100A3A244 /* BeatTag.m */; };
 		B625F13E24327DE300873F62 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B629DBB4259CE8240007EA4E /* Gather Scenes by Color.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */; };
 		B629DBB5259CE8240007EA4E /* Gather Scenes by Color.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */; };
@@ -219,6 +223,8 @@
 		B6EAC18B25E67CCF00C23384 /* BeatTagButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */; };
 		B6EAC18C25E67CCF00C23384 /* BeatTagButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */; };
 		B6EB5170246E9621009014AB /* MarginView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB516F246E9621009014AB /* MarginView.m */; };
+		B6F15CE525E7B13000176946 /* BeatTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F15CE425E7B13000176946 /* BeatTagItem.m */; };
+		B6F15CE625E7B13000176946 /* BeatTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F15CE425E7B13000176946 /* BeatTagItem.m */; };
 		B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F360AA250127C1001ACAEE /* BeatTimeline.m */; };
 		B6F360AC250127C7001ACAEE /* BeatTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F360AA250127C1001ACAEE /* BeatTimeline.m */; };
 		B6F49CDD246D66B0006D88D4 /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
@@ -434,6 +440,10 @@
 		B623BD4D2549B06500201BC9 /* DocumentIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = DocumentIcon.icns; sourceTree = "<group>"; };
 		B624C144234BDE7100C438C7 /* BeatOutlineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatOutlineView.h; sourceTree = "<group>"; };
 		B624C145234BDE7100C438C7 /* BeatOutlineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatOutlineView.m; sourceTree = "<group>"; };
+		B625686025ECE2F000A3A244 /* TagDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TagDefinition.h; sourceTree = "<group>"; };
+		B625686125ECE2F000A3A244 /* TagDefinition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TagDefinition.m; sourceTree = "<group>"; };
+		B625686525ECF96100A3A244 /* BeatTag.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTag.h; sourceTree = "<group>"; };
+		B625686625ECF96100A3A244 /* BeatTag.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTag.m; sourceTree = "<group>"; };
 		B629DBB1259CE3230007EA4E /* About Plugins.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "About Plugins.md"; sourceTree = "<group>"; };
 		B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Gather Scenes by Color.beatPlugin"; sourceTree = "<group>"; };
 		B62A89B424806C8D0065A2BC /* FlatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FlatButton.swift; path = "Beat/User Interface/FlatButton.swift"; sourceTree = SOURCE_ROOT; };
@@ -601,6 +611,8 @@
 		B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagButton.m; sourceTree = "<group>"; };
 		B6EB516E246E9621009014AB /* MarginView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MarginView.h; path = "Beat/User Interface/MarginView.h"; sourceTree = SOURCE_ROOT; };
 		B6EB516F246E9621009014AB /* MarginView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MarginView.m; path = "Beat/User Interface/MarginView.m"; sourceTree = SOURCE_ROOT; };
+		B6F15CE325E7B13000176946 /* BeatTagItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagItem.h; sourceTree = "<group>"; };
+		B6F15CE425E7B13000176946 /* BeatTagItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagItem.m; sourceTree = "<group>"; };
 		B6F360A9250127C1001ACAEE /* BeatTimeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTimeline.h; sourceTree = "<group>"; };
 		B6F360AA250127C1001ACAEE /* BeatTimeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTimeline.m; sourceTree = "<group>"; };
 		B6F49D2E246D66B0006D88D4 /* Beat Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -961,6 +973,12 @@
 			children = (
 				B650D76B25CF349D0042010C /* BeatTagging.h */,
 				B650D76C25CF349D0042010C /* BeatTagging.m */,
+				B625686025ECE2F000A3A244 /* TagDefinition.h */,
+				B625686125ECE2F000A3A244 /* TagDefinition.m */,
+				B625686525ECF96100A3A244 /* BeatTag.h */,
+				B625686625ECF96100A3A244 /* BeatTag.m */,
+				B6F15CE325E7B13000176946 /* BeatTagItem.h */,
+				B6F15CE425E7B13000176946 /* BeatTagItem.m */,
 			);
 			path = Tagging;
 			sourceTree = "<group>";
@@ -1700,6 +1718,7 @@
 				B663680524CE1E64009A1693 /* BeatTest.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
+				B6F15CE525E7B13000176946 /* BeatTagItem.m in Sources */,
 				B69BFC782565336C007A7D2B /* FadeInImport.m in Sources */,
 				B61061EA2590DB66001947D6 /* BeatModalInput.m in Sources */,
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
@@ -1707,6 +1726,7 @@
 				B6FD5D912563B5320037ACBA /* GTMNSString+HTML.m in Sources */,
 				B66F46352565ADA0003748DA /* NSMutableDictionary+DMPExtensions.m in Sources */,
 				B6FD5D932563B5320037ACBA /* HTMLNode.m in Sources */,
+				B625686225ECE2F000A3A244 /* TagDefinition.m in Sources */,
 				B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */,
 				B6447CB124616C8400AA4EBC /* MasterView.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
@@ -1721,6 +1741,7 @@
 				B6829BFB25AB727600C0595B /* BeatEpisodePrinter.m in Sources */,
 				B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
+				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
 				B6FD5D8F2563B5320037ACBA /* HTMLParser.m in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinousFountainParser.m in Sources */,
 				B6FF56D625AA507B004E4752 /* BeatBrowserView.m in Sources */,
@@ -1807,6 +1828,7 @@
 				B6F49CE7246D66B0006D88D4 /* FountainAnalysis.m in Sources */,
 				B6764B32251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B6639DEF2538DD2E00DF87E2 /* BeatColors.m in Sources */,
+				B6F15CE625E7B13000176946 /* BeatTagItem.m in Sources */,
 				B6F49CE9246D66B0006D88D4 /* Theme.m in Sources */,
 				B6F49CEA246D66B0006D88D4 /* PrintView.m in Sources */,
 				B6829BFE25AB727800C0595B /* BeatEpisodePrinter.m in Sources */,
@@ -1815,6 +1837,7 @@
 				B6779B76256EED1100CFD324 /* BeatPaperSizing.m in Sources */,
 				B6F49CEC246D66B0006D88D4 /* DynamicColor.m in Sources */,
 				B6B6C88225650D05005294FE /* TextBundleWrapper.m in Sources */,
+				B625686325ECE2F000A3A244 /* TagDefinition.m in Sources */,
 				B600DD60254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */,
 				B6CE0BD0247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B6F49CEE246D66B0006D88D4 /* MasterView.m in Sources */,
@@ -1840,6 +1863,7 @@
 				B6F49CF6246D66B0006D88D4 /* FDXImport.m in Sources */,
 				B6F49CF7246D66B0006D88D4 /* Line.m in Sources */,
 				B6CB973C254EEB4000C310CC /* BeatTimelineItem.m in Sources */,
+				B625686825ECF96100A3A244 /* BeatTag.m in Sources */,
 				B6764B34251367BF00731A36 /* NSArray+Additions.m in Sources */,
 				B6F49CF8246D66B0006D88D4 /* TitlePageEditorDelegate.m in Sources */,
 				B6D26BE224B9E7350041402B /* BeatTimerView.m in Sources */,

@@ -12,7 +12,7 @@
 #import "BeatTextView.h"
 #import "ContinousFountainParser.h"
 
-NS_ASSUME_NONNULL_BEGIN
+@class BeatTag;
 
 typedef enum : NSInteger {
 	NoTag = 0,
@@ -27,34 +27,40 @@ typedef enum : NSInteger {
 	VehicleTag,
 	MusicTag,
 	GenericTag
-} BeatTag;
+} BeatTagType;
 
 @protocol BeatTaggingDelegate <NSObject>
 @property (readonly, weak) ContinousFountainParser *parser;
 @property (readonly, weak) NSTextView *textView;
 @property (readonly) bool taggingMode;
-- (void)tagRange:(NSRange)range withTag:(BeatTag)tag;
+- (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
+- (void)tagRange:(NSRange)range withType:(BeatTagType)type;
 @end
 
 @interface BeatTagging : NSObject
 @property (weak) id<BeatTaggingDelegate> delegate;
 
 + (NSArray*)tags;
-+ (BeatTag)tagFor:(NSString*)tag;
-+ (NSDictionary*)taggedRangesIn:(NSAttributedString*)string;
++ (BeatTagType)tagFor:(NSString*)tag;
+//+ (NSDictionary*)taggedRangesIn:(NSAttributedString*)string;
 + (NSArray*)styledTags;
 + (void)bakeTags:(NSArray*)tags inString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
++ (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
 + (NSDictionary*)tagColors;
-+ (NSColor*)colorFor:(BeatTag)tag;
++ (NSColor*)colorFor:(BeatTagType)tag;
++ (NSString*)keyFor:(BeatTagType)tag;
++ (NSArray*)definitionsForTags:(NSArray*)tags;
++ (NSString*)newId;
 
 - (instancetype)initWithDelegate:(id<BeatTaggingDelegate>)delegate;
-- (void)setRanges:(NSDictionary*)tags;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (void)bakeTags;
-- (NSArray*)individualTags;
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
 - (void)setupTextView:(NSTextView*)textView;
+- (NSArray*)getDefinitions;
+- (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions;
+- (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type;
+- (NSArray*)getTags;
+- (NSArray*)allTags;
 
 @end
-
-NS_ASSUME_NONNULL_END

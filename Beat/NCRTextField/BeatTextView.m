@@ -520,7 +520,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"× " withString:@""];
 	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"● " withString:@""];
 	
-	[self.taggingDelegate tagRange:self.selectedRange withTag:[BeatTagging tagFor:tagStr]];
+	[self.taggingDelegate tagRange:self.selectedRange withType:[BeatTagging tagFor:tagStr]];
 	
 	// Deselect
 	self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };

@@ -119,6 +119,9 @@
 #import "BeatModalInput.h"
 #import "ThemeEditor.h"
 #import "BeatTagging.h"
+#import "BeatTagItem.h"
+#import "BeatTag.h"
+#import "TagDefinition.h"
 #import "BeatFDXExport.h"
 
 #import "BeatScriptParser.h"
@@ -471,10 +474,7 @@
 	self.themeManager = [ThemeManager sharedManager];
 	[self loadSelectedTheme:false];
 	_nightMode = [self isDark];
-	
-	// Load tags (WIP: THIS SHOULD HAPPEN LATER)
-	[self setupTagging];
-	
+		
 	// Setup views
 	[self setupWindow];
 	[self readUserSettings];
@@ -519,6 +519,10 @@
 	self.parser.delegate = self;
 	
 	[self applyInitialFormating];
+	
+	// Load tags
+	[self setupTagging];
+	
 	self.documentIsLoading = NO;
 	
 	// Ensure layout
@@ -565,9 +569,10 @@
 }
 
 - (void)setupWindow {
+	[_tagViewCostraint setConstant:0];
+
 	// The document width constant is ca. A4 width compared to the font size.
 	// It's used here and there for proportional measurement.
-	
 	_documentWidth = DOCUMENT_WIDTH;
 	_textView.documentWidth = _documentWidth;
 	
@@ -953,7 +958,8 @@
 
 - (IBAction)exportFDX:(id)sender
 {
-	NSArray *tags = self.tagging.individualTags;
+	//NSArray *tags = self.tagging.individualTags;
+	NSArray *tags = _tagging.allTags;
 	BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText tags:tags attributedString:self.textView.attributedString];
 	
     NSSavePanel *saveDialog = [NSSavePanel savePanel];
@@ -963,7 +969,7 @@
         if (result == NSFileHandlingPanelOKButton) {
             //NSString* fdxString = [FDXInterface fdxFromString:[self preprocessSceneNumbers]];
 			// Get tags & export FDX
-			NSArray *tags = self.tagging.individualTags;
+			NSArray *tags = self.tagging.allTags;
 			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText tags:tags attributedString:self.textView.attributedString];
             [fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
@@ -4940,10 +4946,11 @@ triangle walks
 - (void)setupTagging {
 	[_tagView setFillColor:[BeatColors color:@"backgroundGray"]];
 	
-	[_tagViewCostraint setConstant:0];
-	[_tagging setupTextView:self.tagTextView];
 	_tagging = [[BeatTagging alloc] initWithDelegate:self];
-	[_tagging setRanges:[_documentSettings get:@"Tags"]];
+	[_tagging setupTextView:self.tagTextView];
+	//[_tagging setRanges:[_documentSettings get:@"Tags"]];
+	
+	[_tagging loadTags:[_documentSettings get:@"Tags"] definitions:[_documentSettings get:@"TagDefinitions"]];
 }
 
 - (IBAction)toggleTagging:(id)sender {
@@ -4959,11 +4966,7 @@ triangle walks
 	[self updateLayout];
 }
 
-- (void)tagRange:(NSRange)range withTag:(BeatTag)tag {
-	// Tag a range with the specified tag.
-	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
-	// So the tagging system basically only relies on the attributes in the NSTextView's rich-text string.
-	
+- (void)addTagToRange:(NSRange)range tag:(BeatTagItem*)tag {
 	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
 	
 	if (tag == NoTag) {
@@ -4972,11 +4975,9 @@ triangle walks
 		[self.textView.textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
 		[self saveTags];
 	} else {
-		[self.textView.textStorage addAttribute:@"BeatTag" value:@(tag) range:range];
+		[self.textView.textStorage addAttribute:@"BeatTag" value:tag range:range];
 		
-		NSColor *tagColor = [BeatTagging colorFor:tag];
-		tagColor = [tagColor colorWithAlphaComponent:.6];
-		
+		NSColor *tagColor = [tag.color colorWithAlphaComponent:.6];
 		[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
 		
 		[self saveTags];
@@ -4986,9 +4987,48 @@ triangle walks
 		[self.textView.textStorage setAttributes:oldAttributes range:range];
 	}];
 }
+
+- (void)tagRange:(NSRange)range withType:(BeatTagType)type {
+	NSString *string = [self.textView.string substringWithRange:range];
+	BeatTag* tag = [_tagging addTag:string type:type];
+
+	[self tagRange:range withTag:tag];
+}
+- (void)tagRange:(NSRange)range withTag:(BeatTag*)tag {
+	// Tag a range with the specified tag.
+	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
+	// So the tagging system basically only relies on the attributes in the NSTextView's rich-text string.
+	
+	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+	
+	if (tag == nil) {
+		// Clear tags
+		[self.textView.textStorage removeAttribute:@"BeatTag" range:range];
+		[self.textView.textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
+		[self saveTags];
+	} else {
+		[self.textView.textStorage addAttribute:@"BeatTag" value:tag range:range];
+		
+		NSColor *tagColor = [BeatTagging colorFor:tag.type];
+		tagColor = [tagColor colorWithAlphaComponent:.6];
+		
+		[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
+		
+		[self saveTags];
+	}
+	
+	if (!_documentIsLoading) {
+		[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+			[self.textView.textStorage setAttributes:oldAttributes range:range];
+		}];
+	}
+}
 - (void)saveTags {
-	NSDictionary *dict = [BeatTagging taggedRangesIn:self.textView.attributedString];
-	[_documentSettings set:@"Tags" as:dict];
+	NSArray *tags = [_tagging getTags];
+	NSArray *definitions = [_tagging getDefinitions];
+	
+	[_documentSettings set:@"Tags" as:tags];
+	[_documentSettings set:@"TagDefinitions" as:definitions];
 }
 
 - (void)updateTaggingData {
