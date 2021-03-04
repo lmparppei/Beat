@@ -44,7 +44,6 @@ typedef enum : NSInteger {
 + (BeatTagType)tagFor:(NSString*)tag;
 //+ (NSDictionary*)taggedRangesIn:(NSAttributedString*)string;
 + (NSArray*)styledTags;
-+ (void)bakeTags:(NSArray*)tags inString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
 + (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
 + (NSDictionary*)tagColors;
 + (NSColor*)colorFor:(BeatTagType)tag;

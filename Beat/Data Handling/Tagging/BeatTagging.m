@@ -207,28 +207,6 @@
 	}
 }
 
-/*
-- (void)setRanges:(NSDictionary*)tags {
-	for (NSString *key in tags.allKeys) {
-		BeatTagType tag = [BeatTagging tagFor:key];
-		NSArray* ranges = (NSArray*)tags[key];
-		
-		for (NSArray *values in ranges) {
-			// For safety reasons, ignore non-array values
-			if (![values isKindOfClass:NSArray.class] || values.count < 2) continue;
-			
-			NSInteger loc = [(NSNumber*)values[0] integerValue];
-			NSInteger len = [(NSNumber*)values[1] integerValue];
-			
-			if (len > 0) {
-				NSRange range = NSMakeRange(loc, len);
-				[self.delegate tagRange:range withTag:tag];
-			}
-		}
-	}
-}
-*/
-
 + (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines
 {
 	/*
@@ -267,52 +245,7 @@
 		
 		if (line.tags.count) NSLog(@"line tags: %@", line.tags);
 	}
-
-	
-	/*
-	[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		BeatTag tag = (BeatTag)[value integerValue];
-		NSString *string = [self.delegate.textView.string substringWithRange:range];
-		
-		bool tagExists = NO;
-		for (BeatTagItem *item in tags) {
-			if (item.type == tag && [item.name isEqualToString:string]) {
-				[item addRange:range];
-				tagExists = YES;
-				break;
-			}
-		}
-		
-		if (!tagExists) {
-			BeatTagItem *item = [BeatTagItem withString:string type:tag range:range];
-			[tags addObject:item];
-		}
-	}];
-	*/
 }
-
-/*
-- (NSArray*)individualTags {
-	NSMutableArray *tags = [NSMutableArray array];
-	
-	NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.delegate.textView.attributedString];
-	[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		BeatTagType tag = (BeatTagType)[value integerValue];
-		NSString *string = [self.delegate.textView.string substringWithRange:range];
-		
-		if (range.length > 0 && tag != NoTag) {
-			NSDictionary *data = @{
-				@"tag": [BeatTagging keyFor:tag],
-				@"string": string,
-				@"range": [NSValue valueWithRange:range]
-			};
-			[tags addObject:data];
-		}
-	}];
-	
-	return tags;
-}
- */
 
 - (NSArray*)allTags {
 	NSMutableArray *tags = [NSMutableArray array];
@@ -386,70 +319,12 @@
 	return tags;
 }
 
-+ (void)bakeTags:(NSArray*)tags inString:(NSAttributedString*)textViewString toLines:(NSArray*)lines
-{
-	NSLog(@"# +bakeTags will be DEPRECATED.");
-	
-	// This writes tags into line elements
-	for (Line* line in lines) {
-		line.tags = [NSMutableArray array];
-		
-		// Automatically add any character names
-		// NB: This has to be rewritten to automatically match the character name ID
-		/*
-		if (line.type == character) {
-			NSString *name = line.characterName;
-			[line.tags addObject:@{
-				@"tag": [BeatTagging keyFor:CharacterTag],
-				@"name": @"Cast",
-				@"range": [NSValue valueWithRange:[line.string rangeOfString:name]]
-			}];
-			
-			continue;
-		}
-		 */
-		
-		// Go through the attributed string and add tags found in the stylization
-		NSAttributedString *string = [textViewString attributedSubstringFromRange:(NSRange){ line.position, line.string.length }];
-		[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, line.string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-			BeatTag *tag = (BeatTag*)value;
-			
-			if (!tag || range.length == 0) return;
-			
-			for (TagDefinition *def in tags) {
-				NSLog(@" -> %@", def.name);
-			}
-			
-			/*
-			BeatTagType tag = (BeatTagType)[value integerValue];
-			
-			if (range.length > 0 && tag != NoTag) {
-
-				for (NSDictionary *tag in tags) {
-					NSRange range = [(NSValue*)[tag valueForKey:@"range"] rangeValue];
-					
-					// We should probably remove tags from the array after use, but whatever
-					if (NSLocationInRange(range.location, line.range)) {
-						NSMutableDictionary *localTag = [NSMutableDictionary dictionaryWithDictionary:[tag copy]];
-												
-						// Create a local range in line from the global range
-						NSRange localRange = (NSRange){ range.location - line.range.location, range.length };
-						localTag[@"range"] = [NSValue valueWithRange:localRange];
-						[line.tags addObject:localTag];
-					}
-				}
-			}
-			 */
-		}];
-	}
-	
-	
-}
-
 - (void)bakeTags {
 	[BeatTagging bakeAllTagsInString:self.delegate.textView.attributedString toLines:self.delegate.parser.lines];
 	//[BeatTagging bakeTags:[self individualTags] inString:self.delegate.textView.attributedString toLines:self.delegate.parser.lines];
 }
+
+#pragma mark - UI methods for displaying tags in editor
 
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene {
 	if (!scene) return [[NSAttributedString alloc] initWithString:@""];
