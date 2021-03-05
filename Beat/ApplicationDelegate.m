@@ -52,7 +52,7 @@
 	[self checkAutosavedFiles];
 	
 	// Run tests
-	//[[BeatTest alloc] init];
+	//[[BeatTest alloc] init];						   
 	SUUpdater *updater = [[SUUpdater alloc] init];
 	if (updater.automaticallyChecksForUpdates) [updater checkForUpdatesInBackground];
 }

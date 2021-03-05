@@ -412,7 +412,7 @@
 				if (pageNumber > 1)
 					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, (int)pageIndex+1];
 				else
-					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", header];
+					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", header];
             } else {
 				if (pageNumber > 1) [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
 				else [body appendFormat:@"<p class='page-break'></p>\n"];

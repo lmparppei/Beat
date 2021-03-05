@@ -35,9 +35,8 @@ typedef enum : NSUInteger {
 	more
 } LineType;
 
-// For the imagined scripting module :-)
-@protocol LineExports <JSExport>
 
+@protocol LineExports <JSExport>
 @property NSUInteger position;
 @property NSString* sceneNumber;
 @property NSString* color;

@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 #import "ContinousFountainParser.h"
 #import "BeatTagging.h"
+#import "TagDefinition.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
 

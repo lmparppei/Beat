@@ -81,6 +81,20 @@
     return result;
 }
 
++ (NSString*)colorWith16bitHex:(NSString*)colorName {
+	// Only use COLOR NAMES here
+	NSColor *color = [self color:colorName];
+	return [self get16bitHex:color];
+	
+}
++ (NSString*)get16bitHex:(NSColor *)color {
+	NSString* hexString = [NSString stringWithFormat:@"%04X%04X%04X",
+						   (int) (color.redComponent * 0xFFFF),
+						   (int) (color.greenComponent * 0xFFFF),
+						   (int) (color.blueComponent * 0xFFFF)];
+	return hexString;
+}
+
 @end
 /*
  

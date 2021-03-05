@@ -50,6 +50,7 @@ typedef enum : NSInteger {
 + (NSString*)keyFor:(BeatTagType)tag;
 + (NSArray*)definitionsForTags:(NSArray*)tags;
 + (NSString*)newId;
++ (NSString*)hexForKey:(NSString*)key;
 
 - (instancetype)initWithDelegate:(id<BeatTaggingDelegate>)delegate;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;

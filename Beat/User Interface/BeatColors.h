@@ -12,4 +12,6 @@
 @interface BeatColors : NSObject
 + (NSColor*)color:(NSString*)name;
 + (NSDictionary*)colors;
++ (NSString*)colorWith16bitHex:(NSString*)colorName;
++ (NSString*)get16bitHex:(NSColor*)color;
 @end

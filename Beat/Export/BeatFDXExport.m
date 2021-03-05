@@ -73,10 +73,7 @@
  </TagData>
  
  
- For the individual tag IDs we need to create a random hex number. It doesn't seem to have any logic to it,
- just needs to be formatted like this: ########-####-####-####-############
- (And now that I'm learning about UUIDs, I'm kind of ashmed of the comment above, ha ha)
- 
+ For the individual tag definition IDs we need to create a lower-case UUID.
  Tags can then be attached to the screenplay using <Text TagNumber="1">some nice music</Text>
  
  Because the tagging system in Beat doesn't have literal definitions other than what's in the script,
@@ -173,6 +170,41 @@ static NSDictionary *fdxIds;
 	return self;
 }
 
+- (NSString*)createCategories {
+	NSMutableString *c = [NSMutableString string];
+	[c appendString:format(@"      <TagCategory Color=\"#000000000000\" Id=\"8e5e75c2-713b-47df-a75f-f12648b98ded\" Name=\"Synopsis\" Number=\"1\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"01fc9642-84ff-4366-b37c-a3068dee57e8\" Name=\"Cast Members\" Number=\"2\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Cast"])];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"028a4e2b-b507-4d09-88ab-90e3edae9071\" Name=\"Background Actors\" Number=\"3\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Extras"])];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"0377dbe6-77a3-41af-bda8-86eb2468fdbf\" Name=\"Stunts\" Number=\"4\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"04721a56-f54b-49c8-80ad-d53887d6b851\" Name=\"Vehicles\" Number=\"5\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Vehicle"])];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa\" Name=\"Props\" Number=\"6\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Prop"])];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"47b02ff1-5161-4137-b736-f36eebba7643\" Name=\"Camera\" Number=\"7\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"069e18b8-2109-4f3d-94e7-d802027a60a8\" Name=\"Special Effects\" Number=\"8\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"0726fa85-1e65-4ab8-87de-bf21d09b01f0\" Name=\"Wardrobe\" Number=\"9\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Costume"])];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"08ae1eef-32ce-415f-9a9b-0982d2453ec4\" Name=\"Makeup/Hair\" Number=\"10\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Makeup"])];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6\" Name=\"Animals\" Number=\"11\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Animal"])];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"0ae40617-cc7c-48e6-ae2b-5aaecc09986f\" Name=\"Animal Wrangler\" Number=\"12\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Animal"])];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"0b0b44c9-aa4b-4c40-88b1-d94472ad7a26\" Name=\"Music\" Number=\"13\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"Music"])];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"0ce7d308-096d-4603-8fe8-349f72cd89ff\" Name=\"Sound\" Number=\"15\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"c86eae40-3b01-41c3-a7de-6859e6ec971d\" Name=\"Art Department\" Number=\"16\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"0debb71b-5743-4c53-80cc-e17e841ce645\" Name=\"Set Dressing\" Number=\"17\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"0e7a8fc5-5441-4bad-a9bf-5ddd3fe51c69\" Name=\"Greenery\" Number=\"18\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"0ff5cda4-4d43-4cfe-940f-91380c46fdad\" Name=\"Special Equipment\" Number=\"19\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"109d0eaa-0334-4823-ac0c-b44d3f209dc4\" Name=\"Security\" Number=\"20\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"1179a4b1-70ee-4011-b4a2-809a0af09e92\" Name=\"Additional Labor\" Number=\"21\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#%@\" Id=\"12ab0932-e3b9-4b4a-bcd0-3da1b4e61d5e\" Name=\"Visual Effects\" Number=\"23\" Style=\"Bold\"/>", [BeatTagging hexForKey:@"VFX"])];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"135cc9d1-c4d5-4d00-83d9-571f584ea9cd\" Name=\"Mechanical Effects\" Number=\"24\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"ce04f547-f7ee-40c9-ab66-d95a0c98034e\" Name=\"Miscellaneous\" Number=\"25\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"15b6f4fd-4e74-4ad8-9971-b239d88c2997\" Name=\"Notes\" Number=\"26\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"63c140da-ef2b-491a-b416-b46f461abb89\" Name=\"Script Day\" Number=\"27\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"849f1ebf-5507-4f33-bff6-3a5b4d73be14\" Name=\"Unit\" Number=\"28\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"70877d87-30ef-45b6-be46-c6fa94b83a71\" Name=\"Sequence\" Number=\"29\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"c5e89e4d-f83e-4c28-950c-92a63f1b5f26\" Name=\"Location\" Number=\"30\" Style=\"Bold\"/>")];
+	[c appendString:format(@"      <TagCategory Color=\"#94AA11150000\" Id=\"216f33fd-fc42-4269-be01-b05b18f815a0\" Name=\"Comments\" Number=\"31\" Style=\"Bold\"/>")];
+	
+	return c;
+}
+
 - (NSString*)fdxString {
 	return self.result;
 }
@@ -199,37 +231,8 @@ static NSDictionary *fdxIds;
 	if (_tags) {
 		[_result appendString:@"  <TagData>\n"];
 		[_result appendString:@"    <TagCategories>\n"];
-		[_result appendString:@"      <TagCategory Color=\"#00003600B700\" Id=\"01fc9642-84ff-4366-b37c-a3068dee57e8\" Name=\"Cast Members\" Number=\"2\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"028a4e2b-b507-4d09-88ab-90e3edae9071\" Name=\"Background Actors\" Number=\"3\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"0377dbe6-77a3-41af-bda8-86eb2468fdbf\" Name=\"Stunts\" Number=\"4\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"04721a56-f54b-49c8-80ad-d53887d6b851\" Name=\"Vehicles\" Number=\"5\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"05c556eb-6bc1-4a3a-b09f-f8b5ba1b6afa\" Name=\"Props\" Number=\"6\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"069e18b8-2109-4f3d-94e7-d802027a60a8\" Name=\"Special Effects\" Number=\"8\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"0726fa85-1e65-4ab8-87de-bf21d09b01f0\" Name=\"Wardrobe\" Number=\"9\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"08ae1eef-32ce-415f-9a9b-0982d2453ec4\" Name=\"Makeup/Hair\" Number=\"10\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"09cb0d1c-ce01-4f22-bb64-b5f2e6c491c6\" Name=\"Animals\" Number=\"11\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"0ae40617-cc7c-48e6-ae2b-5aaecc09986f\" Name=\"Animal Wrangler\" Number=\"12\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"0b0b44c9-aa4b-4c40-88b1-d94472ad7a26\" Name=\"Music\" Number=\"13\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"0ce7d308-096d-4603-8fe8-349f72cd89ff\" Name=\"Sound\" Number=\"15\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"0debb71b-5743-4c53-80cc-e17e841ce645\" Name=\"Set Dressing\" Number=\"17\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"0e7a8fc5-5441-4bad-a9bf-5ddd3fe51c69\" Name=\"Greenery\" Number=\"18\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"0ff5cda4-4d43-4cfe-940f-91380c46fdad\" Name=\"Special Equipment\" Number=\"19\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"109d0eaa-0334-4823-ac0c-b44d3f209dc4\" Name=\"Security\" Number=\"20\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"1179a4b1-70ee-4011-b4a2-809a0af09e92\" Name=\"Additional Labor\" Number=\"21\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"12ab0932-e3b9-4b4a-bcd0-3da1b4e61d5e\" Name=\"Visual Effects\" Number=\"23\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"135cc9d1-c4d5-4d00-83d9-571f584ea9cd\" Name=\"Mechanical Effects\" Number=\"24\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"15b6f4fd-4e74-4ad8-9971-b239d88c2997\" Name=\"Notes\" Number=\"26\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"216f33fd-fc42-4269-be01-b05b18f815a0\" Name=\"Comments\" Number=\"31\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"47b02ff1-5161-4137-b736-f36eebba7643\" Name=\"Camera\" Number=\"7\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"63c140da-ef2b-491a-b416-b46f461abb89\" Name=\"Script Day\" Number=\"27\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"70877d87-30ef-45b6-be46-c6fa94b83a71\" Name=\"Sequence\" Number=\"29\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"849f1ebf-5507-4f33-bff6-3a5b4d73be14\" Name=\"Unit\" Number=\"28\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#000000000000\" Id=\"8e5e75c2-713b-47df-a75f-f12648b98ded\" Name=\"Synopsis\" Number=\"1\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"c5e89e4d-f83e-4c28-950c-92a63f1b5f26\" Name=\"Location\" Number=\"30\" Style=\"Bold\"/>\n"
-					          @"      <TagCategory Color=\"#94AA11150000\" Id=\"c86eae40-3b01-41c3-a7de-6859e6ec971d\" Name=\"Art Department\" Number=\"16\" Style=\"Bold\"/>\n"
-							  @"      <TagCategory Color=\"#94AA11150000\" Id=\"ce04f547-f7ee-40c9-ab66-d95a0c98034e\" Name=\"Miscellaneous\" Number=\"25\" Style=\"Bold\"/>"
-							  @"    </TagCategories>\n"
-							 ];
+		[_result appendString:[self createCategories]];
+		[_result appendString:@"    </TagCategories>\n"];
 		[_result appendString:@"    <TagDefinitions>\n"];
 		[_result appendString:_tagDefinitionsStr];
 		[_result appendString:@"    </TagDefinitions>\n"];

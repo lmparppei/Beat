@@ -152,7 +152,14 @@
 }
 + (NSColor*)colorFor:(BeatTagType)tag {
 	NSDictionary *colors = [self tagColors];
-	return [colors valueForKey:[self keyFor:tag]];
+	NSColor *color = [colors valueForKey:[self keyFor:tag]];
+	if (!color) color = colors[@"generic"];
+	
+	return color;
+}
++ (NSString*)hexForKey:(NSString*)key {
+	NSColor *color = [self tagColors][key];
+	return [BeatColors get16bitHex:color];
 }
 
 + (NSDictionary*)tagDictionary {
@@ -242,8 +249,6 @@
 				@"range": [NSValue valueWithRange:range]
 			}];
 		}];
-		
-		if (line.tags.count) NSLog(@"line tags: %@", line.tags);
 	}
 }
 
@@ -288,14 +293,17 @@
 	
 	NSDictionary *tags = [self sortedTagsInRange:scene.range];
 	NSArray *lines = [self.delegate.parser linesForScene:scene];
-	/*
+	
+	NSMutableArray *castTags = tags[@"Cast"];
+	
 	for (Line* line in lines) {
 		if (line.type == character) {
 			NSString *name = line.characterName.uppercaseString;
-			if (![(NSMutableArray*)tags[@"Cast"] containsObject:name]) [tags[@"Cast"] addObject:name];
+			BeatTag *characterTag = [self addTag:name type:CharacterTag];
+			
+			if (![castTags containsObject:characterTag.definition]) [castTags addObject:characterTag.definition];
 		}
 	}
-	 */
 	
 	return tags;
 }
@@ -353,17 +361,19 @@
 	[result appendAttributedString:[self str:location]];
 	[result appendAttributedString:[self str:@"\n\n"]];
 	
+	// List cast first
 	NSArray *cast = tags[@"Cast"];
-//	if (cast.count) {
-//		[result appendAttributedString:[BeatTagging styledListTagFor:@"Cast" color:NSColor.whiteColor]];
-//		for (TagDefinition *tag in (NSArray*)tags[@"Cast"]) {
-//			[result appendAttributedString:[self str:tag.name]];
-//			[result appendAttributedString:[self str:@"\n"]];
-//		}
-//
-//		tags[@"Cast"] = nil;
-//		[result appendAttributedString:[self str:@"\n"]];
-//	}
+	if (cast.count) {
+		[result appendAttributedString:[BeatTagging styledListTagFor:@"Cast" color:NSColor.whiteColor]];
+		
+		for (TagDefinition *tag in cast) {
+			[result appendAttributedString:[self str:tag.name]];
+			[result appendAttributedString:[self str:@"\n"]];
+			if (cast.lastObject == tag) [result appendAttributedString:[self str:@"\n"]];
+		}
+
+		tags[@"Cast"] = nil; // Reset so we don't iterate over it again later
+	}
 	
 	for (NSString* tagKey in tags.allKeys) {
 		NSArray *items = tags[tagKey];
@@ -374,7 +384,7 @@
 				[result appendAttributedString:[self str:tag.name]];
 				[result appendAttributedString:[self str:@"\n"]];
 				
-				if (items.lastObject != tag) [result appendAttributedString:[self str:@"\n\n"]];
+				if (items.lastObject == tag) [result appendAttributedString:[self str:@"\n"]];
 			}
 		}
 	}

@@ -96,7 +96,7 @@ body > p:first-child {
 
 .character, .more {
 	position: relative;
-	margin: 1.1em auto 0 172px; /* 30% */
+	margin: 1.1em auto 0 180px; /* 30%, 172px */
 	width: 180px;
 	width: 7cm;
 	padding-bottom: 0;
@@ -110,7 +110,7 @@ body > p:first-child {
 .dialogue {
 	position: relative;
 	margin: 0 auto 0 90px; /* 15% */
-	width: 300px; /* 255 */
+	width: 310px; /* 255 */
 }
 
 .parenthetical {

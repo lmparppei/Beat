@@ -50,7 +50,9 @@
  
  This might have been pretty unhelpful for anyone stumbling upon this file some day.
  Try to make something out of it.
-
+ 
+ NOTE NOTE NOTE: Element widths are 80% of the CSS size. I don't know why, but this
+ is the only way I got them to match with the real WebKit sizing.
  
  Remember the flight
  the bird may die
@@ -1062,7 +1064,7 @@ That you have escaped.
 		width   = 144;
 	}
 	else if ([type isEqualToString:@"Dialogue"]) {
-		width   = 240; // 217
+		width   = 248; // 217
 	}
 	else if ([type isEqualToString:@"Parenthetical"]) {
 		width   = 200;

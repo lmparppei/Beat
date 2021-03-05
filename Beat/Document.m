@@ -569,8 +569,10 @@
 }
 
 - (void)setupWindow {
+	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
+	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
 	[_tagViewCostraint setConstant:0];
-
+	
 	// The document width constant is ca. A4 width compared to the font size.
 	// It's used here and there for proportional measurement.
 	_documentWidth = DOCUMENT_WIDTH;
@@ -1786,10 +1788,8 @@
 		
 		if (index > 0) {
 			Line* previousLine = [self.parser.lines objectAtIndex:index - 1];
-			NSLog(@" --- previous: %@ (%@)", previousLine.string, previousLine.typeAsString);
 			if (previousLine.type == empty ||
 				(previousLine.type == action && previousLine.string.length == 0)) {
-				NSLog(@" ------ force!!!");
 				[self forceCharacterInput];
 			}
 		}
@@ -4957,8 +4957,10 @@ triangle walks
 	_taggingMode = !_taggingMode;
 	
 	if (_taggingMode) {
+		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 		[_tagViewCostraint setConstant:180];
 	} else {
+		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 		[_tagViewCostraint setConstant:0];
 	}
 	
@@ -5023,6 +5025,7 @@ triangle walks
 		}];
 	}
 }
+
 - (void)saveTags {
 	NSArray *tags = [_tagging getTags];
 	NSArray *definitions = [_tagging getDefinitions];

@@ -7,13 +7,22 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "BeatTagging.h"
 
 @class BeatTagging;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TagDefinition : NSObject
+@protocol TagDefinitionExports <JSExport>
+@property (nonatomic, readonly) NSString *defId;
+@property (nonatomic, readonly) NSString *name;
+- (NSString*)typeAsString;
+//- (NSString*)typeAsString;
+//- (bool)hasId:(NSString*)tagId;
+@end
+
+@interface TagDefinition : NSObject <TagDefinitionExports>
 @property (nonatomic) BeatTagType type;
 @property (nonatomic) NSString *defId;
 @property (nonatomic) NSString *name;

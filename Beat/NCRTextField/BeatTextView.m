@@ -332,7 +332,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				// handle tagging + skip default
 				return;
 				
-			} else if (self.autocompletePopover.isShown || _popupMode == Autocomplete) {
+			} else if (self.autocompletePopover.isShown && _popupMode == Autocomplete) {
 				[self insert:self];
 				return; // don't insert a line-break after tab key
 				
