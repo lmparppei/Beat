@@ -307,6 +307,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			return; // Skip default behavior
 		case 125:
 			// Down
+			if (row + 1 >= self.autocompleteTableView.numberOfRows) row = -1;
+			
 			if (self.autocompletePopover.isShown) {
 				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row+1] byExtendingSelection:NO];
 				[self.autocompleteTableView scrollRowToVisible:self.autocompleteTableView.selectedRow];
@@ -316,6 +318,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		case 126:
 			// Up
 			if (self.autocompletePopover.isShown) {
+				if (row - 1 < 0) row = self.autocompleteTableView.numberOfRows;
+				
 				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row-1] byExtendingSelection:NO];
 				[self.autocompleteTableView scrollRowToVisible:self.autocompleteTableView.selectedRow];
 				return; // Skip default behavior
@@ -427,12 +431,23 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
 		NSString *string = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
-		NSInteger beginningOfWord = self.selectedRange.location - self.substring.length;
+		
+		NSInteger beginningOfWord;
+		
+		Line* currentLine = _editorDelegate.getCurrentLine;
+		if (currentLine) {
+			NSInteger locationInString = self.selectedRange.location - currentLine.position;
+			beginningOfWord = self.selectedRange.location - locationInString;
+		} else {
+			beginningOfWord = self.selectedRange.location - self.substring.length;
+		}
+				
 		NSRange range = NSMakeRange(beginningOfWord, self.substring.length);
 		
 		if ([self shouldChangeTextInRange:range replacementString:string]) {
 			[self replaceCharactersInRange:range withString:string];
 			[self didChangeText];
+			[self setAutomaticTextCompletionEnabled:NO];
 		}
 	}
 	[self.autocompletePopover close];
@@ -441,6 +456,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)didChangeSelection:(NSNotification *)notification {
 	if ((self.selectedRange.location - self.lastPos) > 1) {
 		// If selection moves by more than just one character, hide autocomplete
+		if (self.autocompletePopover.shown) [self setAutomaticTextCompletionEnabled:NO];
 		[self.autocompletePopover close];
 	}
 	
@@ -758,8 +774,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void) updateSceneNumberLabelsWithTextLabels {
-	// zoomDelegate is a misleading name, it's the Document, really
-	ContinousFountainParser *parser = self.zoomDelegate.parser;
+	// editorDelegate is a misleading name, it's the Document, really
+	ContinousFountainParser *parser = self.editorDelegate.parser;
 	if (!parser.outline.count) [parser createOutline];
 	
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
@@ -799,12 +815,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				rect.origin.y += _textInsetY;
 
 				label.frame = rect;
-				[label setFont:self.zoomDelegate.courier];
+				[label setFont:self.editorDelegate.courier];
 				if (![scene.color isEqualToString:@""] && scene.color != nil) {
 					NSString *color = [scene.color lowercaseString];
 					[label setTextColor:[BeatColors color:color]];
 				} else {
-					[label setTextColor:self.zoomDelegate.themeManager.currentTextColor];
+					[label setTextColor:self.editorDelegate.themeManager.currentTextColor];
 				}
 			
 				index++;
@@ -833,12 +849,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Gives some performance advantage, but also takes a bigger hit sometimes.
 
 	self.wantsLayer = YES;
-	if (!self.zoomDelegate.parser.outline.count) [self.zoomDelegate.parser createOutline];
+	if (!self.editorDelegate.parser.outline.count) [self.editorDelegate.parser createOutline];
 	
 	// This is pretty fast, but I'm not sure. Still kind of hard to figure out.
 	if (!_sceneNumberLabels.count || !_sceneNumberLabels) _sceneNumberLabels = [NSMutableArray array];
 	
-	NSInteger difference = _sceneNumberLabels.count - self.zoomDelegate.parser.scenes.count;
+	NSInteger difference = _sceneNumberLabels.count - self.editorDelegate.parser.scenes.count;
 
 	// There are extra scene number labels, remove them from superlayer
 	if (difference > 0) {
@@ -853,7 +869,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
 	
 	NSInteger index = 0;
-	for (OutlineScene* scene in self.zoomDelegate.parser.scenes) {
+	for (OutlineScene* scene in self.editorDelegate.parser.scenes) {
 		NSString *number = scene.sceneNumber;
 		
 		NSRange characterRange = NSMakeRange(scene.line.position, scene.line.string.length);
@@ -921,7 +937,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[label setBezeled:NO];
 	[label setSelectable:NO];
 	[label setDrawsBackground:NO];
-	[label setFont:self.zoomDelegate.courier];
+	[label setFont:self.editorDelegate.courier];
 	[label setAlignment:NSTextAlignmentRight];
 	[self addSubview:label];
 	
@@ -930,7 +946,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void) createAllLabels {
-	ContinousFountainParser *parser = self.zoomDelegate.parser;
+	ContinousFountainParser *parser = self.editorDelegate.parser;
 	
 	for (OutlineScene * scene in parser.outline) {
 		[self createLabel:scene];
@@ -976,7 +992,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)setInsets {
-	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.zoomDelegate.magnification / 2) / self.zoomDelegate.magnification;
+	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.editorDelegate.magnification / 2) / self.editorDelegate.magnification;
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
 	self.textContainer.size = NSMakeSize(_documentWidth, self.textContainer.size.height);
 	[self resetCursorRects];

@@ -60,6 +60,7 @@
 - (NSArray*)scenes;
 - (void)ensurePositions;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
+- (Line*)nextLine:(Line*)line;
 
 // Preprocess for printing
 - (NSArray*)preprocessForPrinting;

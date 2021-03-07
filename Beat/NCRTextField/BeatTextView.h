@@ -34,6 +34,7 @@ typedef enum : NSInteger {
 @property (readonly) NSFont *italicCourier;
 @property (readonly) ThemeManager* themeManager;
 - (NSMutableArray*)getOutlineItems;
+- (Line*)getCurrentLine;
 @end
 
 @protocol BeatTaggingDelegate;
@@ -49,7 +50,7 @@ typedef enum : NSInteger {
 - (void) deleteSceneNumberLabels;
 
 @property CGFloat textInsetY;
-@property (weak) id<BeatTextViewDelegate> zoomDelegate;
+@property (weak) id<BeatTextViewDelegate> editorDelegate;
 @property (weak) id<BeatTaggingDelegate> taggingDelegate;
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;

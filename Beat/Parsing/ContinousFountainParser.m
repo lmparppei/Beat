@@ -1547,6 +1547,14 @@ and incomprehensible system of recursion.
 	return lines;
 }
 
+- (Line*)nextLine:(Line*)line {
+	NSInteger lineIndex = [self.lines indexOfObject:line];
+	
+	if (line == self.lines.lastObject || self.lines.count < 2 || lineIndex == NSNotFound) return nil;
+	
+	return self.lines[lineIndex + 1];
+}
+
 
 #pragma mark - Utility
 

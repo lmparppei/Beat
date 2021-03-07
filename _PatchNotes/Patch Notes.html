@@ -315,15 +315,25 @@
 						<p><button onclick='openTemplate("Silent as Murderers")'>Open The Screenplay</button></p>
 					</div>
 -->
+					<h2>Join The Community</h2>
+					<p>Join the brand new <a href='#' onclick='openLink("http://discord.gg/FPHjfH7ms3")'>Beat Discord Community</a>!</p>
+					<p>You are welcome to suggest new features, report bugs or chat about screenwriting in general.</p>
+					
 					<h2>New Features</h2>
 					<ul>
+						<li>Rewritten Final Draft export</li>
+						<li>Enhancements to print layout</li>
 						<li>Expansions to the plugin API</li>
+						<li>Fade In import now supports Fade In 4</li>
+						<li>Preliminary tagging support (in beta)</li>
 					</ul>
 					
 					<h2>Bug Fixes</h2>
 
 					<ul>
+						<li>Autocomplete no longer shows mid-line or when selecting characters/scene headings</li>
 						<li>Jumping to next/previous scene actually works again</li>
+						<li>Minor text editing fixes</li>
 					</ul>
 
 					<p><b>And hey!</b><br>Follow Beat on Twitter for latest updates on development: <b>@beatScreenplay</b></p>
@@ -361,6 +371,9 @@
 		</div>
 
 		<script>
+			function openLink (url) {
+				window.webkit.messageHandlers.openLink.postMessage(url);
+			}
 			function openTemplate (name) {
 				window.webkit.messageHandlers.openTemplate.postMessage(name);
 			}

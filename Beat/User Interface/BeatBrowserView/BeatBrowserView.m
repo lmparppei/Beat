@@ -47,6 +47,7 @@
 	[self.window setIsVisible:true];
 	
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openTemplate"];
+	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openLink"];
 	
 	[self showWindow:self.window];
 	[self.window makeKeyAndOrderFront:self.window];
@@ -63,6 +64,9 @@
 -(void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
 	if ([message.name isEqualToString:@"openTemplate"]) {
 		[(ApplicationDelegate*)NSApp.delegate showTemplate:message.body];
+	}
+	else if ([message.name isEqualToString:@"openLink"]) {
+		[(ApplicationDelegate*)NSApp.delegate openURLInWebBrowser:message.body];
 	}
 }
 

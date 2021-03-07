@@ -910,7 +910,7 @@
 	self.textView.textInsetY = TEXT_INSET_TOP;
 	[self.textView setInsets];
 	
-	self.textView.zoomDelegate = self;
+	self.textView.editorDelegate = self;
 	self.textView.taggingDelegate = self;
 	
 	// Make the text view first responder
@@ -960,10 +960,6 @@
 
 - (IBAction)exportFDX:(id)sender
 {
-	//NSArray *tags = self.tagging.individualTags;
-	NSArray *tags = _tagging.allTags;
-	BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText tags:tags attributedString:self.textView.attributedString];
-	
     NSSavePanel *saveDialog = [NSSavePanel savePanel];
     [saveDialog setAllowedFileTypes:@[@"fdx"]];
     [saveDialog setNameFieldStringValue:[self fileNameString]];
@@ -1229,9 +1225,14 @@
 		}
 	}
 	
-	// Also, if it's an enter key and we are handling a CHARACTER
-	if ([replacementString isEqualToString:@"\n"] && _currentLine.type == character) {
-		// Check here if the character was recently used and somehow put it on top of the autocomplete list
+	// Also, if it's an enter key and we are handling a CHARACTER, don't add a line break if the next line is dialogue
+	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && _currentLine.type == character) {
+		Line *nextLine = [_parser nextLine:_currentLine];
+
+		if (nextLine.type == dialogue && nextLine.string.length) {
+			[self setSelectedRange:(NSRange){ affectedCharRange.location + 1, 0 }];
+			return NO;
+		}
 	}
 	
 	// Backspace / deletion handling for some special case scenarios
@@ -3070,11 +3071,20 @@ static NSString *forceDualDialogueSymbol = @"^";
 			}
 		}
 		
+		// Show all items disabled for non-editor views
 		return NO;
 	}
 	
-	// Normal editor view
+	// Normal editor view items
+	
 	if (_timelineVisible && [menuItem.title isEqualToString:@"Show Timeline"]) {
+		[menuItem setState:NSOnState];
+		return YES;
+	} else {
+		[menuItem setState:NSOffState];
+	}
+	
+	if (_taggingMode && [menuItem.title isEqualToString:@"Tagging Mode"]) {
 		[menuItem setState:NSOnState];
 		return YES;
 	} else {
