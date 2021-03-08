@@ -27,12 +27,20 @@ typedef enum : NSInteger {
 @end
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate>
+
+typedef enum : NSInteger {
+	EditMode = 0,
+	TaggingMode,
+	ReviewMode
+} BeatEditorMode;
+
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic, readonly) ContinousFountainParser *parser;
 @property (readonly) NSFont *courier;
 @property (readonly) NSFont *boldCourier;
 @property (readonly) NSFont *italicCourier;
 @property (readonly) ThemeManager* themeManager;
+@property (readonly) BeatEditorMode mode;
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
 @end

@@ -79,8 +79,9 @@ THE SOFTWARE.
 
 // Set document colors
 - (void)updateTheme;
+- (bool)isDark;
 
 // Tagging
-@property (nonatomic) bool taggingMode;
+@property (nonatomic) BeatEditorMode mode;
 
 @end

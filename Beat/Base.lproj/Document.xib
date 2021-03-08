@@ -45,12 +45,12 @@
                 <outlet property="resetColorFilterButton" destination="Xyx-ug-UXG" id="ZkW-PJ-GEe"/>
                 <outlet property="sceneNumberStartInput" destination="MmF-s9-or8" id="Zr7-zx-nba"/>
                 <outlet property="sceneNumberingPanel" destination="IUI-JC-aZs" id="fnB-g1-4Eb"/>
+                <outlet property="sideView" destination="Thg-Wg-JDd" id="9ox-4Z-GGY"/>
+                <outlet property="sideViewCostraint" destination="O0i-Sv-K16" id="Luf-X1-ZH5"/>
                 <outlet property="sourceField" destination="dWQ-i1-byX" id="Fb2-M0-rkB"/>
                 <outlet property="splitHandle" destination="lKQ-7H-w5w" id="CIA-nS-5Ik"/>
                 <outlet property="tabView" destination="gz5-tZ-Ofd" id="v37-ia-HrJ"/>
                 <outlet property="tagTextView" destination="dhb-rg-0uZ" id="kSd-aj-23f"/>
-                <outlet property="tagView" destination="Thg-Wg-JDd" id="lxn-Z7-1Ur"/>
-                <outlet property="tagViewCostraint" destination="O0i-Sv-K16" id="hQ8-oS-Ddl"/>
                 <outlet property="textClipView" destination="sxN-R8-PHt" id="cYv-gE-6zc"/>
                 <outlet property="textScrollView" destination="Mky-48-wwA" id="w22-2t-KE1"/>
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
@@ -561,7 +561,7 @@
                                                         <outlet property="topOrRightView" destination="Sy0-kF-Tby" id="dJa-bK-lQ4"/>
                                                     </connections>
                                                 </imageView>
-                                                <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="Thg-Wg-JDd" userLabel="Tagging View" customClass="ColorView">
+                                                <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="Thg-Wg-JDd" userLabel="Right Side View" customClass="ColorView">
                                                     <rect key="frame" x="993" y="0.0" width="180" height="541"/>
                                                     <subviews>
                                                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" id="aV3-wb-1do">

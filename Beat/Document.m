@@ -123,6 +123,7 @@
 #import "BeatTag.h"
 #import "TagDefinition.h"
 #import "BeatFDXExport.h"
+#import "ValidationItem.h"
 
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
@@ -132,6 +133,7 @@
 // Window
 @property (weak) NSWindow *thisWindow;
 @property (weak) IBOutlet TKSplitHandle *splitHandle;
+@property (nonatomic) NSArray *itemsToValidate; // Menu items
 
 // Autosave
 @property (nonatomic) bool autosave;
@@ -328,8 +330,8 @@
 // Tagging
 @property (nonatomic) BeatTagging *tagging;
 @property (weak) IBOutlet NSTextView *tagTextView;
-@property (weak) IBOutlet ColorView *tagView;
-@property (weak) IBOutlet NSLayoutConstraint *tagViewCostraint;
+@property (weak) IBOutlet ColorView *sideView;
+@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
 
 
 // Debug flags
@@ -571,7 +573,7 @@
 - (void)setupWindow {
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
-	[_tagViewCostraint setConstant:0];
+	[_sideViewCostraint setConstant:0];
 	
 	// The document width constant is ca. A4 width compared to the font size.
 	// It's used here and there for proportional measurement.
@@ -860,6 +862,10 @@
 }
 - (NSString*)createDocumentFile {
 	// This puts together string content & settings block. It is returned to dataOfType:
+	
+	// Save tagged ranges
+	[self saveTags];
+	
 	return [NSString stringWithFormat:@"%@%@", self.getText, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
 
@@ -1203,7 +1209,7 @@
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
 	// Don't allow editing the script while tagging
-	if (_taggingMode) return NO;
+	if (_mode != EditMode) return NO;
 	
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
@@ -1525,7 +1531,7 @@
 	
 	[self updateUIwithCurrentScene];
 	
-	if (_taggingMode) [self updateTaggingData];
+	if (_mode == TaggingMode) [self updateTaggingData];
 }
 
 - (void)updateUIwithCurrentScene {
@@ -3036,6 +3042,18 @@ static NSString *forceDualDialogueSymbol = @"^";
 - (IBAction)share:(id)sender {}
 - (IBAction)export:(id)sender {}
 
+- (void)setupMenuItems {
+	_itemsToValidate = @[
+		[ValidationItem newItem:@"Match Parentheses" setting:@"matchParentheses" target:self],
+		[ValidationItem newItem:@"Automatic Paragraph Breaks" setting:@"autoLineBreaks" target:self],
+		[ValidationItem newItem:@"Show Scene Numbers" setting:@"showSceneNumberLabels" target:self],
+		[ValidationItem newItem:@"Typewriter Mode" setting:@"typewriterMode" target:self],
+		[ValidationItem newItem:@"Print Automatic Scene Numbers" setting:@"printSceneNumbers" target:self],
+		[ValidationItem newItem:@"Show Outline" setting:@"outlineViewVisible" target:self],
+		[ValidationItem newItem:@"Show Timeline" setting:@"timelineVisible" target:self],
+		[ValidationItem newItem:@"Autosave" setting:@"autosave" target:self],
+	];
+}
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	// Special conditions for other than normal edit view
@@ -3050,7 +3068,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		if ([self selectedTabViewTab] == 2) {
 			//
 			if ([menuItem.title isEqualToString:@"Show Index Cards"]) {
-				[menuItem setState:NSOnState];
+				menuItem.state = NSOnState;
 				return YES;
 			}
 			
@@ -3071,27 +3089,36 @@ static NSString *forceDualDialogueSymbol = @"^";
 			}
 		}
 		
-		// Show all items disabled for non-editor views
+		// Rest of the items are disabled for non-editor views
 		return NO;
 	}
 	
 	// Normal editor view items
+	bool uneditable = NO;
+	if (_mode == TaggingMode || _mode == ReviewMode) uneditable = YES;
 	
-	if (_timelineVisible && [menuItem.title isEqualToString:@"Show Timeline"]) {
-		[menuItem setState:NSOnState];
-		return YES;
-	} else {
-		[menuItem setState:NSOffState];
+	// Validate on/off items
+	for (ValidationItem *item in _itemsToValidate) {
+		if ([menuItem.title isEqualTo:item.title]) {
+			bool on = [item validate];
+			if (on) [menuItem setState:NSOnState];
+			else [menuItem setState:NSOffState];
+		}
 	}
 	
-	if (_taggingMode && [menuItem.title isEqualToString:@"Tagging Mode"]) {
-		[menuItem setState:NSOnState];
-		return YES;
-	} else {
-		[menuItem setState:NSOffState];
-	}
+	if ([menuItem.title isEqualToString:@"Tagging Mode"]) {
+		if (_mode == TaggingMode) menuItem.state = NSOnState;
+		else menuItem.state = NSOffState;
+		
+	} else if ([menuItem.title isEqualToString:@"Autosave"]) {
+		if (_autosave) menuItem.state = NSOnState;
+		else menuItem.state = NSOffState;
+		
+	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
+		if ([(ApplicationDelegate *)[NSApp delegate] isDark]) [menuItem setState:NSOnState];
+		else [menuItem setState:NSOffState];
 	
-	if ([menuItem.title isEqualToString:@"Share"]) {
+	} else if ([menuItem.title isEqualToString:@"Share"]) {
         [menuItem.submenu removeAllItems];
         NSArray *services = @[];
 		
@@ -3113,107 +3140,23 @@ static NSString *forceDualDialogueSymbol = @"^";
             [menuItem.submenu addItem:noThingPleaseSaveItem];
         }
 		
-        return YES;
-	} else if ([menuItem.title isEqualToString:@"Autosave"]) {
-		if (_autosave) menuItem.state = NSOnState; else menuItem.state = NSOffState;
 	} else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"Create PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
+		// Some magic courtesy of Hendrik Noeller
         NSArray* words = [[self getText] componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         NSString* visibleCharacters = [words componentsJoinedByString:@""];
-        if ([visibleCharacters length] == 0) {
-            return NO;
-        }
+        if ([visibleCharacters length] == 0) return NO;
+		
 	} else if ([menuItem.title isEqualToString:@"Dual Dialogue"]) {
-		if ([self selectedTabViewTab] != 0) {
-            return NO;
-		} else {
-			return YES;
-		}
-	} else if ([menuItem.title isEqualToString:@"Dual Dialogue"]) {
-		if (_currentLine.type == character || _currentLine.type == dialogue || _currentLine.type == parenthetical ||
-			_currentLine.type == dualDialogueCharacter || _currentLine.type == dualDialogueParenthetical || _currentLine.type == dualDialogue) return YES; else return NO;
-	} else if ([menuItem.title isEqualToString:@"Match Parentheses"]) {
-        if (self.matchParentheses) {
-            [menuItem setState:NSOnState];
-        } else {
-            [menuItem setState:NSOffState];
-        }
-        if ([self selectedTabViewTab] != 0) {
-            return NO;
-        }
-	} else if ([menuItem.title isEqualToString:@"Automatic Paragraph Breaks"]) {
-		if (self.autoLineBreaks) {
-			[menuItem setState:NSOnState];
-		} else {
-			[menuItem setState:NSOffState];
-		}
-		if ([self selectedTabViewTab] != 0) {
-			return NO;
-		}
-	} else if ([menuItem.title isEqualToString:@"Show Scene Numbers"]) {
-		if (self.showSceneNumberLabels) {
-			[menuItem setState:NSOnState];
-		} else {
-			[menuItem setState:NSOffState];
-		}
-		if ([self selectedTabViewTab] != 0) {
-			return NO;
-		}
-	} else if ([menuItem.title isEqualToString:@"Show Page Numbers"]) {
-		if (self.showPageNumbers) {
-			[menuItem setState:NSOnState];
-		} else {
-			[menuItem setState:NSOffState];
-		}
-		if ([self selectedTabViewTab] != 0) {
-			return NO;
-		}
-	} else if ([menuItem.title isEqualToString:@"Typewriter Mode"]) {
-		if (self.typewriterMode) {
-			[menuItem setState:NSOnState];
-		} else {
-			[menuItem setState:NSOffState];
-		}
-		if ([self selectedTabViewTab] != 0) {
-			return NO;
-		}
-	} else if ([menuItem.title isEqualToString:@"Print Automatic Scene Numbers"]) {
-		if (self.printSceneNumbers) {
-			[menuItem setState:NSOnState];
-		} else {
-			[menuItem setState:NSOffState];
-		}
-		if ([self selectedTabViewTab] != 0) {
-			return NO;
-		}
-    } else if ([menuItem.title isEqualToString:@"Show Outline"]) {
-        if (self.outlineViewVisible) {
-            [menuItem setState:NSOnState];
-        } else {
-            [menuItem setState:NSOffState];
-        }
-        if ([self selectedTabViewTab] != 0) {
-            return NO;
-        }
-	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
-		if ([(ApplicationDelegate *)[NSApp delegate] isDark]) {
-			[menuItem setState:NSOnState];
-		} else {
-			[menuItem setState:NSOffState];
-		}
-		if ([self selectedTabViewTab] != 0) {
-			return NO;
-		}
-    } else if ([menuItem.title isEqualToString:@"Zoom In"] || [menuItem.title isEqualToString:@"Zoom Out"] || [menuItem.title isEqualToString:@"Reset Zoom"]) {
-        if ([self selectedTabViewTab] != 0) {
-            return NO;
-        }
+		if (_currentLine.type == character ||
+			_currentLine.type == dialogue ||
+			_currentLine.type == parenthetical ||
+			_currentLine.type == dualDialogueCharacter ||
+			_currentLine.type == dualDialogueParenthetical ||
+			_currentLine.type == dualDialogue) return YES;
+		else return NO;
+		
     } else if ([menuItem.title isEqualToString:@"Show Index Cards"]) {
-		if ([self selectedTabViewTab] == 1) return NO;
-		if ([self selectedTabViewTab] == 2) {
-			[menuItem setState:NSOnState];
-		} else {
-			[menuItem setState:NSOffState];
-		}
+		menuItem.state = NSOffState;
 	}
 	
 	// So, I have overriden everything regarding undo (because I couldn't figure it out).
@@ -4954,7 +4897,7 @@ triangle walks
 #pragma mark - Tagging
 
 - (void)setupTagging {
-	[_tagView setFillColor:[BeatColors color:@"backgroundGray"]];
+	[_sideView setFillColor:[BeatColors color:@"backgroundGray"]];
 	
 	_tagging = [[BeatTagging alloc] initWithDelegate:self];
 	[_tagging setupTextView:self.tagTextView];
@@ -4964,18 +4907,24 @@ triangle walks
 }
 
 - (IBAction)toggleTagging:(id)sender {
-	_taggingMode = !_taggingMode;
+	if (_mode == TaggingMode) _mode = EditMode;
+	else _mode = TaggingMode;
 	
-	if (_taggingMode) {
+	if (_mode == TaggingMode) {
 		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-		[_tagViewCostraint setConstant:180];
+		[_sideViewCostraint setConstant:180];
 	} else {
-		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-		[_tagViewCostraint setConstant:0];
+		[self exitTagging:nil];
 	}
 	
 	[_thisWindow layoutIfNeeded];
 	[self updateLayout];
+}
+- (IBAction)exitTagging:(id)sender {
+	_mode = EditMode;
+	
+	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
+	[_sideViewCostraint setConstant:0];
 }
 
 - (void)addTagToRange:(NSRange)range tag:(BeatTagItem*)tag {
@@ -5037,7 +4986,7 @@ triangle walks
 }
 
 - (void)saveTags {
-	NSArray *tags = [_tagging getTags];
+	NSArray *tags = [_tagging getTags];	
 	NSArray *definitions = [_tagging getDefinitions];
 	
 	[_documentSettings set:@"Tags" as:tags];
@@ -5046,7 +4995,6 @@ triangle walks
 
 - (void)updateTaggingData {
 	[_tagging setupTextView:self.tagTextView];
-	
 	[_tagTextView.textStorage setAttributedString:[_tagging displayTagsForScene:[self getCurrentScene]]];
 }
 

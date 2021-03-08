@@ -7,21 +7,17 @@
 //
 /*
  
- Minimal tagging support implementation. This relies on kind of a hack. We add tag attributes to the
- string inside NSTextView alongside some stylization. The parser doesn't care about tagging data, and
- it's saved to a separate JSON string inside the document settings.
-
- This really, really should be migrated into a FDX-type system with tag IDs/numbers as follows:
+ Minimal tagging implementation. This relies on adding attributes into the NSTextView string,
+ and tagging data is NOT present in the screenplay text. It is saved as a separate JSON string
+ inside the document settings.
  
- Tag definitions are contained in an array of a custom objects:
- [
-	TagObject(
-		type: CharacterTag,
-		string: "name",
-		id: "12345"
-	),
-	...
- ]
+ We have two classes, BeatTag and TagDefinition (sorry for the inconsistence). BeatTags are
+ added as attributes to the string (attribute name "BeatTag"), and they contain a reference
+ to their definition. Definitions are created on the fly and get their text content from
+ the first time something is tagged.
+ 
+ This is similar to the Final Draft implementation, but for now, Beat doesn't allow
+ choosing from a list of previous definitions or editing them directly.
  
  User tags a range in editor:
 	-> editor presents a menu for existing items in the selected category
@@ -183,13 +179,12 @@
 	return dict;
 }
 
-- (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions {
+- (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions {	
 	self.tagDefinitions = [NSMutableArray array];
 	for (NSDictionary *dict in definitions) {
 		TagDefinition *def = [[TagDefinition alloc] initWithName:dict[@"name"] type:[BeatTagging tagFor:dict[@"type"]] identifier:dict[@"id"]];
 		[_tagDefinitions addObject:def];
 	}
-	
 	
 	for (NSDictionary* tag in tags) {
 		if (![tag isKindOfClass:NSDictionary.class]) {
@@ -258,10 +253,10 @@
 	
 	[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
+		if (tag.type == NoTag) return; // Just in case
 		
-		if (tag.type == NoTag) return;
+		// Save current range of the tag into the object and add to array
 		tag.range = range;
-		
 		[tags addObject:tag];
 	}];
 	

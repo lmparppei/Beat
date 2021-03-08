@@ -22,6 +22,8 @@
 		B600DD60254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */; };
 		B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
+		B606721125F5413C00CBDC7A /* ValidationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B606721025F5413C00CBDC7A /* ValidationItem.m */; };
+		B606721225F5413C00CBDC7A /* ValidationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B606721025F5413C00CBDC7A /* ValidationItem.m */; };
 		B60A592E259938C900207D00 /* BeatPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B60A592D259938C900207D00 /* BeatPluginManager.m */; };
 		B60A592F259938C900207D00 /* BeatPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B60A592D259938C900207D00 /* BeatPluginManager.m */; };
 		B60A593325993FF000207D00 /* Find Longest Scene.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */; };
@@ -414,6 +416,8 @@
 		B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentSettings.m; sourceTree = "<group>"; };
 		B6055CEB23CDBA3800F7D54C /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		B6055CEC23CDBA3800F7D54C /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
+		B606720F25F5413C00CBDC7A /* ValidationItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ValidationItem.h; sourceTree = "<group>"; };
+		B606721025F5413C00CBDC7A /* ValidationItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ValidationItem.m; sourceTree = "<group>"; };
 		B60A592C259938C900207D00 /* BeatPluginManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginManager.h; sourceTree = "<group>"; };
 		B60A592D259938C900207D00 /* BeatPluginManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginManager.m; sourceTree = "<group>"; };
 		B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Find Longest Scene.beatPlugin"; sourceTree = "<group>"; };
@@ -1029,6 +1033,8 @@
 				B6F5420425E2A15900D14E85 /* TagTextView.m */,
 				B6EAC18925E67CCF00C23384 /* BeatTagButton.h */,
 				B6EAC18A25E67CCF00C23384 /* BeatTagButton.m */,
+				B606720F25F5413C00CBDC7A /* ValidationItem.h */,
+				B606721025F5413C00CBDC7A /* ValidationItem.m */,
 			);
 			name = "User Interface";
 			path = "../Beat/User Interface";
@@ -1696,6 +1702,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */,
+				B606721125F5413C00CBDC7A /* ValidationItem.m in Sources */,
 				B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */,
 				B69EF55124659FC000C5B78C /* SceneCards.m in Sources */,
 				B66F46332565ADA0003748DA /* NSString+UriCompatibility.m in Sources */,
@@ -1851,6 +1858,7 @@
 				B6000DCF2562F0B300289676 /* CeltxImport.m in Sources */,
 				B6C84CA425AA566100BDF974 /* BeatAboutScreen.m in Sources */,
 				B6F49CF2246D66B0006D88D4 /* ContinousFountainParser.m in Sources */,
+				B606721225F5413C00CBDC7A /* ValidationItem.m in Sources */,
 				B6F49CF3246D66B0006D88D4 /* SceneFiltering.m in Sources */,
 				B662FC0A24C22167003EF967 /* OSFImport.m in Sources */,
 				B67B95D1256DB52000DFECB1 /* NSMutableArray+MoveItem.m in Sources */,

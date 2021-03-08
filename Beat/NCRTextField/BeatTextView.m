@@ -460,7 +460,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		[self.autocompletePopover close];
 	}
 	
-	if (self.taggingDelegate.taggingMode) {
+	if (self.editorDelegate.mode == TaggingMode) {
 		[self showTaggingOptions];
 	}
 }
