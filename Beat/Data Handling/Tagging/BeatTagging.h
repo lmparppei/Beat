@@ -32,7 +32,6 @@ typedef enum : NSInteger {
 @protocol BeatTaggingDelegate <NSObject>
 @property (readonly, weak) ContinousFountainParser *parser;
 @property (readonly, weak) NSTextView *textView;
-@property (readonly) bool taggingMode;
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type;
 @end

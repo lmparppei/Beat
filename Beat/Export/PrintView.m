@@ -25,7 +25,7 @@
 
 #import "PrintView.h"
 #import "BeatHTMLScript.h"
-#import "BeatComparison.h"
+#import "Document.h"
 
 @interface PrintView () <WebFrameLoadDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;

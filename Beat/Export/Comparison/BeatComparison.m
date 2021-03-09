@@ -37,11 +37,10 @@
  */
 
 //#import <DiffMatchPatch/DiffMatchPatch.h>
-#import "DiffMatchPatch.h"
 #import "BeatComparison.h"
+#import "DiffMatchPatch.h"
 
 #import "ContinousFountainParser.h"
-#import "Line.h"
 
 @implementation BeatComparison
 
@@ -83,13 +82,19 @@
 }
 
 - (void)compare:(NSArray*)script with:(NSString*)oldScript {
-	
+	[self compare:script with:oldScript fromIndex:0];
+}
+
+- (void)compare:(NSArray*)script with:(NSString*)oldScript fromIndex:(NSInteger)startIndex {
 	NSMutableString *newScript = [NSMutableString string];
 	for (Line *line in script) {
-		[newScript appendString:line.string];
-		[newScript appendString:@"\n"];
+		if (line.position >= startIndex) {
+			[newScript appendString:line.string];
+			if (line != script.lastObject) [newScript appendString:@"\n"];
+		}
 	}
 	
+	oldScript = [oldScript substringFromIndex:startIndex];
 	NSArray *diffs = [self diffReportFrom:newScript with:oldScript];
 	
 	// Go through the changed indices and calculate their positions
@@ -118,19 +123,28 @@
 	
 	// Go through the parsed lines and look if they are contained within changed ranges
 	for (Line *l in script) {
-		if (l.type == empty || l.isTitlePage) { l.changed = NO; continue; }
+		// Skip some elements (and ignore anything unchanged)
+		if ((l.position < startIndex) ||
+			(l.type == empty || l.isTitlePage)) {
+			l.changed = NO;
+			continue;
+		}
 		
 		bool changed = NO;
 		
 		NSRange lineRange = NSMakeRange(l.position, l.string.length);
-		for (NSNumber *range in changedRanges) {
-			if (NSIntersectionRange(range.rangeValue, lineRange).length > 0) {
+		for (NSNumber *rangeNum in changedRanges) {
+			NSRange range = rangeNum.rangeValue;
+			range = (NSRange){ range.location + startIndex, range.length };
+			
+			if (NSIntersectionRange(range, lineRange).length > 0) {
 				changed = YES;
 			}
 		}
 		
 		// Mark the line as changed
 		if (changed) l.changed = YES;
+		else l.changed = NO;
 	}
 }
 

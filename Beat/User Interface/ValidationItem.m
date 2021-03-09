@@ -22,7 +22,7 @@
 	return self;
 }
 
-- (bool)validate {
+- (bool)validate {	
 	if ([(NSNumber*)[_target valueForKey:_setting] integerValue]) return YES;
 	else return NO;
 }

@@ -333,7 +333,6 @@
 @property (weak) IBOutlet ColorView *sideView;
 @property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
 
-
 // Debug flags
 @property (nonatomic) bool debug;
 @end
@@ -480,6 +479,7 @@
 	// Setup views
 	[self setupWindow];
 	[self readUserSettings];
+	[self setupMenuItems];
 	
 	// Load font set
 	[self loadSerifFonts];
@@ -519,6 +519,10 @@
 	// Initialize parser
     self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
 	self.parser.delegate = self;
+	
+	// Initialize edit tracking
+	//self.editTracking = [[BeatEditTracking alloc] initWithString:self.contentBuffer delegate:self];
+	_changes = [[NSMutableIndexSet alloc] init];
 	
 	[self applyInitialFormating];
 	
@@ -1474,26 +1478,25 @@
 	}	
 }
 
+- (void)registerChangesAt:(NSInteger)index {
+	Line *line = [self getLineAt:index];
+	[line checkChanges];
+}
+
 - (void)textDidChange:(NSNotification *)notification
 {
 	if (![self.undoManager isUndoRegistrationEnabled]) [self.undoManager enableUndoRegistration];
-	
-	if (_postEditAction) {
-		NSLog(@"post edit %@", _postEditAction);
-		NSInteger index = [_postEditAction[@"index"] integerValue];
-		NSString *string = _postEditAction[@"string"];
-		_postEditAction = nil;
 		
-		if (index <= self.textView.string.length) {
-			[self addString:string atIndex:index];
-		}
-	}
-	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
+
+	// Register changes
+	NSUInteger changeAt = self.textView.rangesForUserTextChange[0].rangeValue.location;
+	[self registerChangesAt:changeAt];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
+	
 	if (changeInOutline) {
 		[self.parser createOutline];
 		if (self.outlineViewVisible) [self reloadOutline];
@@ -1517,21 +1520,24 @@
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
+	if (self.typewriterMode) [self typewriterScroll];
 
-	// We REALLY REALLY should make some sort of cache for these
-	_outline = [self getOutlineItems];
-	_currentLine = [self getCurrentLine];
+	self.currentLine = [self getCurrentLine];
 	
 	// Reset forced character input
-	if (_characterInputForLine != _currentLine) _characterInput = NO;
+	if (self.characterInputForLine != self.currentLine) self.characterInput = NO;
+	
+	// We REALLY REALLY should make some sort of cache for these
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		if (self.outlineViewVisible || self.timelineVisible) {
+			self.outline = [self getOutlineItems];
+			self.currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
+		}
 		
-	if (_outlineViewVisible || _timelineVisible) _currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
-
-	if (self.typewriterMode) [self typewriterScroll];
-	
-	[self updateUIwithCurrentScene];
-	
-	if (_mode == TaggingMode) [self updateTaggingData];
+		[self updateUIwithCurrentScene];
+		
+		if (self.mode == TaggingMode) [self updateTaggingData];
+	});
 }
 
 - (void)updateUIwithCurrentScene {
@@ -2243,6 +2249,13 @@
 							range:[self globalRangeFromLocalRange:&closeSymbolRange
 												 inLineAtPosition:line.position]];
 	}];
+	
+	// Highlight ranges if needed
+	if (_showChanges) {
+		[line.changedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+			[textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"pink"] colorWithAlphaComponent:0.2] range:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
+		}];
+	}
 	
 	if (line.isTitlePage && line.titleRange.length > 0) {
 		NSRange titleRange = line.titleRange;
@@ -3047,6 +3060,7 @@ static NSString *forceDualDialogueSymbol = @"^";
 		[ValidationItem newItem:@"Match Parentheses" setting:@"matchParentheses" target:self],
 		[ValidationItem newItem:@"Automatic Paragraph Breaks" setting:@"autoLineBreaks" target:self],
 		[ValidationItem newItem:@"Show Scene Numbers" setting:@"showSceneNumberLabels" target:self],
+		[ValidationItem newItem:@"Show Page Numbers" setting:@"showPageNumbers" target:self],
 		[ValidationItem newItem:@"Typewriter Mode" setting:@"typewriterMode" target:self],
 		[ValidationItem newItem:@"Print Automatic Scene Numbers" setting:@"printSceneNumbers" target:self],
 		[ValidationItem newItem:@"Show Outline" setting:@"outlineViewVisible" target:self],

@@ -11,6 +11,7 @@
 #import "Line.h"
 #import "RegExCategories.h"
 #import "FountainRegexes.h"
+#import "DiffMatchPatch.h"
 
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]"]
 
@@ -56,6 +57,7 @@
     self = [super init];
     if (self) {
         _string = string;
+		_original = string;
         _type = 0;
         _position = position;
     }
@@ -557,6 +559,36 @@
 	if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
 	
 	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+}
+
+- (void)checkChanges {
+	if ([self.string isEqualTo:self.original]) {
+		self.changed = NO;
+	} else {
+		self.changed = YES;
+	}
+	
+	[self changes];
+}
+
+- (void)changes {
+	_changedRanges = [NSMutableIndexSet indexSet];
+	DiffMatchPatch *diff = [[DiffMatchPatch alloc] init];
+	
+	NSMutableArray *diffs = [diff diff_mainOfOldString:self.original andNewString:self.string];
+	[diff diff_cleanupEfficiency:diffs];
+	//NSArray *diffs = [diff patch_makeFromOldString:self.original andNewString:self.string];
+	
+	NSInteger index = 0;
+	for (Diff* diff in diffs) {
+		if (diff.operation == DIFF_INSERT) {
+			[_changedRanges addIndexesInRange:(NSRange){ index, diff.text.length }];
+		}
+		
+		// Add to index when the string length has grown
+		if (diff.operation == DIFF_EQUAL || diff.operation == DIFF_INSERT)
+			index += diff.text.length;
+	}
 }
 
 @end

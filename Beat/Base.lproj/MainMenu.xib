@@ -684,8 +684,8 @@ DQ
                                     <action selector="showTimer:" target="-1" id="ucF-GX-SkT"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="oQ7-Kk-dvf"/>
-                            <menuItem title="Tagging Mode" id="Fdy-fO-lco">
+                            <menuItem isSeparatorItem="YES" hidden="YES" id="oQ7-Kk-dvf"/>
+                            <menuItem title="Tagging Mode" hidden="YES" id="Fdy-fO-lco">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>

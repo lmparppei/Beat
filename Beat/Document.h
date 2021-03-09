@@ -53,6 +53,7 @@ THE SOFTWARE.
 @property (nonatomic, readonly) NSString* preprocessedText;
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) bool showChanges;
  
 // Fonts
 @property (strong, nonatomic) NSFont *courier;
@@ -61,6 +62,7 @@ THE SOFTWARE.
 
 // For delegation
 @property (nonatomic) OutlineScene *currentScene;
+@property (nonatomic) NSMutableIndexSet *changes;
 
 // Document settings
 @property (nonatomic) BeatDocumentSettings *documentSettings;

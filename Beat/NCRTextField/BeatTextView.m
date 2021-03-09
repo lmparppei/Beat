@@ -691,7 +691,22 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)setMarginColor:(DynamicColor *)newColor {
 	_marginColor = newColor;
 }
- 
+
+- (NSArray*)rectsForChanges {
+	NSMutableArray *rects = [NSMutableArray array];
+
+	for (Line* line in self.editorDelegate.parser.lines) {
+		if (!line.changed) continue;
+		
+		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.range actualCharacterRange:nil];
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+		NSRect highlight = NSMakeRect(self.textContainerInset.width - 20, self.textContainerInset.height + rect.origin.y, 2, rect.size.height);
+		[rects addObject:[NSValue valueWithRect:highlight]];
+	}
+	
+	return rects;
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
 	NSGraphicsContext *context = [NSGraphicsContext currentContext];
 	CGFloat factor = 1 / _zoomLevel;
@@ -750,7 +765,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
-
+	if (self.editorDelegate.showChanges) {
+		for (NSValue *val in [self rectsForChanges]) {
+			NSRect highlight = val.rectValue;
+			NSColor *highlightColor = [BeatColors color:@"pink"];
+			[highlightColor setFill];
+			NSRectFill(highlight);
+		}
+	}
+	
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
 
 		NSString *page = [@(pageNumber) stringValue];

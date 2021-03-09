@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "PrintView.h"
+#import "Line.h"
 
 @class Document;
 

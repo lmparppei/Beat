@@ -55,6 +55,7 @@ typedef enum : NSUInteger {
 
 @property LineType type;
 @property (strong, nonatomic) NSString* string;
+@property (nonatomic) NSString* original;
 @property NSUInteger position;
 @property NSUInteger numberOfPreceedingFormattingCharacters;
 @property NSUInteger sectionDepth;
@@ -127,5 +128,7 @@ typedef enum : NSUInteger {
 
 // For comparing with another version
 @property bool changed;
+@property (nonatomic) NSMutableIndexSet *changedRanges;
+- (void)checkChanges;
 
 @end
