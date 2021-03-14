@@ -53,7 +53,7 @@ THE SOFTWARE.
 @property (nonatomic, readonly) NSString* preprocessedText;
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) bool printSceneNumbers;
-@property (nonatomic) bool showChanges;
+@property (nonatomic) bool trackChanges;
  
 // Fonts
 @property (strong, nonatomic) NSFont *courier;

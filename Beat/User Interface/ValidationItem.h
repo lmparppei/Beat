@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *title;
 @property (nonatomic) NSInteger tab;
 @property (nonatomic) NSString* setting;
-@property (nonatomic) id target;
+@property (weak) id target;
 + (ValidationItem*)newItem:(NSString*)title setting:(NSString*)setting target:(id)target;
 - (bool)validate;
 @end

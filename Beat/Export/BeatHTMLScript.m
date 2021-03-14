@@ -102,6 +102,13 @@
 #import "FountainPaginator.h"
 #import "RegExCategories.h"
 
+#define BOLD_OPEN @"<b>"
+#define BOLD_CLOSE @"</b>"
+#define ITALIC_OPEN @"<i>"
+#define ITALIC_CLOSE @"</i>"
+#define UNDERLINE_OPEN @"<u>"
+#define UNDERLINE_CLOSE @"</u>"
+
 @interface BeatHTMLScript ()
 
 @property (readonly, copy, nonatomic) NSString *cssText;
@@ -427,7 +434,6 @@
 			bool beginBlock = false;
 			
 			if ([ignoringTypes containsObject:line.typeAsFountainString]) {
-				
 				// Close possible blocks
 				if (isLyrics) {
 					// Close lyrics block
@@ -471,15 +477,18 @@
                     [body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
 			}
             
+			// WIP: Add formatting here?
             NSMutableString *text = [NSMutableString string];            
 			if (line.type == heading && line.sceneNumber) {
                 [text appendFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, line.sceneNumber];
+				
 				[text appendString:line.cleanedString];
 				[text appendFormat:@"<span class='scene-number-right'>%@</span>", line.sceneNumber];
             }
             else {
 				[text appendString:line.cleanedString];
             }
+
 			
 			// Remove any formatting symbols
 			// (these should be caught by Line methods, though)
@@ -514,11 +523,12 @@
             }
             
 			// Format string for HTML
-			[text setString:[self format:text]];
-            [text setString:[text replace:RX(@"\\[{2}(.*?)\\]{2}") with:@""]];
+			[text setString:[self htmlStringFor:line]];
+			//[text setString:[self format:text]];
+            //[text setString:[text replace:RX(@"\\[{2}(.*?)\\]{2}") with:@""]];
             
             //Find newlines and replace them with <br/>
-            text = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"] mutableCopy];
+            //text = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"] mutableCopy];
             
             if (![text isEqualToString:@""]) {
                 NSMutableString *additionalClasses = [NSMutableString string];
@@ -570,7 +580,7 @@
 
 - (NSString*)previewJS {
 	return @"" \
-	"<script>function scrollToScene(scene) { var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>" \
+	"<script>function scrollToScene(scene) { console.log('scroll to: ' + scene); var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>" \
 	"<script>var zoomLevel = 100;" \
 		"function zoomIn() { if (zoomLevel < 200) { zoomLevel += 10; document.body.style.zoom = zoomLevel + '%'; } }" \
 		"function zoomOut() { if (zoomLevel > 50) { zoomLevel -= 10;  document.body.style.zoom = zoomLevel + '%'; } }" \
@@ -603,7 +613,67 @@
 
 	return string;
 }
+- (NSString*)htmlStringFor:(Line*)line {
+	NSAttributedString *string = line.attributedStringForFDX;
+	
+	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
+	[line.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[result appendAttributedString:[string attributedSubstringFromRange:range]];
+	}];
+	
+	NSMutableString *htmlString = [NSMutableString string];
+	
+	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+		NSMutableString* text = [[result.string substringWithRange:range] mutableCopy];
+		
+		// Get stylization in the current attribute range
+		NSString *styles = @"";
+		NSString *styleString = attrs[@"Style"];
+		
+		NSString *open = @"";
+		NSString *close = @"";
+		
+		if (styleString.length) {
+			NSMutableArray *styleArray = [NSMutableArray arrayWithArray:[styleString componentsSeparatedByString:@","]];
+			[styleArray removeObject:@""];
+						
+			if ([styleArray containsObject:@"Bold"]) {
+				open = [open stringByAppendingString:BOLD_OPEN];
+				close = [close stringByAppendingString:BOLD_CLOSE];
+			}
+			if ([styleArray containsObject:@"Italic"]) {
+				open = [open stringByAppendingString:ITALIC_OPEN];
+				close = [close stringByAppendingString:ITALIC_CLOSE];
+			}
+			if ([styleArray containsObject:@"Underline"]) {
+				open = [open stringByAppendingString:UNDERLINE_OPEN];
+				close = [close stringByAppendingString:UNDERLINE_CLOSE];
+			}
+			
+			styles = [NSString stringWithFormat:@" Style=\"%@\"", [styleArray componentsJoinedByString:@"+"]];
+		}
+				
+		// Append snippet to paragraph
+		[htmlString appendString:[NSString stringWithFormat:@"%@%@%@", open, [self escapeString:text], close]];
+	}];
+	
+	// Replace line breaks
+	[htmlString replaceOccurrencesOfString:@"\n" withString:@"<br>\n" options:0 range:(NSRange){0,htmlString.length}];
+	
+	return htmlString;
+}
 
+- (NSString*)escapeString:(NSString*)stringToEscape
+{
+	NSMutableString *string = [NSMutableString stringWithString:stringToEscape];
+	[string replaceOccurrencesOfString:@"&"  withString:@"&amp;"  options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+	[string replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+	[string replaceOccurrencesOfString:@"'"  withString:@"&#x27;" options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+	[string replaceOccurrencesOfString:@">"  withString:@"&gt;"   options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+	[string replaceOccurrencesOfString:@"<"  withString:@"&lt;"   options:NSLiteralSearch range:NSMakeRange(0, [string length])];
+	
+	return string;
+}
 
 @end
 

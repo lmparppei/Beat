@@ -552,11 +552,20 @@ static NSDictionary *fdxIds;
 		NSString *styles = @"";
 		NSString *styleString = attrs[@"Style"];
 		
+		NSString *additionalStyles = @"";
+		
 		if (styleString.length) {
 			NSMutableArray *styleArray = [NSMutableArray arrayWithArray:[styleString componentsSeparatedByString:@","]];
 			[styleArray removeObject:@""];
 			
-			styles = [NSString stringWithFormat:@" Style=\"%@\"", [styleArray componentsJoinedByString:@"+"]];
+			// Highlighting does not conform to FDX styles
+			if ([styleArray containsObject:@"Highlight"]) {
+				[styleArray removeObject:@"Highlight"];
+				NSString *highlightColor = [BeatColors colorWith16bitHex:@"blue"];
+				additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\"", highlightColor.uppercaseString];
+			}
+			
+			styles = [NSString stringWithFormat:@" Style=\"%@\"%@", [styleArray componentsJoinedByString:@"+"], additionalStyles];
 		}
 		
 		// Tags for the current range

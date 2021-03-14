@@ -31,6 +31,7 @@
 @interface BeatPluginManager ()
 @property (nonatomic) NSDictionary *plugins;
 @property (nonatomic) NSURL *pluginURL;
+@property (nonatomic) NSMenuItem *menuItem;
 @end
 
 @implementation BeatPluginManager
@@ -166,13 +167,14 @@
 
 - (void)pluginMenuItemsFor:(NSMenu*)parentMenu {
 	// The first item is the prototype
-	NSMenuItem *menuItem = parentMenu.itemArray.firstObject;
+	if (!_menuItem) _menuItem = parentMenu.itemArray.firstObject;
+	
 	[parentMenu removeAllItems];
 	
 	[self loadPlugins];
 	
 	for (NSString *pluginName in self.pluginNames) {
-		NSMenuItem *item = [menuItem copy];
+		NSMenuItem *item = [_menuItem copy];
 		item.title = pluginName;
 		[parentMenu addItem:item];
 	}

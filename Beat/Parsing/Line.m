@@ -13,11 +13,16 @@
 #import "FountainRegexes.h"
 #import "DiffMatchPatch.h"
 
-#define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]"]
+#define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
 
 #define ITALIC_PATTERN @"*"
 #define BOLD_PATTERN @"**"
 #define UNDERLINE_PATTERN @"_"
+#define OMIT_PATTERN @"/*"
+#define NOTE_PATTERN @"[["
+
+#define ADDITION_PATTERN @"<<"
+#define REMOVAL_PATTERN @"<<"
 
 // For FDX compatibility (not used right now, mostly for reminder)
 #define BOLD_STYLE @"Bold"
@@ -46,6 +51,8 @@
 	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
 	if (self.noteRanges.count) newLine.noteRanges = [self.noteRanges copy];
 	if (self.omitedRanges.count) newLine.omitedRanges = [self.omitedRanges copy];
+	if (self.additionRanges.count) newLine.additionRanges = [self.additionRanges copy];
+	if (self.removalRanges.count) newLine.removalRanges = [self.removalRanges copy];
 	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
 	if (self.color) newLine.color = [NSString stringWithString:self.color];
 	
@@ -101,24 +108,24 @@
 // See if whole block is omited
 // Btw, this is me writing from the future. I love you, past me!!!
 - (bool)omited {
-	__block NSUInteger omitLength = 0;
+	__block NSInteger invisibleLength = 0;
+	
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		omitLength += range.length;
+		invisibleLength += range.length;
+	}];
+
+	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		invisibleLength += range.length;
 	}];
 	
-	// Also take notes into account here
-	__block NSUInteger noteLength = 0;
-	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		noteLength += range.length;
+	[self. removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		invisibleLength += range.length;
 	}];
 	
 	// This returns YES also for empty lines, which SHOULD NOT be a problem for anything, but yeah, we could check it:
 	//if (omitLength == [self.string length] && self.type != empty) {
-	if (omitLength + noteLength >= [self.string length]) {
-		return true;
-	} else {
-		return false;
-	}
+	if (invisibleLength >= self.string.length)  return true;
+	else return false;
 }
 
 - (bool)note {
@@ -166,7 +173,6 @@
 	if (line.type == heading && line.sceneNumber) {
 		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
 	}
-	
 	
 	return string;
 }
@@ -220,6 +226,7 @@
 	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
 	[indexes addIndexes:self.omitedRanges];
 	[indexes addIndexes:self.noteRanges];
+	[indexes addIndexes:self.removalRanges];
 	
 	[indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.location - offset + range.length > string.length) {
@@ -429,40 +436,54 @@
 	else return NO;
 }
 - (NSAttributedString*)attributedStringForFDX {
-	// N.B. This is NOT a Cocoa-compatible attributed string. The attributes are used to create a string for FDX conversion.
+	// N.B. This is NOT a Cocoa-compatible attributed string.
+	// The attributes are used to create a string for FDX/HTML conversion.
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
 	
 	// Add font stylization
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > BOLD_PATTERN.length * 2) {
-			[string addAttribute:@"Style" value:@"Bold" range:range];
+			[self addAttr:@"Bold" toString:string range:range];
 		}
 	}];
 	
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
-			NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:NSMakeRange(0, string.length)];
-			
-			NSString *style;
-			if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,Italic", styles[@"Style"]];
-			else style = @"Italic";
-			
-			[string addAttribute:@"Style" value:style range:range];
+			[self addAttr:@"Italic" toString:string range:range];
 		}
 	}];
 
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > UNDERLINE_PATTERN.length * 2) {
-			NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:NSMakeRange(0, string.length)];
-			
-			NSString *style;
-			if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,Underline", styles[@"Style"]];
-			else style = @"Underline";
-			
-			[string addAttribute:@"Style" value:style range:range];
+			[self addAttr:@"Underline" toString:string range:range];
+		}
+	}];
+		
+	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > OMIT_PATTERN.length * 2) {
+			[self addAttr:@"Omit" toString:string range:range];
 		}
 	}];
 	
+	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > NOTE_PATTERN.length * 2) {
+			[self addAttr:@"Omit" toString:string range:range];
+		}
+	}];
+	
+	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > REMOVAL_PATTERN.length * 2) {
+			[self addAttr:@"Strikeout" toString:string range:range];
+		}
+	}];
+	
+	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > ADDITION_PATTERN.length * 2) {
+			[self addAttr:@"Highlight" toString:string range:range];
+		}
+	}];
+	
+		
 	// Loop through tags and apply
 	for (NSDictionary *tag in self.tags) {
 		NSString* tagValue = tag[@"tag"];
@@ -473,6 +494,15 @@
 	}
 	
 	return string;
+}
+
+- (void)addAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
+	NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:NSMakeRange(0, string.length)];
+	NSString *style;
+	if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,%@", styles[@"Style"], name];
+	else style = name;
+	
+	[string addAttribute:@"Style" value:style range:range];
 }
 
 - (NSIndexSet*)contentRanges
@@ -531,9 +561,18 @@
 		[indices addIndexesInRange:NSMakeRange(range.location, UNDERLINE_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length, UNDERLINE_PATTERN.length)];
 	}];
+	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, ADDITION_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ADDITION_PATTERN.length, ADDITION_PATTERN.length)];
+	}];
+	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, REMOVAL_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - REMOVAL_PATTERN.length, REMOVAL_PATTERN.length)];
+	}];
 	
 	// Add note ranges
 	[indices addIndexes:self.noteRanges];
+
 		
 	return indices;
 }
@@ -589,6 +628,14 @@
 		if (diff.operation == DIFF_EQUAL || diff.operation == DIFF_INSERT)
 			index += diff.text.length;
 	}
+}
+- (bool)isUnchanged {
+	bool unchanged = NO;
+	if ([self.string isEqualTo:self.original]) unchanged = YES;
+	else unchanged = NO;
+	
+	self.changed = unchanged;
+	return unchanged;
 }
 
 @end

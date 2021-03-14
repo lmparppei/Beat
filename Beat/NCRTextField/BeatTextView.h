@@ -41,7 +41,8 @@ typedef enum : NSInteger {
 @property (readonly) NSFont *italicCourier;
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) BeatEditorMode mode;	
-@property (readonly) bool showChanges;
+@property (readonly) bool trackChanges;
+@property (readonly) NSMutableIndexSet *changes;
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
 @end

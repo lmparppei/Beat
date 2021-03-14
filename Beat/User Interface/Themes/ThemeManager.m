@@ -265,7 +265,6 @@
 - (DynamicColor*)sectionTextColor { return _theme.sectionTextColor; }
 - (DynamicColor*)synopsisTextColor { return _theme.synopsisTextColor; }
 
-
 - (DynamicColor*)currentBackgroundColor
 {
 	return _theme.backgroundColor;
@@ -323,9 +322,7 @@
 #pragma mark - Show Editor
 
 - (void)showEditor {
-	if (!self.themeEditor) {
-		_themeEditor = [[ThemeEditor alloc] init];
-	}
+	if (!self.themeEditor) _themeEditor = [[ThemeEditor alloc] init];
 	[_themeEditor showWindow:_themeEditor.window];
 }
 

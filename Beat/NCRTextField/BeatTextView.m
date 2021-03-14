@@ -693,8 +693,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (NSArray*)rectsForChanges {
+	
 	NSMutableArray *rects = [NSMutableArray array];
-
+	/*
 	for (Line* line in self.editorDelegate.parser.lines) {
 		if (!line.changed) continue;
 		
@@ -703,7 +704,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSRect highlight = NSMakeRect(self.textContainerInset.width - 20, self.textContainerInset.height + rect.origin.y, 2, rect.size.height);
 		[rects addObject:[NSValue valueWithRect:highlight]];
 	}
+	 */
 	
+	[self.editorDelegate.changes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+		NSRect highlight = NSMakeRect(self.textContainerInset.width - 20, self.textContainerInset.height + rect.origin.y, 2, rect.size.height);
+		[rects addObject:[NSValue valueWithRect:highlight]];
+	}];
+		
 	return rects;
 }
 
@@ -764,8 +773,20 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			rightEdge = self.enclosingScrollView.frame.size.width * factor - 50;
 		}
 	}
+
+	for (NSNumber *pageBreakPosition in self.pageBreaks) {
+		NSString *page = [@(pageNumber) stringValue];
+		// Do we want the dot after page number?
+		// page = [page stringByAppendingString:@"."];
+		
+		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: pageNumberColor }];
+		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
+		attrStr = nil;
+		
+		pageNumber++;
+	}
 	
-	if (self.editorDelegate.showChanges) {
+	if (self.editorDelegate.trackChanges) {
 		for (NSValue *val in [self rectsForChanges]) {
 			NSRect highlight = val.rectValue;
 			NSColor *highlightColor = [BeatColors color:@"pink"];
@@ -774,19 +795,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
-	for (NSNumber *pageBreakPosition in self.pageBreaks) {
-
-		NSString *page = [@(pageNumber) stringValue];
-		
-		// Do we want the dot after page number?
-		// page = [page stringByAppendingString:@"."];
-		
-		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: pageNumberColor }];
-		
-		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
-				
-		pageNumber++;
-	}
 	[context restoreGraphicsState];
 }
 
@@ -799,69 +807,50 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void) updateSceneNumberLabelsWithTextLabels {
 	// editorDelegate is a misleading name, it's the Document, really
 	ContinousFountainParser *parser = self.editorDelegate.parser;
+	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor;
+	
 	if (!parser.outline.count) [parser createOutline];
 	
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
+	
+	NSInteger index = 0;
+	for (OutlineScene *scene in parser.scenes) {
 		
-	NSInteger numberOfScenes = parser.numberOfScenes;
-	NSInteger numberOfLabels = self.sceneNumberLabels.count;
-	NSInteger difference = numberOfScenes - numberOfLabels;
-	
-	// Create missing labels for new scenes
-	if (difference > 0 && self.sceneNumberLabels.count) {
-		for (NSUInteger d = 0; d < difference; d++) {
-			[self createLabel:nil];
+		// Create a label if needed
+		NSTextField *label;
+		
+		// Add new label if needed
+		if (index >= self.sceneNumberLabels.count) label = [self createLabel:scene];
+		else label = self.sceneNumberLabels[index];
+		
+		if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
+		
+		NSRange range = [self.layoutManager glyphRangeForCharacterRange:scene.line.range actualCharacterRange:nil];
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+		
+		rect.size.width = 20 * scene.sceneNumber.length;
+		rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
+		rect.origin.y += self.textInsetY;
+
+		label.frame = rect;
+		
+		//[label setFont:self.editorDelegate.courier];
+		if (scene.color.length) {
+			NSString *color = scene.color.lowercaseString;
+			[label setTextColor:[BeatColors color:color]];
+		} else {
+			[label setTextColor:textColor];
 		}
+
+		index++;
 	}
-	
-	// Create labels if none are present
-	if (![self.sceneNumberLabels count]) {
-		[self createAllLabels];
-	} else {
-		NSUInteger index = 0;
 
-		for (OutlineScene * scene in parser.scenes) {
-			// We'll wrap this in an autorelease pool, not sure if it helps or not :-)
-			@autoreleasepool {
-				if (index >= [self.sceneNumberLabels count]) break;
-				
-				NSTextField * label = [self.sceneNumberLabels objectAtIndex:index];
-				if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
-				
-				NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
-				NSRange range = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-				NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
-				
-				rect.size.width = 20 * [scene.sceneNumber length];
-				rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
-				
-				rect.origin.y += _textInsetY;
-
-				label.frame = rect;
-				[label setFont:self.editorDelegate.courier];
-				if (![scene.color isEqualToString:@""] && scene.color != nil) {
-					NSString *color = [scene.color lowercaseString];
-					[label setTextColor:[BeatColors color:color]];
-				} else {
-					[label setTextColor:self.editorDelegate.themeManager.currentTextColor];
-				}
-			
-				index++;
-			}
-		}
-
-		// Remove unused labels from the end of the array.
-		if (difference < 0) {
-			for (NSInteger d = 0; d > difference; d--) {
-				// Let's just do a double check to reduce the chance of errors
-				if ([self.sceneNumberLabels count] > [self.sceneNumberLabels count] - 1) {
-					NSTextField * label = [self.sceneNumberLabels objectAtIndex:[self.sceneNumberLabels count] - 1];
-				
-					//[label performSelectorOnMainThread:@selector(removeFromSuperview) withObject:nil waitUntilDone:NO];
-					[self.sceneNumberLabels removeObject:label];
-					[label removeFromSuperview];
-				}
-			}
+	// Remove excess labels
+	if (index >= _sceneNumberLabels.count) {
+		for (NSInteger i = index; i < _sceneNumberLabels.count; i++) {
+			NSTextField *label = _sceneNumberLabels[i];
+			[self.sceneNumberLabels removeObject:label];
+			[label removeFromSuperview];
 		}
 	}
 }

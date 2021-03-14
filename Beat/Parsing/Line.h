@@ -69,6 +69,9 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* underlinedRanges;
 @property NSMutableIndexSet* noteRanges;
 @property NSMutableIndexSet* omitedRanges;
+@property NSMutableIndexSet* additionRanges;
+@property NSMutableIndexSet* removalRanges;
+
 @property NSRange titleRange;
 @property NSRange sceneNumberRange;
 @property NSRange storylineRange;
@@ -130,5 +133,6 @@ typedef enum : NSUInteger {
 @property bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
 - (void)checkChanges;
+- (bool)isUnchanged;
 
 @end

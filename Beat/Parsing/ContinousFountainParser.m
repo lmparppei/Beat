@@ -637,11 +637,18 @@
 #define OMIT_OPEN_PATTERN "/*"
 #define OMIT_CLOSE_PATTERN "*/"
 
+#define ADDITION_OPEN_PATTERN "<<"
+#define ADDITION_CLOSE_PATTERN ">>"
+#define REMOVAL_OPEN_PATTERN "{{"
+#define REMOVAL_CLOSE_PATTERN "}}"
+
 #define BOLD_PATTERN_LENGTH 2
 #define ITALIC_PATTERN_LENGTH 1
 #define UNDERLINE_PATTERN_LENGTH 1
 #define NOTE_PATTERN_LENGTH 2
 #define OMIT_PATTERN_LENGTH 2
+#define ADDITION_PATTERN_LENGTH 2
+#define REMOVAL_PATTERN_LENGTH 2
 
 #define COLOR_PATTERN "color"
 #define STORYLINE_PATTERN "storyline"
@@ -694,6 +701,20 @@
                                       and:NOTE_CLOSE_PATTERN
                                withLength:NOTE_PATTERN_LENGTH
                          excludingIndices:nil];
+	
+	line.additionRanges = [self rangesInChars:charArray
+								 ofLength:length
+								  between:ADDITION_OPEN_PATTERN
+									  and:ADDITION_CLOSE_PATTERN
+							   withLength:ADDITION_PATTERN_LENGTH
+						 excludingIndices:nil];
+	
+	line.removalRanges = [self rangesInChars:charArray
+								 ofLength:length
+								  between:REMOVAL_OPEN_PATTERN
+									  and:REMOVAL_CLOSE_PATTERN
+							   withLength:REMOVAL_PATTERN_LENGTH
+						 excludingIndices:nil];
 	
     if (line.type == heading) {
 		line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];

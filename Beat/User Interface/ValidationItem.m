@@ -15,7 +15,7 @@
 - (instancetype)initWithTitle:(NSString*)title setting:(NSString*)setting target:(id)target {
 	self = [super init];
 	if (self) {
-		_title = title;
+		_title = [NSString stringWithString:title];
 		_setting = setting;
 		_target = target;
 	}
