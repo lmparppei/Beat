@@ -147,7 +147,9 @@
 
 	theme.outlineBackground = [self dynamicColorFromArray:darkTheme[@"OutlineBackground"] darkArray:darkTheme[@"OutlineBackground"]];
 	theme.outlineHighlight = [self dynamicColorFromArray:darkTheme[@"OutlineHighlight"] darkArray:darkTheme[@"OutlineHighlight"]];
-
+	
+	theme.highlightColor = [self dynamicColorFromArray:darkTheme[@"Highlight"] darkArray:darkTheme[@"Highlight"]];
+	
 	return theme;
 }
 
@@ -264,60 +266,20 @@
 - (DynamicColor*)pageNumberColor { return _theme.pageNumberColor; }
 - (DynamicColor*)sectionTextColor { return _theme.sectionTextColor; }
 - (DynamicColor*)synopsisTextColor { return _theme.synopsisTextColor; }
+- (DynamicColor*)highlightColor { return _theme.highlightColor; }
 
-- (DynamicColor*)currentBackgroundColor
-{
-	return _theme.backgroundColor;
-}
-
-- (DynamicColor*) currentMarginColor
-{
-	return _theme.marginColor;
-}
-
-- (DynamicColor*)currentSelectionColor
-{
-	return _theme.selectionColor;
-}
-
-- (DynamicColor*) currentTextColor
-{
-	return _theme.textColor;
-}
-
-- (DynamicColor*) currentInvisibleTextColor
-{
-	return _theme.invisibleTextColor;
-}
-
-- (DynamicColor*) currentCaretColor
-{
-	return _theme.caretColor;
-}
-
-- (DynamicColor*) currentCommentColor
-{
-	return _theme.commentColor;
-}
-
-- (Theme*)currentTheme {
-	return _theme;
-}
-
-- (DynamicColor*)currentOutlineHighlight
-{
-	return _theme.outlineHighlight;
-}
-
-- (DynamicColor*)currentOutlineBackground
-{
-	return _theme.outlineBackground;
-}
-
-- (DynamicColor*)currentPageNumberColor
-{
-	return _theme.pageNumberColor;
-}
+- (Theme*)currentTheme { return _theme; }
+- (DynamicColor*)currentBackgroundColor { return _theme.backgroundColor; }
+- (DynamicColor*)currentMarginColor { return _theme.marginColor; }
+- (DynamicColor*)currentSelectionColor { return _theme.selectionColor; }
+- (DynamicColor*)currentTextColor { return _theme.textColor; }
+- (DynamicColor*)currentInvisibleTextColor { return _theme.invisibleTextColor; }
+- (DynamicColor*)currentCaretColor { return _theme.caretColor; }
+- (DynamicColor*)currentCommentColor {	return _theme.commentColor; }
+- (DynamicColor*)currentOutlineHighlight { return _theme.outlineHighlight; }
+- (DynamicColor*)currentOutlineBackground { return _theme.outlineBackground; }
+- (DynamicColor*)currentPageNumberColor { return _theme.pageNumberColor; }
+- (DynamicColor*)currentHighlightColor { return _theme.highlightColor; }
 
 #pragma mark - Show Editor
 

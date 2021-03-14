@@ -1340,6 +1340,24 @@
 						return NO;
 					}
 				}
+			} else if ([replacementString isEqualToString:@"<"]) {
+				if (affectedCharRange.location != 0) {
+					unichar characterBefore = [[self.textView string] characterAtIndex:affectedCharRange.location-1];
+					
+					if (characterBefore == '<') {
+						[self addString:@">>" atIndex:affectedCharRange.location];
+						[self.textView setSelectedRange:affectedCharRange];
+					}
+				}
+			} else if ([replacementString isEqualToString:@"{"]) {
+				if (affectedCharRange.location != 0) {
+					unichar characterBefore = [[self.textView string] characterAtIndex:affectedCharRange.location-1];
+					
+					if (characterBefore == '{') {
+						[self addString:@"}}" atIndex:affectedCharRange.location];
+						[self.textView setSelectedRange:affectedCharRange];
+					}
+				}
 			}
         }
     }
@@ -2278,7 +2296,7 @@
 	}];
 	
 	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:@"" value:nil line:line range:range formattingSymbol:@"<<"];
+		[self stylize:NSForegroundColorAttributeName value:self.themeManager.highlightColor line:line range:range formattingSymbol:@"<<"];
 	}];
 	
 	// Add strikethroughs
@@ -2298,7 +2316,7 @@
 							range:NSMakeRange(line.position + line.string.length - 1, 1)];
 	}
 	
-	[self renderTextBackgroundOnLine:line];
+	//[self renderTextBackgroundOnLine:line];
 }
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
@@ -2344,11 +2362,13 @@
 		}
 	}];
 	
+	/*
 	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (!range.length) return;
 		NSColor *color = [[BeatColors color:@"yellow"] colorWithAlphaComponent:.35];
 		[self stylize:NSBackgroundColorAttributeName value:color line:line range:range formattingSymbol:@"<<"];
 	}];
+	 */
 }
 
 #pragma mark - Scrolling
@@ -2683,51 +2703,11 @@ static NSString *removalSymbolClose = @"}}";
 
 - (IBAction)makeBold:(id)sender
 {
-    //Check if the currently selected tab is the one for editing
+	// Only allow this for editor view
     if ([self selectedTabViewTab] == 0) {
-        //Retreiving the cursor location
-        NSRange cursorLocation = [self cursorLocation];
-        [self format:cursorLocation beginningSymbol:boldSymbol endSymbol:boldSymbol];
+		NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
+        [self format:range beginningSymbol:boldSymbol endSymbol:boldSymbol];
     }
-}
-
-- (IBAction)markAddition:(id)sender
-{
-	if ([self selectedTabViewTab] == 0) {
-		NSRange cursorLocation = [self cursorLocation];
-		[self format:cursorLocation beginningSymbol:additionSymbolOpen endSymbol:additionSymbolClose];
-	}
-}
-- (IBAction)markRemoval:(id)sender
-{
-	if ([self selectedTabViewTab] == 0) {
-		NSRange cursorLocation = [self cursorLocation];
-		[self format:cursorLocation beginningSymbol:removalSymbolOpen endSymbol:removalSymbolClose];
-	}
-}
-
-- (IBAction)unlockSceneNumbers:(id)sender
-{
-	NSString *sceneNumberPatternString = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
-	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPatternString];
-	
-	NSError *error = nil;
-	NSRegularExpression *sceneNumberPattern = [NSRegularExpression regularExpressionWithPattern: @" (\\#([0-9A-Za-z\\.\\)-]+)\\#)" options: NSRegularExpressionCaseInsensitive error: &error];
-	
-	_sceneNumberLabelUpdateOff = true;
-	for (OutlineScene * scene in self.parser.scenes) {
-		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
-			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, [scene.line.string length])];
-			if ([results count]) {
-				NSTextCheckingResult * result = [results objectAtIndex:0];
-				NSRange sceneNumberRange = NSMakeRange(scene.line.position + result.range.location, result.range.length);
-				[self replaceCharactersInRange:sceneNumberRange withString:@""];
-			}
-		}
-	}
-	
-	_sceneNumberLabelUpdateOff = false;
-	[self updateSceneNumberLabels];
 }
 
 - (IBAction)makeItalic:(id)sender
@@ -2735,8 +2715,8 @@ static NSString *removalSymbolClose = @"}}";
     //Check if the currently selected tab is the one for editing
     if ([self selectedTabViewTab] == 0) {
         //Retreiving the cursor location
-        NSRange cursorLocation = [self cursorLocation];
-        [self format:cursorLocation beginningSymbol:italicSymbol endSymbol:italicSymbol];
+		NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
+        [self format:range beginningSymbol:italicSymbol endSymbol:italicSymbol];
     }
 }
 
@@ -2745,8 +2725,8 @@ static NSString *removalSymbolClose = @"}}";
     //Check if the currently selected tab is the one for editing
     if ([self selectedTabViewTab] == 0) {
         //Retreiving the cursor location
-        NSRange cursorLocation = [self cursorLocation];
-        [self format:cursorLocation beginningSymbol:underlinedSymbol endSymbol:underlinedSymbol];
+		NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
+        [self format:range beginningSymbol:underlinedSymbol endSymbol:underlinedSymbol];
     }
 }
 
@@ -2756,8 +2736,8 @@ static NSString *removalSymbolClose = @"}}";
     //Check if the currently selected tab is the one for editing
     if ([self selectedTabViewTab] == 0) {
         //Retreiving the cursor location
-        NSRange cursorLocation = [self cursorLocation];
-        [self format:cursorLocation beginningSymbol:noteOpen endSymbol:noteClose];
+		NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
+        [self format:range beginningSymbol:noteOpen endSymbol:noteClose];
     }
 }
 
@@ -2958,6 +2938,66 @@ static NSString *removalSymbolClose = @"}}";
     }
 }
 
+- (IBAction)markAddition:(id)sender
+{
+	// Only allow this for editor view
+	if ([self selectedTabViewTab] != 0) return;
+	
+	NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
+	[self format:range beginningSymbol:additionSymbolOpen endSymbol:additionSymbolClose];
+}
+- (IBAction)markRemoval:(id)sender
+{
+	// Only allow this for editor view
+	if ([self selectedTabViewTab] != 0) return;
+	
+	NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
+	[self format:range beginningSymbol:removalSymbolOpen endSymbol:removalSymbolClose];
+}
+- (IBAction)commitChanges:(id)sender {
+	for (Line *line in [NSArray arrayWithArray:self.parser.lines]) {
+		NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
+		if (line.additionRanges.count) {
+			[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+				[indices addIndexesInRange:(NSRange){range.location, 2}];
+				[indices addIndexesInRange:(NSRange){range.location + range.length - 2, 2}];
+			}];
+		}
+		if (line.removalRanges.count) {
+			[line.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+				[indices addIndexesInRange:range];
+			}];
+		}
+		
+		if (indices.count) {
+			NSMutableString *string = [NSMutableString string];
+			NSMutableIndexSet *result = [NSMutableIndexSet indexSetWithIndexesInRange:(NSRange){0, line.string.length}];
+			[result removeIndexes:indices];
+			
+			[result enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+				[string appendString:[line.string substringWithRange:range]];
+			}];
+			
+			// Remove resulting double spaces and add a line break for the editor
+			[string replaceOccurrencesOfString:@"  " withString:@" " options:0 range:(NSRange){0, string.length}];
+			[string appendString:@"\n"];
+			
+			[self replaceRange:line.range withString:string];
+		}
+	}
+}
+
+- (NSRange)rangeUntilLineBreak:(NSRange)range {
+	NSString *text = [self.getText substringWithRange:range];
+	if ([text rangeOfString:@"\n"].location != NSNotFound) {
+		NSInteger lineBreakIndex = [text rangeOfString:@"\n"].location;
+		return (NSRange){ range.location, lineBreakIndex };
+	} else {
+		return range;
+	}
+}
+
+
 #pragma mark - Lock & Force Scene Numbering
 
 // Preprocessing was apparently a bottleneck. Redone in 1.1.0f
@@ -3003,6 +3043,31 @@ static NSString *removalSymbolClose = @"}}";
 	
 	return fullText;
 }
+
+- (IBAction)unlockSceneNumbers:(id)sender
+{
+	NSString *sceneNumberPatternString = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
+	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPatternString];
+	
+	NSError *error = nil;
+	NSRegularExpression *sceneNumberPattern = [NSRegularExpression regularExpressionWithPattern: @" (\\#([0-9A-Za-z\\.\\)-]+)\\#)" options: NSRegularExpressionCaseInsensitive error: &error];
+	
+	_sceneNumberLabelUpdateOff = true;
+	for (OutlineScene * scene in self.parser.scenes) {
+		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
+			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, [scene.line.string length])];
+			if ([results count]) {
+				NSTextCheckingResult * result = [results objectAtIndex:0];
+				NSRange sceneNumberRange = NSMakeRange(scene.line.position + result.range.location, result.range.length);
+				[self replaceCharactersInRange:sceneNumberRange withString:@""];
+			}
+		}
+	}
+	
+	_sceneNumberLabelUpdateOff = false;
+	[self updateSceneNumberLabels];
+}
+
 
 - (IBAction)lockSceneNumbers:(id)sender
 {
@@ -3417,9 +3482,7 @@ static NSString *removalSymbolClose = @"}}";
 			// Create JS scroll function call and append it straight into the HTML
 			self.outline = [self getOutlineItems];
 			self.currentScene = [self getCurrentScene];
-			
-			NSLog(@"scene num %@", self.currentScene.sceneNumber);
-			
+						
 			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene('%@');</script>", self.currentScene.sceneNumber];
 			
 			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];

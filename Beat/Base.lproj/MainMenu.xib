@@ -556,6 +556,25 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="SNs-fE-ES7"/>
+                            <menuItem title="Mark as Addition" keyEquivalent="a" id="ksg-Nb-dhr">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="markAddition:" target="-1" id="FXw-d5-XLS"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Mark as Removal" keyEquivalent="r" id="QBe-JV-mxr">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="markRemoval:" target="-1" id="5Er-NW-nOk"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Commit Changes" id="WvZ-sx-gAj">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="commitChanges:" target="-1" id="fcA-ap-I2Q"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="jQJ-2O-va9"/>
                             <menuItem title="Reformat Selected" keyEquivalent="r" id="OYT-mJ-6Jc">
                                 <connections>
                                     <action selector="reformatRange:" target="-1" id="QHM-Pf-WuS"/>
@@ -672,8 +691,8 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Tools" id="T42-tx-tAb">
                         <items>
-                            <menuItem title="Screenplay Analysis" keyEquivalent="a" id="TCn-De-Kk7">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                            <menuItem title="Screenplay Analysis" id="TCn-De-Kk7">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showAnalysis:" target="-1" id="fsX-Fc-sal"/>
                                 </connections>

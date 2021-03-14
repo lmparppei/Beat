@@ -108,6 +108,8 @@
 #define ITALIC_CLOSE @"</i>"
 #define UNDERLINE_OPEN @"<u>"
 #define UNDERLINE_CLOSE @"</u>"
+#define STRIKEOUT_OPEN @"<del>"
+#define STRIKEOUT_CLOSE @"</del>"
 
 @interface BeatHTMLScript ()
 
@@ -248,7 +250,6 @@
 	
     if ([titlePage count] > 0) {
         [body appendString:@"<section id='script-title' class='page'>"];
-		
 		[body appendFormat:@"<div class='mainTitle'>"];
 		
         // Title
@@ -381,6 +382,8 @@
 	
 	_numberOfPages = maxPages;
 
+	
+	// Header string (make sure it's not null)
 	NSString *header = (self.header) ? self.header : @"";
 	
 	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) { @autoreleasepool {
@@ -428,7 +431,6 @@
 		
 		// We need to catch lyrics not to make them fill up a paragraph
 		bool isLyrics = false;
-		
 	
         for (Line *line in elementsOnPage) {
 			bool beginBlock = false;
@@ -440,7 +442,6 @@
 					[body appendFormat:@"</p>\n"];
 					isLyrics = false;
 				}
-				
                 continue;
             }
 			
@@ -451,12 +452,9 @@
 					[body appendFormat:@"</p>\n"];
 					isLyrics = false;
 				}
-				
                 continue;
             }
 			
-			// NEEDS TO BE DEBUGGED
-			 
 			// Stop dual dialogue
 			if (dualDialogueCharacterCount == 2 &&
 				!(line.type == dualDialogueParenthetical ||
@@ -478,58 +476,37 @@
 			}
             
 			// WIP: Add formatting here?
-            NSMutableString *text = [NSMutableString string];            
-			if (line.type == heading && line.sceneNumber) {
-                [text appendFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, line.sceneNumber];
-				
-				[text appendString:line.cleanedString];
-				[text appendFormat:@"<span class='scene-number-right'>%@</span>", line.sceneNumber];
-            }
-            else {
-				[text appendString:line.cleanedString];
+            NSMutableString *text = [NSMutableString string];
+			
+			// Preview shortcuts
+			if (line.type == heading && _operation == ForPreview) {
+				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
             }
 
-			
-			// Remove any formatting symbols
-			// (these should be caught by Line methods, though)
-			if (line.type == dualDialogueCharacter) {
-                [text replaceOccurrencesOfString:@"^" withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, text.length)];
-            }
-            
-			if (line.type == heading) {
-                [text setString:[text replace:RX(@"^\\.") with:@""]];
-				if (_operation == ForPreview) [text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
-            }
-            if (line.type == character) {
-				[text setString:[text replace:RX(@"^@") with:@""]];
-			}
+			// Begin lyrics block
 			if (line.type == lyrics) {
-                [text setString:[text replace:RX(@"^~") with:@""]];
 				if (!isLyrics) {
 					beginBlock = true;
 					isLyrics = true;
 				}
 			} else {
-				// Close possible blocks
+				// Close lyrics block
 				if (isLyrics) {
-					// Close lyrics block
 					[body appendFormat:@"</p>\n"];
 					isLyrics = false;
 				}
 			}
             
-			if (line.type == action) {
-                [text setString:[text replace:RX(@"^\\!") with:@""]];
-            }
-            
-			// Format string for HTML
+			// Format string for HTML (if it's not a heading)
 			[text setString:[self htmlStringFor:line]];
-			//[text setString:[self format:text]];
-            //[text setString:[text replace:RX(@"\\[{2}(.*?)\\]{2}") with:@""]];
-            
-            //Find newlines and replace them with <br/>
-            //text = [[text stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"] mutableCopy];
-            
+			
+			// Add scene number labels if needed
+			if (line.type == heading && line.sceneNumber) {
+				NSString *sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, line.sceneNumber];
+				NSString *sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", line.sceneNumber];
+				[text setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, text, sceneNumberRight]];
+			}
+			
             if (![text isEqualToString:@""]) {
                 NSMutableString *additionalClasses = [NSMutableString string];
 				
@@ -538,8 +515,8 @@
                 }
 				if (elementCount == 0) [additionalClasses appendString:@" first"];
 				
-				// Mark as changed, if comparing against another file
-				if (line.changed) [additionalClasses appendString:@" changed"];
+				// Mark as changed, if comparing against another file or the line contains added/removed text
+				if (line.changed || line.additionRanges.count || line.removalRanges.count) [additionalClasses appendString:@" changed"];
 				
 				// If this line isn't part of a larger block, output it as paragraph
 				if (!beginBlock && !isLyrics) {
@@ -620,12 +597,11 @@
 	[line.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[result appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
-	
+		
 	NSMutableString *htmlString = [NSMutableString string];
 	
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSMutableString* text = [[result.string substringWithRange:range] mutableCopy];
-		
 		// Get stylization in the current attribute range
 		NSString *styles = @"";
 		NSString *styleString = attrs[@"Style"];
@@ -648,6 +624,10 @@
 			if ([styleArray containsObject:@"Underline"]) {
 				open = [open stringByAppendingString:UNDERLINE_OPEN];
 				close = [close stringByAppendingString:UNDERLINE_CLOSE];
+			}
+			if ([styleArray containsObject:@"Strikeout"]) {
+				open = [open stringByAppendingString:STRIKEOUT_OPEN];
+				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
 			}
 			
 			styles = [NSString stringWithFormat:@" Style=\"%@\"", [styleArray componentsJoinedByString:@"+"]];

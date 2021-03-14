@@ -83,6 +83,12 @@
 					<integer>50</integer>
 					<integer>50</integer>
 				</array>
+				<key>Highlight</key>
+				<array>
+					<integer>0</integer>
+					<integer>129</integer>
+					<integer>239</integer>
+				</array>
 			</dict>
 			<key>Dark</key>
 			<dict>
@@ -157,6 +163,12 @@
 					<integer>80</integer>
 					<integer>80</integer>
 					<integer>80</integer>
+				</array>
+				<key>Highlight</key>
+				<array>
+					<integer>0</integer>
+					<integer>129</integer>
+					<integer>239</integer>
 				</array>
 			</dict>
 		</dict>

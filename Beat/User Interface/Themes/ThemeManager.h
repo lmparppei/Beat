@@ -37,6 +37,7 @@
 - (DynamicColor*) currentMarginColor;
 - (DynamicColor*) currentOutlineBackground;
 - (DynamicColor*) currentOutlineHighlight;
+- (DynamicColor*) currentHighlightColor;
 - (DynamicColor*)backgroundColor;
 - (DynamicColor*)marginColor;
 - (DynamicColor*)selectionColor;
@@ -49,4 +50,5 @@
 - (DynamicColor*)pageNumberColor;
 - (DynamicColor*)sectionTextColor;
 - (DynamicColor*)synopsisTextColor;
+- (DynamicColor*)highlightColor;
 @end

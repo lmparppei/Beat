@@ -23,6 +23,7 @@
 @property (strong, nonatomic) DynamicColor* sectionTextColor;
 @property (strong, nonatomic) DynamicColor* synopsisTextColor;
 @property (strong, nonatomic) DynamicColor* pageNumberColor;
+@property (strong, nonatomic) DynamicColor* highlightColor;
 
 @property (strong, nonatomic) NSString* name;
 

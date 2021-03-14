@@ -846,7 +846,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 
 	// Remove excess labels
-	if (index >= _sceneNumberLabels.count) {
+	if (_sceneNumberLabels.count >= index) {
 		for (NSInteger i = index; i < _sceneNumberLabels.count; i++) {
 			NSTextField *label = _sceneNumberLabels[i];
 			[self.sceneNumberLabels removeObject:label];

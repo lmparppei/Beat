@@ -73,6 +73,11 @@
 		light[@"OutlineHighlight"] = values[0];
 		dark[@"OutlineHighlight"] = values[1];
 	}
+	if (self.highlightColor) {
+		NSArray *values = [self.highlightColor valuesAsRGB];
+		light[@"Highlight"] = values[0];
+		dark[@"Highlight"] = values[1];
+	}
 	
 	return @{ @"Name": name, @"Light": light, @"Dark": dark };
 }

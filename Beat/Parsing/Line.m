@@ -4,9 +4,14 @@
 //
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//  Parts copyright © 2019-2020 KAPITAN! / Lauri-Matti Parppei. All Rights reserved.
+//  Parts copyright © 2019-2021 KAPITAN! / Lauri-Matti Parppei. All Rights reserved.
 
-//  Heavily modified for Beat
+/*
+
+ This class is HEAVILY modified for Beat.
+ There are multiple, overlapping methods for legacy reasons. I'm working on cleaning them up.
+ 
+ */
 
 #import "Line.h"
 #import "RegExCategories.h"
@@ -117,11 +122,7 @@
 	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		invisibleLength += range.length;
 	}];
-	
-	[self. removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		invisibleLength += range.length;
-	}];
-	
+		
 	// This returns YES also for empty lines, which SHOULD NOT be a problem for anything, but yeah, we could check it:
 	//if (omitLength == [self.string length] && self.type != empty) {
 	if (invisibleLength >= self.string.length)  return true;
@@ -226,7 +227,6 @@
 	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
 	[indexes addIndexes:self.omitedRanges];
 	[indexes addIndexes:self.noteRanges];
-	[indexes addIndexes:self.removalRanges];
 	
 	[indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.location - offset + range.length > string.length) {
@@ -477,12 +477,13 @@
 		}
 	}];
 	
+	/*
 	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ADDITION_PATTERN.length * 2) {
 			[self addAttr:@"Highlight" toString:string range:range];
 		}
 	}];
-	
+	*/
 		
 	// Loop through tags and apply
 	for (NSDictionary *tag in self.tags) {
@@ -497,7 +498,7 @@
 }
 
 - (void)addAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
-	NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:NSMakeRange(0, string.length)];
+	NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:range];
 	NSString *style;
 	if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,%@", styles[@"Style"], name];
 	else style = name;
@@ -520,7 +521,6 @@
 {
 	// This maps formatting character into an index set.
 	// It could be used anywhere, but for now, it's used to create XML formatting for FDX export.
-	
 	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
 	NSString* string = self.string;
 	
@@ -539,10 +539,17 @@
 		}
 	}
 	
-	// Add ranges for > and <
-	if (self.type == centered) {
-		[indices addIndex:0];
+	// Catch dual dialogue force symbol
+	if (self.type == dualDialogueCharacter && self.string.length > 0) {
 		[indices addIndex:self.string.length - 1];
+	}
+	
+	// Add ranges for > and < (if needed)
+	if (self.type == centered && self.string.length > 2) {
+		if ([self.string characterAtIndex:0] == '>' && [self.string characterAtIndex:self.string.length - 1] == '<') {
+			[indices addIndex:0];
+			[indices addIndex:self.string.length - 1];
+		}
 	}
 	
 	// Scene number range
@@ -569,11 +576,10 @@
 		[indices addIndexesInRange:NSMakeRange(range.location, REMOVAL_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - REMOVAL_PATTERN.length, REMOVAL_PATTERN.length)];
 	}];
-	
+		
 	// Add note ranges
 	[indices addIndexes:self.noteRanges];
-
-		
+	
 	return indices;
 }
 - (NSString*)stripFormatting {
