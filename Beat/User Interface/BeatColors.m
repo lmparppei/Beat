@@ -29,7 +29,8 @@
 			 @"lightGray": [BeatColors colorWithRed:220 green:220 blue:220],
 			 @"darkGray": [BeatColors colorWithRed:170 green:170 blue:170],
 			 @"veryDarkGray": [BeatColors colorWithRed:100 green:100 blue:100],
-			 @"backgroundGray": [BeatColors colorWithRed:41 green:42 blue:45]
+			 @"backgroundGray": [BeatColors colorWithRed:41 green:42 blue:45],
+			 @"fdxRemoval": [BeatColors colorWithRed:255 green:190 blue:220]
     };
 }
 + (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {

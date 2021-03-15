@@ -26,8 +26,8 @@
 #define OMIT_PATTERN @"/*"
 #define NOTE_PATTERN @"[["
 
-#define ADDITION_PATTERN @"<<"
-#define REMOVAL_PATTERN @"<<"
+#define HIGHLIGHT_PATTERN @"<<"
+#define STRIKEOUT_PATTERN @"{{"
 
 // For FDX compatibility (not used right now, mostly for reminder)
 #define BOLD_STYLE @"Bold"
@@ -56,8 +56,12 @@
 	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
 	if (self.noteRanges.count) newLine.noteRanges = [self.noteRanges copy];
 	if (self.omitedRanges.count) newLine.omitedRanges = [self.omitedRanges copy];
+	if (self.highlightRanges.count) newLine.highlightRanges = [self.highlightRanges copy];
+	if (self.strikeoutRanges.count) newLine.strikeoutRanges = [self.strikeoutRanges copy];
+	
 	if (self.additionRanges.count) newLine.additionRanges = [self.additionRanges copy];
 	if (self.removalRanges.count) newLine.removalRanges = [self.removalRanges copy];
+	
 	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
 	if (self.color) newLine.color = [NSString stringWithString:self.color];
 	
@@ -72,7 +76,7 @@
 		_original = string;
         _type = 0;
         _position = position;
-    }
+	}
     return self;
 }
 
@@ -370,8 +374,21 @@
 }
 
 -(NSRange)range {
+	// Range for the full line (incl. line break)
 	return NSMakeRange(self.position, self.string.length + 1);
 }
+-(NSRange)textRange {
+	// Range for the text only
+	return NSMakeRange(self.position, self.string.length);
+}
+-(NSRange)globalRangeToLocal:(NSRange)range {
+	// Insert a range and get a LOCAL range in the line
+	NSRange lineRange = (NSRange){ self.position, self.string.length };
+	NSRange intersection = NSIntersectionRange(range, lineRange);
+	
+	return (NSRange){ intersection.location - self.position, intersection.length };
+}
+
 
 - (NSString*)typeAsFountainString
 {
@@ -471,19 +488,25 @@
 		}
 	}];
 	
-	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > REMOVAL_PATTERN.length * 2) {
+	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > STRIKEOUT_PATTERN.length * 2) {
 			[self addAttr:@"Strikeout" toString:string range:range];
 		}
 	}];
 	
-	/*
-	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > ADDITION_PATTERN.length * 2) {
+	[self.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > HIGHLIGHT_PATTERN.length * 2) {
 			[self addAttr:@"Highlight" toString:string range:range];
 		}
 	}];
-	*/
+	
+	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self addAttr:@"Addition" toString:string range:range];
+	}];
+	
+	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self addAttr:@"Removal" toString:string range:range];
+	}];
 		
 	// Loop through tags and apply
 	for (NSDictionary *tag in self.tags) {
@@ -519,7 +542,7 @@
 }
 - (NSIndexSet*)formattingRanges
 {
-	// This maps formatting character into an index set.
+	// This maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
 	// It could be used anywhere, but for now, it's used to create XML formatting for FDX export.
 	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
 	NSString* string = self.string;
@@ -568,13 +591,13 @@
 		[indices addIndexesInRange:NSMakeRange(range.location, UNDERLINE_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length, UNDERLINE_PATTERN.length)];
 	}];
-	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, ADDITION_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ADDITION_PATTERN.length, ADDITION_PATTERN.length)];
+	[self.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
 	}];
-	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, REMOVAL_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - REMOVAL_PATTERN.length, REMOVAL_PATTERN.length)];
+	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
 	}];
 		
 	// Add note ranges
@@ -582,6 +605,7 @@
 	
 	return indices;
 }
+
 - (NSString*)stripFormatting {
 	// A better version of stripFormattingCharacters
 	NSIndexSet *contentRanges = [self contentRanges];
@@ -643,5 +667,8 @@
 	self.changed = unchanged;
 	return unchanged;
 }
-
+-(NSString *)description
+{
+	return [NSString stringWithFormat:@"Line: %@  - at %lu", self.string, self.position];
+}
 @end

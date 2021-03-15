@@ -79,6 +79,7 @@
 
 //Convenience Methods for Other Stuff
 - (Line*)lineAtPosition:(NSInteger)position;
+- (NSArray*)linesInRange:(NSRange)range;
 - (NSString*)cleanedString;
 - (NSDictionary*)scriptForPrinting;
 - (NSInteger)numberOfScenes;

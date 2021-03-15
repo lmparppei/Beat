@@ -86,6 +86,7 @@
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
+#import "BeatReviewItem.h"
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
 
 static NSDictionary *fdxIds;
@@ -154,7 +155,30 @@ static NSDictionary *fdxIds;
 	});
 	
 	self.parser = [[ContinousFountainParser alloc] initWithString:string];
-	if (attrString && tags.count) [BeatTagging bakeAllTagsInString:attrString toLines:self.parser.lines];
+	
+	if (attrString) {
+		// Bake tags
+		[BeatTagging bakeAllTagsInString:attrString toLines:self.parser.lines];
+		
+		// Enumerate review ranges and bake into lines
+		[attrString enumerateAttribute:@"Review" inRange:(NSRange){0, attrString.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+			BeatReviewItem *item = value;
+			if (item.type == ReviewNone) return;
+			
+			NSArray *lines = [self.parser linesInRange:range];
+			NSLog(@"%@: %@!", item.key, lines);
+			
+			for (Line *line in lines) {
+				if (!line.additionRanges) line.additionRanges = [NSMutableIndexSet indexSet];
+				if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
+				
+				NSRange rangeInLine = [line globalRangeToLocal:range];
+				if (item.type == ReviewAddition) [line.additionRanges addIndexesInRange:rangeInLine];
+				else if (item.type == ReviewRemoval) [line.removalRanges addIndexesInRange:rangeInLine];
+			}
+		}];
+	}
+	
 	
 	self.tags = [NSArray arrayWithArray:tags];
 	self.tagData = [NSMutableDictionary dictionary];
@@ -228,19 +252,27 @@ static NSDictionary *fdxIds;
 	[_result appendString:@"  </Content>\n"];
 	[self appendTitlePage];
 	
-	if (_tags) {
-		[_result appendString:@"  <TagData>\n"];
-		[_result appendString:@"    <TagCategories>\n"];
-		[_result appendString:[self createCategories]];
-		[_result appendString:@"    </TagCategories>\n"];
-		[_result appendString:@"    <TagDefinitions>\n"];
-		[_result appendString:_tagDefinitionsStr];
-		[_result appendString:@"    </TagDefinitions>\n"];
-		[_result appendString:@"    <Tags>\n"];
-		[_result appendString:_tagsStr];
-		[_result appendString:@"    </Tags>\n"];
-		[_result appendString:@"  </TagData>\n"];
-	}
+	// Tagging data
+	[_result appendString:@"  <TagData>\n"];
+	[_result appendString:@"    <TagCategories>\n"];
+	[_result appendString:[self createCategories]];
+	[_result appendString:@"    </TagCategories>\n"];
+	[_result appendString:@"    <TagDefinitions>\n"];
+	[_result appendString:_tagDefinitionsStr];
+	[_result appendString:@"    </TagDefinitions>\n"];
+	[_result appendString:@"    <Tags>\n"];
+	[_result appendString:_tagsStr];
+	[_result appendString:@"    </Tags>\n"];
+	[_result appendString:@"  </TagData>\n"];
+
+	// Revision data
+	[_result appendString:@"	<Revisions ActiveSet=\"1\" Location=\"7.75\" RevisionsShown=\"Active\" ShowAllMarks=\"No\" ShowAllSets=\"No\">\n"];
+	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"1\" Mark=\"*\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"blue"])];
+	[_result appendString:@"	</Revisions>\n"];
+	/*
+	<Revisions ActiveSet="1" Location="7.75" RevisionMode="No" RevisionsShown="Active" ShowAllMarks="No" ShowAllSets="No" ShowPageColor="No">
+	  <Revision Color="#FFFF7E7E7979" FullRevision="No" ID="1" Mark="*" Name="First Revision" PageColor="#FFFFFFFFFFFF" Style=""/>
+	 */
 	
 	[_result appendString:@"</FinalDraft>\n"];
 	
@@ -558,11 +590,22 @@ static NSDictionary *fdxIds;
 			NSMutableArray *styleArray = [NSMutableArray arrayWithArray:[styleString componentsSeparatedByString:@","]];
 			[styleArray removeObject:@""];
 			
-			// Highlighting does not conform to FDX styles
+			// Highlighting, Addition and Removal don't not conform to FDX styles
 			if ([styleArray containsObject:@"Highlight"]) {
 				[styleArray removeObject:@"Highlight"];
 				NSString *highlightColor = [BeatColors colorWith16bitHex:@"blue"];
 				additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\"", highlightColor.uppercaseString];
+			}
+			if ([styleArray containsObject:@"Addition"]) {
+				[styleArray removeObject:@"Addition"];
+				NSString *highlightColor = [BeatColors colorWith16bitHex:@"cyan"];
+				additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"1\"", highlightColor.uppercaseString];
+			}
+			if ([styleArray containsObject:@"Removal"]) {
+				[styleArray removeObject:@"Removal"];
+				[styleArray addObject:@"Strikeout"];
+				NSString *highlightColor = [BeatColors colorWith16bitHex:@"fdxRemoval"];
+				additionalStyles = [additionalStyles stringByAppendingFormat:@" Background=\"#%@\"", highlightColor.uppercaseString];
 			}
 			
 			styles = [NSString stringWithFormat:@" Style=\"%@\"%@", [styleArray componentsJoinedByString:@"+"], additionalStyles];

@@ -637,18 +637,18 @@
 #define OMIT_OPEN_PATTERN "/*"
 #define OMIT_CLOSE_PATTERN "*/"
 
-#define ADDITION_OPEN_PATTERN "<<"
-#define ADDITION_CLOSE_PATTERN ">>"
-#define REMOVAL_OPEN_PATTERN "{{"
-#define REMOVAL_CLOSE_PATTERN "}}"
+#define HIGHLIGHT_OPEN_PATTERN "<<"
+#define HIGHLIGHT_CLOSE_PATTERN ">>"
+#define STRIKEOUT_OPEN_PATTERN "{{"
+#define STRIKEOUT_CLOSE_PATTERN "}}"
 
 #define BOLD_PATTERN_LENGTH 2
 #define ITALIC_PATTERN_LENGTH 1
 #define UNDERLINE_PATTERN_LENGTH 1
 #define NOTE_PATTERN_LENGTH 2
 #define OMIT_PATTERN_LENGTH 2
-#define ADDITION_PATTERN_LENGTH 2
-#define REMOVAL_PATTERN_LENGTH 2
+#define HIGHLIGHT_PATTERN_LENGTH 2
+#define STRIKEOUT_PATTERN_LENGTH 2
 
 #define COLOR_PATTERN "color"
 #define STORYLINE_PATTERN "storyline"
@@ -702,18 +702,18 @@
                                withLength:NOTE_PATTERN_LENGTH
                          excludingIndices:nil];
 	
-	line.additionRanges = [self rangesInChars:charArray
+	line.highlightRanges = [self rangesInChars:charArray
 								 ofLength:length
-								  between:ADDITION_OPEN_PATTERN
-									  and:ADDITION_CLOSE_PATTERN
-							   withLength:ADDITION_PATTERN_LENGTH
+								  between:HIGHLIGHT_OPEN_PATTERN
+									  and:HIGHLIGHT_CLOSE_PATTERN
+							   withLength:HIGHLIGHT_PATTERN_LENGTH
 						 excludingIndices:nil];
 	
-	line.removalRanges = [self rangesInChars:charArray
+	line.strikeoutRanges = [self rangesInChars:charArray
 								 ofLength:length
-								  between:REMOVAL_OPEN_PATTERN
-									  and:REMOVAL_CLOSE_PATTERN
-							   withLength:REMOVAL_PATTERN_LENGTH
+								  between:STRIKEOUT_OPEN_PATTERN
+									  and:STRIKEOUT_CLOSE_PATTERN
+							   withLength:STRIKEOUT_PATTERN_LENGTH
 						 excludingIndices:nil];
 	
     if (line.type == heading) {
@@ -1617,6 +1617,19 @@ and incomprehensible system of recursion.
 		if (position >= line.position && position < line.position + line.string.length + 1) return line;
 	}
 	return nil;
+}
+- (NSArray*)linesInRange:(NSRange)range {
+	NSMutableArray *lines = [NSMutableArray array];
+	for (Line* line in self.lines) {
+		if ((NSLocationInRange(line.position, range) ||
+			NSLocationInRange(range.location, line.range) ||
+			NSLocationInRange(range.location + range.length, line.range)) &&
+			NSIntersectionRange(range, line.range).length > 0) {
+			[lines addObject:line];
+		}
+	}
+	
+	return lines;
 }
 
 - (NSArray*)preprocessForPrinting {

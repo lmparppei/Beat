@@ -555,25 +555,6 @@ DQ
                                     <action selector="addPageBreak:" target="-1" id="QOi-6j-Qi0"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="SNs-fE-ES7"/>
-                            <menuItem title="Mark as Addition" keyEquivalent="a" id="ksg-Nb-dhr">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="markAddition:" target="-1" id="FXw-d5-XLS"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Mark as Removal" keyEquivalent="r" id="QBe-JV-mxr">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="markRemoval:" target="-1" id="5Er-NW-nOk"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Commit Changes" id="WvZ-sx-gAj">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="commitChanges:" target="-1" id="fcA-ap-I2Q"/>
-                                </connections>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="jQJ-2O-va9"/>
                             <menuItem title="Reformat Selected" keyEquivalent="r" id="OYT-mJ-6Jc">
                                 <connections>
@@ -701,6 +682,23 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="showTimer:" target="-1" id="ucF-GX-SkT"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" hidden="YES" id="yt3-ai-0fx"/>
+                            <menuItem title="Mark as Revised" keyEquivalent="k" id="Ah1-Kr-xrQ">
+                                <connections>
+                                    <action selector="markAddition:" target="-1" id="SLz-xu-HxV"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Mark for Removal" keyEquivalent="K" id="nM4-un-Ivn">
+                                <connections>
+                                    <action selector="markRemoval:" target="-1" id="vmU-Md-MKX"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Clear Markers" keyEquivalent="k" id="hrl-ti-1fN">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="clearMarkings:" target="-1" id="Pgz-vk-zKb"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" hidden="YES" id="oQ7-Kk-dvf"/>

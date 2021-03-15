@@ -69,6 +69,9 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* underlinedRanges;
 @property NSMutableIndexSet* noteRanges;
 @property NSMutableIndexSet* omitedRanges;
+@property NSMutableIndexSet* highlightRanges;
+@property NSMutableIndexSet* strikeoutRanges;
+
 @property NSMutableIndexSet* additionRanges;
 @property NSMutableIndexSet* removalRanges;
 
@@ -94,6 +97,8 @@ typedef enum : NSUInteger {
 - (bool)note;
 - (bool)centered;
 - (NSRange)range;
+- (NSRange)textRange;
+- (NSRange)globalRangeToLocal:(NSRange)range;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
@@ -135,4 +140,5 @@ typedef enum : NSUInteger {
 - (void)checkChanges;
 - (bool)isUnchanged;
 
+-(NSString *)description;
 @end

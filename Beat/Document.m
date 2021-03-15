@@ -124,6 +124,7 @@
 #import "TagDefinition.h"
 #import "BeatFDXExport.h"
 #import "ValidationItem.h"
+#import "BeatReviewItem.h"
 
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
@@ -533,8 +534,9 @@
 	
 	[self applyInitialFormating];
 	
-	// Load tags
+	// Load tags & review
 	[self setupTagging];
+	[self setupReview];
 	
 	self.documentIsLoading = NO;
 	
@@ -876,6 +878,9 @@
 	
 	// Save tagged ranges
 	[self saveTags];
+	
+	// Save highlighted/removed ranges
+	[self saveReviewRanges];
 	
 	return [NSString stringWithFormat:@"%@%@", self.getText, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
@@ -1497,6 +1502,7 @@
 
 - (IBAction)reformatRange:(id)sender {
 	if ([self.textView selectedRange].length > 0) {
+		
 		NSString *string = [[[self.textView textStorage] string] substringWithRange:[self.textView selectedRange]];
 		if ([string length]) {
 			[self.parser parseChangeInRange:[self.textView selectedRange] withString:string];
@@ -1921,16 +1927,9 @@
 }
 
 
-# pragma  mark - Formatting
+#pragma  mark - Formatting
 
-// This is a panic button. It replaces the whole document with raw text input.
 - (IBAction) reformatEverything:(id)sender {
-	/*
-	NSString *wholeText = [NSString stringWithString:[self getText]];
-	[self setText:wholeText];
-	self.parser = [[ContinousFountainParser alloc] initWithString:self.getText delegate:self];
-	*/
-	
 	[self.parser resetParsing];
 	[self applyFormatChanges];
 	[self formatAllLines];
@@ -1953,13 +1952,20 @@
 	
     [self.parser.changedIndices removeAllObjects];
 }
+- (void)forceFormatChangesInRange:(NSRange)range
+{
+	NSArray *lines = [self.parser linesInRange:range];
+	for (Line* line in lines) {
+		[self formatLineOfScreenplay:line];
+	}
+}
 
 -(void)applyInitialFormating {
 	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
 	NSInteger index = 0;
 	
 	for (Line* line in self.parser.lines) {
-		[self formatLineOfScreenplay:line recursive:YES firstTime:NO];
+		[self formatLineOfScreenplay:line firstTime:YES];
 		index++;
 	}
 	[_parser.changedIndices removeAllObjects];
@@ -1967,22 +1973,17 @@
 
 - (void)formatLineOfScreenplay:(Line*)line
 {
-	[self formatLineOfScreenplay:line recursive:NO firstTime:NO];
+	[self formatLineOfScreenplay:line firstTime:NO];
 }
 
-- (void)formatLineOfScreenplay:(Line*)line recursive:(bool)recursive {
-	[self formatLineOfScreenplay:line recursive:recursive firstTime:NO];
-}
-
-- (void)formatLineOfScreenplay:(Line*)line recursive:(bool)recursive firstTime:(bool)firstTime
+- (void)formatLineOfScreenplay:(Line*)line firstTime:(bool)firstTime
 {
-	// NB: the recursive logic has been stripped out
-	
 	// Don't go out of range
 	if (line.position + line.string.length > self.textView.string.length) return;
 
-	if (!recursive && !firstTime) _currentLine = line;
+	if (!firstTime) _currentLine = line;
 	
+
 	NSUInteger begin = line.position;
 	NSUInteger length = [line.string length];
 	NSRange range = NSMakeRange(begin, length);
@@ -2216,7 +2217,7 @@
 	}
 	
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
-	if (line.string.length == 0 && !recursive) {
+	if (line.string.length == 0 && !firstTime) {
 		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
 		Line* previousLine;
 		NSInteger lineIndex = [_parser.lines indexOfObject:line];
@@ -2295,14 +2296,15 @@
 												 inLineAtPosition:line.position]];
 	}];
 	
-	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+	// Add highlights
+	[line.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSForegroundColorAttributeName value:self.themeManager.highlightColor line:line range:range formattingSymbol:@"<<"];
 	}];
 	
 	// Add strikethroughs
-	[line.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:@"<<"];
-		[self stylize:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] line:line range:range formattingSymbol:@"<<"];
+	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:@"{{"];
+		[self stylize:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] line:line range:range formattingSymbol:@"{{"];
 	}];
 	
 	// Format force element symbols
@@ -2317,6 +2319,16 @@
 	}
 	
 	//[self renderTextBackgroundOnLine:line];
+	
+	// Render special ranges
+	if (line.string.length) {
+		NSAttributedString *attrStr = [textStorage attributedSubstringFromRange:(NSRange){line.position, line.string.length}];
+		[attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+			BeatReviewItem *review = attrs[@"Review"];
+			if (review.type == ReviewAddition) [textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"blue"] colorWithAlphaComponent:0.2] range:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
+			if (review.type == ReviewRemoval) [textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
+		}];
+	}
 }
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
@@ -2602,10 +2614,10 @@ static NSString *forcetransitionLineSymbol = @">";
 static NSString *forceLyricsSymbol = @"~";
 static NSString *forceDualDialogueSymbol = @"^";
 
-static NSString *additionSymbolOpen = @"<<";
-static NSString *additionSymbolClose = @">>";
-static NSString *removalSymbolOpen = @"{{";
-static NSString *removalSymbolClose = @"}}";
+static NSString *highlightSymbolOpen = @"<<";
+static NSString *highlightSymbolClose = @">>";
+static NSString *strikeoutSymbolOpen = @"{{";
+static NSString *strikeoutSymbolClose = @"}}";
 
 - (NSString*)titlePage
 {
@@ -2938,22 +2950,115 @@ static NSString *removalSymbolClose = @"}}";
     }
 }
 
-- (IBAction)markAddition:(id)sender
-{
+- (IBAction)addHighlight:(id)sender {
 	// Only allow this for editor view
 	if ([self selectedTabViewTab] != 0) return;
-	
 	NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
-	[self format:range beginningSymbol:additionSymbolOpen endSymbol:additionSymbolClose];
+	[self format:range beginningSymbol:highlightSymbolOpen endSymbol:highlightSymbolClose];
+}
+- (IBAction)addStrikeout:(id)sender {
+	// Only allow this for editor view
+	if ([self selectedTabViewTab] != 0) return;
+	NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
+	[self format:range beginningSymbol:strikeoutSymbolOpen endSymbol:strikeoutSymbolClose];
+}
+- (NSRange)rangeUntilLineBreak:(NSRange)range {
+	NSString *text = [self.getText substringWithRange:range];
+	if ([text rangeOfString:@"\n"].location != NSNotFound) {
+		NSInteger lineBreakIndex = [text rangeOfString:@"\n"].location;
+		return (NSRange){ range.location, lineBreakIndex };
+	} else {
+		return range;
+	}
+}
+
+#pragma mark - Review & Edit Tracking
+
+- (void)setupReview {
+	NSDictionary *review = [_documentSettings get:@"Review"];
+	
+	for (NSString *key in review.allKeys) {
+		NSArray *items = review[key];
+		for (NSArray *item in items) {
+			NSInteger loc = [(NSNumber*)item[0] integerValue];
+			NSInteger len = [(NSNumber*)item[1] integerValue];
+			
+			if (len > 0 && loc + len <= self.getText.length) {
+				if ([key isEqualToString:@"Addition"]) [self markRangeAsAddition:(NSRange){loc, len}];
+				if ([key isEqualToString:@"Removal"]) [self markRangeForRemoval:(NSRange){loc, len}];
+			}
+		}
+	}
+}
+
+- (IBAction)markAddition:(id)sender
+{
+	[self markerAction:ReviewAddition];
 }
 - (IBAction)markRemoval:(id)sender
 {
+	[self markerAction:ReviewRemoval];
+}
+- (IBAction)clearMarkings:(id)sender {
+	[self markerAction:ReviewNone];
+}
+- (void)markerAction:(ReviewType)type {
 	// Only allow this for editor view
 	if ([self selectedTabViewTab] != 0) return;
 	
-	NSRange range = [self rangeUntilLineBreak:[self cursorLocation]];
-	[self format:range beginningSymbol:removalSymbolOpen endSymbol:removalSymbolClose];
+	NSRange range = [self selectedRange];
+	if (range.length == 0) return;
+
+	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+	
+	if (type == ReviewRemoval) [self markRangeForRemoval:range];
+	else if (type == ReviewAddition) [self markRangeAsAddition:range];
+	else [self clearReviewMarkers:range];
+		
+	[self.textView setSelectedRange:(NSRange){range.location + range.length, 0}];
+	[self updateChangeCount:NSChangeDone];
+	
+	NSLog(@"old attr %@", oldAttributes);
+	
+	// Create an undo step
+	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+		[self.textView.textStorage setAttributes:oldAttributes range:range];
+		[self forceFormatChangesInRange:range];
+	}];
 }
+
+- (void)markRangeAsAddition:(NSRange)range {
+	[self.textView.textStorage addAttribute:@"Review" value:[BeatReviewItem type:ReviewAddition] range:range];
+	[self forceFormatChangesInRange:range];
+}
+- (void)markRangeForRemoval:(NSRange)range {
+	[self.textView.textStorage addAttribute:@"Review" value:[BeatReviewItem type:ReviewRemoval] range:range];
+	[self forceFormatChangesInRange:range];
+}
+- (void)clearReviewMarkers:(NSRange)range {
+	[self.textView.textStorage addAttribute:@"Review" value:[BeatReviewItem type:ReviewNone] range:range];
+	[self forceFormatChangesInRange:range];
+}
+
+- (void)saveReviewRanges {
+	// This saves the review ranges into Document Settings
+	NSDictionary *ranges = @{
+		@"Addition": [NSMutableArray array],
+		@"Removal": [NSMutableArray array],
+		@"Comment": [NSMutableArray array]
+	};
+	NSAttributedString *string = self.textView.attributedString;
+	
+	[string enumerateAttribute:@"Review" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		BeatReviewItem *item = value;
+		if (item.type != ReviewNone) {
+			NSMutableArray *values = ranges[item.key];
+			[values addObject:@[@(range.location), @(range.length)]];
+		}
+	}];
+	[_documentSettings set:@"Review" as:ranges];
+}
+
 - (IBAction)commitChanges:(id)sender {
 	for (Line *line in [NSArray arrayWithArray:self.parser.lines]) {
 		NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
@@ -2984,16 +3089,6 @@ static NSString *removalSymbolClose = @"}}";
 			
 			[self replaceRange:line.range withString:string];
 		}
-	}
-}
-
-- (NSRange)rangeUntilLineBreak:(NSRange)range {
-	NSString *text = [self.getText substringWithRange:range];
-	if ([text rangeOfString:@"\n"].location != NSNotFound) {
-		NSInteger lineBreakIndex = [text rangeOfString:@"\n"].location;
-		return (NSRange){ range.location, lineBreakIndex };
-	} else {
-		return range;
 	}
 }
 
@@ -5149,6 +5244,8 @@ triangle walks
 }
 
 #pragma mark - Locking The Document
+
+// This is unused for now
 
 - (void)toggleLock {
 	bool locked = [self.documentSettings getBool:@"Locked"];

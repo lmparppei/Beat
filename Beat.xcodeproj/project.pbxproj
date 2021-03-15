@@ -83,6 +83,8 @@
 		B650D77025CF35750042010C /* BeatTagging.m in Sources */ = {isa = PBXBuildFile; fileRef = B650D76C25CF349D0042010C /* BeatTagging.m */; };
 		B65AC22F25ACE340003A6FB3 /* Silent as Murderers.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B65AC22E25ACE340003A6FB3 /* Silent as Murderers.fountain */; };
 		B65AC23025ACE340003A6FB3 /* Silent as Murderers.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B65AC22E25ACE340003A6FB3 /* Silent as Murderers.fountain */; };
+		B65B148525FF815E0087834F /* BeatReviewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65B148425FF815E0087834F /* BeatReviewItem.m */; };
+		B65B148625FF815E0087834F /* BeatReviewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65B148425FF815E0087834F /* BeatReviewItem.m */; };
 		B65F02B125B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */; };
 		B65F02B225B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */; };
 		B65F02B325B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B65F02B025B82BF8009E1D04 /* BeatAnalysisPanel.xib */; };
@@ -478,6 +480,8 @@
 		B650D76B25CF349D0042010C /* BeatTagging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagging.h; sourceTree = "<group>"; };
 		B650D76C25CF349D0042010C /* BeatTagging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagging.m; sourceTree = "<group>"; };
 		B65AC22E25ACE340003A6FB3 /* Silent as Murderers.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Silent as Murderers.fountain"; sourceTree = "<group>"; };
+		B65B148325FF815E0087834F /* BeatReviewItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatReviewItem.h; sourceTree = "<group>"; };
+		B65B148425FF815E0087834F /* BeatReviewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatReviewItem.m; sourceTree = "<group>"; };
 		B65F02AE25B82BF8009E1D04 /* BeatAnalysisPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatAnalysisPanel.h; sourceTree = "<group>"; };
 		B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatAnalysisPanel.m; sourceTree = "<group>"; };
 		B65F02B025B82BF8009E1D04 /* BeatAnalysisPanel.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatAnalysisPanel.xib; sourceTree = "<group>"; };
@@ -844,6 +848,7 @@
 		B600DD5C254C22CC006A09D0 /* Data Handling */ = {
 			isa = PBXGroup;
 			children = (
+				B65B148225FF81400087834F /* Review */,
 				B650D76F25CF34BD0042010C /* Tagging */,
 				B600DD5D254C22F6006A09D0 /* BeatDocumentSettings.h */,
 				B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */,
@@ -993,6 +998,15 @@
 				B6F15CE425E7B13000176946 /* BeatTagItem.m */,
 			);
 			path = Tagging;
+			sourceTree = "<group>";
+		};
+		B65B148225FF81400087834F /* Review */ = {
+			isa = PBXGroup;
+			children = (
+				B65B148325FF815E0087834F /* BeatReviewItem.h */,
+				B65B148425FF815E0087834F /* BeatReviewItem.m */,
+			);
+			path = Review;
 			sourceTree = "<group>";
 		};
 		B667796223C5D10B0029D508 /* User Interface */ = {
@@ -1797,6 +1811,7 @@
 				B6E61F6F25F76123006C972A /* BeatEditTracking.m in Sources */,
 				B6639DFA2538DF7F00DF87E2 /* BeatPrint.m in Sources */,
 				B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */,
+				B65B148525FF815E0087834F /* BeatReviewItem.m in Sources */,
 				B6952C95232B89BE00448B57 /* ScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1876,6 +1891,7 @@
 				B6FD5D902563B5320037ACBA /* HTMLParser.m in Sources */,
 				B6F49CF4246D66B0006D88D4 /* main.m in Sources */,
 				B65F02B225B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */,
+				B65B148625FF815E0087834F /* BeatReviewItem.m in Sources */,
 				B6F49CF5246D66B0006D88D4 /* ColorView.m in Sources */,
 				B6BBF3D124AC811600503EFB /* BeatScriptParser.m in Sources */,
 				B650D77025CF35750042010C /* BeatTagging.m in Sources */,
