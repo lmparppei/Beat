@@ -49,6 +49,7 @@ section {
 }
 
 p {
+	position: relative;
 	margin: 1.3em auto;
 	word-wrap: break-word;
 	padding: 0 0px 0 10px;
@@ -106,6 +107,30 @@ body > p:first-child {
     font-style: italic;
     text-align: center;
 }
+
+.changed::before {
+	position: absolute;
+	display: block;
+	
+	left: -20px;
+	width: 1em;
+	height: 100%;
+	z-index: 999;
+	
+	content: '* * * * * * * * * * * * * * * * * * * * *';
+	overflow: hidden;
+}
+.character.changed::before {
+	left: -154px;
+}
+.parenthetical.changed::before {
+	left: -119px;
+}
+.dialogue.changed::before {
+	left: -87px;
+}
+
+
 #script-title {
 	position: relative;
     overflow: hidden;

@@ -56,7 +56,7 @@
 	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
 	if (self.noteRanges.count) newLine.noteRanges = [self.noteRanges copy];
 	if (self.omitedRanges.count) newLine.omitedRanges = [self.omitedRanges copy];
-	if (self.highlightRanges.count) newLine.highlightRanges = [self.highlightRanges copy];
+	//if (self.highlightRanges.count) newLine.highlightRanges = [self.highlightRanges copy];
 	if (self.strikeoutRanges.count) newLine.strikeoutRanges = [self.strikeoutRanges copy];
 	
 	if (self.additionRanges.count) newLine.additionRanges = [self.additionRanges copy];
@@ -191,7 +191,7 @@
 	return string;
 }
 - (NSString*)stringForDisplay {
-	NSString *string;// = [Line removeMarkUpFrom:[self stripInvisible] line:self];
+	NSString *string;
 	if (!self.omited) string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
 	else string = [Line removeMarkUpFrom:self.string line:self];
 	
@@ -231,6 +231,15 @@
 	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
 	[indexes addIndexes:self.omitedRanges];
 	[indexes addIndexes:self.noteRanges];
+	
+	// Strip section markup characters
+	if (self.type == section) {
+		int s = 0;
+		while (s < self.string.length && [self.string characterAtIndex:s] == '#') {
+			[indexes addIndex:s];
+			s++;
+		}
+	}
 	
 	[indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.location - offset + range.length > string.length) {
@@ -494,12 +503,14 @@
 		}
 	}];
 	
+	/*
 	[self.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > HIGHLIGHT_PATTERN.length * 2) {
 			[self addAttr:@"Highlight" toString:string range:range];
 		}
 	}];
-	
+	*/
+	 
 	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self addAttr:@"Addition" toString:string range:range];
 	}];
@@ -521,6 +532,11 @@
 }
 
 - (void)addAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
+	if (range.location + range.length > string.length) {
+		range = (NSRange) { range.location, range.location + range.length - string.length };
+	}
+	if (range.length < 1 || range.location == NSNotFound) return;
+	
 	NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:range];
 	NSString *style;
 	if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,%@", styles[@"Style"], name];
@@ -591,14 +607,18 @@
 		[indices addIndexesInRange:NSMakeRange(range.location, UNDERLINE_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length, UNDERLINE_PATTERN.length)];
 	}];
-	[self.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
-	}];
 	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
 	}];
+	
+	/*
+	[self.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
+	}];
+	*/
+
 		
 	// Add note ranges
 	[indices addIndexes:self.noteRanges];

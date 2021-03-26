@@ -22,6 +22,13 @@
 @end
 
 @implementation BeatDocumentSettings
+
+NSString * const DocSettingRevisions = @"Revision";
+NSString * const DocSettingRevisionColor = @"Revision Color";
+NSString * const DocSettingSceneNumberStart = @"Scene Numbering Starts From";
+NSString * const DocSettingTagDefinitions = @"TagDefinitions";
+NSString * const DocSettingTags = @"Tags";
+
 -(id)init
 {
 	self = [super init];
@@ -58,7 +65,9 @@
 }
 - (NSString*)getString:(NSString *) key
 {
-	return (NSString*)_settings[key];
+	NSString *value = (NSString*)_settings[key];
+	if (![value isKindOfClass:NSString.class]) value = @"";
+	return value;
 }
 - (id)get:(NSString*)key
 {

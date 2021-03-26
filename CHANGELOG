@@ -1,3 +1,18 @@
+# Changelog
+
+## Beat 1.8
+
+* Tagging support with FDX export (although hidden)
+* Revision tracking, with export to FDX
+* Quick Settings button
+* UI cleanup
+* Shadow under "paper"
+* Flashing cursor bugs fixed
+* Rewritten HTML (print) export
+* Rewritten FDX export
+* Plugin parser fixes
+* Multiple other fixes here and there
+
 
 ## Beat 1.7.4
 

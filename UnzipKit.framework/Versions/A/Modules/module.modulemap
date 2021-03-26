@@ -1,0 +1,6 @@
+framework module UnzipKit {
+  umbrella header "UnzipKit-umbrella.h"
+
+  export *
+  module * { export * }
+}

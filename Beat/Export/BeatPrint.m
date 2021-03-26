@@ -12,6 +12,8 @@
  and handles the UI side of printing, too. The printing itself is done in PrintView,
  which also does all the necessary preprocessing.
  
+ This is a HORRIBLY convoluted system. I'm sorry for any inconvenience.
+ 
  */
 
 

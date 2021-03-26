@@ -23,6 +23,8 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
@@ -38,7 +40,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>Beat</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -46,19 +48,17 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>12604</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2019-2020 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
+	<string>© 2019-2021 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>SUFeedURL</key>
-	<string>https://kapitan.fi/beat/xml/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
 	<key>UTExportedTypeDeclarations</key>
@@ -92,6 +92,11 @@
 			<string>Fountain Screenplay</string>
 			<key>UTTypeIconFile</key>
 			<string>BeatDocumentIcon</string>
+			<key>UTTypeIcons</key>
+			<dict>
+				<key>UTTypeIconBadgeName</key>
+				<string></string>
+			</dict>
 			<key>UTTypeIdentifier</key>
 			<string>fi.KAPITAN.fountain</string>
 			<key>UTTypeReferenceURL</key>

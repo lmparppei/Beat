@@ -141,7 +141,9 @@
             [sup addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[bolv]|" options:0 metrics:nil views:views]];
             [sup addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[bolv]-0-[split]" options:0 metrics:nil views:views]];
         }
-    }
+	} else {
+		//[self.delegate leftViewDidHide];
+	}
 }
 
 - (void) collapseView:(NSView *) view {

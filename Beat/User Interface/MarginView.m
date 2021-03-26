@@ -10,6 +10,10 @@
 #import "MarginView.h"
 #import "DynamicColor.h"
 
+#define WHITESPACE 120
+#define SHADOW_WIDTH 20
+#define SHADOW_OPACITY 0.0125
+
 @implementation MarginView
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -29,16 +33,24 @@
 	 if (self.frame.size.width > 800) {
 		 [self.marginColor setFill];
 		 
-		 CGFloat marginWidth = (_insetWidth - 130) * _magnificationLevel;
+		 CGFloat marginWidth = (_insetWidth - WHITESPACE) * _magnificationLevel;
 		 
 		 if (marginWidth > 0) {
 			 // Set margin boxes
 			 NSRect marginLeft = NSMakeRect(0, 0, marginWidth, self.frame.size.height);
 			 NSRect marginRight = NSMakeRect((self.frame.size.width - marginWidth), 0, marginWidth, self.frame.size.height);
 			 
+			 NSRect shadowLeft = (NSRect){ marginLeft.size.width - SHADOW_WIDTH, 0, SHADOW_WIDTH, marginLeft.size.height };
+			 NSRect shadowRight = (NSRect){ marginRight.origin.x, 0, SHADOW_WIDTH, marginRight.size.height };
+			 
 			 [NSGraphicsContext saveGraphicsState];
 			 NSRectFillUsingOperation(marginLeft, NSCompositingOperationSourceOver);
 			 NSRectFillUsingOperation(marginRight, NSCompositingOperationSourceOver);
+			 
+			 NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:NSColor.clearColor endingColor:[NSColor.blackColor colorWithAlphaComponent:SHADOW_OPACITY]];
+			 [gradient drawInRect:shadowLeft angle:0];
+			 [gradient drawInRect:shadowRight angle:180];
+			 
 			 [NSGraphicsContext restoreGraphicsState];
 		 }
 	 }

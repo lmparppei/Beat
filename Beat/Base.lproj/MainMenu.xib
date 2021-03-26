@@ -28,9 +28,6 @@
                             </menuItem>
                             <menuItem title="Check for Updates" id="34f-vH-vWb">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="checkForUpdates:" target="fo0-Pp-nmB" id="tR1-sW-ayW"/>
-                                </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                             <menuItem title="Services" id="NMo-om-nkz">
@@ -684,18 +681,24 @@ DQ
                                     <action selector="showTimer:" target="-1" id="ucF-GX-SkT"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" hidden="YES" id="yt3-ai-0fx"/>
-                            <menuItem title="Mark as Revised" keyEquivalent="k" id="Ah1-Kr-xrQ">
+                            <menuItem isSeparatorItem="YES" id="yt3-ai-0fx"/>
+                            <menuItem title="Revision Mode" id="R8Y-SU-vpO">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleTrackChanges:" target="-1" id="G7q-gJ-aE7"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Mark Selection as Revised" keyEquivalent="k" id="Ah1-Kr-xrQ">
                                 <connections>
                                     <action selector="markAddition:" target="-1" id="SLz-xu-HxV"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Mark for Removal" keyEquivalent="K" id="nM4-un-Ivn">
+                            <menuItem title="Mark Selection for Removal" keyEquivalent="K" id="nM4-un-Ivn">
                                 <connections>
                                     <action selector="markRemoval:" target="-1" id="vmU-Md-MKX"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Clear Markers" keyEquivalent="k" id="hrl-ti-1fN">
+                            <menuItem title="Clear Selected Markers" keyEquivalent="k" id="hrl-ti-1fN">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="clearMarkings:" target="-1" id="Pgz-vk-zKb"/>
@@ -846,11 +849,11 @@ DQ
         </menu>
         <customObject id="vEX-2F-hcj" customClass="ApplicationDelegate">
             <connections>
+                <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginMenu" destination="84c-6G-MTc" id="PZY-LY-GGq"/>
                 <outlet property="recentFiles" destination="2RT-wl-dQJ" id="2Y1-AI-GVM"/>
                 <outlet property="startModal" destination="Tq0-bd-4zX" id="EIH-WD-4kV"/>
-                <outlet property="updater" destination="fo0-Pp-nmB" id="0b8-r7-EuI"/>
                 <outlet property="versionField" destination="TYI-Wq-8Wy" id="uXG-1x-yVE"/>
             </connections>
         </customObject>
@@ -1013,7 +1016,6 @@ DQ
             </view>
             <point key="canvasLocation" x="724.5" y="324.5"/>
         </window>
-        <customObject id="fo0-Pp-nmB" customClass="SUUpdater"/>
         <menuItem title="Item" id="393-DA-0z5">
             <modifierMask key="keyEquivalentModifierMask"/>
         </menuItem>

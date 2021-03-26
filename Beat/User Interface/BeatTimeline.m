@@ -380,7 +380,7 @@
 	
 	if (index >= _outline.count || index == NSNotFound) {
 		// See if the caret is at the end
-		if (_delegate.caretAtEnd) {
+		if (_delegate.caretAtEnd && _scenes.count) {
 			BeatTimelineItem *item = _scenes.lastObject;
 			[item select];
 			[_selectedItems setArray:@[item]];

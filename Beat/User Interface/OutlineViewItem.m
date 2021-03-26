@@ -33,12 +33,13 @@
 	
 	// Create padding for entry
 	NSString *padding = @"";
-	NSString *paddingSpace = @"    ";
-	padding = [@"" stringByPaddingToLength:(line.sectionDepth * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
+	NSString *paddingSpace = @"   ";
+	
+	padding = [@"" stringByPaddingToLength:(scene.sectionDepth * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
 	
 	// Section padding is slightly smaller
-	if (line.type == section) {
-		if (line.sectionDepth > 1) padding = [@"" stringByPaddingToLength:((line.sectionDepth - 1) * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
+	if (scene.type == section) {
+		if (scene.sectionDepth > 1) padding = [@"" stringByPaddingToLength:((scene.sectionDepth - 1) * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
 		else padding = @"";
 	}
 	
@@ -124,7 +125,13 @@
 			// Italic + white color
 			[resultString applyFontTraits:NSItalicFontMask range:NSMakeRange(0,[resultString length])];
 			
-			[resultString addAttribute:NSForegroundColorAttributeName value:ThemeManager.sharedManager.theme.outlineHighlight range:NSMakeRange(0, [resultString length])];
+			[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.darkGrayColor range:NSMakeRange(0, [resultString length])];
+			
+			// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
+			if (currentScene) {
+				[resultString addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:NSMakeRange(0, [resultString length])];
+			}
+
 		} else {
 			resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
 		}
@@ -146,9 +153,14 @@
 			resultString = [[NSMutableAttributedString alloc] initWithString:string attributes:fontAttributes];
 			
 			// Bold + highlight color
-			[resultString addAttribute:NSForegroundColorAttributeName value:ThemeManager.sharedManager.currentOutlineHighlight range:NSMakeRange(0,[resultString length])];
+			[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.whiteColor range:NSMakeRange(0,[resultString length])];
 			
 			[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0,[resultString length])];
+			
+			// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
+			if (currentScene) {
+				[resultString addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:NSMakeRange(0, [resultString length])];
+			}
 		} else {
 			resultString = [[NSMutableAttributedString alloc] initWithString:line.string];
 		}

@@ -22,9 +22,32 @@
 
 
 #import "FDXImport.h"
+#import "BeatRevisionItem.h"
+#import "FDXElement.h"
+#import "BeatDocumentSettings.h"
+#import "BeatRevisionTracking.h"
 
 @interface FDXImport () <NSXMLParserDelegate>
 @property(nonatomic, strong) NSXMLParser *xmlParser;
+
+@property (nonatomic) NSMutableAttributedString *attrContents;
+
+@property (nonatomic) bool contentFound;
+@property (nonatomic) bool titlePage;
+@property (nonatomic) NSString *lastFoundElement;
+@property (nonatomic) NSString *lastFoundString;
+@property (nonatomic) FDXElement *lastAddedLine;
+@property (nonatomic) NSString *activeElement;
+@property (nonatomic) NSString *alignment;
+@property (nonatomic) NSString *style;
+@property (nonatomic) NSString *textStyle;
+@property (nonatomic) NSMutableString *elementText;
+@property (nonatomic) NSMutableAttributedString *attrText;
+@property (nonatomic) NSString *revisionID;
+@property (nonatomic) NSUInteger dualDialogue;
+@property (nonatomic) bool didFinishText;
+@property (nonatomic) FDXElement *element;
+
 @end
 
 @implementation FDXImport
@@ -34,9 +57,11 @@
 	self = [super init];
 	if (self) {
 		_elementText = [[NSMutableString alloc] init];
+		_attrText = [[NSMutableAttributedString alloc] init];
 		_script = [NSMutableArray array];
 		_titlePage = NO;
 		_dualDialogue = -1;
+		_attrContents = [[NSMutableAttributedString alloc] init];
 
 		// Thank you, RIPtutorial
 		// Fetch xml data
@@ -60,6 +85,9 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict{
 	_lastFoundElement = elementName;
+	
+	// Find different sections of the XML
+	
 	if ([elementName isEqualToString:@"Content"]) {
 		_contentFound = YES;
 	}
@@ -72,26 +100,43 @@
 	else if ([elementName isEqualToString:@"Paragraph"]) {
 		_activeElement = attributeDict[@"Type"];
 		_alignment = attributeDict[@"Alignment"];
-		_style = attributeDict[@"Style"];
-		[_elementText setString:@""];
+				
+		// Create new element
+		_element = [FDXElement withText:@""];
+	}
+	else if ([elementName isEqualToString:@"Text"]) {
+		_didFinishText = NO;
+		_lastFoundString = @"";
+		_textStyle = attributeDict[@"Style"];
+		_revisionID = attributeDict[@"RevisionID"];
 	}
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string{
-	if (_contentFound && !_titlePage) {
+	if (_contentFound && !_titlePage && !_didFinishText) {
+		// Clear line breaks
 		string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-		
-		// This is a trick by FD to kill FDX import/export from other apps, I guess?
 		
 		if ([_lastFoundElement isEqualToString:@"Text"]) {
 			//if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
-			[_elementText appendString:string];
+			[_element append:string];
 		}
-		else [_elementText appendString:[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
 		
+		else {
+			NSString *trimmedString = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+			[_element append:trimmedString];
+		}
+				
 		// Save the string for later use
-		_lastFoundString = string;
+		if (!_didFinishText) {
+			_lastFoundString = [_lastFoundString stringByAppendingString:string];
+		}
+		
 	}
+}
+
+- (NSAttributedString*)attrStrFrom:(NSString*)string {
+	return [[NSAttributedString alloc] initWithString:string];
 }
 
 - (bool)isFirstCharacterSpace:(NSString*)string {
@@ -111,86 +156,122 @@
 		else return NO;
 	}
 }
+- (NSString*)trim:(NSString*)string {
+	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+}
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName{
 	
-	// Reset last found element if needed
-	if ([elementName isEqualToString:@"Text"]) _lastFoundElement = @"";
+	if ([elementName isEqualToString:@"Text"] && !_titlePage) {
+		// This was a text snippet
+		_lastFoundElement = @"";
+		_didFinishText = YES;
+		
+		if (_lastFoundString.length) {
+			NSRange range = (NSRange){ _element.length - _lastFoundString.length, _lastFoundString.length };
+			
+			if (_textStyle) {
+				[_element addStyle:_textStyle to:range];
+			}
+			if (_revisionID) {
+				NSArray *colors = [BeatRevisionItem availableColors];
+				NSInteger index = [_revisionID integerValue];
+				
+				// 0 index in revision ID means original in Final Draft
+				// We support up to 4 revision colors here
+				if (index > 0) {
+					index--;
+					[_element addAttribute:@"Revision" value:[BeatRevisionItem type:RevisionAddition color:colors[index % 4]] range:range];
+				}
+			}
+			
+			// Build tagging support here some day.
+			// Just read TagNumber=x, save it into an array and later parse TagCategories and TagDefinitions. Ez.
+		}
+	}
+	
 	// Reset dual dialogue
 	else if ([elementName isEqualToString:@"DualDialogue"]) _dualDialogue = -1;
 	// Go on
 	else if ([elementName isEqualToString:@"Paragraph"]) {
-		NSString *result = [NSString stringWithFormat:@"%@", _elementText];
+		NSString *result;
 		
 		// Add empty rows before required elements.
 		if ([_script count] > 0) {
-			NSString *previousLine = [_script lastObject];
+			FDXElement *previousLine = [_script lastObject];
 			
-			if ([previousLine length] > 0 && [_elementText length] > 0) {
+			if (previousLine.length > 0 && _element.length > 0) {
 				if ([_activeElement isEqualToString:@"Character"] ||
 					[_activeElement isEqualToString:@"Scene Heading"] ||
 					[_activeElement isEqualToString:@"Action"]) {
-					[_script addObject:@""];
+					[_script addObject:[FDXElement lineBreak]];
 				}
 			}
 		}
 		
+		// Format contents
+		//result = [self fountainString:_attrText];
+		
 		if ([_activeElement isEqualToString:@"Scene Heading"]) {
-			result = [result uppercaseString];
+			// Revert to the original, don't use Fountain formatting in scene headings
+			[_element setString:_element.string.uppercaseString];
 			
-			// Force scene prefix if there is none and the style is scene heading anyway
-			if ([result rangeOfString:@"INT."].location == NSNotFound &&
-				[result rangeOfString:@"EXT."].location == NSNotFound &&
-				[result rangeOfString:@"I./E."].location == NSNotFound
+			// Force scene prefix if needed
+			if ([_element.string rangeOfString:@"INT."].location == NSNotFound &&
+				[_element.string rangeOfString:@"EXT."].location == NSNotFound &&
+				[_element.string rangeOfString:@"I./E."].location == NSNotFound
 			) {
-				result = [NSString stringWithFormat:@".%@", result];
+				[_element insertAtBeginning:@"."];
 			}
 		}
 		else if ([_activeElement isEqualToString:@"Lyrics"]) {
-			result = [NSString stringWithFormat:@"~%@~", result];
+			[_element insertAtBeginning:@"~"];
 		}
-		if ([_activeElement isEqualToString:@"Character"]) {
+		else if ([_activeElement isEqualToString:@"Character"]) {
 			if (_dualDialogue > 0) _dualDialogue++;
 			if (_dualDialogue == 3) {
-				result = [result stringByAppendingString:@" ^"];
+				[_element insertAtEnd:@" ^"];
 				_dualDialogue = -1;
 			}
-			else result = [result uppercaseString];
+			else [_element makeUppercase];
 		}
 		else if ([_activeElement isEqualToString:@"Transition"]) {
-			result = [NSString stringWithFormat:@"> %@", [result uppercaseString]];
-		}
-		else if ([_activeElement isEqualToString:@"Transition"]) {
-			result = [NSString stringWithFormat:@"> %@", [result uppercaseString]];
-		}
-		else {
-			result = [NSString stringWithFormat:@"%@", result];
+			[_element makeUppercase];
+			[_element insertAtBeginning:@"> "];
 		}
 		
-		// Add object
-		if ([result isEqualToString:@""] && [_lastAddedLine isEqualToString:@""]) {
-			// Do nothing for now
-		} else {
-			[_script addObject:[NSString stringWithString:result]];
-			_lastAddedLine = result;
+		// Add object if both this and the previous line are not empty
+		if (!([result isEqualToString:@""] && [_lastAddedLine.string isEqualToString:@""])) {
+			[_script addObject:_element];
+			_lastAddedLine = _element;
 		}
-		_elementText = [NSMutableString string];
 	}
 	
 	// Start & end sections
-	if([elementName isEqualToString:@"TitlePage"]) {
+	if ([elementName isEqualToString:@"TitlePage"]) {
 		_titlePage = NO;
 	}
-    if([elementName isEqualToString:@"Content"]) {
+    if ([elementName isEqualToString:@"Content"]) {
 		_contentFound = NO;
     }
 }
 
 - (NSString*)scriptAsString {
-	if ([_script count]) {
-		return [_script componentsJoinedByString:@"\n"];
+	if (_script.count < 1) return @"";
+	
+	NSMutableAttributedString *attributedScript = [[NSMutableAttributedString alloc] init];
+	
+	for (FDXElement *element in _script) {
+		[attributedScript appendAttributedString:element.attributedFountainString];
+		[attributedScript appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
 	}
-	return @"";
+	
+	// Let's create a faux Beat document out of the FDX data
+	BeatDocumentSettings *settings = [[BeatDocumentSettings alloc] init];
+	NSDictionary *revisionRanges = [BeatRevisionTracking rangesForSaving:attributedScript];
+	[settings set:DocSettingRevisions as:revisionRanges];
+	
+	return [NSString stringWithFormat:@"%@\n%@", attributedScript.string, [settings getSettingsString]];
 }
 
 @end

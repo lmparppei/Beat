@@ -591,8 +591,10 @@
 	return string;
 }
 - (NSString*)htmlStringFor:(Line*)line {
+	// We use the FDX attributed string to create a HTML representation of Line objects
 	NSAttributedString *string = line.attributedStringForFDX;
 	
+	// Ignore any formatting and only include CONTENT ranges
 	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
 	[line.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[result appendAttributedString:[string attributedSubstringFromRange:range]];
@@ -600,15 +602,17 @@
 		
 	NSMutableString *htmlString = [NSMutableString string];
 	
+	// Get stylization in the current attribute range
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSMutableString* text = [[result.string substringWithRange:range] mutableCopy];
-		// Get stylization in the current attribute range
-		NSString *styles = @"";
-		NSString *styleString = attrs[@"Style"];
 		
+		// Opening and closing tags
 		NSString *open = @"";
 		NSString *close = @"";
 		
+		NSString *styleString = attrs[@"Style"];
+			
+		// Append corresponding HTML tags to opening & closing strings, ie. open = "<b>", close = "</b>"
 		if (styleString.length) {
 			NSMutableArray *styleArray = [NSMutableArray arrayWithArray:[styleString componentsSeparatedByString:@","]];
 			[styleArray removeObject:@""];
@@ -629,15 +633,17 @@
 				open = [open stringByAppendingString:STRIKEOUT_OPEN];
 				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
 			}
-			
-			styles = [NSString stringWithFormat:@" Style=\"%@\"", [styleArray componentsJoinedByString:@"+"]];
+			if ([styleArray containsObject:@"Removal"]) {
+				open = [open stringByAppendingString:STRIKEOUT_OPEN];
+				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
+			}
 		}
 				
 		// Append snippet to paragraph
 		[htmlString appendString:[NSString stringWithFormat:@"%@%@%@", open, [self escapeString:text], close]];
 	}];
 	
-	// Replace line breaks
+	// Create HTML line breaks
 	[htmlString replaceOccurrencesOfString:@"\n" withString:@"<br>\n" options:0 range:(NSRange){0,htmlString.length}];
 	
 	return htmlString;

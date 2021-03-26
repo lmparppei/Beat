@@ -502,11 +502,13 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 - (NSArray*)scenes
 {
+	[self.delegate.parser createOutline];
 	return self.delegate.parser.scenes;
 }
 
 - (NSArray*)outline
 {
+	[self.delegate.parser createOutline];
 	return self.delegate.parser.outline;
 }
 

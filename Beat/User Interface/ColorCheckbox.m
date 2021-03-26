@@ -17,6 +17,7 @@
  */
 
 #import "ColorCheckbox.h"
+#import "BeatColors.h"
 #import <QuartzCore/QuartzCore.h>
 IB_DESIGNABLE
 
@@ -39,6 +40,8 @@ static CGFloat size = 12;
 	layer.fillColor = [_itemColor colorWithAlphaComponent:0.5].CGColor;
 	self.layer = layer;
 	 */
+	
+	_itemColor = [BeatColors color:self.colorName];
 }
 
 -(void)mouseUp:(NSEvent *)event {

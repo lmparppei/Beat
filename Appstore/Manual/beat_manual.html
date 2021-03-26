@@ -1,0 +1,835 @@
+<!doctype html>
+<!--[if lt IE 9]><html class="ie"><![endif]-->
+<!--[if gte IE 9]><!--><html><!--<![endif]-->
+	<head>
+		<meta charset="utf-8"/>
+		
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+		<title>Beat</title>
+
+		<style type="text/css">
+			body {
+				margin: 0rem;
+				background-color: #f5f5f5;
+				color: #3b3b3b;
+				font-size: .925em;
+
+				font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+			}
+
+			section {
+				background-color: #fefefe;
+				max-width: 38rem;
+				min-width: 20rem;
+				margin-left: auto;
+				margin-right: auto;
+				margin-bottom: 3em;
+				padding: 1.5rem 1.5rem 1.8rem 1.5rem;
+			}
+
+			h1, h2, h3, p, ul, ol, blockquote, dl {
+				margin-left: 1rem;
+				margin-right: 1rem;
+			}
+
+			h1 {
+				margin-top: .25em;
+				margin-bottom: 1rem;
+				font-weight: 300;
+				font-size: 2.2em;
+			}
+
+			h2 {
+				margin-top: 2em;
+				font-size: 1.5em;
+				font-family: Courier, monospace;
+				font-weight: normal;
+			}
+
+			h3 {
+				margin-top: 1.5em;
+				font-size: 1.1em;
+			}
+			p {
+				line-height: 1.4em;
+				margin-bottom: .75em;
+				margin-top: 0;
+			}
+
+			a:link, a:active, a:visited {
+				color: #0075ee;
+			}
+
+			ol li a:hover {
+				color: black;
+			}
+			ol a:link, ol a:visited {
+				text-decoration: none;
+				color: #555;
+
+			}
+			ul a:link, ul a:visited {
+				text-decoration: none;
+				color: #888;
+			}
+
+			ol {
+				padding-left: 2rem;
+			}
+
+			dl {
+				width: 100%;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+
+			}
+			.forcedElements dd { font-family: Courier, monospace; }
+			dt, dd { width: 50%; margin: .25em 0 .25em 0; padding: 0;}
+			dd { width: 15%; color: #888; }
+			dt { width: 85%; }
+			img { max-width: 100%; height: auto; }
+			.image { margin-bottom: .75em; }
+
+			.shortcut {
+				font-family: Helvetica, sans-serif;
+				color: #888;
+			}
+			h2 .shortcut {
+				font-size: 80%;
+			}
+
+			.image.right {
+				margin-left: 1rem;
+				margin-bottom: 1rem;
+				max-width: 40%;
+				float: right;
+			}
+
+			.example {
+				margin: 1rem auto 1rem auto;
+				padding: 1rem;
+				font-family: courier, monospace;
+				font-size: 1em;
+				min-height: 1.2em;
+				background-color: #f7f7f7;
+
+				white-space: pre-wrap;
+			}
+			
+			.bold {
+				font-weight: bold;
+				text-transform: uppercase;
+			}
+
+			#dialogue {
+				min-height: 2.3em;
+			}
+			#parentheses {
+				min-height: 4.5em;
+			}
+
+			.inset {
+				padding-left: 25%;
+				text-indent: 6em;
+			}
+
+			.parenthesesInset span {
+				padding-left: 3em;
+			}
+
+			#stylization { min-height: 2.3em; }
+			.makeItalic .fItalic {
+				font-style: italic;
+			}
+			.makeItalic .symbol { color: gray; }
+			.makeBold .symbol2 { color: gray; }
+			.makeBold .fBold { font-weight: bold; }
+
+			#underlineFormating { min-height: 1.2em; }
+			.makeUnderline { text-decoration: underline; }
+
+			.centered { text-align: center; }
+			.rightAlign { display: block; text-align: right; }
+			.transition { text-align: right; }
+
+			#storyOutlining {
+				color: #666;
+			}
+			#dualDialogue {
+				padding-left: 15%;
+			}
+
+			#bigFish {
+				min-height: 5.8em;
+			}
+			.fauxCharacter {
+				display: inline-block;
+				text-indent: 14em;
+			}
+			.fauxCharacter2 {
+				display: inline-block;
+				text-indent: 14em;
+			}
+			.firstFaux .fauxCharacter { text-indent: 0; }
+			.secondFaux .fauxCharacter2 { text-indent: 0; }
+
+			.caret {
+				position: absolute;
+				width: 1px;
+				height: 1.2em;
+				margin-left: .1em;
+				margin-bottom: -.25em;
+				background-color: black;
+				display: inline-block;
+				animation: caretAnimation 1s linear infinite;
+			}
+			@keyframes caretAnimation {
+			  0% { opacity: 0; }
+			  1% { opacity: 1; }
+			  50% { opacity: 1; }
+			  51% { opacity: 0; }
+			  100% { opacity: 0; }
+			}
+
+
+			/* Table of contents */
+			.toc {
+				margin-top: 3rem;
+			}
+
+			.omit {
+				color: gray;
+			}
+
+
+
+			/*
+			MAIN CONTAINER
+			*/
+
+			#mainContainer {
+				display: flex;
+				justify-content: center;
+			}
+			#menu, #page {
+				padding: 1rem;
+			}
+			#menu {
+				width: auto;
+				max-width: 14rem;
+				min-width: 10rem;
+				position: relative;
+				flex: 1;
+			}
+			#menu #menuToc {
+				padding: 1rem;
+				position: fixed;
+			}
+			#menu ul, #menu ol, .toc ul {
+				font-size: .9em;
+				margin: 0;
+				padding: 0;
+			}
+			#menu ul, .toc ul {
+				padding-left: 1em;
+			}
+			#menu li, .toc li {
+				margin: .25em 0 .25em 0;
+			}
+			#menu ol li, .toc ol li { margin: .5em 0 .5em 0; }
+			#menu ol ul li, .toc ol ul li { margin: .2em 0 .2em 0; }
+
+			@media screen and (max-width: 800px) {
+				#menu {
+					display: none;
+				}
+			}
+
+
+		</style>
+		<!--[if lt IE 9]>
+			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+	</head>
+
+	<body lang="fi">
+		<div id='mainContainer'>
+			<div id='menu'>
+				<div id='menuToc'>
+				</div>
+			</div>
+			<div id='page'>
+				<section>
+					<h1>Welcome to Beat</h1>
+					<p>This manual will guide you through Beat's basic functions. The app should easy to learn, but some of its best features can be easily missed.</p>
+
+				</section>
+
+				<section>
+
+					<a class='chapter' name='gettingStarted'></a>
+
+					<h1>Getting Started</h1>
+
+					<h2 id='c_newdocument'>New Document</h2>
+
+					<p>Go and create your first document! If you want some reference on how to use Beat, you can find a tutorial in the first screen, or via <b>Help → Beat Tutorial</b>.</p>
+
+					<p>Easiest way to learn Beat is just to play around with the Tutorial template, and see how it works both in editor and as a printed document.</p>
+
+					<h2>What is Fountain?</h2>
+					
+					<p>This guide will cover the basics of writing a Fountain script, but you can find more advanced info on the <a href='https://fountain.io/syntax'>Fountain website</a>.</p>
+
+					<p>Fountain is a <b>plain-text</b> screenwriting format. It means that the scripts are stored on your disk in a way that you can open the file in basically any text-editing app there is. Beat just displays it in a screenplay format.</p>
+					<p>If for some reason you lose the app, or it doesn't work in your new operating system in the year 2046, the script can still be opened. Fountain is basically the best screenplay format for archiving.</p>
+					<p>There are many other apps for editing Fountain files, such as <b>Slugline</b>, <b>Logline</b> and <b>Highland</b>, so if you get fed up with Beat, you can open the same file in any of the other applications.</p>
+				</section>
+
+
+				<section>
+					<h1>Basic Formating</h1>
+
+					<h2>Scenes</h2>
+					<p>Writing screenplays with Beat is made to be as simple and distraction-free as possible.</p>
+					<p>The basic idea is that if it looks like a screenplay, it is screenplay. If you type in <em>int. school room</em> on a new line, it magically becomes a scene heading.</p>
+					
+					<div class='example' id='scene'>
+					</div>
+
+					<h2>Dialogue</h2>
+
+					<p>Dialogue works in the same way. You just need to type in a <em>CHARACTER NAME</em> (in all caps), followed by a line of dialogue. No need for special shortcut keys or anything, just keep on writing!</p>
+
+					<div class='example' id='dialogue'>
+					</div>
+
+					<p>Beat automatically recognizes parentheses inside a dialogue block, and you can write more of them inside the block just as easily.</p>
+
+					<div class='example' id='parentheses'>
+					</div>
+
+					<p>If you are wondering why your FADE IN is a character, don't worry. Keep on smashing the enter key, and after two line breaks Beat figures out that it's not a character. See this example from <em>Big Fish</em> by John August:</p>
+
+					<div class='example' id='bigFish'></div>
+
+					<h2>Stylization</h2>
+
+					<p>Because Fountain is a plain-text format, bold, italic and underline all work with markup characters. This means that something inside <em>*apostrophes*</em> is in italic, two apostrophes mean <b>**bold**</b>.</p>
+					
+					<p>And of course, normal keyboard shortcuts work: <b>⌘B</b> for bold and <b>⌘I</b> for italics.</p>
+
+					<div class='example' id='stylization'>
+					</div>
+
+					<p>To use underlining, surround your text with _underscores_, or use shortcut (<b>⌘U</b>)</p>
+					<div class='example' id='underlineFormating'>
+					</div>
+
+					<p>And don't worry &mdash; the stylization characters are terminated at line break, so there's no risk of having the whole document in cursive if you forget to close it. Also, a single asterisk/star won't stylize anything, so this is totally OK:</p>
+					<div class='example'>They have claimed their family tree could be traced back to the Romans. (*
+
+*) It couldn't</div>
+
+
+					<h2>Title Page</h2>
+
+					<p>Due to the plain-text nature of Beat, title page information is written directly at the top of your script. The format is pretty easy, and can be quickly updated between versions.</p>
+
+					<p>The easiest way to add a title page is to use the <b>Format → Title Page Editor</b>, but you can always type it yourself. Just use any of the common fields (Title, Credit, Author, Draft date, Contact), and Beat will take care of the rest.</p>
+					<p>Note that the title page info needs to be at the very top of the script, followed by two line breaks to mark the start of the script.</p>
+
+	<div class='example'>	Title: Beat Tutorial
+	Credit: Written by
+	Author: KAPITAN!
+	Draft date: Version 2, 01.09.2019
+	Contact:
+	    beat@kapitan.fi
+	    www.kapitan.fi/beat</div>
+
+		    		<p>Toggle print preview (<b>⌘⌥P</b>) to see how your title page looks.</p>
+
+				</section>
+				<section>
+					<h1>Advanced Formating</h1>
+					
+					<p><b>Note:</b> At any time, you can open <b>Force Elements</b> menu by pressing option-Enter while editing.</p>
+
+					<h2>Dual Dialogue</h2>
+
+					<p>Due to the linear and plain-text nature of Fountain screenplay format, writing dual dialogue requires a small trick. Type in <b>^</b> after the character cue you want to appear alongside the first dialogue.</p>
+
+			<div class='example dialogue' id='dualDialogue'>            HUMAN
+Can I come over, I need to rest.
+To lay down for awhile, recollect.
+ 
+                         PERSON ^
+              Was the night long, day even
+              longer? Of course you can.</div>
+
+					<p>This might seem a bit weird and could require you to constantly check your print preview at first. Just remember that special character (^).</p>
+					<p>Check out the <b>Tutorial</b> for an example.</p>
+
+					<h2>Omitting Scenes</h2>
+
+					<p>All text between <b>/*</b> and <b>*/</b> is omitted, so it won't print out, but will still remain inside you script. You can omit large chunks of text by pressing <b>⌘⇧E</b> or selecting <b>Format → Omit</b></p>
+
+					<div class='example omit'>/* 
+
+<b>INT. SCHOOL ROOM - NIGHT</b>
+
+This scene is totally omitted. You can still have it in your screenplay, but it won't print or show up anywhere. 
+
+*/
+</div>
+				
+					<h2>Manual Scene Numbers</h2>
+					<p>Beat normally uses automatic scene numbering, but if you want to have a custom scene number, just type <b>#NUMBER#</b> after your scene heading.</p>
+					<div class='example'><b>INT. BEACH HOUSE - NIGHT <span class='omit'>#6B#</span></b></div>
+
+					<p>Note, however, that this won't affect the automatic scene numbering. If you enter a custom scene number (like 8) after third scene, the scene after that will still be given the number four.</p>
+					<p>Custom scene numbers are especially helpful when you are already in production and want to write in additional scenes while still keeping track of the original scene numbers.</p>
+					<p>You can also turn the automatic scene numbers into manual ones from <b>Format → Lock Scene Numbers</b>.</p>
+
+					<h2>Aligning text</h2>
+					<p>A paragraph surrounded <b>></b> and <b>&lt;</b> is centered, and anything followed by just <b>></b> is aligned right.</p>
+
+					<div class='example centered'>> I am centered &lt;
+<span class='rightAlign'>> I am aligned right.</span></div>
+
+					<h2>Custom Transitions</h2>
+					<p>Anything in all caps followed by a colon (ie. <b>CUT TO:</b>) is a transition.</p>
+					
+					<div class='example transition'>CUT TO:
+FADE TO:
+PAN TO:</div>
+
+					<h2>Force Elements</h2>
+					<p>You can force anything to be any other element. If you have something that is incompatible with the Fountain syntax (such as a character called <em>Int</em>/<em>Ext</em>), you can force their lines to be character cues instead of scene headings. Just type in a special character before the element.</p>
+					<p>See <a href='#KeyboardShortcuts'>Keyboard Shortcuts</a> on how to quickly force the common elements or refer to the <a href='https://fountain.io/syntax'>Fountain Syntax Guide</a>.</p>
+					<p>Here's a list of the most common forced elements:</p>
+
+					<dl class='forcedElements'>
+						<dd>.</dd><dt>Force Scene Heading </dt>
+						<dd>!</dd><dt>Force Action </dt>
+						<dd>@</dd><dt>Force Character Cue </dt>
+						<dd>~</dd><dt>Force Lyrics </dt>
+						<dd>===</dd><dt>Force Page Break</dt>
+					</dl>
+					<div class='example'><b>.THIS IS A SCENE HEADING</b>
+
+!INTENSE ACTION...
+
+			@Character
+		Let's sing something.
+
+
+   <em>~Sunday is gloomy, my hours are slumberless...</em></div>
+
+   				<p>You can find all of the forced elements under <b>Formating</b> menu.</p>
+
+				</section>
+				<section>
+					<h1>Views</h1>
+					
+					
+					<h2>Outline View <span class='shortcut'>(⌘D)</span></h2>
+					<div class='image right'><img src='images/outline.png'></div>
+					<p>Outline View can be activated by clicking on the outline icon on the left side of the screen or by pressing <b>⌘D</b>.</p>
+
+					<p>The view allows you to reorganize your script by dragging &amp; dropping the scenes right in the list. Scenes can be colored by right-clicking and selecting a color.</p>
+
+					<h3>Filtering</h3>
+
+					<p>The search box in the bottom of the Outline View can be used to filter the scenes by their heading. Note that you can also type in colors, if you have color-coded your scenes.</p>
+
+					<p>Aside the search box there is a button which collapses the other filtering options. You can filter the scenes by their color, and also by character. Selecting a character name from the drop-down list shows only scenes in which the character has dialogue or actions in.</p>
+
+					<h2>Cards View <span class='shortcut'>(⌘⇧D)</span></h2>
+
+					<div class='image'><img src='images/cards.png'></div>
+
+					<p>The card view gives you a nice overview of the story. You can access it from the cards icon on the right side of the edit view, or by pressing <b>⌘⇧D</b>.</p>
+
+					<p>Scenes can be rearranged by dragging and dropping, and right clicking a scene allows you to set a color for the selected scene. Double-clicking a card brings the scene into view in your script.</p> 
+
+					<p><b>Sections</b> and <b>synopses</b> (see <a href='outlining'>Story Outlining</a>) can be used for  clarity and to quickly outline your story structure.</p>
+
+					<h2>Timeline View <span class='shortcut'>(⌘T)</span></h2>
+
+					<div class='image'><img src='images/timeline.png'></div>
+
+					<p>The Timeline View gives an insight into how your story plays out in a linear manner. You can access the view by pressing <b>⌘⇧T</b> or by clicking the timeline icon on the right side of the edit view.</p>
+
+					<p>Double-clicking a scene brings it into view in the editor, and you can also select a color for the scene by right-clicking its timeline block.</p>
+					<p>Sections and synopses show up in your timeline, as in the example above.</p>
+					
+					<p><b>Note:</b> Beat measures scene length in "beats", a custom unit of time. Thus, this view does not represent a real-world time, but rather the relative scene lengths in your story.</p>
+
+					<h2>Print Preview <span class='shortcut'>(⌘⌥P)</span></h2>
+
+					<div class='image'><img src='images/printview.png'></div>
+
+					<p>A quick way to see how your screenplay is laid out.</p>
+					<p><b>Note:</b> This is a quick screen preview generated by Beat, and might have some glitches in it. If you are doing something critical, go to Print Menu (⌘P), click on PDF and select "Open in Preview" to see a real preview of the printed version.</p>
+
+					<h2>Screenplay Analysis</h2>
+
+					<div class='image'><img src='images/analysis.png'></div>
+
+					<p>A handy tool for checking the statistics and metrics of your screenplay. It calculates characters' lines and interior and exterior scene count.</p>
+					<p>You can set a gender <em>(for now, this isn't the most inclusive system and only includes other, woman, man and unspecified)</em> for each of the characters to see how many of your lines are divided between genders.</p>
+					<p><b>Note:</b> For now, the character genders are stored locally, so if you send the script to another person, they have to set them again to see the same statistics.</p>
+
+				</section>
+
+				<section>
+					<h1>Story Outlining</h1>
+
+					<p>You can split your script into sections and synopses which make the scene lists and other outlining views much easier to read.</p>
+
+					<p>A section is created by typing in <b>#</b> followed by section name, whereas synopsis line starts with <b>=</b>.</p>
+
+					<div class='example' id='storyOutlining'><b># This is a section</b>
+<em>= This is a synopse</em></div>
+
+					<p>Note that these are invisible elements designed to help you build your story. They <b>do not</b> show up in the printed screenplay itself.</p>
+
+					<p>A section is a larger part of the script. You can mark Acts with it, while synopses could be used to describe smaller events, or, even missing scenes or story arcs that should be added later on or need work.</p>
+
+				</section>
+
+				<section>
+					<h1>Finalizing Your Screenplay</h1>
+					<p>This is a quick checklist for when it's time to submit your screenplay to a producer, a contest or just to print it out so you can set it on fire.</p>
+					<h2>Check Print Settings</h2>
+					<p>Go to <b>Print → Page Setup</b> and select the correct paper size. Defaults are A4 for European users and Letter for those who are yet to convert to the universal system.</p>
+					
+					<h2>Lock Scene Numbers</h2>
+					<p>If this a script you are about to submit for production, you might want to lock your scene numbers: <b>Format → Lock Scene Numbers</b>. After you have locked the scenes, they won't be assigned an automatic scene number, but you can manually adjust them right in the script.</p>
+					<p>This is something you might not want to do while in writing process. You can also remove the locked numbers by clicking <b>Format → Clear Scene Numbers</b>.</p>
+
+					<h2>Printing Scene Numbers</h2>
+					<p>If you don't want to include the automatically generated scene numbers in your printed screenplay, you can toggle them off: <b>Format → Print Automatic Scene Numbers</b>.</p>
+
+					<p>Note that this feature only turns off the <em>automatic</em> scene numbering, so if you have locked your scene numbering, those will show up.</p>
+
+					<h2>Update The Title Page</h2>
+					<p>Remember to update the title page! You can do it manually by editing the information on top of your document, or by selecting <b>Format → Title Page Editor</b>.</p>
+				</section>
+
+				<section>
+					<h1>Keyboard Shortcuts</h1>
+
+					<h3>Views</h3>
+					<dl>
+						<dd>⌘D</dd>
+						<dt>Outline View</dt>
+
+						<dd>⌘⇧D</dd>
+						<dt>Cards View</dt>
+
+						<dd>⌘T</dd>
+						<dt>Timeline View</dt>
+
+						<dd>⌘⌥P</dd>
+						<dt>Print Preview</dt>
+
+						<dd>⌘⌃F</dd>
+						<dt>Full Screen</dt>
+						
+					</dl>
+
+					<h3>Editing</h3>
+					<dl>
+
+						<dd>⌘B</dd>
+						<dt>Bold</dt>
+
+						<dd>⌘I</dd>
+						<dt>Italic</dt>
+
+						<dd>⌘U</dd>
+						<dt>Underline</dt>
+
+						<dd>⌘⇧E</dd>
+						<dt>Omit Text (Longer paragraphs)</dt>
+						
+						<dd>⌘⌥E</dd>
+						<dt>Comment Text (Single line)</dt>
+						
+					</dl>
+					<h3>Advanced Editing</h3>
+					<dl>
+						<dd>⌥↩</dd>
+						<dt>Force Any Element</dt>
+
+						<dd>⌘↩</dd>
+						<dt>Force Line Break</dt>
+						
+						<dd>⌘⇧H</dd>
+						<dt>Force Scene Heading</dt>
+						
+						<dd>⌘⇧C</dd>
+						<dt>Force Character</dt>
+						
+						<dd>⌘⇧A</dd>
+						<dt>Force Action</dt>
+						
+						<dd>⌘⇧L</dd>
+						<dt>Force Lyrics</dt>
+						
+					</dl>
+				</section>
+
+					<script>
+
+						/* 
+
+						TextAnimation © Lauri-Matti Parppei 2020
+						Created for BEAT manual
+
+						*/
+
+						const textAnimation = function (data) {
+							if (!data.waitAt) data.waitAt = {};
+							
+							const container  = document.getElementById(data.container);
+							const text = data.text;
+							const wait = data.wait;
+														
+							let speed = data.speed;
+							if (!speed) speed = 150;
+
+							let waiting = 0;
+							let waitAt = 0;
+							let skipped = 0;
+
+							let _that = this;
+							let typing = "";
+							let index = -1;
+							let done = false;
+
+							let classes = [];
+
+							this.addClass = function (className) {
+								classes.push(className);
+								container.classList.add(className);
+							}
+
+							function reset () {
+								typing = '';
+								container.innerHTML = '';
+
+								waiting = 0;
+								skipped = 0;
+								index = -1;
+								done = false;
+
+								for (const className of classes) {
+									container.classList.remove(className);
+								}
+								classes = [];
+							}
+
+							setInterval(function() {
+								if (index >= text.length) done = true;
+
+								if (!done) {
+									// Run any possible events first
+									if (data.events[index - skipped]) data.events[index - skipped]();
+									if (data.waitAt[index - skipped] && waitAt > 0) waitAt = data.waitAt[index - skipped];
+									
+									if (waitAt > 0) {
+										waitAt--;
+										return;
+									} else {
+										waitAt = -1;
+									}
+
+									index++;
+									let character = text[index];
+									
+									// Skip over HTML
+									if (character == "<") {
+										typing += character;
+
+										while (character != ">" && index < text.length) {
+											index++;
+
+											character = text[index];
+											typing += character;
+
+											skipped++;
+										}
+
+										return;
+									}
+
+									if (text[index]) {
+										typing += text[index];
+										
+										if (data.caret) container.innerHTML = typing + caret;
+										else container.innerHTML = typing;
+
+										if (index == text.length - 1) done = true;
+									}
+
+								} else {
+									waiting++;
+									if (waiting >= wait) reset();
+								}
+
+							}, speed );
+						}
+
+						var caret = "<div class='caret'></div>";
+
+						var sceneAnimation = new textAnimation({ text:"int. school room - day", wait: 15, container: "scene", caret: caret, events: {
+								2: function () { sceneAnimation.addClass('bold'); }
+							}
+						});
+
+						var dialogueAnimation = new textAnimation({ text:"CHARACTER\nWelcome to Beat!", wait: 15, container: "dialogue", caret: caret, events: {
+								4: function () { dialogueAnimation.addClass('inset'); }
+							}
+						});
+
+						var parenthesesAnimation = new textAnimation({ 
+							text:"CHARACTER\n<span>(shrugging)</span>\nWell this is easy.",
+							wait: 15,
+							caret: caret,
+							container: "parentheses",
+							speed: 150,
+							events: {
+								3: function () { parenthesesAnimation.addClass('inset'); },
+								11: function () { parenthesesAnimation.addClass('parenthesesInset'); }
+							}
+						});
+
+						var bigFish = new textAnimation ({
+							text:"<span class='fauxCharacter'>FADE IN:</span>\n\n<span class='fauxCharacter2'>A RIVER.</span>\n\nWe're underwater, watching a fat catfish swim along.",
+							container: "bigFish",
+							wait: 15,
+							caret: caret,
+							speed: 155,
+							caret: caret,
+							events: {
+								11: function() { bigFish.addClass('firstFaux'); },
+								19: function() { bigFish.addClass('secondFaux'); }
+							}
+						});
+
+						var stylization = new textAnimation({
+							text: 
+								"<span class='symbol'>*</span><span class='fItalic'>I am in italic</span><span class='symbol'>*</span>\n" + 
+								"<span class='symbol2'>**</span><span class='fBold'>And I am bold</span><span class='symbol2'>**</span>",
+							wait: 15,
+							caret: caret,
+							speed: 120,
+							debug: true,
+							container: "stylization",
+							events: {
+								20: function () { stylization.addClass('makeItalic'); },
+								44: function () { stylization.addClass('makeBold'); }
+							}
+						});
+
+						var underlineFormating = new textAnimation({
+							text: 
+								"<span class='symbol'>_</span><span class='fUnderline'>You can underline stuff, too.</span><span class='symbol'>_</span>\n",
+							wait: 15,
+							caret: caret,
+							speed: 120,
+							debug: true,
+							container: "underlineFormating",
+							events: {
+								35: function () { underlineFormating.addClass('makeUnderline'); },
+								
+							}
+						});
+
+
+					</script>
+					<script>
+						
+						// TableOfContents © Lauri-Matti Parppei 2020
+						// Created for Beat Manual
+						function tableOfContents(exclude) {
+							if (!exclude) exclude = [];
+							
+							const sections = document.querySelectorAll('section');
+
+							let toc = [];
+
+							// Go through high-level headings
+							for (const section of sections) {
+								const titleNode = section.querySelector('h1');
+								title = titleNode.innerText;
+								if (exclude.includes(title.innerText)) continue;
+
+								// Generate anchor
+								let anchor = document.createElement("a");
+								anchor.name = title.replace(/\W/g, '');
+								titleNode.parentNode.insertBefore(anchor, titleNode);
+
+								let subSections = [];
+								for (let node of section.querySelectorAll('h2')) {
+									
+									let sectionAnchor = document.createElement("a");
+									sectionAnchor.name = anchor.name + "-" + node.innerHTML.replace(/\W/g, '');
+
+									node.parentNode.insertBefore(sectionAnchor, node);
+
+									subSections.push({
+										title: node.innerHTML,
+										anchor: sectionAnchor.name
+									});
+								}
+
+								let chapter = {
+									title: section.querySelector('h1').innerText,
+									anchor: anchor.name,
+									subSections: subSections
+								}
+
+								toc.push(chapter);
+							}
+
+							let string = "<ol>";
+							for (const chapter of toc) {
+								if (chapter.anchor) {
+									string += "<li><a href='#" + chapter.anchor + "'>" + chapter.title + "</a></li>";
+								} else {
+									string += "<li>" + chapter.title + "</li>";
+								}
+								
+								
+								if (chapter.subSections.length) {
+									string += "<ul>";
+									for (let section of chapter.subSections) {
+										string += "<li><a href='#" + section.anchor + "'>" + section.title +"</a></li>";
+									}
+									string += "</ul>";
+								}
+
+							}
+							string += "</ol>";
+							return string;
+						}
+
+						let menu = document.getElementById('menuToc');
+						menu.innerHTML = tableOfContents(["Welcome to Beat"]);
+
+					</script>
+				</section>
+			</div>
+		</div>
+
+	</body>
+
+</html>

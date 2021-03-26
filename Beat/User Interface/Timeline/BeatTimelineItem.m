@@ -19,6 +19,8 @@
 #define FONTSIZE_SYNOPSIS 9.0
 #define FONTSIZE_SECTION 12.5
 
+#define SECTION_Y 2
+
 @interface BeatTimelineItem ()
 @property (nonatomic) NSString *text;
 @property (nonatomic) NSColor *color;
@@ -180,7 +182,7 @@
 	self.layer.backgroundColor = NSColor.clearColor.CGColor;
 	self.layer.opacity = 1.0;
 	
-	self.frame = NSMakeRect(rect.origin.x, 0, size.width + 100, self.superview.superview.superview.frame.size.height);
+	self.frame = NSMakeRect(rect.origin.x, SECTION_Y, size.width + 100, self.superview.superview.superview.frame.size.height);
 }
 - (void)updateSectionPosition:(NSRect)rect {
 	NSRect frame = self.frame;

@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatFDXExport : NSObject
-- (instancetype)initWithString:(NSString*)string tags:(NSArray*)tags attributedString:(NSAttributedString*)attrString;
+- (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions;
 - (NSString*)fdxString;
 @end
 

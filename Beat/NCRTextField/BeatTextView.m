@@ -15,7 +15,8 @@
  - draw masks (array of masks provided by Document)
  - draw page breaks (array of breaks with y position provided by Document/FountainPaginator)
  
- Document acts as delegate, so its methods are accessible from this class too, see forcing elements.
+ Document acts as delegate, so some of its methods are accessible from this class too.
+ This is a bit convoluted design, but works for now.
  
  Auto-completion function is based on NCRAutoCompleteTextView.
  
@@ -34,6 +35,7 @@
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
 
+// Maximum results for autocomplete
 #define MAX_RESULTS 10
 
 #define HIGHLIGHT_STROKE_COLOR [NSColor selectedMenuItemColor]
@@ -46,12 +48,13 @@
 #define POPOVER_PADDING 0.0
 
 #define POPOVER_APPEARANCE NSAppearanceNameVibrantDark
-//#define POPOVER_APPEARANCE NSAppearanceNameVibrantLight
 
 #define POPOVER_FONT [NSFont fontWithName:@"Courier Prime" size:12.0]
 // The font for the characters that have already been typed
 #define POPOVER_BOLDFONT [NSFont fontWithName:@"Courier Prime Bold" size:12.0]
 #define POPOVER_TEXTCOLOR [NSColor whiteColor]
+
+#define CARET_WIDTH 2
 
 @interface NCRAutocompleteTableRowView : NSTableRowView
 @end
@@ -108,11 +111,25 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 // New scene numbering system
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 
+// Text container tracking area
+@property (nonatomic) NSTrackingArea *trackingArea;
+
+// Section rects
+@property NSMutableArray* sections;
+
+// Page number fields
+@property (nonatomic) NSMutableArray *pageNumberLabels;
+
 @end
 
 @implementation BeatTextView
 
 - (void)awakeFromNib {
+	/*
+	BeatLayoutManager *layoutManager = [[BeatLayoutManager alloc] init];
+	[self.textContainer replaceLayoutManager:layoutManager];
+	*/
+	
 	self.pageBreaks = [NSArray array];
 	
 	// Make a table view with 1 column and enclosing scroll view. It doesn't
@@ -179,13 +196,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Arrays for special elements
 	self.masks = [NSMutableArray array];
-	self.sections = [NSArray array];
+	self.sections = [NSMutableArray array];
 	
-	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
+	_trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
-	[self addTrackingArea:trackingArea];
+	[self addTrackingArea:_trackingArea];
 	
-	[self resetCursorRects];
+	[self setInsets];
 }
 -(void)removeFromSuperview {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
@@ -622,7 +639,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		[self.autocompletePopover close];
 	}
 }
-
 - (NSArray *)completionsForPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
 	if ([self.delegate respondsToSelector:@selector(textView:completions:forPartialWordRange:indexOfSelectedItem:)]) {
 		return [self.delegate textView:self completions:@[] forPartialWordRange:charRange indexOfSelectedItem:index];
@@ -693,19 +709,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (NSArray*)rectsForChanges {
-	
 	NSMutableArray *rects = [NSMutableArray array];
-	/*
-	for (Line* line in self.editorDelegate.parser.lines) {
-		if (!line.changed) continue;
-		
-		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.range actualCharacterRange:nil];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
-		NSRect highlight = NSMakeRect(self.textContainerInset.width - 20, self.textContainerInset.height + rect.origin.y, 2, rect.size.height);
-		[rects addObject:[NSValue valueWithRect:highlight]];
-	}
-	 */
-	
+
 	[self.editorDelegate.changes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
 		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
@@ -717,11 +722,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
+	dirtyRect = (NSRect){ dirtyRect.origin.x, dirtyRect.origin.y - 10, dirtyRect.size.width, dirtyRect.size.height + 20 };
 	NSGraphicsContext *context = [NSGraphicsContext currentContext];
 	CGFloat factor = 1 / _zoomLevel;
-	
-	[context saveGraphicsState];
-	
+		
 	// Section header backgrounds
 	for (NSValue* value in _sections) {
 		[self.marginColor setFill];
@@ -731,16 +735,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
 		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
 	}
-	
-	[context restoreGraphicsState];
-	
+		
 	[NSGraphicsContext saveGraphicsState];
 	[super drawRect:dirtyRect];
 	[NSGraphicsContext restoreGraphicsState];
 
 	// An array of NSRanges which are used to mask parts of the text.
 	// Used to hide irrelevant parts when filtering scenes.
-	if ([_masks count]) {
+	if (_masks.count) {
 		for (NSValue * value in _masks) {
 			NSColor* fillColor = self.backgroundColor;
 			fillColor = [fillColor colorWithAlphaComponent:0.85];
@@ -756,36 +758,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
-	NSFont* font = [NSFont fontWithName:@"Courier Prime" size:17];
-	
 	[context saveGraphicsState];
 	
-	DynamicColor *pageNumberColor = [[ThemeManager sharedManager] pageNumberColor];
-	NSInteger pageNumber = 1;
-	CGFloat rightEdge = (self.frame.size.width * factor - self.textContainerInset.width + 170);
-	
-	// Don't let page numbers fall out of view
-	if (rightEdge + 40 > self.enclosingScrollView.frame.size.width * factor) {
-		rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 72;
-		
-		// If it's STILL too far out, compact page numbers even more
-		if (rightEdge + 50 > self.enclosingScrollView.frame.size.width * factor) {
-			rightEdge = self.enclosingScrollView.frame.size.width * factor - 50;
-		}
-	}
-
-	for (NSNumber *pageBreakPosition in self.pageBreaks) {
-		NSString *page = [@(pageNumber) stringValue];
-		// Do we want the dot after page number?
-		// page = [page stringByAppendingString:@"."];
-		
-		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: pageNumberColor }];
-		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
-		attrStr = nil;
-		
-		pageNumber++;
-	}
-	
+	/*
 	if (self.editorDelegate.trackChanges) {
 		for (NSValue *val in [self rectsForChanges]) {
 			NSRect highlight = val.rectValue;
@@ -794,18 +769,111 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			NSRectFill(highlight);
 		}
 	}
+	*/
 	
 	[context restoreGraphicsState];
 }
 
 
-- (void)updateSceneNumberLabels {
-	[self updateSceneNumberLabelsWithTextLabels];
-	//[self updateSceneNumberLabelsWithLayer];
+- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag {
+	aRect.size.width = CARET_WIDTH;
+	[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
+}
+ 
+- (void)setNeedsDisplayInRect:(NSRect)invalidRect {
+	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height + 2);
+	[super setNeedsDisplayInRect:invalidRect];
 }
 
-- (void) updateSceneNumberLabelsWithTextLabels {
-	// editorDelegate is a misleading name, it's the Document, really
+
+- (void)resetPageNumberLabels {
+	for (NSInteger i = 0; i < _pageNumberLabels.count; i++) {
+		NSTextField *label = _pageNumberLabels[i];
+		[label removeFromSuperview];
+	}
+	[_pageNumberLabels removeAllObjects];
+}
+
+- (void)deletePageNumbers {
+	for (NSTextField * label in _pageNumberLabels) {
+		[label removeFromSuperview];
+	}
+	[_pageNumberLabels removeAllObjects];
+}
+
+- (void)updatePageNumbers {
+	[self updatePageNumbers:nil];
+}
+
+- (void)updatePageNumbers:(NSArray*)pageBreaks {
+	if (pageBreaks) _pageBreaks = pageBreaks;
+	
+	CGFloat factor = 1 / _zoomLevel;
+	if (!_pageNumberLabels) _pageNumberLabels = [NSMutableArray array];
+	
+	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
+	NSInteger pageNumber = 1;
+	
+	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 35;
+	// Compact page numbers if needed
+	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
+		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;
+	}
+
+	for (NSNumber *pageBreakPosition in self.pageBreaks) {
+		NSString *page = [@(pageNumber) stringValue];
+		// Do we want the dot after page number?
+		// page = [page stringByAppendingString:@"."];
+		/*
+		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: pageNumberColor }];
+		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
+		attrStr = nil;
+		 */
+		
+		NSTextField *label;
+		
+		// Add new label if needed
+		if (pageNumber - 1 >= self.pageNumberLabels.count) label = [self createPageLabel:page];
+		else label = self.pageNumberLabels[pageNumber - 1];
+		
+		[label setStringValue:page];
+		
+		NSRect rect = NSMakeRect(rightEdge, pageBreakPosition.floatValue + self.textContainerInset.height, 50, 20);
+		label.frame = rect;
+		
+		[label setTextColor:pageNumberColor];
+
+		pageNumber++;
+	}
+	
+	// Remove excess labels
+	if (_pageNumberLabels.count >= pageNumber - 1) {
+		NSInteger labels = _pageNumberLabels.count;
+		for (NSInteger i = pageNumber - 1; i < labels; i++) {
+			NSTextField *label = _pageNumberLabels[pageNumber - 1];
+			[self.pageNumberLabels removeObject:label];
+			[label removeFromSuperview];
+		}
+	}
+}
+
+- (void)resetSceneNumberLabels {
+	for (NSInteger i = 0; i < _sceneNumberLabels.count; i++) {
+		NSTextField *label = _sceneNumberLabels[i];
+		[label removeFromSuperview];
+	}
+	[_sceneNumberLabels removeAllObjects];
+	
+	[self updateSceneLabelsFrom:0];
+}
+
+- (void)updateSceneLabelsFrom:(NSInteger)changedIndex {
+	[self updateSceneTextLabelsFrom:0];
+}
+
+- (void)updateSceneTextLabelsFrom:(NSInteger)changedIndex {
+	[_sections removeAllObjects];
+	
 	ContinousFountainParser *parser = self.editorDelegate.parser;
 	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor;
 	
@@ -814,9 +882,19 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
 	
 	NSInteger index = 0;
-	for (OutlineScene *scene in parser.scenes) {
-		
-		// Create a label if needed
+	for (OutlineScene *scene in parser.outline) {
+		if (scene.type == synopse) continue;
+		if (scene.type == section) {
+			[self addSectionMarker:scene];
+			continue;
+		}
+
+		// don't update scene labels if we are under the index
+		if (scene.line.position + scene.line.string.length < changedIndex) {
+			index++;
+			continue;
+		}
+				
 		NSTextField *label;
 		
 		// Add new label if needed
@@ -831,10 +909,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		rect.size.width = 20 * scene.sceneNumber.length;
 		rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
 		rect.origin.y += self.textInsetY;
-
+			
 		label.frame = rect;
 		
-		//[label setFont:self.editorDelegate.courier];
 		if (scene.color.length) {
 			NSString *color = scene.color.lowercaseString;
 			[label setTextColor:[BeatColors color:color]];
@@ -847,15 +924,48 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 	// Remove excess labels
 	if (_sceneNumberLabels.count >= index) {
-		for (NSInteger i = index; i < _sceneNumberLabels.count; i++) {
-			NSTextField *label = _sceneNumberLabels[i];
+		NSInteger labels = _sceneNumberLabels.count;
+		for (NSInteger i = index; i < labels; i++) {
+			NSTextField *label = _sceneNumberLabels[index];
 			[self.sceneNumberLabels removeObject:label];
 			[label removeFromSuperview];
 		}
 	}
 }
 
+- (void)addSectionMarker:(OutlineScene*)sectionItem {
+	// Don't draw breaks for less-important sections
+	if (sectionItem.sectionDepth > 2) return;
+	NSRange characterRange = NSMakeRange(sectionItem.line.position, sectionItem.line.string.length);
+	
+	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+	NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
 
+	// If the next line is something we care about, include it in the rect for a nicer display
+	// If next line is NOT EMPTY, don't add the rect at all.
+	NSInteger index = [_editorDelegate.parser.lines indexOfObject:sectionItem.line];
+	
+	if (sectionItem.line != _editorDelegate.parser.lines.lastObject) {
+		Line* previousLine;
+		Line* nextLine = [_editorDelegate.parser.lines objectAtIndex:index + 1];
+		if (index > 0) previousLine = [_editorDelegate.parser.lines objectAtIndex:index - 1];
+		
+		if ((nextLine.type == synopse) && (previousLine.string.length < 1 || previousLine.type == section) ) {
+			characterRange = NSMakeRange(nextLine.position, nextLine.string.length);
+			glyphRange = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+			NSRect nextRect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+			
+			rect.size.height += nextRect.size.height;
+			
+			[_sections addObject:[NSValue valueWithRect:rect]];
+		}
+		else if ((nextLine == empty || !nextLine.string.length || nextLine.type == section) && previousLine.string.length < 1 ) {
+			[_sections addObject:[NSValue valueWithRect:rect]];
+		}
+	}
+}
+
+/*
 - (void)updateSceneNumberLabelsWithLayer {
 	// Alternative scene numbering system.
 	// Gives some performance advantage, but also takes a bigger hit sometimes.
@@ -929,6 +1039,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[CATransaction commit];
 	[self updateLayer];
 }
+*/
 
 
 - (NSTextField *) createLabel: (OutlineScene *) scene {
@@ -957,6 +1068,23 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return label;
 }
 
+- (NSTextField *) createPageLabel: (NSString*) numberStr {
+	NSTextField * label;
+	label = [[NSTextField alloc] init];
+	
+	[label setStringValue:numberStr];
+	[label setBezeled:NO];
+	[label setSelectable:NO];
+	[label setDrawsBackground:NO];
+	[label setFont:self.editorDelegate.courier];
+	[label setAlignment:NSTextAlignmentRight];
+	[self addSubview:label];
+	
+	[self.pageNumberLabels addObject:label];
+	return label;
+}
+
+
 - (void) createAllLabels {
 	ContinousFountainParser *parser = self.editorDelegate.parser;
 	
@@ -974,29 +1102,31 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Mouse events
 
 - (void)mouseMoved:(NSEvent *)event {
+	// point in this scaled text view
 	NSPoint point = [self convertPoint:event.locationInWindow fromView:nil];
+	
+	// point in unscaled parent view
 	NSPoint superviewPoint = [self.enclosingScrollView convertPoint:event.locationInWindow fromView:nil];
-	//CGFloat x = event.locationInWindow.x;
+	
+	// y position in window
 	CGFloat y = event.locationInWindow.y;
 	
+	// Super cursor when inside the text container, otherwise arrow
 	if ((point.x > self.textContainerInset.width &&
-		 point.x < self.frame.size.width * (1 / _zoomLevel) - self.textContainerInset.width) &&
+		 point.x * (1/_zoomLevel) < (self.textContainer.size.width + self.textContainerInset.width) * (1/_zoomLevel)) &&
 		 y < self.window.frame.size.height - 22 &&
 		 superviewPoint.y < self.enclosingScrollView.frame.size.height
 		) {
-		[super mouseMoved:event];
+		//[super mouseMoved:event];
+		[NSCursor.IBeamCursor set];
 	} else if (point.x > 10) {
-		[super mouseMoved:event];
+		//[super mouseMoved:event];
 		[NSCursor.arrowCursor set];
 	}
 }
 
 - (void)mouseExited:(NSEvent *)event {
 	//[[NSCursor arrowCursor] set];
-}
-
-- (void)updateSections:(NSArray *)sections {
-	_sections = sections;
 }
 
 - (void)scaleUnitSquareToSize:(NSSize)newUnitSize {
@@ -1007,11 +1137,40 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.editorDelegate.magnification / 2) / self.editorDelegate.magnification;
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
 	self.textContainer.size = NSMakeSize(_documentWidth, self.textContainer.size.height);
+
 	[self resetCursorRects];
+	[self addCursorRect:(NSRect){0,0, 200, 2500} cursor:NSCursor.crosshairCursor];
+	[self addCursorRect:(NSRect){self.frame.size.width * .5,0, self.frame.size.width * .5, self.frame.size.height} cursor:NSCursor.crosshairCursor];
 }
 
 -(void)resetCursorRects {
 	[super resetCursorRects];
+}
+
+-(void)cursorUpdate:(NSEvent *)event {
+	[NSCursor.IBeamCursor set];
+}
+
+#pragma mark - Context Menu
+
+-(NSMenu *)menu {
+	NSMenu *defaultMenu = [super menu];
+	
+	// Add items from context menu prototype to the default menu
+	// (This is run only once)
+	if (_contextMenu.itemArray.count) {
+		[defaultMenu addItem:[NSMenuItem separatorItem]];
+		
+		for (NSMenuItem *item in _contextMenu.itemArray) {
+			[_contextMenu removeItem:item];
+			[defaultMenu addItem:item];
+		}
+		
+		[defaultMenu addItem:[NSMenuItem separatorItem]];
+	}
+	
+	
+	return defaultMenu;
 }
 
 @end

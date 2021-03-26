@@ -52,23 +52,29 @@ typedef enum : NSInteger {
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
-- (void)updateSections:(NSArray*)sections;
 - (void)setInsets;
 
 // Scene Numbering
-- (void) updateSceneNumberLabels;
-- (void) deleteSceneNumberLabels;
+- (void)updateSceneLabelsFrom:(NSInteger)changedIndex;
+- (void)deleteSceneNumberLabels;
+- (void)resetSceneNumberLabels;
+
+// Page numbering
+- (void)deletePageNumbers;
+- (void)updatePageNumbers;
+- (void)updatePageNumbers:(NSArray*)pageBreaks;
 
 @property CGFloat textInsetY;
 @property (weak) id<BeatTextViewDelegate> editorDelegate;
 @property (weak) id<BeatTaggingDelegate> taggingDelegate;
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;
-@property NSArray* sections;
 @property (nonatomic, weak) DynamicColor* marginColor;
 @property NSArray* pageBreaks;
 @property CGFloat zoomLevel;
 @property CGFloat documentWidth;
 @property NSInteger autocompleteIndex;
+
+@property (weak) IBOutlet NSMenu *contextMenu;
 
 @end

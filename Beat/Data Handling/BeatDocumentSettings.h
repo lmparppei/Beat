@@ -13,6 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatDocumentSettings : NSObject
 @property (nonatomic) NSMutableDictionary *settings;
 
+extern NSString * const DocSettingRevisions;
+extern NSString * const DocSettingRevisionColor;
+extern NSString * const DocSettingSceneNumberStart;
+extern NSString * const DocSettingTags;
+extern NSString * const DocSettingTagDefinitions;
+
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)setInt:(NSString*)key as:(NSInteger)value;
 - (void)setString:(NSString*)key as:(NSString*)value;

@@ -7,11 +7,8 @@
 //
 /*
  
- This acts as a bridge between FNScript and Beat.
- One day we'll have a native system to convert a Beat script into HTML
- and this intermediate class is useless. Hopefully.
- 
- ... that day has come long since. It's still a horribly convoluted system.
+ This is a very convoluted system.
+ All hope abandon ye who enter here.
  
  */
 
@@ -21,6 +18,7 @@
 #import "OutlineScene.h"
 #import "BeatHTMLScript.h"
 #import "BeatDocumentSettings.h"
+#import "BeatRevisionTracking.h"
 
 @interface BeatPreview ()
 @property (nonatomic, weak) NSDocument *document;
@@ -48,7 +46,12 @@
 
 	if (_delegate) {
 		// This is probably a normal parser, because a delegate is present
+		// Parse script
 		parser = [[ContinousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate];
+		
+		// Bake revision attributes
+		NSAttributedString *attrStr = self.delegate.attrTextCache;
+		[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
 	} else {
 		// This is probably a QuickLook preview
 		parser = [[ContinousFountainParser alloc] initWithString:rawScript];

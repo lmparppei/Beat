@@ -29,7 +29,7 @@
 	_buttonDefaultY = _outlineButtonY.constant;
 	
 	// Save buttons for later use
-	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton, _previewButton];
+	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton, _previewButton, _quickSettingsButton];
 		
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
@@ -123,6 +123,12 @@
 		[_timerMouseMoveTimer invalidate];
 		_timerMouseMoveTimer = [NSTimer scheduledTimerWithTimeInterval:TIMER_HIDE_INTERVAL target:self selector:@selector(shouldHideTimer:) userInfo:event repeats:NO];
 		
+	}
+}
+
+- (void)layoutButtons {
+	for (NSButton *button in self.editorButtons) {
+		[button setNeedsLayout:YES];
 	}
 }
 

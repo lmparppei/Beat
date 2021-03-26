@@ -701,13 +701,14 @@
                                       and:NOTE_CLOSE_PATTERN
                                withLength:NOTE_PATTERN_LENGTH
                          excludingIndices:nil];
-	
+	/*
 	line.highlightRanges = [self rangesInChars:charArray
 								 ofLength:length
 								  between:HIGHLIGHT_OPEN_PATTERN
 									  and:HIGHLIGHT_CLOSE_PATTERN
 							   withLength:HIGHLIGHT_PATTERN_LENGTH
 						 excludingIndices:nil];
+	 */
 	
 	line.strikeoutRanges = [self rangesInChars:charArray
 								 ofLength:length
@@ -1622,9 +1623,9 @@ and incomprehensible system of recursion.
 	NSMutableArray *lines = [NSMutableArray array];
 	for (Line* line in self.lines) {
 		if ((NSLocationInRange(line.position, range) ||
-			NSLocationInRange(range.location, line.range) ||
-			NSLocationInRange(range.location + range.length, line.range)) &&
-			NSIntersectionRange(range, line.range).length > 0) {
+			NSLocationInRange(range.location, line.textRange) ||
+			NSLocationInRange(range.location + range.length, line.textRange)) &&
+			NSIntersectionRange(range, line.textRange).length > 0) {
 			[lines addObject:line];
 		}
 	}

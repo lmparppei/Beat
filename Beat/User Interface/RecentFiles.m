@@ -25,11 +25,11 @@
 	void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
 	};
 	
-	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:_selectedRow display:YES completionHandler:completionHander];
+	[NSDocumentController.sharedDocumentController openDocumentWithContentsOfURL:_selectedRow display:YES completionHandler:completionHander];
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
-	NSArray *files = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
+	NSArray *files = [NSDocumentController.sharedDocumentController recentDocumentURLs];
 	return [files count];
 }
 
@@ -38,7 +38,7 @@
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
-	NSArray *array = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
+	NSArray *array = [NSDocumentController.sharedDocumentController recentDocumentURLs];
 	return [array objectAtIndex:index];
 }
 
@@ -52,7 +52,7 @@
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.lineSpacing = 1;
 	
-	NSArray *files = [[NSDocumentController sharedDocumentController] recentDocumentURLs];
+	NSArray *files = [NSDocumentController.sharedDocumentController recentDocumentURLs];
 	
 	bool selected = NO;
 	if ([files indexOfObject:item] == outlineView.selectedRow) { selected = YES; }

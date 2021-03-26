@@ -18,11 +18,13 @@
                 <outlet property="blueCheck" destination="ilD-zy-XUu" id="9Sm-2G-BVZ"/>
                 <outlet property="brownCheck" destination="H6k-me-4mN" id="sq8-9g-87R"/>
                 <outlet property="cardView" destination="2ja-Hc-I6Z" id="RvV-26-dPe"/>
+                <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Wxg-hf-1FX"/>
                 <outlet property="characterBox" destination="uDe-RI-kOI" id="qFD-eS-4J2"/>
                 <outlet property="colorMenu" destination="Tqc-M2-IZ5" id="p8e-fo-mfZ"/>
                 <outlet property="contactField" destination="Vkz-wH-dWc" id="WaU-3u-6EG"/>
                 <outlet property="creditField" destination="8wH-7O-fhS" id="CWx-mg-kU1"/>
                 <outlet property="cyanCheck" destination="vqm-UG-kIN" id="7Mm-5u-A65"/>
+                <outlet property="darkModeSwitch" destination="S22-Mw-UkV" id="LjC-kx-glN"/>
                 <outlet property="dateField" destination="M99-wo-HH8" id="lFC-yO-uAO"/>
                 <outlet property="filterView" destination="YvO-D4-qDL" id="kCA-z3-eE5"/>
                 <outlet property="filterViewHeight" destination="vZj-zT-rgW" id="5Al-VZ-Qyl"/>
@@ -37,14 +39,21 @@
                 <outlet property="outlineScrollView" destination="RaS-3C-d5c" id="SfS-4K-icO"/>
                 <outlet property="outlineSearchField" destination="wQe-ic-Dmm" id="EkH-y5-5vL"/>
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
+                <outlet property="pageNumbersSwitch" destination="Mef-QD-NsX" id="Qep-HJ-CZr"/>
                 <outlet property="pinkCheck" destination="X9R-Ze-hyZ" id="O2g-Ue-hZv"/>
+                <outlet property="previewButton" destination="DOv-x4-OK1" id="gJe-tL-TEf"/>
                 <outlet property="printWebView" destination="ddy-rn-xRJ" id="nMo-II-Kfi"/>
                 <outlet property="printing" destination="c93-vc-ktH" id="d6p-mp-q7O"/>
+                <outlet property="quickSettingsButton" destination="piN-SW-wNh" id="uhU-gQ-L56"/>
+                <outlet property="quickSettingsView" destination="zD2-lE-mgt" id="tyu-JN-Hpu"/>
                 <outlet property="redCheck" destination="dCo-x8-fiM" id="7vC-UG-dQ0"/>
                 <outlet property="resetCharacterFilterButton" destination="rNr-qe-M65" id="0cW-Ts-JPc"/>
                 <outlet property="resetColorFilterButton" destination="Xyx-ug-UXG" id="ZkW-PJ-GEe"/>
+                <outlet property="revisionColorPopup" destination="qQI-Yr-iVj" id="Z6u-99-C0d"/>
+                <outlet property="revisionModeSwitch" destination="EIZ-TU-2Aq" id="KYW-ZN-35t"/>
                 <outlet property="sceneNumberStartInput" destination="MmF-s9-or8" id="Zr7-zx-nba"/>
                 <outlet property="sceneNumberingPanel" destination="IUI-JC-aZs" id="fnB-g1-4Eb"/>
+                <outlet property="sceneNumbersSwitch" destination="bKc-za-gPA" id="26c-hz-YMj"/>
                 <outlet property="sideView" destination="Thg-Wg-JDd" id="9ox-4Z-GGY"/>
                 <outlet property="sideViewCostraint" destination="O0i-Sv-K16" id="Luf-X1-ZH5"/>
                 <outlet property="sourceField" destination="dWQ-i1-byX" id="Fb2-M0-rkB"/>
@@ -56,6 +65,7 @@
                 <outlet property="textView" destination="6pm-Ac-n3m" id="cty-Cr-AYB"/>
                 <outlet property="timeline" destination="pm8-b1-sOe" id="Z6f-Fv-qKI"/>
                 <outlet property="timelineBar" destination="23S-cr-Vy0" id="Vm9-rS-IhX"/>
+                <outlet property="timelineButton" destination="SU7-uh-HJD" id="e30-ZZ-Or8"/>
                 <outlet property="timelineViewHeight" destination="naH-It-ilq" id="qVu-x1-36J"/>
                 <outlet property="titleField" destination="Npf-8p-a7b" id="RWb-al-Ywl"/>
                 <outlet property="titlePagePanel" destination="vXu-Dv-TW5" id="SUm-VK-456"/>
@@ -447,6 +457,7 @@
                                                                         </attributedString>
                                                                         <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <connections>
+                                                                            <outlet property="contextMenu" destination="DrH-zx-R7H" id="9LD-s8-Oqi"/>
                                                                             <outlet property="delegate" destination="-2" id="lmD-aH-hkQ"/>
                                                                             <outlet property="touchBar" destination="FXM-lH-N3d" id="ibZ-0X-rds"/>
                                                                         </connections>
@@ -466,6 +477,7 @@
                                                                 <outlet property="outlineButton" destination="ULq-c1-qrj" id="CuS-Gp-cWK"/>
                                                                 <outlet property="outlineButtonY" destination="zrM-cS-i7r" id="1lk-Iy-qXE"/>
                                                                 <outlet property="previewButton" destination="DOv-x4-OK1" id="9jU-o9-8xZ"/>
+                                                                <outlet property="quickSettingsButton" destination="piN-SW-wNh" id="r7C-8M-g3m"/>
                                                                 <outlet property="timelineButton" destination="SU7-uh-HJD" id="cka-oG-7P8"/>
                                                                 <outlet property="timerView" destination="hjj-OY-sw5" id="MrE-Zu-lSD"/>
                                                             </connections>
@@ -479,36 +491,27 @@
                                                             </connections>
                                                         </customView>
                                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="MJt-fS-Zk9" userLabel="Button View">
-                                                            <rect key="frame" x="15" y="504" width="653" height="22"/>
+                                                            <rect key="frame" x="15" y="504" width="653" height="24"/>
                                                             <subviews>
-                                                                <button toolTip="Show Timeline" allowsExpansionToolTips="YES" id="SU7-uh-HJD" userLabel="Timeline Button">
-                                                                    <rect key="frame" x="590" y="0.0" width="27" height="22"/>
+                                                                <button toolTip="Quick Settings" allowsExpansionToolTips="YES" id="piN-SW-wNh" userLabel="Quick Settings Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="626" y="1" width="27" height="22"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="3LY-u6-Jq0">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="SettingIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="yVk-AR-Glo">
+                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                                                         <font key="font" metaFont="system"/>
                                                                     </buttonCell>
-                                                                    <accessibility description="Show Timeline"/>
-                                                                    <connections>
-                                                                        <action selector="toggleTimeline:" target="-2" id="h1e-AW-X20"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button">
-                                                                    <rect key="frame" x="553" y="0.0" width="27" height="22"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
+                                                                    </userDefinedRuntimeAttributes>
                                                                     <accessibility description="Show Print Preview"/>
                                                                     <connections>
-                                                                        <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
+                                                                        <action selector="showQuickSettings:" target="-2" id="LeI-4b-zvh"/>
                                                                     </connections>
                                                                 </button>
-                                                                <button toolTip="Show Index Cards" allowsExpansionToolTips="YES" id="ZL1-eS-Zb2" userLabel="Cards Button">
-                                                                    <rect key="frame" x="626" y="0.0" width="27" height="22"/>
+                                                                <button toolTip="Show Index Cards" allowsExpansionToolTips="YES" id="ZL1-eS-Zb2" userLabel="Cards Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="593" y="1" width="27" height="22"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" alternateTitle="Cards View" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                         <font key="font" metaFont="system"/>
                                                                     </buttonCell>
@@ -518,24 +521,54 @@
                                                                     </connections>
                                                                 </button>
                                                                 <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6aa-Mu-dRU">
-                                                                    <rect key="frame" x="760" y="0.0" width="0.0" height="22"/>
+                                                                    <rect key="frame" x="760" y="2" width="0.0" height="22"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                 </stackView>
-                                                                <button toolTip="Show Outline" allowsExpansionToolTips="YES" id="ULq-c1-qrj">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="24" height="22"/>
+                                                                <button toolTip="Toggle Outline" allowsExpansionToolTips="YES" id="ULq-c1-qrj" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="0.0" y="1" width="22" height="21"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="square" alternateTitle="Show Outline View (⌘D)" bezelStyle="shadowlessSquare" image="OutlineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="FXy-5E-2Md">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="OutlineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyDown" inset="2" id="FXy-5E-2Md">
+                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                                                         <font key="font" metaFont="system"/>
                                                                     </buttonCell>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
+                                                                    </userDefinedRuntimeAttributes>
                                                                     <accessibility description="Outline view"/>
                                                                     <connections>
                                                                         <action selector="toggleOutlineView:" target="-2" id="itM-sD-VVq"/>
                                                                     </connections>
                                                                 </button>
+                                                                <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="556" y="1" width="27" height="22"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
+                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <accessibility description="Show Print Preview"/>
+                                                                    <connections>
+                                                                        <action selector="preview:" target="-2" id="Hqm-uo-Zul"/>
+                                                                    </connections>
+                                                                </button>
+                                                                <button toolTip="Toggle Timeline" allowsExpansionToolTips="YES" id="SU7-uh-HJD" userLabel="Timeline Button" customClass="BeatEditorButton">
+                                                                    <rect key="frame" x="35" y="1" width="27" height="22"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="TimelineIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="3LY-u6-Jq0">
+                                                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                                                        <font key="font" metaFont="system"/>
+                                                                    </buttonCell>
+                                                                    <userDefinedRuntimeAttributes>
+                                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="onOffButton" value="YES"/>
+                                                                    </userDefinedRuntimeAttributes>
+                                                                    <accessibility description="Show Timeline"/>
+                                                                    <connections>
+                                                                        <action selector="toggleTimeline:" target="-2" id="h1e-AW-X20"/>
+                                                                    </connections>
+                                                                </button>
                                                             </subviews>
                                                             <constraints>
-                                                                <constraint firstAttribute="height" constant="22" id="D5l-34-iqo"/>
+                                                                <constraint firstAttribute="height" constant="24" id="D5l-34-iqo"/>
                                                             </constraints>
                                                         </customView>
                                                     </subviews>
@@ -546,7 +579,7 @@
                                                         <constraint firstAttribute="trailing" secondItem="MJt-fS-Zk9" secondAttribute="trailing" constant="25" id="MoW-nY-FZ3"/>
                                                         <constraint firstItem="Mky-48-wwA" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" id="Rri-nf-aFA"/>
                                                         <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="VFm-hQ-O9D"/>
-                                                        <constraint firstItem="MJt-fS-Zk9" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" constant="15" id="zrM-cS-i7r"/>
+                                                        <constraint firstItem="MJt-fS-Zk9" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" constant="13" id="zrM-cS-i7r"/>
                                                     </constraints>
                                                 </customView>
                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lKQ-7H-w5w" customClass="TKSplitHandle">
@@ -591,9 +624,9 @@
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                         </scrollView>
-                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JKs-8L-Wv0">
+                                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="JKs-8L-Wv0">
                                                             <rect key="frame" x="28" y="520" width="146" height="14"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Tagging" id="Zo3-K1-aDo">
                                                                 <font key="font" size="10" name="HelveticaNeue-Light"/>
                                                                 <color key="textColor" red="0.96462065149999998" green="1" blue="0.98077592769999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -604,7 +637,7 @@
                                                             <rect key="frame" x="0.0" y="508" width="180" height="5"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         </box>
-                                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vgJ-8J-sjs">
+                                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="vgJ-8J-sjs">
                                                             <rect key="frame" x="10" y="519" width="12" height="14"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Tag" id="eop-Wt-56O"/>
@@ -1075,9 +1108,8 @@ Gw
             <touchBarItems>
                 <touchBarItem id="Yl5-KN-N3x">
                     <viewController key="viewController" id="1lb-pf-av9">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" id="kVd-IJ-8g1">
-                            <rect key="frame" x="0.0" y="-11" width="84" height="41"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kVd-IJ-8g1">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="OutlineIcon_white" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OS4-Pc-U6L">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1090,9 +1122,8 @@ Gw
                 </touchBarItem>
                 <touchBarItem id="rWL-n1-Ejl">
                     <viewController key="viewController" id="2hM-bM-hIJ">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" id="q8P-yB-ZHg">
-                            <rect key="frame" x="0.0" y="-11" width="84" height="41"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q8P-yB-ZHg">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="CardsIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="b8j-5x-Bvp">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1105,9 +1136,8 @@ Gw
                 </touchBarItem>
                 <touchBarItem id="BZs-Eh-v5e">
                     <viewController key="viewController" id="s2w-pc-SMc">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" id="LJ9-op-UOF">
-                            <rect key="frame" x="0.0" y="-11" width="84" height="41"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LJ9-op-UOF">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="TimelineIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ysm-8B-b7r">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1121,9 +1151,8 @@ Gw
                 <touchBarSpacerItem identifier="NSTouchBarItemIdentifierFixedSpaceSmall" id="oww-Pu-Ief"/>
                 <touchBarItem id="0AV-2P-83z">
                     <viewController key="viewController" id="4Ye-z8-Rbe">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" id="EX8-3T-2S9">
-                            <rect key="frame" x="0.0" y="-11" width="84" height="41"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EX8-3T-2S9">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoUpTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w9h-KQ-O8T">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1136,9 +1165,8 @@ Gw
                 </touchBarItem>
                 <touchBarItem id="vDN-00-so2">
                     <viewController key="viewController" id="f5E-6W-jOD">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" id="zLo-23-u8a">
-                            <rect key="frame" x="0.0" y="-11" width="84" height="41"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zLo-23-u8a">
+                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoDownTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TaB-Om-lXF">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1162,7 +1190,6 @@ Gw
                                 <viewController key="viewController" id="cAF-5m-zuN">
                                     <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="hPv-kP-W8a">
                                         <rect key="frame" x="0.0" y="0.0" width="244" height="18"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Refresh for an anti-lateral thought" id="ebZ-HO-Ch9">
                                             <font key="font" usesAppearanceFont="YES"/>
                                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1174,9 +1201,8 @@ Gw
                             <touchBarSpacerItem identifier="NSTouchBarItemIdentifierFlexibleSpace" id="3s6-G1-HuN"/>
                             <touchBarItem id="uhS-Jd-N5J">
                                 <viewController key="viewController" id="qZl-5L-L5S">
-                                    <button key="view" verticalHuggingPriority="750" misplaced="YES" id="2UL-8x-cZM">
-                                        <rect key="frame" x="0.0" y="-11" width="84" height="41"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                    <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2UL-8x-cZM">
+                                        <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSRefreshTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8QI-Kv-tiu">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" usesAppearanceFont="YES"/>
@@ -1198,7 +1224,6 @@ Gw
                                 <viewController key="viewController" id="KSd-sk-RAR">
                                     <view key="view" translatesAutoresizingMaskIntoConstraints="NO" id="LyB-YR-3Ea" customClass="TouchTimelineView">
                                         <rect key="frame" x="0.0" y="0.0" width="685" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     </view>
                                 </viewController>
                             </touchBarItem>
@@ -1575,6 +1600,174 @@ Gw
             </items>
             <point key="canvasLocation" x="-423" y="88"/>
         </menu>
+        <menu id="DrH-zx-R7H">
+            <items>
+                <menuItem title="Mark as Revised" id="BqD-vz-DpD">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="markAddition:" target="-2" id="3py-4b-o5t"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Mark for Removal" id="qyR-1a-dcy">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="markRemoval:" target="-2" id="yF0-DM-FfN"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Clear Markers" id="6SY-H3-Ej1">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="clearMarkings:" target="-2" id="fIx-Kx-aQY"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="-502" y="321"/>
+        </menu>
+        <customView id="zD2-lE-mgt" userLabel="Quick Settings">
+            <rect key="frame" x="0.0" y="0.0" width="208" height="248"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="djE-wS-Oh2">
+                    <rect key="frame" x="65" y="179" width="125" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbers" id="FcY-wT-YPP">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="Ce8-Oa-473">
+                    <rect key="frame" x="65" y="149" width="125" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Page Numbers" id="JLw-Th-DgB">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="IdW-3r-Koe">
+                    <rect key="frame" x="65" y="50" width="125" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Revision Mode" id="fPt-b4-RaB">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <customView fixedFrame="YES" id="bKc-za-gPA" customClass="ITSwitch">
+                    <rect key="frame" x="20" y="176" width="35" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="checked" value="YES"/>
+                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
+                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="toggleQuickSetting:" target="-2" id="DVa-Kw-jnR"/>
+                    </connections>
+                </customView>
+                <customView fixedFrame="YES" id="Mef-QD-NsX" customClass="ITSwitch">
+                    <rect key="frame" x="20" y="146" width="35" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
+                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="toggleQuickSetting:" target="-2" id="bF7-Zr-EC1"/>
+                    </connections>
+                </customView>
+                <customView fixedFrame="YES" id="EIZ-TU-2Aq" customClass="ITSwitch">
+                    <rect key="frame" x="20" y="47" width="35" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
+                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="toggleQuickSetting:" target="-2" id="2tK-eG-b7e"/>
+                    </connections>
+                </customView>
+                <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" id="AYf-SB-Uer">
+                    <rect key="frame" x="12" y="80" width="184" height="5"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </box>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="ZZf-h8-5r0">
+                    <rect key="frame" x="18" y="212" width="125" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Quick Settings" id="mg9-HW-sgj">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="Ems-vl-Z7w">
+                    <rect key="frame" x="18" y="26" width="75" height="11"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Revision Color" id="Teo-oJ-Dwq">
+                        <font key="font" metaFont="miniSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" id="qQI-Yr-iVj" userLabel="Revision Color">
+                    <rect key="frame" x="95" y="18" width="102" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="Blue" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="Thz-O0-hCD" id="RQ5-js-cwq">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" id="lCd-Rs-g3k">
+                            <items>
+                                <menuItem title="Blue" state="on" image="Color_Blue" id="Thz-O0-hCD">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="Orange" image="Color_Orange" id="NfX-B5-spN">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="Purple" image="Color_Purple" id="bbu-dp-keE">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                                <menuItem title="Green" image="Color_Green" id="gJz-gC-KoS">
+                                    <modifierMask key="keyEquivalentModifierMask"/>
+                                </menuItem>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="selectRevisionColor:" target="-2" id="hrf-a4-FEG"/>
+                    </connections>
+                </popUpButton>
+                <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" id="Dv8-Ik-EDY">
+                    <rect key="frame" x="12" y="129" width="184" height="5"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                </box>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="WkG-bA-E2d">
+                    <rect key="frame" x="65" y="99" width="125" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Dark Mode" id="vbP-uh-iii">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <customView fixedFrame="YES" id="S22-Mw-UkV" customClass="ITSwitch">
+                    <rect key="frame" x="20" y="96" width="35" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
+                            <color key="value" red="0.26899549490000002" green="0.26767039390000003" blue="0.27032059590000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                    <connections>
+                        <action selector="toggleQuickSetting:" target="-2" id="eWb-VD-Qgj"/>
+                    </connections>
+                </customView>
+            </subviews>
+            <point key="canvasLocation" x="525" y="-386"/>
+        </customView>
     </objects>
     <resources>
         <image name="CardsIcon" width="370" height="370"/>
@@ -1587,6 +1780,7 @@ Gw
         <image name="Color_None" width="15" height="15"/>
         <image name="Color_Orange" width="15" height="15"/>
         <image name="Color_Pink" width="15" height="15"/>
+        <image name="Color_Purple" width="15" height="15"/>
         <image name="Color_Red" width="15" height="15"/>
         <image name="NSRefreshTemplate" width="11" height="15"/>
         <image name="NSStatusNone" width="16" height="16"/>
@@ -1597,6 +1791,7 @@ Gw
         <image name="OutlineIcon_white" width="512" height="512"/>
         <image name="PreviewIcon" width="370" height="370"/>
         <image name="Resize" width="50" height="26"/>
+        <image name="SettingIcon" width="370" height="370"/>
         <image name="Tag" width="256" height="256"/>
         <image name="TimelineIcon" width="512" height="512"/>
         <image name="TimelineIcon_white" width="512" height="512"/>

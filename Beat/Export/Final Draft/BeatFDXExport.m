@@ -86,14 +86,13 @@
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
-#import "BeatReviewItem.h"
+#import "BeatRevisionItem.h"
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
 
 static NSDictionary *fdxIds;
 
 @interface BeatFDXExport ()
 @property (nonatomic) ContinousFountainParser *parser;
-@property (nonatomic) NSArray *tags;
 @property (nonatomic) NSMutableString *result;
 
 @property (nonatomic) NSMutableDictionary *tagData;
@@ -111,7 +110,7 @@ static NSDictionary *fdxIds;
 
 @implementation BeatFDXExport
 
-- (instancetype)initWithString:(NSString*)string tags:(NSArray*)tags attributedString:(NSAttributedString*)attrString
+- (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions
 {
 	self = [super init];
 	
@@ -160,10 +159,10 @@ static NSDictionary *fdxIds;
 		// Bake tags
 		[BeatTagging bakeAllTagsInString:attrString toLines:self.parser.lines];
 		
-		// Enumerate review ranges and bake into lines
-		[attrString enumerateAttribute:@"Review" inRange:(NSRange){0, attrString.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-			BeatReviewItem *item = value;
-			if (item.type == ReviewNone) return;
+		// Enumerate revision ranges and bake into lines
+		[attrString enumerateAttribute:@"Revision" inRange:(NSRange){0, attrString.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+			BeatRevisionItem *item = value;
+			if (item.type == RevisionNone) return;
 			
 			NSArray *lines = [self.parser linesInRange:range];
 			NSLog(@"%@: %@!", item.key, lines);
@@ -173,14 +172,13 @@ static NSDictionary *fdxIds;
 				if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
 				
 				NSRange rangeInLine = [line globalRangeToLocal:range];
-				if (item.type == ReviewAddition) [line.additionRanges addIndexesInRange:rangeInLine];
-				else if (item.type == ReviewRemoval) [line.removalRanges addIndexesInRange:rangeInLine];
+				if (item.type == RevisionAddition) [line.additionRanges addIndexesInRange:rangeInLine];
+				else if (item.type == RevisionRemoval) [line.removalRanges addIndexesInRange:rangeInLine];
 			}
 		}];
 	}
 	
 	
-	self.tags = [NSArray arrayWithArray:tags];
 	self.tagData = [NSMutableDictionary dictionary];
 
 	self.tagItems = [NSMutableArray array];
@@ -234,6 +232,9 @@ static NSDictionary *fdxIds;
 }
 
 - (NSString*)createFDX {
+	return [self createFDXwithRevisions:NO tags:NO];
+}
+- (NSString*)createFDXwithRevisions:(bool)includeRevisions tags:(bool)includeTags {
 
 	if (self.parser.lines.count == 0) return @"";
 

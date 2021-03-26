@@ -40,7 +40,7 @@
 - (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;
 - (id)initWithScript:(NSArray*)elements paperSize:(CGSize)paperSize;
 
-- (void)livePaginationFor:(NSArray*)script fromIndex:(NSInteger)index;
+- (void)livePaginationFor:(NSArray*)script changeAt:(NSRange)range;
 - (void)paginate;
 - (NSArray *)pageAtIndex:(NSUInteger)index;
 

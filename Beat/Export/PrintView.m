@@ -26,6 +26,7 @@
 #import "PrintView.h"
 #import "BeatHTMLScript.h"
 #import "Document.h"
+#import "BeatRevisionTracking.h"
 
 @interface PrintView () <WebFrameLoadDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
@@ -119,6 +120,9 @@
 	// Parse the input again
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText delegate:document];
 
+	// Track revisions
+	[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser];
+	
 	// See if we want to compare it with something
 	// BeatComparison marks the Line objects as changed
 	if (oldScript) {

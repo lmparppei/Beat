@@ -13,7 +13,10 @@
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
+
+#ifdef ADHOC
 #import <Sparkle/Sparkle.h>
+#endif
 
 #import "BeatTest.h"
 
@@ -25,8 +28,7 @@
 @property (weak) IBOutlet NSWindow* startModal;
 @property (weak) IBOutlet NSOutlineView* recentFiles;
 
-@property (weak) IBOutlet SUUpdater *updater;
-
+@property (weak) IBOutlet NSMenuItem *checkForUpdatesItem;
 @property (weak) IBOutlet NSMenuItem *menuManual;
 
 @property (weak) IBOutlet NSTextField* versionField;
@@ -34,6 +36,13 @@
 @property (nonatomic) BeatBrowserView *browser;
 @property (nonatomic) BeatAboutScreen *about;
 @property (nonatomic) BeatEpisodePrinter *episodePrinter;
+
+
+#ifdef ADHOC
+// I'm supporting ad hoc distribution for now
+@property (nonatomic) IBOutlet SUUpdater *updater;
+#endif
+
 @end
 
 @implementation ApplicationDelegate
@@ -45,85 +54,22 @@
 #pragma mark - Help
 
 - (instancetype) init {
-	return [super init];
-}
-
-- (void)applicationWillFinishLaunching:(NSNotification *)notification {
-	[self checkAutosavedFiles];
-	
-	// Run tests
-	//[[BeatTest alloc] init];						   
-	SUUpdater *updater = [[SUUpdater alloc] init];
-	if (updater.automaticallyChecksForUpdates) [updater checkForUpdatesInBackground];
-}
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-	_recentFilesSource = [[RecentFiles alloc] init];
-	self.recentFiles.dataSource = _recentFilesSource;
-	self.recentFiles.delegate = _recentFilesSource;
-	[self.recentFiles setDoubleAction:@selector(doubleClickDocument)];
-	[self.recentFiles reloadData];
-
-	// Let's close the welcome screen if any sort of document has been opened
-	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		if (self.startModal && [self.startModal isVisible]) {
-			[self closeStartModal];
-		}
-	}];
-	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-		
-		if ([openDocuments count] == 1 && self.startModal && ![self.startModal isVisible]) {
-			//[self showStartModal];
-			
-			[self.startModal setIsVisible:true];
-			[self.recentFiles deselectAll:nil];
-			[self.recentFiles reloadData];
-		}
-	}];
-		
-	// Check for pro version content
-	NSString* proContentPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
-	if (proContentPath) _proMode = YES;
-	
-	// Only open splash screen if no documents were opened by default
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	if ([openDocuments count] == 0 && self.startModal && ![self.startModal isVisible]) {
-		[self.startModal setIsVisible:true];
-	}
-	
-	_darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:DARKMODE_KEY];
-	
-	// If the OS is set to dark mode, we'll force it
-	if (@available(macOS 10.14, *)) {
-		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
-		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
-		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			_darkMode = true;
-		} else {
-			if (_darkMode) _forceDarkMode = YES;
-		}
-	}
-	
-	[self checkVersion];
-}
--(void)checkVersion {
-	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
-	NSInteger currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
-	
-	// Show patch notes if it's the first time running Beat
-	if (latestVersion == 0 || currentVersion > latestVersion) {
-		[[NSUserDefaults standardUserDefaults] setValue:[NSString stringWithFormat:@"%lu", currentVersion] forKey:LATEST_VERSION_KEY];
-		if (!DEVELOPMENT) [self showPatchNotes:nil];
-	}
-}
-
-- (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
-	return NO;
+	self = [super init];
+	return self;
 }
 
 - (void) awakeFromNib {
+
+#ifdef ADHOC
+	// Add CHECK FOR UPDATES menu item
+	NSLog(@"# ADHOC");
+	self.updater = [[SUUpdater alloc] init];
+	_checkForUpdatesItem.action = @selector(checkForUpdates:);
+#else
+	NSLog(@"# APPSTORE");
+	[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
+#endif
+	
 	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
 	
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
@@ -137,6 +83,99 @@
 	[self.startModal setAcceptsMouseMovedEvents:YES];
 	[self.startModal setMovable:YES];
 	[self.startModal setMovableByWindowBackground:YES];
+}
+
+- (void)applicationWillFinishLaunching:(NSNotification *)notification {
+	[self checkAutosavedFiles];
+	
+#ifdef ADHOC
+	// Run Sparkle if this is an ad hoc distribution
+	if (self.updater.automaticallyChecksForUpdates) [self.updater checkForUpdatesInBackground];
+#endif
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	_recentFilesSource = [[RecentFiles alloc] init];
+	self.recentFiles.dataSource = _recentFilesSource;
+	self.recentFiles.delegate = _recentFilesSource;
+	[self.recentFiles setDoubleAction:@selector(doubleClickDocument)];
+	[self.recentFiles reloadData];
+	
+	[self setupDocumentOpenListener];
+	[self checkProContent];
+	[self checkDarkMode];
+
+	// Only open splash screen if no documents were opened by default
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	if ([openDocuments count] == 0 && self.startModal && ![self.startModal isVisible]) {
+		[self.startModal setIsVisible:true];
+	}
+	
+	// Lastly, open patch notes if the app was recently updated
+	[self checkVersion];
+}
+
+-(void)checkForUpdates:(id)sender {
+#ifdef ADHOC
+	[self.updater checkForUpdates:sender];
+#endif
+}
+
+-(void)checkDarkMode {
+	_darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:DARKMODE_KEY];
+	
+	// If the OS is set to dark mode, we'll force it
+	if (@available(macOS 10.14, *)) {
+		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			_darkMode = true;
+		} else {
+			if (_darkMode) _forceDarkMode = YES;
+		}
+	}
+}
+
+-(void)checkProContent {
+	// Check for pro version content
+	NSString* proContentPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
+	if (proContentPath) _proMode = YES;
+}
+
+-(void)checkVersion {
+	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
+	NSInteger currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
+	
+	// Show patch notes if it's the first time running Beat
+	if (latestVersion == 0 || currentVersion > latestVersion) {
+		[[NSUserDefaults standardUserDefaults] setValue:[NSString stringWithFormat:@"%lu", currentVersion] forKey:LATEST_VERSION_KEY];
+		if (!DEVELOPMENT) [self showPatchNotes:nil];
+	}
+}
+
+-(void)setupDocumentOpenListener {
+	// Let's close the welcome screen if any sort of document has been opened
+	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
+		if (self.startModal && [self.startModal isVisible]) {
+			[self closeStartModal];
+		}
+	}];
+	
+	// And show modal if all documents were closed
+	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
+		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+		
+		if ([openDocuments count] == 1 && self.startModal && ![self.startModal isVisible]) {
+			[self.startModal setIsVisible:true];
+			[self.recentFiles deselectAll:nil];
+			[self.recentFiles reloadData];
+		}
+	}];
+}
+
+- (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
+	return NO;
 }
 
 #pragma mark - Autosave

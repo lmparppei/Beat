@@ -20,12 +20,13 @@ typedef enum : NSUInteger {
 @property (nonatomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) OutlineScene *currentScene;
+@property (readonly) NSAttributedString *attrTextCache;
 - (NSString*) getText;
 
 @end
 
 @interface BeatPreview : NSObject
-@property (nonatomic, weak) id delegate;
+@property (nonatomic, weak) id<BeatPreviewDelegate> delegate;
 - (id) initWithDocument:(id)document;
 - (NSString*) createPreview;
 - (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType;

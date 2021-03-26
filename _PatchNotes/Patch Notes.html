@@ -309,7 +309,7 @@
 			<div id='intro'>
 				<section>
 					<div class='logo'><img src='B_256_logo.png' alt='b'></div>
-					<h1>Welcome to Beat 1.7.5 beta!</h1>
+					<h1>Welcome to Beat 1.8 beta!</h1>
 <!--
 					<div id='goodie'>
 						<h3>New Year's Special!</h3>
@@ -321,16 +321,26 @@
 					<p>Join the brand new <a href='#' onclick='openLink("http://discord.gg/FPHjfH7ms3")'>Beat Discord Community</a>!</p>
 					<p>You are welcome to suggest new features, report bugs or chat about screenwriting in general.</p>
 					
+					<h2>New Features</h2>
+					<ul>
+						<li>Revision Mode, found under <b>Tools</b></li>
+						<li>Rewritten print export</li>
+						<li>Rewritten Final Draft import & export, with support for revisions</li>
+						<li>Quick Settings for quickly accessing most common on/off toggles, including Dark Mode, scene numbering and Revisions Mode </li>
+						<li>Slightly revised UI</li>
+						<li>
+					</ul>
+					
+					
 					<h2>Bug Fixes</h2>
 					<ul>
 						<li>Fixed a bug which caused the preview not to show the current scene</li>
-					</ul>
-					
-					<h2>New Features</h2>
-					<ul>
-						<li>Rewritten print export</li>
-						<li>Rewritten Final Draft export</li>
-						<li>Support for suggesting additions/removals</li>
+						<li>Outline View fixes for section depth and synopsis/section color when selected</li>
+						<li>Layout fixes</li>
+						<li>Fixed graphical glitches which occurred with certain magnification levels</li>
+						<li>Fixed bugs with rendering scene numbers</li>
+						<li>Section rendering now works in real time</li>
+						<li>Multiple performance enhancements</li>
 					</ul>
 					
 					<p><b>And hey!</b><br>Follow Beat on Twitter for latest updates on development: <b>@beatScreenplay</b></p>
@@ -341,16 +351,17 @@
 					<h2>Support Beat</h2>
 					<p>Development is done on spare time and using my own resources, so any price from a bag of coffee (5€) up to a vegan burger (15€) or a used Maserati (around 500&nbsp;000€) will help keeping the project alive. Thanks to everyone who already sent me some loose change!</p>
 					
-					<h2>Suggest Addition / Removal</h2>
-					<p>You can now highlight added text using <code>&lt;&lt;Addition>></code> and suggest stuff to be removed using <code>{{<del>Strikeout</del>}}</code> markup.</p>
-					<p>These tags are exported right into Final Draft files, too!</p>
-					
-					<h2>Print Episodes</h2>
-					<p>You can now export multiple episodes at once (File → Print Episodes). Drag &amp; drop your Fountain files into the menu and organize them in the correct order. You will get a single PDF with all the episodes at once.</p>
-					
+					<h2>Revisions</h2>
+					<p>You can now track changes to your screenplay automatically. Select <em>Tools → Revision Mode</em>. You can also add and remove change markers manually with <em>Mark as Revised</em>, <em>Clear Markers</em> and highlight text to be removed using <em>Mark for Removal</em>.</p>
+					<p>These markers are exported right into Final Draft files, too, and show up as changed when exporting or printing your screenplay. Revision markers can also be imported from Final Draft files.</p>
+					<p><em><b>Note</b>: For now, revision markers don't show up when printing multiple screenplays.</em></p>
+										
 					<h2>Plugin Support</h2>
 					<p>Users can now write their own extensions for Beat using JavaScript. User-installe plugins can be found at <b>~/Library/Application Support/Beat/Plugins/</b>.</p>
 					<p>Scripting support is still a work in progress. Documentation can be found at http://kapitan.fi/beat/plugins/documentation.html</p>
+					
+					<h2>Print Episodes</h2>
+					<p>You can now export multiple episodes at once (File → Print Episodes). Drag &amp; drop your Fountain files into the menu and organize them in the correct order. You will get a single PDF with all the episodes at once.</p>
 
 					<h2>Storylines</h2>
 					<p>Right-click a scene on the Timeline View to tag it with a storyline. You can then track how different storylines are advanced in the course of your script by toggling them using the drop-down on the left-hand side.</p>

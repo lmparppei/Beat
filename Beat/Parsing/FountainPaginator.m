@@ -75,6 +75,9 @@
 @property (nonatomic) NSString *textCache;
 @property bool paginating;
 @property bool A4;
+@property BeatFont *font;
+
+@property NSMutableIndexSet *changedIndices;
 
 // WIP
 @property (nonatomic) bool livePagination;
@@ -89,6 +92,7 @@
 	if (self) {
 		_pages = [[NSMutableArray alloc] init];
 		_script = elements;
+		_font = [BeatFont fontWithName:@"Courier" size:12];
 	}
 	return self;
 }
@@ -99,6 +103,7 @@
 		_pages = [[NSMutableArray alloc] init];
 		_script = elements;
 		_document = document;
+		_font = [BeatFont fontWithName:@"Courier" size:12];
 	}
 	return self;
 }
@@ -107,6 +112,7 @@
 	self = [super init];
 	if (self) {
 		_delegate = delegate;
+		_font = [BeatFont fontWithName:@"Courier" size:12];
 		return self;
 	} else {
 		return nil;
@@ -121,6 +127,8 @@
 		_livePagination = YES;
 		_pageBreaks = [NSMutableArray array];
 		_document = document;
+		_changedIndices = [NSMutableIndexSet indexSet];
+		_font = [BeatFont fontWithName:@"Courier" size:12];
 	}
 	return self;
 }
@@ -132,6 +140,7 @@
 		_livePagination = YES;
 		_pageBreaks = [NSMutableArray array];
 		_document = document;
+		_font = [BeatFont fontWithName:@"Courier" size:12];
 	}
 	return self;
 }
@@ -142,208 +151,112 @@
 		_pages = [[NSMutableArray alloc] init];
 		_script = elements;
 		_paperSize = paperSize;
+		_font = [BeatFont fontWithName:@"Courier" size:12];
 	}
 	return self;
 }
 
 // Experimental new live pagination
 
-// WIP: here we could have the changed indices
-- (void)livePaginateFrom:(NSInteger)index {
-	@synchronized (self) {
-		// Check if the text has changed
-		NSString *string = _delegate.getText;
-		NSUInteger lengthDiff = ABS(string.length - _textCache.length);
+- (NSArray*)findSafeLineFrom:(Line*)line page:(NSMutableArray*)page {
+	NSInteger pageNumber = [_pages indexOfObject:page];
+	
+	for (NSInteger pgIndex = pageNumber; pgIndex >0; pgIndex--) {
+		NSMutableArray *page = _pages[pgIndex];
 		
-		if (lengthDiff > 0) {
-			_textCache = _delegate.getText;
-
-			// We need to create a copy of the array so it won't be mutated while iterating
-			self.script = [NSArray arrayWithArray:self.delegate.lines];
-			[self paginateFromIndex:index currentPage:nil];
+		NSInteger indexOnPage = [page indexOfObject:line];
+		if (indexOnPage == NSNotFound) indexOnPage = page.count - 1;
+		
+		if (index >= 0) {
+			for (NSInteger lnIndex = indexOnPage; lnIndex >= 0; lnIndex--) {
+				Line *line = page[lnIndex];
+				if (!line.unsafeForPageBreak) return @[page, line];
+			}
 		}
 	}
+	
+	return nil;
+}
+- (void)addChangeAt:(NSRange)range {
+	[_changedIndices addIndexesInRange:range];
 }
 
-/*
-- (NSArray*)findSafeLineFrom:(Line*)line page:(NSMutableArray*)page {
-	NSInteger pageIndex = [_pages indexOfObject:page];
-
-}
- */
-
-- (void)livePaginationFor:(NSArray*)script fromIndex:(NSInteger)index {
+- (void)livePaginationFor:(NSArray*)script changeAt:(NSRange)range {
 	// Normal pagination
-	_paginating = NO;
+	//_paginating = NO;
+	
+
+	[_changedIndices addIndex:range.location];
+	
+	/*
 	@synchronized (self) {
 		self.script = script;
 		_paginating = YES;
 		[self paginateFromIndex:0 currentPage:nil];
 	}
-	/*
-	 // Start here if you're planning to build on the stuff below
+	 */
+	
 	@synchronized (self) {
 		self.script = script;
 		_paginating = YES;
 		
+		_pages = [NSMutableArray array];
+		_pageBreaks = [NSMutableArray array];
+
+		[self paginateFromIndex:0 startFromLine:nil page:nil];
+		
+		/*
+		// For those who come after
+		// This is VERY close from working, I just can't wrap my head around it
+		 
+		NSArray *paginationStart;
+				
+		// Find current line based on the index
 		for (NSMutableArray *page in _pages) {
 			for (Line* line in page) {
-				if (NSLocationInRange(index, line.range)) {
-					NSLog(@"found");
-
-					if (line.unsafeForPageBreak) {
-						
-					}
+				if (NSLocationInRange(_changedIndices.firstIndex, line.textRange)) {
+					paginationStart = [self findSafeLineFrom:line page:page];
 				}
 			}
 		}
 		
-	}
-	 */
-	
-	// Another try
-	// This finds an element where we can SAFELY start to repaginate
-	// Because we use the Fountain format, which can have a lot of invisible stuff, normal WYSIWYG approach does not work. That's the reason we are doing this cumbersome "magic".
-	// This one DOES work but is WIP.
-	
-	/*
-	NSInteger pageNumber = 0;
-	Line* firstElement;
-	
-	for (NSMutableArray *page in _pages) {
-		for (Line *line in page) {
-			if (index >= line.position && index <= line.position + line.string.length) {
-				NSLog(@"found: (%lu / %lu-%lu) %@ ", index, line.position, line.position + line.string.length, line.string);
-				
-				// This position is NOT safe for page break, so let's look for another one
-				if (line.unsafeForPageBreak) {
-					NSLog(@"... it's unsafe, look for another one");
-					
-					NSInteger lineIndex = [page indexOfObject:line] - 1;
-					if (lineIndex >= 0) {
-						while (lineIndex >= 0) {
-							Line* previousLine = page[lineIndex];
-							
-							if (!previousLine.unsafeForPageBreak) {
-								// This element is safe to start the pagination from
-								firstElement = previousLine;
-								break;
-							}
-						}
-						
-						// We didn't find a safe line, so we'll skip back to the previous page...
-						pageNumber--;
-						if (pageNumber < 0) {
-							// Just start from the beginning
-							pageNumber = 0;
-							break;
-						}
-						
-						lineIndex = [(NSArray*)_pages[pageNumber] count] - 1;
-						
-						// Do it again
-						while (lineIndex >= 0) {
-							Line* previousLine = page[lineIndex];
-							
-							if (!previousLine.unsafeForPageBreak) {
-								// This element is safe to start the pagination from
-								firstElement = previousLine;
-								break;
-							}
-						}
-						
-						break;
-					}
-				} else {
-					firstElement = line;
-					break;
-				}
-			}
-		}
-		
-		if (firstElement) break;
-		
-		// Increment page number
-		pageNumber++;
-	}
-	NSLog(@" ----> result:  %@", firstElement.string);
-	NSLog(@" ....  on page %lu of %lu", pageNumber, _pages.count);
-	*/
-	
-	/*
-	// NOTE NOTE NOTE: NOT WORKING
-	 
-	if (index == 0 || self.pages.count == 0) {
-		@synchronized (self) {
-			[self paginateFromIndex:0 currentPage:nil];
-			return;
-		}
-	}
-	
-	_livePagination = YES;
-	
-	NSInteger startIndex = -1;
-	
-	NSMutableArray *currentPage = [NSMutableArray array];
-	NSMutableArray *nonEditedPages = [NSMutableArray array];
-	
-	Line *editedLine;
-	
-	// See which pages are unedited
-	for (NSArray *page in self.pages) {
-		Line *lastLine = page.lastObject;
-
-		// This page has not been edited
-		if (index > lastLine.position + lastLine.string.length) {
-			[nonEditedPages addObject:page];
-		} else {
-			// We have found the page the changed index is on
-			NSUInteger lineIndex = -1;
-			bool indexFound = NO;
-			for (Line* line in page) {
-				lineIndex++;
-				NSLog(@" %lu ---- %lu/%lu --- %@", index, line.position, line.position+line.string.length, line.string);
-
-				if (index >= line.position && index <= line.position + line.string.length + 1) {
-					NSLog(@"in range: %@", line.string);
-					editedLine = line;
-					break;
-				} else {
-					[currentPage addObject:line];
-				}
-			}
+		if (paginationStart) {
+			NSMutableArray *page = paginationStart[0];
+			Line *line = paginationStart[1];
 			
-			if (indexFound) startIndex = lineIndex;
-			break;
+			NSInteger pageIndex = [_pages indexOfObject:page];
+			
+			if (pageIndex > 0) {
+				_pages = [_pages subarrayWithRange:(NSRange){0, pageIndex}].mutableCopy;
+				_pageBreaks = [_pageBreaks subarrayWithRange:(NSRange){0, pageIndex + 1}].mutableCopy;
+				
+				[self paginateFromIndex:_changedIndices.firstIndex startFromLine:line page:page];
+			} else {
+				_pages = [NSMutableArray array];
+				_pageBreaks = [NSMutableArray array];
+				[self paginateFromIndex:0 startFromLine:line page:page];
+			}
+		} else {
+			_pages = [NSMutableArray array];
+			_pageBreaks = [NSMutableArray array];
+			[self paginateFromIndex:0 startFromLine:nil page:nil];
 		}
-	}
-	
-	NSInteger indexOfLine = -1;
-	for (Line * line in script) {
-		if (index >= line.position && index <= line.position + line.string.length) {
-			indexOfLine = [script indexOfObject:line];
-		}
-	}
-	
-	@synchronized (self) {
-		self.script = script;
-		self.pages = nonEditedPages;
+		 */
 		
-		if (indexOfLine >= 0 && self.pages.count > 0) [self paginateFromIndex:indexOfLine currentPage:currentPage];
-		else [self paginateFromIndex:0 currentPage:nil];
+		_changedIndices = [NSMutableIndexSet indexSet]; 
 	}
-	*/
+
 }
 
 - (NSArray *)pageAtIndex:(NSUInteger)index
 {
 	// Make sure some kind of pagination has been run before you try to return a value.
-	if ([self.pages count] == 0) {
+	if (self.pages.count == 0) {
 		[self paginate];
 	}
 	
 	// Make sure we don't try and access an index that doesn't exist
-	if ([self.pages count] == 0 || (index > [self.pages count] - 1)) {
+	if ([self.pages count] == 0 || (index > self.pages.count - 1)) {
 		return @[];
 	}
 	
@@ -362,20 +275,22 @@
 /*
 
  You, who shall resurface following the flood
-In which we have perished,
-Contemplate —
-When you speak of our weaknesses,
-Also the dark time
-That you have escaped.
+ In which we have perished,
+ Contemplate —
+ When you speak of our weaknesses,
+ Also the dark time
+ That you have escaped.
  
 */
 
 
 - (void)paginate {
-	[self paginateFromIndex:0 currentPage:nil];
+	[self paginateFromIndex:0 startFromLine:nil page:nil];
 }
-- (void)paginateFromIndex:(NSInteger)fromIndex currentPage:(NSMutableArray*)currentPage
+- (void)paginateFromIndex:(NSInteger)fromIndex startFromLine:(Line*)firstLine page:(NSMutableArray*)firstPage
 {
+	// paginationStart is an
+	
 	if (!self.script.count) return;
 	
 	if (_document) {
@@ -410,55 +325,34 @@ That you have escaped.
 	}
 	 */
 	
-	@autoreleasepool {
-		bool debug = NO;
-				
-		NSInteger initialY = 0; // initial starting point on page
-		NSInteger currentY = initialY;
-		
-		NSInteger oneInchBuffer = 72;
-		NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.25);
-		
-		BeatFont *font = [BeatFont fontWithName:@"Courier" size:12];
-		
-		//NSInteger lineHeight = font.pointSize * 1.1;
-		CGFloat lineHeight = LINE_HEIGHT;
+	bool debug = NO;
 
-		_pages = [NSMutableArray array];
-		_pageBreaks = [NSMutableArray array];
-		currentPage = [NSMutableArray array];
-		 
-/*
-		// For those who come after
-		if (fromIndex == 0 || self.pages.count == 0) {
-			_pages = [NSMutableArray array];
-			_pageBreaks = [NSMutableArray array];
-			currentPage = [NSMutableArray array];
-		} else {
-			// Retain the previous pages if we have a changed index set
-			// NOTE: This is something written for the very distant future, not at all usable now
+	NSMutableArray *currentPage = [NSMutableArray array];
+	
+	NSInteger initialY = 0; // initial starting point on page
+	NSInteger currentY = initialY;
+	
+	NSInteger oneInchBuffer = 72;
+	NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.25);
 		
-			
-//			NSArray *currentPage;
-//			if (pageNumber > 0) {
-//				_pageBreaks = [NSMutableArray arrayWithArray:[self.pageBreaks subarrayWithRange:NSMakeRange(0, pageNumber)]];
-//				currentPage = [_pages objectAtIndex:pageNumber];
-//			} else _pageBreaks = [NSMutableArray array];
-//
-//
-//
-//
-//			if (currentPage) {
-//				NSInteger i = 0;
-//				for (Line* line in currentPage) {
-//					if (i > 0) currentY += [FountainPaginator spaceBeforeForLine:line];
-//					currentY += [self elementHeight:line font:font lineHeight:LINE_HEIGHT];
-//					i++;
-//				}
-//			}
-//
+	//NSInteger lineHeight = font.pointSize * 1.1;
+	CGFloat lineHeight = LINE_HEIGHT;
+	
+	NSInteger firstIndex = 0;
+	
+	if (firstPage) {
+		NSInteger lineIndex = [firstPage indexOfObject:firstLine];
+		firstIndex = firstLine.position;
+		
+		for (int e = 0; e < lineIndex; e++) {
+			Line *line = firstPage[e];
+			currentY += [FountainPaginator spaceBeforeForLine:line];
+			currentY += [self elementHeight:line lineHeight:LINE_HEIGHT];
+			[currentPage addObject:line];
 		}
-*/
+	}
+	
+	@autoreleasepool {
 		
 		CGFloat spaceBefore;
 		CGFloat elementWidth;
@@ -470,15 +364,19 @@ That you have escaped.
 		NSInteger previousDualDialogueBlockHeight = -1;
 
 		// walk through the elements array
-		for (NSInteger i = fromIndex; i < maxElements; i++) {
+		for (NSInteger i = 0; i < maxElements; i++) {
 			if (!_paginating && _livePagination) {
 				// An experiment in canceling background-thread pagination
 				[self cancel];
 				return;
 			}
 			
-			// We need to copy this here, not to fuck anything
 			Line *element  = (self.script)[i];
+			
+			// Skip element if it's not in the specified range
+			if (firstIndex > 0 && firstIndex > element.position + element.string.length) {
+				continue;
+			}
 			
 			// If we already handled this element, carry on
 			if ([tmpElements containsObject:element]) {
@@ -518,7 +416,7 @@ That you have escaped.
 			elementWidth        = [self widthForElement:element];
 			
 			// get the height of the text
-			NSInteger blockHeight    = [FountainPaginator heightForString:element.cleanedString font:font maxWidth:elementWidth lineHeight:lineHeight];
+			NSInteger blockHeight    = [FountainPaginator heightForString:element.cleanedString font:_font maxWidth:elementWidth lineHeight:lineHeight];
 			
 			// data integrity check
 			if (blockHeight <= 0) {
@@ -557,7 +455,7 @@ That you have escaped.
 					nextElement = (self.script)[j];
 					j++;
 				}
-				NSInteger height = [self elementHeight:nextElement font:font lineHeight:lineHeight];
+				NSInteger height = [self elementHeight:nextElement lineHeight:lineHeight];
 				fullHeight += [FountainPaginator spaceBeforeForLine:nextElement] + height;
 				
 				if (nextElement) [tmpElements addObject:nextElement];
@@ -578,7 +476,7 @@ That you have escaped.
 				
 				// Catch elements in the dialogue block, single or dual
 				do {
-					dialogueBlockHeight += [self elementHeight:nextElement font:font lineHeight:lineHeight];
+					dialogueBlockHeight += [self elementHeight:nextElement lineHeight:lineHeight];
 					[tmpElements addObject:nextElement];
 					
 					j++;
@@ -683,7 +581,7 @@ That you have escaped.
 							text = [text stringByAppendingFormat:@" %@", word];
 							// FNElement *tempElement = [FNElement elementOfType:@"Action" text:text];
 							Line *tempElement = [[Line alloc] initWithString:text type:action];
-							NSInteger h = [self elementHeight:tempElement font:font lineHeight:lineHeight];
+							NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
 							if (h < space) {
 								breakPosition = h;
 								retain = [retain stringByAppendingFormat:@" %@", word];
@@ -718,7 +616,7 @@ That you have escaped.
 								
 								currentPage = [NSMutableArray array];
 								[currentPage addObject:postPageBreak];
-								currentY = [self elementHeight:postPageBreak font:font lineHeight:lineHeight];
+								currentY = [self elementHeight:postPageBreak lineHeight:lineHeight];
 							}
 							// Nothing remained, move whole scene heading to next page
 							else {
@@ -741,7 +639,7 @@ That you have escaped.
 							
 							currentPage = [NSMutableArray array];
 							[currentPage addObject:postPageBreak];
-							currentY = [self elementHeight:postPageBreak font:font lineHeight:lineHeight];
+							currentY = [self elementHeight:postPageBreak lineHeight:lineHeight];
 						}
 												
 						continue;
@@ -768,7 +666,7 @@ That you have escaped.
 	
 					for (Line *dElement in tmpElements) {
 						blockIndex++;
-						NSInteger h = [self elementHeight:dElement font:font lineHeight:lineHeight];
+						NSInteger h = [self elementHeight:dElement lineHeight:lineHeight];
 						if (currentY + dialogueHeight + h > maxPageHeight) { spillerElement = dElement; break; }
 						else { dialogueHeight += h; }
 					}
@@ -812,7 +710,7 @@ That you have escaped.
 								text = [text stringByAppendingFormat:@" %@", sentence];
 								Line *tempElement = [[Line alloc] initWithString:text type:dialogue];
 								
-								NSInteger h = [self elementHeight:tempElement font:font lineHeight:lineHeight];
+								NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
 								
 								// We need to substract other dialogue block heights from here
 								NSInteger space = maxPageHeight - currentY - dialogueHeight;
@@ -872,8 +770,8 @@ That you have escaped.
 								[currentPage addObject:postDialogue];
 								
 								currentY = 0;
-								currentY += [self elementHeight:postCue font:font lineHeight:lineHeight];
-								currentY += [self elementHeight:postDialogue font:font lineHeight:lineHeight];
+								currentY += [self elementHeight:postCue lineHeight:lineHeight];
+								currentY += [self elementHeight:postDialogue lineHeight:lineHeight];
 
 								// Add possible remaining dialogue elements
 								if (blockIndex + 1 > [tmpElements count]) continue;
@@ -883,7 +781,7 @@ That you have escaped.
 									postBreak.changed = [tmpElements[d] changed];
 									postBreak.position = position; // String index from file
 									position += postBreak.string.length;
-									currentY += [self elementHeight:postBreak font:font lineHeight:lineHeight];
+									currentY += [self elementHeight:postBreak lineHeight:lineHeight];
 									
 									[currentPage addObject:postBreak];
 									
@@ -918,13 +816,13 @@ That you have escaped.
 								
 								// Count heights
 								currentY = 0;
-								currentY += [self elementHeight:postCue font:font lineHeight:lineHeight];
-								currentY += [self elementHeight:spillerElement font:font lineHeight:lineHeight];
+								currentY += [self elementHeight:postCue lineHeight:lineHeight];
+								currentY += [self elementHeight:spillerElement lineHeight:lineHeight];
 								
 								// Add the rest of the stuff
 								for (NSInteger d = blockIndex + 1; d < tmpElements.count; d++) {
 									Line *dElement = tmpElements[d];
-									currentY += [self elementHeight:dElement font:font lineHeight:lineHeight];
+									currentY += [self elementHeight:dElement lineHeight:lineHeight];
 									[currentPage addObject:dElement];
 								}
 								
@@ -967,7 +865,7 @@ That you have escaped.
 			
 			// Add remaining elements
 			for (Line *el in tmpElements) {
-				NSInteger h = [self elementHeight:el font:font lineHeight:lineHeight];
+				NSInteger h = [self elementHeight:el lineHeight:lineHeight];
 				
 				// Catch dual dialogue
 				if (el.type == character || el.isDialogueElement) {
@@ -1041,8 +939,8 @@ That you have escaped.
 	return spaceBefore;
 }
 
-- (CGFloat)elementHeight:(Line *)element font:(BeatFont*)font lineHeight:(CGFloat)lineHeight {
-	return [FountainPaginator heightForString:element.cleanedString font:font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
+- (CGFloat)elementHeight:(Line *)element lineHeight:(CGFloat)lineHeight {
+	return [FountainPaginator heightForString:element.cleanedString font:_font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
 }
 
 - (NSInteger)widthForElement:(Line *)element

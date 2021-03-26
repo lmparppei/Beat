@@ -63,6 +63,8 @@ THE SOFTWARE.
 // For delegation
 @property (nonatomic) OutlineScene *currentScene;
 @property (nonatomic) NSMutableIndexSet *changes;
+@property (nonatomic) NSAttributedString *attrTextCache;
+- (NSAttributedString*)getAttributedText; // ONLY IN MAIN THREAD
 
 // Document settings
 @property (nonatomic) BeatDocumentSettings *documentSettings;

@@ -12,6 +12,7 @@
 @protocol TKSplitHandleDelegate <NSObject>
 - (void)splitViewDidResize;
 - (void)leftViewDidShow;
+- (void)leftViewDidHide;
 @end
 
 @interface TKSplitHandle : NSImageView {
