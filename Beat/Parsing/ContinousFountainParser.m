@@ -191,7 +191,7 @@
         // Then add
 		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
     }
-    
+    	
     [self correctParsesInLines:changedIndices];
 }
 
@@ -532,9 +532,21 @@
     }
 }
 
+- (void)correctParsesForLines:(NSArray *)lines
+{
+	// Intermediate method for getting indices for line objects
+	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
+	
+	for (Line* line in lines) {
+		NSInteger i = [lines indexOfObject:line];
+		if (i != NSNotFound) [indices addIndex:i];
+	}
+	
+	[self correctParsesInLines:indices];
+}
 - (void)correctParsesInLines:(NSMutableIndexSet*)lineIndices
 {
-    while ([lineIndices count] > 0) {
+    while (lineIndices.count > 0) {
         [self correctParseInLine:[lineIndices lowestIndex] indicesToDo:lineIndices];
     }
 }
@@ -542,12 +554,14 @@
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
 {
     //Remove index as done from array if in array
-    if ([indices count]) {
-        NSUInteger lowestToDo = [indices lowestIndex];
+    if (indices.count) {
+        NSUInteger lowestToDo = indices.lowestIndex;
         if (lowestToDo == index) {
             [indices removeIndex:index];
         }
     }
+	bool lastToParse = YES;
+	if (indices.count) lastToParse = NO;
     
     Line* currentLine = self.lines[index];
 	
@@ -562,15 +576,22 @@
     }
     
     [self.changedIndices addObject:@(index)];
-    	
-    if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut) {
+	
+	if (currentLine.type == dialogue && currentLine.string.length == 0 && indices.count > 1 && index > 0) {
+		// Check for all-caps action lines mistaken for character cues in a pasted text
+		Line *previousLine = self.lines[index - 1];
+		previousLine.type = action;
+		currentLine.type = empty;
+	}
+	
+	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut) {
         //If there is a next element, check if it might need a reparse because of a change in type or omit out
-        if (index < [self.lines count] - 1) {
+        if (index < self.lines.count - 1) {
             Line* nextLine = self.lines[index+1];
 			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
                 currentLine.type == section ||
                 currentLine.type == synopse ||
-                currentLine.type == character ||            //if the line became anythign to
+                currentLine.type == character ||            //if the line became anything to
                 currentLine.type == parenthetical ||        //do with dialogue, it might cause
                 currentLine.type == dialogue ||             //the next lines to be dialogue
                 currentLine.type == dualDialogueCharacter ||
@@ -605,25 +626,6 @@
             }
         }
     }
-	
-	
-	if (currentLine.string.length > 0 && index > 1) {
-		// Check for all-caps action lines mistaken for character cues
-		
-		//Line* lineBeforeThat = [self.lines objectAtIndex:index - 2];
-		//Line* preceedingLine = [self.lines objectAtIndex:index - 1];
-		
-		// NSLog(@"Cursor: %lu // Line: %@ (%lu-%lu)", _delegate.selectedRange.location, currentLine.string, currentLine.position, currentLine.position + currentLine.string.length);
-		
-		/*
-		NSLog(@"current: %@  //  %@ (%@) - %@ (%@)", currentLine.string, lineBeforeThat.string, lineBeforeThat.typeAsString, preceedingLine.string, preceedingLine.typeAsString);
-		
-		if (preceedingLine.string.length == 0 && lineBeforeThat.type == character) {
-			NSLog(@"to action: %@", lineBeforeThat.string);
-		}
-		 */
-		 
-	}
 }
 
 
@@ -787,7 +789,8 @@ and incomprehensible system of recursion.
 
 	// Check for all-caps actions mistaken for character cues
 	if (self.delegate && NSThread.isMainThread) {
-		if (preceedingLine.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location + 1, line.range)) {
+		if (preceedingLine.string.length == 0 &&
+			NSLocationInRange(self.delegate.selectedRange.location + 1, line.range)) {
 			// If the preceeding line is empty, we'll check the line before that, too, to be sure.
 			// This way we can check for false character cues
 			if (index > 1) {
@@ -1677,9 +1680,7 @@ and incomprehensible system of recursion.
 		if (line.type == action && line.isSplitParagraph && [lines indexOfObject:line] > 0) {
 			Line *previousLine = [elements objectAtIndex:elements.count - 1];
 
-			previousLine.string = [previousLine.string stringByAppendingFormat:@"\n%@", line.string];
-			if (line.changed) previousLine.changed = YES; // Inherit change status
-			
+			[previousLine joinWithLine:line];
 			continue;
 		}
 		

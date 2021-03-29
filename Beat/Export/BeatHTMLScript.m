@@ -381,7 +381,6 @@
     NSUInteger maxPages = [paginator numberOfPages];
 	
 	_numberOfPages = maxPages;
-
 	
 	// Header string (make sure it's not null)
 	NSString *header = (self.header) ? self.header : @"";
@@ -394,7 +393,6 @@
 		
 		int index = (int)pageIndex+1;
 		int elementCount = 0;
-		
 		
         if (self.customPage != nil) {
             if ([self.customPage integerValue] == 0) {
@@ -604,8 +602,7 @@
 	
 	// Get stylization in the current attribute range
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-		NSMutableString* text = [[result.string substringWithRange:range] mutableCopy];
-		
+		NSMutableString* text = [result.string substringWithRange:range].mutableCopy;
 		// Opening and closing tags
 		NSString *open = @"";
 		NSString *close = @"";
@@ -644,7 +641,7 @@
 	}];
 	
 	// Create HTML line breaks
-	[htmlString replaceOccurrencesOfString:@"\n" withString:@"<br>\n" options:0 range:(NSRange){0,htmlString.length}];
+	[htmlString replaceOccurrencesOfString:@"\n" withString:@"<br>" options:0 range:(NSRange){0,htmlString.length}];
 	
 	return htmlString;
 }

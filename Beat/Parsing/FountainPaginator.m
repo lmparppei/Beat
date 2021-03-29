@@ -33,26 +33,22 @@
  WebView (which is now deprecated, btw, so I'm fucked again) rendering HTML
  file, the pixel coordinates do not match AT ALL. There is a boolean value
  to check whether we're paginating on a US Letter or on the only real
- paper size used by the rest of the world (A4). I should make a print
- dialog similar to the comparison window in which you could then select
- the correct paper size.
+ paper size, used by the rest of the world (A4).
  
  The current iteration has live pagination stuff built in. The goal is to have
  the class only paginate from changed indices. I've made some experiments to allow
- that, but for now it does not work at all. Though live pagination runs in another
- thread, there is no way of cancelling an ongoing pagination, so there might be
- many of them overlapping.
- 
- We could store an array of dictionaries, which contain the pagination positions,
- as in @{ page: @5, position: @1234 }, but the trouble is that we split elements
- across pages. Splitting TRIES to take the positions into account, but works
- so and so.
+ that, but for now it does not work at all.
  
  This might have been pretty unhelpful for anyone stumbling upon this file some day.
  Try to make something out of it.
  
- NOTE NOTE NOTE: Element widths are 80% of the CSS size. I don't know why, but this
- is the only way I got them to match with the real WebKit sizing.
+ NOTE NOTE NOTE:
+ - Element widths are 80% of the CSS size. I don't know why, but this
+   is the only way I got them to match with the real WebKit sizing.
+ - There is a specific splitting / joining logic built into the Line class. Joining lines
+   happens in the parser, while SPLITTING is taken care of here. This happens in a
+   very convoluted manner, with differing logic for dialogue and actions, but
+   I'm looking into it.
  
  Remember the flight
  the bird may die
@@ -416,7 +412,7 @@
 			elementWidth        = [self widthForElement:element];
 			
 			// get the height of the text
-			NSInteger blockHeight    = [FountainPaginator heightForString:element.cleanedString font:_font maxWidth:elementWidth lineHeight:lineHeight];
+			NSInteger blockHeight    = [FountainPaginator heightForString:element.stripFormattingCharacters font:_font maxWidth:elementWidth lineHeight:lineHeight];
 			
 			// data integrity check
 			if (blockHeight <= 0) {
@@ -432,8 +428,8 @@
 			}
 			
 			// Fix to get styling to show up in PDFs. I have no idea.
-			if (![element.cleanedString isMatch:RX(@" $")]) {
-				element.string = [NSString stringWithFormat:@"%@%@", element.cleanedString, @""];
+			if (![element.string isMatch:RX(@" $")]) {
+				element.string = [NSString stringWithFormat:@"%@%@", element.string, @""];
 			}
 			
 			NSInteger fullHeight = blockHeight;
@@ -451,7 +447,7 @@
 				NSInteger j = i+1;
 				Line *nextElement;
 
-				while (j < maxElements && ![nextElement.cleanedString length]) {
+				while (j < maxElements && ![nextElement.stripFormattingCharacters length]) {
 					nextElement = (self.script)[j];
 					j++;
 				}
@@ -564,6 +560,7 @@
 					//if (headingBlock) limit = lineHeight + blockHeight;
 					
 					if (fabs(overflow) > limit && space > limit * 2 && !handled) {
+						/*
 						//if (debug) NSLog(@"split across pages (%f) %@", overflow, spillerElement.string);
 						NSArray *words = [spillerElement.cleanedString componentsSeparatedByString:@" "];
 						NSInteger space = maxPageHeight - currentY;
@@ -589,11 +586,48 @@
 								split = [split stringByAppendingFormat:@" %@", word];
 							}
 						}
+
 						
 						// Trim split text
 						retain = [retain stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 						split = [split stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 						
+						 */
+						
+						NSArray *words = [spillerElement.stripFormattingCharacters componentsSeparatedByString:@" "];
+						NSInteger space = maxPageHeight - currentY;
+						
+						if (headingBlock) space -= blockHeight;
+						
+						NSString *text = @"";
+						NSString *retain = @"";
+						NSString *split = @"";
+						
+						CGFloat breakPosition = 0;
+						
+						// Loop through words and count the height
+						int wIndex = 0;
+						for (NSString *word in words) {
+							if (wIndex == 0) text = [text stringByAppendingFormat:@"%@", word];
+							else text = [text stringByAppendingFormat:@" %@", word];
+							
+							// FNElement *tempElement = [FNElement elementOfType:@"Action" text:text];
+							Line *tempElement = [[Line alloc] initWithString:text type:action];
+							NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
+							if (h < space) {
+								breakPosition = h;
+								if (wIndex == 0) retain = [retain stringByAppendingFormat:@"%@", word];
+								else retain = [retain stringByAppendingFormat:@" %@", word];
+							} else {
+								split = [split stringByAppendingFormat:@" %@", word];
+							}
+						}
+						
+						// WIP/NB: We should make the Line return two Line elements after split instead of this messy shit
+						NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
+						retain = splitElements[0];
+						split = splitElements[1];
+						 
 						// Let's create character indexes for these virtual elements, too
 						Line *prePageBreak = [Line withString:retain type:action pageSplit:YES];
 						prePageBreak.position = spillerElement.position;
@@ -698,16 +732,20 @@
 					else if (remainingSpace > lineHeight * 2) {
 						if (spillerElement.type == dialogue) {
 							// Break into sentences
-							NSMutableArray *sentences = [NSMutableArray arrayWithArray:[spillerElement.cleanedString matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
-							if (![sentences count] && [spillerElement.cleanedString length]) [sentences addObject:spillerElement.cleanedString];
+							NSString *stripped = spillerElement.stripFormattingCharacters;
+							NSMutableArray *sentences = [NSMutableArray arrayWithArray:[stripped matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
+							if (!sentences.count && stripped.length) [sentences addObject:stripped];
 							
 							NSString *text = @"";
 							NSString *retain = @"";
 							NSString *split = @"";
 							CGFloat breakPosition = 0;
 							
+							int sIndex = 0;
 							for (NSString *sentence in sentences) {
-								text = [text stringByAppendingFormat:@" %@", sentence];
+								if (sIndex == 0) text = [text stringByAppendingFormat:@"%@", sentence];
+								else text = [text stringByAppendingFormat:@" %@", sentence];
+								
 								Line *tempElement = [[Line alloc] initWithString:text type:dialogue];
 								
 								NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
@@ -717,20 +755,28 @@
 
 								if (h < space) {
 									breakPosition = h;
-									retain = [retain stringByAppendingFormat:@" %@", sentence];
+									if (sIndex == 0) retain = [retain stringByAppendingFormat:@"%@", sentence];
+									else retain = [retain stringByAppendingFormat:@" %@", sentence];
 								} else {
 									split = [split stringByAppendingFormat:@" %@", sentence];
 								}
+								
+								sIndex++;
 							}
+							
+							NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
+							retain = splitElements[0];
+							split = splitElements[1];
+							
 							
 							// Trim split text
 							retain = [retain stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 							split = [split stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 							
 							// If we have something to retain, do it, otherwise just break to next page
-							if ([retain length] > 0) {
+							if (retain.length > 0) {
 								for (NSInteger d = 0; d < blockIndex; d++) {
-									Line *preBreak = [Line withString:[tmpElements[d] cleanedString] type:[(Line*)tmpElements[d] type]  pageSplit:YES];
+									Line *preBreak = [Line withString:[tmpElements[d] string] type:[(Line*)tmpElements[d] type]  pageSplit:YES];
 									[currentPage addObject:preBreak];
 								}
 								
@@ -755,7 +801,7 @@
 								currentPage = [NSMutableArray array];
 
 								// Add the remaining stuff on the next page
-								Line *postCue = [Line withString:[element.cleanedString stringByAppendingString:@" (CONT'D)"] type:character pageSplit:YES];
+								Line *postCue = [Line withString:[element.string stringByAppendingString:@" (CONT'D)"] type:character pageSplit:YES];
 								Line *postDialogue = [Line withString:split type:dialogue pageSplit:YES];
 								
 								// Inherit changes
@@ -777,14 +823,13 @@
 								if (blockIndex + 1 > [tmpElements count]) continue;
 								NSInteger position = postDialogue.position + postDialogue.string.length;
 								for (NSInteger d = blockIndex + 1; d < [tmpElements count]; d++) {
-									Line *postBreak = [[Line alloc] initWithString:[tmpElements[d] cleanedString] type:[(Line*)tmpElements[d] type] pageSplit:YES];
+									Line *postBreak = [[Line alloc] initWithString:[tmpElements[d] string] type:[(Line*)tmpElements[d] type] pageSplit:YES];
 									postBreak.changed = [tmpElements[d] changed];
 									postBreak.position = position; // String index from file
 									position += postBreak.string.length;
 									currentY += [self elementHeight:postBreak lineHeight:lineHeight];
 									
 									[currentPage addObject:postBreak];
-									
 								}
 							
 								// Don't let this loop handle the buffer
@@ -810,7 +855,7 @@
 								[_pages addObject:currentPage];
 								currentPage = [NSMutableArray array];
 								
-								Line* postCue = [[Line alloc] initWithString:[element.cleanedString stringByAppendingString:@" (CONT'D)"] type:character pageSplit:YES];
+								Line* postCue = [[Line alloc] initWithString:[element.string stringByAppendingString:@" (CONT'D)"] type:character pageSplit:YES];
 								[currentPage addObject:postCue];
 								[currentPage addObject:spillerElement];
 								
@@ -940,7 +985,8 @@
 }
 
 - (CGFloat)elementHeight:(Line *)element lineHeight:(CGFloat)lineHeight {
-	return [FountainPaginator heightForString:element.cleanedString font:_font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
+	NSString *string = element.stripFormattingCharacters;
+	return [FountainPaginator heightForString:string font:_font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
 }
 
 - (NSInteger)widthForElement:(Line *)element

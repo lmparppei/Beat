@@ -1565,16 +1565,11 @@
 }
 
 - (IBAction)reformatRange:(id)sender {
-	if ([self.textView selectedRange].length > 0) {
-		
-		NSString *string = [[[self.textView textStorage] string] substringWithRange:[self.textView selectedRange]];
-		if ([string length]) {
-			[self.parser parseChangeInRange:[self.textView selectedRange] withString:string];
-			[self applyFormatChanges];
-			
-			[self.parser createOutline];
-			[self ensureLayout];
-		}
+	if (self.textView.selectedRange.length > 0) {
+		NSArray *lines = [self.parser linesInRange:self.textView.selectedRange];
+		if (lines) [self.parser correctParsesForLines:lines];
+		[self.parser createOutline];
+		[self ensureLayout];
 	}	
 }
 
@@ -3030,6 +3025,7 @@ static NSString *revisionAttribute = @"Revision";
 				color = item[2];
 			}
 			
+			// Ensure the revision is in range and "paint" its range
 			if (len > 0 && loc + len <= self.getText.length) {
 				RevisionType type;
 				NSRange range = (NSRange){loc, len};

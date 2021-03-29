@@ -21,13 +21,19 @@
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
 
 #define ITALIC_PATTERN @"*"
+#define ITALIC_CHAR "*"
 #define BOLD_PATTERN @"**"
+#define BOLD_CHAR "**"
 #define UNDERLINE_PATTERN @"_"
+#define UNDERLINE_CHAR "_"
 #define OMIT_PATTERN @"/*"
 #define NOTE_PATTERN @"[["
 
 #define HIGHLIGHT_PATTERN @"<<"
 #define STRIKEOUT_PATTERN @"{{"
+#define STRIKEOUT_CLOSE_PATTERN @"}}"
+#define STRIKEOUT_OPEN_CHAR "{{"
+#define STRIKEOUT_CLOSE_CHAR "}}"
 
 // For FDX compatibility (not used right now, mostly for reminder)
 #define BOLD_STYLE @"Bold"
@@ -95,6 +101,8 @@
 		_string = string;
 		_type = type;
 		_unsafeForPageBreak = YES;
+		
+		if (pageSplit) [self resetFormatting];
 	}
 	return self;
 }
@@ -466,6 +474,12 @@
 	// The attributes are used to create a string for FDX/HTML conversion.
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
 	
+	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > ITALIC_PATTERN.length * 2) {
+			[self addAttr:@"Italic" toString:string range:range];
+		}
+	}];
+	
 	// Add font stylization
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > BOLD_PATTERN.length * 2) {
@@ -473,12 +487,6 @@
 		}
 	}];
 	
-	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > ITALIC_PATTERN.length * 2) {
-			[self addAttr:@"Italic" toString:string range:range];
-		}
-	}];
-
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > UNDERLINE_PATTERN.length * 2) {
 			[self addAttr:@"Underline" toString:string range:range];
@@ -545,13 +553,81 @@
 	[string addAttribute:@"Style" value:style range:range];
 }
 
+- (void)joinWithLine:(Line *)line
+{
+	NSString *string = line.string;
+	NSInteger offset = self.string.length + 1;
+	if (line.changed) self.changed = YES;
+	
+	self.string = [self.string stringByAppendingString:[NSString stringWithFormat:@"\n%@", string]];
+	
+	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self.boldRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+	}];
+	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self.italicRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+	}];
+	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self.underlinedRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+	}];
+	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self.strikeoutRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+	}];
+	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self.additionRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+	}];
+}
+- (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
+	NSAttributedString *string = [self attributedStringForFDX];
+	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
+	[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
+	}];
+	
+	NSAttributedString *first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
+	NSAttributedString *second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
+	
+	NSArray *result = @[ [self attributedStringToFountain:first], [self attributedStringToFountain:second] ];
+	return result;
+}
+- (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr {
+	// NOTE! This only works with the FDX atributed string
+	NSMutableString *result = [NSMutableString string];
+	[attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+		NSString *string = [attrStr attributedSubstringFromRange:range].string;
+				
+		NSString *open = @"";
+		NSString *close = @"";
+		NSString *openClose = @"";
+		
+		NSString *styleString = attrs[@"Style"];
+		NSArray *styles = [styleString componentsSeparatedByString:@","];
+		
+		if ([styles containsObject:@"Bold"]) openClose = [openClose stringByAppendingString:BOLD_PATTERN];
+		if ([styles containsObject:@"Italic"]) openClose = [openClose stringByAppendingString:ITALIC_PATTERN];
+		if ([styles containsObject:@"Underline"]) openClose = [openClose stringByAppendingString:UNDERLINE_PATTERN];
+		if ([styles containsObject:@"Strikeout"]) {
+			open = [open stringByAppendingString:STRIKEOUT_PATTERN];
+			close = [close stringByAppendingString:STRIKEOUT_CLOSE_PATTERN];
+		}
+		
+		[result appendString:open];
+		[result appendString:openClose];
+		[result appendString:string];
+		[result appendString:openClose];
+		[result appendString:close];
+	}];
+	
+	return result;
+}
+
 - (NSIndexSet*)contentRanges
 {
 	// Returns ranges with content ONLY (useful for reconstruction the string with no Fountain stylization)
 	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
 	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
 	
-	NSIndexSet *formattingRanges = [self formattingRanges];
+	NSIndexSet *formattingRanges = self.formattingRanges;
 	[contentRanges removeIndexes:formattingRanges];
 
 	return contentRanges;
@@ -574,7 +650,7 @@
 			(self.type == section && c == '#') ||
 			(self.type == synopse && c == '#') ||
 			(self.type == transitionLine && c == '>')) {
-			[indices addIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1)]];
+			[indices addIndex:0];
 		}
 	}
 	
@@ -584,7 +660,7 @@
 	}
 	
 	// Add ranges for > and < (if needed)
-	if (self.type == centered && self.string.length > 2) {
+	if (self.type == centered && self.string.length >= 2) {
 		if ([self.string characterAtIndex:0] == '>' && [self.string characterAtIndex:self.string.length - 1] == '<') {
 			[indices addIndex:0];
 			[indices addIndex:self.string.length - 1];
@@ -595,13 +671,13 @@
 	[indices addIndexesInRange:self.sceneNumberRange];
 	
 	// Stylization ranges
-	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, ITALIC_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length, ITALIC_PATTERN.length)];
-	}];
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[indices addIndexesInRange:NSMakeRange(range.location, BOLD_PATTERN.length)];
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length, BOLD_PATTERN.length)];
+	}];
+	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[indices addIndexesInRange:NSMakeRange(range.location, ITALIC_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length, ITALIC_PATTERN.length)];
 	}];
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[indices addIndexesInRange:NSMakeRange(range.location, UNDERLINE_PATTERN.length)];
@@ -687,6 +763,87 @@
 	self.changed = unchanged;
 	return unchanged;
 }
+
+#pragma mark - formatting range lookup
+
+- (void)resetFormatting {
+	NSUInteger length = self.string.length;
+	unichar charArray[length];
+	[self.string getCharacters:charArray];
+	
+	self.boldRanges = [self rangesInChars:charArray
+								 ofLength:length
+								  between:BOLD_CHAR
+									  and:BOLD_CHAR
+							   withLength:2];
+	self.italicRanges = [self rangesInChars:charArray
+								 ofLength:length
+								  between:ITALIC_CHAR
+									  and:ITALIC_CHAR
+							   withLength:1];
+	self.underlinedRanges = [self rangesInChars:charArray
+									   ofLength:1
+										between:UNDERLINE_CHAR
+											and:UNDERLINE_CHAR
+									 withLength:1];
+	
+	self.strikeoutRanges = [self rangesInChars:charArray
+								 ofLength:length
+								  between:STRIKEOUT_OPEN_CHAR
+									  and:STRIKEOUT_CLOSE_CHAR
+							   withLength:2];
+}
+
+- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
+{
+	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+	
+	NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
+	NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
+	
+	for (int i = 0;;i++) {
+		if (i > lastIndex) break;
+				
+		// No range is currently inspected
+		if (rangeBegin == -1) {
+			bool match = YES;
+			for (int j = 0; j < delimLength; j++) {
+				// Check for escape character (like \*)
+				if (i > 0 && string[j + i - 1] == '\\') {
+					match = NO;
+					break;
+				}
+				
+				if (string[j+i] != startString[j]) {
+					match = NO;
+					break;
+				}
+			}
+			if (match) {
+				rangeBegin = i;
+				i += delimLength - 1;
+			}
+		// We have found a range
+		} else {
+			bool match = YES;
+			for (int j = 0; j < delimLength; j++) {
+				if (string[j+i] != endString[j]) {
+					match = NO;
+					break;
+				}
+			}
+			if (match) {
+				[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
+				rangeBegin = -1;
+				i += delimLength - 1;
+			}
+		}
+	}
+	return indexSet;
+}
+
+#pragma mark - for debugging
+
 -(NSString *)description
 {
 	return [NSString stringWithFormat:@"Line: %@  - at %lu", self.string, self.position];

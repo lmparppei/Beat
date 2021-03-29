@@ -59,7 +59,7 @@
 	
 	// Create a script dict required by the HTML module
 	NSDictionary *script = [parser scriptForPrinting];
-
+	
 	if (previewType == BeatQuickLookPreview) {
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForQuickLook:script];
 		return html.html;

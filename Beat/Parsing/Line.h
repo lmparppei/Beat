@@ -134,6 +134,10 @@ typedef enum : NSUInteger {
 - (NSIndexSet*)contentRanges;
 - (NSString*)characterName;
 
+- (void)resetFormatting;
+- (void)joinWithLine:(Line*)line;
+- (NSArray*)splitAndFormatToFountainAt:(NSInteger)index;
+
 // For comparing with another version
 @property bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
