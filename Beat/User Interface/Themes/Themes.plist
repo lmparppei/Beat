@@ -61,9 +61,9 @@
 				</array>
 				<key>Caret</key>
 				<array>
-					<integer>20</integer>
-					<integer>20</integer>
-					<integer>20</integer>
+					<integer>0</integer>
+					<integer>129</integer>
+					<integer>239</integer>
 				</array>
 				<key>Comment</key>
 				<array>
@@ -136,9 +136,9 @@
 				</array>
 				<key>Caret</key>
 				<array>
-					<integer>180</integer>
-					<integer>180</integer>
-					<integer>180</integer>
+					<integer>0</integer>
+					<integer>129</integer>
+					<integer>239</integer>
 				</array>
 				<key>Comment</key>
 				<array>

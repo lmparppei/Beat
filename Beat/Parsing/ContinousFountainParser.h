@@ -83,6 +83,7 @@
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSString*)cleanedString;
 - (NSDictionary*)scriptForPrinting;
+- (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
 
 //Convenience Methods for Outlineview data

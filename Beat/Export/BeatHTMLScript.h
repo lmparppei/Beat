@@ -33,6 +33,7 @@
 #endif
 
 #import <Foundation/Foundation.h>
+#import "BeatEditorDelegate.h"
 
 typedef enum : NSUInteger {
 	ForPrint = 0,
@@ -50,8 +51,8 @@ typedef enum : NSUInteger {
 @property (strong, nonatomic) NSNumber *forRendering;
 @property (copy, nonatomic) NSString *bodyText;
 
-- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene;
-- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document;
+- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers;
+- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers;
 - (id)initForQuickLook:(NSDictionary *)script;
 
 - (NSInteger)pages;

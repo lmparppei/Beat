@@ -7,7 +7,6 @@
 //
 
 #import "BeatColors.h"
-#import "DynamicColor.h"
 
 @implementation BeatColors
 + (NSDictionary *) colors {
@@ -23,7 +22,7 @@
 			 @"prince": [BeatColors colorWithRed:181 green:32 blue:218], // for the purple one
 			 @"yellow": [BeatColors colorWithRed:251 green:193 blue:35],
 			 @"cyan": [BeatColors colorWithRed:7 green:189 blue:235],
-			 @"teal": [BeatColors colorWithRed:12 green:224 blue:227], // gotta have teal & orange
+			 @"teal": [BeatColors colorWithRed:12 green:224 blue:227],
 			 @"orange": [BeatColors colorWithRed:255 green:161 blue:13],
 			 @"brown": [BeatColors colorWithRed:169 green:106 blue:7],
 			 @"lightGray": [BeatColors colorWithRed:220 green:220 blue:220],
@@ -42,7 +41,7 @@
 	return [BeatColors valueForKey:colors[index]];
 }
 + (NSColor *) color:(NSString*)name {
-	DynamicColor *color = [BeatColors.colors valueForKey:name];
+	NSColor *color = [BeatColors.colors valueForKey:name];
 	if (color) {
 		return color;
 	} else {

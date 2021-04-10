@@ -34,6 +34,8 @@
 
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
+#define SHADOW_WIDTH 20
+#define SHADOW_OPACITY 0.0125
 
 // Maximum results for autocomplete
 #define MAX_RESULTS 10
@@ -110,6 +112,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 // New scene numbering system
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
+@property (nonatomic) NSMutableArray *sectionBackgrounds;
 
 // Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
@@ -398,6 +401,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (self.infoPopover.isShown) [self closePopovers];
 	
 	[super keyDown:theEvent];
+	
 	if (shouldComplete && self.popupMode != Tagging) {
 		if (self.automaticTextCompletionEnabled) {
 			[self complete:self];
@@ -704,16 +708,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Rects for masking, page breaks etc.
 
-- (void)setMarginColor:(DynamicColor *)newColor {
-	_marginColor = newColor;
+- (NSRect)rectForRange:(NSRange)range {
+	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
+	return [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
 }
 
 - (NSArray*)rectsForChanges {
 	NSMutableArray *rects = [NSMutableArray array];
 
 	[self.editorDelegate.changes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+		NSRect rect = [self rectForRange:range];
 		NSRect highlight = NSMakeRect(self.textContainerInset.width - 20, self.textContainerInset.height + rect.origin.y, 2, rect.size.height);
 		[rects addObject:[NSValue valueWithRect:highlight]];
 	}];
@@ -721,11 +725,55 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return rects;
 }
 
+-(void)resizeWithOldSuperviewSize:(NSSize)oldSize {
+	[super resizeWithOldSuperviewSize:oldSize];
+}
+-(void)viewDidEndLiveResize {
+	//[super viewDidEndLiveResize];
+	[self setInsets];
+}
+- (BOOL)needsToDrawRect:(NSRect)rect {
+	return [super needsToDrawRect:rect];
+}
+
+-(void)drawViewBackgroundInRect:(NSRect)rect {
+	// We need to draw the background to avoid certain graphical glitches.
+	if (!NSGraphicsContext.currentContext) return;
+	
+	CGFloat height = self.frame.size.height * (1 / _zoomLevel);
+	
+	// Draw paper
+	[self.editorDelegate.themeManager.backgroundColor setFill];
+	
+	NSRectFill(rect);
+	
+	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.editorDelegate.magnification / 2) / self.editorDelegate.magnification - 120;
+	
+	NSColor *marginColor = self.editorDelegate.themeManager.marginColor;
+	[marginColor setFill];
+	NSRect marginLeft = (NSRect){ 0, 0, width, height };
+	NSRect marginRight = (NSRect){ width + _documentWidth + 240, 0, width, height };
+	
+	NSRectFill(marginLeft);
+	NSRectFill(marginRight);
+	
+	NSRect shadowLeft = (NSRect){ marginLeft.size.width - SHADOW_WIDTH, 0, SHADOW_WIDTH, marginLeft.size.height };
+	NSRect shadowRight = (NSRect){ marginRight.origin.x, 0, SHADOW_WIDTH, marginRight.size.height };
+	
+	NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:NSColor.clearColor endingColor:[NSColor.blackColor colorWithAlphaComponent:SHADOW_OPACITY]];
+	[gradient drawInRect:shadowLeft angle:0];
+	[gradient drawInRect:shadowRight angle:180];
+}
 - (void)drawRect:(NSRect)dirtyRect {
-	dirtyRect = (NSRect){ dirtyRect.origin.x, dirtyRect.origin.y - 10, dirtyRect.size.width, dirtyRect.size.height + 20 };
-	NSGraphicsContext *context = [NSGraphicsContext currentContext];
+	//NSLog(@"drawing %f -> %f     (in view: %f / %f)    mag: %f", dirtyRect.origin.y, dirtyRect.size.height, self.enclosingScrollView.contentView.bounds.origin.y, self.enclosingScrollView.contentView.bounds.size.height, self.zoomLevel);
+	//dirtyRect = (NSRect){ dirtyRect.origin.x, dirtyRect.origin.y - 10, dirtyRect.size.width, dirtyRect.size.height + 20 };
+ 
 	CGFloat factor = 1 / _zoomLevel;
 		
+	[NSGraphicsContext saveGraphicsState];
+	[super drawRect:dirtyRect];
+	[NSGraphicsContext restoreGraphicsState];
+	
 	// Section header backgrounds
 	for (NSValue* value in _sections) {
 		[self.marginColor setFill];
@@ -735,16 +783,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
 		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
 	}
-		
-	[NSGraphicsContext saveGraphicsState];
-	[super drawRect:dirtyRect];
-	[NSGraphicsContext restoreGraphicsState];
-
+	
 	// An array of NSRanges which are used to mask parts of the text.
 	// Used to hide irrelevant parts when filtering scenes.
 	if (_masks.count) {
 		for (NSValue * value in _masks) {
-			NSColor* fillColor = self.backgroundColor;
+			NSColor* fillColor = self.editorDelegate.themeManager.backgroundColor;
 			fillColor = [fillColor colorWithAlphaComponent:0.85];
 			[fillColor setFill];
 			
@@ -754,24 +798,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			rect.origin.y += self.textContainerInset.height - 12;
 			rect.size.width = self.textContainer.size.width;
 			
+			//NSRectFill(rect);
 			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 		}
 	}
-	
-	[context saveGraphicsState];
-	
-	/*
-	if (self.editorDelegate.trackChanges) {
-		for (NSValue *val in [self rectsForChanges]) {
-			NSRect highlight = val.rectValue;
-			NSColor *highlightColor = [BeatColors color:@"pink"];
-			[highlightColor setFill];
-			NSRectFill(highlight);
-		}
-	}
-	*/
-	
-	[context restoreGraphicsState];
 }
 
 
@@ -781,10 +811,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
  
 - (void)setNeedsDisplayInRect:(NSRect)invalidRect {
-	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height + 2);
+	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
 	[super setNeedsDisplayInRect:invalidRect];
 }
 
+
+#pragma mark - Scene & page numbering
 
 - (void)resetPageNumberLabels {
 	for (NSInteger i = 0; i < _pageNumberLabels.count; i++) {
@@ -877,8 +909,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	ContinousFountainParser *parser = self.editorDelegate.parser;
 	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor;
 	
-	if (!parser.outline.count) [parser createOutline];
-	
+	[parser createOutline];
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
 	
 	NSInteger index = 0;
@@ -894,7 +925,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			index++;
 			continue;
 		}
-				
+		
+		// Don't do anything if the scene number labeling is not on
+		if (!self.editorDelegate.showSceneNumberLabels) continue;
+		
 		NSTextField *label;
 		
 		// Add new label if needed
@@ -903,12 +937,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
 		
-		NSRange range = [self.layoutManager glyphRangeForCharacterRange:scene.line.range actualCharacterRange:nil];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+		NSRect rect = [self rectForRange:scene.line.textRange];
 		
 		rect.size.width = 20 * scene.sceneNumber.length;
 		rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
-		rect.origin.y += self.textInsetY;
+		rect.origin.y += self.textInsetY + 2;
 			
 		label.frame = rect;
 		
@@ -938,8 +971,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (sectionItem.sectionDepth > 2) return;
 	NSRange characterRange = NSMakeRange(sectionItem.line.position, sectionItem.line.string.length);
 	
-	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-	NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+	NSRect rect = [self rectForRange:characterRange];
 
 	// If the next line is something we care about, include it in the rect for a nicer display
 	// If next line is NOT EMPTY, don't add the rect at all.
@@ -952,8 +984,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		if ((nextLine.type == synopse) && (previousLine.string.length < 1 || previousLine.type == section) ) {
 			characterRange = NSMakeRange(nextLine.position, nextLine.string.length);
-			glyphRange = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-			NSRect nextRect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+			NSRect nextRect = [self rectForRange:characterRange];
 			
 			rect.size.height += nextRect.size.height;
 			
@@ -964,6 +995,53 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 }
+
+/*
+ // This isn't working, don't know why
+- (void)updateSectionLayers {
+	NSInteger index = 0;
+	self.wantsLayer = YES;
+	
+	if (!_sectionBackgrounds) _sectionBackgrounds = [NSMutableArray array];
+	CGFloat factor = 1 / _zoomLevel;
+	CGFloat width = self.frame.size.width * factor;
+	//NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
+	
+	for (NSValue *rectValue in _sections) {
+		NSRect rect = rectValue.rectValue;
+		
+		CALayer *layer;
+		if (index >= _sectionBackgrounds.count) {
+			NSLog(@"Add new (%lu vs %lu)", index, _sectionBackgrounds.count);
+			// Add new section
+			layer = [[CALayer alloc] init];
+			layer.backgroundColor = self.editorDelegate.themeManager.marginColor.CGColor;
+			[self.layer addSublayer:layer];
+			layer.zPosition = -1;
+		} else {
+			NSLog(@"Use existing (%lu vs %lu)", index, _sectionBackgrounds.count);
+			layer = _sectionBackgrounds[index];
+		}
+		
+		layer.frame = CGRectMake(0, rect.origin.y + self.textContainerInset.height - 7, width, rect.size.height + 14);
+		[_sectionBackgrounds addObject:layer];
+		
+		index++;
+	}
+	
+	// Remove excess backgrounds
+	if (_sectionBackgrounds.count >= _sections.count && _sectionBackgrounds.count > 0) {
+		NSInteger backgrounds = _sectionBackgrounds.count;
+		for (NSInteger i = index; i < backgrounds; i++) {
+			CALayer *bgLayer = _sectionBackgrounds[index];
+			[self.sectionBackgrounds removeObject:bgLayer];
+			[bgLayer removeFromSuperlayer];
+		}
+	}
+	
+	[self updateLayer];
+}
+ */
 
 /*
 - (void)updateSceneNumberLabelsWithLayer {
@@ -1141,6 +1219,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self resetCursorRects];
 	[self addCursorRect:(NSRect){0,0, 200, 2500} cursor:NSCursor.crosshairCursor];
 	[self addCursorRect:(NSRect){self.frame.size.width * .5,0, self.frame.size.width * .5, self.frame.size.height} cursor:NSCursor.crosshairCursor];
+	
+	[self drawViewBackgroundInRect:self.bounds];
 }
 
 -(void)resetCursorRects {
@@ -1169,9 +1249,24 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		[defaultMenu addItem:[NSMenuItem separatorItem]];
 	}
 	
-	
 	return defaultMenu;
 }
+
+#pragma mark - Scrolling interface
+
+- (void)scrollToRange:(NSRange)range {
+	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
+	containerHeight = containerHeight * _zoomLevel + self.textContainerInset.height * 2 * _zoomLevel;
+	
+	NSRect rect = [self rectForRange:range];
+	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
+	
+	[[self.enclosingScrollView.contentView animator] setBoundsOrigin:NSMakePoint(0, y)];
+}
+
+#pragma mark - Layout Delegation
+
+
 
 @end
 /*

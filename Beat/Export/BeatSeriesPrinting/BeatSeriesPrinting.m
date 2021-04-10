@@ -185,7 +185,7 @@
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 		NSError *error;
 		
-		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:nil];
+		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:nil printSceneNumbers:YES];
 		NSString *header = htmlScript.htmlHeader;
 		NSString *footer = htmlScript.htmlFooter;
 		
@@ -219,7 +219,7 @@
 	[settings readSettingsAndReturnRange:text];
 	
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] staticParsingWithString:text settings:settings];
-	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:[parser scriptForPrinting] document:_document];
+	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:[parser scriptForPrinting] document:_document printSceneNumbers:YES];
 	
 	return htmlScript.content;
 }

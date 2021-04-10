@@ -186,7 +186,7 @@
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
 		__block NSFileManager *fileManager = [NSFileManager defaultManager];
 		
-		NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleNameKey];
+		NSString *appName = [NSBundle.mainBundle.infoDictionary objectForKey:(id)kCFBundleNameKey];
 		NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
 		NSString* appSupportDir = [searchPaths firstObject];
 		appSupportDir = [appSupportDir stringByAppendingPathComponent:appName];
@@ -219,30 +219,48 @@
 						if (result == NSFileHandlingPanelOKButton) {
 
 							NSError *error;
-							[fileManager moveItemAtPath:[appSupportDir stringByAppendingPathComponent:file] toPath:saveDialog.URL.path error:&error];
-							
-							[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:saveDialog.URL display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
-							}];
-							if (error) {
-								NSAlert *alert = [[NSAlert alloc] init];
-								alert.messageText = [NSString stringWithFormat:@"Error recovering %@", filename];
-								alert.informativeText = @"The file could not be recovered, but don't worry, it is still safe. Restart Beat and try to recover into another location.";
-								alert.alertStyle = NSAlertStyleWarning;
-								[alert runModal];
+							@try {
+								[fileManager moveItemAtPath:[appSupportDir stringByAppendingPathComponent:file] toPath:saveDialog.URL.path error:&error];
+								
+								[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:saveDialog.URL display:YES completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+								}];
+								if (error) {
+									NSAlert *alert = [[NSAlert alloc] init];
+									alert.messageText = [NSString stringWithFormat:@"Error recovering %@", filename];
+									alert.informativeText = @"The file could not be recovered, but don't worry, it is still safe. Restart Beat and try to recover into another location.";
+									alert.alertStyle = NSAlertStyleWarning;
+									[alert runModal];
+								}
+							} @catch (NSException *exception) {
+							} @finally {
 							}
 						} else {
 							// If the user really doesn't want to spare this file, let's fucking delete it FOREVER!!!
-							[fileManager removeItemAtPath:[appSupportDir stringByAppendingPathComponent:filename] error:nil];
+							[self deleteAutosaveFile:[appSupportDir stringByAppendingPathComponent:filename]];
 						}
 					}];
 				} else {
-					// Remove the autosave
-					[fileManager removeItemAtPath:[appSupportDir stringByAppendingPathComponent:filename] error:nil];
+					[self deleteAutosaveFile:[appSupportDir stringByAppendingPathComponent:filename]];
 				}
 				
 			});
 		}
 	});
+}
+
+- (void)deleteAutosaveFile:(NSString*)filename {
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	@try {
+		[fileManager removeItemAtPath:filename error:nil];
+	} @catch (NSException *exception) {
+		NSAlert *alert = [NSAlert.alloc init];
+		alert.messageText = [NSString stringWithFormat:@"Error removing autosave file %@", filename];
+		alert.informativeText = @"Beat doesn't have write permissions to access its Application Support folder. You need to remove the autosave file manually to avoid seeing this error in the future.\n\n\
+		In Finder, press cmd-shift-G and type in ~/Library/Application Support/Beat/Autosave/ and delete any files in that folder. Sorry for any inconvenience.";
+		alert.alertStyle = NSAlertStyleWarning;
+		[alert runModal];
+	} @finally {
+	}
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)flag {
@@ -252,8 +270,7 @@
 
 #pragma mark - Dark mode stuff
 
-// This is some spaghetti but seems to work for now
-// We have to check if OS is set to dark AND if the user has forced either mode
+// At all times, we have to check if OS is set to dark AND if the user has forced either mode
 
 - (bool)isForcedDarkMode {
 	if (![self OSisDark]) return _forceDarkMode;
@@ -263,23 +280,19 @@
 	if ([self OSisDark]) return _forceLightMode;
 	return NO;
 }
+
 - (bool)isDark {
-	// Uh... if OS set to dark mode, Beat is forced to use it too
-	if (@available(macOS 10.14, *)) {
-		NSAppearance *appearance = [NSApp effectiveAppearance];
-		if (appearance == nil) appearance = [NSAppearance currentAppearance];
-		
-		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
-		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			if (!_forceLightMode) return YES; else return NO;
-		} else {
-			if (!_forceDarkMode) return NO; else return YES;
-		}
+	if ([self OSisDark]) {
+		// OS in dark mode
+		if (_forceLightMode) return NO;
+		else return YES;
+	} else {
+		// OS in light mode
+		if (_forceDarkMode) return YES;
+		else return NO;
 	}
-	if (_forceDarkMode) return YES;
-	
-	return _darkMode;
 }
+
 - (bool)OSisDark {
 	if (@available(macOS 10.14, *)) {
 		NSAppearance *appearance = [NSApp effectiveAppearance];
@@ -287,12 +300,13 @@
 		
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			return true;
+			return YES;
 		}
 	}
 	return NO;
 }
-- (void) toggleDarkMode {
+
+- (void)toggleDarkMode {
 	_darkMode = ![self isDark];
 	
 	// OS is in dark mode, so we need to force the light mode
@@ -324,7 +338,7 @@
 	NSURL *url = [NSBundle.mainBundle URLForResource:name withExtension:@"fountain"];
 	
 	if (url) [[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:url copying:YES displayName:name error:nil];
-	else NSLog(@"can't find template");
+	else NSLog(@"ERROR: Can't find template");
 }
 
 #pragma mark - Fountain syntax references & help
@@ -395,7 +409,7 @@
 #pragma mark - Misc UI
 
 // Why is this here? Anyway, a method for the NSOutlineView showing recent files
--(void)doubleClickDocument {
+- (void)doubleClickDocument {
 	[_recentFilesSource doubleClickDocument:nil];
 }
 
@@ -540,6 +554,19 @@
 	CFRelease(uuid);
 
 	return result;
+}
+
+#pragma mark - Clear user defaults
+
+- (void)removeUserDefaults
+{
+	NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
+	NSDictionary * dict = [userDefaults dictionaryRepresentation];
+	for (id key in dict)
+	{
+		[userDefaults removeObjectForKey:key];
+	}
+	[userDefaults synchronize];
 }
 
 @end

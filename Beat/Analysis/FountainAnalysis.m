@@ -249,7 +249,7 @@
 
 - (NSMutableArray*)scenesWithCharacter:(NSString *)characterName onlyDialogue:(bool)onlyDialogue  {
 	// Let's assume we have the scenes / lines property set
-	if (![_scenes count] || ![_lines count]) return nil;
+	if (!_scenes.count || !_lines.count) return nil;
 	
 	// We'll use a simple trick here.
 	// First remove all extra whitespace from the character and then add one space at the beginning.
@@ -265,21 +265,23 @@
 		if (scene.type == synopse || scene.type == section) continue;
 		
 		NSInteger index = [self.lines indexOfObject:scene.line];
-		if (index + 1 >= [self.lines count]) break; // Heading was the last line
+		if (index + 1 >= self.lines.count) break; // Heading was the last line
 		
 		// Loop through lines array until we encounter a scene heading
-		for (NSInteger i = index + 1; i < [self.lines count]; i++) {
-			Line* line = [self.lines objectAtIndex:i];
+		for (NSInteger i = index + 1; i < _lines.count; i++) {
+			Line* line = self.lines[i];
 			
 			// Break on next scene
-			if (line.type == heading) break;
+			if (line.type == heading) {
+				break;
+			}
 
 			bool found = NO;
 			NSString* string = line.string;
-			
+					
 			// The character is talking in the scene
 			if (line.type == character) {
-				if ([string isEqualToString:characterName]) found = YES;
+				if ([line.stripFormattingCharacters isEqualToString:characterName]) found = YES;
 			}
 			
 			// The character is at least MENTIONED within the action

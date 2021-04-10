@@ -15,40 +15,30 @@
                 <outlet property="authorField" destination="iQB-xN-crh" id="A5Z-La-bAn"/>
                 <outlet property="backgroundView" destination="3qa-Wg-PsD" id="is8-W2-FQ7"/>
                 <outlet property="beatTimer" destination="rsQ-wl-KkE" id="pT8-vn-UCc"/>
-                <outlet property="blueCheck" destination="ilD-zy-XUu" id="9Sm-2G-BVZ"/>
-                <outlet property="brownCheck" destination="H6k-me-4mN" id="sq8-9g-87R"/>
                 <outlet property="cardView" destination="2ja-Hc-I6Z" id="RvV-26-dPe"/>
                 <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Wxg-hf-1FX"/>
                 <outlet property="characterBox" destination="uDe-RI-kOI" id="qFD-eS-4J2"/>
                 <outlet property="colorMenu" destination="Tqc-M2-IZ5" id="p8e-fo-mfZ"/>
                 <outlet property="contactField" destination="Vkz-wH-dWc" id="WaU-3u-6EG"/>
                 <outlet property="creditField" destination="8wH-7O-fhS" id="CWx-mg-kU1"/>
-                <outlet property="cyanCheck" destination="vqm-UG-kIN" id="7Mm-5u-A65"/>
                 <outlet property="darkModeSwitch" destination="S22-Mw-UkV" id="LjC-kx-glN"/>
                 <outlet property="dateField" destination="M99-wo-HH8" id="lFC-yO-uAO"/>
                 <outlet property="filterView" destination="YvO-D4-qDL" id="kCA-z3-eE5"/>
                 <outlet property="filterViewHeight" destination="vZj-zT-rgW" id="5Al-VZ-Qyl"/>
-                <outlet property="greenCheck" destination="vch-pB-KcR" id="xVe-Pn-2pc"/>
-                <outlet property="magentaCheck" destination="Qh9-lw-g46" id="Eng-T1-cKe"/>
-                <outlet property="marginView" destination="Sy0-kF-Tby" id="eag-me-NqH"/>
+                <outlet property="marginView" destination="Sy0-kF-Tby" id="3Mt-n8-mIL"/>
                 <outlet property="masterView" destination="gIp-Ho-8D9" id="s3n-ER-Rgi"/>
                 <outlet property="notesField" destination="IeG-kC-YIL" id="mL9-jO-KIP"/>
-                <outlet property="orangeCheck" destination="6lp-Oc-waP" id="uBv-Ny-Vkc"/>
                 <outlet property="outlineBackgroundView" destination="ddX-aG-EER" id="uNK-hW-mWG"/>
                 <outlet property="outlineButton" destination="ULq-c1-qrj" id="TPP-Em-8Xy"/>
                 <outlet property="outlineScrollView" destination="RaS-3C-d5c" id="SfS-4K-icO"/>
                 <outlet property="outlineSearchField" destination="wQe-ic-Dmm" id="EkH-y5-5vL"/>
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
                 <outlet property="pageNumbersSwitch" destination="Mef-QD-NsX" id="Qep-HJ-CZr"/>
-                <outlet property="pinkCheck" destination="X9R-Ze-hyZ" id="O2g-Ue-hZv"/>
                 <outlet property="previewButton" destination="DOv-x4-OK1" id="gJe-tL-TEf"/>
                 <outlet property="printWebView" destination="ddy-rn-xRJ" id="nMo-II-Kfi"/>
                 <outlet property="printing" destination="c93-vc-ktH" id="d6p-mp-q7O"/>
                 <outlet property="quickSettingsButton" destination="piN-SW-wNh" id="uhU-gQ-L56"/>
                 <outlet property="quickSettingsView" destination="zD2-lE-mgt" id="tyu-JN-Hpu"/>
-                <outlet property="redCheck" destination="dCo-x8-fiM" id="7vC-UG-dQ0"/>
-                <outlet property="resetCharacterFilterButton" destination="rNr-qe-M65" id="0cW-Ts-JPc"/>
-                <outlet property="resetColorFilterButton" destination="Xyx-ug-UXG" id="ZkW-PJ-GEe"/>
                 <outlet property="revisionColorPopup" destination="qQI-Yr-iVj" id="Z6u-99-C0d"/>
                 <outlet property="revisionModeSwitch" destination="EIZ-TU-2Aq" id="KYW-ZN-35t"/>
                 <outlet property="sceneNumberStartInput" destination="MmF-s9-or8" id="Zr7-zx-nba"/>
@@ -128,7 +118,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="red"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="GOt-GF-awE"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="mq5-0P-RyV"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vch-pB-KcR" customClass="ColorCheckbox">
@@ -144,7 +134,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="green"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="htA-BL-ABw"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="juN-dg-AQr"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ilD-zy-XUu" customClass="ColorCheckbox">
@@ -160,7 +150,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="blue"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="RZP-qu-evF"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="PqH-Vq-oy8"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="X9R-Ze-hyZ" customClass="ColorCheckbox">
@@ -176,7 +166,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="pink"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="nay-rr-2Vf"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="at0-PX-nZy"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="H6k-me-4mN" customClass="ColorCheckbox">
@@ -192,7 +182,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="brown"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="4FK-Qc-D6D"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="kqm-vg-16j"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vqm-UG-kIN" customClass="ColorCheckbox">
@@ -208,7 +198,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="cyan"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="Kf0-aO-qCQ"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="lzc-Cr-2jS"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6lp-Oc-waP" customClass="ColorCheckbox">
@@ -224,7 +214,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="orange"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="5y8-iS-kZP"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="O6p-VP-AUB"/>
                                                                                 </connections>
                                                                             </button>
                                                                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Qh9-lw-g46" customClass="ColorCheckbox">
@@ -240,7 +230,7 @@
                                                                                     <userDefinedRuntimeAttribute type="string" keyPath="colorName" value="magenta"/>
                                                                                 </userDefinedRuntimeAttributes>
                                                                                 <connections>
-                                                                                    <action selector="toggleColorFilter:" target="-2" id="zs3-7B-e4u"/>
+                                                                                    <action selector="toggleColorFilter:" target="7yW-8d-gb9" id="feF-l3-cqF"/>
                                                                                 </connections>
                                                                             </button>
                                                                         </subviews>
@@ -298,7 +288,7 @@
                                                                             </menu>
                                                                         </popUpButtonCell>
                                                                         <connections>
-                                                                            <action selector="filterByCharacter:" target="-2" id="Pln-11-VKO"/>
+                                                                            <action selector="filterByCharacter:" target="7yW-8d-gb9" id="UiI-sU-hG5"/>
                                                                         </connections>
                                                                     </popUpButton>
                                                                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Fsz-Ri-m8r">
@@ -318,7 +308,7 @@
                                                                             <font key="font" metaFont="system"/>
                                                                         </buttonCell>
                                                                         <connections>
-                                                                            <action selector="resetCharacterFilter:" target="-2" id="Ge7-zd-ETF"/>
+                                                                            <action selector="resetCharacterFilter:" target="7yW-8d-gb9" id="rVu-Z5-4Q4"/>
                                                                         </connections>
                                                                     </button>
                                                                     <button hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xyx-ug-UXG">
@@ -329,7 +319,7 @@
                                                                             <font key="font" metaFont="system"/>
                                                                         </buttonCell>
                                                                         <connections>
-                                                                            <action selector="resetColorFilters:" target="-2" id="Ngr-nJ-hAd"/>
+                                                                            <action selector="resetColorFilters:" target="7yW-8d-gb9" id="xjn-uV-KqD"/>
                                                                         </connections>
                                                                     </button>
                                                                 </subviews>
@@ -370,13 +360,13 @@
                                                                 <constraint firstAttribute="height" constant="35" id="yM7-wa-yCE"/>
                                                             </constraints>
                                                         </box>
-                                                        <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
+                                                        <scrollView appearanceType="darkAqua" borderType="none" autohidesScrollers="YES" horizontalLineScroll="24" horizontalPageScroll="10" verticalLineScroll="24" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
                                                             <rect key="frame" x="0.0" y="110" width="300" height="431"/>
                                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                                 <rect key="frame" x="0.0" y="0.0" width="300" height="431"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" indentationPerLevel="2" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
+                                                                    <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" indentationPerLevel="2" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                         <rect key="frame" x="0.0" y="0.0" width="300" height="431"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <size key="intercellSpacing" width="0.0" height="9"/>
@@ -397,9 +387,21 @@
                                                                             </tableColumn>
                                                                         </tableColumns>
                                                                         <connections>
-                                                                            <outlet property="dataSource" destination="-2" id="loZ-ZJ-rVQ"/>
-                                                                            <outlet property="delegate" destination="-2" id="RqU-Db-rm4"/>
+                                                                            <outlet property="blueCheck" destination="ilD-zy-XUu" id="YEt-hb-55S"/>
+                                                                            <outlet property="brownCheck" destination="H6k-me-4mN" id="hyL-Qh-FgD"/>
+                                                                            <outlet property="characterBox" destination="uDe-RI-kOI" id="ZUC-7F-EXt"/>
+                                                                            <outlet property="cyanCheck" destination="vqm-UG-kIN" id="SLE-sn-bTo"/>
+                                                                            <outlet property="editorDelegate" destination="-2" id="FY9-Fe-Bz0"/>
+                                                                            <outlet property="filterView" destination="YvO-D4-qDL" id="R7W-Mq-ord"/>
+                                                                            <outlet property="greenCheck" destination="vch-pB-KcR" id="itm-eJ-lT5"/>
+                                                                            <outlet property="magentaCheck" destination="Qh9-lw-g46" id="wJQ-JK-Sgd"/>
                                                                             <outlet property="menu" destination="Tqc-M2-IZ5" id="e7B-0a-jMc"/>
+                                                                            <outlet property="orangeCheck" destination="6lp-Oc-waP" id="4Xl-Kg-o42"/>
+                                                                            <outlet property="outlineSearchField" destination="wQe-ic-Dmm" id="eJ9-Yv-H3Q"/>
+                                                                            <outlet property="pinkCheck" destination="X9R-Ze-hyZ" id="jld-ds-6Xd"/>
+                                                                            <outlet property="redCheck" destination="dCo-x8-fiM" id="89n-JE-Gyh"/>
+                                                                            <outlet property="resetCharacterFilterButton" destination="rNr-qe-M65" id="VdZ-d2-okb"/>
+                                                                            <outlet property="resetColorFilterButton" destination="Xyx-ug-UXG" id="MJU-Ok-NTB"/>
                                                                             <outlet property="touchBar" destination="FXM-lH-N3d" id="w3J-ix-faK"/>
                                                                         </connections>
                                                                     </outlineView>
@@ -1304,7 +1306,7 @@ Gw
                     <button hidden="YES" verticalHuggingPriority="750" id="gk2-l6-n92">
                         <rect key="frame" x="117" y="82" width="43" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="bevel" title="▶" bezelStyle="regularSquare" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="tcN-5X-A5X">
+                        <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" imagePosition="overlaps" alignment="center" imageScaling="proportionallyDown" inset="2" id="tcN-5X-A5X">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system" size="24"/>
                         </buttonCell>
@@ -1627,7 +1629,7 @@ Gw
             <rect key="frame" x="0.0" y="0.0" width="208" height="248"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="djE-wS-Oh2">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="djE-wS-Oh2">
                     <rect key="frame" x="65" y="179" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbers" id="FcY-wT-YPP">
@@ -1636,16 +1638,16 @@ Gw
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="Ce8-Oa-473">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ce8-Oa-473">
                     <rect key="frame" x="65" y="149" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Page Numbers" id="JLw-Th-DgB">
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Page Numbers" usesSingleLineMode="YES" id="JLw-Th-DgB">
                         <font key="font" usesAppearanceFont="YES"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="IdW-3r-Koe">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="IdW-3r-Koe">
                     <rect key="frame" x="65" y="50" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Revision Mode" id="fPt-b4-RaB">
@@ -1654,7 +1656,7 @@ Gw
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <customView fixedFrame="YES" id="bKc-za-gPA" customClass="ITSwitch">
+                <customView id="bKc-za-gPA" customClass="ITSwitch">
                     <rect key="frame" x="20" y="176" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
@@ -1667,7 +1669,7 @@ Gw
                         <action selector="toggleQuickSetting:" target="-2" id="DVa-Kw-jnR"/>
                     </connections>
                 </customView>
-                <customView fixedFrame="YES" id="Mef-QD-NsX" customClass="ITSwitch">
+                <customView id="Mef-QD-NsX" customClass="ITSwitch">
                     <rect key="frame" x="20" y="146" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
@@ -1679,7 +1681,7 @@ Gw
                         <action selector="toggleQuickSetting:" target="-2" id="bF7-Zr-EC1"/>
                     </connections>
                 </customView>
-                <customView fixedFrame="YES" id="EIZ-TU-2Aq" customClass="ITSwitch">
+                <customView id="EIZ-TU-2Aq" customClass="ITSwitch">
                     <rect key="frame" x="20" y="47" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
@@ -1691,11 +1693,11 @@ Gw
                         <action selector="toggleQuickSetting:" target="-2" id="2tK-eG-b7e"/>
                     </connections>
                 </customView>
-                <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" id="AYf-SB-Uer">
+                <box verticalHuggingPriority="750" boxType="separator" id="AYf-SB-Uer">
                     <rect key="frame" x="12" y="80" width="184" height="5"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="ZZf-h8-5r0">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ZZf-h8-5r0">
                     <rect key="frame" x="18" y="212" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Quick Settings" id="mg9-HW-sgj">
@@ -1704,7 +1706,7 @@ Gw
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="Ems-vl-Z7w">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ems-vl-Z7w">
                     <rect key="frame" x="18" y="26" width="75" height="11"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Revision Color" id="Teo-oJ-Dwq">
@@ -1713,7 +1715,7 @@ Gw
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" id="qQI-Yr-iVj" userLabel="Revision Color">
+                <popUpButton verticalHuggingPriority="750" id="qQI-Yr-iVj" userLabel="Revision Color">
                     <rect key="frame" x="95" y="18" width="102" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Blue" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="Thz-O0-hCD" id="RQ5-js-cwq">
@@ -1740,11 +1742,11 @@ Gw
                         <action selector="selectRevisionColor:" target="-2" id="hrf-a4-FEG"/>
                     </connections>
                 </popUpButton>
-                <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" id="Dv8-Ik-EDY">
+                <box verticalHuggingPriority="750" boxType="separator" id="Dv8-Ik-EDY">
                     <rect key="frame" x="12" y="129" width="184" height="5"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" id="WkG-bA-E2d">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WkG-bA-E2d">
                     <rect key="frame" x="65" y="99" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Dark Mode" id="vbP-uh-iii">
@@ -1753,7 +1755,7 @@ Gw
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <customView fixedFrame="YES" id="S22-Mw-UkV" customClass="ITSwitch">
+                <customView id="S22-Mw-UkV" customClass="ITSwitch">
                     <rect key="frame" x="20" y="96" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>

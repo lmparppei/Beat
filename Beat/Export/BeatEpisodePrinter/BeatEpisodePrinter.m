@@ -236,7 +236,8 @@
 		NSError *error;
 		
 		// Begin the document
-		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:self.doc];
+		// WIP: Add a toggle switch for scene number printing!!!
+		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:self.doc printSceneNumbers:YES];
 		NSString *header = htmlScript.htmlHeader;
 		NSString *footer = htmlScript.htmlFooter;
 	
@@ -279,7 +280,7 @@
 	[settings readSettingsAndReturnRange:text];
 	
 	ContinousFountainParser *parser = [[ContinousFountainParser alloc] staticParsingWithString:text settings:settings];
-	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:[parser scriptForPrinting] document:_doc];
+	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:[parser scriptForPrinting] document:_doc printSceneNumbers:YES];
 	
 	return htmlScript.content;
 }

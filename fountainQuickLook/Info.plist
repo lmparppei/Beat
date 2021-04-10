@@ -26,10 +26,6 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
-			<key>QLSupportedContentTypes</key>
-			<array>
-				<string>fi.KAPITAN.fountain</string>
-			</array>
 			<key>QLSupportsSearchableItems</key>
 			<true/>
 		</dict>

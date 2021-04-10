@@ -7,12 +7,31 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "OutlineScene.h"
+#import "SceneFiltering.h"
+#import "Line.h"
+#import "BeatEditorDelegate.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface BeatOutlineView : NSOutlineView
-@property (nonatomic) NSInteger currentScene;
-@property (weak) IBOutlet NSTouchBar *touchBar;
+@protocol BeatOutlineViewEditorDelegate <NSObject>
+@property (readonly, nonatomic) OutlineScene *currentScene;
+@property (nonatomic) bool outlineEdit;
+@property (readonly, nonatomic) NSMutableArray *outline;
+- (NSMutableArray*)lines;
+- (NSMutableArray*)getOutlineItems;
+- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
+- (void)scrollToScene:(OutlineScene*)scene;
+- (void)maskScenes;
 @end
 
-NS_ASSUME_NONNULL_END
+@interface BeatOutlineView : NSOutlineView <NSOutlineViewDelegate, NSOutlineViewDataSource>
+@property (nonatomic, weak) IBOutlet id<BeatOutlineViewEditorDelegate, BeatEditorDelegate> editorDelegate;
+@property (nonatomic) NSInteger currentScene;
+@property (weak) IBOutlet NSTouchBar *touchBar;
+@property (nonatomic) bool editing;
+
+@property (nonatomic) NSMutableArray *filteredOutline;
+@property (nonatomic) SceneFiltering *filters;
+
+-(void)reloadOutline;
+- (void)scrollToScene:(OutlineScene*)scene;
+@end

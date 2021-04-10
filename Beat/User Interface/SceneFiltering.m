@@ -48,7 +48,8 @@
     if (self) {
 		_text = @"";
 		_colors = [NSMutableArray array];
-		_filteredScenes = [NSMutableArray array];
+		_scenes = [NSMutableArray array];
+		_lines = [NSMutableArray array];
 		_analysis = [[FountainAnalysis alloc] init];
     }
     return self;
@@ -61,17 +62,17 @@
 }
 
 - (bool)activeFilters {
-	if ([_text length] || [_character length] || [_colors count]) return YES;
+	if (_text.length || _character.length || _colors.count) return YES;
 	return NO;
 }
 - (bool)filterText {
-	if ([_text length]) return YES; else return NO;
+	if (_text.length) return YES; else return NO;
 }
 - (bool)filterColor {
-	if ([_colors count]) return YES; else return NO;
+	if (_colors.count) return YES; else return NO;
 }
 - (bool)filterCharacter {
-	if ([_scenes count] > 0 && [_character length] > 0) return YES; else return NO;
+	if (_character.length > 0) return YES; else return NO;
 }
 
 - (void)byText:(NSString*)string {
@@ -85,15 +86,10 @@
 }
 - (void)byCharacter:(NSString*)character {
 	_character = [NSString stringWithString:character];
-	[_filteredScenes removeAllObjects];
-		
-	[self.analysis setupScript:_lines scenes:_scenes];
-	_filteredScenes = [self.analysis scenesWithCharacter:_character onlyDialogue:NO];
 }
 
 - (void)resetScenes {
 	_character = @"";
-	[_filteredScenes removeAllObjects];
 }
 
 // This updates the lines + scenes pointers if we need them later
@@ -106,14 +102,11 @@
 	bool matchSearch = NO;
 	bool matchCharacter = NO;
 	bool matchColor = NO;
-
+	
 	// NOTE: the prefiltered scene array has to be updated EVERY TIME the outline is reloaded
 	if ([self filterCharacter]) {
-		if ([_filteredScenes indexOfObject:scene] == NSNotFound) {
-			matchCharacter = NO;
-		} else {
-			matchCharacter = YES;
-		}
+		if ([scene.characters containsObject:self.character]) matchCharacter = YES;
+		else matchCharacter = NO;
 	}
 		
 	if ([scene.string rangeOfString:_text options:NSCaseInsensitiveSearch].location != NSNotFound) {

@@ -10,9 +10,11 @@
  
  This module prints out both the screen and print versions of the scene cards.
  Note that WebPrinter IS NOT agnostic or reusable anywhere, it's specifically
- customized for use with scene cards and has forced landscape paper orientation.
+ customized for use with scene cards, and has forced landscape paper orientation.
 
  This is a very undocumented piece of code.
+ AND, MIGHT I ADD some time later, this is a bunch of horrible spaghetti. I have no idea
+ what I've been thinking while writing this shit. The whole class should rewritten ASAP.
  
  */
 
@@ -107,24 +109,28 @@
 	NSInteger index = 0;
 
 	for (OutlineScene *scene in [self.delegate getOutlineItems]) {
-		if (scene.line.type != synopse) {
-			NSDictionary *sceneCard = @{
-				@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
-				@"name": (scene.string) ? scene.line.stripFormattingCharacters : @"",
-				@"title": (scene.string) ? scene.line.stripFormattingCharacters : @"", // for weird backwards compatibility stuff
-				@"color": (scene.color) ? [scene.color lowercaseString] : @"",
-				@"snippet": [self snippet:scene],
-				@"type": [[scene.line typeAsString] lowercaseString],
-				@"sceneIndex": [NSNumber numberWithInteger:index],
-				@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
-				@"position": [NSNumber numberWithInteger:scene.sceneStart],
-				@"lineIndex": [NSNumber numberWithInteger:[_delegate.lines indexOfObject:scene.line]],
-				@"omited": [NSNumber numberWithBool:scene.omited],
-				@"depth": [NSNumber numberWithInteger:scene.sectionDepth]
-			};
-			
-			[sceneCards addObject:sceneCard];
+		if (scene.type == synopse ||
+			(scene.type == section && scene.line.sectionDepth > 1)) {
+			index++;
+			continue;
 		}
+		
+		NSDictionary *sceneCard = @{
+			@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
+			@"name": (scene.string) ? scene.line.stripFormattingCharacters : @"",
+			@"title": (scene.string) ? scene.line.stripFormattingCharacters : @"", // for weird backwards compatibility stuff
+			@"color": (scene.color) ? [scene.color lowercaseString] : @"",
+			@"snippet": [self snippet:scene],
+			@"type": [[scene.line typeAsString] lowercaseString],
+			@"sceneIndex": [NSNumber numberWithInteger:index],
+			@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
+			@"position": [NSNumber numberWithInteger:scene.sceneStart],
+			@"lineIndex": [NSNumber numberWithInteger:[_delegate.lines indexOfObject:scene.line]],
+			@"omited": [NSNumber numberWithBool:scene.omited],
+			@"depth": [NSNumber numberWithInteger:scene.sectionDepth]
+		};
+		
+		[sceneCards addObject:sceneCard];
 		
 		index++;
 	}

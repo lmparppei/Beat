@@ -11,35 +11,37 @@
 #import "Line.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
-// For the imagined scripting module
+// JavaScript interface
 @protocol OutlineSceneExports <JSExport>
-@property NSString * sceneNumber;
-@property NSString * color;
+@property (nonatomic) NSString * sceneNumber;
+@property (nonatomic) NSString * color;
 @property (nonatomic) Line * line;
 @property (strong, nonatomic) NSString * string;
-@property NSArray * storylines;
-@property NSUInteger sceneStart;
-@property NSUInteger sceneLength;
-@property NSInteger sectionDepth;
-@property bool omited;
+@property (nonatomic) NSArray * storylines;
+@property (nonatomic) NSUInteger sceneStart;
+@property (nonatomic) NSUInteger sceneLength;
+@property (nonatomic) NSInteger sectionDepth;
+@property (nonatomic) bool omited;
+@property (nonatomic) NSMutableArray * characters;
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;
 @end
 
 @interface OutlineScene : NSObject <OutlineSceneExports>
-@property NSMutableArray * scenes;
+@property (nonatomic) NSMutableArray * scenes;
 @property (strong, nonatomic) NSString * string;
-@property LineType type;
-@property NSString * sceneNumber;
-@property NSString * color;
-@property NSArray * storylines;
-@property NSUInteger sceneStart;
-@property NSUInteger sceneLength;
-@property NSInteger sectionDepth;
+@property (nonatomic) LineType type;
+@property (nonatomic) NSString * sceneNumber;
+@property (nonatomic) NSString * color;
+@property (nonatomic) NSArray * storylines;
+@property (nonatomic) NSUInteger sceneStart;
+@property (nonatomic) NSUInteger sceneLength;
+@property (nonatomic) NSInteger sectionDepth;
+@property (nonatomic) NSMutableArray * characters;
 
-@property bool omited;
-@property bool noOmitIn;
-@property bool noOmitOut;
+@property (nonatomic) bool omited;
+@property (nonatomic) bool noOmitIn;
+@property (nonatomic) bool noOmitOut;
 
 @property (nonatomic) Line * line; // Is this overkill regarding memory? Isn't this just a pointer?
 

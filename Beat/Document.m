@@ -79,7 +79,6 @@
  
 */
 
-#import <Python/Python.h>
 #import <WebKit/WebKit.h>
 #import <Foundation/Foundation.h>
 #import "Document.h"
@@ -197,46 +196,11 @@
 @property BOOL outlineViewVisible;
 @property (nonatomic) NSMutableArray *outlineClosedSections;
 @property (weak) IBOutlet NSMenu *colorMenu;
-@property BOOL outlineEdit;
 
 // Outline view filtering
-@property (nonatomic) NSMutableArray *filteredOutline;
 @property (weak) IBOutlet NSBox *filterView;
 @property (weak) IBOutlet NSLayoutConstraint *filterViewHeight;
 @property (weak) IBOutlet NSPopUpButton *characterBox;
-@property (nonatomic) SceneFiltering *filters;
-@property (weak) IBOutlet NSButton *resetColorFilterButton;
-@property (weak) IBOutlet NSButton *resetCharacterFilterButton;
-
-// Fuck you macOS & Apple. For two things, particulary:
-//
-// 1) IBOutletCollection is iOS-only
-// 2) This computer (and my phone and everything else) is made in
-//    horrible conditions in some sweatshop in China, just to add
-//    to your fucking sky-high profits, you fucking despicable capitalist fucks.
-//
-//    You are the most profitable company operating in our current monetary
-//    and economic system. EQUALITY, WELFARE AND FREEDOM FOR EVERYONE.
-//    FUCK YOU, APPLE.
-//
-//    2020 edit: FUCK YOU EVEN MORE, fucking capitalist motherfuckers, for
-//    allowing UIGHUR SLAVE LABOUR in your subcontracting factories, you fucking
-//    pieces of human garbage!!! Go fuck yourself, Apple. Fucking evil corp!!!
-//
-//    2021 edit: YOU STILL HAVEN'T FIXED ANY OF THE PROBLEMS STATED ABOVE.
-//	  If you can't make a big enough profit without using slave labour, maybe
-//    you should go FUCK YOURSELVES.
-
-//    So, back to the code:
-
-@property (weak) IBOutlet ColorCheckbox *redCheck;
-@property (weak) IBOutlet ColorCheckbox *blueCheck;
-@property (weak) IBOutlet ColorCheckbox *greenCheck;
-@property (weak) IBOutlet ColorCheckbox *orangeCheck;
-@property (weak) IBOutlet ColorCheckbox *cyanCheck;
-@property (weak) IBOutlet ColorCheckbox *brownCheck;
-@property (weak) IBOutlet ColorCheckbox *magentaCheck;
-@property (weak) IBOutlet ColorCheckbox *pinkCheck;
 
 // Views
 @property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
@@ -375,7 +339,7 @@
 
 #define SECTION_FONT_SIZE 20.0 // base value for section sizes
 #define FONT_SIZE 17.92 // 19.5 for Inconsolata
-#define LINE_HEIGHT 1.03 // 1.15 for Inconsolata
+#define LINE_HEIGHT 1.1 // 1.15 for Inconsolata
 
 #define DOCUMENT_WIDTH 630
 #define TEXT_INSET_TOP 80
@@ -472,10 +436,10 @@
 	self.currentLine = nil;
 	self.sceneCards = nil;
 	self.paginator = nil;
-	self.filters = nil;
+	self.outlineView.filters = nil;
 	self.sceneCards = nil;
 	self.outline = nil;
-	self.filteredOutline = nil;
+	self.outlineView.filteredOutline = nil;
 	self.tagging = nil;
 	self.itemsToValidate = nil;
 	self.documentSettings = nil;
@@ -590,7 +554,7 @@
 	} else {
 		self.showPageNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
 	}
-	
+
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:PRINT_SCENE_NUMBERS_KEY]) {
 		self.printSceneNumbers = YES;
 	} else {
@@ -599,8 +563,10 @@
 
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_SCENE_LABELS_KEY]) {
 		self.showSceneNumberLabels = YES;
+		self.printSceneNumbers = YES;
 	} else {
 		self.showSceneNumberLabels = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_SCENE_LABELS_KEY];
+		self.printSceneNumbers = self.showSceneNumberLabels;
 	}
 }
 
@@ -822,7 +788,7 @@
 	[self updateLayout];
 }
 
-- (void) zoom: (bool) zoomIn {
+- (void)zoom:(bool)zoomIn {
 	if (!_scaleFactor) _scaleFactor = _magnification;
 	CGFloat oldMagnification = _magnification;
 	
@@ -835,8 +801,6 @@
 	} else {
 		if (_magnification > 0.8) _magnification -= 0.04;
 	}
-	if (_magnification == 0.98) NSLog(@"problemz");
-	NSLog(@"mag %f", _magnification);
 
 	// If magnification did change, scale the view
 	if (oldMagnification != _magnification) {
@@ -855,12 +819,13 @@
 		NSRect clipFrame = _textClipView.frame;
 		clipFrame.size.height = _textClipView.superview.frame.size.height * _magnification;
 		_textClipView.frame = clipFrame;
-				
+		
 		[self ensureLayout];
 		
 		[[NSUserDefaults standardUserDefaults] setFloat:_magnification forKey:MAGNIFYLEVEL_KEY];
 	}
 	
+	[self.textView setInsets];
 	[self updateLayout];
 	[self ensureLayout];
 	[self ensureCaret];
@@ -874,11 +839,11 @@
 
 - (void)ensureLayout {
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-	[self.textView setNeedsDisplay:YES];
 	
 	// When ensuring layout, we'll update all scene number labels
-	[self.textView updatePageNumbers];
-	[self.textView updateSceneLabelsFrom:0];
+	if (self.showPageNumbers) [self.textView updatePageNumbers];
+	if (self.showSceneNumberLabels) [self.textView updateSceneLabelsFrom:0];
+	[self.textView setNeedsDisplay:YES];
 }
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
@@ -1017,8 +982,8 @@
 - (void)setupTextView {
 	self.textView.editable = YES;
 	
-	self.textView.textContainer.widthTracksTextView = false;
-	self.textView.textContainer.heightTracksTextView = false;
+	self.textView.textContainer.widthTracksTextView = NO;
+	self.textView.textContainer.heightTracksTextView = NO;
 	
 	// Set textView style
 	self.textView.font = self.courier;
@@ -1164,19 +1129,26 @@
 }
 
 - (OutlineScene*)getPreviousScene {
-	NSArray * scenes = self.parser.scenes;
-	if (scenes.count == 0) return nil;
+	NSArray *outline = [self getOutlineItems];
+	if (outline.count == 0) return nil;
 	
-	_currentScene = [self getCurrentScene];
-	if (!_currentScene) return nil;
+	NSInteger position = self.selectedRange.location;
 	
-	NSInteger index = [scenes indexOfObject:_currentScene];
+	Line * currentLine = [self getLineAt:position];
+	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] ;
+	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
 	
-	if (index - 1 >= 0 && index < scenes.count) {
-		return [scenes objectAtIndex:index - 1];
-	} else {
-		return nil;
+	for (NSInteger i = lineIndex - 1; i >= 0; i--) {
+		Line* line = self.parser.lines[i];
+		
+		if (line.type == heading || line.type == section) {
+			for (OutlineScene *scene in outline) {
+				if (scene.line == line) return scene;
+			}
+		}
 	}
+	
+	return nil;
 }
 - (OutlineScene*)getNextScene {
 	NSArray *outline = [self getOutlineItems];
@@ -1615,7 +1587,7 @@
 	[self updatePreview];
 	
 	// Draw masks again if text did change
-	if (_filteredOutline.count) [self maskScenes];
+	if (_outlineView.filteredOutline.count) [self maskScenes];
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -1659,12 +1631,12 @@
 		if (self.outlineViewVisible) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
 				[self reloadOutline];
-				if (self.currentScene) [self scrollOutlineToCurrentScene:self.currentScene];
+				if (self.currentScene) [self.outlineView scrollToScene:self.currentScene];
 				
-				if (self.filteredOutline.count < 1) {
+				if (self.outlineView.filteredOutline.count < 1) {
 					self.outlineView.currentScene = sceneIndex;
 				} else {
-					self.outlineView.currentScene = [self.filteredOutline indexOfObject:self.currentScene];
+					self.outlineView.currentScene = [self.outlineView.filteredOutline indexOfObject:self.currentScene];
 				}
 			});
 		}
@@ -2238,7 +2210,7 @@
 
 	
 	if (![attributes valueForKey:NSFontAttributeName]) {
-		[attributes setObject:[self courier] forKey:NSFontAttributeName];
+		[attributes setObject:self.courier forKey:NSFontAttributeName];
 	}
 	if (![attributes valueForKey:NSForegroundColorAttributeName]) {
 		[attributes setObject:self.themeManager.textColor forKey:NSForegroundColorAttributeName];
@@ -2404,6 +2376,9 @@
 }
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
+	// Don't add a nil value
+	if (!value) return;
+	
 	NSUInteger symLen = sym.length;
 	NSRange openRange = (NSRange){ range.location, symLen };
 	NSRange closeRange = (NSRange){ range.location + range.length - symLen, symLen };
@@ -2452,7 +2427,9 @@
 - (void)scrollToScene:(OutlineScene*)scene {
 	NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
 	[self.textView setSelectedRange:lineRange];
-	[self.textView scrollRangeToVisible:lineRange];
+	//[self.textView scrollRangeToVisible:lineRange];
+	[self.textView scrollToRange:lineRange];
+	[_thisWindow makeFirstResponder:_textView];
 }
 - (void)scrollToRange:(NSRange)range {
 	[self.textView setSelectedRange:range];
@@ -2575,31 +2552,6 @@
 	_boldCourier = [NSFont fontWithName:@"Courier Prime Sans Bold" size:[self fontSize]];
 	_italicCourier = [NSFont fontWithName:@"Courier Prime Sans Italic" size:[self fontSize]];
 }
-/*
-- (NSFont*)courier
-{
-    if (!_courier) {
-		_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
-    }
-    return _courier;
-}
-
-- (NSFont*)boldCourier
-{
-    if (!_boldCourier) {
-        _boldCourier = [NSFont fontWithName:@"Courier Prime Sans Bold" size:[self fontSize]];
-    }
-    return _boldCourier;
-}
-
-- (NSFont*)italicCourier
-{
-    if (!_italicCourier) {
-        _italicCourier = [NSFont fontWithName:@"Courier Prime Sans Italic" size:[self fontSize]];
-    }
-    return _italicCourier;
-}
-*/
  
 - (NSFont*)sectionFont
 {
@@ -3033,7 +2985,8 @@ static NSString *revisionAttribute = @"Revision";
 				else if ([key isEqualToString:@"Removal"]) type = RevisionRemoval;
 				else type = RevisionNone;
 				
-				[self.textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionAddition color:color] range:range];
+				BeatRevisionItem *revisionItem = [BeatRevisionItem type:RevisionAddition color:color];
+				if (revisionItem) [self.textView.textStorage addAttribute:revisionAttribute value:revisionItem range:range];
 			}
 		}
 	}
@@ -3075,26 +3028,17 @@ static NSString *revisionAttribute = @"Revision";
 
 - (void)markRangeAsAddition:(NSRange)range {
 	BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition color:_revisionColor];
-	[_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
-	//[_textView.textStorage addAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor range:range];
+	if (revision) [_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
 	[self forceFormatChangesInRange:range];
 }
 - (void)markRangeForRemoval:(NSRange)range {
 	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionRemoval];
-	[_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
-	/*
-	[_textView.textStorage addAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] range:range];
-	[_textView.textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
-	[_textView.textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:range];
-	 */
+	if (revision) [_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
 	[self forceFormatChangesInRange:range];
 }
 - (void)clearReviewMarkers:(NSRange)range {
-	[_textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionNone] range:range];
-	/*
-	[_textView.textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:range];
-	[_textView.textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
-	 */
+	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionNone];
+	if (revision) [_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
 	[self forceFormatChangesInRange:range];
 }
 
@@ -3453,11 +3397,13 @@ static NSString *revisionAttribute = @"Revision";
 	
 	[self updateQuickSettings];
 }
-
+- (void)setPrintSceneNumbers:(bool)value {
+	_printSceneNumbers = value;
+	[[NSUserDefaults standardUserDefaults] setBool:self.printSceneNumbers forKey:PRINT_SCENE_NUMBERS_KEY];
+}
 - (IBAction)togglePrintSceneNumbers:(id)sender
 {
 	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	
 	for (Document* doc in openDocuments) {
 		doc.printSceneNumbers = !doc.printSceneNumbers;
 	}
@@ -3520,7 +3466,7 @@ static NSString *revisionAttribute = @"Revision";
 		[self.textView setNeedsDisplay:YES];
 		[self.textView setNeedsDisplayInRect:self.textView.frame avoidAdditionalLayout:YES];
 	}
-	[doc.textView setInsertionPointColor:[BeatColors color:@"blue"]];
+	[doc.textView setInsertionPointColor:self.themeManager.caretColor];
 			
 	// Set global background
 	doc.backgroundView.fillColor = self.themeManager.currentOutlineBackground;
@@ -3531,6 +3477,7 @@ static NSString *revisionAttribute = @"Revision";
 	doc.marginView.marginColor = self.themeManager.currentMarginColor;
 	
 	[doc updateUIColors];
+	[doc.textView setNeedsDisplay:YES];
 }
 - (void)loadSelectedTheme:(bool)forAll
 {
@@ -3600,7 +3547,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)preview:(id)sender
 {
-    if ([self selectedTab] == 0) {
+    if (self.selectedTab == 0) {
 		// Do a synchronous refresh of the preview if the preview is not available
 		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
 		else {
@@ -3666,7 +3613,7 @@ static NSString *revisionAttribute = @"Revision";
 			self.htmlString = html;
 			
 			self.previewUpdated = YES;
-
+			
 			if (updateUI || self.printPreview) {
 				dispatch_async(dispatch_get_main_queue(), ^(void){
 					//[[self.webView mainFrame] loadHTMLString:html baseURL:nil];
@@ -3686,6 +3633,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 - (void)cancelOperation:(id) sender
 {
+	// ESCAPE KEY pressed
 	if (_printPreview) [self preview:nil];
 	if (_cardsVisible) [self toggleCards:nil];
 }
@@ -3775,47 +3723,27 @@ static NSString *revisionAttribute = @"Revision";
 
 - (void)setupOutlineView {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
-	
-	self.filters = [[SceneFiltering alloc] init];
-	self.filteredOutline = [[NSMutableArray alloc] init];
 	[self hideFilterView];
-	
-	// Initialize drag & drop for outline view
-	[self.outlineView registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
-	[self.outlineView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
 }
 
-- (NSMutableArray *) getOutlineItems {
+- (NSMutableArray *)getOutlineItems {
 	// Make a copy of the outline to avoid threading issues
 	NSMutableArray * outlineItems = [NSMutableArray arrayWithArray:self.parser.outline];
 	return outlineItems;
 }
 
-- (void) filterOutline {
-	// We don't need to GET outline at this point, let's use the cached one
-	[_filteredOutline removeAllObjects];
-	if (![_filters activeFilters]) return;
-	
-	if ([_filters.character length] > 0) {
-		[_filters setScript:self.parser.lines scenes:[self getOutlineItems]];
-		[_filters byCharacter:self.filters.character];
-	} else {
-		[_filters resetScenes];
-	}
-
-	for (OutlineScene * scene in _outline) {
-		//NSLog(@"%@ - %@", scene.string, [_filters match:scene] ? @"YES" : @"NO");
-        if ([_filters match:scene]) [_filteredOutline addObject:scene];
-	}
+- (NSMutableArray*)filteredOutline {
+	return self.outlineView.filteredOutline;
 }
 
 - (void)searchOutline {
+	// This should probably be moved to BeatOutlineView, too.
 	// Don't search if it's only spaces
 	if ([_outlineSearchField.stringValue containsOnlyWhitespace] || [_outlineSearchField.stringValue length] < 1) {
-        [_filters byText:@""];
+        [self.outlineView.filters byText:@""];
 	}
 	
-    [_filters byText:_outlineSearchField.stringValue];
+    [self.outlineView.filters byText:_outlineSearchField.stringValue];
     [self reloadOutline];
 	
 	// Mask scenes that were left out
@@ -3824,116 +3752,17 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Outline View data source, delegation & other madness
 
-- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
-{
-	// If we have a search term, let's use the filtered array
-	if ([_filters activeFilters]) {
-		return [_filteredOutline count];
-	} else {
-		return [[self getOutlineItems] count];
-	}
-}
+/*
+ 
+ Could we move all of this into another class? Just hook it in IB and so on.
+ 
+ */
 
-- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(nullable id)item
-{
-	// If there is a search term, let's search the filtered array
-	if ([_filters activeFilters]) {
-		return [_filteredOutline objectAtIndex:index];
-	} else {
-		return [[self getOutlineItems] objectAtIndex:index];
-	}
-}
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
-{
-	return NO;
-}
-
-// Outline items
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
-{ @autoreleasepool {
-    if ([item isKindOfClass:[OutlineScene class]]) {
-		// Note: OutlineViewItem returns an NSMutableAttributedString
-		return [OutlineViewItem withScene:item currentScene:_currentScene];
-    }
-    return @"";
-	
-} }
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
-{
-	if ([item isKindOfClass:[OutlineScene class]]) {
-		[self scrollToScene:item];
-		[_thisWindow makeFirstResponder:_textView];
-	}
-	return NO;
-}
-
-- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems {
-	//_draggedNodes = draggedItems;
-	[session.draggingPasteboard setData:[NSData data] forType:LOCAL_REORDER_PASTEBOARD_TYPE];
-}
-
-- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation {
-	// ?
-}
-
-
-- (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item{
-	// Don't allow reordering a filtered list
-	if ([_filters activeFilters]) return nil;
-	
-	OutlineScene *scene = (OutlineScene*)item;
-	_draggedScene = scene;
-	
-	NSPasteboardItem *pboardItem = [[NSPasteboardItem alloc] init];
-	[pboardItem setString:scene.string forType: NSPasteboardTypeString];
-	return pboardItem;
-}
-
-- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index{
-	
-	// Don't allow reordering a filtered list
-	if ([_filters activeFilters]) return NSDragOperationNone;
-	
-	// Don't allow dropping INTO scenes
-	OutlineScene *targetScene = (OutlineScene*)targetItem;
-	if ([targetScene.string length] > 0 || index < 0) return NSDragOperationNone;
-	
-	return NSDragOperationMove;
-}
-
-- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index{
-
-	// Don't allow reordering a filtered list
-	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return NSDragOperationNone;
-	
-	NSMutableArray *outline = [self getOutlineItems];
-	
-	NSInteger to = index;
-	NSInteger from = [outline indexOfObject:_draggedScene];
-	
-	if (from == to || from  == to - 1) return NO;
-	
-	// Let's move the scene
-	_outlineEdit = YES;
-	[self moveScene:_draggedScene from:from to:to];
-	_outlineEdit = NO;
-	return YES;
-}
-
-- (void) reloadOutline {
-	// Save outline scroll position
-	NSPoint scrollPosition = [[self.outlineScrollView contentView] bounds].origin;
-	
+- (void)reloadOutline {
 	// Create outline
 	_outline = [self getOutlineItems];
-	
-	[self filterOutline];
-	[self.outlineView reloadData];
-	
-	// Scroll back to original position after reload
-	[self.outlineScrollView.contentView scrollPoint:scrollPosition];
+	[self.outlineView reloadOutline];
+	return;
 }
 
 - (void)scrollOutlineToCurrentScene:(OutlineScene*)scene {
@@ -3952,7 +3781,7 @@ static NSString *revisionAttribute = @"Revision";
 	});
 }
 
-- (void) moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
+- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
 	// FOLLOWING CODE IS A MESS. Dread lightly.
 	// Thanks for the heads up, past me, but I'll just dive right in
 	
@@ -4252,18 +4081,20 @@ static NSString *revisionAttribute = @"Revision";
 	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
 }
 
+#pragma mark - Editor Delegate methods
 
-#pragma mark - Card view
-/*
+// This stuff is a mess.
 
- I'm sorry, but this whole thing should be rewritten.
- 
-*/
-
-// Delegate method for cards, but can be reused elsewhere too
-- (NSArray*)lines {
+- (NSMutableArray*)lines {
 	return self.parser.lines;
 }
+
+- (NSMutableArray *)scenes {
+	return [self getOutlineItems];
+}
+
+#pragma mark - Card view
+// I'm sorry, but this whole thing should be rewritten.
 
 - (IBAction) toggleCards: (id)sender {
 	if ([self selectedTab] != 2) {
@@ -4473,12 +4304,14 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)toggleSceneLabels: (id) sender {
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
+	
 	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
 	
-	if (self.showSceneNumberLabels) {
-		[self ensureLayout];
-	}
+	if (self.showSceneNumberLabels) [self ensureLayout];
 	else [self.textView deleteSceneNumberLabels];
+	
+	// Update the print preview accordingly
+	self.previewUpdated = NO;
 	
 	[self updateQuickSettings];
 }
@@ -4609,82 +4442,10 @@ static NSString *revisionAttribute = @"Revision";
 	[_filterViewHeight setConstant:0.0];
 }
 
-- (IBAction)toggleColorFilter:(id)sender {
-	ColorCheckbox *button = (ColorCheckbox*)sender;
-		
-	if (button.state == NSControlStateValueOn) {
-		// Apply color filter
-        [_filters addColorFilter:button.colorName];
-	} else {
-        [_filters removeColorFilter:button.colorName];
-	}
-	
-    // Hide / show button to reset filters
-    if ([_filters filterColor]) [_resetColorFilterButton setHidden:NO]; else [_resetColorFilterButton setHidden:YES];
-    
-    // Reload outline and set visual masks to apply the filter
-	[self reloadOutline];
-	[self maskScenes];
-}
-
-- (IBAction)resetColorFilters:(id)sender {
-    [_filters.colors removeAllObjects];
-    
-    // Read more about this (and my political views) in the property declarations
-    [_redCheck setState:NSControlStateValueOff];
-    [_blueCheck setState:NSControlStateValueOff];
-    [_greenCheck setState:NSControlStateValueOff];
-    [_orangeCheck setState:NSControlStateValueOff];
-    [_cyanCheck setState:NSControlStateValueOff];
-    [_brownCheck setState:NSControlStateValueOff];
-    [_magentaCheck setState:NSControlStateValueOff];
-    [_pinkCheck setState:NSControlStateValueOff];
-    
-    // Reload outline & reset masks
-    [self reloadOutline];
-    [self maskScenes];
-    
-    // Hide the button
-    [_resetColorFilterButton setHidden:YES];
-}
-
-- (IBAction)filterByCharacter:(id)sender {
-	NSString *characterName = _characterBox.selectedItem.title;
-	[_filters setScript:self.parser.lines scenes:[self getOutlineItems]];
-	
-	if ([characterName isEqualToString:@" "] || [characterName length] == 0) {
-        [self resetCharacterFilter:nil];
-		return;
-	}
-
-	[_filters byCharacter:characterName];
-    
-    // Reload outline and set visual masks to apply the filter
-	[self reloadOutline];
-	[self maskScenes];
-    
-    // Show the button to reset character filter
-    [_resetCharacterFilterButton setHidden:NO];
-}
-
-- (IBAction)resetCharacterFilter:(id)sender {
-    [_filters resetScenes];
-    _filters.character = @"";
-	
-    [self reloadOutline];
-	[self maskScenes];
-    
-    // Hide the button to reset filter
-    [_resetCharacterFilterButton setHidden:YES];
-    
-    // Select the first item (hopefully it exists by now)
-    [_characterBox selectItem:[_characterBox.itemArray objectAtIndex:0]];
-}
-
-- (void) maskScenes {
+- (void)maskScenes {
 	// If there is no filtered outline, just reset everything
 	[self.parser createOutline];
-	if (![_filteredOutline count]) {
+	if (!_outlineView.filteredOutline.count) {
 		[self.textView.masks removeAllObjects];
 		[self ensureLayout];
 		return;
@@ -4694,12 +4455,13 @@ static NSString *revisionAttribute = @"Revision";
 	NSMutableArray* masks = [NSMutableArray array];
 	[self.textView.masks removeAllObjects];
 
-	// Create flat outline if we don't have one
-	if (![_outline count]) _outline = [self getOutlineItems];
-	
 	for (OutlineScene* scene in _outline) {
+		NSLog(@"masking: %@", scene.string);
 		// Ignore this scene if it's contained in filtered scenes
-		if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) continue;
+		if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) {
+			NSLog(@" ... ignore");
+			continue;
+		}
 		NSRange sceneRange = NSMakeRange([scene sceneStart], [scene sceneLength]);
 
 		// Add scene ranges to TextView's masks
@@ -5066,10 +4828,7 @@ triangle walks
 
 - (IBAction)nextScene:(id)sender {
 	OutlineScene *scene = [self getNextScene];
-	
-	if (scene) {
-		[self scrollToScene:scene];
-	}
+	if (scene) [self scrollToScene:scene];
 }
 - (IBAction)previousScene:(id)sender {
 	OutlineScene *scene = [self getPreviousScene];

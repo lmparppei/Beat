@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import "OutlineScene.h"
 #import "BeatDocumentSettings.h"
+#import "BeatEditorDelegate.h"
 
 typedef enum : NSUInteger {
 	BeatPrintPreview = 0,
@@ -26,7 +27,7 @@ typedef enum : NSUInteger {
 @end
 
 @interface BeatPreview : NSObject
-@property (nonatomic, weak) id<BeatPreviewDelegate> delegate;
+@property (nonatomic, weak) id<BeatPreviewDelegate, BeatEditorDelegate> delegate;
 - (id) initWithDocument:(id)document;
 - (NSString*) createPreview;
 - (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType;

@@ -161,11 +161,11 @@
 }
 - (IBAction)selectSceneNumberPrinting:(id)sender {
 	if (_printSceneNumbers.state == NSOnState) {
-		_document.printSceneNumbers = YES;
+		[_document setPrintSceneNumbers:YES];
 	} else {
-		_document.printSceneNumbers = NO;
+		[_document setPrintSceneNumbers:NO];
 	}
-	
+
 	[self loadPreview];
 }
 

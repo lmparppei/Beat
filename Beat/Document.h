@@ -43,11 +43,12 @@ THE SOFTWARE.
 #import "BeatScriptParser.h"
 #import "BeatOutlineView.h"
 #import "BeatAnalysisPanel.h"
+#import "BeatEditorDelegate.h"
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatAnalysisDelegate, BeatTaggingDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatAnalysisDelegate, BeatTaggingDelegate, BeatEditorDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
@@ -78,6 +79,9 @@ THE SOFTWARE.
 - (IBAction)forceCharacter:(id)sender;
 - (OutlineScene*)getCurrentScene;
 
+- (void)setPrintSceneNumbers:(bool)value;
+- (IBAction)togglePrintSceneNumbers:(id)sender;
+
 // Analysis
 @property (nonatomic) NSMutableDictionary *characterGenders;
 
@@ -87,5 +91,8 @@ THE SOFTWARE.
 
 // Tagging
 @property (nonatomic) BeatEditorMode mode;
+
+@property (nonatomic, readwrite) bool outlineEdit;
+- (NSMutableArray*)filteredOutline;
 
 @end

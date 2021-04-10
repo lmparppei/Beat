@@ -10,6 +10,12 @@
  This is a very convoluted system.
  All hope abandon ye who enter here.
  
+ Note that we use a "clever" JavaScript hack to jump into the correct scene.
+ BeatHTMLScript writes a span element with scene number id into the content,
+ and we evaluate a "scroll to" JavaScript code whenever the print view is
+ opened. That happens in the document, if you were looking for it here,
+ as I was.
+ 
  */
 
 #import "BeatPreview.h"
@@ -64,7 +70,7 @@
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForQuickLook:script];
 		return html.html;
 	} else {
-		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPreview:script document:_document scene:[(id<BeatPreviewDelegate>)_delegate currentScene].sceneNumber];
+		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPreview:script document:_document scene:_delegate.currentScene.sceneNumber printSceneNumbers:_delegate.showSceneNumberLabels];
 		return html.html;
 	}
 }

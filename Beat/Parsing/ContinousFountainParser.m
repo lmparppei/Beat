@@ -547,7 +547,7 @@
 - (void)correctParsesInLines:(NSMutableIndexSet*)lineIndices
 {
     while (lineIndices.count > 0) {
-        [self correctParseInLine:[lineIndices lowestIndex] indicesToDo:lineIndices];
+        [self correctParseInLine:lineIndices.lowestIndex indicesToDo:lineIndices];
     }
 }
 
@@ -1398,7 +1398,6 @@ and incomprehensible system of recursion.
 			else item.string = line.stripNotes;
 			
 			// Add storylines to the storyline bank
-			// btw: this is a fully speculative feature, no idea if it'll be used
 			for (NSString* storyline in item.storylines) {
 				if (![_storylines containsObject:storyline]) [_storylines addObject:storyline];
 			}
@@ -1447,6 +1446,9 @@ and incomprehensible system of recursion.
 						line.sceneNumber = @"";
 					}
 				}
+				
+				// Create an array for character names
+				item.characters = [NSMutableArray array];
 			}
 			
 			// Get in / out points
@@ -1514,6 +1516,11 @@ and incomprehensible system of recursion.
 
 			result++;
 			[_outline addObject:item];
+		}
+		
+		// Add characters if we are inside a scene
+		if (line.type == character && previousScene.type == heading) {
+			[previousScene.characters addObject:line.characterName];
 		}
 		
 		// Done. Set the previous line.
@@ -1657,12 +1664,13 @@ and incomprehensible system of recursion.
 			continue;
 		}
 		
-		// If there is no delegate, show scene numbers. Otherwise, ask the delegate.
-		if (line.type == heading && (self.delegate.printSceneNumbers || !self.delegate)) {
+		// Add scene numbers
+		if (line.type == heading) {
 			if (line.sceneNumberRange.length > 0) {
 				line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
 				line.string = line.stripSceneNumber;
-			} else {
+			}
+			else if (!line.sceneNumber) {
 				line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
 				line.string = line.stripSceneNumber;
 				sceneNumber += 1;
@@ -1728,4 +1736,32 @@ and incomprehensible system of recursion.
 	return @{ @"title page": self.titlePage, @"script": [self preprocessForPrinting] };
 }
 
+#pragma mark - String result for saving the screenplay
+
+- (NSString*)scriptForSaving {
+	NSMutableString *string = [NSMutableString string];
+	
+	Line *previousLine;
+	for (Line* line in self.lines) {
+		// Ensure we have correct amount of line breaks before elements
+		if ((line.type == character || line.type == heading)
+			&& previousLine.string.length > 0) {
+			[string appendString:@"\n"];
+		}
+		
+		[string appendString:line.string];
+		[string appendString:@"\n"];
+	
+		previousLine = line;
+	}
+	
+	return string;
+}
+
 @end
+/*
+ 
+ Thank you, Hendrik Noeller, for making Beat possible.
+ Without your massive original work, all of this would have never happened.
+ 
+ */

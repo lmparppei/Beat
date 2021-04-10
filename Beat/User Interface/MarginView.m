@@ -23,11 +23,9 @@
     
 	 // Draw background (we have drawBackground se as NO, as otherwise the margins didn't work.)
 	 // I can't get my head around this so let's just do the background manually.
-	 [NSGraphicsContext saveGraphicsState];
 	 [self.backgroundColor setFill];
 	
 	 NSRectFill(NSMakeRect(0, 0, self.frame.size.width, self.frame.size.height));
-	 [NSGraphicsContext restoreGraphicsState];
 	 
 	 // Draw margins if they don't fall outsid(e/ish) the viewport
 	 if (self.frame.size.width > 800) {
@@ -43,7 +41,6 @@
 			 NSRect shadowLeft = (NSRect){ marginLeft.size.width - SHADOW_WIDTH, 0, SHADOW_WIDTH, marginLeft.size.height };
 			 NSRect shadowRight = (NSRect){ marginRight.origin.x, 0, SHADOW_WIDTH, marginRight.size.height };
 			 
-			 [NSGraphicsContext saveGraphicsState];
 			 NSRectFillUsingOperation(marginLeft, NSCompositingOperationSourceOver);
 			 NSRectFillUsingOperation(marginRight, NSCompositingOperationSourceOver);
 			 
@@ -51,7 +48,6 @@
 			 [gradient drawInRect:shadowLeft angle:0];
 			 [gradient drawInRect:shadowRight angle:180];
 			 
-			 [NSGraphicsContext restoreGraphicsState];
 		 }
 	 }
 }

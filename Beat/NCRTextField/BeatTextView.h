@@ -42,6 +42,7 @@ typedef enum : NSInteger {
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) BeatEditorMode mode;	
 @property (readonly) bool trackChanges;
+@property (readonly) bool showSceneNumberLabels;
 @property (readonly) NSMutableIndexSet *changes;
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
@@ -49,10 +50,11 @@ typedef enum : NSInteger {
 
 @protocol BeatTaggingDelegate;
 
-@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate>
+@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
 - (void)setInsets;
+- (void)scrollToRange:(NSRange)range;
 
 // Scene Numbering
 - (void)updateSceneLabelsFrom:(NSInteger)changedIndex;

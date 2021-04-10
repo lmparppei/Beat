@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FountainAnalysis.h"
 #import "OutlineScene.h"
+#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,10 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString* text;
 @property (nonatomic) NSString* character;
 @property (nonatomic) NSMutableArray* colors;
-@property (weak) NSMutableArray* lines;
-@property (weak) NSMutableArray* scenes;
+@property (weak) NSMutableArray* lines; // This is a reference to the parser
+@property (nonatomic) NSMutableArray* scenes; // This is a real array of scenes
 @property (nonatomic) FountainAnalysis* analysis;
 @property (nonatomic) NSMutableArray* filteredScenes;
+
+@property (weak) IBOutlet id<BeatEditorDelegate> editorDelegate;
 
 - (void)setScript:(NSMutableArray *)lines scenes:(NSMutableArray *)scenes;
 - (bool)activeFilters;

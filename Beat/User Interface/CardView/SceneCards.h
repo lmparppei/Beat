@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSRange)selectedRange;
 - (NSMutableArray*)getOutlineItems;
-- (NSArray*)lines;
+- (NSMutableArray*)lines;
 
 @end
 

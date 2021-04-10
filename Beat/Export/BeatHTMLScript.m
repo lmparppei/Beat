@@ -119,24 +119,24 @@
 @property (nonatomic) NSString *header;
 @property (nonatomic) bool print;
 @property (nonatomic) BeatHTMLOperation operation;
-
+@property (nonatomic) bool printSceneNumbers;
 @end
 
 @implementation BeatHTMLScript
 
-- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene
+- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers
 {
-	return [self initWithScript:script document:document scene:scene operation:ForPreview];
+	return [self initWithScript:script document:document scene:scene operation:ForPreview printSceneNumbers:printSceneNumbers];
 }
 - (id)initForQuickLook:(NSDictionary *)script {
-	return [self initWithScript:script document:nil scene:nil operation:ForQuickLook];
+	return [self initWithScript:script document:nil scene:nil operation:ForQuickLook printSceneNumbers:YES];
 }
-- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document
+- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers
 {
-	return [self initWithScript:script document:document scene:nil operation:ForPrint];
+	return [self initWithScript:script document:document scene:nil operation:ForPrint printSceneNumbers:printSceneNumbers];
 }
 
-- (id)initWithScript:(NSDictionary*)script document:(NSDocument*)document scene:(NSString*)currentScene operation:(BeatHTMLOperation)operation {
+- (id)initWithScript:(NSDictionary*)script document:(NSDocument*)document scene:(NSString*)currentScene operation:(BeatHTMLOperation)operation printSceneNumbers:(bool)printSceneNumbers {
 	self = [super init];
 	
 	if (self) {
@@ -148,6 +148,8 @@
 		_font = [NSFont fontWithName:@"Courier" size:12];
 		_document = document;
 		_operation = operation;
+		
+		_printSceneNumbers = printSceneNumbers;
 		
 		if (_operation == ForPrint) _print = YES;
 	}
@@ -497,11 +499,15 @@
             
 			// Format string for HTML (if it's not a heading)
 			[text setString:[self htmlStringFor:line]];
-			
-			// Add scene number labels if needed
+
 			if (line.type == heading && line.sceneNumber) {
-				NSString *sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, line.sceneNumber];
-				NSString *sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", line.sceneNumber];
+				// Add scene number ID to HTML, but don't print it if it's toggled off
+				NSString *printedSceneNumber;
+				if (self.printSceneNumbers) printedSceneNumber = line.sceneNumber;
+				else printedSceneNumber = @"";
+				
+				NSString *sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
+				NSString *sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
 				[text setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, text, sceneNumberRight]];
 			}
 			
