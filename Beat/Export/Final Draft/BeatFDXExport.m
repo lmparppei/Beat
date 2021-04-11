@@ -94,6 +94,7 @@ static NSDictionary *fdxIds;
 @interface BeatFDXExport ()
 @property (nonatomic) ContinousFountainParser *parser;
 @property (nonatomic) NSMutableString *result;
+@property (nonatomic) NSArray *preprocessedLines;
 
 @property (nonatomic) NSMutableDictionary *tagData;
 
@@ -244,14 +245,17 @@ static NSDictionary *fdxIds;
 			   @"  <Content>\n" mutableCopy];
 	
 	_inDualDialogue = NO;
-		
-	for (int i = 0; i < _parser.lines.count; i++) {
+	
+	_preprocessedLines = [self preprocessLines];
+	
+	for (int i = 0; i < _preprocessedLines.count; i++) {
 		[self appendLineAtIndex:i];
 		//inDualDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDualDialogue:inDualDialogue tags:tags];
 	}
 	
 	[_result appendString:@"  </Content>\n"];
 	[self appendTitlePage];
+	[self appendElementStyles];
 	
 	// Tagging data
 	[_result appendString:@"  <TagData>\n"];
@@ -280,21 +284,59 @@ static NSDictionary *fdxIds;
 	return _result;
 }
 
+- (NSArray*)preprocessLines {
+	NSMutableArray *lines = [NSMutableArray array];
+	
+	Line *previousLine;
+	for (Line* line in self.parser.lines) {
+		// Skip omited lines
+		if (line.omited) continue;
+
+		if ((line.type == action && previousLine.type == action) ||
+			(line.type == lyrics && previousLine.type == lyrics)) {
+			[previousLine joinWithLine:line];
+			continue;
+		}
+		
+		// Mark dual dialogue
+		if (line.type == dualDialogueCharacter) {
+			NSInteger i = lines.count - 1;
+			while (i >= 0) {
+				Line *preceedingLine = lines[i];
+				
+				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
+				
+				if (preceedingLine.type == character) {
+					preceedingLine.nextElementIsDualDialogue = YES;
+					break;
+				}
+				i--;
+			}
+		}
+		
+		[lines addObject:line];
+		previousLine = line;
+	}
+	
+	return  lines;
+}
+
 - (void)appendLineAtIndex:(NSUInteger)index
 {
-	Line* line = self.parser.lines[index];
-	NSArray *lines = self.parser.lines;
-	
-	// Skip omited lines
-	if (line.omited) return;
-	
+	NSArray *lines = self.preprocessedLines;
+	Line* line = lines[index];
+		
 	NSString* paragraphType = [self typeAsFDXString:line.type];
 	if (paragraphType.length == 0) {
 		//Ignore if no type is known
 		return;
 	}
-		
+	
+	NSMutableArray *paragraphStyles = [NSMutableArray array];
+	[paragraphStyles addObject:[NSString stringWithFormat:@"Type=\"%@\"", paragraphType]];
+	
 	//If no double dialogue is currently in action, and a dialogue should be printed, check if it is followed by double dialogue so both can be wrapped in a double dialogue
+	/*
 	if (!_inDualDialogue && line.type == character) {
 		for (NSUInteger i = index + 1; i < [lines count]; i++) {
 			Line* futureLine = lines[i];
@@ -308,27 +350,34 @@ static NSDictionary *fdxIds;
 			}
 			break;
 		}
+		
 		if (_inDualDialogue) {
 			[_result appendString:@"    <Paragraph>\n"];
 			[_result appendString:@"      <DualDialogue>\n"];
 		}
 	}
+	 */
 	
-	
+	if (line.type == character && line.nextElementIsDualDialogue) {
+		[_result appendString:@"    <Paragraph>\n"];
+		[_result appendString:@"      <DualDialogue>\n"];
+		_inDualDialogue = YES;
+	}
 	
 	//Append Open Paragraph Tag
 	if (line.type == centered) {
-		[_result appendFormat:@"    <Paragraph Alignment=\"Center\" Type=\"%@\">\n", paragraphType];
-	} else {
-		// Add scene number if it's a heading
-		if (line.type == heading) {
-			// Strip possible scene number
-			if (line.sceneNumber) line.string = [line.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
-			[_result appendFormat:@"    <Paragraph Number=\"%@\" Type=\"%@\">\n", line.sceneNumber, paragraphType];
-		} else {
-			[_result appendFormat:@"    <Paragraph Type=\"%@\">\n", paragraphType];
-		}
+		[paragraphStyles addObject: @"Alignment=\"Centered\""];
 	}
+	else if (line.type == heading) {
+		// Strip possible scene number
+		if (line.sceneNumber) line.string = [line.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
+		
+		[paragraphStyles addObject:[NSString stringWithFormat:@"Number=\"%@\"", line.sceneNumber]];
+	}
+	
+	// IF it's a dual dialogue block, we won't do the paragraph stylization
+	
+	[_result appendFormat:@"    <Paragraph %@>\n", [paragraphStyles componentsJoinedByString:@" "]];
 	
 	//Append content
 	[self appendLineContents:line];
@@ -338,7 +387,7 @@ static NSDictionary *fdxIds;
 	
 	//If a double dialogue is currently in action, check wether it needs to be closed after this
 	if (_inDualDialogue) {
-		if (index < [lines count] - 1) {
+		if (index < lines.count - 1) {
 			//If the following line doesn't have anything to do with dialogue, end double dialogue
 			Line* nextLine = lines[index+1];
 			if (nextLine.type != empty &&
@@ -347,17 +396,21 @@ static NSDictionary *fdxIds;
 				nextLine.type != dialogue &&
 				nextLine.type != dualDialogueCharacter &&
 				nextLine.type != dualDialogueParenthetical &
-				nextLine.type != dualDialogue) {
+				nextLine.type != dualDialogue &&
+				nextLine.string.length > 0) {
+				
 				_inDualDialogue = NO;
 				[_result appendString:@"      </DualDialogue>\n"];
 				[_result appendString:@"    </Paragraph>\n"];
 			}
-		} else {
-			//If the line is the last line, it's also time to close the dual dialogue tag
-			_inDualDialogue = NO;
-			[_result appendString:@"      </DualDialogue>\n"];
-			[_result appendString:@"    </Paragraph>\n"];
 		}
+	}
+	
+	if (line == _preprocessedLines.lastObject && _inDualDialogue) {
+		//If the line is the last line, it's also time to close the dual dialogue tag
+		_inDualDialogue = NO;
+		[_result appendString:@"      </DualDialogue>\n"];
+		[_result appendString:@"    </Paragraph>\n"];
 	}
 }
 
@@ -544,6 +597,15 @@ static NSDictionary *fdxIds;
 	
 	[_result appendFormat:@"        <Text>%@</Text>\n", string];
 	[_result appendString:@"      </Paragraph>\n"];
+}
+
+- (void)appendElementStyles {
+	[_result appendString:@"\
+	<ElementSettings Type=\"Lyrics\">\n\
+		<FontSpec  Style=\"Italic\"/>\
+		<ParagraphSpec Alignment=\"Center\"/>\n\
+		<Behavior PaginateAs=\"Action\" ReturnKey=\"Action\" />\n\
+	 </ElementSettings>"];
 }
 
 - (NSString*)firstStringForLineType:(LineType)type

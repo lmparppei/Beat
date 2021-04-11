@@ -95,6 +95,9 @@
 		B6639DF12538DD2F00DF87E2 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B6639DFA2538DF7F00DF87E2 /* BeatPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = B6639DF92538DF7F00DF87E2 /* BeatPrint.m */; };
 		B6639DFB2538DF7F00DF87E2 /* BeatPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = B6639DF92538DF7F00DF87E2 /* BeatPrint.m */; };
+		B66682FF262369DD006473B9 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = B66682FE262369DD006473B9 /* TODO */; };
+		B6668300262369DD006473B9 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = B66682FE262369DD006473B9 /* TODO */; };
+		B6668301262369DD006473B9 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = B66682FE262369DD006473B9 /* TODO */; };
 		B667796523C5D1CB0029D508 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B667796423C5D1CB0029D508 /* FDXImport.m */; };
 		B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B66ED8BC25AA5BF100C77A03 /* Credits.pdf */; };
 		B66ED8BE25AA5BF100C77A03 /* Credits.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B66ED8BC25AA5BF100C77A03 /* Credits.pdf */; };
@@ -597,7 +600,7 @@
 		B1509A3E1CB5C0C500884918 /* FDXInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FDXInterface.h; sourceTree = "<group>"; };
 		B1B62A3819E3402F009F6E23 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorView.h; sourceTree = "<group>"; };
 		B1D0B84919E31B86005252E4 /* PrintView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintView.h; sourceTree = "<group>"; };
-		B1E7FF511BC4555B008E2B99 /* Beat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Beat.entitlements; sourceTree = "<group>"; };
+		B1E7FF511BC4555B008E2B99 /* Beat Adhoc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat Adhoc.entitlements"; sourceTree = "<group>"; };
 		B1EC6B9C1CE3B33200B48CDB /* OutlineExtractor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineExtractor.h; sourceTree = "<group>"; };
 		B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold Italic.ttf"; sourceTree = "<group>"; };
 		B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Bold.ttf"; sourceTree = "<group>"; };
@@ -680,6 +683,7 @@
 		B663680224CE1CCF009A1693 /* BeatTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTest.m; path = BeatTests/BeatTest.m; sourceTree = SOURCE_ROOT; };
 		B6639DF82538DF7F00DF87E2 /* BeatPrint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPrint.h; path = Beat/Export/BeatPrint.h; sourceTree = SOURCE_ROOT; };
 		B6639DF92538DF7F00DF87E2 /* BeatPrint.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPrint.m; path = Beat/Export/BeatPrint.m; sourceTree = SOURCE_ROOT; };
+		B66682FE262369DD006473B9 /* TODO */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; path = TODO; sourceTree = "<group>"; };
 		B667796323C5D1CB0029D508 /* FDXImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDXImport.h; sourceTree = "<group>"; };
 		B667796423C5D1CB0029D508 /* FDXImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
 		B66ED8BC25AA5BF100C77A03 /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
@@ -948,11 +952,12 @@
 		B138B56A19E1C973000489C4 = {
 			isa = PBXGroup;
 			children = (
+				B66682FE262369DD006473B9 /* TODO */,
+				B69A928B231915E900FE6A3E /* README.md */,
+				B69A92952319387B00FE6A3E /* CHANGELOG */,
 				B6D062BD260CA9B200DEF6FB /* BeatRelease.entitlements */,
 				B68B60C9260BA87000463AD8 /* Appstore */,
 				B6D062E3260CAC9500DEF6FB /* Adhoc */,
-				B69A928B231915E900FE6A3E /* README.md */,
-				B69A92952319387B00FE6A3E /* CHANGELOG */,
 				B63DC837260A1EC60092B472 /* Beat File Specification copy.md */,
 				B138B57519E1C973000489C4 /* Beat */,
 				B62ADC7623CCCE560015563A /* fountainQuickLook */,
@@ -979,7 +984,6 @@
 		B138B57519E1C973000489C4 /* Beat */ = {
 			isa = PBXGroup;
 			children = (
-				B1E7FF511BC4555B008E2B99 /* Beat.entitlements */,
 				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
 				B138B57A19E1C973000489C4 /* Document.h */,
 				B6D2B7122218B39A005B8447 /* Document.m */,
@@ -1474,6 +1478,7 @@
 		B6D062E3260CAC9500DEF6FB /* Adhoc */ = {
 			isa = PBXGroup;
 			children = (
+				B1E7FF511BC4555B008E2B99 /* Beat Adhoc.entitlements */,
 				B623BD352549AE7F00201BC9 /* Info.plist */,
 			);
 			path = Adhoc;
@@ -1741,6 +1746,7 @@
 				B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B6BE1AD42567B93500F7476A /* Courier Prime Sans Bold.ttf in Resources */,
 				B6C84CA525AA566100BDF974 /* BeatAboutScreen.xib in Resources */,
+				B66682FF262369DD006473B9 /* TODO in Resources */,
 				B6BE1AD62567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B6907E3B233FE17C00741071 /* analysis.html in Resources */,
@@ -1805,6 +1811,7 @@
 				B68B609F260B849300463AD8 /* Tutorial.fountain in Resources */,
 				B68B60A0260B849300463AD8 /* Courier Prime Sans Bold.ttf in Resources */,
 				B68B60A1260B849300463AD8 /* BeatAboutScreen.xib in Resources */,
+				B6668301262369DD006473B9 /* TODO in Resources */,
 				B68B60A2260B849300463AD8 /* Courier Prime Sans Italic.ttf in Resources */,
 				B68B60A3260B849300463AD8 /* CardView.js in Resources */,
 				B68B60A5260B849300463AD8 /* analysis.html in Resources */,
@@ -1873,6 +1880,7 @@
 				B6F49D20246D66B0006D88D4 /* timeline.html in Resources */,
 				B6F49D21246D66B0006D88D4 /* Images.xcassets in Resources */,
 				B623BD492549AFDA00201BC9 /* B_256_logo.png in Resources */,
+				B6668300262369DD006473B9 /* TODO in Resources */,
 				B6BE1ADB2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B623BD452549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B6F49D22246D66B0006D88D4 /* Themes.plist in Resources */,
@@ -2543,12 +2551,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Beat/Beat.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Adhoc/Beat Adhoc.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2583,12 +2591,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = Beat/Beat.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Adhoc/Beat Adhoc.entitlements";
 				CODE_SIGN_IDENTITY = "Developer ID Application";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2629,7 +2637,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2662,7 +2670,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2691,7 +2699,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2724,7 +2732,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2754,7 +2762,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2788,7 +2796,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13088;
+				CURRENT_PROJECT_VERSION = 13089;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (

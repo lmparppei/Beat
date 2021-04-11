@@ -1,5 +1,15 @@
 # Changelog
 
+## Beat 1.82
+
+* Fixed revision mode bugs which could cause crashes on older macOS systems
+* Fixed bugs with scene numbering not toggling on and off correctly
+* Scene numbering logic streamlined: toggling scene numbers on/off in editor now affects the print preview, too. Printing dialog still has its own checkbox for printing the numbers, and its value is saved separately  
+
+## Beat 1.81
+
+* Minor fixes to stuff I can't remember
+
 ## Beat 1.8
 
 * Tagging support with FDX export (although hidden)

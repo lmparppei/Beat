@@ -122,9 +122,13 @@
     return [[[[self typeAsString] stringByAppendingString:@": \"" ] stringByAppendingString:self.string] stringByAppendingString:@"\""];
 }
 
-// See if whole block is omited
-// Btw, this is me writing from the future. I love you, past me!!!
 - (bool)omited {
+	// See if whole block is omited
+	// WARNING: This also includes lines that have 0 length, meaning
+	// the method will return YES for empty lines too.
+	
+	// Btw, this is me writing from the future. I love you, past me!!!
+	
 	__block NSInteger invisibleLength = 0;
 	
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -556,6 +560,10 @@
 - (void)joinWithLine:(Line *)line
 {
 	NSString *string = line.string;
+	if (line.numberOfPreceedingFormattingCharacters > 0 && string.length > 0) {
+		string = [string substringFromIndex:line.numberOfPreceedingFormattingCharacters];
+	}
+	
 	NSInteger offset = self.string.length + 1;
 	if (line.changed) self.changed = YES;
 	
