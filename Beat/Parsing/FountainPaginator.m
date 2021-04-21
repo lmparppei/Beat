@@ -742,7 +742,8 @@
 							CGFloat breakPosition = 0;
 							
 							int sIndex = 0;
-							for (NSString *sentence in sentences) {
+							for (NSString *rawSentence in sentences) {
+								NSString *sentence = [rawSentence stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 								if (sIndex == 0) text = [text stringByAppendingFormat:@"%@", sentence];
 								else text = [text stringByAppendingFormat:@" %@", sentence];
 								

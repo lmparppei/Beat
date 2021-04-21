@@ -60,12 +60,25 @@
 	// Spinner
 	content = [content stringByAppendingFormat:@"<div id='wait'><div class='lds-spinner'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>"];
 	
-	content = [content stringByAppendingString:@"<div id='print' class='ui'>⎙ Print</div>"];
+	content = [content stringByAppendingString:[self createMenu]];
 	
-	content = [content stringByAppendingString:@"<div id='close' class='ui'>✕</div><div id='debug'></div><div id='container'>"];
+	content = [content stringByAppendingString:@"<div id='debug'></div><div id='container'>"];
 	content = [content stringByAppendingFormat:@"</div><script>%@</script></body></html>", javaScript];
 	
 	[_cardView loadHTMLString:content baseURL:nil];
+}
+
+- (NSString*)createMenu {
+	return @"<div id='menu'>\
+			 <div id='print' class='ui'>⎙ Print</div>\
+			 <div id='filters'>\
+				<input type='checkbox' name='scenes' onclick='filter(this)' checked> 🎬 \
+				<input type='checkbox' name='sections' onclick='filter(this)' checked> # \
+				<input type='checkbox' name='lowerSections' onclick='filter(this)' checked> ## \
+				<input type='checkbox' name='lowestSections' onclick='filter(this)' checked> ### \
+			 </div>\
+			 <div id='close' class='ui'>✕</div><div id='debug'></div>\
+			</div>";
 }
 
 
@@ -107,22 +120,26 @@
 	
 	NSMutableArray *sceneCards = [NSMutableArray array];
 	NSInteger index = 0;
+	
+	NSArray *outline = [self.delegate getOutlineItems];
 
-	for (OutlineScene *scene in [self.delegate getOutlineItems]) {
+	for (OutlineScene *scene in outline) {
 		if (scene.type == synopse ||
-			(scene.type == section && scene.line.sectionDepth > 1)) {
-			index++;
+			(scene.type == section && scene.line.sectionDepth > 3)) {
 			continue;
 		}
 		
+		NSString *title = scene.line.cleanedString;
+		if (scene.type == section) title = scene.line.stripInvisible;
+		
 		NSDictionary *sceneCard = @{
 			@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
-			@"name": (scene.string) ? scene.line.stripFormattingCharacters : @"",
-			@"title": (scene.string) ? scene.line.stripFormattingCharacters : @"", // for weird backwards compatibility stuff
+			@"name": (scene.string) ? title : @"",
+			@"title": (scene.string) ? title : @"", // for weird backwards compatibility stuff
 			@"color": (scene.color) ? [scene.color lowercaseString] : @"",
 			@"snippet": [self snippet:scene],
-			@"type": [[scene.line typeAsString] lowercaseString],
-			@"sceneIndex": [NSNumber numberWithInteger:index],
+			@"type": scene.line.typeAsString.lowercaseString,
+			@"sceneIndex": @([outline indexOfObject:scene]),
 			@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
 			@"position": [NSNumber numberWithInteger:scene.sceneStart],
 			@"lineIndex": [NSNumber numberWithInteger:[_delegate.lines indexOfObject:scene.line]],

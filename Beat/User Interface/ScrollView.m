@@ -15,6 +15,7 @@
 
 #import "ScrollView.h"
 #import "DynamicColor.h"
+#import "BeatTextView.h"
 
 @implementation ScrollView
 
@@ -77,10 +78,13 @@
 }
 
 - (void)hideButtons {
+	/*
 	if ([self isFullSize]) {
-		[[[[self.window standardWindowButton:NSWindowCloseButton] superview] animator] setAlphaValue:0];
+		NSView *topBar = [self.window standardWindowButton:NSWindowCloseButton].superview;
+		[topBar.animator setAlphaValue:0];
 		[self.window setTitlebarAppearsTransparent:YES];
 	}
+	 */
 	
 	for (NSButton *button in _editorButtons) {
 		[button.animator setAlphaValue:0.0];
@@ -91,10 +95,13 @@
 }
 
 - (void)showButtons {
+	/*
 	if ([self isFullSize]) {
-		[[[[self.window standardWindowButton:NSWindowCloseButton] superview] animator] setAlphaValue:1];
+		NSView *topBar = [self.window standardWindowButton:NSWindowCloseButton].superview;
+		[topBar.animator setAlphaValue:1];
 		[self.window setTitlebarAppearsTransparent:NO];
 	}
+	 */
 	for (NSButton *button in _editorButtons) {
 		[button.animator setAlphaValue:1.0];
 	}

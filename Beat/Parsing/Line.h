@@ -49,6 +49,8 @@ typedef enum : NSUInteger {
 - (bool)isDialogueElement;
 - (bool)isDualDialogueElement;
 - (NSString*)typeAsString;
+- (NSString*)characterName;
+- (NSString*)stripInvisible;
 @end
 
 @interface Line : NSObject <LineExports>
@@ -71,6 +73,7 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* omitedRanges;
 @property NSMutableIndexSet* highlightRanges;
 @property NSMutableIndexSet* strikeoutRanges;
+@property NSMutableIndexSet* escapeRanges;
 
 @property NSMutableIndexSet* additionRanges;
 @property NSMutableIndexSet* removalRanges;

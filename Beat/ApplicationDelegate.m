@@ -13,6 +13,7 @@
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
+#import "BeatDownloadManager.h"
 
 #ifdef ADHOC
 #import <Sparkle/Sparkle.h>
@@ -35,12 +36,14 @@
 
 @property (nonatomic) BeatBrowserView *browser;
 @property (nonatomic) BeatAboutScreen *about;
+@property (nonatomic) BeatDownloadManager *downloadManager;
 @property (nonatomic) BeatEpisodePrinter *episodePrinter;
 
 
 #ifdef ADHOC
 // I'm supporting ad hoc distribution for now
-@property (nonatomic) IBOutlet SUUpdater *updater;
+@property (nonatomic) IBOutlet SPUUpdater *updater;
+@property (nonatomic) IBOutlet SPUStandardUserDriver *userDriver;
 #endif
 
 @end
@@ -63,7 +66,14 @@
 #ifdef ADHOC
 	// Add CHECK FOR UPDATES menu item
 	NSLog(@"# ADHOC");
-	self.updater = [[SUUpdater alloc] init];
+
+	self.userDriver = [[SPUStandardUserDriver alloc] init];
+	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:NSBundle.mainBundle userDriver:self.userDriver delegate:nil];
+	
+	NSError *error;
+	[self.updater startUpdater:&error];
+	if (error) NSLog(@"sparkle error: %@", error);
+	
 	_checkForUpdatesItem.action = @selector(checkForUpdates:);
 #else
 	NSLog(@"# APPSTORE");
@@ -90,6 +100,7 @@
 	
 #ifdef ADHOC
 	// Run Sparkle if this is an ad hoc distribution
+	//if (self.updater.) [self.updater checkForUpdatesInBackground];
 	if (self.updater.automaticallyChecksForUpdates) [self.updater checkForUpdatesInBackground];
 #endif
 }
@@ -118,7 +129,7 @@
 
 -(void)checkForUpdates:(id)sender {
 #ifdef ADHOC
-	[self.updater checkForUpdates:sender];
+	[self.updater checkForUpdates];
 #endif
 }
 
@@ -497,6 +508,10 @@
 - (void)openPluginFolder {
 	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
 	[plugins openPluginFolder];
+}
+- (IBAction)openPluginManager:(id)sender {
+	_downloadManager = [[BeatDownloadManager alloc] init];
+	[_downloadManager show];
 }
 
 

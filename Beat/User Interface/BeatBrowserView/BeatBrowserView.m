@@ -27,12 +27,12 @@
 }
 -(void)resetWebView {
 	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openTemplate"];
+	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openLink"];
 }
 
 - (void)setHTML:(NSString*)string {
 	[self.webview loadHTMLString:string baseURL:nil];
 }
-
 - (void)showBrowser:(NSURL*)url withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height {
 	self.window.title = title;
 	
@@ -44,6 +44,23 @@
 						 display:YES];
 	
 	[self loadURL:url];
+	[self showBrowser];
+}
+
+- (void)showBrowserWithString:(NSString*)string withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height {
+	self.window.title = title;
+	
+	[self.window setFrame:NSMakeRect(
+									 (NSScreen.mainScreen.frame.size.width - width) / 2,
+									 (NSScreen.mainScreen.frame.size.height - height) / 2,
+									 width, height
+									 )
+						 display:YES];
+	
+	[self.webview loadHTMLString:string baseURL:NSBundle.mainBundle.resourceURL];
+	[self showBrowser];
+}
+- (void)showBrowser {
 	[self.window setIsVisible:true];
 	
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openTemplate"];
@@ -68,6 +85,15 @@
 	else if ([message.name isEqualToString:@"openLink"]) {
 		[(ApplicationDelegate*)NSApp.delegate openURLInWebBrowser:message.body];
 	}
+}
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+	NSLog(@"error %@", error);
+}
+-(void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+	NSLog(@"error %@", error);
+}
+-(void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
+	NSLog(@"terminate %@", webView);
 }
 
 @end

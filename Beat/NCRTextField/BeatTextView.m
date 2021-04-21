@@ -32,6 +32,9 @@
 #import "BeatColors.h"
 #import "ThemeManager.h"
 
+#define DEFAULT_MAGNIFY 1.02
+#define MAGNIFYLEVEL_KEY @"Magnifylevel"
+
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
 #define SHADOW_WIDTH 20
@@ -122,6 +125,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 // Page number fields
 @property (nonatomic) NSMutableArray *pageNumberLabels;
+
+// Scale factor
+@property (nonatomic) CGFloat scaleFactor;
 
 @end
 
@@ -763,16 +769,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:NSColor.clearColor endingColor:[NSColor.blackColor colorWithAlphaComponent:SHADOW_OPACITY]];
 	[gradient drawInRect:shadowLeft angle:0];
 	[gradient drawInRect:shadowRight angle:180];
-}
-- (void)drawRect:(NSRect)dirtyRect {
-	//NSLog(@"drawing %f -> %f     (in view: %f / %f)    mag: %f", dirtyRect.origin.y, dirtyRect.size.height, self.enclosingScrollView.contentView.bounds.origin.y, self.enclosingScrollView.contentView.bounds.size.height, self.zoomLevel);
-	//dirtyRect = (NSRect){ dirtyRect.origin.x, dirtyRect.origin.y - 10, dirtyRect.size.width, dirtyRect.size.height + 20 };
- 
+	
 	CGFloat factor = 1 / _zoomLevel;
-		
-	[NSGraphicsContext saveGraphicsState];
-	[super drawRect:dirtyRect];
-	[NSGraphicsContext restoreGraphicsState];
 	
 	// Section header backgrounds
 	for (NSValue* value in _sections) {
@@ -781,8 +779,20 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		CGFloat width = self.frame.size.width * factor;
 
 		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
-		NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
+		NSRectFill(rect);
+		//if (self.editorDelegate.isDark) NSRectFillUsingOperation(rect, NSCompositingOperationScreen);
+		//else NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
+		
 	}
+	
+}
+- (void)drawRect:(NSRect)dirtyRect {
+	//NSLog(@"drawing %f -> %f     (in view: %f / %f)    mag: %f", dirtyRect.origin.y, dirtyRect.size.height, self.enclosingScrollView.contentView.bounds.origin.y, self.enclosingScrollView.contentView.bounds.size.height, self.zoomLevel);
+	//dirtyRect = (NSRect){ dirtyRect.origin.x, dirtyRect.origin.y - 10, dirtyRect.size.width, dirtyRect.size.height + 20 };
+ 		
+	[NSGraphicsContext saveGraphicsState];
+	[super drawRect:dirtyRect];
+	[NSGraphicsContext restoreGraphicsState];
 	
 	// An array of NSRanges which are used to mask parts of the text.
 	// Used to hide irrelevant parts when filtering scenes.
@@ -815,6 +825,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[super setNeedsDisplayInRect:invalidRect];
 }
 
+-(void)viewDidChangeEffectiveAppearance {
+	[self drawViewBackgroundInRect:self.bounds];
+	[self drawRect:self.bounds];
+}
+-(void)redrawUI {
+	[self scaleUnitSquareToSize:(NSSize){1.0, 1.0}];
+	[self displayRect:self.frame];
+	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
+}
 
 #pragma mark - Scene & page numbering
 
@@ -845,7 +864,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	NSInteger pageNumber = 1;
-	
+
 	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 35;
 	// Compact page numbers if needed
 	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
@@ -1190,16 +1209,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CGFloat y = event.locationInWindow.y;
 	
 	// Super cursor when inside the text container, otherwise arrow
-	if ((point.x > self.textContainerInset.width &&
-		 point.x * (1/_zoomLevel) < (self.textContainer.size.width + self.textContainerInset.width) * (1/_zoomLevel)) &&
-		 y < self.window.frame.size.height - 22 &&
-		 superviewPoint.y < self.enclosingScrollView.frame.size.height
-		) {
-		//[super mouseMoved:event];
-		[NSCursor.IBeamCursor set];
-	} else if (point.x > 10) {
-		//[super mouseMoved:event];
-		[NSCursor.arrowCursor set];
+	if (self.window.isKeyWindow) {
+		if ((point.x > self.textContainerInset.width &&
+			 point.x * (1/_zoomLevel) < (self.textContainer.size.width + self.textContainerInset.width) * (1/_zoomLevel)) &&
+			 y < self.window.frame.size.height - 22 &&
+			 superviewPoint.y < self.enclosingScrollView.frame.size.height
+			) {
+			//[super mouseMoved:event];
+			[NSCursor.IBeamCursor set];
+		} else if (point.x > 10) {
+			//[super mouseMoved:event];
+			[NSCursor.arrowCursor set];
+		}
 	}
 }
 
@@ -1266,6 +1287,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Layout Delegation
 
+#pragma mark - Zooming
 
 
 @end

@@ -11,8 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatBrowserView : NSWindowController <WKScriptMessageHandler>
+@interface BeatBrowserView : NSWindowController <WKScriptMessageHandler, WKNavigationDelegate>
 - (void)showBrowser:(NSURL*)url withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height;
+- (void)showBrowserWithString:(NSString*)string withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height;
 - (void)resetWebView;
 @end
 

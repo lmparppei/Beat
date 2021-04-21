@@ -98,10 +98,10 @@ function initDragDrop () {
 
 // Night mode
 function nightModeOn () {
-	document.body.className = 'nightMode';
+	document.body.classList.add('nightMode');
 }
 function nightModeOff () {
-	document.body.className = '';
+	document.body.classList.remove('nightMode');
 }
 
 // Context menu
@@ -207,6 +207,17 @@ function setupCards () {
 	});
 }
 
+function filter(element) {
+	const value = element.checked;
+	let className = 'hide-' + element.name;
+	
+	if (value) {
+		document.body.classList.remove(className);
+	} else {
+		document.body.classList.add(className);
+	}
+}
+
 // This refreshes the cards
 function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	var html = "<section id='cardContainer'>";
@@ -222,13 +233,10 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	for (let card of cards) {
 		if (!card.name) { continue; }
 		
-		index++;
-		
+		index = card.sceneIndex;
 		// Don't show synopsis lines
 		if (card.type == 'synopse') card.invisible = true;
 		
-		card.sceneIndex = index;
-
 		// Let's save the data to scenes array for later use
 		scenes.push(card);
 
@@ -261,15 +269,28 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		if (index == changedIndex) {
 			changed = ' indexChanged ';
 		}
-
+		
 		if (card.type == 'section') {
-			let depth = card.depth;
-			if (card.depth > 3) depth = 3;
-			html += "<h2 class='depth-" +depth+ "' sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
-		} else if (card.type == 'synopse') {
+			if (card.depth == 1) {
+				html += "<h2 class='depth-" + card.depth + "' sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
+			} else {
+				if (card.depth > 3) depth = 3;
+				let sectionCardClass = " section-" + card.depth;
+				
+				html += "<div sceneIndex='" + card.sceneIndex + "' class='sectionCardContainer " + sectionCardClass + "'><div lineIndex='" +
+						card.lineIndex + "' pos='" + card.position + "' " +
+						"sceneIndex='" + card.sceneIndex + "' " +
+						"class='sectionCard" + sectionCardClass + color + status + changed +
+						"'>"+
+					"<p>" + card.name + "</p></div></div>";
+			}
+		}
+
+		else if (card.type == 'synopse') {
 			// Hidden
 			html += "<div sceneIndex='" + card.sceneIndex + "' style='display: none;'></div>";
-		} else {
+		}
+		else {
 			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div lineIndex='" + 
 					card.lineIndex + "' pos='" + card.position + "' " +
 					"sceneIndex='" + card.sceneIndex + "' " +
@@ -298,4 +319,4 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	setupCards();
 }
 
-init ();
+init();

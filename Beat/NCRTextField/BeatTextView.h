@@ -43,9 +43,14 @@ typedef enum : NSInteger {
 @property (readonly) BeatEditorMode mode;	
 @property (readonly) bool trackChanges;
 @property (readonly) bool showSceneNumberLabels;
+@property (readonly) bool showPageNumbers;
 @property (readonly) NSMutableIndexSet *changes;
+
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
+- (bool)isDark;
+- (void)updateLayout;
+- (void)ensureLayout;
 @end
 
 @protocol BeatTaggingDelegate;
@@ -65,6 +70,8 @@ typedef enum : NSInteger {
 - (void)deletePageNumbers;
 - (void)updatePageNumbers;
 - (void)updatePageNumbers:(NSArray*)pageBreaks;
+
+-(void)redrawUI;
 
 @property CGFloat textInsetY;
 @property (weak) id<BeatTextViewDelegate> editorDelegate;

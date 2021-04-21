@@ -15,56 +15,29 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Manual" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="LYh-uj-mgD">
+        <window title="Manual" separatorStyle="none" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" toolbarStyle="compact" id="LYh-uj-mgD">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="240" width="884" height="655"/>
+            <rect key="contentRect" x="196" y="240" width="761" height="655"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <view key="contentView" id="hv9-on-WeC">
-                <rect key="frame" x="0.0" y="0.0" width="884" height="655"/>
+                <rect key="frame" x="0.0" y="0.0" width="761" height="655"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <wkWebView wantsLayer="YES" allowsBackForwardNavigationGestures="YES" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="blv-Wj-69w">
-                        <rect key="frame" x="0.0" y="0.0" width="884" height="655"/>
-                        <wkWebViewConfiguration key="configuration">
+                    <wkWebView wantsLayer="YES" allowsLinkPreview="NO" id="blv-Wj-69w">
+                        <rect key="frame" x="0.0" y="0.0" width="761" height="655"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat">
                             <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
-                            <wkPreferences key="preferences"/>
+                            <wkPreferences key="preferences" javaScriptCanOpenWindowsAutomatically="NO"/>
                         </wkWebViewConfiguration>
+                        <connections>
+                            <outlet property="navigationDelegate" destination="-2" id="Gs8-Bj-fPh"/>
+                        </connections>
                     </wkWebView>
                 </subviews>
-                <constraints>
-                    <constraint firstItem="blv-Wj-69w" firstAttribute="top" secondItem="hv9-on-WeC" secondAttribute="top" id="OLs-aO-kaG"/>
-                    <constraint firstItem="blv-Wj-69w" firstAttribute="leading" secondItem="hv9-on-WeC" secondAttribute="leading" id="qpM-4g-hz4"/>
-                    <constraint firstAttribute="bottom" secondItem="blv-Wj-69w" secondAttribute="bottom" id="vhe-hc-Ysb"/>
-                    <constraint firstAttribute="trailing" secondItem="blv-Wj-69w" secondAttribute="trailing" id="xNE-c1-0Iz"/>
-                </constraints>
             </view>
-            <toolbar key="toolbar" implicitIdentifier="011A4750-CC8E-4FA4-887E-728FAE31755B" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconOnly" sizeMode="small" id="pnG-pV-CZl">
-                <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="oGL-rC-Xhy"/>
-                    <toolbarItem implicitItemIdentifier="77CDEB4C-1617-4229-980D-0A18E9651288" label="" paletteLabel="Back" image="NSGoBackTemplate" id="OiJ-Wg-ZAm">
-                        <nil key="toolTip"/>
-                        <size key="minSize" width="35" height="25"/>
-                        <size key="maxSize" width="127" height="25"/>
-                        <button key="view" hidden="YES" verticalHuggingPriority="750" id="Xib-wc-UVB">
-                            <rect key="frame" x="0.0" y="14" width="127" height="25"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSGoBackTemplate" imagePosition="overlaps" alignment="center" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FAT-w0-GnC">
-                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                <font key="font" metaFont="message" size="11"/>
-                            </buttonCell>
-                        </button>
-                    </toolbarItem>
-                </allowedToolbarItems>
-                <defaultToolbarItems>
-                    <toolbarItem reference="oGL-rC-Xhy"/>
-                    <toolbarItem reference="OiJ-Wg-ZAm"/>
-                </defaultToolbarItems>
-            </toolbar>
-            <point key="canvasLocation" x="1192" y="-320"/>
+            <point key="canvasLocation" x="1130.5" y="-320.5"/>
         </window>
     </objects>
-    <resources>
-        <image name="NSGoBackTemplate" width="9" height="12"/>
-    </resources>
 </document>

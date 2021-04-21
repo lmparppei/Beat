@@ -67,6 +67,7 @@
 	
 	if (self.additionRanges.count) newLine.additionRanges = [self.additionRanges copy];
 	if (self.removalRanges.count) newLine.removalRanges = [self.removalRanges copy];
+	if (self.escapeRanges.count) newLine.escapeRanges = [self.escapeRanges copy];
 	
 	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
 	if (self.color) newLine.color = [NSString stringWithString:self.color];
@@ -212,6 +213,8 @@
 }
 
 - (NSString*)stripFormattingCharacters {
+	return [self stripInvisible];
+	/*
 	NSMutableString *string = [NSMutableString stringWithString:self.string];
 
 	// Remove force characters
@@ -234,6 +237,7 @@
 	}
 
 	return string;
+	 */
 }
 - (NSString*)stripInvisible {
 	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
@@ -243,6 +247,7 @@
 	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
 	[indexes addIndexes:self.omitedRanges];
 	[indexes addIndexes:self.noteRanges];
+	[indexes addIndexes:self.escapeRanges];
 	
 	// Strip section markup characters
 	if (self.type == section) {
@@ -475,7 +480,7 @@
 }
 - (NSAttributedString*)attributedStringForFDX {
 	// N.B. This is NOT a Cocoa-compatible attributed string.
-	// The attributes are used to create a string for FDX/HTML conversion.
+	// The attributes are used to 	create a string for FDX/HTML conversion.
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
 	
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -508,11 +513,15 @@
 			[self addAttr:@"Omit" toString:string range:range];
 		}
 	}];
-	
+		
 	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > STRIKEOUT_PATTERN.length * 2) {
 			[self addAttr:@"Strikeout" toString:string range:range];
 		}
+	}];
+	
+	[self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self addAttr:@"Omit" toString:string range:range];
 	}];
 	
 	/*
@@ -549,7 +558,8 @@
 	}
 	if (range.length < 1 || range.location == NSNotFound) return;
 	
-	NSDictionary *styles = [string attributesAtIndex:0 longestEffectiveRange:nil inRange:range];
+	NSDictionary *styles = [string attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+
 	NSString *style;
 	if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,%@", styles[@"Style"], name];
 	else style = name;
@@ -674,6 +684,9 @@
 			[indices addIndex:self.string.length - 1];
 		}
 	}
+	
+	// Escape ranges
+	[indices addIndexes:[[NSIndexSet alloc] initWithIndexSet:self.escapeRanges]];
 	
 	// Scene number range
 	[indices addIndexesInRange:self.sceneNumberRange];

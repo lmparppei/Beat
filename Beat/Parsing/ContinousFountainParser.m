@@ -10,7 +10,7 @@
 /*
  
  This code is still mostly based on Hendrik Noeller's work.
- It is heavily modified for Beat, and is all the time more reliable.
+ It is heavily modified for Beat, and is more and more reliable.
  
  Main differences include:
  - double-checking for all-caps actions mistaken for character cues
@@ -20,7 +20,9 @@
  - overall tweaks to parsing here and there
  - parsing large chunks of text is optimized
  
- The file and class are still called Continous, instead of Continuous, because I haven't had the time and willpower to fix Hendrik's small typo. Also, singular synopsis lines are called 'synopse' for some reason. :-)
+ The file and class are still called Continous, instead of Continuous, because
+ I haven't had the time and willpower to fix Hendrik's small typo.
+ Also, singular synopsis lines are called 'synopse' for some reason. :-)
  
  
  Future Considerations:
@@ -47,6 +49,7 @@
  
  
  Update 2020-11-07: Delegation is now implemented
+ Update 2021-something: COVID is still on, and this class has been improved a lot.
  
  */
 
@@ -679,30 +682,36 @@
                                           saveStarsIn:starsInOmit];
     }
     
+	line.escapeRanges = [NSMutableIndexSet indexSet];
+	
     line.boldRanges = [self rangesInChars:charArray
                                  ofLength:length
                                   between:BOLD_PATTERN
                                       and:BOLD_PATTERN
                                withLength:BOLD_PATTERN_LENGTH
-                         excludingIndices:starsInOmit];
+                         excludingIndices:starsInOmit
+									 line:line];
     line.italicRanges = [self rangesInChars:charArray
                                    ofLength:length
                                     between:ITALIC_PATTERN
                                         and:ITALIC_PATTERN
                                  withLength:ITALIC_PATTERN_LENGTH
-                           excludingIndices:starsInOmit];
+                           excludingIndices:starsInOmit
+									   line:line];
     line.underlinedRanges = [self rangesInChars:charArray
                                        ofLength:length
                                         between:UNDERLINE_PATTERN
                                             and:UNDERLINE_PATTERN
                                      withLength:UNDERLINE_PATTERN_LENGTH
-                               excludingIndices:nil];
+                               excludingIndices:nil
+										   line:line];
     line.noteRanges = [self rangesInChars:charArray
                                  ofLength:length
                                   between:NOTE_OPEN_PATTERN
                                       and:NOTE_CLOSE_PATTERN
                                withLength:NOTE_PATTERN_LENGTH
-                         excludingIndices:nil];
+                         excludingIndices:nil
+									 line:line];
 	/*
 	line.highlightRanges = [self rangesInChars:charArray
 								 ofLength:length
@@ -717,7 +726,8 @@
 								  between:STRIKEOUT_OPEN_PATTERN
 									  and:STRIKEOUT_CLOSE_PATTERN
 							   withLength:STRIKEOUT_PATTERN_LENGTH
-						 excludingIndices:nil];
+						 excludingIndices:nil
+										line:line];
 	
     if (line.type == heading) {
 		line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
@@ -780,6 +790,7 @@ and incomprehensible system of recursion.
 {
     NSString* string = line.string;
     NSUInteger length = [string length];
+	NSString* trimmedString = [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
 	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 	
@@ -999,20 +1010,21 @@ and incomprehensible system of recursion.
 	}
 	    
     //Check for transitionLines and page breaks
-    if (length >= 3) {
+    if (trimmedString.length >= 3) {
         //transitionLine happens if the last three chars are "TO:"
-        NSRange lastThreeRange = NSMakeRange(length-3, 3);
-        NSString *lastThreeChars = [[string substringWithRange:lastThreeRange] lowercaseString];
+        NSRange lastThreeRange = NSMakeRange(trimmedString.length - 3, 3);
+        NSString *lastThreeChars = [trimmedString substringWithRange:lastThreeRange].lowercaseString;
+
         if ([lastThreeChars isEqualToString:@"to:"]) {
             return transitionLine;
         }
         
         //Page breaks start with "==="
         NSString *firstChars;
-        if (length == 3) {
+        if (trimmedString.length == 3) {
             firstChars = lastThreeChars;
         } else {
-            firstChars = [string substringToIndex:3];
+            firstChars = [trimmedString substringToIndex:3];
         }
         if ([firstChars isEqualToString:@"==="]) {
             return pageBreak;
@@ -1097,14 +1109,14 @@ and incomprehensible system of recursion.
     return action;
 }
 
-- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSIndexSet*)excludes
+- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSIndexSet*)excludes line:(Line*)line
 {
     NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
     
     NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
     NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
     
-    for (int i = 0;;i++) {
+    for (int i = 0;; i++) {
 		if (i > lastIndex) break;
 		
         // If this index is contained in the omit character indexes, skip
@@ -1114,9 +1126,11 @@ and incomprehensible system of recursion.
         if (rangeBegin == -1) {
             bool match = YES;
             for (int j = 0; j < delimLength; j++) {
-				// Check for escape character (like \*)
-				if (i > 0 && string[j + i - 1] == '\\') {
+				// IF the characters in range are correct, check for an escape character (\)
+				if (string[j+i] == startString[j] && i > 0 &&
+					string[j + i - 1] == '\\') {
 					match = NO;
+					[line.escapeRanges addIndex:j+i - 1];
 					break;
 				}
 				
@@ -1136,7 +1150,13 @@ and incomprehensible system of recursion.
                 if (string[j+i] != endString[j]) {
                     match = NO;
                     break;
-                }
+				} else {
+					// Check for escape characters again
+					if (i > 0 && string[j+i - 1] == '\\') {
+						[line.escapeRanges addIndex:j+i - 1];
+						match = NO;
+					}
+				}
             }
             if (match) {
                 [indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
@@ -1145,6 +1165,7 @@ and incomprehensible system of recursion.
             }
         }
     }
+	
     return indexSet;
 }
 
@@ -1658,6 +1679,8 @@ and incomprehensible system of recursion.
 		if (sceneNumber < 1) sceneNumber = 1;
 	}
 	
+	Line *previousLine;
+	
 	for (Line *line in lines) {
 		// Skip over certain elements
 		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
@@ -1679,6 +1702,12 @@ and incomprehensible system of recursion.
 			line.sceneNumber = @"";
 		}
 		
+		// Eliminate faux empty lines with only single space (let's use two)
+		if ([line.string isEqualToString:@" "] && line.type == action && (previousLine.type != dialogue && previousLine.type != parenthetical)) {
+			line.type = empty;
+			continue;
+		}
+		
 		// This is a paragraph with a line break, so append the line to the previous one
 		// A quick explanation for this practice: We generally skip empty lines and instead
 		// calculate margins before elements. This is a legacy of the old Fountain parser,
@@ -1686,15 +1715,16 @@ and incomprehensible system of recursion.
 		// one element.
 		
 		if (line.type == action && line.isSplitParagraph && [lines indexOfObject:line] > 0) {
-			Line *previousLine = [elements objectAtIndex:elements.count - 1];
+			Line *preceedingLine = [elements objectAtIndex:elements.count - 1];
 
-			[previousLine joinWithLine:line];
+			[preceedingLine joinWithLine:line];
 			continue;
 		}
 		
 		// Remove misinterpreted dialogue
 		if (line.type == dialogue && line.string.length < 1) {
 			line.type = empty;
+			previousLine = line;
 			continue;
 		}
 
@@ -1705,17 +1735,19 @@ and incomprehensible system of recursion.
 		if (line.isDualDialogueElement) {
 			NSInteger i = elements.count - 2; // Go for previous element
 			while (i > 0) {
-				Line *previousLine = [elements objectAtIndex:i];
+				Line *preceedingLine = [elements objectAtIndex:i];
 				
-				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
+				if (!(preceedingLine.isDialogueElement || preceedingLine.isDualDialogueElement)) break;
 				
-				if (previousLine.type == character ) {
-					previousLine.nextElementIsDualDialogue = YES;
+				if (preceedingLine.type == character ) {
+					preceedingLine.nextElementIsDualDialogue = YES;
 					break;
 				}
 				i--;
 			}
 		}
+		
+		previousLine = line;
 	}
 	
 	return elements;

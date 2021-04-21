@@ -159,14 +159,14 @@
 
 // Outline items
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
-{ @autoreleasepool {
+{
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		// Note: OutlineViewItem returns an NSMutableAttributedString
 		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene];
 	}
 	return @"";
 	
-} }
+}
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {

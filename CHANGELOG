@@ -1,5 +1,16 @@
 # Changelog
 
+## Beat 1.83
+
+* Fixed a bug with sections in dark mode
+* Added the option to filter out index cards, and changed how 2nd and 3rd level section are displayed
+* Fixes to index card UI in dark mode
+* Migrated ad hoc distribution to be sandboxed. We're now using Sparkle 2.0.
+* Further fixes to layout bugs
+* Fixed Final Draft export for in-paragraph line breaks, dual dialogue and lyrics
+
+
+
 ## Beat 1.82
 
 * Fixed revision mode bugs which could cause crashes on older macOS systems

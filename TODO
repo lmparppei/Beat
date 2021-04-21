@@ -5,10 +5,6 @@
 
 * Allow pagination to happen from a given index. This is a LOT harder than it sounds, because of everything.
 
-## Final Draft Export
-
-* Make lyrics be treated like actions, as in join them if there is no empty line between lyric lines
-
 ## Document.m
 
 * Sanitize and clean old stuff (please define what exactly)

@@ -226,7 +226,6 @@
 @property (nonatomic) bool cardsVisible;
 
 // Timeline view
-@property (weak) IBOutlet WKWebView *timelineView;
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
 @property (nonatomic) NSInteger timelineClickedScene;
 @property (nonatomic) NSInteger timelineSelection;
@@ -528,6 +527,15 @@
 	// Ensure layout
 	[self setupLayoutWithPagination:YES];
 	[self initAutosave];
+	
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		[self updateLayout];
+	});
+}
+-(void)awakeFromNib {
+	// Set up recovery file saving
+	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
+	[self scheduleAutosaving];
 }
 
 - (void)readUserSettings {
@@ -609,11 +617,6 @@
 	if (paginate) [self paginateAt:(NSRange){0,0} sync:YES];
 }
 
--(void)awakeFromNib {
-	// Set up recovery file saving
-	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
-	[self scheduleAutosaving];
-}
 
 - (void)setFileURL:(NSURL *)fileURL {
 	NSString *oldName = [NSString stringWithString:[self fileNameString]];
@@ -920,15 +923,6 @@
 
 
 #pragma mark - Window & data handling
-
-// Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
-+ (BOOL)autosavesInPlace {
-    return NO;
-}
-
-+ (BOOL)autosavesDrafts {
-	return YES;
-}
 
 // I have no idea what these are or do.
 - (NSString *)windowNibName {
@@ -2151,6 +2145,7 @@
 			if (line.sectionDepth == 1) {
 				// Black for high-level sections
 				NSColor* sectionColor = self.themeManager.sectionTextColor;
+
 				[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 			} else {
@@ -2288,7 +2283,13 @@
 		NSRange titleRange = line.titleRange;
 		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.commentColor range:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
 	}
-
+	
+	[line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
+							range:[self globalRangeFromLocalRange:&range
+												 inLineAtPosition:line.position]];
+	}];
+	
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.commentColor
 							range:[self globalRangeFromLocalRange:&range
@@ -3429,12 +3430,12 @@ static NSString *revisionAttribute = @"Revision";
 	
 	[self.masterView setNeedsDisplayInRect:[_masterView frame]];
 	[self.backgroundView setNeedsDisplay:true];
-	[self.textView setNeedsDisplay:true];
 	[self.textScrollView setNeedsDisplay:true];
 	[self.marginView setNeedsDisplay:true];
 	
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
+	[self.textView drawViewBackgroundInRect:self.textView.bounds];
 	[self.textView setNeedsDisplay:true];
 	
 	[self.textScrollView layoutButtons];
@@ -3442,6 +3443,10 @@ static NSString *revisionAttribute = @"Revision";
 	[self resetSceneNumberLabels];
 	
 	if (_outlineViewVisible) [self.outlineView setNeedsDisplay:YES];
+	
+	//[self.textView setNeedsDisplay:true];
+	
+	[self.textView redrawUI];
 }
 
 
@@ -4041,12 +4046,6 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-- (void) contextMenu:(NSString*)context {
-	// Let's take a moment to marvel at the beauty of objective-c code:
-	NSPoint localPosition = [_timelineView convertPoint:[_thisWindow convertPointFromScreen:[NSEvent mouseLocation]] fromView:nil];
-	[_colorMenu popUpMenuPositioningItem:_colorMenu.itemArray[0] atLocation:localPosition inView:_timelineView];
-}
-
 /*
  
  I'm very good with plants
@@ -4184,12 +4183,11 @@ static NSString *revisionAttribute = @"Revision";
 	if ([message.name isEqualToString:@"selectSceneFromScript"]) {
 		NSInteger sceneIndex = [message.body integerValue];
 		
+		[self preview:nil];
 		if (sceneIndex < [self getOutlineItems].count) {
 			OutlineScene *scene = [[self getOutlineItems] objectAtIndex:sceneIndex];
 			if (scene) [self scrollToScene:scene];
 		}
-		
-		[self preview:nil];
 	}
 	
 	if ([message.name isEqualToString:@"jumpToScene"]) {
@@ -4199,9 +4197,9 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
 	if ([message.name isEqualToString:@"cardClick"]) {
+		[self toggleCards:nil];
 		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
 		[self scrollToScene:scene];
-		[self toggleCards:nil];
 		
 		return;
 	}
@@ -4849,6 +4847,16 @@ triangle walks
  
  */
 
+// Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
+
++ (BOOL)autosavesInPlace {
+	return NO;
+}
+
++ (BOOL)autosavesDrafts {
+	return YES;
+}
+
 - (IBAction)toggleAutosave:(id)sender {
 	if (_autosave) {
 		_autosave = NO;
@@ -4860,7 +4868,7 @@ triangle walks
 }
 
 // Custom autosave in place
-- (void) autosaveInPlace {
+- (void)autosaveInPlace {
 	// Don't autosave if it's an untitled document
 	if (self.fileURL == nil) return;
 	
@@ -4873,25 +4881,10 @@ triangle walks
 	NSURL *autosavePath = [self autosavePath];
 	autosavePath = [autosavePath URLByAppendingPathComponent:[self fileNameString]];
 	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
-
+	
 	return autosavePath;
 }
 - (NSURL*)autosavePath {
-	NSString* pathComponent = @"Beat/Autosave";
-	
-	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-																		  NSUserDomainMask,
-																		  YES);
-	NSString* appSupportDir = [searchPaths firstObject];
-	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
-	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
-	if (![fileManager fileExistsAtPath:appSupportDir]) {
-		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
-	}
-	
-	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
 	return [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
 }
 
@@ -4909,7 +4902,7 @@ triangle walks
 	else { return [super hasUnautosavedChanges]; }
 }
 
-- (void) initAutosave {
+- (void)initAutosave {
  	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
 	
 	// Set default if not set
@@ -4937,6 +4930,7 @@ triangle walks
 		[fileManager removeItemAtURL:url error:nil];
 	}
 }
+
 
 #pragma mark - split view listener
 

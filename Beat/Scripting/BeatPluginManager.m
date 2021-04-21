@@ -21,8 +21,13 @@
 #import "BeatPluginManager.h"
 #import "ApplicationDelegate.h"
 #import "RegExCategories.h"
+#import "BDMCheckboxCell.h"
+#import <UnzipKit/UnzipKit.h>
 
+#define PLUGIN_LIBRARY_URL @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/Beat%20Plugins.json"
+#define DOWNLOAD_URL_BASE @"raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/"
 #define PLUGIN_FOLDER @"Plugins"
+#define DISABLED_KEY @"Disabled Plugins"
 
 @implementation BeatPlugin
 
@@ -32,6 +37,8 @@
 @property (nonatomic) NSDictionary *plugins;
 @property (nonatomic) NSURL *pluginURL;
 @property (nonatomic) NSMenuItem *menuItem;
+@property (nonatomic) NSDictionary *externalLibrary;
+@property (nonatomic) NSMutableDictionary *availablePlugins;
 @end
 
 @implementation BeatPluginManager
@@ -46,6 +53,9 @@
 }
 
 - (BeatPluginManager*)init {
+	static BeatPluginManager* sharedManager;
+	if (sharedManager) return sharedManager;
+	
 	self = [super init];
 	
 	if (self) {
@@ -54,6 +64,99 @@
 	}
 	
 	return self;
+}
+
+- (NSArray*)disabledPlugins {
+	return [NSUserDefaults.standardUserDefaults valueForKey:DISABLED_KEY];
+}
+- (void)disablePlugin:(NSString*)plugin {
+	NSMutableArray *disabledPlugins = [NSMutableArray arrayWithArray:[NSUserDefaults.standardUserDefaults valueForKey:DISABLED_KEY]];
+	[disabledPlugins addObject:plugin];
+	[NSUserDefaults.standardUserDefaults setValue:disabledPlugins forKey:DISABLED_KEY];
+}
+- (void)enablePlugin:(NSString *)plugin {
+	NSMutableArray *disabledPlugins = [NSMutableArray arrayWithArray:[NSUserDefaults.standardUserDefaults valueForKey:DISABLED_KEY]];
+	if ([disabledPlugins containsObject:plugin]) [disabledPlugins removeObject:plugin];
+	[NSUserDefaults.standardUserDefaults setValue:disabledPlugins forKey:DISABLED_KEY];
+}
+
+- (void)updateAvailablePlugins {
+	self.availablePlugins = [NSMutableDictionary dictionary];
+	for (NSString *pluginName in self.plugins.allKeys) {
+		[_availablePlugins setValue:[self pluginInfoFor:pluginName] forKey:pluginName];
+	}
+}
+
+- (void)updateAvailablePluginsWithExternalLibrary {
+	for (NSString *pluginName in self.externalLibrary.allKeys) {
+		NSDictionary *plugin = self.externalLibrary[pluginName];
+		
+		if (_availablePlugins[pluginName]) {
+			// The plugin is already available, check for updates
+			NSMutableDictionary *existingPlugin = [NSMutableDictionary dictionaryWithDictionary:_availablePlugins[pluginName]];
+			
+			if ([self isNewerVersion:plugin[@"version"] old:existingPlugin[@"version"]]) {
+				existingPlugin[@"updateAvailable"] = plugin[@"version"];
+			}
+			[_availablePlugins setValue:existingPlugin forKey:pluginName];
+		} else {
+			[_availablePlugins setValue:plugin forKey:pluginName];
+		}
+	}
+}
+
+- (bool)isNewerVersion:(NSString*)current old:(NSString*)old {
+	NSString *pad = @"0000";
+	
+	current = [current stringByReplacingOccurrencesOfString:@"." withString:@""];
+	old = [old stringByReplacingOccurrencesOfString:@"." withString:@""];
+	
+	current = [pad stringByReplacingCharactersInRange:(NSRange){0, current.length} withString:current];
+	old = [pad stringByReplacingCharactersInRange:(NSRange){0, old.length} withString:old];
+	
+	NSInteger currentVersion = [current integerValue];
+	NSInteger oldVersion = [old integerValue];
+	
+	if (currentVersion > oldVersion) return YES;
+	else return NO;
+}
+
+- (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock {
+	NSString *urlAsString = PLUGIN_LIBRARY_URL;
+
+	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+
+
+	[[session dataTaskWithURL:[NSURL URLWithString:urlAsString]
+			completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+		
+		NSMutableDictionary *plugins = [NSMutableDictionary dictionary];
+		NSDictionary *pluginData = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+		
+		for (NSString *pluginName in pluginData.allKeys) {
+			NSDictionary *data = pluginData[pluginName];
+			NSString *name = pluginName.stringByDeletingPathExtension;
+			
+			// Never add stuff with no name
+			if (!name) continue;
+			
+			NSDictionary *pluginInfo = @{
+				@"name": name,
+				@"version": data[@"version"],
+				@"copyright": data[@"copyright"],
+				@"description": data[@"description"],
+				@"installed": @(NO)
+			};
+			[plugins setValue:pluginInfo forKey:name];
+		}
+		
+		self.externalLibrary = plugins;
+		[self updateAvailablePluginsWithExternalLibrary];
+		
+		dispatch_async(dispatch_get_main_queue(), ^(void){
+			callbackBlock();
+		});
+	}] resume];
 }
 
 - (void)loadPlugins {
@@ -141,6 +244,47 @@
 	return script;
 }
 
+- (bool)isFolderPlugin:(NSString*)pluginName {
+	BOOL isDir = NO;
+	NSString *filename = _plugins[pluginName];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir] && isDir) return YES;
+	else return NO;
+}
+
+- (NSDictionary*)pluginInfoFor:(NSString*)plugin {
+	NSMutableDictionary *info = [NSMutableDictionary dictionary];
+	NSString *path;
+	
+	if (![self isFolderPlugin:plugin]) {
+		path = _plugins[plugin];
+	} else {
+		path = [[(NSString*)_plugins[plugin] stringByAppendingPathComponent:plugin] stringByAppendingPathExtension:@"beatPlugin"];
+	}
+		
+	info[@"name"] = plugin;
+	info[@"localURL"] = [NSURL fileURLWithPath:path];
+	info[@"installed"] = @(YES);
+
+	NSError *error;
+	NSString *script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+
+	//Rx* versionRx = RX(@"^Version:");
+	Rx* versionRx = [Rx rx:@"\nVersion:(.*)\n" options:NSRegularExpressionCaseInsensitive];
+	Rx* copyrightRx = [Rx rx:@"\nCopyright:(.*)\n" options:NSRegularExpressionCaseInsensitive];
+	Rx* descriptionRx = [Rx rx:@"\nDescription:(.*)\n" options:NSRegularExpressionCaseInsensitive];
+	
+	RxMatch *matchVersion = [script firstMatchWithDetails:versionRx];
+	RxMatch *matchCopyright = [script firstMatchWithDetails:copyrightRx];
+	RxMatch *matchDescription = [script firstMatchWithDetails:descriptionRx];
+		
+	if (matchVersion) info[@"version"] = [[(RxMatchGroup*)matchVersion.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	if (matchCopyright) info[@"copyright"] = [[(RxMatchGroup*)matchCopyright.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	if (matchDescription) info[@"description"] = [[(RxMatchGroup*)matchDescription.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	
+	return info;
+}
+
 - (BeatPluginType)pluginTypeFor:(NSString*)plugin {
 	NSString *path = _plugins[plugin];
 	
@@ -173,21 +317,150 @@
 	
 	[self loadPlugins];
 	
+	NSArray *disabledPlugins = [self disabledPlugins];
+	
 	for (NSString *pluginName in self.pluginNames) {
+		// Don't show this plugin in menu
+		if ([disabledPlugins containsObject:pluginName]) continue;
+		
 		NSMenuItem *item = [_menuItem copy];
 		item.title = pluginName;
 		[parentMenu addItem:item];
 	}
 	
-	[parentMenu addItem:[NSMenuItem separatorItem]];
-	[parentMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Open Plugin Folder..." action:@selector(openPluginFolder) keyEquivalent:@""]];
+	// [parentMenu addItem:[NSMenuItem separatorItem]];
+	// [parentMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Open Plugin Folder..." action:@selector(openPluginFolder) keyEquivalent:@""]];
 	// NB: The selector above is responded by ApplicationDelegate
 }
 
+- (IBAction)openPluginFolderAction:(id)sender {
+	[self openPluginFolder];
+}
 - (void)openPluginFolder {
 	NSURL *url = [(ApplicationDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
 	[NSWorkspace.sharedWorkspace openURL:url];
 }
+
+#pragma mark - Data Source
+
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
+	if (!item) return [self availablePluginNames].count;
+	return 0;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
+	return [self availablePluginNames][index];
+}
+
+-(BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
+	return NO;
+}
+
+-(NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+	NSInteger index = [[self availablePluginNames] indexOfObject:(NSString*)item];
+	
+	NSString *name = [self availablePluginNames][index];
+	
+	//BDMCheckboxCell *cell = [[BDMCheckboxCell alloc] initWithName:name url:url];
+	BDMCheckboxCell *cell = [outlineView makeViewWithIdentifier:@"PluginCell" owner:self];
+	
+	if ([[self disabledPlugins] containsObject:name]) cell.enabled = NO; else cell.enabled = YES;
+	
+	NSDictionary *pluginInfo = _availablePlugins[name];
+	
+	bool installed = [(NSNumber*)pluginInfo[@"installed"] boolValue];
+	if (installed) {
+		cell.localURL = pluginInfo[@"localURL"];
+	} else {
+		NSLog(@"Not installed: %@", pluginInfo[@"name"]);
+		cell.localURL = nil;
+	}
+	
+	if (pluginInfo[@"updateAvailable"]) { cell.updateAvailable = YES; }
+	
+	cell.name = pluginInfo[@"name"];
+	cell.info = pluginInfo[@"description"];
+	cell.copyright = pluginInfo[@"copyright"];
+	cell.version = pluginInfo[@"version"];
+	
+	return cell;
+}
+
+- (NSArray*)availablePluginNames {
+	return [self.availablePlugins.allKeys sortedArrayUsingSelector:@selector(compare:)];
+}
+
+#pragma mark - Outlineview delegate
+
+-(BOOL)outlineView:(NSOutlineView *)outlineView shouldShowOutlineCellForItem:(id)item {
+	return YES;
+}
+-(BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
+	return NO;
+}
+-(BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
+	return YES;
+}
+
+#pragma mark - File Access
+
+- (void)deletePlugin:(NSString*)name {
+	NSString *path = _plugins[name];
+	NSURL *url = [NSURL fileURLWithPath:path];
+	
+	NSError *error;
+	[NSFileManager.defaultManager removeItemAtURL:url error:&error];
+	if (error) {
+		NSLog(@"Error deleting plugin: %@", name);
+	}
+}
+
+- (void)downloadPlugin:(NSString*)pluginName sender:(id)sender {
+	BDMCheckboxCell *cell = (BDMCheckboxCell*)sender;
+	[cell.downloadButton setEnabled:NO];
+	[cell.downloadButton setTitle:@"Downloading..."];
+	
+	// Plugins are wrapped in a zip
+	__block NSString *pluginFileName = [NSString stringWithFormat:@"%@.beatPlugin.zip", pluginName];
+	
+	NSString *downloadPath = [NSString stringWithFormat:@"%@%@", DOWNLOAD_URL_BASE, pluginFileName];
+	downloadPath = [downloadPath stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLPathAllowedCharacterSet];
+	downloadPath = [NSString stringWithFormat:@"https://%@", downloadPath];
+	
+	NSURL *url = [NSURL URLWithString:downloadPath];
+	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+	
+	[[session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+		NSError *writeError;
+		NSString *tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:pluginFileName];
+		
+		[data writeToURL:[NSURL fileURLWithPath:tempDir] options:0 error:&writeError];
+		
+		if (writeError) {
+			NSLog(@"Error writing temporary zip file: %@", writeError);
+		} else {
+			dispatch_async(dispatch_get_main_queue(), ^(void){
+				[cell downloadComplete];
+				NSLog(@"Installing plugin...");
+				[self installPlugin:tempDir];
+			});
+		}
+	}] resume];
+}
+
+- (void)installPlugin:(NSString*)path {
+	NSURL *url = [NSURL fileURLWithPath:path];
+	
+	NSError *error;
+	UZKArchive *container = [[UZKArchive alloc] initWithURL:url error:&error];
+	if (error || !container) return;
+	
+	// Get & create plugin path
+	NSURL *pluginURL = [(ApplicationDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	
+	[container extractFilesTo:pluginURL.path overwrite:YES error:&error];
+}
+
 
 @end
 /*

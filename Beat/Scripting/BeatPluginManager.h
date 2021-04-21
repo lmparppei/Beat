@@ -23,7 +23,7 @@ typedef enum : NSInteger {
 @property (nonatomic) NSArray* files;
 @end
 
-@interface BeatPluginManager : NSObject
+@interface BeatPluginManager : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
 + (BeatPluginManager*)sharedManager;
 - (NSArray*)pluginNames;
 - (NSString*)scriptForPlugin:(NSString*)pluginName;
@@ -31,6 +31,13 @@ typedef enum : NSInteger {
 - (NSString*)pathForPlugin:(NSString*)pluginName;
 - (void)pluginMenuItemsFor:(NSMenu*)parentMenu;
 - (void)openPluginFolder;
+
+- (NSArray*)disabledPlugins;
+- (void)disablePlugin:(NSString*)plugin;
+- (void)enablePlugin:(NSString*)plugin;
+- (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock;
+- (void)updateAvailablePlugins;
+- (void)downloadPlugin:(NSString*)pluginName sender:(id)sender;
 @end
 
 NS_ASSUME_NONNULL_END

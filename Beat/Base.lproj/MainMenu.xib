@@ -734,6 +734,12 @@ DQ
                                     </connections>
                                 </menu>
                             </menuItem>
+                            <menuItem title="Manage Plugins" id="jCo-JF-2g0">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openPluginManager:" target="vEX-2F-hcj" id="hdm-XI-prP"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

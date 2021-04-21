@@ -614,7 +614,7 @@
 		NSString *close = @"";
 		
 		NSString *styleString = attrs[@"Style"];
-			
+
 		// Append corresponding HTML tags to opening & closing strings, ie. open = "<b>", close = "</b>"
 		if (styleString.length) {
 			NSMutableArray *styleArray = [NSMutableArray arrayWithArray:[styleString componentsSeparatedByString:@","]];
@@ -641,7 +641,7 @@
 				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
 			}
 		}
-				
+		
 		// Append snippet to paragraph
 		[htmlString appendString:[NSString stringWithFormat:@"%@%@%@", open, [self escapeString:text], close]];
 	}];
