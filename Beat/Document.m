@@ -126,6 +126,7 @@
 #import "BeatRevisionTracking.h"
 #import "BeatRevisionItem.h"
 #import "ITSwitch.h"
+#import "BeatTitlePageEditor.h"
 
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
@@ -293,15 +294,7 @@
 @property (strong, nonatomic) ContinousFountainParser* parser;
 
 // Title page editor
-@property (weak) IBOutlet NSPanel *titlePagePanel;
-@property (weak) IBOutlet NSTextField *titleField;
-@property (weak) IBOutlet NSTextField *creditField;
-@property (weak) IBOutlet NSTextField *authorField;
-@property (weak) IBOutlet NSTextField *sourceField;
-@property (weak) IBOutlet NSTextField *dateField;
-@property (weak) IBOutlet NSTextField *contactField;
-@property (weak) IBOutlet NSTextField *notesField;
-@property (nonatomic) NSMutableArray *customFields;
+@property (nonatomic) BeatTitlePageEditor *titlePageEditor;
 
 // Theme settings
 @property (nonatomic) ThemeManager* themeManager;
@@ -407,6 +400,13 @@
 	// Avoid retain cycles with WKWebView
 	[self deallocPreview];
 	[self deallocCards];
+	
+	// Terminate running plugins
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		BeatScriptParser* plugin = _runningPlugins[pluginName];
+		[plugin end];
+		[_runningPlugins removeObjectForKey:pluginName];
+	}
 	
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
@@ -1550,7 +1550,6 @@
 {
 	if (![self.undoManager isUndoRegistrationEnabled]) [self.undoManager enableUndoRegistration];
 	
-
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 	
@@ -1582,6 +1581,9 @@
 	
 	// Draw masks again if text did change
 	if (_outlineView.filteredOutline.count) [self maskScenes];
+	
+	// Update any currently running plugins
+	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -2027,18 +2029,18 @@
 		// Format heading
 		
 		// Set Font to bold
-		[attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
+		[attributes setObject:self.boldCourier forKey:NSFontAttributeName];
 		
 		// If the scene has a color, let's color it
 		if (line.color.length) {
-			NSColor* headingColor = [BeatColors color:[line.color lowercaseString]];
+			NSColor* headingColor = [BeatColors color:line.color.lowercaseString];
 			if (headingColor != nil) [attributes setObject:headingColor forKey:NSForegroundColorAttributeName];
 		}
 	
 	} else if (line.type == pageBreak) {
 		// Format page break
 		// Set Font to bold
-		[attributes setObject:[self boldCourier] forKey:NSFontAttributeName];
+		[attributes setObject:self.boldCourier forKey:NSFontAttributeName];
 		
 	} else if (line.type == lyrics) {
 		// Format lyrics
@@ -2271,6 +2273,9 @@
 	}];
 	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSFontAttributeName value:self.boldCourier line:line range:range formattingSymbol:boldSymbol];
+		if ([line.italicRanges containsIndexesInRange:range]) {
+			// Add bold italics here
+		}
 	}];
 	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
@@ -2370,7 +2375,9 @@
 				NSColor *tagColor = [BeatTagging colorFor:tag.type];
 				tagColor = [tagColor colorWithAlphaComponent:.6];
 				
-				[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
+				NSLog(@"tag color %@", tagColor);
+				
+				if (tagColor) [self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
 			}
 		}];
 	});
@@ -2443,6 +2450,11 @@
 	[self.textView setSelectedRange:range];
 	[self.textView scrollRangeToVisible:range];
 }
+- (void)scrollToLine:(Line*)line {
+	NSRange range = NSMakeRange(line.position, line.string.length);
+	[self.textView setSelectedRange:range];
+	[self.textView scrollRangeToVisible:range];
+}
 - (void)scrollToLineIndex:(NSInteger)index {
 	Line *line = [self.parser.lines objectAtIndex:index];
 	if (!line) return;
@@ -2475,6 +2487,7 @@
 		alert.messageText = @"Selection out of range";
 	}
 }
+
 - (bool)caretAtEnd {
 	if (self.textView.selectedRange.location == self.textView.string.length) return YES;
 	else return NO;
@@ -2546,11 +2559,13 @@
 - (void)loadSerifFonts {
 	_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
 	_boldCourier = [NSFont fontWithName:@"Courier Prime Bold" size:[self fontSize]];
+	_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Bold Italic" size:[self fontSize]];
 	_italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:[self fontSize]];
 }
 - (void)loadSansSerifFonts {
 	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
 	_boldCourier = [NSFont fontWithName:@"Courier Prime Sans Bold" size:[self fontSize]];
+	_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Sans Bold Italic" size:[self fontSize]];
 	_italicCourier = [NSFont fontWithName:@"Courier Prime Sans Italic" size:[self fontSize]];
 }
  
@@ -2986,7 +3001,7 @@ static NSString *revisionAttribute = @"Revision";
 				else if ([key isEqualToString:@"Removal"]) type = RevisionRemoval;
 				else type = RevisionNone;
 				
-				BeatRevisionItem *revisionItem = [BeatRevisionItem type:RevisionAddition color:color];
+				BeatRevisionItem *revisionItem = [BeatRevisionItem type:type color:color];
 				if (revisionItem) [self.textView.textStorage addAttribute:revisionAttribute value:revisionItem range:range];
 			}
 		}
@@ -3926,7 +3941,7 @@ static NSString *revisionAttribute = @"Revision";
 	_currentScene = [self getCurrentScene];
 	if (!_currentScene) return;
 	
-	[self setColor:pickedColor forScene:_currentScene];
+	if (pickedColor != nil) [self setColor:pickedColor forScene:_currentScene];
 
 }
 
@@ -4697,123 +4712,46 @@ triangle walks
 
 #pragma mark - Title page editor
 
-// WIP: Move this into separate class
-// Do it already, jesus fucking christ
-
 - (IBAction)editTitlePage:(id)sender {
+	_titlePageEditor = [[BeatTitlePageEditor alloc] initWithDelegate:self];
 	
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
-	//FNScript* script = [[FNScript alloc] initWithString:[self getText]];
-
-	// List of applicable fields
-	NSDictionary* fields = @{
-							 @"title":_titleField,
-							 @"credit":_creditField,
-							 @"author":_authorField,
-							 @"authors":_authorField, // override if "authors" is present
-							 @"source":_sourceField,
-							 @"draft date":_dateField,
-							 @"contact":_contactField,
-							 @"notes":_notesField
-							 };
-
-	// Clear custom fields
-	_customFields = [NSMutableArray array];
-	
-	if ([parser.titlePage count] > 0) {
-		// This is a shitty approach, but what can you say. When copying the dictionary, the order of entries gets messed up, so we need to uh...
-		for (NSDictionary *dict in parser.titlePage) {
-			NSString *key = [dict.allKeys objectAtIndex:0];
-			
-			if ([fields objectForKey:key]) {
-				NSMutableString *values = [NSMutableString string];
-				
-				for (NSString *val in dict[key]) {
-					if ([dict[key] indexOfObject:val] == [dict[key] count] - 1) [values appendFormat:@"%@", val];
-					else [values appendFormat:@"%@\n", val];
+	[_thisWindow beginSheet:_titlePageEditor.window completionHandler:^(NSModalResponse returnCode) {
+		if (returnCode != NSModalResponseOK) {
+			// User pressed cancel, dealloc the sheet
+			self.titlePageEditor = nil;
+			return;
+		}
+		
+		NSString *titlePage = self.titlePageEditor.result;
+		
+		// Find the range
+		if (self.getText.length < 6) {
+			// If there is not much text in the script, just add the title page in the beginning of the document, followed by newlines
+			[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
+		} else if (![[[self getText] substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
+			// There is no title page present here either. We're just careful not to cause errors with ranges
+			[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
+		} else {
+			// There IS a title page, so we need to find out its range to replace it.
+			NSInteger titlePageEnd = -1;
+			for (Line* line in [self.parser lines]) {
+				if (line.type == empty) {
+					titlePageEnd = line.position;
+					break;
 				}
-				// Strip extra line break from multiline values
-				if (values.length > 1 && [values characterAtIndex:0] == '\n') [values setString:[values substringFromIndex:1]];
-				
-				if (![fields[key] isKindOfClass:[NSTextView class]]) [fields[key] setStringValue:values];
-				else [fields[key] setString:values];
-			} else {
-				[_customFields addObject:dict];
 			}
+			if (titlePageEnd < 0) titlePageEnd = self.getText.length;
+			
+			NSRange titlePageRange = NSMakeRange(0, titlePageEnd);
+			NSString *oldTitlePage = [self.getText substringWithRange:titlePageRange];
+
+			[self replaceString:oldTitlePage withString:titlePage atIndex:0];
 		}
-	} else {
-		// Clear all fields
-		for (NSString *key in fields) {
-			[fields[key] setStringValue:@""];
-		}
-	}
 		
-	// Display
-	[_thisWindow beginSheet:_titlePagePanel completionHandler:nil];
+		// Dealloc
+		self.titlePageEditor = nil;
+	}];
 }
-
-- (IBAction)cancelTitlePageEdit:(id)sender {
-	[_thisWindow endSheet:_titlePagePanel];
-}
-
-- (IBAction)applyTitlePageEdit:(id)sender {
-	[_thisWindow endSheet:_titlePagePanel];
-	
-	NSMutableString *titlePage = [NSMutableString string];
-	
-	// BTW, isn't Objective C nice, beautiful and elegant?
-	[titlePage appendFormat:@"Title: %@\n", [_titleField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	[titlePage appendFormat:@"Credit: %@\n", [_creditField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	[titlePage appendFormat:@"Author: %@\n", [_authorField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	[titlePage appendFormat:@"Source: %@\n", [_sourceField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	[titlePage appendFormat:@"Draft date: %@\n", [_dateField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet]];
-	
-	// Only add contact + notes fields they are not empty
-	NSString *contact = [_contactField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-	if ([contact length] > 0) [titlePage appendFormat:@"Contact:\n%@\n", contact];
-	
-	NSString *notes = [_notesField.stringValue stringByTrimmingTrailingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-	if ([notes length] > 0) [titlePage appendFormat:@"Notes:\n%@\n", notes];
-	
-	// Add back possible custom fields that were left out
-	for (NSDictionary *dict in _customFields) {
-		NSString *key = [dict.allKeys objectAtIndex:0];
-		NSArray *obj = dict[key];
-	
-		// Check if it is a text block or single line
-		if ([obj count] == 1) [titlePage appendFormat:@"%@:", [key capitalizedString]];
-		else  [titlePage appendFormat:@"%@:\n", [key capitalizedString]];
-		
-		for (NSString *val in obj) {
-			[titlePage appendFormat:@"%@\n", val];
-		}
-	}
-	
-	// Find the range
-	if ([[self getText] length] < 6) {
-		// If there is not much text in the script, just add the title page in the beginning of the document, followed by newlines
-		[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
-	} else if (![[[self getText] substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
-		// There is no title page present here either. We're just careful not to cause errors with ranges
-		[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
-	} else {
-		// There IS a title page, so we need to find out its range to replace it.
-		NSInteger titlePageEnd = -1;
-		for (Line* line in [self.parser lines]) {
-			if (line.type == empty) {
-				titlePageEnd = line.position;
-				break;
-			}
-		}
-		if (titlePageEnd < 0) titlePageEnd = [[self getText] length];
-		
-		NSRange titlePageRange = NSMakeRange(0, titlePageEnd);
-		NSString *oldTitlePage = [[self getText] substringWithRange:titlePageRange];
-
-		[self replaceString:oldTitlePage withString:titlePage atIndex:0];
-	}
-}
-
 
 #pragma mark - Timer
 
@@ -4885,7 +4823,7 @@ triangle walks
 	return autosavePath;
 }
 - (NSURL*)autosavePath {
-	return [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
+	return [ApplicationDelegate appDataPath:@"Autosave"];
 }
 
 - (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
@@ -4952,16 +4890,45 @@ triangle walks
 	_pluginManager = [BeatPluginManager sharedManager];
 }
 - (IBAction)runPlugin:(id)sender {
-	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
-	parser.delegate = self;
-	
 	NSMenuItem *menuItem = (NSMenuItem*)sender;
 	NSString *pluginName = menuItem.title;
 
+	if (_runningPlugins[pluginName]) {
+		// Disable a running plugin and return
+		[(BeatScriptParser*)_runningPlugins[pluginName] end];
+		[_runningPlugins removeObjectForKey:pluginName];
+		return;
+	}
+	
+	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
+	parser.delegate = self;
+	
 	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
 	[parser runPlugin:plugin];
 	
 	parser = nil;
+}
+
+- (void)registerPlugin:(id)plugin {
+	BeatScriptParser *parser = (BeatScriptParser*)plugin;
+	if (!_runningPlugins) _runningPlugins = [NSMutableDictionary dictionary];
+	
+	_runningPlugins[parser.pluginName] = parser;
+}
+- (void)deregisterPlugin:(id)plugin {
+	BeatScriptParser *parser = (BeatScriptParser*)plugin;
+	[_runningPlugins removeObjectForKey:parser.pluginName];
+	parser = nil;
+}
+
+- (void)updatePlugins:(NSRange)range {
+	// Run resident plugins
+	if (!_runningPlugins) return;
+	
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		[plugin update:range];
+	}
 }
 
 #pragma mark - Color Customization
@@ -5028,8 +4995,11 @@ triangle walks
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type {
 	NSString *string = [self.textView.string substringWithRange:range];
 	BeatTag* tag = [_tagging addTag:string type:type];
-
-	[self tagRange:range withTag:tag];
+	
+	if (tag) {
+		[self tagRange:range withTag:tag];
+		[self forceFormatChangesInRange:range];
+	}
 }
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag {
 	// Tag a range with the specified tag.
@@ -5061,7 +5031,7 @@ triangle walks
 	NSArray *definitions = [_tagging getDefinitions];
 	
 	[_documentSettings set:DocSettingTags as:tags];
-	[_documentSettings set:DocSettingRevisionColor as:definitions];
+	[_documentSettings set:DocSettingTagDefinitions as:definitions];
 }
 
 - (void)updateTaggingData {

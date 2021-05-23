@@ -59,6 +59,7 @@ THE SOFTWARE.
 // Fonts
 @property (strong, nonatomic) NSFont *courier;
 @property (strong, nonatomic) NSFont *boldCourier;
+@property (strong, nonatomic) NSFont *boldItalicCourier;
 @property (strong, nonatomic) NSFont *italicCourier;
 
 // For delegation
@@ -66,6 +67,9 @@ THE SOFTWARE.
 @property (nonatomic) NSMutableIndexSet *changes;
 @property (nonatomic) NSAttributedString *attrTextCache;
 - (NSAttributedString*)getAttributedText; // ONLY IN MAIN THREAD
+
+// Plugins running in this window
+@property (nonatomic) NSMutableDictionary *runningPlugins;
 
 // Document settings
 @property (nonatomic) BeatDocumentSettings *documentSettings;

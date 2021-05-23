@@ -39,6 +39,8 @@
 @property (nonatomic) BeatDownloadManager *downloadManager;
 @property (nonatomic) BeatEpisodePrinter *episodePrinter;
 
+@property (nonatomic) NSPanel *console;
+@property (nonatomic) NSTextView *consoleTextView;
 
 #ifdef ADHOC
 // I'm supporting ad hoc distribution for now
@@ -67,8 +69,8 @@
 	// Add CHECK FOR UPDATES menu item
 	NSLog(@"# ADHOC");
 
-	self.userDriver = [[SPUStandardUserDriver alloc] init];
-	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:NSBundle.mainBundle userDriver:self.userDriver delegate:nil];
+	self.userDriver = [[SPUStandardUserDriver alloc] initWithHostBundle:NSBundle.mainBundle delegate:nil];
+	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:[NSBundle mainBundle] userDriver:self.userDriver delegate:nil];
 	
 	NSError *error;
 	[self.updater startUpdater:&error];
@@ -78,6 +80,7 @@
 #else
 	NSLog(@"# APPSTORE");
 	[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
+	[_checkForUpdatesItem setHidden:YES];
 #endif
 	
 	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
@@ -498,9 +501,9 @@
 
 #pragma mark - Plugin support
 
-- (void)setupPlugins {	
+- (void)setupPlugins {
 	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
-	[plugins pluginMenuItemsFor:_pluginMenu];
+	[plugins pluginMenuItemsFor:_pluginMenu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"]];
 }
 -(void)menuWillOpen:(NSMenu *)menu {
 	if (menu == _pluginMenu) [self setupPlugins];
@@ -512,6 +515,47 @@
 - (IBAction)openPluginManager:(id)sender {
 	_downloadManager = [[BeatDownloadManager alloc] init];
 	[_downloadManager show];
+}
+
+-(void)openConsole {
+	// This is written very quickly on a train and is VERY hacky and shady. Works for now, though.
+	if (!_console) {
+		NSArray *objects = [NSArray array];
+		[NSBundle.mainBundle loadNibNamed:@"BeatConsole" owner:_console topLevelObjects:&objects];
+		_console = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 450, 100) styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskHUDWindow | NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskUtilityWindow backing:NSBackingStoreNonretained defer:NO];
+		
+		NSPanel *panel;
+		for (id item in objects) { if ([item isKindOfClass:NSPanel.class]) panel = item; }
+		_console.contentView = panel.contentView;
+		_consoleTextView = [(NSScrollView*)_console.contentView.subviews[0] documentView];
+	}
+
+	[_console makeKeyAndOrderFront:nil];
+	//[NSDocumentController.sharedDocumentController.currentDocument.windowControllers[0] showWindow:_console];
+}
+-(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName {
+	if (!_console) return;
+	NSString *consoleValue = [NSString stringWithFormat:@"%@: %@\n", pluginName, string];
+	[_consoleTextView.textStorage replaceCharactersInRange:NSMakeRange(_consoleTextView.string.length, 0) withString:consoleValue];
+	[_consoleTextView.textStorage addAttribute:NSForegroundColorAttributeName value:NSColor.textColor range:(NSRange){ _consoleTextView.string.length - consoleValue.length, consoleValue.length }];
+
+	[_consoleTextView.layoutManager ensureLayoutForTextContainer:_consoleTextView.textContainer];
+	_consoleTextView.frame = [_consoleTextView.layoutManager usedRectForTextContainer:_consoleTextView.textContainer];
+	
+	// Get clip view
+	NSClipView *clipView = _consoleTextView.enclosingScrollView.contentView;
+
+	// Calculate the y position by subtracting clip view height from total document height
+	CGFloat scrollTo = _consoleTextView.frame.size.height - clipView.frame.size.height;
+
+	// Animate bounds
+	[clipView setBoundsOrigin:NSMakePoint(0, scrollTo)];
+}
+-(void)clearConsole {
+	if (!_console) return;
+	
+	[_consoleTextView.textStorage replaceCharactersInRange:(NSRange){0, _consoleTextView.string.length} withString:@""];
+	[_consoleTextView setTextColor:NSColor.whiteColor];
 }
 
 
@@ -531,6 +575,25 @@
 
 - (NSURL*)appDataPath:(NSString*)subPath {
 	//NSString* pathComponent = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+	NSString* pathComponent = APPNAME;
+	
+	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
+	
+	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+																		  NSUserDomainMask,
+																		  YES);
+	NSString* appSupportDir = [searchPaths firstObject];
+	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
+	
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	if (![fileManager fileExistsAtPath:appSupportDir]) {
+		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
+	}
+	
+	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
+}
++ (NSURL*)appDataPath:(NSString*)subPath {
 	NSString* pathComponent = APPNAME;
 	
 	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
@@ -582,6 +645,24 @@
 		[userDefaults removeObjectForKey:key];
 	}
 	[userDefaults synchronize];
+}
+
+#pragma mark - App Store update check
+
+-(void)checkForAppstoreUpdates{
+	NSDictionary* infoDictionary = [[NSBundle mainBundle] infoDictionary];
+	NSString* appID = infoDictionary[@"CFBundleIdentifier"];
+	NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://itunes.apple.com/lookup?bundleId=%@", appID]];
+	NSData* data = [NSData dataWithContentsOfURL:url];
+	NSDictionary* lookup = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+
+	if ([lookup[@"resultCount"] integerValue] == 1){
+		NSString* appStoreVersion = lookup[@"results"][0][@"version"];
+		NSString* currentVersion = infoDictionary[@"CFBundleShortVersionString"];
+		if (![appStoreVersion isEqualToString:currentVersion]){
+			NSLog(@"Need to update [%@ != %@]", appStoreVersion, currentVersion);
+		}
+	}
 }
 
 @end

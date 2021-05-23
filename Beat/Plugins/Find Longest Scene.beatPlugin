@@ -1,9 +1,10 @@
 /*
  
- Find longest scene - a bare-bones Beat plugin example.
- © Lauri-Matti Parppei
- 
+ Name: Find Longest Scene
+ Copyright: Lauri-Matti Parppei
+ Description: Jumps to the longest scene in length
  Plugin Type: Tool
+ Version: 1.0
  
 */
 

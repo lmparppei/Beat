@@ -1,8 +1,10 @@
 /*
 
- Gather Scenes by Color
- © Lauri-Matti Parppei
-
+ Name: Gather Scenes by Color
+ Description: Creates a new document with scenes containing the selected color
+ Copyright: Lauri-Matti Parppei
+ Version: 1.0
+ 
  Plugin Type: Tool
 
 */
@@ -17,7 +19,7 @@ for (const scene of Beat.scenes()) {
 }
 
 if (!colors.length) {
-	Beat.alert("No Colors Used", "Add some colors to your scenes first");
+	Beat.alert("No Colors Used", "Add some colors to your scene headings first");
 	return;
 }
 

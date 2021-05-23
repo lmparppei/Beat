@@ -203,14 +203,19 @@
 	
 	return string;
 }
+
 - (NSString*)stringForDisplay {
 	NSString *string;
 	if (!self.omited) string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
 	else string = [Line removeMarkUpFrom:self.string line:self];
 	
 	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-
 }
+
+- (NSString*)string {
+	return _string;
+}
+
 
 - (NSString*)stripFormattingCharacters {
 	return [self stripInvisible];
@@ -470,8 +475,17 @@
 			return @"More";
     }
 }
+- (bool)isDialogue {
+	if (self.type == character || self.type == parenthetical || self.type == dialogue) return YES;
+	else return NO;
+}
 - (bool)isDialogueElement {
 	if (self.type == parenthetical || self.type == dialogue) return YES;
+	else return NO;
+}
+
+- (bool)isDualDialogue {
+	if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical) return YES;
 	else return NO;
 }
 - (bool)isDualDialogueElement {
@@ -867,6 +881,6 @@
 
 -(NSString *)description
 {
-	return [NSString stringWithFormat:@"Line: %@  - at %lu", self.string, self.position];
+	return [NSString stringWithFormat:@"Line: %@  (%@ at %lu) %@", self.string, self.typeAsString, self.position, (self.nextElementIsDualDialogue) ? @"Next is dual" : @"" ];
 }
 @end

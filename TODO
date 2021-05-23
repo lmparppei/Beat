@@ -1,4 +1,10 @@
 
+# High-priority
+
+## Fix FDX Import Bugs
+
+* Double scene headings
+
 # Work in progress
 
 ## Pagination
@@ -14,3 +20,4 @@
 
 * Check and fix dark mode UI
 * Full rewrite to Cocoa when possible
+

@@ -29,7 +29,7 @@ typedef enum : NSInteger {
 - (NSString*)scriptForPlugin:(NSString*)pluginName;
 - (BeatPlugin*)pluginWithName:(NSString*)name;
 - (NSString*)pathForPlugin:(NSString*)pluginName;
-- (void)pluginMenuItemsFor:(NSMenu*)parentMenu;
+- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins;
 - (void)openPluginFolder;
 
 - (NSArray*)disabledPlugins;

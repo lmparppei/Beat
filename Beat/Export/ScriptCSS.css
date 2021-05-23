@@ -216,6 +216,7 @@ hr {
     border-bottom: 1px solid #ccc;
 }
 .dual-dialogue {
+	margin: 1.3em auto;
 	overflow: hidden;
 }
 .dual-dialogue .dual-dialogue-left,

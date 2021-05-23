@@ -11,14 +11,19 @@
 #import "ContinousFountainParser.h"
 #import "BeatTagging.h"
 #import "TagDefinition.h"
+#import "BeatPluginWindow.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
 
+@class BeatPluginWindow;
 
 @protocol BeatScriptingExports <JSExport>
+- (void)setUpdate:(JSValue*)updateMethod;
 - (void)log:(NSString*)string;
+- (void)openConsole;
 - (void)scrollTo:(NSInteger)location;
 - (void)scrollToLineIndex:(NSInteger)index;
+- (void)scrollToLine:(Line*)line;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (void)scrollToSceneIndex:(NSInteger)index;
 - (void)newDocument:(NSString*)string;
@@ -35,6 +40,7 @@
 - (void)end;
 - (void)endScript;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
+- (NSArray*)availableTags;
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
@@ -49,6 +55,7 @@ JSExportAs(openFile, - (void)openFile:(NSArray*)formats callBack:(JSValue*)callb
 JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
 JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)content);
 JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
+JSExportAs(htmlWindow, - (BeatPluginWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 @end
 
 // Interfacing with the document
@@ -56,21 +63,26 @@ JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width hei
 @property (strong, nonatomic) ContinousFountainParser *parser;
 @property (weak, readonly) NSWindow *thisWindow;
 @property (readonly) BeatTagging *tagging;
+- (void)registerPlugin:(id)parser;
+- (void)deregisterPlugin:(id)parser;
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
 - (void)scrollTo:(NSInteger)location;
+- (void)scrollToLine:(Line*)line;
 - (void)scrollToLineIndex:(NSInteger)index;
 - (void)scrollToSceneIndex:(NSInteger)index;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
 - (void)removeRange:(NSRange)range;
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
+- (NSString*)getText;
 @end
 
-@interface BeatScriptParser : NSObject <BeatScriptingExports, WKScriptMessageHandler>
+@interface BeatScriptParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate>
 @property (weak) id<BeatScriptingDelegate> delegate;
 @property (nonatomic) NSString* pluginName;
 
 - (void)runPlugin:(BeatPlugin*)plugin;
 - (void)log:(NSString*)string;
+- (void)update:(NSRange)range;
 @end

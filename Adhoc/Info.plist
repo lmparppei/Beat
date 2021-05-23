@@ -53,16 +53,6 @@
 	<string>public.app-category.productivity</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>© 2019-2021 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>SUFeedURL</key>
-	<string>https://kapitan.fi/beat/xml/appcast.xml</string>
-	<key>SUPublicEDKey</key>
-	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -78,6 +68,16 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSHumanReadableCopyright</key>
+	<string>© 2019-2021 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>SUFeedURL</key>
+	<string>https://kapitan.fi/beat/xml/appcast_testi.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>QkNPKBv0OZgUa4WRWgqB+E2p6iPIBtdJzGBHl49ynNo=</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

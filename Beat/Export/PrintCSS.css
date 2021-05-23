@@ -178,7 +178,6 @@ body > p:first-child {
 .dual-dialogue-right .changed::before {
 	left: auto;
 	right: -10px;
-	
 }
 
 .dialogue.changed::before {

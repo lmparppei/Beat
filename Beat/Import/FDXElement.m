@@ -12,15 +12,15 @@
 
 -(instancetype)initWithText:(NSString*)text
 {
-	_text = [[NSMutableAttributedString alloc] initWithString:text];
 	self = [super init];
+	_text = [[NSMutableAttributedString alloc] initWithString:text];
 	return self;
 }
 
 -(instancetype)initWithAttributedText:(NSAttributedString*)text
 {
-	_text = [[NSMutableAttributedString alloc] initWithAttributedString:text];
 	self = [super init];
+	_text = [[NSMutableAttributedString alloc] initWithAttributedString:text];
 	return self;
 }
 

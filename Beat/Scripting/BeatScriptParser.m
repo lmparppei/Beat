@@ -27,6 +27,8 @@
 #import "ApplicationDelegate.h"
 #import "BeatPluginManager.h"
 #import "BeatTagging.h"
+#import "ApplicationDelegate.h"
+#import "BeatPluginWindow.h"
 #import <PDFKit/PDFKit.h>
 
 @interface BeatScriptParser ()
@@ -34,8 +36,14 @@
 @property (nonatomic) JSContext *context;
 @property (nonatomic) NSWindow *sheet;
 @property (nonatomic) JSValue *sheetCallback;
+@property (nonatomic) JSValue *windowCallback;
 @property (nonatomic) WKWebView *sheetWebView;
 @property (nonatomic) BeatPlugin *plugin;
+@property (nonatomic, nullable) JSValue* updateMethod;
+@property (nonatomic) bool resident;
+@property (nonatomic) bool terminating;
+@property (nonatomic) bool windowClosing;
+@property (nonatomic) BeatPluginWindow *pluginWindow;
 @end
 
 @implementation BeatScriptParser
@@ -78,11 +86,10 @@
 {
 	[self setJSData];
 	
-	JSValue *value = [_context evaluateScript:string];
-	NSLog(@"result %@", value);
+	[_context evaluateScript:string];
 
-	// Kill it if no sheet is present
-	if (!self.sheet) {
+	// Kill it if the plugin is not resident
+	if (!self.sheet && !_resident && !_pluginWindow) {
 		[self endScript];
 	}
 }
@@ -90,12 +97,32 @@
 - (void)end { [self endScript]; } // Alias
 - (void)endScript
 {
+	_terminating = YES;
+
+	if (!_windowClosing && _pluginWindow) {
+		[_pluginWindow close];
+	}
+		
 	// Null everything
 	_context = nil;
 	_vm = nil;
 	_sheet = nil;
 	_sheetCallback = nil;
 	_plugin = nil;
+	
+	//_updateMethod = nil;
+	
+	if (_resident) {
+		[_delegate deregisterPlugin:self];
+	}
+
+}
+
+- (void)openConsole {
+	[(ApplicationDelegate*)NSApp.delegate openConsole];
+}
+- (IBAction)clearConsole:(id)sender {
+	[(ApplicationDelegate*)NSApp.delegate clearConsole];
 }
 
 /*
@@ -106,6 +133,20 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 }
 */
 
+
+#pragma mark - Resident plugin
+
+- (void)setUpdate:(JSValue *)updateMethod {
+	// Save callback
+	_updateMethod = updateMethod;
+	_resident = YES;
+	
+	// Tell the delegate to keep this plugin in memory and update it on refresh
+	[_delegate registerPlugin:self];
+}
+- (void)update:(NSRange)range {
+	[_updateMethod callWithArguments:@[@(range.location), @(range.length)]];
+}
 
 #pragma mark - File i/o
 
@@ -189,15 +230,19 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	if ([_plugin.files containsObject:filename]) {
 		NSString *path = [[BeatPluginManager.sharedManager pathForPlugin:_plugin.name] stringByAppendingPathComponent:filename];
 		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+	} else {
+		[self log:@"Can't find bundled file '%@' – Are you sure the plugin is contained in a self-titled folder? For example: Plugin.beatPlugin/Plugin.beatPlugin"];
+		return @"";
 	}
-	return @"jee";
+	
 }
 
 #pragma mark - Scripting methods accessible via JS
 
 - (void)log:(NSString*)string
 {
-	NSLog(@"# %@", string);
+	[(ApplicationDelegate*)NSApp.delegate logToConsole:string pluginName:_pluginName];
+	NSLog(@"%@: %@", _pluginName, string);
 }
 
 - (void)scrollTo:(NSInteger)location
@@ -205,6 +250,15 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[self.delegate scrollTo:location];
 }
 
+- (void)scrollToLine:(Line*)line
+{
+	@try {
+		[_delegate scrollToLine:line];
+	}
+	@catch (NSException *e) {
+		[self alert:@"Can't find line" withText:@"Plugin tried to access an unknown line"];
+	}
+}
 - (void)scrollToLineIndex:(NSInteger)index
 {
 	[self.delegate scrollToLineIndex:index];
@@ -254,13 +308,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 - (NSString*)getText
 {
-	NSMutableString *string = [NSMutableString string];
-	
-	for (Line* line in self.delegate.parser.lines) {
-		if (line != self.delegate.parser.lines.lastObject) [string appendFormat:@"%@\n", line.string];
-	}
-	
-	return string;
+	return [_delegate getText];
 }
 
 - (void)alert:(NSString*)title withText:(NSString*)info
@@ -370,7 +418,22 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return value;
 }
 
+#pragma mark - Timer
+
+- (NSTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback {
+	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:seconds repeats:NO block:^(NSTimer * _Nonnull timer) {
+		[callback callWithArguments:nil];
+	}];
+	return timer;
+}
+
 #pragma mark - HTML panel magic
+
+/*
+ 
+ These two should be merged at some point
+ 
+ */
 
 - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
@@ -400,6 +463,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[okButton setTarget:self];
 	[okButton setAction:@selector(fetchHTMLPanelDataAndClose)];
 
+	okButton.keyEquivalent = [NSString stringWithFormat:@"%C", 0x1b];
 	okButton.title = @"Close";
 	[panel.contentView addSubview:okButton];
 	
@@ -408,7 +472,6 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	_sheetCallback = callback;
 	
 	[self.delegate.thisWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
-		// Run callback here?
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
 		self.sheetWebView = nil;
@@ -468,8 +531,63 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	}
 }
 
+#pragma mark - HTML Window
+
+- (BeatPluginWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+{
+	// This is a floating window, so the plugin has to be resident
+	_resident = YES;
+	_windowClosing = NO;
+	
+	if (width <= 0) width = 500;
+	if (width > 1000) width = 1000;
+	if (height <= 0) height = 300;
+	if (height > 800) height = 800;
+		
+	if (!_pluginWindow) {
+		[_delegate registerPlugin:self];
+		_pluginWindow = [BeatPluginWindow withHTML:html width:width height:height parser:self];
+		_pluginWindow.parentWindow = _delegate.thisWindow;
+		_pluginWindow.delegate = self;
+		[_pluginWindow makeKeyAndOrderFront:nil];
+	}
+	
+	if (callback && !callback.isUndefined) _windowCallback = callback;
+	
+	return _pluginWindow;
+}
+
+-(void)windowWillClose:(NSNotification *)notification {
+	NSLog(@"window will close");
+	_windowClosing = YES;
+
+	// Remove webview from memory, for sure
+	[_pluginWindow.webview.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
+	[_pluginWindow.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
+	[_pluginWindow.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
+	_pluginWindow.webview = nil;
+	
+
+	if (_terminating) return;
+	
+	if (!_windowCallback.isUndefined && _windowCallback) {
+		NSLog(@"Callback");
+		[_windowCallback callWithArguments:nil];
+	}
+//	else {
+//		NSLog(@"Force end script");
+//		[self end];
+//	}
+
+	_windowClosing = NO;
+}
+
+
 #pragma mark - Tagging interface
 
+- (NSArray*)availableTags {
+	return [BeatTagging tags];
+}
 - (NSDictionary*)tagsForScene:(OutlineScene *)scene
 {
 	return [self.delegate.tagging tagsForScene:scene];
@@ -537,8 +655,12 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	if ([message.name isEqualToString:@"log"]) {
 		[self log:message.body];
 	}
-	if ([message.name isEqualToString:@"sendData"]) {
-		[self receiveDataFromHTMLPanel:message.body];
+	else if ([message.name isEqualToString:@"sendData"]) {
+		if (!_windowClosing) [self receiveDataFromHTMLPanel:message.body];
+	}
+	else if ([message.name isEqualToString:@"call"]) {
+		NSLog(@"calling: %@", message.body);
+		if (!_windowClosing) [_context evaluateScript:message.body];
 	}
 }
 

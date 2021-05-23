@@ -1276,8 +1276,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Scrolling interface
 
 - (void)scrollToRange:(NSRange)range {
-	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
-	containerHeight = containerHeight * _zoomLevel + self.textContainerInset.height * 2 * _zoomLevel;
+	//CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
+	//containerHeight = containerHeight * _zoomLevel + self.textContainerInset.height * 2 * _zoomLevel;
 	
 	NSRect rect = [self rectForRange:range];
 	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;

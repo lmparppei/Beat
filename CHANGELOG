@@ -1,5 +1,24 @@
 # Changelog
 
+## Beat 1.86
+
+* Plugins can now be left running in the background
+
+
+## Beat 1.85.1
+
+* Fixed a bug in FDX export which could cause the export to fail
+
+
+## Beat 1.84/85
+
+* Crashing bug with Sparkle should be fixed now
+* Plugin HTML panel can now be closed with esc
+* Bug fixes to pagination and print layout
+* Plugin method `Beat.scrollToLine()` now works
+* Plugin console (`Beat.openConsole`)
+
+
 ## Beat 1.83
 
 * Fixed a bug with sections in dark mode

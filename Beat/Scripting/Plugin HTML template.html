@@ -147,6 +147,8 @@
 
 	<body>
 		<script>
+			document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
+			
 			let Beat = {
 				setData: function(data) {
 					Beat.data = data;
@@ -157,6 +159,10 @@
 				},
 				closeAndSendData: function() {
 					sendBeatData();
+				},
+				call: function(value) {
+					// We convert the value into a string, just as a safety measure
+					window.webkit.messageHandlers.call.postMessage(value.toString())
 				}
 			};
 		

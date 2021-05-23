@@ -309,12 +309,17 @@
 
 #pragma mark - Provide Menu Items
 
-- (void)pluginMenuItemsFor:(NSMenu*)parentMenu {
-	// The first item is the prototype
-	if (!_menuItem) _menuItem = parentMenu.itemArray.firstObject;
-	
-	[parentMenu removeAllItems];
-	
+- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins {
+	// Remove existing plugin menu items
+	NSArray *menuItems = [NSArray arrayWithArray:parentMenu.itemArray];
+	for (NSMenuItem *item in menuItems) {
+		if (item.tag == 1) {
+			// Save prototype
+			if (!_menuItem) _menuItem = item;
+			[parentMenu removeItem:item];
+		}
+	}
+		
 	[self loadPlugins];
 	
 	NSArray *disabledPlugins = [self disabledPlugins];
@@ -324,13 +329,13 @@
 		if ([disabledPlugins containsObject:pluginName]) continue;
 		
 		NSMenuItem *item = [_menuItem copy];
+		item.state = NSOffState;
 		item.title = pluginName;
+		
+		if (runningPlugins[pluginName]) item.state = NSOnState;
+		
 		[parentMenu addItem:item];
 	}
-	
-	// [parentMenu addItem:[NSMenuItem separatorItem]];
-	// [parentMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Open Plugin Folder..." action:@selector(openPluginFolder) keyEquivalent:@""]];
-	// NB: The selector above is responded by ApplicationDelegate
 }
 
 - (IBAction)openPluginFolderAction:(id)sender {

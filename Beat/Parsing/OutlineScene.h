@@ -13,16 +13,16 @@
 
 // JavaScript interface
 @protocol OutlineSceneExports <JSExport>
-@property (nonatomic) NSString * sceneNumber;
-@property (nonatomic) NSString * color;
-@property (nonatomic) Line * line;
-@property (strong, nonatomic) NSString * string;
-@property (nonatomic) NSArray * storylines;
-@property (nonatomic) NSUInteger sceneStart;
+@property (nonatomic, readonly) NSString * sceneNumber;
+@property (nonatomic, readonly) NSString * color;
+@property (nonatomic, readonly) Line * line;
+@property (strong, nonatomic, readonly) NSString * string;
+@property (nonatomic, readonly) NSArray * storylines;
+@property (nonatomic, readonly) NSUInteger sceneStart;
 @property (nonatomic) NSUInteger sceneLength;
 @property (nonatomic) NSInteger sectionDepth;
 @property (nonatomic) bool omited;
-@property (nonatomic) NSMutableArray * characters;
+@property (nonatomic, readonly) NSMutableArray * characters;
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;
 @end

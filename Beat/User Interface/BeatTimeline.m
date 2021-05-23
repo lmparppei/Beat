@@ -254,10 +254,9 @@
 		if (scene.omited) continue;
 
 		// Handle regular scenes
-		bool selected = NO;
-		NSInteger selection = self.delegate.selectedRange.location;
-		
-		if (selection >= scene.sceneStart && selection < scene.sceneStart + scene.sceneLength) selected = YES;
+		//bool selected = NO;
+		//NSInteger selection = self.delegate.selectedRange.location;
+		//if (selection >= scene.sceneStart && selection < scene.sceneStart + scene.sceneLength) selected = YES;
 
 		NSRect rect;
 		CGFloat width;

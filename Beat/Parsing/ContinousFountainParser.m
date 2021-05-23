@@ -563,8 +563,8 @@
             [indices removeIndex:index];
         }
     }
-	bool lastToParse = YES;
-	if (indices.count) lastToParse = NO;
+	//bool lastToParse = YES;
+	//if (indices.count) lastToParse = NO;
     
     Line* currentLine = self.lines[index];
 	

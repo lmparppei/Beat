@@ -15,6 +15,7 @@
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
 - (NSMutableArray*)lines;
+- (NSString*)getText;
 
 @end
 

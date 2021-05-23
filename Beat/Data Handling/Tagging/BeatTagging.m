@@ -219,7 +219,8 @@
 	 */
 
 	for (Line *line in lines) {
-		if (line.range.length == 0) continue;
+		if (line.range.length == 0 || line.string.length == 0) continue;
+		
 		line.tags = [NSMutableArray array];
 
 		/*
@@ -231,9 +232,9 @@
 		
 		// Local string from the attributed content using line range
 		if (line.range.location >= textViewString.length) break;
-		NSAttributedString *string = [textViewString attributedSubstringFromRange:line.range];
+		NSAttributedString *string = [textViewString attributedSubstringFromRange:line.textRange];
 		
-		// Enumerate through tags in the attributed string
+		// Enumerate through tags in the attributed string		
 		[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, line.string.length} options:0 usingBlock:^(id _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 			BeatTag *tag = (BeatTag*)value;
 			
