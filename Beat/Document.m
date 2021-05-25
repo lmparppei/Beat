@@ -3199,6 +3199,7 @@ static NSString *revisionAttribute = @"Revision";
 	NSMutableString *text = [NSMutableString string];
 	
 	NSInteger sceneNumber = [self.documentSettings getInt:@"Scene Numbering Starts From"];
+	if (sceneNumber == 0) sceneNumber = 1;
 	
 	for (Line* line in self.parser.lines) {
 		if (line.type != heading) [text appendFormat:@"%@\n", line.string];
@@ -4285,6 +4286,7 @@ static NSString *revisionAttribute = @"Revision";
 	[_thisWindow beginSheet:_sceneNumberingPanel completionHandler:nil];
 }
 - (IBAction)closeSceneNumberStart:(id)sender {
+	NSLog(@"close");
 	[_thisWindow endSheet:_sceneNumberingPanel];
 }
 - (IBAction)applySceneNumberStart:(id)sender {

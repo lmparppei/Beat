@@ -593,6 +593,12 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return [self.delegate.tagging tagsForScene:scene];
 }
 
+#pragma mark - Utilities
+
+- (NSArray*)screen {
+	NSRect screen = self.delegate.thisWindow.screen.frame;
+	return @[ @(screen.origin.x), @(screen.origin.y), @(screen.size.width), @(screen.size.height) ];
+}
 
 #pragma mark - Parser data delegation
 

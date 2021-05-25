@@ -41,6 +41,7 @@
 - (void)endScript;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (NSArray*)availableTags;
+- (NSArray*)screen;
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);

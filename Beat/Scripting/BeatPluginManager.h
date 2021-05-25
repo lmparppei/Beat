@@ -11,10 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef enum : NSInteger {
-	GenericPlugin = 0,
+	ToolPlugin = 0,
 	ImportPlugin,
-	ToolPlugin,
-	StandalonePlugin
+	ExportPlugin
 } BeatPluginType;
 
 @interface BeatPlugin : NSObject
@@ -24,12 +23,16 @@ typedef enum : NSInteger {
 @end
 
 @interface BeatPluginManager : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@property (nonatomic) NSMenuItem *menuItem;
+@property (nonatomic) NSMenuItem *exportMenuItem;
+@property (nonatomic) NSMenuItem *importMenuItem;
+
 + (BeatPluginManager*)sharedManager;
 - (NSArray*)pluginNames;
 - (NSString*)scriptForPlugin:(NSString*)pluginName;
 - (BeatPlugin*)pluginWithName:(NSString*)name;
 - (NSString*)pathForPlugin:(NSString*)pluginName;
-- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins;
+- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type;
 - (void)openPluginFolder;
 
 - (NSArray*)disabledPlugins;

@@ -13,7 +13,6 @@
  Future considerations:
  - Add plugin types. Type specification could be located either inside the
    files (Plugin Type: ...) or in the filename: "Plugin [Import].beatPlugin"
- - Plugin could be a simple XML file with both the JS and some HTML content
  
  */
 
@@ -36,7 +35,7 @@
 @interface BeatPluginManager ()
 @property (nonatomic) NSDictionary *plugins;
 @property (nonatomic) NSURL *pluginURL;
-@property (nonatomic) NSMenuItem *menuItem;
+
 @property (nonatomic) NSDictionary *externalLibrary;
 @property (nonatomic) NSMutableDictionary *availablePlugins;
 @end
@@ -273,24 +272,34 @@
 	Rx* versionRx = [Rx rx:@"\nVersion:(.*)\n" options:NSRegularExpressionCaseInsensitive];
 	Rx* copyrightRx = [Rx rx:@"\nCopyright:(.*)\n" options:NSRegularExpressionCaseInsensitive];
 	Rx* descriptionRx = [Rx rx:@"\nDescription:(.*)\n" options:NSRegularExpressionCaseInsensitive];
+	Rx* typeRx = [Rx rx:@"\nType:(.*)\n" options:NSRegularExpressionCaseInsensitive];
 	
 	RxMatch *matchVersion = [script firstMatchWithDetails:versionRx];
 	RxMatch *matchCopyright = [script firstMatchWithDetails:copyrightRx];
 	RxMatch *matchDescription = [script firstMatchWithDetails:descriptionRx];
+	RxMatch *matchType = [script firstMatchWithDetails:typeRx];
 		
 	if (matchVersion) info[@"version"] = [[(RxMatchGroup*)matchVersion.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	if (matchCopyright) info[@"copyright"] = [[(RxMatchGroup*)matchCopyright.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	if (matchDescription) info[@"description"] = [[(RxMatchGroup*)matchDescription.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
+	if (matchType) {
+		NSString *typeString = [[(RxMatchGroup*)matchDescription.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet].lowercaseString;
+		BeatPluginType type = ToolPlugin;
+		if ([typeString isEqualToString:@"export"]) type = ExportPlugin;
+		else if ([typeString isEqualToString:@"import"]) type = ImportPlugin;
+	}
+	
 	return info;
 }
 
+/*
 - (BeatPluginType)pluginTypeFor:(NSString*)plugin {
 	NSString *path = _plugins[plugin];
 	
 	NSError *error;
 	NSString *script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-	if (error) return GenericPlugin;
+	if (error) return ToolPlugin;
 	
 	Rx* rx = [Rx rx:@"\nPlugin type:([\\w|\\s]+)\n" options:NSRegularExpressionCaseInsensitive];
 	RxMatch* match = [script firstMatchWithDetails:rx];
@@ -299,32 +308,43 @@
 		NSString *type = [[[(RxMatchGroup*)match.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet] lowercaseString];
 		
 		if ([type isEqualToString:@"import"]) return ImportPlugin;
-		else if ([type isEqualToString:@"standalone"]) return StandalonePlugin;
-		else if ([type isEqualToString:@"tool"]) return ToolPlugin;
-		else return GenericPlugin;
+		else if ([type isEqualToString:@"export"]) return ExportPlugin;
+		else return ToolPlugin;
 	} else {
-		return GenericPlugin;
+		return ToolPlugin;
 	}
 }
-
+*/
+ 
 #pragma mark - Provide Menu Items
 
-- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins {
+- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type {
 	// Remove existing plugin menu items
 	NSArray *menuItems = [NSArray arrayWithArray:parentMenu.itemArray];
 	for (NSMenuItem *item in menuItems) {
 		if (item.tag == 1) {
-			// Save prototype
-			if (!_menuItem) _menuItem = item;
+			// Save prototype for plugin type
+			if (type == ToolPlugin && !_menuItem) _menuItem = item;
+			else if (type == ImportPlugin && !_importMenuItem) _importMenuItem = item;
+			else if (type == ExportPlugin && !_exportMenuItem) _exportMenuItem = item;
+			
 			[parentMenu removeItem:item];
 		}
 	}
-		
+	
+	NSString *filter;
+	if (type == ExportPlugin) filter = @"Export";
+	else if (type == ImportPlugin) filter = @"Import";
+	
 	[self loadPlugins];
 	
 	NSArray *disabledPlugins = [self disabledPlugins];
 	
 	for (NSString *pluginName in self.pluginNames) {
+		if (filter.length) {
+			if ([pluginName rangeOfString:filter].location != 0) continue;
+		}
+		
 		// Don't show this plugin in menu
 		if ([disabledPlugins containsObject:pluginName]) continue;
 		

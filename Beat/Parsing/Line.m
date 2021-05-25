@@ -212,7 +212,7 @@
 	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
-- (NSString*)string {
+- (NSString*)stringCopy:(id)sender {
 	return _string;
 }
 

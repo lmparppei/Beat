@@ -13,6 +13,8 @@
 
 @protocol BeatPluginWindowExports <JSExport>
 JSExportAs(runJS, - (void)runJS:(NSString*)js callback:(JSValue*)callback);
+JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height);
+- (NSArray*)getSize;
 - (void)setHTML:(NSString*)html;
 - (void)close;
 @end

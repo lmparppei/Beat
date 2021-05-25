@@ -18,6 +18,8 @@
 
 // Plugin support
 @property (weak) IBOutlet NSMenu *pluginMenu;
+@property (weak) IBOutlet NSMenu *exportMenu;
+@property (weak) IBOutlet NSMenu *importMenu;
 
 // Modifier for "pro" version, meaning the App Store edition.
 // You could think that one can just change this byte to true in the open source version, but actually the "pro" stuff is just additional content and not really restricting any other functionality in the app, so it's no use.

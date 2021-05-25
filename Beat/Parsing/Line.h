@@ -35,12 +35,12 @@ typedef enum : NSUInteger {
 	more
 } LineType;
 
-
 @protocol LineExports <JSExport>
 @property NSUInteger position;
+@property NSString* sceneNumber;
 @property NSString* color;
+@property (strong, nonatomic) NSString* string;
 
-- (NSString*)sceneNumber;
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
 - (bool)isTitlePage;
@@ -50,7 +50,7 @@ typedef enum : NSUInteger {
 - (NSString*)typeAsString;
 - (NSString*)characterName;
 - (NSString*)stripInvisible;
-- (NSString*)string;
+- (id)clone;
 @end
 
 @interface Line : NSObject <LineExports>
@@ -102,7 +102,6 @@ typedef enum : NSUInteger {
 - (NSRange)range;
 - (NSRange)textRange;
 - (NSRange)globalRangeToLocal:(NSRange)range;
-- (NSString*)stringCopy;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;

@@ -65,4 +65,22 @@
 	}
 }
 
+- (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
+	NSRect screen = self.screen.frame;
+	// Don't allow moving the windows out of view
+	if (x > screen.size.width) x = screen.size.width - 100;
+	if (y > screen.size.height) x = screen.size.height - height;
+	
+	if (x < 0) x = 0;
+	if (y < 0) y = 0;
+	
+	NSRect frame = NSMakeRect(x, y, width, height);
+	[self setFrame:frame display:YES];
+}
+
+- (NSArray*)getSize {
+	NSRect rect = self.frame;
+	return @[ @(rect.origin.x), @(rect.origin.y), @(rect.size.width), @(rect.size.height) ];
+}
+
 @end

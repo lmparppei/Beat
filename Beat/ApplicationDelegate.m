@@ -14,6 +14,8 @@
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
 #import "BeatDownloadManager.h"
+#import "BeatScriptParser.h"
+#import "BeatPluginManager.h"
 
 #ifdef ADHOC
 #import <Sparkle/Sparkle.h>
@@ -66,9 +68,10 @@
 - (void) awakeFromNib {
 
 #ifdef ADHOC
-	// Add CHECK FOR UPDATES menu item
+	// Ad hoc vector
 	NSLog(@"# ADHOC");
 
+	// Init Sparkle
 	self.userDriver = [[SPUStandardUserDriver alloc] initWithHostBundle:NSBundle.mainBundle delegate:nil];
 	self.updater = [[SPUUpdater alloc] initWithHostBundle:NSBundle.mainBundle applicationBundle:[NSBundle mainBundle] userDriver:self.userDriver delegate:nil];
 	
@@ -76,9 +79,13 @@
 	[self.updater startUpdater:&error];
 	if (error) NSLog(@"sparkle error: %@", error);
 	
+	// Add selector to check updates item
 	_checkForUpdatesItem.action = @selector(checkForUpdates:);
 #else
+	// App store vector
 	NSLog(@"# APPSTORE");
+	
+	// Remove "Check For Updates" menu item
 	[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
 	[_checkForUpdatesItem setHidden:YES];
 #endif
@@ -88,14 +95,19 @@
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
 	[_versionField setStringValue:versionString];
 	
+	// Show/hide pro content
 	if (_proMode) {
 		[self.menuManual setHidden:NO];
 	}
 	
+	// Show welcome screen
 	[self.startModal becomeKeyWindow];
 	[self.startModal setAcceptsMouseMovedEvents:YES];
 	[self.startModal setMovable:YES];
 	[self.startModal setMovableByWindowBackground:YES];
+	
+	// Populate plugin menu
+	[self setupPlugins];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
@@ -132,6 +144,7 @@
 
 -(void)checkForUpdates:(id)sender {
 #ifdef ADHOC
+	// Only allow this in ad hoc distribution
 	[self.updater checkForUpdates];
 #endif
 }
@@ -502,11 +515,21 @@
 #pragma mark - Plugin support
 
 - (void)setupPlugins {
+	[self setupPlugins:_pluginMenu];
+	[self setupPlugins:_exportMenu];
+	[self setupPlugins:_importMenu];
+}
+- (void)setupPlugins:(NSMenu*)menu {
 	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
-	[plugins pluginMenuItemsFor:_pluginMenu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"]];
+	
+	BeatPluginType type = ToolPlugin;
+	if (menu == _exportMenu) type = ExportPlugin;
+	else if (menu == _importMenu) type = ImportPlugin;
+	
+	[plugins pluginMenuItemsFor:menu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"] type:type];
 }
 -(void)menuWillOpen:(NSMenu *)menu {
-	if (menu == _pluginMenu) [self setupPlugins];
+	if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
 }
 - (void)openPluginFolder {
 	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
@@ -515,6 +538,17 @@
 - (IBAction)openPluginManager:(id)sender {
 	_downloadManager = [[BeatDownloadManager alloc] init];
 	[_downloadManager show];
+}
+
+- (IBAction)runStandalonePlugin:(id)sender {
+	// This runs a plugin which is NOT tied to the document
+	NSMenuItem *item = sender;
+	NSString *pluginName = item.title;
+	
+	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
+	BeatPlugin *plugin = [BeatPluginManager.sharedManager pluginWithName:pluginName];
+	[parser runPlugin:plugin];
+	parser = nil;
 }
 
 -(void)openConsole {

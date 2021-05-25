@@ -175,7 +175,16 @@
                                                 <action selector="importFadeIn:" target="vEX-2F-hcj" id="6C8-ah-Gva"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="PLUGIN PLACEHOLDER" tag="1" id="r2v-xc-qum">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="runStandalonePlugin:" target="vEX-2F-hcj" id="2AU-um-39i"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="vEX-2F-hcj" id="Q0K-RW-bar"/>
+                                    </connections>
                                 </menu>
                             </menuItem>
                             <menuItem title="Export" id="RGT-hK-aoo">
@@ -200,7 +209,16 @@
                                                 <action selector="exportOutline:" target="-1" id="HXB-My-Vhk"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="PLUGIN PLACEHOLDER" tag="1" id="YDF-BB-4gm">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="runPlugin:" target="-1" id="QyP-Ea-Dsi"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="vEX-2F-hcj" id="GIg-YB-4ek"/>
+                                    </connections>
                                 </menu>
                                 <connections>
                                     <action selector="export:" target="-1" id="TfW-38-X9Y"/>
@@ -719,7 +737,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="rAa-we-oVz"/>
-                            <menuItem title="PLUGIN TEST" tag="1" id="S1k-gz-zdn">
+                            <menuItem title="PLUGIN PLACEHOLDER" tag="1" id="S1k-gz-zdn">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runPlugin:" target="-1" id="tg9-p3-qPc"/>
@@ -844,6 +862,8 @@ DQ
         <customObject id="vEX-2F-hcj" customClass="ApplicationDelegate">
             <connections>
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
+                <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>
+                <outlet property="importMenu" destination="xR8-x2-hNB" id="9Pt-Ay-c1K"/>
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
                 <outlet property="recentFiles" destination="2RT-wl-dQJ" id="2Y1-AI-GVM"/>
