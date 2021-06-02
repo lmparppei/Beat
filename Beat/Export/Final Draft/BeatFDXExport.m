@@ -486,6 +486,8 @@ static NSDictionary *fdxIds;
 			return @"Action";
 		case more:
 			return @"More";
+		case dualDialogueMore:
+			return @"More";
 	}
 }
 

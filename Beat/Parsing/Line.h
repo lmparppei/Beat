@@ -32,7 +32,8 @@ typedef enum : NSUInteger {
     lyrics,
     pageBreak,
     centered,
-	more
+	more,
+	dualDialogueMore
 } LineType;
 
 @protocol LineExports <JSExport>
@@ -43,6 +44,7 @@ typedef enum : NSUInteger {
 
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
+- (NSString*)stripFormatting;
 - (bool)isTitlePage;
 - (bool)isInvisible;
 - (bool)isDialogueElement;
@@ -100,6 +102,7 @@ typedef enum : NSUInteger {
 - (bool)note;
 - (bool)centered;
 - (NSRange)range;
+- (NSInteger)length;
 - (NSRange)textRange;
 - (NSRange)globalRangeToLocal:(NSRange)range;
 

@@ -289,6 +289,7 @@
         }
 	}
 	
+	// Log any problems faced during parsing (safety measure for debugging)
 	[self report];
 	
 	return changedIndices;
@@ -563,8 +564,9 @@
             [indices removeIndex:index];
         }
     }
-	//bool lastToParse = YES;
-	//if (indices.count) lastToParse = NO;
+	
+	bool lastToParse = YES;
+	if (indices.count) lastToParse = NO;
     
     Line* currentLine = self.lines[index];
 	
@@ -587,7 +589,7 @@
 		currentLine.type = empty;
 	}
 	
-	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut) {
+	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse) {
         //If there is a next element, check if it might need a reparse because of a change in type or omit out
         if (index < self.lines.count - 1) {
             Line* nextLine = self.lines[index+1];
@@ -624,7 +626,7 @@
                                                             //of the last line to end or not end
                                                             //with an open omit other than the
                                                             //line actually does, omites changed
-                
+				
                 [self correctParseInLine:index+1 indicesToDo:indices];
             }
         }

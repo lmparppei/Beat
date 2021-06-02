@@ -78,9 +78,12 @@
 	[self setFrame:frame display:YES];
 }
 
-- (NSArray*)getSize {
+- (NSArray*)getFrame {
 	NSRect rect = self.frame;
 	return @[ @(rect.origin.x), @(rect.origin.y), @(rect.size.width), @(rect.size.height) ];
+}
+- (NSArray*)screenSize {
+	return @[ @(self.screen.frame.size.width), @(self.screen.frame.size.height) ];
 }
 
 @end

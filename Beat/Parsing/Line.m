@@ -358,6 +358,8 @@
             return @"Centered";
 		case more:
 			return @"More";
+		case dualDialogueMore:
+			return @"DD More";
     }
 }
 
@@ -407,6 +409,9 @@
 -(NSRange)range {
 	// Range for the full line (incl. line break)
 	return NSMakeRange(self.position, self.string.length + 1);
+}
+-(NSInteger)length {
+	return self.string.length;
 }
 -(NSRange)textRange {
 	// Range for the text only
@@ -473,6 +478,8 @@
             return @"Centered";
 		case more:
 			return @"More";
+		case dualDialogueMore:
+			return @"More";
     }
 }
 - (bool)isDialogue {
@@ -480,6 +487,7 @@
 	else return NO;
 }
 - (bool)isDialogueElement {
+	// Is SUB-DIALOGUE element
 	if (self.type == parenthetical || self.type == dialogue) return YES;
 	else return NO;
 }
@@ -619,8 +627,17 @@
 	NSAttributedString *first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
 	NSAttributedString *second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
-	NSArray *result = @[ [self attributedStringToFountain:first], [self attributedStringToFountain:second] ];
-	return result;
+	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
+	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
+	
+	if (self.changed) {
+		retain.changed = YES;
+		split.changed = YES;
+	}
+	retain.position = self.position;
+	split.position = self.position + retain.string.length;
+	
+	return @[ retain, split ];
 }
 - (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr {
 	// NOTE! This only works with the FDX atributed string
@@ -650,7 +667,7 @@
 		[result appendString:close];
 	}];
 	
-	return result;
+	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
 - (NSIndexSet*)contentRanges

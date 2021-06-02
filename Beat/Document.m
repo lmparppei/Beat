@@ -1282,15 +1282,19 @@
 		}
 	}
 	
-	// Also, if it's an enter key and we are handling a CHARACTER, don't add a line break if the next line is dialogue
+	
+	// Also, if it's an enter key and we are handling a CHARACTER, force dialogue if needed
+	bool forceDialogue = NO;
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && _currentLine.type == character) {
 		Line *nextLine = [_parser nextLine:_currentLine];
 
 		if (nextLine.type == dialogue && nextLine.string.length) {
-			[self setSelectedRange:(NSRange){ affectedCharRange.location + 1, 0 }];
-			return NO;
+			//[self setSelectedRange:(NSRange){ affectedCharRange.location + 1, 0 }];
+			forceDialogue = YES;
+			//return NO;
 		}
 	}
+
 	
 	// Backspace / deletion handling for some special case scenarios
 	// Implementing some undoing weirdness, which works, kind-of.
@@ -1403,6 +1407,7 @@
 
 	// Enter key
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && ![self.undoManager isUndoing] && !self.documentIsLoading) {
+		
 		// Process line break after a forced character input
 		if (_characterInput && _characterInputForLine) {
 			// Don't go out of range
@@ -1465,8 +1470,18 @@
 
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-			
+				
 	_currentLine = [self getCurrentLine];
+	
+	/*
+	if (forceDialogue) {
+		Line *nextLine = [self getNextLine:_currentLine];
+		if (nextLine.type == empty) {
+			nextLine.type = dialogue;
+			[self forceFormatChangesInRange:nextLine.textRange];
+		}
+	}
+	*/
 	
 	if (processDoubleBreak) {
 		// This is here to fix a formating error with dialogue.
@@ -1505,6 +1520,15 @@
 	_previewUpdated = NO;
     return YES;
 }
+- (Line*)getNextLine:(Line*)line {
+	NSInteger i = [self.parser.lines indexOfObject:line];
+	if (i < self.parser.lines.count - 1 && i != NSNotFound) {
+		return self.parser.lines[i + 1];
+	} else {
+		return nil;
+	}
+}
+
 - (IBAction)toggleAutoLineBreaks:(id)sender {
 	self.autoLineBreaks = !self.autoLineBreaks;
 	[[NSUserDefaults standardUserDefaults] setBool:self.autoLineBreaks forKey:AUTOMATIC_LINEBREAKS_KEY];
@@ -1552,6 +1576,17 @@
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
+	
+	if (_postEditAction) {
+		NSLog(@"post edit %@", _postEditAction);
+		NSInteger index = [_postEditAction[@"index"] integerValue];
+		NSString *string = _postEditAction[@"string"];
+		_postEditAction = nil;
+		
+		if (index <= self.textView.string.length) {
+			[self addString:string atIndex:index];
+		}
+	}
 	
 	// Register changes
 	if (_trackChanges) [self registerChangesInRange:_lastChangedRange];

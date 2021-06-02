@@ -261,6 +261,9 @@ hr {
 .dual-dialogue .parenthetical {
 	padding-left: 40px;
 }
+.dual-dialogue .more {
+	text-align: center;
+}
 p.page-break {
 	text-align: right;
 	border-top: 1px solid #ccc;

@@ -458,7 +458,7 @@
 			// Stop dual dialogue
 			if (dualDialogueCharacterCount == 2 &&
 				!(line.type == dualDialogueParenthetical ||
-				 line.type == dualDialogue)) {
+				 line.type == dualDialogue || line.type == dualDialogueMore)) {
 				[body appendString:@"</div></div>\n"];
 				dualDialogueCharacterCount = 0;
 			}

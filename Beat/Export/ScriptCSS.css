@@ -237,6 +237,9 @@ hr {
 .dual-dialogue .parenthetical {
 	padding-left: 40px;
 }
+.dual-dialogue .more {
+	text-align: center;
+}
 p.page-break {
 	padding-right: 0;
 	margin-top: 0;
