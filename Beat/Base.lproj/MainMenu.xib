@@ -730,7 +730,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Lx9-Tc-HJm"/>
-                            <menuItem title="Manage Plugins..." id="jCo-JF-2g0">
+                            <menuItem title="Plugin Library..." id="jCo-JF-2g0">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openPluginManager:" target="vEX-2F-hcj" id="hdm-XI-prP"/>

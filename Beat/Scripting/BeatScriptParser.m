@@ -435,7 +435,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
  
  */
 
-- (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+- (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
 {
 	if (_delegate.thisWindow.attachedSheet) return;
 	
@@ -455,17 +455,37 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[webView loadHTMLString:template baseURL:nil];
 	[webView.configuration.userContentController addScriptMessageHandler:self name:@"sendData"];
 	[webView.configuration.userContentController addScriptMessageHandler:self name:@"log"];
+	[webView.configuration.userContentController addScriptMessageHandler:self name:@"call"];
 	[panel.contentView addSubview:webView];
 	
-	NSButton *okButton = [[NSButton alloc] initWithFrame:NSMakeRect(width - 90, 8, 90, 20)];
+	NSButton *okButton = [[NSButton alloc] initWithFrame:NSMakeRect(width - 90, 5, 90, 24)];
 	okButton.bezelStyle = NSRoundedBezelStyle;
 	[okButton setButtonType:NSMomentaryLightButton];
 	[okButton setTarget:self];
 	[okButton setAction:@selector(fetchHTMLPanelDataAndClose)];
 
+	// Make esc close the panel
 	okButton.keyEquivalent = [NSString stringWithFormat:@"%C", 0x1b];
 	okButton.title = @"Close";
 	[panel.contentView addSubview:okButton];
+	
+	// Add cancel button if needed
+	if (cancelButton) {
+		NSButton *cancelButton = [[NSButton alloc] initWithFrame:NSMakeRect(width - 175, 5, 90, 24)];
+		cancelButton.bezelStyle = NSRoundedBezelStyle;
+		[cancelButton setButtonType:NSMomentaryLightButton];
+		[cancelButton setTarget:self];
+		[cancelButton setAction:@selector(closePanel:)];
+
+		// Close button is now OK and enter is the shortcut for sending the data
+		okButton.title = @"OK";
+		okButton.keyEquivalent = @"\r";
+		
+		// Esc closes the panel
+		cancelButton.keyEquivalent = [NSString stringWithFormat:@"%C", 0x1b];
+		cancelButton.title = @"Cancel";
+		[panel.contentView addSubview:cancelButton];
+	}
 	
 	_sheet = panel;
 	_sheetWebView = webView;
@@ -474,6 +494,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[self.delegate.thisWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
+		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
 		self.sheetWebView = nil;
 		self.sheet = nil;
 	}];

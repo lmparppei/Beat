@@ -18,7 +18,7 @@
         <window title="About Beat" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="2ip-76-u7o">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="633" height="600"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
             <value key="minSize" type="size" width="500" height="300"/>
             <value key="maxSize" type="size" width="633" height="800"/>
             <view key="contentView" id="hqH-LR-UWK">
@@ -125,7 +125,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
-                    <button id="ObH-2d-c5Z">
+                    <button toolTip="Open Plugin Folder" id="ObH-2d-c5Z">
                         <rect key="frame" x="595" y="515" width="18" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="Folder" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="H5o-YW-PoE">
@@ -139,7 +139,7 @@
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="evc-jX-SI1">
                         <rect key="frame" x="18" y="517" width="578" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" title="Note: Only official extensions of Beat are available for download" id="l2z-Yk-TJT">
+                        <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" title="Note: Only official and verified extensions are available for download" id="l2z-Yk-TJT">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -148,7 +148,7 @@
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="95E-Ee-89D">
                         <rect key="frame" x="18" y="537" width="196" height="29"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" lineBreakMode="clipping" title="Plugin Manager" id="XTV-aV-QaU">
+                        <textFieldCell key="cell" lineBreakMode="clipping" title="Plugin Library" id="XTV-aV-QaU">
                             <font key="font" size="24" name="Helvetica-Light"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

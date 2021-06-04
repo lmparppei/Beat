@@ -380,12 +380,12 @@
     NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
 	
 	FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:_script document:_document];
-    NSUInteger maxPages = [paginator numberOfPages];
+    NSUInteger maxPages = paginator.numberOfPages;
 	
 	_numberOfPages = maxPages;
 	
 	// Header string (make sure it's not null)
-	NSString *header = (self.header) ? self.header : @"";
+	NSString *header = (self.header) ? self.header : @"";	
 	
 	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) { @autoreleasepool {
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];

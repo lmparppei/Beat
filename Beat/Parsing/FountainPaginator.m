@@ -459,7 +459,6 @@
 						if (fullHeight - fabs(overflow) < lineHeight * 3
 							&& fabs(overflow) > lineHeight * 2) {
 							handled = YES;
-							NSLog(@"Push heading block on next page");
 						}
 					} else {
 						spillerElement = element;
@@ -588,7 +587,6 @@
 					
 					// Normal, single dialogue
 					if (!element.nextElementIsDualDialogue) {
-						NSLog(@"splitting single dialogue");
 						Line *spillEl = [self findDialogueSpiller:dialogueBlock remainingSpace:remainingSpace];
 									
 						NSDictionary *split = [self splitDialogue:dialogueBlock spiller:spillEl remainingSpace:remainingSpace height:[self heightForDialogueBlock:dialogueBlock page:currentPage]];
@@ -953,12 +951,15 @@
 	NSInteger i = [self.script indexOfObject:line];
 	if (i == self.script.count - 1) return @[line];
 
+	LineType type = line.type;
+	if (type != heading && type != character && type != dualDialogueCharacter) return @[line];
+	
 	NSInteger l = i + 1;
 	[block addObject:line];
 		
 	while (l < self.script.count) {
 		Line *el = self.script[l];
-				
+		
 		if (el.type == empty || el.string.length == 0) continue;
 		
 		if (line.type == heading) {
@@ -978,7 +979,7 @@
 			if (el.isDualDialogueElement) [block addObject:el];
 			else break;
 		}
-			
+				
 		l++;
 	}
 	

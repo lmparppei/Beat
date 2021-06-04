@@ -10,9 +10,11 @@
  
  Provides a list of plugin names and a runnable JS script for the plugin.
  
- Future considerations:
- - Add plugin types. Type specification could be located either inside the
-   files (Plugin Type: ...) or in the filename: "Plugin [Import].beatPlugin"
+ Also handles downloading plugins from the GitHub repository. The address is HARD-CODED.
+ For now, I'm the only admin in that repository. There is a risk of it becoming an attack-vector
+ for malicious purposes, but Beat is sandboxed, so even while the API allows the plugins to
+ write files, the operations have to be approved by the user. So probably we are on safe
+ waters for now.
  
  */
 
@@ -112,7 +114,7 @@
 	
 	current = [pad stringByReplacingCharactersInRange:(NSRange){0, current.length} withString:current];
 	old = [pad stringByReplacingCharactersInRange:(NSRange){0, old.length} withString:old];
-	
+		
 	NSInteger currentVersion = [current integerValue];
 	NSInteger oldVersion = [old integerValue];
 	

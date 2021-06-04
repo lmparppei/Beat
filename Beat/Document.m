@@ -34,11 +34,11 @@
  
  Some structures are legacy from Writer and original Fountain repository, and while most have since been replaced with a totally different approach, some variable names and complimentary methods still linger around. You can find some *very* shady stuff lying around here and there, with no real purpose. I built some very convoluted UI methods on top of legacy code from Writer before getting a grip on AppKit & Objective-C programming. I have since made it much more sensible, but dismantling those weird solutions is still WIP.
  
- As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg. Some clumsy stuff is still lingering around, unfortunately. I'll keep on fixing those when I have the time.
+ As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg. Some clumsy stuff is still lingering around, unfortunately. I'll keep on fixing that stuff when I have the time.
  
- I originally started the project to combat a creative block, while overcoming some difficult PTSD symptoms. Coding helped to escape those feelings. If you are in an abusive relationship, leave RIGHT NOW. You might love that person, but it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file. Anyway, I'm glad to say that things have turned for the better.
+ I originally started the project to combat a creative block, while overcoming some difficult PTSD symptoms. Coding helped to escape those feelings. If you are in an abusive relationship, leave RIGHT NOW. You might love that person, but it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file.
  
- Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'll make a commercial version to finance the development. It has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree.
+ Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'd make a commercial version to finance the development. Beat has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree. Or, even better, donate to a NGO helping less fortunate people. I'm already on the top of Maslow hierarchy.
  
  I am in the process of modularizing the code so that it could be ported more easily to iOS.
 
@@ -59,14 +59,6 @@
  2019-2021
  
  
- = = = = = = = = = = = = = = = = = = = = = = = =
- 
- Page sizing info:
- 
- Character - 32%
- Parenthetical - 30%
- Dialogue - 16%
- Dialogue width - 74%
  
  = = = = = = = = = = = = = = = = = = = = = = = =
  
@@ -75,7 +67,8 @@
               I know, I know, I know.
  And in the hollow of my ink-stained palms
  swallows will make their nest.
-  
+ 
+ = = = = = = = = = = = = = = = = = = = = = = = =
  
 */
 
@@ -1569,6 +1562,11 @@
 	//[self markRangeAsAddition:range];
 	[_textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionAddition color:_revisionColor] range:range];
 }
+- (bool)inRange:(NSRange)range {
+	NSRange intersection = NSIntersectionRange(range, (NSRange){0, _textView.string.length  });
+	if (intersection.length == range.length) return YES;
+	else return NO;
+}
 
 - (void)textDidChange:(NSNotification *)notification
 {
@@ -2227,7 +2225,7 @@
 		
 		if (index > 1) {
 			preceedingLine = [_parser.lines objectAtIndex:index - 1];
-			if ([preceedingLine.string length] < 1) {
+			if (preceedingLine.string.length < 1) {
 				[paragraphStyle setFirstLineHeadIndent:0];
 				[paragraphStyle setHeadIndent:0];
 				[paragraphStyle setTailIndent:0];
@@ -2392,7 +2390,7 @@
 - (void)initialTextBackgroundRender {
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[self.textView.textStorage enumerateAttributesInRange:(NSRange){0,self.textView.string.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-					
+			
 			// Revisions
 			if (attrs[revisionAttribute]) {
 				BeatRevisionItem *revision = attrs[revisionAttribute];

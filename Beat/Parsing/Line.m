@@ -618,14 +618,18 @@
 	}];
 }
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
+
 	NSAttributedString *string = [self attributedStringForFDX];
 	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
 	[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
 	
-	NSAttributedString *first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
-	NSAttributedString *second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
+	NSAttributedString *first = [[NSMutableAttributedString alloc] initWithString:@""];
+	NSAttributedString *second = [[NSMutableAttributedString alloc] initWithString:@""];
+	
+	first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
+	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
 	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
 	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];

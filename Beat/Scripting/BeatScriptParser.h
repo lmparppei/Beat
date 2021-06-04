@@ -55,7 +55,7 @@ JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 JSExportAs(openFile, - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback);
 JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
 JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)content);
-JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
+JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
 JSExportAs(htmlWindow, - (BeatPluginWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 @end
 

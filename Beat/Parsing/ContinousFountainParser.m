@@ -18,7 +18,7 @@
  - title page parsing (mostly for preview & export purposes)
  - new data structure called OutlineScene, which contains scene name and length, as well as a reference to original line
  - overall tweaks to parsing here and there
- - parsing large chunks of text is optimized
+ - parsing large chunks of text is optimized 	
  
  The file and class are still called Continous, instead of Continuous, because
  I haven't had the time and willpower to fix Hendrik's small typo.
@@ -1705,7 +1705,7 @@ and incomprehensible system of recursion.
 		}
 		
 		// Eliminate faux empty lines with only single space (let's use two)
-		if ([line.string isEqualToString:@" "] && line.type == action && (previousLine.type != dialogue && previousLine.type != parenthetical)) {
+		if ([line.string isEqualToString:@" "]) {
 			line.type = empty;
 			continue;
 		}
