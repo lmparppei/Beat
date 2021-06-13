@@ -1,5 +1,9 @@
+// NOTE: You need to set let standalone = false/true somewhere
 
-var dragDrop = true;
+// Drag & drop should be true for in-app view, false for standalone
+let dragDrop
+if (standalone) dragDrop = false
+else dragDrop = true
 
 var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
 
@@ -9,32 +13,29 @@ var scenes,
 	printButton,
 	contextMenu;
 
-var drake;
-var debugElement;
-var wait;
-
-/*
-Array.prototype.move = function (from, to) {
-  this.splice(to, 0, this.splice(from, 1)[0]);
-};
-*/
+var drake
+var debugElement = document.getElementById('debug')
+var wait
 
 function init () {
-	scenes = [];
+	scenes = []
 	
-	container = document.getElementById('container');
-	wait = document.getElementById('wait');
+	container = document.getElementById('container')
+	wait = document.getElementById('wait')
 
-	printButton = document.getElementById('print');
-	printButton.onclick = function () {
-		// This is a janky implementation but I don't care right now
-		var html = "<html>" + document.getElementsByTagName('html')[0].innerHTML + "</html>";
-		window.webkit.messageHandlers.printCards.postMessage(html);
-	}
-	
-	closeButton = document.getElementById('close');
-	closeButton.onclick = function () {
-		window.webkit.messageHandlers.cardClick.postMessage('exit');
+	// Only allow printing & closing for the standalone, windowed version
+	if (!standalone) {
+		printButton = document.getElementById('print');
+		printButton.onclick = function () {
+			// This is a janky implementation but I don't care right now
+			var html = "<html>" + document.getElementsByTagName('html')[0].innerHTML + "</html>";
+			window.webkit.messageHandlers.printCards.postMessage(html);
+		}
+		
+		closeButton = document.getElementById('close');
+		closeButton.onclick = function () {
+			window.webkit.messageHandlers.cardClick.postMessage('exit');
+		}
 	}
 	
 	document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
@@ -55,7 +56,7 @@ function log(message) {
 
 function initDragDrop () {
 	// Init dragula
-	drake = dragula({ 
+	drake = dragula({
 		direction: 'horizontal' ,
 		
 		invalid: function (el, handle) {
@@ -86,7 +87,7 @@ function initDragDrop () {
 		scenes.sort((a, b) => (a.sceneIndex > b.sceneIndex) ? 1 : -1)
 		
 		// Post move action to main window
-		window.webkit.messageHandlers.move.postMessage(sceneIndex + "," + nextIndex);
+		//window.webkit.messageHandlers.move.postMessage(sceneIndex + "," + nextIndex);
 
 		// Disable editing until the operation is complete
 		wait.className = "waiting";
@@ -104,7 +105,9 @@ function nightModeOff () {
 	document.body.classList.remove('nightMode');
 }
 
-// Context menu
+
+/* ##### CONTEXT MENU ##### */
+
 contextMenu = {};
 contextMenu.init = function () {
 	contextMenu.menu = document.createElement('div');
@@ -161,7 +164,12 @@ contextMenu.setColor = function (color) {
 	
 	contextMenu.target.classList.add(color);
 	
-	window.webkit.messageHandlers.setColor.postMessage(contextMenu.target.getAttribute('lineIndex') + ":" + color );
+	// SET COLOR
+	let index = contextMenu.target.getAttribute('lineIndex');
+	let sceneIndex = contextMenu.target.getAttribute('sceneIndex');
+	
+	if (standalone) Beat.call("Beat.custom.setColor(" + sceneIndex + ", '" + color + "')")
+	else window.webkit.messageHandlers.setColor.postMessage(contextMenu.target.getAttribute('lineIndex') + ":" + color );
 }
 function getPosition(e) {
 	var posx = 0;
@@ -186,8 +194,7 @@ function getPosition(e) {
 }
 
 
-// Cards
-
+/* ##### CONTEXT MENU ##### */
 function setupCards () {
 	let cards = document.querySelectorAll('.card');
 	cards.forEach(function (card) {
@@ -196,12 +203,13 @@ function setupCards () {
 			var position = this.getAttribute('pos');
 			var index = this.getAttribute('sceneIndex');
 			//window.webkit.messageHandlers.cardClick.postMessage(position);
-			window.webkit.messageHandlers.cardClick.postMessage(index);
+
+			if (!standalone) window.webkit.messageHandlers.cardClick.postMessage(index);
+			else Beat.call("Beat.custom.goToScene(" + index + ")")
 		}
 				  
 		card.oncontextmenu = function (e) {
 			e.preventDefault();
-			//card.innerHTML = "JEE";
 			contextMenu.toggle(e);
 		}
 	});
@@ -220,67 +228,67 @@ function filter(element) {
 
 // This refreshes the cards
 function createCards (cards, alreadyVisible = false, changedIndex = -1) {
-	var html = "<section id='cardContainer'>";
-	var index = -1;
+	let html = "<section id='cardContainer'>";
+	let index = -1;
 
-	var selected = null;
+	let selected = null;
+	let customStyles = 0
 
 	scenes = [];
 	debugElement.innerHTML = '';
 
+	// No cards
 	if (cards.length < 1) html += "<div id='noData'><h2>No scenes</h2><p>When you write some scenes, they will be visible as cards in this view</p></div>";
 	
+	// Iterate through index card data
 	for (let card of cards) {
-		if (!card.name) { continue; }
+		if (!card.name) continue; // Skip empty
 		
 		index = card.sceneIndex;
-		// Don't show synopsis lines
+		
+		// Don't show synopsis lines, but still add them
 		if (card.type == 'synopse') card.invisible = true;
 		
-		// Let's save the data to scenes array for later use
+		// Let's save the data into an array for later use
 		scenes.push(card);
 
-		var status = '';
-		var color = '';
-		var changed = '';
-		var customStyles = 0;
+		// Style object
+		let style = { status: '', color: '', changed: '' }
 
 		if (card.selected) {
-			status = ' selected';
-			selected = index;
+			style.status = ' selected'
+			selected = index
 		}
+
 		if (String(card.color) != "") {
+			let colorName = ""
+
 			if (String(card.color).substring(0,1) == "#") {
-				// lol
-				var customColor = String(card.color).substring(1);
-				var style = document.createElement('style');
-				
-				customStyles++;
-				var customStyleName = "customStyle" + customStyles.count;
-				
-				style.innerHTML = ".card."+customStyleName+", ."+customStyleName+".selected .sceneNumber { background-color: #"+customColor+"; color: white; } .card."+customStyleName+" p { color: #000; }";
-				document.head.appendChild(style);
-				
-				color = ' colored ' + customStyleName;
+				// This is a custom, hex color
+				let customStyleName = addCustomColor(card.color)
+				colorName = customStyleName
 			} else {
-				color = ' colored ' + card.color;
+				// Use default colors
+				colorName = card.color
 			}
+			style.color = ' colored ' + colorName
 		}
-		if (index == changedIndex) {
-			changed = ' indexChanged ';
-		}
+
+		// For moving stuff around
+		if (index == changedIndex) style.changed = ' indexChanged '
 		
+		// Create HTML for different card types
 		if (card.type == 'section') {
 			if (card.depth == 1) {
-				html += "<h2 class='depth-" + card.depth + "' sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
+				html += "<h2 class='depth-" + card.depth + style.color + "' sceneIndex='" + card.sceneIndex + "'>" + card.name + style.color + "</h2>";
 			} else {
 				if (card.depth > 3) depth = 3;
 				let sectionCardClass = " section-" + card.depth;
 				
-				html += "<div sceneIndex='" + card.sceneIndex + "' class='sectionCardContainer " + sectionCardClass + "'><div lineIndex='" +
+				html += "<div sceneIndex='" + card.sceneIndex + "' class='sectionCardContainer " + sectionCardClass + style.color + "'><div lineIndex='" +
 						card.lineIndex + "' pos='" + card.position + "' " +
 						"sceneIndex='" + card.sceneIndex + "' " +
-						"class='sectionCard" + sectionCardClass + color + status + changed +
+						"class='sectionCard" + sectionCardClass + style.color + style.status + style.changed +
 						"'>"+
 					"<p>" + card.name + "</p></div></div>";
 			}
@@ -291,10 +299,11 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 			html += "<div sceneIndex='" + card.sceneIndex + "' style='display: none;'></div>";
 		}
 		else {
-			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div lineIndex='" + 
+			// Normal card
+			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div lineIndex='" +
 					card.lineIndex + "' pos='" + card.position + "' " +
 					"sceneIndex='" + card.sceneIndex + "' " +
-					"class='card" + color + status + changed +
+					"class='card" + style.color + style.status + style.changed +
 					"'>"+
 				"<div class='header'><div class='sceneNumber'>" + card.sceneNumber	+ "</div>" +
 				"<h3>" + card.name + "</h3></div>" +
@@ -303,12 +312,13 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	}
 	html += "</section>";
 
+	// Set page HTML nad update drag & drop objects
 	container.innerHTML = html;
 	if (dragDrop) drake.containers = [document.getElementById("cardContainer")];
 
 	// If the view is already visible, don't scroll to selected scene
 	if (selected && !alreadyVisible) {
-		var el = document.querySelector("div[sceneIndex='" + selected + "']");
+		let el = document.querySelector("div[sceneIndex='" + selected + "']");
 		el.scrollIntoView({ inline: "center", block: "center" });
 	}
 
@@ -317,6 +327,34 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 
 	// Setup drag & drop and context menus
 	setupCards();
+}
+
+function select(index) {
+	// Selects a card in the given index
+	const cards = document.querySelectorAll("div.card")
+
+	cards.forEach(function (item) {
+		let cardIndex = item.getAttribute('sceneIndex')
+		if (index != cardIndex) item.classList.remove("selected")
+		else {
+			item.classList.add("selected")
+			item.scrollIntoViewIfNeeded(true)
+		}
+	})
+}
+
+function addCustomColor(color) {
+	// Adds a custom hex class into styles
+	var customColor = String(card.color).substring(1)
+	var style = document.createElement('style')
+	
+	customStyles++
+	var customStyleName = "customStyle" + customStyles.count
+	
+	style.innerHTML = ".card."+customStyleName+", ."+customStyleName+".selected .sceneNumber { background-color: #"+customColor+"; color: white; } .card."+customStyleName+" p { color: #000; }";
+	document.head.appendChild(style)
+
+	return customStyleName
 }
 
 init();

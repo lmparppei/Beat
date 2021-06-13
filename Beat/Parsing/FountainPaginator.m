@@ -262,10 +262,23 @@
 - (NSUInteger)numberOfPages
 {
 	// Make sure some kind of pagination has been run before you try to return a value.
-	if ([self.pages count] == 0) {
-		[self paginate];
+	if (self.pages.count == 0) [self paginate];
+	return self.pages.count;
+}
+- (NSArray*)lengthInEights {
+	if (self.pages.count == 0) [self paginate];
+	
+	NSInteger pageCount = self.pages.count - 1;
+	NSInteger eights = (NSInteger)round(_lastPageHeight / (1.0/8.0));
+	
+	// If the last page is almost full, just calculate it as one full page
+	if (eights == 8) {
+		pageCount++;
+		eights = 0;
 	}
-	return [self.pages count];
+	
+	if (pageCount < 0) return nil;
+	else return @[@(pageCount), @(eights)];
 }
 
 /*
@@ -279,14 +292,26 @@
  
 */
 
+-(void)setScript:(NSArray *)script {
+	NSMutableArray *lines = [NSMutableArray array];
+	for (Line *line in script) {
+		if (line.omitted || line.type == empty) continue;
+		[lines addObject:line];
+	}
+	_script = lines;
+}
 
+- (void)paginateLines:(NSArray*)lines {
+	self.script = lines;
+	self.pages = [NSMutableArray array];
+	self.pageBreaks = [NSMutableArray array];
+	[self paginate];
+}
 - (void)paginate {
 	[self paginateFromIndex:0 startFromLine:nil page:nil];
 }
 - (void)paginateFromIndex:(NSInteger)fromIndex startFromLine:(Line*)firstLine page:(NSMutableArray*)firstPage
 {
-	// paginationStart is an
-	
 	if (!self.script.count) return;
 	
 	// Get paper size from the document
@@ -761,6 +786,8 @@
 		
 		[_pages addObject:currentPage];
 	}
+	
+	_lastPageHeight = (float)currentY / (float)maxPageHeight;
 }
 
 
@@ -956,11 +983,14 @@
 	
 	NSInteger l = i + 1;
 	[block addObject:line];
-		
+	
 	while (l < self.script.count) {
 		Line *el = self.script[l];
-		
-		if (el.type == empty || el.string.length == 0) continue;
+
+		if (el.type == empty || el.string.length == 0) {
+			l++;
+			continue;
+		}
 		
 		if (line.type == heading) {
 			if (el.type == action) {

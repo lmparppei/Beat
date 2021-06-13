@@ -5,6 +5,10 @@
 
 * Double scene headings
 
+## Parser
+
+* There is a known bug which begins at parser level, because doesn't really understand nested styling. Stuff gets stylized correctly, but ranges are messed up. For example, ***Bold** italic* leaves the third asterisk into formatting ranges. Quick fix: `(\*\*)(?!\*)(.*)(\*\*)`  
+
 # Work in progress
 
 ## Pagination

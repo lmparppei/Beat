@@ -39,7 +39,11 @@
 @property (nonatomic) JSValue *windowCallback;
 @property (nonatomic) WKWebView *sheetWebView;
 @property (nonatomic) BeatPlugin *plugin;
+@property (nonatomic) NSMutableArray *timers;
 @property (nonatomic, nullable) JSValue* updateMethod;
+@property (nonatomic, nullable) JSValue* updateSelectionMethod;
+@property (nonatomic, nullable) JSValue* updateOutlineMethod;
+@property (nonatomic, nullable) JSValue* updateSceneMethod;
 @property (nonatomic) bool resident;
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
@@ -98,10 +102,13 @@
 - (void)endScript
 {
 	_terminating = YES;
-
+	
 	if (!_windowClosing && _pluginWindow) {
 		[_pluginWindow close];
 	}
+	
+	// Stop any timers left
+	[self stopTimers];
 		
 	// Null everything
 	_context = nil;
@@ -115,7 +122,11 @@
 	if (_resident) {
 		[_delegate deregisterPlugin:self];
 	}
+}
 
+- (void)focusEditor {
+	// Give focus back to the editor
+	[_delegate focusEditor];
 }
 
 - (void)openConsole {
@@ -136,6 +147,10 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 #pragma mark - Resident plugin
 
+// Text change update
+- (void)onTextChange:(JSValue*)updateMethod {
+	[self setUpdate:updateMethod];
+}
 - (void)setUpdate:(JSValue *)updateMethod {
 	// Save callback
 	_updateMethod = updateMethod;
@@ -145,8 +160,105 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[_delegate registerPlugin:self];
 }
 - (void)update:(NSRange)range {
+	if (!_updateMethod) return;
 	[_updateMethod callWithArguments:@[@(range.location), @(range.length)]];
 }
+
+// Selection change update
+- (void)onSelectionChange:(JSValue*)updateMethod {
+	[self setSelectionUpdate:updateMethod];
+}
+- (void)setSelectionUpdate:(JSValue *)updateMethod {
+	// Save callback for selection change update
+	_updateSelectionMethod = updateMethod;
+	_resident = YES;
+	
+	// Tell the delegate to keep this plugin in memory and update it on refresh
+	[_delegate registerPlugin:self];
+}
+- (void)updateSelection:(NSRange)selection {
+	if (!_updateSelectionMethod) return;
+	[_updateSelectionMethod callWithArguments:@[@(selection.location), @(selection.length)]];
+}
+
+// Outline change update
+- (void)onOutlineChange:(JSValue*)updateMethod {
+	[self setOutlineUpdate:updateMethod];
+}
+- (void)setOutlineUpdate:(JSValue *)updateMethod {
+	// Save callback for selection change update
+	_updateOutlineMethod = updateMethod;
+	_resident = YES;
+	
+	// Tell the delegate to keep this plugin in memory and update it on refresh
+	[_delegate registerPlugin:self];
+}
+- (void)updateOutline:(NSArray*)outline {
+	if (!_updateOutlineMethod) return;
+	[_updateOutlineMethod callWithArguments:self.delegate.parser.outline];
+}
+
+- (void)onSceneIndexUpdate:(JSValue*)updateMethod {
+	[self setSceneIndexUpdate:updateMethod];
+}
+- (void)setSceneIndexUpdate:(JSValue*)updateMethod {
+	// Save callback for selection change update
+	_updateSceneMethod = updateMethod;
+	_resident = YES;
+	
+	// Tell the delegate to keep this plugin in memory and update it on refresh
+	[_delegate registerPlugin:self];
+}
+- (void)updateSceneIndex:(NSInteger)sceneIndex {
+	[_updateSceneMethod callWithArguments:@[@(sceneIndex)]];
+}
+
+#pragma mark - Multithreading
+
+- (void)dispatch:(JSValue*)callback {
+	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+		[callback callWithArguments:nil];
+	});
+}
+- (void)dispatch_sync:(JSValue*)callback {
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		[callback callWithArguments:nil];
+	});
+}
+
+#pragma mark - Timer
+
+- (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats {
+	BeatPluginTimer *timer = [BeatPluginTimer scheduledTimerWithTimeInterval:seconds repeats:repeats block:^(NSTimer * _Nonnull timer) {
+		[callback callWithArguments:nil];
+	}];
+	
+	// When adding a new timer, remove references to invalid ones
+	[self cleanInvalidTimers];
+	
+	// Add the new timer to timer array
+	if (!_timers) _timers = [NSMutableArray array];
+	[_timers addObject:timer];
+		
+	return timer;
+}
+- (void)cleanInvalidTimers {
+	NSMutableArray *timers = [NSMutableArray array];
+	
+	for (int i=0; i < _timers.count; i++) {
+		BeatPluginTimer *timer = _timers[i];
+		if (timer.isValid) [timers addObject:timer];
+	}
+	
+	_timers = timers;
+}
+- (void)stopTimers {
+	for (BeatPluginTimer *timer in _timers) {
+		[timer invalidate];
+	}
+	_timers = nil;
+}
+
 
 #pragma mark - File i/o
 
@@ -234,8 +346,20 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		[self log:@"Can't find bundled file '%@' – Are you sure the plugin is contained in a self-titled folder? For example: Plugin.beatPlugin/Plugin.beatPlugin"];
 		return @"";
 	}
-	
 }
+
+- (NSString*)appAssetAsString:(NSString *)filename
+{
+	NSString *path = [NSBundle.mainBundle pathForResource:filename.stringByDeletingPathExtension ofType:filename.pathExtension];
+	
+	if (path) {
+		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+	} else {
+		[self log:@"Can't find bundled file '%@' from app bundle"];
+		return @"";
+	}
+}
+
 
 #pragma mark - Scripting methods accessible via JS
 
@@ -614,6 +738,13 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return [self.delegate.tagging tagsForScene:scene];
 }
 
+#pragma mark - Pagination interface
+
+- (FountainPaginator*)paginator:(NSArray*)lines {
+	FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:lines paperSize:_delegate.printInfo.paperSize];
+	return paginator;
+}
+
 #pragma mark - Utilities
 
 - (NSArray*)screen {
@@ -640,7 +771,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 		}
 	}
 	@catch (NSException *e) {
-		[self alert:@"Scene index out of range" withText:@"Plugin tried to access an nonexistent scene"];
+		[self alert:@"Scene index out of range" withText:@"Plugin tried to access a nonexistent scene"];
 	}
 	return lines;
 }
@@ -655,6 +786,60 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 {
 	[self.delegate.parser createOutline];
 	return self.delegate.parser.outline;
+}
+
+- (NSString*)scenesAsJSON {
+	[self.delegate.parser createOutline];
+	
+	NSMutableArray *scenesToSerialize = [NSMutableArray array];
+	
+	for (OutlineScene* scene in self.delegate.parser.scenes) {
+		[scenesToSerialize addObject:scene.forSerialization];
+	}
+	
+	NSError *error;
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:NSJSONWritingPrettyPrinted error:&error];
+	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	return json;
+}
+
+- (NSString*)outlineAsJSON {
+	[self.delegate.parser createOutline];
+	
+	NSMutableArray *scenesToSerialize = [NSMutableArray array];
+	
+	for (OutlineScene* scene in self.delegate.parser.outline) {
+		[scenesToSerialize addObject:scene.forSerialization];
+	}
+	
+	NSError *error;
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:NSJSONWritingPrettyPrinted error:&error];
+	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	return json;
+}
+
+- (NSString*)linesAsJSON {
+	NSMutableArray *linesToSerialize = [NSMutableArray array];
+	
+	for (Line* line in self.delegate.parser.lines) {
+		[linesToSerialize addObject:line.forSerialization];
+	}
+	
+	NSError *error;
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:linesToSerialize options:NSJSONWritingPrettyPrinted error:&error];
+	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	return json;
+}
+
+- (void)setColor:(NSString *)color forScene:(OutlineScene *)scene {
+	[_delegate setColor:color forScene:scene];
+}
+
+- (OutlineScene*)getCurrentScene {
+	return _delegate.getCurrentScene;
+}
+- (OutlineScene*)getSceneAt:(NSInteger)position {
+	return [_delegate getCurrentSceneWithPosition:position];
 }
 
 - (void)parse
@@ -676,6 +861,9 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[_context setObject:self.delegate.parser.scenes forKeyedSubscript:@"Scenes"];
 }
 
+- (Line*)currentLine {
+	return _delegate.currentLine;
+}
 
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
 {

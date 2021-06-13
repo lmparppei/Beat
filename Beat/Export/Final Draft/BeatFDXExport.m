@@ -290,7 +290,7 @@ static NSDictionary *fdxIds;
 	Line *previousLine;
 	for (Line* line in self.parser.lines) {
 		// Skip omited lines
-		if (line.omited) continue;
+		if (line.omitted) continue;
 
 		if ((line.type == action && previousLine.type == action) ||
 			(line.type == lyrics && previousLine.type == lyrics)) {

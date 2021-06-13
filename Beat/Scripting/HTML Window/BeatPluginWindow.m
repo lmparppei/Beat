@@ -35,7 +35,6 @@
 	_webview = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
 	_webview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
-	
 	[self setHTML:html];
 	[self.contentView addSubview:_webview];
 	
@@ -46,6 +45,9 @@
 	return [[BeatPluginWindow alloc] initWithHTML:html width:width height:height parser:(BeatScriptParser*)parser];
 }
 
+- (void)setTitle:(NSString *)title {
+	[super setTitle:title];
+}
 - (void)setHTML:(NSString*)html {
 	// Load template
 	NSURL *templateURL = [NSBundle.mainBundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
@@ -65,6 +67,10 @@
 	}
 }
 
+- (void)focus {
+	[self makeFirstResponder:self.contentView];
+}
+
 - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
 	NSRect screen = self.screen.frame;
 	// Don't allow moving the windows out of view
@@ -78,12 +84,13 @@
 	[self setFrame:frame display:YES];
 }
 
-- (NSArray*)getFrame {
-	NSRect rect = self.frame;
-	return @[ @(rect.origin.x), @(rect.origin.y), @(rect.size.width), @(rect.size.height) ];
+- (NSRect)getFrame {
+	//NSRect rect = self.frame;
+	return self.frame;
 }
-- (NSArray*)screenSize {
-	return @[ @(self.screen.frame.size.width), @(self.screen.frame.size.height) ];
+- (NSSize)screenSize {
+	return self.screen.frame.size;
+	//return @[ @(self.screen.frame.size.width), @(self.screen.frame.size.height) ];
 }
 
 @end

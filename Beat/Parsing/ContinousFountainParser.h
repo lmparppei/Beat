@@ -15,6 +15,7 @@
 @protocol ContinuousFountainParserDelegate <NSObject>
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) BeatDocumentSettings *documentSettings;
+@property (nonatomic, readonly) Line* characterInputForLine;
 
 - (NSInteger)sceneNumberingStartsFrom;
 - (NSRange)selectedRange;
@@ -89,8 +90,6 @@
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;
 - (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view
-- (NSInteger)outlineItemIndex:(Line*)item;
-//- (OutlineScene*) getOutlineForLine:(Line*)line;
 - (OutlineScene*) getOutlineForLine:(Line*)line;
 
 - (NSString*)description;

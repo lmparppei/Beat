@@ -928,7 +928,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	ContinousFountainParser *parser = self.editorDelegate.parser;
 	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor;
 	
-	[parser createOutline];
+	//[parser createOutline];
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
 	
 	NSInteger index = 0;

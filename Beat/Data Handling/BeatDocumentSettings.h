@@ -7,11 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatDocumentSettings : NSObject
 @property (nonatomic) NSMutableDictionary *settings;
+@property (weak) id<BeatEditorDelegate> delegate;
 
 extern NSString * const DocSettingRevisions;
 extern NSString * const DocSettingRevisionColor;

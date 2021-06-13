@@ -345,12 +345,6 @@
 #define AUTOMATIC_LINEBREAKS_KEY @"Automatic Line Breaks"
 #define TYPERWITER_KEY @"Typewriter Mode"
 
-#define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
-#define OUTLINE_DATATYPE @"OutlineDatatype"
-
-// Length of scene excerpt in cards
-#define SNIPPET_LENGTH 190
-
 // DOCUMENT LAYOUT SETTINGS
 // The 0.?? values represent percentages of view width
 #define INITIAL_WIDTH 900
@@ -370,10 +364,6 @@
 #define DIALOGUE_INDENT_P 0.164
 #define DIALOGUE_RIGHT_P 0.75
 
-#define OUTLINE_SECTION_SIZE 13.0
-#define OUTLINE_SYNOPSE_SIZE 12.0
-#define OUTLINE_SCENE_SIZE 11.5
-
 @implementation Document
 
 #pragma mark - Document Initialization
@@ -383,10 +373,10 @@
     return self;
 }
 - (void) close {
-	
 	// Save the gender list & caret position if the document is saved
 	if (!self.documentEdited) {
-		if ([_characterGenders count] > 0) [self saveGenders];
+		// This should be moved into document settings.
+		if (_characterGenders.count > 0) [self saveGenders];
 		[self saveCaret];
 	}
 	
@@ -418,6 +408,7 @@
 	self.textScrollView.mouseMoveTimer = nil;
 	self.textScrollView.timerMouseMoveTimer = nil;
 	
+	// Null other stuff, just in case
 	self.parser = nil;
 	self.outlineView = nil;
 	self.thisWindow = nil;
@@ -436,6 +427,7 @@
 	self.itemsToValidate = nil;
 	self.documentSettings = nil;
 	
+	// Terminate autosave timer
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
 	
@@ -511,11 +503,14 @@
 	self.trackChanges = NO;
 	
 	[self applyInitialFormating];
-		
+	
 	// Load tags
 	[self setupTagging];
 	
 	self.documentIsLoading = NO;
+	
+	// Setup page size
+	self.printInfo = [BeatPaperSizing setSize:[_documentSettings getInt:@"Page Size"] printInfo:self.printInfo];
 	
 	// Ensure layout
 	[self setupLayoutWithPagination:YES];
@@ -1034,21 +1029,6 @@
 	_attrTextCache = [self getAttributedText];
 	[self.printing openForPDF:self];
 }
-/*
-- (IBAction)printDocument:(id)sender
-{
-	// deprecated
-    if ([[self getText] length] == 0) {
-        NSAlert* alert = [[NSAlert alloc] init];
-        alert.messageText = @"Can not print an empty document";
-        alert.informativeText = @"Please enter some text before printing, or obtain white paper directly by accessing you printers paper tray.";
-		alert.alertStyle = NSAlertStyleWarning;
-        [alert beginSheetModalForWindow:self.windowControllers[0].window completionHandler:nil];
-    } else {
-		self.printView = [[PrintView alloc] initWithDocument:self script:self.parser.lines operation:BeatToPrint compareWith:nil];
-    }
-}
- */
 
 - (IBAction)exportPDF:(id)sender
 {
@@ -1110,7 +1090,6 @@
 		lastScene = scene;
 	}
 
-	
 	_currentScene = nil;
 	return nil;
 }
@@ -1252,6 +1231,8 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
+	[self startMeasure];
+	
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode) return NO;
 	
@@ -1280,7 +1261,6 @@
 	bool forceDialogue = NO;
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && _currentLine.type == character) {
 		Line *nextLine = [_parser nextLine:_currentLine];
-
 		if (nextLine.type == dialogue && nextLine.string.length) {
 			//[self setSelectedRange:(NSRange){ affectedCharRange.location + 1, 0 }];
 			forceDialogue = YES;
@@ -1397,9 +1377,10 @@
 	
 	// Add an extra line break after some elements
 	bool processDoubleBreak = NO;
-
+	
 	// Enter key
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && ![self.undoManager isUndoing] && !self.documentIsLoading) {
+		_currentLine = [self getCurrentLine];
 		
 		// Process line break after a forced character input
 		if (_characterInput && _characterInputForLine) {
@@ -1418,10 +1399,12 @@
 		}
 		
 		// Process double breaks after some elements
+		// This should be rewritten at some point, I have no idea what's going on
 		if (self.autoLineBreaks) {
 			// Test if we should add a new line
 			// (We are not in the process of adding a dual line break and shift is not pressed)
-			if (!_newScene && _currentLine.string.length > 0 && !([NSEvent modifierFlags ] & NSEventModifierFlagShift)) {
+			if (!_newScene && _currentLine.string.length > 0 && !([NSEvent modifierFlags] & NSEventModifierFlagShift)) {
+				
 				if (_currentLine.type == heading ||
 					_currentLine.type == section ||
 					_currentLine.type == synopse) {
@@ -1463,7 +1446,6 @@
 
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-				
 	_currentLine = [self getCurrentLine];
 	
 	/*
@@ -1529,7 +1511,7 @@
 
 - (Line*)getCurrentLine {
 	NSInteger location = self.selectedRange.location;
-	if (location > [self getText].length) { location = [self getText].length; }
+	if (location > self.getText.length) { location = self.getText.length; }
 	return [self getLineAt:location];
 }
 - (Line*)getLineAt:(NSInteger)position {
@@ -1538,10 +1520,9 @@
 	// right now, that I'm a bit afraid of crashes :---)
 	NSArray * lines = [NSArray arrayWithArray:self.parser.lines];
 	for (Line* line in lines) {
-		if (line && line.string) {
-			if (position >= line.position && position <= line.position + line.string.length) {
-				return line;
-			}
+		if (line) {
+			if (position == line.position) return line;
+			else if (NSLocationInRange(position, line.range)) return line;
 		}
 	}
 	return nil;
@@ -1574,7 +1555,7 @@
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-	
+
 	if (_postEditAction) {
 		NSLog(@"post edit %@", _postEditAction);
 		NSInteger index = [_postEditAction[@"index"] integerValue];
@@ -1585,7 +1566,7 @@
 			[self addString:string atIndex:index];
 		}
 	}
-	
+		
 	// Register changes
 	if (_trackChanges) [self registerChangesInRange:_lastChangedRange];
 	
@@ -1597,12 +1578,12 @@
 		if (self.outlineViewVisible) [self reloadOutline];
 		if (self.timelineVisible) [self reloadTimeline];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
+		if (_runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
 	} else {
 		if (self.timelineVisible) [_timeline refreshWithDelay];
 	}
 	
 	[self applyFormatChanges];
-	
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
 	// If the outline has changed, update all labels	
@@ -1617,6 +1598,8 @@
 	
 	// Update any currently running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
+	
+	
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -1635,7 +1618,7 @@
 	
 	// We REALLY REALLY should make some sort of cache for these
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		if (self.outlineViewVisible || self.timelineVisible) {
+		if (self.outlineViewVisible || self.timelineVisible || self.runningPlugins) {
 			self.outline = [self getOutlineItems];
 			self.currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
 		}
@@ -1643,7 +1626,10 @@
 		[self updateUIwithCurrentScene];
 		
 		if (self.mode == TaggingMode) [self updateTaggingData];
+		
+		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
 	});
+	
 }
 
 - (void)updateUIwithCurrentScene {
@@ -1677,6 +1663,8 @@
 			[_colorPicker setColor:[BeatColors color:[_currentScene.color lowercaseString]]];
 		}
 	}
+	
+	if (_runningPlugins) [self updatePluginsWithSceneIndex:sceneIndex];
 }
 
 - (IBAction)showInfo:(id)sender {
@@ -1770,7 +1758,7 @@
 # pragma mark - Autocomplete
 
 // Collect all character names from script
-- (void) collectCharacterNames {
+- (void)collectCharacterNames {
     /*
      
      So let me elaborate a bit. This is currently two systems upon each
@@ -1807,9 +1795,11 @@
 			// Don't add this line if it's just a character with cont'd.
 			// We'll account for other things later, such as V.O., O.S. etc.
 			if ([line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound) continue;
-						
+			
+			// Character name, INCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
             NSString *character = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 			
+			// Add the character + suffix into dict and calculate number of appearances
 			if (charactersAndLines[character]) {
 				NSInteger lines = [charactersAndLines[character] integerValue] + 1;
 				charactersAndLines[character] = [NSNumber numberWithInteger:lines];
@@ -1818,21 +1808,11 @@
 			}
 						            
 			// Remove anything that's NOT a character name
-            if ([character rangeOfString:@"("].location != NSNotFound) {
-                NSRange infoRange = [character rangeOfString:@"("];
-                NSRange characterRange = NSMakeRange(0, infoRange.location);
-                
-                character = [NSString stringWithString:[character substringWithRange:characterRange]];
-            }
-            
-            // Trim any useless whitespace
-            character = [NSString stringWithString:[character stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-            
-			if (![characterList containsObject:character]) {
-                // Add character to the filter box
-                [_characterBox addItemWithTitle:character];
-                
-				// Add character to the pure list
+			character = line.characterName;
+			
+			// Add character to list
+			if (character && ![characterList containsObject:character]) {
+				[_characterBox addItemWithTitle:character]; // Add into the dropown
                 [characterList addObject:character];
             }
 		}
@@ -1847,8 +1827,8 @@
 		[_characterNames addObject:[NSString stringWithFormat:@"%@ (CONT'D)", character]];
 	}
 	
-    // There was a character selected in the filtering menu, so select it again
-    if ([selectedCharacter length]) {
+    // There was a character selected in the filtering menu, so select it again (if applicable)
+    if (selectedCharacter.length) {
         for (NSMenuItem *item in _characterBox.itemArray) {
             if ([item.title isEqualToString:selectedCharacter]) [_characterBox selectItem:item];
         }
@@ -1856,14 +1836,14 @@
 }
 - (void) collectHeadings {
 	[_sceneHeadings removeAllObjects];
-	for (Line *line in [self.parser lines]) {
+	for (Line *line in self.parser.lines) {
 		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
 			
 			// If the heading has a color set, strip the color
 			if ([line.string rangeOfString:@"[[COLOR"].location != NSNotFound) {
-				[_sceneHeadings addObject:[[line.string uppercaseString] substringToIndex:[line.string rangeOfString:@"[[COLOR"].location]];
+				[_sceneHeadings addObject:[line.string.uppercaseString substringToIndex:[line.string rangeOfString:@"[[COLOR"].location]];
 			} else {
-				[_sceneHeadings addObject:[line.string uppercaseString]];
+				[_sceneHeadings addObject:line.string.uppercaseString];
 			}
 		}
 	}
@@ -1882,7 +1862,7 @@
 	
 	// Find matching lines for the partially typed line
 	for (NSString *string in search) {
-		if ([string rangeOfString:[[textView string] substringWithRange:charRange] options:NSAnchoredSearch range:NSMakeRange(0, [string length])].location != NSNotFound) {
+		if ([string rangeOfString:[textView.string substringWithRange:charRange] options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
 			[matches addObject:string];
 		}
 	}
@@ -1891,7 +1871,7 @@
 	return matches;
 }
 
-- (void) handleTabPress {
+- (void)handleTabPress {
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
@@ -1967,9 +1947,9 @@
 }
 
 
-#pragma  mark - Formatting
+#pragma mark - Formatting
 
-- (IBAction) reformatEverything:(id)sender {
+- (IBAction)reformatEverything:(id)sender {
 	[self.parser resetParsing];
 	[self applyFormatChanges];
 	[self formatAllLines];
@@ -2033,7 +2013,7 @@
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
 	
 	// Redo everything we just did for forced character input
-	if (_characterInput) {
+	if (_characterInput && _characterInputForLine == line) {
 		line.type = character;
 		
 		NSRange selectedRange = self.textView.selectedRange;
@@ -2129,7 +2109,6 @@
 		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
 
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		
 	} else if (line.type == parenthetical) {
 		// Parenthetical after character
 		[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
@@ -2172,20 +2151,25 @@
 
 		// Bold section headings for first-level sections
 		if (line.type == section) {
-			
 			[paragraphStyle setParagraphSpacingBefore:20];
-			
 			CGFloat size = SECTION_FONT_SIZE;
 			
+			NSColor *sectionColor;
+			
 			if (line.sectionDepth == 1) {
-				// Black for high-level sections
-				NSColor* sectionColor = self.themeManager.sectionTextColor;
+				// Black or custom for high-level sections
+				if (line.color) {
+					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
+				} else sectionColor = self.themeManager.sectionTextColor;
 
 				[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 			} else {
-				// And gray for others
-				NSColor* sectionColor = self.themeManager.commentColor;
+				// And custom or gray for others
+				if (line.color) {
+					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
+				} else sectionColor = self.themeManager.commentColor;
+				
 				[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 				
 				// Also, make lower sections a bit smaller
@@ -2199,10 +2183,12 @@
 		}
 		
 		if (line.type == synopse) {
-			if (self.themeManager) {
-				NSColor* synopsisColor = self.themeManager.synopsisTextColor;
-				[attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
-			}
+			NSColor* synopsisColor;
+			if (line.color) {
+				if (!(synopsisColor = [BeatColors color:line.color])) synopsisColor = self.themeManager.sectionTextColor;
+			} else synopsisColor = self.themeManager.synopsisTextColor;
+			
+			if (synopsisColor) [attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
 			
 			[attributes setObject:[self synopsisFont] forKey:NSFontAttributeName];
 		}
@@ -2306,9 +2292,9 @@
 	}];
 	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSFontAttributeName value:self.boldCourier line:line range:range formattingSymbol:boldSymbol];
-		if ([line.italicRanges containsIndexesInRange:range]) {
-			// Add bold italics here
-		}
+	}];
+	[line.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self stylize:NSFontAttributeName value:self.boldItalicCourier line:line range:range formattingSymbol:@""];
 	}];
 	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
@@ -2425,9 +2411,16 @@
 	NSRange closeRange = (NSRange){ range.location + range.length - symLen, symLen };
 	
 	NSRange effectiveRange;
-	if (range.length >= 2 * symLen) {
+	
+	if (symLen == 0) {
+		// Format full range
+		effectiveRange = NSMakeRange(range.location, range.length);
+	}
+	else if (range.length >= 2 * symLen) {
+		// Format between characters (ie. *italic*)
 		effectiveRange = NSMakeRange(range.location + symLen, range.length - 2 * symLen);
 	} else {
+		// Format nothing
 		effectiveRange = NSMakeRange(range.location + symLen, 0);
 	}
 	
@@ -2503,6 +2496,10 @@
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
 	[self.textView setSelectedRange:range];
 	[self.textView scrollRangeToVisible:range];
+}
+
+- (void)focusEditor {
+	[_thisWindow makeKeyWindow];
 }
 
 
@@ -3176,7 +3173,7 @@ static NSString *revisionAttribute = @"Revision";
 		// If the heading already has a forced number, skip it
 		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
 			// Check if the scene heading is omited
-			if (![line omited]) {
+			if (![line omitted]) {
 				[fullText appendFormat:@"%@ #%lu#\n", cleanedLine, sceneCount];
 				sceneCount++;
 			} else {
@@ -3990,7 +3987,7 @@ static NSString *revisionAttribute = @"Revision";
 - (IBAction) setMagentaColor:(id) sender { [self setColor:@"MAGENTA"]; }
 - (IBAction) setBrownColor:(id) sender { [self setColor:@"BROWN"]; }
 
-- (void) setColor:(NSString *) color {
+- (void)setColor:(NSString *) color {
 	id item = nil;
 	
 	if ([self.outlineView clickedRow] > -1) {
@@ -4011,7 +4008,7 @@ static NSString *revisionAttribute = @"Revision";
 	_timeline.clickedItem = nil;
 	_timelineClickedScene = -1;
 }
-- (void) setColor:(NSString *) color forScene:(OutlineScene *) scene {
+- (void)setColor:(NSString *) color forScene:(OutlineScene *) scene {
 	color = [color uppercaseString];
 
 	if (![scene.color isEqualToString:@""] && scene.color != nil) {
@@ -4142,7 +4139,9 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 #pragma mark - Card view
+
 // I'm sorry, but this whole thing should be rewritten.
+// I agree, a year later.
 
 - (IBAction) toggleCards: (id)sender {
 	if ([self selectedTab] != 2) {
@@ -4190,17 +4189,17 @@ static NSString *revisionAttribute = @"Revision";
 	return nil;
 }
 
-- (void) refreshCards {
+- (void)refreshCards {
 	// Refresh cards assuming the view isn't visible
 	[self refreshCards:NO changed:-1];
 }
 
-- (void) refreshCards:(BOOL)alreadyVisible {
+- (void)refreshCards:(BOOL)alreadyVisible {
 	// Just refresh cards, no change in index
 	[self refreshCards:alreadyVisible changed:-1];
 }
 
-- (void) printCards {
+- (void)printCards {
 	[_sceneCards printCardsWithInfo:[self.printInfo copy]];
 	//[_sceneCards printCards:[self getSceneCards] printInfo:self.printInfo];
 }
@@ -4550,7 +4549,7 @@ triangle walks
 	bool hasDualDialogue = NO;
 	for (Line* line in lines) {
 		// Make a copy of the line so we don't fuck up the current parse
-		if (line.type != empty && !line.omited) {
+		if (line.type != empty && !line.omitted) {
 			[result addObject:[line clone]];
 			if (line.type == dualDialogueCharacter) hasDualDialogue = YES;
 		}
@@ -4665,6 +4664,13 @@ triangle walks
 			});
 		});
 	}];
+}
+
+- (void)setPrintInfo:(NSPrintInfo *)printInfo {
+	if (printInfo.paperSize.width > 600) [self.documentSettings setInt:@"Page Size" as:BeatUSLetter];
+	else [self.documentSettings setInt:@"Page Size" as:BeatA4];
+	
+	[super setPrintInfo:printInfo];
 }
 
 - (NSInteger)numberOfPages {
@@ -4963,6 +4969,36 @@ triangle walks
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		BeatScriptParser *plugin = _runningPlugins[pluginName];
 		[plugin update:range];
+	}
+}
+
+- (void)updatePluginsWithSelection:(NSRange)range {
+	// Run resident plugins which are listening for selection changes
+	if (!_runningPlugins) return;
+	
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		[plugin updateSelection:range];
+	}
+}
+
+- (void)updatePluginsWithSceneIndex:(NSInteger)index {
+	// Run resident plugins which are listening for selection changes
+	if (!_runningPlugins) return;
+	
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		[plugin updateSceneIndex:index];
+	}
+}
+
+- (void)updatePluginsWithOutline:(NSArray*)outline {
+	// Run resident plugins which are listening for selection changes
+	if (!_runningPlugins) return;
+	
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		[plugin updateOutline:outline];
 	}
 }
 

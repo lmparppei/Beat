@@ -17,14 +17,17 @@
 @property (nonatomic, readonly) NSString * color;
 @property (nonatomic, readonly) Line * line;
 @property (strong, nonatomic, readonly) NSString * string;
+@property (nonatomic, readonly) NSString * stringForDisplay;
 @property (nonatomic, readonly) NSArray * storylines;
 @property (nonatomic, readonly) NSUInteger sceneStart;
-@property (nonatomic) NSUInteger sceneLength;
-@property (nonatomic) NSInteger sectionDepth;
-@property (nonatomic) bool omited;
+@property (nonatomic, readonly) NSUInteger sceneLength;
+@property (nonatomic, readonly) NSInteger sectionDepth;
+@property (nonatomic, readonly) bool omitted;
+@property (nonatomic, readonly) bool omited; // Legacy compatibility
 @property (nonatomic, readonly) NSMutableArray * characters;
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;
+- (NSDictionary*)forSerialization;
 @end
 
 @interface OutlineScene : NSObject <OutlineSceneExports>
@@ -39,7 +42,7 @@
 @property (nonatomic) NSInteger sectionDepth;
 @property (nonatomic) NSMutableArray * characters;
 
-@property (nonatomic) bool omited;
+@property (nonatomic) bool omitted;
 @property (nonatomic) bool noOmitIn;
 @property (nonatomic) bool noOmitOut;
 
@@ -49,4 +52,5 @@
 - (NSRange)range;
 - (NSInteger)timeLength;
 - (NSString*)typeAsString;
+- (NSDictionary*)forSerialization;
 @end

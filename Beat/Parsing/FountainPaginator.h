@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "Line.h"
 
 #if TARGET_OS_IPHONE
@@ -16,18 +17,27 @@
     #import <Cocoa/Cocoa.h>
 #endif
 
+@protocol BeatPaginatorExports <JSExport>
+@property (nonatomic, readonly) NSUInteger numberOfPages;
+@property (strong, nonatomic) NSMutableArray *pages;
+@property (readonly) CGFloat lastPageHeight;
+- (void)paginateLines:(NSArray*)lines;
+- (void)paginate;
+- (NSArray*)lengthInEights;
+@end
 
 @protocol BeatPaginatorDelegate <NSObject>
 - (NSArray*)lines;
 - (NSString*)getText;
 @end
 
-@interface FountainPaginator : NSObject
+@interface FountainPaginator : NSObject <BeatPaginatorExports>
 
 @property (weak) id<BeatPaginatorDelegate> delegate;
-
 @property (nonatomic, readonly) NSUInteger numberOfPages;
+@property (nonatomic, readonly) NSArray* lengthInEights;
 @property (nonatomic) CGSize paperSize;
+@property (readonly) CGFloat lastPageHeight;
 @property (strong, nonatomic) NSMutableArray *pages;
 
 // For live pagination
@@ -45,6 +55,7 @@
 - (NSArray *)pageAtIndex:(NSUInteger)index;
 
 - (NSInteger)pageNumberFor:(NSInteger)location;
+- (NSArray*)lengthInEights;
 
 // Helper methods
 + (CGFloat)lineHeight;

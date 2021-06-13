@@ -58,6 +58,7 @@
 #import "Line.h"
 #import "NSString+Whitespace.h"
 #import "NSMutableIndexSet+Lowest.h"
+#import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
 
 @interface  ContinousFountainParser ()
@@ -70,9 +71,14 @@
 @property (nonatomic) NSString *openTitlePageKey;
 @property (nonatomic) NSString *previousTitlePageKey;
 
+// For testing
+@property (nonatomic) NSDate *executionTime;
+
 @end
 
 @implementation ContinousFountainParser
+
+static NSDictionary* patterns;
 
 #pragma mark - Parsing
 
@@ -95,6 +101,14 @@
 		_storylines = [NSMutableArray array];
 		_delegate = delegate;
 		_staticDocumentSettings = settings;
+		
+		// Init patterns
+		static dispatch_once_t onceToken;
+		dispatch_once(&onceToken, ^{
+			patterns = @{
+				@"bold": RX(@"(?<!\\\\)(\\*{2})(.+?)(\\*{2})")
+			};
+		});
 		
 		[self parseText:string];
 	}
@@ -127,7 +141,7 @@
 			if (previousLine.type == character) previousLine.type = action;
 		}
 		
-		// For a quick scene index lookup
+		// For a quick scene index lookup (wtf is this, later me)
 		if (line.type == heading || line.type == synopse || line.type == section) {
 			sceneIndex++;
 			line.sceneIndex = sceneIndex;
@@ -154,7 +168,7 @@
 // This sets EVERY INDICE as changed.
 - (void)resetParsing {
 	NSInteger index = 0;
-	while (index < [self.lines count]) {
+	while (index < self.lines.count) {
 		[self.changedIndices addObject:@(index)];
 		index++;
 	}
@@ -228,7 +242,7 @@
 	// Get the line where into which we are adding characters
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
 	Line* line = self.lines[lineIndex];
-	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = true;
+	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = YES;
 	
     NSUInteger indexInLine = position - line.position;
 	
@@ -464,7 +478,7 @@
 	
     if (indexInLine == [line.string length]) {
         //Get next line and put together
-        if (lineIndex == [self.lines count] - 1) {
+        if (lineIndex == self.lines.count - 1) {
             return nil; //Removed newline at end of document without there being an empty line - should never happen but to be sure...
         }
 		
@@ -668,37 +682,38 @@
     unichar charArray[length];
     [line.string getCharacters:charArray];
     
-    NSMutableIndexSet* starsInOmit = [[NSMutableIndexSet alloc] init];
+    NSMutableIndexSet* excluded = [[NSMutableIndexSet alloc] init];
     if (index == 0) {
         line.omitedRanges = [self rangesOfOmitChars:charArray
                                              ofLength:length
                                                inLine:line
                                      lastLineOmitOut:NO
-                                          saveStarsIn:starsInOmit];
+                                          saveStarsIn:excluded];
     } else {
         Line* previousLine = self.lines[index-1];
         line.omitedRanges = [self rangesOfOmitChars:charArray
                                              ofLength:length
                                                inLine:line
                                      lastLineOmitOut:previousLine.omitOut
-                                          saveStarsIn:starsInOmit];
+                                          saveStarsIn:excluded];
     }
     
 	line.escapeRanges = [NSMutableIndexSet indexSet];
-	
+
     line.boldRanges = [self rangesInChars:charArray
                                  ofLength:length
                                   between:BOLD_PATTERN
                                       and:BOLD_PATTERN
                                withLength:BOLD_PATTERN_LENGTH
-                         excludingIndices:starsInOmit
+                         excludingIndices:excluded
 									 line:line];
+	
     line.italicRanges = [self rangesInChars:charArray
                                    ofLength:length
                                     between:ITALIC_PATTERN
                                         and:ITALIC_PATTERN
                                  withLength:ITALIC_PATTERN_LENGTH
-                           excludingIndices:starsInOmit
+                           excludingIndices:excluded
 									   line:line];
     line.underlinedRanges = [self rangesInChars:charArray
                                        ofLength:length
@@ -714,14 +729,6 @@
                                withLength:NOTE_PATTERN_LENGTH
                          excludingIndices:nil
 									 line:line];
-	/*
-	line.highlightRanges = [self rangesInChars:charArray
-								 ofLength:length
-								  between:HIGHLIGHT_OPEN_PATTERN
-									  and:HIGHLIGHT_CLOSE_PATTERN
-							   withLength:HIGHLIGHT_PATTERN_LENGTH
-						 excludingIndices:nil];
-	 */
 	
 	line.strikeoutRanges = [self rangesInChars:charArray
 								 ofLength:length
@@ -730,6 +737,10 @@
 							   withLength:STRIKEOUT_PATTERN_LENGTH
 						 excludingIndices:nil
 										line:line];
+	
+	// Intersecting indices between bold & italic are boldItalic
+	if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
+	else line.boldItalicRanges = [NSMutableIndexSet indexSet];
 	
     if (line.type == heading) {
 		line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
@@ -1056,8 +1067,6 @@ and incomprehensible system of recursion.
                 return dualDialogueCharacter;
             } else {
 				// It is possible that this IS NOT A CHARACTER anyway, so let's see.
-				// WIP
-				
 				if (index + 2 < self.lines.count && currentLine) {
 					Line* nextLine = (Line*)self.lines[index+1];
 					Line* twoLinesOver = (Line*)self.lines[index+2];
@@ -1066,6 +1075,7 @@ and incomprehensible system of recursion.
 						return action;
 					}
 				}
+
                 return character;
             }
         }
@@ -1111,7 +1121,7 @@ and incomprehensible system of recursion.
     return action;
 }
 
-- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSIndexSet*)excludes line:(Line*)line
+- (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
 {
     NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
     
@@ -1161,6 +1171,10 @@ and incomprehensible system of recursion.
 				}
             }
             if (match) {
+				// Add the current formatting ranges to future excludes
+				[excludes addIndexesInRange:(NSRange){ rangeBegin, delimLength }];
+				[excludes addIndexesInRange:(NSRange){ i, delimLength }];
+				
                 [indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
                 rangeBegin = -1;
                 i += delimLength - 1;
@@ -1412,12 +1426,12 @@ and incomprehensible system of recursion.
 			currentScene = item;
 			
 			item.type = line.type;
-			item.omited = line.omited;
+			item.omitted = line.omitted;
 			item.line = line;
 			item.storylines = line.storylines;
 			item.color = line.color;
 			
-			if (!item.omited) item.string = line.stripInvisible;
+			if (!item.omitted) item.string = line.stripInvisible;
 			else item.string = line.stripNotes;
 			
 			// Add storylines to the storyline bank
@@ -1460,7 +1474,7 @@ and incomprehensible system of recursion.
 					*/
 				}
 				else {
-					if (!line.omited) {
+					if (!line.omitted) {
 						item.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
 						line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
 						sceneNumber++;
@@ -1478,7 +1492,7 @@ and incomprehensible system of recursion.
 			item.sceneStart = line.position;
 			
 			// If this scene is omited, we need to figure out where the omission starts from.
-			if (item.omited) {
+			if (item.omitted) {
 				NSUInteger index = [self.lines indexOfObject:line];
 				while (index > 0) {
 					index--;
@@ -1553,11 +1567,6 @@ and incomprehensible system of recursion.
 	OutlineScene *lastScene = _outline.lastObject;
 	Line *lastLine = _lines.lastObject;
 	lastScene.sceneLength = lastLine.position + lastLine.string.length - lastScene.sceneStart;
-}
-
-// Deprecated (why though?)
-- (NSInteger)outlineItemIndex:(Line*)item {
-	return [self.lines indexOfObject:item];
 }
 
 - (BOOL)getAndResetChangeInOutline
@@ -1638,7 +1647,7 @@ and incomprehensible system of recursion.
 	
 	for (Line* line in self.lines) {
 		// Skip invisible elements
-		if (line.type == section || line.type == synopse || line.omited || line.isTitlePage) continue;
+		if (line.type == section || line.type == synopse || line.omitted || line.isTitlePage) continue;
 		
 		result = [result stringByAppendingFormat:@"%@\n", line.cleanedString];
 	}
@@ -1685,7 +1694,7 @@ and incomprehensible system of recursion.
 	
 	for (Line *line in lines) {
 		// Skip over certain elements
-		if (line.type == synopse || line.type == section || line.omited || [line isTitlePage]) {
+		if (line.type == synopse || line.type == section || line.omitted || [line isTitlePage]) {
 			continue;
 		}
 		
@@ -1790,6 +1799,24 @@ and incomprehensible system of recursion.
 	}
 	
 	return string;
+}
+
+#pragma mark - Testing methods
+
+- (void)startMeasure
+{
+	_executionTime = [NSDate date];
+}
+- (NSTimeInterval)getMeasure {
+	NSDate *methodFinish = [NSDate date];
+	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:_executionTime];
+	return executionTime;
+}
+- (void)endMeasure:(NSString*)name
+{
+	NSDate *methodFinish = [NSDate date];
+	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:_executionTime];
+	NSLog(@"%@ execution time = %f", name, executionTime);
 }
 
 @end

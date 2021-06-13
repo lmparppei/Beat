@@ -36,4 +36,26 @@
 	return self.line.typeAsString;
 }
 
+// Plugin compatibility
+- (NSDictionary*)forSerialization {
+	return @{
+		@"string": self.string,
+		@"sceneStart": @(self.sceneStart),
+		@"sceneLength": @(self.sceneLength),
+		@"omitted": @(self.omitted),
+		@"typeAsString": self.line.typeAsString,
+		@"stringForDisplay": self.stringForDisplay,
+		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
+		@"storylines": self.storylines,
+		@"sceneNumber": self.sceneNumber,
+		@"color": self.color,
+		@"line": self.line.forSerialization
+	};
+}
+
+// Legacy compatibility
+-(bool)omited {	return self.omitted; }
+
+@synthesize omited;
+
 @end

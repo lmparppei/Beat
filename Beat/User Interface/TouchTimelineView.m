@@ -71,7 +71,7 @@
 		 }
 		 else [item setValue:NSColor.grayColor forKey:@"color"];
 		 
-		 if (scene.omited) [item setValue:@"YES" forKey:@"invisible"];
+		 if (scene.omitted) [item setValue:@"YES" forKey:@"invisible"];
 		 
 		 [_items addObject:item];
      }

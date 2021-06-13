@@ -37,10 +37,12 @@ typedef enum : NSUInteger {
 } LineType;
 
 @protocol LineExports <JSExport>
-@property NSUInteger position;
-@property NSString* sceneNumber;
-@property NSString* color;
-@property (strong, nonatomic) NSString* string;
+@property (readonly) NSUInteger position;
+@property (readonly) NSString* sceneNumber;
+@property (readonly) NSString* color;
+@property (readonly) NSRange range;
+@property (readonly) NSRange textRange;
+@property (strong, nonatomic, readonly) NSString* string;
 
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
@@ -52,6 +54,8 @@ typedef enum : NSUInteger {
 - (NSString*)typeAsString;
 - (NSString*)characterName;
 - (NSString*)stripInvisible;
+- (NSString*)textContent;
+- (NSDictionary*)forSerialization;
 - (id)clone;
 @end
 
@@ -70,6 +74,7 @@ typedef enum : NSUInteger {
 
 @property NSMutableIndexSet* boldRanges;
 @property NSMutableIndexSet* italicRanges;
+@property NSMutableIndexSet* boldItalicRanges;
 @property NSMutableIndexSet* underlinedRanges;
 @property NSMutableIndexSet* noteRanges;
 @property NSMutableIndexSet* omitedRanges;
@@ -98,13 +103,14 @@ typedef enum : NSUInteger {
 - (NSString*)typeAsFountainString;
 - (NSString*)cleanedString;
 - (NSString*)stripInvisible;
-- (bool)omited;
+- (bool)omitted;
 - (bool)note;
 - (bool)centered;
 - (NSRange)range;
 - (NSInteger)length;
 - (NSRange)textRange;
 - (NSRange)globalRangeToLocal:(NSRange)range;
+- (NSString*)textContent;
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
@@ -146,11 +152,11 @@ typedef enum : NSUInteger {
 - (void)joinWithLine:(Line*)line;
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index;
 
+- (NSDictionary*)forSerialization;
+
 // For comparing with another version
 @property bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
-- (void)checkChanges;
-- (bool)isUnchanged;
 
 -(NSString *)description;
 @end

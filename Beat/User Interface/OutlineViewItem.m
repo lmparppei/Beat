@@ -29,7 +29,7 @@
 	bool currentScene = false;
 	
 	// Check that this scene is not omited from the screenplay
-	bool omited = line.omited;
+	bool omited = line.omitted;
 	
 	// Create padding for entry
 	NSString *padding = @"";

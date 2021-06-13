@@ -60,6 +60,7 @@
 	
 	if (self.italicRanges.count) newLine.italicRanges = [self.italicRanges copy];
 	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
+	if (self.boldItalicRanges.count) newLine.boldItalicRanges = [self.boldItalicRanges copy];
 	if (self.noteRanges.count) newLine.noteRanges = [self.noteRanges copy];
 	if (self.omitedRanges.count) newLine.omitedRanges = [self.omitedRanges copy];
 	//if (self.highlightRanges.count) newLine.highlightRanges = [self.highlightRanges copy];
@@ -123,7 +124,7 @@
     return [[[[self typeAsString] stringByAppendingString:@": \"" ] stringByAppendingString:self.string] stringByAppendingString:@"\""];
 }
 
-- (bool)omited {
+- (bool)omitted {
 	// See if whole block is omited
 	// WARNING: This also includes lines that have 0 length, meaning
 	// the method will return YES for empty lines too.
@@ -197,7 +198,7 @@
 
 - (NSString*)cleanedString {
 	// Return empty string for invisible blocks
-	if (self.type == section || self.type == synopse || self.omited) return @"";
+	if (self.type == section || self.type == synopse || self.omitted) return @"";
 		
 	NSMutableString *string = [NSMutableString stringWithString:[Line removeMarkUpFrom:[self stripInvisible] line:self]];
 	
@@ -206,7 +207,7 @@
 
 - (NSString*)stringForDisplay {
 	NSString *string;
-	if (!self.omited) string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
+	if (!self.omitted) string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
 	else string = [Line removeMarkUpFrom:self.string line:self];
 	
 	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -217,16 +218,14 @@
 }
 
 
-- (NSString*)stripFormattingCharacters {
-	return [self stripInvisible];
-	/*
+- (NSString*)textContent {
 	NSMutableString *string = [NSMutableString stringWithString:self.string];
 
 	// Remove force characters
 	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
 		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
 		else if (self.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
- 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
+		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
 		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
 		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
 		else {
@@ -242,7 +241,11 @@
 	}
 
 	return string;
-	 */
+}
+
+- (NSString*)stripFormattingCharacters {
+	// Strip any formatting
+	return [self stripInvisible];
 }
 - (NSString*)stripInvisible {
 	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
@@ -374,7 +377,7 @@
 	else return NO;
 }
 - (bool)isInvisible {
-	if (self.omited ||
+	if (self.omitted ||
 		self.type == section ||
 		self.type == synopse ||
 		self.isTitlePage) return YES;
@@ -424,7 +427,6 @@
 	
 	return (NSRange){ intersection.location - self.position, intersection.length };
 }
-
 
 - (NSString*)typeAsFountainString
 {
@@ -500,6 +502,10 @@
 	if (self.type == dualDialogueParenthetical || self.type == dualDialogue) return YES;
 	else return NO;
 }
+- (bool)rangeInStringRange:(NSRange)range {
+	if (range.location + range.length <= self.string.length) return YES;
+	else return NO;
+}
 - (NSAttributedString*)attributedStringForFDX {
 	// N.B. This is NOT a Cocoa-compatible attributed string.
 	// The attributes are used to 	create a string for FDX/HTML conversion.
@@ -507,43 +513,43 @@
 	
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
-			[self addAttr:@"Italic" toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addAttr:@"Italic" toString:string range:range];
 		}
 	}];
 	
 	// Add font stylization
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > BOLD_PATTERN.length * 2) {
-			[self addAttr:@"Bold" toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addAttr:@"Bold" toString:string range:range];
 		}
 	}];
 	
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > UNDERLINE_PATTERN.length * 2) {
-			[self addAttr:@"Underline" toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addAttr:@"Underline" toString:string range:range];
 		}
 	}];
 		
 	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > OMIT_PATTERN.length * 2) {
-			[self addAttr:@"Omit" toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addAttr:@"Omit" toString:string range:range];
 		}
 	}];
 	
 	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > NOTE_PATTERN.length * 2) {
-			[self addAttr:@"Omit" toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addAttr:@"Omit" toString:string range:range];
 		}
 	}];
 		
 	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > STRIKEOUT_PATTERN.length * 2) {
-			[self addAttr:@"Strikeout" toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addAttr:@"Strikeout" toString:string range:range];
 		}
 	}];
 	
 	[self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self addAttr:@"Omit" toString:string range:range];
+		if ([self rangeInStringRange:range]) [self addAttr:@"Omit" toString:string range:range];
 	}];
 	
 	/*
@@ -555,11 +561,11 @@
 	*/
 	 
 	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self addAttr:@"Addition" toString:string range:range];
+		if ([self rangeInStringRange:range]) [self addAttr:@"Addition" toString:string range:range];
 	}];
 	
 	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self addAttr:@"Removal" toString:string range:range];
+		if ([self rangeInStringRange:range]) [self addAttr:@"Removal" toString:string range:range];
 	}];
 		
 	// Loop through tags and apply
@@ -575,10 +581,8 @@
 }
 
 - (void)addAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
-	if (range.location + range.length > string.length) {
-		range = (NSRange) { range.location, range.location + range.length - string.length };
-	}
-	if (range.length < 1 || range.location == NSNotFound) return;
+	// We are going out of range. Abort.
+	if (range.location + range.length > string.length || range.length < 1 || range.location == NSNotFound) return;
 	
 	NSDictionary *styles = [string attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
 
@@ -618,22 +622,26 @@
 	}];
 }
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
-
 	NSAttributedString *string = [self attributedStringForFDX];
 	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
+	
 	[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
+		if (range.length > 0) [attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
 	
 	NSAttributedString *first = [[NSMutableAttributedString alloc] initWithString:@""];
 	NSAttributedString *second = [[NSMutableAttributedString alloc] initWithString:@""];
 	
+	// Safeguard index (this could happen to numerous reasons, extra spaces etc.)
+	if (index > attrStr.length) index = attrStr.length;
+		
 	first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
+	
 	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
 	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
-	
+		
 	if (self.changed) {
 		retain.changed = YES;
 		split.changed = YES;
@@ -679,16 +687,17 @@
 	// Returns ranges with content ONLY (useful for reconstruction the string with no Fountain stylization)
 	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
 	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
-	
+		
 	NSIndexSet *formattingRanges = self.formattingRanges;
 	[contentRanges removeIndexes:formattingRanges];
-
+	
 	return contentRanges;
 }
 - (NSIndexSet*)formattingRanges
 {
 	// This maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
 	// It could be used anywhere, but for now, it's used to create XML formatting for FDX export.
+	
 	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
 	NSString* string = self.string;
 	
@@ -770,7 +779,8 @@
 - (NSString*)characterName
 {
 	// This removes any extra suffixes from character name, ie. (V.O.), (CONT'D) etc.
-	if (self.type != character) return nil;
+	// We'll allow the method to run for lines under 4 characters, even if not parsed as character cues
+	if (self.type != character && self.string.length > 3) return nil;
 	
 	// Strip formatting (such as symbols for forcing element types)
 	NSString *name = [self stripFormatting];
@@ -781,6 +791,12 @@
 	
 	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
+
+#pragma mark - Change Tracking
+
+/*
+ 
+ Usable, but not really sensible.
 
 - (void)checkChanges {
 	if ([self.string isEqualTo:self.original]) {
@@ -820,6 +836,8 @@
 	return unchanged;
 }
 
+*/
+ 
 #pragma mark - formatting range lookup
 
 - (void)resetFormatting {
@@ -896,6 +914,18 @@
 		}
 	}
 	return indexSet;
+}
+
+-(NSDictionary*)forSerialization {
+	return @{
+		@"string": (self.string) ? self.string : @"",
+		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber : @"",
+		@"position": @(self.position),
+		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
+		@"textRange": @{ @"location": @(self.textRange.location), @"length": @(self.textRange.length) },
+		@"typeAsString": self.typeAsString,
+		@"omitted": @(self.omitted)
+	};
 }
 
 #pragma mark - for debugging

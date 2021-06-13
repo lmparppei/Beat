@@ -161,7 +161,7 @@
 		// Calculate total length
 		for (OutlineScene *scene in _outline) {
 			// Skip some elements
-			if (scene.omited) continue;
+			if (scene.omitted) continue;
 			else if (scene.type == synopse) { scenes++; continue; }
 			
 			if (scene.type == heading) _totalLength += scene.timeLength;
@@ -251,7 +251,7 @@
 	NSRect selectionRect = NSZeroRect;
 	
 	for (OutlineScene *scene in self.outline) {
-		if (scene.omited) continue;
+		if (scene.omitted) continue;
 
 		// Handle regular scenes
 		//bool selected = NO;

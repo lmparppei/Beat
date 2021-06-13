@@ -12,12 +12,15 @@
 #import "BeatScriptParser.h"
 
 @protocol BeatPluginWindowExports <JSExport>
+@property (nonatomic) NSString* title;
 JSExportAs(runJS, - (void)runJS:(NSString*)js callback:(JSValue*)callback);
 JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height);
-- (NSArray*)getFrame;
-- (NSArray*)screenSize;
+- (CGRect)getFrame;
+- (NSSize)screenSize;
+- (void)setTitle:(NSString*)title;
 - (void)setHTML:(NSString*)html;
 - (void)close;
+- (void)focus;
 @end
 
 @interface BeatPluginWindow : NSPanel <BeatPluginWindowExports, NSWindowDelegate>

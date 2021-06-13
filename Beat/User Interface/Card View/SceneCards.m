@@ -63,7 +63,7 @@
 	content = [content stringByAppendingString:[self createMenu]];
 	
 	content = [content stringByAppendingString:@"<div id='debug'></div><div id='container'>"];
-	content = [content stringByAppendingFormat:@"</div><script>%@</script></body></html>", javaScript];
+	content = [content stringByAppendingFormat:@"</div><script>let standalone = false;\n%@</script></body></html>", javaScript];
 	
 	[_cardView loadHTMLString:content baseURL:nil];
 }
@@ -143,7 +143,7 @@
 			@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
 			@"position": [NSNumber numberWithInteger:scene.sceneStart],
 			@"lineIndex": [NSNumber numberWithInteger:[_delegate.lines indexOfObject:scene.line]],
-			@"omited": [NSNumber numberWithBool:scene.omited],
+			@"omited": [NSNumber numberWithBool:scene.omitted],
 			@"depth": [NSNumber numberWithInteger:scene.sectionDepth]
 		};
 		
@@ -161,7 +161,7 @@
 	else return NO;
 }
 
-- (NSString *) snippet:(OutlineScene *)scene {
+- (NSString *)snippet:(OutlineScene *)scene {
 	NSUInteger index = [_delegate.lines indexOfObject:scene.line];
 	
 	// If we won't reach the end of file with this, let's take out a snippet from the script for the card
@@ -172,17 +172,16 @@
 	// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading.
 	// Also, we'll use SYNOPSIS line as the snippet in case it's the first line
 	while (lineIndex < _delegate.lines.count) {
-			
 		Line* snippetLine = [_delegate.lines objectAtIndex:lineIndex];
-		if (snippetLine.type != heading && snippetLine.type != section && !(snippetLine.omited && !snippetLine.note)) {
-			snippet = [[_delegate.lines objectAtIndex:lineIndex] stripFormattingCharacters];
+		if (snippetLine.type != heading && snippetLine.type != section && !(snippetLine.omitted && !snippetLine.note)) {
+			snippet = snippetLine.textContent;
 			break;
 		}
 		lineIndex++;
 	}
 	
 	// If it's longer than we want, split into sentences
-	if ([snippet length] > SNIPPET_LENGTH) {
+	if (snippet.length > SNIPPET_LENGTH) {
 		NSMutableArray *sentences = [NSMutableArray arrayWithArray:[snippet matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
 		NSString *result = @"";
 		
@@ -192,10 +191,10 @@
 		// Add as many sentences as possible
 		for (NSString *sentence in sentences) {
 			result = [result stringByAppendingString:sentence];
-			if ([result length] > SNIPPET_LENGTH || [result length] > SNIPPET_LENGTH - 15) break;
+			if (result.length > SNIPPET_LENGTH || result.length > SNIPPET_LENGTH - 15) break;
 		}
 		
-		if ([result length]) snippet = result; else snippet = @"";
+		if (result.length) snippet = result; else snippet = @"";
 	}
 	
 	return snippet;

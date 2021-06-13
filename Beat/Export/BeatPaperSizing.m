@@ -45,3 +45,16 @@
 }
 
 @end
+/*
+ 
+ mä puen villapaidan päälle
+ me tehdään kierros järven jäälle
+ ja nähdään läheltä saari
+ jossa muutama talo on tyhjillään
+ 
+ se ei oo mitenkään ihmeellistä
+ se ei oo mitään tyypillistä
+ josta joku vois tehdä kivan biisin
+ ja kerätä miljoonan
+ 
+ */
