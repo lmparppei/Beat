@@ -29,7 +29,11 @@ NSString * const DocSettingSceneNumberStart = @"Scene Numbering Starts From";
 NSString * const DocSettingTagDefinitions = @"TagDefinitions";
 NSString * const DocSettingTags = @"Tags";
 NSString * const DocSettingRevisedPageColor = @"Revised Page Color";
+NSString * const DocSettingRevisionMode = @"Revision Mode";
 NSString * const DocSettingColorCodePages = @"Color-code Pages";
+
+NSString * const DocSettingWindowWidth = @"Window Width";
+NSString * const DocSettingWindowHeight = @"Window Height";
 
 -(id)init
 {
@@ -48,6 +52,10 @@ NSString * const DocSettingColorCodePages = @"Color-code Pages";
 {
 	[_settings setValue:[NSNumber numberWithInteger:value] forKey:key];
 }
+- (void)setFloat:(NSString*)key as:(NSInteger)value
+{
+	[_settings setValue:[NSNumber numberWithFloat:value] forKey:key];
+}
 - (void)setString:(NSString*)key as:(NSString*)value
 {
 	[_settings setValue:value forKey:key];
@@ -60,6 +68,9 @@ NSString * const DocSettingColorCodePages = @"Color-code Pages";
 - (NSInteger)getInt:(NSString *)key
 {
 	return [(NSNumber*)[_settings valueForKey:key] integerValue];
+}
+- (NSInteger)getFloat:(NSString *)key {
+	return [(NSNumber*)[_settings valueForKey:key] floatValue];
 }
 - (bool)getBool:(NSString *)key
 {

@@ -40,15 +40,19 @@ typedef enum : NSUInteger {
 } BeatPrintOperation;
 
 @protocol PrintViewDelegate
-@property (nonatomic) NSString* header;
 - (void) didFinishPreviewAt:(NSURL*)url;
 @end
 
 @interface PrintView : NSView
 @property (weak) id<PrintViewDelegate> delegate;
+/*
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript;
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id)delegate;
-- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate;
 - (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode;
 - (id)initWithHTML:(NSString *)htmlString document:(NSDocument *)document operation:(BeatPrintOperation)mode completion:(void (^)(void))completion;
+*/
+ 
+// Modern ways
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate;
+- (id)initWithHTML:(NSString*)htmlString settings:(BeatExportSettings*)settings operation:(BeatPrintOperation)mode completion:(void (^)(void))completion;
 @end

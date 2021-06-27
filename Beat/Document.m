@@ -330,7 +330,7 @@
 
 // Magnifying stuff
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
-#define DEFAULT_MAGNIFY 1.02
+#define DEFAULT_MAGNIFY 0.98
 #define MAGNIFY YES
 
 // User preferences key names
@@ -372,6 +372,10 @@
     return self;
 }
 - (void) close {
+	if (!self.hasUnautosavedChanges) {
+		[self.thisWindow saveFrameUsingName:[self fileNameString]];
+	}
+	
 	// Save the gender list & caret position if the document is saved
 	if (!self.documentEdited) {
 		// This should be moved into document settings.
@@ -499,7 +503,6 @@
 	
 	// Initialize edit tracking
 	[self setupRevision];
-	self.trackChanges = NO;	
 	
 	[self applyInitialFormatting];
 	
@@ -588,12 +591,34 @@
 	_splitHandle.delegate = self;
 	[_splitHandle collapseBottomOrLeftView];
 	
+	// Recall window position
+	if (![self.fileNameString isEqualToString:@"Untitled"]) _thisWindow.frameAutosaveName = self.fileNameString;
+	
+	CGFloat x = _thisWindow.frame.origin.x;
+	CGFloat y = _thisWindow.frame.origin.y;
+	CGFloat width = [_documentSettings getFloat:DocSettingWindowWidth];
+	CGFloat height = [_documentSettings getFloat:DocSettingWindowHeight];
+	
+	// Default size for new windows or those going over screen bounds
+	if (width < _documentWidth || x > _thisWindow.screen.frame.size.width) {
+		width = _documentWidth * 1.6;
+		x = (_thisWindow.screen.frame.size.width - width) / 2;
+	}
+	if (height < MIN_WINDOW_HEIGHT || y + height > _thisWindow.screen.frame.size.height) {
+		height = _thisWindow.screen.frame.size.height * .85;
+		
+		if (height < MIN_WINDOW_HEIGHT) height = MIN_WINDOW_HEIGHT;
+		if (height > _documentWidth * 2.5) height = _documentWidth * 1.75;
+		
+		y = (_thisWindow.screen.frame.size.height - height) / 2;
+	}
+	
 	// Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
 	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, MIN_WINDOW_HEIGHT)];
-	NSRect newFrame = NSMakeRect(_thisWindow.frame.origin.x,
-								 _thisWindow.frame.origin.y,
-								 _documentWidth * 1.7,
-								 _documentWidth * 1.5);
+	NSRect newFrame = NSMakeRect(x,
+								 y,
+								 width,
+								 height);
 	[_thisWindow setFrame:newFrame display:YES];
 }
 
@@ -655,6 +680,8 @@
 
 - (void)windowDidResize:(NSNotification *)notification
 {
+	[_documentSettings setFloat:DocSettingWindowWidth as:_thisWindow.frame.size.width];
+	[_documentSettings setFloat:DocSettingWindowHeight as:_thisWindow.frame.size.height];
 	[self updateLayout];
 }
 - (void)updateLayout
@@ -1032,11 +1059,6 @@
 - (IBAction)openPDFExport:(id)sender {
 	_attrTextCache = [self getAttributedText];
 	[self.printing openForPDF:self];
-}
-
-- (IBAction)exportPDF:(id)sender
-{
-	self.printView = [[PrintView alloc] initWithDocument:self script:self.parser.lines operation:BeatToPDF compareWith:nil];
 }
 
 - (IBAction)exportFDX:(id)sender
@@ -3012,7 +3034,7 @@ static NSString *revisionAttribute = @"Revision";
 	_revisionColor = [_documentSettings getString:DocSettingRevisionColor];
 	if (![_revisionColor isKindOfClass:NSString.class]) _revisionColor = @"";
 	if (!_revisionColor) _revisionColor = @"";
-	
+		
 	NSDictionary *revisions = [_documentSettings get:DocSettingRevisions];
 	
 	for (NSString *key in revisions.allKeys) {
@@ -3027,7 +3049,7 @@ static NSString *revisionAttribute = @"Revision";
 				color = item[2];
 			}
 			
-			// Ensure the revision is in range and "paint" its range
+			// Ensure the revision is in range and then paint it 
 			if (len > 0 && loc + len <= self.getText.length) {
 				RevisionType type;
 				NSRange range = (NSRange){loc, len};
@@ -3039,6 +3061,12 @@ static NSString *revisionAttribute = @"Revision";
 				if (revisionItem) [self.textView.textStorage addAttribute:revisionAttribute value:revisionItem range:range];
 			}
 		}
+	}
+	
+	bool revisionMode = [_documentSettings getBool:DocSettingRevisionMode];
+	if (revisionMode) {
+		self.trackChanges = YES;
+		[self updateQuickSettings];
 	}
 }
 
@@ -3095,6 +3123,8 @@ static NSString *revisionAttribute = @"Revision";
 -(IBAction)toggleTrackChanges:(id)sender {
 	_trackChanges = !_trackChanges;
 	[self updateQuickSettings];
+	
+	[_documentSettings setBool:DocSettingRevisionMode as:_trackChanges];
 }
 
 - (void)saveRevisionRanges {

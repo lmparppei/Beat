@@ -1,5 +1,14 @@
 # Changelog
 
+## Beat 1.89
+
+* Color-code revised pages
+* Save window position
+* Save revision mode status
+* Some bug fixes, can't remember what
+* Some code was sanitized
+
+
 ## Beat 1.87.*
 
 A catatrophic version with multiple changes to Plugin API, exporting and stuff. Some changes include:

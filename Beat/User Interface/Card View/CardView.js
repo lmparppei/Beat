@@ -1,9 +1,9 @@
 // NOTE: You need to set let standalone = false/true somewhere
 
 // Drag & drop should be true for in-app view, false for standalone
-let dragDrop
-if (standalone) dragDrop = false
-else dragDrop = true
+let dragDrop;
+if (standalone) dragDrop = false;
+else dragDrop = true;
 
 let colorValues = {
 	red: [239,0,73],
@@ -23,7 +23,7 @@ let textColors = {
 	white: "white",
 	black: "#222"
 }
-let blackTextFor = ["yellow", "orange", "pink", "green"]
+let blackTextFor = ["yellow", "orange", "pink", "green"];
 
 var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
 
@@ -33,9 +33,9 @@ var scenes,
 	printButton,
 	contextMenu;
 
-var drake
-var debugElement = document.getElementById('debug')
-var wait
+var drake;
+var debugElement;
+var wait;
 
 // Polyfill, just in case
 if (!Object.entries) {
@@ -50,12 +50,15 @@ if (!Object.entries) {
   };
 }
 
+
 function init () {
-	scenes = []
+	debugElement = document.getElementById('debug');
 	
-	createStyles()
-	container = document.getElementById('container')
-	wait = document.getElementById('wait')
+	scenes = [];
+	
+	createStyles();
+	container = document.getElementById('container');
+	wait = document.getElementById('wait');
 
 	// Only allow printing & closing for the standalone, windowed version
 	if (!standalone) {
@@ -77,8 +80,6 @@ function init () {
 	// Init context menut
 	contextMenu.init();
 	document.body.onclick = function (e) { contextMenu.close(); }
-
-	debugElement = document.getElementById('debug');
 	
 	// Init drag & drop
 	if (dragDrop) initDragDrop();
@@ -288,29 +289,29 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		scenes.push(card);
 
 		// Style object
-		let style = { status: '', color: '', changed: '' }
+		let style = { status: '', color: '', changed: '' };
 
 		if (card.selected) {
-			style.status = ' selected'
-			selected = index
+			style.status = ' selected';
+			selected = index;
 		}
 
 		if (String(card.color) != "") {
-			let colorName = ""
+			let colorName = "";
 
 			if (String(card.color).substring(0,1) == "#") {
 				// This is a custom, hex color
-				let customStyleName = addCustomColor(card.color)
-				colorName = customStyleName
+				let customStyleName = addCustomColor(card.color);
+				colorName = customStyleName;
 			} else {
 				// Use default colors
-				colorName = card.color
+				colorName = card.color;
 			}
-			style.color = ' colored ' + colorName
+			style.color = ' colored ' + colorName;
 		}
 
 		// For moving stuff around
-		if (index == changedIndex) style.changed = ' indexChanged '
+		if (index == changedIndex) style.changed = ' indexChanged ';
 		
 		// Create HTML for different card types
 		if (card.type == 'section') {
@@ -369,51 +370,53 @@ function select(index) {
 	const cards = document.querySelectorAll("div.card")
 
 	cards.forEach(function (item) {
-		let cardIndex = item.getAttribute('sceneIndex')
-		if (index != cardIndex) item.classList.remove("selected")
+		if (!item.classList) return;
+		
+		let cardIndex = item.getAttribute('sceneIndex');
+		if (index != cardIndex) item.classList.remove("selected");
 		else {
-			item.classList.add("selected")
-			item.scrollIntoViewIfNeeded(true)
+			item.classList.add("selected");
+			if (item.scrollIntoViewIfNeeded) item.scrollIntoViewIfNeeded(true);
 		}
 	})
 }
 
 function addCustomColor(color) {
 	// Adds a custom hex class into styles
-	var customColor = String(card.color).substring(1)
-	var style = document.createElement('style')
+	var customColor = String(card.color).substring(1);
+	var style = document.createElement('style');
 	
-	customStyles++
-	var customStyleName = "customStyle" + customStyles.count
+	customStyles++;
+	var customStyleName = "customStyle" + customStyles.count;
 	
 	style.innerHTML = ".card."+customStyleName+", ."+customStyleName+".selected .sceneNumber { background-color: #"+customColor+"; color: white; } .card."+customStyleName+" p { color: #000; }";
-	document.head.appendChild(style)
+	document.head.appendChild(style);
 
-	return customStyleName
+	return customStyleName;
 }
 
 function createStyles() {
 	let template = "h2.#name# { color: rgb(#values#); }\n" +
 		".card.#name#, .#name#.selected .sceneNumber, .color.#name#, .sectionCard.#name# { background-color: rgb(#values#) !important; color: #textColor# !important; }\n" +
-		".card.#name# p { color: #textColor# !important; }\n"
+		".card.#name# p { color: #textColor# !important; }\n";
 	
-	let styles = ""
+	let styles = "";
 
 	for (const [colorName, value] of Object.entries(colorValues)) {
-		let colorValue = value.join(",")
-		let textColor = textColors.white
-		if (blackTextFor.includes(colorName)) textColor = textColors.black
+		let colorValue = value.join(",");
+		let textColor = textColors.white;
+		if (blackTextFor.includes(colorName)) textColor = textColors.black;
 
-		let style = template.replaceAll("#name#", colorName)
-		style = style.replaceAll("#values#", colorValue)
-		style = style.replaceAll("#textColor#", textColor)
+		let style = template.replaceAll("#name#", colorName);
+		style = style.replaceAll("#values#", colorValue);
+		style = style.replaceAll("#textColor#", textColor);
 
-		styles += style
+		styles += style;
 	}
 	
-	let element = document.createElement('style')
-	element.innerHTML = styles
-	document.head.appendChild(element)
+	let element = document.createElement('style');
+	element.innerHTML = styles;
+	document.head.appendChild(element);
 }
 
 init();

@@ -126,6 +126,34 @@
 
 @implementation BeatHTMLScript
 
+// The new, modernized way
+- (id)initWithScript:(NSDictionary*)script settings:(BeatExportSettings*)settings {
+	self = [super init];
+	
+	if (settings) {
+		_script = script[@"script"];
+		_titlePage = script[@"title page"];
+		
+		_document = settings.document;
+		
+		_header = settings.header;
+		_currentScene = settings.currentScene;
+		_operation = settings.operation;
+		_printSceneNumbers = settings.printSceneNumbers;
+		
+		_revisionColor = settings.revisionColor;
+		_coloredPages = settings.coloredPages;
+		
+		// Simple boolean for later checks
+		if (_operation == ForPrint) _print = YES;
+	}
+	
+	return self;
+}
+
+// The old methods should be abolished for the sake of clarity,
+// but they remain here for the sake of compatibility, for now:
+
 - (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers
 {
 	return [self initWithScript:script document:document scene:scene operation:ForPreview printSceneNumbers:printSceneNumbers];
@@ -159,30 +187,6 @@
 	return self;
 }
 
-// The new, modernized way
-- (id)initWithScript:(NSDictionary*)script settings:(BeatExportSettings*)settings {
-	self = [super init];
-	
-	if (settings) {
-		_script = script[@"script"];
-		_titlePage = script[@"title page"];
-		
-		_document = settings.document;
-		
-		_header = settings.header;
-		_currentScene = settings.currentScene;
-		_operation = settings.operation;
-		_printSceneNumbers = settings.printSceneNumbers;
-		
-		_revisionColor = settings.revisionColor;
-		_coloredPages = settings.coloredPages;
-		
-		// Simple boolean for later checks
-		if (_operation == ForPrint) _print = YES;
-	}
-	
-	return self;
-}
 
 #pragma mark - HTML content
 
@@ -412,7 +416,8 @@
 	_numberOfPages = maxPages;
 	
 	// Header string (make sure it's not null)
-	NSString *header = (self.header) ? self.header : @"";	
+	NSString *header = (self.header) ? self.header : @"";
+	if (header.length) header = [header stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	
 	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) { @autoreleasepool {
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
@@ -517,13 +522,8 @@
                     [body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
 			}
             
-			// WIP: Add formatting here?
             NSMutableString *text = [NSMutableString string];
-			
-			// Preview shortcuts
-			if (line.type == heading && _operation == ForPreview) {
-				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
-            }
+		
 
 			// Begin lyrics block
 			if (line.type == lyrics) {
@@ -541,6 +541,11 @@
             
 			// Format string for HTML (if it's not a heading)
 			[text setString:[self htmlStringFor:line]];
+			
+			// Preview shortcuts
+			if (line.type == heading && _operation == ForPreview) {
+				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
+			}
 
 			if (line.type == heading && line.sceneNumber) {
 				// Add scene number ID to HTML, but don't print it if it's toggled off

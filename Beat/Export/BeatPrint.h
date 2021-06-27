@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)openForPDF:(id)sender;
 
 // Move all PrintView values here
-@property (nonatomic) NSString* header;
+// @property (nonatomic) NSString* header;
 
 @end
 

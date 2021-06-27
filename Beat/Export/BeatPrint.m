@@ -104,19 +104,12 @@
 	
 }
 - (IBAction)print:(id)sender {
-	// Set header
-	if (_headerText.stringValue.length > 0) _header = _headerText.stringValue;
-	
-	//NSString *oldScript = [NSString stringWithContentsOfURL:_compareWith encoding:NSUTF8StringEncoding error:nil];
 	//self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint compareWith:_compareWith];
 	self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
 
 	[self.window endSheet:_panel];
 }
 - (IBAction)pdf:(id)sender {
-	// Set header
-	if (_headerText.stringValue.length > 0) _header = _headerText.stringValue;
-	
 	//self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPDF compareWith:_compareWith];
 	self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
 	[self.window endSheet:_panel];
@@ -147,7 +140,6 @@
 	_compareWith = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
 }
 - (IBAction)headerTextChange:(id)sender {
-	self.header = _headerText.stringValue;
 	[self loadPreview];
 }
 
@@ -201,16 +193,19 @@
 }
 
 - (BeatExportSettings*)exportSettings {
+	// Set how we see revisions
 	bool coloredPages = NO;
 	if (_colorCodePages.state == NSOnState) coloredPages = YES;
 	
 	NSString *revisionColor = @"";
 	if (coloredPages) revisionColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:(self.headerText.stringValue) ? self.headerText.stringValue : @""  printSceneNumbers:self.document.printSceneNumbers revisionColor:revisionColor coloredPages:coloredPages];
+	// Set header
+	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
+	
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:header  printSceneNumbers:self.document.printSceneNumbers revisionColor:revisionColor coloredPages:coloredPages];
 	
 	return settings;
 }
-
 
 @end

@@ -19,18 +19,24 @@ extern NSString * const DocSettingRevisions;
 extern NSString * const DocSettingRevisedPageColor;
 extern NSString * const DocSettingColorCodePages;
 extern NSString * const DocSettingRevisionColor;
+extern NSString * const DocSettingRevisionMode;
 extern NSString * const DocSettingSceneNumberStart;
 extern NSString * const DocSettingTags;
 extern NSString * const DocSettingTagDefinitions;
 
+extern NSString * const DocSettingWindowWidth;
+extern NSString * const DocSettingWindowHeight;
+
 - (void)setBool:(NSString*)key as:(bool)value;
 - (void)setInt:(NSString*)key as:(NSInteger)value;
+- (void)setFloat:(NSString*)key as:(NSInteger)value;
 - (void)setString:(NSString*)key as:(NSString*)value;
 - (void)set:(NSString*)key as:(id)value;
 
 - (NSInteger)getInt:(NSString*)key;
 - (bool)getBool:(NSString*)key;
 - (NSString*)getString:(NSString *) key;
+- (NSInteger)getFloat:(NSString *)key;
 - (id)get:(NSString*)key;
 
 - (void)remove:(NSString *)key;

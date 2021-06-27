@@ -32,6 +32,9 @@
 @property (weak) IBOutlet NSButton *pdfButton;
 @property (weak) IBOutlet NSButton *radioA4;
 @property (weak) IBOutlet NSButton *radioLetter;
+
+@property (weak) IBOutlet NSButton *colorCodePages;
+@property (weak) IBOutlet NSPopUpButton *revisedPageColorMenu;
 @end
 
 @implementation BeatEpisodePrinter
@@ -221,6 +224,21 @@
 		[_pdfButton setEnabled:YES];
 	}
 }
+
+- (BeatExportSettings*)settings {
+	NSString *header = (self.headerText.stringValue.length) ? self.headerText.stringValue : @"";
+	
+	bool colorCodePages = NO;
+	NSString *revisedPageColor = @"";
+	if (self.colorCodePages.state == NSOnState) {
+		colorCodePages = YES;
+		revisedPageColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
+	}
+	
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.doc header:header printSceneNumbers:YES revisionColor:revisedPageColor coloredPages:colorCodePages];
+	return settings;
+}
+
 - (void)printDocuments:(bool)toPDF {
 	[self toggleProgressUI:YES];
 		
@@ -231,10 +249,9 @@
 	 
 	if (_radioA4.state == NSOnState) size = BeatA4;
 	else size = BeatUSLetter;
-	
-	if (size == BeatUSLetter) NSLog(@"a4");
-	
 	self.doc.printInfo = [BeatPaperSizing printInfoFor:size];
+	
+	BeatExportSettings *settings = [self settings];
 	
 	// The operation can be quite heavy, so do it in another thread
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
@@ -256,7 +273,7 @@
 				[self alertPanelWithTitle:@"Error Opening File" content:[NSString stringWithFormat:@"%@ could not be opened. Other documents will be printed normally.", filename]];
 				error = nil;
 			} else {
-				NSString *documentHtml = [self htmlForDocument:text];
+				NSString *documentHtml = [self htmlForDocument:text settings:settings];
 				html = [html stringByAppendingString:documentHtml];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
@@ -267,11 +284,12 @@
 		}
 		
 		html = [html stringByAppendingString:footer];
+		
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			if (toPDF) self.printView = [[PrintView alloc] initWithHTML:html document:self.doc operation:BeatToPDF completion:^{
+			if (toPDF) self.printView = [[PrintView alloc] initWithHTML:html settings:settings operation:BeatToPDF completion:^{
 				[self close];
 			}];
-			else self.printView = [[PrintView alloc] initWithHTML:html document:self.doc operation:BeatToPrint completion:^{
+			else self.printView = [[PrintView alloc] initWithHTML:html settings:settings operation:BeatToPrint completion:^{
 				[self close];
 			}];
 		});
@@ -280,7 +298,7 @@
 
 
 
--(NSString*)htmlForDocument:(NSString*)text {
+-(NSString*)htmlForDocument:(NSString*)text settings:(BeatExportSettings*)exportSettings {
 	BeatDocumentSettings *settings = [[BeatDocumentSettings alloc] init];
 	[settings readSettingsAndReturnRange:text];
 	
@@ -289,13 +307,7 @@
 	// Bake revision data into the document
 	NSDictionary *revisions = [settings get:DocSettingRevisions];
 	if (revisions.count) [BeatRevisionTracking bakeRevisionsIntoLines:parser.lines revisions:revisions string:text parser:parser];
-
-	// Set header if available. And replace any < characters.
-	NSString *header = @"";
-	if (self.headerText.stringValue.length) header = [self.headerText.stringValue stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
-	
-	BeatExportSettings *exportSettings = [BeatExportSettings operation:ForPrint document:_doc header:header printSceneNumbers:YES revisionColor:@"" coloredPages:NO];
-	
+		
 	NSDictionary *script = [parser scriptForPrinting];
 	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initWithScript:script settings:exportSettings];
 	
