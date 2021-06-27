@@ -7,12 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "Line.h"
 #import "BeatComparison.h"
 
 @protocol BeatEditTrackingDelegate <NSObject>
-@property (weak, readonly) ContinousFountainParser *parser;
+@property (weak, readonly) ContinuousFountainParser *parser;
 - (NSString*)getText;
 @end
 

@@ -59,7 +59,6 @@
 #import "FountainPaginator.h"
 #import "Line.h"
 #import "RegExCategories.h"
-#import "BeatPaperSizing.h"
 
 #define LINE_HEIGHT 12.5
 
@@ -71,6 +70,7 @@
 @property (nonatomic) NSString *textCache;
 @property bool paginating;
 @property bool A4;
+@property (nonatomic) NSPrintInfo *printInfo;
 @property BeatFont *font;
 
 @property NSMutableIndexSet *changedIndices;
@@ -140,13 +140,14 @@
 	}
 	return self;
 }
-- (id)initWithScript:(NSArray *)elements paperSize:(CGSize)paperSize
+
+- (id)initWithScript:(NSArray *)elements printInfo:(NSPrintInfo*)printInfo
 {
 	self = [super init];
 	if (self) {
 		_pages = [[NSMutableArray alloc] init];
 		_script = elements;
-		_paperSize = paperSize;
+		_printInfo = printInfo;
 		_font = [BeatFont fontWithName:@"Courier" size:12];
 	}
 	return self;
@@ -292,7 +293,11 @@
  
 */
 
--(void)setScript:(NSArray *)script {
+- (void)setPageSize:(BeatPaperSize)pageSize {
+	_printInfo = [BeatPaperSizing printInfoFor:pageSize];
+}
+
+- (void)setScript:(NSArray *)script {
 	NSMutableArray *lines = [NSMutableArray array];
 	for (Line *line in script) {
 		if (line.omitted || line.type == empty) continue;
@@ -315,14 +320,17 @@
 	if (!self.script.count) return;
 	
 	// Get paper size from the document
-	if (_document) {
-		NSPrintInfo *printInfo = [_document.printInfo copy];
+	if (_document || _printInfo) {
+		NSPrintInfo *printInfo;
+		if (_document) printInfo = [_document.printInfo copy];
+		else printInfo = [_printInfo copy];
+		
 		printInfo = [BeatPaperSizing setMargins:printInfo];
 		
 		// Check paper size
 		if (printInfo.paperSize.width > 595) _A4 = NO;
 		_A4 = YES;
-
+		
 		CGFloat w = printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin;
 		CGFloat h = printInfo.paperSize.height - printInfo.topMargin - printInfo.bottomMargin;
 		
@@ -331,8 +339,6 @@
 		_paperSize = CGSizeMake(595, 821);
 	}
 		
-	bool debug = NO;
-
 	NSMutableArray *currentPage = [NSMutableArray array];
 	
 	NSInteger initialY = 0; // initial starting point on page
@@ -340,7 +346,7 @@
 	
 	NSInteger oneInchBuffer = 72;
 	NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.25);
-		
+			
 	//NSInteger lineHeight = font.pointSize * 1.1;
 	CGFloat lineHeight = LINE_HEIGHT;
 	
@@ -388,10 +394,10 @@
 			if (element.isInvisible || element.type == empty) continue;
 			
 			// If this is the FIRST page, add a break to mark for the end of title page and beginning of document
-			if (_pageBreaks.count == 0) [self pageBreak:element position:0];
+			if (_pageBreaks.count == 0 && _livePagination) [self pageBreak:element position:0 type:@"First page"];
 			
 			// Reset Y if the page is empty
-			if ([currentPage count] == 0) currentY = initialY;
+			if (currentPage.count == 0) currentY = initialY;
 			
 			// catch page breaks immediately
 			if (element.type == pageBreak) {
@@ -399,7 +405,7 @@
 				[currentPage addObject:element];
 				[self.pages addObject:currentPage];
 
-				[self pageBreak:element position:-1];
+				[self pageBreak:element position:-1 type:@"Forced page break"];
 				
 				// reset currentPage and the currentY value
 				currentPage = [NSMutableArray array];
@@ -456,7 +462,7 @@
 					[_pages addObject:currentPage];
 					
 					// Add page break for live pagination (-1 means the break is AFTER the element)
-					[self pageBreak:[tmpElements lastObject] position:-1];
+					[self pageBreak:(Line*)tmpElements.lastObject position:-1 type:@"Generally squeezed"];
 					
 					currentPage = [NSMutableArray array];
 					currentY = 0;
@@ -537,7 +543,7 @@
 								[_pages addObject:currentPage];
 								
 								// Add page break for live pagination
-								[self pageBreak:spillerElement position:breakPosition];
+								[self pageBreak:spillerElement position:breakPosition type:@"Heading block"];
 								
 								currentPage = [NSMutableArray array];
 								[currentPage addObject:postPageBreak];
@@ -548,7 +554,7 @@
 								[_pages addObject:currentPage];
 								
 								// Page break for live pagination
-								[self pageBreak:element position:0];
+								[self pageBreak:element position:0 type:@"Heading block moved on next page"];
 								
 								currentPage = [NSMutableArray array];
 								[currentPage addObject:element];
@@ -560,7 +566,7 @@
 							[_pages addObject:currentPage];
 							
 							// Add page break info (for live pagination if in use)
-							[self pageBreak:spillerElement position:breakPosition];
+							[self pageBreak:spillerElement position:breakPosition type:@"Action or heading"];
 							
 							currentPage = [NSMutableArray array];
 							[currentPage addObject:postPageBreak];
@@ -570,14 +576,12 @@
 						continue;
 						
 					} else {
-						if (debug) NSLog(@"throw on next: %@", element.string);
-												
 						// Close page and reset
 						[_pages addObject:currentPage];
 						currentPage = [NSMutableArray array];
 
 						// Add page break info (for live pagination if in use)
-						[self pageBreak:element position:0];
+						[self pageBreak:element position:0 type:@"Whatever"];
 					}
 				}
 				
@@ -606,7 +610,7 @@
 						currentY = 0;
 						
 						// Add page break info (for live pagination if in use)
-						[self pageBreak:dialogueBlock.lastObject position:-1];
+						[self pageBreak:dialogueBlock.lastObject position:-1 type:@"Squeezed dialogue"];
 						continue; // Don't let the loop take care of the tmp buffer here
 					}
 					
@@ -624,6 +628,7 @@
 							
 							[nextPageLines addObjectsFromArray:(NSArray*)split[@"next page"]];
 						} else {
+							pageBreakElement = dialogueBlock.lastObject;
 							[nextPageLines addObjectsFromArray:dialogueBlock];
 						}
 					}
@@ -719,7 +724,7 @@
 					[_pages addObject:currentPage];
 					
 					// Add page break for live pagination
-					[self pageBreak:pageBreakElement position:pageBreakPosition];
+					[self pageBreak:pageBreakElement position:pageBreakPosition type:@"Dialogue"];
 					
 					currentPage = [NSMutableArray array];
 					[currentPage addObjectsFromArray:nextPageLines];
@@ -734,14 +739,14 @@
 					[_pages addObject:currentPage];
 					currentPage = [NSMutableArray array];
 					
-					[self pageBreak:spillerElement position:-1];
+					[self pageBreak:spillerElement position:-1 type:@"Some action"];
 
 				} else {
 					// Whatever, let's just push this element on the next page
 					[_pages addObject:currentPage];
 					currentPage = [NSMutableArray array];
 					
-					[self pageBreak:spillerElement position:0];
+					[self pageBreak:spillerElement position:0 type:@"Whatever, again"];
 				}
 				
 				currentY = 0;
@@ -901,12 +906,10 @@
 		[layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
 		index = NSMaxRange(lineRange);
 	}
-	
-	//NSLog(@"-> number of lines: %lu", numberOfLines);
-	
+		
 	return numberOfLines * lineHeight;
 }
-- (void)pageBreak:(Line*)line position:(CGFloat)position {
+- (void)pageBreak:(Line*)line position:(CGFloat)position type:(NSString*)reason {
 	if (!_livePagination) return; // Don't run this for non-live pagination
 
 	NSNumber *value = [NSNumber numberWithFloat:position];

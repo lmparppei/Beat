@@ -5,9 +5,10 @@
 
 * Double scene headings
 
-## Parser
+## Sanitize delegates
 
-* There is a known bug which begins at parser level, because doesn't really understand nested styling. Stuff gets stylized correctly, but ranges are messed up. For example, ***Bold** italic* leaves the third asterisk into formatting ranges. Quick fix: `(\*\*)(?!\*)(.*)(\*\*)`  
+Right now, there are many, many delegates which do almost the same thing. It would be pretty sensible to write a single delegate, which could be reused almost anywhere. That's pretty much what `BeatEditorDelegate` does, and most controls and classes could perhaps use it directly? 
+
 
 # Work in progress
 

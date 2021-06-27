@@ -24,7 +24,7 @@
 
 @property (nonatomic) NSMutableArray *customFields;
 @property (assign) id<BeatEditorDelegate> editorDelegate;
-@property (nonatomic) ContinousFountainParser *parser;
+@property (nonatomic) ContinuousFountainParser *parser;
 @end
 
 @implementation BeatTitlePageEditor
@@ -37,7 +37,7 @@
 }
 
 - (void)parseTitlePage {
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:[self.editorDelegate getText]];
+	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:[self.editorDelegate getText]];
 
 	// List of applicable fields
 	NSDictionary* fields = @{

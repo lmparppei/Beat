@@ -1,7 +1,7 @@
 /* Dragula */
 .gu-mirror{position:fixed!important;margin:0!important;z-index:9999!important;opacity:.8;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";filter:alpha(opacity=80)}.gu-hide{display:none!important}.gu-unselectable{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important}.gu-transit{opacity:.2;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";filter:alpha(opacity=20)}
 
-/* 
+/*
 
 Beat Card View
 © 2019 Lauri-Matti Parppei / KAPITAN
@@ -10,7 +10,7 @@ Released under GPL license.
 
 */
 
-#debug {	
+#debug {
 	color: white;
 }
 
@@ -19,7 +19,7 @@ Released under GPL license.
 	cursor: default;
 }
 body {
-	user-select: none; 
+	user-select: none;
 	-webkit-user-select: none;
 	
 	padding-top: 2rem;
@@ -36,13 +36,13 @@ body.nightMode {
 }
 
 h2 {
-	width: 100%;	
-	font-family: Helvetica, sans-serif; 
-	font-size: 2.2em; 
+	width: 100%;
+	font-family: Helvetica, sans-serif;
+	font-size: 2.2em;
 	padding: 2rem 0 1rem .7rem;
-	margin: 0; 
-	color: #eee; 
-	font-weight: 300; 
+	margin: 0;
+	color: #eee;
+	font-weight: 300;
 }
 
 h3, p { font-size: 1em;  margin: 0;}
@@ -260,54 +260,42 @@ section {
 .nightMode .colored h3 { color: #111 !important; }
 .nightMode .colored p, .nightMode .card.colored:hover p { color: #111 !important; }
 
-
+/*
 .card.red, .red.selected .sceneNumber, .color.red { background-color: rgb(239,0,73); color: white; }
 .card.red p { color: white; }
-/* .red h3 { color: rgb(239,0,73); } */
 
 .card.blue, .blue.selected .sceneNumber, .color.blue   { background-color: rgb(0,129,239); color: white; }
 .card.blue p { color: white; }
-/* .blue h3 { color: rgb(0,129,239); } */
 
 .card.green, .green.selected .sceneNumber, .color.green  { background-color: rgb(0,223,121); color: #333; }
 .card.green p { color: #333; }
-/* .green h3 { color: rgb(0,223,121); } */
 
 .card.pink, .pink.selected .sceneNumber, .color.pink { background-color: rgb(250,111,193); color: #333; }
 .card.pink p { color: #333; }
-/* .pink h3 { color: rgb(250,111,193); } */
 
 .card.magenta, .magenta.selected .sceneNumber, .color.magenta { background-color: rgb(236,0,140); color: white; }
 .card.magenta p { color: white; }
-/* .magenta h3 { color: rgb(236,0,140); } */
 
 .card.orange, .orange.selected .sceneNumber, .color.orange { background-color: rgb(255, 161, 13); }
 .card.orange p { color: #333; }
-/* .orange h3 { color: rgb(255, 161, 13); } */
 
 .card.brown, .brown.selected .sceneNumber, .color.brown { background-color: rgb(169, 106, 7); color: white; }
 .card.brown p { color: white; }
-/* .brown h3 { color: rgb(169, 106, 7); } */
 
 .card.gray, .gray.selected .sceneNumber, .color.gray { background-color: gray; color: white; }
 .card.gray p { color: white; }
-/* .magenta h3 { color: gray; } */
 
 .card.purple, .purple.selected .sceneNumber, .color.purple { background-color: rgb(181, 32, 218); color: white; }
 .card.purple p { color: white; }
-/* .purple h3 { color: rgb(181, 32, 218); } */
 
 .card.yellow, .yellow.selected .sceneNumber, .color.yellow { background-color: rgb(255, 162, 0); color: #333; }
 .card.yellow p { color: #333; }
-/* .yellow h3 { color: rgb(255, 162, 0); } */
 
 .card.cyan, .cyan.selected .sceneNumber, .color.cyan { background-color: rgb(7, 189, 236); color: white; }
 .card.cyan p { color: white; }
-/* .cyan h3 { color: rgb(7, 189, 236); } */
 
 .teal .sceneNumber, .teal.selected .sceneNumber, .color.teal { background-color: rgb(12, 224, 227); color: white; }
-/* .teal h3 { color: rgb(12, 224, 227); } */
-
+*/
 
 #noData {
 	position: absolute;
@@ -566,9 +554,9 @@ section {
 }
 @keyframes lds-spinner {
   0% {
-    opacity: 1;
+	opacity: 1;
   }
   100% {
-    opacity: 0;
+	opacity: 0;
   }
 }

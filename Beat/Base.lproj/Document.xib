@@ -885,6 +885,7 @@
         </customObject>
         <customObject id="c93-vc-ktH" customClass="BeatPrint">
             <connections>
+                <outlet property="colorCodePages" destination="qKK-Re-kap" id="PoH-ci-B5a"/>
                 <outlet property="headerText" destination="96o-Wo-DT8" id="5Gy-mr-7te"/>
                 <outlet property="panel" destination="QbD-Re-N9Z" id="bEC-Qs-Knv"/>
                 <outlet property="pdfButton" destination="9bM-yX-jPq" id="v6T-at-7b9"/>
@@ -893,6 +894,7 @@
                 <outlet property="printSceneNumbers" destination="ooy-VG-wHP" id="FtU-Dy-nVT"/>
                 <outlet property="radioA4" destination="pnK-E1-Fez" id="inO-EE-42z"/>
                 <outlet property="radioLetter" destination="OPF-sr-e7n" id="oy7-4S-WWc"/>
+                <outlet property="revisedPageColorMenu" destination="Y6L-wW-VtI" id="Yv3-Pu-VxJ"/>
                 <outlet property="title" destination="6sm-Ta-PxI" id="D7P-TV-6Au"/>
                 <outlet property="window" destination="xOd-HO-29H" id="7pb-bo-Mpe"/>
             </connections>
@@ -1189,15 +1191,6 @@ DQ
                             <real value="3.4028234663852886e+38"/>
                         </customSpacing>
                     </stackView>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="4lt-5P-1ge">
-                        <rect key="frame" x="416" y="89" width="243" height="36"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" title="Select a previous version to print out a file with markers aside the changes" id="0hB-KJ-SPD">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="underPageBackgroundColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <pdfView autoresizesSubviews="NO" wantsLayer="YES" scaleFactor="0.5" id="O38-qB-kJm">
                         <rect key="frame" x="0.0" y="0.0" width="397" height="398"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
@@ -1243,15 +1236,6 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="eUh-zz-OcG">
-                        <rect key="frame" x="415" y="136" width="157" height="16"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" title="Mark Changes To..." id="EU5-TD-jAn">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                     <box verticalHuggingPriority="750" boxType="separator" id="c7W-by-RVY">
                         <rect key="frame" x="417" y="164" width="240" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1260,17 +1244,6 @@ DQ
                         <rect key="frame" x="417" y="228" width="240" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
-                    <button verticalHuggingPriority="750" id="Ue1-JL-IfL">
-                        <rect key="frame" x="545" y="126" width="118" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Select Script" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2yw-7s-I3z">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="pickFileToCompare:" target="c93-vc-ktH" id="rnA-Se-KIj"/>
-                        </connections>
-                    </button>
                     <button verticalHuggingPriority="750" tag="1" id="pnK-E1-Fez">
                         <rect key="frame" x="417" y="304" width="39" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1291,6 +1264,35 @@ DQ
                         </buttonCell>
                         <connections>
                             <action selector="selectPaperSize:" target="c93-vc-ktH" id="6gK-88-FC3"/>
+                        </connections>
+                    </button>
+                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Y6L-wW-VtI">
+                        <rect key="frame" x="608" y="123" width="52" height="25"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <popUpButtonCell key="cell" type="push" title="Red" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="32z-eW-bTT" id="2p7-Bl-fit">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" id="Xhe-Wg-o90">
+                                <items>
+                                    <menuItem title="Red" state="on" image="Color_Red" id="32z-eW-bTT"/>
+                                    <menuItem title="Cyan" image="Color_Cyan" id="nJB-TZ-Pzd"/>
+                                    <menuItem title="Green" image="Color_Green" id="g4z-ZF-efk"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <action selector="setRevisedPageColor:" target="c93-vc-ktH" id="JC1-zH-tYh"/>
+                        </connections>
+                    </popUpButton>
+                    <button verticalHuggingPriority="750" id="qKK-Re-kap">
+                        <rect key="frame" x="415" y="128" width="189" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Color-code revised pages" bezelStyle="regularSquare" imagePosition="left" inset="2" id="cYq-6M-VKh">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleColorCodePages:" target="c93-vc-ktH" id="gw1-uz-wb0"/>
                         </connections>
                     </button>
                 </subviews>
@@ -1569,6 +1571,38 @@ Gw
             </subviews>
             <point key="canvasLocation" x="525" y="-386"/>
         </customView>
+        <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="4lt-5P-1ge">
+            <rect key="frame" x="0.0" y="0.0" width="243" height="36"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+            <textFieldCell key="cell" title="Select a previous version to print out a file with markers aside the changes" id="0hB-KJ-SPD">
+                <font key="font" metaFont="smallSystem"/>
+                <color key="textColor" name="underPageBackgroundColor" catalog="System" colorSpace="catalog"/>
+                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+            </textFieldCell>
+            <point key="canvasLocation" x="2887" y="-727"/>
+        </textField>
+        <textField hidden="YES" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="eUh-zz-OcG">
+            <rect key="frame" x="0.0" y="0.0" width="157" height="16"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <textFieldCell key="cell" title="Mark Changes To..." id="EU5-TD-jAn">
+                <font key="font" metaFont="system"/>
+                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+            </textFieldCell>
+            <point key="canvasLocation" x="2843" y="-764"/>
+        </textField>
+        <button hidden="YES" verticalHuggingPriority="750" id="Ue1-JL-IfL">
+            <rect key="frame" x="0.0" y="0.0" width="118" height="32"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+            <buttonCell key="cell" type="push" title="Select Script" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2yw-7s-I3z">
+                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                <font key="font" metaFont="system"/>
+            </buttonCell>
+            <connections>
+                <action selector="pickFileToCompare:" target="c93-vc-ktH" id="rnA-Se-KIj"/>
+            </connections>
+            <point key="canvasLocation" x="2953" y="-764"/>
+        </button>
     </objects>
     <resources>
         <image name="CardsIcon" width="370" height="370"/>

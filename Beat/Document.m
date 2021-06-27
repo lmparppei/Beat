@@ -80,7 +80,6 @@
 #import "OutlineExtractor.h"
 #import "PrintView.h"
 #import "ColorView.h"
-#import "ContinousFountainParser.h"
 #import "ThemeManager.h"
 #import "OutlineScene.h"
 #import "DynamicColor.h"
@@ -284,7 +283,7 @@
 @property (nonatomic) NSColorPickerTouchBarItem *colorPicker;
 
 // Parser
-@property (strong, nonatomic) ContinousFountainParser* parser;
+@property (strong, nonatomic) ContinuousFountainParser* parser;
 
 // Title page editor
 @property (nonatomic) BeatTitlePageEditor *titlePageEditor;
@@ -495,22 +494,27 @@
 	}
 		
 	// Initialize parser
-	self.parser = [[ContinousFountainParser alloc] initWithString:[self getText]];
+	self.parser = [[ContinuousFountainParser alloc] initWithString:[self getText]];
 	self.parser.delegate = self;
 	
 	// Initialize edit tracking
 	[self setupRevision];
-	self.trackChanges = NO;
+	self.trackChanges = NO;	
 	
-	[self applyInitialFormating];
+	[self applyInitialFormatting];
 	
 	// Load tags
 	[self setupTagging];
 	
-	self.documentIsLoading = NO;
-	
 	// Setup page size
+	// (We'll disable undo registration here, so the doc won't appear as edited on open)
+	[self.undoManager disableUndoRegistration];
 	self.printInfo = [BeatPaperSizing setSize:[_documentSettings getInt:@"Page Size"] printInfo:self.printInfo];
+	[self.undoManager enableUndoRegistration];
+	[self updateChangeCount:NSChangeCleared];
+
+	// Document loading has ended
+	self.documentIsLoading = NO;
 	
 	// Ensure layout
 	[self setupLayoutWithPagination:YES];
@@ -1459,7 +1463,7 @@
 	*/
 	
 	if (processDoubleBreak) {
-		// This is here to fix a formating error with dialogue.
+		// This is here to fix a formatting error with dialogue.
 		// If the caret is at the end of the document, we need to parse one step behind
 		// to correctly format the extra line break we just added.
 		@try {
@@ -1586,7 +1590,7 @@
 	[self applyFormatChanges];
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
-	// If the outline has changed, update all labels	
+	// If the outline has changed, update all labels
 	if (changeInOutline) [self updateSceneNumberLabels:0];
 	else [self updateSceneNumberLabels:_lastChangedRange.location];
 	
@@ -1979,7 +1983,7 @@
 	}
 }
 
--(void)applyInitialFormating {
+-(void)applyInitialFormatting {
 	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
 	NSInteger index = 0;
 
@@ -3456,6 +3460,12 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	[[NSUserDefaults standardUserDefaults] setBool:self.printSceneNumbers forKey:PRINT_SCENE_NUMBERS_KEY];
 }
+- (void)setRevisedPageColor:(NSString*)color {
+	[_documentSettings setString:DocSettingRevisedPageColor as:color];
+}
+- (void)setColorCodePages:(bool)value {
+	[_documentSettings setBool:DocSettingColorCodePages as:value];
+}
 
 #pragma mark - Themes & UI outlook
 
@@ -4667,10 +4677,10 @@ triangle walks
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {
+	[super setPrintInfo:printInfo];
+	
 	if (printInfo.paperSize.width > 600) [self.documentSettings setInt:@"Page Size" as:BeatUSLetter];
 	else [self.documentSettings setInt:@"Page Size" as:BeatA4];
-	
-	[super setPrintInfo:printInfo];
 }
 
 - (NSInteger)numberOfPages {

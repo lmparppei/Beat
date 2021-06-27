@@ -31,6 +31,7 @@
 #import <WebKit/WebKit.h>
 #import "Document.h"
 #import "BeatComparison.h"
+#import "BeatExportSettings.h"
 
 typedef enum : NSUInteger {
 	BeatToPDF = 0,
@@ -47,6 +48,7 @@ typedef enum : NSUInteger {
 @property (weak) id<PrintViewDelegate> delegate;
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript;
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id)delegate;
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate;
 - (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode;
 - (id)initWithHTML:(NSString *)htmlString document:(NSDocument *)document operation:(BeatPrintOperation)mode completion:(void (^)(void))completion;
 @end

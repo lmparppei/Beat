@@ -7,12 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatRevisionTracking : NSObject
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinousFountainParser*)parser;
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser;
++ (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string parser:(ContinuousFountainParser*)parser;
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "Line.h"
+#import "BeatPaperSizing.h"
 
 #if TARGET_OS_IPHONE
     #define BeatFont UIFont
@@ -24,6 +25,7 @@
 - (void)paginateLines:(NSArray*)lines;
 - (void)paginate;
 - (NSArray*)lengthInEights;
+- (void)setPageSize:(BeatPaperSize)pageSize;
 @end
 
 @protocol BeatPaginatorDelegate <NSObject>
@@ -48,11 +50,12 @@
 - (id)initForLivePagination:(NSDocument*)document;
 - (id)initForLivePagination:(NSDocument*)document withElements:(NSArray*)elements;
 - (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;
-- (id)initWithScript:(NSArray*)elements paperSize:(CGSize)paperSize;
+- (id)initWithScript:(NSArray *)elements printInfo:(NSPrintInfo*)printInfo;
 
 - (void)livePaginationFor:(NSArray*)script changeAt:(NSRange)range;
 - (void)paginate;
 - (NSArray *)pageAtIndex:(NSUInteger)index;
+- (void)setPageSize:(BeatPaperSize)pageSize;
 
 - (NSInteger)pageNumberFor:(NSInteger)location;
 - (NSArray*)lengthInEights;

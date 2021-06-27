@@ -26,24 +26,27 @@
 
 
 #if TARGET_OS_IPHONE
-    #define QUQFont UIFont
+    #define BeatFont UIFont
 #else
-    #define QUQFont NSFont
+    #define BeatFont NSFont
     #import <Cocoa/Cocoa.h>
 #endif
 
 #import <Foundation/Foundation.h>
 #import "BeatEditorDelegate.h"
+#import "BeatExportSettings.h"
 
+/*
 typedef enum : NSUInteger {
 	ForPrint = 0,
 	ForPreview,
 	ForQuickLook
 } BeatHTMLOperation;
-
+*/
+ 
 @interface BeatHTMLScript : NSObject
 
-@property (strong, nonatomic) QUQFont *font;
+@property (strong, nonatomic) BeatFont *font;
 @property (strong, nonatomic) NSArray *script;
 @property (strong, nonatomic) NSArray *titlePage;
 @property (strong, nonatomic) NSDocument *document;
@@ -51,6 +54,7 @@ typedef enum : NSUInteger {
 @property (strong, nonatomic) NSNumber *forRendering;
 @property (copy, nonatomic) NSString *bodyText;
 
+- (id)initWithScript:(NSDictionary*)script settings:(id)settings; // The new way
 - (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers;
 - (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers;
 - (id)initForQuickLook:(NSDictionary *)script;

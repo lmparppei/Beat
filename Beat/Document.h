@@ -33,7 +33,7 @@ THE SOFTWARE.
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
 #import "TouchTimelinePopover.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "SceneCards.h"
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
@@ -85,6 +85,8 @@ THE SOFTWARE.
 
 - (void)setPrintSceneNumbers:(bool)value;
 - (IBAction)togglePrintSceneNumbers:(id)sender;
+- (void)setRevisedPageColor:(NSString*)color;
+- (void)setColorCodePages:(bool)value;
 
 // Analysis
 @property (nonatomic) NSMutableDictionary *characterGenders;

@@ -226,6 +226,10 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	});
 }
 
+- (JSValue*)fetch:(JSValue*)callback {
+	return nil;
+}
+
 #pragma mark - Timer
 
 - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats {
@@ -294,6 +298,16 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 {
 	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
 	openPanel.allowedFileTypes = formats;
+	
+	NSModalResponse result = [openPanel runModal];
+	if (result == NSModalResponseOK) {
+		[callback callWithArguments:@[openPanel.URL.path]];
+	} else {
+		[callback callWithArguments:nil];
+	}
+	
+	/*
+	 // Alternatively we can use a sheet
 	[openPanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse result) {
 		if (result == NSModalResponseOK) {
 			[openPanel close];
@@ -305,6 +319,47 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 			[callback callWithArguments:nil];
 		}
 	}];
+	*/
+}
+
+- (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback
+{
+	// Open MULTIPLE files
+	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+	openPanel.allowedFileTypes = formats;
+	openPanel.allowsMultipleSelection = YES;
+	
+	NSModalResponse result = [openPanel runModal];
+	
+	if (result == NSModalResponseOK) {
+		NSMutableArray *paths = [NSMutableArray array];
+		for (NSURL* url in openPanel.URLs) {
+			[paths addObject:url.path];
+		}
+		[callback callWithArguments:@[paths]];
+	} else {
+		[callback callWithArguments:nil];
+	}
+	
+	/*
+	// Alternatively we can use a sheet
+	[openPanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse result) {
+		if (result == NSModalResponseOK) {
+			[openPanel close];
+			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
+				// some other method calls here
+				NSMutableArray *paths = [NSMutableArray array];
+				for (NSURL* url in openPanel.URLs) {
+					[paths addObject:url.path];
+				}
+				
+				[callback callWithArguments:@[paths]];
+			});
+		} else {
+			[callback callWithArguments:nil];
+		}
+	}];
+	*/
 }
 
 - (NSString*)fileToString:(NSString*)path
@@ -741,7 +796,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 #pragma mark - Pagination interface
 
 - (FountainPaginator*)paginator:(NSArray*)lines {
-	FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:lines paperSize:_delegate.printInfo.paperSize];
+	FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:lines printInfo:_delegate.printInfo];
 	return paginator;
 }
 
@@ -864,6 +919,30 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 - (Line*)currentLine {
 	return _delegate.currentLine;
 }
+
+- (ContinuousFountainParser*)parser:(NSString*)string {
+	// Catch document settings
+	NSRange settingsRange = [[[BeatDocumentSettings alloc] init] readSettingsAndReturnRange:string];
+	if (settingsRange.length > 0) {
+		string = [self removeRange:settingsRange from:string];
+	}
+	
+	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:string];
+	return parser;
+}
+- (NSString*)removeRange:(NSRange)range from:(NSString*)string {
+	NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] initWithIndexesInRange:(NSRange){0, string.length}];
+	[indexSet removeIndexesInRange:range];
+	
+	NSMutableString *result = [NSMutableString string];
+	[indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[result appendString:[string substringWithRange:range]];
+	}];
+	
+	return result;
+}
+
+#pragma mark - WebKit controller
 
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
 {

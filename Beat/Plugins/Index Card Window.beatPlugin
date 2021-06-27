@@ -1,0 +1,131 @@
+/*
+
+Plugin name: Index Card Window
+Description: Detachable index card view. Allows you to see the beat board while writing your script. Great for dual monitor setups and large screens.
+Copyright: Lauri-Matti Parppei 2021
+Version: 1.0
+
+If you are reading through this code, note that this has been mostly translated from
+Objective-C. The normal Index Card View uses a WebKit view and a HTML template with 
+some JavaScript, both of which were written back when my programming skills were much 
+more limited.
+
+That's why my frontend code in the HTML component is somewhat messy and horrible. 
+It was something that I put together quickly, it worked, and I never thought I'd be 
+living with that piece of code years later.
+
+Dread lightly, and if you are more clever than me, please rewrite frontend side
+completely!
+
+Lauri-Matti
+
+*/
+
+let htmlWindow
+let cards = []
+
+function init() {
+	let js = Beat.appAssetAsString("CardView.js")
+	let css = Beat.appAssetAsString("CardCSS.css")
+	//let js = Beat.assetAsString("CardView.js")
+	//let css = Beat.assetAsString("CardView.css")
+
+	let html = Beat.appAssetAsString("CardWindow.html")
+	html = html.replaceAll("#STYLE#", css)
+	html = html.replaceAll("#JAVASCRIPT#", js)
+
+	htmlWindow = Beat.htmlWindow(html, 800, 600, function () {
+		let frame = htmlWindow.getFrame()
+		Beat.setUserDefault("frame", frame)
+		Beat.end()
+	})
+	htmlWindow.title = "Index Cards"
+
+	const frame = Beat.getUserDefault("frame")
+	if (frame) htmlWindow.setFrame(frame.x, frame.y, frame.width, frame.height);
+
+	// Create cards after 200 ms to let the window load
+	Beat.timer(0.2, function () { createCards(Beat.outline()) }, false)
+
+	// Listen to outline changes
+	Beat.onOutlineChange(function (...outline) {
+		createCards(outline)
+	})
+
+	// Listen to scene index changes
+	Beat.onSceneIndexUpdate(function (index) {
+		htmlWindow.runJS("select("+index+")")
+	})
+}
+
+// Begin
+init()
+
+function createCards(scenes) {
+	// Create card data
+	cards = []
+	let lines = Beat.lines()
+	let loc = Beat.selectedRange().location
+
+	for (let i=0; i<scenes.length; i++) {
+		let scene = scenes[i]
+
+		let type = scene.line.typeAsString()
+		if (type == "Synopsis" || (type == "Section" && scene.sectionDepth > 3)) continue;
+
+		let selected = false
+		if (loc >= scene.sceneStart && loc <= scene.sceneStart + scene.sceneLength) selected = true
+
+		let card = {
+			sceneNumber: scene.sceneNumber,
+			name: scene.stringForDisplay,
+			color: scene.color.toLowerCase(),
+			snippet: snippet(scene),
+			type: scene.typeAsString().toLowerCase(),
+			sceneIndex: i,
+			selected: selected,
+			position: scene.sceneStart,
+			lineIndex: lines.indexOf(scene.line),
+			omitted: scene.omitted,
+			depth: scene.sectionDepth
+		}
+		cards.push(card)
+	}
+	
+	let json = JSON.stringify(cards)
+	htmlWindow.runJS("createCards(" + json + ", true)")
+}
+
+function snippet(scene) {
+	let lines = Beat.linesForScene(scene)
+	if (!lines.length) return "";
+
+	for (let line of lines) {
+		let type = line.typeAsString()
+		if (type == "Empty") continue;
+
+		if (type == "Synopse" || line.note) {
+			return line.textContent()
+		}
+		else if (type == "Action") return line.stripFormatting()
+	}
+
+	return ""
+}
+
+Beat.custom = {
+	setColor: function (sceneIndex, color) {
+		let scene = Beat.outline()[sceneIndex]
+		if (!scene) return;
+
+		Beat.setColorForScene(color, scene)
+	},
+	goToScene: function (sceneIndex) {
+		let scene = Beat.outline()[sceneIndex]
+		if (!scene) return;
+		
+		Beat.setSelectedRange(scene.line.textRange.location, scene.line.textRange.length)
+		Beat.scrollToScene(scene)
+		Beat.focusEditor()
+	}
+}

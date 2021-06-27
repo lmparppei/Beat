@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatAnalysisPanel : NSWindowController <WKScriptMessageHandler, WKNavigationDelegate>
 @property (weak) id<BeatAnalysisDelegate> delegate;
-- (instancetype)initWithParser:(ContinousFountainParser*)parser delegate:(id<BeatAnalysisDelegate>)delegate;
+- (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatAnalysisDelegate>)delegate;
 @end
 
 NS_ASSUME_NONNULL_END

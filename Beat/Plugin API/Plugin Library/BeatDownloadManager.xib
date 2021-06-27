@@ -25,17 +25,16 @@
                 <rect key="frame" x="0.0" y="0.0" width="633" height="600"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <scrollView autohidesScrollers="YES" horizontalLineScroll="50" horizontalPageScroll="10" verticalLineScroll="50" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="ywC-g4-0Lj">
+                    <scrollView autohidesScrollers="YES" horizontalLineScroll="60" horizontalPageScroll="10" verticalLineScroll="60" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="ywC-g4-0Lj">
                         <rect key="frame" x="20" y="20" width="593" height="488"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                         <clipView key="contentView" id="sLE-gv-YTz">
                             <rect key="frame" x="1" y="1" width="591" height="486"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="48" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="7" outlineTableColumn="tZY-TM-rmK" id="Z5H-Jj-9ul">
+                                <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="60" usesAutomaticRowHeights="YES" viewBased="YES" outlineTableColumn="tZY-TM-rmK" id="Z5H-Jj-9ul">
                                     <rect key="frame" x="0.0" y="0.0" width="591" height="486"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                    <size key="intercellSpacing" width="0.0" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <tableViewGridLines key="gridStyleMask" horizontal="YES"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
@@ -53,11 +52,11 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="PluginCell" id="dGQ-gh-SEY" customClass="BDMCheckboxCell">
-                                                    <rect key="frame" x="0.0" y="1" width="588" height="48"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="588" height="70"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                                     <subviews>
                                                         <button verticalHuggingPriority="750" id="gKD-sT-bKd">
-                                                            <rect key="frame" x="7" y="23" width="22" height="18"/>
+                                                            <rect key="frame" x="9" y="44" width="22" height="18"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="JKq-CO-h6o">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -68,9 +67,9 @@
                                                             </connections>
                                                         </button>
                                                         <button verticalHuggingPriority="750" id="7AF-5y-VzM">
-                                                            <rect key="frame" x="502" y="17" width="78" height="27"/>
+                                                            <rect key="frame" x="502" y="38" width="78" height="27"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                                            <buttonCell key="cell" type="push" title="Download" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="kwM-aM-Yiz">
+                                                            <buttonCell key="cell" type="push" title="Download" bezelStyle="rounded" imagePosition="overlaps" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyUpOrDown" inset="2" id="kwM-aM-Yiz">
                                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                                 <font key="font" metaFont="smallSystem"/>
                                                             </buttonCell>
@@ -79,7 +78,7 @@
                                                             </connections>
                                                         </button>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="uri-ta-vEE">
-                                                            <rect key="frame" x="33" y="23" width="474" height="18"/>
+                                                            <rect key="frame" x="34" y="44" width="474" height="18"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Plugin Name" usesSingleLineMode="YES" id="AnX-6Q-1vO">
                                                                 <font key="font" metaFont="system"/>
@@ -88,9 +87,9 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="AvT-7T-yKR">
-                                                            <rect key="frame" x="33" y="5" width="544" height="17"/>
+                                                            <rect key="frame" x="34" y="29" width="544" height="13"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Plugin Name" usesSingleLineMode="YES" id="TEp-n2-RjF">
+                                                            <textFieldCell key="cell" title="Plugin Name" id="TEp-n2-RjF">
                                                                 <font key="font" metaFont="miniSystem"/>
                                                                 <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>

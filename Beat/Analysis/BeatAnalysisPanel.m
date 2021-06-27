@@ -8,17 +8,17 @@
 
 #import "BeatAnalysisPanel.h"
 #import "FountainAnalysis.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 
 @interface BeatAnalysisPanel ()
 @property (nonatomic) FountainAnalysis *analysis;
-@property (nonatomic) ContinousFountainParser *parser;
+@property (nonatomic) ContinuousFountainParser *parser;
 @property (weak) IBOutlet WKWebView *analysisView;
 @end
 
 @implementation BeatAnalysisPanel
 
-- (instancetype)initWithParser:(ContinousFountainParser*)parser delegate:(id<BeatAnalysisDelegate>)delegate {
+- (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatAnalysisDelegate>)delegate {
 	self = [super initWithWindowNibName:@"BeatAnalysisPanel" owner:self];
 	
 	self.delegate = delegate;

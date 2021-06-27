@@ -82,7 +82,7 @@
  */
 
 #import "BeatFDXExport.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
@@ -92,7 +92,7 @@
 static NSDictionary *fdxIds;
 
 @interface BeatFDXExport ()
-@property (nonatomic) ContinousFountainParser *parser;
+@property (nonatomic) ContinuousFountainParser *parser;
 @property (nonatomic) NSMutableString *result;
 @property (nonatomic) NSArray *preprocessedLines;
 
@@ -154,7 +154,7 @@ static NSDictionary *fdxIds;
 		};
 	});
 	
-	self.parser = [[ContinousFountainParser alloc] initWithString:string];
+	self.parser = [[ContinuousFountainParser alloc] initWithString:string];
 	
 	if (attrString) {
 		// Bake tags

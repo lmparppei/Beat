@@ -54,7 +54,39 @@ section {
 
 	/* padding: 2.5cm 2.5cm 2.5cm 3.9cm; */
 	page-break-after: always;
+	/*overflow: hidden;*/
+	/*position: relative;*/
 }
+
+/* Color-coded pages */
+
+section.revised {
+	-webkit-print-color-adjust: exact !important;
+	
+	border-right-width: 6px;
+	border-right-style: solid;
+
+}
+
+/*
+.revised.red .header-top {
+	background-color: rgba(255,25,0,0.1) !important;
+}
+*/
+
+.revised.red {
+	border-color: rgba(255,25,0,0.2);
+}
+section.cyan {
+	border-color: rgba(0,25,255,.2);
+}
+section.pink {
+	border-color: rgba(150,0,20,.2);
+}
+section.green {
+	border-color: rgba(0,255,0,.2);
+}
+
 p {
 	position: relative;
 	margin: 1em auto 0em 0;
@@ -259,7 +291,8 @@ hr {
 	margin-top: 0;
 }
 .dual-dialogue .parenthetical {
-	padding-left: 40px;
+	padding-left: 35px;
+	width: 100%;
 }
 .dual-dialogue .more {
 	text-align: center;

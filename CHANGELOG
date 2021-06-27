@@ -1,9 +1,19 @@
 # Changelog
 
+## Beat 1.87.*
+
+A catatrophic version with multiple changes to Plugin API, exporting and stuff. Some changes include:
+
+* Fixes to exporting overlapping formatting (ie. bold-italic etc.)
+* Text input fixes
+* Performance optimizations
+* `BeatExportSettings` class, which could potentially make exports cleaner and easier, as long as I have the time to clean up my clunky previous code.
+
+
 ## Beat 1.86
 
 * Plugins can now be left running in the background
-/Users/lmp/Koodaus/Beat 1.0b/CHANGELOG
+
 
 ## Beat 1.85.1
 

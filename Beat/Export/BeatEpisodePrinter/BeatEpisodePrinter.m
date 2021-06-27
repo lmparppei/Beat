@@ -8,15 +8,20 @@
 
 #import "BeatEpisodePrinter.h"
 #import "NSMutableArray+MoveItem.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "BeatHTMLScript.h"
 #import "BeatDocumentSettings.h"
 #import "BeatPaperSizing.h"
 #import "PrintView.h"
+#import "BeatRevisionTracking.h"
+#import "BeatRevisionItem.h"
+#import "BeatExportSettings.h"
 #import <Cocoa/Cocoa.h>
 
 @interface BeatEpisodePrinter ()
 @property (weak) IBOutlet NSTableView *table;
+@property (weak) IBOutlet NSTextField *headerText;
+
 @property (nonatomic) NSMutableArray<NSURL*> *urls;
 @property (nonatomic) NSDocument *doc; // Faux document for paper sizing info
 @property (nonatomic) PrintView *printView;
@@ -279,8 +284,20 @@
 	BeatDocumentSettings *settings = [[BeatDocumentSettings alloc] init];
 	[settings readSettingsAndReturnRange:text];
 	
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] staticParsingWithString:text settings:settings];
-	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:[parser scriptForPrinting] document:_doc printSceneNumbers:YES];
+	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] staticParsingWithString:text settings:settings];
+	
+	// Bake revision data into the document
+	NSDictionary *revisions = [settings get:DocSettingRevisions];
+	if (revisions.count) [BeatRevisionTracking bakeRevisionsIntoLines:parser.lines revisions:revisions string:text parser:parser];
+
+	// Set header if available. And replace any < characters.
+	NSString *header = @"";
+	if (self.headerText.stringValue.length) header = [self.headerText.stringValue stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
+	
+	BeatExportSettings *exportSettings = [BeatExportSettings operation:ForPrint document:_doc header:header printSceneNumbers:YES revisionColor:@"" coloredPages:NO];
+	
+	NSDictionary *script = [parser scriptForPrinting];
+	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initWithScript:script settings:exportSettings];
 	
 	return htmlScript.content;
 }
@@ -291,7 +308,7 @@
 	[alert setMessageText:title];
 	[alert setInformativeText:content];
 	[alert setAlertStyle:NSAlertStyleWarning];
-	//[alert beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:@selector(alertDidEnd:returnCode:contextInfo:) contextInfo:nil];
+	
 	[alert runModal];
 }
 

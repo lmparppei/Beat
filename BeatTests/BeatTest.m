@@ -10,7 +10,7 @@
 
 #import "BeatTest.h"
 
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "Line.h"
 #import "BeatHTMLScript.h"
 #import "BeatScriptParser.h"

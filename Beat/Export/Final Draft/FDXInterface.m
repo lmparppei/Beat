@@ -19,14 +19,14 @@
 
 
 #import "FDXInterface.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "Line.h"
 
 @implementation FDXInterface
 
 + (NSString*)fdxFromString:(NSString*)string tags:(NSArray*)tags
 {
-	ContinousFountainParser* parser = [[ContinousFountainParser alloc] initWithString:string];
+	ContinuousFountainParser* parser = [[ContinuousFountainParser alloc] initWithString:string];
 	if ([parser.lines count] == 0) {
 		return @"";
 	}

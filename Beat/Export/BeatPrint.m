@@ -42,11 +42,15 @@
 @property (weak) IBOutlet NSButton* pdfButton;
 @property (weak) IBOutlet NSTextField* title;
 @property (weak) IBOutlet NSTextField* headerText;
+@property (weak) IBOutlet NSPopUpButton *revisedPageColorMenu;
+@property (weak) IBOutlet NSButton *colorCodePages;
 
 @property (nonatomic) NSString *compareWith;
 
 @property (nonatomic) BeatPaperSize paperSize;
 @property (nonatomic) PrintView *printView;
+
+@property (nonatomic) bool automaticPreview;
 @end
 
 @implementation BeatPrint
@@ -104,21 +108,27 @@
 	if (_headerText.stringValue.length > 0) _header = _headerText.stringValue;
 	
 	//NSString *oldScript = [NSString stringWithContentsOfURL:_compareWith encoding:NSUTF8StringEncoding error:nil];
-	self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint compareWith:_compareWith];
+	//self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint compareWith:_compareWith];
+	self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
+
 	[self.window endSheet:_panel];
 }
 - (IBAction)pdf:(id)sender {
 	// Set header
 	if (_headerText.stringValue.length > 0) _header = _headerText.stringValue;
 	
-	self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPDF compareWith:_compareWith];
+	//self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPDF compareWith:_compareWith];
+	self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
 	[self.window endSheet:_panel];
 }
 
 - (void)loadPreview {
 	// Update PDF preview
+	BeatExportSettings *settings = [self exportSettings];
+	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
-		self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPreview compareWith:self.compareWith delegate:self];
+		//self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPreview compareWith:self.compareWith delegate:self];
+		self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPreview settings:settings delegate:self];
 	});
 }
 
@@ -169,10 +179,37 @@
 	[self loadPreview];
 }
 
+- (IBAction)toggleColorCodePages:(id)sender {
+	NSButton *checkbox = sender;
+	if (checkbox.state == NSOnState) [_document setColorCodePages:YES];
+	else [_document setColorCodePages:NO];
+
+	[self loadPreview];
+}
+- (IBAction)setRevisedPageColor:(id)sender {
+	NSPopUpButton *menu = sender;
+	NSString *color = menu.selectedItem.title.lowercaseString;
+	
+	[_document setRevisedPageColor:color];
+	[self loadPreview];
+}
+
 
 - (void)didFinishPreviewAt:(NSURL *)url {
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
 	[_pdfView setDocument:doc];
+}
+
+- (BeatExportSettings*)exportSettings {
+	bool coloredPages = NO;
+	if (_colorCodePages.state == NSOnState) coloredPages = YES;
+	
+	NSString *revisionColor = @"";
+	if (coloredPages) revisionColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
+	
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:(self.headerText.stringValue) ? self.headerText.stringValue : @""  printSceneNumbers:self.document.printSceneNumbers revisionColor:revisionColor coloredPages:coloredPages];
+	
+	return settings;
 }
 
 

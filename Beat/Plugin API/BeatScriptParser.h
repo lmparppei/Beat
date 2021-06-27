@@ -8,7 +8,7 @@
 
 #import "BeatPluginManager.h"
 #import <Foundation/Foundation.h>
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "BeatTagging.h"
 #import "TagDefinition.h"
 #import "BeatPluginWindow.h"
@@ -64,6 +64,7 @@
 - (void)dispatch:(JSValue*)callback;
 - (void)dispatch_sync:(JSValue*)callback;
 - (void)focusEditor;
+- (ContinuousFountainParser*)parser:(NSString*)string;
 
 - (FountainPaginator*)paginator:(NSArray*)lines;
 
@@ -77,6 +78,7 @@ JSExportAs(dropdownPrompt, - (NSString*)dropdownPrompt:(NSString*)prompt withInf
 JSExportAs(setUserDefault, - (void)setUserDefault:(NSString*)settingName setting:(id)value);
 JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
 JSExportAs(openFile, - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback);
+JSExportAs(openFiles, - (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback);
 JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
 JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)content);
 JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
@@ -87,7 +89,7 @@ JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(Outline
 
 // Interfacing with the document
 @protocol BeatScriptingDelegate <NSObject>
-@property (strong, nonatomic) ContinousFountainParser *parser;
+@property (strong, nonatomic) ContinuousFountainParser *parser;
 @property (weak, readonly) NSWindow *thisWindow;
 @property (readonly) BeatTagging *tagging;
 @property (readonly) NSPrintInfo *printInfo;

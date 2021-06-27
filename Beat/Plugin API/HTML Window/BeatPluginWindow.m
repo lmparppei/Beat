@@ -18,7 +18,7 @@
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreNonretained defer:NO];
-	self.level = NSDockWindowLevel;
+	self.level = NSModalPanelWindowLevel;
 	self.delegate = parser;
 	self.releasedWhenClosed = YES;
 	

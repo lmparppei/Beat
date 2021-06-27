@@ -42,6 +42,11 @@ typedef enum : NSUInteger {
 @property (readonly) NSString* color;
 @property (readonly) NSRange range;
 @property (readonly) NSRange textRange;
+@property (readonly) bool omitIn;
+@property (readonly) bool omitOut;
+@property (readonly) bool omitted;
+@property (readonly) bool note;
+@property (readonly) bool centered;
 @property (strong, nonatomic, readonly) NSString* string;
 
 - (NSString*)cleanedString;
@@ -155,6 +160,7 @@ typedef enum : NSUInteger {
 - (NSDictionary*)forSerialization;
 
 // For comparing with another version
+// (Is this still used?)
 @property bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
 

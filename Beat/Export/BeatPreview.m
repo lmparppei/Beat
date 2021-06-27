@@ -20,11 +20,12 @@
 
 #import "BeatPreview.h"
 #import "Line.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "OutlineScene.h"
 #import "BeatHTMLScript.h"
 #import "BeatDocumentSettings.h"
 #import "BeatRevisionTracking.h"
+#import "BeatExportSettings.h"
 
 @interface BeatPreview ()
 @property (nonatomic, weak) NSDocument *document;
@@ -48,19 +49,19 @@
 	return @"";
 }
 - (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType {
-	ContinousFountainParser *parser;
+	ContinuousFountainParser *parser;
 
 	if (_delegate) {
 		// This is probably a normal parser, because a delegate is present
 		// Parse script
-		parser = [[ContinousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate];
+		parser = [[ContinuousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate];
 		
 		// Bake revision attributes
 		NSAttributedString *attrStr = self.delegate.attrTextCache;
 		[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
 	} else {
 		// This is probably a QuickLook preview
-		parser = [[ContinousFountainParser alloc] initWithString:rawScript];
+		parser = [[ContinuousFountainParser alloc] initWithString:rawScript];
 	}
 	
 	// Create a script dict required by the HTML module
@@ -71,6 +72,7 @@
 		return html.html;
 	} else {
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPreview:script document:_document scene:_delegate.currentScene.sceneNumber printSceneNumbers:_delegate.showSceneNumberLabels];
+		
 		return html.html;
 	}
 }

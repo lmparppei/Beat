@@ -42,6 +42,7 @@
 	
 	self.pluginView.dataSource = self.pluginManager;
 	
+	
 	[self.pluginManager updateAvailablePlugins];
 	[self.pluginManager getPluginLibraryWithCallback:^{
 		// Reload again when external data has been loaded

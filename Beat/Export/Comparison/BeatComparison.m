@@ -40,7 +40,7 @@
 #import "BeatComparison.h"
 #import "DiffMatchPatch.h"
 
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 
 @implementation BeatComparison
 

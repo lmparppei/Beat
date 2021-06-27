@@ -10,7 +10,7 @@
 #import "DynamicColor.h"
 #import "BeatColors.h"
 #import "BeatTextView.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 
 @class BeatTag;
 
@@ -30,7 +30,7 @@ typedef enum : NSInteger {
 } BeatTagType;
 
 @protocol BeatTaggingDelegate <NSObject>
-@property (readonly, weak) ContinousFountainParser *parser;
+@property (readonly, weak) ContinuousFountainParser *parser;
 @property (readonly, weak) NSTextView *textView;
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type;

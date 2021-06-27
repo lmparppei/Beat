@@ -27,7 +27,7 @@
 #import "DynamicColor.h"
 #import "Line.h"
 #import "ScrollView.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "FountainPaginator.h"
 #import "BeatColors.h"
 #import "ThemeManager.h"
@@ -925,10 +925,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)updateSceneTextLabelsFrom:(NSInteger)changedIndex {
 	[_sections removeAllObjects];
 	
-	ContinousFountainParser *parser = self.editorDelegate.parser;
+	ContinuousFountainParser *parser = self.editorDelegate.parser;
 	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor;
 	
-	//[parser createOutline];
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
 	
 	NSInteger index = 0;
@@ -1183,7 +1182,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 - (void) createAllLabels {
-	ContinousFountainParser *parser = self.editorDelegate.parser;
+	ContinuousFountainParser *parser = self.editorDelegate.parser;
 	
 	for (OutlineScene * scene in parser.outline) {
 		[self createLabel:scene];

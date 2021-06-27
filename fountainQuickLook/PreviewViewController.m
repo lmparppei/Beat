@@ -11,7 +11,7 @@
 
 #import "PreviewViewController.h"
 
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "BeatPreview.h"
 
 @interface PreviewViewController () <QLPreviewingController>

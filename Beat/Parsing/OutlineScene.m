@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "OutlineScene.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 
 @implementation OutlineScene
 
@@ -39,16 +39,18 @@
 // Plugin compatibility
 - (NSDictionary*)forSerialization {
 	return @{
-		@"string": self.string,
+		// String values have to be guarded so we don't try to put nil into NSDictionary
+		@"string": (self.string.length) ? self.string : @"",
+		@"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
+		@"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
+		@"storylines": (self.storylines) ? self.storylines : @[],
+		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber : @"",
+		@"color": (self.color) ? self.color : @"",
+
+		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
 		@"sceneStart": @(self.sceneStart),
 		@"sceneLength": @(self.sceneLength),
 		@"omitted": @(self.omitted),
-		@"typeAsString": self.line.typeAsString,
-		@"stringForDisplay": self.stringForDisplay,
-		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
-		@"storylines": self.storylines,
-		@"sceneNumber": self.sceneNumber,
-		@"color": self.color,
 		@"line": self.line.forSerialization
 	};
 }

@@ -22,6 +22,8 @@
 @property (nonatomic) NSString * _Nullable info;
 @property (nonatomic) NSString * _Nullable copyright;
 @property (nonatomic) NSString * _Nullable version;
+@property (nonatomic) CGFloat rowHeight;
 - (void)downloadComplete;
+-(void)setSize;
 @end
 

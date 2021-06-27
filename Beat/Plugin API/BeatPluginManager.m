@@ -90,18 +90,18 @@
 
 - (void)updateAvailablePluginsWithExternalLibrary {
 	for (NSString *pluginName in self.externalLibrary.allKeys) {
-		NSDictionary *plugin = self.externalLibrary[pluginName];
+		NSDictionary *remotePlugin = self.externalLibrary[pluginName];
 		
 		if (_availablePlugins[pluginName]) {
 			// The plugin is already available, check for updates
 			NSMutableDictionary *existingPlugin = [NSMutableDictionary dictionaryWithDictionary:_availablePlugins[pluginName]];
-			
-			if ([self isNewerVersion:plugin[@"version"] old:existingPlugin[@"version"]]) {
-				existingPlugin[@"updateAvailable"] = plugin[@"version"];
+			NSLog(@"%@ / %@ – %@", remotePlugin[@"version"], existingPlugin[@"version"], remotePlugin[@"name"]);
+			if ([self isNewerVersion:remotePlugin[@"version"] old:existingPlugin[@"version"]]) {
+				existingPlugin[@"updateAvailable"] = remotePlugin[@"version"];
 			}
 			[_availablePlugins setValue:existingPlugin forKey:pluginName];
 		} else {
-			[_availablePlugins setValue:plugin forKey:pluginName];
+			[_availablePlugins setValue:remotePlugin forKey:pluginName];
 		}
 	}
 }
@@ -409,7 +409,8 @@
 	cell.info = pluginInfo[@"description"];
 	cell.copyright = pluginInfo[@"copyright"];
 	cell.version = pluginInfo[@"version"];
-	
+	[cell setSize];
+
 	return cell;
 }
 
@@ -428,6 +429,31 @@
 -(BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
 	return YES;
 }
+
+/*
+ 
+-(CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item {
+	
+	I don't get it.
+	 
+	BDMCheckboxCell *cell;
+	
+	NSInteger row = [outlineView rowForItem:item];
+	if (row != NSNotFound && row < outlineView.numberOfRows) {
+		cell = (BDMCheckboxCell*)[self outlineView:outlineView viewForTableColumn:nil item:item];
+		[cell setSize];
+		
+		if (cell.rowHeight > 0) {
+			return cell.rowHeight;
+		}
+		else return 50;
+		
+	}
+	else {
+		return 50;
+	}
+}
+ */
 
 #pragma mark - File Access
 

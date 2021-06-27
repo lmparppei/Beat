@@ -28,6 +28,8 @@ NSString * const DocSettingRevisionColor = @"Revision Color";
 NSString * const DocSettingSceneNumberStart = @"Scene Numbering Starts From";
 NSString * const DocSettingTagDefinitions = @"TagDefinitions";
 NSString * const DocSettingTags = @"Tags";
+NSString * const DocSettingRevisedPageColor = @"Revised Page Color";
+NSString * const DocSettingColorCodePages = @"Color-code Pages";
 
 -(id)init
 {

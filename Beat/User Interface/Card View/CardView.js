@@ -5,6 +5,26 @@ let dragDrop
 if (standalone) dragDrop = false
 else dragDrop = true
 
+let colorValues = {
+	red: [239,0,73],
+	blue: [0,129,239],
+	green: [0,223,121],
+	pink: [250,111,193],
+	magenta: [236,0,140],
+	orange: [255, 161, 13],
+	brown: [169, 106, 7],
+	gray: [150, 150, 150],
+	purple: [181, 32, 218],
+	yellow: [255, 162, 0],
+	cyan: [7, 189, 236],
+	teal: [12, 224, 227]
+}
+let textColors = {
+	white: "white",
+	black: "#222"
+}
+let blackTextFor = ["yellow", "orange", "pink", "green"]
+
 var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
 
 var scenes,
@@ -17,9 +37,23 @@ var drake
 var debugElement = document.getElementById('debug')
 var wait
 
+// Polyfill, just in case
+if (!Object.entries) {
+  Object.entries = function( obj ){
+	var ownProps = Object.keys( obj ),
+		i = ownProps.length,
+		resArray = new Array(i); // preallocate the Array
+	while (i--)
+	  resArray[i] = [ownProps[i], obj[ownProps[i]]];
+
+	return resArray;
+  };
+}
+
 function init () {
 	scenes = []
 	
+	createStyles()
 	container = document.getElementById('container')
 	wait = document.getElementById('wait')
 
@@ -194,17 +228,18 @@ function getPosition(e) {
 }
 
 
-/* ##### CONTEXT MENU ##### */
+/* ##### CARDS ##### */
+
 function setupCards () {
 	let cards = document.querySelectorAll('.card');
 	cards.forEach(function (card) {
 		card.onclick = function () { contextMenu.close(); }
 		card.ondblclick = function () {
-			var position = this.getAttribute('pos');
-			var index = this.getAttribute('sceneIndex');
-			//window.webkit.messageHandlers.cardClick.postMessage(position);
+			let index = this.getAttribute('sceneIndex');
 
-			if (!standalone) window.webkit.messageHandlers.cardClick.postMessage(index);
+			if (!standalone) {
+				window.webkit.messageHandlers.cardClick.postMessage(index);
+			}
 			else Beat.call("Beat.custom.goToScene(" + index + ")")
 		}
 				  
@@ -280,7 +315,7 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		// Create HTML for different card types
 		if (card.type == 'section') {
 			if (card.depth == 1) {
-				html += "<h2 class='depth-" + card.depth + style.color + "' sceneIndex='" + card.sceneIndex + "'>" + card.name + style.color + "</h2>";
+				html += "<h2 class='depth-" + card.depth + style.color + "' sceneIndex='" + card.sceneIndex + "'>" + card.name + "</h2>";
 			} else {
 				if (card.depth > 3) depth = 3;
 				let sectionCardClass = " section-" + card.depth;
@@ -319,7 +354,7 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	// If the view is already visible, don't scroll to selected scene
 	if (selected && !alreadyVisible) {
 		let el = document.querySelector("div[sceneIndex='" + selected + "']");
-		el.scrollIntoView({ inline: "center", block: "center" });
+		el.scrollIntoViewIfNeeded(true);
 	}
 
 	// Enable editing if we were waiting for something
@@ -355,6 +390,30 @@ function addCustomColor(color) {
 	document.head.appendChild(style)
 
 	return customStyleName
+}
+
+function createStyles() {
+	let template = "h2.#name# { color: rgb(#values#); }\n" +
+		".card.#name#, .#name#.selected .sceneNumber, .color.#name#, .sectionCard.#name# { background-color: rgb(#values#) !important; color: #textColor# !important; }\n" +
+		".card.#name# p { color: #textColor# !important; }\n"
+	
+	let styles = ""
+
+	for (const [colorName, value] of Object.entries(colorValues)) {
+		let colorValue = value.join(",")
+		let textColor = textColors.white
+		if (blackTextFor.includes(colorName)) textColor = textColors.black
+
+		let style = template.replaceAll("#name#", colorName)
+		style = style.replaceAll("#values#", colorValue)
+		style = style.replaceAll("#textColor#", textColor)
+
+		styles += style
+	}
+	
+	let element = document.createElement('style')
+	element.innerHTML = styles
+	document.head.appendChild(element)
 }
 
 init();

@@ -120,6 +120,8 @@
 @property (nonatomic) bool print;
 @property (nonatomic) BeatHTMLOperation operation;
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) bool coloredPages;
+@property (nonatomic) NSString* revisionColor;
 @end
 
 @implementation BeatHTMLScript
@@ -157,6 +159,31 @@
 	return self;
 }
 
+// The new, modernized way
+- (id)initWithScript:(NSDictionary*)script settings:(BeatExportSettings*)settings {
+	self = [super init];
+	
+	if (settings) {
+		_script = script[@"script"];
+		_titlePage = script[@"title page"];
+		
+		_document = settings.document;
+		
+		_header = settings.header;
+		_currentScene = settings.currentScene;
+		_operation = settings.operation;
+		_printSceneNumbers = settings.printSceneNumbers;
+		
+		_revisionColor = settings.revisionColor;
+		_coloredPages = settings.coloredPages;
+		
+		// Simple boolean for later checks
+		if (_operation == ForPrint) _print = YES;
+	}
+	
+	return self;
+}
+
 #pragma mark - HTML content
 
 - (NSInteger)pages {
@@ -164,7 +191,7 @@
 }
 
 - (NSString *)html
-{
+{	
 	NSMutableString *html = [NSMutableString string];
 	[html appendString:[self htmlHeader]];
 	[html appendString:[self content]];
@@ -215,7 +242,7 @@
 	[html appendString:@"<article>\n"];
 	if (_operation == ForPreview) [html appendString:[self previewUI]];	// Adds the 'close' button
 	[html appendString:self.bodyText];
-	[html appendString:@"</section>\n</article>\n"]; // Close section, meaning a page
+	[html appendString:@"</article>\n"];
 	
 	return html;
 }
@@ -389,9 +416,24 @@
 	
 	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) { @autoreleasepool {
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
+		
+		NSString *pageClass = @"";
+		
+		// If we are coloring the revised pages, check for any changed lines here
+		if (_coloredPages && _revisionColor.length && self.operation == ForPrint) {
+			bool revised = NO;
+			for (Line* line in elementsOnPage) {
+				if (line.changed) {
+					revised = YES; break;
+				}
+			}
+			
+			if (revised) pageClass = [NSString stringWithFormat:@"revised %@", _revisionColor];
+		}
+		
         
-        // Print what page we're on -- used for page jumper
-		[body appendFormat:@"<section>"];
+        // Begin page
+		[body appendFormat:@"<section class='%@'>", pageClass];
 		
 		int index = (int)pageIndex+1;
 		int elementCount = 0;
@@ -546,7 +588,7 @@
 			
 			elementCount++;
 		} }
-
+		
 		[body appendFormat:@"</section>"];
     }
 	

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "Line.h"
 
 @interface FountainAnalysis : NSObject

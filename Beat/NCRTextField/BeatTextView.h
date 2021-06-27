@@ -9,7 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "ThemeManager.h"
 #import "BeatTagging.h"
 
@@ -35,7 +35,7 @@ typedef enum : NSInteger {
 } BeatEditorMode;
 
 @property (nonatomic) CGFloat magnification;
-@property (nonatomic, readonly) ContinousFountainParser *parser;
+@property (nonatomic, readonly) ContinuousFountainParser *parser;
 @property (readonly) NSFont *courier;
 @property (readonly) NSFont *boldCourier;
 @property (readonly) NSFont *italicCourier;

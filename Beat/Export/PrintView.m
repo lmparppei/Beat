@@ -27,11 +27,13 @@
 #import "BeatHTMLScript.h"
 #import "Document.h"
 #import "BeatRevisionTracking.h"
+#import "BeatExportSettings.h"
 
 @interface PrintView () <WebFrameLoadDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
 @property (weak, nonatomic) Document *document;
 @property (weak, nonatomic) WebView *webView;
+@property (nonatomic) BeatExportSettings *settings;
 @property bool pdf;
 @property bool preview;
 
@@ -43,10 +45,38 @@
 
 @implementation PrintView
 
-// We know the HTML already (probably we're printing a series)
+- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate {
+	// New, modern way
+	self = [super init];
+		
+	if (self) {
+		if (delegate) self.delegate = delegate;
+		
+		if (mode == BeatToPDF) self.pdf = YES;
+		else if (mode == BeatToPreview) {
+			self.preview = YES; // Preview returns a temporary pdf file to the delegate
+			self.pdf = YES;
+		}
+
+		_finishedWebViews = 0;
+		_document = document;
+		_settings = settings;
+		
+		// NOTE: Lines can be nil, in which case this returns the text from delegate/document
+		// Later we bake revisions into the text
+		NSString *rawText = [self getRawTextFor:lines];
+		NSString *htmlString = [self createPrint:rawText document:document settings:_settings];
+		
+		[self printHTML:htmlString];
+	}
+	
+	return self;
+}
+
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript {
 	return [self initWithDocument:document script:lines operation:mode compareWith:oldScript delegate:nil];
 }
+// We know the HTML already (probably we're printing a series)
 - (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode {
 	return [self initWithHTML:htmlString document:document operation:mode completion:nil];
 }
@@ -116,19 +146,27 @@
 	[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
 }
 
-- (NSString*) createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript header:(NSString*)header {
+- (NSString*)createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript header:(NSString*)header {
+	return [self createPrint:rawText document:document compareWith:oldScript header:header settings:nil];
+}
+- (NSString*)createPrint:(NSString*)rawText document:(Document*)document settings:(BeatExportSettings*)settings {
+	return [self createPrint:rawText document:document compareWith:nil header:nil settings:settings];
+}
+- (NSString*)createPrint:(NSString*)rawText document:(Document*)document compareWith:(NSString*)oldScript header:(NSString*)header settings:(BeatExportSettings*)settings {
 	// Parse the input again
-	ContinousFountainParser *parser = [[ContinousFountainParser alloc] initWithString:rawText delegate:document];
+	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:rawText delegate:document];
 
 	// Track revisions
 	[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser];
 	
+	/*
 	// See if we want to compare it with something
 	// BeatComparison marks the Line objects as changed
 	if (oldScript) {
 		BeatComparison *comparison = [[BeatComparison alloc] init];
 		[comparison compare:parser.lines with:oldScript];
 	}
+    */
 	
 	// Set script data
 	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -136,10 +174,19 @@
 		@"title page": parser.titlePage
 	}];
 
-	// Set header if sent
-	if (header.length) [script setValue:header forKey:@"header"];
+	// If we don't have settings, make them
+	if (!settings) {
+		settings = [BeatExportSettings operation:ForPrint document:document header:(header) ? header : @"" printSceneNumbers:document.printSceneNumbers];
+	}
 	
-	BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPrint:script document:document printSceneNumbers:document.printSceneNumbers];
+	// Set header if sent
+	//if (header.length) [script setValue:header forKey:@"header"];
+	if (header.length) settings.header = header;
+	
+	//BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPrint:script document:document printSceneNumbers:document.printSceneNumbers];
+	
+	
+	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script settings:settings];
 	return html.html;
 }
 
@@ -190,14 +237,14 @@
 	// Display sheet for documents, normal modal for other cases
 	if (self.document.windowControllers.count) {
 		[saveDialog beginSheetModalForWindow:self.document.windowControllers[0].window completionHandler:^(NSInteger result) {
-			if (result == NSFileHandlingPanelOKButton) [self exportPDftoURL:saveDialog.URL];
+			if (result == NSFileHandlingPanelOKButton) [self exportPDFtoURL:saveDialog.URL];
 		}];
 	} else {
 		NSInteger result = [saveDialog runModal];
-		if (result == NSFileHandlingPanelOKButton) [self exportPDftoURL:saveDialog.URL];
+		if (result == NSFileHandlingPanelOKButton) [self exportPDFtoURL:saveDialog.URL];
 	}
 }
-- (void)exportPDftoURL:(NSURL*)url {
+- (void)exportPDFtoURL:(NSURL*)url {
 	NSPrintInfo *printInfo = [self.document.printInfo copy];
 	
 	[printInfo.dictionary addEntriesFromDictionary:@{
@@ -206,7 +253,7 @@
 													 }];
 
 	NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
-	
+		
 	printOperation.showsPrintPanel = NO;
 	printOperation.showsProgressPanel = YES;
 	

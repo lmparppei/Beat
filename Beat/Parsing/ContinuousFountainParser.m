@@ -14,46 +14,18 @@
  
  Main differences include:
  - double-checking for all-caps actions mistaken for character cues
- - convoluted recursive logic for lookback / lookforward (should be dismantled)
+ - delegation with the editor
  - title page parsing (mostly for preview & export purposes)
- - new data structure called OutlineScene, which contains scene name and length, as well as a reference to original line
+ - new data structure called OutlineScene, which contains scene name and length, as well as a reference to the original line
  - overall tweaks to parsing here and there
  - parsing large chunks of text is optimized 	
+  
  
- The file and class are still called Continous, instead of Continuous, because
- I haven't had the time and willpower to fix Hendrik's small typo.
- Also, singular synopsis lines are called 'synopse' for some reason. :-)
- 
- 
- Future Considerations:
- 
- DELEGATION
- 
- For now, correcting some faulty interpretation of the Fountain format
- (like all-caps action lines mistaken for character cues) is done in the
- Document class. This should be fixed in order to be able to make porting
- Beat to iOS easier.
- 
- Document should act as a delegate for the parser, and there is already one
- implementation in action, changing heading into action. In the same way, we
- should tell the UI to change the character cue line into action, rather than
- the UI making the decision itself and parsing the changes recursively, as
- it happens now.
- 
- This is a big, big structural change for my skill level, and requires a lot
- of work and time, which I don't have right now. However, implementing delegation
- would make the Countinuous Parser more reliable and the code much easier to debug.
- 
- Lauri-Matti Parppei
- 2020
- 
- 
- Update 2020-11-07: Delegation is now implemented
  Update 2021-something: COVID is still on, and this class has been improved a lot.
  
  */
 
-#import "ContinousFountainParser.h"
+#import "ContinuousFountainParser.h"
 #import "RegExCategories.h"
 #import "Line.h"
 #import "NSString+Whitespace.h"
@@ -61,7 +33,7 @@
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
 
-@interface  ContinousFountainParser ()
+@interface  ContinuousFountainParser ()
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) Line *editedLine;
 @property (nonatomic) Line *lastEditedLine;
@@ -76,7 +48,7 @@
 
 @end
 
-@implementation ContinousFountainParser
+@implementation ContinuousFountainParser
 
 static NSDictionary* patterns;
 
@@ -84,13 +56,13 @@ static NSDictionary* patterns;
 
 #pragma mark Bulk Parsing
 
-- (ContinousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
+- (ContinuousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
 	return [self initWithString:string delegate:nil settings:settings];
 }
-- (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate {
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate {
 	return [self initWithString:string delegate:delegate settings:nil];
 }
-- (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings {
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings {
 	self = [super init];
 	
 	if (self) {
@@ -115,7 +87,7 @@ static NSDictionary* patterns;
 	
 	return self;
 }
-- (ContinousFountainParser*)initWithString:(NSString*)string
+- (ContinuousFountainParser*)initWithString:(NSString*)string
 {
 	return [self initWithString:string delegate:nil];
 }
@@ -676,6 +648,9 @@ static NSDictionary* patterns;
 
 - (void)parseTypeAndFormattingForLine:(Line*)line atIndex:(NSUInteger)index
 {
+	// Type and formatting are parsed by iterating through character arrays.
+	// Using regexes would be much easier, but also about 10 times more costly in CPU time.
+	
     line.type = [self parseLineType:line atIndex:index];
 	
     NSUInteger length = line.string.length;

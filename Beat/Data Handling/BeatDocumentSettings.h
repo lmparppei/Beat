@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak) id<BeatEditorDelegate> delegate;
 
 extern NSString * const DocSettingRevisions;
+extern NSString * const DocSettingRevisedPageColor;
+extern NSString * const DocSettingColorCodePages;
 extern NSString * const DocSettingRevisionColor;
 extern NSString * const DocSettingSceneNumberStart;
 extern NSString * const DocSettingTags;

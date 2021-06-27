@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "Line.h"
 #import "OutlineScene.h"
 #import "BeatDocumentSettings.h"
@@ -28,11 +29,20 @@
 @protocol ContinuousFountainParserExports <JSExport>
 @property (nonatomic, readonly) NSMutableArray *lines;
 @property (nonatomic, readonly) NSMutableArray *outline;
+@property (nonatomic, readonly) NSMutableArray *scenes;
 @property (nonatomic, readonly) NSMutableArray *titlePage;
+@property (nonatomic, readonly) NSMutableArray *storylines;
+@property (nonatomic, readonly) bool hasTitlePage;
 - (void)parseText:(NSString*)text;
+- (Line*)lineAtPosition:(NSInteger)position;
+- (NSArray*)linesInRange:(NSRange)range;
+- (NSString*)cleanedString;
+- (NSDictionary*)scriptForPrinting;
+- (NSString*)scriptForSaving;
+- (NSInteger)numberOfScenes;
 @end
 
-@interface ContinousFountainParser : NSObject <ContinuousFountainParserExports>
+@interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports>
 // A new structure to avoid having thousands of loopbacks & recursion.
 // Slowly being implemented into the code.
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
@@ -48,9 +58,9 @@
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
 
 // Initialization for both CONTINUOUS and STATIC parsing
-- (ContinousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;
-- (ContinousFountainParser*)initWithString:(NSString*)string;
-- (ContinousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;
+- (ContinuousFountainParser*)initWithString:(NSString*)string;
+- (ContinuousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
 
 //Parsing methods
 - (void)parseText:(NSString*)text;

@@ -10,7 +10,7 @@
 
 @implementation OutlineExtractor
 
-+ (NSString*)outlineFromParse:(ContinousFountainParser*)parser
++ (NSString*)outlineFromParse:(ContinuousFountainParser*)parser
 {
     NSMutableString* result = [[NSMutableString alloc] init];
     
