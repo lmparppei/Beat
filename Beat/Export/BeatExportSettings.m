@@ -37,6 +37,7 @@
 		_revisionColor = (revisionColor) ? revisionColor : @"";
 		_coloredPages = coloredPages;
 		_currentScene = scene;
+		_oldScript = oldScript;
 	}
 	return self;
 }

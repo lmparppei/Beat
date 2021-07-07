@@ -843,6 +843,13 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return self.delegate.parser.outline;
 }
 
+- (Line*)lineAtIndex:(NSInteger)index {
+	return [_delegate.parser lineAtPosition:index];
+}
+- (OutlineScene*)sceneAtIndex:(NSInteger)index {
+	return [_delegate.parser sceneAtIndex:index];
+}
+
 - (NSString*)scenesAsJSON {
 	[self.delegate.parser createOutline];
 	
@@ -918,6 +925,11 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 - (Line*)currentLine {
 	return _delegate.currentLine;
+}
+
+- (ContinuousFountainParser*)currentParser {
+	if (!_currentParser) _currentParser = _delegate.parser; 
+	return _currentParser;
 }
 
 - (ContinuousFountainParser*)parser:(NSString*)string {

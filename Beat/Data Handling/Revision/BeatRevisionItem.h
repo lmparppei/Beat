@@ -6,7 +6,18 @@
 //  Copyright © 2021 KAPITAN!. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <TargetConditionals.h>
+#if !TARGET_OS_IOS
+    #import <Cocoa/Cocoa.h>
+#else
+    #import <UIKit/UIKit.h>
+#endif
+
+#if TARGET_OS_IOS
+    #define BeatColor UIColor
+#else
+    #define BeatColor NSColor
+#endif
 
 typedef enum : NSInteger {
 	RevisionNone = 0,
@@ -22,7 +33,7 @@ typedef enum : NSInteger {
 + (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color;
 + (BeatRevisionItem*)type:(RevisionType)type;
 + (NSArray<NSString*>*)availableColors;
-- (NSColor*)backgroundColor;
+- (BeatColor*)backgroundColor;
 - (NSString*)key;
 - (NSString*)description;
 @end

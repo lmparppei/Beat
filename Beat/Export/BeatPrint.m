@@ -27,6 +27,8 @@
 #define PDF_BUTTON_WHEN_PRINTING @"PDF"
 #define PDF_BUTTON @"Create PDF..."
 
+#define ADVANCED_PRINT_OPTIONS_KEY @"Show Advanced Print Options"
+
 #define PAPER_A4 595, 842
 #define PAPER_USLETTER 612, 792
 
@@ -44,6 +46,10 @@
 @property (weak) IBOutlet NSTextField* headerText;
 @property (weak) IBOutlet NSPopUpButton *revisedPageColorMenu;
 @property (weak) IBOutlet NSButton *colorCodePages;
+@property (weak) IBOutlet NSStackView *advancedOptions;
+@property (weak) IBOutlet NSButton* advancedOptionsButton;
+@property (weak) IBOutlet NSLayoutConstraint *advancedOptionsHeightConstraint;
+@property (nonatomic) IBInspectable CGFloat advancedOptionsHeight;
 
 @property (nonatomic) NSString *compareWith;
 
@@ -85,6 +91,10 @@
 - (void)openPanel {
 	// Remove the previous preview
 	[_pdfView setDocument:nil];
+	
+	bool showAdvancedOptions = [NSUserDefaults.standardUserDefaults valueForKey:ADVANCED_PRINT_OPTIONS_KEY];
+	if (showAdvancedOptions) _advancedOptionsButton.state = NSOnState; else _advancedOptionsButton.state = NSOffState;
+	[self toggleAdvancedOptions:_advancedOptionsButton];
 	
 	// Get setting from document
 	if (_document.printSceneNumbers) [_printSceneNumbers setState:NSOnState];
@@ -171,6 +181,32 @@
 	[self loadPreview];
 }
 
+- (IBAction)toggleAdvancedOptions:(id)sender {
+	NSButton *button = sender;
+	if (button.state == NSOffState) {
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
+			context.duration = 0.25;
+			context.allowsImplicitAnimation = YES;
+			
+			[_advancedOptions.arrangedSubviews.lastObject setHidden:YES];
+			[self.window.contentView layoutSubtreeIfNeeded];
+		}];
+		
+		[NSUserDefaults.standardUserDefaults setBool:NO forKey:ADVANCED_PRINT_OPTIONS_KEY];
+	} else {
+		[NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
+			context.duration = 0.25;
+			context.allowsImplicitAnimation = YES;
+			
+			[_advancedOptions.arrangedSubviews.lastObject setHidden:NO];
+			[self.window.contentView layoutSubtreeIfNeeded];
+		}];
+		
+		[NSUserDefaults.standardUserDefaults setBool:YES forKey:ADVANCED_PRINT_OPTIONS_KEY];
+	}
+	
+}
+
 - (IBAction)toggleColorCodePages:(id)sender {
 	NSButton *checkbox = sender;
 	if (checkbox.state == NSOnState) [_document setColorCodePages:YES];
@@ -203,7 +239,8 @@
 	// Set header
 	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:header  printSceneNumbers:self.document.printSceneNumbers revisionColor:revisionColor coloredPages:coloredPages];
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:header  printSceneNumbers:self.document.printSceneNumbers revisionColor:revisionColor coloredPages:coloredPages compareWith:_compareWith];
+	
 	
 	return settings;
 }

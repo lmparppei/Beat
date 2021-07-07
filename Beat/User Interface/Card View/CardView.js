@@ -24,6 +24,7 @@ let textColors = {
 	black: "#222"
 }
 let blackTextFor = ["yellow", "orange", "pink", "green"];
+let customStyles = 0;
 
 var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
 
@@ -37,7 +38,7 @@ var drake;
 var debugElement;
 var wait;
 
-// Polyfill, just in case
+// Polyfills, just in case
 if (!Object.entries) {
   Object.entries = function( obj ){
 	var ownProps = Object.keys( obj ),
@@ -48,6 +49,17 @@ if (!Object.entries) {
 
 	return resArray;
   };
+}
+if (!String.prototype.replaceAll) {
+	String.prototype.replaceAll = function(str, newStr){
+		// If a regex pattern
+		if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
+			return this.replace(str, newStr);
+		}
+
+		// If a string
+		return this.replace(new RegExp(str, 'g'), newStr);
+	};
 }
 
 
@@ -264,11 +276,11 @@ function filter(element) {
 
 // This refreshes the cards
 function createCards (cards, alreadyVisible = false, changedIndex = -1) {
+	customStyles = 0;
 	let html = "<section id='cardContainer'>";
 	let index = -1;
 
 	let selected = null;
-	let customStyles = 0
 
 	scenes = [];
 	debugElement.innerHTML = '';
@@ -383,14 +395,23 @@ function select(index) {
 
 function addCustomColor(color) {
 	// Adds a custom hex class into styles
-	var customColor = String(card.color).substring(1);
-	var style = document.createElement('style');
+	var customColor = String(color).substring(1);
+	//var style = document.createElement('style');
 	
 	customStyles++;
-	var customStyleName = "customStyle" + customStyles.count;
 	
-	style.innerHTML = ".card."+customStyleName+", ."+customStyleName+".selected .sceneNumber { background-color: #"+customColor+"; color: white; } .card."+customStyleName+" p { color: #000; }";
-	document.head.appendChild(style);
+	let style = document.getElementById('customStyle-' + customStyles)
+	if (!style) {
+		style = document.createElement('style');
+		style.setAttribute('id', 'customStyle-' + customStyles);
+		
+		document.head.appendChild(style);
+	}
+	
+	var customStyleName = "customStyle-" + customStyles;
+	
+	style.innerHTML = "h2."+customStyleName+" { color: #"+customColor+"; }\n" +
+		".card."+customStyleName+", ."+customStyleName+".selected .sceneNumber, .color."+customStyleName+", .sectionCard."+customStyleName+" { background-color: #"+customColor+" !important; color: white; } .card."+customStyleName+" p { color: #000; }";
 
 	return customStyleName;
 }
@@ -417,6 +438,13 @@ function createStyles() {
 	let element = document.createElement('style');
 	element.innerHTML = styles;
 	document.head.appendChild(element);
+}
+
+function changeZoom(el) {
+	let zoomLevel = el.value
+	let zoomClass = 'zoomLevel-' + zoomLevel
+	
+	document.body.className = zoomClass
 }
 
 init();

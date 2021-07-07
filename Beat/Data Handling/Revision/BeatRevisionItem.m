@@ -8,13 +8,17 @@
 
 #import "BeatRevisionItem.h"
 #import "BeatColors.h"
-//#import "ThemeManager.h"
-#import <Cocoa/Cocoa.h>
+
+#if !TARGET_OS_IOS
+    #import <Cocoa/Cocoa.h>
+#else
+    #import <UIKit/UIKit.h>
+#endif
 
 @interface BeatRevisionItem ()
 //@property (weak) ThemeManager *themeManager;
-@property (nonatomic, weak) NSColor *color;
-@property (nonatomic, weak) NSColor *backgroundColor;
+@property (nonatomic, weak) BeatColor *color;
+@property (nonatomic, weak) BeatColor *backgroundColor;
 @end
 
 @implementation BeatRevisionItem
@@ -56,14 +60,14 @@
 	return [NSString stringWithFormat:@"%@", self.key];
 }
 
-- (NSColor*)color {
+- (BeatColor*)color {
 	if (_color) return _color;
 	if (self.colorName.length) _color = [BeatColors color:self.colorName];
 	if (!_color) _color = [BeatColors color:@"cyan"];
 	return _color;
 }
 
-- (NSColor*)backgroundColor {
+- (BeatColor*)backgroundColor {
 	if (_backgroundColor) return _backgroundColor;
 	_backgroundColor = [[self color] colorWithAlphaComponent:0.2];
 	return _backgroundColor;

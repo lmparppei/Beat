@@ -241,15 +241,15 @@ section {
 	/* .card, .synopse { width: calc(100% / 2 - 1.4rem); } */
 	.cardContainer, .sectionCardContainer { width: calc(100% / 2);	}
 }
-@media screen and (min-width: 1350px) {
+@media screen and (min-width: 1250px) {
 	/* .card, .synopse { width: calc(100% / 5 - 1.4rem); } */
 	.cardContainer, .sectionCardContainer { width: calc(100% / 5);	}
 }
-@media screen and (min-width: 1800px) {
+@media screen and (min-width: 1500px) {
 	/* .card, .synopse { width: calc(100% / 6 - 1.4rem); } */
 	.cardContainer, .sectionCardContainer { width: calc(100% / 6);	}
 }
-@media screen and (min-width: 2200px) {
+@media screen and (min-width: 1800px) {
 	/* .card, .synopse { width: calc(100% / 6 - 1.4rem); } */
 	.cardContainer, .sectionCardContainer { width: calc(100% / 7);	}
 }

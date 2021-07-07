@@ -77,6 +77,9 @@
 				<input type='checkbox' name='lowerSections' onclick='filter(this)' checked> ## \
 				<input type='checkbox' name='lowestSections' onclick='filter(this)' checked> ### \
 			 </div>\
+			 <!--<div id='zoom'>\
+				<input type='range' min='1' max='3' value='3' onchange='changeZoom(this)'>\
+			 </div>-->\
 			 <div id='close' class='ui'>✕</div><div id='debug'></div>\
 			</div>";
 }

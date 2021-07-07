@@ -16,7 +16,7 @@
 #import "Line.h"
 #import "RegExCategories.h"
 #import "FountainRegexes.h"
-#import "DiffMatchPatch.h"
+//#import "DiffMatchPatch.h"
 
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
 

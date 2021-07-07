@@ -6,6 +6,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IOS
+    #import <UIKit/UIKit.h>
+#endif
 
 @class OutlineScene;
 
@@ -28,6 +33,10 @@
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 - (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
 - (bool)caretAtEnd;
+
+#if TARGET_OS_IOS
+    - (CGFloat)fontSize;
+#endif
 
 @end
 

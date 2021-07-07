@@ -15,7 +15,12 @@
 #import "BeatRevisionTracking.h"
 #import "BeatRevisionItem.h"
 #import "Line.h"
-#import <Cocoa/Cocoa.h>
+
+#if !TARGET_OS_IOS
+    #import <Cocoa/Cocoa.h>
+#else
+    #import <UIKit/UIKit.h>
+#endif
 
 @implementation BeatRevisionTracking
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser

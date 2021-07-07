@@ -21,6 +21,18 @@ Lauri-Matti
 
 */
 
+if (!String.prototype.replaceAll) {
+	String.prototype.replaceAll = function(str, newStr){
+		// If a regex pattern
+		if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
+			return this.replace(str, newStr);
+		}
+
+		// If a string
+		return this.replace(new RegExp(str, 'g'), newStr);
+	};
+}
+
 let htmlWindow
 let cards = []
 
@@ -69,7 +81,9 @@ function createCards(scenes) {
 
 	for (let i=0; i<scenes.length; i++) {
 		let scene = scenes[i]
-
+		
+		if (scene.omitted) continue;
+		
 		let type = scene.line.typeAsString()
 		if (type == "Synopsis" || (type == "Section" && scene.sectionDepth > 3)) continue;
 

@@ -21,6 +21,7 @@
 
 @protocol BeatScriptingExports <JSExport>
 @property (readonly) Line* currentLine;
+@property (weak, readonly) ContinuousFountainParser *currentParser;
 //@property (readonly) NSArray* scenes;
 //@property (readonly) NSArray* outline;
 
@@ -64,6 +65,7 @@
 - (void)dispatch:(JSValue*)callback;
 - (void)dispatch_sync:(JSValue*)callback;
 - (void)focusEditor;
+
 - (ContinuousFountainParser*)parser:(NSString*)string;
 
 - (FountainPaginator*)paginator:(NSArray*)lines;
@@ -115,6 +117,7 @@ JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(Outline
 
 @interface BeatScriptParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate>
 @property (weak) id<BeatScriptingDelegate> delegate;
+@property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
 
 - (void)runPlugin:(BeatPlugin*)plugin;

@@ -210,6 +210,23 @@ body > p:first-child {
 	content: '* * * * * * * * * * * * * * * * * * * * *';
 	overflow: hidden;
 }
+
+/*
+.changed::after {
+	position: absolute;
+	display: block;
+	
+	top: 0px;
+	right: -10px;
+	width: 1em;
+	height: 100%;
+	z-index: 999;
+	
+	content: '* * * * * * * * * * * * * * * * * * * * *';
+	overflow: hidden;
+}
+*/
+ 
 .dual-dialogue-right .changed::before {
 	left: auto;
 	right: -10px;

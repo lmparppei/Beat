@@ -1630,6 +1630,9 @@ and incomprehensible system of recursion.
 	return result;
 }
 
+- (Line*)lineAtIndex:(NSInteger)index {
+	return [self lineAtPosition:index];
+}
 - (Line*)lineAtPosition:(NSInteger)position {
 	for (Line* line in self.lines) {
 		if (position >= line.position && position < line.position + line.string.length + 1) return line;
@@ -1648,6 +1651,13 @@ and incomprehensible system of recursion.
 	}
 	
 	return lines;
+}
+
+- (OutlineScene*)sceneAtIndex:(NSInteger)index {
+	for (OutlineScene *scene in self.outline) {
+		if (NSLocationInRange(index, scene.range)) return scene;
+	}
+	return nil;
 }
 
 - (NSArray*)preprocessForPrinting {
