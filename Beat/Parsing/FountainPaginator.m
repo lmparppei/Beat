@@ -440,7 +440,7 @@
 			[tmpElements addObjectsFromArray:blck];
 			
 			
-			# pragma mark Break elements onto pages
+			#pragma mark Break elements onto pages
 			
 			// BREAKING ELEMENTS ONTO PAGES
 			// Figure out which element went overboard
@@ -884,7 +884,7 @@
 	// set up the layout manager
 	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
 	NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
 	NSTextContainer *textContainer = [[NSTextContainer alloc] init];
 	[textContainer setSize:CGSizeMake(maxWidth, MAXFLOAT)];
 #else

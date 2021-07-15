@@ -11,7 +11,7 @@
 #import "Line.h"
 #import "BeatPaperSizing.h"
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IOS
     #define BeatFont UIFont
 #else
     #define BeatFont NSFont

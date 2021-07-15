@@ -427,6 +427,11 @@
 {
     [self openURLInWebBrowser:@"https://github.com/lmparppei/beat/"];
 }
+- (IBAction)openDiscord:(id)sender
+{
+	[self openURLInWebBrowser:@"http://discord.gg/FPHjfH7ms3"];
+}
+
 
 - (void)openURLInWebBrowser:(NSString*)urlString
 {

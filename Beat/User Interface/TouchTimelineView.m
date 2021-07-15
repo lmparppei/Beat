@@ -60,7 +60,7 @@
      for (OutlineScene *scene in data) {
 		 NSMutableDictionary *item = [NSMutableDictionary dictionaryWithDictionary:@{
             @"name": scene.string,
-            @"length": [NSNumber numberWithInteger:scene.sceneLength],
+            @"length": [NSNumber numberWithInteger:scene.length],
             @"type": scene.line.typeAsString
 		 }];
 		 

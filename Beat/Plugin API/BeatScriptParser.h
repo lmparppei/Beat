@@ -22,6 +22,12 @@
 @protocol BeatScriptingExports <JSExport>
 @property (readonly) Line* currentLine;
 @property (weak, readonly) ContinuousFountainParser *currentParser;
+
+@property (nonatomic) bool onOutlineChangeDisabled;
+@property (nonatomic) bool onSelectionChangeDisabled;
+@property (nonatomic) bool onTextChangeDisabled;
+@property (nonatomic) bool onSceneIndexUpdateDisabled;
+
 //@property (readonly) NSArray* scenes;
 //@property (readonly) NSArray* outline;
 
@@ -96,6 +102,7 @@ JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(Outline
 @property (readonly) BeatTagging *tagging;
 @property (readonly) NSPrintInfo *printInfo;
 @property (readonly) Line* currentLine;
+
 - (void)registerPlugin:(id)parser;
 - (void)deregisterPlugin:(id)parser;
 - (NSRange)selectedRange;
@@ -119,6 +126,11 @@ JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(Outline
 @property (weak) id<BeatScriptingDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
+
+@property (nonatomic) bool onOutlineChangeDisabled;
+@property (nonatomic) bool onSelectionChangeDisabled;
+@property (nonatomic) bool onTextChangeDisabled;
+@property (nonatomic) bool onSceneIndexUpdateDisabled;
 
 - (void)runPlugin:(BeatPlugin*)plugin;
 - (void)log:(NSString*)string;

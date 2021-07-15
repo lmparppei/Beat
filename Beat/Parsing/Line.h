@@ -47,7 +47,8 @@ typedef enum : NSUInteger {
 @property (readonly) bool omitted;
 @property (readonly) bool note;
 @property (readonly) bool centered;
-@property (strong, nonatomic, readonly) NSString* string;
+@property (nonatomic, readonly) NSString* string;
+@property (nonatomic, readonly) NSInteger length;
 
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
@@ -93,8 +94,11 @@ typedef enum : NSUInteger {
 @property NSRange titleRange;
 @property NSRange sceneNumberRange;
 @property NSRange storylineRange;
+@property NSRange colorRange;
 
 @property NSMutableArray *tags;
+
+@property (nonatomic) NSInteger length;
 
 @property bool omitIn; //wether the line terminates an unfinished omit
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
@@ -112,7 +116,7 @@ typedef enum : NSUInteger {
 - (bool)note;
 - (bool)centered;
 - (NSRange)range;
-- (NSInteger)length;
+
 - (NSRange)textRange;
 - (NSRange)globalRangeToLocal:(NSRange)range;
 - (NSString*)textContent;

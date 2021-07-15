@@ -120,10 +120,10 @@ static NSDictionary* patterns;
 		}
 		
 		// Quick fix for recognizing split paragraphs
-		if (line.type == action &&
-			line.string.length > 0 &&
-			previousLine.type == action &&
-			previousLine.string.length > 0) line.isSplitParagraph = YES;
+        LineType currentType = line.type;
+        if (line.type == action || line.type == lyrics || line.type == transitionLine) {
+            if (previousLine.type == currentType && previousLine.string.length > 0) line.isSplitParagraph = YES;
+        }
 		
         //Add to lines array
         [self.lines addObject:line];
@@ -165,6 +165,8 @@ static NSDictionary* patterns;
 
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string
 {
+	if (range.location == NSNotFound) return; // This is for avoiding crashes when plugin developers are doing weird things
+	
 	_lastEditedLine = nil;
 	_editedIndex = -1;
 
@@ -1245,6 +1247,7 @@ and incomprehensible system of recursion.
 {
 	__block NSString *color = @"";
 	
+	line.colorRange = NSMakeRange(0, 0);
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSString * note = [line.string substringWithRange:range];
 
@@ -1252,10 +1255,14 @@ and incomprehensible system of recursion.
 		note =  [note substringWithRange:noteRange];
         
 		if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN] == true) {
-			if ([note length] > [@COLOR_PATTERN length] + 1) {
+			if (note.length > @COLOR_PATTERN.length + 1) {
 				NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];
-				color = [note substringWithRange:NSMakeRange(colorRange.length, [note length] - colorRange.length)];
-				color = [color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+				if (colorRange.length) {
+					color = [note substringWithRange:NSMakeRange(colorRange.length, [note length] - colorRange.length)];
+					color = [color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+					
+					line.colorRange = range;
+				}
 			}
 		}
 	}];
@@ -1404,7 +1411,6 @@ and incomprehensible system of recursion.
 			item.omitted = line.omitted;
 			item.line = line;
 			item.storylines = line.storylines;
-			item.color = line.color;
 			
 			if (!item.omitted) item.string = line.stripInvisible;
 			else item.string = line.stripNotes;
@@ -1464,7 +1470,7 @@ and incomprehensible system of recursion.
 			}
 			
 			// Get in / out points
-			item.sceneStart = line.position;
+			item.position = line.position;
 			
 			// If this scene is omited, we need to figure out where the omission starts from.
 			if (item.omitted) {
@@ -1478,11 +1484,11 @@ and incomprehensible system of recursion.
 					// b) Somewhere before there NEEDS to be a line which starts the omission
 					// c) I mean, if there is omission INSIDE omission, the user can/should blame themself?
 					if ([previous.string rangeOfString:@OMIT_OPEN_PATTERN].location != NSNotFound) {
-						item.sceneStart = previous.position;
+						item.position = previous.position;
 						
 						// Shorten the previous scene accordingly
 						if (previousScene) {
-							previousScene.sceneLength = item.sceneStart - previous.position;
+							previousScene.length = item.position - previous.position;
 						}
 						break;
 					// So, what did I say about blaming the user?
@@ -1492,7 +1498,7 @@ and incomprehensible system of recursion.
 					// but what does it count...
 						// the only thing that matters is how you walk through the fire
 					} else if (previous.type == heading) {
-						item.sceneStart = line.position;
+						item.position = line.position;
 						item.noOmitIn = YES;
 						if (previousScene) previousScene.noOmitOut = YES;
 					}
@@ -1508,15 +1514,15 @@ and incomprehensible system of recursion.
 						sceneBlock = previousScene;
 					} else {
 						// Act normally
-						previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
+						previousScene.length = item.position - previousScene.position;
 					}
 				} else {
 					if (sceneBlock) {
 						// Reset scene block
-						sceneBlock.sceneLength = item.sceneStart - sceneBlock.sceneStart;
+						sceneBlock.length = item.position - sceneBlock.position;
 						sceneBlock = nil;
 					} else {
-						previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
+						previousScene.length = item.position - previousScene.position;
 					}
 				}
 				
@@ -1541,7 +1547,7 @@ and incomprehensible system of recursion.
 	
 	OutlineScene *lastScene = _outline.lastObject;
 	Line *lastLine = _lines.lastObject;
-	lastScene.sceneLength = lastLine.position + lastLine.string.length - lastScene.sceneStart;
+	lastScene.length = lastLine.position + lastLine.string.length - lastScene.position;
 }
 
 - (BOOL)getAndResetChangeInOutline
@@ -1574,7 +1580,7 @@ and incomprehensible system of recursion.
 	NSMutableArray *lines = [NSMutableArray array];
 	
 	@try {
-		NSRange sceneRange = NSMakeRange(scene.sceneStart, scene.sceneLength);
+		NSRange sceneRange = NSMakeRange(scene.position, scene.length);
 		
 		for (Line* line in self.lines) {
 			if (NSLocationInRange(line.position, sceneRange)) [lines addObject:line];
@@ -1710,7 +1716,7 @@ and incomprehensible system of recursion.
 		// but is actually somewhat sensitive approach. That's why we join the lines into
 		// one element.
 		
-		if (line.type == action && line.isSplitParagraph && [lines indexOfObject:line] > 0) {
+		if (line.isSplitParagraph && [lines indexOfObject:line] > 0) {
 			Line *preceedingLine = [elements objectAtIndex:elements.count - 1];
 
 			[preceedingLine joinWithLine:line];

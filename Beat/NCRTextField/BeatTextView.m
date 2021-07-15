@@ -964,8 +964,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		label.frame = rect;
 		
 		if (scene.color.length) {
-			NSString *color = scene.color.lowercaseString;
-			[label setTextColor:[BeatColors color:color]];
+			NSString *colorName = scene.color.lowercaseString;
+			NSColor *color = [BeatColors color:colorName];
+			if (!color) color = ThemeManager.sharedManager.currentTextColor;
+			[label setTextColor:color];
 		} else {
 			[label setTextColor:textColor];
 		}

@@ -320,7 +320,7 @@
 		else if (scene.type == synopse) {
 			// There is a chance that the synopsis line describes the CONTENT OF A SCENE and not a story point.
 			// The parser already takes this into account, so we'll just check if it is within the ranges.
-			if (NSLocationInRange(scene.sceneStart, previousScene.range)) {
+			if (NSLocationInRange(scene.position, previousScene.range)) {
 				NSRect frame = item.frame;
 				frame.origin.x = previousItem.frame.origin.x;
 				item.frame = frame;

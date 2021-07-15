@@ -144,7 +144,7 @@
 			@"type": scene.line.typeAsString.lowercaseString,
 			@"sceneIndex": @([outline indexOfObject:scene]),
 			@"selected": [NSNumber numberWithBool:[self isSceneSelected:scene]],
-			@"position": [NSNumber numberWithInteger:scene.sceneStart],
+			@"position": [NSNumber numberWithInteger:scene.position],
 			@"lineIndex": [NSNumber numberWithInteger:[_delegate.lines indexOfObject:scene.line]],
 			@"omited": [NSNumber numberWithBool:scene.omitted],
 			@"depth": [NSNumber numberWithInteger:scene.sectionDepth]
@@ -160,7 +160,7 @@
 - (bool)isSceneSelected:(OutlineScene*)scene {
 	NSInteger position = self.delegate.selectedRange.location;
 	
-	if (position >= scene.sceneStart && position < scene.sceneStart + scene.sceneLength) return YES;
+	if (position >= scene.position && position < scene.position + scene.length) return YES;
 	else return NO;
 }
 

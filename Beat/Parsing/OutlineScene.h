@@ -20,8 +20,12 @@
 @property (nonatomic, readonly) NSString * stringForDisplay;
 @property (nonatomic, readonly) NSArray * storylines;
 @property (nonatomic, readonly) NSUInteger sceneStart;
-@property (nonatomic, readonly) NSUInteger sceneLength;
-@property (nonatomic, readonly) NSInteger sectionDepth;
+
+@property (nonatomic, readonly) NSUInteger position;
+@property (nonatomic, readonly) NSUInteger length;
+@property (nonatomic, readonly) NSUInteger sceneLength; // backwards compatibility
+@property (nonatomic, readonly) NSInteger sectionDepth; // backwards compatibility
+
 @property (nonatomic, readonly) bool omitted;
 @property (nonatomic, readonly) bool omited; // Legacy compatibility
 @property (nonatomic, readonly) NSMutableArray * characters;
@@ -35,10 +39,14 @@
 @property (strong, nonatomic) NSString * string;
 @property (nonatomic) LineType type;
 @property (nonatomic) NSString * sceneNumber;
-@property (nonatomic) NSString * color;
+@property (nonatomic, readonly) NSString * color;
 @property (nonatomic) NSArray * storylines;
-@property (nonatomic) NSUInteger sceneStart;
-@property (nonatomic) NSUInteger sceneLength;
+
+@property (nonatomic) NSUInteger position;
+@property (nonatomic) NSUInteger length;
+@property (nonatomic) NSUInteger sceneStart;  // backwards compatibility
+@property (nonatomic) NSUInteger sceneLength;  // backwards compatibilit
+
 @property (nonatomic) NSInteger sectionDepth;
 @property (nonatomic) NSMutableArray * characters;
 

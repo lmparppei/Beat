@@ -44,8 +44,10 @@ article {
 }
 section {
 	padding: 0 0 0 60px;
-	/*width: 465px;
-	*/
+	
+	/*width: 465px;*/
+	/*padding: 0 0 0 50px;
+	margin-right: 10px;*/
 	margin-right: auto;
 	margin-left: auto;
 	margin-bottom: 0;
@@ -225,7 +227,7 @@ body > p:first-child {
 	content: '* * * * * * * * * * * * * * * * * * * * *';
 	overflow: hidden;
 }
-*/
+ */
  
 .dual-dialogue-right .changed::before {
 	left: auto;

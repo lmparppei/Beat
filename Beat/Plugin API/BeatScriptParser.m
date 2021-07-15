@@ -31,6 +31,7 @@
 #import "BeatPluginWindow.h"
 #import <PDFKit/PDFKit.h>
 
+
 @interface BeatScriptParser ()
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
@@ -160,8 +161,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[_delegate registerPlugin:self];
 }
 - (void)update:(NSRange)range {
-	if (!_updateMethod) return;
-	[_updateMethod callWithArguments:@[@(range.location), @(range.length)]];
+	if (!_updateMethod || [_updateMethod isNull]) return;
+	if (!self.onTextChangeDisabled) [_updateMethod callWithArguments:@[@(range.location), @(range.length)]];
 }
 
 // Selection change update
@@ -177,8 +178,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[_delegate registerPlugin:self];
 }
 - (void)updateSelection:(NSRange)selection {
-	if (!_updateSelectionMethod) return;
-	[_updateSelectionMethod callWithArguments:@[@(selection.location), @(selection.length)]];
+	if (!_updateSelectionMethod || [_updateSelectionMethod isNull]) return;
+	if (!self.onSelectionChangeDisabled) [_updateSelectionMethod callWithArguments:@[@(selection.location), @(selection.length)]];
 }
 
 // Outline change update
@@ -194,8 +195,11 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[_delegate registerPlugin:self];
 }
 - (void)updateOutline:(NSArray*)outline {
-	if (!_updateOutlineMethod) return;
-	[_updateOutlineMethod callWithArguments:self.delegate.parser.outline];
+	if (!_updateOutlineMethod || [_updateOutlineMethod isNull]) {
+		return;
+	}
+	
+	if (!self.onOutlineChangeDisabled) [_updateOutlineMethod callWithArguments:self.delegate.parser.outline];
 }
 
 - (void)onSceneIndexUpdate:(JSValue*)updateMethod {
@@ -210,7 +214,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[_delegate registerPlugin:self];
 }
 - (void)updateSceneIndex:(NSInteger)sceneIndex {
-	[_updateSceneMethod callWithArguments:@[@(sceneIndex)]];
+	if (!self.onSceneIndexUpdateDisabled) [_updateSceneMethod callWithArguments:@[@(sceneIndex)]];
 }
 
 #pragma mark - Multithreading
@@ -819,7 +823,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	OutlineScene *scene = (OutlineScene*)sceneId;
 	
 	@try {
-		NSRange sceneRange = NSMakeRange(scene.sceneStart, scene.sceneLength);
+		NSRange sceneRange = NSMakeRange(scene.position, scene.length);
 		
 		for (Line* line in self.delegate.parser.lines) {
 			if (NSLocationInRange(line.position, sceneRange)) [lines addObject:line];
@@ -979,3 +983,4 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
  to believe that the garden is dying
  
  */
+

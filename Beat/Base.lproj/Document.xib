@@ -801,71 +801,6 @@
             </connections>
             <point key="canvasLocation" x="270.5" y="154.5"/>
         </window>
-        <menu id="Tqc-M2-IZ5">
-            <items>
-                <menuItem title="Color" enabled="NO" id="Afp-fN-Tl7">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem title="None" image="Color_None" id="LgM-Xa-gig">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setNoneColor:" target="-2" id="gLL-Ll-1H5"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Red" image="Color_Red" id="2lb-aO-myG">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setRedColor:" target="-2" id="6cU-J0-LDI"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Blue" image="Color_Blue" id="EzC-hd-0ex">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setBlueColor:" target="-2" id="kvW-rf-sh8"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Green" image="Color_Green" id="tLV-bS-9E1">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setGreenColor:" target="-2" id="MN3-m1-eoh"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Pink" image="Color_Pink" id="Zu3-Fk-iUY">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setPinkColor:" target="-2" id="IB6-Zr-wD3"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Brown" image="Color_Brown" id="Uq4-Ad-AU8">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setBrownColor:" target="-2" id="0QB-n0-UJS"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Cyan" image="Color_Cyan" id="aEe-qy-xc9">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setCyanColor:" target="-2" id="fr5-nb-VYC"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Orange" image="Color_Orange" id="PtV-0l-a6v">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setOrangeColor:" target="-2" id="tLw-Fq-VhB"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Magenta" image="Color_Magenta" id="KUg-Bv-fNP">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="setMagentaColor:" target="-2" id="Po4-aa-ftF"/>
-                    </connections>
-                </menuItem>
-            </items>
-            <connections>
-                <outlet property="delegate" destination="-2" id="QLP-DS-JdJ"/>
-            </connections>
-            <point key="canvasLocation" x="-571" y="88"/>
-        </menu>
         <userDefaultsController representsSharedInstance="YES" id="ho8-td-WxP"/>
         <customObject id="rsQ-wl-KkE" customClass="BeatTimer">
             <connections>
@@ -1453,6 +1388,71 @@ Gw
             </view>
             <point key="canvasLocation" x="3175.5" y="-339"/>
         </window>
+        <menu id="Tqc-M2-IZ5" userLabel="Outline Context Menu">
+            <items>
+                <menuItem title="Color" enabled="NO" id="Afp-fN-Tl7">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="None" image="Color_None" id="LgM-Xa-gig">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="0km-xA-isH"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Red" image="Color_Red" id="2lb-aO-myG">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="3EU-2z-nJW"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Blue" image="Color_Blue" id="EzC-hd-0ex">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="Tgm-R1-5nz"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Green" image="Color_Green" id="tLV-bS-9E1">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="nB2-Sd-Csd"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Pink" image="Color_Pink" id="Zu3-Fk-iUY">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="7TF-nf-pXW"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Brown" image="Color_Brown" id="Uq4-Ad-AU8">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="kQz-iP-7xB"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Cyan" image="Color_Cyan" id="aEe-qy-xc9">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="hYd-rb-hdL"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Orange" image="Color_Orange" id="PtV-0l-a6v">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="Ysw-nz-RrY"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Magenta" image="Color_Magenta" id="KUg-Bv-fNP">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="setSceneColor:" target="-2" id="ON0-nL-umH"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <connections>
+                <outlet property="delegate" destination="-2" id="QLP-DS-JdJ"/>
+            </connections>
+            <point key="canvasLocation" x="-571" y="88"/>
+        </menu>
         <menu id="4zR-Lb-D4A" userLabel="Timeline Context Menu">
             <items>
                 <menuItem title="None" image="Color_None" id="X1d-1b-z0n">

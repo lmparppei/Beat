@@ -1,5 +1,13 @@
 # Changelog
 
+## Beat 1.89.1
+
+I've forgotten most of the changes, but:
+* A lot of plugin API fixes and expansions
+* Overlapping formatting fixes
+* Some parsing issues fixed
+
+
 ## Beat 1.89
 
 * Color-code revised pages
@@ -11,7 +19,7 @@
 
 ## Beat 1.87.*
 
-A catatrophic version with multiple changes to Plugin API, exporting and stuff. Some changes include:
+A catastrophic version with multiple changes to Plugin API, exporting and stuff. Some changes include:
 
 * Fixes to exporting overlapping formatting (ie. bold-italic etc.)
 * Text input fixes

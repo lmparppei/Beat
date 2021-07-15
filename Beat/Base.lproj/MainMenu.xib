@@ -809,38 +809,39 @@ DQ
                                     <action selector="showManual:" target="-1" id="QTL-lA-eLK"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Beat Tutorial" id="ZsI-w6-Fec">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="showReference:" target="vEX-2F-hcj" id="qax-XK-0yN"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Patch Notes" id="jMf-Y4-igF">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showPatchNotes:" target="vEX-2F-hcj" id="m7r-sq-wm8"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Beat Tutorial" id="ZsI-w6-Fec">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showReference:" target="vEX-2F-hcj" id="qax-XK-0yN"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="eyc-hG-S9v"/>
                             <menuItem title="Support Beat" id="oNz-fC-tr3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showSupport:" target="vEX-2F-hcj" id="UCi-i7-OQb"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Discord Community" id="u5m-eu-948">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openDiscord:" target="vEX-2F-hcj" id="RD2-y2-c71"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="gy8-Q9-fNE"/>
-                            <menuItem title="How to write Fountain (Online)" id="FKE-Sm-Kum">
+                            <menuItem title="How to write Fountain (Online)" hidden="YES" id="FKE-Sm-Kum">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showFountainSyntax:" target="vEX-2F-hcj" id="6sK-eZ-AKi"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Fountain website (Online)" id="oSB-uU-Wcb">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="showFountainWebsite:" target="vEX-2F-hcj" id="TIG-tL-lWJ"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="gZd-FK-fD7"/>
+                            <menuItem isSeparatorItem="YES" hidden="YES" id="gZd-FK-fD7"/>
                             <menuItem title="Beat Website (Online)" id="guF-zs-YEi">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -851,6 +852,12 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showBeatSource:" target="vEX-2F-hcj" id="COh-bM-V1f"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Fountain website (Online)" id="oSB-uU-Wcb">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showFountainWebsite:" target="vEX-2F-hcj" id="TIG-tL-lWJ"/>
                                 </connections>
                             </menuItem>
                         </items>

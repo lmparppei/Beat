@@ -1108,11 +1108,11 @@
 			_currentScene = scene;
 			return scene;
 		}
-		else if (position >= lastPosition && position < scene.sceneStart && lastScene) {
+		else if (position >= lastPosition && position < scene.position && lastScene) {
 			return lastScene;
 		}
 		
-		lastPosition = scene.sceneStart + scene.sceneLength;
+		lastPosition = scene.position + scene.length;
 		lastScene = scene;
 	}
 
@@ -3893,7 +3893,7 @@ static NSString *revisionAttribute = @"Revision";
 	if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
 	
 	// On to the very dangerous stuff :-) fuck me :----)
-	NSRange range = NSMakeRange(sceneToMove.sceneStart, sceneToMove.sceneLength);
+	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
 	
 	
 	
@@ -3915,7 +3915,7 @@ static NSString *revisionAttribute = @"Revision";
 	//[self moveString:textToMove withRange:range newRange:newRange];
 	
 	if (!moveToEnd) {
-		[self moveStringFrom:range to:sceneAfter.sceneStart];
+		[self moveStringFrom:range to:sceneAfter.position];
 	} else {
 		[self moveStringFrom:range to:self.getText.length];
 	}
@@ -3998,7 +3998,7 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-- (IBAction) pickColor:(id)sender {
+- (IBAction)pickColor:(id)sender {
 	NSString *pickedColor;
 
 	for (NSString *color in [self colors]) {
@@ -4016,72 +4016,61 @@ static NSString *revisionAttribute = @"Revision";
 
 }
 
-- (IBAction) setNoneColor:(id) sender { [self setColor:@"NONE"]; }
-- (IBAction) setRedColor:(id) sender { [self setColor:@"RED"]; }
-- (IBAction) setBlueColor:(id) sender { [self setColor:@"BLUE"]; }
-- (IBAction) setGreenColor:(id) sender { [self setColor:@"GREEN"]; }
-- (IBAction) setCyanColor:(id) sender { [self setColor:@"CYAN"]; }
-- (IBAction) setOrangeColor:(id) sender { [self setColor:@"ORANGE"]; }
-- (IBAction) setPinkColor:(id) sender { [self setColor:@"PINK"]; }
-- (IBAction) setGrayColor:(id) sender { [self setColor:@"GRAY"]; }
-- (IBAction) setMagentaColor:(id) sender { [self setColor:@"MAGENTA"]; }
-- (IBAction) setBrownColor:(id) sender { [self setColor:@"BROWN"]; }
-
-- (void)setColor:(NSString *) color {
-	id item = nil;
+- (IBAction)setSceneColor:(id)sender {
+	NSMenuItem *item = sender;
+	NSString *colorName = item.title.uppercaseString;
 	
-	if ([self.outlineView clickedRow] > -1) {
-		item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
-	} else if (_timeline.clickedItem) {
-		item = _timeline.clickedItem;
-	} else if (_timelineSelection > -1) {
-		item = [[self getOutlineItems] objectAtIndex:_timelineSelection];
+	if (self.outlineView.clickedRow > -1) {
+		id selectedScene = nil;
+		selectedScene = [self.outlineView itemAtRow:self.outlineView.clickedRow];
+		
+		if (selectedScene != nil && [selectedScene isKindOfClass:[OutlineScene class]]) {
+			OutlineScene *scene = selectedScene;
+			[self setColor:colorName forScene:scene];
+			if (_timelineClickedScene >= 0) [self reloadTimeline];
+			if (self.timelineBar.visible) [self reloadTouchTimeline];
+		}
+		
+		_timeline.clickedItem = nil;
+		_timelineClickedScene = -1;
 	}
-	
-	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
-		OutlineScene *scene = item;
-		[self setColor:color forScene:scene];
-		if (_timelineClickedScene >= 0) [self reloadTimeline];
-		if (self.timelineBar.visible) [self reloadTouchTimeline];
-	}
-	
-	_timeline.clickedItem = nil;
-	_timelineClickedScene = -1;
 }
-- (void)setColor:(NSString *) color forScene:(OutlineScene *) scene {
-	color = [color uppercaseString];
 
-	if (![scene.color isEqualToString:@""] && scene.color != nil) {
-		// Scene already has a color
+- (void)setColor:(NSString *)color forScene:(OutlineScene *) scene {
+	if (!scene) return;;
+	
+	color = color.uppercaseString;
+		
+	if (![scene.color isEqualToString:@""] && scene.color != nil &&
+		scene.line.colorRange.length > 0 && scene.line.colorRange.location != NSNotFound) {
+		// Scene already has a color (a very robust check, just in case)
 
 		// If color is set to none, we'll remove the previous string.
 		// If the color is changed, let's replace the string.
-		if ([[color lowercaseString] isEqualToString:@"none"]) {
-			NSString *oldColorString = [NSString stringWithFormat:@"[[COLOR %@]]", [scene.color uppercaseString]];
-			NSRange innerRange = [scene.line.string rangeOfString:oldColorString];
-			NSRange range = NSMakeRange([[scene line] position] + innerRange.location, innerRange.length);
-			
+		if ([color.lowercaseString isEqualToString:@"none"]) {
 			_outlineEdit = YES;
-			[self removeString:oldColorString atIndex:range.location];
+
+			NSRange localRange = scene.line.colorRange;
+			NSRange colorRange = [self globalRangeFromLocalRange:&localRange inLineAtPosition:scene.line.position];
+			[self removeRange:colorRange];
+			
 			_outlineEdit = NO;
 			
 		} else {
-			NSString * oldColor = [NSString stringWithFormat:@"COLOR %@", scene.color];
-			NSString * newColor = [NSString stringWithFormat:@"COLOR %@", color];
-			NSRange innerRange = [scene.line.string rangeOfString:oldColor];
-			NSRange range = NSMakeRange([[scene line] position] + innerRange.location, innerRange.length);
-			
+			NSRange localRange = scene.line.colorRange;
+			NSRange colorRange = [self globalRangeFromLocalRange:&localRange inLineAtPosition:scene.line.position];
+			NSString * newColor = [NSString stringWithFormat:@"[[COLOR %@]]", color];
+						
 			_outlineEdit = YES;
-			[self replaceString:oldColor withString:newColor atIndex:range.location];
+			[self replaceRange:colorRange withString:newColor];
 			_outlineEdit = NO;
 		}
 	} else {
 		// No color yet
-		
 		if ([[color lowercaseString] isEqualToString:@"none"]) return; // Do nothing if set to none
 		
 		NSString * colorString = [NSString stringWithFormat:@" [[COLOR %@]]", color];
-		NSUInteger position = [[scene line] position] + [[scene line].string length];
+		NSUInteger position = scene.line.position + scene.line.string.length;
 		
 		_outlineEdit = YES;
 		[self addString:colorString atIndex:position];
@@ -4549,7 +4538,7 @@ static NSString *revisionAttribute = @"Revision";
 			NSLog(@" ... ignore");
 			continue;
 		}
-		NSRange sceneRange = NSMakeRange([scene sceneStart], [scene sceneLength]);
+		NSRange sceneRange = NSMakeRange([scene position], [scene length]);
 
 		// Add scene ranges to TextView's masks
 		NSValue* rangeValue = [NSValue valueWithRange:sceneRange];
