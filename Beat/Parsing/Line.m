@@ -49,7 +49,7 @@
 		_string = string;
 		_type = type;
 		_position = position;
-		_parser = parser;
+		//_parser = parser; // UNCOMMENT WHEN NEEDED
 	}
 	return self;
 }
@@ -637,13 +637,12 @@
 		if (range.length > 0) [attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
 	
-	NSAttributedString *first = [[NSMutableAttributedString alloc] initWithString:@""];
 	NSAttributedString *second = [[NSMutableAttributedString alloc] initWithString:@""];
 	
 	// Safeguard index (this could happen to numerous reasons, extra spaces etc.)
 	if (index > attrStr.length) index = attrStr.length;
 		
-	first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
+	NSAttributedString *first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
 	

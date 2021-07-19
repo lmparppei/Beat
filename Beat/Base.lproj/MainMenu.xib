@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -678,7 +677,7 @@ DQ
                             <menuItem title="Dark Mode" id="8a1-24-Jc9">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="toggleNightMode:" target="-1" id="9SW-xS-Tmx"/>
+                                    <action selector="toggleDarkMode:" target="-1" id="9SW-xS-Tmx"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Customize Colours..." id="Zms-ef-jSw">
@@ -932,7 +931,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>
@@ -967,7 +966,7 @@ DQ
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" id="cC2-Ee-HhX">
+                                <button verticalHuggingPriority="750" id="cC2-Ee-HhX">
                                     <rect key="frame" x="9" y="308" width="99" height="16"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="→ Support Beat" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="2pT-mL-1hZ">
@@ -979,7 +978,7 @@ DQ
                                         <action selector="showSupport:" target="vEX-2F-hcj" id="Wiw-xo-oac"/>
                                     </connections>
                                 </button>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" id="xiO-qI-A7Q">
+                                <button verticalHuggingPriority="750" id="xiO-qI-A7Q">
                                     <rect key="frame" x="9" y="291" width="99" height="16"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="→ Discord" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="120-l9-Uim">

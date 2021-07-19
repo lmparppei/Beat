@@ -742,45 +742,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return rects;
 }
 
--(void)resizeWithOldSuperviewSize:(NSSize)oldSize {
-	[super resizeWithOldSuperviewSize:oldSize];
-}
 -(void)viewDidEndLiveResize {
 	//[super viewDidEndLiveResize];
 	[self setInsets];
-}
-- (BOOL)needsToDrawRect:(NSRect)rect {
-	return [super needsToDrawRect:rect];
-}
-
--(void)drawViewBackgroundInRect:(NSRect)rect {
-	// We need to draw the background to avoid certain graphical glitches.
-	if (!NSGraphicsContext.currentContext) return;
-
-	/*
-	CGFloat height = self.frame.size.height * (1 / _zoomLevel);
-		
-	// Margin width
-	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.editorDelegate.magnification / 2) / self.editorDelegate.magnification - 120;
-	
-	// Draw paper
-	[self.editorDelegate.themeManager.backgroundColor setFill];
-	NSRect paper = NSMakeRect(width, 0, _documentWidth, height);
-	NSRectFill(paper);
-
-	// Section header backgrounds
-	CGFloat factor = 1 / self.zoomLevel;
-	[self.marginColor setFill];
-	
-	CGFloat sectionWidth = self.frame.size.width * factor;
-	
-	for (NSValue* value in _sections) {
-		NSRect sectionRect = [value rectValue];
-		
-		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, sectionWidth, sectionRect.size.height + 14);
-		NSRectFill(rect);
-	}
-	*/
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -824,12 +788,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[super setNeedsDisplayInRect:invalidRect];
 }
 
--(void)viewDidChangeEffectiveAppearance {
-	[self drawViewBackgroundInRect:self.bounds];
-	[self drawRect:self.bounds];
-}
 -(void)redrawUI {
-	[self scaleUnitSquareToSize:(NSSize){1.0, 1.0}];
 	[self displayRect:self.frame];
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 }

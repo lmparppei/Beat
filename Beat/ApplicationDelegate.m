@@ -687,7 +687,7 @@
 }
 
 #pragma mark - App Store update check
-
+/*
 -(void)checkForAppstoreUpdates{
 	NSDictionary* infoDictionary = [[NSBundle mainBundle] infoDictionary];
 	NSString* appID = infoDictionary[@"CFBundleIdentifier"];
@@ -703,5 +703,6 @@
 		}
 	}
 }
+ */
 
 @end

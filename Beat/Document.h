@@ -98,6 +98,7 @@ THE SOFTWARE.
 // Set document colors
 - (void)updateTheme;
 - (bool)isDark;
+- (void)updateUIColors;
 
 // Tagging
 @property (nonatomic) BeatEditorMode mode;

@@ -136,6 +136,7 @@
 @property (nonatomic, weak) IBOutlet ITSwitch *taggingModeSwitch;
 @property (nonatomic, weak) IBOutlet ITSwitch *darkModeSwitch;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *revisionColorPopup;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *pageSizePopup;
 
 // Editor buttons
 @property (nonatomic, weak) IBOutlet NSButton *outlineButton;
@@ -316,6 +317,8 @@
 #define LINE_HEIGHT 1.1 // 1.15 for Inconsolata
 
 #define DOCUMENT_WIDTH 630
+#define DOCUMENT_WIDTH_A4 620
+#define DOCUMENT_WIDTH_US 650
 #define TEXT_INSET_TOP 80
 
 // Magnifying stuff
@@ -749,6 +752,8 @@
 	[_revisionModeSwitch setChecked:self.trackChanges];
 	[_darkModeSwitch setChecked:self.isDark];
 	
+	NSInteger paperSize = [self.documentSettings getInt:@"Page Size"];
+	
 	if (self.mode == TaggingMode) [_taggingModeSwitch setChecked:YES]; else [_taggingModeSwitch setChecked:NO];
 	
 	if (_revisionColor) {
@@ -773,7 +778,7 @@
 	else if (button == _pageNumbersSwitch) [self togglePageNumbers:nil];
 	else if (button == _revisionModeSwitch) [self toggleTrackChanges:nil];
 	else if (button == _taggingModeSwitch) [self toggleTagging:nil];
-	else if (button == _darkModeSwitch) [self toggleNightMode:nil];
+	else if (button == _darkModeSwitch) [self toggleDarkMode:nil];
 	
 	[self updateQuickSettings];
 }
@@ -3491,13 +3496,19 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Themes & UI outlook
 
-- (IBAction)toggleNightMode:(id)sender {
+- (IBAction)toggleDarkMode:(id)sender {
 	[(ApplicationDelegate *)NSApp.delegate toggleDarkMode];
 	
 	[self updateUIColors];
 
 	[self.textView toggleDarkPopup:nil];
 	_darkPopup = [self isDark];
+	
+	NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
+	
+	for (Document* doc in openDocuments) {
+		[doc updateUIColors];
+	}
 }
 - (bool)isDark {
 	return [(ApplicationDelegate *)[NSApp delegate] isDark];
@@ -3505,7 +3516,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (void)updateUIColors {
 	if (_thisWindow.frame.size.height == 0 || _thisWindow.frame.size.width == 0) return;
-	
+		
 	if (@available(macOS 10.14, *)) {
 		// Force the whole window into dark mode if possible.
 		// This redraws everything by default.
@@ -3534,6 +3545,9 @@ static NSString *revisionAttribute = @"Revision";
 	[self.textScrollView layoutButtons];
 	[self.thisWindow setViewsNeedDisplay:true];
 	[self.textView redrawUI];
+	
+	// Update background layers
+	[_marginView updateBackground];
 }
 
 
@@ -4695,8 +4709,30 @@ triangle walks
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {
 	[super setPrintInfo:printInfo];
 	
-	if (printInfo.paperSize.width > 600) [self.documentSettings setInt:@"Page Size" as:BeatUSLetter];
-	else [self.documentSettings setInt:@"Page Size" as:BeatA4];
+	BeatPaperSize size;
+	
+	if (printInfo.paperSize.width > 600) size = BeatUSLetter;
+	else size = BeatA4;
+	
+	[self.documentSettings setInt:@"Page Size" as:size];
+	if (size == BeatA4) _documentWidth = DOCUMENT_WIDTH_A4;
+	else _documentWidth = DOCUMENT_WIDTH_US;
+	
+	[self updateLayout];
+}
+- (IBAction)selectPaperSize:(id)sender {
+	//NSPopUpButton *button = (NSPopUpButton*)sender;
+	NSMenuItem *item;
+	if ([sender isKindOfClass:NSPopUpButton.class]) item = [(NSPopUpButton*)sender selectedItem];
+	else item = (NSMenuItem*)sender;
+	
+	BeatPaperSize size;
+	if ([item.title isEqualToString:@"A4"]) size = BeatA4;
+	else size = BeatUSLetter;
+		
+	self.printInfo = [BeatPaperSizing setSize:size printInfo:self.printInfo];
+	[self.documentSettings setInt:@"Page Size" as:size];
+	[self updateLayout];
 }
 
 - (NSInteger)numberOfPages {

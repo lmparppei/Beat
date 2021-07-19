@@ -38,6 +38,8 @@
 - (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
 - (bool)caretAtEnd;
 
+- (bool)isDark;
+
 - (void)showLockStatus;
 - (bool)contentLocked;
 

@@ -1402,7 +1402,6 @@ and incomprehensible system of recursion.
 	NSUInteger sectionDepth = 0;
 	
 	OutlineScene *previousScene;
-	OutlineScene *currentScene;
 	
 	// This is for allowing us to include synopses INSIDE scenes when needed
 	OutlineScene *sceneBlock;
@@ -1413,8 +1412,6 @@ and incomprehensible system of recursion.
 		
 			// Create an outline item
 			OutlineScene *item = [[OutlineScene alloc] init];
-			
-			currentScene = item;
 			
 			item.type = line.type;
 			item.omitted = line.omitted;

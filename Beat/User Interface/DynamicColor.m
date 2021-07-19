@@ -64,7 +64,6 @@
 
 	if (@available(macOS 10.14, *)) {
 		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
-		
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		
 		if (self.darkAquaColor != nil && [appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
@@ -241,5 +240,6 @@ FORWARD(localizedColorNameComponent, NSString *)
 	} else
 		return color;
 }
+
 
 @end

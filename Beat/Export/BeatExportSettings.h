@@ -17,14 +17,14 @@ typedef enum : NSUInteger {
 } BeatHTMLOperation;
 
 @interface BeatExportSettings : NSObject
-@property NSString *header;
-@property BeatHTMLOperation operation;
-@property NSString *revisionColor;
-@property bool coloredPages;
-@property bool printSceneNumbers;
-@property NSDocument *document;
-@property NSString *currentScene;
-@property NSString *oldScript;
+@property (nonatomic) NSString *header;
+@property (nonatomic) BeatHTMLOperation operation;
+@property (nonatomic)  NSString * _Nullable revisionColor;
+@property (nonatomic) bool coloredPages;
+@property (nonatomic) bool printSceneNumbers;
+@property (nonatomic, weak) NSDocument *document;
+@property (nonatomic) NSString * _Nullable currentScene;
+@property (nonatomic) NSString * _Nullable oldScript;
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers;
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages;
