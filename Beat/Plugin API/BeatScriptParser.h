@@ -12,7 +12,7 @@
 #import "BeatTagging.h"
 #import "TagDefinition.h"
 #import "BeatPluginWindow.h"
-#import "FountainPaginator.h"
+#import "BeatPaginator.h"
 #import "BeatPluginTimer.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
@@ -74,7 +74,7 @@
 
 - (ContinuousFountainParser*)parser:(NSString*)string;
 
-- (FountainPaginator*)paginator:(NSArray*)lines;
+- (BeatPaginator*)paginator:(NSArray*)lines;
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
@@ -85,6 +85,8 @@ JSExportAs(confirm, - (bool)confirm:(NSString*)title withInfo:(NSString*)info);
 JSExportAs(dropdownPrompt, - (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items);
 JSExportAs(setUserDefault, - (void)setUserDefault:(NSString*)settingName setting:(id)value);
 JSExportAs(getUserDefault, - (id)getUserDefault:(NSString*)settingName);
+JSExportAs(setRawDocumentSetting, - (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value);
+JSExportAs(setDocumentSetting, - (void)setDocumentSetting:(NSString*)settingName setting:(id)value);
 JSExportAs(openFile, - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback);
 JSExportAs(openFiles, - (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback);
 JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
@@ -97,11 +99,12 @@ JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(Outline
 
 // Interfacing with the document
 @protocol BeatScriptingDelegate <NSObject>
-@property (strong, nonatomic) ContinuousFountainParser *parser;
-@property (weak, readonly) NSWindow *thisWindow;
-@property (readonly) BeatTagging *tagging;
-@property (readonly) NSPrintInfo *printInfo;
-@property (readonly) Line* currentLine;
+@property (nonatomic, strong, nonatomic) ContinuousFountainParser *parser;
+@property (nonatomic, weak, readonly) NSWindow *thisWindow;
+@property (nonatomic, readonly) BeatTagging *tagging;
+@property (nonatomic, readonly) NSPrintInfo *printInfo;
+@property (nonatomic, readonly) Line* currentLine;
+@property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
 
 - (void)registerPlugin:(id)parser;
 - (void)deregisterPlugin:(id)parser;

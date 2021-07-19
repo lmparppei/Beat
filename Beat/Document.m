@@ -72,12 +72,9 @@
  
 */
 
-#import <WebKit/WebKit.h>
-#import <Foundation/Foundation.h>
 #import "Document.h"
 #import "ScrollView.h"
 #import "FDXInterface.h"
-#import "OutlineExtractor.h"
 #import "PrintView.h"
 #import "ColorView.h"
 #import "ThemeManager.h"
@@ -86,25 +83,17 @@
 #import "ApplicationDelegate.h"
 #import "NSString+Whitespace.h"
 #import "FountainAnalysis.h"
-#import "BeatOutlineView.h"
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
 #import "FDXImport.h"
-#import "FountainPaginator.h"
+#import "BeatPaginator.h"
 #import "MasterView.h"
-#import "WebPrinter.h"
+#import "OutlineExtractor.h"
 #import "SceneCards.h"
 #import "RegExCategories.h"
-#import "TouchTimelineView.h"
-#import "TouchTimelinePopover.h"
 #import "MarginView.h"
-#import "BeatPreview.h"
 #import "BeatColors.h"
-#import "BeatTimer.h"
-#import "BeatTimeline.h"
-#import "TKSplitHandle.h"
 #import "BeatPrint.h"
-#import "BeatDocumentSettings.h"
 #import "OutlineViewItem.h"
 #import "BeatPaperSizing.h"
 #import "BeatModalInput.h"
@@ -119,6 +108,7 @@
 #import "BeatRevisionItem.h"
 #import "ITSwitch.h"
 #import "BeatTitlePageEditor.h"
+#import "BeatLockButton.h"
 
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
@@ -153,6 +143,7 @@
 @property (nonatomic, weak) IBOutlet NSButton *timelineButton;
 @property (nonatomic, weak) IBOutlet NSButton *quickSettingsButton;
 @property (nonatomic, weak) IBOutlet NSButton *cardsButton;
+@property (nonatomic, weak) IBOutlet BeatLockButton *lockButton;
 
 // Text view
 @property (weak, nonatomic) IBOutlet BeatTextView *textView;
@@ -161,9 +152,8 @@
 @property (weak, nonatomic) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
-@property (nonatomic) FountainPaginator *paginator;
+@property (nonatomic) BeatPaginator *paginator;
 @property (nonatomic) NSTimer *paginationTimer;
-@property (nonatomic) NSMutableArray *sectionMarkers;
 @property (nonatomic) bool newScene;
 @property (nonatomic) bool moving;
 @property (nonatomic) bool sceneHeadingEdited;
@@ -486,7 +476,7 @@
 	self.sceneHeadings = [[NSMutableArray alloc] init];
 		
 	// Pagination etc.
-	self.paginator = [[FountainPaginator alloc] initForLivePagination:self];
+	self.paginator = [[BeatPaginator alloc] initForLivePagination:self];
 	self.printing.document = self;
 	
 	//Put any previously loaded data into the text view
@@ -522,6 +512,9 @@
 	// Ensure layout
 	[self setupLayoutWithPagination:YES];
 	[self initAutosave];
+	
+	// Lock status
+	if ([_documentSettings getBool:@"Locked"]) [self lock];
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		[self updateLayout];
@@ -581,7 +574,6 @@
 	// The document width constant is ca. A4 width compared to the font size.
 	// It's used here and there for proportional measurement.
 	_documentWidth = DOCUMENT_WIDTH;
-	_textView.documentWidth = _documentWidth;
 	
 	// Reset zoom
 	[self setZoom];
@@ -702,16 +694,7 @@
 	}
 	
 	if (width < 10000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
-		[_textView setInsets];
-
-		// We have to inform the views of both the magnification and inset width
-		// This would be safer if it was built as a delegate method
-		self.textScrollView.insetWidth = self.textView.textContainerInset.width;
-		self.marginView.insetWidth = self.textView.textContainerInset.width;
-
-		self.textScrollView.magnificationLevel = _magnification;
-		self.marginView.magnificationLevel = _magnification;
-		
+		_inset = [_textView setInsets];
 		[self.textScrollView setNeedsDisplay:YES];
 		[self.marginView setNeedsDisplay:YES];
 	} else {
@@ -866,6 +849,7 @@
 	if (self.showPageNumbers) [self.textView updatePageNumbers];
 	if (self.showSceneNumberLabels) [self.textView updateSceneLabelsFrom:0];
 	[self.textView setNeedsDisplay:YES];
+	[self.marginView updateBackground];
 }
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
@@ -876,7 +860,7 @@
 	if (_scaleFactor != newScaleFactor)
 	{
 		NSSize curDocFrameSize, newDocBoundsSize;
-		NSView *clipView = [[self textView] superview];
+		NSView *clipView = self.textView.superview;
 		
 		_scaleFactor = newScaleFactor;
 		
@@ -1257,10 +1241,8 @@
 
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
-	[self startMeasure];
-	
 	// Don't allow editing the script while tagging
-	if (_mode != EditMode) return NO;
+	if (_mode != EditMode || self.contentLocked) return NO;
 	
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
@@ -1432,7 +1414,7 @@
 			if (!_newScene && _currentLine.string.length > 0 && !([NSEvent modifierFlags] & NSEventModifierFlagShift)) {
 				
 				if (_currentLine.type == heading ||
-					_currentLine.type == section ||
+					//_currentLine.type == section ||
 					_currentLine.type == synopse) {
 					// No shift down, add two breaks afer a scene heading, heading and synopsis
 					_newScene = YES;
@@ -1592,7 +1574,7 @@
 			[self addString:string atIndex:index];
 		}
 	}
-		
+	
 	// Register changes
 	if (_trackChanges) [self registerChangesInRange:_lastChangedRange];
 	
@@ -2175,14 +2157,15 @@
 	} else if (line.type == section || line.type == synopse) {
 		// Stylize sections & synopses
 
-		// Bold section headings for first-level sections
 		if (line.type == section) {
-			[paragraphStyle setParagraphSpacingBefore:20];
 			CGFloat size = SECTION_FONT_SIZE;
 			
 			NSColor *sectionColor;
 			
 			if (line.sectionDepth == 1) {
+				[paragraphStyle setParagraphSpacingBefore:30];
+				[paragraphStyle setParagraphSpacing:20];
+				
 				// Black or custom for high-level sections
 				if (line.color) {
 					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
@@ -2191,6 +2174,11 @@
 				[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 			} else {
+				if (line.sectionDepth == 2) {
+					[paragraphStyle setParagraphSpacingBefore:10];
+					[paragraphStyle setParagraphSpacing:10];
+				}
+				
 				// And custom or gray for others
 				if (line.color) {
 					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
@@ -2216,7 +2204,7 @@
 			
 			if (synopsisColor) [attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
 			
-			[attributes setObject:[self synopsisFont] forKey:NSFontAttributeName];
+			[attributes setObject:self.synopsisFont forKey:NSFontAttributeName];
 		}
 		
 	} else if (line.type == action) {
@@ -3072,16 +3060,19 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)markAddition:(id)sender
 {
-	[self markerAction:RevisionAddition];
+	if (!self.contentLocked) [self markerAction:RevisionAddition];
 }
 - (IBAction)markRemoval:(id)sender
 {
-	[self markerAction:RevisionRemoval];
+	if (!self.contentLocked) [self markerAction:RevisionRemoval];
 }
 - (IBAction)clearMarkings:(id)sender {
 	[self markerAction:RevisionNone];
 }
 - (void)markerAction:(RevisionType)type {
+	// Content can't be marked as revised when locked.
+	if (self.contentLocked) return;
+	
 	// Only allow this for editor view
 	if ([self selectedTab] != 0) return;
 	
@@ -3325,6 +3316,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem newItem:@"Show Timeline" setting:@"timelineVisible" target:self],
 		[ValidationItem newItem:@"Autosave" setting:@"autosave" target:self],
 		[ValidationItem newItem:@"Revision Mode" setting:@"trackChanges" target:self],
+		[ValidationItem newItem:@"Lock Document" setting:@"Locked" target:self.documentSettings],
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -3512,26 +3504,35 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)updateUIColors {
-	[self.thisWindow setViewsNeedDisplay:true];
+	if (_thisWindow.frame.size.height == 0 || _thisWindow.frame.size.width == 0) return;
 	
-	[self.masterView setNeedsDisplayInRect:[_masterView frame]];
-	[self.backgroundView setNeedsDisplay:true];
-	[self.textScrollView setNeedsDisplay:true];
-	[self.marginView setNeedsDisplay:true];
-	
-	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-	
-	[self.textView drawViewBackgroundInRect:self.textView.bounds];
-	[self.textView setNeedsDisplay:true];
-	
-	[self.textScrollView layoutButtons];
+	if (@available(macOS 10.14, *)) {
+		// Force the whole window into dark mode if possible.
+		// This redraws everything by default.
+		if ([self isDark]) self.thisWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+		else self.thisWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+	} else {
+		// Else, we need to force everything to redraw, in a very clunky way
+		[self.thisWindow setViewsNeedDisplay:true];
+		
+		[self.masterView setNeedsDisplayInRect:_masterView.frame];
+		[self.backgroundView setNeedsDisplay:true];
+		[self.textScrollView setNeedsDisplay:true];
+		[self.marginView setNeedsDisplay:true];
+		
+		[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+		
+		[self.textView drawViewBackgroundInRect:self.textView.bounds];
+		[self.textView setNeedsDisplay:true];
 
-	[self resetSceneNumberLabels];
-	
-	if (_outlineViewVisible) [self.outlineView setNeedsDisplay:YES];
+		[self resetSceneNumberLabels];
+		
+		if (_outlineViewVisible) [self.outlineView setNeedsDisplay:YES];
+	}
 	
 	//[self.textView setNeedsDisplay:true];
-	
+	[self.textScrollView layoutButtons];
+	[self.thisWindow setViewsNeedDisplay:true];
 	[self.textView redrawUI];
 }
 
@@ -3562,11 +3563,7 @@ static NSString *revisionAttribute = @"Revision";
 	// Set global background
 	doc.backgroundView.fillColor = self.themeManager.currentOutlineBackground;
 	//_outlineView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleSourceList;
-	
-	// Margins are drawn in a separate view
-	doc.marginView.backgroundColor = self.themeManager.currentBackgroundColor;
-	doc.marginView.marginColor = self.themeManager.currentMarginColor;
-	
+		
 	[doc updateUIColors];
 	[doc.textView setNeedsDisplay:YES];
 }
@@ -4037,7 +4034,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)setColor:(NSString *)color forScene:(OutlineScene *) scene {
-	if (!scene) return;;
+	if (!scene) return;
 	
 	color = color.uppercaseString;
 		
@@ -4705,7 +4702,7 @@ triangle walks
 - (NSInteger)numberOfPages {
 	// If pagination is not on, create temporary paginator
 	if (!self.showPageNumbers) {
-		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
+		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
 		return paginator.numberOfPages;
 	} else {
 		return self.paginator.numberOfPages;
@@ -4716,7 +4713,7 @@ triangle walks
 	
 	// If we don't have pagination turned on, create temporary paginator
 	if (!self.showPageNumbers) {
-		FountainPaginator *paginator = [[FountainPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
+		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
 		[paginator paginate];
 		return [paginator pageNumberFor:location];
 	} else {
@@ -5141,16 +5138,15 @@ triangle walks
 
 #pragma mark - Locking The Document
 
-// This is unused for now
+-(IBAction)lockContent:(id)sender {
+	[self toggleLock];
+}
 
 - (void)toggleLock {
 	bool locked = [self.documentSettings getBool:@"Locked"];
 	
-	if (locked) {
-		[self unlock];
-	} else {
-		[self lock];
-	}
+	if (locked) [self unlock];
+	else [self lock];
 }
 - (bool)screenplayLocked {
 	if ([self.documentSettings getBool:@"Locked"]) return YES;
@@ -5159,13 +5155,31 @@ triangle walks
 - (void)lock {
 	self.textView.editable = NO;
 	[self.documentSettings setBool:@"Locked" as:YES];
+	
+	[self.lockButton show];
 }
 - (void)unlock {
-	self.textView.editable = YES;
-	[self.documentSettings setBool:@"Locked" as:NO];
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = @"Unlock Document";
+	alert.informativeText = @"Are you sure you want to unlock the document and allow changes?";
+	
+	[alert addButtonWithTitle:@"Yes"];
+	[alert addButtonWithTitle:@"No"];
+	
+	NSModalResponse response = [alert runModal];
+	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
+		self.textView.editable = YES;
+		[self.documentSettings setBool:@"Locked" as:NO];
+		
+		[self.lockButton hide];
+	}
 }
-- (void)updateLockingStatus {
-	// If file is locked, show an indicator that the document CAN'T BE CHANGED.
+- (void)showLockStatus {
+	[self.lockButton displayLabel];
+}
+
+-(bool)contentLocked {
+	return [self.documentSettings getBool:@"Locked"];
 }
 
 #pragma mark - Testing methods

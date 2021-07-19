@@ -56,13 +56,13 @@
  
  */
 
-#import "FountainPaginator.h"
+#import "BeatPaginator.h"
 #import "Line.h"
 #import "RegExCategories.h"
 
 #define LINE_HEIGHT 12.5
 
-@interface FountainPaginator ()
+@interface BeatPaginator ()
 
 @property (weak, nonatomic) NSDocument *document;
 @property (strong, nonatomic) NSArray *script;
@@ -80,7 +80,7 @@
 
 @end
 
-@implementation FountainPaginator
+@implementation BeatPaginator
 
 - (id)initWithScript:(NSArray *)elements
 {
@@ -358,7 +358,7 @@
 		
 		for (int e = 0; e < lineIndex; e++) {
 			Line *line = firstPage[e];
-			currentY += [FountainPaginator spaceBeforeForLine:line];
+			currentY += [BeatPaginator spaceBeforeForLine:line];
 			currentY += [self elementHeight:line lineHeight:LINE_HEIGHT];
 			[currentPage addObject:line];
 		}
@@ -418,7 +418,7 @@
 			#pragma mark Calculate block height
 			
 			// Save space before for this line
-			spaceBefore = [FountainPaginator spaceBeforeForLine:element];
+			spaceBefore = [BeatPaginator spaceBeforeForLine:element];
 			
 			// Catch wrong parsing.
 			// We SHOULD NOT have orphaned dialogue. This can happen with non-forced text.
@@ -767,7 +767,7 @@
 					
 					// Append y position
 					currentY += h;
-					if ([currentPage count] > 0) { currentY += [FountainPaginator spaceBeforeForLine:el]; }
+					if ([currentPage count] > 0) { currentY += [BeatPaginator spaceBeforeForLine:el]; }
 				}
 				else if (el.type == dualDialogueCharacter || el.isDualDialogueElement) {
 					if (el.type == dualDialogueCharacter) dualDialogueHeight = 0;
@@ -782,7 +782,7 @@
 				} else {
 					// Update y position
 					currentY += h;
-					if ([currentPage count] > 0) { currentY += [FountainPaginator spaceBeforeForLine:el]; }
+					if ([currentPage count] > 0) { currentY += [BeatPaginator spaceBeforeForLine:el]; }
 				}
 				
 				[currentPage addObject:el];
@@ -835,7 +835,7 @@
 
 - (CGFloat)elementHeight:(Line *)element lineHeight:(CGFloat)lineHeight {
 	NSString *string = element.stripFormatting;
-	return [FountainPaginator heightForString:string font:_font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
+	return [BeatPaginator heightForString:string font:_font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
 }
 
 - (NSInteger)widthForElement:(Line *)element
@@ -1048,10 +1048,10 @@
 	
 	for (Line *line in block) {
 		CGFloat spaceBefore = 0;
-		if (currentPage.count || line != block.firstObject) spaceBefore = [FountainPaginator spaceBeforeForLine:line];
+		if (currentPage.count || line != block.firstObject) spaceBefore = [BeatPaginator spaceBeforeForLine:line];
 		
 		CGFloat elementWidth = [self widthForElement:line];
-		NSInteger height = [FountainPaginator heightForString:line.stripFormattingCharacters font:_font maxWidth:elementWidth lineHeight:LINE_HEIGHT];
+		NSInteger height = [BeatPaginator heightForString:line.stripFormattingCharacters font:_font maxWidth:elementWidth lineHeight:LINE_HEIGHT];
 		
 		fullHeight += spaceBefore + height;
 	}
@@ -1084,7 +1084,7 @@
 	// Set the height to be the longer one
 	if (previousDialogueBlockHeight > dialogueBlockHeight) dialogueBlockHeight = previousDialogueBlockHeight;
 	
-	if (currentPage.count > 0) dialogueBlockHeight += [FountainPaginator spaceBeforeForLine:block.firstObject];
+	if (currentPage.count > 0) dialogueBlockHeight += [BeatPaginator spaceBeforeForLine:block.firstObject];
 	
 	return dialogueBlockHeight;
 }

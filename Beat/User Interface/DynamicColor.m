@@ -9,7 +9,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
-#import "ApplicationDelegate.h"
 
 #define FORWARD( PROP, TYPE ) \
 - (TYPE)PROP { return [self.effectiveColor PROP]; }
@@ -62,18 +61,7 @@
 		return self.aquaColor;
 	}
 	
-	// Modification for Beat. Load dark scheme if the app is set into dark mode.
-	if (NSApp) {
-		if (![NSThread mainThread]) return self.aquaColor;
-		
-		if ([(ApplicationDelegate*)[NSApp delegate] isForcedLightMode]) {
-			if (self.aquaColor != nil) return self.aquaColor;
-		}
-		else if ([(ApplicationDelegate*)[NSApp delegate] isForcedDarkMode]) {
-			if (self.darkAquaColor != nil) return self.darkAquaColor;
-		}
-	}
-	
+
 	if (@available(macOS 10.14, *)) {
 		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
 		

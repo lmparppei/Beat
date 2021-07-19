@@ -99,7 +99,7 @@
 #import "BeatHTMLScript.h"
 #import "Line.h"
 #import "FountainRegexes.h"
-#import "FountainPaginator.h"
+#import "BeatPaginator.h"
 #import "RegExCategories.h"
 
 #define BOLD_OPEN @"<b>"
@@ -410,7 +410,7 @@
     NSInteger dualDialogueCharacterCount = 0;
     NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
 	
-	FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:_script document:_document];
+	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:_script document:_document];
     NSUInteger maxPages = paginator.numberOfPages;
 	
 	_numberOfPages = maxPages;

@@ -35,6 +35,7 @@ typedef enum : NSInteger {
 } BeatEditorMode;
 
 @property (nonatomic) CGFloat magnification;
+@property (nonatomic, readonly) NSUInteger documentWidth;
 @property (nonatomic, readonly) ContinuousFountainParser *parser;
 @property (readonly) NSFont *courier;
 @property (readonly) NSFont *boldCourier;
@@ -45,12 +46,14 @@ typedef enum : NSInteger {
 @property (readonly) bool showSceneNumberLabels;
 @property (readonly) bool showPageNumbers;
 @property (readonly) NSMutableIndexSet *changes;
+@property (readonly) bool contentLocked;
 
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
 - (bool)isDark;
 - (void)updateLayout;
 - (void)ensureLayout;
+- (void)showLockStatus;
 @end
 
 @protocol BeatTaggingDelegate;
@@ -58,13 +61,14 @@ typedef enum : NSInteger {
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
-- (void)setInsets;
+- (CGFloat)setInsets;
 - (void)scrollToRange:(NSRange)range;
 
 // Scene Numbering
 - (void)updateSceneLabelsFrom:(NSInteger)changedIndex;
 - (void)deleteSceneNumberLabels;
 - (void)resetSceneNumberLabels;
+- (void)updateSectionLayers;
 
 // Page numbering
 - (void)deletePageNumbers;
@@ -81,7 +85,6 @@ typedef enum : NSInteger {
 @property (nonatomic, weak) DynamicColor* marginColor;
 @property NSArray* pageBreaks;
 @property CGFloat zoomLevel;
-@property CGFloat documentWidth;
 @property NSInteger autocompleteIndex;
 
 @property (weak) IBOutlet NSMenu *contextMenu;

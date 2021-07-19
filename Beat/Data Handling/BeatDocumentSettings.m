@@ -28,6 +28,7 @@ NSString * const DocSettingRevisionColor = @"Revision Color";
 NSString * const DocSettingSceneNumberStart = @"Scene Numbering Starts From";
 NSString * const DocSettingTagDefinitions = @"TagDefinitions";
 NSString * const DocSettingTags = @"Tags";
+NSString * const DocSettingLocked = @"Locked";
 NSString * const DocSettingRevisedPageColor = @"Revised Page Color";
 NSString * const DocSettingRevisionMode = @"Revision Mode";
 NSString * const DocSettingColorCodePages = @"Color-code Pages";

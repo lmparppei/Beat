@@ -44,7 +44,7 @@
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 @end
 
-@interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports>
+@interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
 // A new structure to avoid having thousands of loopbacks & recursion.
 // Slowly being implemented into the code.
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;

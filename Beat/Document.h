@@ -45,6 +45,7 @@ THE SOFTWARE.
 #import "BeatAnalysisPanel.h"
 #import "BeatEditorDelegate.h"
 
+
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
@@ -53,9 +54,12 @@ THE SOFTWARE.
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
 @property (nonatomic) CGFloat magnification;
+@property (nonatomic) CGFloat inset;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool trackChanges;
  
+@property (nonatomic) bool contentLocked;
+
 // Fonts
 @property (strong, nonatomic) NSFont *courier;
 @property (strong, nonatomic) NSFont *boldCourier;

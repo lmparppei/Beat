@@ -20,6 +20,10 @@
 @property (nonatomic, readonly) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
 
+@property (nonatomic, readonly) CGFloat magnification;
+@property (nonatomic) CGFloat inset;
+@property (nonatomic, readonly) NSUInteger documentWidth;
+
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
 - (NSMutableArray*)lines;
@@ -33,6 +37,9 @@
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 - (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
 - (bool)caretAtEnd;
+
+- (void)showLockStatus;
+- (bool)contentLocked;
 
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;

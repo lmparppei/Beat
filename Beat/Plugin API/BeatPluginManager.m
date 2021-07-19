@@ -395,15 +395,14 @@
 	
 	NSDictionary *pluginInfo = _availablePlugins[name];
 	
+	// Set local url for installed plugins, nil it for others
 	bool installed = [(NSNumber*)pluginInfo[@"installed"] boolValue];
-	if (installed) {
-		cell.localURL = pluginInfo[@"localURL"];
-	} else {
-		NSLog(@"Not installed: %@", pluginInfo[@"name"]);
-		cell.localURL = nil;
-	}
+	if (installed) cell.localURL = pluginInfo[@"localURL"];
+	else cell.localURL = nil;
 	
+	// Set update info
 	if (pluginInfo[@"updateAvailable"]) { cell.updateAvailable = YES; }
+	else cell.updateAvailable = NO;
 	
 	cell.name = pluginInfo[@"name"];
 	cell.info = pluginInfo[@"description"];
@@ -423,37 +422,43 @@
 -(BOOL)outlineView:(NSOutlineView *)outlineView shouldShowOutlineCellForItem:(id)item {
 	return YES;
 }
+
 -(BOOL)outlineView:(NSOutlineView *)outlineView shouldExpandItem:(id)item {
 	return NO;
 }
 -(BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
 	return YES;
 }
+-(void)outlineViewSelectionDidChange:(NSNotification *)notification {
+	NSOutlineView *outlineView = notification.object;
+	if (!outlineView) return;
+	
+	
+	
+	id item = [outlineView itemAtRow:outlineView.selectedRow];
+	BDMCheckboxCell *cell = (BDMCheckboxCell*)[self outlineView:outlineView viewForTableColumn:nil item:item];
+	
+	cell.selected = YES;
+	[cell setNeedsDisplay:YES];
+}
 
-/*
  
 -(CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item {
-	
-	I don't get it.
-	 
-	BDMCheckboxCell *cell;
-	
 	NSInteger row = [outlineView rowForItem:item];
-	if (row != NSNotFound && row < outlineView.numberOfRows) {
-		cell = (BDMCheckboxCell*)[self outlineView:outlineView viewForTableColumn:nil item:item];
-		[cell setSize];
-		
-		if (cell.rowHeight > 0) {
-			return cell.rowHeight;
-		}
-		else return 50;
-		
-	}
-	else {
-		return 50;
+
+	BDMCheckboxCell *cell;
+	if (row != NSNotFound && row < outlineView.numberOfRows) cell = (BDMCheckboxCell*)[self outlineView:outlineView viewForTableColumn:nil item:item];
+	
+	if (outlineView.selectedRow == row && row != NSNotFound) {
+		// Selected height
+		return 100;
+	} else {
+		// Deselected height
+		cell.selected = NO;
+		return 62;
 	}
 }
- */
+
 
 #pragma mark - File Access
 

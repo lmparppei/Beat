@@ -8,14 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
+#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MarginView : NSView
+@property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> editor;
 @property (nonatomic, weak) DynamicColor *backgroundColor;
 @property (nonatomic, weak) DynamicColor *marginColor;
-@property (nonatomic) CGFloat insetWidth;
-@property (nonatomic) CGFloat magnificationLevel;
+- (void)updateBackground;
 @end
 
 NS_ASSUME_NONNULL_END

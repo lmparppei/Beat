@@ -1,5 +1,19 @@
 # Changelog
 
+## Beat 1.89.3
+
+* Lines now know the parser they reside inside, allowing easier access to their index etc. in the future
+* Plugin API expansions and fixes
+* Document contents can be locked
+* Margin view is now layer-backed, and no longer based on `drawRect`
+
+
+## Beat 1.89.2
+
+* Plugin API additions and sanitizing
+* Other minor things, I guess
+
+
 ## Beat 1.89.1
 
 I've forgotten most of the changes, but:

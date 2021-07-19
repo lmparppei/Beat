@@ -21,6 +21,7 @@
                 <outlet property="darkModeSwitch" destination="S22-Mw-UkV" id="LjC-kx-glN"/>
                 <outlet property="filterView" destination="YvO-D4-qDL" id="kCA-z3-eE5"/>
                 <outlet property="filterViewHeight" destination="vZj-zT-rgW" id="5Al-VZ-Qyl"/>
+                <outlet property="lockButton" destination="ftJ-Zm-jkE" id="naF-WT-rXK"/>
                 <outlet property="marginView" destination="Sy0-kF-Tby" id="3Mt-n8-mIL"/>
                 <outlet property="masterView" destination="gIp-Ho-8D9" id="s3n-ER-Rgi"/>
                 <outlet property="outlineBackgroundView" destination="ddX-aG-EER" id="uNK-hW-mWG"/>
@@ -562,6 +563,32 @@
                                                                 <constraint firstAttribute="height" constant="24" id="D5l-34-iqo"/>
                                                             </constraints>
                                                         </customView>
+                                                        <customView hidden="YES" appearanceType="darkAqua" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ftJ-Zm-jkE" customClass="BeatLockButton">
+                                                            <rect key="frame" x="15" y="15" width="160" height="36"/>
+                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                            <subviews>
+                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="afZ-Mw-gsE">
+                                                                    <rect key="frame" x="3" y="3" width="30" height="30"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSLockLockedTemplate" id="pVq-ze-Jbh"/>
+                                                                    <color key="contentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                </imageView>
+                                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jtj-qF-qHB">
+                                                                    <rect key="frame" x="40" y="11" width="108" height="14"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Document is locked" usesSingleLineMode="YES" id="aMy-cb-lJ3">
+                                                                        <font key="font" metaFont="smallSystem"/>
+                                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                    </textFieldCell>
+                                                                </textField>
+                                                            </subviews>
+                                                            <connections>
+                                                                <outlet property="image" destination="afZ-Mw-gsE" id="Tp1-dC-YLt"/>
+                                                                <outlet property="label" destination="jtj-qF-qHB" id="RdZ-DN-aFN"/>
+                                                                <outlet property="target" destination="-2" id="DiJ-pn-7FW"/>
+                                                            </connections>
+                                                        </customView>
                                                     </subviews>
                                                     <constraints>
                                                         <constraint firstAttribute="bottom" secondItem="Mky-48-wwA" secondAttribute="bottom" id="6ht-pW-tB8"/>
@@ -572,6 +599,9 @@
                                                         <constraint firstAttribute="trailing" secondItem="Mky-48-wwA" secondAttribute="trailing" id="VFm-hQ-O9D"/>
                                                         <constraint firstItem="MJt-fS-Zk9" firstAttribute="top" secondItem="Sy0-kF-Tby" secondAttribute="top" constant="13" id="zrM-cS-i7r"/>
                                                     </constraints>
+                                                    <connections>
+                                                        <outlet property="editor" destination="-2" id="JTG-Zr-Zsx"/>
+                                                    </connections>
                                                 </customView>
                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lKQ-7H-w5w" customClass="TKSplitHandle">
                                                     <rect key="frame" x="300" y="0.0" width="10" height="541"/>
@@ -1667,6 +1697,7 @@ Gw
         <image name="Color_Pink" width="15" height="15"/>
         <image name="Color_Purple" width="15" height="15"/>
         <image name="Color_Red" width="15" height="15"/>
+        <image name="NSLockLockedTemplate" width="10" height="14"/>
         <image name="NSRefreshTemplate" width="11" height="15"/>
         <image name="NSStatusNone" width="16" height="16"/>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>

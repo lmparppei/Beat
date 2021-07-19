@@ -33,7 +33,7 @@
 - (NSString*)getText;
 @end
 
-@interface FountainPaginator : NSObject <BeatPaginatorExports>
+@interface BeatPaginator : NSObject <BeatPaginatorExports>
 
 @property (weak) id<BeatPaginatorDelegate> delegate;
 @property (nonatomic, readonly) NSUInteger numberOfPages;

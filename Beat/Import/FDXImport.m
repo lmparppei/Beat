@@ -194,8 +194,6 @@
 	else if ([elementName isEqualToString:@"DualDialogue"]) _dualDialogue = -1;
 	// Go on
 	else if ([elementName isEqualToString:@"Paragraph"]) {
-		NSString *result;
-		
 		// Add empty rows before required elements.
 		if ([_script count] > 0) {
 			FDXElement *previousLine = [_script lastObject];
@@ -213,7 +211,7 @@
 		//result = [self fountainString:_attrText];
 		
 		if ([_activeElement isEqualToString:@"Scene Heading"]) {
-			// Revert to the original, don't use Fountain formatting in scene headings
+			// Set to uppercase
 			[_element setString:_element.string.uppercaseString];
 			
 			// Force scene prefix if needed
@@ -241,7 +239,7 @@
 		}
 		
 		// Add object if both this and the previous line are not empty
-		if (!([result isEqualToString:@""] && [_lastAddedLine.string isEqualToString:@""])) {
+		if (!([_element.string isEqualToString:@""] && [_lastAddedLine.string isEqualToString:@""])) {
 			[_script addObject:_element];
 			_lastAddedLine = _element;
 		}

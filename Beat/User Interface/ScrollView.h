@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "DynamicColor.h"
+@class DynamicColor;
 
 @interface ScrollView : NSScrollView
 
@@ -24,9 +24,7 @@
 @property (nonatomic) NSView *taggingView;
 
 @property (nonatomic, weak) DynamicColor *marginColor;
-@property (nonatomic) CGFloat insetWidth;
 @property (nonatomic) CGFloat buttonDefaultY;
-@property (nonatomic) CGFloat magnificationLevel;
 @property (nonatomic) NSTimer *mouseMoveTimer;
 @property (nonatomic) NSTimer *timerMouseMoveTimer;
 

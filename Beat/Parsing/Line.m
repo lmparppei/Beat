@@ -42,6 +42,52 @@
 
 @implementation Line
 
+
+- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position parser:(id<LineDelegate>)parser {
+	self = [super init];
+	if (self) {
+		_string = string;
+		_type = type;
+		_position = position;
+		_parser = parser;
+	}
+	return self;
+}
+
+- (Line*)initWithString:(NSString*)string position:(NSUInteger)position
+{
+	return [[Line alloc] initWithString:string type:0 position:position parser:nil];
+}
+- (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser
+{
+	return [[Line alloc] initWithString:string type:0 position:position parser:parser];
+}
+- (Line*)initWithString:(NSString *)string type:(LineType)type position:(NSUInteger)position {
+	return [[Line alloc] initWithString:string type:type position:position parser:nil];
+}
+
+
+// For non-continuous parsing
+- (Line*)initWithString:(NSString *)string type:(LineType)type {
+	return [[Line alloc] initWithString:string type:type position:-1 parser:nil];
+}
+- (Line*)initWithString:(NSString *)string type:(LineType)type pageSplit:(bool)pageSplit {
+	// This is used solely for pagination purposes
+	self = [super init];
+	if (self) {
+		_string = string;
+		_type = type;
+		_unsafeForPageBreak = YES;
+		
+		if (pageSplit) [self resetFormatting];
+	}
+	return self;
+}
+
+// Shorthands (used mostly by the paginator)
++ (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser {
+	return [[Line alloc] initWithString:string type:type position:0 parser:parser];
+}
 + (Line*)withString:(NSString*)string type:(LineType)type {
 	return [[Line alloc] initWithString:string type:type];
 }
@@ -76,48 +122,10 @@
 	return newLine;
 }
 
-- (Line*)initWithString:(NSString*)string position:(NSUInteger)position
-{
-    self = [super init];
-    if (self) {
-        _string = string;
-		_original = string;
-        _type = 0;
-        _position = position;
-	}
-    return self;
+- (NSUInteger)index {
+	if (!self.parser) return NSNotFound;
+	return [self.parser.lines indexOfObject:self];
 }
-
-// For non-continuous parsing
-- (Line*)initWithString:(NSString *)string type:(LineType)type {
-	self = [super init];
-	if (self) {
-		_string = string;
-		_type = type;
-	}
-	return self;
-}
-- (Line*)initWithString:(NSString *)string type:(LineType)type pageSplit:(bool)pageSplit {
-	self = [super init];
-	if (self) {
-		_string = string;
-		_type = type;
-		_unsafeForPageBreak = YES;
-		
-		if (pageSplit) [self resetFormatting];
-	}
-	return self;
-}
-- (Line*)initWithString:(NSString *)string type:(LineType)type position:(NSUInteger)position {
-	self = [super init];
-	if (self) {
-		_string = string;
-		_type = type;
-		_position = position;
-	}
-	return self;
-}
-
 
 - (NSString *)toString
 {

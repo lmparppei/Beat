@@ -28,7 +28,7 @@
 #import "Line.h"
 #import "ScrollView.h"
 #import "ContinuousFountainParser.h"
-#import "FountainPaginator.h"
+#import "BeatPaginator.h"
 #import "BeatColors.h"
 #import "ThemeManager.h"
 
@@ -211,6 +211,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:_trackingArea];
 	
+	self.wantsLayer = YES;
+	
 	[self setInsets];
 }
 -(void)removeFromSuperview {
@@ -316,6 +318,15 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)keyDown:(NSEvent *)theEvent {
+	if (self.editorDelegate.contentLocked) {
+		// Show lock status for alphabet keys
+		NSString * const character = [theEvent charactersIgnoringModifiers];
+		if (character.length > 0) {
+			unichar c = [character characterAtIndex:0];
+			if ([NSCharacterSet.letterCharacterSet characterIsMember:c]) [self.editorDelegate showLockStatus];
+		}
+	}
+	
 	NSInteger row = self.autocompleteTableView.selectedRow;
 	BOOL shouldComplete = YES;
 	
@@ -745,55 +756,43 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 -(void)drawViewBackgroundInRect:(NSRect)rect {
 	// We need to draw the background to avoid certain graphical glitches.
 	if (!NSGraphicsContext.currentContext) return;
-	
+
+	/*
 	CGFloat height = self.frame.size.height * (1 / _zoomLevel);
+		
+	// Margin width
+	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.editorDelegate.magnification / 2) / self.editorDelegate.magnification - 120;
 	
 	// Draw paper
 	[self.editorDelegate.themeManager.backgroundColor setFill];
-	
-	NSRectFill(rect);
-	
-	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.editorDelegate.magnification / 2) / self.editorDelegate.magnification - 120;
-	
-	NSColor *marginColor = self.editorDelegate.themeManager.marginColor;
-	[marginColor setFill];
-	NSRect marginLeft = (NSRect){ 0, 0, width, height };
-	NSRect marginRight = (NSRect){ width + _documentWidth + 240, 0, width, height };
-	
-	NSRectFill(marginLeft);
-	NSRectFill(marginRight);
-	
-	NSRect shadowLeft = (NSRect){ marginLeft.size.width - SHADOW_WIDTH, 0, SHADOW_WIDTH, marginLeft.size.height };
-	NSRect shadowRight = (NSRect){ marginRight.origin.x, 0, SHADOW_WIDTH, marginRight.size.height };
-	
-	NSGradient *gradient = [[NSGradient alloc] initWithStartingColor:NSColor.clearColor endingColor:[NSColor.blackColor colorWithAlphaComponent:SHADOW_OPACITY]];
-	[gradient drawInRect:shadowLeft angle:0];
-	[gradient drawInRect:shadowRight angle:180];
-	
-	CGFloat factor = 1 / _zoomLevel;
-	
-	// Section header backgrounds
-	for (NSValue* value in _sections) {
-		[self.marginColor setFill];
-		NSRect sectionRect = [value rectValue];
-		CGFloat width = self.frame.size.width * factor;
+	NSRect paper = NSMakeRect(width, 0, _documentWidth, height);
+	NSRectFill(paper);
 
-		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
-		NSRectFill(rect);
-		//if (self.editorDelegate.isDark) NSRectFillUsingOperation(rect, NSCompositingOperationScreen);
-		//else NSRectFillUsingOperation(rect, NSCompositingOperationDarken);
-		
-	}
+	// Section header backgrounds
+	CGFloat factor = 1 / self.zoomLevel;
+	[self.marginColor setFill];
 	
+	CGFloat sectionWidth = self.frame.size.width * factor;
+	
+	for (NSValue* value in _sections) {
+		NSRect sectionRect = [value rectValue];
+		
+		NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, sectionWidth, sectionRect.size.height + 14);
+		NSRectFill(rect);
+	}
+	*/
 }
+
 - (void)drawRect:(NSRect)dirtyRect {
 	//NSLog(@"drawing %f -> %f     (in view: %f / %f)    mag: %f", dirtyRect.origin.y, dirtyRect.size.height, self.enclosingScrollView.contentView.bounds.origin.y, self.enclosingScrollView.contentView.bounds.size.height, self.zoomLevel);
 	//dirtyRect = (NSRect){ dirtyRect.origin.x, dirtyRect.origin.y - 10, dirtyRect.size.width, dirtyRect.size.height + 20 };
- 		
-	[NSGraphicsContext saveGraphicsState];
-	[super drawRect:dirtyRect];
-	[NSGraphicsContext restoreGraphicsState];
+	NSGraphicsContext *ctx = NSGraphicsContext.currentContext;
+	if (!ctx) return;
 	
+	[ctx saveGraphicsState];
+	[super drawRect:dirtyRect];
+	[ctx restoreGraphicsState];
+
 	// An array of NSRanges which are used to mask parts of the text.
 	// Used to hide irrelevant parts when filtering scenes.
 	if (_masks.count) {
@@ -984,11 +983,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			[label removeFromSuperview];
 		}
 	}
+	
+	//[self updateSectionLayers];
 }
 
 - (void)addSectionMarker:(OutlineScene*)sectionItem {
 	// Don't draw breaks for less-important sections
-	if (sectionItem.sectionDepth > 2) return;
+	if (sectionItem.sectionDepth > 1) return;
 	NSRange characterRange = NSMakeRange(sectionItem.line.position, sectionItem.line.string.length);
 	
 	NSRect rect = [self rectForRange:characterRange];
@@ -1016,7 +1017,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 }
 
-/*
+
  // This isn't working, don't know why
 - (void)updateSectionLayers {
 	NSInteger index = 0;
@@ -1044,6 +1045,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 		
 		layer.frame = CGRectMake(0, rect.origin.y + self.textContainerInset.height - 7, width, rect.size.height + 14);
+		layer.bounds = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
 		[_sectionBackgrounds addObject:layer];
 		
 		index++;
@@ -1061,7 +1063,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	[self updateLayer];
 }
- */
 
 /*
 - (void)updateSceneNumberLabelsWithLayer {
@@ -1233,16 +1234,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[super scaleUnitSquareToSize:newUnitSize];
 }
 
-- (void)setInsets {
-	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _documentWidth * self.editorDelegate.magnification / 2) / self.editorDelegate.magnification;
+- (CGFloat)setInsets {
+	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
-	self.textContainer.size = NSMakeSize(_documentWidth, self.textContainer.size.height);
+	self.textContainer.size = NSMakeSize(_editorDelegate.documentWidth, self.textContainer.size.height);
 
 	[self resetCursorRects];
 	[self addCursorRect:(NSRect){0,0, 200, 2500} cursor:NSCursor.crosshairCursor];
 	[self addCursorRect:(NSRect){self.frame.size.width * .5,0, self.frame.size.width * .5, self.frame.size.height} cursor:NSCursor.crosshairCursor];
 	
-	[self drawViewBackgroundInRect:self.bounds];
+	return width;
 }
 
 -(void)resetCursorRects {

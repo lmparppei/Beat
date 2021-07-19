@@ -24,37 +24,46 @@
 }
 
 -(void)setSize {
+	/*
 	// Set default size
 	NSRect frame = self.frame;
 	frame.size.height = DEFAULT_HEIGHT;
 	self.frame = frame;
+	 */
 	
-	NSRect textFrame = _pluginText.frame;
-	textFrame.size.height = DEFAULT_TEXT_HEIGHT;
-
+	 /*
 	_pluginText.preferredMaxLayoutWidth = _pluginText.frame.size.width;
 	[_pluginText invalidateIntrinsicContentSize];
-	[self layoutSubtreeIfNeeded];
+	
+	textFrame.size.height = _pluginText.intrinsicContentSize.height;
+	[_pluginText setFrame:textFrame];
+	  */
+	
+	/*
+	//[self layoutSubtreeIfNeeded];
 	
 	if (_pluginText.frame.size.height < _pluginText.intrinsicContentSize.height) {
 		CGFloat heightDiff = _pluginText.intrinsicContentSize.height - _pluginText.frame.size.height;
 		
 		textFrame = _pluginText.frame;
-		frame = self.frame;
+		//frame = self.frame;
 		
 		textFrame.size.height += heightDiff;
-		frame.size.height += heightDiff;
+		//frame.size.height += heightDiff;
 		
-		self.frame = frame;
+		//self.frame = frame;
 		_pluginText.frame = textFrame;
 		
 		_rowHeight = self.frame.size.height;
 	} else {
 		_rowHeight = self.frame.size.height;
 	}
+ */
 }
 
 -(void)viewWillDraw {
+	NSLog(@"draw");
+	
 	if (_localURL) {
 		// Plugin is installed
 		[_pluginName setTextColor:NSColor.labelColor];
@@ -68,7 +77,6 @@
 	}
 	
 	if (_updateAvailable) {
-		NSLog(@"Check: update available for %@", _name);
 		[_downloadButton setHidden:NO];
 		[_downloadButton setTitle:@"Update"];
 		
@@ -84,10 +92,31 @@
 	if (_enabled) [_checkbox setState:NSOnState]; else [_checkbox setState:NSOffState];
 	[_pluginName setStringValue:_name];
 	(_info) ? [_pluginText setStringValue:[_info stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]] : [_pluginText setStringValue:@""];
+	
+	//NSTableRowView *parent = (NSTableRowView*)self.superview;
+	
+	NSString *copyright = (_copyright) ? [NSString stringWithFormat:@"© %@", _copyright] : @"";
+	NSString *version = (_version) ? [NSString stringWithFormat:@"Version %@", _version] : @"";
+	
+	NSString *copyrightText = @"";
+	if (copyright.length) copyrightText = [copyrightText stringByAppendingFormat:@"%@\n", copyright];
+	if (version.length) copyrightText = [copyrightText stringByAppendingFormat:@"%@", version];
+	_copyrightText.stringValue = copyrightText;
 		
+	//NSString *stringWithCopyrightInfo = [NSString stringWithFormat:@"%@\n\n%@\n%@", _pluginText.stringValue, self.copyright, self.version];
+//		[_pluginText setStringValue:stringWithCopyrightInfo];
+
 	
 	//NSString *copyrightAndVersion = [NSString stringWithFormat:@"%@ — %@", (_version) ? _version : @"", (_copyright) ? _copyright : @""];
-	
+}
+
+- (void)select {
+	self.selected = YES;
+	_copyrightText.hidden = NO;
+}
+- (void)deselect {
+	self.selected = NO;
+	_copyrightText.hidden = YES;
 }
 
 - (IBAction)download:(id)sender {
@@ -106,12 +135,8 @@
 	if (!_pluginManager) _pluginManager = [BeatPluginManager sharedManager];
 	
 	NSButton *checkBox = (NSButton*)sender;
-	if (checkBox.state == NSOnState) {
-		NSLog(@"enable");
-		[_pluginManager enablePlugin:self.name];
-	} else {
-		[_pluginManager disablePlugin:self.name];
-	}
+	if (checkBox.state == NSOnState) [_pluginManager enablePlugin:self.name];
+	else [_pluginManager disablePlugin:self.name];
 }
 
 - (NSImage*)buttonBackground:(NSColor*)color size:(CGSize)size {

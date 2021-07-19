@@ -601,6 +601,14 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return value;
 }
 
+- (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
+	[_delegate.documentSettings set:settingName as:value];
+}
+- (void)setDocumentSetting:(NSString*)settingName setting:(id)value {
+	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
+	[_delegate.documentSettings set:key as:value];
+}
+
 #pragma mark - Timer
 
 - (NSTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback {
@@ -799,8 +807,8 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 #pragma mark - Pagination interface
 
-- (FountainPaginator*)paginator:(NSArray*)lines {
-	FountainPaginator *paginator = [[FountainPaginator alloc] initWithScript:lines printInfo:_delegate.printInfo];
+- (BeatPaginator*)paginator:(NSArray*)lines {
+	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines printInfo:_delegate.printInfo];
 	return paginator;
 }
 
@@ -958,6 +966,10 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	return result;
 }
 
+#pragma mark - Document Settings
+
+
+
 #pragma mark - WebKit controller
 
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
@@ -983,4 +995,3 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
  to believe that the garden is dying
  
  */
-

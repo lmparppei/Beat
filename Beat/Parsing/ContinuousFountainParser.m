@@ -23,6 +23,10 @@
  
  Update 2021-something: COVID is still on, and this class has been improved a lot.
  
+ Future considerations:
+ - Make it possible to change editor text via text elements. This means making lines aware of their parser, and
+   even tighter integration with the editor delegate.
+ 
  */
 
 #import "ContinuousFountainParser.h"
@@ -74,6 +78,8 @@ static NSDictionary* patterns;
 		_delegate = delegate;
 		_staticDocumentSettings = settings;
 		
+		/*
+		// FUTURE CONSIDERATION:
 		// Init patterns
 		static dispatch_once_t onceToken;
 		dispatch_once(&onceToken, ^{
@@ -81,6 +87,7 @@ static NSDictionary* patterns;
 				@"bold": RX(@"(?<!\\\\)(\\*{2})(.+?)(\\*{2})")
 			};
 		});
+		 */
 		
 		[self parseText:string];
 	}
@@ -104,7 +111,7 @@ static NSDictionary* patterns;
 	
     for (NSString *rawLine in lines) {
         NSInteger index = [self.lines count];
-        Line* line = [[Line alloc] initWithString:rawLine position:position];
+        Line* line = [[Line alloc] initWithString:rawLine position:position parser:self];
         [self parseTypeAndFormattingForLine:line atIndex:index];
 		
 		// Quick fix for mistaking an ALL CAPS action to character cue
@@ -188,6 +195,7 @@ static NSDictionary* patterns;
 
 - (void)ensurePositions {
 	// This is a method to fix anything that might get broken :-)
+	// Use only when debugging.
 
 	NSInteger previousPosition = 0;
 	NSInteger previousLength = 0;
@@ -253,13 +261,13 @@ static NSDictionary* patterns;
 				if (i == newLines.count - 1) {
 					// Handle adding the last line a bit differently
 					tail = [newLine stringByAppendingString:tail];
-					addedLine = [[Line alloc] initWithString:tail position:offset];
+					addedLine = [[Line alloc] initWithString:tail position:offset parser:self];
 
 					[self.lines insertObject:addedLine atIndex:lineIndex + i];
 					[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:addedLine.string.length];
 					offset += newLine.length + 1;
 				} else {
-					addedLine = [[Line alloc] initWithString:newLine position:offset];
+					addedLine = [[Line alloc] initWithString:newLine position:offset parser:self];
 					
 					[self.lines insertObject:addedLine atIndex:lineIndex + i];
 					[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:addedLine.string.length + 1];
@@ -278,7 +286,7 @@ static NSDictionary* patterns;
 	}
 	
 	// Log any problems faced during parsing (safety measure for debugging)
-	[self report];
+	// [self report];
 	
 	return changedIndices;
 }
@@ -323,7 +331,8 @@ static NSDictionary* patterns;
         }
         
         Line* newLine = [[Line alloc] initWithString:cutOffString
-                                            position:position+1];
+                                            position:position+1
+											  parser:self];
         [self.lines insertObject:newLine atIndex:lineIndex+1];
         
         [self incrementLinePositionsFromIndex:lineIndex+2 amount:1];
@@ -1814,6 +1823,6 @@ and incomprehensible system of recursion.
 /*
  
  Thank you, Hendrik Noeller, for making Beat possible.
- Without your massive original work, all of this would have never happened.
+ Without your massive original work, any of this had never happened.
  
  */

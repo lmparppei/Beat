@@ -7,6 +7,7 @@
 //
 
 #import "ValidationItem.h"
+#import "BeatDocumentSettings.h"
 
 @implementation ValidationItem
 + (ValidationItem*)newItem:(NSString*)title setting:(NSString*)setting target:(id)target {
@@ -22,8 +23,18 @@
 	return self;
 }
 
-- (bool)validate {	
-	if ([(NSNumber*)[_target valueForKey:_setting] integerValue]) return YES;
+- (bool)validate {
+	NSInteger value = 0;
+	
+	if ([[self.target className] isEqualToString:@"BeatDocumentSettings"]) {
+		// Document settings
+		value = [(BeatDocumentSettings*)_target getBool:_setting];
+	} else {
+		// App settings
+		value = [(NSNumber*)[_target valueForKey:_setting] integerValue];
+	}
+	
+	if (value) return YES;
 	else return NO;
 }
 

@@ -69,3 +69,21 @@
 @synthesize omited;
 
 @end
+/*
+ 
+ This place is not a place of honor.
+ No highly esteemed deed is commemorated here.
+ Nothing valued is here.
+ 
+ What is here was dangerous and repulsive to us.
+ This message is a warning about danger.
+ 
+ The danger is still present, in your time, as it was in ours.
+ The danger is to the body, and it can kill.
+
+ The form of the danger is an emanation of energy.
+
+ The danger is unleashed only if you substantially disturb this place physically.
+ This place is best shunned and left uninhabited.
+ 
+ */

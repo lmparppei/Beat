@@ -1,20 +1,23 @@
 
 # High-priority
 
-## Fix FDX Import Bugs
-
-* Double scene headings
-
 ## Sanitize delegates
 
-Right now, there are many, many delegates which do almost the same thing. It would be pretty sensible to write a single delegate, which could be reused almost anywhere. That's pretty much what `BeatEditorDelegate` does, and most controls and classes could perhaps use it directly? 
+Right now, there are many, many delegates which do almost the same thing. It would be pretty sensible to write a single delegate, which could be reused almost anywhere. That's pretty much what `BeatEditorDelegate` does, and most controls and classes could perhaps use it directly?
+
+... Nope. Timeline, Outline and Cards need their own delegates. For any new classes, let's just extend `BeatEditorDelegate`.
 
 
 # Work in progress
 
+## Line Delegation
+
+Lines are now aware of their parser, which potentially allows cleaning up some weirder practices. It could even potentially make it possible to change line object contents, and have it be directly updated in the editor. This is something I've been hoping for a long time, and would make life easier with plugins, but it has to be very robust before making those methods public. 
+
 ## Pagination
 
 * Allow pagination to happen from a given index. This is a LOT harder than it sounds, because of everything.
+* I've begun working on a completely new, native Cocoa pagination and rendering.
 
 ## Document.m
 
@@ -25,4 +28,4 @@ Right now, there are many, many delegates which do almost the same thing. It wou
 
 * Check and fix dark mode UI
 * Full rewrite to Cocoa when possible
-
+... though the above is a bit obsolete now, with the addition of floating index cards plugin. And maybe the dark mode should be abolished from cards, too. They are pretty dark already.

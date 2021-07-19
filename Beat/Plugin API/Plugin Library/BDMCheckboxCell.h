@@ -13,6 +13,7 @@
 @property (nonatomic,strong) IBOutlet NSTextField * _Nonnull pluginName;
 @property (nonatomic,strong) IBOutlet NSTextField * _Nonnull pluginText;
 @property (nonatomic,strong) IBOutlet NSButton * _Nonnull downloadButton;
+@property (nonatomic,strong) IBOutlet NSTextField * _Nonnull copyrightText;
 @property (nonatomic) bool available;
 @property (nonatomic) bool updateAvailable;
 @property (nonatomic) bool enabled;
@@ -23,7 +24,10 @@
 @property (nonatomic) NSString * _Nullable copyright;
 @property (nonatomic) NSString * _Nullable version;
 @property (nonatomic) CGFloat rowHeight;
+@property (nonatomic) bool selected;
 - (void)downloadComplete;
--(void)setSize;
+- (void)setSize;
+- (void)select;
+- (void)deselect;
 @end
 

@@ -49,6 +49,7 @@ typedef enum : NSUInteger {
 @property (readonly) bool centered;
 @property (nonatomic, readonly) NSString* string;
 @property (nonatomic, readonly) NSInteger length;
+@property (nonatomic, readonly) NSUInteger index;
 
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
@@ -65,8 +66,12 @@ typedef enum : NSUInteger {
 - (id)clone;
 @end
 
-@interface Line : NSObject <LineExports>
+@protocol LineDelegate <NSObject>
+@property (nonatomic, readonly) NSMutableArray *lines;
+@end
 
+@interface Line : NSObject <LineExports>
+@property (nonatomic, weak) id<LineDelegate> parser;
 @property LineType type;
 @property (strong, nonatomic) NSString* string;
 @property (nonatomic) NSString* original;
@@ -96,6 +101,8 @@ typedef enum : NSUInteger {
 @property NSRange storylineRange;
 @property NSRange colorRange;
 
+@property (nonatomic, readonly) NSUInteger index; // index of line ine parser, experimental
+
 @property NSMutableArray *tags;
 
 @property (nonatomic) NSInteger length;
@@ -104,6 +111,8 @@ typedef enum : NSUInteger {
 @property bool omitOut; //Wether the line starts an omit and doesn't finish it
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
+- (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser;
+- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position parser:(id<LineDelegate>)parser;
 - (Line*)initWithString:(NSString*)string type:(LineType)type;
 - (Line*)initWithString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position;
@@ -123,6 +132,7 @@ typedef enum : NSUInteger {
 
 + (Line*)withString:(NSString*)string type:(LineType)type;
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
++ (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser;
 
 // Copy element
 - (Line*)clone;
