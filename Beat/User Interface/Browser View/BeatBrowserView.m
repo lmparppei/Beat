@@ -13,7 +13,7 @@
  */
 
 #import "BeatBrowserView.h"
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import <Webkit/Webkit.h>
 
 @interface BeatBrowserView ()
@@ -80,10 +80,10 @@
 
 -(void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
 	if ([message.name isEqualToString:@"openTemplate"]) {
-		[(ApplicationDelegate*)NSApp.delegate showTemplate:message.body];
+		[(BeatAppDelegate*)NSApp.delegate showTemplate:message.body];
 	}
 	else if ([message.name isEqualToString:@"openLink"]) {
-		[(ApplicationDelegate*)NSApp.delegate openURLInWebBrowser:message.body];
+		[(BeatAppDelegate*)NSApp.delegate openURLInWebBrowser:message.body];
 	}
 }
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {

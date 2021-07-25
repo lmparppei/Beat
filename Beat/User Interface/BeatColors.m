@@ -8,9 +8,24 @@
 
 #import "BeatColors.h"
 
+@interface BeatColors ()
+@property (nonatomic) NSDictionary *colorValues;
+@end
+
 @implementation BeatColors
-+ (NSDictionary *) colors {
-	return @{
+
++ (BeatColors*)sharedColors
+{
+	static BeatColors* sharedColors;
+	if (!sharedColors) {
+		sharedColors = [[BeatColors alloc] init];
+	}
+	return sharedColors;
+}
+
+- (NSDictionary*)colorValues {
+	if (_colorValues) return _colorValues;
+	else _colorValues = @{
 			 @"red" : [BeatColors colorWithRed:239 green:0 blue:73],
 			 @"blue" : [BeatColors colorWithRed:0 green:129 blue:239],
 			 @"green": [BeatColors colorWithRed:0 green:223 blue:121],
@@ -30,7 +45,14 @@
 			 @"veryDarkGray": [BeatColors colorWithRed:100 green:100 blue:100],
 			 @"backgroundGray": [BeatColors colorWithRed:41 green:42 blue:45],
 			 @"fdxRemoval": [BeatColors colorWithRed:255 green:190 blue:220]
-    };
+	};
+	
+	return _colorValues;
+}
+
++ (NSDictionary *) colors {
+	BeatColors *colors = [self sharedColors];
+	return colors.colorValues;
 }
 + (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
 	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];

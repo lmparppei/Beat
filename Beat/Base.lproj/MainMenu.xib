@@ -872,7 +872,7 @@ DQ
             </items>
             <point key="canvasLocation" x="82" y="-6"/>
         </menu>
-        <customObject id="vEX-2F-hcj" customClass="ApplicationDelegate">
+        <customObject id="vEX-2F-hcj" customClass="BeatAppDelegate">
             <connections>
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
                 <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>

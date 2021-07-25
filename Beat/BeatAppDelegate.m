@@ -6,7 +6,7 @@
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //	Released under GPL license
 
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import "RecentFiles.h"
 #import "BeatFileImport.h"
 #import "BeatPluginManager.h"
@@ -25,7 +25,7 @@
 
 #define APPNAME @"Beat"
 
-@interface ApplicationDelegate ()
+@interface BeatAppDelegate ()
 @property (nonatomic) RecentFiles *recentFilesSource;
 
 @property (weak) IBOutlet NSWindow* startModal;
@@ -33,6 +33,7 @@
 
 @property (weak) IBOutlet NSMenuItem *checkForUpdatesItem;
 @property (weak) IBOutlet NSMenuItem *menuManual;
+@property (nonatomic) BeatPluginManager *pluginManager; // Set main ownership to avoid leaks
 
 @property (weak) IBOutlet NSTextField* versionField;
 
@@ -52,7 +53,7 @@
 
 @end
 
-@implementation ApplicationDelegate
+@implementation BeatAppDelegate
 
 #define DEVELOPMENT NO
 #define DARKMODE_KEY @"Dark Mode"
@@ -87,7 +88,7 @@
 	
 	// Remove "Check For Updates" menu item
 	[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
-	[_checkForUpdatesItem setHidden:YES];
+	_checkForUpdatesItem = nil;
 #endif
 	
 	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
@@ -96,6 +97,7 @@
 	[_versionField setStringValue:versionString];
 	
 	// Show/hide pro content
+	// NOTE: This was an old concept, but still remains here in the code for some reason.
 	if (_proMode) {
 		[self.menuManual setHidden:NO];
 	}
@@ -525,13 +527,13 @@
 	[self setupPlugins:_importMenu];
 }
 - (void)setupPlugins:(NSMenu*)menu {
-	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
+	if (!_pluginManager) _pluginManager = [BeatPluginManager sharedManager];
 	
 	BeatPluginType type = ToolPlugin;
 	if (menu == _exportMenu) type = ExportPlugin;
 	else if (menu == _importMenu) type = ImportPlugin;
 	
-	[plugins pluginMenuItemsFor:menu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"] type:type];
+	[_pluginManager pluginMenuItemsFor:menu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"] type:type];
 }
 -(void)menuWillOpen:(NSMenu *)menu {
 	if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];

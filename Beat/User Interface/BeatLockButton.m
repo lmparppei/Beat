@@ -25,39 +25,35 @@
 
 @implementation BeatLockButton
 
+
+- (void)setupLayer {
+	self.wantsLayer = YES;
+	
+	_backgroundLayer = [CALayer layer];
+
+	_backgroundLayer.cornerRadius = self.frame.size.height / 2;
+	_backgroundLayer.backgroundColor = [NSColor.grayColor colorWithAlphaComponent:.9].CGColor;
+	_backgroundLayer.bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+	_backgroundLayer.position = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
+	[self.layer addSublayer:_backgroundLayer];
+	
+	//NSAffineTransform *transform =  [NSAffineTransform transform];
+	_shapeLayer = [CAShapeLayer layer];
+	CGRect rect = CGRectMake(0, 0, self.frame.size.height - 6, self.frame.size.height - 6);
+	CGPathRef path = CGPathCreateWithEllipseInRect(rect, nil);
+		
+	_shapeLayer.fillColor = NSColor.darkGrayColor.CGColor;
+	_shapeLayer.path = path;
+	_shapeLayer.bounds = CGRectMake(0,0, rect.size.width, rect.size.height);
+	_shapeLayer.position = CGPointMake(rect.size.height / 2 + 3 , rect.size.height / 2 + 3);
+	
+	[self.layer addSublayer:_shapeLayer];
+	CGPathRelease(path);
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     // Drawing code here.
-}
--(void)viewWillDraw {
-	self.wantsLayer = YES;
-	
-	if (!_shapeLayer) {
-		self.layerUsesCoreImageFilters = YES;
-		_backgroundLayer = [CALayer layer];
-
-		_backgroundLayer.cornerRadius = self.frame.size.height / 2;
-		_backgroundLayer.backgroundColor = [NSColor.grayColor colorWithAlphaComponent:.9].CGColor;
-		_backgroundLayer.bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-		_backgroundLayer.position = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2);
-		[self.layer addSublayer:_backgroundLayer];
-		
-		//NSAffineTransform *transform =  [NSAffineTransform transform];
-		_shapeLayer = [CAShapeLayer layer];
-		CGRect rect = CGRectMake(3, 3, self.frame.size.height - 6, self.frame.size.height - 6);
-		CGPathRef path = CGPathCreateWithEllipseInRect(rect, nil);
-		
-		CGAffineTransform transform = _shapeLayer.affineTransform;
-		[_shapeLayer setAffineTransform:CGAffineTransformRotate(transform, 90)];
-		
-		_shapeLayer.fillColor = NSColor.darkGrayColor.CGColor;
-		_shapeLayer.path = path;
-		_shapeLayer.bounds = CGRectMake(0,0, rect.size.width, rect.size.height);
-		_shapeLayer.position = CGPointMake(rect.size.width - 8, rect.size.height / 2 + 2);
-		
-		[self.layer addSublayer:_shapeLayer];
-		CGPathRelease(path);
-	}
 }
 
 -(void)updateTrackingAreas
@@ -67,7 +63,7 @@
 		[self removeTrackingArea:area];
 	}
 
-	int opts = (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways);
+	NSInteger opts = (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways);
 	NSTrackingArea *trackingArea = trackingArea = [[NSTrackingArea alloc]initWithRect:(NSRect){ 0, 0, self.frame.size.width, self.frame.size.height } options:opts owner:self userInfo:nil];
 	[self addTrackingArea:trackingArea];
 }
@@ -89,6 +85,8 @@
 }
 
 -(void)show {
+	if (!_shapeLayer) [self setupLayer];
+	
 	self.hidden = NO;
 	[self.label.animator setAlphaValue:1.0];
 	self.backgroundLayer.opacity = 1.0;

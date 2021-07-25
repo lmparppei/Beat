@@ -30,7 +30,7 @@
                 <outlet property="outlineSearchField" destination="wQe-ic-Dmm" id="EkH-y5-5vL"/>
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
                 <outlet property="pageNumbersSwitch" destination="Mef-QD-NsX" id="Qep-HJ-CZr"/>
-                <outlet property="pageSizePopup" destination="UOV-VP-tY1" id="VAT-lR-lFz"/>
+                <outlet property="pageSizePopup" destination="UOV-VP-tY1" id="4Sc-YE-3pD"/>
                 <outlet property="previewButton" destination="DOv-x4-OK1" id="gJe-tL-TEf"/>
                 <outlet property="printWebView" destination="ddy-rn-xRJ" id="nMo-II-Kfi"/>
                 <outlet property="printing" destination="c93-vc-ktH" id="d6p-mp-q7O"/>

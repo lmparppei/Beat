@@ -10,6 +10,7 @@
 #import "DynamicColor.h"
 
 @interface BeatColors : NSObject
+@property (nonatomic) NSDictionary *colors;
 + (NSColor*)color:(NSString*)name;
 + (NSDictionary*)colors;
 + (NSString*)colorWith16bitHex:(NSString*)colorName;

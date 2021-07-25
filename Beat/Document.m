@@ -80,7 +80,7 @@
 #import "ThemeManager.h"
 #import "OutlineScene.h"
 #import "DynamicColor.h"
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import "NSString+Whitespace.h"
 #import "FountainAnalysis.h"
 #import "ColorCheckbox.h"
@@ -318,7 +318,7 @@
 
 #define DOCUMENT_WIDTH 630
 #define DOCUMENT_WIDTH_A4 620
-#define DOCUMENT_WIDTH_US 650
+#define DOCUMENT_WIDTH_US 640
 #define TEXT_INSET_TOP 80
 
 // Magnifying stuff
@@ -427,6 +427,8 @@
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
 	
+	// Kill observers
+	[NSNotificationCenter.defaultCenter removeObserver:self.marginView];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 		
 	// ApplicationDelegate will show welcome screen when no documents are open
@@ -696,12 +698,10 @@
 		self.textView.textInsetY = TEXT_INSET_TOP;
 	}
 	
-	if (width < 10000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
+	if (width < 100000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
 		_inset = [_textView setInsets];
 		[self.textScrollView setNeedsDisplay:YES];
 		[self.marginView setNeedsDisplay:YES];
-	} else {
-		[_textView setInsets];
 	}
 	 
 	[self ensureLayout];
@@ -753,6 +753,9 @@
 	[_darkModeSwitch setChecked:self.isDark];
 	
 	NSInteger paperSize = [self.documentSettings getInt:@"Page Size"];
+	NSLog(@"Paper size %lu", paperSize);
+	if (paperSize == BeatA4) [_pageSizePopup selectItemWithTitle:@"A4"];
+	else [_pageSizePopup selectItemWithTitle:@"US Letter"];
 	
 	if (self.mode == TaggingMode) [_taggingModeSwitch setChecked:YES]; else [_taggingModeSwitch setChecked:NO];
 	
@@ -1029,6 +1032,18 @@
     }
 }
 
+- (void)saveCaret {
+	[self.documentSettings setInt:@"Caret Position" as:self.textView.selectedRange.location];
+}
+- (void)loadCaret {
+	NSInteger position = [self.documentSettings getInt:@"Caret Position"];
+	
+	if (position < self.textView.string.length && position >= 0) {
+		[self.textView setSelectedRange:NSMakeRange(position, 0)];
+		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
+	}
+}
+
 #pragma mark - Print & Export
 
 - (NSString*)fileNameString
@@ -1183,38 +1198,6 @@
 	// To avoid some graphical glitches
 	[self ensureLayout];
 }
-
-- (void)saveCaret {
-	[self saveDocumentSetting:@"Caret Position" value:[NSNumber numberWithInteger:self.textView.selectedRange.location]];
-}
-- (void)loadCaret {
-	NSInteger position = [(NSNumber*)[self getDocumentSetting:@"Caret Position"] integerValue];
-	if (position < self.textView.string.length && position >= 0) {
-		[self.textView setSelectedRange:NSMakeRange(position, 0)];
-		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
-	}
-}
-
-- (id)getDocumentSetting:(NSString*)settingName {
-	if ([self.fileNameString isEqualToString:@"Untitled"]) return nil;
-	NSDictionary *documentSettings = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"Document Settings"];
-	NSDictionary *settings = [documentSettings objectForKey:self.fileNameString];
-	return [settings objectForKey:settingName];
-}
-- (void)saveDocumentSetting:(NSString*)settingName value:(id)object {
-	if ([self.fileNameString isEqualToString:@"Untitled"]) return;
-	
-	NSMutableDictionary *documentSettings = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"Document Settings"]];
-
-	NSMutableDictionary *settings = [NSMutableDictionary dictionaryWithDictionary:[documentSettings objectForKey:[self fileNameString]]];
-	if (settings && object != nil) {
-		[settings setObject:object forKey:settingName];
-		[documentSettings setObject:settings forKey:[self fileNameString]];
-	}
-	
-	[[NSUserDefaults standardUserDefaults] setValue:documentSettings forKey:@"Document Settings"];
-}
-
 
 /*
  
@@ -1907,7 +1890,7 @@
 	}
 }
 
-- (void) forceCharacterInput {
+- (void)forceCharacterInput {
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
@@ -3390,7 +3373,7 @@ static NSString *revisionAttribute = @"Revision";
 		else menuItem.state = NSOffState;
 		
 	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
-		if ([(ApplicationDelegate *)[NSApp delegate] isDark]) [menuItem setState:NSOnState];
+		if ([(BeatAppDelegate *)[NSApp delegate] isDark]) [menuItem setState:NSOnState];
 		else [menuItem setState:NSOffState];
 	
 	} else if ([menuItem.title isEqualToString:@"Share"]) {
@@ -3497,7 +3480,7 @@ static NSString *revisionAttribute = @"Revision";
 #pragma mark - Themes & UI outlook
 
 - (IBAction)toggleDarkMode:(id)sender {
-	[(ApplicationDelegate *)NSApp.delegate toggleDarkMode];
+	[(BeatAppDelegate *)NSApp.delegate toggleDarkMode];
 	
 	[self updateUIColors];
 
@@ -3511,7 +3494,7 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 - (bool)isDark {
-	return [(ApplicationDelegate *)[NSApp delegate] isDark];
+	return [(BeatAppDelegate *)[NSApp delegate] isDark];
 }
 
 - (void)updateUIColors {
@@ -3691,7 +3674,7 @@ static NSString *revisionAttribute = @"Revision";
 	// WORK IN PROGRESS // WIP WIP WIP
 	// Update preview in background
 	
-	_attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
+	 _attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
 	
 	[_previewTimer invalidate];
 	self.previewUpdated = NO;
@@ -3732,6 +3715,7 @@ static NSString *revisionAttribute = @"Revision";
 	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
 	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
 	self.printWebView.navigationDelegate = nil;
+	self.printWebView = nil;
 }
 - (void)cancelOperation:(id) sender
 {
@@ -4218,7 +4202,8 @@ static NSString *revisionAttribute = @"Revision";
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"setColor"];
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"move"];
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"printCards"];
-	
+	self.cardView.navigationDelegate = nil;
+	self.cardView = nil;
 }
 
 // This might be pretty shitty solution for my problem but whatever
@@ -4926,7 +4911,7 @@ triangle walks
 	return autosavePath;
 }
 - (NSURL*)autosavePath {
-	return [ApplicationDelegate appDataPath:@"Autosave"];
+	return [BeatAppDelegate appDataPath:@"Autosave"];
 }
 
 - (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
@@ -4961,7 +4946,7 @@ triangle walks
 	
 	[super saveDocumentAs:sender];
 	
-	NSURL *url = [(ApplicationDelegate*)NSApp.delegate appDataPath:@"Autosave"];
+	NSURL *url = [(BeatAppDelegate*)NSApp.delegate appDataPath:@"Autosave"];
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
 	
@@ -4990,7 +4975,7 @@ triangle walks
 #pragma mark - Plugin support for documents
 
 - (void)setupPlugins {
-	_pluginManager = [BeatPluginManager sharedManager];
+	_pluginManager = BeatPluginManager.sharedManager;
 }
 - (IBAction)runPlugin:(id)sender {
 	NSMenuItem *menuItem = (NSMenuItem*)sender;

@@ -7,7 +7,7 @@
 //
 
 #import "BeatEditorButton.h"
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import "BeatColors.h"
 
 IB_DESIGNABLE
@@ -35,7 +35,7 @@ IB_DESIGNABLE
 }
 
 - (void)layout {
-	ApplicationDelegate *appDelegate = (ApplicationDelegate*)NSApp.delegate;
+	BeatAppDelegate *appDelegate = (BeatAppDelegate*)NSApp.delegate;
 	NSImage *image = self.image;
 	
 	if (@available(macOS 10.14, *)) {

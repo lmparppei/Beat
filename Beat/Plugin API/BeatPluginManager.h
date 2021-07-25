@@ -23,8 +23,8 @@ typedef enum : NSInteger {
 @end
 
 @interface BeatPluginManager : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
-@property (nonatomic) NSMenuItem *menuItem;
-@property (nonatomic) NSMenuItem *exportMenuItem;
+@property (nonatomic, strong) NSMenuItem *menuItem;
+@property (nonatomic, strong) NSMenuItem *exportMenuItem;
 @property (nonatomic) NSMenuItem *importMenuItem;
 
 + (BeatPluginManager*)sharedManager;

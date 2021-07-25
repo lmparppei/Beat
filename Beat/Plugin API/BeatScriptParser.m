@@ -24,10 +24,10 @@
 #import "BeatScriptParser.h"
 #import "Line.h"
 #import "OutlineScene.h"
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import "BeatPluginManager.h"
 #import "BeatTagging.h"
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import "BeatPluginWindow.h"
 #import <PDFKit/PDFKit.h>
 
@@ -118,8 +118,6 @@
 	_sheetCallback = nil;
 	_plugin = nil;
 	
-	//_updateMethod = nil;
-	
 	if (_resident) {
 		[_delegate deregisterPlugin:self];
 	}
@@ -131,20 +129,11 @@
 }
 
 - (void)openConsole {
-	[(ApplicationDelegate*)NSApp.delegate openConsole];
+	[(BeatAppDelegate*)NSApp.delegate openConsole];
 }
 - (IBAction)clearConsole:(id)sender {
-	[(ApplicationDelegate*)NSApp.delegate clearConsole];
+	[(BeatAppDelegate*)NSApp.delegate clearConsole];
 }
-
-/*
-if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
-	
-} else {
-	[plugins addObject:filepath];
-}
-*/
-
 
 #pragma mark - Resident plugin
 
@@ -424,7 +413,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 - (void)log:(NSString*)string
 {
-	[(ApplicationDelegate*)NSApp.delegate logToConsole:string pluginName:_pluginName];
+	[(BeatAppDelegate*)NSApp.delegate logToConsole:string pluginName:_pluginName];
 	NSLog(@"%@: %@", _pluginName, string);
 }
 
@@ -770,7 +759,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 }
 
 -(void)windowWillClose:(NSNotification *)notification {
-	NSLog(@"window will close");
+	NSLog(@"HTML window will close");
 	_windowClosing = YES;
 
 	// Remove webview from memory, for sure
@@ -779,11 +768,10 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 	[_pluginWindow.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
 	_pluginWindow.webview = nil;
 	
-
 	if (_terminating) return;
 	
 	if (!_windowCallback.isUndefined && _windowCallback) {
-		NSLog(@"Callback");
+		NSLog(@"  --> Callback");
 		[_windowCallback callWithArguments:nil];
 	}
 //	else {
@@ -924,7 +912,7 @@ if ([fileManager fileExistsAtPath:filepath isDirectory:YES]) {
 
 - (void)newDocument:(NSString*)string
 {
-	if (string.length) [(ApplicationDelegate*)NSApp.delegate newDocumentWithContents:string];
+	if (string.length) [(BeatAppDelegate*)NSApp.delegate newDocumentWithContents:string];
 	else [[NSDocumentController sharedDocumentController] newDocument:nil];
 }
 

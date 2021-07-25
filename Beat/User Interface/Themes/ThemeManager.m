@@ -20,7 +20,7 @@
 #import "ThemeEditor.h"
 #import "Theme.h"
 #import "DynamicColor.h"
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import "Document.h"
 
 @interface ThemeManager ()
@@ -77,7 +77,7 @@
 	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
 		
 	// Read user-created theme file
-	NSURL *userUrl = [(ApplicationDelegate*)NSApp.delegate appDataPath:@""];
+	NSURL *userUrl = [(BeatAppDelegate*)NSApp.delegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
@@ -203,7 +203,7 @@
 	
 	NSDictionary *themeDict = [customTheme themeAsDictionaryWithName:CUSTOM_KEY];
 	
-	NSURL *userUrl = [(ApplicationDelegate*)NSApp.delegate appDataPath:@""];
+	NSURL *userUrl = [(BeatAppDelegate*)NSApp.delegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	[themeDict writeToFile:userUrl.path atomically:NO];

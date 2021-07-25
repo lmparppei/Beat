@@ -20,7 +20,7 @@
 
 
 #import "BeatPluginManager.h"
-#import "ApplicationDelegate.h"
+#import "BeatAppDelegate.h"
 #import "RegExCategories.h"
 #import "BDMCheckboxCell.h"
 #import <UnzipKit/UnzipKit.h>
@@ -60,7 +60,7 @@
 	self = [super init];
 	
 	if (self) {
-		_pluginURL = [(ApplicationDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+		_pluginURL = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
 		[self loadPlugins];
 	}
 	
@@ -364,7 +364,7 @@
 	[self openPluginFolder];
 }
 - (void)openPluginFolder {
-	NSURL *url = [(ApplicationDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	NSURL *url = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
 	[NSWorkspace.sharedWorkspace openURL:url];
 }
 
@@ -514,7 +514,7 @@
 	if (error || !container) return;
 	
 	// Get & create plugin path
-	NSURL *pluginURL = [(ApplicationDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	NSURL *pluginURL = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
 	
 	[container extractFilesTo:pluginURL.path overwrite:YES error:&error];
 }
