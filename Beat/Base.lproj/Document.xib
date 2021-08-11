@@ -568,7 +568,7 @@
                                                             <rect key="frame" x="15" y="15" width="160" height="36"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <subviews>
-                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="afZ-Mw-gsE">
+                                                                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" id="afZ-Mw-gsE">
                                                                     <rect key="frame" x="3" y="3" width="30" height="30"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSLockLockedTemplate" id="pVq-ze-Jbh"/>
@@ -576,7 +576,7 @@
                                                                 </imageView>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="jtj-qF-qHB">
                                                                     <rect key="frame" x="40" y="11" width="108" height="14"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Document is locked" usesSingleLineMode="YES" id="aMy-cb-lJ3">
                                                                         <font key="font" metaFont="smallSystem"/>
                                                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>

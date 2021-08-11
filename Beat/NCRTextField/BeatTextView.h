@@ -17,7 +17,8 @@ typedef enum : NSInteger {
 	NoPopup = 0,
 	Autocomplete,
 	ForceElement,
-	Tagging
+	Tagging,
+	SelectTag
 } BeatTextviewPopupMode;
 
 @protocol NCRAutocompleteTableViewDelegate <NSObject>

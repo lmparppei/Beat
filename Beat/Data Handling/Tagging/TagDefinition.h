@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *name;
 @property (nonatomic) NSMutableIndexSet *indices;
 - (NSString*)typeAsString;
-- (instancetype)initWithName:(NSString*)name type:(BeatTagType)type identifier:(NSString*)tagId;
+- (instancetype)initWithName:(NSString*)name type:(BeatTagType)type identifier:(NSString*)tagId; 
 - (bool)hasId:(NSString*)tagId;
 @end
 

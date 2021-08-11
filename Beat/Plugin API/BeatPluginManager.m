@@ -67,6 +67,32 @@
 	return self;
 }
 
+- (void)checkForUpdates {
+	NSArray *disabled = [self disabledPlugins];
+	
+	[self updateAvailablePlugins];
+	[self getPluginLibraryWithCallback:^{
+		NSMutableArray *availableUpdates = [NSMutableArray array];
+		
+		for (NSString *name in self.availablePlugins.allKeys) {
+			NSDictionary *plugin = self.availablePlugins[name];
+			
+			// Don't check updates for disabled plugins
+			if ([disabled containsObject:name]) continue;
+			
+			if (plugin[@"updateAvailable"]) {
+				[availableUpdates addObject:name];
+			}
+		}
+		
+		if (availableUpdates.count > 0) {
+			NSString *text = [NSString stringWithFormat:@"%@", [availableUpdates componentsJoinedByString:@", "]];
+			[(BeatAppDelegate*)NSApp.delegate showNotification:@"Update Available" body:text identifier:@"PluginUpdates" oneTime:YES interval:5.0];
+		}
+	}];
+	
+}
+
 - (NSArray*)disabledPlugins {
 	return [NSUserDefaults.standardUserDefaults valueForKey:DISABLED_KEY];
 }
@@ -126,8 +152,6 @@
 	NSString *urlAsString = PLUGIN_LIBRARY_URL;
 
 	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-
-
 	[[session dataTaskWithURL:[NSURL URLWithString:urlAsString]
 			completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 		

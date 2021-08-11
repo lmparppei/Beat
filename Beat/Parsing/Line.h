@@ -88,7 +88,7 @@ typedef enum : NSUInteger {
 @property NSMutableIndexSet* boldItalicRanges;
 @property NSMutableIndexSet* underlinedRanges;
 @property NSMutableIndexSet* noteRanges;
-@property NSMutableIndexSet* omitedRanges;
+@property NSMutableIndexSet* omittedRanges;
 @property NSMutableIndexSet* highlightRanges;
 @property NSMutableIndexSet* strikeoutRanges;
 @property NSMutableIndexSet* escapeRanges;
@@ -101,14 +101,19 @@ typedef enum : NSUInteger {
 @property NSRange storylineRange;
 @property NSRange colorRange;
 
-@property (nonatomic, readonly) NSUInteger index; // index of line ine parser, experimental
+@property (nonatomic, readonly) NSUInteger index; /// index of line in parser, experimental
 
 @property NSMutableArray *tags;
 
 @property (nonatomic) NSInteger length;
 
-@property bool omitIn; //wether the line terminates an unfinished omit
-@property bool omitOut; //Wether the line starts an omit and doesn't finish it
+@property bool omitIn; ///wether the line terminates an unfinished omit
+@property bool omitOut; ///Wether the line starts a note and doesn't finish it
+
+@property bool unterminatedNoteBlock; /// the line has potential to become a note block
+@property (weak) Line* noteBlockOrigin;
+@property bool noteIn; ///wether the line terminates an unfinished note
+@property bool noteOut; ///Wether the line starts a note and doesn't finish it
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser;

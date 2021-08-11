@@ -95,6 +95,8 @@ JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width hei
 JSExportAs(htmlWindow, - (BeatPluginWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats);
 JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(OutlineScene *)scene);
+JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
+
 @end
 
 // Interfacing with the document

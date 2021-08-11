@@ -14,6 +14,8 @@
 #import "Line.h"
 #import "BeatHTMLScript.h"
 #import "BeatScriptParser.h"
+#import "NSString+Levenshtein.h"
+
 
 @implementation BeatTest
 
@@ -27,6 +29,14 @@
 }
 
 - (void) test {
+	NSString *string = @"Tämä on testi!";
+	NSArray *alt = @[@"Tämä on testi!", @"Tämäkin on testi", @"Pelkkä testi", @"Testi"];
+	
+	for (NSString *str in alt) {
+		CGFloat result = [str compareWithString:string];
+		NSLog(@"%@: result %f", str, result);
+	}
+	
 }
 
 - (NSString*)testString {

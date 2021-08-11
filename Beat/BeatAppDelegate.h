@@ -8,9 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
-#import "RecentFiles.h"
+#import <UserNotifications/UserNotifications.h>
 
-@interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate>
+@interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate>
 
 @property (nonatomic) bool darkMode;
 @property (nonatomic) bool forceLightMode;
@@ -44,5 +44,8 @@
 - (void)newDocumentWithContents:(NSString*)string;
 
 - (void)openURLInWebBrowser:(NSString*)urlString;
+
+- (IBAction)openPluginManager:(id)sender;
+- (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval;
 
 @end

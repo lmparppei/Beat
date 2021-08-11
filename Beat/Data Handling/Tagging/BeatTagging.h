@@ -29,11 +29,25 @@ typedef enum : NSInteger {
 	GenericTag
 } BeatTagType;
 
+@class BeatTagging;
 @protocol BeatTaggingDelegate <NSObject>
 @property (readonly, weak) ContinuousFountainParser *parser;
 @property (readonly, weak) NSTextView *textView;
+
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type;
+- (bool)tagExists:(NSString*)string type:(BeatTagType)type;
+- (void)tagRange:(NSRange)range withDefinition:(id)definition;
+- (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type;
+- (id)definitionWithName:(NSString*)name type:(BeatTagType)type;
+
+@end
+
+
+@interface TagSearchResult : NSObject
+@property (nonatomic) NSString *string;
+@property (nonatomic) CGFloat distance;
+- (instancetype)initWith:(NSString*)string distance:(CGFloat)distance;
 @end
 
 @interface BeatTagging : NSObject
@@ -61,5 +75,8 @@ typedef enum : NSInteger {
 - (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type;
 - (NSArray*)getTags;
 - (NSArray*)allTags;
+- (bool)tagExists:(NSString*)string type:(BeatTagType)type;
+- (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type;
+- (id)definitionWithName:(NSString*)name type:(BeatTagType)type;
 
 @end

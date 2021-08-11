@@ -287,7 +287,6 @@
 @property (weak) IBOutlet BeatTimer *beatTimer;
 
 // Tagging
-@property (nonatomic) BeatTagging *tagging;
 @property (weak) IBOutlet NSTextView *tagTextView;
 @property (weak) IBOutlet ColorView *sideView;
 @property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
@@ -753,7 +752,7 @@
 	[_darkModeSwitch setChecked:self.isDark];
 	
 	NSInteger paperSize = [self.documentSettings getInt:@"Page Size"];
-	NSLog(@"Paper size %lu", paperSize);
+
 	if (paperSize == BeatA4) [_pageSizePopup selectItemWithTitle:@"A4"];
 	else [_pageSizePopup selectItemWithTitle:@"US Letter"];
 	
@@ -1698,10 +1697,12 @@
 	[self replaceCharactersInRange:range withString:@""];
 	[[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:range.location];
 }
-- (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
+- (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string {
 	_moving = YES;
 	
-	NSString *stringToMove = [self.getText substringWithRange:range];
+	NSString *oldString = [self.getText substringWithRange:range];
+	
+	NSString *stringToMove = string;
 	NSInteger length = self.getText.length;
 	
 	if (position > length) position = length;
@@ -1727,10 +1728,14 @@
 		undoPosition = range.location;
 	}
 	
-	[[[self undoManager] prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition];
+	[[[self undoManager] prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldString];
 	[[self undoManager] setActionName:@"Move Scene"];
 	
 	_moving = NO;
+}
+- (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
+	NSString *stringToMove = [self.getText substringWithRange:range];
+	[self moveStringFrom:range to:position actualString:stringToMove];
 }
 
 - (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
@@ -1961,11 +1966,11 @@
 }
 - (void)applyFormatChanges
 {
-    for (NSNumber* index in self.parser.changedIndices) {
-        [self formatLineOfScreenplay:self.parser.lines[index.integerValue]];
-    }
-	
-    [self.parser.changedIndices removeAllObjects];
+	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		[self formatLineOfScreenplay:self.parser.lines[idx]];
+	}];
+        
+    [self.parser.changedIndices removeAllIndexes];
 }
 - (void)forceFormatChangesInRange:(NSRange)range
 {
@@ -1984,7 +1989,7 @@
 		index++;
 	}
 
-	[_parser.changedIndices removeAllObjects];
+	[_parser.changedIndices removeAllIndexes];
 	[self initialTextBackgroundRender];
 }
 
@@ -2322,7 +2327,7 @@
 												 inLineAtPosition:line.position]];
 	}];
 	
-	[line.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+	[line.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 							range:[self globalRangeFromLocalRange:&range
 												 inLineAtPosition:line.position]];
@@ -2554,6 +2559,21 @@
 		[self.textView setSelectedRange:NSMakeRange(range.location, 0)];
 	}];
 	[self.undoManager endUndoGrouping];
+}
+
+- (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices {
+	[indices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		NSMutableString *str = [NSMutableString string];
+		
+		Line *line = _parser.lines[idx];
+		
+		[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+			[str appendString:[line.string substringWithRange:range]];
+		}];
+		NSLog(@"  --> %@", str);
+		
+		[self formatLineOfScreenplay:line];
+	}];
 }
 
 #pragma mark - Caret methods
@@ -3186,7 +3206,7 @@ static NSString *revisionAttribute = @"Revision";
 		// If the heading already has a forced number, skip it
 		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
 			// Check if the scene heading is omited
-			if (![line omitted]) {
+			if (!line.omitted) {
 				[fullText appendFormat:@"%@ #%lu#\n", cleanedLine, sceneCount];
 				sceneCount++;
 			} else {
@@ -3890,24 +3910,6 @@ static NSString *revisionAttribute = @"Revision";
 	// On to the very dangerous stuff :-) fuck me :----)
 	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
 	
-	
-	
-	// Different ranges depending on to which direction the scene was moved
-	/*
-	NSRange newRange;
-	if (from < to) {
-		if (!moveToEnd) {
-			newRange = NSMakeRange(sceneAfter.sceneStart - sceneToMove.sceneLength, 0);
-		} else {
-			newRange = NSMakeRange([[self getText] length] - sceneToMove.sceneLength, 0);
-		}
-	} else {
-		newRange = NSMakeRange(sceneAfter.sceneStart, 0);
-	}
-	 */
-
-	// We move the string itself in an easily undoable method
-	//[self moveString:textToMove withRange:range newRange:newRange];
 	
 	if (!moveToEnd) {
 		[self moveStringFrom:range to:sceneAfter.position];
@@ -5119,6 +5121,17 @@ triangle walks
 		[self forceFormatChangesInRange:range];
 	}
 }
+- (TagDefinition*)definitionWithName:(NSString*)name type:(BeatTagType)type {
+	return [self.tagging definitionWithName:name type:type];
+}
+- (void)tagRange:(NSRange)range withDefinition:(id)definition {
+	TagDefinition *def = (TagDefinition*)definition;
+	BeatTag *tag = [BeatTag withDefinition:def];
+
+	[self tagRange:range withTag:tag];
+	[self forceFormatChangesInRange:range];
+}
+
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag {
 	// Tag a range with the specified tag.
 	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
@@ -5143,6 +5156,10 @@ triangle walks
 		}];
 	}
 }
+
+- (bool)tagExists:(NSString*)string type:(BeatTagType)type { return [self.tagging tagExists:string type:type]; }
+- (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type { return [self.tagging searchTagsByTerm:string type:type]; }
+
 
 - (void)saveTags {
 	NSArray *tags = [_tagging getTags];	

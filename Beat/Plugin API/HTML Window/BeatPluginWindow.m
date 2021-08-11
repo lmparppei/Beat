@@ -12,7 +12,7 @@
 @property (assign) BeatScriptParser *parser;
 @end
 
-@implementation BeatPluginWindow
+@implementation BeatPluginWindow 
 
 -(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height parser:(BeatScriptParser*)parser {
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);

@@ -105,6 +105,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @property (nonatomic) bool forceElementMenu;
 
 @property (nonatomic) BeatTextviewPopupMode popupMode;
+@property (nonatomic) BeatTagType currentTagType;
 
 // Used to highlight typed characters and insert text
 @property (nonatomic, copy) NSString *substring;
@@ -395,6 +396,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				} else if (_popupMode == Tagging) {
 					[self setTag:self];
 					return;
+				} else if (_popupMode == SelectTag) {
+					[self selectTag:self];
+					return;
 				} else if (self.autocompletePopover.isShown) {
 					[self insert:self];
 				}
@@ -573,12 +577,58 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Tag string in the menu is prefixed by "● " or "× " so take them it out
 	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"× " withString:@""];
 	tagStr = [tagStr stringByReplacingOccurrencesOfString:@"● " withString:@""];
+		
+	if (self.selectedRange.length > 0) {
+		NSString *tagString = [self.textStorage.string substringWithRange:self.selectedRange].lowercaseString;
+		BeatTagType type = [BeatTagging tagFor:tagStr];
+		
+		if (![self.taggingDelegate tagExists:tagString type:type]) {
+			// If a tag with corresponding text & type doesn't exist, let's find possible similar tags
+			NSArray *possibleMatches = [self.taggingDelegate searchTagsByTerm:tagString type:type];
+			
+			if (possibleMatches.count == 0)	[self.taggingDelegate tagRange:self.selectedRange withType:type];
+			else {
+				NSArray *items = @[[NSString stringWithFormat:@"New: %@", tagString]];
+				self.matches = [items arrayByAddingObjectsFromArray:possibleMatches];
+				_popupMode = SelectTag;
+				_currentTagType = type;
+				[self.autocompleteTableView reloadData];
+				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+				return;
+			}
+			
+		} else {
+			[self.taggingDelegate tagRange:self.selectedRange withType:type];
+		}
+		
+		// Deselect
+		self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
+	}
+		
+	[self.autocompletePopover close];
+	_popupMode = NoPopup;
+}
+- (void)selectTag:(id)sender {
+	id tagName;
+	if (_autocompleteTableView.selectedRow == 0) {
+		// First item CREATES A NEW TAG
+		tagName = [self.textStorage.string substringWithRange:self.selectedRange];
+	} else {
+		// This was selected from the list of existing tags
+		tagName = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
+	}
 	
-	[self.taggingDelegate tagRange:self.selectedRange withType:[BeatTagging tagFor:tagStr]];
+	id def = [self.taggingDelegate definitionWithName:(NSString*)tagName type:_currentTagType];
 	
-	// Deselect
+	if (def) {
+		// Definition was selected
+		[self.taggingDelegate tagRange:self.selectedRange withDefinition:def];
+	} else {
+		// No existing definition selected
+		[self.taggingDelegate tagRange:self.selectedRange withType:_currentTagType];
+	}
+	
 	self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
-	
 	[self.autocompletePopover close];
 	_popupMode = NoPopup;
 }

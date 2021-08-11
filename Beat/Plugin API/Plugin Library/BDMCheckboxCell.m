@@ -62,8 +62,6 @@
 }
 
 -(void)viewWillDraw {
-	NSLog(@"draw");
-	
 	if (_localURL) {
 		// Plugin is installed
 		[_pluginName setTextColor:NSColor.labelColor];

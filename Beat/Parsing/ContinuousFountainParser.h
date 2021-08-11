@@ -22,7 +22,8 @@
 - (NSRange)selectedRange;
 - (void)headingChangedToActionAt:(Line*)line;
 - (void)actionChangedToHeadingAt:(Line*)line;
-
+- (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
+- (void)applyFormatChanges;
 @end
 
 // Plugin compatibility
@@ -50,7 +51,7 @@
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
 
 @property (nonatomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
-@property (nonatomic) NSMutableArray *changedIndices; //Stores every line that needs to be formatted according to the type
+@property (nonatomic) NSMutableIndexSet *changedIndices; //Stores every line that needs to be formatted according to the type
 @property (nonatomic) NSMutableArray *outline;
 @property (nonatomic) NSMutableArray *titlePage;
 @property (nonatomic) NSMutableArray *storylines;
@@ -58,6 +59,7 @@
 
 // For STATIC parsing without a document
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
+@property (nonatomic) bool staticParser;
 
 // Initialization for both CONTINUOUS and STATIC parsing
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;

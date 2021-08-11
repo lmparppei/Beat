@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -728,8 +729,8 @@ DQ
                                     <action selector="clearMarkings:" target="-1" id="Pgz-vk-zKb"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="oQ7-Kk-dvf"/>
-                            <menuItem title="Tagging Mode" id="Fdy-fO-lco">
+                            <menuItem isSeparatorItem="YES" hidden="YES" id="oQ7-Kk-dvf"/>
+                            <menuItem title="Tagging Mode" hidden="YES" id="Fdy-fO-lco">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>
@@ -900,9 +901,9 @@ DQ
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="C6Z-Uz-f8Q">
-                                    <rect key="frame" x="7" y="22" width="187" height="15"/>
+                                    <rect key="frame" x="7" y="21" width="187" height="15"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="© L-M Parppei 2019–2021" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="HVn-HB-zZO">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="© Lauri-Matti Parppei 2019–2021" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="HVn-HB-zZO">
                                         <font key="font" size="9" name="HelveticaNeue"/>
                                         <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -931,7 +932,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="sourceList" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>

@@ -6,6 +6,11 @@
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //	Released under GPL license
 
+
+#ifdef ADHOC
+#import <Sparkle/Sparkle.h>
+#endif
+
 #import "BeatAppDelegate.h"
 #import "RecentFiles.h"
 #import "BeatFileImport.h"
@@ -16,10 +21,7 @@
 #import "BeatDownloadManager.h"
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
-
-#ifdef ADHOC
-#import <Sparkle/Sparkle.h>
-#endif
+#import "BeatNotifications.h"
 
 #import "BeatTest.h"
 
@@ -34,6 +36,8 @@
 @property (weak) IBOutlet NSMenuItem *checkForUpdatesItem;
 @property (weak) IBOutlet NSMenuItem *menuManual;
 @property (nonatomic) BeatPluginManager *pluginManager; // Set main ownership to avoid leaks
+
+@property (nonatomic) BeatNotifications *notifications;
 
 @property (weak) IBOutlet NSTextField* versionField;
 
@@ -68,6 +72,8 @@
 
 - (void) awakeFromNib {
 
+	//BeatTest *test = BeatTest.alloc.init;
+	
 #ifdef ADHOC
 	// Ad hoc vector
 	NSLog(@"# ADHOC");
@@ -114,6 +120,12 @@
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
 	[self checkAutosavedFiles];
+	
+	if (@available(macOS 10.14, *)) {
+		UNUserNotificationCenter *center = UNUserNotificationCenter.currentNotificationCenter;
+		[center requestAuthorizationWithOptions:UNAuthorizationOptionBadge | UNAuthorizationOptionAlert completionHandler:^(BOOL granted, NSError * _Nullable error) {
+		}];
+	}
 	
 #ifdef ADHOC
 	// Run Sparkle if this is an ad hoc distribution
@@ -207,7 +219,7 @@
 	return NO;
 }
 
-#pragma mark - Autosave
+#pragma mark - Autosave Recovery
 
 - (void)checkAutosavedFiles {
 	// We will run this operation in another thread, so that the app can start and opening recovered documents won't mess up any other logic built into the app.
@@ -515,8 +527,7 @@
 }
 
 - (IBAction)newDocument:(id)sender {
-	[[NSDocumentController sharedDocumentController] newDocument:nil];
-	
+	[NSDocumentController.sharedDocumentController newDocument:nil];
 }
 
 #pragma mark - Plugin support
@@ -525,6 +536,8 @@
 	[self setupPlugins:_pluginMenu];
 	[self setupPlugins:_exportMenu];
 	[self setupPlugins:_importMenu];
+	
+	[_pluginManager checkForUpdates];
 }
 - (void)setupPlugins:(NSMenu*)menu {
 	if (!_pluginManager) _pluginManager = [BeatPluginManager sharedManager];
@@ -688,23 +701,11 @@
 	[userDefaults synchronize];
 }
 
-#pragma mark - App Store update check
-/*
--(void)checkForAppstoreUpdates{
-	NSDictionary* infoDictionary = [[NSBundle mainBundle] infoDictionary];
-	NSString* appID = infoDictionary[@"CFBundleIdentifier"];
-	NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://itunes.apple.com/lookup?bundleId=%@", appID]];
-	NSData* data = [NSData dataWithContentsOfURL:url];
-	NSDictionary* lookup = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+#pragma mark - Show notifications
 
-	if ([lookup[@"resultCount"] integerValue] == 1){
-		NSString* appStoreVersion = lookup[@"results"][0][@"version"];
-		NSString* currentVersion = infoDictionary[@"CFBundleShortVersionString"];
-		if (![appStoreVersion isEqualToString:currentVersion]){
-			NSLog(@"Need to update [%@ != %@]", appStoreVersion, currentVersion);
-		}
-	}
+- (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval {
+	if (!_notifications) _notifications = [[BeatNotifications alloc] init];
+	[_notifications showNotification:title body:body identifier:identifier oneTime:showOnce interval:interval];
 }
- */
 
 @end

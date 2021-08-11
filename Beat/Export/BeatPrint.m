@@ -101,8 +101,14 @@
 	else [_printSceneNumbers setState:NSOffState];
 	
 	// Check the paper size
-	if (_document.printInfo.paperSize.width > 595) [_radioLetter setState:NSOnState];
-	else [_radioA4 setState:NSOnState];
+	// WIP: Unify these so the document knows its BeatPaperSize too
+	if (_document.printInfo.paperSize.width > 596) {
+		[_radioLetter setState:NSOnState];
+		_paperSize = BeatUSLetter;
+	} else {
+		[_radioA4 setState:NSOnState];
+		_paperSize = BeatA4;
+	}
 	_document.printInfo = [BeatPaperSizing setMargins:_document.printInfo];
 	
 	// Show window
@@ -156,6 +162,8 @@
 - (IBAction)selectPaperSize:(id)sender {
 	BeatPaperSize oldSize = _paperSize;
 	
+	NSLog(@"paper size %lu", oldSize);
+	
 	if ([(NSButton*)sender tag] == 1) {
 		// A4
 		_document.printInfo = [BeatPaperSizing setSize:BeatA4 printInfo:_document.printInfo];
@@ -165,6 +173,8 @@
 		_document.printInfo = [BeatPaperSizing setSize:BeatUSLetter printInfo:_document.printInfo];
 		_paperSize = BeatUSLetter;
 	}
+	
+	NSLog(@"new size %lu", _paperSize);
 	
 	// Preview needs refreshing
 	if (oldSize != _paperSize) {

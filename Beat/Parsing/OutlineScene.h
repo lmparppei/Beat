@@ -35,6 +35,9 @@
 @end
 
 @interface OutlineScene : NSObject <OutlineSceneExports>
++ (OutlineScene*)withLine:(Line*)line;
+
+@property (nonatomic) id<LineDelegate> delegate;
 @property (nonatomic) NSMutableArray * scenes;
 @property (strong, nonatomic) NSString * string;
 @property (nonatomic) LineType type;
@@ -42,10 +45,10 @@
 @property (nonatomic, readonly) NSString * color;
 @property (nonatomic) NSArray * storylines;
 
-@property (nonatomic) NSUInteger position;
+@property (nonatomic, readonly) NSUInteger position;
 @property (nonatomic) NSUInteger length;
-@property (nonatomic) NSUInteger sceneStart;  // backwards compatibility
-@property (nonatomic) NSUInteger sceneLength;  // backwards compatibilit
+@property (nonatomic, readonly) NSUInteger sceneStart;  // backwards compatibility
+@property (nonatomic, readonly) NSUInteger sceneLength;  // backwards compatibility
 
 @property (nonatomic) NSInteger sectionDepth;
 @property (nonatomic) NSMutableArray * characters;
@@ -53,8 +56,9 @@
 @property (nonatomic) bool omitted;
 @property (nonatomic) bool noOmitIn;
 @property (nonatomic) bool noOmitOut;
+@property (nonatomic) NSInteger omitStartsFrom;
 
-@property (nonatomic) Line * line; // Is this overkill regarding memory? Isn't this just a pointer?
+@property (nonatomic, weak) Line * line;
 
 - (NSString*)stringForDisplay;
 - (NSRange)range;

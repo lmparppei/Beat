@@ -40,10 +40,19 @@
 #import "BeatTagging.h"
 #import "RegExCategories.h"
 #import "BeatTagItem.h"
-#import "TagDefinition.h"
 #import "BeatTag.h"
+#import "NSString+Levenshtein.h"
 
 #define UIFontSize 11.0
+
+@implementation TagSearchResult
+- (instancetype)initWith:(NSString*)string distance:(CGFloat)distance {
+	self = [super init];
+	self.distance = distance;
+	self.string = string;
+	return self;
+}
+@end
 
 @interface BeatTagging ()
 @property (nonatomic) NSMutableArray *tagDefinitions;
@@ -434,6 +443,14 @@
 	return [BeatTag withDefinition:def];
 }
 
+- (TagDefinition*)definitionWithName:(NSString*)name type:(BeatTagType)type {
+	for (TagDefinition* def in self.tagDefinitions) {
+		if (def.type != type) continue;
+		if ([def.name isEqualToString:name]) return def;
+	}
+	return nil;
+}
+
 + (NSString*)newId {
 	NSUUID *uuid = [NSUUID UUID];
 	return [uuid UUIDString].lowercaseString;
@@ -447,6 +464,35 @@
 	}
 	
 	return nil;
+}
+- (NSArray<TagDefinition*>*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type {
+	NSMutableArray *matches = [NSMutableArray array];
+	
+	string = [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	
+	for (TagDefinition *tag in _tagDefinitions) {
+		// Ignore stuff that isn't this type
+		if (tag.type != type) continue;
+		
+		// Calculate Levenshtein distance
+		CGFloat distance = [string compareWithString:tag.name];
+		TagSearchResult *result = [TagSearchResult.alloc initWith:tag.name distance:distance];
+		[matches addObject:result];
+	}
+	
+	// Sort results using Levenshtein algorithm
+	if (matches.count) [matches sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"distance" ascending:YES]]];
+	
+	// Convert results to strings
+	NSMutableArray *matchStrings = NSMutableArray.array;
+	for (TagSearchResult *result in matches) {
+		[matchStrings addObject:result.string];
+	}
+	
+	return matchStrings;
+}
+- (bool)tagExists:(NSString*)string type:(BeatTagType)type {
+	if ([self searchForTag:string type:type] != nil) return YES; else return NO;
 }
 
 - (NSArray*)getTags {

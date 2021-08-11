@@ -41,6 +41,8 @@ typedef enum : NSInteger {
 - (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock;
 - (void)updateAvailablePlugins;
 - (void)downloadPlugin:(NSString*)pluginName sender:(id)sender;
+
+- (void)checkForUpdates;
 @end
 
 NS_ASSUME_NONNULL_END

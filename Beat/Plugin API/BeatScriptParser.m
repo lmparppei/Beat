@@ -29,6 +29,7 @@
 #import "BeatTagging.h"
 #import "BeatAppDelegate.h"
 #import "BeatPluginWindow.h"
+#import "BeatModalAccessoryView.h"
 #import <PDFKit/PDFKit.h>
 
 
@@ -509,6 +510,43 @@
 	}
 }
 
+- (NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback {
+	// We support both return & callback in modal windows
+	
+	NSString *title = (settings[@"title"]) ? settings[@"title"] : @"";
+	NSString *info  = (settings[@"info"]) ? settings[@"info"] : @"";
+	
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = title;
+	alert.informativeText = info;
+	
+	[alert addButtonWithTitle:@"OK"];
+	[alert addButtonWithTitle:@"Cancel"];
+	
+	BeatModalAccessoryView *itemView = [[BeatModalAccessoryView alloc] init];
+	
+	if ([settings[@"items"] isKindOfClass:NSArray.class]) {
+		NSArray *items = settings[@"items"];
+		
+		for (NSDictionary* item in items) {
+			[itemView addField:item];
+		}
+	}
+	
+	[itemView setFrame:(NSRect){ 0, 0, 350, itemView.heightForItems }];
+	[alert setAccessoryView:itemView];
+	NSModalResponse response = [alert runModal];
+	
+	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
+		NSDictionary *values = itemView.valuesForFields;
+		[callback callWithArguments:@[values]];
+		return values;
+	} else {
+		[callback callWithArguments:nil];
+		return nil;
+	}
+}
+
 - (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText
 {
 	if ([placeholder isEqualToString:@"undefined"]) placeholder = @"";
@@ -716,9 +754,8 @@
 		
 		if (!error) {
 			[self closePanel:nil];
-			[_sheetCallback callWithArguments:@[jsonData]];
-		}
-		else {
+			[self.sheetCallback callWithArguments:@[jsonData]];
+		} else {
 			[self closePanel:nil];
 			[self alert:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
 		}

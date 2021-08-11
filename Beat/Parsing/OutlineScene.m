@@ -12,9 +12,13 @@
 
 @implementation OutlineScene
 
-- (id)init
++ (OutlineScene*)withLine:(Line*)line {
+	return [[OutlineScene alloc] initWithLine:line];
+}
+- (id)initWithLine:(Line*)line
 {
 	if ((self = [super init]) == nil) { return nil; }
+	self.line = line;
 	
 	return self;
 }
@@ -46,6 +50,7 @@
 		@"storylines": (self.storylines) ? self.storylines : @[],
 		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber : @"",
 		@"color": (self.color) ? self.color : @"",
+		@"sectionDepth": @(self.sectionDepth),
 
 		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
 		@"sceneStart": @(self.position),
@@ -55,6 +60,18 @@
 	};
 }
 
+// Forward these properties from line
+-(LineType)type {
+	return self.line.type;
+}
+-(NSUInteger)position {
+	return self.line.position;
+}
+-(NSArray*)storylines {
+	return self.line.storylines;
+}
+
+-(bool)omitted {return self.line.omitted; }
 // Legacy compatibility
 -(bool)omited {	return self.omitted; }
 

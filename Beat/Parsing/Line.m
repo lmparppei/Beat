@@ -108,7 +108,7 @@
 	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
 	if (self.boldItalicRanges.count) newLine.boldItalicRanges = [self.boldItalicRanges copy];
 	if (self.noteRanges.count) newLine.noteRanges = [self.noteRanges copy];
-	if (self.omitedRanges.count) newLine.omitedRanges = [self.omitedRanges copy];
+	if (self.omittedRanges.count) newLine.omittedRanges = [self.omittedRanges copy];
 	//if (self.highlightRanges.count) newLine.highlightRanges = [self.highlightRanges copy];
 	if (self.strikeoutRanges.count) newLine.strikeoutRanges = [self.strikeoutRanges copy];
 	
@@ -141,7 +141,7 @@
 	
 	__block NSInteger invisibleLength = 0;
 	
-	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+	[self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		invisibleLength += range.length;
 	}];
 
@@ -261,7 +261,7 @@
 	
 	// To remove any omitted ranges, we need to combine the index sets
 	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
-	[indexes addIndexes:self.omitedRanges];
+	[indexes addIndexes:self.omittedRanges];
 	[indexes addIndexes:self.noteRanges];
 	[indexes addIndexes:self.escapeRanges];
 	
@@ -538,7 +538,7 @@
 		}
 	}];
 		
-	[self.omitedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+	[self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > OMIT_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addAttr:@"Omit" toString:string range:range];
 		}
@@ -929,6 +929,7 @@
 		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber : @"",
 		@"position": @(self.position),
 		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
+		@"sectionDepth": @(self.sectionDepth),
 		@"textRange": @{ @"location": @(self.textRange.location), @"length": @(self.textRange.length) },
 		@"typeAsString": self.typeAsString,
 		@"omitted": @(self.omitted)

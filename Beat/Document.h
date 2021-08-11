@@ -78,6 +78,9 @@ THE SOFTWARE.
 // Document settings
 @property (nonatomic) BeatDocumentSettings *documentSettings;
 
+// Tagging
+@property (nonatomic) BeatTagging *tagging;
+
 - (NSString*)getText;
 - (NSString*)fileNameString;
 // Make some of the actions available for text view
