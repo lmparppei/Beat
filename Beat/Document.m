@@ -3891,30 +3891,78 @@ static NSString *revisionAttribute = @"Revision";
 	// FOLLOWING CODE IS A MESS. Dread lightly.
 	// Thanks for the heads up, past me, but I'll just dive right in
 	
-	// ... or not.
 	// NOTE FROM BEAT 1.1 r4:
     // The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
 	
+	// On to the very dangerous stuff :-) fuck me :----)
+	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
+	NSString *string = [self.getText substringWithRange:range];
+	
+	NSInteger omissionStartsAt = NSNotFound;
+	NSInteger omissionEndsAt = NSNotFound;
+	
+	if (sceneToMove.omitted) {
+		// We need to find out where the omission begins & ends
+		NSInteger idx = [self.parser.lines indexOfObject:sceneToMove.line];
+		if (idx == NSNotFound) return; // Shouldn't happen
+		
+		if (idx > 0) {
+			// Look for start of omission, but break when encountering an outline item
+			for (NSInteger i = idx - 1; i >= 0; i++) {
+				Line *prevLine = self.lines[i];
+				if (prevLine.type == heading || prevLine.type == synopse || prevLine.type == section) break;
+				else if (prevLine.omitOut && [prevLine.string rangeOfString:@"/*"].location != NSNotFound) {
+					omissionStartsAt = prevLine.position + [prevLine.string rangeOfString:@"/*"].location;
+					break;
+				}
+			}
+			
+			// Look for end of omission
+			for (NSInteger i = idx + 1; i < self.lines.count; i++) {
+				Line *nextLine = self.lines[i];
+				if (nextLine.type == heading || nextLine.type == section) break;
+				else if (nextLine.omitIn && [nextLine.string rangeOfString:@"*/"].location != NSNotFound) {
+					omissionEndsAt = nextLine.position + [nextLine.string rangeOfString:@"*/"].location + 2;
+				}
+			}
+		}
+		
+	
+		// Recreate range to represent the actual range with omission symbols
+		// (if applicable)
+		NSInteger loc = (omissionStartsAt == NSNotFound) ? sceneToMove.position : omissionStartsAt;
+		NSInteger len = (omissionEndsAt == NSNotFound) ? (sceneToMove.position + sceneToMove.length) - loc : omissionEndsAt - loc;
+		
+		range = (NSRange){ loc, len };
+		
+		string = [self.getText substringWithRange:range];
+		
+		// Add omission markup if needed
+		if (omissionStartsAt == NSNotFound) string = [NSString stringWithFormat:@"\n/*\n\n%@", string];
+		if (omissionEndsAt == NSNotFound) string = [string stringByAppendingString:@"\n*/\n\n"];
+		
+		// Normal omitted blocks end with */, so add some line breaks if needed
+		if ([[string substringFromIndex:string.length - 2] isEqualToString:@"*/"]) string = [string stringByAppendingString:@"\n\n"];
+	}
+	
+	// Create a new outline before trusting it
 	NSMutableArray *outline = [self getOutlineItems];
 	
+	// When an item is dropped at the end, its target index will be +1 from the last item
 	bool moveToEnd = false;
-	if (to >= [outline count]) {
-		to = [outline count] - 1;
+	if (to >= outline.count) {
+		to = outline.count - 1;
 		moveToEnd = true;
 	}
 	
 	// Scene before which this scene will be moved, if not moved to the end
 	OutlineScene *sceneAfter;
 	if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
-	
-	// On to the very dangerous stuff :-) fuck me :----)
-	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
-	
-	
+		
 	if (!moveToEnd) {
-		[self moveStringFrom:range to:sceneAfter.position];
+		[self moveStringFrom:range to:sceneAfter.position actualString:string];
 	} else {
-		[self moveStringFrom:range to:self.getText.length];
+		[self moveStringFrom:range to:self.getText.length actualString:string];
 	}
 }
 
@@ -4153,8 +4201,6 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 #pragma mark - Editor Delegate methods
-
-// This stuff is a mess.
 
 - (NSMutableArray*)lines {
 	return self.parser.lines;

@@ -63,6 +63,7 @@ typedef enum : NSUInteger {
 - (NSString*)stripInvisible;
 - (NSString*)textContent;
 - (NSDictionary*)forSerialization;
+- (NSString*)trimmed;
 - (id)clone;
 @end
 
@@ -75,45 +76,48 @@ typedef enum : NSUInteger {
 @property LineType type;
 @property (strong, nonatomic) NSString* string;
 @property (nonatomic) NSString* original;
-@property NSUInteger position;
-@property NSUInteger numberOfPreceedingFormattingCharacters;
-@property NSUInteger sectionDepth;
-@property NSString* sceneNumber;
-@property NSInteger sceneIndex;
-@property NSString* color;
-@property NSArray* storylines;
+@property (nonatomic) NSUInteger position;
+@property (nonatomic) NSUInteger numberOfPreceedingFormattingCharacters;
+@property (nonatomic) NSUInteger sectionDepth;
+@property (nonatomic) NSString* sceneNumber;
+@property (nonatomic) NSInteger sceneIndex;
+@property (nonatomic) NSString* color;
+@property (nonatomic) NSArray* storylines;
 
-@property NSMutableIndexSet* boldRanges;
-@property NSMutableIndexSet* italicRanges;
-@property NSMutableIndexSet* boldItalicRanges;
-@property NSMutableIndexSet* underlinedRanges;
-@property NSMutableIndexSet* noteRanges;
-@property NSMutableIndexSet* omittedRanges;
-@property NSMutableIndexSet* highlightRanges;
-@property NSMutableIndexSet* strikeoutRanges;
-@property NSMutableIndexSet* escapeRanges;
+@property (nonatomic) NSMutableIndexSet* boldRanges;
+@property (nonatomic) NSMutableIndexSet* italicRanges;
+@property (nonatomic) NSMutableIndexSet* boldItalicRanges;
+@property (nonatomic) NSMutableIndexSet* underlinedRanges;
+@property (nonatomic) NSMutableIndexSet* noteRanges;
+@property (nonatomic) NSMutableIndexSet* omittedRanges;
+@property (nonatomic) NSMutableIndexSet* highlightRanges;
+@property (nonatomic) NSMutableIndexSet* strikeoutRanges;
+@property (nonatomic) NSMutableIndexSet* escapeRanges;
 
-@property NSMutableIndexSet* additionRanges;
-@property NSMutableIndexSet* removalRanges;
+@property (nonatomic) NSMutableIndexSet* additionRanges;
+@property (nonatomic) NSMutableIndexSet* removalRanges;
 
-@property NSRange titleRange;
-@property NSRange sceneNumberRange;
-@property NSRange storylineRange;
-@property NSRange colorRange;
+@property (nonatomic) NSRange titleRange;
+@property (nonatomic) NSRange sceneNumberRange;
+@property (nonatomic) NSRange storylineRange;
+@property (nonatomic) NSRange colorRange;
 
-@property (nonatomic, readonly) NSUInteger index; /// index of line in parser, experimental
+@property (nonatomic, readonly) NSUInteger index; /// Index of line in parser, experimental
 
-@property NSMutableArray *tags;
+@property (nonatomic) NSMutableArray *tags;
 
 @property (nonatomic) NSInteger length;
 
-@property bool omitIn; ///wether the line terminates an unfinished omit
-@property bool omitOut; ///Wether the line starts a note and doesn't finish it
+@property bool omitIn; /// Wether the line terminates an unfinished omit
+@property bool omitOut; /// Wether the line starts a note and doesn't finish it
 
-@property bool unterminatedNoteBlock; /// the line has potential to become a note block
-@property (weak) Line* noteBlockOrigin;
-@property bool noteIn; ///wether the line terminates an unfinished note
-@property bool noteOut; ///Wether the line starts a note and doesn't finish it
+@property (nonatomic) bool noteIn; /// Wether the line terminates an unfinished note
+@property (nonatomic) bool noteOut; /// Wether the line starts a note and doesn't finish it
+@property (nonatomic) bool cancelsNoteBlock;
+@property (nonatomic) bool beginsNoteBlock;
+@property (nonatomic) bool endsNoteBlock;
+@property (nonatomic) NSMutableIndexSet *noteOutIndices;
+@property (nonatomic) NSMutableIndexSet *noteInIndices;
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser;
@@ -121,17 +125,17 @@ typedef enum : NSUInteger {
 - (Line*)initWithString:(NSString*)string type:(LineType)type;
 - (Line*)initWithString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position;
-- (NSString*)toString;
 - (NSString*)typeAsString;
-- (NSString*)typeAsFountainString;
+- (NSString*)typeAsFountainString; /// Type as the original Fountain repo type
 - (NSString*)cleanedString;
 - (NSString*)stripInvisible;
-- (bool)omitted;
-- (bool)note;
+- (bool)omitted; /// The line is omitted completely from print — either inside an omission block or a note
+- (bool)note; /// The line is completely a note
 - (bool)centered;
-- (NSRange)range;
+- (NSString*)trimmed;
 
-- (NSRange)textRange;
+- (NSRange)range; /// Range of the whole line, including line break
+- (NSRange)textRange; /// The range of string only, excluding line break
 - (NSRange)globalRangeToLocal:(NSRange)range;
 - (NSString*)textContent;
 
@@ -150,21 +154,21 @@ typedef enum : NSUInteger {
 // Note: Following stuff is intended ONLY for non-continuous parsing
 - (bool)isTitlePage;
 - (bool)isInvisible;
-- (bool)isDialogue; // returns TRUE also for character
-- (bool)isDialogueElement;
-- (bool)isDualDialogue; // returns TRUE also for character
-- (bool)isDualDialogueElement;
+- (bool)isDialogue; /// returns TRUE for character cues too
+- (bool)isDialogueElement; /// returns TRUE for elements other than a character cue
+- (bool)isDualDialogue; /// returns TRUE for dual dialogue characters too
+- (bool)isDualDialogueElement;  /// returns TRUE for elements other than a character cue
 
 - (NSString*)stripSceneNumber;
 - (NSString*)stripFormattingCharacters;
 - (NSString*)stripNotes;
 - (NSString*)stringForDisplay;
 
-@property bool isSplitParagraph;
-@property bool nextElementIsDualDialogue; // Note: this is ONLY used for non-continuous parsing
+@property bool isSplitParagraph; /// This element contains line breaks
+@property bool nextElementIsDualDialogue; /// Note: this is ONLY used for non-continuous parsing
 
 // Properties for pagination
-@property bool unsafeForPageBreak;
+@property bool unsafeForPageBreak; /// EXPERIMENTAL
 
 // For FDX export
 - (NSAttributedString*)attributedStringForFDX;
@@ -176,7 +180,7 @@ typedef enum : NSUInteger {
 - (void)joinWithLine:(Line*)line;
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index;
 
-- (NSDictionary*)forSerialization;
+- (NSDictionary*)forSerialization; /// A JSON object for plugin use
 
 // For comparing with another version
 // (Is this still used?)

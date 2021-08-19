@@ -54,9 +54,6 @@
 @property (nonatomic) NSMutableArray * characters;
 
 @property (nonatomic) bool omitted;
-@property (nonatomic) bool noOmitIn;
-@property (nonatomic) bool noOmitOut;
-@property (nonatomic) NSInteger omitStartsFrom;
 
 @property (nonatomic, weak) Line * line;
 

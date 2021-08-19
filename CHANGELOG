@@ -1,5 +1,24 @@
 # Changelog
 
+
+## Beat 1.89.6
+
+* Outline parsing was optimized
+* `OutlineScene` class is now a bit more sanitized and sensible
+* Moving omitted scenes now works more reliably  
+
+
+
+## Beat 1.89.5
+
+* Fixed a bug with paper sizing in print panel
+
+
+## Beat 1.89.4
+
+* Plugin API fixes and expansions
+
+
 ## Beat 1.89.3
 
 * Lines now know the parser they reside inside, allowing easier access to their index etc. in the future

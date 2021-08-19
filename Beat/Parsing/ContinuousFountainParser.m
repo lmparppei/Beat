@@ -26,6 +26,7 @@
  Future considerations:
  - Make it possible to change editor text via text elements. This means making lines aware of their parser, and
    even tighter integration with the editor delegate.
+ - Conform to Fountain note syntax
  
  */
 
@@ -558,6 +559,103 @@ static NSDictionary* patterns;
     }
 }
 
+- (NSInteger)indexOfNoteOpen:(Line*)line {
+	unichar string[line.string.length];
+	[line.string getCharacters:string];
+	
+	NSInteger lastIndex = 1;
+	NSInteger rangeBegin = -1;
+	for (int i = (int)line.length;;i--) {
+		if (i > lastIndex) break;
+		
+		if ((string[i] == '[' && string[i-1] == '[')) {
+			rangeBegin = i;
+			break;
+		}
+	}
+	
+	if (rangeBegin >= 0) return rangeBegin;
+	else return NSNotFound;
+}
+
+- (NSMutableIndexSet*)parseNoteBlockFrom:(NSUInteger)idx {
+	NSLog(@" begins at %lu (%@)", idx, _lines[idx]);
+	NSMutableIndexSet *indicesToDo = [NSMutableIndexSet indexSet];
+	
+	Line *line;
+	NSMutableArray *affectedLines = [NSMutableArray array];
+	
+	bool match = NO;
+	bool unterminated = NO;
+	
+	// Look behind to find out where the note block ends
+	for (NSInteger i = idx; i >= 0; i--) {
+		line = _lines[i];
+		
+		[affectedLines addObject:line];
+		
+		if (line.type == empty) {
+			NSLog(@" -> cancels behidn: '%@'", line.string);
+			unterminated = YES;
+		}
+		else if (line.beginsNoteBlock) {
+			match = YES;
+			break;
+		}
+	}
+	// We iterated through the items in reverse, so let's invert the array
+	[affectedLines setArray:[[affectedLines reverseObjectEnumerator] allObjects]];
+	
+	// Look forward
+	for (NSInteger i = idx + 1; i < self.lines.count; i++) {
+		line = _lines[i];
+		NSLog(@"  inspecting %@ (%lu)", line, line.noteOutIndices.count);
+		if (line.endsNoteBlock) NSLog(@"     ... should end block");
+		
+		[affectedLines addObject:line];
+		
+		if (line.cancelsNoteBlock || line.type == empty) {
+			NSLog(@" -> cancels frwrd: '%@'", line.string);
+			unterminated = YES;
+			break;
+		}
+		else if (line.endsNoteBlock) {
+			NSLog(@"ends note block: %@", line);
+			break;
+		}
+	}
+	
+	
+	// Iterate through affected lines and set the fixed note ranges.
+	// If the note style has changed, add the line to changed indices.
+	for (Line* l in affectedLines) {
+		NSMutableIndexSet *oldIndices = [[NSMutableIndexSet alloc] initWithIndexSet:l.noteRanges];
+		
+		if (!unterminated) {
+			if (l == affectedLines.firstObject) [l.noteRanges addIndexes:l.noteOutIndices];
+			else if (l == affectedLines.lastObject) [l.noteRanges addIndexes:l.noteInIndices];
+			else l.noteRanges = [NSMutableIndexSet indexSetWithIndexesInRange:(NSRange){0, l.length }];
+			NSLog(@" --- %@", l);
+		} else {
+			if (l == affectedLines.firstObject) [l.noteRanges removeIndexes:l.noteOutIndices];
+			else if (l == affectedLines.lastObject) [l.noteRanges removeIndexes:l.noteInIndices];
+			else {
+				[l.noteRanges removeIndexesInRange:(NSRange){0,l.length}];
+			}
+		}
+		
+		if (oldIndices.count) {
+			[oldIndices removeIndexes:l.noteRanges];
+			if (oldIndices.count != 0) {
+				//[_changedIndices addIndex:[_lines indexOfObject:l]];
+				[indicesToDo addIndex:[_lines indexOfObject:l]];
+			}
+		}
+	}
+	
+	return indicesToDo;
+}
+
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
 {
     //Remove index as done from array if in array
@@ -572,13 +670,12 @@ static NSDictionary* patterns;
 	if (indices.count) lastToParse = NO;
     
     Line* currentLine = self.lines[index];
-	
+		
 	//Correct type on this line
     LineType oldType = currentLine.type;
     bool oldOmitOut = currentLine.omitOut;
-	bool oldNoteOut = currentLine.noteOut;
-	bool oldNoteIn = currentLine.noteIn;
-	
+	bool oldNoteTermination = currentLine.cancelsNoteBlock;
+		
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
     
     if (!self.changeInOutline && (oldType == heading || oldType == section || oldType == synopse ||
@@ -594,34 +691,24 @@ static NSDictionary* patterns;
 		previousLine.type = action;
 		currentLine.type = empty;
 	}
-	
-	/*
-	if (currentLine.noteIn || currentLine.noteOut) {
-		Line *noteBegin;
 		
-		if (!currentLine.noteIn) {
-			// This begins a note block
-			noteBegin = currentLine;
-		} else {
-			NSInteger prevIndex = index - 1;
-			Line *previousLine = self.lines[prevIndex];
-
-			// Find the item which begins the block
-			do {
-				previousLine = self.lines[prevIndex];
-				if (!previousLine.noteIn) break;
-				prevIndex--;
-			} while (previousLine.noteOut && previousLine.noteIn && prevIndex >= 0);
-			
-			noteBegin = previousLine;
+	
+	if (currentLine.noteOut || currentLine.noteIn) {
+		/*
+		// This line *could* be a part of a note block
+		if (currentLine.noteInIndices.count) {
+			[currentLine.noteRanges addIndexes:currentLine.noteInIndices];
 		}
-		
-		// noteBegin is the culprit here
-		// don't know what I can do with it
+		else if (currentLine.noteOutIndices.count) {
+			[currentLine.noteRanges addIndexes:currentLine.noteOutIndices];
+		}
+		 */
+		NSLog(@"###### parsing block...");
+		[indices addIndexes:[self parseNoteBlockFrom:index]];
 	}
-	*/
 	
-	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse || oldNoteOut != currentLine.noteOut || oldNoteIn != currentLine.noteIn) {
+	
+	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse) {
         //If there is a next element, check if it might need a reparse because of a change in type or omit out
         if (index < self.lines.count - 1) {
             Line* nextLine = self.lines[index+1];
@@ -654,8 +741,10 @@ static NSDictionary* patterns;
                 nextLine.type == dialogue ||
                 nextLine.type == dualDialogueParenthetical ||
                 nextLine.type == dualDialogue ||
-                nextLine.omitIn != currentLine.omitOut ||					// Look for unterminated omits & notes
-				nextLine.noteIn != currentLine.noteOut) {
+                nextLine.omitIn != currentLine.omitOut	// Look for unterminated omits & notes
+				//|| nextLine.noteIn != currentLine.noteOut
+				
+				) {
 				
                 [self correctParseInLine:index+1 indicesToDo:indices];
             }
@@ -1274,148 +1363,83 @@ and incomprehensible system of recursion.
 
 - (NSMutableIndexSet*)noteRanges:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line partOfBlock:(bool)partOfBlock
 {
+	// If a note block is bleeding into this line, noteIn is true
+	line.noteIn = partOfBlock;
+	
+	// Reset all indices
 	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+	
+	line.cancelsNoteBlock = NO;
+	line.endsNoteBlock = NO;
+	[line.noteInIndices removeAllIndexes];
+	[line.noteOutIndices removeAllIndexes];
+	
+	// Empty lines cut off note blocks
+	if (line.type == empty && partOfBlock) {
+		line.cancelsNoteBlock = YES;
+		line.noteOut = NO;
+		return indexSet;
+	}
 	
 	// rangeBegin is -1 when a note range is not being inspected
 	// and >0 when we have found the index of an open note range
-
-	if (line.type == empty && partOfBlock) {
-		NSLog(@"We have to cancel the note here");
-		[self terminateNoteFrom:line];
-	}
 	
 	NSInteger lastIndex = length - NOTE_PATTERN_LENGTH; //Last index to look at if we are looking for start
 	NSInteger rangeBegin = partOfBlock ? 0 : -1;
-	line.noteIn = partOfBlock;
+	
+	bool beginsNoteBlock = NO;
+	bool lookForTerminator = NO;
+	if (line.noteIn) lookForTerminator = YES;
 	
 	for (int i = 0;;i++) {
 		if (i > lastIndex) break;
-		if (rangeBegin == -1) {
-			bool match = NO;
-			if (string[i] == '[' && string[i+1] == '[') match = YES;
-			if (match) rangeBegin = i;
-		} else {
-			bool match = NO;
-			if (string[i] == ']' && string[i+1] == ']') match = YES;
-
-			if (match) {
+		
+		bool match = NO;
+		if ((string[i] == '[' && string[i+1] == '[')) {
+			lookForTerminator = NO;
+			match = YES;
+			beginsNoteBlock = YES;
+			rangeBegin = i;
+		}
+		else if (string[i] == ']' && string[i+1] == ']') {
+			
+			if (lookForTerminator && rangeBegin != -1) {
+				lookForTerminator = NO;
+				line.endsNoteBlock = YES;
+				
+				beginsNoteBlock = NO;
+				
+				line.noteInIndices = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + NOTE_PATTERN_LENGTH)];
+				
+				rangeBegin = -1;
+			}
+			else {
+				match = YES;
 				[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + NOTE_PATTERN_LENGTH)];
 				rangeBegin = -1;
 			}
+
 		}
 	}
 	
 	//Terminate any open ranges at the end of the line so that this line is omited untill the end
+
 	if (rangeBegin != -1) {
-		NSRange rangeToAdd = NSMakeRange(rangeBegin, length - rangeBegin);
-		[indexSet addIndexesInRange:rangeToAdd];
-		line.noteOut = YES;
-	} else {
-		line.noteOut = NO;
-	}
-	
-	/*
-	NSInteger lastIndex = length - NOTE_PATTERN_LENGTH; //Last index to look at if we are looking for start
-	NSInteger rangeBegin = partOfBlock ? 0 : -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
-	
-	if (partOfBlock && line.type == empty) {
-		NSLog(@"Terminate note block because this is an empty line");
-		
-		line.noteOut = NO;
-		line.noteIn = NO;
-		[self terminateNoteFrom:line];
-		[_changedIndices addIndex:[self.lines indexOfObject:line]];
-		
-		return indexSet;
-	}
-	
-	line.noteIn = partOfBlock;
-	
-	for (int i = 0;;i++) {
-		if (i > lastIndex) break;
-		
-		if (rangeBegin == -1) {
-			// Not part of a note block, only look for open brackets
-			bool match = YES;
-			for (int j = 0; j < NOTE_PATTERN_LENGTH; j++) {
-				if (string[j+i] != NOTE_OPEN_PATTERN[j]) {
-					match = NO;
-					break;
-				}
-			}
-			if (match) {
-				rangeBegin = i;
-			}
-		} else {
-			// This line is part of a note block, look for closing pattern
-			bool match = YES;
-			for (int j = 0; j < NOTE_PATTERN_LENGTH; j++) {
-				if (string[j+i] != NOTE_CLOSE_PATTERN[j]) {
-					match = NO;
-					break;
-				}
-			}
-			if (match) {
-				[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + NOTE_PATTERN_LENGTH)];
-				rangeBegin = -1;
-			}
-		}
-	}
-	
-	//Terminate any open ranges at the end of the line so that this line is a note until the end
-	if (rangeBegin != -1) {
-		NSRange rangeToAdd = NSMakeRange(rangeBegin, length - rangeBegin);
-		[indexSet addIndexesInRange:rangeToAdd];
+			//NSRange rangeToAdd = NSMakeRange(rangeBegin, length - rangeBegin);
+			//[indexSet addIndexesInRange:rangeToAdd];
+
+		// Let's take note that this line bleeds out a note range
+		if (beginsNoteBlock) line.beginsNoteBlock = YES;
 		line.noteOut = YES;
 		
-		// Here we need to find where the note will be terminated, IF it is terminated
-		bool terminatorFound = NO;
-		for (NSInteger i = [_lines indexOfObject:line]+1; i<_lines.count; i++) {
-			Line *nextLine = _lines[i];
-			if (nextLine.type == empty) break;
-			
-			NSInteger noteIn = [nextLine.string rangeOfString:@NOTE_OPEN_PATTERN].location;
-			NSInteger noteOut = [nextLine.string rangeOfString:@NOTE_CLOSE_PATTERN].location;
-
-			if (noteOut < noteIn && noteOut != NSNotFound) {
-				terminatorFound = YES;
-				break;
-			} else if (noteIn < noteOut && noteIn != NSNotFound) {
-				// Another note kicks in before a terminator was found,
-				// so let's just ignore this note
-				break;
-			}
-		}
-		if (terminatorFound) {
-			NSLog(@"--> terminator found for %@", line.string);
-			line.noteOut = YES;
-		}
-		else {
-			NSLog(@"--  terminator not found for %@", line.string);
-			// No terminator found, remove note ranges from the end
-			line.noteOut = NO;
-
-			if (line.noteIn) {
-				// This line has a note block bleeding into it,
-				// so let's remove the existing ranges using recursion
-				line.noteRanges = [self noteRanges:string ofLength:line.string.length inLine:line partOfBlock:NO];
-			}
-						
-			int j = (int)line.string.length;
-			while (j >= 1) {
-				if (string[j] == '[' && string[j-1] == '[') break;
-				j--;
-			}
-			
-			NSRange range = (NSRange){ j-1, line.length - (j - 1)};
-			[indexSet removeIndexesInRange:range];
-		}
-			
+		NSRange rangeToAdd = NSMakeRange(rangeBegin, length - rangeBegin);
+		NSMutableIndexSet *unterminatedIndices = [NSMutableIndexSet indexSetWithIndexesInRange:rangeToAdd];
+		line.noteOutIndices = unterminatedIndices;
 	} else {
-		// Don't let the line to bleed in
 		line.noteOut = NO;
+		[line.noteOutIndices removeAllIndexes];
 	}
-	*/
+	
 	
 	return indexSet;
 }
@@ -1681,33 +1705,12 @@ and incomprehensible system of recursion.
 				scene.sectionDepth = sectionDepth;
 			}
 			
-			/*
-			if (scene.string.length > 0) {
-				// Remove formatting characters from the outline item string if needed
-				if ([scene.string characterAtIndex:0] == '#' && [item.string length] > 1) {
-					scene.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-				}
-				if ([item.string characterAtIndex:0] == '=' && [item.string length] > 1) {
-					item.string = [item.string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-				}
-			}
-			 */
-			
 			if (line.type == heading) {
 				// Check if the scene is omitted
 				// If the scene is omited, let's not increment scene number for it.
 				// However, if the scene has a forced number, we'll maintain it
 				if (line.sceneNumberRange.length > 0) {
 					scene.sceneNumber = line.sceneNumber;
-					
-					/*
-					// Also, if the document wants to start the scene numbering from first scene,
-					// let's offset the numbering, IF it returns a valid number
-					if (self.delegate.offsetFromFirstCustomSceneNumber) {
-						NSInteger sceneNumberOffset = [item.sceneNumber integerValue];
-						if (sceneNumberOffset > 0) sceneNumber = sceneNumberOffset + 1;
-					}
-					*/
 				}
 				else {
 					if (!line.omitted) {
@@ -1724,46 +1727,11 @@ and incomprehensible system of recursion.
 				scene.characters = [NSMutableArray array];
 			}
 			
-			/*
-			// If this scene is omited, we need to figure out where the omission starts from.
-			if (scene.omitted) {
-				NSUInteger index = [self.lines indexOfObject:line];
-				while (index > 0) {
-					index--;
-					Line* previous = [self.lines objectAtIndex:index];
-					
-					// So, this is kind of brute force, but here's my rationalization:
-					// a) The scene heading is already omited
-					// b) Somewhere before there NEEDS to be a line which starts the omission
-					// c) I mean, if there is an omission INSIDE omission, the user can/should blame themself?
-					if ([previous.string rangeOfString:@OMIT_OPEN_PATTERN].location != NSNotFound) {
-						scene.omitStartsFrom = previous.position;
-						
-						// Shorten the previous scene accordingly
-						if (previousScene) {
-							previousScene.length = scene.position - previous.position;
-						}
-						break;
-					// So, what did I say about blaming the user?
-					// I remembered that I have myself sometimes omited several scenes at once, so if we come across a scene heading while going through the lines, let's just reset and tell the previous scene that its omission is unterminated. We need this information for swapping the scenes around.
-					// btw, I have really learned to code
-					// in a shady way
-					// but what does it count...
-						// the only thing that matters is how you walk through the fire
-					} else if (previous.type == heading) {
-						scene.position = line.position;
-						scene.noOmitIn = YES;
-						if (previousScene) previousScene.noOmitOut = YES;
-					}
-				}
-			}*/
-			
 			if (previousScene) {
-				
 				// If this is a synopsis line, it might need to be included in the previous scene length (for moving them around)
 				if (scene.type == synopse) {
 					if (previousLine.type == heading) {
-						// This synopse belongs into a block, so don't set the length for previous scene
+						// This synopsis belongs into a block, so don't set the length for previous scene
 						sceneBlock = previousScene;
 					} else {
 						// Act normally
@@ -1778,8 +1746,6 @@ and incomprehensible system of recursion.
 						previousScene.length = scene.position - previousScene.position;
 					}
 				}
-				
-				//previousScene.sceneLength = item.sceneStart - previousScene.sceneStart;
 			}
 			
 			// Set previous scene to point to the current one
@@ -1867,7 +1833,8 @@ and incomprehensible system of recursion.
         } else {
             result = [result stringByAppendingFormat:@"%lu ", (unsigned long) index];
         }
-        result = [[result stringByAppendingString:[l toString]] stringByAppendingString:@"\n"];
+		
+        result = [[result stringByAppendingString:[NSString stringWithFormat:@"%@", l]] stringByAppendingString:@"\n"];
         index++;
     }
     //Cut off the last newline
@@ -1929,13 +1896,15 @@ and incomprehensible system of recursion.
 		lines = self.lines;
 	}
 	
-	NSMutableArray *elements = [NSMutableArray array];
-	
+	// Get scene number offset from the delegate/document settings
 	NSInteger sceneNumber = 1;
-	if (self.delegate) {
+	if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 1) {
 		sceneNumber = [self.documentSettings getInt:DocSettingSceneNumberStart];
 		if (sceneNumber < 1) sceneNumber = 1;
 	}
+	
+	// Printable elements
+	NSMutableArray *elements = [NSMutableArray array];
 	
 	Line *previousLine;
 	
@@ -2034,14 +2003,14 @@ and incomprehensible system of recursion.
 	Line *previousLine;
 	for (Line* line in self.lines) {
 		// Ensure we have correct amount of line breaks before elements
-		if ((line.type == character || line.type == heading)
-			&& previousLine.string.length > 0) {
+		if ((line.type == character || line.type == heading) &&
+			previousLine.string.length > 0) {
 			[string appendString:@"\n"];
 		}
 		
 		[string appendString:line.string];
 		[string appendString:@"\n"];
-	
+		
 		previousLine = line;
 	}
 	

@@ -121,7 +121,10 @@
 		if (_availablePlugins[pluginName]) {
 			// The plugin is already available, check for updates
 			NSMutableDictionary *existingPlugin = [NSMutableDictionary dictionaryWithDictionary:_availablePlugins[pluginName]];
-			NSLog(@"%@ / %@ – %@", remotePlugin[@"version"], existingPlugin[@"version"], remotePlugin[@"name"]);
+			
+			// Log version numbers for remote and local plugins for debugging
+			// NSLog(@"%@ / %@ – %@", remotePlugin[@"version"], existingPlugin[@"version"], remotePlugin[@"name"]);
+			
 			if ([self isNewerVersion:remotePlugin[@"version"] old:existingPlugin[@"version"]]) {
 				existingPlugin[@"updateAvailable"] = remotePlugin[@"version"];
 			}

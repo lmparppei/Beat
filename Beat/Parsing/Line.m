@@ -127,11 +127,6 @@
 	return [self.parser.lines indexOfObject:self];
 }
 
-- (NSString *)toString
-{
-    return [[[[self typeAsString] stringByAppendingString:@": \"" ] stringByAppendingString:self.string] stringByAppendingString:@"\""];
-}
-
 - (bool)omitted {
 	// See if whole block is omited
 	// WARNING: This also includes lines that have 0 length, meaning
@@ -797,6 +792,10 @@
 	if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
 	
 	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+}
+
+- (NSString*)trimmed {
+	return [self.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
 }
 
 #pragma mark - Change Tracking
