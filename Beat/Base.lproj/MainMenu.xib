@@ -182,7 +182,7 @@
                                                 <action selector="importFadeIn:" target="vEX-2F-hcj" id="6C8-ah-Gva"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="PLUGIN PLACEHOLDER" tag="1" id="r2v-xc-qum">
+                                        <menuItem title="IMPORT PLUGIN PLACEHOLDER" tag="1" id="r2v-xc-qum">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="runStandalonePlugin:" target="vEX-2F-hcj" id="2AU-um-39i"/>
@@ -216,7 +216,7 @@
                                                 <action selector="exportOutline:" target="-1" id="HXB-My-Vhk"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="PLUGIN PLACEHOLDER" tag="1" id="YDF-BB-4gm">
+                                        <menuItem title="EXPORT PLUGIN PLACEHOLDER" tag="1" id="YDF-BB-4gm">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="runPlugin:" target="-1" id="QyP-Ea-Dsi"/>
@@ -744,7 +744,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="rAa-we-oVz"/>
-                            <menuItem title="PLUGIN PLACEHOLDER" tag="1" id="S1k-gz-zdn">
+                            <menuItem title="TOOL PLUGIN PLACEHOLDER" tag="1" id="S1k-gz-zdn">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runPlugin:" target="-1" id="tg9-p3-qPc"/>
@@ -947,7 +947,7 @@ DQ
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="fKb-RI-A8z">
+                                                        <textFieldCell key="dataCell" truncatesLastVisibleLine="YES" selectable="YES" editable="YES" title="Text Cell" id="fKb-RI-A8z">
                                                             <font key="font" size="12" name="HelveticaNeue"/>
                                                             <color key="textColor" white="0.78987165178571428" alpha="1" colorSpace="calibratedWhite"/>
                                                             <color key="backgroundColor" white="1" alpha="0.0" colorSpace="deviceWhite"/>

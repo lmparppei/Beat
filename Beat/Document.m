@@ -5026,6 +5026,7 @@ triangle walks
 	_pluginManager = BeatPluginManager.sharedManager;
 }
 - (IBAction)runPlugin:(id)sender {
+	NSLog(@"# RUN PLUGIN %@", sender);
 	NSMenuItem *menuItem = (NSMenuItem*)sender;
 	NSString *pluginName = menuItem.title;
 
@@ -5040,7 +5041,7 @@ triangle walks
 	parser.delegate = self;
 	
 	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
-	[parser runPlugin:plugin];
+	[parser loadPlugin:plugin];
 	
 	parser = nil;
 }

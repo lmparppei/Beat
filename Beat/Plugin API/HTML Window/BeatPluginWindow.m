@@ -9,28 +9,28 @@
 #import "BeatPluginWindow.h"
 
 @interface BeatPluginWindow ()
-@property (assign) BeatScriptParser *parser;
+@property (assign) BeatScriptParser *host;
 @end
 
 @implementation BeatPluginWindow 
 
--(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height parser:(BeatScriptParser*)parser {
+-(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatScriptParser*)host {
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreNonretained defer:NO];
 	self.level = NSModalPanelWindowLevel;
-	self.delegate = parser;
+	self.delegate = host;
 	self.releasedWhenClosed = YES;
 	
-	_parser = parser;
-	self.title = parser.pluginName;
+	_host = host;
+	self.title = host.pluginName;
 
 	WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
 	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
 	
-	[config.userContentController addScriptMessageHandler:self.parser name:@"sendData"];
-	[config.userContentController addScriptMessageHandler:self.parser name:@"call"];
-	[config.userContentController addScriptMessageHandler:self.parser name:@"log"];
+	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
+	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
+	[config.userContentController addScriptMessageHandler:self.host name:@"log"];
 
 	_webview = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
 	_webview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
@@ -41,8 +41,8 @@
 	return self;
 }
 
-+ (BeatPluginWindow*)withHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height parser:(id)parser {
-	return [[BeatPluginWindow alloc] initWithHTML:html width:width height:height parser:(BeatScriptParser*)parser];
++ (BeatPluginWindow*)withHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host {
+	return [[BeatPluginWindow alloc] initWithHTML:html width:width height:height host:(BeatScriptParser*)host];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -92,6 +92,11 @@
 	return self.screen.frame.size;
 	//return @[ @(self.screen.frame.size.width), @(self.screen.frame.size.height) ];
 }
-
+-(BOOL)canBecomeKeyWindow {
+	return  YES;
+}
+-(void)cancelOperation:(id)sender {
+	[self close];
+}
 
 @end

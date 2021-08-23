@@ -567,7 +567,7 @@
 	
 	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
 	BeatPlugin *plugin = [BeatPluginManager.sharedManager pluginWithName:pluginName];
-	[parser runPlugin:plugin];
+	[parser loadPlugin:plugin];
 	parser = nil;
 }
 

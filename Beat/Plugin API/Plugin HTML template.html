@@ -146,14 +146,27 @@
 	</head>
 
 	<body>
-		<script>
+		<script crossorigin='anonymous'>
+			// Prevent native WKWebView context menu
 			document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
 			
+			// Log errors
+			window.onerror = (msg, url, line, column, error) => {
+				const message = msg + "  Line: " + line + " Col: " + column + "  " + JSON.stringify(error)
+
+				if (window.webkit) {
+					window.webkit.messageHandlers.log.postMessage("ERROR: " + message);
+				} else {
+					console.log("Error:", message);
+				}
+			};
+			
+			// Custom Beat HTML window object to allow some interaction with the host
 			let Beat = {
 				setData: function(data) {
 					Beat.data = data;
 				},
-				data: null,
+				data: null, // user-generated data to be passed back to plugin
 				log: function(message) {
 					window.webkit.messageHandlers.log.postMessage(message);
 				},

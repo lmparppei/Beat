@@ -25,5 +25,5 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 
 @interface BeatPluginWindow : NSPanel <BeatPluginWindowExports, NSWindowDelegate>
 @property (nonatomic) WKWebView *webview;
-+ (BeatPluginWindow*)withHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height parser:(id)parser;
++ (BeatPluginWindow*)withHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host;
 @end

@@ -137,7 +137,7 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
 
-- (void)runPlugin:(BeatPlugin*)plugin;
+- (void)loadPlugin:(BeatPlugin*)plugin;
 - (void)log:(NSString*)string;
 - (void)update:(NSRange)range;
 - (void)updateSelection:(NSRange)selection;

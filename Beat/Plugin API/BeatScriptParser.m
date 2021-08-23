@@ -78,8 +78,9 @@
 
 #pragma mark - Running Scripts
 
-- (void)runPlugin:(BeatPlugin*)plugin
+- (void)loadPlugin:(BeatPlugin*)plugin
 {
+	NSLog(@"run %@", plugin );
 	self.plugin = plugin;
 	_pluginName = plugin.name;
 	
@@ -105,7 +106,7 @@
 {
 	_terminating = YES;
 	
-	if (!_windowClosing && _pluginWindow) {
+	if (!_windowClosing && _pluginWindow && _pluginWindow.isVisible) {
 		[_pluginWindow close];
 	}
 	
@@ -784,7 +785,7 @@
 		
 	if (!_pluginWindow) {
 		[_delegate registerPlugin:self];
-		_pluginWindow = [BeatPluginWindow withHTML:html width:width height:height parser:self];
+		_pluginWindow = [BeatPluginWindow withHTML:html width:width height:height host:self];
 		_pluginWindow.parentWindow = _delegate.thisWindow;
 		_pluginWindow.delegate = self;
 		[_pluginWindow makeKeyAndOrderFront:nil];
@@ -807,15 +808,11 @@
 	
 	if (_terminating) return;
 	
-	if (!_windowCallback.isUndefined && _windowCallback) {
+	if (!_windowCallback.isUndefined && ![_windowCallback isNull]) {
 		NSLog(@"  --> Callback");
 		[_windowCallback callWithArguments:nil];
 	}
-//	else {
-//		NSLog(@"Force end script");
-//		[self end];
-//	}
-
+	
 	_windowClosing = NO;
 }
 
@@ -1003,11 +1000,10 @@
 		[self log:message.body];
 	}
 	else if ([message.name isEqualToString:@"sendData"]) {
-		if (!_windowClosing) [self receiveDataFromHTMLPanel:message.body];
+		if (!_windowClosing && _context) [self receiveDataFromHTMLPanel:message.body];
 	}
 	else if ([message.name isEqualToString:@"call"]) {
-		NSLog(@"calling: %@", message.body);
-		if (!_windowClosing) [_context evaluateScript:message.body];
+		if (!_windowClosing && _context) [_context evaluateScript:message.body];
 	}
 }
 

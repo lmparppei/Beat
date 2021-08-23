@@ -44,6 +44,7 @@
 
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
 	// Feast your eyes on the beauty of Objective-C!
+	
 	NSURL *fileUrl = item;
 	NSDate *fileDate;
 	NSError *error;
@@ -57,10 +58,21 @@
 	bool selected = NO;
 	if ([files indexOfObject:item] == outlineView.selectedRow) { selected = YES; }
 	
-	NSMutableAttributedString *fileResult = [[NSMutableAttributedString alloc] initWithString:[[item URLByDeletingPathExtension] lastPathComponent] attributes:@{
+	NSDictionary *fileAttributes = @{
 		NSParagraphStyleAttributeName: paragraphStyle,
 		NSFontAttributeName: [NSFont systemFontOfSize:13.0]
-	}];
+	};
+	
+	NSMutableAttributedString *fileResult = [[NSMutableAttributedString alloc] initWithString:[[item URLByDeletingPathExtension] lastPathComponent] attributes:fileAttributes];
+		
+	if (fileResult.size.width > outlineView.frame.size.width - 40) {
+		NSInteger i = [item URLByDeletingPathExtension].lastPathComponent.length;
+		while (fileResult.size.width > outlineView.frame.size.width - 40 && i > 0) {
+			[fileResult setAttributedString:[fileResult attributedSubstringFromRange:(NSRange){0, i}]];
+			[fileResult appendAttributedString:[[NSAttributedString alloc] initWithString:@"..." attributes:fileAttributes]];
+			i--;
+		}
+	}
 	
 	// Get file date
 	[fileUrl getResourceValue:&fileDate forKey:NSURLContentModificationDateKey error:&error];
@@ -89,6 +101,10 @@
  
 	return fileResult;
 }
+- (CGFloat)widthOfString:(NSString *)string withFont:(NSFont *)font {
+	 NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];
+	 return [[NSAttributedString alloc] initWithString:string attributes:attributes].size.width;
+ }
 
 - (void)outlineView:(NSOutlineView *)outlineView didClickTableColumn:(NSTableColumn *)tableColumn {
 	
