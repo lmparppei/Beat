@@ -71,7 +71,8 @@
 }
 
 - (void) awakeFromNib {
-
+	[[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
+	
 	//BeatTest *test = BeatTest.alloc.init;
 	
 #ifdef ADHOC

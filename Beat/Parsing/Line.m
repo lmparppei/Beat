@@ -102,7 +102,7 @@
 	newLine.position = self.position;
 	
 	newLine.isSplitParagraph = self.isSplitParagraph;
-	newLine.numberOfPreceedingFormattingCharacters = self.numberOfPreceedingFormattingCharacters;
+	newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
 	
 	if (self.italicRanges.count) newLine.italicRanges = [self.italicRanges copy];
 	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
@@ -172,7 +172,7 @@
 + (NSString*)removeMarkUpFrom:(NSString*)rawString line:(Line*)line {
 	NSMutableString *string = [NSMutableString stringWithString:rawString];
 	
-	if (string.length > 0 && line.numberOfPreceedingFormattingCharacters > 0 && line.type != centered) {
+	if (string.length > 0 && line.numberOfPrecedingFormattingCharacters > 0 && line.type != centered) {
 		if (line.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
 		else if (line.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
 		else if (line.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
@@ -225,15 +225,15 @@
 	NSMutableString *string = [NSMutableString stringWithString:self.string];
 
 	// Remove force characters
-	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
+	if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
 		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
 		else if (self.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
 		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
 		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
 		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
 		else {
-			if (self.numberOfPreceedingFormattingCharacters > 0 && self.string.length >= self.numberOfPreceedingFormattingCharacters) {
-				[string setString:[string substringFromIndex:self.numberOfPreceedingFormattingCharacters]];
+			if (self.numberOfPrecedingFormattingCharacters > 0 && self.string.length >= self.numberOfPrecedingFormattingCharacters) {
+				[string setString:[string substringFromIndex:self.numberOfPrecedingFormattingCharacters]];
 			}
 		}
 	}
@@ -599,8 +599,8 @@
 - (void)joinWithLine:(Line *)line
 {
 	NSString *string = line.string;
-	if (line.numberOfPreceedingFormattingCharacters > 0 && string.length > 0) {
-		string = [string substringFromIndex:line.numberOfPreceedingFormattingCharacters];
+	if (line.numberOfPrecedingFormattingCharacters > 0 && string.length > 0) {
+		string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
 	}
 	
 	NSInteger offset = self.string.length + 1;
@@ -697,14 +697,14 @@
 }
 - (NSIndexSet*)formattingRanges
 {
-	// This maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
+// This maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
 	// It could be used anywhere, but for now, it's used to create XML formatting for FDX export.
 	
 	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
 	NSString* string = self.string;
 	
 	// Add force element ranges
-	if (string.length > 0 && self.numberOfPreceedingFormattingCharacters > 0 && self.type != centered) {
+	if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
 		unichar c = [string characterAtIndex:0];
 		
 		if ((self.type == character && c == '@') ||

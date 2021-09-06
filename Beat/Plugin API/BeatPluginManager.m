@@ -158,6 +158,9 @@
 	[[session dataTaskWithURL:[NSURL URLWithString:urlAsString]
 			completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 		
+		// No data available (we are offline)
+		if (error || data == nil) return;
+		
 		NSMutableDictionary *plugins = [NSMutableDictionary dictionary];
 		NSDictionary *pluginData = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
 		

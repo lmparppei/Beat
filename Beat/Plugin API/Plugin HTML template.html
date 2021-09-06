@@ -146,21 +146,34 @@
 	</head>
 
 	<body>
-		<script crossorigin='anonymous'>
+		<script crossorigin='anonymous'>			
 			// Prevent native WKWebView context menu
 			document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
 			
-			// Log errors
-			window.onerror = (msg, url, line, column, error) => {
-				const message = msg + "  Line: " + line + " Col: " + column + "  " + JSON.stringify(error)
+			// Override console methods.
+			// This doesn't seem to work, though.
+			function log(emoji, type, args) {
+				if (type == "log") type = '';
+				window.webkit.messageHandlers.log.postMessage(
+															  `${emoji} ${type} ${Object.values(args)
+															  .map(v => typeof(v) === "undefined" ? "undefined" : typeof(v) === "object" ? JSON.stringify(v) : v.toString())
+															  .map(v => v.substring(0, 3000)) // Limit msg to 3000 chars
+															  .join(", ")}`
+															  )
+			}
 
-				if (window.webkit) {
-					window.webkit.messageHandlers.log.postMessage("ERROR: " + message);
-				} else {
-					console.log("Error:", message);
-				}
-			};
+			let originalLog = console.log
+			let originalWarn = console.warn
+			let originalError = console.error
+			let originalDebug = console.debug
+
+			console.log = function() { log("", "log", arguments); originalLog.apply(null, arguments) }
+			console.warn = function() { log("🟠", "Warning:", arguments); originalWarn.apply(null, arguments) }
+			console.error = function() { log("🔴", "Error:", arguments); originalError.apply(null, arguments) }
+			console.debug = function() { log("🔵", "Debug:", arguments); originalDebug.apply(null, arguments) }
+
 			
+
 			// Custom Beat HTML window object to allow some interaction with the host
 			let Beat = {
 				setData: function(data) {

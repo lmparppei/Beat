@@ -77,7 +77,7 @@ typedef enum : NSUInteger {
 @property (strong, nonatomic) NSString* string;
 @property (nonatomic) NSString* original;
 @property (nonatomic) NSUInteger position;
-@property (nonatomic) NSUInteger numberOfPreceedingFormattingCharacters;
+@property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
 @property (nonatomic) NSUInteger sectionDepth;
 @property (nonatomic) NSString* sceneNumber;
 @property (nonatomic) NSInteger sceneIndex;

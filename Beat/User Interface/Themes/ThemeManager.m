@@ -89,30 +89,9 @@
 	_plistContents = contents;
 }
 
-
-/*
-- (NSString*)plistFilePath
-{
-    NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-                                                                          NSUserDomainMask,
-                                                                          YES);
-    NSString* applicationSupportDir = searchPaths[0];
-    NSString* appName = @"Beat";
-    NSString* writerAppSupportDir = [applicationSupportDir stringByAppendingPathComponent:appName];
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:writerAppSupportDir]) {
-        [fileManager createDirectoryAtPath:writerAppSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-    
-    return [writerAppSupportDir stringByAppendingPathComponent:@"Themes.plist"];
-}
-*/
-
 - (NSString*)bundlePlistFilePath
 {
-    return [[NSBundle mainBundle] pathForResource:@"Themes"
-                                    ofType:@"plist"];
+    return [[NSBundle mainBundle] pathForResource:@"Themes" ofType:@"plist"];
 }
 
 -(Theme*)defaultTheme {
@@ -171,6 +150,7 @@
 		if (customTheme.textColor) _theme.textColor = customTheme.textColor;
 		if (customTheme.marginColor) _theme.marginColor = customTheme.marginColor;
 		if (customTheme.selectionColor) _theme.selectionColor = customTheme.selectionColor;
+		if (customTheme.highlightColor) _theme.highlightColor = customTheme.highlightColor;
 		if (customTheme.commentColor) _theme.commentColor = customTheme.commentColor;
 		if (customTheme.invisibleTextColor) _theme.invisibleTextColor = customTheme.invisibleTextColor;
 		if (customTheme.caretColor) _theme.caretColor = customTheme.caretColor;
@@ -191,6 +171,7 @@
 	if (![self.backgroundColor isEqualToColor:defaultTheme.backgroundColor]) customTheme.backgroundColor = self.backgroundColor;
 	if (![self.marginColor isEqualToColor:defaultTheme.marginColor]) customTheme.marginColor = self.marginColor;
 	if (![self.selectionColor isEqualToColor:defaultTheme.selectionColor]) customTheme.selectionColor = self.selectionColor;
+	if (![self.highlightColor isEqualToColor:defaultTheme.highlightColor]) customTheme.highlightColor = self.highlightColor;
 	if (![self.textColor isEqualToColor:defaultTheme.textColor]) customTheme.textColor = self.textColor;
 	if (![self.commentColor isEqualToColor:defaultTheme.commentColor]) customTheme.commentColor = self.commentColor;
 	if (![self.invisibleTextColor isEqualToColor:defaultTheme.invisibleTextColor]) customTheme.invisibleTextColor = self.invisibleTextColor;

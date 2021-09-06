@@ -1231,7 +1231,17 @@
 					
 					[nextPageElements addObject:postBreak];
 				}
+				
 			}
+			
+			if (spillerElement != dialogueBlock.lastObject) {
+				NSInteger splitIdx = [dialogueBlock indexOfObject:spillerElement];
+				if (splitIdx < dialogueBlock.count - 1) {
+					NSArray *splitItems = [dialogueBlock subarrayWithRange:(NSRange){ splitIdx + 1, dialogueBlock.count - (splitIdx+1) }];
+					[nextPageElements addObjectsFromArray:splitItems];
+				}
+			}
+			
 		} else {
 			// Nothing to retain, move whole block on next page
 			[nextPageElements addObjectsFromArray:dialogueBlock];
@@ -1239,12 +1249,14 @@
 			pageBreakItem = dialogueBlock.firstObject;
 		}
 		
-		return @{
+		NSDictionary *result =  @{
 			@"page break item": pageBreakItem,
 			@"position": @(suggestedPageBreak),
 			@"retained": retainedElements,
 			@"next page": nextPageElements
 		};
+				
+		return result;
 	}
 	
 	return nil;

@@ -80,7 +80,6 @@
 
 - (void)loadPlugin:(BeatPlugin*)plugin
 {
-	NSLog(@"run %@", plugin );
 	self.plugin = plugin;
 	_pluginName = plugin.name;
 	

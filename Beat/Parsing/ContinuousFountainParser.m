@@ -38,6 +38,8 @@
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
 
+#define NEW_NOTES YES
+
 @interface  ContinuousFountainParser ()
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) Line *editedLine;
@@ -628,29 +630,34 @@ static NSDictionary* patterns;
 	
 	// Iterate through affected lines and set the fixed note ranges.
 	// If the note style has changed, add the line to changed indices.
-	for (Line* l in affectedLines) {
-		NSMutableIndexSet *oldIndices = [[NSMutableIndexSet alloc] initWithIndexSet:l.noteRanges];
-		
-		if (!unterminated) {
-			if (l == affectedLines.firstObject) [l.noteRanges addIndexes:l.noteOutIndices];
-			else if (l == affectedLines.lastObject) [l.noteRanges addIndexes:l.noteInIndices];
-			else l.noteRanges = [NSMutableIndexSet indexSetWithIndexesInRange:(NSRange){0, l.length }];
-			NSLog(@" --- %@", l);
-		} else {
-			if (l == affectedLines.firstObject) [l.noteRanges removeIndexes:l.noteOutIndices];
-			else if (l == affectedLines.lastObject) [l.noteRanges removeIndexes:l.noteInIndices];
-			else {
-				[l.noteRanges removeIndexesInRange:(NSRange){0,l.length}];
+	
+	if (NEW_NOTES) {
+		/*
+		for (Line* l in affectedLines) {
+			NSMutableIndexSet *oldIndices = [[NSMutableIndexSet alloc] initWithIndexSet:l.noteRanges];
+			
+			if (!unterminated) {
+				if (l == affectedLines.firstObject) [l.noteRanges addIndexes:l.noteOutIndices];
+				else if (l == affectedLines.lastObject) [l.noteRanges addIndexes:l.noteInIndices];
+				else l.noteRanges = [NSMutableIndexSet indexSetWithIndexesInRange:(NSRange){0, l.length }];
+				NSLog(@" --- %@", l);
+			} else {
+				if (l == affectedLines.firstObject) [l.noteRanges removeIndexes:l.noteOutIndices];
+				else if (l == affectedLines.lastObject) [l.noteRanges removeIndexes:l.noteInIndices];
+				else {
+					[l.noteRanges removeIndexesInRange:(NSRange){0,l.length}];
+				}
+			}
+			
+			if (oldIndices.count) {
+				[oldIndices removeIndexes:l.noteRanges];
+				if (oldIndices.count != 0) {
+					//[_changedIndices addIndex:[_lines indexOfObject:l]];
+					[indicesToDo addIndex:[_lines indexOfObject:l]];
+				}
 			}
 		}
-		
-		if (oldIndices.count) {
-			[oldIndices removeIndexes:l.noteRanges];
-			if (oldIndices.count != 0) {
-				//[_changedIndices addIndex:[_lines indexOfObject:l]];
-				[indicesToDo addIndex:[_lines indexOfObject:l]];
-			}
-		}
+		*/
 	}
 	
 	return indicesToDo;
@@ -692,19 +699,12 @@ static NSDictionary* patterns;
 		currentLine.type = empty;
 	}
 		
-	
-	if (currentLine.noteOut || currentLine.noteIn) {
-		/*
-		// This line *could* be a part of a note block
-		if (currentLine.noteInIndices.count) {
-			[currentLine.noteRanges addIndexes:currentLine.noteInIndices];
+	if (NEW_NOTES) {
+		if (currentLine.noteOut || currentLine.noteIn) {
+			// WIP
+			//NSLog(@"###### parsing block...");
+			//[indices addIndexes:[self parseNoteBlockFrom:index]];
 		}
-		else if (currentLine.noteOutIndices.count) {
-			[currentLine.noteRanges addIndexes:currentLine.noteOutIndices];
-		}
-		 */
-		NSLog(@"###### parsing block...");
-		[indices addIndexes:[self parseNoteBlockFrom:index]];
 	}
 	
 	
@@ -985,23 +985,23 @@ and incomprehensible system of recursion.
     }
 	
 	// Reset to zero to avoid strange formatting issues
-	line.numberOfPreceedingFormattingCharacters = 0;
+	line.numberOfPrecedingFormattingCharacters = 0;
 	
     //Check for forces (the first character can force a line type)
     if (firstChar == '!') {
-        line.numberOfPreceedingFormattingCharacters = 1;
+        line.numberOfPrecedingFormattingCharacters = 1;
         return action;
     }
     if (firstChar == '@') {
-        line.numberOfPreceedingFormattingCharacters = 1;
+        line.numberOfPrecedingFormattingCharacters = 1;
         return character;
     }
     if (firstChar == '~') {
-        line.numberOfPreceedingFormattingCharacters = 1;
+        line.numberOfPrecedingFormattingCharacters = 1;
         return lyrics;
     }
     if (firstChar == '>' && lastChar != '<') {
-        line.numberOfPreceedingFormattingCharacters = 1;
+        line.numberOfPrecedingFormattingCharacters = 1;
         return transitionLine;
     }
 	if (firstChar == '>' && lastChar == '<') {
@@ -1020,33 +1020,33 @@ and incomprehensible system of recursion.
 		}
 		
 		line.sectionDepth = depth;
-		line.numberOfPreceedingFormattingCharacters = depth;
+		line.numberOfPrecedingFormattingCharacters = depth;
         return section;
     }
     if (firstChar == '=' && (length >= 2 ? [string characterAtIndex:1] != '=' : YES)) {
-        line.numberOfPreceedingFormattingCharacters = 1;
+        line.numberOfPrecedingFormattingCharacters = 1;
         return synopse;
     }
 	
 	// '.' forces a heading. Because our American friends love to shoot their guns like we Finnish people love our booze, screenwriters might start dialogue blocks with such "words" as '.44'
-	// So, let's NOT return a scene heading IF the previous line is not empty OR is a character OR is a parenthetical...
+	// So, let's NOT return a scene heading IF the previous line is not empty OR is a character OR is a parenthetical AND is not an omit in...
     if (firstChar == '.' && length >= 2 && [string characterAtIndex:1] != '.') {
 		if (preceedingLine) {
 			if (preceedingLine.type == character) return dialogue;
-			if (preceedingLine.type == parenthetical) return dialogue;
-			if ([preceedingLine.string length] > 0) return action;
+			else if (preceedingLine.type == parenthetical) return dialogue;
+			else if (preceedingLine.string.length > 0 && ![preceedingLine.trimmed isEqualToString:@"/*"]) return action;
 		}
 		
-		line.numberOfPreceedingFormattingCharacters = 1;
+		line.numberOfPrecedingFormattingCharacters = 1;
 		return heading;
     }
 		
     //Check for scene headings (lines beginning with "INT", "EXT", "EST",  "I/E"). "INT./EXT" and "INT/EXT" are also inside the spec, but already covered by "INT".
 	if (preceedingLine.type == empty ||
-		[preceedingLine.string length] == 0 ||
+		preceedingLine.string.length == 0 ||
 		line.position == 0 ||
-		[preceedingLine.string isEqualToString:@"*/"] ||
-		[preceedingLine.string isEqualToString:@"/*"]) {
+		[preceedingLine.trimmed isEqualToString:@"*/"] ||
+		[preceedingLine.trimmed isEqualToString:@"/*"]) {
         if (length >= 3) {
             NSString* firstChars = [[string substringToIndex:3] lowercaseString];
 			
@@ -1152,9 +1152,9 @@ and incomprehensible system of recursion.
     if (trimmedString.length >= 3) {
         //transitionLine happens if the last three chars are "TO:"
         NSRange lastThreeRange = NSMakeRange(trimmedString.length - 3, 3);
-        NSString *lastThreeChars = [trimmedString substringWithRange:lastThreeRange].lowercaseString;
+        NSString *lastThreeChars = [trimmedString substringWithRange:lastThreeRange];
 
-        if ([lastThreeChars isEqualToString:@"to:"]) {
+        if ([lastThreeChars isEqualToString:@"TO:"]) {
             return transitionLine;
         }
         

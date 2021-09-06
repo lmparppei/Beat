@@ -2335,9 +2335,9 @@
 
 
 	// Format force element symbols
-	if (line.numberOfPreceedingFormattingCharacters > 0 && line.string.length >= line.numberOfPreceedingFormattingCharacters) {
+	if (line.numberOfPrecedingFormattingCharacters > 0 && line.string.length >= line.numberOfPrecedingFormattingCharacters) {
 		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-							range:NSMakeRange(line.position, line.numberOfPreceedingFormattingCharacters)];
+							range:NSMakeRange(line.position, line.numberOfPrecedingFormattingCharacters)];
 	} else if (line.type == centered && line.string.length > 1) {
 		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 		range:NSMakeRange(line.position, 1)];
@@ -3562,14 +3562,15 @@ static NSString *revisionAttribute = @"Revision";
 - (void)setThemeFor:(Document*)doc setTextColor:(bool)setTextColor {
 	if (!doc) doc = self;
 	
-	[doc.textView setMarginColor:[self.themeManager currentMarginColor]];
+	[doc.textView setMarginColor:self.themeManager.currentMarginColor];
+	[doc.textScrollView setMarginColor:self.themeManager.currentMarginColor];
 	
 	[doc.textView setSelectedTextAttributes:@{
 										  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
 										  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
 	}];
 	
-	if (setTextColor) [doc.textView setTextColor:[self.themeManager currentTextColor]];
+	if (setTextColor) [doc.textView setTextColor:self.themeManager.currentTextColor];
 	else {
 		[self.textView setNeedsLayout:YES];
 		[self.textView setNeedsDisplay:YES];
@@ -3579,7 +3580,6 @@ static NSString *revisionAttribute = @"Revision";
 			
 	// Set global background
 	doc.backgroundView.fillColor = self.themeManager.currentOutlineBackground;
-	//_outlineView.selectionHighlightStyle = NSTableViewSelectionHighlightStyleSourceList;
 		
 	[doc updateUIColors];
 	[doc.textView setNeedsDisplay:YES];
@@ -5021,6 +5021,19 @@ triangle walks
 }
 
 #pragma mark - Plugin support for documents
+
+/*
+ 
+ Some explanation:
+ 
+ Plugins are run inside document scope, unless they are standalone tools.
+ If the plugins are "resident" (can be left running in the background),
+ they are registered and deregistered when launching and shutting down.
+ 
+ Some changes made to the document are sent to all of the running plugins,
+ if they have any change listeners.
+ 
+ */
 
 - (void)setupPlugins {
 	_pluginManager = BeatPluginManager.sharedManager;

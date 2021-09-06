@@ -250,7 +250,7 @@
     }
     
     NSUInteger length = string.length;
-    NSUInteger appendFromIndex = line.numberOfPreceedingFormattingCharacters;
+    NSUInteger appendFromIndex = line.numberOfPrecedingFormattingCharacters;
     
     bool lastBold = [boldRanges containsIndex:appendFromIndex];
     bool lastItalic = [italicRanges containsIndex:appendFromIndex];

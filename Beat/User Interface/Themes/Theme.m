@@ -61,6 +61,11 @@
 	if (self.synopsisTextColor) {
 		NSArray *values = [self.synopsisTextColor valuesAsRGB];
 		light[@"SynopsisText"] = values[0];
+		dark[@"SynopsisText"] = values[1];
+	}
+	if (self.sectionTextColor) {
+		NSArray *values = [self.sectionTextColor valuesAsRGB];
+		light[@"SectionText"] = values[0];
 		dark[@"SectionText"] = values[1];
 	}
 	if (self.outlineBackground) {
@@ -78,7 +83,7 @@
 		light[@"Highlight"] = values[0];
 		dark[@"Highlight"] = values[1];
 	}
-	
+		
 	return @{ @"Name": name, @"Light": light, @"Dark": dark };
 }
 
