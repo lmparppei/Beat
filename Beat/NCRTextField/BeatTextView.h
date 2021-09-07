@@ -48,6 +48,8 @@ typedef enum : NSInteger {
 @property (readonly) bool showPageNumbers;
 @property (readonly) NSMutableIndexSet *changes;
 @property (readonly) bool contentLocked;
+@property (readonly) NSUInteger fontSize;
+@property (readonly) bool typewriterMode;
 
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;

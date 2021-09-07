@@ -1603,7 +1603,7 @@
 	
 	// Close popups
 	if (_quickSettingsPopover.shown) [self closeQuickSettings];
-	if (self.typewriterMode) [self typewriterScroll];
+	//if (self.typewriterMode) [self typewriterScroll];
 
 	//if (!NSLocationInRange(_textView.selectedRange.location, _currentLine.textRange)) self.currentLine = [self getCurrentLine];
 	self.currentLine = [self getCurrentLine];
@@ -3566,8 +3566,8 @@ static NSString *revisionAttribute = @"Revision";
 	[doc.textScrollView setMarginColor:self.themeManager.currentMarginColor];
 	
 	[doc.textView setSelectedTextAttributes:@{
-										  NSBackgroundColorAttributeName: [self.themeManager currentSelectionColor],
-										  NSForegroundColorAttributeName: [self.themeManager currentBackgroundColor]
+										  NSBackgroundColorAttributeName: self.themeManager.currentSelectionColor,
+										  NSForegroundColorAttributeName: self.themeManager.currentBackgroundColor
 	}];
 	
 	if (setTextColor) [doc.textView setTextColor:self.themeManager.currentTextColor];
@@ -3604,38 +3604,6 @@ static NSString *revisionAttribute = @"Revision";
 	[[NSUserDefaults standardUserDefaults] setBool:self.typewriterMode forKey:TYPERWITER_KEY];
 	
 	[self updateLayout];
-}
-- (void)typewriterScroll {
-	if (self.textView.needsLayout) [self.textView layout];
-
-	// So, we'll try to center the caret.
-	// Trouble is, line heights get fucked up for some reason. This probably needs some sort of hack :-(
-	
-	NSRange range = [[self.textView layoutManager] glyphRangeForCharacterRange:self.textView.selectedRange actualCharacterRange:nil];
-	NSRect rect = [[self.textView layoutManager] boundingRectForGlyphRange:range inTextContainer:[self.textView textContainer]];
-
-	CGFloat scrollY = (rect.origin.y - self.fontSize / 2 - 10) * _magnification;
-	/*
-	// Fix some silliness
-	CGFloat boundsY = self.textClipView.bounds.size.height + self.textClipView.bounds.origin.y;
-	CGFloat maxY = self.textView.frame.size.height;
-	CGFloat pixelsToBottom = maxY - boundsY;
-	if (pixelsToBottom < self.fontSize * _magnification * 0.5 && pixelsToBottom > 0) {
-		scrollY -= 5 * _magnification;
-	}
-	NSLog(@"bounds - max = %f", maxY - boundsY);
-	*/
-	
-	// Calculate container height with insets
-	CGFloat containerHeight = [_textView.layoutManager usedRectForTextContainer:_textView.textContainer].size.height;
-	containerHeight = containerHeight * _magnification + _textInsetY * 2 * _magnification;
-		
-	CGFloat delta = fabs(scrollY - self.textClipView.bounds.origin.y);
-	
-	if (scrollY < containerHeight && delta > self.fontSize * _magnification) {
-		//scrollY = containerHeight - _textClipView.frame.size.height;
-		[[self.textClipView animator] setBoundsOrigin:NSMakePoint(0, scrollY)];
-	}
 }
 
 

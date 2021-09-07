@@ -318,6 +318,42 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return nil;
 }
 
+- (void)typewriterScroll {
+	if (self.needsLayout) [self layout];
+
+	// So, we'll try to center the caret.
+	// Trouble is, line heights get fucked up for some reason. This probably needs some sort of hack :-(
+	
+	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
+	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+
+	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize / 2 - 10) * self.editorDelegate.magnification;
+	/*
+	// Fix some silliness
+	CGFloat boundsY = self.textClipView.bounds.size.height + self.textClipView.bounds.origin.y;
+	CGFloat maxY = self.textView.frame.size.height;
+	CGFloat pixelsToBottom = maxY - boundsY;
+	if (pixelsToBottom < self.fontSize * _magnification * 0.5 && pixelsToBottom > 0) {
+		scrollY -= 5 * _magnification;
+	}
+	NSLog(@"bounds - max = %f", maxY - boundsY);
+	*/
+	
+	// Calculate container height with insets
+	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
+	containerHeight = containerHeight * self.editorDelegate.magnification + self.textInsetY * 2 * self.editorDelegate.magnification;
+		
+	CGFloat delta = fabs(scrollY - self.superview.bounds.origin.y);
+	
+	if (scrollY < containerHeight && delta > self.editorDelegate.fontSize * self.editorDelegate.magnification) {
+		//scrollY = containerHeight - _textClipView.frame.size.height;
+		[self.superview.animator setBoundsOrigin:NSMakePoint(0, scrollY)];
+	}
+}
+
+-(void)keyUp:(NSEvent *)event {
+	if (self.editorDelegate.typewriterMode) [self typewriterScroll];
+}
 - (void)keyDown:(NSEvent *)theEvent {
 	if (self.editorDelegate.contentLocked) {
 		// Show lock status for alphabet keys

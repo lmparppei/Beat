@@ -64,7 +64,6 @@
 - (NSString*)assetAsString:(NSString*)filename;
 - (NSString*)appAssetAsString:(NSString*)filename;
 - (void)end;
-- (void)endScript;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (NSArray*)availableTags;
 - (NSArray*)screen;
@@ -143,4 +142,5 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 - (void)updateSelection:(NSRange)selection;
 - (void)updateOutline:(NSArray*)outline;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
+- (void)closePluginWindow:(BeatPluginWindow*)window;
 @end

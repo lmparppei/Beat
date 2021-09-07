@@ -49,7 +49,9 @@
 @property (nonatomic) bool resident;
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
-@property (nonatomic) BeatPluginWindow *pluginWindow;
+@property (nonatomic) bool inCallback;
+@property (nonatomic) bool terminateAfterCallback;
+@property (nonatomic) NSMutableArray<BeatPluginWindow*> *pluginWindows;
 @end
 
 @implementation BeatScriptParser
@@ -92,29 +94,44 @@
 {
 	[self setJSData];
 	
-	[_context evaluateScript:string];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self.context evaluateScript:string];
 
-	// Kill it if the plugin is not resident
-	if (!self.sheet && !_resident && !_pluginWindow) {
-		[self endScript];
-	}
+		// Kill it if the plugin is not resident
+		if (!self.sheet && !self.resident && self.pluginWindows.count < 1) {
+			[self end];
+		}
+	});
 }
 
-- (void)end { [self endScript]; } // Alias
-- (void)endScript
-{
+- (void)safeToTerminate {
+	
+}
+
+- (void)end {
+	if (_inCallback) {
+		_terminateAfterCallback = YES;
+		return;
+	}
+	
+	NSLog(@"##### TERMINATING #####");
+	
 	_terminating = YES;
 	
-	if (!_windowClosing && _pluginWindow && _pluginWindow.isVisible) {
-		[_pluginWindow close];
+	if (_pluginWindows.count) {
+		for (BeatPluginWindow *window in _pluginWindows) {
+			// Don't perform any callbacks here
+			if (window.isVisible && !window.isClosing) {
+				[window closeWindow];
+			}
+		}
 	}
 	
 	// Stop any timers left
 	[self stopTimers];
-		
-	// Null everything
-	_context = nil;
-	_vm = nil;
+	
+	
+	//_vm = nil;
 	_sheet = nil;
 	_sheetCallback = nil;
 	_plugin = nil;
@@ -228,7 +245,7 @@
 
 - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats {
 	BeatPluginTimer *timer = [BeatPluginTimer scheduledTimerWithTimeInterval:seconds repeats:repeats block:^(NSTimer * _Nonnull timer) {
-		[callback callWithArguments:nil];
+		[self runCallback:callback withArguments:nil];
 	}];
 	
 	// When adding a new timer, remove references to invalid ones
@@ -254,6 +271,7 @@
 	for (BeatPluginTimer *timer in _timers) {
 		[timer invalidate];
 	}
+	[_timers removeAllObjects];
 	_timers = nil;
 }
 
@@ -271,7 +289,8 @@
 				[callback callWithArguments:@[savePanel.URL.path]];
 			});
 		} else {
-			[callback callWithArguments:nil];
+			
+			[self runCallback:callback withArguments:nil];
 		}
 	}];
 }
@@ -295,9 +314,9 @@
 	
 	NSModalResponse result = [openPanel runModal];
 	if (result == NSModalResponseOK) {
-		[callback callWithArguments:@[openPanel.URL.path]];
+		[self runCallback:callback withArguments:@[openPanel.URL.path]];
 	} else {
-		[callback callWithArguments:nil];
+		[self runCallback:callback withArguments:nil];
 	}
 	
 	/*
@@ -330,9 +349,9 @@
 		for (NSURL* url in openPanel.URLs) {
 			[paths addObject:url.path];
 		}
-		[callback callWithArguments:@[paths]];
+		[self runCallback:callback withArguments:@[paths]];
 	} else {
-		[callback callWithArguments:nil];
+		[self runCallback:callback withArguments:nil];
 	}
 	
 	/*
@@ -539,10 +558,10 @@
 	
 	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
 		NSDictionary *values = itemView.valuesForFields;
-		[callback callWithArguments:@[values]];
+		[self runCallback:callback withArguments:@[values]];
 		return values;
 	} else {
-		[callback callWithArguments:nil];
+		[self runCallback:callback withArguments:nil];
 		return nil;
 	}
 }
@@ -640,7 +659,7 @@
 
 - (NSTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback {
 	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:seconds repeats:NO block:^(NSTimer * _Nonnull timer) {
-		[callback callWithArguments:nil];
+		[self runCallback:callback withArguments:nil];
 	}];
 	return timer;
 }
@@ -754,7 +773,7 @@
 		
 		if (!error) {
 			[self closePanel:nil];
-			[self.sheetCallback callWithArguments:@[jsonData]];
+			[self runCallback:self.sheetCallback withArguments:@[jsonData]];
 		} else {
 			[self closePanel:nil];
 			[self alert:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
@@ -765,7 +784,6 @@
 		// If there was no callback, it marks the end of the script
 		[self closePanel:nil];
 		_context = nil;
-		_vm = nil;
 	}
 }
 
@@ -781,36 +799,80 @@
 	if (width > 1000) width = 1000;
 	if (height <= 0) height = 300;
 	if (height > 800) height = 800;
-		
-	if (!_pluginWindow) {
+	
+	
+	if (_pluginWindows == nil) {
+		_pluginWindows = [NSMutableArray array];
 		[_delegate registerPlugin:self];
-		_pluginWindow = [BeatPluginWindow withHTML:html width:width height:height host:self];
-		_pluginWindow.parentWindow = _delegate.thisWindow;
-		_pluginWindow.delegate = self;
-		[_pluginWindow makeKeyAndOrderFront:nil];
 	}
 	
-	if (callback && !callback.isUndefined) _windowCallback = callback;
+	// Create window
+	BeatPluginWindow *window = [BeatPluginWindow withHTML:html width:width height:height host:self];
+	[_pluginWindows addObject:window];
 	
-	return _pluginWindow;
+	[window makeKeyAndOrderFront:nil];
+	
+	// Store callback
+	if (callback && !callback.isUndefined) window.callback = callback;
+	
+	return window;
 }
 
--(void)windowWillClose:(NSNotification *)notification {
-	NSLog(@"HTML window will close");
-	_windowClosing = YES;
+- (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments {
+	if (!callback || callback.isUndefined) return;
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		self.inCallback = YES;
+		[callback callWithArguments:arguments];
+		self.inCallback = NO;
+		
+		if (self.terminateAfterCallback) {
+			NSLog(@"... terminate post callback");
+			[self end];
+		}
+	});
+}
 
-	// Remove webview from memory, for sure
-	[_pluginWindow.webview.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
-	[_pluginWindow.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
-	[_pluginWindow.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
-	_pluginWindow.webview = nil;
-	
+- (void)closePluginWindow:(BeatPluginWindow*)window {
 	if (_terminating) return;
+	window.isClosing = YES;
 	
-	if (!_windowCallback.isUndefined && ![_windowCallback isNull]) {
-		NSLog(@"  --> Callback");
-		[_windowCallback callWithArguments:nil];
+	NSInteger i = [self.pluginWindows indexOfObject:window];
+	NSLog(@"... index %lu", i);
+	
+	// Store callback
+	JSValue *callback = window.callback;
+		
+	// Run callback
+	if (!callback.isUndefined && ![callback isNull]) {
+		[self runCallback:callback withArguments:nil];
 	}
+	
+	// Close window and remove its reference
+	[_pluginWindows removeObject:window];
+	[window closeWindow];
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+	NSLog(@"HTML window will close");
+	
+	BeatPluginWindow *window = (BeatPluginWindow*)notification.object;
+	if (window == nil) return;
+	
+	// Remove webview from memory, for sure
+	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
+	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
+	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
+	window.webview = nil;
+	
+	/*
+	if (!window.callback.isUndefined && ![window.callback isNull]) {
+		NSLog(@"  --> Callback");
+		[window.callback callWithArguments:nil];
+	}
+	 */
+	
+	NSLog(@" ....");
 	
 	_windowClosing = NO;
 }

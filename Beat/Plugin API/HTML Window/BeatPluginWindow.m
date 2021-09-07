@@ -20,6 +20,7 @@
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreNonretained defer:NO];
 	self.level = NSModalPanelWindowLevel;
 	self.delegate = host;
+	//self.parentWindow = host.delegate.thisWindow;
 	self.releasedWhenClosed = YES;
 	
 	_host = host;
@@ -96,7 +97,16 @@
 	return  YES;
 }
 -(void)cancelOperation:(id)sender {
-	[self close];
+	[super cancelOperation:sender];
 }
+-(void)close {
+	NSLog(@"CLOSE CALLED");
+	[self.host closePluginWindow:self];
+}
+-(void)closeWindow {
+	NSLog(@"SUPER CLOSE CALLED");
+	[super close];
+}
+
 
 @end

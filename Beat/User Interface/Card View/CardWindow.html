@@ -38,7 +38,13 @@ body { margin: 1rem; }
 <script>
 	let standalone = true
 	
+	window.onblur = function () {
+		//Beat.call("Beat.custom.savePosition()")
+	}
+	
 	// Javascript is loaded from an app asset.
 	// See CardView.js inside the Beat executable bundle.
 	#JAVASCRIPT#
+	
+	Beat.call("Beat.custom.createCards()")
 </script>
