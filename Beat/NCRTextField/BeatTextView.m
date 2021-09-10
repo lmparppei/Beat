@@ -150,6 +150,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[column1 setWidth:POPOVER_WIDTH - 2 * POPOVER_PADDING];
 	
 	NSTableView *tableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
+	
 	[tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleRegular];
 	[tableView setBackgroundColor:[NSColor clearColor]];
 	[tableView setRowSizeStyle:NSTableViewRowSizeStyleSmall];
@@ -161,7 +162,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[tableView addTableColumn:column1];
 	[tableView setDelegate:self];
 	[tableView setDataSource:self];
+	
+	// Avoid the "modern" padding on Big Sur
+	if (@available(macOS 11.0, *)) {
+		tableView.style = NSTableViewStyleFullWidth;
+	}
+	
 	self.autocompleteTableView = tableView;
+	
 	
 	NSScrollView *tableScrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
 	[tableScrollView setDrawsBackground:NO];
@@ -579,7 +587,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CGFloat height = (self.autocompleteTableView.rowHeight + self.autocompleteTableView.intercellSpacing.height) * numberOfRows + 2 * POPOVER_PADDING;
 	NSRect frame = NSMakeRect(0, 0, POPOVER_WIDTH, height);
 	[self.autocompleteTableView.enclosingScrollView setFrame:NSInsetRect(frame, POPOVER_PADDING, POPOVER_PADDING)];
-	[self.autocompletePopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
+	[self.autocompletePopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame) + POPOVER_PADDING)];
 	
 	self.substring = [self.string substringWithRange:NSMakeRange(location, 0)];
 	

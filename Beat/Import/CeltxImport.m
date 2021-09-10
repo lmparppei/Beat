@@ -11,7 +11,7 @@
 #import <Cocoa/Cocoa.h>
 #import "CeltxImport.h"
 #import "HTMLParser.h"
-#import <UnzipKit/UnzipKit.h>
+#import "UnzipKit.h"
 
 #define TITLE @"Import .celtx File"
 #define PADDING 8.0

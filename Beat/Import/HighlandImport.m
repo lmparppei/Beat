@@ -7,7 +7,7 @@
 //
 
 #import "HighlandImport.h"
-#import <UnzipKit/UnzipKit.h>
+#import "UnzipKit.h"
 
 @implementation HighlandImport
 

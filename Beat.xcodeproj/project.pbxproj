@@ -19,7 +19,6 @@
 		B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B606721125F5413C00CBDC7A /* ValidationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B606721025F5413C00CBDC7A /* ValidationItem.m */; };
-		B606E199260E12B900F0DC5E /* UnzipKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B6D062E4260CAF4500DEF6FB /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B60A592E259938C900207D00 /* BeatPluginManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B60A592D259938C900207D00 /* BeatPluginManager.m */; };
 		B60A593325993FF000207D00 /* Find Longest Scene.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */; };
 		B60D192726B0811E005C2693 /* BeatNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = B60D192626B0811E005C2693 /* BeatNotifications.m */; };
@@ -250,7 +249,6 @@
 		B68B60B9260B849300463AD8 /* Find Longest Scene.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */; };
 		B68B60BA260B849300463AD8 /* Outlining.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3A2549AEDD00201BC9 /* Outlining.fountain */; };
 		B68B60C0260B849300463AD8 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		B68B60CD260BA8A800463AD8 /* Silent as Murderers.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B68B60CA260BA8A800463AD8 /* Silent as Murderers.fountain */; };
 		B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D6260BA8D600463AD8 /* beat_manual.html */; };
 		B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D6260BA8D600463AD8 /* beat_manual.html */; };
 		B68D60BA267574FB00E067F0 /* NSIndexSet+Subset.m in Sources */ = {isa = PBXBuildFile; fileRef = B68D60B9267574FB00E067F0 /* NSIndexSet+Subset.m */; };
@@ -289,9 +287,6 @@
 		B6CE54BF26010D5B006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
 		B6CE54C326010FC1006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
-		B6D062E7260CAF4500DEF6FB /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D062E4260CAF4500DEF6FB /* UnzipKit.framework */; };
-		B6D062F0260CAFF000DEF6FB /* UnzipKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D062E4260CAF4500DEF6FB /* UnzipKit.framework */; };
-		B6D062F4260CB0F700DEF6FB /* UnzipKit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B6D062E4260CAF4500DEF6FB /* UnzipKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6D26BE124B9E7350041402B /* BeatTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE024B9E7350041402B /* BeatTimerView.m */; };
 		B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE424B9ED830041402B /* BeatTimer.m */; };
 		B6D2B7072218B308005B8447 /* BeatAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* BeatAppDelegate.m */; };
@@ -315,6 +310,28 @@
 		B6D5D9002699A42F00B88D06 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
 		B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D74A6C24817518001E5AF4 /* Patch Notes.html */; };
+		B6DAF74826E8109600C4464B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72C26E8109600C4464B /* LICENSE */; };
+		B6DAF74926E8109600C4464B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72C26E8109600C4464B /* LICENSE */; };
+		B6DAF74A26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */; };
+		B6DAF74B26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */; };
+		B6DAF74C26E8109600C4464B /* UnzipKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72F26E8109600C4464B /* UnzipKit.strings */; };
+		B6DAF74D26E8109600C4464B /* UnzipKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72F26E8109600C4464B /* UnzipKit.strings */; };
+		B6DAF74E26E8109600C4464B /* UZKArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73326E8109600C4464B /* UZKArchive.m */; };
+		B6DAF74F26E8109600C4464B /* UZKArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73326E8109600C4464B /* UZKArchive.m */; };
+		B6DAF75026E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */; };
+		B6DAF75126E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */; };
+		B6DAF75226E8109600C4464B /* UZKFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73A26E8109600C4464B /* UZKFileInfo.m */; };
+		B6DAF75326E8109600C4464B /* UZKFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73A26E8109600C4464B /* UZKFileInfo.m */; };
+		B6DAF75426E8109600C4464B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF73C26E8109600C4464B /* README.md */; };
+		B6DAF75526E8109600C4464B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF73C26E8109600C4464B /* README.md */; };
+		B6DAF75626E8109600C4464B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73F26E8109600C4464B /* unzip.c */; };
+		B6DAF75726E8109600C4464B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73F26E8109600C4464B /* unzip.c */; };
+		B6DAF75826E8109600C4464B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74026E8109600C4464B /* zip.c */; };
+		B6DAF75926E8109600C4464B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74026E8109600C4464B /* zip.c */; };
+		B6DAF75A26E8109600C4464B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74126E8109600C4464B /* ioapi.c */; };
+		B6DAF75B26E8109600C4464B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74126E8109600C4464B /* ioapi.c */; };
+		B6DAF75C26E8109600C4464B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74226E8109600C4464B /* mztools.c */; };
+		B6DAF75D26E8109600C4464B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74226E8109600C4464B /* mztools.c */; };
 		B6DF34B4259D0C2A0077041F /* About Plugins.md in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB1259CE3230007EA4E /* About Plugins.md */; };
 		B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS.css */; };
 		B6E182832626BFCF00775FB6 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -369,6 +386,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		B6101CBE26E7DA1F0015940D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B68B4CBC263F293A00AC4939 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -376,16 +403,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				B670CBCD263FD9A900E82AC1 /* org.sparkle-project.InstallerLauncher.xpc in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B68B60BB260B849300463AD8 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				B606E199260E12B900F0DC5E /* UnzipKit.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,7 +443,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B6D062F4260CB0F700DEF6FB /* UnzipKit.framework in CopyFiles */,
 				B6F4A2D5221EEDDC0065D9CB /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -434,11 +450,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0B4082E6693EB20E270C76F1 /* Pods-Beat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat.release.xcconfig"; path = "Target Support Files/Pods-Beat/Pods-Beat.release.xcconfig"; sourceTree = "<group>"; };
-		2FB39393BF8463B13843D3E9 /* Pods-fountainQuickLook.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fountainQuickLook.release.xcconfig"; path = "Target Support Files/Pods-fountainQuickLook/Pods-fountainQuickLook.release.xcconfig"; sourceTree = "<group>"; };
-		3039704761ADD0862D88045E /* Pods-Beat Pro.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat Pro.release.xcconfig"; path = "Target Support Files/Pods-Beat Pro/Pods-Beat Pro.release.xcconfig"; sourceTree = "<group>"; };
-		56BC41FF88E0C11D8835CD25 /* Pods-Beat Pro.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat Pro.debug.xcconfig"; path = "Target Support Files/Pods-Beat Pro/Pods-Beat Pro.debug.xcconfig"; sourceTree = "<group>"; };
-		A2A160DE6C1CE602E024A335 /* Pods-Beat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat.debug.xcconfig"; path = "Target Support Files/Pods-Beat/Pods-Beat.debug.xcconfig"; sourceTree = "<group>"; };
+		1B111AF840E60FFC294D606D /* Pods-Beat Appstore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat Appstore.release.xcconfig"; path = "Target Support Files/Pods-Beat Appstore/Pods-Beat Appstore.release.xcconfig"; sourceTree = "<group>"; };
+		45EE83D3B178DEE9AD30F97F /* Pods-Beat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat.release.xcconfig"; path = "Target Support Files/Pods-Beat/Pods-Beat.release.xcconfig"; sourceTree = "<group>"; };
+		4F1AE424E75D9189A2D92CDF /* Pods-Beat Appstore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat Appstore.debug.xcconfig"; path = "Target Support Files/Pods-Beat Appstore/Pods-Beat Appstore.debug.xcconfig"; sourceTree = "<group>"; };
+		97F6E89FC0445762E5DB568A /* Pods-Beat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat.debug.xcconfig"; path = "Target Support Files/Pods-Beat/Pods-Beat.debug.xcconfig"; sourceTree = "<group>"; };
 		B13111821CB2885200D07A0C /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeManager.h; sourceTree = "<group>"; };
 		B13111861CB289ED00D07A0C /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
 		B131118B1CB2A41800D07A0C /* ContinuousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinuousFountainParser.h; sourceTree = "<group>"; };
@@ -542,6 +557,7 @@
 		B645A97E23CD03CC00F13710 /* NSString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Regex.m"; path = "Beat/Categories/NSString+Regex.m"; sourceTree = SOURCE_ROOT; };
 		B6482F7722195BEC00175927 /* BeatTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatTextView.h; path = Beat/NCRTextField/BeatTextView.h; sourceTree = SOURCE_ROOT; };
 		B6482F7822195BEC00175927 /* BeatTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatTextView.m; path = Beat/NCRTextField/BeatTextView.m; sourceTree = SOURCE_ROOT; };
+		B64C3B2A26E7C9F200A5022E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = ../en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B65027EF256EAAAF00862A14 /* Info Pro.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info Pro.plist"; sourceTree = "<group>"; };
 		B650D76B25CF349D0042010C /* BeatTagging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagging.h; sourceTree = "<group>"; };
 		B650D76C25CF349D0042010C /* BeatTagging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagging.m; sourceTree = "<group>"; };
@@ -582,7 +598,6 @@
 		B66F462D2565ADA0003748DA /* NSString+JavaSubstring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+JavaSubstring.h"; sourceTree = "<group>"; };
 		B66F462E2565ADA0003748DA /* NSMutableDictionary+DMPExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DMPExtensions.h"; sourceTree = "<group>"; };
 		B66F462F2565ADA0003748DA /* MinMaxMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MinMaxMacros.h; sourceTree = "<group>"; };
-		B66F46322565ADA0003748DA /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
 		B66FC99D2276EAD800C0265D /* CardView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = CardView.js; sourceTree = "<group>"; };
 		B670CBC9263FD95000E82AC1 /* org.sparkle-project.InstallerLauncher.xpc */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.xpc-service"; path = "org.sparkle-project.InstallerLauncher.xpc"; sourceTree = "<group>"; };
 		B670E20824BF689A006375BA /* BeatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTests.m; sourceTree = "<group>"; };
@@ -672,7 +687,6 @@
 		B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionTracking.m; sourceTree = "<group>"; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
-		B6D062E4260CAF4500DEF6FB /* UnzipKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UnzipKit.framework; sourceTree = "<group>"; };
 		B6D12FEA2537A04C0018A88F /* BeatComparison.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatComparison.h; path = Beat/Export/Comparison/BeatComparison.h; sourceTree = SOURCE_ROOT; };
 		B6D12FEB2537A04C0018A88F /* BeatComparison.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatComparison.m; path = Beat/Export/Comparison/BeatComparison.m; sourceTree = SOURCE_ROOT; };
 		B6D26BDF24B9E7350041402B /* BeatTimerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimerView.h; path = "Beat/User Interface/BeatTimer/BeatTimerView.h"; sourceTree = SOURCE_ROOT; };
@@ -701,6 +715,28 @@
 		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/Parsing/OutlineScene.m; sourceTree = SOURCE_ROOT; };
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/Parsing/OutlineScene.h; sourceTree = SOURCE_ROOT; };
 		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "Patch Notes.html"; sourceTree = SOURCE_ROOT; };
+		B6DAF72C26E8109600C4464B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UnzipKitResources-Info.plist"; sourceTree = "<group>"; };
+		B6DAF73026E8109600C4464B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UnzipKit.strings; sourceTree = "<group>"; };
+		B6DAF73226E8109600C4464B /* UnzipKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKit.h; sourceTree = "<group>"; };
+		B6DAF73326E8109600C4464B /* UZKArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKArchive.m; sourceTree = "<group>"; };
+		B6DAF73426E8109600C4464B /* UZKFileInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo.h; sourceTree = "<group>"; };
+		B6DAF73526E8109600C4464B /* UnzipKitMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKitMacros.h; sourceTree = "<group>"; };
+		B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+UnzipKitExtensions.m"; sourceTree = "<group>"; };
+		B6DAF73826E8109600C4464B /* NSURL+UnzipKitExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+UnzipKitExtensions.h"; sourceTree = "<group>"; };
+		B6DAF73926E8109600C4464B /* UZKArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKArchive.h; sourceTree = "<group>"; };
+		B6DAF73A26E8109600C4464B /* UZKFileInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKFileInfo.m; sourceTree = "<group>"; };
+		B6DAF73B26E8109600C4464B /* UZKFileInfo_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo_Private.h; sourceTree = "<group>"; };
+		B6DAF73C26E8109600C4464B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B6DAF73F26E8109600C4464B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		B6DAF74026E8109600C4464B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		B6DAF74126E8109600C4464B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		B6DAF74226E8109600C4464B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		B6DAF74326E8109600C4464B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		B6DAF74426E8109600C4464B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		B6DAF74526E8109600C4464B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		B6DAF74626E8109600C4464B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		B6DAF74726E8109600C4464B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		B6E067CF222D7C4100CE425A /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
 		B6E3246624B515670001273F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B6E61F6D25F76123006C972A /* BeatEditTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditTracking.h; sourceTree = "<group>"; };
@@ -733,7 +769,6 @@
 		B6FF56D325AA507B004E4752 /* BeatBrowserView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatBrowserView.h; sourceTree = "<group>"; };
 		B6FF56D425AA507B004E4752 /* BeatBrowserView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatBrowserView.m; sourceTree = "<group>"; };
 		B6FF56D525AA507B004E4752 /* BeatBrowserView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatBrowserView.xib; sourceTree = "<group>"; };
-		CABAB0D01B72A934848BA070 /* Pods-fountainQuickLook.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fountainQuickLook.debug.xcconfig"; path = "Target Support Files/Pods-fountainQuickLook/Pods-fountainQuickLook.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -743,7 +778,6 @@
 			files = (
 				B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */,
 				B6E3246724B515670001273F /* AppKit.framework in Frameworks */,
-				B6D062F0260CAFF000DEF6FB /* UnzipKit.framework in Frameworks */,
 				B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */,
 				B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */,
 				B138B61F19E1D6A7000489C4 /* WebKit.framework in Frameworks */,
@@ -765,7 +799,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B68B6086260B849300463AD8 /* Cocoa.framework in Frameworks */,
-				B6D062E7260CAF4500DEF6FB /* UnzipKit.framework in Frameworks */,
 				B68B6087260B849300463AD8 /* AppKit.framework in Frameworks */,
 				B68B6088260B849300463AD8 /* QuickLook.framework in Frameworks */,
 				B68B608A260B849300463AD8 /* WebKit.framework in Frameworks */,
@@ -775,15 +808,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A511D304017AD9D4480C6B15 /* Pods */ = {
+		0849B67034DD3C5A7FE6077A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				A2A160DE6C1CE602E024A335 /* Pods-Beat.debug.xcconfig */,
-				0B4082E6693EB20E270C76F1 /* Pods-Beat.release.xcconfig */,
-				56BC41FF88E0C11D8835CD25 /* Pods-Beat Pro.debug.xcconfig */,
-				3039704761ADD0862D88045E /* Pods-Beat Pro.release.xcconfig */,
-				CABAB0D01B72A934848BA070 /* Pods-fountainQuickLook.debug.xcconfig */,
-				2FB39393BF8463B13843D3E9 /* Pods-fountainQuickLook.release.xcconfig */,
+				97F6E89FC0445762E5DB568A /* Pods-Beat.debug.xcconfig */,
+				45EE83D3B178DEE9AD30F97F /* Pods-Beat.release.xcconfig */,
+				4F1AE424E75D9189A2D92CDF /* Pods-Beat Appstore.debug.xcconfig */,
+				1B111AF840E60FFC294D606D /* Pods-Beat Appstore.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -835,7 +866,7 @@
 				B138B62419E1D8A4000489C4 /* Frameworks */,
 				B6A61293256C106800E4AF92 /* Libraries */,
 				B138B57419E1C973000489C4 /* Products */,
-				A511D304017AD9D4480C6B15 /* Pods */,
+				0849B67034DD3C5A7FE6077A /* Pods */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
@@ -898,7 +929,6 @@
 				B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */,
 				B138B62019E1D6FA000489C4 /* Cocoa.framework */,
 				B138B61E19E1D6A7000489C4 /* WebKit.framework */,
-				B6D062E4260CAF4500DEF6FB /* UnzipKit.framework */,
 				B62ADC7423CCCE560015563A /* Quartz.framework */,
 			);
 			name = Frameworks;
@@ -1345,6 +1375,7 @@
 		B6A61293256C106800E4AF92 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				B6DAF72B26E8109600C4464B /* UnzipKit */,
 				B66F46212565AD57003748DA /* DiffMatchPatch */,
 				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
 				B6B6C87E25650CDD005294FE /* TextBundle */,
@@ -1406,6 +1437,76 @@
 			);
 			name = Comparison;
 			path = ..;
+			sourceTree = "<group>";
+		};
+		B6DAF72B26E8109600C4464B /* UnzipKit */ = {
+			isa = PBXGroup;
+			children = (
+				B6DAF72C26E8109600C4464B /* LICENSE */,
+				B6DAF72D26E8109600C4464B /* Resources */,
+				B6DAF73126E8109600C4464B /* Source */,
+				B6DAF73C26E8109600C4464B /* README.md */,
+				B6DAF73D26E8109600C4464B /* Lib */,
+			);
+			name = UnzipKit;
+			path = Pods/UnzipKit;
+			sourceTree = SOURCE_ROOT;
+		};
+		B6DAF72D26E8109600C4464B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */,
+				B6DAF72F26E8109600C4464B /* UnzipKit.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B6DAF73126E8109600C4464B /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B6DAF73226E8109600C4464B /* UnzipKit.h */,
+				B6DAF73326E8109600C4464B /* UZKArchive.m */,
+				B6DAF73426E8109600C4464B /* UZKFileInfo.h */,
+				B6DAF73526E8109600C4464B /* UnzipKitMacros.h */,
+				B6DAF73626E8109600C4464B /* Extensions */,
+				B6DAF73926E8109600C4464B /* UZKArchive.h */,
+				B6DAF73A26E8109600C4464B /* UZKFileInfo.m */,
+				B6DAF73B26E8109600C4464B /* UZKFileInfo_Private.h */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		B6DAF73626E8109600C4464B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */,
+				B6DAF73826E8109600C4464B /* NSURL+UnzipKitExtensions.h */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		B6DAF73D26E8109600C4464B /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				B6DAF73E26E8109600C4464B /* MiniZip */,
+			);
+			path = Lib;
+			sourceTree = "<group>";
+		};
+		B6DAF73E26E8109600C4464B /* MiniZip */ = {
+			isa = PBXGroup;
+			children = (
+				B6DAF73F26E8109600C4464B /* unzip.c */,
+				B6DAF74026E8109600C4464B /* zip.c */,
+				B6DAF74126E8109600C4464B /* ioapi.c */,
+				B6DAF74226E8109600C4464B /* mztools.c */,
+				B6DAF74326E8109600C4464B /* crypt.h */,
+				B6DAF74426E8109600C4464B /* zip.h */,
+				B6DAF74526E8109600C4464B /* unzip.h */,
+				B6DAF74626E8109600C4464B /* mztools.h */,
+				B6DAF74726E8109600C4464B /* ioapi.h */,
+			);
+			path = MiniZip;
 			sourceTree = "<group>";
 		};
 		B6DCB25526510E1000FE2447 /* HTML Window */ = {
@@ -1495,7 +1596,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B138B59319E1C974000489C4 /* Build configuration list for PBXNativeTarget "Beat" */;
 			buildPhases = (
-				6C3C718F0FD949F43D9D42B9 /* [CP] Check Pods Manifest.lock */,
+				10720B7DC0D6E818B2DDD4F9 /* [CP] Check Pods Manifest.lock */,
 				B138B56F19E1C973000489C4 /* Sources */,
 				B138B57019E1C973000489C4 /* Frameworks */,
 				B138B57119E1C973000489C4 /* Resources */,
@@ -1518,7 +1619,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B62ADC8523CCCE560015563A /* Build configuration list for PBXNativeTarget "fountainQuickLook" */;
 			buildPhases = (
-				FAEC245D19CF8E550FF277D5 /* [CP] Check Pods Manifest.lock */,
 				B62ADC6F23CCCE560015563A /* Sources */,
 				B62ADC7023CCCE560015563A /* Frameworks */,
 				B62ADC7123CCCE560015563A /* Resources */,
@@ -1538,13 +1638,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B68B60C2260B849300463AD8 /* Build configuration list for PBXNativeTarget "Beat Appstore" */;
 			buildPhases = (
-				B68B6024260B849300463AD8 /* [CP] Check Pods Manifest.lock */,
 				B68B6025260B849300463AD8 /* Sources */,
 				B68B6084260B849300463AD8 /* Frameworks */,
 				B68B608B260B849300463AD8 /* Resources */,
-				B68B60BB260B849300463AD8 /* CopyFiles */,
 				B68B60BE260B849300463AD8 /* ShellScript */,
 				B68B60BF260B849300463AD8 /* Embed App Extensions */,
+				B6101CBE26E7DA1F0015940D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1562,7 +1661,7 @@
 		B138B56B19E1C973000489C4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = "KAPITAN!";
 				TargetAttributes = {
 					B138B57219E1C973000489C4 = {
@@ -1597,7 +1696,6 @@
 			knownRegions = (
 				en,
 				Base,
-				English,
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
@@ -1622,9 +1720,12 @@
 				B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */,
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
 				B65F02B325B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */,
+				B6DAF74C26E8109600C4464B /* UnzipKit.strings in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
+				B6DAF74A26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */,
 				B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
+				B6DAF75426E8109600C4464B /* README.md in Resources */,
 				B6829BFC25AB727600C0595B /* BeatEpisodePrinter.xib in Resources */,
 				B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */,
 				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
@@ -1654,6 +1755,7 @@
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,
 				B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B6C16AFB25A72D3D003EF5A7 /* Plugin HTML template.html in Resources */,
+				B6DAF74826E8109600C4464B /* LICENSE in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
 				B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */,
@@ -1681,10 +1783,12 @@
 				B68B6090260B849300463AD8 /* ThemeEditor.xib in Resources */,
 				B68B6091260B849300463AD8 /* Courier Prime Bold.ttf in Resources */,
 				B68B6092260B849300463AD8 /* BeatAnalysisPanel.xib in Resources */,
+				B6DAF74D26E8109600C4464B /* UnzipKit.strings in Resources */,
 				B68B6093260B849300463AD8 /* Courier Prime Italic.ttf in Resources */,
-				B68B60CD260BA8A800463AD8 /* Silent as Murderers.fountain in Resources */,
+				B6DAF74B26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */,
 				B68B6094260B849300463AD8 /* Courier Prime.ttf in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
+				B6DAF75526E8109600C4464B /* README.md in Resources */,
 				B68B6096260B849300463AD8 /* BeatEpisodePrinter.xib in Resources */,
 				B68B6097260B849300463AD8 /* BeatDocumentIcon.iconset in Resources */,
 				B68B6098260B849300463AD8 /* CardCSS.css in Resources */,
@@ -1714,6 +1818,7 @@
 				B68B60B4260B849300463AD8 /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B68B60B6260B849300463AD8 /* Plugin HTML template.html in Resources */,
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
+				B6DAF74926E8109600C4464B /* LICENSE in Resources */,
 				B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B60FF86B26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
 				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
@@ -1725,7 +1830,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		6C3C718F0FD949F43D9D42B9 /* [CP] Check Pods Manifest.lock */ = {
+		10720B7DC0D6E818B2DDD4F9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1762,29 +1867,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# INFOPLIST=\"${SRCROOT}/Beat/Supporting Files/Info.plist\"\n# versionNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"$INFOPLIST\")\n# buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST\")\n# buildNumber=$(($buildNumber + 1))\n\n# INFOPLIST_SHAREEXT=\"${SRCROOT}/fountainQuickLook/Info.plist\"\n# /usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $versionNumber\" \"$INFOPLIST_SHAREEXT\"\n# /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_SHAREEXT\"\n";
-		};
-		B68B6024260B849300463AD8 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Beat-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "
+";
 		};
 		B68B60BE260B849300463AD8 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1812,28 +1896,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# buildNumber=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"$INFOPLIST_FILE\")\n# buildNumber=$(($buildNumber + 1))\n# /usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $buildNumber\" \"$INFOPLIST_FILE\"\n";
 		};
-		FAEC245D19CF8E550FF277D5 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-fountainQuickLook-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1853,12 +1915,14 @@
 				B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */,
 				B69154652480EB7E002393D1 /* RoundedButton.m in Sources */,
 				B6F5420525E2A15900D14E85 /* TagTextView.m in Sources */,
+				B6DAF75826E8109600C4464B /* zip.c in Sources */,
 				B61F016E266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */,
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
 				B6D2B7132218B39A005B8447 /* Document.m in Sources */,
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */,
 				B6D2B7072218B308005B8447 /* BeatAppDelegate.m in Sources */,
+				B6DAF75026E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */,
 				B69C8C6524A12765007B55A7 /* BeatHTMLScript.m in Sources */,
 				B6000DCE2562F0B300289676 /* CeltxImport.m in Sources */,
 				B60A592E259938C900207D00 /* BeatPluginManager.m in Sources */,
@@ -1880,6 +1944,7 @@
 				B625686225ECE2F000A3A244 /* TagDefinition.m in Sources */,
 				B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */,
 				B6447CB124616C8400AA4EBC /* MasterView.m in Sources */,
+				B6DAF75226E8109600C4464B /* UZKFileInfo.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+Whitespace.m in Sources */,
 				B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */,
@@ -1893,8 +1958,10 @@
 				B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
+				B6DAF75C26E8109600C4464B /* mztools.c in Sources */,
 				B6119C522682154F0049456D /* BeatExportSettings.m in Sources */,
 				B6FD5D8F2563B5320037ACBA /* HTMLParser.m in Sources */,
+				B6DAF75626E8109600C4464B /* unzip.c in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinuousFountainParser.m in Sources */,
 				B6FF56D625AA507B004E4752 /* BeatBrowserView.m in Sources */,
 				B62C0FFE262C945F007659F8 /* BDMCheckboxCell.m in Sources */,
@@ -1905,6 +1972,7 @@
 				B6D2B71A2218B408005B8447 /* main.m in Sources */,
 				B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */,
 				B6BBF3D024AC811600503EFB /* BeatScriptParser.m in Sources */,
+				B6DAF74E26E8109600C4464B /* UZKArchive.m in Sources */,
 				B63CF61625B43EDD00EFA3A2 /* ThemeEditor.m in Sources */,
 				B650D76D25CF349D0042010C /* BeatTagging.m in Sources */,
 				B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */,
@@ -1926,6 +1994,7 @@
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */,
 				B6E47D8825028A4E00734A8D /* BeatPaginator.m in Sources */,
+				B6DAF75A26E8109600C4464B /* ioapi.c in Sources */,
 				B60FAD7626A1D4960019A77B /* BeatLockButton.m in Sources */,
 				B6B6C88125650D05005294FE /* TextBundleWrapper.m in Sources */,
 				B6779B75256EED1100CFD324 /* BeatPaperSizing.m in Sources */,
@@ -1994,12 +2063,14 @@
 				B68B602E260B849300463AD8 /* FDXInterface.m in Sources */,
 				B68B602F260B849300463AD8 /* RoundedButton.m in Sources */,
 				B68B6030260B849300463AD8 /* TagTextView.m in Sources */,
+				B6DAF75926E8109600C4464B /* zip.c in Sources */,
 				B61F016F266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */,
 				B68B6031260B849300463AD8 /* BeatOutlineView.m in Sources */,
 				B68B6033260B849300463AD8 /* Document.m in Sources */,
 				B68B6034260B849300463AD8 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B68B6035260B849300463AD8 /* BeatTimeline.m in Sources */,
 				B68B6036260B849300463AD8 /* BeatAppDelegate.m in Sources */,
+				B6DAF75126E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */,
 				B68B6037260B849300463AD8 /* BeatHTMLScript.m in Sources */,
 				B68B6038260B849300463AD8 /* CeltxImport.m in Sources */,
 				B68B6039260B849300463AD8 /* BeatPluginManager.m in Sources */,
@@ -2021,6 +2092,7 @@
 				B68B6047260B849300463AD8 /* TagDefinition.m in Sources */,
 				B68B6048260B849300463AD8 /* DynamicColor.m in Sources */,
 				B68B6049260B849300463AD8 /* MasterView.m in Sources */,
+				B6DAF75326E8109600C4464B /* UZKFileInfo.m in Sources */,
 				B68B604A260B849300463AD8 /* OutlineExtractor.m in Sources */,
 				B68B604B260B849300463AD8 /* NSString+Whitespace.m in Sources */,
 				B68B604C260B849300463AD8 /* BeatColors.m in Sources */,
@@ -2034,8 +2106,10 @@
 				B68B6054260B849300463AD8 /* BeatTimer.m in Sources */,
 				B68B6055260B849300463AD8 /* ThemeManager.m in Sources */,
 				B68B6056260B849300463AD8 /* BeatTag.m in Sources */,
+				B6DAF75D26E8109600C4464B /* mztools.c in Sources */,
 				B6119C542682154F0049456D /* BeatExportSettings.m in Sources */,
 				B68B6057260B849300463AD8 /* HTMLParser.m in Sources */,
+				B6DAF75726E8109600C4464B /* unzip.c in Sources */,
 				B68B6058260B849300463AD8 /* ContinuousFountainParser.m in Sources */,
 				B68B6059260B849300463AD8 /* BeatBrowserView.m in Sources */,
 				B62C1000262C945F007659F8 /* BDMCheckboxCell.m in Sources */,
@@ -2046,6 +2120,7 @@
 				B68B605D260B849300463AD8 /* main.m in Sources */,
 				B68B605E260B849300463AD8 /* TouchTimelineView.m in Sources */,
 				B68B605F260B849300463AD8 /* BeatScriptParser.m in Sources */,
+				B6DAF74F26E8109600C4464B /* UZKArchive.m in Sources */,
 				B68B6060260B849300463AD8 /* ThemeEditor.m in Sources */,
 				B68B6061260B849300463AD8 /* BeatTagging.m in Sources */,
 				B68B6062260B849300463AD8 /* ITSwitch.m in Sources */,
@@ -2067,6 +2142,7 @@
 				B68B6070260B849300463AD8 /* NSString+Regex.m in Sources */,
 				B68B6071260B849300463AD8 /* BeatAntilateralThoughts.m in Sources */,
 				B68B6072260B849300463AD8 /* BeatPaginator.m in Sources */,
+				B6DAF75B26E8109600C4464B /* ioapi.c in Sources */,
 				B60FAD7726A1D4960019A77B /* BeatLockButton.m in Sources */,
 				B68B6073260B849300463AD8 /* TextBundleWrapper.m in Sources */,
 				B68B6074260B849300463AD8 /* BeatPaperSizing.m in Sources */,
@@ -2118,7 +2194,7 @@
 		B66F46312565ADA0003748DA /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				B66F46322565ADA0003748DA /* English */,
+				B64C3B2A26E7C9F200A5022E /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -2139,6 +2215,14 @@
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
+		B6DAF72F26E8109600C4464B /* UnzipKit.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B6DAF73026E8109600C4464B /* en */,
+			);
+			name = UnzipKit.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -2146,6 +2230,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -2201,6 +2286,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -2248,7 +2334,7 @@
 		};
 		B138B59419E1C974000489C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A2A160DE6C1CE602E024A335 /* Pods-Beat.debug.xcconfig */;
+			baseConfigurationReference = 97F6E89FC0445762E5DB568A /* Pods-Beat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
@@ -2287,7 +2373,7 @@
 		};
 		B138B59519E1C974000489C4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0B4082E6693EB20E270C76F1 /* Pods-Beat.release.xcconfig */;
+			baseConfigurationReference = 45EE83D3B178DEE9AD30F97F /* Pods-Beat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
@@ -2325,7 +2411,6 @@
 		};
 		B62ADC8323CCCE560015563A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CABAB0D01B72A934848BA070 /* Pods-fountainQuickLook.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -2357,7 +2442,6 @@
 		};
 		B62ADC8423CCCE560015563A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2FB39393BF8463B13843D3E9 /* Pods-fountainQuickLook.release.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -2366,7 +2450,7 @@
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = fountainQuickLook/fountainQuickLook.entitlements;
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
@@ -2389,7 +2473,7 @@
 		};
 		B68B60C3260B849300463AD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A2A160DE6C1CE602E024A335 /* Pods-Beat.debug.xcconfig */;
+			baseConfigurationReference = 4F1AE424E75D9189A2D92CDF /* Pods-Beat Appstore.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
@@ -2422,13 +2506,13 @@
 		};
 		B68B60C4260B849300463AD8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0B4082E6693EB20E270C76F1 /* Pods-Beat.release.xcconfig */;
+			baseConfigurationReference = 1B111AF840E60FFC294D606D /* Pods-Beat Appstore.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Appstore/Beat Appstore.entitlements";
-				CODE_SIGN_IDENTITY = "Developer ID Application";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;

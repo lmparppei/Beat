@@ -23,7 +23,7 @@
 #import "BeatAppDelegate.h"
 #import "RegExCategories.h"
 #import "BDMCheckboxCell.h"
-#import <UnzipKit/UnzipKit.h>
+#import "UnzipKit.h"
 
 #define PLUGIN_LIBRARY_URL @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/Beat%20Plugins.json"
 #define DOWNLOAD_URL_BASE @"raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/"
