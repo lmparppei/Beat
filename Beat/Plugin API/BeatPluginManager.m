@@ -154,7 +154,7 @@
 - (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock {
 	NSString *urlAsString = PLUGIN_LIBRARY_URL;
 
-	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
+	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration ephemeralSessionConfiguration]];
 	[[session dataTaskWithURL:[NSURL URLWithString:urlAsString]
 			completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 		
@@ -384,6 +384,7 @@
 		item.state = NSOffState;
 		item.title = pluginName;
 		
+		// If the plugin is running, display a tick next to it
 		if (runningPlugins[pluginName]) item.state = NSOnState;
 		
 		[parentMenu addItem:item];

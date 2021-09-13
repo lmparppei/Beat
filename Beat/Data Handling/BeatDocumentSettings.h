@@ -23,6 +23,7 @@ extern NSString * const DocSettingRevisionMode;
 extern NSString * const DocSettingSceneNumberStart;
 extern NSString * const DocSettingTags;
 extern NSString * const DocSettingTagDefinitions;
+extern NSString * const DocSettingCaretPosition;
 
 extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;

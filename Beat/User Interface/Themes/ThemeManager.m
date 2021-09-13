@@ -112,10 +112,20 @@
 	// Fall back to light theme if no dark settings are available
 	if (!darkTheme.count) darkTheme = lightTheme;
 	
+	// If it's the default color scheme, we'll use native accent colors for certain items
+
+	if (@available(macOS 10.14, *)) {
+		theme.selectionColor = [self dynamicColorFromColor:NSColor.controlAccentColor];
+	} else {
+		// Fallback on earlier versions
+		theme.selectionColor = [self dynamicColorFromArray:lightTheme[@"Selection"] darkArray:darkTheme[@"Selection"]];
+	}
+
+	
 	theme.backgroundColor = [self dynamicColorFromArray:lightTheme[@"Background"] darkArray:darkTheme[@"Background"]];
 	theme.textColor = [self dynamicColorFromArray:lightTheme[@"Text"] darkArray:darkTheme[@"Text"]];
 	theme.marginColor = [self dynamicColorFromArray:lightTheme[@"Margin"] darkArray:darkTheme[@"Margin"]];
-	theme.selectionColor = [self dynamicColorFromArray:lightTheme[@"Selection"] darkArray:darkTheme[@"Selection"]];
+	
 	theme.commentColor  = [self dynamicColorFromArray:lightTheme[@"Comment"] darkArray:darkTheme[@"Comment"]];
 	theme.invisibleTextColor  = [self dynamicColorFromArray:lightTheme[@"InvisibleText"] darkArray:darkTheme[@"InvisibleText"]];
 	theme.caretColor = [self dynamicColorFromArray:lightTheme[@"Caret"] darkArray:darkTheme[@"Caret"]];
@@ -144,6 +154,7 @@
 	_theme = [self loadTheme:_themes[DEFAULT_KEY]];
 	
 	Theme *customTheme = [self loadTheme:_themes[CUSTOM_KEY]];
+	
 	if (customTheme) {
 		// Apply any custom values
 		if (customTheme.backgroundColor) _theme.backgroundColor = customTheme.backgroundColor;
@@ -159,7 +170,6 @@
 		if (customTheme.sectionTextColor) _theme.sectionTextColor = customTheme.sectionTextColor;
 		if (customTheme.outlineBackground) _theme.outlineBackground = customTheme.outlineBackground;
 		if (customTheme.outlineHighlight) _theme.outlineHighlight = customTheme.outlineHighlight;
-		
 	}
 }
 
@@ -203,6 +213,10 @@
     double green = greenValue.doubleValue / 255.0;
     double blue = blueValue.doubleValue / 255.0;
     return [NSColor colorWithCalibratedRed:red green:green blue:blue alpha:1.0];
+}
+
+- (DynamicColor*)dynamicColorFromColor:(NSColor*)color {
+	return [[DynamicColor new] initWithAquaColor:color darkAquaColor:color];
 }
 
 - (DynamicColor*)dynamicColorFromArray:(NSArray*)lightArray darkArray:(NSArray*)darkArray {

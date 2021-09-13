@@ -56,7 +56,7 @@
 		}
 	}
 }
-- (void) setGenderFor:(NSString*)name gender:(NSString*)gender {
+- (void)setGenderFor:(NSString*)name gender:(NSString*)gender {
 	[self.delegate.characterGenders setObject:gender forKey:name];
 }
 

@@ -47,11 +47,8 @@ function init() {
 	html = html.replaceAll("#JAVASCRIPT#", js)
 
 	htmlWindow = Beat.htmlWindow(html, 800, 600, function () {
-		/*
 		let frame = htmlWindow.getFrame()
 		Beat.setUserDefault("frame", frame)
-		Beat.end()
-		 */
 		Beat.end()
 	})
 	htmlWindow.title = "Index Cards"
@@ -60,7 +57,7 @@ function init() {
 	if (frame) htmlWindow.setFrame(frame.x, frame.y, frame.width, frame.height);
 
 	// Create cards after 400 ms to let the window load
-	//Beat.timer(0.4, function () { createCards(Beat.outline()) }, false)
+	// Beat.timer(0.4, function () { createCards(Beat.outline()) }, false)
 
 	// Listen to outline changes
 	Beat.onOutlineChange(function (...outline) {

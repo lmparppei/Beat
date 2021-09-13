@@ -23,7 +23,7 @@
 @implementation BeatBrowserView
 
 - (instancetype) init {
-	return [super initWithWindowNibName:@"BeatBrowserView" owner:self];
+	return [super initWithWindowNibName:self.className owner:self];
 }
 -(void)resetWebView {
 	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openTemplate"];

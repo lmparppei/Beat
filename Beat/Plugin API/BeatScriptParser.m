@@ -28,7 +28,7 @@
 #import "BeatPluginManager.h"
 #import "BeatTagging.h"
 #import "BeatAppDelegate.h"
-#import "BeatPluginWindow.h"
+//#import "BeatPluginWindow.h"
 #import "BeatModalAccessoryView.h"
 #import <PDFKit/PDFKit.h>
 
@@ -51,7 +51,7 @@
 @property (nonatomic) bool windowClosing;
 @property (nonatomic) bool inCallback;
 @property (nonatomic) bool terminateAfterCallback;
-@property (nonatomic) NSMutableArray<BeatPluginWindow*> *pluginWindows;
+@property (nonatomic) NSMutableArray *pluginWindows;
 @end
 
 @implementation BeatScriptParser
@@ -71,8 +71,8 @@
 		[alert runModal];
 	}];
 
-	[_context setObject:[Line class] forKeyedSubscript:@"Line"];
-	[_context setObject:[OutlineScene class] forKeyedSubscript:@"OutlineScene"];
+	//[_context setObject:[Line class] forKeyedSubscript:@"Line"];
+	//[_context setObject:[OutlineScene class] forKeyedSubscript:@"OutlineScene"];
 	[_context setObject:self forKeyedSubscript:@"Beat"];
 	
 	return self;
@@ -92,34 +92,47 @@
 
 - (void)runScript:(NSString*)string
 {
-	[self setJSData];
-	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[self.context evaluateScript:string];
+	[self.context evaluateScript:string];
 
-		// Kill it if the plugin is not resident
-		if (!self.sheet && !self.resident && self.pluginWindows.count < 1) {
-			[self end];
-		}
-	});
+	// Kill it if the plugin is not resident
+	if (!self.sheet && !self.resident && self.pluginWindows.count < 1) {
+		[self end];
+	}
 }
 
 - (void)safeToTerminate {
 	
 }
 
+- (void)forceEnd {
+	// This is user for force-quitting a resident plugin from the tools menu
+	
+	_terminating = YES;
+	if (_pluginWindows.count) {
+		for (BeatHTMLPanel *window in _pluginWindows) {
+			[window closeWindow];
+		}
+	}
+	
+	_sheet = nil;
+	_sheetCallback = nil;
+	_plugin = nil;
+	
+	[self stopTimers];
+	[_delegate deregisterPlugin:self];
+}
+
 - (void)end {
+	// If end was called in callback, we'll wait until it's done before killing the plugin altogether
 	if (_inCallback) {
 		_terminateAfterCallback = YES;
 		return;
 	}
 	
-	NSLog(@"##### TERMINATING #####");
-	
 	_terminating = YES;
 	
 	if (_pluginWindows.count) {
-		for (BeatPluginWindow *window in _pluginWindows) {
+		for (BeatHTMLPanel *window in _pluginWindows) {
 			// Don't perform any callbacks here
 			if (window.isVisible && !window.isClosing) {
 				[window closeWindow];
@@ -129,7 +142,6 @@
 	
 	// Stop any timers left
 	[self stopTimers];
-	
 	
 	//_vm = nil;
 	_sheet = nil;
@@ -789,18 +801,18 @@
 
 #pragma mark - HTML Window
 
-- (BeatPluginWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+- (BeatHTMLPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
+
 	// This is a floating window, so the plugin has to be resident
 	_resident = YES;
-	_windowClosing = NO;
 	
 	if (width <= 0) width = 500;
 	if (width > 1000) width = 1000;
 	if (height <= 0) height = 300;
 	if (height > 800) height = 800;
 	
-	
+	/*
 	if (_pluginWindows == nil) {
 		_pluginWindows = [NSMutableArray array];
 		[_delegate registerPlugin:self];
@@ -816,6 +828,20 @@
 	if (callback && !callback.isUndefined) window.callback = callback;
 	
 	return window;
+	 */
+	BeatHTMLPanel *panel = [BeatHTMLPanel.alloc initWithHTML:html width:width height:height host:self];
+	//NSPanel *panel = [[NSPanel alloc] initWithContentRect:(NSRect){0,0, width,height} styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
+	[panel makeKeyAndOrderFront:nil];
+	
+	if (_pluginWindows == nil) {
+		_pluginWindows = [NSMutableArray array];
+		[_delegate registerPlugin:self];
+	}
+	[_pluginWindows addObject:panel];
+	panel.delegate = self;
+	panel.callback = callback;
+	
+	return panel;
 }
 
 - (void)runCallback:(JSValue*)callback withArguments:(NSArray*)arguments {
@@ -833,8 +859,10 @@
 	});
 }
 
-- (void)closePluginWindow:(BeatPluginWindow*)window {
+- (void)closePluginWindow:(id)sender {
 	if (_terminating) return;
+	
+	BeatHTMLPanel *window = (BeatHTMLPanel*)sender;
 	window.isClosing = YES;
 	
 	NSInteger i = [self.pluginWindows indexOfObject:window];
@@ -855,26 +883,21 @@
 
 - (void)windowWillClose:(NSNotification *)notification {
 	NSLog(@"HTML window will close");
+	//_terminating = YES;
 	
-	BeatPluginWindow *window = (BeatPluginWindow*)notification.object;
+	BeatHTMLPanel *window = notification.object;
 	if (window == nil) return;
+	
+	window.isClosing = YES;
 	
 	// Remove webview from memory, for sure
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
-	window.webview = nil;
 	
-	/*
-	if (!window.callback.isUndefined && ![window.callback isNull]) {
-		NSLog(@"  --> Callback");
-		[window.callback callWithArguments:nil];
-	}
-	 */
+	[window.webview removeFromSuperview];
 	
-	NSLog(@" ....");
-	
-	_windowClosing = NO;
+	//[self end];
 }
 
 
@@ -1002,20 +1025,12 @@
 - (void)parse
 {
 	[self.delegate.parser createOutline];
-	[self setJSData];
 }
 
 - (void)newDocument:(NSString*)string
 {
 	if (string.length) [(BeatAppDelegate*)NSApp.delegate newDocumentWithContents:string];
-	else [[NSDocumentController sharedDocumentController] newDocument:nil];
-}
-
-- (void)setJSData
-{
-	[_context setObject:self.delegate.parser.lines forKeyedSubscript:@"Lines"];
-	[_context setObject:self.delegate.parser.outline forKeyedSubscript:@"Outline"];
-	[_context setObject:self.delegate.parser.scenes forKeyedSubscript:@"Scenes"];
+	else [NSDocumentController.sharedDocumentController newDocument:nil];
 }
 
 - (Line*)currentLine {
@@ -1061,10 +1076,10 @@
 		[self log:message.body];
 	}
 	else if ([message.name isEqualToString:@"sendData"]) {
-		if (!_windowClosing && _context) [self receiveDataFromHTMLPanel:message.body];
+		if (_context) [self receiveDataFromHTMLPanel:message.body];
 	}
 	else if ([message.name isEqualToString:@"call"]) {
-		if (!_windowClosing && _context) [_context evaluateScript:message.body];
+		if (_context) [_context evaluateScript:message.body];
 	}
 }
 

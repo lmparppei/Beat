@@ -1,18 +1,18 @@
 //
-//  BeatPluginWindow.m
+//  TestPanel.m
 //  Beat
 //
-//  Created by Lauri-Matti Parppei on 16.5.2021.
+//  Created by Lauri-Matti Parppei on 11.9.2021.
 //  Copyright © 2021 KAPITAN!. All rights reserved.
 //
 
-#import "BeatPluginWindow.h"
+#import "BeatHTMLPanel.h"
+#import "BeatScriptParser.h"
 
-@interface BeatPluginWindow ()
-@property (weak) BeatScriptParser *host;
+@interface BeatHTMLPanel ()
 @end
 
-@implementation BeatPluginWindow 
+@implementation BeatHTMLPanel
 
 -(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatScriptParser*)host {
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
@@ -21,11 +21,13 @@
 	self.level = NSModalPanelWindowLevel;
 	self.delegate = host;
 	
+	// We can't release the panel on close, because JSContext might hang onto it and cause a crash
 	self.releasedWhenClosed = NO;
 	
 	_host = host;
 	self.title = host.pluginName;
 
+	
 	WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
 	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
 	
@@ -42,13 +44,6 @@
 	return self;
 }
 
-+ (BeatPluginWindow*)withHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host {
-	return [[BeatPluginWindow alloc] initWithHTML:html width:width height:height host:(BeatScriptParser*)host];
-}
-
-- (void)setTitle:(NSString *)title {
-	[super setTitle:title];
-}
 - (void)setHTML:(NSString*)html {
 	// Load template
 	NSURL *templateURL = [NSBundle.mainBundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
@@ -56,6 +51,26 @@
 	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
 	
 	[_webview loadHTMLString:template baseURL:nil];
+}
+
+- (void)close {
+	[self.host closePluginWindow:self];
+}
+
+- (void)closeWindow {
+	[super close];
+}
+
+- (void)focus {
+	[self makeFirstResponder:self.contentView];
+}
+
+- (void)setTitle:(NSString *)title {
+	[super setTitle:title];
+}
+
+- (CGRect)getFrame {
+	return self.frame;
 }
 
 - (void)runJS:(nonnull NSString *)js callback:(nullable JSValue *)callback {
@@ -71,45 +86,14 @@
 	}
 }
 
-- (void)focus {
-	[self makeFirstResponder:self.contentView];
-}
-
-- (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
-	NSRect screen = self.screen.frame;
-	// Don't allow moving the windows out of view
-	if (x > screen.size.width) x = screen.size.width - 100;
-	if (y > screen.size.height) x = screen.size.height - height;
-	
-	if (x < 0) x = 0;
-	if (y < 0) y = 0;
-	
-	NSRect frame = NSMakeRect(x, y, width, height);
-	[self setFrame:frame display:YES];
-}
-
-- (NSRect)getFrame {
-	//NSRect rect = self.frame;
-	return self.frame;
-}
 - (NSSize)screenSize {
 	return self.screen.frame.size;
-	//return @[ @(self.screen.frame.size.width), @(self.screen.frame.size.height) ];
-}
--(BOOL)canBecomeKeyWindow {
-	return  YES;
-}
--(void)cancelOperation:(id)sender {
-	[super cancelOperation:sender];
-}
--(void)close {
-	NSLog(@"CLOSE CALLED");
-	[self.host closePluginWindow:self];
-}
--(void)closeWindow {
-	NSLog(@"SUPER CLOSE CALLED");
-	[super close];
 }
 
+
+- (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
+	NSRect frame = (NSRect){ x, y, width, height };
+	[self setFrame:frame display:YES];
+}
 
 @end

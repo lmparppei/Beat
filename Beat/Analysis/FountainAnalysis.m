@@ -105,19 +105,9 @@
 				// This is not a character cue if the next line is empty
 				if ([nextLine.string length] < 1 || [nextLine.string containsOnlyWhitespace]) continue;
 				
-				NSString *character = line.string;
-			
-				// Remove any (V.O.), (CONT'D), (O.S.) etc. stuff from the cue
-				if ([character rangeOfString:@"("].location != NSNotFound) {
-					NSRange infoRange = [character rangeOfString:@"("];
-					NSRange characterRange = NSMakeRange(0, infoRange.location);
-					
-					character = [NSString stringWithString:[character substringWithRange:characterRange]];
-				}
-				
-				// Trim any useless whitespace
-				character = [NSString stringWithString:[character stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-				
+				// Get character name (strips V.O. etc.)
+				NSString *character = line.characterName;
+								
 				// Check if the character has been already found
 				// Thank you, Venk & Tom Jefferys at stackoverflow
 				NSNumber *value = [_characterLines objectForKey:character];

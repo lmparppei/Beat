@@ -11,9 +11,10 @@
 #import "ContinuousFountainParser.h"
 #import "BeatTagging.h"
 #import "TagDefinition.h"
-#import "BeatPluginWindow.h"
+//#import "BeatPluginWindow.h"
 #import "BeatPaginator.h"
 #import "BeatPluginTimer.h"
+#import "BeatHTMLPanel.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
 
@@ -91,7 +92,7 @@ JSExportAs(openFiles, - (void)openFiles:(NSArray*)formats callBack:(JSValue*)cal
 JSExportAs(saveFile, - (void)saveFile:(NSString*)format callback:(JSValue*)callback);
 JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)content);
 JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
-JSExportAs(htmlWindow, - (BeatPluginWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
+JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats);
 JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(OutlineScene *)scene);
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
@@ -126,7 +127,7 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
 @end
 
-@interface BeatScriptParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate>
+@interface BeatScriptParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
 @property (weak) id<BeatScriptingDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
@@ -142,5 +143,6 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 - (void)updateSelection:(NSRange)selection;
 - (void)updateOutline:(NSArray*)outline;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
-- (void)closePluginWindow:(BeatPluginWindow*)window;
+- (void)closePluginWindow:(NSPanel*)window;
+- (void)forceEnd;
 @end

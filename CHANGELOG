@@ -1,6 +1,16 @@
 # Changelog
 
 
+## Beat 1.89.9
+
+* Fixed plugin window bugs
+* Fixed plugin API memory issues with Big Sur
+* Title bar harmonized with Big Sur UI
+* Fixed minor bugs, such as the colors not saving as intended
+* Use system accent color for selected text
+* Option to select between serif / sans serif font
+
+
 ## Beat 1.89.6
 
 * Outline parsing was optimized

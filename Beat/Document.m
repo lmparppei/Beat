@@ -123,6 +123,7 @@
 // Autosave
 @property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
+@property (nonatomic) NSString *contentBackup;
 
 // Plugin support
 @property (assign) BeatPluginManager *pluginManager;
@@ -232,6 +233,7 @@
 // Content buffer
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
 
+// Fonts
 @property (nonatomic) NSUInteger fontSize;
 @property (strong, nonatomic) NSFont *sectionFont;
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
@@ -335,6 +337,7 @@
 #define DARKMODE_KEY @"Dark Mode"
 #define AUTOMATIC_LINEBREAKS_KEY @"Automatic Line Breaks"
 #define TYPERWITER_KEY @"Typewriter Mode"
+#define FONT_STYLE_KEY @"Sans Serif"
 
 // DOCUMENT LAYOUT SETTINGS
 // The 0.?? values represent percentages of view width
@@ -363,16 +366,9 @@
     self = [super init];
     return self;
 }
-- (void) close {
+- (void)close {
 	if (!self.hasUnautosavedChanges) {
 		[self.thisWindow saveFrameUsingName:[self fileNameString]];
-	}
-	
-	// Save the gender list & caret position if the document is saved
-	if (!self.documentEdited) {
-		// This should be moved into document settings.
-		if (_characterGenders.count > 0) [self saveGenders];
-		[self saveCaret];
 	}
 	
 	// Avoid retain cycles with WKWebView
@@ -394,8 +390,8 @@
 	[self.beatTimer.timer invalidate];
 	self.beatTimer = nil;
 	
-	// Without this, BeatTextView is retained. I haven't found the reason for now.
 	self.preview = nil;
+	// Without this, BeatTextView is retained. I haven't found the reason for now.
 	self.textView = nil;
 	
 	[self.textScrollView.mouseMoveTimer invalidate];
@@ -432,6 +428,10 @@
 		
 	// ApplicationDelegate will show welcome screen when no documents are open
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document close" object:nil];
+	
+	// Do we need this?
+	// if (self.fileURL) [self.fileURL stopAccessingSecurityScopedResource];
+	
 	[super close];
 }
 
@@ -457,7 +457,10 @@
 	[self setupMenuItems];
 	
 	// Load font set
-	[self loadSerifFonts];
+	bool sansSerif = [NSUserDefaults.standardUserDefaults boolForKey:FONT_STYLE_KEY];
+	if (sansSerif) [self loadSansSerifFonts];
+	else [self loadSerifFonts];
+	
 	
 	// Setup views
 	[self setupTextView];
@@ -632,19 +635,9 @@
 
 
 - (void)setFileURL:(NSURL *)fileURL {
-	NSString *oldName = [NSString stringWithString:[self fileNameString]];
+	//NSString *oldName = [NSString stringWithString:[self fileNameString]];
 	[super setFileURL:fileURL];
-	NSString *newName = [NSString stringWithString:[self fileNameString]];
-						 
-    // The file was renamed
-	 if (![newName isEqualToString:oldName] && [oldName length] > 0) {
-		 // Set gender data --- though I guess this is unnecessary?
-		 /*
-		 NSDictionary *genderData = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:oldName];
-		 [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] setValue:genderData forKey:newName];
-		 NSLog(@"old gender data %@", genderData);
-		  */
-	 }
+	//NSString *newName = [NSString stringWithString:[self fileNameString]];
 }
 - (NSString *)displayName {
 	if (![self fileURL]) return @"Untitled";
@@ -954,7 +947,17 @@
 	// Save added/removed ranges
 	[self saveRevisionRanges];
 	
-	return [NSString stringWithFormat:@"%@%@", self.getText, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
+	// Save caret position
+	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
+	
+	// Save character genders (if set)
+	if (_characterGenders) [self.documentSettings set:@"CharacterGenders" as:_characterGenders];
+	
+	// Resort to content buffer
+	NSString *text = self.getText;
+	if (text == nil) text = _contentBuffer;
+	
+	return [NSString stringWithFormat:@"%@%@", text, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
@@ -1031,12 +1034,9 @@
     }
 }
 
-- (void)saveCaret {
-	[self.documentSettings setInt:@"Caret Position" as:self.textView.selectedRange.location];
-}
 - (void)loadCaret {
-	NSInteger position = [self.documentSettings getInt:@"Caret Position"];
-	
+	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
+		
 	if (position < self.textView.string.length && position >= 0) {
 		[self.textView setSelectedRange:NSMakeRange(position, 0)];
 		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
@@ -2620,6 +2620,27 @@
 	_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Sans Bold Italic" size:[self fontSize]];
 	_italicCourier = [NSFont fontWithName:@"Courier Prime Sans Italic" size:[self fontSize]];
 }
+- (IBAction)selectSerif:(id)sender {
+	NSMenuItem* item = sender;
+	if (item.state != NSOnState) [NSUserDefaults.standardUserDefaults setBool:NO forKey:FONT_STYLE_KEY];
+	
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc loadSerifFonts];
+		[doc formatAllLines];
+	}
+}
+- (IBAction)selectSansSerif:(id)sender {
+	NSMenuItem* item = sender;
+	if (item.state != NSOnState) [NSUserDefaults.standardUserDefaults setBool:YES forKey:FONT_STYLE_KEY];
+	
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc loadSansSerifFonts];
+		[doc formatAllLines];
+	}
+}
+- (void)reloadFonts {
+	[self formatAllLines];
+}
  
 - (NSFont*)sectionFont
 {
@@ -3387,9 +3408,19 @@ static NSString *revisionAttribute = @"Revision";
 	if ([menuItem.title isEqualToString:@"Tagging Mode"]) {
 		if (_mode == TaggingMode) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
-		
+	
 	} else if ([menuItem.title isEqualToString:@"Autosave"]) {
 		if (_autosave) menuItem.state = NSOnState;
+		else menuItem.state = NSOffState;
+		
+	} else if ([menuItem.title isEqualToString:@"Sans Serif"]) {
+		bool sansSerif = [NSUserDefaults.standardUserDefaults boolForKey:FONT_STYLE_KEY];
+		if (sansSerif) menuItem.state = NSOnState;
+		else menuItem.state = NSOffState;
+		
+	} else if ([menuItem.title isEqualToString:@"Serif"]) {
+		bool sansSerif = [NSUserDefaults.standardUserDefaults boolForKey:FONT_STYLE_KEY];
+		if (!sansSerif) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 		
 	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
@@ -4353,20 +4384,20 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)showSceneNumberStart:(id)sender {
 	// Load previous setting
-	if ([_documentSettings getInt:@"Scene Numbering Starts From"] > 0) {
-		[_sceneNumberStartInput setIntegerValue:[_documentSettings getInt:@"Scene Numbering Starts From"]];
+	
+	if ([_documentSettings getInt:DocSettingSceneNumberStart] > 0) {
+		[_sceneNumberStartInput setIntegerValue:[_documentSettings getInt:DocSettingSceneNumberStart]];
 	}
 	[_thisWindow beginSheet:_sceneNumberingPanel completionHandler:nil];
 }
 - (IBAction)closeSceneNumberStart:(id)sender {
-	NSLog(@"close");
 	[_thisWindow endSheet:_sceneNumberingPanel];
 }
 - (IBAction)applySceneNumberStart:(id)sender {
 	if (_sceneNumberStartInput.integerValue > 1) {
-		[_documentSettings setInt:@"Scene Numbering Starts From" as:_sceneNumberStartInput.integerValue];
+		[_documentSettings setInt:DocSettingSceneNumberStart as:_sceneNumberStartInput.integerValue];
 	} else {
-		[_documentSettings remove:@"Scene Numbering Starts From"];
+		[_documentSettings remove:DocSettingSceneNumberStart];
 	}
 		
 	// Rebuild outline everywhere
@@ -4379,7 +4410,7 @@ static NSString *revisionAttribute = @"Revision";
 	[_thisWindow endSheet:_sceneNumberingPanel];
 }
 - (NSInteger)sceneNumberingStartsFrom {
-	return [self.documentSettings getInt:@"Scene Numbering Starts From"];
+	return [self.documentSettings getInt:DocSettingSceneNumberStart];
 }
 - (void)resetSceneNumberLabels {
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
@@ -4405,13 +4436,6 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 #pragma mark - Timeline + chronometry
-
-/*
- 
- Timeline has been rewritten to be a native Cocoa class instead of the
- javascript/webkit mess.
-   
-*/
 
 - (IBAction)toggleTimeline:(id)sender
 {
@@ -4494,6 +4518,8 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Analysis
 
+// This is a horrible mess, but whatever
+
 - (IBAction)showAnalysis:(id)sender {
 	_analysisWindow = [[BeatAnalysisPanel alloc] initWithParser:self.parser delegate:self];
 	[_thisWindow beginSheet:_analysisWindow.window completionHandler:^(NSModalResponse returnCode) {
@@ -4502,17 +4528,8 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void) setupAnalysis {
-	// N.B. Genders are saved locally in app preferences (for now - this could very well be saved into document settings, too)
-	_characterGenders = [[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"] objectForKey:[self fileNameString]];
-}
-- (void) saveGenders {
-	// Get gender dictionary, which contains character genders according to FILE NAME
-	// Like this: { @"YourFile.fountain": { @"Name": @"female" } }
-	NSMutableDictionary *genderLists = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:@"CharacterGender"]];
-	[genderLists setObject:_characterGenders forKey:[self fileNameString]];
-	
-	// Save the list
-	[[NSUserDefaults standardUserDefaults] setObject:genderLists forKey:@"CharacterGender"];
+	_characterGenders = [self.documentSettings get:@"CharacterGenders"];
+	if (!_characterGenders) _characterGenders = [NSMutableDictionary dictionary];
 }
 
 #pragma mark - Advanced Filtering
@@ -4917,6 +4934,8 @@ triangle walks
 	if (_autosave && self.documentEdited) {
 		[self saveDocument:nil];
 	}
+	
+	NSLog(@"Autosave performed");
 }
 
 - (NSURL *)autosavedContentsFileURL {
@@ -5013,7 +5032,7 @@ triangle walks
 
 	if (_runningPlugins[pluginName]) {
 		// Disable a running plugin and return
-		[(BeatScriptParser*)_runningPlugins[pluginName] end];
+		[(BeatScriptParser*)_runningPlugins[pluginName] forceEnd];
 		[_runningPlugins removeObjectForKey:pluginName];
 		return;
 	}
