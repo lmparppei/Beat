@@ -1,14 +1,20 @@
 
 # High-priority
 
-## Sanitize delegates
+## New rendering engine
 
-Right now, there are many, many delegates which do almost the same thing. It would be pretty sensible to write a single delegate, which could be reused almost anywhere. That's pretty much what `BeatEditorDelegate` does, and most controls and classes could perhaps use it directly?
-
-... Nope. Timeline, Outline and Cards need their own delegates. For any new classes, let's just extend `BeatEditorDelegate`.
+For now, we are using an ancient `WebView` implementation for exporting PDF files. The legacy WebKit will probably be deprecated any time soon, so it's **HIGHLY** important to create a new rendering engine. 
 
 
-# Work in progress
+# Work in progress / considerations
+
+## Importing FDX revisions
+
+Import revised ranges from FDX files 
+
+## Tagging
+
+Tagging is already pretty much built into the code, but has to be thoroughly tested.
 
 ## Line Delegation
 
@@ -26,6 +32,5 @@ Lines are now aware of their parser, which potentially allows cleaning up some w
 
 ## Index Cards
 
-* Check and fix dark mode UI
 * Full rewrite to Cocoa when possible
 ... though the above is a bit obsolete now, with the addition of floating index cards plugin. And maybe the dark mode should be abolished from cards, too. They are pretty dark already.

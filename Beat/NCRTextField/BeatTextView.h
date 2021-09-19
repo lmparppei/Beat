@@ -21,6 +21,7 @@ typedef enum : NSInteger {
 	SelectTag
 } BeatTextviewPopupMode;
 
+
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
 - (NSImage *)textView:(NSTextView *)textView imageForCompletion:(NSString *)word;
@@ -51,6 +52,7 @@ typedef enum : NSInteger {
 @property (readonly) NSUInteger fontSize;
 @property (readonly) bool typewriterMode;
 
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string;
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
 - (bool)isDark;

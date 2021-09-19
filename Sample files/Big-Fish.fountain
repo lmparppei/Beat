@@ -235,7 +235,7 @@ Edward swims laps in the family pool.  He's born to the water.
 WILL (V.O.)
 The truth is, I didn't see anything of myself in my father, and I don't think he saw anything of himself in me.  We were like strangers who knew each other very well.
 
-EXT.  RIVER - DAY [[STORYLINE EDWARD]]
+EXT.  RIVER - DAY
 
 Edward stares intently into the water, a lion in wait.
 
@@ -350,13 +350,13 @@ JOSEPHINE
 (a simple fact)
 I'm going with you.
 
-INT.  AIR FRANCE 747 - NIGHT
+INT.  AIR FRANCE 747 - NIGHT [[COLOR RED]]
 
 As the plane continues boarding, a STEWARDESS recites the welcome spiel in French.  Will has a window seat in coach.  Josephine sits beside him, putting on hand lotion.  
 
 Taking his hands, she rubs the excess into him.  There's an effortless intimacy between them.  She can pinpoint what he's feeling before he can.
 
-INT.  747 / FLYING - NIGHT
+INT.  747 / FLYING - NIGHT [[COLOR BLUE]]
 
 Hours later, and the lights are dimmed.  Most of the PASSENGERS are asleep, including Josephine.  Her head is propped against Will's shoulder, her hands tucked under her belly. 
 
@@ -916,7 +916,7 @@ I said this isn't how I go.  The last part is much more unusual.  Trust me on th
 
 INT.  UPSTAIRS HALLWAY - DAY
 
-Shutting the door behind himself, Will drinks the rest of the Ensure himself.  Edward was right.  It tastes horrible.
+Shutting the door behind himself, Will drinks the rest of the Ensure himself§.  Edward was right.  It tastes horrible.
 
 Heading for the stairs, Will walks past an open door.  As he leaves frame, we STAY BEHIND to look inside...
 
@@ -983,6 +983,8 @@ As soon as my bones had settled in their adult configuration, I set upon my plan
 EXT.  SCHOOL FIELDS - DAY  
 
 SINGLE SHOTS:  Football hero Edward leads his team to victory.  On the sidelines, a PRETTY GIRL admits the name of her secret love:
+
+d
 
 GIRL
 Edward Bloom!
@@ -1422,7 +1424,7 @@ He didn't mean it as a joke, but for some reason, everyone's laughing.
 BEAMEN
 Son, I already told you.  You're early.
 
-INT.  BEAMEN'S HOUSE - DAY
+INT.  BEAMEN'S HOUSE - DAY [[COLOR BLUE]]
 
 Sitting at the kitchen table, Edward takes a second slice of apple pie.  He and Beamen are joined by NORTHER WINSLOW (30), who fancies himself a cultured artist, though he's never left the state.
 
@@ -1582,7 +1584,7 @@ Shoot.
 
 He starts to work pulling them off.
 
-EXT.  PATH BACK TO TOWN - NIGHT
+EXT.  PATH BACK TO TOWN - NIGHT [[COLOR CYAN]]
 
 Edward and Jenny walk back.
 
@@ -1725,7 +1727,7 @@ With that, the men start walking down the larger road.
 
 CROSSFADE TO:
 
-INT.  DINING ROOM - NIGHT  
+INT.  DINING ROOM - NIGHT   [[COLOR BLUE]]
 
 Edward and Will sit at opposite ends of the table, with Sandra and Josephine in the middle.  Although Edward has a small plate of food in front of him, he hasn't touched it.  He's exhausted from the trip downstairs, but determined to maintain the family dinner ritual.
 
@@ -2012,7 +2014,7 @@ A SPINNING PINWHEEL
 
 held by a LITTLE BOY.  He's slumped over his FATHER's shoulder, being carried towards a big-top tent.  We are...
 
-EXT.  OLYMPIA CIRCUS - NIGHT
+EXT.  OLYMPIA CIRCUS - NIGHT [[COLOR RED]]
 
 ...where the second-rate carnival is parked for the moment in an Alabama field.  To the left, we spot Edward, 20-ish, halfway through a bag of peanuts.  He's still carrying the backpack we saw earlier, and scratched up from his trip through Spectre.
 
@@ -2021,7 +2023,7 @@ I had just left Ashton, and was on my way to discover my destiny.  Not knowing w
 
 Joining the crowd, he heads into the big-top.
 
-INT.  BIG TOP - NIGHT 
+INT.  BIG TOP - NIGHT  [[COLOR RED]]
 
 A troupe of STILT-WALKING FIREBREATHERS finishes their act to tremendous APPLAUSE.  
 
@@ -4649,6 +4651,4 @@ CUT TO BLACK.
 
 > _**THE END**_ <
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {
-
-} END_BEAT */
+/* If you're seeing this, you can remove the following stuff - BEAT: {"Caret Position":27844,"Window Width":1058,"Page Size":0,"Revision":{"Removal":[],"Comment":[],"Addition":[]},"TagDefinitions":[],"Tags":[],"Revision Color":"","Window Height":986,"CharacterGenders":{}} END_BEAT */

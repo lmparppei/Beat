@@ -1789,7 +1789,7 @@
 	[_characterBox removeAllItems];
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
 		
-	for (Line *line in [self.parser lines]) {
+	for (Line *line in self.parser.lines) {
 		if ((line.type == character || line.type == dualDialogueCharacter) && line != _currentLine
 			//&& ![_characterNames containsObject:line.string]
 			) {
@@ -1798,7 +1798,7 @@
 			if ([line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound) continue;
 			
 			// Character name, INCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
-            NSString *character = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+			NSString *character = line.characterName;
 			
 			// Add the character + suffix into dict and calculate number of appearances
 			if (charactersAndLines[character]) {
@@ -1807,9 +1807,6 @@
 			} else {
 				charactersAndLines[character] = [NSNumber numberWithInteger:1];
 			}
-						            
-			// Remove anything that's NOT a character name
-			character = line.characterName;
 			
 			// Add character to list
 			if (character && ![characterList containsObject:character]) {
@@ -4538,9 +4535,9 @@ static NSString *revisionAttribute = @"Revision";
 	NSButton *button = (NSButton*)sender;
 	
 	if (button.state == NSControlStateValueOn) {
-		[self.filterViewHeight setConstant:75.0];
+		[self.filterViewHeight.animator setConstant:75.0];
 	} else {
-		[_filterViewHeight setConstant:0.0];
+		[_filterViewHeight.animator setConstant:0.0];
 	}
 }
 - (void)hideFilterView {
@@ -4561,10 +4558,8 @@ static NSString *revisionAttribute = @"Revision";
 	[self.textView.masks removeAllObjects];
 
 	for (OutlineScene* scene in _outline) {
-		NSLog(@"masking: %@", scene.string);
 		// Ignore this scene if it's contained in filtered scenes
 		if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) {
-			NSLog(@" ... ignore");
 			continue;
 		}
 		NSRange sceneRange = NSMakeRange([scene position], [scene length]);
@@ -4934,8 +4929,6 @@ triangle walks
 	if (_autosave && self.documentEdited) {
 		[self saveDocument:nil];
 	}
-	
-	NSLog(@"Autosave performed");
 }
 
 - (NSURL *)autosavedContentsFileURL {

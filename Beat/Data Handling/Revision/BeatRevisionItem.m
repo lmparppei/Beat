@@ -73,6 +73,35 @@
 	return _backgroundColor;
 }
 
+#pragma mark - Encoding and Copying
+
+-(void)encodeWithCoder:(NSCoder *)coder {
+	[coder encodeInteger:self.type forKey:@"type"];
+	[coder encodeObject:self.text forKey:@"text"];
+	[coder encodeObject:self.colorName forKey:@"colorName"];
+}
+
+- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
+	self = [super init];
+
+	if (self) {
+		_type = [coder decodeIntForKey:@"type"];
+		_colorName = [coder decodeObjectForKey:@"colorName"];
+		_text = [coder decodeObjectForKey:@"text"];
+	}
+	
+	return self;
+
+}
+
+
+-(id)copyWithZone:(NSZone *)zone {
+	BeatRevisionItem *newItem = [[[self class] alloc] initWithType:(RevisionType)self.type text:(NSString*)[self.text copyWithZone:zone] color:(NSString*)[self.colorName copyWithZone:zone]];
+	return newItem;
+}
+
+
+
 @end
 /*
  
@@ -90,9 +119,11 @@
  jonka sisältö muutta
  K A I K E N
  hän viettää
- 15 seuraava vuottansa matkalla
+ 15 seuraava vuottansa matkalla...
  
- alas postin portaita
- auringossa...
+ alas
+ postin
+ portaita
+ auringossa
  
  */

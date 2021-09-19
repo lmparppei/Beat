@@ -31,6 +31,7 @@
 #import "BeatPaginator.h"
 #import "BeatColors.h"
 #import "ThemeManager.h"
+#import "BeatPasteboardItem.h"
 
 #define DEFAULT_MAGNIFY 1.02
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -237,72 +238,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_popupMode = NoPopup;
 }
 
-- (IBAction)showInfo:(id)sender {
-	bool wholeDocument = NO;
-	NSRange range;
-	if (self.selectedRange.length == 0) {
-		wholeDocument = YES;
-		range = NSMakeRange(0, self.string.length);
-	} else {
-		range = self.selectedRange;
-	}
-		
-	NSInteger words = 0;
-	NSArray *lines = [[self.string substringWithRange:range] componentsSeparatedByString:@"\n"];
-	NSInteger symbols = [[self.string substringWithRange:range] length];
-	
-	for (NSString *line in lines) {
-		for (NSString *word in [line componentsSeparatedByString:@" "]) {
-			if (word.length > 0) words += 1;
-		}
-		
-	}
-	[_infoTextView setString:@""];
-	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
-	
-	NSString *infoString = [NSString stringWithFormat:@"Words: %lu\nCharacters: %lu", words, symbols];
-
-	// Get number of pages / page number for selection
-	if (wholeDocument) {
-		NSInteger pages = [self numberOfPages];
-		if (pages > 0) infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", pages];
-	} else {
-		NSInteger page = [self getPageNumber:self.selectedRange.location];
-		if (page > 0) infoString = [infoString stringByAppendingFormat:@"\nPage: %lu", page];
-	}
-	
-	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
-	[attributes setObject:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]] forKey:NSFontAttributeName];
-	
-	
-	if (wholeDocument) infoString = [NSString stringWithFormat:@"Document\n%@", infoString];
-	else infoString = [NSString stringWithFormat:@"Selection\n%@", infoString];
-	_infoTextView.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
-	_infoTextView.string = infoString;
-	[_infoTextView.textStorage addAttributes:attributes range:NSMakeRange(0, [infoString rangeOfString:@"\n"].location)];
-		
-	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
-	NSRect result = [_infoTextView.layoutManager usedRectForTextContainer:_infoTextView.textContainer];
-	
-	NSRect frame = NSMakeRect(0, 0, 200, result.size.height + 16);
-	[self.infoPopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
-	[self.infoTextView setFrame:NSMakeRect(0, 0, NSWidth(frame), NSHeight(frame))];
-	
-	self.substring = [self.string substringWithRange:NSMakeRange(range.location, 0)];
-	
-	NSRect rect;
-	if (!wholeDocument) {
-		rect = [self firstRectForCharacterRange:NSMakeRange(range.location, 0) actualRange:NULL];
-	} else {
-		rect = [self firstRectForCharacterRange:NSMakeRange(self.selectedRange.location, 0) actualRange:NULL];
-	}
-	rect = [self.window convertRectFromScreen:rect];
-	rect = [self convertRect:rect fromView:nil];
-	rect.size.width = 5;
-	
-	[self.infoPopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
-	[self.window makeFirstResponder:self];
-}
+#pragma mark - Window interactions
 
 - (void)mouseDown:(NSEvent *)event {
 	[self closePopovers];
@@ -326,38 +262,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return nil;
 }
 
-- (void)typewriterScroll {
-	if (self.needsLayout) [self layout];
+#pragma mark - Key events
 
-	// So, we'll try to center the caret.
-	// Trouble is, line heights get fucked up for some reason. This probably needs some sort of hack :-(
-	
-	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
-	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 
-	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize / 2 - 10) * self.editorDelegate.magnification;
-	/*
-	// Fix some silliness
-	CGFloat boundsY = self.textClipView.bounds.size.height + self.textClipView.bounds.origin.y;
-	CGFloat maxY = self.textView.frame.size.height;
-	CGFloat pixelsToBottom = maxY - boundsY;
-	if (pixelsToBottom < self.fontSize * _magnification * 0.5 && pixelsToBottom > 0) {
-		scrollY -= 5 * _magnification;
-	}
-	NSLog(@"bounds - max = %f", maxY - boundsY);
-	*/
-	
-	// Calculate container height with insets
-	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
-	containerHeight = containerHeight * self.editorDelegate.magnification + self.textInsetY * 2 * self.editorDelegate.magnification;
-		
-	CGFloat delta = fabs(scrollY - self.superview.bounds.origin.y);
-	
-	if (scrollY < containerHeight && delta > self.editorDelegate.fontSize * self.editorDelegate.magnification) {
-		//scrollY = containerHeight - _textClipView.frame.size.height;
-		[self.superview.animator setBoundsOrigin:NSMakePoint(0, scrollY)];
-	}
-}
 
 -(void)keyUp:(NSEvent *)event {
 	if (self.editorDelegate.typewriterMode) [self typewriterScroll];
@@ -484,6 +391,111 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 
+#pragma mark - Typewriter scroll
+
+- (void)typewriterScroll {
+	if (self.needsLayout) [self layout];
+
+	// So, we'll try to center the caret.
+	// Trouble is, line heights get fucked up for some reason. This probably needs some sort of hack :-(
+	
+	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
+	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+
+	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize / 2 - 10) * self.editorDelegate.magnification;
+	/*
+	// Fix some silliness
+	CGFloat boundsY = self.textClipView.bounds.size.height + self.textClipView.bounds.origin.y;
+	CGFloat maxY = self.textView.frame.size.height;
+	CGFloat pixelsToBottom = maxY - boundsY;
+	if (pixelsToBottom < self.fontSize * _magnification * 0.5 && pixelsToBottom > 0) {
+		scrollY -= 5 * _magnification;
+	}
+	NSLog(@"bounds - max = %f", maxY - boundsY);
+	*/
+	
+	// Calculate container height with insets
+	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
+	containerHeight = containerHeight * self.editorDelegate.magnification + self.textInsetY * 2 * self.editorDelegate.magnification;
+		
+	CGFloat delta = fabs(scrollY - self.superview.bounds.origin.y);
+	
+	if (scrollY < containerHeight && delta > self.editorDelegate.fontSize * self.editorDelegate.magnification) {
+		//scrollY = containerHeight - _textClipView.frame.size.height;
+		[self.superview.animator setBoundsOrigin:NSMakePoint(0, scrollY)];
+	}
+}
+
+#pragma mark - Info popup
+
+- (IBAction)showInfo:(id)sender {
+	bool wholeDocument = NO;
+	NSRange range;
+	if (self.selectedRange.length == 0) {
+		wholeDocument = YES;
+		range = NSMakeRange(0, self.string.length);
+	} else {
+		range = self.selectedRange;
+	}
+		
+	NSInteger words = 0;
+	NSArray *lines = [[self.string substringWithRange:range] componentsSeparatedByString:@"\n"];
+	NSInteger symbols = [[self.string substringWithRange:range] length];
+	
+	for (NSString *line in lines) {
+		for (NSString *word in [line componentsSeparatedByString:@" "]) {
+			if (word.length > 0) words += 1;
+		}
+		
+	}
+	[_infoTextView setString:@""];
+	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
+	
+	NSString *infoString = [NSString stringWithFormat:@"Words: %lu\nCharacters: %lu", words, symbols];
+
+	// Get number of pages / page number for selection
+	if (wholeDocument) {
+		NSInteger pages = [self numberOfPages];
+		if (pages > 0) infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", pages];
+	} else {
+		NSInteger page = [self getPageNumber:self.selectedRange.location];
+		if (page > 0) infoString = [infoString stringByAppendingFormat:@"\nPage: %lu", page];
+	}
+	
+	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
+	[attributes setObject:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]] forKey:NSFontAttributeName];
+	
+	
+	if (wholeDocument) infoString = [NSString stringWithFormat:@"Document\n%@", infoString];
+	else infoString = [NSString stringWithFormat:@"Selection\n%@", infoString];
+	_infoTextView.font = [NSFont systemFontOfSize:[NSFont systemFontSize]];
+	_infoTextView.string = infoString;
+	[_infoTextView.textStorage addAttributes:attributes range:NSMakeRange(0, [infoString rangeOfString:@"\n"].location)];
+		
+	[_infoTextView.layoutManager ensureLayoutForTextContainer:_infoTextView.textContainer];
+	NSRect result = [_infoTextView.layoutManager usedRectForTextContainer:_infoTextView.textContainer];
+	
+	NSRect frame = NSMakeRect(0, 0, 200, result.size.height + 16);
+	[self.infoPopover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
+	[self.infoTextView setFrame:NSMakeRect(0, 0, NSWidth(frame), NSHeight(frame))];
+	
+	self.substring = [self.string substringWithRange:NSMakeRange(range.location, 0)];
+	
+	NSRect rect;
+	if (!wholeDocument) {
+		rect = [self firstRectForCharacterRange:NSMakeRange(range.location, 0) actualRange:NULL];
+	} else {
+		rect = [self firstRectForCharacterRange:NSMakeRange(self.selectedRange.location, 0) actualRange:NULL];
+	}
+	rect = [self.window convertRectFromScreen:rect];
+	rect = [self convertRect:rect fromView:nil];
+	rect.size.width = 5;
+	
+	[self.infoPopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
+	[self.window makeFirstResponder:self];
+}
+
+
 // Beat customization
 - (IBAction)toggleDarkPopup:(id)sender {
 	/*
@@ -499,6 +511,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	 */
 }
 
+#pragma mark - Page numbering
+
 - (NSInteger)getPageNumber:(NSInteger)location {
 	if ([self.delegate respondsToSelector:@selector(getPageNumber:)]) {
 		return [(id)self.delegate getPageNumber:location];
@@ -511,6 +525,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	return 0;
 }
+
+#pragma mark - Insert
 
 - (void)insert:(id)sender {
 	if (self.popupMode != Autocomplete) return;
@@ -1343,6 +1359,59 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Layout Delegation
 
 #pragma mark - Zooming
+
+#pragma mark - Copy-paste
+
+-(void)copy:(id)sender {
+	NSPasteboard *pasteBoard = NSPasteboard.generalPasteboard;
+	[pasteBoard clearContents];
+	
+	BeatPasteboardItem *item = [[BeatPasteboardItem alloc] initWithAttrString:[self.attributedString attributedSubstringFromRange:self.selectedRange]];
+	
+	NSArray *copiedObjects = @[item];
+	[pasteBoard writeObjects:copiedObjects];
+}
+
+-(NSArray<NSPasteboardType> *)writablePasteboardTypes {
+	return @[NSBundle.mainBundle.bundleIdentifier];
+}
+-(NSArray<NSPasteboardType> *)readablePasteboardTypes {
+	return [NSArray arrayWithObjects:NSPasteboardTypeString, NSPasteboardTypeRTF, NSBundle.mainBundle.bundleIdentifier, nil];
+}
+
+-(void)paste:(id)sender {
+	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
+	NSDictionary *options = [NSDictionary dictionary];
+	
+	BOOL ok = [pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]];
+
+	if (ok) {
+		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
+		id obj = objectsToPaste[0];
+		
+		if ([obj isKindOfClass:NSString.class]) {
+			[super paste:sender];
+			return;
+		}
+		else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
+			// Paste custom Beat pasteboard data
+			BeatPasteboardItem *pastedItem = obj;
+			NSAttributedString *str = pastedItem.attrString;
+			
+			// Replace string content
+			NSInteger pos = self.selectedRange.location;
+			[self.editorDelegate replaceCharactersInRange:self.selectedRange withString:str.string];
+			
+			// Enumerate custom attributes
+			[str enumerateAttributesInRange:(NSRange){0, str.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+				[self.textStorage addAttributes:attrs range:(NSRange){ pos + range.location, range.length }];
+			}];
+			
+		}
+	}
+	
+}
 
 
 @end

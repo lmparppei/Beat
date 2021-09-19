@@ -3,13 +3,14 @@
 A simple and elegant screenwriting app for macOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **free and open source** under GPL.
 
 Read more: https://kapitan.fi/beat/
+Download releases on App Store: https://apps.apple.com/fi/app/beat/id1549538329
 
 This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. All other existing screenwriting apps were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations. To make up for those, Beat some **very** useful features, such as powerful outlining tools, scene coloring and filtering. 
 
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.7
+## Latest release: Beat 1.89
 
 **Features**
 * Minimalistic UI with as little distractions as possible
@@ -32,20 +33,16 @@ Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/H
 * Fountain Quicklook in Finder
 * Autosave & script backups in case of crashes 
 * Automatic paragraphs & tab key for auto character cue
-* Timer with measuring your productivity
+* Timer for measuring your productivity
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 
 
 ## FAQ
 
-### Future & State of development
+### Future & state of development
 
 Beat is under active development when I have the time -- or rather, desperately need a new feature myself. Worst bugs will usually be fixed ASAP. If you encounter a bug, contact me through Twitter, e-mail or file an issue here on GitHub. 
-
-### Running on Catalina / Big Sur
-
-Beat is ready for Big Sur. You need to allow Beat to run from System Preferences → Security → General. Click on the lock and allow Beat.
 
 ### Plugins
 

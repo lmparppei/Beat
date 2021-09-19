@@ -26,7 +26,7 @@ typedef enum : NSInteger {
 	RevisionComment
 } RevisionType;
 
-@interface BeatRevisionItem : NSObject
+@interface BeatRevisionItem : NSObject <NSCoding, NSCopying>
 @property (nonatomic) RevisionType type;
 @property (nonatomic) NSString *colorName;
 @property (nonatomic) NSString *text; // Support for additional comments - unrealized, for now

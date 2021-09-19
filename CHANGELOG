@@ -1,5 +1,10 @@
 # Changelog
 
+## Beat 1.90.0
+
+* Copy & paste revised text (and probably tags in the future, too)
+* Fixed visual bugs in sidebar + added slight animation
+
 
 ## Beat 1.89.9
 
@@ -9,6 +14,7 @@
 * Fixed minor bugs, such as the colors not saving as intended
 * Use system accent color for selected text
 * Option to select between serif / sans serif font
+* Fixed typewriter mode weirdness
 
 
 ## Beat 1.89.6

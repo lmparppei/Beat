@@ -39,6 +39,8 @@
 		B6119C532682154F0049456D /* BeatExportSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6119C512682154F0049456D /* BeatExportSettings.m */; };
 		B6119C542682154F0049456D /* BeatExportSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6119C512682154F0049456D /* BeatExportSettings.m */; };
 		B615E5E923CE022F00E61C54 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
+		B616493E26F7535600582671 /* BeatPasteboardItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B616493D26F7535600582671 /* BeatPasteboardItem.m */; };
+		B616493F26F7535800582671 /* BeatPasteboardItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B616493D26F7535600582671 /* BeatPasteboardItem.m */; };
 		B61875A52471BEDA00FB7646 /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B61875A42471BEDA00FB7646 /* BeatPreview.m */; };
 		B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D12FEB2537A04C0018A88F /* BeatComparison.m */; };
 		B61F016E266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */; };
@@ -509,13 +511,15 @@
 		B61061E92590DB66001947D6 /* BeatModalInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatModalInput.m; sourceTree = "<group>"; };
 		B6119C502682154F0049456D /* BeatExportSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
 		B6119C512682154F0049456D /* BeatExportSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatExportSettings.m; sourceTree = "<group>"; };
+		B616493B26F7389B00582671 /* BeatEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorDelegate.h; sourceTree = "<group>"; };
+		B616493C26F7535600582671 /* BeatPasteboardItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPasteboardItem.h; sourceTree = "<group>"; };
+		B616493D26F7535600582671 /* BeatPasteboardItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPasteboardItem.m; sourceTree = "<group>"; };
 		B61875A32471BEDA00FB7646 /* BeatPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = Beat/Export/BeatPreview.h; sourceTree = SOURCE_ROOT; };
 		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/Export/BeatPreview.m; sourceTree = SOURCE_ROOT; };
 		B61B693B2472DEE800DCDBFA /* BeatPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPaginator.h; path = Beat/Parsing/BeatPaginator.h; sourceTree = SOURCE_ROOT; };
 		B61B693C2472DEE800DCDBFA /* BeatPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPaginator.m; path = Beat/Parsing/BeatPaginator.m; sourceTree = SOURCE_ROOT; };
 		B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+MoveItem.m"; sourceTree = "<group>"; };
 		B61F016D266AB93A005A1B8A /* NSMutableArray+MoveItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+MoveItem.h"; sourceTree = "<group>"; };
-		B621EEB3261F0DEC0014131C /* BeatEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatEditorDelegate.h; path = "/Users/lmp/Koodaus/Beat 1.0b/Beat/Data Handling/BeatEditorDelegate.h"; sourceTree = "<absolute>"; };
 		B62392AF247FD351008E61D0 /* TouchTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchTimelineView.h; sourceTree = "<group>"; };
 		B62392B0247FD351008E61D0 /* TouchTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchTimelineView.m; sourceTree = "<group>"; };
 		B623BD352549AE7F00201BC9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -974,7 +978,9 @@
 		B600DD5C254C22CC006A09D0 /* Data Handling */ = {
 			isa = PBXGroup;
 			children = (
-				B621EEB3261F0DEC0014131C /* BeatEditorDelegate.h */,
+				B616493B26F7389B00582671 /* BeatEditorDelegate.h */,
+				B616493C26F7535600582671 /* BeatPasteboardItem.h */,
+				B616493D26F7535600582671 /* BeatPasteboardItem.m */,
 				B65B148225FF81400087834F /* Revision */,
 				B650D76F25CF34BD0042010C /* Tagging */,
 				B600DD5D254C22F6006A09D0 /* BeatDocumentSettings.h */,
@@ -1991,6 +1997,7 @@
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
 				B60FF86826582D1500886E06 /* BeatTitlePageEditor.m in Sources */,
 				B667796523C5D1CB0029D508 /* FDXImport.m in Sources */,
+				B616493E26F7535600582671 /* BeatPasteboardItem.m in Sources */,
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
 				B600DD5F254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */,
 				B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */,
@@ -2141,6 +2148,7 @@
 				B68B6064260B849300463AD8 /* ColorView.m in Sources */,
 				B60FF86926582D1500886E06 /* BeatTitlePageEditor.m in Sources */,
 				B68B6065260B849300463AD8 /* FDXImport.m in Sources */,
+				B616493F26F7535800582671 /* BeatPasteboardItem.m in Sources */,
 				B68B6066260B849300463AD8 /* Line.m in Sources */,
 				B68B6067260B849300463AD8 /* BeatDocumentSettings.m in Sources */,
 				B68B6068260B849300463AD8 /* BeatEditorButton.m in Sources */,
