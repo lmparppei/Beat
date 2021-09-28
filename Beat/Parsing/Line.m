@@ -127,6 +127,10 @@
 	return [self.parser.lines indexOfObject:self];
 }
 
+- (void)savePreviousVersion {
+	_previousString = [NSString stringWithString:self.string];
+}
+
 - (bool)omitted {
 	// See if whole block is omited
 	// WARNING: This also includes lines that have 0 length, meaning

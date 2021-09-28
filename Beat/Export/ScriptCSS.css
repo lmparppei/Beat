@@ -54,6 +54,7 @@ p {
 	word-wrap: break-word;
 	padding: 0 0px 0 10px;
 	white-space: pre-wrap;
+	width: 98%;
 }
 body > p:first-child {
 	margin-top: 0;

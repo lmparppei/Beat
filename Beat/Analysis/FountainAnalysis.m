@@ -31,6 +31,7 @@
 #import "FountainAnalysis.h"
 #import "NSString+Whitespace.h"
 #import "RegExCategories.h"
+#import "BeatPaginator.h"
 
 // lol
 #define LATER @[@"LATER", @"MYÖHEMMIN", @"SPÄTER", @"SENARE", @"PLUS TARD", @"ENSUITE", @"LUEGO", @"SENERE", @"SEINERE", @"SEINNA", @"BERANDUAGO", @"DESPRÉS", @"PÄRAST", @"HILJEM", @"TAGANTJÄRELE", @"SEURAAVAKSI", @"PÄRASTPOOLE", @"VĒLĀK", @"VĖLIAU", @"PÓŹNIEJ"]
@@ -38,8 +39,8 @@
 @interface FountainAnalysis ()
 
 @property NSMutableArray * characters;
-@property NSMutableArray * lines;
-@property NSMutableArray * scenes;
+@property NSArray * lines;
+@property NSArray * scenes;
 @property NSDictionary * genders;
 @property NSMutableDictionary * TOD;
 @property NSMutableDictionary<NSString *, NSNumber *>* characterLines;
@@ -50,34 +51,34 @@
 @property NSInteger words;
 @property NSInteger glyphs;
 
+@property NSArray* avgLength;
+@property NSArray* longestLength;
+
 @end
 
 @implementation FountainAnalysis
 
-- (id)init
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate
 {
 	if ((self = [super init]) == nil) { return nil; }
+	_delegate = delegate;
 	
 	_characterLines = [NSMutableDictionary dictionary];
 	_TOD = [NSMutableDictionary dictionary];
+		
+	_lines = [NSArray arrayWithArray:self.delegate.lines];
+	_scenes = [NSArray arrayWithArray:self.delegate.scenes];
+	_genders = self.delegate.characterGenders;
 	
 	return self;
 }
 
-- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes {
-	_lines = lines;
-	_scenes = scenes;
-}
-
-- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes characterGenders:(NSDictionary *)genders {
-	_lines = lines;
-	_scenes = scenes;
-	_genders = genders;
-}
 
 - (void) createReport {
 	// Reset everything
 	[_characterLines removeAllObjects];
+	
+	[self calculateAverageSceneLength];
 	
 	_interiorScenes = 0;
 	_exteriorScenes = 0;
@@ -103,7 +104,7 @@
 				Line* nextLine = [_lines objectAtIndex:lineIndex+1];
 				
 				// This is not a character cue if the next line is empty
-				if ([nextLine.string length] < 1 || [nextLine.string containsOnlyWhitespace]) continue;
+				if (nextLine.string.length < 1 || [nextLine.string containsOnlyWhitespace]) continue;
 				
 				// Get character name (strips V.O. etc.)
 				NSString *character = line.characterName;
@@ -188,9 +189,38 @@
 		}
 	}
 }
+
+- (void)calculateAverageSceneLength {
+	CGFloat totalLength = 0;
+	
+	CGFloat longest = 0;
+	
+	@autoreleasepool {
+		for (OutlineScene* scene in self.scenes) {
+			NSArray * lines = [self.delegate linesForScene:scene];
+			BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines];
+			NSArray *length = paginator.lengthInEights;
+			
+			CGFloat sceneLength = ([(NSNumber*)length[0] floatValue]) + ([(NSNumber*)length[1] floatValue] * 0.125);
+			if (sceneLength > longest) longest = sceneLength;
+			totalLength += sceneLength;
+		}
+	}
+	
+	CGFloat avg = totalLength / self.scenes.count;
+	CGFloat avgPages = floorf(avg);
+	CGFloat avgEights = avg - avgPages;
+	
+	CGFloat lngPages = floorf(longest);
+	CGFloat lngEights = longest - lngPages;
+	
+	_avgLength = @[ @(avgPages), @(avgEights) ];
+	_longestLength = @[ @(lngPages), @(lngEights) ];
+	
+}
 	
 - (NSString*)getJSON {
-	if (![_lines count]) {
+	if (!_lines.count) {
 		return @"genders:{ }";
 	}
 	[self createReport];
@@ -229,7 +259,11 @@
 	NSData *tods = [NSJSONSerialization dataWithJSONObject:_TOD options:NSJSONWritingPrettyPrinted error:nil];
 	[json appendFormat:@"tods:%@,", [[NSString alloc] initWithData:tods encoding:NSUTF8StringEncoding]];
 	// JSON statistics --------------------------------------------------------
-	[json appendFormat:@"statistics:{ words: %lu, glyphs: %lu }", _words, _glyphs];
+	[json appendFormat:@"statistics:{ words: %lu, glyphs: %lu, scenes: %lu, avgLength: { pages: %lu, eights: %f }, longestScene: { pages: %lu, eights: %f } }",
+	 _words, _glyphs, _scenes.count,
+	 [(NSNumber*)_avgLength[0] integerValue], [(NSNumber*)_avgLength[1] floatValue],
+	 [(NSNumber*)_longestLength[0] integerValue], [(NSNumber*)_longestLength[1] floatValue]
+	];
 	
 	// JSON END
 	[json appendString:@"}"];

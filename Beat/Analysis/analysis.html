@@ -42,6 +42,7 @@
 			}
 			.right {
 				width: 40%;
+				margin-top: -2.5em;
 			}
 			.left { width: 60%; }
 		
@@ -62,16 +63,11 @@
 				margin-bottom: .5rem;
 			}
 			h2 {
-				margin-top: 1rem;
-				font-size: 1.2em;
+				margin: 0;
+				font-size: 1.5em;
 			}
 			section h2 {
 				text-align: center;
-			}
-			#documentInfo p {
-				margin-top: 0;
-				text-align: center;
-				font-size: .7em;
 			}
 
 			table { width: 100%; }
@@ -84,11 +80,23 @@
 				width: 30%;
 			}
 			td.gender {
+				position: relative;
 				padding: .1rem;
 			}
-
+			
+			.header td.gender span {
+				position: absolute;
+				display: block;
+				bottom: 0;
+				left: 0;
+				transform: rotate(-90deg) translateX(-.5em);
+				transform-origin: top left;
+				color: #999;
+			}
+			
 			#characters {
-				width: 100%;
+				width: 70%;
+				margin-right: 2em;
 			}
 
 			.linesBar, .statsBar {
@@ -143,8 +151,28 @@
 			.interior { background-color: rgb(236,0,140); }
 			.exterior { background-color: rgb(0,129,239); }
 			
+			section#todStats {
+				width: 33%;
+			}
 			#tods td {
+				padding-top: .3em;
+				padding-bottom: .3em;
 				text-transform: uppercase;
+			}
+			
+			#tods .statsNumber {
+				padding-right: 0;
+			}
+			
+			#top {
+				padding-top: .5em;
+				display: flex;
+				
+				align-items: center;
+				
+				padding-bottom: 0.5em;
+				border-bottom: solid 1px #eee;
+				margin-bottom: 3em;
 			}
 
 			/* Beat colors */
@@ -169,9 +197,9 @@
 			
 			.textJade { color: rgb(90, 208, 133) }
 
-			.textFemale { color: #1684ec; }
-			.textMale { color: #1f4a73; }
-			.textOther { color: rgb(236,0,140); }
+			.textWoman { color: #1684ec !important; }
+			.textMan { color: #1f4a73 !important; }
+			.textOther { color: rgb(236,0,140) !important; }
 
 			.donutChart {
 				position: relative;
@@ -200,127 +228,132 @@
 				margin: 0 0 .25rem 0;
 			}
 
-		input[type="radio"] {
+			input[type="radio"] {
 
-			margin: 0;
-		    border-radius: 50%;
+				margin: 0;
+				border-radius: 50%;
 
-		    cursor: pointer;
-		    display: inline-block;
-		    
-		    width: 12px;
-		    height: 12px;
-		    border: solid 1px #bbb;
-		    
-		    position: relative;
+				cursor: pointer;
+				display: inline-block;
+				
+				width: 12px;
+				height: 12px;
+				border: solid 1px #bbb;
+				
+				position: relative;
 
-		    -webkit-appearance: none;
-		}
-		input[type="radio"]:focus {
-			outline: none;
-		}
-		input[type="radio"]:after {
-		    background-color: transparent;
-		    border-radius: 25px;
-		    box-shadow: inset 0 0 0 0px hsla(0,0%,0%,.2),
-		                0 0px 0px hsla(0,0%,100%,.5);
-		    content: '';
-		    display: block;
-		    height: 8px;
-		    left: 1px;
-		    position: relative;
-		    top: 1px;
-		    width: 8px;
-		}
-		input[type="radio"]:checked:after {
-		    background-color: #888;
-		}
-		.other input[type="radio"]:checked:after {
-			background-color: rgb(236,0,140);
-		}
-		.female input[type="radio"]:checked:after {
-			background-color: #1684ec;;
-		}
-		.male input[type="radio"]:checked:after {
-			background-color: #1f4a73;
-		}
+				-webkit-appearance: none;
+			}
+			input[type="radio"]:focus {
+				outline: none;
+			}
+			input[type="radio"]:after {
+				background-color: transparent;
+				border-radius: 25px;
+				box-shadow: inset 0 0 0 0px hsla(0,0%,0%,.2),
+							0 0px 0px hsla(0,0%,100%,.5);
+				content: '';
+				display: block;
+				height: 8px;
+				left: 1px;
+				position: relative;
+				top: 1px;
+				width: 8px;
+			}
+			input[type="radio"]:checked:after {
+				background-color: #888;
+			}
+			.other input[type="radio"]:checked:after {
+				background-color: rgb(236,0,140);
+			}
+			.female input[type="radio"]:checked:after {
+				background-color: #1684ec;;
+			}
+			.male input[type="radio"]:checked:after {
+				background-color: #1f4a73;
+			}
 
+			section#documentStats {
+				margin-left: 0;
+				text-align: left;
+				width: 33%;
+			}
+			
+			#documentStats p {
+				margin-top: 0;
+				font-size: .8em;
+			}
+			#documentStats p.statsSmall {
+				font-size: .75em;
+				color: #888;
+				line-height: 1.5em;
+			}
+			
+			#linesAndGenders {
+				display: flex;
+			}
+			section#characterCharts {
+				margin-right: 0;
+			}
+			
 		</style>
 	</head>
 
 	<body lang="fi">
 
-		<h1>Analysis</h1>
+		<h1>Screenplay Analysis</h1>
 
-		<div class='columns'>
-			<div class='column left'>
+		<div id='top'>
 			
-				<table id='characters' cellspacing="0">
+			<section id='documentStats'>
+				<div id='documentInfo'>
+
+				</div>
+			</section>
+			
+			<section>
+				<div style='display: none;' id='sceneBar'></div>
+				
+				<div class='donutChart'>
+					<canvas class='donutCanvas' id='sceneCanvas' width="180" height="180"></canvas>
+					<div id='sceneLegend' class='donutLegend'></div>
+				</div>
+			</section>
+			
+			<section id="todStats">
+				<table id='tods' cellspacing='0'>
 				</table>
-
-			</div>
-
-			<div class='column right'>
-				
-				<!--
-				<p class='legend'><span class='box interior'></span> interior &nbsp; <span class='box exterior'></span> exterior  &nbsp; <span class='box other'></span> other</p>
-				-->
-
-				<section>
-					<div id='genderPie' class='donutChart'>
-						<canvas id='genderCanvas' class='donutCanvas' width="180" height="180"></canvas>
-						<div id='genderLegend' class='donutLegend'></div>
-					</div>
-				</section>
-
-				<section>
-					<div style='display: none;' id='sceneBar'></div>
-					
-					<div class='donutChart'>
-						<canvas class='donutCanvas' id='sceneCanvas' width="180" height="180"></canvas>
-						<div id='sceneLegend' class='donutLegend'></div>
-					</div>
-				</section>
-				
-				<section>
-					<table id='tods' cellspacing='0'>
-					</table>
-				</section>
-				
-				<section>
-					<div id='documentInfo'>asdf</div>
-				</section>
-
-			</div>
+			</section>
+			
 		</div>
 		
+		<div id='linesAndGenders'>
+			<table id='characters' cellspacing="0"></table>
+
+			<section id='characterCharts'>
+				<div id='genderPie' class='donutChart'>
+					<canvas id='genderCanvas' class='donutCanvas' width="180" height="180"></canvas>
+					<div id='genderLegend' class='donutLegend'></div>
+				</div>
+			</section>
+		</div>
 
 		<script>
-			/*
-			var storage;
-			try {
-				storage = window.localStorage;
-			} 
-			catch (err) {
-				document.write(err);
-				storage = null;
-			}
-			*/
-			
-			var debugData;
-			var defaultData = {};
+			var debugData
+			//var defaultData = { "characters": { "Testi": 123 }, genders: { "Testi": "female" }, statistics: {}  };
+			let defaultData = {}
 
-			var characterTable = document.getElementById('characters');
-			var todTable = document.getElementById('tods');
-			var sceneBar = document.getElementById('sceneBar');
+			var characterTable = document.getElementById('characters')
+			var todTable = document.getElementById('tods')
+			var sceneBar = document.getElementById('sceneBar')
 			
-			var sceneLegend = document.getElementById('sceneLegend');
-			var sceneCanvas = document.getElementById('sceneCanvas');
+			var sceneLegend = document.getElementById('sceneLegend')
+			var sceneCanvas = document.getElementById('sceneCanvas')
 
-			var genderLegend = document.getElementById('genderLegend');
-			var genderCanvas = document.getElementById('genderCanvas');
+			var genderLegend = document.getElementById('genderLegend')
+			var genderCanvas = document.getElementById('genderCanvas')
 			
-			var documentInfo = document.getElementById('documentInfo');
+			var documentInfo = document.getElementById('documentInfo')
 
 			// An object containing the character gender data
 			var characterGender = {};
@@ -392,7 +425,18 @@
 			}
 
 			function getDocumentInfo (statistics) {
-				documentInfo.innerHTML = "<p><b>" + statistics.words + "</b> words<br><b>" + statistics.glyphs + "</b> characters</p>";
+				let html = ""
+				
+				
+				
+				html += "<p>Average scene length: <b>" + statistics.avgLength.pages + " " + getEight(statistics.avgLength.eights * 8) + "</b> pgs<br>";
+				html += "Longest scene: <b>" + statistics.longestScene.pages + " " + getEight(statistics.longestScene.eights * 8) + "</b> pgs</p>";
+				
+				html += "<p class='statsSmall'><b>" + statistics.scenes + "</b> scenes<br>"+
+						   "<b>" + statistics.words + "</b> words<br><b>" + statistics.glyphs + "</b> characters</p>";
+						   
+				
+				documentInfo.innerHTML = html;
 			}
 		
 			function getGenderStatistics () {
@@ -423,8 +467,10 @@
 					other: Math.round(g.other / g.total * 100),
 					unspecified: Math.round(g.unspecified / g.total * 100)
 				}
-
+				
+				let noGenderData = false
 				if (total == 0) {
+					noGenderData = true
 					chartValues = {
 						female: 0,
 						male: 0,
@@ -432,14 +478,19 @@
 						unspecified: 0
 					}
 				}
-
-				genderLegend.innerHTML = 
-				"<h3>Lines by gender</h3>" +
-				"<span class='textFemale'>Women " + chartValues.female + "%</span>" + 
-				"<span class='textMale'>Men " + chartValues.male + "%</span>" +
-				"<span class='textOther'>Other " + chartValues.other + "%</span>" + 
-				"<span class='textGray'>Unknown " + chartValues.unspecified + "%</span>";
-
+				
+				if (!noGenderData) {
+					genderLegend.innerHTML =
+					"<h3>Lines by Gender</h3>" +
+					"<span class='textWoman'>Women " + chartValues.female + "%</span>" +
+					"<span class='textMan'>Men " + chartValues.male + "%</span>" +
+					"<span class='textOther'>Other " + chartValues.other + "%</span>" +
+					"<span class='textGray'>Unknown " + chartValues.unspecified + "%</span>";
+				} else {
+					genderLegend.innerHTML =
+					"<h3>Lines by Gender</h3>" +
+					"<span>Set gender for characters on the left side</span>"
+				}
 
 				// Draw donut chart
 				var data = [
@@ -472,12 +523,9 @@
 				});
 				characterList.reverse();
 
-				characterTable.innerHTML = 
-				/*"<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>" + 
-				"<td class='gender'>?</td><td class='gender'>⚥</td><td class='gender'>♀</td><td class='gender'>♂</td></tr>"
-				*/
-				"<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>" + 
-				"<td class='gender'>?</td><td class='gender'>O</td><td class='gender'>W</td><td class='gender'>M</td></tr>"
+				characterTable.innerHTML =
+				"<tr class='header'><td colspan='3'><h2>Lines per Character</h2></td>" +
+				"<td class='gender'><span>undefined</span></td><td class='gender'><span class='textOther'>other</span></td><td class='gender'><span class='textWoman'>woman</span></td><td class='gender'><span class='textMan'>man</span></td></tr>"
 				
 				;
 
@@ -519,7 +567,31 @@
 					"</tr>";
 				}
 			}
-											
+								
+			function getEight (number) {
+				switch (number) {
+					case 0:
+						return "⁰⁄₈"
+					case 1:
+						return "⅛"
+					case 2:
+						return "²⁄₈"
+					case 3:
+						return "⅜"
+					case 4:
+						return "⁴⁄₈"
+					case 5:
+						return "⅝"
+					case 6:
+						return "⁶⁄₈"
+					case 7:
+						return "⅞"
+					case 8:
+						return "⁸⁄₈"
+				}
+				
+			}
+								
 			function getTODData(tods) {				
 				let sortedTods = [];
 
@@ -542,6 +614,7 @@
 				}
 
 				// Print out
+				let i = 0;
 				for (const value of sortedTods) {
 					let percent = Math.floor(100 * (value[1] / total));
 
@@ -555,7 +628,10 @@
 
 					 	html += "<tr class='" + extraClass +"'><td class='name'>" + value[0] + "</td><td class='statsBar'><div class='bar' style='width: " + width + "%;'>&nbsp;</div></td><td class='statsNumber'>" + value[1] + "</td></tr>";
 					 }
-					 	
+					i++;
+					
+					// Only allow 8 different times of day
+					if (i > 8) break;
 				}
 
 				todTable.innerHTML = html;
@@ -565,11 +641,6 @@
 				sceneBar.innerHTML = "";
 
 				var total = scenes.interior + scenes.exterior + scenes.other;
-				/*
-				sceneBar.innerHTML += "<div class='sceneCount interior' style='width: " + Math.floor(scenes.interior / total * 100) + "%'>" + scenes.interior + "</div>";
-				sceneBar.innerHTML += "<div class='sceneCount exterior' style='width: " + Math.floor(scenes.exterior / total * 100) + "%'>" + scenes.exterior + "</div>";
-				if (scenes.other > 0) sceneBar.innerHTML += "<div class='sceneCount other' style='width: " + Math.floor(scenes.other / total * 100) + "%'>" + scenes.other + "</div>";
-				*/
 
 				var data = [
 					scenes.interior / total * 100,

@@ -242,15 +242,20 @@
 			__block NSString *filename = [NSString stringWithString:file];
 			
 			dispatch_async(dispatch_get_main_queue(), ^(void){
+				
 				NSAlert *alert = [[NSAlert alloc] init];
 				alert.messageText = [NSString stringWithFormat:@"%@", filename];
-				alert.informativeText = @"An unsaved script was found. Do you want to recover the latest autosaved version of this file?";
-				[alert addButtonWithTitle:@"Recover"];
+				alert.informativeText = @"An unsaved script was found. Do you want to open the latest autosaved version of this file?";
+				[alert addButtonWithTitle:@"Open"];
 				[alert addButtonWithTitle:@"Cancel"];
 
 				NSModalResponse response = [alert runModal];
 
 				if (response == NSAlertFirstButtonReturn) {
+					NSString *contents = [NSString stringWithContentsOfFile:[appSupportDir stringByAppendingPathComponent:file] encoding:NSUTF8StringEncoding error:nil];
+					[self newDocumentWithContents:contents];
+					
+					/*
 					NSString *recoveredFilename = [[[filename stringByDeletingPathExtension] stringByAppendingString:@" (Recovered)"] stringByAppendingString:@".fountain"];
 					
 					NSSavePanel *saveDialog = [NSSavePanel savePanel];
@@ -281,6 +286,7 @@
 							[self deleteAutosaveFile:[appSupportDir stringByAppendingPathComponent:filename]];
 						}
 					}];
+					 */
 				} else {
 					[self deleteAutosaveFile:[appSupportDir stringByAppendingPathComponent:filename]];
 				}

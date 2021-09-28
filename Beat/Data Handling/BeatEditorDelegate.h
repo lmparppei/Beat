@@ -24,10 +24,15 @@
 @property (nonatomic) CGFloat inset;
 @property (nonatomic, readonly) NSUInteger documentWidth;
 
+@property (nonatomic) NSMutableDictionary *characterGenders;
+
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
 - (NSMutableArray*)lines;
 - (NSString*)getText;
+- (NSArray*)linesForScene:(OutlineScene*)scene;
+
+- (NSInteger)lineTypeAt:(NSInteger)index;
 
 - (NSRange)selectedRange;
 - (NSArray*)getOutline; // ???
@@ -43,10 +48,30 @@
 - (void)showLockStatus;
 - (bool)contentLocked;
 
+- (void)showTitleBar;
+- (void)hideTitleBar;
+
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;
 #endif
 
 @end
-
+/*
+ 
+ tää viesti on varoitus
+ tää viesti on
+ varoitus
+ 
+ tästä hetkestä
+ ikuisuuteen
+ tästä hetkestä
+ ikuisuuteen
+ 
+ ja se vaara
+ on yhä läsnä
+ vaikka me oomme lähteneet
+ se vaara on
+ yhä läsnä
+ 
+ */
 

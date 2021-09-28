@@ -24,13 +24,14 @@
 //  IN THE SOFTWARE.
 //
 
-
-#if TARGET_OS_IPHONE
+/*
+#if TARGET_OS_IOS
     #define BeatFont UIFont
 #else
+*/
     #define BeatFont NSFont
     #import <Cocoa/Cocoa.h>
-#endif
+/* #endif */
 
 #import <Foundation/Foundation.h>
 #import "BeatEditorDelegate.h"

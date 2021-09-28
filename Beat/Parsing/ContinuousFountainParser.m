@@ -198,7 +198,7 @@ static NSDictionary* patterns;
         // Then add
 		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
     }
-    	
+	    	
     [self correctParsesInLines:changedIndices];
 }
 
@@ -234,6 +234,9 @@ static NSDictionary* patterns;
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
 	Line* line = self.lines[lineIndex];
 	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = YES;
+	
+	// Cache old version of the string
+	[line savePreviousVersion];
 	
     NSUInteger indexInLine = position - line.position;
 	
@@ -287,10 +290,21 @@ static NSDictionary* patterns;
 		
 		[changedIndices addIndexesInRange:NSMakeRange(lineIndex, newLines.count)];
 	} else {
+		// Do it character by character...
+		
+		// Set the currently edited line index
+		if (_editedIndex >= self.lines.count || _editedIndex < 0) {
+			_editedIndex = [self lineIndexAtPosition:position];
+		}
+
+		// Find the current line and cache its previous version
+		Line* line = self.lines[lineIndex];
+		[line savePreviousVersion];
+		
         for (int i = 0; i < string.length; i++) {
             NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
 			[changedIndices addIndexes:[self parseCharacterAdded:character
-                                                      atPosition:position+i]];
+													  atPosition:position+i  line:line]];
         }
 	}
 	
@@ -315,16 +329,9 @@ static NSDictionary* patterns;
 	}
 }
 
-- (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position
+- (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position line:(Line*)line
 {
-	NSUInteger lineIndex;
-	
-	if (_editedIndex >= self.lines.count || _editedIndex < 0) {
-		_editedIndex = [self lineIndexAtPosition:position];
-	}
-	
-	lineIndex = _editedIndex;
-	Line* line = self.lines[lineIndex];
+	NSUInteger lineIndex = _editedIndex;
 
     NSUInteger indexInLine = position - line.position;
 	
@@ -381,6 +388,9 @@ static NSDictionary* patterns;
 		NSInteger lineIndex = [self lineIndexAtPosition:range.location];
 		Line *firstLine = self.lines[lineIndex];
 		
+		// Cache the previous version of the line
+		[firstLine savePreviousVersion];
+		
 		// Change in outline
 		if (firstLine.type == heading || firstLine.type == section || firstLine.type == synopse) _changeInOutline = YES;
 		
@@ -394,7 +404,7 @@ static NSDictionary* patterns;
 		
 		for (NSInteger i = 1; i <= lineBreaks; i++) {
 			Line* nextLine = self.lines[nextIndex];
-			
+						
 			if (nextLine.type == heading || nextLine.type == section || nextLine.type == synopse) {
 				_changeInOutline = YES;
 			}
@@ -428,9 +438,20 @@ static NSDictionary* patterns;
 										
 		[changedIndices addIndex:lineIndex];
 	} else {
-		// Do it normally
+		// Do it normally...
+		
+		// Set the currently edited line index
+		if (_editedIndex >= self.lines.count || _editedIndex < 0) {
+			_editedIndex = [self lineIndexAtPosition:range.location];
+		}
+		
+		// Cache previous version of the string
+		Line* line = self.lines[_editedIndex];
+		[line savePreviousVersion];
+		
+		// Parse removal character by character
 		for (int i = 0; i < range.length; i++) {
-			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location]];
+			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location line:line]];
 		}
 	}
 	
@@ -438,7 +459,7 @@ static NSDictionary* patterns;
 	
 	return changedIndices;
 }
-- (NSIndexSet*)parseCharacterRemovedAtPosition:(NSUInteger)position
+- (NSIndexSet*)parseCharacterRemovedAtPosition:(NSUInteger)position line:(Line*)line
 {
 	/*
 	 
@@ -453,22 +474,13 @@ static NSDictionary* patterns;
 	 character, too, don't bother appending any strings anywhere.
 	 
 	 */
-	
-	// Get index for current line
-	NSUInteger lineIndex;
 		
-	if (_editedIndex >= self.lines.count || _editedIndex < 0) {
-		_editedIndex = [self lineIndexAtPosition:position];
-	}
-	
-	lineIndex = _editedIndex;
-    Line* line = self.lines[lineIndex];
-
 	NSUInteger indexInLine = position - line.position;
+	NSUInteger lineIndex = _editedIndex;
 
 	if (indexInLine > line.string.length) indexInLine = line.string.length;
 	
-    if (indexInLine == [line.string length]) {
+    if (indexInLine == line.string.length) {
         //Get next line and put together
         if (lineIndex == self.lines.count - 1) {
             return nil; //Removed newline at end of document without there being an empty line - should never happen but to be sure...
@@ -1059,17 +1071,9 @@ and incomprehensible system of recursion.
 				if (length < 4) return heading;
 				else {
 					char nextChar = [string characterAtIndex:3];
-					if (nextChar == '.' || nextChar == ' ') {
+					if (nextChar == '.' || nextChar == ' ' || nextChar == '/') {
 						// Line begins with int. or ext. etc.
-						// Signal change into the document to make undo work correctly
-						if (line.type != heading) [self.delegate actionChangedToHeadingAt:line];
 						return heading;
-					} else {
-						// If the line is just "internal" or "estoy aqui", it should NOT be a scene heading
-						if (line.type == heading) {
-							// Signal change to action
-							[self.delegate headingChangedToActionAt:line];
-						}
 					}
 				}
             }
@@ -1619,12 +1623,20 @@ and incomprehensible system of recursion.
 
 - (NSString*)sceneNumberAtLine:(NSUInteger)line
 {
-    if (line >= [self.lines count]) {
+    if (line >= self.lines.count) {
         return nil;
     } else {
         Line* l = self.lines[line];
         return l.sceneNumber;
     }
+}
+
+- (LineType)lineTypeAt:(NSInteger)index
+{
+	Line * line = [self lineAtPosition:index];
+	
+	if (!line) return action;
+	else return line.type;
 }
 
 #pragma mark - Outline Data

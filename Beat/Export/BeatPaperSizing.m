@@ -26,10 +26,10 @@
 }
 
 + (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo {
-	[printInfo setTopMargin:MARGIN_TOP];
-	[printInfo setBottomMargin:MARGIN_BOTTOM];
-	[printInfo setLeftMargin:MARGIN_LEFT];
-	[printInfo setRightMargin:MARGIN_RIGHT];
+	printInfo.topMargin = MARGIN_TOP;
+	printInfo.bottomMargin = MARGIN_BOTTOM;
+	printInfo.leftMargin = MARGIN_LEFT;
+	printInfo.rightMargin = MARGIN_RIGHT;
 	return printInfo;
 }
 + (NSPrintInfo*)setPaperSize:(NSPrintInfo*)printInfo size:(BeatPaperSize)size {

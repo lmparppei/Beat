@@ -9,16 +9,13 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import "ContinuousFountainParser.h"
+#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatAnalysisDelegate <NSObject>
-@property (nonatomic) NSMutableDictionary *characterGenders;
-@end
-
 @interface BeatAnalysisPanel : NSWindowController <WKScriptMessageHandler, WKNavigationDelegate>
-@property (weak) id<BeatAnalysisDelegate> delegate;
-- (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatAnalysisDelegate>)delegate;
+@property (weak) id<BeatEditorDelegate> delegate;
+- (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatEditorDelegate>)delegate;
 @end
 
 NS_ASSUME_NONNULL_END

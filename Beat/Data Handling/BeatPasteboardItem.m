@@ -7,12 +7,12 @@
 //
 
 #import "BeatPasteboardItem.h"
+#define UTI @"com.kapitanFI.beat.copiedString"
 
 @implementation BeatPasteboardItem
  
 - (void)encodeWithCoder:(NSCoder *)coder {
 	[coder encodeObject:self.attrString forKey:@"attrString"];
-	[coder encodeObject:self.attrString.string forKey:@"string"];
 }
 
 - (id)initWithAttrString:(NSAttributedString*)string {
@@ -29,7 +29,7 @@
 	self = [super init];
 
 	if (self) {
-		  _attrString = [coder decodeObjectForKey:@"attrString"];
+		_attrString = [coder decodeObjectForKey:@"attrString"];
 	}
 	
 	return self;
@@ -40,27 +40,20 @@
 }
 
 +(NSArray *)readableTypesForPasteboard:(NSPasteboard *)pasteboard {
-	// I am using the bundleID as a type
-	return @[[[NSBundle mainBundle] bundleIdentifier]];
+	return @[UTI];
 }
 
 - (NSArray *)writableTypesForPasteboard:(NSPasteboard *)pasteboard {
-	// I am using the bundleID as a type
-	return @[[[NSBundle mainBundle] bundleIdentifier]];
+	return @[UTI];
 }
 
-
 - (id)pasteboardPropertyListForType:(NSString *)type {
-	// I am using the bundleID as a type
-	if(![type isEqualToString:[[NSBundle mainBundle] bundleIdentifier]]) {
-		return nil;
-	}
-	
+	if(![type isEqualToString:UTI]) return nil;
 	return [NSKeyedArchiver archivedDataWithRootObject:self];
 }
 
 - (nonnull id)copyWithZone:(nullable NSZone *)zone {
-	BeatPasteboardItem *item = [[self class] allocWithZone:zone];
+	BeatPasteboardItem *item = [[self.class allocWithZone:zone] init];
 	item->_attrString = [_attrString copyWithZone:zone];
 	return item;
 }

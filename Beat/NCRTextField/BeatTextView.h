@@ -52,13 +52,14 @@ typedef enum : NSInteger {
 @property (readonly) NSUInteger fontSize;
 @property (readonly) bool typewriterMode;
 
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string;
+- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
 - (bool)isDark;
 - (void)updateLayout;
 - (void)ensureLayout;
 - (void)showLockStatus;
+- (LineType)lineTypeAt:(NSInteger)index;
 @end
 
 @protocol BeatTaggingDelegate;

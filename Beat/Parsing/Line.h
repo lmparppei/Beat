@@ -75,6 +75,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, weak) id<LineDelegate> parser;
 @property LineType type;
 @property (strong, nonatomic) NSString* string;
+@property (nonatomic) NSString* previousString;
 @property (nonatomic) NSString* original;
 @property (nonatomic) NSUInteger position;
 @property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
@@ -186,6 +187,9 @@ typedef enum : NSUInteger {
 // (Is this still used?)
 @property bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
+
+// For some undo operations
+- (void)savePreviousVersion;
 
 -(NSString *)description;
 @end

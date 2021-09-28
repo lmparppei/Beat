@@ -7,9 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "BeatEditorDelegate.h"
 @class DynamicColor;
 
 @interface ScrollView : NSScrollView
+
+@property (weak) IBOutlet id<BeatEditorDelegate> editorDelegate;
 
 // Buttons to hide
 @property (weak) IBOutlet NSButton *outlineButton;

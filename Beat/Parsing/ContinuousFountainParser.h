@@ -102,6 +102,7 @@
 - (NSDictionary*)scriptForPrinting;
 - (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
+- (LineType)lineTypeAt:(NSInteger)index;
 
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;

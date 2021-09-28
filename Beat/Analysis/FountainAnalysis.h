@@ -10,11 +10,11 @@
 #import "ContinuousFountainParser.h"
 #import "Line.h"
 
+@class BeatEditorDelegate;
+
 @interface FountainAnalysis : NSObject
-{
-}
+@property (weak) id<BeatEditorDelegate> delegate;
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
 - (NSString*) getJSON;
-- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes;
-- (void) setupScript:(NSMutableArray*)lines scenes:(NSMutableArray*)scenes characterGenders:(NSDictionary*)genders;
 - (NSMutableArray*) scenesWithCharacter:(NSString*)character onlyDialogue:(bool)onlyDialogue;
 @end

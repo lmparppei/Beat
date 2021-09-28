@@ -356,7 +356,7 @@
 #define CHARACTER_INDENT_P 0.36
 #define PARENTHETICAL_INDENT_P 0.27
 #define DIALOGUE_INDENT_P 0.164
-#define DIALOGUE_RIGHT_P 0.75
+#define DIALOGUE_RIGHT_P 0.725
 
 @implementation Document
 
@@ -437,6 +437,7 @@
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
 	[super windowControllerDidLoadNib:aController];
+	
 	_thisWindow = aController.window;
 	
 	// Hide the welcome screen
@@ -444,13 +445,13 @@
 		
 	// Initialize document settings if needed
 	if (!self.documentSettings) self.documentSettings = [[BeatDocumentSettings alloc] init];
-
+	
 	// Initialize Theme Manager
 	// (before formatting the content, because we need the colors for formatting!)
 	self.themeManager = [ThemeManager sharedManager];
 	[self loadSelectedTheme:false];
 	self.nightMode = [self isDark];
-		
+	
 	// Setup views
 	[self setupWindow];
 	[self readUserSettings];
@@ -471,8 +472,8 @@
 	[self setupTouchTimeline];
 	[self setupAnalysis];
 	[self setupColorPicker];
-		
-	// Setup layout here first
+	
+	// Setup layout here first, but don't paginate
 	[self setupLayoutWithPagination:NO];
 		
 	// Setup plugin management
@@ -493,37 +494,49 @@
 	} else {
 		[self setText:@""];
 	}
-		
+			
 	// Initialize parser
 	self.parser = [[ContinuousFountainParser alloc] initWithString:[self getText]];
 	self.parser.delegate = self;
 	
 	// Initialize edit tracking
 	[self setupRevision];
-	
+
+	// Apply document formatting
 	[self applyInitialFormatting];
 	
 	// Load tags
 	[self setupTagging];
-	
-	// Setup page size
-	// (We'll disable undo registration here, so the doc won't appear as edited on open)
-	[self.undoManager disableUndoRegistration];
-	self.printInfo = [BeatPaperSizing setSize:[_documentSettings getInt:@"Page Size"] printInfo:self.printInfo];
-	[self.undoManager enableUndoRegistration];
-	[self updateChangeCount:NSChangeCleared];
-
+		
 	// Document loading has ended
 	self.documentIsLoading = NO;
 	
-	// Ensure layout
+	// Ensure layout with pagination
 	[self setupLayoutWithPagination:YES];
+	
+	// Init autosave
 	[self initAutosave];
 	
 	// Lock status
 	if ([_documentSettings getBool:@"Locked"]) [self lock];
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		// Setup page size
+		// (We'll disable undo registration here, so the doc won't appear as edited on open)
+		[self.undoManager disableUndoRegistration];
+		printf("Begin print info set....");
+		NSPrintInfo *printInfo = [BeatPaperSizing setSize:[self.documentSettings getInt:@"Page Size"] printInfo:self.printInfo];
+		self.printInfo.paperSize = printInfo.paperSize;
+		self.printInfo.orientation = printInfo.orientation;
+		self.printInfo.leftMargin = printInfo.leftMargin;
+		self.printInfo.topMargin = printInfo.topMargin;
+		self.printInfo.rightMargin = printInfo.rightMargin;
+		self.printInfo.bottomMargin = printInfo.bottomMargin;
+		printf("Done.\n");
+		
+		[self.undoManager enableUndoRegistration];
+		[self updateChangeCount:NSChangeCleared];
+		
 		[self updateLayout];
 	});
 }
@@ -640,7 +653,7 @@
 	//NSString *newName = [NSString stringWithString:[self fileNameString]];
 }
 - (NSString *)displayName {
-	if (![self fileURL]) return @"Untitled";
+	if (!self.fileURL) return @"Untitled";
 	return [super displayName];
 }
 
@@ -659,7 +672,18 @@
 
 - (void)setTab:(NSUInteger)index
 {
+	if (index == 0) {
+		_thisWindow.titlebarAppearsTransparent = YES;
+	} else {
+		_thisWindow.titlebarAppearsTransparent = NO;
+	}
 	[self.tabView selectTabViewItem:[self.tabView tabViewItemAtIndex:index]];
+}
+- (void)showTitleBar {
+	_thisWindow.titlebarAppearsTransparent = NO;
+}
+- (void)hideTitleBar {
+	_thisWindow.titlebarAppearsTransparent = YES;
 }
 
 - (bool)isFullscreen
@@ -953,9 +977,24 @@
 	// Save character genders (if set)
 	if (_characterGenders) [self.documentSettings set:@"CharacterGenders" as:_characterGenders];
 	
-	// Resort to content buffer
+	// Resort to content buffer if needed
+	NSMutableString *content = [NSMutableString string];
+	for (Line *line in self.parser.lines) {
+		NSString *string = line.string;
+		LineType type = line.type;
+		
+		// Make some lines uppercase
+		if ((type == heading || type == character || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
+		
+		[content appendString:string];
+		if (line != _parser.lines.lastObject) [content appendString:@"\n"];
+	}
+	NSLog(@"content: %@", content);
+	
 	NSString *text = self.getText;
 	if (text == nil) text = _contentBuffer;
+	
+	
 	
 	return [NSString stringWithFormat:@"%@%@", text, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
@@ -1266,7 +1305,7 @@
 	
 	// Backspace / deletion handling for some special case scenarios
 	// Implementing some undoing weirdness, which works, kind-of.
-	
+	/*
 	if (!self.documentIsLoading && replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
 		
 		Line * affectedLine = [self getLineAt:affectedCharRange.location];
@@ -1309,6 +1348,7 @@
 			}
 		}
 	}
+	*/
 	
     //If something is being inserted, check whether it is a "(" or a "[[" and auto close it
     if (self.matchParentheses) {
@@ -2028,13 +2068,16 @@
 	
 	// Format according to style
 	// WIP: Replace with delegation
+	/*
 	if ((line.type == heading && [line.string characterAtIndex:0] != '.') ||
 		(line.type == transitionLine && [line.string characterAtIndex:0] != '>')) {
 		//Make uppercase, and then reapply cursor position, because they'd get lost otherwise
 		NSArray<NSValue*>* selectedRanges = self.textView.selectedRanges;
+		
 		[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
 		[self.textView setSelectedRanges:selectedRanges];
 	}
+	 */
 	
 	if (line.type == heading) {
 		// Format heading
@@ -2528,19 +2571,83 @@
 }
 
 - (void)headingChangedToActionAt:(Line*)line {
-	if (!NSThread.isMainThread) return;
+	// NOTE: Everything that this method does has been replaced by layout manager delegation
+	NSLog(@"NOTE: headingChangedToActionAt is deprecated. Remove it from parser.");
+	return;
 	
+	
+	/*
+	if (!NSThread.isMainThread) return;
+
 	// The parser has changed a presumed line element back into action/something else,
 	// but the Line element should still have the original string value intact.
 	
 	// The parser is way ahead of the textView here, so we need to take it into account with text ranges, as
 	// the last character has not been added into view yet. This signal has come right from parser level.
-	[self.textView.textStorage replaceCharactersInRange:NSMakeRange(line.position, line.string.length - 1) withString:[line.string substringToIndex:line.string.length - 1]];
+	
+	// If the change happened MID-LINE, we need to pull off some tricks to restore the original
+	// line object content, by replacing the head & tail part in the storage, before textView
+	// does the actual removal/addition
+		
+	if (self.selectedRange.location + self.selectedRange.length == line.position + line.string.length -1) {
+		[self.textView.textStorage replaceCharactersInRange:NSMakeRange(line.position, line.string.length - 1) withString:[line.string substringToIndex:line.string.length - 1]];
+	} else {
+		if (line.previousString == nil) return;
+		
+		NSRange selectedRange = self.textView.selectedRange;
+		
+		// We need to pull some tricks here. Probably
+		NSInteger diff = line.previousString.length - line.string.length;
+		
+		NSRange headRange;
+		NSRange tailRange;
+		
+
+		if (selectedRange.length < 1) {
+			// Change happened without a selected range
+			headRange = (NSRange){ 0, selectedRange.location - line.position - diff };
+			tailRange = (NSRange){ selectedRange.location + selectedRange.length - line.position - diff, line.position + line.length - selectedRange.location - selectedRange.length + diff };
+		} else {
+			// Change was made over multiple characters
+			// Head is until the beginning of the selection
+			headRange = (NSRange){ 0, self.selectedRange.location - line.position };
+			
+			// Tail calculation is a bit more complex
+			if (diff < 0) {
+				// Something was added
+				tailRange = (NSRange){ selectedRange.location - line.position, line.position + line.length - selectedRange.location };
+			} else {
+				// Something was removed
+				tailRange = (NSRange){ selectedRange.location - line.position, line.position + line.length - selectedRange.location };
+			}
+		}
+		
+		// Original line in storage
+		//NSRange lineRangeInStorage = (NSRange){ line.position, line.previousString.length };
+		
+		//NSLog(@"original line: %@", [_textView.textStorage.string substringWithRange:lineRangeInStorage]);
+		NSString *head = [line.string substringWithRange:headRange];
+		NSString *tail = [line.string substringWithRange:tailRange];
+		
+		NSRange headInStorage = (NSRange){ line.position, headRange.length };
+		NSRange tailInStorage = (NSRange){ line.position + line.previousString.length - tailRange.length, tailRange.length };
+		
+		// Replace head & tail with the original string
+		[_textView.textStorage replaceCharactersInRange:headInStorage withString:head];
+		[_textView.textStorage replaceCharactersInRange:tailInStorage withString:tail];
+		
+		[_textView setSelectedRange:selectedRange];
+	}
+	*/
 }
 
 - (void)actionChangedToHeadingAt:(Line*)line {
+	NSLog(@"NOTE: actionChangedToHeadingAt is deprecated. Remove it from parser.");
+	
+	/*
 	if (!NSThread.isMainThread) return;
 	if (_moving) return;
+	
 	
 	// The parser changed a line with some text already on it into a scene heading, for example by by typing int. at the start of a line.
 	NSRange range = NSMakeRange(line.position, line.string.length - 1);
@@ -2556,6 +2663,7 @@
 		[self.textView setSelectedRange:NSMakeRange(range.location, 0)];
 	}];
 	[self.undoManager endUndoGrouping];
+	*/
 }
 
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices {
@@ -2588,12 +2696,13 @@
 }
 
 - (bool)caretOnLine:(Line*)line {
-	if (self.textView.selectedRange.location >= line.position && self.textView.selectedRange.location <= line.position + [line.string length]) return YES;
+	if (self.textView.selectedRange.location >= line.position && self.textView.selectedRange.location <= line.position + line.string.length) return YES;
 	else return NO;
 }
 
 /*
- 
+
+ hei
  saanko jäädä yöksi, mun tarvii levätä
  ennen kuin se alkaa taas
  saanko jäädä yöksi, mun tarvii levätä
@@ -4206,6 +4315,14 @@ static NSString *revisionAttribute = @"Revision";
 	return [self getOutlineItems];
 }
 
+- (NSArray*)linesForScene:(OutlineScene*)scene {
+	return [self.parser linesForScene:scene];
+}
+
+- (LineType)lineTypeAt:(NSInteger)index {
+	return [self.parser lineTypeAt:index];
+}
+
 #pragma mark - Card view
 
 // I'm sorry, but this whole thing should be rewritten.
@@ -4525,8 +4642,9 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void) setupAnalysis {
-	_characterGenders = [self.documentSettings get:@"CharacterGenders"];
-	if (!_characterGenders) _characterGenders = [NSMutableDictionary dictionary];
+	NSDictionary *genders = [self.documentSettings get:@"CharacterGenders"];
+	if (!genders) _characterGenders = [NSMutableDictionary dictionary];
+	else _characterGenders = [NSMutableDictionary dictionaryWithDictionary:genders];
 }
 
 #pragma mark - Advanced Filtering
@@ -5131,6 +5249,8 @@ triangle walks
 }
 
 - (void)addTagToRange:(NSRange)range tag:(BeatTagItem*)tag {
+	// NOTE: Is this obsolete?
+	
 	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
 	
 	if (tag == NoTag) {

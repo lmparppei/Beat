@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatTagItem : NSObject
+@interface BeatTagItem : NSObject <NSCopying, NSCoding>
 
 @property (nonatomic) BeatTagType type;
 @property (nonatomic) NSString *name;

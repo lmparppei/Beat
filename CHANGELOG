@@ -1,9 +1,23 @@
 # Changelog
 
+# Beat 1.90.1
+
+* Fixed problems with undoing uppercase elements with layout manager delegation
+* ... and hence deprecated parser delegate methods 
+* Fixed bugs with saving genders
+* Fixed title bar bugs when finding or replacing text
+* Fixed a bug with the editor not becoming focused after dismissing find/replace
+* Slightly revised Screenplay Analysis UI
+
+
 ## Beat 1.90.0
 
 * Copy & paste revised text (and probably tags in the future, too)
 * Fixed visual bugs in sidebar + added slight animation
+* Fixed some sizing busg
+* Fixed scene heading input bugs
+* Fixed title bar bugs in card view and print preview
+* Minor optimizations
 
 
 ## Beat 1.89.9

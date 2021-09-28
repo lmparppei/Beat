@@ -33,4 +33,32 @@
 	return [BeatTagging keyFor:self.type];
 }
 
+#pragma mark - Copy & encode
+
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+	TagDefinition *newDef = [[self.class allocWithZone:zone] init];
+	newDef->_defId = [self.defId copyWithZone:zone];
+	newDef->_type = self.type;
+	newDef->_name = [self.name copyWithZone:zone];
+	
+	return newDef;
+}
+
+- (void)encodeWithCoder:(nonnull NSCoder *)coder {
+	[coder encodeObject:self.name forKey:@"name"];
+	[coder encodeObject:self.defId forKey:@"defId"];
+	[coder encodeInteger:self.type forKey:@"type"];
+}
+
+- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
+	self = [super init];
+	if (self) {
+		_type = [coder decodeIntegerForKey:@"type"];
+		_name = [coder decodeObjectForKey:@"name"];
+		_defId = [coder decodeObjectForKey:@"defId"];
+	}
+	return self;
+}
+
+
 @end

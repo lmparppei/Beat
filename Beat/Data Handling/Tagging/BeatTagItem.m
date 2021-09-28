@@ -63,9 +63,40 @@
 	return ranges;
 }
 
+#pragma mark - Debugging
+
 -(NSString *)description
 {
 	return [NSString stringWithFormat:@"Tag: %@ - %@ - ranges: %lu", [BeatTagging keyFor:self.type], self.name, [self ranges].count];
+}
+
+#pragma mark - Copy & coding
+
+- (nonnull id)copyWithZone:(nullable NSZone *)zone {
+	BeatTagItem *item = [[self.class allocWithZone:zone] init];
+	item->_type = self.type;
+	item->_name = [self.name copyWithZone:zone];
+	item->_indices = [self.indices copyWithZone:zone];
+	return item;
+}
+
+- (void)encodeWithCoder:(nonnull NSCoder *)coder {
+	[coder encodeInteger:self.type forKey:@"type"];
+	[coder encodeObject:self.name forKey:@"name"];
+	[coder encodeObject:self.indices forKey:@"indices"];
+}
+
+- (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
+	self = [super init];
+	
+	if (self) {
+		_type = [coder decodeIntegerForKey:@"type"];
+		_name = [coder decodeObjectForKey:@"name"];
+		// NOTE NOTE NOTE: This won't work when copy-pasting, so please dread lightly
+		_indices = [coder decodeObjectForKey:@"indices"];
+	}
+	
+	return self;
 }
 
 @end

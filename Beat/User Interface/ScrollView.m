@@ -149,9 +149,13 @@
 	
 	if (!findBarVisible) {
 		_outlineButtonY.constant = _buttonDefaultY;
+		[_editorDelegate hideTitleBar];
+		[self.window makeFirstResponder:self.documentView];
 	} else {
 		_outlineButtonY.constant += height;
+		[_editorDelegate showTitleBar];
 	}
+	
 }
 
 - (void) findBarViewDidChangeHeight {

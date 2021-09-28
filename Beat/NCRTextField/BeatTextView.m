@@ -136,11 +136,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @implementation BeatTextView
 
 - (void)awakeFromNib {
-	/*
-	BeatLayoutManager *layoutManager = [[BeatLayoutManager alloc] init];
-	[self.textContainer replaceLayoutManager:layoutManager];
-	*/
-	
+	self.layoutManager.delegate = self;
 	self.pageBreaks = [NSArray array];
 	
 	// Make a table view with 1 column and enclosing scroll view. It doesn't
@@ -783,6 +779,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
 	NSTableCellView *cellView = [tableView makeViewWithIdentifier:@"MyView" owner:self];
+	if (row >= self.matches.count) return cellView; // Return an empty view if something is wrong
+	
 	if (cellView == nil) {
 		cellView = [[NSTableCellView alloc] initWithFrame:NSZeroRect];
 		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
@@ -1366,9 +1364,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSPasteboard *pasteBoard = NSPasteboard.generalPasteboard;
 	[pasteBoard clearContents];
 	
+	// We create both a plaintext string & a custom pasteboard object
+	NSString *string = [self.string substringWithRange:self.selectedRange];
 	BeatPasteboardItem *item = [[BeatPasteboardItem alloc] initWithAttrString:[self.attributedString attributedSubstringFromRange:self.selectedRange]];
 	
-	NSArray *copiedObjects = @[item];
+	// Copy them on pasteboard
+	NSArray *copiedObjects = @[item, string];
 	[pasteBoard writeObjects:copiedObjects];
 }
 
@@ -1376,7 +1377,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return @[NSBundle.mainBundle.bundleIdentifier];
 }
 -(NSArray<NSPasteboardType> *)readablePasteboardTypes {
-	return [NSArray arrayWithObjects:NSPasteboardTypeString, NSPasteboardTypeRTF, NSBundle.mainBundle.bundleIdentifier, nil];
+	return [NSArray arrayWithObjects:NSBundle.mainBundle.bundleIdentifier, NSPasteboardTypeString, nil];
 }
 
 -(void)paste:(id)sender {
@@ -1384,10 +1385,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
 	NSDictionary *options = [NSDictionary dictionary];
 	
+	// See if we can read anything from the pasteboard
 	BOOL ok = [pasteboard canReadItemWithDataConformingToTypes:[self readablePasteboardTypes]];
 
 	if (ok) {
+		// We know for a fact that if the data originated from beat, the FIRST item will be
+		// the custom object we created when copying. So let's just pick the first one of the
+		// readable objects.
+		
 		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
+		
 		id obj = objectsToPaste[0];
 		
 		if ([obj isKindOfClass:NSString.class]) {
@@ -1399,9 +1406,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			BeatPasteboardItem *pastedItem = obj;
 			NSAttributedString *str = pastedItem.attrString;
 			
-			// Replace string content
+			// Replace string content with an undoable method
 			NSInteger pos = self.selectedRange.location;
-			[self.editorDelegate replaceCharactersInRange:self.selectedRange withString:str.string];
+			[self.editorDelegate replaceRange:self.selectedRange withString:str.string];
 			
 			// Enumerate custom attributes
 			[str enumerateAttributesInRange:(NSRange){0, str.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
@@ -1412,6 +1419,140 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	
 }
+
+#pragma mark - Layout Manager delegation
+
+-(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
+	
+	LineType type = [self.editorDelegate lineTypeAt:charIndexes[0]];
+	
+	// Do nothing
+	if (!(type == heading || type == transitionLine || type == character)) return 0;
+	
+	// Make uppercase
+	NSUInteger location = charIndexes[0];
+	NSUInteger length = glyphRange.length;
+	
+	CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
+	CFMutableStringRef uppercase = CFStringCreateMutable(NULL, CFStringGetLength(str));
+	CFStringAppend(uppercase, str);
+	CFStringUppercase(uppercase, NULL);
+	
+	CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), uppercase);
+	[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+	free(newGlyphs);
+	
+	return glyphRange.length;
+}
+
+CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
+{
+	// Get the string length.
+	CFIndex count = CFStringGetLength(string);
+ 
+	// Allocate our buffers for characters and glyphs.
+	UniChar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
+	CGGlyph *glyphs = (CGGlyph *)malloc(sizeof(CGGlyph) * count);
+ 
+	// Get the characters from the string.
+	CFStringGetCharacters(string, CFRangeMake(0, count), characters);
+ 
+	// Get the glyphs for the characters.
+	CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
+ 
+	// Free the buffers
+	free(characters);
+	return glyphs;
+}
+
+//
+//-(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
+//
+//	NSUInteger glyphCount = glyphRange.length;
+//	NSGlyphProperty *newGlyphProperties = NULL;
+//
+//	NSString *textStorageString = layoutManager.textStorage.string;
+//
+//	CFStringRef ref = (__bridge CFStringRef)([textStorageString substringWithRange:glyphRange]);
+//	GetGlyphsForCharacters((__bridge CTFontRef)(aFont), ref);
+//
+//
+//	for (NSUInteger i = 0; i < glyphCount; i++) {
+//		NSUInteger characterIndex = charIndexes[i];
+//
+//		if ([textStorageString characterAtIndex:characterIndex] != ' ') continue;
+//
+//		/*
+////		// If we've set the whitespace control character for this space already, we have nothing to do.
+////		if (props[arrayIndex] == NSGlyphPropertyControlCharacter) {
+////			continue;
+////		}
+//
+//		// Create new glyph properties, if necessary.
+//		if (!newGlyphProperties) {
+//			newGlyphProperties = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphCount);
+//			memcpy(newGlyphProperties, props, (sizeof(NSGlyphProperty) * glyphCount));
+//		}
+//
+//		// It's a space. Make it a whitespace control character.
+//		newGlyphProperties[arrayIndex] = NSGlyphPropertyControlCharacter;
+//		 */
+//	}
+//
+//	/*
+//	// If we don't have any custom glyph properties, return 0 to indicate to the layout manager that it should use the standard glyphs+properties.
+//	if (!newGlyphProperties) {
+//		bool something = YES;
+//		if (something) {
+//			// If the text does use word kerning we have to make sure we return the correct glyphCount, or the layout manager will just use the default properties and ignore our kerning.
+//			[layoutManager setGlyphs:glyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+//			free(newGlyphProperties);
+//			return glyphCount;
+//		} else {
+//			return 0;
+//		}
+//	}
+//
+//	// Otherwise, use our custom glyph properties.
+//	[layoutManager setGlyphs:glyphs properties:newGlyphProperties characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+//	free(newGlyphProperties);
+//	*/
+//
+//	return 0;
+//}
+//
+//void GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
+//{
+//	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
+//
+//	// Get the string length.
+//	CFIndex count = CFStringGetLength(string);
+//
+//	// Allocate our buffers for characters and glyphs.
+//	UniChar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
+//	CGGlyph *glyphs = (CGGlyph *)malloc(sizeof(CGGlyph) * count);
+//
+//	// Get the characters from the string.
+//	CFStringGetCharacters(string, CFRangeMake(0, count), characters);
+//
+//	// Get the glyphs for the characters.
+//	CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
+//
+//	// Do something with the glyphs here. Characters not mapped by this font will be zero.
+//	// ...
+//	for (int i = 0; i < count; i ++) {
+//		if (characters[i] != 0) {
+//
+//		}
+//	}
+//
+//	// Free the buffers
+//	free(characters);
+//	free(glyphs);
+//}
+//
+
+
 
 
 @end

@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 //- (bool)hasId:(NSString*)tagId;
 @end
 
-@interface TagDefinition : NSObject <TagDefinitionExports>
+@interface TagDefinition : NSObject <TagDefinitionExports, NSCopying, NSCoding>
 @property (nonatomic) BeatTagType type;
 @property (nonatomic) NSString *defId;
 @property (nonatomic) NSString *name;

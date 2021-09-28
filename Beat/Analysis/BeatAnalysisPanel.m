@@ -18,15 +18,13 @@
 
 @implementation BeatAnalysisPanel
 
-- (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatAnalysisDelegate>)delegate {
+- (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatEditorDelegate>)delegate {
 	self = [super initWithWindowNibName:@"BeatAnalysisPanel" owner:self];
 	
 	self.delegate = delegate;
 	
 	[parser createOutline];
-	self.analysis = [[FountainAnalysis alloc] init];
-	
-	[self.analysis setupScript:parser.lines scenes:parser.outline characterGenders:self.delegate.characterGenders];
+	self.analysis = [[FountainAnalysis alloc] initWithDelegate:self.delegate];
 	
 	return self;
 }
@@ -34,7 +32,7 @@
 - (void)windowDidLoad {
     [super windowDidLoad];
     
-	NSString *analysisPath = [[NSBundle mainBundle] pathForResource:@"analysis.html" ofType:@""];
+	NSString *analysisPath = [NSBundle.mainBundle pathForResource:@"analysis.html" ofType:@""];
 	NSString *content = [NSString stringWithContentsOfFile:analysisPath encoding:NSUTF8StringEncoding error:nil];
 	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
 	[self.analysisView loadHTMLString:content baseURL:nil];
