@@ -25,8 +25,33 @@
 @property NSTextField *inputField;
 @end
 @implementation BeatModalInput
-
-
+- (void)confirmBoxWithMessage:(NSString*)message text:(NSString*)infoText forWindow:(NSWindow*)window completion:(void (^)(bool result))completion {
+	[self confirmBoxWithMessage:message text:infoText forWindow:window completion:completion buttons:nil];
+}
+- (void)confirmBoxWithMessage:(NSString*)message text:(NSString*)infoText forWindow:(NSWindow*)window completion:(void (^)(bool result))completion buttons:(NSArray* _Nullable)buttons {
+	if (!_dialog) {
+		_dialog = [[NSAlert alloc] init];
+		if (buttons) {
+			for (NSString* button in buttons) {
+				[_dialog addButtonWithTitle:button];
+			}
+		} else {
+			[_dialog addButtonWithTitle:@"OK"];
+			[_dialog addButtonWithTitle:@"Cancel"];
+		}
+	}
+	
+	_dialog.messageText = message;
+	_dialog.informativeText = infoText;
+	
+	[_dialog beginSheetModalForWindow:window completionHandler:^(NSModalResponse returnCode) {
+		if (returnCode == NSModalResponseOK || returnCode == NSAlertFirstButtonReturn) {
+			completion(YES);
+		} else {
+			completion(NO);
+		}
+	}];
+}
 
 - (void)inputBoxWithMessage:(NSString*)message text:(NSString*)infoText placeholder:(NSString*)placeholder forWindow:(NSWindow*)window completion:(void (^)(NSString *result))completion {
 	

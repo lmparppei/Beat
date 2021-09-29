@@ -739,7 +739,12 @@
 	[indices addIndexes:[[NSIndexSet alloc] initWithIndexSet:self.escapeRanges]];
 	
 	// Scene number range
-	[indices addIndexesInRange:self.sceneNumberRange];
+	if (self.sceneNumberRange.length) {
+		[indices addIndexesInRange:self.sceneNumberRange];
+		// Also remove the surrounding #'s
+		[indices addIndex:self.sceneNumberRange.location - 1];
+		[indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length];
+	}
 	
 	// Stylization ranges
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {

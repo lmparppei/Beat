@@ -16,6 +16,9 @@
 @property (nonatomic) bool forceLightMode;
 @property (nonatomic) bool forceDarkMode;
 
+// Versioning menu
+@property (weak) IBOutlet NSMenu *versionMenu;
+
 // Plugin support
 @property (weak) IBOutlet NSMenu *pluginMenu;
 @property (weak) IBOutlet NSMenu *exportMenu;

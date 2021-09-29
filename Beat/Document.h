@@ -78,6 +78,9 @@ THE SOFTWARE.
 // Document settings
 @property (nonatomic) BeatDocumentSettings *documentSettings;
 
+// Versioning
+@property (nonatomic) NSURL *revertedTo;
+
 // Tagging
 @property (nonatomic) BeatTagging *tagging;
 

@@ -22,6 +22,8 @@
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
 #import "BeatNotifications.h"
+#import "BeatModalInput.h"
+#import "Document.h"
 
 #import "BeatTest.h"
 
@@ -537,6 +539,91 @@
 	[NSDocumentController.sharedDocumentController newDocument:nil];
 }
 
+#pragma mark - Menu delegation
+
+-(void)menuWillOpen:(NSMenu *)menu {
+	if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
+	else if (menu == _versionMenu) {
+		[self versionMenuItems];
+	}
+}
+
+#pragma mark - Version control
+
+- (void)versionMenuItems {
+	[_versionMenu removeAllItems];
+	
+	NSDocument *doc = NSDocumentController.sharedDocumentController.currentDocument;
+	NSURL *url = doc.fileURL;
+	if (!url) return;
+	
+	// Get available versions
+	NSArray *versions = [NSFileVersion otherVersionsOfItemAtURL:url];
+	
+	NSDateFormatter* df = [[NSDateFormatter alloc] init];
+	[df setDateStyle:NSDateFormatterShortStyle];
+	[df setTimeStyle:NSDateFormatterShortStyle];
+	
+	// Add revert to saved
+	NSMenuItem *toSaved = [[NSMenuItem alloc] initWithTitle:@"Saved" action:@selector(revertTo:) keyEquivalent:@""];
+	toSaved.tag = NSNotFound;
+	if (!doc.isDocumentEdited) toSaved.state = NSOnState;
+	
+	[_versionMenu addItem:toSaved];
+	[_versionMenu addItem:NSMenuItem.separatorItem];
+	
+	// Only allow 10
+	NSInteger count = 0;
+	
+	for (NSInteger i = versions.count - 1; i >= 0; i--) {
+		// Don't allow more than 10 versions
+		if (count > 10) break;
+		
+		NSFileVersion *version = versions[i];
+		NSString *modificationTime = [df stringFromDate:version.modificationDate];
+		
+		NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:modificationTime action:@selector(revertTo:) keyEquivalent:@""];
+		item.tag = i;
+		
+		if ([[(Document*)doc revertedTo] isEqualTo:version.URL]) item.state = NSOnState;
+		
+		[_versionMenu addItem:item];
+		
+		count++;
+	}
+	
+	[_versionMenu addItem:NSMenuItem.separatorItem];
+	[_versionMenu addItemWithTitle:@"Browse Versions..." action:@selector(browseVersions:) keyEquivalent:@""];
+}
+
+- (void)browseVersions:(id)sender {
+	[NSDocumentController.sharedDocumentController.currentDocument browseDocumentVersions:self];
+}
+
+- (void)revertTo:(id)sender {
+	BeatModalInput *input = BeatModalInput.alloc.init;
+	[input confirmBoxWithMessage:@"Revert File" text:@"Any unsaved changes will be lost when reverting to an earlier version." forWindow:NSDocumentController.sharedDocumentController.currentDocument.windowForSheet completion:^(bool result) {
+		if (!result) return;
+		else {
+			NSMenuItem *item = sender;
+			
+			NSError *error;
+			
+			if (item.tag == NSNotFound) {
+				// Revert to saved
+				[NSDocumentController.sharedDocumentController.currentDocument revertDocumentToSaved:nil];
+				return;
+			}
+			
+			NSArray *versions = [NSFileVersion otherVersionsOfItemAtURL:NSDocumentController.sharedDocumentController.currentDocument.fileURL];
+			NSFileVersion *version = versions[item.tag];
+			
+			[NSDocumentController.sharedDocumentController.currentDocument revertToContentsOfURL:version.URL ofType:NSPlainTextDocumentType error:&error];
+			if (error) NSLog(@"Error: %@", error);
+		}
+	} buttons:@[@"Revert", @"Cancel"]];
+}
+
 #pragma mark - Plugin support
 
 - (void)setupPlugins {
@@ -554,9 +641,6 @@
 	else if (menu == _importMenu) type = ImportPlugin;
 	
 	[_pluginManager pluginMenuItemsFor:menu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"] type:type];
-}
--(void)menuWillOpen:(NSMenu *)menu {
-	if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
 }
 - (void)openPluginFolder {
 	BeatPluginManager *plugins = [BeatPluginManager sharedManager];

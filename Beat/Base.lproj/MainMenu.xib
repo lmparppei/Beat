@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="18122" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19162" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="18122"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19162"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -104,17 +104,24 @@
                                     <action selector="saveDocumentAs:" target="-1" id="mDf-zr-I0C"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Revert to Saved" hidden="YES" id="KaW-ft-85H">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="revertDocumentToSaved:" target="-1" id="iJ3-Pv-kwq"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Autosave" id="eZ7-I2-Df6">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleAutosave:" target="-1" id="UJw-ny-khR"/>
                                 </connections>
+                            </menuItem>
+                            <menuItem title="Revert To..." id="66O-OW-2gf">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Revert To..." id="dbF-KQ-yEw">
+                                    <items>
+                                        <menuItem title="Item" id="dSo-T0-bVH">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="vEX-2F-hcj" id="XDb-Zr-vaK"/>
+                                    </connections>
+                                </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
                             <menuItem title="Lock Document" id="dTg-uk-VoW">
@@ -518,13 +525,6 @@
                                     <action selector="makeUnderlined:" target="-1" id="jB4-Tq-def"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="ccp-HV-yr1"/>
-                            <menuItem title="Dual Dialogue" keyEquivalent="2" id="tXd-FU-iE5">
-                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
-                                <connections>
-                                    <action selector="dualDialogue:" target="-1" id="LXU-zz-7Bt"/>
-                                </connections>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="Pfc-pX-Eb8"/>
                             <menuItem title="Force Element..." id="zQH-Oq-iw8">
                                 <string key="keyEquivalent" base64-UTF8="YES">
@@ -558,7 +558,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Ygd-Y8-VFo"/>
-                            <menuItem title="Omitted text" keyEquivalent="E" id="5Y3-LZ-qMb">
+                            <menuItem title="Omit" keyEquivalent="E" id="5Y3-LZ-qMb">
                                 <connections>
                                     <action selector="makeOmitted:" target="-1" id="uw4-3u-NKQ"/>
                                 </connections>
@@ -578,43 +578,57 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="jQJ-2O-va9"/>
-                            <menuItem title="Reformat Selected" keyEquivalent="r" id="OYT-mJ-6Jc">
+                            <menuItem title="Dual Dialogue" keyEquivalent="2" id="tXd-FU-iE5">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                <connections>
+                                    <action selector="dualDialogue:" target="-1" id="LXU-zz-7Bt"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="ccp-HV-yr1"/>
+                            <menuItem title="Reformat Selected" hidden="YES" keyEquivalent="r" id="OYT-mJ-6Jc">
                                 <connections>
                                     <action selector="reformatRange:" target="-1" id="QHM-Pf-WuS"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Reformat Everything" id="giJ-d7-DJr">
+                            <menuItem title="Reformat Everything" hidden="YES" id="giJ-d7-DJr">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="reformatEverything:" target="-1" id="6E8-Py-FLm"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="ffW-ny-yDK"/>
+                            <menuItem isSeparatorItem="YES" hidden="YES" id="ffW-ny-yDK"/>
                             <menuItem title="Start Scene Numbering From..." id="12m-8C-qlE">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showSceneNumberStart:" target="-1" id="MFl-PI-GdS"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Print Automatic Scene Numbers" state="on" hidden="YES" id="p37-Bz-gMZ">
+                            <menuItem title="Set Number For Current Scene..." id="3x7-V3-rMc">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="togglePrintSceneNumbers:" target="-1" id="8bJ-zj-vM7"/>
+                                    <action selector="forceSceneNumberForScene:" target="-1" id="sG2-Tx-7S8"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Lock Scene Numbers" id="neY-LE-02O">
+                            <menuItem title="Make Scene Non-Numbered" id="nRS-St-fYj">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="makeSceneNonNumbered:" target="-1" id="bSc-xi-jH1"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="9KI-Cy-Uax"/>
+                            <menuItem title="Lock All Scene Numbers" id="neY-LE-02O">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="lockSceneNumbers:" target="-1" id="2aS-fP-yJR"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Clear Scene Numbers" id="6uV-eM-FCI">
+                            <menuItem title="Clear Locked Scene Numbers" id="6uV-eM-FCI">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="unlockSceneNumbers:" target="-1" id="Iwa-ri-jSu"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="NmP-5j-KWS"/>
+                            <menuItem isSeparatorItem="YES" id="mN1-gt-Mb1"/>
                             <menuItem title="Match Parentheses" state="on" id="s7C-kV-oq3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -902,6 +916,7 @@ DQ
                 <outlet property="recentFiles" destination="2RT-wl-dQJ" id="2Y1-AI-GVM"/>
                 <outlet property="startModal" destination="Tq0-bd-4zX" id="EIH-WD-4kV"/>
                 <outlet property="versionField" destination="TYI-Wq-8Wy" id="uXG-1x-yVE"/>
+                <outlet property="versionMenu" destination="dbF-KQ-yEw" id="zp5-mG-MLs"/>
             </connections>
         </customObject>
         <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" toolbarStyle="compact" titleVisibility="hidden" id="Tq0-bd-4zX">
@@ -1057,11 +1072,6 @@ DQ
             </view>
             <point key="canvasLocation" x="714.5" y="360"/>
         </window>
-        <box verticalHuggingPriority="750" boxType="separator" id="UFu-51-Hih">
-            <rect key="frame" x="0.0" y="0.0" width="96" height="5"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <point key="canvasLocation" x="76" y="74"/>
-        </box>
         <button verticalHuggingPriority="750" id="bvh-bI-vIn" customClass="BeatRoundedButton">
             <rect key="frame" x="0.0" y="0.0" width="92" height="32"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1079,6 +1089,9 @@ DQ
             </connections>
             <point key="canvasLocation" x="523" y="72"/>
         </button>
+        <menuItem title="Item" id="6Wm-mJ-pNx">
+            <modifierMask key="keyEquivalentModifierMask"/>
+        </menuItem>
     </objects>
     <resources>
         <image name="B_256" width="256" height="256"/>

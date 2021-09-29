@@ -693,7 +693,7 @@ static NSDictionary* patterns;
 	//Correct type on this line
     LineType oldType = currentLine.type;
     bool oldOmitOut = currentLine.omitOut;
-	bool oldNoteTermination = currentLine.cancelsNoteBlock;
+	//bool oldNoteTermination = currentLine.cancelsNoteBlock;
 		
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
     
@@ -1930,11 +1930,9 @@ and incomprehensible system of recursion.
 		if (line.type == heading) {
 			if (line.sceneNumberRange.length > 0) {
 				line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
-				line.string = line.stripSceneNumber;
 			}
 			else if (!line.sceneNumber) {
 				line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-				line.string = line.stripSceneNumber;
 				sceneNumber += 1;
 			}
 		} else {

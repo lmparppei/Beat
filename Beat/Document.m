@@ -524,7 +524,6 @@
 		// Setup page size
 		// (We'll disable undo registration here, so the doc won't appear as edited on open)
 		[self.undoManager disableUndoRegistration];
-		printf("Begin print info set....");
 		NSPrintInfo *printInfo = [BeatPaperSizing setSize:[self.documentSettings getInt:@"Page Size"] printInfo:self.printInfo];
 		self.printInfo.paperSize = printInfo.paperSize;
 		self.printInfo.orientation = printInfo.orientation;
@@ -532,7 +531,6 @@
 		self.printInfo.topMargin = printInfo.topMargin;
 		self.printInfo.rightMargin = printInfo.rightMargin;
 		self.printInfo.bottomMargin = printInfo.bottomMargin;
-		printf("Done.\n");
 		
 		[self.undoManager enableUndoRegistration];
 		[self updateChangeCount:NSChangeCleared];
@@ -989,17 +987,18 @@
 		[content appendString:string];
 		if (line != _parser.lines.lastObject) [content appendString:@"\n"];
 	}
-	NSLog(@"content: %@", content);
 	
-	NSString *text = self.getText;
-	if (text == nil) text = _contentBuffer;
+	//NSString *text = self.getText;
+	//if (text == nil) text = _contentBuffer;
+	if (content == nil) [content setString:_contentBuffer];
 	
-	
-	
-	return [NSString stringWithFormat:@"%@%@", text, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
+	return [NSString stringWithFormat:@"%@%@", content, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
+	return [self readFromData:data ofType:typeName error:outError reverting:NO];
+}
+- (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting {
 	// Read settings
 	if (!_documentSettings) {
 		_documentSettings = [[BeatDocumentSettings alloc] init];
@@ -1010,7 +1009,9 @@
 	NSRange settingsRange = [_documentSettings readSettingsAndReturnRange:text];
 	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
     
-	[self setText:text];
+	if (!reverting)	[self setText:text];
+	else _contentBuffer = text; // When reverting, we only set the content buffer
+	
     return YES;
 }
 
@@ -1080,6 +1081,45 @@
 		[self.textView setSelectedRange:NSMakeRange(position, 0)];
 		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
 	}
+}
+
+#pragma mark - Reverting to versions
+
+-(void)revertDocumentToSaved:(id)sender {
+	if (!self.fileURL) return;
+	
+	NSData *data = [NSData dataWithContentsOfURL:self.fileURL];
+	
+	[self readFromData:data ofType:NSPlainTextDocumentType error:nil reverting:YES];
+	[self.textView setString:_contentBuffer];
+	[self.parser parseText:_contentBuffer];
+	[self formatAllLines];
+	
+	_revertedTo = self.fileURL;
+	
+	[self updateChangeCount:NSChangeCleared];
+	[self.undoManager removeAllActions];
+}
+
+-(BOOL)revertToContentsOfURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError {
+	// Don't allow wrong document contents
+	if (![typeName isEqualToString:@"com.kapitanFI.fountain"] && ![typeName isEqualToString:NSPlainTextDocumentType] && ![typeName isEqualToString:@"Fountain script"]) {
+		NSLog(@"Error: wrong file type");
+		return NO;
+	}
+	
+	NSData *data = [NSData dataWithContentsOfURL:url];
+	_revertedTo = url;
+	[self readFromData:data ofType:typeName error:nil reverting:YES];
+	[self.textView setString:_contentBuffer];
+	[self.parser parseText:_contentBuffer];
+	[self formatAllLines];
+	
+	[self updateChangeCount:NSChangeCleared];
+	[self updateChangeCount:NSChangeDone];
+	[self.undoManager removeAllActions];
+	
+	return YES;
 }
 
 #pragma mark - Print & Export
@@ -1634,7 +1674,8 @@
 	// Update any currently running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
 	
-	
+	// Save to buffer
+	_contentBuffer = self.textView.string;
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -2956,6 +2997,37 @@ static NSString *revisionAttribute = @"Revision";
 		NSRange cursorLocation = self.selectedRange;
         [self format:cursorLocation beginningSymbol:omitOpen endSymbol:omitClose];
     }
+}
+
+- (IBAction)forceSceneNumberForScene:(id)sender {
+	BeatModalInput *input = [[BeatModalInput alloc] init];
+	[input inputBoxWithMessage:@"Set Number For Scene"  text:@"Type in a custom scene number (can include letters)" placeholder:@"123A" forWindow:_thisWindow completion:^(NSString * _Nonnull result) {
+		if (result.length > 0) {
+			OutlineScene *scene = [self getCurrentScene];
+			if (scene) {
+				if (scene.line.sceneNumberRange.length) {
+					// Remove existing scene number
+					[self replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:result];
+				} else {
+					// Add empty scene number
+					[self addString:[NSString stringWithFormat:@" #%@#", result] atIndex:scene.line.position + scene.line.string.length];
+				}
+			}
+		}
+	}];
+}
+
+- (IBAction)makeSceneNonNumbered:(id)sender {
+	OutlineScene *scene = [self getCurrentScene];
+	if (!scene) return;
+	
+	if (scene.line.sceneNumberRange.length) {
+		// Remove existing scene number
+		[self replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:@" "];
+	} else {
+		// Add empty scene number
+		[self addString:@" # #" atIndex:scene.line.position + scene.line.string.length];
+	}
 }
 
 - (void)format:(NSRange)cursorLocation beginningSymbol:(NSString*)beginningSymbol endSymbol:(NSString*)endSymbol
@@ -5027,6 +5099,29 @@ triangle walks
 
 + (BOOL)autosavesDrafts {
 	return YES;
+}
+
++ (BOOL)preservesVersions {
+	return YES;
+}
+- (IBAction)versions:(id)sender {
+	NSArray *versions = [NSFileVersion unresolvedConflictVersionsOfItemAtURL:self.fileURL];
+	versions = [NSFileVersion otherVersionsOfItemAtURL:self.fileURL];
+	
+	NSDateFormatter* df = [[NSDateFormatter alloc] init];
+	[df setTimeStyle:NSDateFormatterShortStyle];
+	
+	NSInteger count = 0;
+	
+	for (NSInteger i = versions.count - 1; i >= 0; i++) {
+		// Don't allow more than 10 versions
+		if (count > 10) break;
+		
+		NSFileVersion *version = versions[i];
+		NSLog(@"Version: %@", [df stringFromDate:version.modificationDate]);
+		
+		count++;
+	}
 }
 
 - (IBAction)toggleAutosave:(id)sender {

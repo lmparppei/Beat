@@ -8,6 +8,7 @@
 * Fixed title bar bugs when finding or replacing text
 * Fixed a bug with the editor not becoming focused after dismissing find/replace
 * Slightly revised Screenplay Analysis UI
+* Added option to revert to older versions
 
 
 ## Beat 1.90.0
