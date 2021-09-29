@@ -2,9 +2,12 @@
 
 ## Fountain
 
-Beat document fully conforms to the Fountain markup specification: http://fountain.io/
+Beat document (almost) fully conforms to the Fountain markup specification: http://fountain.io/
+The only thing missing are notes spanning over multiple lines. That is being worked on.
 
 The files are saved using `.fountain` extension to maintain compatibility with other Fountain editors, such as Slugline, Logline and Highland. Basically everything should be readable in any other app, save for ranges marked for removal. They appear as plain text. 
+
+Beat parses lowercase scene headings as scenes (ie. *int. home*), but once the file is saved, they are converted to uppercase, except for forced headings. They are still rendered as uppercase in Beat.
 
 ## Document Settings
 

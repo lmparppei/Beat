@@ -556,7 +556,7 @@
 		B63CF61325B43EDD00EFA3A2 /* ThemeEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeEditor.h; sourceTree = "<group>"; };
 		B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeEditor.m; sourceTree = "<group>"; };
 		B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ThemeEditor.xib; sourceTree = "<group>"; };
-		B63DC837260A1EC60092B472 /* Beat File Format Specification copy.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "Beat File Format Specification copy.md"; sourceTree = "<group>"; };
+		B63DC837260A1EC60092B472 /* Beat File Format Specification.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "Beat File Format Specification.md"; sourceTree = "<group>"; };
 		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = "Beat/User Interface/Misc/MasterView.h"; sourceTree = SOURCE_ROOT; };
 		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = "Beat/User Interface/Misc/MasterView.m"; sourceTree = SOURCE_ROOT; };
 		B644DBDD260511E10091AEAB /* ITSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSwitch.m; sourceTree = "<group>"; };
@@ -871,7 +871,7 @@
 				B66682FE262369DD006473B9 /* TODO */,
 				B69A928B231915E900FE6A3E /* README.md */,
 				B69A92952319387B00FE6A3E /* CHANGELOG */,
-				B63DC837260A1EC60092B472 /* Beat File Format Specification copy.md */,
+				B63DC837260A1EC60092B472 /* Beat File Format Specification.md */,
 				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
 				B68B60C9260BA87000463AD8 /* Appstore */,
 				B6D062E3260CAC9500DEF6FB /* Adhoc */,
