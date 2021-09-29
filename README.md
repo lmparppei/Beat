@@ -3,7 +3,8 @@
 A simple and elegant screenwriting app for macOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **free and open source** under GPL.
 
 Read more: https://kapitan.fi/beat/  
-Download releases on App Store: https://apps.apple.com/fi/app/beat/id1549538329  
+
+Download releases on **App Store**: https://apps.apple.com/fi/app/beat/id1549538329  
 Public plugin repository: https://github.com/lmparppei/BeatPlugins/  
 
 This started as a personal project as I needed a simple, multi-window, lightweight screenwriting application for my own films. All other existing screenwriting apps were weird, expensive, cumbersome or even lacked some pretty important features - such as automatic and visible scene numbering while writing. At this point Beat pretty much outdoes most of the commercial Fountain editors, with certain limitations. To make up for those, Beat some **very** useful features, such as powerful outlining tools, scene coloring and filtering. 
@@ -47,7 +48,7 @@ Beat is under active development when I have the time -- or rather, desperately 
 
 ### Plugins
 
-You can download the latest public plugins and learn more about creating your own in the Beat Plugin repo: https://github.com/lmparppei/BeatPlugins
+You can download the latest public plugins (and learn more about creating your own) in the Beat Plugin repo: https://github.com/lmparppei/BeatPlugins
 
 ### iOS Version
 
@@ -55,19 +56,25 @@ Some day. A working prototype exists, but its development is on hiatus right now
 
 ### Will There Be a Windows Version? 
 
-Unfortunately no. Beat is written in Objective C and relies on native macOS APIs. There are no good Fountain editors on Windows, and somebody should really write one, but it won't be me.
+Unfortunately no. Beat is written in Objective C and relies on native macOS APIs. There are no good Fountain editors on Windows, and somebody should really write one!
 
 ### Can I help?
 
-Please do! The person behind this project is not a real programmer but an artist and a filmmaker, and it really shows in the code. When I started the project, my understanding of Objective-C was little to none, and it shows. Though my code has been getting better, there are still silly things going on. Help, donations and feedback are highly appreciated! 
+Please do! The person behind this project is not a real programmer but an artist and a filmmaker, and it really shows in the code. Coding assistance, bug reports, feature requests, ~~donations~~ and feedback are highly appreciated! 
 
-If you are here just to steal some code for your own Fountain editor, the best stuff can be found under Parsing, Fountain and User Interface folders in the project. Note that most of the code is under GPL, so you need to share your derivative work publicly. 
+(If you are here just to steal some code for your own Fountain editor, the best stuff can be found under Parsing, Fountain and User Interface folders in the project. Note that most of the code is under GPL, so you need to share your derivative work publicly.) 
+
+### Support Beat
+
+The creator of this app is a well-off person from a social-democratic welfare country, and with everything going on in the world, donations are no longer accepted. If you've ever wanted to support the project monetarily, it's preferrable to direct those funds to NGOs helping underprivileged people struggling with the COVID-19 pandemic in crisis zones. 
 
 ## Post-mortem
 
-**Beat is purely an anti-capitalist venture**. It will stay free and open source forever, even if there might be a "pro" version with some extra content to finance the development. I came to filmmaking from a DIY & underground art scene, and was shocked. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people, including me. A free screenwriting app might not be the thing that helps you to break through, but it's something to build upon, I guess. 
+**Beat is stricktly an anti-capitalist venture**. 
 
-The app has been cooked through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva and Charles Bukowski. All apologies.
+Beat will stay free and open source forever, even if there might be a "pro" version with some extra content to finance the development. I came to filmmaking from a DIY & underground art scene, which works on very different rules than the film industry. We desperately need new voices and new people to tell their own stories instead of all the established middle-class white people — including me. A free screenwriting app might not be the thing that helps you to break through, but it's a start. 
+
+The app has been cooked through trial and error, and might be rough around the edges, but it is -- above all -- a labour of love. At times, to vent my frustration, I've included quotes from my favourite poets as comments in the code. They include Forough Farrokhzad, Marina Tsvetayeva, Charles Bukowski and me myself. All apologies.
 
 Lauri-Matti Parppei  
 www.parppei.com  
