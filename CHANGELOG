@@ -1,6 +1,11 @@
 # Changelog
 
-# Beat 1.90.1
+## Beat 1.90.2
+
+* Fixed a character name collection bug
+
+
+## Beat 1.90.1
 
 * Fixed problems with undoing uppercase elements with layout manager delegation
 * ... and hence deprecated parser delegate methods 

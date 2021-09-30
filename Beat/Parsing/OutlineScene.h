@@ -50,6 +50,9 @@
 @property (nonatomic, readonly) NSUInteger sceneStart;  // backwards compatibility
 @property (nonatomic, readonly) NSUInteger sceneLength;  // backwards compatibility
 
+@property (nonatomic) NSUInteger omissionStartsAt;
+@property (nonatomic) NSUInteger omissionEndsAt;
+
 @property (nonatomic) NSInteger sectionDepth;
 @property (nonatomic) NSMutableArray * characters;
 

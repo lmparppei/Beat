@@ -699,13 +699,20 @@
 	
 	return contentRanges;
 }
-- (NSIndexSet*)formattingRanges
+
+- (NSIndexSet*)formattingRanges {
+	return [self formattingRangesWithGlobalRange:NO includeNotes:NO];
+}
+- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes
 {
-// This maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
+	// This maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
 	// It could be used anywhere, but for now, it's used to create XML formatting for FDX export.
 	
 	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
 	NSString* string = self.string;
+	NSInteger offset = 0;
+	
+	if (globalRange) offset = self.position;
 	
 	// Add force element ranges
 	if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
@@ -718,20 +725,20 @@
 			(self.type == section && c == '#') ||
 			(self.type == synopse && c == '#') ||
 			(self.type == transitionLine && c == '>')) {
-			[indices addIndex:0];
+			[indices addIndex:0+offset];
 		}
 	}
 	
 	// Catch dual dialogue force symbol
 	if (self.type == dualDialogueCharacter && self.string.length > 0) {
-		[indices addIndex:self.string.length - 1];
+		[indices addIndex:self.string.length - 1 +offset];
 	}
 	
 	// Add ranges for > and < (if needed)
 	if (self.type == centered && self.string.length >= 2) {
 		if ([self.string characterAtIndex:0] == '>' && [self.string characterAtIndex:self.string.length - 1] == '<') {
-			[indices addIndex:0];
-			[indices addIndex:self.string.length - 1];
+			[indices addIndex:0+offset];
+			[indices addIndex:self.string.length - 1+offset];
 		}
 	}
 	
@@ -742,26 +749,26 @@
 	if (self.sceneNumberRange.length) {
 		[indices addIndexesInRange:self.sceneNumberRange];
 		// Also remove the surrounding #'s
-		[indices addIndex:self.sceneNumberRange.location - 1];
-		[indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length];
+		[indices addIndex:self.sceneNumberRange.location - 1 +offset];
+		[indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length +offset];
 	}
 	
 	// Stylization ranges
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, BOLD_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length, BOLD_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location +offset, BOLD_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - BOLD_PATTERN.length +offset, BOLD_PATTERN.length)];
 	}];
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, ITALIC_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length, ITALIC_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location +offset, ITALIC_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - ITALIC_PATTERN.length +offset, ITALIC_PATTERN.length)];
 	}];
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, UNDERLINE_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length, UNDERLINE_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location +offset, UNDERLINE_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
 	}];
 	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length +offset)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length +offset, HIGHLIGHT_PATTERN.length)];
 	}];
 	
 	/*
@@ -773,7 +780,7 @@
 
 		
 	// Add note ranges
-	[indices addIndexes:self.noteRanges];
+	if (includeNotes) [indices addIndexes:self.noteRanges];
 	
 	return indices;
 }

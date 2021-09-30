@@ -1732,6 +1732,19 @@ and incomprehensible system of recursion.
 					} else {
 						scene.sceneNumber = @"";
 						line.sceneNumber = @"";
+						
+						// Find out where the omission starts
+						NSInteger idx = [self.lines indexOfObject:line];
+						for (NSInteger s = idx; s >= 0; s--) {
+							Line *prevLine = self.lines[s];
+							NSInteger omitLoc = [prevLine.string rangeOfString:@"/*"].location;
+							if (omitLoc != NSNotFound && prevLine.omitOut) {
+								scene.omissionStartsAt = prevLine.position + omitLoc;
+								break;
+							}
+						}
+						
+						NSLog(@"Omission starts at %lu", scene.omissionStartsAt);
 					}
 				}
 				

@@ -52,6 +52,9 @@ typedef enum : NSInteger {
 @property (readonly) NSUInteger fontSize;
 @property (readonly) bool typewriterMode;
 
+@property (nonatomic, readonly) Line *previouslySelectedLine;
+@property (nonatomic, readonly) Line *currentLine;
+
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (NSMutableArray*)getOutlineItems;
 - (Line*)getCurrentLine;
@@ -60,6 +63,7 @@ typedef enum : NSInteger {
 - (void)ensureLayout;
 - (void)showLockStatus;
 - (LineType)lineTypeAt:(NSInteger)index;
+- (Line*)lineAt:(NSInteger)index;
 @end
 
 @protocol BeatTaggingDelegate;
@@ -82,6 +86,7 @@ typedef enum : NSInteger {
 - (void)updatePageNumbers:(NSArray*)pageBreaks;
 
 -(void)redrawUI;
+-(void)updateMarkdownView;
 
 @property CGFloat textInsetY;
 @property (weak) id<BeatTextViewDelegate> editorDelegate;

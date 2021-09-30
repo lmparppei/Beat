@@ -1417,31 +1417,78 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			
 		}
 	}
-	
 }
 
 #pragma mark - Layout Manager delegation
 
+-(void)updateMarkdownView {
+	//if (NSGraphicsContext.currentContext) [self.layoutManager drawGlyphsForGlyphRange:(NSRange){0, self.string.length} atPoint:(NSPoint){0,self.textContainer.size.height}];
+	if (!self.string.length) return;
+
+	
+	/*
+	Line* line = self.editorDelegate.currentLine;
+	Line* prevLine = self.editorDelegate.previouslySelectedLine;
+	[self.layoutManager invalidateGlyphsForCharacterRange:line.range changeInLength:0 actualCharacterRange:nil];
+	[self.layoutManager invalidateGlyphsForCharacterRange:prevLine.range changeInLength:0 actualCharacterRange:nil];
+	
+	[self.layoutManager ensureGlyphsForCharacterRange:line.range];
+	[self.layoutManager ensureGlyphsForCharacterRange:prevLine.range];
+	 */
+}
+
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	
-	LineType type = [self.editorDelegate lineTypeAt:charIndexes[0]];
+	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
+	LineType type = line.type;
+	//NSIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
 	
-	// Do nothing
+	// Nothing to do
+	//if (!mdIndices.count && !(type == heading || type == transitionLine || type == character)) return 0;
 	if (!(type == heading || type == transitionLine || type == character)) return 0;
 	
-	// Make uppercase
+	// Get string reference
 	NSUInteger location = charIndexes[0];
 	NSUInteger length = glyphRange.length;
-	
 	CFStringRef str = (__bridge CFStringRef)[self.textStorage.string substringWithRange:(NSRange){ location, length }];
-	CFMutableStringRef uppercase = CFStringCreateMutable(NULL, CFStringGetLength(str));
-	CFStringAppend(uppercase, str);
-	CFStringUppercase(uppercase, NULL);
 	
-	CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), uppercase);
+	// Create a mutable copy
+	CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
+	CFStringAppend(modifiedStr, str);
+	
+	/*
+	// Modified props
+	NSGlyphProperty *modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
+	
+	// Hide markdown characters
+	for (NSInteger i = 0; i < glyphRange.length; i++) {
+		NSUInteger index = charIndexes[i];
+		NSGlyphProperty prop = props[i];
+		
+		if (mdIndices.count && !NSLocationInRange(self.selectedRange.location, line.range)) {
+			if ([mdIndices containsIndex:index]) {
+				//CFStringReplace(modifiedStr, CFRangeMake(i, 1), (__bridge CFStringRef)@" ");
+				prop |= NSGlyphPropertyNull;
+			}
+		}
+		
+		modifiedProps[i] = prop;
+	}
+	 */
+	
+	if (type == heading || type == transitionLine || type == character) {
+		// Make uppercase
+		CFStringUppercase(modifiedStr, NULL);
+	}
+	
+	// Create the new glyphs
+	CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
 	[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-	free(newGlyphs);
 	
+	// Release
+	free(newGlyphs);
+	//free(modifiedProps);
+		 
 	return glyphRange.length;
 }
 

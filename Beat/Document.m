@@ -264,6 +264,7 @@
 
 // Current line / scene
 @property (nonatomic) Line *currentLine;
+@property (nonatomic) Line *previouslySelectedLine;
 
 // Autocompletion
 @property (nonatomic) NSString *cachedText;
@@ -1687,6 +1688,7 @@
 	//if (self.typewriterMode) [self typewriterScroll];
 
 	//if (!NSLocationInRange(_textView.selectedRange.location, _currentLine.textRange)) self.currentLine = [self getCurrentLine];
+	self.previouslySelectedLine = self.currentLine;
 	self.currentLine = [self getCurrentLine];
 	
 	// Reset forced character input
@@ -1706,6 +1708,7 @@
 		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
 	});
 	
+	[_textView updateMarkdownView];
 }
 
 - (void)updateUIwithCurrentScene {
@@ -1880,6 +1883,7 @@
 			
 			// Character name, INCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
 			NSString *character = line.characterName;
+			if (character.length == 0) continue;
 			
 			// Add the character + suffix into dict and calculate number of appearances
 			if (charactersAndLines[character]) {
@@ -4389,6 +4393,10 @@ static NSString *revisionAttribute = @"Revision";
 
 - (NSArray*)linesForScene:(OutlineScene*)scene {
 	return [self.parser linesForScene:scene];
+}
+
+- (Line*)lineAt:(NSInteger)index {
+	return [self.parser lineAtPosition:index];
 }
 
 - (LineType)lineTypeAt:(NSInteger)index {

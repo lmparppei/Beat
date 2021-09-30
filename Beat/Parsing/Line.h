@@ -174,6 +174,7 @@ typedef enum : NSUInteger {
 // For FDX export
 - (NSAttributedString*)attributedStringForFDX;
 - (NSIndexSet*)formattingRanges;
+- (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes;
 - (NSIndexSet*)contentRanges;
 - (NSString*)characterName;
 
