@@ -41,6 +41,8 @@
 #define SHADOW_WIDTH 20
 #define SHADOW_OPACITY 0.0125
 
+#define HIDE_MARKDOWN YES
+
 // Maximum results for autocomplete
 #define MAX_RESULTS 10
 
@@ -1208,7 +1210,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 */
 
 
-- (NSTextField *) createLabel: (OutlineScene *) scene {
+- (NSTextField *)createLabel: (OutlineScene *) scene {
 	NSTextField * label;
 	label = [[NSTextField alloc] init];
 	
@@ -1422,30 +1424,53 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Layout Manager delegation
 
 -(void)updateMarkdownView {
-	//if (NSGraphicsContext.currentContext) [self.layoutManager drawGlyphsForGlyphRange:(NSRange){0, self.string.length} atPoint:(NSPoint){0,self.textContainer.size.height}];
 	if (!self.string.length) return;
-
 	
-	/*
+	self.layoutManager.allowsNonContiguousLayout = NO;
+	
 	Line* line = self.editorDelegate.currentLine;
 	Line* prevLine = self.editorDelegate.previouslySelectedLine;
+	
 	[self.layoutManager invalidateGlyphsForCharacterRange:line.range changeInLength:0 actualCharacterRange:nil];
 	[self.layoutManager invalidateGlyphsForCharacterRange:prevLine.range changeInLength:0 actualCharacterRange:nil];
+	[self.layoutManager invalidateLayoutForCharacterRange:line.range actualCharacterRange:nil];
 	
-	[self.layoutManager ensureGlyphsForCharacterRange:line.range];
-	[self.layoutManager ensureGlyphsForCharacterRange:prevLine.range];
+//	[self.layoutManager ensureGlyphsForCharacterRange:line.range];
+//	[self.layoutManager ensureGlyphsForCharacterRange:prevLine.range];
+	
+	if (NSGraphicsContext.currentContext) {
+		[self.layoutManager drawGlyphsForGlyphRange:line.range atPoint:self.frame.origin];
+		[self.layoutManager drawGlyphsForGlyphRange:prevLine.range atPoint:self.frame.origin];
+	}
+	
+	[self updateInsertionPointStateAndRestartTimer:NO];
+	
+	
+
+	/*
+	NSIndexSet *currentMdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
+	NSIndexSet *prevMdIndices = [prevLine formattingRangesWithGlobalRange:YES includeNotes:NO];
+	
+	[currentMdIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		[self.layoutManager setNotShownAttribute:NO forGlyphAtIndex:idx];
+	}];
+	
+	[prevMdIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		[self.layoutManager setNotShownAttribute:YES forGlyphAtIndex:idx];
+	}];
 	 */
+
 }
+
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	
 	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
 	LineType type = line.type;
-	//NSIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
+	NSIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
 	
 	// Nothing to do
-	//if (!mdIndices.count && !(type == heading || type == transitionLine || type == character)) return 0;
-	if (!(type == heading || type == transitionLine || type == character)) return 0;
+	if (!mdIndices.count && !(type == heading || type == transitionLine || type == character)) return 0;
 	
 	// Get string reference
 	NSUInteger location = charIndexes[0];
@@ -1456,39 +1481,43 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CFMutableStringRef modifiedStr = CFStringCreateMutable(NULL, CFStringGetLength(str));
 	CFStringAppend(modifiedStr, str);
 	
-	/*
-	// Modified props
-	NSGlyphProperty *modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
-	
-	// Hide markdown characters
-	for (NSInteger i = 0; i < glyphRange.length; i++) {
-		NSUInteger index = charIndexes[i];
-		NSGlyphProperty prop = props[i];
-		
-		if (mdIndices.count && !NSLocationInRange(self.selectedRange.location, line.range)) {
-			if ([mdIndices containsIndex:index]) {
-				//CFStringReplace(modifiedStr, CFRangeMake(i, 1), (__bridge CFStringRef)@" ");
-				prop |= NSGlyphPropertyNull;
-			}
-		}
-		
-		modifiedProps[i] = prop;
-	}
-	 */
-	
+	// If it's a heading or transition, render it uppercase
 	if (type == heading || type == transitionLine || type == character) {
-		// Make uppercase
 		CFStringUppercase(modifiedStr, NULL);
 	}
 	
-	// Create the new glyphs
-	CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
-	[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+	// Modified properties
+	NSGlyphProperty *modifiedProps;
 	
-	// Release
-	free(newGlyphs);
-	//free(modifiedProps);
-		 
+	bool test = YES;
+	if (test) {
+		modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
+		
+		// Hide markdown characters
+		for (NSInteger i = 0; i < glyphRange.length; i++) {
+			NSUInteger index = charIndexes[i];
+			NSGlyphProperty prop = props[i];
+			
+			if (mdIndices.count && !NSLocationInRange(self.selectedRange.location, line.range)) {
+				// Make it a null glyph if it's NOT on the current line
+				if ([mdIndices containsIndex:index]) prop |= NSGlyphPropertyNull;
+			}
+			
+			modifiedProps[i] = prop;
+		}
+		
+		// Create the new glyphs
+		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+		[self.layoutManager setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+		free(newGlyphs);
+		free(modifiedProps);
+	} else {
+		// Create the new glyphs
+		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+		free(newGlyphs);
+	}
+	
 	return glyphRange.length;
 }
 

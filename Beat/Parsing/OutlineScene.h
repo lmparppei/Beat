@@ -28,6 +28,9 @@
 
 @property (nonatomic, readonly) bool omitted;
 @property (nonatomic, readonly) bool omited; // Legacy compatibility
+@property (nonatomic, readonly) NSUInteger omissionStartsAt;
+@property (nonatomic, readonly) NSUInteger omissionEndsAt;
+
 @property (nonatomic, readonly) NSMutableArray * characters;
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;

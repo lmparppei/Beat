@@ -1744,7 +1744,15 @@ and incomprehensible system of recursion.
 							}
 						}
 						
-						NSLog(@"Omission starts at %lu", scene.omissionStartsAt);
+						for (NSInteger s = idx + 1; s < self.lines.count; s++) {
+							Line *nextLine = self.lines[s];
+							NSInteger omitEndLoc = [nextLine.string rangeOfString:@"*/"].location;
+							
+							if (omitEndLoc != NSNotFound && nextLine.omitIn) {
+								scene.omissionEndsAt = nextLine.position + omitEndLoc;
+								break;
+							}
+						}
 					}
 				}
 				
