@@ -284,7 +284,7 @@ A catastrophic version with multiple changes to Plugin API, exporting and stuff.
 - Fixed quirks with scene heading editing
 - Timeline View no longer scrolls randomly if the scene is already in view
 - Caret position is saved per document
-- Page numbering in edit mode (View → Show Page Numbers)
+- Page numbering in edit mode (View → Show Page Numbers)
 
 
 ## Beat 1.1 r6
@@ -318,11 +318,14 @@ The only difference between free and paid versions is the extra content: manual 
 ## Beat 1.1 r4
 
 Bug fixes:
+
 - Fixed a bug with filtered outline not showing the currently edited scene
 - Fixed bug with Fountain QuickLook
 - Fixed bugs with the Title Page Editor
 - Fixed a bug with pointers on the editor buttons (has been there since first version) 
 - Fixed bugs with margin sizes in full screen mode
+
+New stuff:
 
 - Simplifying outline structure back to how it was
 - UI and usability tweaks
@@ -418,7 +421,7 @@ Bug fixes:
 
 - Scenes can be reorganized in outline view
 - Character cues & non-character related UPPERCASE strings now behave more sensibly in edit mode
-- New -About- window
+- New *About* window
 
 
 ## 1.1.0 beta
@@ -435,7 +438,7 @@ Bug fixes:
 
 ## 1.0.9d
 
-- Fixed a stupid and silly bug which caused -every- screenplay get reformatted again, when another document was opened
+- Fixed a stupid and silly bug which caused *every* screenplay get reformatted again, when another document was opened
 
 
 ## 1.0.9c
