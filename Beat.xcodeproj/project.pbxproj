@@ -657,7 +657,7 @@
 		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = "Beat/User Interface/ScrollView.h"; sourceTree = SOURCE_ROOT; };
 		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = "Beat/User Interface/ScrollView.m"; sourceTree = SOURCE_ROOT; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		B69A92952319387B00FE6A3E /* CHANGELOG */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; fileEncoding = 4; path = CHANGELOG; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
+		B69A92952319387B00FE6A3E /* CHANGELOG.md */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; fileEncoding = 4; path = CHANGELOG.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
 		B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FountainAnalysis.h; sourceTree = "<group>"; };
 		B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FountainAnalysis.m; sourceTree = "<group>"; };
@@ -875,7 +875,7 @@
 			children = (
 				B66682FE262369DD006473B9 /* TODO */,
 				B69A928B231915E900FE6A3E /* README.md */,
-				B69A92952319387B00FE6A3E /* CHANGELOG */,
+				B69A92952319387B00FE6A3E /* CHANGELOG.md */,
 				B63DC837260A1EC60092B472 /* Beat File Format Specification.md */,
 				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
 				B68B60C9260BA87000463AD8 /* Appstore */,
