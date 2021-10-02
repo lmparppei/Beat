@@ -24,6 +24,7 @@
 #import "BeatNotifications.h"
 #import "BeatModalInput.h"
 #import "Document.h"
+#import "BeatPreferencesPanel.h"
 
 #import "BeatTest.h"
 
@@ -44,6 +45,7 @@
 @property (weak) IBOutlet NSTextField* versionField;
 
 @property (nonatomic) BeatBrowserView *browser;
+@property (nonatomic) BeatPreferencesPanel *preferencesPanel;
 @property (nonatomic) BeatAboutScreen *about;
 @property (nonatomic) BeatDownloadManager *downloadManager;
 @property (nonatomic) BeatEpisodePrinter *episodePrinter;
@@ -479,6 +481,14 @@
 		_about = [[BeatAboutScreen alloc] init];
 	}
 	[_about show];
+}
+
+- (IBAction)openPreferences:(id)sender {
+	if (!_preferencesPanel) {
+		_preferencesPanel = [[BeatPreferencesPanel alloc] init];
+	}
+	[NSApp runModalForWindow:_preferencesPanel.window];
+	_preferencesPanel = nil;
 }
 
 #pragma mark - File Import

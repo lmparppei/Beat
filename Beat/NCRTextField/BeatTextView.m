@@ -1424,44 +1424,31 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Layout Manager delegation
 
 -(void)updateMarkdownView {
+	if (!_editorDelegate.hideFountainMarkup) return;
 	if (!self.string.length) return;
 	
-	self.layoutManager.allowsNonContiguousLayout = NO;
+	//self.layoutManager.allowsNonContiguousLayout = NO;
 	
 	Line* line = self.editorDelegate.currentLine;
 	Line* prevLine = self.editorDelegate.previouslySelectedLine;
 	
 	[self.layoutManager invalidateGlyphsForCharacterRange:line.range changeInLength:0 actualCharacterRange:nil];
 	[self.layoutManager invalidateGlyphsForCharacterRange:prevLine.range changeInLength:0 actualCharacterRange:nil];
+	[self.layoutManager invalidateLayoutForCharacterRange:prevLine.range actualCharacterRange:nil];
 	[self.layoutManager invalidateLayoutForCharacterRange:line.range actualCharacterRange:nil];
-	
-//	[self.layoutManager ensureGlyphsForCharacterRange:line.range];
-//	[self.layoutManager ensureGlyphsForCharacterRange:prevLine.range];
-	
+		
 	if (NSGraphicsContext.currentContext) {
-		[self.layoutManager drawGlyphsForGlyphRange:line.range atPoint:self.frame.origin];
-		[self.layoutManager drawGlyphsForGlyphRange:prevLine.range atPoint:self.frame.origin];
+		[self.layoutManager drawGlyphsForGlyphRange:line.textRange atPoint:self.frame.origin];
+		[self.layoutManager drawGlyphsForGlyphRange:prevLine.textRange atPoint:self.frame.origin];
 	}
 	
 	[self updateInsertionPointStateAndRestartTimer:NO];
-	
-	
-
-	/*
-	NSIndexSet *currentMdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
-	NSIndexSet *prevMdIndices = [prevLine formattingRangesWithGlobalRange:YES includeNotes:NO];
-	
-	[currentMdIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-		[self.layoutManager setNotShownAttribute:NO forGlyphAtIndex:idx];
-	}];
-	
-	[prevMdIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-		[self.layoutManager setNotShownAttribute:YES forGlyphAtIndex:idx];
-	}];
-	 */
-
 }
 
+-(void)toggleHideFountainMarkup {
+	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
+	[self updateMarkdownView];
+}
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	
@@ -1489,8 +1476,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Modified properties
 	NSGlyphProperty *modifiedProps;
 	
-	bool test = YES;
-	if (test) {
+	if (_editorDelegate.hideFountainMarkup) {
 		modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
 		
 		// Hide markdown characters

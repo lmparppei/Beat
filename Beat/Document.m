@@ -113,6 +113,8 @@
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
 
+#import "BeatUserDefaults.h"
+
 @interface Document ()
 
 // Window
@@ -166,6 +168,7 @@
 @property (nonatomic) Line* characterInputForLine;
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) bool typewriterMode;
+@property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) CGFloat textInsetY;
 @property (nonatomic) NSMutableArray *recentCharacters;
 @property (nonatomic) NSRange lastChangedRange;
@@ -234,6 +237,7 @@
 @property (strong, nonatomic) NSString *contentBuffer; //Keeps the text until the text view is initialized
 
 // Fonts
+@property (nonatomic) bool useSansSerif;
 @property (nonatomic) NSUInteger fontSize;
 @property (strong, nonatomic) NSFont *sectionFont;
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
@@ -339,6 +343,7 @@
 #define AUTOMATIC_LINEBREAKS_KEY @"Automatic Line Breaks"
 #define TYPERWITER_KEY @"Typewriter Mode"
 #define FONT_STYLE_KEY @"Sans Serif"
+#define HIDE_FOUNTAIN_MARKUP_KEY @"Hide Fountain Markup"
 
 // DOCUMENT LAYOUT SETTINGS
 // The 0.?? values represent percentages of view width
@@ -459,10 +464,8 @@
 	[self setupMenuItems];
 	
 	// Load font set
-	bool sansSerif = [NSUserDefaults.standardUserDefaults boolForKey:FONT_STYLE_KEY];
-	if (sansSerif) [self loadSansSerifFonts];
+	if (self.useSansSerif) [self loadSansSerifFonts];
 	else [self loadSerifFonts];
-	
 	
 	// Setup views
 	[self setupTextView];
@@ -546,43 +549,13 @@
 }
 
 - (void)readUserSettings {
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:MATCH_PARENTHESES_KEY]) {
-		self.matchParentheses = YES;
-	} else {
-		self.matchParentheses = [[NSUserDefaults standardUserDefaults] boolForKey:MATCH_PARENTHESES_KEY];
-	}
-
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:AUTOMATIC_LINEBREAKS_KEY]) {
-		self.autoLineBreaks = YES;
-	} else {
-		self.autoLineBreaks = [[NSUserDefaults standardUserDefaults] boolForKey:AUTOMATIC_LINEBREAKS_KEY];
-	}
+	BeatUserDefaults *defaults = BeatUserDefaults.sharedDefaults;
+	[defaults readUserDefaultsFor:self];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:TYPERWITER_KEY]) {
-		self.typewriterMode = NO;
-	} else {
-		self.typewriterMode = [[NSUserDefaults standardUserDefaults] boolForKey:TYPERWITER_KEY];
-	}
+	// Do some additional setup if needed
+	self.printSceneNumbers = self.showSceneNumberLabels;
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_PAGENUMBERS_KEY]) {
-		self.showPageNumbers = YES;
-	} else {
-		self.showPageNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_PAGENUMBERS_KEY];
-	}
-
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:PRINT_SCENE_NUMBERS_KEY]) {
-		self.printSceneNumbers = YES;
-	} else {
-		self.printSceneNumbers = [[NSUserDefaults standardUserDefaults] boolForKey:PRINT_SCENE_NUMBERS_KEY];
-	}
-
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:SHOW_SCENE_LABELS_KEY]) {
-		self.showSceneNumberLabels = YES;
-		self.printSceneNumbers = YES;
-	} else {
-		self.showSceneNumberLabels = [[NSUserDefaults standardUserDefaults] boolForKey:SHOW_SCENE_LABELS_KEY];
-		self.printSceneNumbers = self.showSceneNumberLabels;
-	}
+	return;
 }
 
 - (void)setupWindow {
@@ -1582,7 +1555,7 @@
 
 - (IBAction)toggleAutoLineBreaks:(id)sender {
 	self.autoLineBreaks = !self.autoLineBreaks;
-	[[NSUserDefaults standardUserDefaults] setBool:self.autoLineBreaks forKey:AUTOMATIC_LINEBREAKS_KEY];
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
 - (Line*)getCurrentLine {
@@ -2773,7 +2746,8 @@
 }
 - (IBAction)selectSerif:(id)sender {
 	NSMenuItem* item = sender;
-	if (item.state != NSOnState) [NSUserDefaults.standardUserDefaults setBool:NO forKey:FONT_STYLE_KEY];
+	if (item.state != NSOnState) self.useSansSerif = NO;
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc loadSerifFonts];
@@ -2782,7 +2756,8 @@
 }
 - (IBAction)selectSansSerif:(id)sender {
 	NSMenuItem* item = sender;
-	if (item.state != NSOnState) [NSUserDefaults.standardUserDefaults setBool:YES forKey:FONT_STYLE_KEY];
+	if (item.state != NSOnState) self.useSansSerif = YES;
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc loadSansSerifFonts];
@@ -3528,6 +3503,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem newItem:@"Autosave" setting:@"autosave" target:self],
 		[ValidationItem newItem:@"Revision Mode" setting:@"trackChanges" target:self],
 		[ValidationItem newItem:@"Lock Document" setting:@"Locked" target:self.documentSettings],
+		[ValidationItem newItem:@"Hide Fountain Markup" setting:@"hideFountainMarkup" target:self],
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -3596,12 +3572,12 @@ static NSString *revisionAttribute = @"Revision";
 		else menuItem.state = NSOffState;
 		
 	} else if ([menuItem.title isEqualToString:@"Sans Serif"]) {
-		bool sansSerif = [NSUserDefaults.standardUserDefaults boolForKey:FONT_STYLE_KEY];
+		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:@"useSansSerif"];
 		if (sansSerif) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 		
 	} else if ([menuItem.title isEqualToString:@"Serif"]) {
-		bool sansSerif = [NSUserDefaults.standardUserDefaults boolForKey:FONT_STYLE_KEY];
+		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:@"useSansSerif"];
 		if (!sansSerif) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 		
@@ -3676,12 +3652,13 @@ static NSString *revisionAttribute = @"Revision";
     for (Document* doc in openDocuments) {
         doc.matchParentheses = !doc.matchParentheses;
     }
-    [[NSUserDefaults standardUserDefaults] setBool:self.matchParentheses forKey:MATCH_PARENTHESES_KEY];
+	
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
 - (IBAction)togglePageNumbers:(id)sender {
 	self.showPageNumbers = !self.showPageNumbers;
-	[[NSUserDefaults standardUserDefaults] setBool:self.showPageNumbers forKey:SHOW_PAGENUMBERS_KEY];
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	if (self.showPageNumbers) [self paginateAt:(NSRange){ 0,0 } sync:YES];
 	else {
@@ -3693,7 +3670,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 - (void)setPrintSceneNumbers:(bool)value {
 	_printSceneNumbers = value;
-	[[NSUserDefaults standardUserDefaults] setBool:self.printSceneNumbers forKey:PRINT_SCENE_NUMBERS_KEY];
+	[BeatUserDefaults.sharedDefaults saveBool:value forKey:@"printSceneNumbers"];
 }
 - (IBAction)togglePrintSceneNumbers:(id)sender
 {
@@ -3701,7 +3678,7 @@ static NSString *revisionAttribute = @"Revision";
 	for (Document* doc in openDocuments) {
 		doc.printSceneNumbers = !doc.printSceneNumbers;
 	}
-	[[NSUserDefaults standardUserDefaults] setBool:self.printSceneNumbers forKey:PRINT_SCENE_NUMBERS_KEY];
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 - (void)setRevisedPageColor:(NSString*)color {
 	[_documentSettings setString:DocSettingRevisedPageColor as:color];
@@ -3814,11 +3791,20 @@ static NSString *revisionAttribute = @"Revision";
 // Typewriter mode
 - (IBAction)toggleTypewriterMode:(id)sender {
 	self.typewriterMode = !self.typewriterMode;
-	[[NSUserDefaults standardUserDefaults] setBool:self.typewriterMode forKey:TYPERWITER_KEY];
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	[self updateLayout];
 }
 
+#pragma mark - Hiding markup
+
+- (IBAction)toggleHideFountainMarkup:(id)sender {
+	self.hideFountainMarkup = !self.hideFountainMarkup;
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+	
+	[self.textView toggleHideFountainMarkup];
+	[self updateLayout];
+}
 
 #pragma mark - Preview
 
@@ -4617,8 +4603,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)toggleSceneLabels: (id) sender {
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
-	
-	[[NSUserDefaults standardUserDefaults] setBool:self.showSceneNumberLabels forKey:SHOW_SCENE_LABELS_KEY];
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	if (self.showSceneNumberLabels) [self ensureLayout];
 	else [self.textView deleteSceneNumberLabels];
@@ -5133,13 +5118,8 @@ triangle walks
 }
 
 - (IBAction)toggleAutosave:(id)sender {
-	if (_autosave) {
-		_autosave = NO;
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"Autosave"];
-	} else {
-		_autosave = YES;
-		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"Autosave"];
-	}
+	self.autosave = !self.autosave;
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
 // Custom autosave in place
@@ -5179,14 +5159,6 @@ triangle walks
 
 - (void)initAutosave {
  	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
-	
-	// Set default if not set
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"Autosave"]) {
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"Autosave"];
-	}
-	
-	NSString *autosaving = [[NSUserDefaults standardUserDefaults] objectForKey:@"Autosave"];
-	if ([autosaving isEqualToString:@"YES"]) _autosave = YES; else _autosave = NO;
 }
 
 - (void)saveDocumentAs:(id)sender {

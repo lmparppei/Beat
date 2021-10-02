@@ -51,6 +51,7 @@ typedef enum : NSInteger {
 @property (readonly) bool contentLocked;
 @property (readonly) NSUInteger fontSize;
 @property (readonly) bool typewriterMode;
+@property (readonly) bool hideFountainMarkup;
 
 @property (nonatomic, readonly) Line *previouslySelectedLine;
 @property (nonatomic, readonly) Line *currentLine;
@@ -87,6 +88,7 @@ typedef enum : NSInteger {
 
 -(void)redrawUI;
 -(void)updateMarkdownView;
+-(void)toggleHideFountainMarkup;
 
 @property CGFloat textInsetY;
 @property (weak) id<BeatTextViewDelegate> editorDelegate;

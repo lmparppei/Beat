@@ -26,6 +26,11 @@
                                     <action selector="showAboutScreen:" target="vEX-2F-hcj" id="GZO-Bz-bRJ"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Preferences" keyEquivalent="," id="B4z-XP-1B0">
+                                <connections>
+                                    <action selector="openPreferences:" target="vEX-2F-hcj" id="E89-rn-6OD"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Check for Updates" id="34f-vH-vWb">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                             </menuItem>
@@ -682,6 +687,13 @@ DQ
                                     <action selector="togglePageNumbers:" target="-1" id="gdh-dA-GH1"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="5k0-hN-7vj"/>
+                            <menuItem title="Hide Fountain Markup" id="ayj-TQ-Go1">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleHideFountainMarkup:" target="-1" id="x4v-W6-YXw"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Typewriter Mode" id="Lej-vD-RFS">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -966,7 +978,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="plain" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>

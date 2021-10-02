@@ -701,7 +701,7 @@
 }
 
 - (NSIndexSet*)formattingRanges {
-	return [self formattingRangesWithGlobalRange:NO includeNotes:NO];
+	return [self formattingRangesWithGlobalRange:NO includeNotes:YES];
 }
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes
 {
