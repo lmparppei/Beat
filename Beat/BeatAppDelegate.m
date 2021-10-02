@@ -109,9 +109,7 @@
 	
 	// Show/hide pro content
 	// NOTE: This was an old concept, but still remains here in the code for some reason.
-	if (_proMode) {
-		[self.menuManual setHidden:NO];
-	}
+	// if (_proMode) { [self.menuManual setHidden:NO]; }
 	
 	// Show welcome screen
 	[self.startModal becomeKeyWindow];

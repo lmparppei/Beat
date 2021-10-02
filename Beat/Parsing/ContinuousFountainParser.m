@@ -675,6 +675,56 @@ static NSDictionary* patterns;
 	return indicesToDo;
 }
 
+- (NSIndexSet*)terminateNoteBlockAt:(Line*)line {
+	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
+	
+	NSInteger idx = [self.lines indexOfObject:line];
+	if (idx == NSNotFound) return changedIndices;
+	
+	[line.noteRanges addIndexes:line.noteInIndices];
+	
+	for (NSInteger i = idx-1; i >= 0; i--) {
+		Line *l = self.lines[i];
+		
+		if ([l.string rangeOfString:@"[["].location != NSNotFound) {
+			[l.noteRanges addIndexes:l.noteOutIndices];
+			[changedIndices addIndex:i];
+			break;
+		} else {
+			[l.noteRanges addIndexesInRange:(NSRange){ 0, l.string.length }];
+			[changedIndices addIndex:i];
+		}
+	}
+	
+	[_changedIndices addIndexes:changedIndices];
+	
+	return changedIndices;
+}
+- (NSIndexSet*)cancelNoteBlockAt:(Line*)line {
+	NSLog(@"canceling at %@", line);
+	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
+	
+	NSInteger idx = [self.lines indexOfObject:line];
+	if (idx == NSNotFound) return changedIndices;
+	
+	for (NSInteger i = idx-1; i >= 0; i--) {
+		Line *l = self.lines[i];
+		NSLog(@"    -> %@", l);
+		if ([l.string rangeOfString:@"[["].location != NSNotFound) {
+			[l.noteRanges removeIndexes:l.noteOutIndices];
+			[changedIndices addIndex:i];
+			break;
+		} else {
+			[l.noteRanges removeIndexesInRange:(NSRange){ 0, l.string.length }];
+			[changedIndices addIndex:i];
+		}
+	}
+	
+	[_changedIndices addIndexes:changedIndices];
+	
+	return changedIndices;
+}
+
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
 {
     //Remove index as done from array if in array
@@ -689,11 +739,14 @@ static NSDictionary* patterns;
 	if (indices.count) lastToParse = NO;
     
     Line* currentLine = self.lines[index];
-		
+	
 	//Correct type on this line
     LineType oldType = currentLine.type;
     bool oldOmitOut = currentLine.omitOut;
-	//bool oldNoteTermination = currentLine.cancelsNoteBlock;
+	bool oldNoteOut = currentLine.noteOut;
+	bool oldEndsNoteBlock = currentLine.endsNoteBlock;
+	bool oldNoteTermination = currentLine.cancelsNoteBlock;
+	bool notesNeedParsing = NO;
 		
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
     
@@ -710,18 +763,38 @@ static NSDictionary* patterns;
 		previousLine.type = action;
 		currentLine.type = empty;
 	}
-		
-	if (NEW_NOTES) {
-		if (currentLine.noteOut || currentLine.noteIn) {
-			// WIP
-			//NSLog(@"###### parsing block...");
-			//[indices addIndexes:[self parseNoteBlockFrom:index]];
-		}
+
+	// Parse multiline note ranges
+	// This is a mess, and written using trial & error. Dread lightly.
+	
+	if (currentLine.endsNoteBlock != oldEndsNoteBlock) {
+		// A note block which was previously terminated, is no longer that
+		if (!currentLine.endsNoteBlock && currentLine.noteIn) currentLine.noteOut = YES;
+		else if (currentLine.endsNoteBlock && currentLine.noteIn) currentLine.noteOut = NO;
+		notesNeedParsing = YES;
 	}
 	
+	if (currentLine.noteIn && (currentLine.type == empty || currentLine == _lines.lastObject)) {
+		// Empty line automatically cancels a note block
+		currentLine.cancelsNoteBlock = YES;
+		currentLine.noteOut = NO;
+		NSIndexSet *noteIndices = [self cancelNoteBlockAt:currentLine];
+		[self.changedIndices addIndexes:noteIndices];
+	}
+	else if (currentLine.noteOut) {
+		// Something else was changed and note spills out of the block, so we need to reparse the whole block
+		notesNeedParsing = YES;
+	}
 	
+	if (currentLine.noteIn && [currentLine.string rangeOfString:@"]]"].location != NSNotFound) {
+		// This line potentially terminates a note block
+		NSIndexSet *noteIndices = [self terminateNoteBlockAt:currentLine];
+		[self.changedIndices addIndexes:noteIndices];
+	}
+
+	
+	//If there is a next element, check if it might need a reparse because of a change in type or omit out
 	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse) {
-        //If there is a next element, check if it might need a reparse because of a change in type or omit out
         if (index < self.lines.count - 1) {
             Line* nextLine = self.lines[index+1];
 			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
@@ -753,11 +826,15 @@ static NSDictionary* patterns;
                 nextLine.type == dialogue ||
                 nextLine.type == dualDialogueParenthetical ||
                 nextLine.type == dualDialogue ||
-                nextLine.omitIn != currentLine.omitOut	// Look for unterminated omits & notes
-				//|| nextLine.noteIn != currentLine.noteOut
 				
+				// Look for unterminated omits & notes
+				nextLine.omitIn != currentLine.omitOut ||
+				nextLine.noteIn != currentLine.noteOut ||
+				currentLine.noteOut != oldNoteOut ||
+				currentLine.cancelsNoteBlock != oldNoteTermination ||
+				notesNeedParsing ||
+				currentLine.endsNoteBlock != oldEndsNoteBlock
 				) {
-				
                 [self correctParseInLine:index+1 indicesToDo:indices];
             }
         }
@@ -1422,7 +1499,6 @@ and incomprehensible system of recursion.
 				[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + NOTE_PATTERN_LENGTH)];
 				rangeBegin = -1;
 			}
-
 		}
 	}
 	

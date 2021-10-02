@@ -124,11 +124,7 @@
 		id value = [target valueForKey:docKey];
 		NSArray *keyValues = userDefaults[docKey];
 		
-		if (keyValues) {
-			id then = value;
-			[NSUserDefaults.standardUserDefaults setValue:value forKey:keyValues[0]];
-			id now = [NSUserDefaults.standardUserDefaults objectForKey:keyValues[0]];
-		}
+		if (keyValues) [NSUserDefaults.standardUserDefaults setValue:value forKey:keyValues[0]];
 	}
 }
 
