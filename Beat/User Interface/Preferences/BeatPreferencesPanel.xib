@@ -25,7 +25,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" animationBehavior="default" toolbarStyle="expanded" id="F0z-JX-Cv5">
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" animationBehavior="default" toolbarStyle="preference" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <rect key="contentRect" x="196" y="240" width="564" height="298"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
@@ -181,7 +181,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DFt-in-f1B">
                                             <rect key="frame" x="-1" y="290" width="181" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Heading Style" id="yHb-oc-ujO">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Heading Style" usesSingleLineMode="YES" id="yHb-oc-ujO">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -218,7 +218,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DEO-Es-4wX">
                                             <rect key="frame" x="-2" y="329" width="182" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Default Paper Size" id="nUl-8Q-mMa">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Default Paper Size" usesSingleLineMode="YES" id="nUl-8Q-mMa">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -235,6 +235,15 @@
                                                 <action selector="toggle:" target="-2" id="ER1-3u-EPe"/>
                                             </connections>
                                         </button>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nle-UB-NWS">
+                                            <rect key="frame" x="198" y="232" width="219" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="INT. SCENE - DAY" id="m9T-8O-t6l">
+                                                <font key="font" size="15" name="Courier"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -244,17 +253,13 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="C305BD06-C77B-4711-8216-CF6D1DF5CD3F" autosavesConfiguration="NO" allowsUserCustomization="NO" showsBaselineSeparator="NO" displayMode="iconAndLabel" sizeMode="regular" id="VGQ-ca-NQC">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="8FC7741E-C32B-47EB-B7DC-6B592AB038A2" label="General" paletteLabel="General" tag="-1" image="SettingIcon" title="General" id="2No-Jf-9GH">
-                        <size key="minSize" width="32" height="32"/>
-                        <size key="maxSize" width="32" height="32"/>
+                    <toolbarItem implicitItemIdentifier="8FC7741E-C32B-47EB-B7DC-6B592AB038A2" explicitItemIdentifier="General" label="General" paletteLabel="General" tag="-1" image="SettingIcon_black" sizingBehavior="auto" selectable="YES" id="2No-Jf-9GH">
                         <connections>
                             <action selector="toggleTab:" target="-2" id="UXK-iw-BjQ"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="46607BB2-3806-4EB1-929F-7E30BD87B9F4" label="Layout" paletteLabel="Layout" tag="-1" id="ha1-yG-obd">
-                        <imageReference key="image" image="Print" symbolScale="medium" renderingMode="template"/>
-                        <size key="minSize" width="22" height="22"/>
-                        <size key="maxSize" width="22" height="22"/>
+                    <toolbarItem implicitItemIdentifier="46607BB2-3806-4EB1-929F-7E30BD87B9F4" explicitItemIdentifier="Layout" label="Layout" paletteLabel="Layout" tag="-1" sizingBehavior="auto" selectable="YES" id="ha1-yG-obd">
+                        <imageReference key="image" image="doc" catalog="system" symbolScale="medium" renderingMode="template"/>
                         <connections>
                             <action selector="toggleTab:" target="-2" id="wTh-QK-A1o"/>
                         </connections>
@@ -272,7 +277,7 @@
         </window>
     </objects>
     <resources>
-        <image name="Print" width="25" height="25"/>
-        <image name="SettingIcon" width="370" height="370"/>
+        <image name="SettingIcon_black" width="370" height="370"/>
+        <image name="doc" catalog="system" width="14" height="16"/>
     </resources>
 </document>

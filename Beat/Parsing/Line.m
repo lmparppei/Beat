@@ -612,8 +612,6 @@
 		string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
 	}
 	
-	NSLog(@"join with line %@ (%lu)", line, line.noteRanges.count);
-	
 	NSInteger offset = self.string.length + 1;
 	if (line.changed) self.changed = YES;
 	

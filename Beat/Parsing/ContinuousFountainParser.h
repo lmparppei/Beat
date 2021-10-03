@@ -41,7 +41,6 @@
 - (NSDictionary*)scriptForPrinting;
 - (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
-- (Line*)lineAtIndex:(NSInteger)position;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 @end
 
@@ -95,7 +94,6 @@
 
 //Convenience Methods for Other Stuff
 - (Line*)lineAtPosition:(NSInteger)position;
-- (Line*)lineAtIndex:(NSInteger)position;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSString*)cleanedString;

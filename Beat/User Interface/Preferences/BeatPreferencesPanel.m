@@ -26,6 +26,8 @@
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleBold;
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleUnderline;
 
+@property (nonatomic, weak) IBOutlet NSTextField *sampleHeading;
+
 @property (nonatomic) NSMutableDictionary *controls;
 
 @property (weak) IBOutlet NSTabView *tabView;
@@ -69,6 +71,27 @@
 		}
 	}
 	
+	[self.window.toolbar setSelectedItemIdentifier:@"General"];
+	[self updateHeadingSample];
+}
+- (void)updateHeadingSample {
+	//if (_headingStyleBold.state == NSOnState) [self.sampleHeading setFont:[NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize]];
+	//else [self.sampleHeading setFont:[NSFont fontWithName:@"Courier Prime" size:self.sampleHeading.font.pointSize]];
+	
+	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithAttributedString:_sampleHeading.attributedStringValue];
+	if (_headingStyleBold.state == NSOnState) {
+		[attrStr addAttribute:NSFontAttributeName value:[NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize] range:(NSRange){0,attrStr.length}];
+	} else {
+		[attrStr addAttribute:NSFontAttributeName value:[NSFont fontWithName:@"Courier Prime" size:self.sampleHeading.font.pointSize] range:(NSRange){0,attrStr.length}];
+	}
+	if (_headingStyleUnderline.state == NSOnState) {
+		[attrStr addAttribute:NSUnderlineStyleAttributeName value:@1 range:(NSRange){0,attrStr.length}];
+	} else {
+		[attrStr addAttribute:NSUnderlineStyleAttributeName value:@0 range:(NSRange){0,attrStr.length}];
+	}
+	
+	[self.sampleHeading setAttributedStringValue:attrStr];
+	
 }
 - (void)show {
 	[self showWindow:self.window];
@@ -86,7 +109,6 @@
 		if (sender == control) {
 			if ([sender isKindOfClass:NSPopUpButton.class]) {
 				NSPopUpButton *button = sender;
-				NSLog(@"select %lu", [button.itemArray indexOfObject:button.selectedItem]);
 				[BeatUserDefaults.sharedDefaults saveInteger:[button.itemArray indexOfObject:button.selectedItem] forKey:key];
 			}
 			else if ([sender isKindOfClass:NSButton.class]) {
@@ -101,6 +123,8 @@
 		}
 	}
 	
+	if (sender == _headingStyleBold || sender == _headingStyleUnderline) [self updateHeadingSample];
+	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc applyUserSettings];
 	}
@@ -111,7 +135,9 @@
 	NSToolbar *toolbar = button.toolbar;
 	
 	NSInteger i = [toolbar.items indexOfObject:button];
-	[self.tabView selectTabViewItem:[self.tabView tabViewItemAtIndex:i]];
+	NSTabViewItem * item = [self.tabView tabViewItemAtIndex:i];
+	
+	[self.tabView selectTabViewItem:item];
 }
 
 - (void)windowWillClose:(NSNotification *)notification

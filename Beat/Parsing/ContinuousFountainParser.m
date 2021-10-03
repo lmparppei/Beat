@@ -57,6 +57,9 @@
 // For testing
 @property (nonatomic) NSDate *executionTime;
 
+// Caches for often requested elements
+@property (nonatomic) Line *prevLineAtLocation;
+
 @end
 
 @implementation ContinuousFountainParser
@@ -600,9 +603,13 @@ static NSDictionary* patterns;
 	if (idx == NSNotFound) return changedIndices;
 	
 	[line.noteRanges addIndexes:line.noteInIndices];
+	NSLog(@"begin from %@ (%lu)", line, idx);
+	
+	NSLog(@"lines %@", self.lines);
 	
 	for (NSInteger i = idx-1; i >= 0; i--) {
 		Line *l = self.lines[i];
+		NSLog(@"  -> %@ (%lu)", l,i);
 		
 		if ([l.string rangeOfString:@"[["].location != NSNotFound) {
 			[l.noteRanges addIndexes:l.noteOutIndices];
@@ -1562,7 +1569,7 @@ and incomprehensible system of recursion.
 
 - (NSUInteger)positionAtLine:(NSUInteger)line
 {
-    if (line >= [self.lines count]) {
+    if (line >= self.lines.count) {
         return NSNotFound;
     } else {
         Line* l = self.lines[line];
@@ -1617,11 +1624,9 @@ and incomprehensible system of recursion.
 }
 - (void)createOutline
 {
-	[_outline removeAllObjects];
+	//[_outline removeAllObjects];
 	[_storylines removeAllObjects];
 	
-	NSUInteger result = 0;
-
 	// Get first scene number
 	NSUInteger sceneNumber = 1;
 	
@@ -1638,17 +1643,17 @@ and incomprehensible system of recursion.
 	OutlineScene *sceneBlock;
 	Line *previousLine;
 	
+	NSInteger sceneIndex = 0;
+	
 	for (Line* line in self.lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
-		
-			// Create an outline item
-			//OutlineScene *item = [[OutlineScene alloc] init];
-			OutlineScene *scene = [OutlineScene withLine:line];
-			
-			//item.type = line.type;
-			//item.omitted = line.omitted;
-			//item.line = line;
-			//item.storylines = line.storylines;
+			OutlineScene *scene;
+			if (sceneIndex >= _outline.count) {
+				scene = [OutlineScene withLine:line];
+			} else {
+				scene = _outline[sceneIndex];
+				scene.line = line;
+			}
 			
 			if (!scene.omitted) scene.string = line.stripInvisible;
 			else scene.string = line.stripNotes;
@@ -1732,19 +1737,31 @@ and incomprehensible system of recursion.
 			
 			// Set previous scene to point to the current one
 			previousScene = scene;
-
-			result++;
-			[_outline addObject:scene];
+			
+			// This was a new scene
+			if (sceneIndex >= _outline.count) [_outline addObject:scene];
+			
+			sceneIndex++;
 		}
 		
-		// Add characters if we are inside a scene
+		// Add characters if we are inside a scene.
+		// This is the PREVIOUS SCENE because it refers to the last found heading.
 		if (line.type == character && previousScene.type == heading) {
-			[previousScene.characters addObject:line.characterName];
+			NSString *characterName = line.characterName;
+			if (characterName.length) [previousScene.characters addObject:characterName];
 		}
 		
 		// Done. Set the previous line.
 		if (line.type != empty) previousLine = line;
 	}
+	
+	// Remove excess scene items
+	if (sceneIndex - 1 < _outline.count - 1) {
+		while (sceneIndex - 1 < _outline.count - 1) {
+			[_outline removeLastObject];
+		}
+	}
+	if (sceneIndex == 0) [_outline removeAllObjects];
 	
 	OutlineScene *lastScene = _outline.lastObject;
 	Line *lastLine = _lines.lastObject;
@@ -1838,12 +1855,17 @@ and incomprehensible system of recursion.
 	return result;
 }
 
-- (Line*)lineAtIndex:(NSInteger)index {
-	return [self lineAtPosition:index];
-}
 - (Line*)lineAtPosition:(NSInteger)position {
+	// Let's check the cached line first
+	if (NSLocationInRange(position, _prevLineAtLocation.range)) {
+		return _prevLineAtLocation;
+	}
+	
 	for (Line* line in self.lines) {
-		if (position >= line.position && position < line.position + line.string.length + 1) return line;
+		if (position >= line.position && position < line.position + line.string.length + 1) {
+			_prevLineAtLocation = line;
+			return line;
+		}
 	}
 	return nil;
 }

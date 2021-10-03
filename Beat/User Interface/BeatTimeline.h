@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatTimelineDelegate <NSObject>
 
-@property (nonatomic) OutlineScene *currentScene;
+@property (nonatomic, readonly, weak) OutlineScene *currentScene;
 
 - (NSRange)selectedRange;
 - (NSMutableArray*)getOutlineItems;

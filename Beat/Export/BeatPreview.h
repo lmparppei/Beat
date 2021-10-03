@@ -20,7 +20,7 @@ typedef enum : NSUInteger {
 @protocol BeatPreviewDelegate
 @property (nonatomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic) bool printSceneNumbers;
-@property (nonatomic) OutlineScene *currentScene;
+@property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (readonly) NSAttributedString *attrTextCache;
 - (NSString*) getText;
 

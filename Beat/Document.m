@@ -564,7 +564,11 @@
 	[self scheduleAutosaving];
 }
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key {
+	NSLog(@"Document: Undefined key (%@) set. This might be intentional.", key);
+}
+-(id)valueForUndefinedKey:(NSString *)key {
 	NSLog(@"Document: Undefined key (%@) requested. This might be intentional.", key);
+	return nil;
 }
 
 - (void)readUserSettings {
@@ -1221,6 +1225,10 @@
 	return [self getCurrentSceneWithPosition:position];
 }
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
+	if (self.currentScene && NSLocationInRange(position, self.currentScene.range)) {
+		return self.currentScene;
+	}
+	
 	if (position >= self.getText.length) {
 		return self.parser.outline.lastObject;
 	}
@@ -1632,7 +1640,10 @@
 - (Line*)getCurrentLine {
 	NSInteger location = self.selectedRange.location;
 	if (location > self.getText.length) { location = self.getText.length; }
-	return [self getLineAt:location];
+	
+	// Don't fetch the line if we already know it
+	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
+	else return [self getLineAt:location];
 }
 - (Line*)getLineAt:(NSInteger)position {
 	// Let's make a copy of the parser array so it's not mutated while iterated.
@@ -1671,8 +1682,6 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
-	if (![self.undoManager isUndoRegistrationEnabled]) [self.undoManager enableUndoRegistration];
-	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 
@@ -1729,11 +1738,11 @@
 	
 	// Close popups
 	if (_quickSettingsPopover.shown) [self closeQuickSettings];
-	//if (self.typewriterMode) [self typewriterScroll];
 
-	//if (!NSLocationInRange(_textView.selectedRange.location, _currentLine.textRange)) self.currentLine = [self getCurrentLine];
-	self.previouslySelectedLine = self.currentLine;
-	self.currentLine = [self getCurrentLine];
+	self.previouslySelectedLine = _currentLine;
+	if (!_currentLine || !NSLocationInRange(_textView.selectedRange.location, _currentLine.range)) {
+		self.currentLine = [self getCurrentLine];
+	}
 	
 	// Reset forced character input
 	if (self.characterInputForLine != self.currentLine) self.characterInput = NO;

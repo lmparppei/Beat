@@ -67,7 +67,7 @@ THE SOFTWARE.
 @property (strong, nonatomic) NSFont *italicCourier;
 
 // For delegation
-@property (nonatomic) OutlineScene *currentScene;
+@property (nonatomic, weak) OutlineScene *currentScene; // Don't retain the Outline Scene
 @property (nonatomic) NSMutableIndexSet *changes;
 @property (nonatomic) NSAttributedString *attrTextCache;
 - (NSAttributedString*)getAttributedText; // ONLY IN MAIN THREAD

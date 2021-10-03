@@ -16,7 +16,7 @@
 
 @protocol BeatEditorDelegate <NSObject>
 
-@property (nonatomic) OutlineScene *currentScene;
+@property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (nonatomic, readonly) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
 
