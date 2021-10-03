@@ -158,6 +158,7 @@
 @property (nonatomic) bool documentIsLoading;
 @property (nonatomic) BeatPaginator *paginator;
 @property (nonatomic) NSTimer *paginationTimer;
+@property (nonatomic) bool autocomplete;
 @property (nonatomic) bool newScene;
 @property (nonatomic) bool moving;
 @property (nonatomic) bool sceneHeadingEdited;
@@ -172,6 +173,9 @@
 @property (nonatomic) CGFloat textInsetY;
 @property (nonatomic) NSMutableArray *recentCharacters;
 @property (nonatomic) NSRange lastChangedRange;
+
+@property (nonatomic) bool headingStyleBold;
+@property (nonatomic) bool headingStyleUnderline;
 
 // Outline view
 @property (weak) IBOutlet BeatOutlineView *outlineView;
@@ -526,15 +530,27 @@
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Setup page size
+		// This can take surprising long, so let's do it in an asynchronous block.
 		// (We'll disable undo registration here, so the doc won't appear as edited on open)
 		[self.undoManager disableUndoRegistration];
-		NSPrintInfo *printInfo = [BeatPaperSizing setSize:[self.documentSettings getInt:@"Page Size"] printInfo:self.printInfo];
+		
+	
+		NSInteger pageSize;
+		if ([self.documentSettings has:@"Page Size"]) {
+			pageSize = [self.documentSettings getInt:@"Page Size"];
+		} else {
+			pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
+		}
+		
+		NSPrintInfo *printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
 		self.printInfo.paperSize = printInfo.paperSize;
 		self.printInfo.orientation = printInfo.orientation;
 		self.printInfo.leftMargin = printInfo.leftMargin;
 		self.printInfo.topMargin = printInfo.topMargin;
 		self.printInfo.rightMargin = printInfo.rightMargin;
 		self.printInfo.bottomMargin = printInfo.bottomMargin;
+		
+		[self.documentSettings setInt:@"Page Size" as:pageSize];
 		
 		[self.undoManager enableUndoRegistration];
 		[self updateChangeCount:NSChangeCleared];
@@ -547,6 +563,9 @@
 	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
 }
+-(void)setValue:(id)value forUndefinedKey:(NSString *)key {
+	NSLog(@"Document: Undefined key (%@) requested. This might be intentional.", key);
+}
 
 - (void)readUserSettings {
 	BeatUserDefaults *defaults = BeatUserDefaults.sharedDefaults;
@@ -556,6 +575,57 @@
 	self.printSceneNumbers = self.showSceneNumberLabels;
 	
 	return;
+}
+- (void)applyUserSettings {
+	// Apply settings from user preferences panel, some things have to be applied in every document
+	
+	bool oldHeadingStyleBold = self.headingStyleBold;
+	bool oldHeadingStyleUnderline = self.headingStyleUnderline;
+	bool oldSansSerif = self.useSansSerif;
+	bool oldShowSceneNumbers = self.showSceneNumberLabels;
+	bool oldHideFountainMarkup = self.hideFountainMarkup;
+	bool oldShowPageNumbers = self.showPageNumbers;
+	
+	BeatUserDefaults *defaults = BeatUserDefaults.sharedDefaults;
+	[defaults readUserDefaultsFor:self];
+
+	if (oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) {
+		[self formatAllLinesOfType:heading];
+		self.previewUpdated = NO;
+	}
+	
+	if (oldSansSerif != self.useSansSerif) {
+		if (self.useSansSerif) {
+			[self loadSansSerifFonts];
+			[self formatAllLines];
+		} else {
+			[self loadSerifFonts];
+			[self formatAllLines];
+		}
+	}
+	
+	if (oldHideFountainMarkup != self.hideFountainMarkup) {
+		[self.textView toggleHideFountainMarkup];
+		[self ensureLayout];
+	}
+	
+	if (oldShowPageNumbers != self.showPageNumbers) {
+		if (self.showPageNumbers) [self paginateAt:(NSRange){ 0,0 } sync:YES];
+		else {
+			self.textView.pageBreaks = nil;
+			[self.textView deletePageNumbers];
+		}
+	}
+	
+	if (oldShowSceneNumbers != self.showSceneNumberLabels) {
+		if (self.showSceneNumberLabels) [self ensureLayout];
+		else [self.textView deleteSceneNumberLabels];
+		
+		// Update the print preview accordingly
+		self.previewUpdated = NO;
+	}
+	
+	[self updateQuickSettings];
 }
 
 - (void)setupWindow {
@@ -956,7 +1026,7 @@
 		LineType type = line.type;
 		
 		// Make some lines uppercase
-		if ((type == heading || type == character || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
+		if ((type == heading || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
 		
 		[content appendString:string];
 		if (line != _parser.lines.lastObject) [content appendString:@"\n"];
@@ -1521,12 +1591,13 @@
 	
 	// Fire up autocomplete at the end of string and
 	// create cached lists of scene headings / character names
+	
 	if (_textView.selectedRange.location == _currentLine.position + _currentLine.string.length - 1) {
 		if (_currentLine.type == character) {
-			if (![_characterNames count]) [self collectCharacterNames];
+			if (!_characterNames.count) [self collectCharacterNames];
 			[self.textView setAutomaticTextCompletionEnabled:YES];
 		} else if (_currentLine.type == heading) {
-			if (![_sceneHeadings count]) [self collectHeadings];
+			if (!_sceneHeadings.count) [self collectHeadings];
 			[self.textView setAutomaticTextCompletionEnabled:YES];
 		} else {
 			[_characterNames removeAllObjects];
@@ -1890,7 +1961,7 @@
         }
     }
 }
-- (void) collectHeadings {
+- (void)collectHeadings {
 	[_sceneHeadings removeAllObjects];
 	for (Line *line in self.parser.lines) {
 		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
@@ -1918,7 +1989,7 @@
 	
 	// Find matching lines for the partially typed line
 	for (NSString *string in search) {
-		if ([string rangeOfString:[textView.string substringWithRange:charRange] options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
+		if ([string rangeOfString:[textView.string substringWithRange:charRange].uppercaseString options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
 			[matches addObject:string];
 		}
 	}
@@ -2011,6 +2082,15 @@
 	[self formatAllLines];
 }
 
+- (void)formatAllLinesOfType:(LineType)type
+{
+	for (Line* line in self.parser.lines) {
+		if (line.type == type) [self formatLineOfScreenplay:line];
+	}
+	
+	[self ensureLayout];
+}
+
 - (void)formatAllLines
 {
 	for (Line* line in self.parser.lines) {
@@ -2048,10 +2128,7 @@
 	[self initialTextBackgroundRender];
 }
 
-- (void)formatLineOfScreenplay:(Line*)line
-{
-	[self formatLineOfScreenplay:line firstTime:NO];
-}
+- (void)formatLineOfScreenplay:(Line*)line { [self formatLineOfScreenplay:line firstTime:NO]; }
 
 - (void)formatLineOfScreenplay:(Line*)line firstTime:(bool)firstTime
 {
@@ -2083,25 +2160,15 @@
 			[self.textView setSelectedRange:selectedRange];
 		}
 	}
-	
-	// Format according to style
-	// WIP: Replace with delegation
-	/*
-	if ((line.type == heading && [line.string characterAtIndex:0] != '.') ||
-		(line.type == transitionLine && [line.string characterAtIndex:0] != '>')) {
-		//Make uppercase, and then reapply cursor position, because they'd get lost otherwise
-		NSArray<NSValue*>* selectedRanges = self.textView.selectedRanges;
 		
-		[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
-		[self.textView setSelectedRanges:selectedRanges];
-	}
-	 */
-	
 	if (line.type == heading) {
 		// Format heading
 		
 		// Set Font to bold
-		[attributes setObject:self.boldCourier forKey:NSFontAttributeName];
+		if (self.headingStyleBold) [attributes setObject:self.boldCourier forKey:NSFontAttributeName];
+		if (self.headingStyleUnderline) {
+			[attributes setObject:@1 forKey:NSUnderlineStyleAttributeName];
+		}
 		
 		// If the scene has a color, let's color it
 		if (line.color.length) {

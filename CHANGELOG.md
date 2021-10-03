@@ -3,7 +3,7 @@
 ## Beat 1.90.4
 
 - Hide Fountain markup
-- Multiline blocks now work
+- Multiline block parsing implemented in parser
 
 
 ## Beat 1.90.3

@@ -101,6 +101,7 @@
 #import "FountainRegexes.h"
 #import "BeatPaginator.h"
 #import "RegExCategories.h"
+#import "BeatUserDefaults.h"
 
 #define BOLD_OPEN @"<b>"
 #define BOLD_CLOSE @"</b>"
@@ -277,6 +278,10 @@
     // Add title page
     NSMutableDictionary *titlePage = [NSMutableDictionary dictionary];
     
+	// Styles
+	bool boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
+	bool underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
+	
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
@@ -547,6 +552,8 @@
 				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
 			}
 
+			NSMutableString *additionalClasses = [NSMutableString string];
+			
 			if (line.type == heading && line.sceneNumber) {
 				// Add scene number ID to HTML, but don't print it if it's toggled off
 				NSString *printedSceneNumber;
@@ -556,11 +563,12 @@
 				NSString *sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
 				NSString *sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
 				[text setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, text, sceneNumberRight]];
+				
+				if (boldedHeading) [additionalClasses appendString:@" bold"];
+				if (underlinedHeading) [additionalClasses appendString:@" underline"];
 			}
 			
             if (![text isEqualToString:@""]) {
-                NSMutableString *additionalClasses = [NSMutableString string];
-				
 				if (line.type == centered) {
                     [additionalClasses appendString:@" center"];
                 }

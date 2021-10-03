@@ -518,6 +518,11 @@
 	// The attributes are used to 	create a string for FDX/HTML conversion.
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
 	
+	// Make (forced) character names uppercase
+	if (self.type == character || self.type == dualDialogueCharacter) {
+		[string replaceCharactersInRange:self.characterNameRange withString:[self.string substringWithRange:self.characterNameRange].uppercaseString];
+	}
+	
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addAttr:@"Italic" toString:string range:range];
@@ -574,7 +579,7 @@
 	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if ([self rangeInStringRange:range]) [self addAttr:@"Removal" toString:string range:range];
 	}];
-		
+	
 	// Loop through tags and apply
 	for (NSDictionary *tag in self.tags) {
 		NSString* tagValue = tag[@"tag"];
@@ -583,7 +588,7 @@
 		NSRange range = [(NSValue*)tag[@"range"] rangeValue];
 		[string addAttribute:@"BeatTag" value:tagValue range:range];
 	}
-	
+		
 	return string;
 }
 
@@ -607,6 +612,8 @@
 		string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
 	}
 	
+	NSLog(@"join with line %@ (%lu)", line, line.noteRanges.count);
+	
 	NSInteger offset = self.string.length + 1;
 	if (line.changed) self.changed = YES;
 	
@@ -626,6 +633,9 @@
 	}];
 	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.additionRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+	}];
+	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
 }
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
@@ -808,6 +818,16 @@
 	if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
 	
 	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+}
+- (NSRange)characterNameRange
+{
+	NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
+	
+	if (parenthesisLoc == NSNotFound) {
+		return (NSRange){ 0, self.string.length };
+	} else {
+		return (NSRange){ 0, parenthesisLoc };
+	}
 }
 
 - (NSString*)trimmed {

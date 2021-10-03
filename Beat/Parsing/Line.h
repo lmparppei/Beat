@@ -33,7 +33,7 @@ typedef enum : NSUInteger {
     pageBreak,
     centered,
 	more,
-	dualDialogueMore
+	dualDialogueMore,
 } LineType;
 
 @protocol LineExports <JSExport>
@@ -177,6 +177,7 @@ typedef enum : NSUInteger {
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes;
 - (NSIndexSet*)contentRanges;
 - (NSString*)characterName;
+- (NSRange)characterNameRange;
 
 - (void)resetFormatting;
 - (void)joinWithLine:(Line*)line;

@@ -39,6 +39,7 @@ extern NSString * const DocSettingWindowHeight;
 - (NSString*)getString:(NSString *) key;
 - (NSInteger)getFloat:(NSString *)key;
 - (id)get:(NSString*)key;
+- (bool)has:(NSString*)key;
 
 - (void)remove:(NSString *)key;
 

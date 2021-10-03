@@ -59,7 +59,7 @@ p {
 body > p:first-child {
 	margin-top: 0;
 }
-.scene-heading, .transition, .new-act, .end-of-act, .character {
+.scene-heading, .transition, .new-act, .end-of-act {
 	text-transform: uppercase;
 }
 
@@ -91,10 +91,16 @@ body > p:first-child {
 
 .scene-heading {
 	margin-top: 2.2em;
-	font-weight: bold;
 	position: relative;
 	padding-right: 40px;
 }
+.scene-heading.bold {
+	font-weight: bold;
+}
+.scene-heading.underline {
+	text-decoration: underline;
+}
+
 .scene-number-left {
 	float: left;
 	margin-left: -50px;

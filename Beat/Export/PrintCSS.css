@@ -120,6 +120,9 @@ body > p:first-child {
 	position: relative;
 	text-transform: uppercase;
 }
+.character {
+	text-transform: none;
+}
 
 .transition {
 	position: relative;
@@ -158,12 +161,19 @@ body > p:first-child {
 
 .scene-heading {
 	margin-top: 2em;
-	font-weight: bold;
 	position: relative;
 	padding-right: 40px;
 	white-space: pre-wrap;
 	margin-left: 0;
 }
+
+.scene-heading.bold {
+	font-weight: bold;
+}
+.scene-heading.underline {
+	text-decoration: underline;
+}
+
 .scene-heading.first {
 	margin-top: 1.1em;
 }

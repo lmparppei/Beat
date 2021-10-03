@@ -97,6 +97,8 @@ THE SOFTWARE.
 - (IBAction)togglePrintSceneNumbers:(id)sender;
 - (void)setRevisedPageColor:(NSString*)color;
 - (void)setColorCodePages:(bool)value;
+- (void)readUserSettings;
+- (void)applyUserSettings;
 
 // Analysis
 @property (nonatomic) NSMutableDictionary *characterGenders;

@@ -33,6 +33,7 @@
 #define FONT_STYLE_KEY @"Sans Serif"
 #define HIDE_FOUNTAIN_MARKUP_KEY @"Hide Fountain Markup"
 #define AUTOSAVE_KEY @"Autosave"
+#define AUTOCOMPLETE_KEY @"Autosave"
 
 
 + (BeatUserDefaults*)sharedDefaults
@@ -45,6 +46,12 @@
 }
 
 + (NSDictionary*)userDefaults {
+	// For the barbaric countries still using imperial units and non-standard paper sizes,
+	// we'll set default-default paper size to US Letter (1)
+	NSInteger pageSize = 0;
+	NSString *language = NSLocale.currentLocale.localeIdentifier;
+	if ([language isEqualToString:@"en_US"]) pageSize = 1;
+	
 	return @{
 		// Structure: Document class property name, key, default
 		@"matchParentheses": @[MATCH_PARENTHESES_KEY, @YES],
@@ -54,8 +61,12 @@
 		@"hideFountainMarkup": @[HIDE_FOUNTAIN_MARKUP_KEY, @NO],
 		@"typewriterMode": @[TYPEWRITER_KEY, @NO],
 		@"autosave": @[AUTOSAVE_KEY, @NO],
+		@"autocomplete": @[AUTOCOMPLETE_KEY, @YES],
 		@"useSansSerif": @[FONT_STYLE_KEY, @NO],
-		@"printSceneNumbers": @[PRINT_SCENE_NUMBERS_KEY, @YES]
+		@"printSceneNumbers": @[PRINT_SCENE_NUMBERS_KEY, @YES],
+		@"headingStyleBold": @[@"headingStyleBold", @YES],
+		@"headingStyleUnderline": @[@"headingStyleUnderline", @NO],
+		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)]
 	};
 }
 
@@ -66,7 +77,8 @@
 	return self;
 }
 
-- (void)readUserDefaultsFor:(id)target {
+- (void)readUserDefaultsFor:(id)target
+{
 	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
 	for (NSString *docKey in userDefaults.allKeys) {
 		NSArray *values = userDefaults[docKey];
@@ -96,18 +108,32 @@
 	}
 }
 
-- (bool)getBool:(NSString*)docKey {
+- (NSInteger)getInteger:(NSString*)docKey
+{
 	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
 	NSArray *values = userDefaults[docKey];
 	
 	NSString *settingKey = values[0];
 	if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
-		return (bool)values[1];
+		return [(NSNumber*)values[1] integerValue];
+	} else {
+		return [NSUserDefaults.standardUserDefaults integerForKey:settingKey];
+	}
+}
+- (BOOL)getBool:(NSString*)docKey
+{
+	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSArray *values = userDefaults[docKey];
+	
+	NSString *settingKey = values[0];
+	if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
+		return [(NSNumber*)values[1] boolValue];
 	} else {
 		return [NSUserDefaults.standardUserDefaults boolForKey:settingKey];
 	}
 }
-- (void)saveBool:(bool)value forKey:(NSString*)key {
+- (void)saveBool:(bool)value forKey:(NSString*)key
+{
 	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
 	NSArray *values = userDefaults[key];
 	
@@ -116,8 +142,19 @@
 		[NSUserDefaults.standardUserDefaults setBool:value forKey:settingKey];
 	}
 }
+- (void)saveInteger:(NSInteger)value forKey:(NSString*)key
+{
+	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSArray *values = userDefaults[key];
+	
+	if (values) {
+		NSString *settingKey = values[0];
+		[NSUserDefaults.standardUserDefaults setInteger:value forKey:settingKey];
+	}
+}
 
-- (void)saveSettingsFrom:(id)target {
+- (void)saveSettingsFrom:(id)target
+{
 	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
 	
 	for (NSString *docKey in userDefaults.allKeys) {

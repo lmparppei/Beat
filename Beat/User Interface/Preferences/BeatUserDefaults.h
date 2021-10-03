@@ -12,10 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatUserDefaults : NSObject
 + (BeatUserDefaults*)sharedDefaults;
++ (NSDictionary*)userDefaults;
 - (void)readUserDefaultsFor:(id)target;
 - (void)saveBool:(bool)value forKey:(NSString*)key;
-- (bool)getBool:(NSString*)docKey;
+- (BOOL)getBool:(NSString*)docKey;
 - (void)saveSettingsFrom:(id)target;
+- (NSInteger)getInteger:(NSString*)docKey;
+- (void)saveInteger:(NSInteger)value forKey:(NSString*)key;
 @end
 
 NS_ASSUME_NONNULL_END

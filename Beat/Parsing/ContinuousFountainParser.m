@@ -592,93 +592,11 @@ static NSDictionary* patterns;
 	else return NSNotFound;
 }
 
-- (NSMutableIndexSet*)parseNoteBlockFrom:(NSUInteger)idx {
-	NSLog(@" begins at %lu (%@)", idx, _lines[idx]);
-	NSMutableIndexSet *indicesToDo = [NSMutableIndexSet indexSet];
-	
-	Line *line;
-	NSMutableArray *affectedLines = [NSMutableArray array];
-	
-	bool match = NO;
-	bool unterminated = NO;
-	
-	// Look behind to find out where the note block ends
-	for (NSInteger i = idx; i >= 0; i--) {
-		line = _lines[i];
-		
-		[affectedLines addObject:line];
-		
-		if (line.type == empty) {
-			NSLog(@" -> cancels behidn: '%@'", line.string);
-			unterminated = YES;
-		}
-		else if (line.beginsNoteBlock) {
-			match = YES;
-			break;
-		}
-	}
-	// We iterated through the items in reverse, so let's invert the array
-	[affectedLines setArray:[[affectedLines reverseObjectEnumerator] allObjects]];
-	
-	// Look forward
-	for (NSInteger i = idx + 1; i < self.lines.count; i++) {
-		line = _lines[i];
-		NSLog(@"  inspecting %@ (%lu)", line, line.noteOutIndices.count);
-		if (line.endsNoteBlock) NSLog(@"     ... should end block");
-		
-		[affectedLines addObject:line];
-		
-		if (line.cancelsNoteBlock || line.type == empty) {
-			NSLog(@" -> cancels frwrd: '%@'", line.string);
-			unterminated = YES;
-			break;
-		}
-		else if (line.endsNoteBlock) {
-			NSLog(@"ends note block: %@", line);
-			break;
-		}
-	}
-	
-	
-	// Iterate through affected lines and set the fixed note ranges.
-	// If the note style has changed, add the line to changed indices.
-	
-	if (NEW_NOTES) {
-		/*
-		for (Line* l in affectedLines) {
-			NSMutableIndexSet *oldIndices = [[NSMutableIndexSet alloc] initWithIndexSet:l.noteRanges];
-			
-			if (!unterminated) {
-				if (l == affectedLines.firstObject) [l.noteRanges addIndexes:l.noteOutIndices];
-				else if (l == affectedLines.lastObject) [l.noteRanges addIndexes:l.noteInIndices];
-				else l.noteRanges = [NSMutableIndexSet indexSetWithIndexesInRange:(NSRange){0, l.length }];
-				NSLog(@" --- %@", l);
-			} else {
-				if (l == affectedLines.firstObject) [l.noteRanges removeIndexes:l.noteOutIndices];
-				else if (l == affectedLines.lastObject) [l.noteRanges removeIndexes:l.noteInIndices];
-				else {
-					[l.noteRanges removeIndexesInRange:(NSRange){0,l.length}];
-				}
-			}
-			
-			if (oldIndices.count) {
-				[oldIndices removeIndexes:l.noteRanges];
-				if (oldIndices.count != 0) {
-					//[_changedIndices addIndex:[_lines indexOfObject:l]];
-					[indicesToDo addIndex:[_lines indexOfObject:l]];
-				}
-			}
-		}
-		*/
-	}
-	
-	return indicesToDo;
+- (NSIndexSet*)terminateNoteBlockAt:(Line*)line  {
+	return [self terminateNoteBlockAt:line index:[self.lines indexOfObject:line]];
 }
-
-- (NSIndexSet*)terminateNoteBlockAt:(Line*)line {
+- (NSIndexSet*)terminateNoteBlockAt:(Line*)line index:(NSInteger)idx {
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
-	
-	NSInteger idx = [self.lines indexOfObject:line];
 	if (idx == NSNotFound) return changedIndices;
 	
 	[line.noteRanges addIndexes:line.noteInIndices];
@@ -700,16 +618,17 @@ static NSDictionary* patterns;
 	
 	return changedIndices;
 }
+
 - (NSIndexSet*)cancelNoteBlockAt:(Line*)line {
-	NSLog(@"canceling at %@", line);
+	return [self cancelNoteBlockAt:line index:[self.lines indexOfObject:line]];
+}
+
+- (NSIndexSet*)cancelNoteBlockAt:(Line*)line index:(NSInteger)idx {
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
-	
-	NSInteger idx = [self.lines indexOfObject:line];
 	if (idx == NSNotFound) return changedIndices;
 	
 	for (NSInteger i = idx-1; i >= 0; i--) {
 		Line *l = self.lines[i];
-		NSLog(@"    -> %@", l);
 		if ([l.string rangeOfString:@"[["].location != NSNotFound) {
 			[l.noteRanges removeIndexes:l.noteOutIndices];
 			[changedIndices addIndex:i];
@@ -935,15 +854,6 @@ static NSDictionary* patterns;
                                      withLength:UNDERLINE_PATTERN_LENGTH
                                excludingIndices:nil
 										   line:line];
-	/*
-    line.noteRanges = [self rangesInChars:charArray
-                                 ofLength:length
-                                  between:NOTE_OPEN_PATTERN
-                                      and:NOTE_CLOSE_PATTERN
-                               withLength:NOTE_PATTERN_LENGTH
-                         excludingIndices:nil
-									 line:line];
-	 */
 	
 	line.strikeoutRanges = [self rangesInChars:charArray
 								 ofLength:length
@@ -981,6 +891,18 @@ static NSDictionary* patterns;
 			if ([line.string characterAtIndex:0] != ' ' &&
 				[line.string characterAtIndex:0] != '\t' ) line.titleRange = NSMakeRange(0, [line.string rangeOfString:@":"].location + 1);
 			else line.titleRange = NSMakeRange(0, 0);
+		}
+	}
+	
+	// Multiline block parsing
+	// There's no index for this line yet, so let's just pass on the count of lines as index
+	if (line.noteIn) {
+		if ([line.string rangeOfString:@"]]"].location != NSNotFound) {
+			[self terminateNoteBlockAt:line index:self.lines.count];
+		}
+		else if (line.type == empty) {
+			[self cancelNoteBlockAt:line index:self.lines.count];
+			line.noteOut = NO;
 		}
 	}
 }
@@ -1048,7 +970,7 @@ and incomprehensible system of recursion.
 		// Else it's just empty.
 		if (preceedingLine.type == character || preceedingLine.type == parenthetical || preceedingLine.type == dialogue) {
 			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty. OMG IT WORKS!
-			if ([preceedingLine.string length] > 0) {
+			if (preceedingLine.string.length > 0) {
 				// If preceeded by character cue, return dialogue
 				if (preceedingLine.type == character) return dialogue;
 				// If its a parenthetical line, return dialogue
@@ -1066,8 +988,8 @@ and incomprehensible system of recursion.
     char firstChar = [string characterAtIndex:0];
     char lastChar = [string characterAtIndex:length-1];
     
-    bool containsOnlyWhitespace = [string containsOnlyWhitespace]; //Save to use again later
-    bool twoSpaces = (length == 2 && firstChar == ' ' && lastChar == ' ');
+    bool containsOnlyWhitespace = [string containsOnlyWhitespace]; // Save to use again later
+    bool twoSpaces = (firstChar == ' ' && lastChar == ' '); // Contains at least two spaces
     //If not empty, check if contains only whitespace. Exception: two spaces indicate a continued whatever, so keep them
     if (containsOnlyWhitespace && !twoSpaces) {
         return empty;
@@ -1252,14 +1174,14 @@ and incomprehensible system of recursion.
     }
     
     //Check if all uppercase (and at least 3 characters to not indent every capital leter before anything else follows) = character name.
-    if (preceedingLine.type == empty || [preceedingLine.string length] == 0) {
-        if (length >= 3 && [string containsOnlyUppercase] && !containsOnlyWhitespace) {
+    if (preceedingLine.type == empty || preceedingLine.string.length == 0) {
+        if (length >= 3 && string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace) {
             // A character line ending in ^ is a double dialogue character
             if (lastChar == '^') {
 				// PLEASE NOTE:
 				// nextElementIsDualDialogue is ONLY used while staticly parsing for printing,
 				// and SHOULD NOT be used anywhere else, as it won't be updated.
-				NSUInteger i = index - 1;
+				NSInteger i = index - 1;
 				while (i >= 0) {
 					Line *prevLine = [self.lines objectAtIndex:i];
 
@@ -1523,55 +1445,6 @@ and incomprehensible system of recursion.
 	
 	return indexSet;
 }
-- (void)terminateNoteFrom:(Line*)line {
-	// We will now iterate
-	NSInteger idx = [self.lines indexOfObject:line];
-	if (idx == NSNotFound) idx = self.lines.count - 1;
-	
-	NSLog(@"go from %lu (%@) %@", idx, line.string, line.typeAsString);
-	
-	Line *prevLine;
-	
-	for (int i = (int)idx; i>=0; i--) {
-		prevLine = self.lines[i];
-		if (!prevLine.noteOut) break;
-		
-		NSLog(@"... %@", prevLine);
-		
-		unichar string[prevLine.string.length];
-		[prevLine.string getCharacters:string];
-		
-		prevLine.noteRanges = [self noteRanges:string ofLength:prevLine.string.length inLine:prevLine partOfBlock:NO];
-		if (prevLine.noteOut) prevLine.noteOut = NO;
-		[_changedIndices addIndex:i];
-		
-		/*
-		prevLine = self.lines[i];
-		unichar string[line.string.length];
-		[prevLine.string getCharacters:string];
-		
-		bool match = NO;
-		int j = (int)prevLine.string.length;
-		while (j >= 1) {
-			if (string[j] == '[' && string[j-1] == '[') {
-				match = YES;
-				break;
-			}
-			j--;
-		}
-		
-		if (match) {
-			NSLog(@"[[ starts from %i", j);
-			break;
-		} else {
-			NSLog(@"kill note from %@", line.string);
-			[prevLine.noteRanges removeAllIndexes];
-			[_changedIndices addIndex:i];
-		}
-		 */
-	}
-}
-
 
 - (NSRange)sceneNumberForChars:(unichar*)string ofLength:(NSUInteger)length
 {

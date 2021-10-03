@@ -12,6 +12,7 @@
 
 - (bool)containsOnlyWhitespace;
 - (bool)containsOnlyUppercase;
+- (bool)onlyUppercaseUntilParenthesis;
 - (NSString *)stringByTrimmingTrailingCharactersInSet:(NSCharacterSet *)characterSet;
 
 @end

@@ -725,7 +725,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	self.matches = [self completionsForPartialWordRange:substringRange indexOfSelectedItem:&index];
 	
 	if (self.matches.count > 0) {
-
 		// Beat customization: if we have only one possible match and it's the same the user has already typed, close it
 		if (self.matches.count == 1) {
 			NSString *match = [self.matches objectAtIndex:0];
@@ -1021,16 +1020,24 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		if (index >= self.sceneNumberLabels.count) label = [self createLabel:scene];
 		else label = self.sceneNumberLabels[index];
 		
+		// Set scene number to be displayed
 		if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
 		
+		// Invalidate layout if needed
+		if (_editorDelegate.hideFountainMarkup) {
+			[self.layoutManager invalidateLayoutForCharacterRange:scene.line.textRange actualCharacterRange:nil];
+		}
+		
+		// Actual pixel position of the label
 		NSRect rect = [self rectForRange:scene.line.textRange];
 		
+		// Some hardcoded values, which seem to work
 		rect.size.width = 20 * scene.sceneNumber.length;
 		rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
 		rect.origin.y += self.textInsetY + 2;
-			
 		label.frame = rect;
 		
+		// Set label color to be the same as scene color
 		if (scene.color.length) {
 			NSString *colorName = scene.color.lowercaseString;
 			NSColor *color = [BeatColors color:colorName];
@@ -1427,15 +1434,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (!_editorDelegate.hideFountainMarkup) return;
 	if (!self.string.length) return;
 	
-	//self.layoutManager.allowsNonContiguousLayout = NO;
-	
 	Line* line = self.editorDelegate.currentLine;
 	Line* prevLine = self.editorDelegate.previouslySelectedLine;
 	
-	[self.layoutManager invalidateGlyphsForCharacterRange:line.range changeInLength:0 actualCharacterRange:nil];
-	[self.layoutManager invalidateGlyphsForCharacterRange:prevLine.range changeInLength:0 actualCharacterRange:nil];
-	[self.layoutManager invalidateLayoutForCharacterRange:prevLine.range actualCharacterRange:nil];
-	[self.layoutManager invalidateLayoutForCharacterRange:line.range actualCharacterRange:nil];
+	[self.layoutManager invalidateGlyphsForCharacterRange:line.textRange changeInLength:0 actualCharacterRange:nil];
+	[self.layoutManager invalidateGlyphsForCharacterRange:prevLine.textRange changeInLength:0 actualCharacterRange:nil];
+	[self.layoutManager invalidateLayoutForCharacterRange:prevLine.textRange actualCharacterRange:nil];
+	[self.layoutManager invalidateLayoutForCharacterRange:line.textRange actualCharacterRange:nil];
 		
 	if (NSGraphicsContext.currentContext) {
 		[self.layoutManager drawGlyphsForGlyphRange:line.textRange atPoint:self.frame.origin];
@@ -1469,8 +1474,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CFStringAppend(modifiedStr, str);
 	
 	// If it's a heading or transition, render it uppercase
-	if (type == heading || type == transitionLine || type == character) {
+	if (type == heading || type == transitionLine) {
 		CFStringUppercase(modifiedStr, NULL);
+	}
+	else if (type == character || type == dualDialogueCharacter) {
+		// Only capitalize the beginning (before parenthesis)
+		NSRange nameRange = line.characterNameRange;
+		CFMutableStringRef nameStr = CFStringCreateMutable(NULL, nameRange.length);
+		CFStringAppend(nameStr, CFStringCreateWithSubstring(NULL, modifiedStr, CFRangeMake(nameRange.location, nameRange.length)));
+		CFStringUppercase(nameStr, NULL);
+		CFStringReplace(modifiedStr, CFRangeMake(nameRange.location, nameRange.length), nameStr);
 	}
 	
 	// Modified properties

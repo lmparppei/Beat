@@ -10,8 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatPreferencesPanel : NSWindowController
-
+@interface BeatPreferencesPanel : NSWindowController <NSWindowDelegate>
+- (void)show;
 @end
 
 NS_ASSUME_NONNULL_END

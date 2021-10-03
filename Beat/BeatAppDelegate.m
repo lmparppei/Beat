@@ -406,6 +406,9 @@
 		[NSApp stopModal];
 		_episodePrinter = nil;
 	}
+	else if (window == _preferencesPanel.window) {
+		_preferencesPanel = nil;
+	}
 }
 
 - (IBAction)showPatchNotes:(id)sender {
@@ -484,9 +487,9 @@
 - (IBAction)openPreferences:(id)sender {
 	if (!_preferencesPanel) {
 		_preferencesPanel = [[BeatPreferencesPanel alloc] init];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_preferencesPanel.window];
 	}
-	[NSApp runModalForWindow:_preferencesPanel.window];
-	_preferencesPanel = nil;
+	[_preferencesPanel show];
 }
 
 #pragma mark - File Import

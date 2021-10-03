@@ -67,6 +67,11 @@ NSString * const DocSettingWindowHeight = @"Window Height";
 	[_settings setValue:value forKey:key];
 }
 
+- (bool)has:(NSString*)key {
+	if ([_settings objectForKey:key]) return YES;
+	else return NO;
+}
+
 - (NSInteger)getInt:(NSString *)key
 {
 	return [(NSNumber*)[_settings valueForKey:key] integerValue];

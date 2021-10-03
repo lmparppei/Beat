@@ -51,4 +51,32 @@
 	return [self substringToIndex:rangeOfLastWantedCharacter.location+1]; // non-inclusive
 }
 
+- (bool)onlyUppercaseUntilParenthesis
+{
+	NSInteger parenthesisLoc = [self rangeOfString:@"("].location;
+	NSInteger parenthesisEnd = [self rangeOfString:@")"].location;
+	
+	if (parenthesisLoc == NSNotFound) {
+		// No parenthesis
+		return [self containsOnlyUppercase];
+	}
+	else if (parenthesisEnd != NSNotFound &&
+			 parenthesisEnd + 1 < self.length) {
+		// The line continues after parenthesis
+		NSString* tail = [self substringFromIndex:parenthesisEnd + 1];
+		
+		if ([tail containsOnlyWhitespace]) return YES;
+		else if ([self characterAtIndex:self.length - 1] == '^') return YES;
+		else return NO;
+	}
+	else if (parenthesisLoc < 3) {
+		return NO;
+	} else {
+		NSString *head = [self substringToIndex:parenthesisLoc];
+		
+		if ([head containsOnlyUppercase]) return YES;
+		else return NO;
+	}
+}
+
 @end
