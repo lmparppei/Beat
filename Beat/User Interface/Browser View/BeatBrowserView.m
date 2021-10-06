@@ -43,6 +43,8 @@
 									 )
 						 display:YES];
 	
+	self.window.minSize = (NSSize){ width, self.window.minSize.height };
+	
 	[self loadURL:url];
 	[self showBrowser];
 }

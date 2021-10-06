@@ -146,7 +146,6 @@
 	[self.recentFiles reloadData];
 	
 	[self setupDocumentOpenListener];
-	[self checkProContent];
 	[self checkDarkMode];
 
 	// Only open splash screen if no documents were opened by default
@@ -179,12 +178,6 @@
 			if (_darkMode) _forceDarkMode = YES;
 		}
 	}
-}
-
--(void)checkProContent {
-	// Check for pro version content
-	NSString* proContentPath = [[NSBundle mainBundle] pathForResource:@"beat_manual" ofType:@"html"];
-	if (proContentPath) _proMode = YES;
 }
 
 -(void)checkVersion {
@@ -427,7 +420,7 @@
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"beat_manual" withExtension:@"html"];
-	[_browser showBrowser:url withTitle:@"(beat manual)" width:600 height:500];
+	[_browser showBrowser:url withTitle:@"(beat manual)" width:850 height:600];
 }
 
 - (IBAction)showFountainSyntax:(id)sender

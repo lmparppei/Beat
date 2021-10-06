@@ -855,22 +855,23 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Help" systemMenu="help" id="jA1-Lj-Irm">
                         <items>
-                            <menuItem title="Beat Manual" hidden="YES" id="Yiy-8c-i5h">
+                            <menuItem title="Beat Manual" id="Yiy-8c-i5h">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showManual:" target="-1" id="QTL-lA-eLK"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Patch Notes" id="jMf-Y4-igF">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="showPatchNotes:" target="vEX-2F-hcj" id="m7r-sq-wm8"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Beat Tutorial" id="ZsI-w6-Fec">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showReference:" target="vEX-2F-hcj" id="qax-XK-0yN"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Psf-iS-te8"/>
+                            <menuItem title="Patch Notes" id="jMf-Y4-igF">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showPatchNotes:" target="vEX-2F-hcj" id="m7r-sq-wm8"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eyc-hG-S9v"/>
@@ -978,7 +979,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" heightSizable="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="9jM-RT-aCR">
                                         <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="plain" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="32" viewBased="YES" indentationPerLevel="15" outlineTableColumn="fG0-pM-cZd" id="2RT-wl-dQJ">
                                                 <rect key="frame" x="0.0" y="0.0" width="317" height="331"/>
@@ -1101,9 +1102,6 @@ DQ
             </connections>
             <point key="canvasLocation" x="523" y="72"/>
         </button>
-        <menuItem title="Item" id="6Wm-mJ-pNx">
-            <modifierMask key="keyEquivalentModifierMask"/>
-        </menuItem>
     </objects>
     <resources>
         <image name="B_256" width="256" height="256"/>

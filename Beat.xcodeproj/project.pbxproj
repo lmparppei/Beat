@@ -349,6 +349,16 @@
 		B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS.css */; };
 		B6E182832626BFCF00775FB6 /* fountainQuickLook.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B62ADC7323CCCE560015563A /* fountainQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B6E3246724B515670001273F /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3246624B515670001273F /* AppKit.framework */; };
+		B6E38948270DDE120067DD0C /* printview.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D5260BA8D600463AD8 /* printview.png */; };
+		B6E38949270DDE120067DD0C /* cards.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D1260BA8D600463AD8 /* cards.png */; };
+		B6E3894A270DDE120067DD0C /* timeline.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D2260BA8D600463AD8 /* timeline.png */; };
+		B6E3894B270DDE120067DD0C /* outline.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D3260BA8D600463AD8 /* outline.png */; };
+		B6E3894C270DDE120067DD0C /* analysis.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D4260BA8D600463AD8 /* analysis.png */; };
+		B6E3894D270DDE130067DD0C /* printview.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D5260BA8D600463AD8 /* printview.png */; };
+		B6E3894E270DDE130067DD0C /* cards.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D1260BA8D600463AD8 /* cards.png */; };
+		B6E3894F270DDE130067DD0C /* timeline.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D2260BA8D600463AD8 /* timeline.png */; };
+		B6E38950270DDE130067DD0C /* outline.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D3260BA8D600463AD8 /* outline.png */; };
+		B6E38951270DDE130067DD0C /* analysis.png in Resources */ = {isa = PBXBuildFile; fileRef = B68B60D4260BA8D600463AD8 /* analysis.png */; };
 		B6E47D852502899400734A8D /* BeatPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B693C2472DEE800DCDBFA /* BeatPaginator.m */; };
 		B6E47D86250289D000734A8D /* BeatHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */; };
 		B6E47D8825028A4E00734A8D /* BeatPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B61B693C2472DEE800DCDBFA /* BeatPaginator.m */; };
@@ -1807,6 +1817,7 @@
 				B1F04ED81C88ACAD001C4D27 /* Courier Prime Bold Italic.ttf in Resources */,
 				B66F463F2565ADA0003748DA /* InfoPlist.strings in Resources */,
 				B623BD3F2549AEDD00201BC9 /* document.xml in Resources */,
+				B6E3894D270DDE130067DD0C /* printview.png in Resources */,
 				B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */,
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
 				B65F02B325B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */,
@@ -1824,6 +1835,7 @@
 				B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */,
 				B69A929C2319609100FE6A3E /* dragula.js in Resources */,
 				B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */,
+				B6E3894E270DDE130067DD0C /* cards.png in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS.css in Resources */,
 				B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B62C1008262C9472007659F8 /* BeatDownloadManager.xib in Resources */,
@@ -1832,9 +1844,11 @@
 				B6BE1AD62567B93500F7476A /* Courier Prime Sans Italic.ttf in Resources */,
 				B66FC99E2276EAD800C0265D /* CardView.js in Resources */,
 				B6907E3B233FE17C00741071 /* analysis.html in Resources */,
+				B6E38950270DDE130067DD0C /* outline.png in Resources */,
 				B68B4C9E263F02F100AC4939 /* BeatConsole.xib in Resources */,
 				B629DBB4259CE8240007EA4E /* Gather Scenes by Color.beatPlugin in Resources */,
 				B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */,
+				B6E38951270DDE130067DD0C /* analysis.png in Resources */,
 				B60FF86A26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
 				B6EAEDBC267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
@@ -1851,6 +1865,7 @@
 				B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */,
 				B60A593325993FF000207D00 /* Find Longest Scene.beatPlugin in Resources */,
+				B6E3894F270DDE130067DD0C /* timeline.png in Resources */,
 				B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1871,6 +1886,7 @@
 				B68B608C260B849300463AD8 /* Courier Prime Bold Italic.ttf in Resources */,
 				B68B608D260B849300463AD8 /* InfoPlist.strings in Resources */,
 				B68B608E260B849300463AD8 /* document.xml in Resources */,
+				B6E38948270DDE120067DD0C /* printview.png in Resources */,
 				B68B6090260B849300463AD8 /* ThemeEditor.xib in Resources */,
 				B68B6091260B849300463AD8 /* Courier Prime Bold.ttf in Resources */,
 				B68B6092260B849300463AD8 /* BeatAnalysisPanel.xib in Resources */,
@@ -1888,6 +1904,7 @@
 				B68B609A260B849300463AD8 /* MainMenu.xib in Resources */,
 				B68B609B260B849300463AD8 /* dragula.js in Resources */,
 				B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */,
+				B6E38949270DDE120067DD0C /* cards.png in Resources */,
 				B68B609D260B849300463AD8 /* Patch Notes.html in Resources */,
 				B68B609E260B849300463AD8 /* PrintCSS.css in Resources */,
 				B68B609F260B849300463AD8 /* Tutorial.fountain in Resources */,
@@ -1896,9 +1913,11 @@
 				B68B60A1260B849300463AD8 /* BeatAboutScreen.xib in Resources */,
 				B68B60A2260B849300463AD8 /* Courier Prime Sans Italic.ttf in Resources */,
 				B68B60A3260B849300463AD8 /* CardView.js in Resources */,
+				B6E3894B270DDE120067DD0C /* outline.png in Resources */,
 				B68B60A5260B849300463AD8 /* analysis.html in Resources */,
 				B6EAEDBD267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
 				B68B4C9F263F02F100AC4939 /* BeatConsole.xib in Resources */,
+				B6E3894C270DDE120067DD0C /* analysis.png in Resources */,
 				B68B60A8260B849300463AD8 /* Gather Scenes by Color.beatPlugin in Resources */,
 				B68B60A9260B849300463AD8 /* Big-Fish.fountain in Resources */,
 				B68B60AB260B849300463AD8 /* Document.xib in Resources */,
@@ -1915,6 +1934,7 @@
 				B60FF86B26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
 				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
 				B68B60B9260B849300463AD8 /* Find Longest Scene.beatPlugin in Resources */,
+				B6E3894A270DDE120067DD0C /* timeline.png in Resources */,
 				B68B60BA260B849300463AD8 /* Outlining.fountain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

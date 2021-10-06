@@ -29,8 +29,8 @@
 			min-width: 20rem;
 			margin-left: auto;
 			margin-right: auto;
-			margin-bottom: 3em;
-			padding: 1.5rem 1.5rem 1.8rem 1.5rem;
+			margin-bottom: 2em;
+			padding: 1.25rem 1.25rem 1.55rem 1.25rem;
 		}
 
 		h1,
@@ -47,16 +47,17 @@
 
 		h1 {
 			margin-top: .25em;
-			margin-bottom: 1rem;
+			margin-bottom: .7rem;
 			font-weight: 300;
-			font-size: 2.2em;
+			font-size: 1.8em;
 		}
 
 		h2 {
-			margin-top: 2em;
-			font-size: 1.5em;
-			font-family: Courier, monospace;
+			margin-top: 1.8em;
+			font-size: 1.25em;
+			font-family: "Courier Prime", Courier, monospace;
 			font-weight: normal;
+			border-bottom: solid 1px #ddd;
 		}
 
 		h3 {
@@ -94,7 +95,11 @@
 		}
 
 		ol {
-			padding-left: 2rem;
+			padding-left: 1rem;
+		}
+		#menuToc ol {
+			margin: 0;
+			padding: 0 0 0 2rem;
 		}
 
 		dl {
@@ -218,11 +223,15 @@
 		}
 
 		.makeItalic .symbol {
-			color: gray;
+			color: #ccc;
+		}
+		
+		.fSymbol {
+			color: #ccc;
 		}
 
 		.makeBold .symbol2 {
-			color: gray;
+			color: #ccc;
 		}
 
 		.makeBold .fBold {
@@ -316,11 +325,11 @@
 
 		/* Table of contents */
 		.toc {
-			margin-top: 3rem;
+			margin-top: 0rem;
 		}
 
 		.omit {
-			color: gray;
+			color: #ccc;
 		}
 
 
@@ -342,14 +351,20 @@
 		#menu {
 			width: auto;
 			max-width: 14rem;
-			min-width: 10rem;
+			min-width: 11rem;
 			position: relative;
+			display: flex;
 			flex: 1;
 		}
 
 		#menu #menuToc {
-			padding: 1rem;
 			position: fixed;
+			min-width: 200px;
+			max-width: 12rem;
+			width: 100%;
+			max-height: 100vh;
+			overflow-y: scroll;
+			top: 0;
 		}
 
 		#menu ul,
@@ -358,6 +373,11 @@
 			font-size: .9em;
 			margin: 0;
 			padding: 0;
+		}
+		#menu ol {
+			padding-left: 1.5rem;
+			padding-top: 1.5rem;
+			padding-bottom: 1.5rem;
 		}
 
 		#menu ul,
@@ -386,9 +406,6 @@
 			}
 		}
 	</style>
-	<!--[if lt IE 9]>
-			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
 </head>
 
 <body lang="fi">
@@ -464,7 +481,7 @@
 				</div>
 
 				<p>If you are wondering why your FADE IN is a character, don't worry. Keep on smashing the enter key,
-					and after two line breaks Beat figures out that it's not a character. See this blockExample from <em>Big
+					and after two line breaks Beat figures out that it's not a character. See this example from <em>Big
 						Fish</em> by John August:</p>
 
 				<div class='blockExample' id='bigFish'></div>
@@ -567,18 +584,20 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 						Numbers</b>.</p>
 
 				<h2>Aligning text</h2>
-				<p>A paragraph surrounded <b>></b> and <b>&lt;</b> is centered, and anything followed by just <b>></b>
-					is aligned right.</p>
+				<p>A paragraph surrounded by <b>></b> and <b>&lt;</b> is centered.</p>
 
-				<pre class='blockExample centered'>> I am centered &lt;
-<span class='rightAlign'>> I am aligned right.</span></pre>
+				<pre class='blockExample centered'><span class='fSymbol'>></span> I am centered <span class='fSymbol'>&lt;</span></pre>
 
-				<h2>Custom Transitions</h2>
-				<p>Anything in all caps followed by a colon (ie. <b>CUT TO:</b>) is a transition.</p>
+				<h2>Transitions</h2>
+				
+				<p>Anything in all caps, followed by TO: (ie. <b>CUT TO:</b>) is a transition.</p>
 
 				<pre class='blockExample transition'>CUT TO:
 					FADE TO:
 					PAN TO:</pre>
+				
+				<p>To make a custom transition, use <b>> TRANSITION:</b></p>
+				<pre class='blockExample transition'><span class='fSymbol'>></span> Custom transition:</pre>
 
 				<h2>Force Elements</h2>
 				<p>You can force anything to be any other element. If you have something that is incompatible with the
@@ -601,15 +620,15 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 					<dd>===</dd>
 					<dt>Force Page Break</dt>
 				</dl>
-				<pre class='blockExample'><b>.THIS IS A SCENE HEADING</b>
+				<pre class='blockExample'><b><span class='fSymbol'>.</span>THIS IS A SCENE HEADING</b>
 
-!INTENSE ACTION...
+<span class='fSymbol'>!</span>INTENSE ACTION...
 
-			@Character
+<span class='fSymbol'>@</span>Character
 		Let's sing something.
 
 
-   <em>~Sunday is gloomy, my hours are slumberless...</em></pre>
+      <em><span class='fSymbol'>~</span>Sunday is gloomy, my hours are slumberless...</em></pre>
 
 				<p>You can find all of the forced elements under <b>Formatting</b> menu.</p>
 
@@ -619,7 +638,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 
 
 				<h2>Outline View <span class='shortcut'>(⌘D)</span></h2>
-				<div class='image right'><img src='images/outline.png'></div>
+				<div class='image right'><img src='outline.png'></div>
 				<p>Outline View can be activated by clicking on the outline icon on the left side of the screen or by
 					pressing <b>⌘D</b>.</p>
 
@@ -637,7 +656,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 
 				<h2>Cards View <span class='shortcut'>(⌘⇧D)</span></h2>
 
-				<div class='image'><img src='images/cards.png'></div>
+				<div class='image'><img src='cards.png'></div>
 
 				<p>The card view gives you a nice overview of the story. You can access it from the cards icon on the
 					right side of the edit view, or by pressing <b>⌘⇧D</b>.</p>
@@ -650,7 +669,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 
 				<h2>Timeline View <span class='shortcut'>(⌘T)</span></h2>
 
-				<div class='image'><img src='images/timeline.png'></div>
+				<div class='image'><img src='timeline.png'></div>
 
 				<p>The Timeline View gives an insight into how your story plays out in a linear manner. You can access
 					the view by pressing <b>⌘⇧T</b> or by clicking the timeline icon on the right side of the edit view.
@@ -665,7 +684,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 
 				<h2>Print Preview <span class='shortcut'>(⌘⌥P)</span></h2>
 
-				<div class='image'><img src='images/printview.png'></div>
+				<div class='image'><img src='printview.png'></div>
 
 				<p>A quick way to see how your screenplay is laid out.</p>
 				<p><b>Note:</b> This is a quick screen preview generated by Beat, and might have some glitches in it. If
@@ -674,7 +693,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 
 				<h2>Screenplay Analysis</h2>
 
-				<div class='image'><img src='images/analysis.png'></div>
+				<div class='image'><img src='analysis.png'></div>
 
 				<p>A handy tool for checking the statistics and metrics of your screenplay. It calculates characters'
 					lines and interior and exterior scene count.</p>
@@ -939,11 +958,11 @@ Brick and Steel regard one another.  A job well done.
 NARRATOR
 Shoot, to the Dukes that's about like taking Grandma for a Sunday drive.
 
->**End of Act One**<
+>**End of Act One**&lt;
 
 ===
 
->**Act Two**<
+>**Act Two**&lt;
 
 The General Lee hangs in the air, right where we left it.  The NARRATOR'S voice kicks in.</pre>
 
