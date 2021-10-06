@@ -102,6 +102,7 @@
 #import "BeatTagItem.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
+//#import "BeatTextStorage.h"
 #import "BeatFDXExport.h"
 #import "ValidationItem.h"
 #import "BeatRevisionTracking.h"
@@ -326,7 +327,7 @@
 #define FONT_SIZE 17.92 // 19.5 for Inconsolata
 #define LINE_HEIGHT 1.1 // 1.15 for Inconsolata
 
-#define DOCUMENT_WIDTH 630
+#define DOCUMENT_WIDTH_MODIFIER 630
 #define DOCUMENT_WIDTH_A4 620
 #define DOCUMENT_WIDTH_US 640
 #define TEXT_INSET_TOP 80
@@ -504,8 +505,7 @@
 	}
 			
 	// Initialize parser
-	self.parser = [[ContinuousFountainParser alloc] initWithString:[self getText]];
-	self.parser.delegate = self;
+	self.parser = [[ContinuousFountainParser alloc] initWithString:self.getText delegate:self];
 	
 	// Initialize edit tracking
 	[self setupRevision];
@@ -556,6 +556,7 @@
 		[self updateChangeCount:NSChangeCleared];
 		
 		[self updateLayout];
+		[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	});
 }
 -(void)awakeFromNib {
@@ -639,7 +640,13 @@
 	
 	// The document width constant is ca. A4 width compared to the font size.
 	// It's used here and there for proportional measurement.
-	_documentWidth = DOCUMENT_WIDTH;
+	
+	if ([BeatUserDefaults.sharedDefaults getInteger:@"defaultPaperSize"] == BeatA4) {
+		_documentWidth = DOCUMENT_WIDTH_A4;
+	} else {
+		_documentWidth = DOCUMENT_WIDTH_US;
+	}
+	
 	
 	// Reset zoom
 	[self setZoom];
@@ -1142,6 +1149,7 @@
 	[self.textView setString:_contentBuffer];
 	[self.parser parseText:_contentBuffer];
 	[self formatAllLines];
+	[self updateLayout];
 	
 	_revertedTo = self.fileURL;
 	
@@ -1162,6 +1170,7 @@
 	[self.textView setString:_contentBuffer];
 	[self.parser parseText:_contentBuffer];
 	[self formatAllLines];
+	[self updateLayout];
 	
 	[self updateChangeCount:NSChangeCleared];
 	[self updateChangeCount:NSChangeDone];
@@ -1258,9 +1267,7 @@
 	NSArray *outline = [self getOutlineItems];
 	if (outline.count == 0) return nil;
 	
-	NSInteger position = self.selectedRange.location;
-	
-	Line * currentLine = [self getLineAt:position];
+	Line * currentLine = [self getCurrentLine];
 	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] ;
 	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
 	
@@ -1280,9 +1287,7 @@
 	NSArray *outline = [self getOutlineItems];
 	if (outline.count == 0) return nil;
 	
-	NSInteger position = self.selectedRange.location;
-	
-	Line * currentLine = [self getLineAt:position];
+	Line * currentLine = [self getCurrentLine];
 	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] ;
 	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
 	
@@ -1394,55 +1399,8 @@
 		}
 	}
 
-	
-	// Backspace / deletion handling for some special case scenarios
-	// Implementing some undoing weirdness, which works, kind-of.
-	/*
-	if (!self.documentIsLoading && replacementString.length < 1 && affectedCharRange.length > 0 && affectedCharRange.location <= self.textView.string.length) {
-		
-		Line * affectedLine = [self getLineAt:affectedCharRange.location];
 
-		if (affectedLine.type == character && _characterInput && affectedLine.string.length == 0) {
-			affectedLine.type = action;
-			[self cancelCharacterInput];
-		}
-		
-		Line * otherLine = [self getLineAt:affectedCharRange.location + affectedCharRange.length];
-		
-		if (otherLine.string.length > 0) {
-			if (affectedLine.type == heading && otherLine.type != heading) {
-				if (self.undoManager.isRedoing) NSLog(@"Redoing");
-				if (self.undoManager.isUndoing) NSLog(@"Undoing");
-				
-				__block NSString *undoString = [otherLine.string stringByAppendingString:@"\n"];
-				NSLog(@"Affected: %@ / undo: %@", affectedLine.string, undoString);
-				
-				NSInteger position = otherLine.position;
-				NSInteger length = undoString.length;
-				
-				if (position + length > [self getText].length) {
-					NSLog(@"attempting to fix length");
-					length = undoString.length;
-				}
-				
-				[self.undoManager beginUndoGrouping];
-				[self.undoManager registerUndoWithTarget:self handler:^(id _Nonnull target) {
-					[self replaceCharactersInRange:NSMakeRange(position, length) withString:undoString];
-				}];
-				[self.undoManager endUndoGrouping];
-			}
-			else if (_characterInput && otherLine.type != empty) {
-				// delete key was pressed at the end of line and the app would make the next line uppercase
-				// let's avoid that
-				if (affectedCharRange.location == _currentLine.string.length + 1) {
-					[self cancelCharacterInput];
-				}
-			}
-		}
-	}
-	*/
-	
-    //If something is being inserted, check whether it is a "(" or a "[[" and auto close it
+    // If something is being inserted, check whether it is a "(" or a "[[" and auto close it
     if (self.matchParentheses) {
         if (affectedCharRange.length == 0) {
             if ([replacementString isEqualToString:@"("]) {
@@ -1527,6 +1485,8 @@
 		
 		// Process double breaks after some elements
 		// This should be rewritten at some point, I have no idea what's going on
+		// ... This is future me writing from the present, and I have no idea what you've going after, either.
+		//     This REALLY should be rewritten.
 		if (self.autoLineBreaks) {
 			// Test if we should add a new line
 			// (We are not in the process of adding a dual line break and shift is not pressed)
@@ -1573,17 +1533,8 @@
 
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+	// Why are we constantly checkin for current line?
 	_currentLine = [self getCurrentLine];
-	
-	/*
-	if (forceDialogue) {
-		Line *nextLine = [self getNextLine:_currentLine];
-		if (nextLine.type == empty) {
-			nextLine.type = dialogue;
-			[self forceFormatChangesInRange:nextLine.textRange];
-		}
-	}
-	*/
 	
 	if (processDoubleBreak) {
 		// This is here to fix a formatting error with dialogue.
@@ -1639,25 +1590,13 @@
 
 - (Line*)getCurrentLine {
 	NSInteger location = self.selectedRange.location;
-	if (location > self.getText.length) { location = self.getText.length; }
+	if (location >= self.getText.length) return self.parser.lines.lastObject;
 	
 	// Don't fetch the line if we already know it
 	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
-	else return [self getLineAt:location];
+	else return [_parser lineAtPosition:location];
 }
-- (Line*)getLineAt:(NSInteger)position {
-	// Let's make a copy of the parser array so it's not mutated while iterated.
-	// I'm not sure if this is needed, but we have so many background tasks going on
-	// right now, that I'm a bit afraid of crashes :---)
-	NSArray * lines = [NSArray arrayWithArray:self.parser.lines];
-	for (Line* line in lines) {
-		if (line) {
-			if (position == line.position) return line;
-			else if (NSLocationInRange(position, line.range)) return line;
-		}
-	}
-	return nil;
-}
+
 
 - (IBAction)reformatRange:(id)sender {
 	if (self.textView.selectedRange.length > 0) {
@@ -1665,7 +1604,7 @@
 		if (lines) [self.parser correctParsesForLines:lines];
 		[self.parser createOutline];
 		[self ensureLayout];
-	}	
+	}
 }
 
 - (void)registerChangesInRange:(NSRange)range {
@@ -1684,7 +1623,7 @@
 {
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-
+	
 	if (_postEditAction) {
 		NSLog(@"post edit %@", _postEditAction);
 		NSInteger index = [_postEditAction[@"index"] integerValue];
@@ -1707,17 +1646,17 @@
 		if (self.outlineViewVisible) [self reloadOutline];
 		if (self.timelineVisible) [self reloadTimeline];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
-		if (_runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
+		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
 	} else {
 		if (self.timelineVisible) [_timeline refreshWithDelay];
 	}
 	
 	[self applyFormatChanges];
-	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	//[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 	
 	// If the outline has changed, update all labels
 	if (changeInOutline) [self updateSceneNumberLabels:0];
-	else [self updateSceneNumberLabels:_lastChangedRange.location];
+	else [self updateSceneNumberLabels:self.lastChangedRange.location];
 	
 	// Update preview screen
 	[self updatePreview];
@@ -2051,7 +1990,7 @@
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
+	[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	
 	[self.textView setTypingAttributes:attributes];
@@ -2124,6 +2063,32 @@
 	}
 }
 
+/*
+- (void)didPerformEdit:(NSRange)range {
+	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		//[self formatLineOfScreenplay:self.parser.lines[idx]];
+		[self setTemporaryAttributes:self.parser.lines[idx]];
+	}];
+		
+	[self.parser.changedIndices removeAllIndexes];
+}
+
+- (void)setTemporaryAttributes:(Line*)line {
+	NSLog(@"line %@", line);
+	NSString *lineTypeAttrName = @"BeatLineType";
+	NSString *colorAttrName = @"BeatColor";
+	
+	NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
+	
+	if (line.type == heading) {
+		[attrs setObject:self.boldCourier forKey:NSFontAttributeName];
+	}
+	[attrs setObject:NSColor.redColor forKey:NSForegroundColorAttributeName];
+	
+	[self.textView.layoutManager setTemporaryAttributes:attrs forCharacterRange:line.range];
+}
+ */
+
 -(void)applyInitialFormatting {
 	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
 	NSInteger index = 0;
@@ -2144,8 +2109,6 @@
 	// Don't go out of range
 	if (line.position + line.string.length > self.textView.string.length) return;
 	
-	if (!firstTime) _currentLine = line;
-	
 	NSUInteger begin = line.position;
 	NSUInteger length = line.string.length;
 	NSRange range = NSMakeRange(begin, length);
@@ -2165,7 +2128,7 @@
 		// lines into character cues and the user is unable to undo the changes
 		if (range.location + range.length <= selectedRange.location) {
 			[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
-			line.string = [line.string uppercaseString];
+			line.string = line.string.uppercaseString;
 			[self.textView setSelectedRange:selectedRange];
 		}
 	}
@@ -2173,11 +2136,9 @@
 	if (line.type == heading) {
 		// Format heading
 		
-		// Set Font to bold
+		// Format according to settings
 		if (self.headingStyleBold) [attributes setObject:self.boldCourier forKey:NSFontAttributeName];
-		if (self.headingStyleUnderline) {
-			[attributes setObject:@1 forKey:NSUnderlineStyleAttributeName];
-		}
+		if (self.headingStyleUnderline) [attributes setObject:@1 forKey:NSUnderlineStyleAttributeName];
 		
 		// If the scene has a color, let's color it
 		if (line.color.length) {
@@ -2195,12 +2156,12 @@
 		// Set Font to italic
 		[attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
 	}
+	
+	//[self startMeasure];
 
 	// Format layout & alignment
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	
 	// Handle title page block
 	if (line.type == titlePageTitle  ||
@@ -2212,74 +2173,58 @@
 		line.type == titlePageContact ||
 		line.type == titlePageDraftDate) {
 		
-		[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
-		[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
+		[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		
 		// Indent lines following a first-level title page element a bit more
 		if ([line.string rangeOfString:@":"].location != NSNotFound) {
-			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
-			[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH];
+			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
+			[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
 		} else {
-			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * 1.25 * DOCUMENT_WIDTH];
-			[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * DOCUMENT_WIDTH];
+			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * 1.25 * DOCUMENT_WIDTH_MODIFIER];
+			[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * DOCUMENT_WIDTH_MODIFIER];
 		}
-
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		
 	} else if (line.type == transitionLine) {
 		// Transitions
 		[paragraphStyle setAlignment:NSTextAlignmentRight];
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		
 	} else if (line.type == centered || line.type == lyrics) {
 		// Lyrics & centered text
 		[paragraphStyle setAlignment:NSTextAlignmentCenter];
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	
 	} else if (line.type == character) {
 		// Character cue
-		[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
+		[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
 
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	} else if (line.type == parenthetical) {
 		// Parenthetical after character
-		[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
-		
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
 		
 	} else if (line.type == dialogue) {
 		// Dialogue block
-		[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
-		
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
 		
 	} else if (line.type == dualDialogueCharacter) {
-		[paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
-		
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		[paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
 		
 	} else if (line.type == dualDialogueParenthetical) {
-		[paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
-		
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		[paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
 		
 	} else if (line.type == dualDialogue) {
-		[paragraphStyle setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
-		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH];
-		
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		[paragraphStyle setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
 		
 	} else if (line.type == section || line.type == synopse) {
 		// Stylize sections & synopses
@@ -2291,7 +2236,7 @@
 			
 			if (line.sectionDepth == 1) {
 				[paragraphStyle setParagraphSpacingBefore:30];
-				[paragraphStyle setParagraphSpacing:20];
+				[paragraphStyle setParagraphSpacing:0];
 				
 				// Black or custom for high-level sections
 				if (line.color) {
@@ -2302,8 +2247,8 @@
 				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 			} else {
 				if (line.sectionDepth == 2) {
-					[paragraphStyle setParagraphSpacingBefore:10];
-					[paragraphStyle setParagraphSpacing:10];
+					[paragraphStyle setParagraphSpacingBefore:20];
+					[paragraphStyle setParagraphSpacing:0];
 				}
 				
 				// And custom or gray for others
@@ -2319,8 +2264,6 @@
 				
 				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 			}
-			
-			[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		}
 		
 		if (line.type == synopse) {
@@ -2345,27 +2288,23 @@
 			}
 		}
 	} else if (line.type == empty) {
-		// Just to make sure
-		NSInteger index = [_parser.lines indexOfObject:line];
+		// Just to make sure that after second empty line we reset indents
+		NSInteger lineIndex = [_parser.lines indexOfObject:line];
 		
-		Line* preceedingLine;
-		
-		if (index > 1) {
-			preceedingLine = [_parser.lines objectAtIndex:index - 1];
+		if (lineIndex > 1) {
+			Line* preceedingLine = [_parser.lines objectAtIndex:lineIndex - 1];
 			if (preceedingLine.string.length < 1) {
 				[paragraphStyle setFirstLineHeadIndent:0];
 				[paragraphStyle setHeadIndent:0];
 				[paragraphStyle setTailIndent:0];
-				[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 			}
 		}
 	}
-		
-	// Remove all former paragraph styles and overwrite fonts if they are not set yet
-	//[textStorage addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:range];
-	//[textStorage removeAttribute:NSParagraphStyleAttributeName range:range];
-
 	
+	// Apply paragraph styles set above
+	[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+	
+	// Overwrite fonts if they are not set yet
 	if (![attributes valueForKey:NSFontAttributeName]) {
 		[attributes setObject:self.courier forKey:NSFontAttributeName];
 	}
@@ -2385,6 +2324,8 @@
 	//Add selected attributes
 	if (range.length > 0) {
 		[textStorage addAttributes:attributes range:range];
+		// Future consideration:
+		// [self.textView.layoutManager setTemporaryAttributes:attributes forCharacterRange:range];
 	} else {
 		// Add attributes ahead
 		if (range.location + 1 < textStorage.string.length) {
@@ -2392,6 +2333,8 @@
 			[textStorage addAttributes:attributes range:range];
 		}
 	}
+	
+	//[self endMeasure:@"Add attributes"];
 	
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
 	if (line.string.length == 0 && !firstTime) {
@@ -2404,10 +2347,10 @@
 
 		// Keep dialogue input for character blocks
 		if ((previousLine.type == dialogue || previousLine.type == character || previousLine.type == parenthetical)
-			&& [previousLine.string length]) {
-			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
-			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH];
-			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH];
+			&& previousLine.string.length) {
+			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
 		} else {
 			[paragraphStyle setFirstLineHeadIndent:0];
 			[paragraphStyle setHeadIndent:0];
@@ -2417,7 +2360,7 @@
 		[self.textView setTypingAttributes:attributes];
 	}
 	
-	//Format scene number as invisible
+	// Format scene number as invisible
 	if (line.sceneNumberRange.length > 0) {
 		NSRange sceneNumberRange = NSMakeRange(line.sceneNumberRange.location - 1, line.sceneNumberRange.length + 2);
 		// Don't go out of range, please, please
@@ -2478,19 +2421,39 @@
 		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 							range:NSMakeRange(line.position + line.string.length - 1, 1)];
 	}
+
 	
 	//[self renderTextBackgroundOnLine:line];
 	
 	// Render backgrounds according to text attributes
 	// This is AMAZINGLY slow
 
-	if (!firstTime) {
+	if (!firstTime && line.string.length) {
+		// Enumerate attributes (if applicable)
+		NSDictionary *beatAttrs = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:(NSRange){0, line.string.length}];
+		
+		if (beatAttrs[revisionAttribute]) {
+			[textStorage enumerateAttribute:revisionAttribute inRange:line.range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+				BeatRevisionItem *revision = value;
+				if (revision.type == RevisionAddition) [textStorage addAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor range:range];
+				else if (revision.type == RevisionRemoval) {
+					[textStorage addAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] range:range];
+					[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
+					[textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:range];
+				}
+			}];
+		}
+		if (beatAttrs[tagAttribute]) {
+			[textStorage enumerateAttribute:tagAttribute inRange:line.textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+				BeatTag *tag = value;
+				NSColor *tagColor = [BeatTagging colorFor:tag.type];
+				tagColor = [tagColor colorWithAlphaComponent:.6];
+				
+				[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
+			}];
+		}
+		/*
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-
-			if (!attrs[NSBackgroundColorAttributeName]) {
-				[textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
-			}
-
 			// Revisions
 			if (attrs[revisionAttribute]) {
 				BeatRevisionItem *revision = attrs[revisionAttribute];
@@ -2511,6 +2474,8 @@
 				[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
 			}
 		}];
+
+		 */
 	}
 }
 
@@ -4500,7 +4465,7 @@ static NSString *revisionAttribute = @"Revision";
 	_sceneCards = [[SceneCards alloc] initWithWebView:_cardView];
 	_sceneCards.delegate = self;
 }
-- (void) deallocCards {
+- (void)deallocCards {
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"cardClick"];
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"setColor"];
 	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"move"];
@@ -4509,9 +4474,9 @@ static NSString *revisionAttribute = @"Revision";
 	self.cardView = nil;
 }
 
-// This might be pretty shitty solution for my problem but whatever
-- (OutlineScene *) findSceneByLine: (Line *) line {
-	for (OutlineScene * scene in [self.parser outline]) {
+- (OutlineScene *)findSceneByLine: (Line *) line {
+	// This might be pretty shitty solution for my problem but whatever
+	for (OutlineScene * scene in self.parser.outline) {
 		if (line == scene.line) return scene;
 	}
 	return nil;
@@ -5109,7 +5074,7 @@ triangle walks
 		} else {
 			// There IS a title page, so we need to find out its range to replace it.
 			NSInteger titlePageEnd = -1;
-			for (Line* line in [self.parser lines]) {
+			for (Line* line in self.parser.lines) {
 				if (line.type == empty) {
 					titlePageEnd = line.position;
 					break;
@@ -5526,6 +5491,11 @@ triangle walks
 - (void)showLockStatus {
 	[self.lockButton displayLabel];
 }
+
+- (void)didPerformEdit:(NSRange)range {
+	//
+}
+
 
 -(bool)contentLocked {
 	return [self.documentSettings getBool:@"Locked"];

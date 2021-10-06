@@ -54,7 +54,7 @@
 	if (_delegate) {
 		// This is probably a normal parser, because a delegate is present
 		// Parse script
-		parser = [[ContinuousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate];
+		parser = [[ContinuousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate nonContinuous:YES];
 		
 		// Bake revision attributes
 		NSAttributedString *attrStr = self.delegate.attrTextCache;

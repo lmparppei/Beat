@@ -4,6 +4,9 @@
 
 - Hide Fountain markup
 - Multiline block parsing implemented in parser
+- Fixed underlining in breaking dialogue across pages
+- Fixed tons of other stuff
+- Preferences panel
 
 
 ## Beat 1.90.3

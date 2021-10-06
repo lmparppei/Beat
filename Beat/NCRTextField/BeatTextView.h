@@ -12,6 +12,7 @@
 #import "ContinuousFountainParser.h"
 #import "ThemeManager.h"
 #import "BeatTagging.h"
+#import "BeatTextStorage.h"
 
 typedef enum : NSInteger {
 	NoPopup = 0,
@@ -65,11 +66,14 @@ typedef enum : NSInteger {
 - (void)showLockStatus;
 - (LineType)lineTypeAt:(NSInteger)index;
 - (Line*)lineAt:(NSInteger)index;
+
+- (void)didPerformEdit:(NSRange)range;
+
 @end
 
 @protocol BeatTaggingDelegate;
 
-@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate>
+@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, BeatTextStorageDelegate>
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
 - (CGFloat)setInsets;
@@ -89,6 +93,7 @@ typedef enum : NSInteger {
 -(void)redrawUI;
 -(void)updateMarkdownView;
 -(void)toggleHideFountainMarkup;
+- (NSRect)rectForRange:(NSRange)range;
 
 @property CGFloat textInsetY;
 @property (weak) id<BeatTextViewDelegate> editorDelegate;

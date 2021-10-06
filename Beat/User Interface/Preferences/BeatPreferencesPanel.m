@@ -75,11 +75,10 @@
 	[self updateHeadingSample];
 }
 - (void)updateHeadingSample {
-	//if (_headingStyleBold.state == NSOnState) [self.sampleHeading setFont:[NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize]];
-	//else [self.sampleHeading setFont:[NSFont fontWithName:@"Courier Prime" size:self.sampleHeading.font.pointSize]];
 	
 	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithAttributedString:_sampleHeading.attributedStringValue];
 	if (_headingStyleBold.state == NSOnState) {
+		self.sampleHeading.font = [NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize];
 		[attrStr addAttribute:NSFontAttributeName value:[NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize] range:(NSRange){0,attrStr.length}];
 	} else {
 		[attrStr addAttribute:NSFontAttributeName value:[NSFont fontWithName:@"Courier Prime" size:self.sampleHeading.font.pointSize] range:(NSRange){0,attrStr.length}];
@@ -91,7 +90,6 @@
 	}
 	
 	[self.sampleHeading setAttributedStringValue:attrStr];
-	
 }
 - (void)show {
 	[self showWindow:self.window];

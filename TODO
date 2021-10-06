@@ -5,6 +5,10 @@
 
 For now, we are using an ancient `WebView` implementation for exporting PDF files. The legacy WebKit will probably be deprecated any time soon, so it's **HIGHLY** important to create a new rendering engine. 
 
+## Try out temporary attributes
+
+One possibility to optimize `NSTextView` would be to use temporary text attributes. It would require us to have a rewritten method for `formatLineOfScreenplay:` which would be called *before* text has changed. I already have a custom `NSTextView` subclass in place, which has a delegate method for when editing did end. We could retain `replaceString` from `shouldChange...` and build up from there.
+
 
 # Work in progress / considerations
 

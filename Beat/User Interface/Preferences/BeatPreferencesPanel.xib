@@ -16,6 +16,7 @@
                 <outlet property="headingStyleUnderline" destination="aHV-Ph-6Mp" id="K4K-QV-eeT"/>
                 <outlet property="hideFountainMarkup" destination="zb1-5Z-ZFC" id="LqH-52-9Md"/>
                 <outlet property="matchParentheses" destination="AgT-pV-Zlk" id="rWF-iN-fvz"/>
+                <outlet property="sampleHeading" destination="nle-UB-NWS" id="DjM-MA-fQL"/>
                 <outlet property="showPageNumbers" destination="Als-Po-nVY" id="GMW-Uw-bCL"/>
                 <outlet property="showSceneNumberLabels" destination="Fx2-XA-GLr" id="dHe-kX-AXN"/>
                 <outlet property="tabView" destination="vYj-Wj-ba8" id="ieg-AQ-lKV"/>

@@ -302,7 +302,7 @@
 	BeatDocumentSettings *settings = [[BeatDocumentSettings alloc] init];
 	[settings readSettingsAndReturnRange:text];
 	
-	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] staticParsingWithString:text settings:settings];
+	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initStaticParsingWithString:text settings:settings];
 	
 	// Bake revision data into the document
 	NSDictionary *revisions = [settings get:DocSettingRevisions];

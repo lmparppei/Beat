@@ -547,6 +547,10 @@
 			// Format string for HTML (if it's not a heading)
 			[text setString:[self htmlStringFor:line]];
 			
+			// To avoid underlining heading tails, let's trim the text if needed
+			if (line.type == heading && underlinedHeading) [text setString:[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
+
+			
 			// Preview shortcuts
 			if (line.type == heading && _operation == ForPreview) {
 				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];

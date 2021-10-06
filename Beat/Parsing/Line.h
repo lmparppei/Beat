@@ -51,6 +51,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
 
+@property (nonatomic, readonly) bool noteIn; /// Wether the line terminates an unfinished note
+@property (nonatomic, readonly) bool noteOut; /// Wether the line starts a note and doesn't finish it
+
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
 - (NSString*)stripFormatting;

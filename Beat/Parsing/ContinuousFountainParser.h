@@ -63,7 +63,8 @@
 // Initialization for both CONTINUOUS and STATIC parsing
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;
 - (ContinuousFountainParser*)initWithString:(NSString*)string;
-- (ContinuousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
+- (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings;
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous;
 
 //Parsing methods
 - (void)parseText:(NSString*)text;

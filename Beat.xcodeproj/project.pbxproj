@@ -75,6 +75,8 @@
 		B63943912593FE59009BE3CA /* BeatPaperSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6779B74256EED1100CFD324 /* BeatPaperSizing.m */; };
 		B63CF61625B43EDD00EFA3A2 /* ThemeEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */; };
 		B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */; };
+		B64170EC270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */; };
+		B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */; };
 		B6447CB124616C8400AA4EBC /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6447CB024616C8400AA4EBC /* MasterView.m */; };
 		B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBDD260511E10091AEAB /* ITSwitch.m */; };
 		B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBE3260605D30091AEAB /* BeatEditorButton.m */; };
@@ -560,6 +562,8 @@
 		B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeEditor.m; sourceTree = "<group>"; };
 		B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ThemeEditor.xib; sourceTree = "<group>"; };
 		B63DC837260A1EC60092B472 /* Beat File Format Specification.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "Beat File Format Specification.md"; sourceTree = "<group>"; };
+		B64170EA270B6C0D0002FFA1 /* BeatTextStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextStorage.h; sourceTree = "<group>"; };
+		B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextStorage.m; sourceTree = "<group>"; };
 		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = "Beat/User Interface/Misc/MasterView.h"; sourceTree = SOURCE_ROOT; };
 		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = "Beat/User Interface/Misc/MasterView.m"; sourceTree = SOURCE_ROOT; };
 		B644DBDD260511E10091AEAB /* ITSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSwitch.m; sourceTree = "<group>"; };
@@ -1125,6 +1129,8 @@
 				B6EB516F246E9621009014AB /* MarginView.m */,
 				B6482F7722195BEC00175927 /* BeatTextView.h */,
 				B6482F7822195BEC00175927 /* BeatTextView.m */,
+				B64170EA270B6C0D0002FFA1 /* BeatTextStorage.h */,
+				B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */,
 				B644DBE2260605D30091AEAB /* BeatEditorButton.h */,
 				B644DBE3260605D30091AEAB /* BeatEditorButton.m */,
 				B60FAD7426A1D4960019A77B /* BeatLockButton.h */,
@@ -1171,8 +1177,8 @@
 		B667796223C5D10B0029D508 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
-				B68AE21526EDEE9700F6DF59 /* Preferences */,
 				B6482F7622195BD300175927 /* Editor View */,
+				B68AE21526EDEE9700F6DF59 /* Preferences */,
 				B60FF86226582CE800886E06 /* Title Page Editor */,
 				B13111851CB2893F00D07A0C /* Themes */,
 				B6764B2C251367BF00731A36 /* TKSplitHandle */,
@@ -1997,6 +2003,7 @@
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
 				B6F15CE525E7B13000176946 /* BeatTagItem.m in Sources */,
+				B64170EC270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
 				B69BFC782565336C007A7D2B /* FadeInImport.m in Sources */,
 				B61061EA2590DB66001947D6 /* BeatModalInput.m in Sources */,
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
@@ -2150,6 +2157,7 @@
 				B68B603D260B849300463AD8 /* Theme.m in Sources */,
 				B68B603E260B849300463AD8 /* PrintView.m in Sources */,
 				B68B603F260B849300463AD8 /* BeatTagItem.m in Sources */,
+				B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
 				B68B6040260B849300463AD8 /* FadeInImport.m in Sources */,
 				B68B6041260B849300463AD8 /* BeatModalInput.m in Sources */,
 				B68B6042260B849300463AD8 /* TKSplitHandle.m in Sources */,
@@ -2417,7 +2425,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13140;
+				CURRENT_PROJECT_VERSION = 13143;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2456,7 +2464,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13140;
+				CURRENT_PROJECT_VERSION = 13143;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2495,7 +2503,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13140;
+				CURRENT_PROJECT_VERSION = 13143;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2527,7 +2535,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13140;
+				CURRENT_PROJECT_VERSION = 13143;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2556,7 +2564,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13140;
+				CURRENT_PROJECT_VERSION = 13143;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2589,7 +2597,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13140;
+				CURRENT_PROJECT_VERSION = 13143;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

@@ -1051,7 +1051,7 @@
 		if (currentPage.count || line != block.firstObject) spaceBefore = [BeatPaginator spaceBeforeForLine:line];
 		
 		CGFloat elementWidth = [self widthForElement:line];
-		NSInteger height = [BeatPaginator heightForString:line.stripFormattingCharacters font:_font maxWidth:elementWidth lineHeight:LINE_HEIGHT];
+		NSInteger height = [BeatPaginator heightForString:line.stripFormatting font:_font maxWidth:elementWidth lineHeight:LINE_HEIGHT];
 		
 		fullHeight += spaceBefore + height;
 	}
@@ -1136,7 +1136,8 @@
 	
 	else if (spillerElement.type == dialogue || spillerElement.type == dualDialogue) {
 		// Break into sentences
-		NSString *stripped = spillerElement.stripFormattingCharacters;
+		NSString *stripped = spillerElement.stripFormatting;
+		
 		NSMutableArray *sentences = [NSMutableArray arrayWithArray:[stripped matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
 		if (!sentences.count && stripped.length) [sentences addObject:stripped];
 		

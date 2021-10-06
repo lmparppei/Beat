@@ -60,6 +60,8 @@
 // Caches for often requested elements
 @property (nonatomic) Line *prevLineAtLocation;
 
+@property (nonatomic) bool nonContinuous;
+
 @end
 
 @implementation ContinuousFountainParser
@@ -70,13 +72,19 @@ static NSDictionary* patterns;
 
 #pragma mark Bulk Parsing
 
-- (ContinuousFountainParser*)staticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
-	return [self initWithString:string delegate:nil settings:settings];
+- (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
+	return [self initWithString:string delegate:nil settings:settings nonContinuous:YES];
+}
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate nonContinuous:(bool)nonContinuous {
+	return [self initWithString:string delegate:delegate settings:nil nonContinuous:nonContinuous];
 }
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate {
 	return [self initWithString:string delegate:delegate settings:nil];
 }
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings {
+	return [self initWithString:string delegate:delegate settings:settings nonContinuous:NO];
+}
+- (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate settings:(BeatDocumentSettings*)settings nonContinuous:(bool)nonContinuous  {
 	self = [super init];
 	
 	if (self) {
@@ -86,10 +94,11 @@ static NSDictionary* patterns;
 		_titlePage = [NSMutableArray array];
 		_storylines = [NSMutableArray array];
 		_delegate = delegate;
+		_nonContinuous = nonContinuous;
 		_staticDocumentSettings = settings;
 		 
-		// Inform that this parser is STATIC and not continuous
-		if (_delegate == nil) _staticParser = YES; else _staticParser = NO;
+		// Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
+		if (_nonContinuous) _staticParser = YES; else _staticParser = NO;
 		
 		[self parseText:string];
 	}
@@ -245,7 +254,7 @@ static NSDictionary* patterns;
 	
 	// If the added string is a multi-line block, we need to optimize the addition.
 	// Else, just parse it character-by-character.
-	if ([string rangeOfString:@"\n"].location != NSNotFound && string.length > 1) {
+	if ([string containsString:@"\n"] && string.length > 1) {
 		// Split the original line into two
 		NSString *head = [line.string substringToIndex:indexInLine];
 		NSString *tail = (indexInLine + 1 <= line.string.length) ? [line.string substringFromIndex:indexInLine] : @"";
@@ -413,7 +422,6 @@ static NSDictionary* patterns;
 			}
 			
 			if (i < lineBreaks) {
-				// NSLog(@"remove: %@", nextLine.string);
 				[self.lines removeObjectAtIndex:nextIndex];
 				offset += nextLine.string.length + 1;
 			} else {
@@ -596,22 +604,19 @@ static NSDictionary* patterns;
 }
 
 - (NSIndexSet*)terminateNoteBlockAt:(Line*)line  {
-	return [self terminateNoteBlockAt:line index:[self.lines indexOfObject:line]];
+	NSInteger i = [self.lines indexOfObject:line];
+	return [self terminateNoteBlockAt:line index:i];
 }
 - (NSIndexSet*)terminateNoteBlockAt:(Line*)line index:(NSInteger)idx {
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
 	if (idx == NSNotFound) return changedIndices;
 	
 	[line.noteRanges addIndexes:line.noteInIndices];
-	NSLog(@"begin from %@ (%lu)", line, idx);
-	
-	NSLog(@"lines %@", self.lines);
-	
+		
 	for (NSInteger i = idx-1; i >= 0; i--) {
 		Line *l = self.lines[i];
-		NSLog(@"  -> %@ (%lu)", l,i);
 		
-		if ([l.string rangeOfString:@"[["].location != NSNotFound) {
+		if ([l.string containsString:@"[["]) {
 			[l.noteRanges addIndexes:l.noteOutIndices];
 			[changedIndices addIndex:i];
 			break;
@@ -636,7 +641,7 @@ static NSDictionary* patterns;
 	
 	for (NSInteger i = idx-1; i >= 0; i--) {
 		Line *l = self.lines[i];
-		if ([l.string rangeOfString:@"[["].location != NSNotFound) {
+		if ([l.string containsString:@"[["]) {
 			[l.noteRanges removeIndexes:l.noteOutIndices];
 			[changedIndices addIndex:i];
 			break;
@@ -712,7 +717,7 @@ static NSDictionary* patterns;
 		notesNeedParsing = YES;
 	}
 	
-	if (currentLine.noteIn && [currentLine.string rangeOfString:@"]]"].location != NSNotFound) {
+	if (currentLine.noteIn && [currentLine.string containsString:@"]]"]) {
 		// This line potentially terminates a note block
 		NSIndexSet *noteIndices = [self terminateNoteBlockAt:currentLine];
 		[self.changedIndices addIndexes:noteIndices];
@@ -861,7 +866,7 @@ static NSDictionary* patterns;
                                      withLength:UNDERLINE_PATTERN_LENGTH
                                excludingIndices:nil
 										   line:line];
-	
+			
 	line.strikeoutRanges = [self rangesInChars:charArray
 								 ofLength:length
 								  between:STRIKEOUT_OPEN_PATTERN
@@ -893,7 +898,7 @@ static NSDictionary* patterns;
 	}
 	
 	if (line.isTitlePage) {
-		if ([line.string rangeOfString:@":"].location != NSNotFound && line.string.length > 0) {
+		if ([line.string containsString:@":"] && line.string.length > 0) {
 			// If the title doesn't begin with \t or space, format it as key name	
 			if ([line.string characterAtIndex:0] != ' ' &&
 				[line.string characterAtIndex:0] != '\t' ) line.titleRange = NSMakeRange(0, [line.string rangeOfString:@":"].location + 1);
@@ -904,11 +909,14 @@ static NSDictionary* patterns;
 	// Multiline block parsing
 	// There's no index for this line yet, so let's just pass on the count of lines as index
 	if (line.noteIn) {
-		if ([line.string rangeOfString:@"]]"].location != NSNotFound) {
-			[self terminateNoteBlockAt:line index:self.lines.count];
+		NSInteger lineIdx = [self.lines indexOfObject:line];
+		if (lineIdx == NSNotFound) lineIdx = self.lines.count;
+		
+		if ([line.string containsString:@"]]"]) {
+			[self terminateNoteBlockAt:line index:lineIdx];
 		}
 		else if (line.type == empty) {
-			[self cancelNoteBlockAt:line index:self.lines.count];
+			[self cancelNoteBlockAt:line index:lineIdx];
 			line.noteOut = NO;
 		}
 	}

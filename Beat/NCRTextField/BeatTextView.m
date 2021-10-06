@@ -137,9 +137,23 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @implementation BeatTextView
 
+-(instancetype)initWithCoder:(NSCoder *)coder {
+	self = [super initWithCoder:coder];
+	
+//	BeatTextStorage * textStorage = [[BeatTextStorage alloc] init];
+//	[textStorage addLayoutManager:self.layoutManager];
+//	self.layoutManager.textStorage = textStorage;
+//	textStorage.delegate = self;
+	
+	return self;
+}
+
+
 - (void)awakeFromNib {
 	self.layoutManager.delegate = self;
 	self.pageBreaks = [NSArray array];
+	
+	self.layoutManager.allowsNonContiguousLayout = YES;
 	
 	// Make a table view with 1 column and enclosing scroll view. It doesn't
 	// matter what the frames are here because they are set when the popover
@@ -571,8 +585,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSString *selectedString = [self.string substringWithRange:self.selectedRange];
 	
 	// Don't allow line breaks in tagged content. Limit the selection if break is found.
-	if ([selectedString rangeOfString:@"\n"].location != NSNotFound) {
-		[self setSelectedRange:(NSRange){ self.selectedRange.location,  [selectedString rangeOfString:@"\n"].location }];
+	if ([selectedString containsString:@"\n"]) {
+		[self setSelectedRange:(NSRange){ self.selectedRange.location, [selectedString rangeOfString:@"\n"].location }];
 	}
 	
 	if (self.selectedRange.length < 1) return;
@@ -857,8 +871,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-	//NSLog(@"drawing %f -> %f     (in view: %f / %f)    mag: %f", dirtyRect.origin.y, dirtyRect.size.height, self.enclosingScrollView.contentView.bounds.origin.y, self.enclosingScrollView.contentView.bounds.size.height, self.zoomLevel);
-	//dirtyRect = (NSRect){ dirtyRect.origin.x, dirtyRect.origin.y - 10, dirtyRect.size.width, dirtyRect.size.height + 20 };
 	NSGraphicsContext *ctx = NSGraphicsContext.currentContext;
 	if (!ctx) return;
 	
@@ -990,6 +1002,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)updateSceneTextLabelsFrom:(NSInteger)changedIndex {
+	// Don't do anything if the scene number labeling is not on
+	if (!self.editorDelegate.showSceneNumberLabels) return;
+
 	[_sections removeAllObjects];
 	
 	ContinuousFountainParser *parser = self.editorDelegate.parser;
@@ -999,21 +1014,21 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSInteger index = 0;
 	for (OutlineScene *scene in parser.outline) {
-		if (scene.type == synopse) continue;
+		if (scene.type == synopse || scene.type == section) continue;
+		/*
+		// Not in use for now
 		if (scene.type == section) {
 			[self addSectionMarker:scene];
 			continue;
 		}
+		*/
 
 		// don't update scene labels if we are under the index
 		if (scene.line.position + scene.line.string.length < changedIndex) {
 			index++;
 			continue;
 		}
-		
-		// Don't do anything if the scene number labeling is not on
-		if (!self.editorDelegate.showSceneNumberLabels) continue;
-		
+				
 		NSTextField *label;
 		
 		// Add new label if needed
@@ -1217,18 +1232,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 */
 
 
-- (NSTextField *)createLabel: (OutlineScene *) scene {
+- (NSTextField *)createLabel:(OutlineScene *)scene {
 	NSTextField * label;
 	label = [[NSTextField alloc] init];
 	
 	if (scene != nil) {
-		NSRange characterRange = NSMakeRange([scene.line position], [scene.line.string length]);
+		NSRange characterRange = NSMakeRange(scene.line.position, scene.line.string.length);
 		NSRange range = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 		
 		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
 		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 		rect.origin.y += _textInsetY;
-		rect.size.width = 20 * [scene.sceneNumber length];
+		rect.size.width = 20 * scene.sceneNumber.length;
 		rect.origin.x = self.textContainerInset.width - 80 - rect.size.width;
 	}
 	
@@ -1449,7 +1464,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			[self.layoutManager drawGlyphsForGlyphRange:prevLine.textRange atPoint:self.frame.origin];
 		}
 		
-		[self updateInsertionPointStateAndRestartTimer:NO];
+		//[self updateInsertionPointStateAndRestartTimer:NO];
 	}
 }
 
@@ -1458,10 +1473,19 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self updateMarkdownView];
 }
 
+
+-(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange {
+	return attrs;
+}
+
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
 
 	LineType type = line.type;
+	
+	// Do nothing for section markers
+	if (line.type == section) return 0;
+	
 	NSIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
 	
 	// Nothing to do
@@ -1525,6 +1549,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		free(newGlyphs);
 	}
 	
+	CFRelease(modifiedStr);
 	return glyphRange.length;
 }
 
@@ -1636,6 +1661,21 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 //
 
 
+#pragma mark - Text Storage delegation
+
+- (void)didPerformEdit:(NSRange)range {
+	[self.editorDelegate didPerformEdit:range];
+}
+
+/*
+- (nullable NSAttributedString *)attributedSubstringForProposedRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
+	<#code#>
+}
+
+- (NSRect)firstRectForCharacterRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
+	<#code#>
+}
+*/
 
 
 @end

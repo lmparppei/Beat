@@ -34,6 +34,8 @@
 #define STRIKEOUT_CLOSE_PATTERN @"}}"
 #define STRIKEOUT_OPEN_CHAR "{{"
 #define STRIKEOUT_CLOSE_CHAR "}}"
+#define NOTE_OPEN_CHAR "[["
+#define NOTE_CLOSE_CHAR "]]"
 
 // For FDX compatibility (not used right now, mostly for reminder)
 #define BOLD_STYLE @"Bold"
@@ -83,6 +85,15 @@
 	}
 	return self;
 }
+/*
+- (Line*)initWithAttributedString:(NSAttributedString*)string type:(LineType)type {
+	self = [super init];
+	
+	if (self) {
+		
+	}
+}
+*/
 
 // Shorthands (used mostly by the paginator)
 + (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser {
@@ -157,9 +168,10 @@
 - (bool)note {
 	// This should be used only in conjuction with .omited to check that, yeah, it's omited but it's a note:
 	// if (line.omited && !line.note) ...
-	if (self.string.length >= 2) {
-		if ([[self.string substringWithRange:NSMakeRange(0, 2)] isEqualToString:@"[["]) return YES;
-		else return NO;
+	// Comparing with trimmed length is done to make lines like "[[note]] " still be notes.
+	
+	if (self.noteRanges.count >= self.trimmed.length && self.noteRanges.count && self.string.length >= 2) {
+		return YES;
 	} else {
 		return NO;
 	}
@@ -636,6 +648,7 @@
 		[self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
 }
+
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
 	NSAttributedString *string = [self attributedStringForFDX];
 	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
@@ -652,7 +665,6 @@
 	NSAttributedString *first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
-	
 	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
 	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
 		
@@ -666,8 +678,14 @@
 	return @[ retain, split ];
 }
 - (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr {
+	return [self attributedStringToFountain:attrStr saveRanges:NO];
+}
+- (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr saveRanges:(bool)saveRanges {
 	// NOTE! This only works with the FDX atributed string
 	NSMutableString *result = [NSMutableString string];
+	
+	__block NSInteger pos = 0;
+	
 	[attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSString *string = [attrStr attributedSubstringFromRange:range].string;
 				
@@ -691,6 +709,8 @@
 		[result appendString:string];
 		[result appendString:openClose];
 		[result appendString:close];
+
+		pos += open.length + openClose.length + string.length + openClose.length + close.length;
 	}];
 	
 	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -796,6 +816,7 @@
 - (NSString*)stripFormatting {
 	// A better version of stripFormattingCharacters
 	NSIndexSet *contentRanges = [self contentRanges];
+
 	__block NSMutableString *content = [NSMutableString string];
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[content appendString:[self.string substringWithRange:range]];
@@ -896,27 +917,39 @@
 									  and:ITALIC_CHAR
 							   withLength:1];
 	self.underlinedRanges = [self rangesInChars:charArray
-									   ofLength:1
+									   ofLength:length
 										between:UNDERLINE_CHAR
 											and:UNDERLINE_CHAR
 									 withLength:1];
-	
+			
 	self.strikeoutRanges = [self rangesInChars:charArray
 								 ofLength:length
 								  between:STRIKEOUT_OPEN_CHAR
 									  and:STRIKEOUT_CLOSE_CHAR
 							   withLength:2];
+	self.noteRanges = [self rangesInChars:charArray
+								 ofLength:length
+								  between:NOTE_OPEN_CHAR
+									  and:NOTE_CLOSE_CHAR
+							   withLength:2];
 }
 
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
 {
+	bool test = NO;
+	if (self.type == dialogue) {
+		if (startString[0] == "_"[0]) test = YES;
+	}
 	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
 	
 	NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
 	NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
 	
-	for (int i = 0;;i++) {
-		if (i > lastIndex) break;
+
+	for (NSInteger i = 0;;i++) {
+		if (i > lastIndex) {
+			break;
+		}
 				
 		// No range is currently inspected
 		if (rangeBegin == -1) {
@@ -927,7 +960,7 @@
 					match = NO;
 					break;
 				}
-				
+			
 				if (string[j+i] != startString[j]) {
 					match = NO;
 					break;
@@ -953,6 +986,7 @@
 			}
 		}
 	}
+		
 	return indexSet;
 }
 
