@@ -290,10 +290,14 @@ static NSDictionary *fdxIds;
 	Line *previousLine;
 	for (Line* line in self.parser.lines) {
 		// Skip omited lines
-		if (line.omitted) continue;
+		if (line.omitted) {
+			previousLine = line;
+			continue;
+		}
 
 		if ((line.type == action && previousLine.type == action) ||
 			(line.type == lyrics && previousLine.type == lyrics)) {
+			NSLog(@"join %@ with %@", previousLine, line);
 			[previousLine joinWithLine:line];
 			continue;
 		}
