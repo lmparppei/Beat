@@ -297,7 +297,6 @@ static NSDictionary *fdxIds;
 
 		if ((line.type == action && previousLine.type == action) ||
 			(line.type == lyrics && previousLine.type == lyrics)) {
-			NSLog(@"join %@ with %@", previousLine, line);
 			[previousLine joinWithLine:line];
 			continue;
 		}

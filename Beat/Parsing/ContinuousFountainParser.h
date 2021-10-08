@@ -35,6 +35,7 @@
 @property (nonatomic, readonly) NSMutableArray *storylines;
 @property (nonatomic, readonly) bool hasTitlePage;
 - (void)parseText:(NSString*)text;
+- (Line*)lineAtIndex:(NSInteger)index;
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSString*)cleanedString;
@@ -42,6 +43,7 @@
 - (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
+- (OutlineScene*)sceneAtPosition:(NSInteger)index;
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>

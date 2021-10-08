@@ -7,6 +7,7 @@
 - Fixed underlining in breaking dialogue across pages
 - Fixed tons of other stuff
 - Preferences panel
+- Fixed FDX export
 
 
 ## Beat 1.90.3

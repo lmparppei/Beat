@@ -1092,6 +1092,10 @@
 	self.textView.automaticDataDetectionEnabled = NO;
 	self.textView.automaticQuoteSubstitutionEnabled = NO;
 	self.textView.automaticDashSubstitutionEnabled = NO;
+	
+	// Set layout style
+	if (self.hideFountainMarkup) self.textView.layoutManager.allowsNonContiguousLayout = NO;
+	else self.textView.layoutManager.allowsNonContiguousLayout = YES;
 
 	// Create a default paragraph style for line height
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
@@ -3842,6 +3846,9 @@ static NSString *revisionAttribute = @"Revision";
 - (IBAction)toggleHideFountainMarkup:(id)sender {
 	self.hideFountainMarkup = !self.hideFountainMarkup;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+	
+	if (self.hideFountainMarkup) self.textView.layoutManager.allowsNonContiguousLayout = NO;
+	else self.textView.layoutManager.allowsNonContiguousLayout = YES;
 	
 	[self.textView toggleHideFountainMarkup];
 	[self updateLayout];

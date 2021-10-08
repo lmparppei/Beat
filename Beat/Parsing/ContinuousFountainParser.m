@@ -1863,6 +1863,9 @@ and incomprehensible system of recursion.
 	return result;
 }
 
+- (Line*)lineAtIndex:(NSInteger)position {
+	return [self lineAtPosition:position];
+}
 - (Line*)lineAtPosition:(NSInteger)position {
 	// Let's check the cached line first
 	if (NSLocationInRange(position, _prevLineAtLocation.range)) {
@@ -1892,6 +1895,9 @@ and incomprehensible system of recursion.
 }
 
 - (OutlineScene*)sceneAtIndex:(NSInteger)index {
+	return [self sceneAtPosition:index];
+}
+- (OutlineScene*)sceneAtPosition:(NSInteger)index {
 	for (OutlineScene *scene in self.outline) {
 		if (NSLocationInRange(index, scene.range)) return scene;
 	}
