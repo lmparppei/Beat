@@ -133,6 +133,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 // Scale factor
 @property (nonatomic) CGFloat scaleFactor;
 
+// Scroll wheel behavior
+@property (nonatomic) bool scrolling;
+@property (nonatomic) bool selectionAtEnd;
+
 @end
 
 @implementation BeatTextView
@@ -407,6 +411,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (void)typewriterScroll {
 	if (self.needsLayout) [self layout];
+	[self.layoutManager ensureLayoutForCharacterRange:self.editorDelegate.currentLine.range];
 
 	// So, we'll try to center the caret.
 	// Trouble is, line heights get fucked up for some reason. This probably needs some sort of hack :-(
@@ -415,27 +420,48 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 
 	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize / 2 - 10) * self.editorDelegate.magnification;
-	/*
-	// Fix some silliness
-	CGFloat boundsY = self.textClipView.bounds.size.height + self.textClipView.bounds.origin.y;
-	CGFloat maxY = self.textView.frame.size.height;
-	CGFloat pixelsToBottom = maxY - boundsY;
-	if (pixelsToBottom < self.fontSize * _magnification * 0.5 && pixelsToBottom > 0) {
-		scrollY -= 5 * _magnification;
-	}
-	NSLog(@"bounds - max = %f", maxY - boundsY);
-	*/
 	
+	
+	// Fix some silliness
+	NSClipView *clipView = self.enclosingScrollView.documentView;
+	CGFloat boundsY = clipView.bounds.size.height + clipView.bounds.origin.y;
+	CGFloat maxY = self.frame.size.height;
+	CGFloat pixelsToBottom = maxY - boundsY;
+	if (pixelsToBottom < self.editorDelegate.fontSize * _editorDelegate.magnification * 0.5 && pixelsToBottom > 0) {
+		scrollY -= 5 * _editorDelegate.magnification;
+	}
+	
+
 	// Calculate container height with insets
 	CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
 	containerHeight = containerHeight * self.editorDelegate.magnification + self.textInsetY * 2 * self.editorDelegate.magnification;
 		
+	// how many pixels the view should shift
 	CGFloat delta = fabs(scrollY - self.superview.bounds.origin.y);
 	
-	if (scrollY < containerHeight && delta > self.editorDelegate.fontSize * self.editorDelegate.magnification) {
+	CGFloat fontSize = self.editorDelegate.fontSize * self.editorDelegate.magnification;
+	if (scrollY < containerHeight && delta > fontSize) {
 		//scrollY = containerHeight - _textClipView.frame.size.height;
 		[self.superview.animator setBoundsOrigin:NSMakePoint(0, scrollY)];
 	}
+}
+-(void)scrollWheel:(NSEvent *)event {
+	// If the user scrolls, let's ignore any other scroll behavior
+	_selectionAtEnd = NO;
+	
+	if (event.phase == NSEventPhaseBegan || event.phase == NSEventPhaseChanged) _scrolling = YES;
+	else if (event.phase == NSEventPhaseEnded) _scrolling = NO;
+	
+	[super scrollWheel:event];
+}
+-(NSRect)adjustScroll:(NSRect)newVisible {
+	if (self.editorDelegate.typewriterMode && !_scrolling && _selectionAtEnd) {
+		if (self.selectedRange.location == self.string.length) {
+			return self.enclosingScrollView.documentVisibleRect;
+		}
+	}
+	
+	return newVisible;
 }
 
 #pragma mark - Info popup
@@ -577,6 +603,19 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (self.editorDelegate.mode == TaggingMode) {
 		[self showTaggingOptions];
 	}
+	
+	if (self.editorDelegate.typewriterMode) {
+		NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+		
+		CGFloat viewOrigin = self.enclosingScrollView.documentVisibleRect.origin.y;
+		CGFloat viewHeight = self.enclosingScrollView.documentVisibleRect.size.height;
+		CGFloat y = rect.origin.y + self.textContainerInset.height;
+		if (y < viewOrigin || y > viewOrigin + viewHeight) [self typewriterScroll];
+	}
+	
+	if (self.selectedRange.location == self.string.length) _selectionAtEnd = YES;
+	else _selectionAtEnd = NO;
 }
 
 #pragma mark - Tagging / Force Element menu
@@ -1326,6 +1365,27 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (CGFloat)setInsets {
+	/*
+	// Some ideas for using a layer to achieve the "page look"
+	 
+	CGFloat factor = 1.0;
+	if (_editorDelegate.magnification > 0) factor = 1 / _editorDelegate.magnification;
+	
+	CGFloat x = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
+	
+	
+	NSRect frame = self.layer.frame;
+	frame.size.width =  _editorDelegate.documentWidth * factor;
+	frame.origin.x = x;
+		
+	self.layer.frame = frame;
+	NSSize size = self.textContainer.size;
+		
+	size.width = frame.size.width;
+	self.textContainer.size = size;
+	 
+	return 0;
+	*/
 	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
 	self.textContainer.size = NSMakeSize(_editorDelegate.documentWidth, self.textContainer.size.height);
@@ -1333,7 +1393,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self resetCursorRects];
 	[self addCursorRect:(NSRect){0,0, 200, 2500} cursor:NSCursor.crosshairCursor];
 	[self addCursorRect:(NSRect){self.frame.size.width * .5,0, self.frame.size.width * .5, self.frame.size.height} cursor:NSCursor.crosshairCursor];
-	
 	return width;
 }
 
@@ -1369,9 +1428,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Scrolling interface
 
 - (void)scrollToRange:(NSRange)range {
-	//CGFloat containerHeight = [self.layoutManager usedRectForTextContainer:self.textContainer].size.height;
-	//containerHeight = containerHeight * _zoomLevel + self.textContainerInset.height * 2 * _zoomLevel;
-	
 	NSRect rect = [self rectForRange:range];
 	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
 	
@@ -1475,6 +1531,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 -(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange {
+	
+	
 	return attrs;
 }
 
@@ -1572,93 +1630,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	//free(characters);
 	return glyphs;
 }
-
-//
-//-(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
-//
-//	NSUInteger glyphCount = glyphRange.length;
-//	NSGlyphProperty *newGlyphProperties = NULL;
-//
-//	NSString *textStorageString = layoutManager.textStorage.string;
-//
-//	CFStringRef ref = (__bridge CFStringRef)([textStorageString substringWithRange:glyphRange]);
-//	GetGlyphsForCharacters((__bridge CTFontRef)(aFont), ref);
-//
-//
-//	for (NSUInteger i = 0; i < glyphCount; i++) {
-//		NSUInteger characterIndex = charIndexes[i];
-//
-//		if ([textStorageString characterAtIndex:characterIndex] != ' ') continue;
-//
-//		/*
-////		// If we've set the whitespace control character for this space already, we have nothing to do.
-////		if (props[arrayIndex] == NSGlyphPropertyControlCharacter) {
-////			continue;
-////		}
-//
-//		// Create new glyph properties, if necessary.
-//		if (!newGlyphProperties) {
-//			newGlyphProperties = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphCount);
-//			memcpy(newGlyphProperties, props, (sizeof(NSGlyphProperty) * glyphCount));
-//		}
-//
-//		// It's a space. Make it a whitespace control character.
-//		newGlyphProperties[arrayIndex] = NSGlyphPropertyControlCharacter;
-//		 */
-//	}
-//
-//	/*
-//	// If we don't have any custom glyph properties, return 0 to indicate to the layout manager that it should use the standard glyphs+properties.
-//	if (!newGlyphProperties) {
-//		bool something = YES;
-//		if (something) {
-//			// If the text does use word kerning we have to make sure we return the correct glyphCount, or the layout manager will just use the default properties and ignore our kerning.
-//			[layoutManager setGlyphs:glyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-//			free(newGlyphProperties);
-//			return glyphCount;
-//		} else {
-//			return 0;
-//		}
-//	}
-//
-//	// Otherwise, use our custom glyph properties.
-//	[layoutManager setGlyphs:glyphs properties:newGlyphProperties characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
-//	free(newGlyphProperties);
-//	*/
-//
-//	return 0;
-//}
-//
-//void GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
-//{
-//	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
-//
-//	// Get the string length.
-//	CFIndex count = CFStringGetLength(string);
-//
-//	// Allocate our buffers for characters and glyphs.
-//	UniChar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
-//	CGGlyph *glyphs = (CGGlyph *)malloc(sizeof(CGGlyph) * count);
-//
-//	// Get the characters from the string.
-//	CFStringGetCharacters(string, CFRangeMake(0, count), characters);
-//
-//	// Get the glyphs for the characters.
-//	CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
-//
-//	// Do something with the glyphs here. Characters not mapped by this font will be zero.
-//	// ...
-//	for (int i = 0; i < count; i ++) {
-//		if (characters[i] != 0) {
-//
-//		}
-//	}
-//
-//	// Free the buffers
-//	free(characters);
-//	free(glyphs);
-//}
-//
 
 
 #pragma mark - Text Storage delegation

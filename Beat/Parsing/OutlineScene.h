@@ -23,6 +23,7 @@
 
 @property (nonatomic, readonly) NSUInteger position;
 @property (nonatomic, readonly) NSUInteger length;
+@property (nonatomic, readonly) NSUInteger printedLength;
 @property (nonatomic, readonly) NSUInteger sceneLength; // backwards compatibility
 @property (nonatomic, readonly) NSInteger sectionDepth; // backwards compatibility
 
@@ -50,6 +51,7 @@
 
 @property (nonatomic, readonly) NSUInteger position;
 @property (nonatomic) NSUInteger length;
+@property (nonatomic) NSUInteger printedLength;
 @property (nonatomic, readonly) NSUInteger sceneStart;  // backwards compatibility
 @property (nonatomic, readonly) NSUInteger sceneLength;  // backwards compatibility
 

@@ -63,7 +63,7 @@
 		NSFontAttributeName: [NSFont systemFontOfSize:13.0]
 	};
 	
-	NSMutableAttributedString *fileResult = [[NSMutableAttributedString alloc] initWithString:[[item URLByDeletingPathExtension] lastPathComponent] attributes:fileAttributes];
+	NSMutableAttributedString *fileResult = [[NSMutableAttributedString alloc] initWithString:fileUrl.URLByDeletingPathExtension.lastPathComponent attributes:fileAttributes];
 		
 	if (fileResult.size.width > outlineView.frame.size.width - 40) {
 		NSInteger i = [item URLByDeletingPathExtension].lastPathComponent.length;
@@ -97,6 +97,7 @@
 		NSFontAttributeName: [NSFont systemFontOfSize:10.0]
 	}];
 
+	[fileUrl.URLByDeletingLastPathComponent stopAccessingSecurityScopedResource];
 	[fileResult appendAttributedString:dateResult];
  
 	return fileResult;

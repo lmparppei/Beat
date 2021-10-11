@@ -40,9 +40,6 @@ typedef enum : NSInteger {
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic, readonly) NSUInteger documentWidth;
 @property (nonatomic, readonly) ContinuousFountainParser *parser;
-@property (readonly) NSFont *courier;
-@property (readonly) NSFont *boldCourier;
-@property (readonly) NSFont *italicCourier;
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) BeatEditorMode mode;	
 @property (readonly) bool trackChanges;
@@ -53,6 +50,11 @@ typedef enum : NSInteger {
 @property (readonly) NSUInteger fontSize;
 @property (readonly) bool typewriterMode;
 @property (readonly) bool hideFountainMarkup;
+
+@property (readonly, nonatomic) NSFont *courier;
+@property (readonly, nonatomic) NSFont *boldCourier;
+@property (readonly, nonatomic) NSFont *boldItalicCourier;
+@property (readonly, nonatomic) NSFont *italicCourier;
 
 @property (nonatomic, readonly) Line *previouslySelectedLine;
 @property (nonatomic, readonly) Line *currentLine;

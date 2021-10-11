@@ -888,7 +888,6 @@ static NSDictionary* patterns;
             line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
         }
 		
-		line.color = [self colorForHeading:line];
 		line.storylines = [self storylinesForHeading:line];
     }
 	
@@ -896,6 +895,9 @@ static NSDictionary* patterns;
 	if (line.type == heading || line.type == section || line.type == synopse) {
 		line.color = [self colorForHeading:line];
 	}
+	
+	// Markers
+	line.marker = [self markerForLine:line];
 	
 	if (line.isTitlePage) {
 		if ([line.string containsString:@":"] && line.string.length > 0) {
@@ -1490,6 +1492,18 @@ and incomprehensible system of recursion.
     return NSMakeRange(0, 0);
 }
 
+- (NSString *)markerForLine:(Line*)line {
+	__block NSString *markerColor = @"";
+	
+	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSString *note = [line.string substringWithRange:range].lowercaseString;
+		if ([note containsString:@"[[marker "] && note.length > @"[[marker ]]".length) {
+			markerColor = [note substringWithRange:(NSRange){ @"[[marker ".length, note.length - @"[[marker ".length - 2 }];
+		}
+	}];
+
+	return markerColor;
+}
 - (NSString *)colorForHeading:(Line *)line
 {
 	__block NSString *color = @"";
@@ -1611,7 +1625,7 @@ and incomprehensible system of recursion.
 	return [_outline count];
 }
 
-- (OutlineScene*) getOutlineForLine: (Line *) line {
+- (OutlineScene*)getOutlineForLine: (Line *) line {
 	for (OutlineScene * item in _outline) {
 		if (item.line == line) {
 			return item;
@@ -1648,7 +1662,6 @@ and incomprehensible system of recursion.
 	OutlineScene *previousScene;
 	
 	// This is for allowing us to include synopses INSIDE scenes when needed
-	OutlineScene *sceneBlock;
 	Line *previousLine;
 	
 	NSInteger sceneIndex = 0;
@@ -1723,28 +1736,14 @@ and incomprehensible system of recursion.
 			}
 			
 			if (previousScene) {
-				// If this is a synopsis line, it might need to be included in the previous scene length (for moving them around)
-				if (scene.type == synopse) {
-					if (previousLine.type == heading) {
-						// This synopsis belongs into a block, so don't set the length for previous scene
-						sceneBlock = previousScene;
-					} else {
-						// Act normally
-						previousScene.length = scene.position - previousScene.position;
-					}
-				} else {
-					if (sceneBlock) {
-						// Reset scene block
-						sceneBlock.length = scene.position - sceneBlock.position;
-						sceneBlock = nil;
-					} else {
-						previousScene.length = scene.position - previousScene.position;
-					}
-				}
+				// Calculate synopses inside the scenes
+				if (scene.type != synopse) previousScene.length = scene.position - previousScene.position;
+				else scene.length = line.string.length;
+
 			}
 			
 			// Set previous scene to point to the current one
-			previousScene = scene;
+			if (scene.type != synopse) previousScene = scene;
 			
 			// This was a new scene
 			if (sceneIndex >= _outline.count) [_outline addObject:scene];
@@ -1757,6 +1756,13 @@ and incomprehensible system of recursion.
 		if (line.type == character && previousScene.type == heading) {
 			NSString *characterName = line.characterName;
 			if (characterName.length) [previousScene.characters addObject:characterName];
+		}
+		
+		if (!line.note && !line.omitted && line.type != empty) {
+			NSInteger length = line.range.length;
+			if (length < 1) length = 1;
+			
+			if (previousScene) previousScene.printedLength += length;
 		}
 		
 		// Done. Set the previous line.

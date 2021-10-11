@@ -44,6 +44,7 @@
 
 + (NSURL*)appDataPath:(NSString*)subPath;
 - (NSURL*)appDataPath:(NSString*)subPath;
+- (NSURL*)autosavePath;
 - (void)newDocumentWithContents:(NSString*)string;
 
 - (void)openURLInWebBrowser:(NSString*)urlString;

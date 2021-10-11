@@ -122,7 +122,7 @@
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
-	[self checkAutosavedFiles];
+	// [self checkAutosavedFiles];
 	
 	if (@available(macOS 10.14, *)) {
 		UNUserNotificationCenter *center = UNUserNotificationCenter.currentNotificationCenter;
@@ -459,6 +459,8 @@
 
 #pragma mark - Misc UI
 
+
+ 
 // Why is this here? Anyway, a method for the NSOutlineView showing recent files
 - (void)doubleClickDocument {
 	[_recentFilesSource doubleClickDocument:nil];
@@ -721,6 +723,24 @@
 }
 
 #pragma mark - Supporting methods
+
+- (NSURL*)autosavePath {
+	NSError *error;
+	NSURL *url = [NSFileManager.defaultManager URLForDirectory:NSAutosavedInformationDirectory
+													  inDomain:NSUserDomainMask
+											 appropriateForURL:nil
+														create:YES
+														 error:&error];
+	
+	url = [url URLByAppendingPathComponent:NSBundle.mainBundle.bundleIdentifier];
+	if (![NSFileManager.defaultManager fileExistsAtPath:url.path]) {
+		[NSFileManager.defaultManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:nil];
+	}
+	
+	NSLog(@" ... autsovae url %@", url);
+	
+	return url;
+}
 
 - (NSURL*)appDataPath:(NSString*)subPath {
 	//NSString* pathComponent = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];

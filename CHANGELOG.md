@@ -8,6 +8,8 @@
 - Fixed tons of other stuff
 - Preferences panel
 - Fixed FDX export
+- User manual
+- Fixes the jumping view in Typewriter Mode
 
 
 ## Beat 1.90.3

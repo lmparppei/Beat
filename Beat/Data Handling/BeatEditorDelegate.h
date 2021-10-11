@@ -19,6 +19,8 @@
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (nonatomic, readonly) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
+@property (nonatomic, readonly) bool typewriterMode;
+
 
 @property (nonatomic, readonly) CGFloat magnification;
 @property (nonatomic) CGFloat inset;
@@ -47,6 +49,10 @@
 
 - (void)showLockStatus;
 - (bool)contentLocked;
+
+// This determines if the text has changed since last query
+- (bool)hasChanged;
+- (NSArray*)markers;
 
 - (void)showTitleBar;
 - (void)hideTitleBar;

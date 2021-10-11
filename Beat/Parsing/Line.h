@@ -112,8 +112,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSInteger length;
 
-@property bool omitIn; /// Wether the line terminates an unfinished omit
-@property bool omitOut; /// Wether the line starts a note and doesn't finish it
+@property (nonatomic) bool omitIn; /// Wether the line terminates an unfinished omit
+@property (nonatomic) bool omitOut; /// Wether the line starts a note and doesn't finish it
 
 @property (nonatomic) bool noteIn; /// Wether the line terminates an unfinished note
 @property (nonatomic) bool noteOut; /// Wether the line starts a note and doesn't finish it
@@ -168,11 +168,14 @@ typedef enum : NSUInteger {
 - (NSString*)stripNotes;
 - (NSString*)stringForDisplay;
 
-@property bool isSplitParagraph; /// This element contains line breaks
-@property bool nextElementIsDualDialogue; /// Note: this is ONLY used for non-continuous parsing
+@property (nonatomic) bool isSplitParagraph; /// This element contains line breaks
+@property (nonatomic) bool nextElementIsDualDialogue; /// Note: this is ONLY used for non-continuous parsing
 
 // Properties for pagination
-@property bool unsafeForPageBreak; /// EXPERIMENTAL
+@property (nonatomic) bool unsafeForPageBreak; /// EXPERIMENTAL
+
+// Markers
+@property (nonatomic) NSString *marker;
 
 // For FDX export
 - (NSAttributedString*)attributedStringForFDX;
@@ -190,7 +193,7 @@ typedef enum : NSUInteger {
 
 // For comparing with another version
 // (Is this still used?)
-@property bool changed;
+@property (nonatomic) bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
 
 // For some undo operations

@@ -178,6 +178,9 @@
 @property (nonatomic) bool headingStyleBold;
 @property (nonatomic) bool headingStyleUnderline;
 
+// Change query
+@property (nonatomic) NSString *bufferedText;
+
 // Outline view
 @property (weak) IBOutlet BeatOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
@@ -402,8 +405,6 @@
 	self.beatTimer = nil;
 	
 	self.preview = nil;
-	// Without this, BeatTextView is retained. I haven't found the reason for now.
-	self.textView = nil;
 	
 	[self.textScrollView.mouseMoveTimer invalidate];
 	[self.textScrollView.timerMouseMoveTimer invalidate];
@@ -441,7 +442,8 @@
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document close" object:nil];
 	
 	// Do we need this?
-	// if (self.fileURL) [self.fileURL stopAccessingSecurityScopedResource];
+	//if (self.fileURL) [self.fileURL stopAccessingSecurityScopedResource];
+	//if (self.autosavedContentsFileURL) [self.autosavedContentsFileURL stopAccessingSecurityScopedResource];
 	
 	[super close];
 }
@@ -1015,6 +1017,7 @@
     NSData *dataRepresentation = [[self createDocumentFile] dataUsingEncoding:NSUTF8StringEncoding];
     return dataRepresentation;
 }
+
 - (NSString*)createDocumentFile {
 	// This puts together string content & settings block. It is returned to dataOfType:
 	
@@ -1050,6 +1053,11 @@
 	return [NSString stringWithFormat:@"%@%@", content, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
 
+
+- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError {
+	if (![url checkResourceIsReachableAndReturnError:outError]) return NO;
+	return [super readFromURL:url ofType:typeName error:outError];
+}
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError {
 	return [self readFromData:data ofType:typeName error:outError reverting:NO];
 }
@@ -2136,7 +2144,7 @@
 			[self.textView setSelectedRange:selectedRange];
 		}
 	}
-		
+	
 	if (line.type == heading) {
 		// Format heading
 		
@@ -2325,16 +2333,27 @@
 		[textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
 	}
 
-	//Add selected attributes
+	// Add selected attributes
 	if (range.length > 0) {
 		[textStorage addAttributes:attributes range:range];
 		// Future consideration:
-		// [self.textView.layoutManager setTemporaryAttributes:attributes forCharacterRange:range];
+		//[self.textView.layoutManager setTemporaryAttributes:attributes forCharacterRange:range];
 	} else {
 		// Add attributes ahead
 		if (range.location + 1 < textStorage.string.length) {
 			range = NSMakeRange(range.location, range.length + 1);
 			[textStorage addAttributes:attributes range:range];
+		}
+	}
+	
+	// Color markers
+	[self.textView.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:line.textRange];
+	if (line.marker.length) {
+		NSColor *color = [BeatColors color:line.marker];
+		if (color) {
+			[self.textView.layoutManager setTemporaryAttributes:@{
+				NSForegroundColorAttributeName: color
+			} forCharacterRange:line.textRange];
 		}
 	}
 	
@@ -4662,6 +4681,23 @@ static NSString *revisionAttribute = @"Revision";
 	[self updateQuickSettings];
 }
 
+#pragma mark - Markers
+
+- (NSArray*)markers {
+	NSMutableArray * markers = [NSMutableArray array];
+	for (Line* line in self.parser.lines) {
+		if (line.marker.length == 0) continue;
+
+		NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
+		CGFloat yPosition = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer].origin.y;
+		CGFloat relativeY = yPosition / self.textView.frame.size.height;
+			
+		[markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
+	}
+	
+	return markers;
+}
+
 #pragma mark - Timeline + chronometry
 
 - (IBAction)toggleTimeline:(id)sender
@@ -5181,22 +5217,21 @@ triangle walks
 }
 
 - (NSURL *)autosavedContentsFileURL {
-	NSURL *autosavePath = [self autosavePath];
+	NSURL *autosavePath = [(BeatAppDelegate*)NSApp.delegate autosavePath];
 	autosavePath = [autosavePath URLByAppendingPathComponent:[self fileNameString]];
 	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
 	
-	return autosavePath;
+	if (![NSFileManager.defaultManager fileExistsAtPath:autosavePath.path]) return nil;
+	else return autosavePath;
 }
 - (NSURL*)autosavePath {
 	return [BeatAppDelegate appDataPath:@"Autosave"];
 }
 
 - (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
-	self.autosavedContentsFileURL = [self autosavedContentsFileURL];
-
 	[super autosaveDocumentWithDelegate:delegate didAutosaveSelector:didAutosaveSelector contextInfo:contextInfo];
 	
-	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
+	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
 }
 - (BOOL)hasUnautosavedChanges {
@@ -5209,22 +5244,24 @@ triangle walks
  	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
 }
 
+/*
 - (void)saveDocumentAs:(id)sender {
 	// Delete old drafts when saving under a new name
 	NSString *previousName = self.fileNameString;
 	
 	[super saveDocumentAs:sender];
-	
+
 	NSURL *url = [(BeatAppDelegate*)NSApp.delegate appDataPath:@"Autosave"];
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
-	
+		 
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
 	if ([fileManager fileExistsAtPath:url.path]) {
 		[fileManager removeItemAtURL:url error:nil];
 	}
 }
+ */
 
 
 #pragma mark - split view listener
@@ -5506,6 +5543,16 @@ triangle walks
 
 -(bool)contentLocked {
 	return [self.documentSettings getBool:@"Locked"];
+}
+
+#pragma mark - For throttling
+
+- (bool)hasChanged {
+	if ([self.textView.string isEqualToString:self.bufferedText]) return NO;
+	else {
+		self.bufferedText = [NSString stringWithString:self.textView.string];
+		return YES;
+	}
 }
 
 #pragma mark - Testing methods

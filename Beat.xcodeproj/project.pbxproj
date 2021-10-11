@@ -84,6 +84,8 @@
 		B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B645A97E23CD03CC00F13710 /* NSString+Regex.m */; };
 		B6482F7922195BEC00175927 /* BeatTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6482F7822195BEC00175927 /* BeatTextView.m */; };
 		B650D76D25CF349D0042010C /* BeatTagging.m in Sources */ = {isa = PBXBuildFile; fileRef = B650D76C25CF349D0042010C /* BeatTagging.m */; };
+		B655B1062714607700BA52ED /* BeatMarkerScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B655B1052714607700BA52ED /* BeatMarkerScroller.m */; };
+		B655B1072714607700BA52ED /* BeatMarkerScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B655B1052714607700BA52ED /* BeatMarkerScroller.m */; };
 		B65B148525FF815E0087834F /* BeatRevisionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65B148425FF815E0087834F /* BeatRevisionItem.m */; };
 		B65F02B125B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B65F02AF25B82BF8009E1D04 /* BeatAnalysisPanel.m */; };
 		B65F02B325B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B65F02B025B82BF8009E1D04 /* BeatAnalysisPanel.xib */; };
@@ -98,6 +100,8 @@
 		B667796523C5D1CB0029D508 /* FDXImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B667796423C5D1CB0029D508 /* FDXImport.m */; };
 		B667CD3F26ED316100274660 /* BeatHTMLPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B667CD3E26ED316100274660 /* BeatHTMLPanel.m */; };
 		B667CD4026ED316100274660 /* BeatHTMLPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B667CD3E26ED316100274660 /* BeatHTMLPanel.m */; };
+		B667D57C2711EDF1006B1285 /* BeatClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B667D57B2711EDF1006B1285 /* BeatClipView.m */; };
+		B667D57D2711EDF1006B1285 /* BeatClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B667D57B2711EDF1006B1285 /* BeatClipView.m */; };
 		B66B970E26C03E3200FB0B47 /* BeatDocumentSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */; };
 		B66DB76F2651690000E2C30B /* BeatPluginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66DB76E2651690000E2C30B /* BeatPluginWindow.m */; };
 		B66DB7702651690000E2C30B /* BeatPluginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66DB76E2651690000E2C30B /* BeatPluginWindow.m */; };
@@ -588,6 +592,8 @@
 		B65027EF256EAAAF00862A14 /* Info Pro.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info Pro.plist"; sourceTree = "<group>"; };
 		B650D76B25CF349D0042010C /* BeatTagging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagging.h; sourceTree = "<group>"; };
 		B650D76C25CF349D0042010C /* BeatTagging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagging.m; sourceTree = "<group>"; };
+		B655B1042714607700BA52ED /* BeatMarkerScroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatMarkerScroller.h; sourceTree = "<group>"; };
+		B655B1052714607700BA52ED /* BeatMarkerScroller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMarkerScroller.m; sourceTree = "<group>"; };
 		B65B148325FF815E0087834F /* BeatRevisionItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionItem.h; sourceTree = "<group>"; };
 		B65B148425FF815E0087834F /* BeatRevisionItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionItem.m; sourceTree = "<group>"; };
 		B65F02AE25B82BF8009E1D04 /* BeatAnalysisPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatAnalysisPanel.h; sourceTree = "<group>"; };
@@ -610,6 +616,8 @@
 		B667796423C5D1CB0029D508 /* FDXImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FDXImport.m; sourceTree = "<group>"; };
 		B667CD3D26ED316100274660 /* BeatHTMLPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLPanel.h; sourceTree = "<group>"; };
 		B667CD3E26ED316100274660 /* BeatHTMLPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLPanel.m; sourceTree = "<group>"; };
+		B667D57A2711EDF1006B1285 /* BeatClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatClipView.h; sourceTree = "<group>"; };
+		B667D57B2711EDF1006B1285 /* BeatClipView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatClipView.m; sourceTree = "<group>"; };
 		B66DB76D2651690000E2C30B /* BeatPluginWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginWindow.h; sourceTree = "<group>"; };
 		B66DB76E2651690000E2C30B /* BeatPluginWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginWindow.m; sourceTree = "<group>"; };
 		B66ED8BC25AA5BF100C77A03 /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
@@ -1145,6 +1153,8 @@
 				B644DBE3260605D30091AEAB /* BeatEditorButton.m */,
 				B60FAD7426A1D4960019A77B /* BeatLockButton.h */,
 				B60FAD7526A1D4960019A77B /* BeatLockButton.m */,
+				B667D57A2711EDF1006B1285 /* BeatClipView.h */,
+				B667D57B2711EDF1006B1285 /* BeatClipView.m */,
 			);
 			name = "Editor View";
 			sourceTree = "<group>";
@@ -1212,6 +1222,8 @@
 				B606721025F5413C00CBDC7A /* ValidationItem.m */,
 				B60D192526B0811E005C2693 /* BeatNotifications.h */,
 				B60D192626B0811E005C2693 /* BeatNotifications.m */,
+				B655B1042714607700BA52ED /* BeatMarkerScroller.h */,
+				B655B1052714607700BA52ED /* BeatMarkerScroller.m */,
 			);
 			name = "User Interface";
 			path = "../Beat/User Interface";
@@ -2020,6 +2032,7 @@
 				B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */,
 				B66F463B2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */,
 				B663680524CE1E64009A1693 /* BeatTest.m in Sources */,
+				B655B1062714607700BA52ED /* BeatMarkerScroller.m in Sources */,
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
 				B6F15CE525E7B13000176946 /* BeatTagItem.m in Sources */,
@@ -2076,6 +2089,7 @@
 				B616493E26F7535600582671 /* BeatPasteboardItem.m in Sources */,
 				B6D2B70B2218B342005B8447 /* Line.m in Sources */,
 				B600DD5F254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */,
+				B667D57C2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */,
 				B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */,
@@ -2174,6 +2188,7 @@
 				B68B603A260B849300463AD8 /* FountainAnalysis.m in Sources */,
 				B68B603B260B849300463AD8 /* DiffMatchPatchCFUtilities.c in Sources */,
 				B68B603C260B849300463AD8 /* BeatTest.m in Sources */,
+				B655B1072714607700BA52ED /* BeatMarkerScroller.m in Sources */,
 				B68B603D260B849300463AD8 /* Theme.m in Sources */,
 				B68B603E260B849300463AD8 /* PrintView.m in Sources */,
 				B68B603F260B849300463AD8 /* BeatTagItem.m in Sources */,
@@ -2230,6 +2245,7 @@
 				B616493F26F7535800582671 /* BeatPasteboardItem.m in Sources */,
 				B68B6066260B849300463AD8 /* Line.m in Sources */,
 				B68B6067260B849300463AD8 /* BeatDocumentSettings.m in Sources */,
+				B667D57D2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B68B6068260B849300463AD8 /* BeatEditorButton.m in Sources */,
 				B68B6069260B849300463AD8 /* TouchTimelinePopover.m in Sources */,
 				B68B606A260B849300463AD8 /* OutlineViewItem.m in Sources */,
@@ -2445,7 +2461,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13146;
+				CURRENT_PROJECT_VERSION = 13150;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2484,7 +2500,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13146;
+				CURRENT_PROJECT_VERSION = 13150;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2523,7 +2539,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13146;
+				CURRENT_PROJECT_VERSION = 13150;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2555,7 +2571,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13146;
+				CURRENT_PROJECT_VERSION = 13150;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2584,7 +2600,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13146;
+				CURRENT_PROJECT_VERSION = 13149;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2617,7 +2633,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13146;
+				CURRENT_PROJECT_VERSION = 13149;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
