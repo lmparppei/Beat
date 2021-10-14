@@ -639,11 +639,11 @@
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
 	[_sideViewCostraint setConstant:0];
-	
+		
 	// The document width constant is ca. A4 width compared to the font size.
 	// It's used here and there for proportional measurement.
 	
-	if ([BeatUserDefaults.sharedDefaults getInteger:@"defaultPaperSize"] == BeatA4) {
+	if ([(NSNumber*)[BeatUserDefaults.sharedDefaults get:@"defaultPageSize"] integerValue] == BeatA4) {
 		_documentWidth = DOCUMENT_WIDTH_A4;
 	} else {
 		_documentWidth = DOCUMENT_WIDTH_US;
@@ -1472,6 +1472,20 @@
         }
     }
 	
+	// When on a parenthetical, parenthesis on the line when pressing enter
+	if (_currentLine.type == parenthetical && [replacementString isEqualToString:@"\n"] && self.selectedRange.length == 0) {
+		if (self.textView.string.length >= affectedCharRange.location + 1) {
+			char chr = [self.textView.string characterAtIndex:affectedCharRange.location];
+			if (chr == ')') {
+				[self addString:@"\n" atIndex:affectedCharRange.location + 1];
+				Line *nextLine = [self getNextLine:_currentLine];
+				[self formatLineOfScreenplay:nextLine];
+				[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
+				return NO;
+			}
+		}
+	}
+	
 	// Add an extra line break after some elements
 	bool processDoubleBreak = NO;
 	
@@ -1586,6 +1600,11 @@
 	_previewUpdated = NO;
     return YES;
 }
+- (Line*)getPreviousLine:(Line*)line {
+	NSInteger i = [self.parser.lines indexOfObject:line];
+	if (i > 0) return self.parser.lines[i - 1];
+	else return nil;
+}
 - (Line*)getNextLine:(Line*)line {
 	NSInteger i = [self.parser.lines indexOfObject:line];
 	if (i < self.parser.lines.count - 1 && i != NSNotFound) {
@@ -1664,7 +1683,7 @@
 	}
 	
 	[self applyFormatChanges];
-	//[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	[self.textView.layoutManager ensureLayoutForCharacterRange:_lastChangedRange];
 	
 	// If the outline has changed, update all labels
 	if (changeInOutline) [self updateSceneNumberLabels:0];
@@ -2650,102 +2669,6 @@
 - (bool)caretAtEnd {
 	if (self.textView.selectedRange.location == self.textView.string.length) return YES;
 	else return NO;
-}
-
-- (void)headingChangedToActionAt:(Line*)line {
-	// NOTE: Everything that this method does has been replaced by layout manager delegation
-	NSLog(@"NOTE: headingChangedToActionAt is deprecated. Remove it from parser.");
-	return;
-	
-	
-	/*
-	if (!NSThread.isMainThread) return;
-
-	// The parser has changed a presumed line element back into action/something else,
-	// but the Line element should still have the original string value intact.
-	
-	// The parser is way ahead of the textView here, so we need to take it into account with text ranges, as
-	// the last character has not been added into view yet. This signal has come right from parser level.
-	
-	// If the change happened MID-LINE, we need to pull off some tricks to restore the original
-	// line object content, by replacing the head & tail part in the storage, before textView
-	// does the actual removal/addition
-		
-	if (self.selectedRange.location + self.selectedRange.length == line.position + line.string.length -1) {
-		[self.textView.textStorage replaceCharactersInRange:NSMakeRange(line.position, line.string.length - 1) withString:[line.string substringToIndex:line.string.length - 1]];
-	} else {
-		if (line.previousString == nil) return;
-		
-		NSRange selectedRange = self.textView.selectedRange;
-		
-		// We need to pull some tricks here. Probably
-		NSInteger diff = line.previousString.length - line.string.length;
-		
-		NSRange headRange;
-		NSRange tailRange;
-		
-
-		if (selectedRange.length < 1) {
-			// Change happened without a selected range
-			headRange = (NSRange){ 0, selectedRange.location - line.position - diff };
-			tailRange = (NSRange){ selectedRange.location + selectedRange.length - line.position - diff, line.position + line.length - selectedRange.location - selectedRange.length + diff };
-		} else {
-			// Change was made over multiple characters
-			// Head is until the beginning of the selection
-			headRange = (NSRange){ 0, self.selectedRange.location - line.position };
-			
-			// Tail calculation is a bit more complex
-			if (diff < 0) {
-				// Something was added
-				tailRange = (NSRange){ selectedRange.location - line.position, line.position + line.length - selectedRange.location };
-			} else {
-				// Something was removed
-				tailRange = (NSRange){ selectedRange.location - line.position, line.position + line.length - selectedRange.location };
-			}
-		}
-		
-		// Original line in storage
-		//NSRange lineRangeInStorage = (NSRange){ line.position, line.previousString.length };
-		
-		//NSLog(@"original line: %@", [_textView.textStorage.string substringWithRange:lineRangeInStorage]);
-		NSString *head = [line.string substringWithRange:headRange];
-		NSString *tail = [line.string substringWithRange:tailRange];
-		
-		NSRange headInStorage = (NSRange){ line.position, headRange.length };
-		NSRange tailInStorage = (NSRange){ line.position + line.previousString.length - tailRange.length, tailRange.length };
-		
-		// Replace head & tail with the original string
-		[_textView.textStorage replaceCharactersInRange:headInStorage withString:head];
-		[_textView.textStorage replaceCharactersInRange:tailInStorage withString:tail];
-		
-		[_textView setSelectedRange:selectedRange];
-	}
-	*/
-}
-
-- (void)actionChangedToHeadingAt:(Line*)line {
-	NSLog(@"NOTE: actionChangedToHeadingAt is deprecated. Remove it from parser.");
-	
-	/*
-	if (!NSThread.isMainThread) return;
-	if (_moving) return;
-	
-	
-	// The parser changed a line with some text already on it into a scene heading, for example by by typing int. at the start of a line.
-	NSRange range = NSMakeRange(line.position, line.string.length - 1);
-	
-	// This can happen when moving strings, ignore
-	if (range.location + range.length > self.textView.string.length) return;
-	
-	NSString *string = [self.textView.textStorage.string substringWithRange:range];
-
-	[self.undoManager beginUndoGrouping];
-	[self.undoManager registerUndoWithTarget:self handler:^(id _Nonnull target) {
-		[self replaceCharactersInRange:range withString:string];
-		[self.textView setSelectedRange:NSMakeRange(range.location, 0)];
-	}];
-	[self.undoManager endUndoGrouping];
-	*/
 }
 
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices {
@@ -5168,8 +5091,6 @@ triangle walks
  
  */
 
-// Oh well. Let's not autosave and instead have the good old "save as..." button in the menu.
-
 + (BOOL)autosavesInPlace {
 	return NO;
 }
@@ -5217,18 +5138,19 @@ triangle walks
 }
 
 - (NSURL *)autosavedContentsFileURL {
-	NSURL *autosavePath = [(BeatAppDelegate*)NSApp.delegate autosavePath];
+	//NSURL *autosavePath = [(BeatAppDelegate*)NSApp.delegate autosavePath];
+	NSURL *autosavePath = [self autosavePath];
 	autosavePath = [autosavePath URLByAppendingPathComponent:[self fileNameString]];
 	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
 	
-	if (![NSFileManager.defaultManager fileExistsAtPath:autosavePath.path]) return nil;
-	else return autosavePath;
+	return autosavePath;
 }
 - (NSURL*)autosavePath {
 	return [BeatAppDelegate appDataPath:@"Autosave"];
 }
 
 - (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
+	self.autosavedContentsFileURL = [self autosavedContentsFileURL];
 	[super autosaveDocumentWithDelegate:delegate didAutosaveSelector:didAutosaveSelector contextInfo:contextInfo];
 	
 	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
@@ -5244,7 +5166,7 @@ triangle walks
  	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
 }
 
-/*
+
 - (void)saveDocumentAs:(id)sender {
 	// Delete old drafts when saving under a new name
 	NSString *previousName = self.fileNameString;
@@ -5261,7 +5183,6 @@ triangle walks
 		[fileManager removeItemAtURL:url error:nil];
 	}
 }
- */
 
 
 #pragma mark - split view listener

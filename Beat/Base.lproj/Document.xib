@@ -1739,12 +1739,12 @@ Gw
         <image name="Color_Pink" width="15" height="15"/>
         <image name="Color_Purple" width="15" height="15"/>
         <image name="Color_Red" width="15" height="15"/>
-        <image name="NSLockLockedTemplate" width="14" height="15"/>
+        <image name="NSLockLockedTemplate" width="15" height="15"/>
         <image name="NSRefreshTemplate" width="14" height="16"/>
         <image name="NSStatusNone" width="16" height="16"/>
         <image name="NSStopProgressFreestandingTemplate" width="15" height="15"/>
-        <image name="NSTouchBarGoDownTemplate" width="15" height="9"/>
-        <image name="NSTouchBarGoUpTemplate" width="15" height="9"/>
+        <image name="NSTouchBarGoDownTemplate" width="16" height="9"/>
+        <image name="NSTouchBarGoUpTemplate" width="16" height="9"/>
         <image name="OutlineIcon" width="370" height="370"/>
         <image name="OutlineIcon_white" width="512" height="512"/>
         <image name="PreviewIcon" width="370" height="370"/>

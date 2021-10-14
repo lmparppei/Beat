@@ -29,8 +29,8 @@
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item {
-	NSArray *files = [NSDocumentController.sharedDocumentController recentDocumentURLs];
-	return [files count];
+	NSArray *files = NSDocumentController.sharedDocumentController.recentDocumentURLs;
+	return files.count;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
@@ -38,7 +38,7 @@
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item {
-	NSArray *array = [NSDocumentController.sharedDocumentController recentDocumentURLs];
+	NSArray *array = NSDocumentController.sharedDocumentController.recentDocumentURLs;
 	return [array objectAtIndex:index];
 }
 
@@ -77,7 +77,7 @@
 	// Get file date
 	[fileUrl getResourceValue:&fileDate forKey:NSURLContentModificationDateKey error:&error];
 	if (!error) {
-		NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[item path] error:&error];
+		NSDictionary *attributes = [NSFileManager.defaultManager attributesOfItemAtPath:fileUrl.path error:&error];
 		
 		fileDate = (NSDate*)[attributes objectForKey: NSFileModificationDate];
 		date = [NSDateFormatter localizedStringFromDate:fileDate

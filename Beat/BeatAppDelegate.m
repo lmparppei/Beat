@@ -122,7 +122,7 @@
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
-	// [self checkAutosavedFiles];
+	// if (!(NSEvent.modifierFlags & NSEventModifierFlagShift)) [self checkAutosavedFiles];
 	
 	if (@available(macOS 10.14, *)) {
 		UNUserNotificationCenter *center = UNUserNotificationCenter.currentNotificationCenter;
@@ -149,8 +149,8 @@
 	[self checkDarkMode];
 
 	// Only open splash screen if no documents were opened by default
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	if ([openDocuments count] == 0 && self.startModal && ![self.startModal isVisible]) {
+	NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
+	if (openDocuments.count == 0 && self.startModal && !self.startModal.isVisible) {
 		[self.startModal setIsVisible:true];
 	}
 	
@@ -230,6 +230,7 @@
 		appSupportDir = [appSupportDir stringByAppendingPathComponent:@"Autosave"];
 		
 		NSArray *files = [fileManager contentsOfDirectoryAtPath:appSupportDir error:nil];
+		NSLog(@"filwes %@", files);
 		
 		for (NSString *file in files) {
 			if (![file.pathExtension isEqualToString:@"fountain"]) continue;
@@ -723,24 +724,6 @@
 }
 
 #pragma mark - Supporting methods
-
-- (NSURL*)autosavePath {
-	NSError *error;
-	NSURL *url = [NSFileManager.defaultManager URLForDirectory:NSAutosavedInformationDirectory
-													  inDomain:NSUserDomainMask
-											 appropriateForURL:nil
-														create:YES
-														 error:&error];
-	
-	url = [url URLByAppendingPathComponent:NSBundle.mainBundle.bundleIdentifier];
-	if (![NSFileManager.defaultManager fileExistsAtPath:url.path]) {
-		[NSFileManager.defaultManager createDirectoryAtURL:url withIntermediateDirectories:YES attributes:nil error:nil];
-	}
-	
-	NSLog(@" ... autsovae url %@", url);
-	
-	return url;
-}
 
 - (NSURL*)appDataPath:(NSString*)subPath {
 	//NSString* pathComponent = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];

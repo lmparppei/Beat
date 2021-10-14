@@ -132,6 +132,18 @@
 		return [NSUserDefaults.standardUserDefaults boolForKey:settingKey];
 	}
 }
+- (id)get:(NSString*)docKey {
+	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSArray *values = userDefaults[docKey];
+	
+	NSString *settingKey = values[0];
+	if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
+		return values[1];
+	} else {
+		return [NSUserDefaults.standardUserDefaults valueForKey:settingKey];
+	}
+}
+
 - (void)saveBool:(bool)value forKey:(NSString*)key
 {
 	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];

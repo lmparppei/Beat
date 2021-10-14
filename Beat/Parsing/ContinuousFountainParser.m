@@ -959,6 +959,7 @@ and incomprehensible system of recursion.
     NSUInteger length = [string length];
 	NSString* trimmedString = [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
+	LineType oldType = line.type;
 	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 	
 	// So we need to pull all sorts of tricks out of our sleeve here.
@@ -1226,6 +1227,11 @@ and incomprehensible system of recursion.
             }
         }
     }
+	else if (preceedingLine.type == action && preceedingLine.length > 0 && preceedingLine.string.onlyUppercaseUntilParenthesis && line.length > 0) {
+		preceedingLine.type = character;
+		[_changedIndices addIndex:index-1];
+		return dialogue;
+	}
     
     //Check for centered text
     if (firstChar == '>' && lastChar == '<') {

@@ -20,8 +20,6 @@
 
 - (NSInteger)sceneNumberingStartsFrom;
 - (NSRange)selectedRange;
-- (void)headingChangedToActionAt:(Line*)line;
-- (void)actionChangedToHeadingAt:(Line*)line;
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
 - (void)applyFormatChanges;
 @end

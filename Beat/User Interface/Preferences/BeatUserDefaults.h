@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary*)userDefaults;
 - (void)readUserDefaultsFor:(id)target;
 - (void)saveBool:(bool)value forKey:(NSString*)key;
+- (id)get:(NSString*)docKey;
 - (BOOL)getBool:(NSString*)docKey;
 - (void)saveSettingsFrom:(id)target;
 - (NSInteger)getInteger:(NSString*)docKey;

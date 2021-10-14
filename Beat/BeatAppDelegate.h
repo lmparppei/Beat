@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <UserNotifications/UserNotifications.h>
+#import "BeatDocumentController.h"
 
 @interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate>
 
@@ -17,12 +18,15 @@
 @property (nonatomic) bool forceDarkMode;
 
 // Versioning menu
-@property (weak) IBOutlet NSMenu *versionMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *versionMenu;
 
 // Plugin support
-@property (weak) IBOutlet NSMenu *pluginMenu;
-@property (weak) IBOutlet NSMenu *exportMenu;
-@property (weak) IBOutlet NSMenu *importMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *pluginMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *exportMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *importMenu;
+
+// Restoration
+@property (nonatomic) bool preventRestoration;
 
 // Modifier for "pro" version, meaning the App Store edition.
 // You could think that one can just change this byte to true in the open source version, but actually the "pro" stuff is just additional content and not really restricting any other functionality in the app, so it's no use.
@@ -44,7 +48,6 @@
 
 + (NSURL*)appDataPath:(NSString*)subPath;
 - (NSURL*)appDataPath:(NSString*)subPath;
-- (NSURL*)autosavePath;
 - (void)newDocumentWithContents:(NSString*)string;
 
 - (void)openURLInWebBrowser:(NSString*)urlString;
