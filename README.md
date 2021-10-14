@@ -12,13 +12,14 @@ This started as a personal project as I needed a simple, multi-window, lightweig
 Beat is originally a fork of **Writer** by Hendrik Noeller (https://github.com/HendrikNoeller/Writer/) and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.90.1
+## Latest release: Beat 1.91.0
 
 **Features**
 * Minimalistic UI with as little distractions as possible
 * Smart, automatic screenplay formatting
 * Dark mode for the children of the night
-* Extensive support for Fountain syntax
+* Full support for Fountain syntax
+* Hide Fountain markup
 * Final Draft import / export
 * Title page editor
 * JavaScript plugin API
