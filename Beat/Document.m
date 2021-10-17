@@ -126,7 +126,8 @@
 // Autosave
 @property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
-@property (nonatomic) NSString *contentBackup;
+@property (nonatomic) NSString *contentCache;
+@property (nonatomic) NSAttributedString *attributedContentCache;
 
 // Plugin support
 @property (assign) BeatPluginManager *pluginManager;
@@ -712,7 +713,6 @@
 	return [super displayName];
 }
 
-
 // Can I come over, I need to rest
 // lay down for a while, disconnect
 // the night was so long, the day even longer
@@ -1011,6 +1011,8 @@
     return @"Document";
 }
 
+
+
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
     // Insert code here to write your document to data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning nil.
     // You can also choose to override -fileWrapperOfType:error:, -writeToURL:ofType:error:, or -writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
@@ -1022,10 +1024,16 @@
 	// This puts together string content & settings block. It is returned to dataOfType:
 	
 	// Save tagged ranges
-	[self saveTags];
+	// [self saveTags];
+	
+	// For async saving & thread safety, make a copy of the lines array
+	NSString *content = self.parser.screenplayForSaving;
+		
+	// Resort to content buffer if needed
+	if (content == nil) content = self.contentCache;
 	
 	// Save added/removed ranges
-	[self saveRevisionRanges];
+	[self saveRevisionRangesUsing:_attrTextCache];
 	
 	// Save caret position
 	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
@@ -1033,22 +1041,7 @@
 	// Save character genders (if set)
 	if (_characterGenders) [self.documentSettings set:@"CharacterGenders" as:_characterGenders];
 	
-	// Resort to content buffer if needed
-	NSMutableString *content = [NSMutableString string];
-	for (Line *line in self.parser.lines) {
-		NSString *string = line.string;
-		LineType type = line.type;
-		
-		// Make some lines uppercase
-		if ((type == heading || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
-		
-		[content appendString:string];
-		if (line != _parser.lines.lastObject) [content appendString:@"\n"];
-	}
-	
-	//NSString *text = self.getText;
-	//if (text == nil) text = _contentBuffer;
-	if (content == nil) [content setString:_contentBuffer];
+	[self unblockUserInteraction];
 	
 	return [NSString stringWithFormat:@"%@%@", content, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
 }
@@ -1127,7 +1120,7 @@
 }
 - (NSAttributedString *)getAttributedText
 {
-	return self.textView.attributedString;
+	return [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
 }
 
 - (void)setText:(NSString *)text
@@ -1593,10 +1586,6 @@
 
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
 	
-	
-	// WIP
-	[self paginateAt:affectedCharRange sync:NO];
-	
 	_previewUpdated = NO;
     return YES;
 }
@@ -1652,6 +1641,9 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
+	// Save attributed text to cache
+	_attrTextCache = [self getAttributedText];
+	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 	
@@ -1682,8 +1674,13 @@
 		if (self.timelineVisible) [_timeline refreshWithDelay];
 	}
 	
+	// Paginate
+	[self paginateAt:_lastChangedRange sync:NO];
+	
 	[self applyFormatChanges];
+	
 	[self.textView.layoutManager ensureLayoutForCharacterRange:_lastChangedRange];
+	[self.textView setNeedsDisplay:YES];
 	
 	// If the outline has changed, update all labels
 	if (changeInOutline) [self updateSceneNumberLabels:0];
@@ -1699,7 +1696,7 @@
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
 	
 	// Save to buffer
-	_contentBuffer = self.textView.string;
+	_contentCache = [NSString stringWithString:self.textView.string];
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -1730,6 +1727,8 @@
 		
 		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
 	});
+
+	if (!_typewriterMode) [self.textView scrollRangeToVisible:self.selectedRange];
 	
 	[_textView updateMarkdownView];
 }
@@ -2137,6 +2136,16 @@
 
 - (void)formatLineOfScreenplay:(Line*)line firstTime:(bool)firstTime
 {
+	/*
+	 
+	 This method uses a mixture of permanent text attributes and temporary attributes
+	 to optimize performance.
+	 
+	 Colors are set using NSLayoutManager's temporary attributes, while everything else
+	 is stored into the attributed string in NSTextStorage.
+	 
+	 */
+	
 	// Don't go out of range
 	if (line.position + line.string.length > self.textView.string.length) return;
 	
@@ -2145,8 +2154,19 @@
 	NSRange range = NSMakeRange(begin, length);
 		
 	// Let's do the real formatting now
-	NSTextStorage *textStorage = self.textView.textStorage;
+	NSLayoutManager *layoutMgr = _textView.layoutManager;
+	NSTextStorage *textStorage = _textView.textStorage;
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
+	
+	// Reset temporary attributes
+	[layoutMgr removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:line.textRange];
+	
+	// Format layout & alignment
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
+	
+	// Foreground color is TEMPORARY ATTRIBUTE
+	[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.textColor forCharacterRange:line.range];
 	
 	// Redo everything we just did for forced character input
 	if (_characterInput && _characterInputForLine == line) {
@@ -2167,35 +2187,26 @@
 	if (line.type == heading) {
 		// Format heading
 		
-		// Format according to settings
+		// Stylize according to settings
 		if (self.headingStyleBold) [attributes setObject:self.boldCourier forKey:NSFontAttributeName];
 		if (self.headingStyleUnderline) [attributes setObject:@1 forKey:NSUnderlineStyleAttributeName];
 		
 		// If the scene has a color, let's color it
 		if (line.color.length) {
 			NSColor* headingColor = [BeatColors color:line.color.lowercaseString];
-			if (headingColor != nil) [attributes setObject:headingColor forKey:NSForegroundColorAttributeName];
+			if (headingColor != nil) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:headingColor forCharacterRange:line.textRange];
 		}
-	
 	} else if (line.type == pageBreak) {
-		// Format page break
-		// Set Font to bold
+		// Format page break - bold
 		[attributes setObject:self.boldCourier forKey:NSFontAttributeName];
 		
 	} else if (line.type == lyrics) {
-		// Format lyrics
-		// Set Font to italic
-		[attributes setObject:[self italicCourier] forKey:NSFontAttributeName];
+		// Format lyrics - italic
+		[attributes setObject:self.italicCourier forKey:NSFontAttributeName];
 	}
-	
-	//[self startMeasure];
 
-	// Format layout & alignment
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	
 	// Handle title page block
-	if (line.type == titlePageTitle  ||
+	else if (line.type == titlePageTitle  ||
 		line.type == titlePageAuthor ||
 		line.type == titlePageCredit ||
 		line.type == titlePageSource ||
@@ -2339,19 +2350,18 @@
 	if (![attributes valueForKey:NSFontAttributeName]) {
 		[attributes setObject:self.courier forKey:NSFontAttributeName];
 	}
-	if (![attributes valueForKey:NSForegroundColorAttributeName]) {
-		[attributes setObject:self.themeManager.textColor forKey:NSForegroundColorAttributeName];
-	}
 	if (![attributes valueForKey:NSUnderlineStyleAttributeName]) {
 		[attributes setObject:@0 forKey:NSUnderlineStyleAttributeName];
 	}
 	if (![attributes valueForKey:NSStrikethroughStyleAttributeName]) {
 		[attributes setObject:@0 forKey:NSStrikethroughStyleAttributeName];
 	}
+	/*
 	if (!attributes[NSBackgroundColorAttributeName]) {
 		[textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
 	}
-
+	 */
+	
 	// Add selected attributes
 	if (range.length > 0) {
 		[textStorage addAttributes:attributes range:range];
@@ -2362,17 +2372,6 @@
 		if (range.location + 1 < textStorage.string.length) {
 			range = NSMakeRange(range.location, range.length + 1);
 			[textStorage addAttributes:attributes range:range];
-		}
-	}
-	
-	// Color markers
-	[self.textView.layoutManager removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:line.textRange];
-	if (line.marker.length) {
-		NSColor *color = [BeatColors color:line.marker];
-		if (color) {
-			[self.textView.layoutManager setTemporaryAttributes:@{
-				NSForegroundColorAttributeName: color
-			} forCharacterRange:line.textRange];
 		}
 	}
 	
@@ -2428,40 +2427,54 @@
 	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:strikeoutSymbolOpen];
 	}];
+	
+	// Color markers
+	if (line.marker.length) {
+		NSColor *color = [BeatColors color:line.marker];
+		if (color) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:line.textRange];
+	}
 
+
+	// Foreground color attributes
 	if (line.isTitlePage && line.titleRange.length > 0) {
 		NSRange titleRange = line.titleRange;
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.commentColor range:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.commentColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
 	}
 	
 	[line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-							range:[self globalRangeFromLocalRange:&range
-												 inLineAtPosition:line.position]];
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
 	}];
 	
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.commentColor
-							range:[self globalRangeFromLocalRange:&range
-												 inLineAtPosition:line.position]];
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.commentColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
 	}];
 	
 	[line.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-							range:[self globalRangeFromLocalRange:&range
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&range
 												 inLineAtPosition:line.position]];
 	}];
 
 
 	// Format force element symbols
 	if (line.numberOfPrecedingFormattingCharacters > 0 && line.string.length >= line.numberOfPrecedingFormattingCharacters) {
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-							range:NSMakeRange(line.position, line.numberOfPrecedingFormattingCharacters)];
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:NSMakeRange(line.position, line.numberOfPrecedingFormattingCharacters)];
 	} else if (line.type == centered && line.string.length > 1) {
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-		range:NSMakeRange(line.position, 1)];
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-							range:NSMakeRange(line.position + line.string.length - 1, 1)];
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:NSMakeRange(line.position, 1)];
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:NSMakeRange(line.position + line.string.length - 1, 1)];
 	}
 
 	
@@ -2477,11 +2490,11 @@
 		if (beatAttrs[revisionAttribute]) {
 			[textStorage enumerateAttribute:revisionAttribute inRange:line.range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 				BeatRevisionItem *revision = value;
-				if (revision.type == RevisionAddition) [textStorage addAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor range:range];
+				if (revision.type == RevisionAddition) [layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
 				else if (revision.type == RevisionRemoval) {
-					[textStorage addAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] range:range];
-					[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
-					[textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:range];
+					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
+					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] forCharacterRange:range];
 				}
 			}];
 		}
@@ -2491,7 +2504,7 @@
 				NSColor *tagColor = [BeatTagging colorFor:tag.type];
 				tagColor = [tagColor colorWithAlphaComponent:.6];
 				
-				[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
+				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
 			}];
 		}
 		/*
@@ -2554,6 +2567,8 @@
 	// Don't add a nil value
 	if (!value) return;
 	
+	NSLayoutManager *layoutMgr = _textView.layoutManager;
+	
 	NSUInteger symLen = sym.length;
 	NSRange openRange = (NSRange){ range.location, symLen };
 	NSRange closeRange = (NSRange){ range.location + range.length - symLen, symLen };
@@ -2577,11 +2592,13 @@
 											 inLineAtPosition:line.position]];
 	
 	if (openRange.length) {
-		[self.textView.textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-						range:[self globalRangeFromLocalRange:&openRange
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&openRange
 											 inLineAtPosition:line.position]];
-		[self.textView.textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-						range:[self globalRangeFromLocalRange:&closeRange
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&closeRange
 											 inLineAtPosition:line.position]];
 	}
 }
@@ -3292,8 +3309,11 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)saveRevisionRanges {
+	[self saveRevisionRangesUsing:self.textView.attributedString];
+}
+- (void)saveRevisionRangesUsing:(NSAttributedString*)string {
 	// This saves the review ranges into Document Settings
-	NSDictionary *ranges = [BeatRevisionTracking rangesForSaving:self.textView.attributedString];
+	NSDictionary *ranges = [BeatRevisionTracking rangesForSaving:string];
 	
 	[_documentSettings set:DocSettingRevisions as:ranges];
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
@@ -3851,7 +3871,7 @@ static NSString *revisionAttribute = @"Revision";
 	// WORK IN PROGRESS // WIP WIP WIP
 	// Update preview in background
 	
-	 _attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
+	_attrTextCache = [self getAttributedText];
 	
 	[_previewTimer invalidate];
 	self.previewUpdated = NO;

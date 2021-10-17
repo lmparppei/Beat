@@ -110,6 +110,23 @@ static NSDictionary* patterns;
 	return [self initWithString:string delegate:nil];
 }
 
+- (NSString*)screenplayForSaving {
+	NSArray *lines = [NSArray arrayWithArray:self.lines];
+	NSMutableString *content = [NSMutableString string];
+	
+	for (Line *line in lines) {
+		NSString *string = line.string;
+		LineType type = line.type;
+		
+		// Make some lines uppercase
+		if ((type == heading || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
+		
+		[content appendString:string];
+		if (line != self.lines.lastObject) [content appendString:@"\n"];
+	}
+	return content;
+}
+
 - (void)parseText:(NSString*)text
 {
 	_firstTime = YES;
@@ -693,6 +710,7 @@ static NSDictionary* patterns;
 		Line *previousLine = self.lines[index - 1];
 		previousLine.type = action;
 		currentLine.type = empty;
+		[_changedIndices addIndex:index - 1];
 	}
 
 	// Parse multiline note ranges
@@ -959,7 +977,6 @@ and incomprehensible system of recursion.
     NSUInteger length = [string length];
 	NSString* trimmedString = [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
-	LineType oldType = line.type;
 	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 	
 	// So we need to pull all sorts of tricks out of our sleeve here.
@@ -976,6 +993,8 @@ and incomprehensible system of recursion.
 				Line* lineBeforeThat = (Line*)self.lines[index - 2];
 				if (lineBeforeThat.type == character) {
 					lineBeforeThat.type = action;
+					preceedingLine.type = action;
+					[self.changedIndices addIndex:index - 1];
 					[self.changedIndices addIndex:index - 2];
 				}
 			}
@@ -987,7 +1006,7 @@ and incomprehensible system of recursion.
 		// If previous line is part of dialogue block, this line becomes dialogue right away
 		// Else it's just empty.
 		if (preceedingLine.type == character || preceedingLine.type == parenthetical || preceedingLine.type == dialogue) {
-			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty. OMG IT WORKS!
+			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty.
 			if (preceedingLine.string.length > 0) {
 				// If preceeded by character cue, return dialogue
 				if (preceedingLine.type == character) return dialogue;
@@ -996,6 +1015,8 @@ and incomprehensible system of recursion.
 				// AND if its just dialogue, return action.
 				else return action;
 			} else {
+//				preceedingLine.type = empty;
+//				[self.changedIndices addIndex:index - 1];
 				return empty;
 			}
 		} else {
@@ -1227,7 +1248,13 @@ and incomprehensible system of recursion.
             }
         }
     }
-	else if (preceedingLine.type == action && preceedingLine.length > 0 && preceedingLine.string.onlyUppercaseUntilParenthesis && line.length > 0) {
+	else if (preceedingLine.type == action &&
+			 preceedingLine.length > 0 &&
+			 preceedingLine.string.onlyUppercaseUntilParenthesis &&
+			 line.length > 0 &&
+			 !preceedingLine.forced) {
+		// Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when
+		// the text is changed to have some dialogue follow it.
 		preceedingLine.type = character;
 		[_changedIndices addIndex:index-1];
 		return dialogue;
@@ -1240,7 +1267,9 @@ and incomprehensible system of recursion.
 
     //If it's just usual text, see if it might be (double) dialogue or a parenthetical, or section/synopsis
     if (preceedingLine) {
-        if (preceedingLine.type == character || preceedingLine.type == dialogue || preceedingLine.type == parenthetical) {
+        if (preceedingLine.type == character ||
+			preceedingLine.type == dialogue ||
+			preceedingLine.type == parenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
 			if (firstChar == '(' && [preceedingLine.string length] > 0) {
                 return parenthetical;

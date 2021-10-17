@@ -15,7 +15,7 @@
 
 @protocol ContinuousFountainParserDelegate <NSObject>
 @property (nonatomic) bool printSceneNumbers;
-@property (nonatomic) BeatDocumentSettings *documentSettings;
+@property (atomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) Line* characterInputForLine;
 
 - (NSInteger)sceneNumberingStartsFrom;
@@ -26,7 +26,7 @@
 
 // Plugin compatibility
 @protocol ContinuousFountainParserExports <JSExport>
-@property (nonatomic, readonly) NSMutableArray *lines;
+@property (readonly) NSMutableArray *lines;
 @property (nonatomic, readonly) NSMutableArray *outline;
 @property (nonatomic, readonly) NSMutableArray *scenes;
 @property (nonatomic, readonly) NSMutableArray *titlePage;
@@ -49,7 +49,7 @@
 // Slowly being implemented into the code.
 @property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
 
-@property (nonatomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
+@property (atomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
 @property (nonatomic) NSMutableIndexSet *changedIndices; //Stores every line that needs to be formatted according to the type
 @property (nonatomic) NSMutableArray *outline;
 @property (nonatomic) NSMutableArray *titlePage;
@@ -78,7 +78,8 @@
 - (Line*)nextLine:(Line*)line;
 - (void)correctParsesForLines:(NSArray*)lines;
 
-// Preprocess for printing
+// Preprocess for printing & saving
+- (NSString*)screenplayForSaving;
 - (NSArray*)preprocessForPrinting;
 - (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines;
 

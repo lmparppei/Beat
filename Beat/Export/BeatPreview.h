@@ -18,7 +18,7 @@ typedef enum : NSUInteger {
 } BeatPreviewType;
 
 @protocol BeatPreviewDelegate
-@property (nonatomic) BeatDocumentSettings *documentSettings;
+@property (atomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (readonly) NSAttributedString *attrTextCache;

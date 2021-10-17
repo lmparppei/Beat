@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatDocumentSettings : NSObject
-@property (nonatomic) NSMutableDictionary *settings;
+@property (atomic) NSMutableDictionary *settings;
 @property (weak) id<BeatEditorDelegate> delegate;
 
 extern NSString * const DocSettingRevisions;

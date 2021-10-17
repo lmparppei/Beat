@@ -143,6 +143,7 @@
 	self.recentFiles.dataSource = _recentFilesSource;
 	self.recentFiles.delegate = _recentFilesSource;
 	[self.recentFiles setDoubleAction:@selector(doubleClickDocument)];
+	[self.recentFilesSource reload];
 	[self.recentFiles reloadData];
 	
 	[self setupDocumentOpenListener];
@@ -203,9 +204,10 @@
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
 		
-		if ([openDocuments count] == 1 && self.startModal && ![self.startModal isVisible]) {
+		if (openDocuments.count == 1 && self.startModal && !self.startModal.isVisible) {
 			[self.startModal setIsVisible:true];
 			[self.recentFiles deselectAll:nil];
+			[self.recentFilesSource reload];
 			[self.recentFiles reloadData];
 		}
 	}];

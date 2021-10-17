@@ -47,7 +47,7 @@ typedef enum : NSUInteger {
 @property (readonly) bool omitted;
 @property (readonly) bool note;
 @property (readonly) bool centered;
-@property (nonatomic, readonly) NSString* string;
+@property (readonly) NSString* string;
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
 
@@ -67,17 +67,18 @@ typedef enum : NSUInteger {
 - (NSString*)textContent;
 - (NSDictionary*)forSerialization;
 - (NSString*)trimmed;
+- (bool)forced;
 - (id)clone;
 @end
 
 @protocol LineDelegate <NSObject>
-@property (nonatomic, readonly) NSMutableArray *lines;
+@property (readonly) NSMutableArray *lines;
 @end
 
 @interface Line : NSObject <LineExports>
 @property (nonatomic, weak) id<LineDelegate> parser;
 @property LineType type;
-@property (strong, nonatomic) NSString* string;
+@property (strong) NSString* string;
 @property (nonatomic) NSString* previousString;
 @property (nonatomic) NSString* original;
 @property (nonatomic) NSUInteger position;
@@ -137,6 +138,7 @@ typedef enum : NSUInteger {
 - (bool)note; /// The line is completely a note
 - (bool)centered;
 - (NSString*)trimmed;
+- (bool)forced;
 
 - (NSRange)range; /// Range of the whole line, including line break
 - (NSRange)textRange; /// The range of string only, excluding line break
@@ -150,7 +152,7 @@ typedef enum : NSUInteger {
 // Copy element
 - (Line*)clone;
 
-// Helper
+// Helper methods
 - (bool)isBoldedAt:(NSInteger)index;
 - (bool)isItalicAt:(NSInteger)index;
 - (bool)isUnderlinedAt:(NSInteger)index;

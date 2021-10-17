@@ -8,6 +8,6 @@
 
 @interface RecentFiles : NSObject <NSOutlineViewDelegate, NSOutlineViewDataSource> {
 }
-@property id selectedRow;
+- (void)reload;
 - (IBAction)doubleClickDocument:(id)sender;
 @end

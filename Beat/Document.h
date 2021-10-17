@@ -69,14 +69,14 @@ THE SOFTWARE.
 // For delegation
 @property (nonatomic, weak) OutlineScene *currentScene; // Don't retain the Outline Scene
 @property (nonatomic) NSMutableIndexSet *changes;
-@property (nonatomic) NSAttributedString *attrTextCache;
+@property (atomic) NSAttributedString *attrTextCache;
 - (NSAttributedString*)getAttributedText; // ONLY IN MAIN THREAD
 
 // Plugins running in this window
 @property (nonatomic) NSMutableDictionary *runningPlugins;
 
 // Document settings
-@property (nonatomic) BeatDocumentSettings *documentSettings;
+@property (atomic) BeatDocumentSettings *documentSettings;
 
 // Versioning
 @property (nonatomic) NSURL *revertedTo;

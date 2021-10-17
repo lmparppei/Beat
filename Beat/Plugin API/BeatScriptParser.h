@@ -106,7 +106,7 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 @property (nonatomic, readonly) BeatTagging *tagging;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
 @property (nonatomic, readonly) Line* currentLine;
-@property (nonatomic, readonly) BeatDocumentSettings *documentSettings;
+@property (atomic, readonly) BeatDocumentSettings *documentSettings;
 
 - (void)registerPlugin:(id)parser;
 - (void)deregisterPlugin:(id)parser;

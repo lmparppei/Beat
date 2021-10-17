@@ -1079,7 +1079,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		// Invalidate layout if needed
 		if (_editorDelegate.hideFountainMarkup) {
-			[self.layoutManager invalidateLayoutForCharacterRange:scene.line.textRange actualCharacterRange:nil];
+			//[self.layoutManager invalidateLayoutForCharacterRange:scene.line.textRange actualCharacterRange:nil];
 		}
 		
 		// Actual pixel position of the label
@@ -1492,7 +1492,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			
 			// Enumerate custom attributes
 			[str enumerateAttributesInRange:(NSRange){0, str.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-				[self.textStorage addAttributes:attrs range:(NSRange){ pos + range.location, range.length }];
+				if (attrs[@"Revision"]) [self.textStorage addAttribute:@"Revision" value:attrs[@"Revision"] range:(NSRange){ pos + range.location, range.length }];
+				if (attrs[@"BeatTag"]) [self.textStorage addAttribute:@"BeatTag" value:attrs[@"BeatTag"] range:(NSRange){ pos + range.location, range.length }];
 			}];
 			
 		}
@@ -1531,14 +1532,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 -(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange {
-	
-	
 	return attrs;
 }
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
-
 	LineType type = line.type;
 	
 	// Do nothing for section markers
