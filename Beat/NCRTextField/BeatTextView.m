@@ -1077,10 +1077,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// Set scene number to be displayed
 		if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
 		
-		// Invalidate layout if needed
-		if (_editorDelegate.hideFountainMarkup) {
-			//[self.layoutManager invalidateLayoutForCharacterRange:scene.line.textRange actualCharacterRange:nil];
-		}
+		// Invalidate layout
+		//[self.layoutManager invalidateLayoutForCharacterRange:scene.line.textRange actualCharacterRange:nil];
 		
 		// Actual pixel position of the label
 		NSRect rect = [self rectForRange:scene.line.textRange];
@@ -1515,13 +1513,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		[self.layoutManager invalidateGlyphsForCharacterRange:prevLine.textRange changeInLength:0 actualCharacterRange:nil];
 		[self.layoutManager invalidateLayoutForCharacterRange:prevLine.textRange actualCharacterRange:nil];
 		[self.layoutManager invalidateLayoutForCharacterRange:line.textRange actualCharacterRange:nil];
-			
-		if (NSGraphicsContext.currentContext) {
-			[self.layoutManager drawGlyphsForGlyphRange:line.textRange atPoint:self.frame.origin];
-			[self.layoutManager drawGlyphsForGlyphRange:prevLine.textRange atPoint:self.frame.origin];
-		}
-		
-		//[self updateInsertionPointStateAndRestartTimer:NO];
 	}
 }
 
@@ -1537,6 +1528,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
+
 	LineType type = line.type;
 	
 	// Do nothing for section markers
@@ -1560,19 +1552,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (type == heading || type == transitionLine) {
 		CFStringUppercase(modifiedStr, NULL);
 	}
-	/*
-	else if (type == character || type == dualDialogueCharacter) {
-		// This dosen't work
-		// Only capitalize the beginning (before parenthesis)
-		NSRange nameRange = line.characterNameRange;
-		CFMutableStringRef nameStr = CFStringCreateMutable(NULL, nameRange.length);
-		
-		CFStringAppend(nameStr, CFStringCreateWithSubstring(NULL, modifiedStr, CFRangeMake(nameRange.location, nameRange.length)));
-		CFStringUppercase(nameStr, NULL);
-		CFStringReplace(modifiedStr, CFRangeMake(nameRange.location, nameRange.length), nameStr);
-		free(nameStr);
-	}
-	 */
 	
 	// Modified properties
 	NSGlyphProperty *modifiedProps;

@@ -72,6 +72,7 @@
  
 */
 
+#import <QuartzCore/QuartzCore.h>
 #import "Document.h"
 #import "ScrollView.h"
 #import "FDXInterface.h"
@@ -317,6 +318,9 @@
 
 // Debug flags
 @property (nonatomic) bool debug;
+
+@property (nonatomic) NSPanel* progressPanel;
+@property (nonatomic) NSProgressIndicator *progressIndicator;
 @end
 
 #define APP_NAME @"Beat"
@@ -441,12 +445,15 @@
 		
 	// ApplicationDelegate will show welcome screen when no documents are open
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document close" object:nil];
-	
-	// Do we need this?
-	//if (self.fileURL) [self.fileURL stopAccessingSecurityScopedResource];
-	//if (self.autosavedContentsFileURL) [self.autosavedContentsFileURL stopAccessingSecurityScopedResource];
-	
+		
 	[super close];
+}
+
+typedef void (^ CallbackBlock)(void);
+void delay (double delay, CallbackBlock block) {
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+		   (delay * (double)NSEC_PER_SEC)),
+				   dispatch_get_main_queue(), block);
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
@@ -504,18 +511,54 @@
 	if (self.contentBuffer) {
 		[self setText:self.contentBuffer];
 	} else {
+		self.contentBuffer = @"";
 		[self setText:@""];
 	}
-			
-	// Initialize parser
-	self.parser = [[ContinuousFountainParser alloc] initWithString:self.getText delegate:self];
+
+	self.textView.alphaValue = 0;
 	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
+		// Initialize parser
+		self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
+
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			// Show a progress bar for longer documents
+			if (self.parser.lines.count > 1000) {
+				self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.thisWindow.screen.frame.size.width - 300) / 2, (self.thisWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
+				self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
+				self.progressIndicator.maxValue = 10.0;
+				self.progressIndicator.indeterminate = NO;
+				[self.progressPanel.contentView addSubview:self.progressIndicator];
+				
+				[self.thisWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
+			}
+			
+			// Apply document formatting
+			[self applyInitialFormatting];
+
+		});
+	});
+}
+
+-(void)loadingComplete {
+	[_parser.changedIndices removeAllIndexes];
+	[self initialTextBackgroundRender];
+	
+	// No animations
+	[CATransaction begin];
+	[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
+	if (self.progressPanel.visible) [self.thisWindow endSheet:self.progressPanel];
+	[CATransaction commit];
+
+	
+	self.progressPanel = nil;
+	
+	[self updateLayout];
+	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+
 	// Initialize edit tracking
 	[self setupRevision];
-
-	// Apply document formatting
-	[self applyInitialFormatting];
-	
+			
 	// Load tags
 	[self setupTagging];
 		
@@ -529,39 +572,36 @@
 	[self initAutosave];
 	
 	// Lock status
-	if ([_documentSettings getBool:@"Locked"]) [self lock];
+	if ([self.documentSettings getBool:@"Locked"]) [self lock];
+
+	// Setup page size
+	// This can take surprising long, so let's do it in an asynchronous block.
+	// (We'll disable undo registration here, so the doc won't appear as edited on open)
+	[self.undoManager disableUndoRegistration];
+
+	NSInteger pageSize;
+	if ([self.documentSettings has:@"Page Size"]) {
+		pageSize = [self.documentSettings getInt:@"Page Size"];
+	} else {
+		pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
+	}
 	
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		// Setup page size
-		// This can take surprising long, so let's do it in an asynchronous block.
-		// (We'll disable undo registration here, so the doc won't appear as edited on open)
-		[self.undoManager disableUndoRegistration];
-		
+	NSPrintInfo *printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
+	self.printInfo.paperSize = printInfo.paperSize;
+	self.printInfo.orientation = printInfo.orientation;
+	self.printInfo.leftMargin = printInfo.leftMargin;
+	self.printInfo.topMargin = printInfo.topMargin;
+	self.printInfo.rightMargin = printInfo.rightMargin;
+	self.printInfo.bottomMargin = printInfo.bottomMargin;
 	
-		NSInteger pageSize;
-		if ([self.documentSettings has:@"Page Size"]) {
-			pageSize = [self.documentSettings getInt:@"Page Size"];
-		} else {
-			pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
-		}
-		
-		NSPrintInfo *printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
-		self.printInfo.paperSize = printInfo.paperSize;
-		self.printInfo.orientation = printInfo.orientation;
-		self.printInfo.leftMargin = printInfo.leftMargin;
-		self.printInfo.topMargin = printInfo.topMargin;
-		self.printInfo.rightMargin = printInfo.rightMargin;
-		self.printInfo.bottomMargin = printInfo.bottomMargin;
-		
-		[self.documentSettings setInt:@"Page Size" as:pageSize];
-		
-		[self.undoManager enableUndoRegistration];
-		[self updateChangeCount:NSChangeCleared];
-		
-		[self updateLayout];
-		[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-	});
+	[self.documentSettings setInt:@"Page Size" as:pageSize];
+	
+	[self.undoManager enableUndoRegistration];
+	[self updateChangeCount:NSChangeCleared];
+	
+	[self.textView.animator setAlphaValue:1.0];
 }
+
 -(void)awakeFromNib {
 	// Set up recovery file saving
 	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
@@ -1679,8 +1719,8 @@
 	
 	[self applyFormatChanges];
 	
-	[self.textView.layoutManager ensureLayoutForCharacterRange:_lastChangedRange];
-	[self.textView setNeedsDisplay:YES];
+//	[self.textView.layoutManager ensureLayoutForCharacterRange:_lastChangedRange];
+//	[self.textView setNeedsDisplay:YES];
 	
 	// If the outline has changed, update all labels
 	if (changeInOutline) [self updateSceneNumberLabels:0];
@@ -1697,6 +1737,9 @@
 	
 	// Save to buffer
 	_contentCache = [NSString stringWithString:self.textView.string];
+	
+	// A larger chunk of text was pasted. Ensure layout.
+	if (self.lastChangedRange.length > 5) [self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -1727,8 +1770,6 @@
 		
 		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
 	});
-
-	if (!_typewriterMode) [self.textView scrollRangeToVisible:self.selectedRange];
 	
 	[_textView updateMarkdownView];
 }
@@ -2120,16 +2161,24 @@
  */
 
 -(void)applyInitialFormatting {
+	if (self.parser.lines.count == 0) {
+		[self loadingComplete];
+		return;
+	}
+	
 	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
 	NSInteger index = 0;
 
+	self.progressIndicator.maxValue = self.parser.lines.count * 1.0;
+	
 	for (Line* line in self.parser.lines) {
-		[self formatLineOfScreenplay:line firstTime:YES];
+		delay(0.0003 * index, ^{
+			[self formatLineOfScreenplay:line firstTime:YES];
+			[self.progressIndicator incrementBy:1.0];
+			if (line == self.parser.lines.lastObject) [self loadingComplete];
+		});
 		index++;
 	}
-
-	[_parser.changedIndices removeAllIndexes];
-	[self initialTextBackgroundRender];
 }
 
 - (void)formatLineOfScreenplay:(Line*)line { [self formatLineOfScreenplay:line firstTime:NO]; }
@@ -2159,7 +2208,7 @@
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
 	
 	// Reset temporary attributes
-	[layoutMgr removeTemporaryAttribute:NSForegroundColorAttributeName forCharacterRange:line.textRange];
+	[layoutMgr setTemporaryAttributes:@{} forCharacterRange:line.textRange];
 	
 	// Format layout & alignment
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
@@ -2285,7 +2334,8 @@
 					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
 				} else sectionColor = self.themeManager.sectionTextColor;
 
-				[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
+				[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:sectionColor forCharacterRange:line.textRange];
+				//[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
 				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
 			} else {
 				if (line.sectionDepth == 2) {
@@ -2298,7 +2348,8 @@
 					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
 				} else sectionColor = self.themeManager.commentColor;
 				
-				[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
+				//[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
+				[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:sectionColor forCharacterRange:line.textRange];
 				
 				// Also, make lower sections a bit smaller
 				size = size - line.sectionDepth;
@@ -2314,7 +2365,8 @@
 				if (!(synopsisColor = [BeatColors color:line.color])) synopsisColor = self.themeManager.sectionTextColor;
 			} else synopsisColor = self.themeManager.synopsisTextColor;
 			
-			if (synopsisColor) [attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
+			//if (synopsisColor) [attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
+			if (synopsisColor) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:synopsisColor forCharacterRange:line.textRange];
 			
 			[attributes setObject:self.synopsisFont forKey:NSFontAttributeName];
 		}
@@ -2356,17 +2408,13 @@
 	if (![attributes valueForKey:NSStrikethroughStyleAttributeName]) {
 		[attributes setObject:@0 forKey:NSStrikethroughStyleAttributeName];
 	}
-	/*
 	if (!attributes[NSBackgroundColorAttributeName]) {
 		[textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
 	}
-	 */
 	
 	// Add selected attributes
 	if (range.length > 0) {
 		[textStorage addAttributes:attributes range:range];
-		// Future consideration:
-		//[self.textView.layoutManager setTemporaryAttributes:attributes forCharacterRange:range];
 	} else {
 		// Add attributes ahead
 		if (range.location + 1 < textStorage.string.length) {
@@ -2406,8 +2454,8 @@
 		NSRange sceneNumberRange = NSMakeRange(line.sceneNumberRange.location - 1, line.sceneNumberRange.length + 2);
 		// Don't go out of range, please, please
 		if (sceneNumberRange.location + sceneNumberRange.length <= line.string.length && sceneNumberRange.location >= 0) {
-			[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
-								range:[self globalRangeFromLocalRange:&sceneNumberRange inLineAtPosition:line.position]];
+			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
+								forCharacterRange:[self globalRangeFromLocalRange:&sceneNumberRange inLineAtPosition:line.position]];
 		}
 	}
 	
@@ -2484,53 +2532,27 @@
 	// This is AMAZINGLY slow
 
 	if (!firstTime && line.string.length) {
-		// Enumerate attributes (if applicable)
-		NSDictionary *beatAttrs = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:(NSRange){0, line.string.length}];
-		
-		if (beatAttrs[revisionAttribute]) {
-			[textStorage enumerateAttribute:revisionAttribute inRange:line.range options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-				BeatRevisionItem *revision = value;
-				if (revision.type == RevisionAddition) [layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
+		// Enumerate attributes
+		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+			if (attrs[revisionAttribute]) {
+				BeatRevisionItem *revision = attrs[revisionAttribute];
+				if (revision.type == RevisionAddition) {
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
+				}
 				else if (revision.type == RevisionRemoval) {
 					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
 					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
 					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] forCharacterRange:range];
 				}
-			}];
-		}
-		if (beatAttrs[tagAttribute]) {
-			[textStorage enumerateAttribute:tagAttribute inRange:line.textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-				BeatTag *tag = value;
-				NSColor *tagColor = [BeatTagging colorFor:tag.type];
-				tagColor = [tagColor colorWithAlphaComponent:.6];
-				
-				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
-			}];
-		}
-		/*
-		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			// Revisions
-			if (attrs[revisionAttribute]) {
-				BeatRevisionItem *revision = attrs[revisionAttribute];
-				if (revision.type == RevisionAddition) [textStorage addAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor range:range];
-				else if (revision.type == RevisionRemoval) {
-					[textStorage addAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] range:range];
-					[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
-					[textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:range];
-				}
 			}
-			
-			// Tags
 			if (attrs[tagAttribute]) {
 				BeatTag *tag = attrs[tagAttribute];
 				NSColor *tagColor = [BeatTagging colorFor:tag.type];
 				tagColor = [tagColor colorWithAlphaComponent:.6];
-				
-				[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
+			   
+				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
 			}
 		}];
-
-		 */
 	}
 }
 
@@ -2592,14 +2614,20 @@
 											 inLineAtPosition:line.position]];
 	
 	if (openRange.length) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+		// Fuck. We need to format these ranges twice, because there is a weird bug in glyph setter.
+		[_textView.textStorage addAttribute:NSForegroundColorAttributeName
 								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&openRange
+					   range:[self globalRangeFromLocalRange:&openRange
 											 inLineAtPosition:line.position]];
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+		[_textView.textStorage addAttribute:NSForegroundColorAttributeName
 								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&closeRange
+					   range:[self globalRangeFromLocalRange:&closeRange
 											 inLineAtPosition:line.position]];
+		
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&openRange inLineAtPosition:line.position]];
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
+					   forCharacterRange:[self globalRangeFromLocalRange:&closeRange inLineAtPosition:line.position]];
 	}
 }
 
@@ -3278,7 +3306,7 @@ static NSString *revisionAttribute = @"Revision";
 	[self.textView setSelectedRange:(NSRange){range.location + range.length, 0}];
 	[self updateChangeCount:NSChangeDone];
 	[self updatePreview];
-		
+	
 	// Create an undo step
 	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
 		[self.textView.textStorage setAttributes:oldAttributes range:range];

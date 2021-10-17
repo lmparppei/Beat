@@ -56,6 +56,7 @@ p {
 	white-space: pre-wrap;
 	width: 98%;
 }
+
 body > p:first-child {
 	margin-top: 0;
 }
@@ -151,27 +152,34 @@ body > p:first-child {
 	align-items: center;
 	flex-direction: column;
 }
-#script-title * { white-space: pre-wrap; }
+#script-title * {
+	white-space: pre-wrap;
+	width: 100%;
+}
 #script-title .mainTitle {
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
 	flex: 1;
 	margin-bottom: 6em;
+	padding: 0;
 }
 #script-title .title {
     text-align: center;
     margin: 1.3em 0;
+	padding: 0;
     text-transform: uppercase;
 	white-space: pre-wrap;
 }
 #script-title .credit {
     text-align: center;
 	white-space: pre-wrap;
+	padding: 0;
 }
 #script-title .authors {
     text-align: center;
 	white-space: pre-wrap;
+	padding: 0;
 }
 #script-title p.source {
     text-align: center;
@@ -212,6 +220,7 @@ body > p:first-child {
 
 #script-title p.notes {
     white-space: pre-line !important;
+	padding: 0;
 }
 
 .center {
