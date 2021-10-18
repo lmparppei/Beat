@@ -43,6 +43,9 @@
 		B616493F26F7535800582671 /* BeatPasteboardItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B616493D26F7535600582671 /* BeatPasteboardItem.m */; };
 		B61875A52471BEDA00FB7646 /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B61875A42471BEDA00FB7646 /* BeatPreview.m */; };
 		B61A5C9C253DFD9200CA3C3F /* BeatComparison.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D12FEB2537A04C0018A88F /* BeatComparison.m */; };
+		B61BE98A271D5053008FFA0F /* BeatMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = B61BE989271D5053008FFA0F /* BeatMeasure.m */; };
+		B61BE98B271D5053008FFA0F /* BeatMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = B61BE989271D5053008FFA0F /* BeatMeasure.m */; };
+		B61BE98C271D5D7F008FFA0F /* BeatMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = B61BE989271D5053008FFA0F /* BeatMeasure.m */; };
 		B61F016E266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */; };
 		B61F016F266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */; };
 		B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B62392B0247FD351008E61D0 /* TouchTimelineView.m */; };
@@ -539,6 +542,8 @@
 		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/Export/BeatPreview.m; sourceTree = SOURCE_ROOT; };
 		B61B693B2472DEE800DCDBFA /* BeatPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPaginator.h; path = Beat/Parsing/BeatPaginator.h; sourceTree = SOURCE_ROOT; };
 		B61B693C2472DEE800DCDBFA /* BeatPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPaginator.m; path = Beat/Parsing/BeatPaginator.m; sourceTree = SOURCE_ROOT; };
+		B61BE988271D5053008FFA0F /* BeatMeasure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatMeasure.h; sourceTree = "<group>"; };
+		B61BE989271D5053008FFA0F /* BeatMeasure.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMeasure.m; sourceTree = "<group>"; };
 		B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+MoveItem.m"; sourceTree = "<group>"; };
 		B61F016D266AB93A005A1B8A /* NSMutableArray+MoveItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+MoveItem.h"; sourceTree = "<group>"; };
 		B62392AF247FD351008E61D0 /* TouchTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchTimelineView.h; sourceTree = "<group>"; };
@@ -950,6 +955,7 @@
 				B623BD4C2549B03700201BC9 /* Icons */,
 				B68AC7B32219732800E02466 /* Sample files */,
 				B60A593125993FBE00207D00 /* Plugins */,
+				B61BE987271D5038008FFA0F /* Dev Tools */,
 			);
 			path = Beat;
 			sourceTree = "<group>";
@@ -1073,6 +1079,15 @@
 				B6342D6625682D7B0034D54F /* OutlineViewItem.m */,
 			);
 			name = "Outline View";
+			sourceTree = "<group>";
+		};
+		B61BE987271D5038008FFA0F /* Dev Tools */ = {
+			isa = PBXGroup;
+			children = (
+				B61BE988271D5053008FFA0F /* BeatMeasure.h */,
+				B61BE989271D5053008FFA0F /* BeatMeasure.m */,
+			);
+			path = "Dev Tools";
 			sourceTree = "<group>";
 		};
 		B623BD4C2549B03700201BC9 /* Icons */ = {
@@ -2067,6 +2082,7 @@
 				B6D26BE124B9E7350041402B /* BeatTimerView.m in Sources */,
 				B6829BFB25AB727600C0595B /* BeatEpisodePrinter.m in Sources */,
 				B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */,
+				B61BE98A271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
 				B6DAF75C26E8109600C4464B /* mztools.c in Sources */,
@@ -2147,6 +2163,7 @@
 				B6E47D86250289D000734A8D /* BeatHTMLScript.m in Sources */,
 				B6E47D8C25028D5400734A8D /* BeatPreview.m in Sources */,
 				B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */,
+				B61BE98C271D5D7F008FFA0F /* BeatMeasure.m in Sources */,
 				B6FACDEE25F7C20400570D77 /* DiffMatchPatchCFUtilities.c in Sources */,
 				B68D60BB267574FB00E067F0 /* NSIndexSet+Subset.m in Sources */,
 				B645A98023CD03CC00F13710 /* NSString+Regex.m in Sources */,
@@ -2224,6 +2241,7 @@
 				B68B6052260B849300463AD8 /* BeatTimerView.m in Sources */,
 				B68B6053260B849300463AD8 /* BeatEpisodePrinter.m in Sources */,
 				B68B6054260B849300463AD8 /* BeatTimer.m in Sources */,
+				B61BE98B271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B68B6055260B849300463AD8 /* ThemeManager.m in Sources */,
 				B68B6056260B849300463AD8 /* BeatTag.m in Sources */,
 				B6DAF75D26E8109600C4464B /* mztools.c in Sources */,
@@ -2469,7 +2487,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13154;
+				CURRENT_PROJECT_VERSION = 13156;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2508,7 +2526,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13154;
+				CURRENT_PROJECT_VERSION = 13156;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2547,7 +2565,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13154;
+				CURRENT_PROJECT_VERSION = 13156;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2579,7 +2597,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13154;
+				CURRENT_PROJECT_VERSION = 13156;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2608,7 +2626,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13154;
+				CURRENT_PROJECT_VERSION = 13156;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2641,7 +2659,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13154;
+				CURRENT_PROJECT_VERSION = 13156;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

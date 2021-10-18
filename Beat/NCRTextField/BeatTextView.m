@@ -32,6 +32,7 @@
 #import "BeatColors.h"
 #import "ThemeManager.h"
 #import "BeatPasteboardItem.h"
+#import "BeatMeasure.h"
 
 #define DEFAULT_MAGNIFY 1.02
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -40,8 +41,6 @@
 #define MARGIN_CONSTANT 10
 #define SHADOW_WIDTH 20
 #define SHADOW_OPACITY 0.0125
-
-#define HIDE_MARKDOWN YES
 
 // Maximum results for autocomplete
 #define MAX_RESULTS 10
@@ -1528,14 +1527,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
-
 	LineType type = line.type;
 	
 	// Do nothing for section markers
 	if (line.type == section) return 0;
 	
 	NSIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
-	
+
 	// Nothing to do
 	if (!mdIndices.count && !(type == heading || type == transitionLine || type == character)) return 0;
 	
@@ -1583,7 +1581,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
 		free(newGlyphs);
 	}
-	
+		
 	CFRelease(modifiedStr);
 	return glyphRange.length;
 }

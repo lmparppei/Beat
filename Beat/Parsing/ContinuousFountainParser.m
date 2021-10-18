@@ -37,6 +37,7 @@
 #import "NSMutableIndexSet+Lowest.h"
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
+#import "BeatMeasure.h"
 
 #define NEW_NOTES YES
 
@@ -675,6 +676,11 @@ static NSDictionary* patterns;
 
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
 {
+	bool lastToParse = YES;
+	if (indices.count) lastToParse = NO;
+	  
+	Line* currentLine = self.lines[index];
+	
     //Remove index as done from array if in array
     if (indices.count) {
         NSUInteger lowestToDo = indices.lowestIndex;
@@ -682,12 +688,7 @@ static NSDictionary* patterns;
             [indices removeIndex:index];
         }
     }
-	
-	bool lastToParse = YES;
-	if (indices.count) lastToParse = NO;
-    
-    Line* currentLine = self.lines[index];
-	
+		
 	//Correct type on this line
     LineType oldType = currentLine.type;
     bool oldOmitOut = currentLine.omitOut;
@@ -712,7 +713,7 @@ static NSDictionary* patterns;
 		currentLine.type = empty;
 		[_changedIndices addIndex:index - 1];
 	}
-
+	
 	// Parse multiline note ranges
 	// This is a mess, and written using trial & error. Dread lightly.
 	
@@ -740,7 +741,6 @@ static NSDictionary* patterns;
 		NSIndexSet *noteIndices = [self terminateNoteBlockAt:currentLine];
 		[self.changedIndices addIndexes:noteIndices];
 	}
-
 	
 	//If there is a next element, check if it might need a reparse because of a change in type or omit out
 	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse) {
@@ -749,9 +749,9 @@ static NSDictionary* patterns;
 			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
                 currentLine.type == section ||
                 currentLine.type == synopse ||
-                currentLine.type == character ||            //if the line became anything to
-                currentLine.type == parenthetical ||        //do with dialogue, it might cause
-                currentLine.type == dialogue ||             //the next lines to be dialogue
+				currentLine.type == character ||        					    //if the line became anything to
+                currentLine.type == parenthetical ||        					//do with dialogue, it might cause
+                (currentLine.type == dialogue && nextLine.type != empty) ||     //the next lines to be dialogue
                 currentLine.type == dualDialogueCharacter ||
                 currentLine.type == dualDialogueParenthetical ||
                 currentLine.type == dualDialogue ||

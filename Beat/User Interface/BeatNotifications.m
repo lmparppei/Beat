@@ -72,3 +72,26 @@
 }
 
 @end
+/*
+ 
+ sä saat mut piiloutumaan
+ sä saat mut piiloutumaan
+ hiivin yli lattian niin hiljaa
+ ettet huomaakaan
+ 
+ jos piiloudun kasvien taa
+ sä et huomaa
+ jos pukeudun mustaan ja pysyn varjoissa
+ ehkä sä et huomaa
+ toivon että sä et huomaa
+ mua
+ 
+ teen samat virheet aina uudestaan
+ samat virheet aina uudestaan
+ sä saat mut katoamaan
+ sä saat mut katoamaan
+ sun tapettien sekaan
+ sä saat mut katoamaan
+ sä saat mut katoamaan
+ 
+ */

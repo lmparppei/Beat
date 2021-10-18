@@ -111,6 +111,7 @@
 #import "ITSwitch.h"
 #import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
+#import "BeatMeasure.h"
 
 #import "BeatScriptParser.h"
 #import "BeatPluginManager.h"
@@ -1592,6 +1593,7 @@ void delay (double delay, CallbackBlock block) {
 
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+
 	// Why are we constantly checkin for current line?
 	_currentLine = [self getCurrentLine];
 	
@@ -5524,23 +5526,6 @@ triangle walks
 	}
 }
 
-#pragma mark - Testing methods
-
-- (void)startMeasure
-{
-	_executionTime = [NSDate date];
-}
-- (NSTimeInterval)getMeasure {
-	NSDate *methodFinish = [NSDate date];
-	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:_executionTime];
-	return executionTime;
-}
-- (void)endMeasure:(NSString*)name
-{
-	NSDate *methodFinish = [NSDate date];
-	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:_executionTime];
-	NSLog(@"%@ execution time = %f", name, executionTime);
-}
 
 @end
 
