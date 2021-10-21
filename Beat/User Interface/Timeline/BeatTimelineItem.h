@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef enum : NSInteger {
 	TimelineScene = 1,
 	TimelineSection,
+	TimelineLowerSection,
 	TimelineSynopsis,
 	TimelineStoryline
 } BeatTimelineItemType;

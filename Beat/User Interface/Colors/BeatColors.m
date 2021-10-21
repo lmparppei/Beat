@@ -7,6 +7,7 @@
 //
 
 #import "BeatColors.h"
+#import "ThemeManager.h"
 
 @interface BeatColors ()
 @property (nonatomic) NSDictionary *colorValues;
@@ -40,30 +41,30 @@
 			 @"teal": [BeatColors colorWithRed:12 green:224 blue:227],
 			 @"orange": [BeatColors colorWithRed:255 green:161 blue:13],
 			 @"brown": [BeatColors colorWithRed:169 green:106 blue:7],
-			 @"lightGray": [BeatColors colorWithRed:220 green:220 blue:220],
-			 @"darkGray": [BeatColors colorWithRed:170 green:170 blue:170],
-			 @"veryDarkGray": [BeatColors colorWithRed:100 green:100 blue:100],
-			 @"backgroundGray": [BeatColors colorWithRed:41 green:42 blue:45],
-			 @"fdxRemoval": [BeatColors colorWithRed:255 green:190 blue:220]
+			 @"lightgray": [BeatColors colorWithRed:220 green:220 blue:220],
+			 @"darkgray": [BeatColors colorWithRed:170 green:170 blue:170],
+			 @"verydarkgray": [BeatColors colorWithRed:100 green:100 blue:100],
+			 @"backgroundgray": [BeatColors colorWithRed:41 green:42 blue:45],
+			 @"fdxremoval": [BeatColors colorWithRed:255 green:190 blue:220]
 	};
 	
 	return _colorValues;
 }
 
-+ (NSDictionary *) colors {
++ (NSDictionary *)colors {
 	BeatColors *colors = [self sharedColors];
 	return colors.colorValues;
 }
-+ (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
++ (NSColor *)colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
 	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
 }
-+ (NSColor *) randomColor {
++ (NSColor *)randomColor {
 	NSArray * colors = [BeatColors attributeKeys];
 	NSUInteger index = arc4random_uniform((uint32_t)(colors.count - 1));
 	return [BeatColors valueForKey:colors[index]];
 }
-+ (NSColor *) color:(NSString*)name {
-	NSColor *color = [BeatColors.colors valueForKey:name];
++ (NSColor *)color:(NSString*)name {
+	NSColor *color = [BeatColors.colors valueForKey:name.lowercaseString];
 	if (color) {
 		return color;
 	} else {

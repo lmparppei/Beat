@@ -7,14 +7,14 @@
 //
 
 #import "BeatHTMLPanel.h"
-#import "BeatScriptParser.h"
+#import "BeatPluginParser.h"
 
 @interface BeatHTMLPanel ()
 @end
 
 @implementation BeatHTMLPanel
 
--(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatScriptParser*)host {
+-(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatPluginParser*)host {
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];

@@ -1007,8 +1007,8 @@
 
 -(NSDictionary*)forSerialization {
 	return @{
-		@"string": (self.string) ? self.string : @"",
-		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber : @"",
+		@"string": (self.string.length) ? self.string.copy : @"",
+		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
 		@"position": @(self.position),
 		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
 		@"sectionDepth": @(self.sectionDepth),

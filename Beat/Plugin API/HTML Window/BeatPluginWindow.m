@@ -9,12 +9,12 @@
 #import "BeatPluginWindow.h"
 
 @interface BeatPluginWindow ()
-@property (weak) BeatScriptParser *host;
+@property (weak) BeatPluginParser *host;
 @end
 
 @implementation BeatPluginWindow 
 
--(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatScriptParser*)host {
+-(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatPluginParser*)host {
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
@@ -31,6 +31,7 @@
 	
 	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
+	[config.userContentController addScriptMessageHandler:self.host name:@"callAndLog"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"log"];
 
 	_webview = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
@@ -43,7 +44,7 @@
 }
 
 + (BeatPluginWindow*)withHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host {
-	return [[BeatPluginWindow alloc] initWithHTML:html width:width height:height host:(BeatScriptParser*)host];
+	return [[BeatPluginWindow alloc] initWithHTML:html width:width height:height host:(BeatPluginParser*)host];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -103,11 +104,9 @@
 	[super cancelOperation:sender];
 }
 -(void)close {
-	NSLog(@"CLOSE CALLED");
 	[self.host closePluginWindow:self];
 }
 -(void)closeWindow {
-	NSLog(@"SUPER CLOSE CALLED");
 	[super close];
 }
 

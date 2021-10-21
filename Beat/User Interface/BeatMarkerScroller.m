@@ -5,6 +5,11 @@
 //  Created by Lauri-Matti Parppei on 11.10.2021.
 //  Copyright © 2021 KAPITAN!. All rights reserved.
 //
+/*
+ 
+ Scroller subclass used to draw markers under scroll bar
+ 
+ */
 
 #import "BeatMarkerScroller.h"
 #import "BeatColors.h"

@@ -14,11 +14,15 @@
  - force line type (set in this class)
  - draw masks (array of masks provided by Document)
  - draw page breaks (array of breaks with y position provided by Document/FountainPaginator)
+ - set custom glyphs when hiding Fountain markup
+ - render uppercase characters when needed (scene headings, transitions etc)
  
- Document acts as delegate, so some of its methods are accessible from this class too.
- This is a bit convoluted design, but works for now.
+ Document can be accessed using .editorDelegate
+ Note that this is NOT the BeatEditorDelegate seen elsewhere, but a custom one
+ just for BeatTextView. It has some methods that don't have to be exposed elsewhere.
  
  Auto-completion function is based on NCRAutoCompleteTextView.
+ Heavily modified for Beat.
  
  */
 
@@ -147,7 +151,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 //	[textStorage addLayoutManager:self.layoutManager];
 //	self.layoutManager.textStorage = textStorage;
 //	textStorage.delegate = self;
-	
+		
 	return self;
 }
 
@@ -1036,7 +1040,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)updateSceneLabelsFrom:(NSInteger)changedIndex {
-	[self updateSceneTextLabelsFrom:0];
+	[self updateSceneTextLabelsFrom:changedIndex];
 }
 
 - (void)updateSceneTextLabelsFrom:(NSInteger)changedIndex {
@@ -1049,6 +1053,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor;
 	
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
+	
+	// We need to do this, unfortunately
+	[self.layoutManager ensureLayoutForCharacterRange:_editorDelegate.currentLine.textRange];
 	
 	NSInteger index = 0;
 	for (OutlineScene *scene in parser.outline) {
@@ -1074,13 +1081,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		else label = self.sceneNumberLabels[index];
 		
 		// Set scene number to be displayed
-		if (scene.sceneNumber) { [label setStringValue:scene.sceneNumber]; }
-		
-		// Invalidate layout
-		//[self.layoutManager invalidateLayoutForCharacterRange:scene.line.textRange actualCharacterRange:nil];
-		
+		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber];
+				
 		// Actual pixel position of the label
-		NSRect rect = [self rectForRange:scene.line.textRange];
+		NSRect rect;
+		if (!self.editorDelegate.hideFountainMarkup && scene.line.numberOfPrecedingFormattingCharacters == 0) {
+			// Hiding markup is not on, just grab the text range
+			rect = [self rectForRange:scene.line.textRange];
+		} else {
+			// Hiding might be on, so let's calculate rect using only the first visible character
+			NSRange sceneRange = (NSRange){ scene.position + scene.line.numberOfPrecedingFormattingCharacters, 1  };
+			rect = [self rectForRange:sceneRange];
+		}
 		
 		// Some hardcoded values, which seem to work
 		rect.size.width = 20 * scene.sceneNumber.length;
@@ -1294,7 +1306,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return label;
 }
 
-- (NSTextField *) createPageLabel: (NSString*) numberStr {
+- (NSTextField *)createPageLabel: (NSString*) numberStr {
 	NSTextField * label;
 	label = [[NSTextField alloc] init];
 	
@@ -1311,7 +1323,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 
-- (void) createAllLabels {
+- (void)createAllLabels {
 	ContinuousFountainParser *parser = self.editorDelegate.parser;
 	
 	for (OutlineScene * scene in parser.outline) {
@@ -1532,8 +1544,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Do nothing for section markers
 	if (line.type == section) return 0;
 	
-	NSIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO];
-
+	// Formatting characters etc.
+	NSMutableIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
+	[mdIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
+	if (line.colorRange.length) [mdIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
+	
 	// Nothing to do
 	if (!mdIndices.count && !(type == heading || type == transitionLine || type == character)) return 0;
 	
@@ -1556,7 +1571,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	if (_editorDelegate.hideFountainMarkup) {
 		modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
-		
+				
 		// Hide markdown characters
 		for (NSInteger i = 0; i < glyphRange.length; i++) {
 			NSUInteger index = charIndexes[i];
@@ -1592,7 +1607,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	CFIndex count = CFStringGetLength(string);
  
 	// Allocate our buffers for characters and glyphs.
-	UniChar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
+	unichar *characters = (UniChar *)malloc(sizeof(UniChar) * count);
 	CGGlyph *glyphs = (CGGlyph *)malloc(sizeof(CGGlyph) * count);
  
 	// Get the characters from the string.
@@ -1601,8 +1616,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	// Get the glyphs for the characters.
 	CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
  
-	// Free the buffers
-	//free(characters);
 	return glyphs;
 }
 
@@ -1623,6 +1636,35 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 }
 */
 
+#pragma mark - Spell Checking
+
+- (void)handleTextCheckingResults:(NSArray<NSTextCheckingResult *> *)results forRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount {
+	
+	// Avoid capitalizing parentheticals
+	if (self.editorDelegate.currentLine.type == parenthetical && range.location == self.editorDelegate.currentLine.position) {
+		NSMutableArray<NSTextCheckingResult*> *newResults;
+		
+		for (NSTextCheckingResult *result in results) {
+			if (result.resultType == NSTextCheckingTypeCorrection && _editorDelegate.currentLine.length > 2) {
+				// Strip () from the line for testing, then get first word and capitalize it
+				NSString *textToChange = [[self.textStorage.string substringWithRange:(NSRange){ range.location + 1, range.length - 2 }] componentsSeparatedByString:@" "].firstObject;
+				textToChange = textToChange.capitalizedString;
+				
+				// This is actually the first word in parenthetical, so let's not add it into the suggestions.
+				// Otherwise, add the replacement suggestion
+				if (![result.replacementString isEqualToString:textToChange] || result.range.location == _editorDelegate.currentLine.position + 1) {
+					[newResults addObject:result];
+				}
+			} else {
+				[newResults addObject:result];
+			}
+		}
+		[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
+	} else {
+		// default behaviors, including auto-correct
+		[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
+	}
+}
 
 @end
 /*

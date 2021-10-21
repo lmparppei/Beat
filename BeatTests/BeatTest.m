@@ -13,7 +13,7 @@
 #import "ContinuousFountainParser.h"
 #import "Line.h"
 #import "BeatHTMLScript.h"
-#import "BeatScriptParser.h"
+#import "BeatPluginParser.h"
 #import "NSString+Levenshtein.h"
 
 

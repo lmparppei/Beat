@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-#import "BeatScriptParser.h"
+#import "BeatPluginParser.h"
 
 @protocol BeatPluginWindowExports <JSExport>
 @property (nonatomic) NSString* title;

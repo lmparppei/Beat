@@ -96,6 +96,8 @@ JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)wid
 JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats);
 JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(OutlineScene *)scene);
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
+JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
+JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
 
 @end
 
@@ -106,6 +108,7 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 @property (nonatomic, readonly) BeatTagging *tagging;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
 @property (nonatomic, readonly) Line* currentLine;
+@property (nonatomic, readonly, weak) NSTextView *textView;
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 
 - (void)registerPlugin:(id)parser;
@@ -127,7 +130,7 @@ JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValu
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
 @end
 
-@interface BeatScriptParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
+@interface BeatPluginParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
 @property (weak) id<BeatScriptingDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;

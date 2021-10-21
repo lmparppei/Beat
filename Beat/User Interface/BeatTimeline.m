@@ -29,7 +29,7 @@
 
 #define STORYLINE_TITLE @"Track Storyline"
 
-#define DEFAULT_HEIGHT 120.0
+#define DEFAULT_HEIGHT 130.0
 #define DEFAULT_Y 33.0
 #define SECTION_HEADROOM 6.0
 #define PADDING 8.0
@@ -46,18 +46,19 @@
 @interface BeatTimeline ()
 
 // Interface
-@property (weak) IBOutlet NSPopUpButton *storylinePopup;
-@property (weak) IBOutlet NSLayoutConstraint *localHeightConstraint;
-@property CGFloat originalHeight;
-@property NSTimer *refreshTimer;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *storylinePopup;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *localHeightConstraint;
+@property (nonatomic) CGFloat originalHeight;
+@property (nonatomic) NSTimer *refreshTimer;
 
 // Timeline data
-@property NSInteger totalLength;
-@property bool hasSections;
-@property NSMutableArray *scenes;
-@property NSMutableArray *storylineItems;
-@property NSMutableArray *storylineLabels;
-@property NSArray *storylineColors;
+@property (nonatomic) NSInteger totalLength;
+@property (nonatomic) bool hasSections;
+@property (nonatomic) NSInteger sectionDepth;
+@property (nonatomic) NSMutableArray *scenes;
+@property (nonatomic) NSMutableArray *storylineItems;
+@property (nonatomic) NSMutableArray *storylineLabels;
+@property (nonatomic) NSArray *storylineColors;
 
 // Storyline UI
 @property (nonatomic) NSPopover *storylinePopover;
@@ -165,7 +166,11 @@
 			else if (scene.type == synopse) { scenes++; continue; }
 			
 			if (scene.type == heading) _totalLength += scene.timeLength;
-			if (scene.type == section) _hasSections = YES;
+			if (scene.type == section) {
+				// Having sections transforms the view, so save the depth, too
+				_hasSections = YES;
+				if (scene.sectionDepth > _sectionDepth) _sectionDepth = scene.sectionDepth;
+			}
 			if (scene.storylines.count) {
 				NSMutableSet *storylines = [NSMutableSet setWithArray:scene.storylines];
 				[storylines intersectSet:[NSSet setWithArray:_visibleStorylines]];
@@ -238,7 +243,10 @@
 
 	// Make the scenes be centered in the frame
 	CGFloat yPosition = DEFAULT_Y;
-	if (_hasSections) yPosition += SECTION_HEADROOM;
+	if (_hasSections) {
+		if (_sectionDepth == 1) yPosition += SECTION_HEADROOM;
+		else yPosition += 2 * SECTION_HEADROOM;
+	}
 	
 	NSInteger index = 0;
 	NSInteger storylineIndex = 0;
@@ -275,7 +283,7 @@
 		if (item.selected) selectionRect = item.frame;
 		
 		// Show storylines
-		// Much more sensible approach would be to really create timelines by a track, but whatever.
+		// A much more sensible approach would be to really create timelines by a track, but whatever.
 		// The track y positions should still maybe be set while creating the labels. That way,
 		// we would have the exact and correct y position to match the label.
 		if (scene.type == heading && scene.storylines.count && _visibleStorylines.count) {
@@ -297,9 +305,9 @@
 			
 		}
 		
-		// Clip sections & synopsis markers
+		// Clip sections & synopsis markers for same and higher level sections
 		if (scene.type == section) {
-			if (previousSection) {
+			if (previousSection && previousSection.representedItem.sectionDepth >= scene.sectionDepth) {
 				if (previousSection.frame.origin.x + previousSection.frame.size.width > item.frame.origin.x) {
 					CGFloat difference = previousSection.frame.origin.x + previousSection.frame.size.width - item.frame.origin.x;
 					NSRect frame = previousSection.frame;
@@ -578,7 +586,10 @@
 		
 		NSRect frame = textField.frame;
 		frame.origin.y = DEFAULT_Y + 30 + i * STORYLINE_HEIGHT + 5;
-		if (_hasSections) frame.origin.y += SECTION_HEADROOM;
+		if (_hasSections) {
+			if (_sectionDepth == 1) frame.origin.y += SECTION_HEADROOM;
+			else frame.origin.y += SECTION_HEADROOM * 2;
+		}
 		textField.frame = frame;
 	}
 }

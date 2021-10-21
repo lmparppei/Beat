@@ -44,12 +44,12 @@
 - (NSDictionary*)forSerialization {
 	return @{
 		// String values have to be guarded so we don't try to put nil into NSDictionary
-		@"string": (self.string.length) ? self.string : @"",
+		@"string": (self.string.length) ? self.string.copy : @"",
 		@"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
 		@"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
-		@"storylines": (self.storylines) ? self.storylines : @[],
-		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber : @"",
-		@"color": (self.color) ? self.color : @"",
+		@"storylines": (self.storylines) ? self.storylines.copy : @[],
+		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
+		@"color": (self.color) ? self.color.copy : @"",
 		@"sectionDepth": @(self.sectionDepth),
 
 		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },

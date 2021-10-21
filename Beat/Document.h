@@ -40,7 +40,7 @@ THE SOFTWARE.
 #import "BeatTimer.h"
 #import "BeatDocumentSettings.h"
 #import "BeatPreview.h"
-#import "BeatScriptParser.h"
+#import "BeatPluginParser.h"
 #import "BeatOutlineView.h"
 #import "BeatAnalysisPanel.h"
 #import "BeatEditorDelegate.h"

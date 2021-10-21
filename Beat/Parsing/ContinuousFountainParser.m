@@ -115,15 +115,24 @@ static NSDictionary* patterns;
 	NSArray *lines = [NSArray arrayWithArray:self.lines];
 	NSMutableString *content = [NSMutableString string];
 	
+	Line *previousLine;
 	for (Line *line in lines) {
 		NSString *string = line.string;
 		LineType type = line.type;
+		
+		// Ensure correct whitespace before elements
+		if ((line.type == character || line.type == heading) &&
+			previousLine.string.length > 0) {
+			[content appendString:@"\n"];
+		}
 		
 		// Make some lines uppercase
 		if ((type == heading || type == transitionLine) && line.numberOfPrecedingFormattingCharacters == 0) string = string.uppercaseString;
 		
 		[content appendString:string];
 		if (line != self.lines.lastObject) [content appendString:@"\n"];
+		
+		previousLine = line;
 	}
 	return content;
 }
@@ -410,7 +419,7 @@ static NSDictionary* patterns;
 - (NSIndexSet*)parseRemovalAt:(NSRange)range {
 	NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
 	
-	NSString *stringToRemove = [[self rawText] substringWithRange:range];
+	NSString *stringToRemove = [self.rawText substringWithRange:range];
 	NSInteger lineBreaks = [stringToRemove componentsSeparatedByString:@"\n"].count - 1;
 	
 	if (lineBreaks > 1) {
@@ -426,7 +435,7 @@ static NSDictionary* patterns;
 		
 		NSUInteger indexInLine = range.location - firstLine.position;
 		
-		NSString *retain = [firstLine.string substringToIndex:indexInLine];
+		NSString *retain = (firstLine.string.length) ? [firstLine.string substringToIndex:indexInLine] : @"";
 		NSInteger nextIndex = lineIndex + 1;
 				
 		// +1 for line break
@@ -983,6 +992,12 @@ and incomprehensible system of recursion.
 	// Usually Fountain files are parsed from bottom to up, but here we are parsing in a linear manner.
 	// I have no idea how I got this to work but it does.
 
+	// Check if this line was forced to become a character cue
+	if (line.forcedCharacterCue) {
+		line.forcedCharacterCue = NO;
+		return character;
+	}
+	
 	// Check for all-caps actions mistaken for character cues
 	if (self.delegate && NSThread.isMainThread) {
 		if (preceedingLine.string.length == 0 &&
@@ -2072,24 +2087,6 @@ and incomprehensible system of recursion.
 	}
 	
 	return string;
-}
-
-#pragma mark - Testing methods
-
-- (void)startMeasure
-{
-	_executionTime = [NSDate date];
-}
-- (NSTimeInterval)getMeasure {
-	NSDate *methodFinish = [NSDate date];
-	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:_executionTime];
-	return executionTime;
-}
-- (void)endMeasure:(NSString*)name
-{
-	NSDate *methodFinish = [NSDate date];
-	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:_executionTime];
-	NSLog(@"%@ execution time = %f", name, executionTime);
 }
 
 @end

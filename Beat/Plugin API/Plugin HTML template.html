@@ -186,9 +186,10 @@
 				closeAndSendData: function() {
 					sendBeatData();
 				},
-				call: function(value) {
+				call: function(value, logCall = false) {
 					// We convert the value into a string, just as a safety measure
-					window.webkit.messageHandlers.call.postMessage(value.toString())
+					if (!logCall) window.webkit.messageHandlers.call.postMessage(value.toString())
+					else window.webkit.messageHandlers.callAndLog.postMessage(value.toString())
 				}
 			};
 		

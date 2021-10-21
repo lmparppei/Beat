@@ -68,15 +68,18 @@
 	if (reset) {
 		if (storyline) _type = TimelineStoryline;
 		else if (scene.type == heading) _type = TimelineScene;
-		else if (scene.type == section) _type = TimelineSection;
-		else if (scene.type == synopse) _type = TimelineSynopsis;
+		else if (scene.type == section) {
+			// Lower and higher sections
+			if (scene.sectionDepth < 2) _type = TimelineSection;
+			else _type = TimelineLowerSection;
+		} else if (scene.type == synopse) _type = TimelineSynopsis;
 		
 		self.color = [BeatColors color:scene.color.lowercaseString];
 		
 		if (!self.color) {
 			// Default colors for elements
 			if (self.type == TimelineScene) self.color = NSColor.darkGrayColor;
-			else if (self.type == TimelineSection) self.color = NSColor.whiteColor;
+			else if (self.type == TimelineSection || self.type == TimelineLowerSection) self.color = NSColor.whiteColor;
 			else self.color = NSColor.grayColor;
 		}
 		
@@ -94,6 +97,10 @@
 	else if (_type == TimelineSection) {
 		if (reset) [self setSectionFor:rect];
 		else [self updateSectionPosition:rect];
+	}
+	else if (_type == TimelineLowerSection) {
+		if (reset) [self setLowerSectionFor:rect];
+		else [self updateLowerSectionPosition:rect];
 	}
 	else if (_type == TimelineSynopsis) {
 		if (reset) [self setSynopsisFor:rect];
@@ -156,12 +163,31 @@
 		_textLayer.foregroundColor = self.color.CGColor;
 	}
 	
-	self.frame = NSMakeRect(rect.origin.x, rect.origin.y - 18, size.width + 10, 13);
+	self.frame = NSMakeRect(rect.origin.x, rect.origin.y - 15, size.width + 10, 13);
+}
+- (void)updateLowerSectionPosition:(NSRect)rect {
+	[self updateSynopsisPosition:rect];
 }
 - (void)updateSynopsisPosition:(NSRect)rect {
 	NSRect frame = self.frame;
 	frame.origin.x = rect.origin.x;
 	self.frame = frame;
+}
+
+- (void)setLowerSectionFor:(NSRect)rect {
+	self.layer.backgroundColor = NSColor.clearColor.CGColor;
+	self.layer.opacity = 1.0;
+	
+	_textLayer.backgroundColor = NSColor.clearColor.CGColor;
+	_textLayer.fontSize = FONTSIZE_SYNOPSIS;
+	_textLayer.string = self.text;
+	
+	CGSize size = _textLayer.preferredFrameSize;
+	_textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
+	_textLayer.position = CGPointMake(size.width / 2, size.height / 2);
+	_textLayer.foregroundColor = self.color.CGColor;
+	
+	self.frame = NSMakeRect(rect.origin.x, rect.origin.y - 26, size.width + 10, 13);
 }
 
 - (void)setSectionFor:(NSRect)rect {
@@ -172,12 +198,7 @@
 	CGSize size = _textLayer.preferredFrameSize;
 	_textLayer.bounds = CGRectMake(0, 0, size.width, size.height);
 	_textLayer.position = CGPointMake(size.width / 2 + 2, size.height / 2 + 2);
-	
-	if (_representedItem.color.length) {
-		_textLayer.foregroundColor = self.color.CGColor;
-	} else {
-		_textLayer.foregroundColor = self.color.CGColor;
-	}
+	_textLayer.foregroundColor = self.color.CGColor;
 	
 	self.layer.backgroundColor = NSColor.clearColor.CGColor;
 	self.layer.opacity = 1.0;

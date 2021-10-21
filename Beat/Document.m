@@ -113,7 +113,7 @@
 #import "BeatLockButton.h"
 #import "BeatMeasure.h"
 
-#import "BeatScriptParser.h"
+#import "BeatPluginParser.h"
 #import "BeatPluginManager.h"
 
 #import "BeatUserDefaults.h"
@@ -373,10 +373,10 @@
 // Title page element indent
 #define TITLE_INDENT .15
 
-#define CHARACTER_INDENT_P 0.36
+#define CHARACTER_INDENT_P 0.34
 #define PARENTHETICAL_INDENT_P 0.27
 #define DIALOGUE_INDENT_P 0.164
-#define DIALOGUE_RIGHT_P 0.725
+#define DIALOGUE_RIGHT_P 0.735
 
 @implementation Document
 
@@ -397,7 +397,7 @@
 	
 	// Terminate running plugins
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatScriptParser* plugin = _runningPlugins[pluginName];
+		BeatPluginParser* plugin = _runningPlugins[pluginName];
 		[plugin end];
 		[_runningPlugins removeObjectForKey:pluginName];
 	}
@@ -526,8 +526,14 @@ void delay (double delay, CallbackBlock block) {
 			// Show a progress bar for longer documents
 			if (self.parser.lines.count > 1000) {
 				self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.thisWindow.screen.frame.size.width - 300) / 2, (self.thisWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
+				
+				// Dark mode
+				if (@available(macOS 10.14, *)) {
+					NSAppearance *appr = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+					[self.progressPanel setAppearance:appr];
+				}
+				
 				self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
-				self.progressIndicator.maxValue = 10.0;
 				self.progressIndicator.indeterminate = NO;
 				[self.progressPanel.contentView addSubview:self.progressIndicator];
 				
@@ -575,8 +581,10 @@ void delay (double delay, CallbackBlock block) {
 	// Lock status
 	if ([self.documentSettings getBool:@"Locked"]) [self lock];
 
+	// If this a recovered autosave, the file might changed when it opens, so let's save this info
+	if (self.hasUnautosavedChanges) NSLog(@"Unautosaved");
+	
 	// Setup page size
-	// This can take surprising long, so let's do it in an asynchronous block.
 	// (We'll disable undo registration here, so the doc won't appear as edited on open)
 	[self.undoManager disableUndoRegistration];
 
@@ -1411,8 +1419,11 @@ void delay (double delay, CallbackBlock block) {
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
 	// Don't allow editing the script while tagging
-	if (_mode != EditMode || self.contentLocked) return NO;
-	
+	if (_mode != EditMode || self.contentLocked) {
+		NSLog(@"# Don't change text");
+		return NO;
+	}
+		
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
 	}
@@ -1432,19 +1443,15 @@ void delay (double delay, CallbackBlock block) {
 			[self cancelCharacterInput];
 		}
 	}
-	
-	
+		
 	// Also, if it's an enter key and we are handling a CHARACTER, force dialogue if needed
 	bool forceDialogue = NO;
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && _currentLine.type == character) {
 		Line *nextLine = [_parser nextLine:_currentLine];
 		if (nextLine.type == dialogue && nextLine.string.length) {
-			//[self setSelectedRange:(NSRange){ affectedCharRange.location + 1, 0 }];
 			forceDialogue = YES;
-			//return NO;
 		}
 	}
-
 
     // If something is being inserted, check whether it is a "(" or a "[[" and auto close it
     if (self.matchParentheses) {
@@ -1505,8 +1512,8 @@ void delay (double delay, CallbackBlock block) {
 			}
         }
     }
-	
-	// When on a parenthetical, parenthesis on the line when pressing enter
+		
+	// When on a parenthetical, stay on the line when pressing enter
 	if (_currentLine.type == parenthetical && [replacementString isEqualToString:@"\n"] && self.selectedRange.length == 0) {
 		if (self.textView.string.length >= affectedCharRange.location + 1) {
 			char chr = [self.textView.string characterAtIndex:affectedCharRange.location];
@@ -1522,7 +1529,7 @@ void delay (double delay, CallbackBlock block) {
 	
 	// Add an extra line break after some elements
 	bool processDoubleBreak = NO;
-	
+		
 	// Enter key
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && ![self.undoManager isUndoing] && !self.documentIsLoading) {
 		_currentLine = [self getCurrentLine];
@@ -1531,15 +1538,19 @@ void delay (double delay, CallbackBlock block) {
 		if (_characterInput && _characterInputForLine) {
 			// Don't go out of range
 			if (_characterInputForLine.position + _characterInputForLine.string.length <= self.textView.string.length) {
+				
 				// If the cue is empty, reset it
 				if (_characterInputForLine.string.length == 0) {
 					_characterInputForLine.type = empty;
 					[self formatLineOfScreenplay:_characterInputForLine];
 				}
-				// If the character is less than 3 characters long, we need to force it.
-				else if (_characterInputForLine.string.length < 3) {
-					_postEditAction = @{ @"index": [NSNumber numberWithInteger:_characterInputForLine.position], @"string": @"@" };
+				else {
+					_characterInputForLine.forcedCharacterCue = YES;
 				}
+				// If the character is less than 3 characters long, we need to force it.
+//				else if (_characterInputForLine.string.length < 3) {
+//					//_postEditAction = @{ @"index": [NSNumber numberWithInteger:_characterInputForLine.position], @"string": @"@" };
+//				}
 			}
 		}
 		
@@ -1547,6 +1558,7 @@ void delay (double delay, CallbackBlock block) {
 		// This should be rewritten at some point, I have no idea what's going on
 		// ... This is future me writing from the present, and I have no idea what you've going after, either.
 		//     This REALLY should be rewritten.
+		//           This is future me again, and what the actual fuck???
 		if (self.autoLineBreaks) {
 			// Test if we should add a new line
 			// (We are not in the process of adding a dual line break and shift is not pressed)
@@ -1590,10 +1602,10 @@ void delay (double delay, CallbackBlock block) {
 	}
 	
 	if (_characterInput) replacementString = [replacementString uppercaseString];
-
+	
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-
+		
 	// Why are we constantly checkin for current line?
 	_currentLine = [self getCurrentLine];
 	
@@ -1720,9 +1732,6 @@ void delay (double delay, CallbackBlock block) {
 	[self paginateAt:_lastChangedRange sync:NO];
 	
 	[self applyFormatChanges];
-	
-//	[self.textView.layoutManager ensureLayoutForCharacterRange:_lastChangedRange];
-//	[self.textView setNeedsDisplay:YES];
 	
 	// If the outline has changed, update all labels
 	if (changeInOutline) [self updateSceneNumberLabels:0];
@@ -2169,18 +2178,44 @@ void delay (double delay, CallbackBlock block) {
 	}
 	
 	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
-	NSInteger index = 0;
-
-	self.progressIndicator.maxValue = self.parser.lines.count * 1.0;
+	self.progressIndicator.maxValue =  1.0;
 	
+	[self formatAllWithDelay:0];
+/*
 	for (Line* line in self.parser.lines) {
-		delay(0.0003 * index, ^{
+		delay(0.0006 * index, ^{
 			[self formatLineOfScreenplay:line firstTime:YES];
-			[self.progressIndicator incrementBy:1.0];
+			[self.progressIndicator incrementBy:1.0 / self.parser.lines.count];
 			if (line == self.parser.lines.lastObject) [self loadingComplete];
 		});
+
 		index++;
 	}
+ */
+}
+- (void)formatAllWithDelay:(NSInteger)idx {
+	// We split the document into chunks of 400 lines and render them asynchronously
+	// to throttle the initial loading of document a bit
+	
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		Line *line;
+		NSInteger lastIndex = idx;
+		for (NSInteger i = 0; i < 400; i++) {
+			// After 400 lines, hand off the process
+			if (i + idx >= self.parser.lines.count) break;
+			
+			line = self.parser.lines[i + idx];
+			lastIndex = i + idx;
+			[self formatLineOfScreenplay:line firstTime:YES];
+		}
+		
+		[self.progressIndicator incrementBy:400.0 / self.parser.lines.count];
+		
+		// If the document is done formatting, complete the loading process.
+		// Else render 400 more lines
+		if (line == self.parser.lines.lastObject || lastIndex >= self.parser.lines.count) [self loadingComplete];
+		else [self formatAllWithDelay:lastIndex + 1];
+	});
 }
 
 - (void)formatLineOfScreenplay:(Line*)line { [self formatLineOfScreenplay:line firstTime:NO]; }
@@ -2208,10 +2243,7 @@ void delay (double delay, CallbackBlock block) {
 	NSLayoutManager *layoutMgr = _textView.layoutManager;
 	NSTextStorage *textStorage = _textView.textStorage;
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
-	
-	// Reset temporary attributes
-	[layoutMgr setTemporaryAttributes:@{} forCharacterRange:line.textRange];
-	
+		
 	// Format layout & alignment
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
@@ -2254,10 +2286,11 @@ void delay (double delay, CallbackBlock block) {
 	} else if (line.type == lyrics) {
 		// Format lyrics - italic
 		[attributes setObject:self.italicCourier forKey:NSFontAttributeName];
+		[paragraphStyle setAlignment:NSTextAlignmentCenter];
 	}
 
 	// Handle title page block
-	else if (line.type == titlePageTitle  ||
+	if (line.type == titlePageTitle  ||
 		line.type == titlePageAuthor ||
 		line.type == titlePageCredit ||
 		line.type == titlePageSource ||
@@ -2332,9 +2365,11 @@ void delay (double delay, CallbackBlock block) {
 				[paragraphStyle setParagraphSpacing:0];
 				
 				// Black or custom for high-level sections
+				
 				if (line.color) {
 					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
 				} else sectionColor = self.themeManager.sectionTextColor;
+				
 
 				[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:sectionColor forCharacterRange:line.textRange];
 				//[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
@@ -2383,6 +2418,7 @@ void delay (double delay, CallbackBlock block) {
 				line.isSplitParagraph = YES;
 			}
 		}
+		
 	} else if (line.type == empty) {
 		// Just to make sure that after second empty line we reset indents
 		NSInteger lineIndex = [_parser.lines indexOfObject:line];
@@ -2488,7 +2524,7 @@ void delay (double delay, CallbackBlock block) {
 	// Foreground color attributes
 	if (line.isTitlePage && line.titleRange.length > 0) {
 		NSRange titleRange = line.titleRange;
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
 								   value:self.themeManager.commentColor
 					   forCharacterRange:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
 	}
@@ -3014,7 +3050,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)forceSceneNumberForScene:(id)sender {
 	BeatModalInput *input = [[BeatModalInput alloc] init];
-	[input inputBoxWithMessage:@"Set Number For Scene"  text:@"Type in a custom scene number (can include letters)" placeholder:@"123A" forWindow:_thisWindow completion:^(NSString * _Nonnull result) {
+	[input inputBoxWithMessage:@"Set Number For Scene"  text:@"Custom scene number (can include letters, or press space for a scene with no scene number)" placeholder:@"123A" forWindow:_thisWindow completion:^(NSString * _Nonnull result) {
 		if (result.length > 0) {
 			OutlineScene *scene = [self getCurrentScene];
 			if (scene) {
@@ -3839,8 +3875,9 @@ static NSString *revisionAttribute = @"Revision";
 	self.hideFountainMarkup = !self.hideFountainMarkup;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
-	if (self.hideFountainMarkup) self.textView.layoutManager.allowsNonContiguousLayout = NO;
-	else self.textView.layoutManager.allowsNonContiguousLayout = YES;
+	//if (self.hideFountainMarkup) self.textView.layoutManager.allowsNonContiguousLayout = NO;
+	//else self.textView.layoutManager.allowsNonContiguousLayout = YES;
+	self.textView.layoutManager.allowsNonContiguousLayout = YES;
 	
 	[self.textView toggleHideFountainMarkup];
 	[self updateLayout];
@@ -5274,12 +5311,12 @@ triangle walks
 
 	if (_runningPlugins[pluginName]) {
 		// Disable a running plugin and return
-		[(BeatScriptParser*)_runningPlugins[pluginName] forceEnd];
+		[(BeatPluginParser*)_runningPlugins[pluginName] forceEnd];
 		[_runningPlugins removeObjectForKey:pluginName];
 		return;
 	}
 	
-	BeatScriptParser *parser = [[BeatScriptParser alloc] init];
+	BeatPluginParser *parser = [[BeatPluginParser alloc] init];
 	parser.delegate = self;
 	
 	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
@@ -5289,13 +5326,13 @@ triangle walks
 }
 
 - (void)registerPlugin:(id)plugin {
-	BeatScriptParser *parser = (BeatScriptParser*)plugin;
+	BeatPluginParser *parser = (BeatPluginParser*)plugin;
 	if (!_runningPlugins) _runningPlugins = [NSMutableDictionary dictionary];
 	
 	_runningPlugins[parser.pluginName] = parser;
 }
 - (void)deregisterPlugin:(id)plugin {
-	BeatScriptParser *parser = (BeatScriptParser*)plugin;
+	BeatPluginParser *parser = (BeatPluginParser*)plugin;
 	[_runningPlugins removeObjectForKey:parser.pluginName];
 	parser = nil;
 }
@@ -5305,7 +5342,7 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		BeatPluginParser *plugin = _runningPlugins[pluginName];
 		[plugin update:range];
 	}
 }
@@ -5315,7 +5352,7 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		BeatPluginParser *plugin = _runningPlugins[pluginName];
 		[plugin updateSelection:range];
 	}
 }
@@ -5325,7 +5362,7 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		BeatPluginParser *plugin = _runningPlugins[pluginName];
 		[plugin updateSceneIndex:index];
 	}
 }
@@ -5335,7 +5372,7 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatScriptParser *plugin = _runningPlugins[pluginName];
+		BeatPluginParser *plugin = _runningPlugins[pluginName];
 		[plugin updateOutline:outline];
 	}
 }

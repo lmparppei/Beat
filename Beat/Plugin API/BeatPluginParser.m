@@ -21,7 +21,7 @@
 #import <Cocoa/Cocoa.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
-#import "BeatScriptParser.h"
+#import "BeatPluginParser.h"
 #import "Line.h"
 #import "OutlineScene.h"
 #import "BeatAppDelegate.h"
@@ -33,7 +33,7 @@
 #import <PDFKit/PDFKit.h>
 
 
-@interface BeatScriptParser ()
+@interface BeatPluginParser ()
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
 @property (nonatomic) NSWindow *sheet;
@@ -54,7 +54,7 @@
 @property (nonatomic) NSMutableArray *pluginWindows;
 @end
 
-@implementation BeatScriptParser
+@implementation BeatPluginParser
 
 - (id)init
 {
@@ -98,10 +98,6 @@
 	if (!self.sheet && !self.resident && self.pluginWindows.count < 1) {
 		[self end];
 	}
-}
-
-- (void)safeToTerminate {
-	
 }
 
 - (void)forceEnd {
@@ -506,8 +502,13 @@
 
 - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length
 {
-	NSRange range = NSMakeRange(start, length);
-	[self.delegate setSelectedRange:range];
+	@try {
+		NSRange range = NSMakeRange(start, length);
+		[self.delegate setSelectedRange:range];
+	}
+	@catch (NSException *exception) {
+		[self log:[NSString stringWithFormat:@"Out of range (position: %lu  length: %lu)", start, length]];
+	}
 }
 
 - (NSString*)getText
@@ -659,14 +660,6 @@
 	return value;
 }
 
-- (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
-	[_delegate.documentSettings set:settingName as:value];
-}
-- (void)setDocumentSetting:(NSString*)settingName setting:(id)value {
-	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
-	[_delegate.documentSettings set:key as:value];
-}
-
 #pragma mark - Timer
 
 - (NSTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback {
@@ -705,6 +698,7 @@
 	[webView.configuration.userContentController addScriptMessageHandler:self name:@"sendData"];
 	[webView.configuration.userContentController addScriptMessageHandler:self name:@"log"];
 	[webView.configuration.userContentController addScriptMessageHandler:self name:@"call"];
+	[webView.configuration.userContentController addScriptMessageHandler:self name:@"callAndLog"];
 	[panel.contentView addSubview:webView];
 	
 	NSButton *okButton = [[NSButton alloc] initWithFrame:NSMakeRect(width - 90, 5, 90, 24)];
@@ -744,6 +738,7 @@
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
+		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"callAndLog"];
 		self.sheetWebView = nil;
 		self.sheet = nil;
 	}];
@@ -893,6 +888,7 @@
 	// Remove webview from memory, for sure
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
+	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndLog"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
 	
 	[window.webview removeFromSuperview];
@@ -1066,6 +1062,28 @@
 
 #pragma mark - Document Settings
 
+- (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
+	[_delegate.documentSettings set:settingName as:value];
+}
+- (void)setDocumentSetting:(NSString*)settingName setting:(id)value {
+	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
+	[_delegate.documentSettings set:key as:value];
+}
+
+
+#pragma mark - Temporary attributes
+
+- (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
+{
+	NSColor *color = [BeatColors color:hexColor];
+	[_delegate.textView.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+}
+
+- (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
+{
+	NSColor *color = [BeatColors color:hexColor];
+	[_delegate.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+}
 
 
 #pragma mark - WebKit controller
@@ -1081,6 +1099,13 @@
 	else if ([message.name isEqualToString:@"call"]) {
 		if (_context) [_context evaluateScript:message.body];
 	}
+	else if ([message.name isEqualToString:@"callAndLog"]) {
+		if (_context) {
+			[_context evaluateScript:message.body];
+			[self log:[NSString stringWithFormat:@"Evaluate: %@", message.body]];
+		}
+	}
+
 }
 
 @end

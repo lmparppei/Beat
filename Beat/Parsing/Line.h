@@ -89,6 +89,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSString* color;
 @property (nonatomic) NSArray* storylines;
 
+@property (nonatomic) bool forcedCharacterCue;
+
 @property (nonatomic) NSMutableIndexSet* boldRanges;
 @property (nonatomic) NSMutableIndexSet* italicRanges;
 @property (nonatomic) NSMutableIndexSet* boldItalicRanges;
