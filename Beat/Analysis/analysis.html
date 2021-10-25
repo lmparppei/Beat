@@ -266,10 +266,10 @@
 			.other input[type="radio"]:checked:after {
 				background-color: rgb(236,0,140);
 			}
-			.female input[type="radio"]:checked:after {
+			.woman input[type="radio"]:checked:after {
 				background-color: #1684ec;;
 			}
-			.male input[type="radio"]:checked:after {
+			.man input[type="radio"]:checked:after {
 				background-color: #1f4a73;
 			}
 
@@ -340,7 +340,7 @@
 
 		<script>
 			var debugData
-			//var defaultData = { "characters": { "Testi": 123 }, genders: { "Testi": "female" }, statistics: {}  };
+			//var defaultData = { "characters": { "Testi": 123 }, genders: { "Testi": "woman" }, statistics: {}  };
 			let defaultData = {}
 
 			var characterTable = document.getElementById('characters')
@@ -359,17 +359,17 @@
 			var characterGender = {};
 			var genderStatistics = {
 				other: 0,
-				female: 0,
-				male: 0,
+				woman: 0,
+				man: 0,
 				unspecified: 0
 			}
 
 			var chartColors = {
-				//male: "rgb(245, 163, 0)",
-				male: '#1f4a73',
+				//man: "rgb(245, 163, 0)",
+				man: '#1f4a73',
 				
-				//female: "rgb(90, 208, 133)",
-				female: '#1684ec',
+				//woman: "rgb(90, 208, 133)",
+				woman: '#1684ec',
 
 				//other: "rgb(0,129,239)",
 				other: "rgb(236,0,140)",
@@ -418,8 +418,8 @@
 			function resetGenderStatistics() {
 				genderStatistics = {
 					other: 0,
-					female: 0,
-					male: 0,
+					woman: 0,
+					man: 0,
 					unspecified: 0
 				}
 			}
@@ -448,7 +448,11 @@
 				// Go through characters
 				for (var c in characterLines) {
 					var gender = characterGender[c];
-
+					
+					// Quick fix to support earlier incosiderate gender values
+					if (gender == "female") gender = "woman"
+					else if (gender == "male") gender = "man"
+					
 					if (gender) {
 						genderStatistics[gender] += characterLines[c];
 					} else { 
@@ -462,8 +466,8 @@
 
 				var g = genderStatistics;
 				var chartValues = {
-					female: Math.round(g.female / g.total * 100),
-					male: Math.round(g.male / g.total * 100),
+					woman: Math.round(g.woman / g.total * 100),
+					man: Math.round(g.man / g.total * 100),
 					other: Math.round(g.other / g.total * 100),
 					unspecified: Math.round(g.unspecified / g.total * 100)
 				}
@@ -472,8 +476,8 @@
 				if (total == 0) {
 					noGenderData = true
 					chartValues = {
-						female: 0,
-						male: 0,
+						woman: 0,
+						man: 0,
 						other: 0,
 						unspecified: 0
 					}
@@ -482,8 +486,8 @@
 				if (!noGenderData) {
 					genderLegend.innerHTML =
 					"<h3>Lines by Gender</h3>" +
-					"<span class='textWoman'>Women " + chartValues.female + "%</span>" +
-					"<span class='textMan'>Men " + chartValues.male + "%</span>" +
+					"<span class='textWoman'>Women " + chartValues.woman + "%</span>" +
+					"<span class='textMan'>Men " + chartValues.man + "%</span>" +
 					"<span class='textOther'>Other " + chartValues.other + "%</span>" +
 					"<span class='textGray'>Unknown " + chartValues.unspecified + "%</span>";
 				} else {
@@ -494,14 +498,14 @@
 
 				// Draw donut chart
 				var data = [
-					chartValues.male,
-					chartValues.female,
+					chartValues.man,
+					chartValues.woman,
 					chartValues.other,
 					chartValues.unspecified
 				];
 				var colors = [
-					chartColors.male,
-					chartColors.female,
+					chartColors.man,
+					chartColors.woman,
 					chartColors.other,
 					chartColors.unspecified
 				];
@@ -545,8 +549,8 @@
 					// This is kinda silly. We want to have gender['other'] = 'checked' based on the data
 					var gender = {
 						other: '',
-						female: '',
-						male: '',
+						woman: '',
+						man: '',
 						unspecified: ''
 					};
 
@@ -561,8 +565,8 @@
 					"<td class='linesNumber'>" + characterList[c][1] + "</td>"+
 					"<td class='gender unspecified'><input type='radio' " + gender['unspecified'] + " name='"+name+"' value='unspecified' onchange='genderSwitch(this)'></td>" +
 					"<td class='gender other'><input type='radio' " + gender['other'] + " name='"+name+"' value='other' onchange='genderSwitch(this)'></td>" +
-					"<td class='gender female'><input type='radio' " + gender['female'] + " name='"+name+"' value='female' onchange='genderSwitch(this)'></td>" + 
-					"<td class='gender male'><input type='radio' " + gender['male'] + " name='"+name+"' value='male' onchange='genderSwitch(this)'></td>" + 
+					"<td class='gender woman'><input type='radio' " + gender['woman'] + " name='"+name+"' value='woman' onchange='genderSwitch(this)'></td>" +
+					"<td class='gender man'><input type='radio' " + gender['man'] + " name='"+name+"' value='man' onchange='genderSwitch(this)'></td>" +
 					"</td>" +
 					"</tr>";
 				}

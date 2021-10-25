@@ -12,7 +12,10 @@
     #import <UIKit/UIKit.h>
 #endif
 
+@class ContinuousFountainParser;
+@class Line;
 @class OutlineScene;
+@class BeatDocumentSettings;
 
 @protocol BeatEditorDelegate <NSObject>
 
@@ -20,13 +23,14 @@
 @property (nonatomic, readonly) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
 @property (nonatomic, readonly) bool typewriterMode;
-
+@property ContinuousFountainParser *parser;
 
 @property (nonatomic, readonly) CGFloat magnification;
 @property (nonatomic) CGFloat inset;
 @property (nonatomic, readonly) NSUInteger documentWidth;
 
 @property (nonatomic) NSMutableDictionary *characterGenders;
+@property (atomic) BeatDocumentSettings *documentSettings;
 
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
@@ -36,6 +40,7 @@
 
 - (NSInteger)lineTypeAt:(NSInteger)index;
 
+- (void)setSelectedRange:(NSRange)range;
 - (NSRange)selectedRange;
 - (NSArray*)getOutline; // ???
 - (OutlineScene*)getCurrentScene;
@@ -56,6 +61,9 @@
 
 - (void)showTitleBar;
 - (void)hideTitleBar;
+
+- (void)scrollToLine:(Line*)line;
+
 
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;

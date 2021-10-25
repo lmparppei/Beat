@@ -22,6 +22,7 @@
 - (NSRange)selectedRange;
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
 - (void)applyFormatChanges;
+
 @end
 
 // Plugin compatibility
@@ -42,6 +43,10 @@
 - (NSInteger)numberOfScenes;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (OutlineScene*)sceneAtPosition:(NSInteger)index;
+
+- (Line*)previousLine:(Line*)line;
+- (Line*)nextLine:(Line*)line;
+
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
@@ -75,6 +80,7 @@
 - (NSArray*)scenes;
 - (void)ensurePositions;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
+- (Line*)previousLine:(Line*)line;
 - (Line*)nextLine:(Line*)line;
 - (void)correctParsesForLines:(NSArray*)lines;
 

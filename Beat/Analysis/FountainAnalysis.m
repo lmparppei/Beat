@@ -29,7 +29,7 @@
 
 #import <Foundation/Foundation.h>
 #import "FountainAnalysis.h"
-#import "NSString+Whitespace.h"
+#import "NSString+CharacterControl.h"
 #import "RegExCategories.h"
 #import "BeatPaginator.h"
 

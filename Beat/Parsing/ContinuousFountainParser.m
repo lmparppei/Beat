@@ -33,7 +33,7 @@
 #import "ContinuousFountainParser.h"
 #import "RegExCategories.h"
 #import "Line.h"
-#import "NSString+Whitespace.h"
+#import "NSString+CharacterControl.h"
 #import "NSMutableIndexSet+Lowest.h"
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
@@ -1227,9 +1227,10 @@ and incomprehensible system of recursion.
         }
     }
     
-    //Check if all uppercase (and at least 3 characters to not indent every capital leter before anything else follows) = character name.
+    // Check if all uppercase (and at least 3 characters to not indent every capital leter before anything else follows) = character name.
+	// Also, note lines never constitute a character cue
     if (preceedingLine.type == empty || preceedingLine.string.length == 0) {
-        if (length >= 3 && string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace) {
+		if (length >= 3 && string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && ![line.noteRanges containsIndex:0]) {
             // A character line ending in ^ is a double dialogue character
             if (lastChar == '^') {
 				// PLEASE NOTE:
@@ -1250,11 +1251,14 @@ and incomprehensible system of recursion.
                 return dualDialogueCharacter;
             } else {
 				// It is possible that this IS NOT A CHARACTER anyway, so let's see.
-				if (index + 2 < self.lines.count && currentLine) {
+				if ([line.noteRanges containsIndex:0]) {
+					return action;
+				}
+				else if (index + 2 < self.lines.count && currentLine) {
 					Line* nextLine = (Line*)self.lines[index+1];
 					Line* twoLinesOver = (Line*)self.lines[index+2];
 					
-					if (recursive && [nextLine.string length] == 0 && [twoLinesOver.string length] > 0) {
+					if (recursive && nextLine.string.length == 0 && twoLinesOver.string.length > 0) {
 						return action;
 					}
 				}
@@ -1270,6 +1274,7 @@ and incomprehensible system of recursion.
 			 !preceedingLine.forced) {
 		// Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when
 		// the text is changed to have some dialogue follow it.
+
 		preceedingLine.type = character;
 		[_changedIndices addIndex:index-1];
 		return dialogue;
@@ -1872,6 +1877,14 @@ and incomprehensible system of recursion.
 		NSLog(@"No lines found");
 	}
 	return lines;
+}
+
+- (Line*)previousLine:(Line*)line {
+	NSInteger lineIndex = [self.lines indexOfObject:line];
+	
+	if (line == self.lines.firstObject || lineIndex == 0 || lineIndex == NSNotFound) return nil;
+	
+	return self.lines[lineIndex - 1];
 }
 
 - (Line*)nextLine:(Line*)line {

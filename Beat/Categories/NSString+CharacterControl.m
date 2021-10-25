@@ -6,9 +6,9 @@
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //
 
-#import "NSString+Whitespace.h"
+#import "NSString+CharacterControl.h"
 
-@implementation NSString (Whitespace)
+@implementation NSString (CharacterControl)
 
 - (bool)containsOnlyWhitespace
 {
@@ -53,8 +53,12 @@
 
 - (bool)onlyUppercaseUntilParenthesis
 {
+	NSInteger noteLoc = [self rangeOfString:@"[["].location;
 	NSInteger parenthesisLoc = [self rangeOfString:@"("].location;
 	NSInteger parenthesisEnd = [self rangeOfString:@")"].location;
+	
+	// Don't let note lines become characters
+	if (noteLoc == 0) return NO;
 	
 	if (parenthesisLoc == NSNotFound) {
 		// No parenthesis

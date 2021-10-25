@@ -7,7 +7,7 @@
 //
 
 #import "BeatTitlePageEditor.h"
-#import "NSString+Whitespace.h"
+#import "NSString+CharacterControl.h"
 
 @interface BeatTitlePageEditor ()
 @property (weak) IBOutlet NSTextField *titleField;

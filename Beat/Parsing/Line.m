@@ -777,10 +777,6 @@
 
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
 {
-	bool test = NO;
-	if (self.type == dialogue) {
-		if (startString[0] == "_"[0]) test = YES;
-	}
 	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
 	
 	NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start

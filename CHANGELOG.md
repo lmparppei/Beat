@@ -1,5 +1,21 @@
 # Changelog
 
+## Beat 1.91.4
+
+- Sidebar tabs with a notepad & dialogue/character list
+- Remaining references to male/female removed from code and replaced with woman/man 
+ 
+
+## Beat 1.91.x
+
+Multiple fixes for minor bugs, including but not limited to:
+- some parsing issues fixed, including 2-letter character cues
+- rendering optimization
+- title page preview errors fixed
+- marker support added
+- copy & paste revisions
+
+
 ## Beat 1.90.4
 
 - Hide Fountain markup

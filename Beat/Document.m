@@ -82,7 +82,7 @@
 #import "OutlineScene.h"
 #import "DynamicColor.h"
 #import "BeatAppDelegate.h"
-#import "NSString+Whitespace.h"
+#import "NSString+CharacterControl.h"
 #import "FountainAnalysis.h"
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
@@ -103,7 +103,6 @@
 #import "BeatTagItem.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
-//#import "BeatTextStorage.h"
 #import "BeatFDXExport.h"
 #import "ValidationItem.h"
 #import "BeatRevisionTracking.h"
@@ -116,7 +115,11 @@
 #import "BeatPluginParser.h"
 #import "BeatPluginManager.h"
 
+#import "BeatNotepad.h"
+
 #import "BeatUserDefaults.h"
+
+#import "BeatCharacterList.h"
 
 @interface Document ()
 
@@ -190,16 +193,21 @@
 @property (weak) NSArray *draggedNodes;
 @property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
 @property (nonatomic) NSMutableArray *outline;
-@property (weak) IBOutlet NSSearchField *outlineSearchField;
-@property (weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
+@property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property BOOL outlineViewVisible;
 @property (nonatomic) NSMutableArray *outlineClosedSections;
-@property (weak) IBOutlet NSMenu *colorMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *colorMenu;
+
+@property (nonatomic, weak) IBOutlet BeatCharacterList *characterList;
 
 // Outline view filtering
-@property (weak) IBOutlet NSBox *filterView;
-@property (weak) IBOutlet NSLayoutConstraint *filterViewHeight;
-@property (weak) IBOutlet NSPopUpButton *characterBox;
+@property (nonatomic, weak) IBOutlet NSBox *filterView;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *filterViewHeight;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
+
+// Notepad
+@property (nonatomic, weak) IBOutlet BeatNotepad *notepad;
 
 // Views
 @property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
@@ -388,7 +396,13 @@
 }
 - (void)close {
 	if (!self.hasUnautosavedChanges) {
-		[self.thisWindow saveFrameUsingName:[self fileNameString]];
+		if (self.outlineViewVisible) {
+			// Don't save sidebar width
+			NSRect frame = self.thisWindow.frame;
+			frame.size.width -= self.splitHandle.bottomOrLeftView.frame.size.width;
+			[self.thisWindow setFrame:frame display:NO];
+		}
+		[self.thisWindow saveFrameUsingName:self.fileNameString];
 	}
 	
 	// Avoid retain cycles with WKWebView
@@ -450,12 +464,14 @@
 	[super close];
 }
 
+/*
 typedef void (^ CallbackBlock)(void);
 void delay (double delay, CallbackBlock block) {
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
 		   (delay * (double)NSEC_PER_SEC)),
 				   dispatch_get_main_queue(), block);
 }
+*/
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
 	[super windowControllerDidLoadNib:aController];
@@ -580,9 +596,13 @@ void delay (double delay, CallbackBlock block) {
 	
 	// Lock status
 	if ([self.documentSettings getBool:@"Locked"]) [self lock];
+	
+	// Notepad
+	if ([self.documentSettings getString:@"Notes"].length) [self.notepad loadString:[self.documentSettings getString:@"Notes"]];
 
 	// If this a recovered autosave, the file might changed when it opens, so let's save this info
-	if (self.hasUnautosavedChanges) NSLog(@"Unautosaved");
+	bool saved = YES;
+	if (self.hasUnautosavedChanges) saved = NO;
 	
 	// Setup page size
 	// (We'll disable undo registration here, so the doc won't appear as edited on open)
@@ -606,7 +626,7 @@ void delay (double delay, CallbackBlock block) {
 	[self.documentSettings setInt:@"Page Size" as:pageSize];
 	
 	[self.undoManager enableUndoRegistration];
-	[self updateChangeCount:NSChangeCleared];
+	if (saved) [self updateChangeCount:NSChangeCleared];
 	
 	[self.textView.animator setAlphaValue:1.0];
 }
@@ -797,7 +817,13 @@ void delay (double delay, CallbackBlock block) {
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-	[_documentSettings setFloat:DocSettingWindowWidth as:_thisWindow.frame.size.width];
+	CGFloat width = _thisWindow.frame.size.width;
+	if (self.outlineViewVisible) {
+		// Don't calculate sidebar width to saved document width
+		width -= self.splitHandle.bottomOrLeftView.frame.size.width;
+	}
+	
+	[_documentSettings setFloat:DocSettingWindowWidth as:width];
 	[_documentSettings setFloat:DocSettingWindowHeight as:_thisWindow.frame.size.height];
 	[self updateLayout];
 }
@@ -1701,6 +1727,7 @@ void delay (double delay, CallbackBlock block) {
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 	
+	/*
 	if (_postEditAction) {
 		NSLog(@"post edit %@", _postEditAction);
 		NSInteger index = [_postEditAction[@"index"] integerValue];
@@ -1711,6 +1738,7 @@ void delay (double delay, CallbackBlock block) {
 			[self addString:string atIndex:index];
 		}
 	}
+	*/
 	
 	// Register changes
 	if (_trackChanges) [self registerChangesInRange:_lastChangedRange];
@@ -1727,7 +1755,14 @@ void delay (double delay, CallbackBlock block) {
 	} else {
 		if (self.timelineVisible) [_timeline refreshWithDelay];
 	}
-	
+
+	// Idea for the future:
+	// Have views register themselves with the document. They would all have
+	// a standardized reloadInBackground method, which would then be called here
+	// when needed. This approach would remove the need for massive amount of conditionals
+	// in textDidChange.
+	if (self.characterList.visibleInTab) [self.characterList reloadInBackground];
+
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
 	
@@ -1751,6 +1786,7 @@ void delay (double delay, CallbackBlock block) {
 	
 	// A larger chunk of text was pasted. Ensure layout.
 	if (self.lastChangedRange.length > 5) [self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -1838,14 +1874,16 @@ void delay (double delay, CallbackBlock block) {
 	[self replaceCharactersInRange:NSMakeRange(index, [string length]) withString:@""];
 	[[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:index];
 }
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString {
-	// Replacement method with undo
+- (void)replaceRange:(NSRange)range withString:(NSString*)newString
+{
+	// Replace with undo registration
 	NSString *oldString = [self.textView.string substringWithRange:range];
 	[self replaceCharactersInRange:range withString:newString];
 	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
 }
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
 {
+	// Replace with undo registration
 	NSRange range = NSMakeRange(index, [string length]);
 	[self replaceCharactersInRange:range withString:newString];
 	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
@@ -1857,7 +1895,6 @@ void delay (double delay, CallbackBlock block) {
 }
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string {
 	_moving = YES;
-	
 	NSString *oldString = [self.getText substringWithRange:range];
 	
 	NSString *stringToMove = string;
@@ -2034,6 +2071,7 @@ void delay (double delay, CallbackBlock block) {
 	
 	// Force character if the line is suitable
 	_currentLine = [self getCurrentLine];
+	
 	if (_currentLine.type == empty) {
 		NSInteger index = [self.parser.lines indexOfObject:_currentLine];
 		
@@ -2045,9 +2083,25 @@ void delay (double delay, CallbackBlock block) {
 			}
 		}
 	} else {
-		// Default behaviour: add tab
-		// nope
-		// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
+		// Else see if we could force the character cue
+		Line* prevLine = [self.parser previousLine:_currentLine];
+		Line* nextLine = [self.parser nextLine:_currentLine];
+		
+		// A convoluted conditional, but the rules are:
+		// Previous line is empty, current line is not already part of a dialogue block,
+		// next line is not a heading OR is already formatted as dialogue (can happen rarely)
+		if (prevLine.type == empty &&
+			!_currentLine.isDialogueElement &&
+			((nextLine.type != character &&
+			 nextLine.type != heading) ||
+			nextLine.isDialogue)) {
+			[self replaceString:_currentLine.string withString:_currentLine.string.uppercaseString atIndex:_currentLine.position];
+		}
+		else {
+			// Default behaviour: add tab
+			// nope
+			// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
+		}
 	}
 }
 
@@ -2181,17 +2235,6 @@ void delay (double delay, CallbackBlock block) {
 	self.progressIndicator.maxValue =  1.0;
 	
 	[self formatAllWithDelay:0];
-/*
-	for (Line* line in self.parser.lines) {
-		delay(0.0006 * index, ^{
-			[self formatLineOfScreenplay:line firstTime:YES];
-			[self.progressIndicator incrementBy:1.0 / self.parser.lines.count];
-			if (line == self.parser.lines.lastObject) [self loadingComplete];
-		});
-
-		index++;
-	}
- */
 }
 - (void)formatAllWithDelay:(NSInteger)idx {
 	// We split the document into chunks of 400 lines and render them asynchronously

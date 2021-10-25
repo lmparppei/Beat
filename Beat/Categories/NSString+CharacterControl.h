@@ -1,5 +1,5 @@
 //
-//  NSString+Whitespace.h
+//  NSString+CharacterControl.h
 //  Writer / Beat
 //
 //  Created by Hendrik Noeller on 01.04.16.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSString (Whitespace)
+@interface NSString (CharacterControl)
 
 - (bool)containsOnlyWhitespace;
 - (bool)containsOnlyUppercase;

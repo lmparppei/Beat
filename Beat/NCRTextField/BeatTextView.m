@@ -157,6 +157,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 - (void)awakeFromNib {
+	self.matches = NSMutableArray.array;
 	self.layoutManager.delegate = self;
 	self.pageBreaks = [NSArray array];
 	
@@ -200,7 +201,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[contentView addSubview:tableScrollView];
 	
 	NSViewController *contentViewController = [[NSViewController alloc] init];
-	[contentViewController setView:contentView];;
+	[contentViewController setView:contentView];
 	
 	// Autocomplete popover
 	self.autocompletePopover = [[NSPopover alloc] init];
@@ -211,8 +212,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Info popover
 	self.infoPopover = [[NSPopover alloc] init];
-
-	self.matches = [NSMutableArray array];
+	
 	NSView *infoContentView = [[NSView alloc] initWithFrame:NSZeroRect];
 	_infoTextView = [[NSTextView alloc] initWithFrame:NSZeroRect];
 	[_infoTextView setEditable:NO];
@@ -224,7 +224,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	[infoContentView addSubview:_infoTextView];
 	NSViewController *infoViewController = [[NSViewController alloc] init];
-	[infoViewController setView:infoContentView];;
+	[infoViewController setView:infoContentView];
 
 	self.infoPopover.contentViewController = infoViewController;
 

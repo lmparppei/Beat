@@ -1,0 +1,366 @@
+//
+//  BeatCharacterList.m
+//  Beat
+//
+//  Created by Lauri-Matti Parppei on 22.10.2021.
+//  Copyright © 2021 KAPITAN!. All rights reserved.
+//
+
+#import "BeatCharacterList.h"
+#import "Line.h"
+#import "BeatColors.h"
+#import "ContinuousFountainParser.h"
+
+@interface BeatCharacter : NSObject
+@property (nonatomic) NSString *name;
+@property (nonatomic) NSInteger lines;
+@property (nonatomic) NSMutableSet * scenes;
+@end
+@implementation BeatCharacter
+@end
+
+@interface BeatLinesBarRowView : NSTableCellView
+@property (nonatomic) CGFloat barWidth;
+@end
+@implementation BeatLinesBarRowView
+
+#define POPOVER_WIDTH 150
+
+-(void)drawRect:(NSRect)dirtyRect {
+	[super drawRect:dirtyRect];
+	
+	NSColor *color = [BeatColors color:@"cyan"];
+	CGFloat alpha = _barWidth * 1.0;
+		
+	if (alpha > 1.0) alpha = 1.0;
+	if (alpha < 0.2) alpha = .2;
+	color = [color colorWithAlphaComponent:alpha];
+	[color setFill];
+	
+	CGFloat width = (self.frame.size.width - self.textField.frame.size.width * 1.2)  * _barWidth;
+	CGFloat height = self.frame.size.height * .6;
+	if (width < 2.0) width = 2.0;
+	
+	// Paint a rounded rect
+	NSRect rect = (NSRect){ 0, (self.frame.size.height - height) / 2, width, height };
+	NSBezierPath *path = [[NSBezierPath alloc] init];
+	[path appendBezierPathWithRoundedRect:rect xRadius:2 yRadius:2];
+	[path fill];
+	
+	//NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
+}
+
+@end
+
+@interface BeatCharacterList ()
+@property (nonatomic, weak) IBOutlet NSTabView *masterTabView;
+@property (nonatomic) NSDictionary<NSString*, BeatCharacter*> *characterNames;
+@property (nonatomic) NSTimer *reloadTimer;
+@property (nonatomic) NSInteger mostLines;
+@property (nonatomic) NSPopover *popover;
+@property (nonatomic) NSTextView *infoTextView;
+
+@property (nonatomic) NSButton *radioUnspecified;
+@property (nonatomic) NSButton *radioWoman;
+@property (nonatomic) NSButton *radioMan;
+@property (nonatomic) NSButton *radioOther;
+
+@end
+
+@implementation BeatCharacterList
+
+-(instancetype)initWithCoder:(NSCoder *)coder {
+	self = [super initWithCoder:coder];
+	self.dataSource = self;
+	self.delegate = self;
+	
+	[self setDoubleAction:@selector(showCharacterInfo:)];
+	
+	return self;
+}
+- (void)drawRect:(NSRect)dirtyRect {
+    [super drawRect:dirtyRect];
+    
+    // Drawing code here.
+}
+
+-(void)viewWillDraw {
+	// Reload (in sync) on draw
+	if (!_characterNames) [self reload];
+}
+
+-(bool)visibleInTab {
+	if (_masterTabView.selectedTabViewItem.view == self.enclosingScrollView.superview) {
+		return YES;
+	} else {
+		return NO;
+	}
+}
+
+
+-(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+
+	return _characterNames.count;
+}
+
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+	NSString *key = [self sortCharactersByLines][row];
+	return _characterNames[key];
+}
+-(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+	BeatCharacter *character = [tableView.dataSource tableView:tableView objectValueForTableColumn:tableColumn row:row];
+	
+	if (tableColumn == tableView.tableColumns[1]) {
+		BeatLinesBarRowView *linesRow = [tableView makeViewWithIdentifier:@"LinesBarView" owner:nil];
+		linesRow.barWidth = (CGFloat)character.lines / (CGFloat)_mostLines;
+		linesRow.textField.stringValue = [NSString stringWithFormat:@"%lu", character.lines];
+		return linesRow;
+	} else {
+		//NSTableRowView *row = [[NSTableRowView alloc] initWithFrame:(NSRect){0,0, tableColumn.width, 20 }];
+		NSTableCellView *row = [tableView makeViewWithIdentifier:@"CharacterName" owner:nil];
+		row.textField.stringValue = character.name;
+		return row;
+	}
+}
+
+-(void)reload {
+	NSInteger selectedRow = self.selectedRow;
+	NSArray *lines = self.editorDelegate.lines.copy;
+	NSMutableDictionary *charactersAndLines = NSMutableDictionary.dictionary;
+	
+	// Proces in a background thread
+	// (This is pretty light, but still
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
+		Line *scene;
+		
+		for (Line* line in lines) {
+			// WIP: We need to get the actual OutlineScene here
+			if (line.type == heading) scene = line;
+			
+			if (line.type == character || line.type == dualDialogueCharacter) {
+				NSString *name = line.characterName;
+				if (name.length == 0) continue;
+				
+				BeatCharacter *character;
+				
+				if (charactersAndLines[name]) {
+					character = charactersAndLines[name];
+					character.lines += 1;
+				} else {
+					character = BeatCharacter.alloc.init;
+					character.name = name.copy;
+					character.lines = 1;
+					character.scenes = [NSMutableSet set];
+					charactersAndLines[name] = character;
+				}
+				
+				if (scene) [character.scenes addObject:scene];
+				if (character.lines > self.mostLines) self.mostLines = character.lines;
+			}
+		}
+		
+		self.characterNames = charactersAndLines;
+		
+		// Reload data in main thread
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			[self reloadData];
+			if (selectedRow < self.numberOfRows) {
+				NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRow];
+				[self selectRowIndexes:indexSet byExtendingSelection:NO];
+			}
+		});
+	});
+}
+
+-(void)reloadInBackground {
+	if (_reloadTimer.valid) [_reloadTimer invalidate];
+	
+	_reloadTimer = [NSTimer scheduledTimerWithTimeInterval:.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
+		[self reload];
+	}];
+}
+
+- (NSArray*)sortCharactersByLines {
+	NSArray *sortedKeys = [_characterNames keysSortedByValueUsingComparator: ^(BeatCharacter* obj1, BeatCharacter* obj2) {
+		 return (NSComparisonResult)[@(obj2.lines) compare:@(obj1.lines)];;
+	}];
+	return sortedKeys;
+}
+
+-(BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row {
+	[_popover close];
+	return YES;
+}
+
+- (IBAction)showCharacterInfo:(id)sender {
+	if (!self.popover) {
+		// Load popover into memory only when used for the first time
+		[self setupCharacterPopup];
+	}
+	
+	NSRect rowFrame = [self frameOfCellAtColumn:1 row:self.selectedRow];
+	
+	BeatCharacter *character = _characterNames[[self sortCharactersByLines][self.selectedRow]];
+	NSString *infoString = [NSString stringWithFormat:@"%@\nLines: %lu\nScenes: %lu", character.name, character.lines, character.scenes.count];
+	_infoTextView.string = infoString;
+	
+	NSString *gender = [(NSString*)_editorDelegate.characterGenders[character.name] lowercaseString];
+	if (gender) {
+		if ([gender isEqualToString:@"woman"] || [gender isEqualToString:@"female"]) _radioWoman.state = NSOnState;
+		else if ([gender isEqualToString:@"man"] || [gender isEqualToString:@"male"]) _radioMan.state = NSOnState;
+		else if ([gender isEqualToString:@"other"]) _radioOther.state = NSOnState;
+		else _radioUnspecified.state = NSOnState;
+	} else {
+		_radioOther.state = NSOnState;
+	}
+		
+	[self.popover showRelativeToRect:rowFrame ofView:self preferredEdge:NSMaxXEdge];
+}
+
+- (void)setupCharacterPopup {
+	self.popover = [[NSPopover alloc] init];
+	if (@available(macOS 10.14, *)) self.popover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+
+	NSView *contentView = [[NSView alloc] initWithFrame:NSZeroRect];
+	NSViewController *contentViewController = [[NSViewController alloc] init];
+	[contentViewController setView:contentView];
+	
+	NSRect frame = NSMakeRect(0, 0, 200, 150);
+	[self.popover setContentSize:NSMakeSize(NSWidth(frame), NSHeight(frame))];
+	
+	_infoTextView = [NSTextView.alloc initWithFrame:frame];
+	[_infoTextView setEditable:NO];
+	[_infoTextView setDrawsBackground:NO];
+	[_infoTextView setRichText:NO];
+	[_infoTextView setUsesRuler:NO];
+	[_infoTextView setSelectable:NO];
+	[_infoTextView setTextContainerInset:NSMakeSize(8, 8)];
+	_infoTextView.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+	
+	NSView *infoContentView = [NSView.alloc initWithFrame:NSZeroRect];
+	[infoContentView addSubview:_infoTextView];
+	NSViewController *infoViewController = [[NSViewController alloc] init];
+	[infoViewController setView:infoContentView];
+	
+	self.popover.contentViewController = infoViewController;
+	
+	NSButton *buttonUp = [NSButton buttonWithTitle:@"▲" target:self action:@selector(prevLine)];
+	NSButton *buttonDown = [NSButton buttonWithTitle:@"▼" target:self action:@selector(nextLine)];
+	
+	NSRect upFrame = buttonUp.frame;
+	NSRect downFrame = buttonDown.frame;
+	
+	buttonUp.bezelStyle = NSBezelStyleCircular;
+	buttonUp.bordered = NO;
+	buttonDown.bezelStyle = NSBezelStyleCircular;
+	buttonDown.bordered = NO;
+	
+	upFrame.origin.x = _popover.contentSize.width - upFrame.size.width;
+	upFrame.origin.y = _popover.contentSize.height - upFrame.size.height;
+	buttonUp.frame = upFrame;
+	
+	downFrame.origin.x = downFrame.origin.x = _popover.contentSize.width - downFrame.size.width;
+	downFrame.origin.y = 0;
+	buttonDown.frame = downFrame;
+	
+	[self.popover.contentViewController.view addSubview:buttonUp];
+	[self.popover.contentViewController.view addSubview:buttonDown];
+
+	NSView *genderStack = [[NSView alloc] initWithFrame:(NSRect){0, 4, 150, 80}];
+	
+	NSArray *radioButtons = [self buttonsForGenders];
+	for (NSButton *btn in radioButtons) {
+		[genderStack addSubview:btn];
+	}
+	
+	[self.popover.contentViewController.view addSubview:genderStack];
+}
+
+- (NSArray<NSButton*>*)buttonsForGenders {
+	NSArray *genders = @[@"Unspecified", @"Woman", @"Man", @"Other"];
+	NSMutableArray *buttons = [NSMutableArray array];
+	
+	CGFloat y = genders.count * 35;
+	NSInteger i = 0;
+	
+	for (NSString *gender in genders) {
+		NSButton *button = [[NSButton alloc] initWithFrame:(NSRect){ 8, 0, 150, y - i * 35 }];
+		[button setButtonType:NSRadioButton];
+		button.title = gender;
+		[buttons addObject:button];
+		
+		//button.target = self;
+		button.action = @selector(selectGender:);
+		
+		if ([gender isEqualToString:@"Unspecified"]) _radioUnspecified = button;
+		else if ([gender isEqualToString:@"Woman"]) _radioWoman = button;
+		else if ([gender isEqualToString:@"Man"]) _radioMan = button;
+		else _radioOther = button;
+		
+		i++;
+	}
+	
+	return buttons;
+}
+- (IBAction)selectGender:(id)sender {
+	NSButton *btn = sender;
+	NSString *gender = btn.title.lowercaseString;
+	
+	BeatCharacter *character = _characterNames[[self sortCharactersByLines][self.selectedRow]];
+	
+	if (gender.length && character.name.length) {
+		// Set gender
+		_editorDelegate.characterGenders[character.name] = gender;
+	}
+}
+
+- (void)prevLine {
+	NSArray *lines = self.editorDelegate.lines;
+	Line *currentLine = [_editorDelegate.parser lineAtPosition:_editorDelegate.selectedRange.location];
+	if (!currentLine) return;
+	
+	BeatCharacter *chr = _characterNames[[self sortCharactersByLines][self.selectedRow]];
+	
+	NSInteger idx = [lines indexOfObject:currentLine];
+	
+	for (NSInteger i=idx-1; i>=0; i--) {
+		Line *line = lines[i];
+		if (line.type != character && line.type != dualDialogueCharacter) continue;
+		
+		if ([line.characterName isEqualToString:chr.name]) {
+			[_editorDelegate scrollToLine:line];
+			break;
+		}
+	}
+}
+- (void)nextLine {
+	NSArray *lines = self.editorDelegate.lines;
+	Line *currentLine = [_editorDelegate.parser lineAtPosition:_editorDelegate.selectedRange.location];
+	if (!currentLine) return;
+	
+	BeatCharacter *chr = _characterNames[[self sortCharactersByLines][self.selectedRow]];
+
+	NSInteger idx = [lines indexOfObject:currentLine];
+
+	for (NSInteger i=idx+1; i<lines.count; i++) {
+		Line *line = lines[i];
+		if (line.type != character && line.type != dualDialogueCharacter) continue;
+		
+		if ([line.characterName isEqualToString:chr.name]) {
+			[_editorDelegate scrollToLine:line];
+			break;
+		}
+	}
+}
+
+-(BOOL)resignFirstResponder {
+	[self.popover close];
+	return YES;
+}
+
+-(void)tableViewSelectionDidChange:(NSNotification *)notification {
+	// Hide popover when deselected
+	if (self.selectedRow == -1) [self.popover close];
+}
+
+@end
