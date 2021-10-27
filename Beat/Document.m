@@ -4843,10 +4843,18 @@ static NSString *revisionAttribute = @"Revision";
 	}];
 }
 
-- (void) setupAnalysis {
-	NSDictionary *genders = [self.documentSettings get:@"CharacterGenders"];
+- (void)setupAnalysis {
+	NSMutableDictionary *genders = [(NSDictionary*)[self.documentSettings get:@"CharacterGenders"] mutableCopy];
+	
 	if (!genders) _characterGenders = [NSMutableDictionary dictionary];
-	else _characterGenders = [NSMutableDictionary dictionaryWithDictionary:genders];
+	else {
+		_characterGenders = [NSMutableDictionary dictionaryWithDictionary:genders];
+		for (NSString *name in _characterGenders.allKeys) {
+			// Backwards compatibility
+			if ([_characterGenders[name] isEqualToString:@"male"]) _characterGenders[name] = @"man";
+			else if ([_characterGenders[name] isEqualToString:@"female"]) _characterGenders[name] = @"woman";
+		}
+	}
 }
 
 #pragma mark - Advanced Filtering

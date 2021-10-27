@@ -54,6 +54,15 @@
     }
 }
 
+-(id)copy {
+	DynamicColor *color = [DynamicColor.alloc initWithAquaColor:self.aquaColor darkAquaColor:self.darkAquaColor];
+	return color;
+}
+-(id)copyWithZone:(NSZone *)zone {
+	DynamicColor *color = [[self.class allocWithZone:zone] initWithAquaColor:self.aquaColor darkAquaColor:self.aquaColor];
+	return color;
+}
+
 - (NSColor *)effectiveColor
 {
 	// Don't allow calls to this class from anywhere else than main thread

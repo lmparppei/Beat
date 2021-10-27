@@ -9,7 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
 
-@interface Theme : NSObject
+@interface Theme : NSObject <NSCopying>
+@property (nonatomic) NSDictionary<NSString*, NSString*> *propertyToValue;
 
 @property (strong, nonatomic) DynamicColor* backgroundColor;
 @property (strong, nonatomic) DynamicColor* selectionColor;
@@ -24,6 +25,11 @@
 @property (strong, nonatomic) DynamicColor* synopsisTextColor;
 @property (strong, nonatomic) DynamicColor* pageNumberColor;
 @property (strong, nonatomic) DynamicColor* highlightColor;
+
+@property (strong, nonatomic) DynamicColor* genderWomanColor;
+@property (strong, nonatomic) DynamicColor* genderManColor;
+@property (strong, nonatomic) DynamicColor* genderOtherColor;
+@property (strong, nonatomic) DynamicColor* genderUnspecifiedColor;
 
 @property (strong, nonatomic) NSString* name;
 

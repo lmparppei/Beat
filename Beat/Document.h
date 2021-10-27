@@ -101,7 +101,7 @@ THE SOFTWARE.
 - (void)applyUserSettings;
 
 // Analysis
-@property (nonatomic) NSMutableDictionary *characterGenders;
+@property (nonatomic) NSMutableDictionary<NSString*, NSString*> *characterGenders;
 
 // Set document colors
 - (void)updateTheme;

@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatPieGraph : NSView
-
+- (void)pieChartForData:(NSArray*)items;
 @end
 
 NS_ASSUME_NONNULL_END

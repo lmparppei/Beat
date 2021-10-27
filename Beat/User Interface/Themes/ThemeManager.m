@@ -14,6 +14,14 @@
  NOTE IN 2021:
  This has been rewritten to offer limited support for multiple themes.
  
+ NOTE LATER IN 2021:
+ Themes.plist file contains two keys: "Default" and "Custom". Both are dictionaries
+ with theme values, and loadTheme: converts the dictionary to a Theme object.
+ 
+ Basic usage:
+ Theme* theme = [self loadTheme:dictionary];
+ [self readTheme:theme];
+ 
  */
 
 #import "ThemeManager.h"
@@ -71,6 +79,11 @@
 		[_themes setValue:theme forKey:name];
 	}
 }
+- (void)revertToSaved {
+	[self loadThemes];
+	[self readTheme];
+	[self loadThemeForAllDocuments];
+}
 
 - (void)loadThemeFile
 {
@@ -81,6 +94,7 @@
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
+	
 	if (customPlist) {
 		NSMutableArray *themes = contents[THEMES_KEY];
 		[themes addObject:customPlist];
@@ -95,14 +109,14 @@
 }
 
 -(Theme*)defaultTheme {
-	Theme *theme = [self loadTheme:self.themes[DEFAULT_KEY]];
+	Theme *theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 	return theme;
 }
 -(void)resetToDefault {
-	_theme = [self loadTheme:self.themes[DEFAULT_KEY]];
+	_theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 }
 
--(Theme*)loadTheme:(NSDictionary*)values {
+-(Theme*)dictionaryToTheme:(NSDictionary*)values {
 	// Work for the new theme model
 	Theme *theme = [[Theme alloc] init];
 
@@ -113,7 +127,6 @@
 	if (!darkTheme.count) darkTheme = lightTheme;
 	
 	// If it's the default color scheme, we'll use native accent colors for certain items
-
 	if (@available(macOS 10.14, *)) {
 		theme.selectionColor = [self dynamicColorFromColor:NSColor.controlAccentColor];
 	} else {
@@ -139,10 +152,15 @@
 	
 	theme.highlightColor = [self dynamicColorFromArray:darkTheme[@"Highlight"] darkArray:darkTheme[@"Highlight"]];
 	
+	theme.genderWomanColor = [self dynamicColorFromArray:darkTheme[@"Woman"] darkArray:darkTheme[@"Woman"]];
+	theme.genderManColor = [self dynamicColorFromArray:darkTheme[@"Man"] darkArray:darkTheme[@"Man"]];
+	theme.genderOtherColor = [self dynamicColorFromArray:darkTheme[@"Other"] darkArray:darkTheme[@"Other"]];
+	theme.genderUnspecifiedColor = [self dynamicColorFromArray:darkTheme[@"Unspecified"] darkArray:darkTheme[@"Unspecified"]];
+	
 	return theme;
 }
 
--(void)readTheme {
+-(void)readTheme:(Theme*)theme {
 	/*
 	 
 	 My reasoning for the following approach is that adding new customizable values could otherwise
@@ -151,47 +169,40 @@
 	 
 	 */
 	
-	_theme = [self loadTheme:_themes[DEFAULT_KEY]];
+	// First load DEFAULT theme into memory
+	_theme = [self dictionaryToTheme:_themes[DEFAULT_KEY]];
 	
-	Theme *customTheme = [self loadTheme:_themes[CUSTOM_KEY]];
+	// Load custom theme (this is a bit convoluted)
+	Theme *customTheme = theme;
 	
 	if (customTheme) {
-		// Apply any custom values
-		if (customTheme.backgroundColor) _theme.backgroundColor = customTheme.backgroundColor;
-		if (customTheme.textColor) _theme.textColor = customTheme.textColor;
-		if (customTheme.marginColor) _theme.marginColor = customTheme.marginColor;
-		if (customTheme.selectionColor) _theme.selectionColor = customTheme.selectionColor;
-		if (customTheme.highlightColor) _theme.highlightColor = customTheme.highlightColor;
-		if (customTheme.commentColor) _theme.commentColor = customTheme.commentColor;
-		if (customTheme.invisibleTextColor) _theme.invisibleTextColor = customTheme.invisibleTextColor;
-		if (customTheme.caretColor) _theme.caretColor = customTheme.caretColor;
-		if (customTheme.pageNumberColor) _theme.pageNumberColor = customTheme.pageNumberColor;
-		if (customTheme.synopsisTextColor) _theme.synopsisTextColor = customTheme.synopsisTextColor;
-		if (customTheme.sectionTextColor) _theme.sectionTextColor = customTheme.sectionTextColor;
-		if (customTheme.outlineBackground) _theme.outlineBackground = customTheme.outlineBackground;
-		if (customTheme.outlineHighlight) _theme.outlineHighlight = customTheme.outlineHighlight;
+		// We get the property names from theme, and we'll overwrite those values in default theme
+		for (NSString *property in customTheme.propertyToValue) {
+			if ([customTheme valueForKey:property]) {
+				[_theme setValue:[customTheme valueForKey:property] forKey:property];
+			}
+		}
 	}
+}
+
+-(void)readTheme {
+	Theme* customTheme = [self dictionaryToTheme:_themes[CUSTOM_KEY]];
+	[self readTheme:customTheme];
 }
 
 -(void)saveTheme {
 	Theme *defaultTheme = [self defaultTheme];
-	
 	Theme *customTheme = [[Theme alloc] init];
 	
-	if (![self.backgroundColor isEqualToColor:defaultTheme.backgroundColor]) customTheme.backgroundColor = self.backgroundColor;
-	if (![self.marginColor isEqualToColor:defaultTheme.marginColor]) customTheme.marginColor = self.marginColor;
-	if (![self.selectionColor isEqualToColor:defaultTheme.selectionColor]) customTheme.selectionColor = self.selectionColor;
-	if (![self.highlightColor isEqualToColor:defaultTheme.highlightColor]) customTheme.highlightColor = self.highlightColor;
-	if (![self.textColor isEqualToColor:defaultTheme.textColor]) customTheme.textColor = self.textColor;
-	if (![self.commentColor isEqualToColor:defaultTheme.commentColor]) customTheme.commentColor = self.commentColor;
-	if (![self.invisibleTextColor isEqualToColor:defaultTheme.invisibleTextColor]) customTheme.invisibleTextColor = self.invisibleTextColor;
-	if (![self.caretColor isEqualToColor:defaultTheme.caretColor]) customTheme.caretColor = self.caretColor;
-	if (![self.pageNumberColor isEqualToColor:defaultTheme.pageNumberColor]) customTheme.pageNumberColor = self.pageNumberColor;
-	if (![self.synopsisTextColor isEqualToColor:defaultTheme.synopsisTextColor]) customTheme.synopsisTextColor = self.synopsisTextColor;
-	if (![self.sectionTextColor isEqualToColor:defaultTheme.sectionTextColor]) customTheme.sectionTextColor = self.sectionTextColor;
-	if (![self.outlineBackground isEqualToColor:defaultTheme.outlineBackground]) customTheme.outlineBackground = self.outlineBackground;
-	if (![self.outlineHighlight isEqualToColor:defaultTheme.outlineHighlight]) customTheme.outlineHighlight = self.outlineHighlight;
+	for (NSString *property in customTheme.propertyToValue) {
+		DynamicColor *currentColor = [self valueForKey:property];
+		DynamicColor *defaultColor = [defaultTheme valueForKey:property];
+		
+		// We won't save colors that are the same as default colors
+		if (![currentColor isEqualToColor:defaultColor]) [customTheme setValue:currentColor forKey:property];
+	}
 	
+	// Convert theme values into a dictionary
 	NSDictionary *themeDict = [customTheme themeAsDictionaryWithName:CUSTOM_KEY];
 	
 	NSURL *userUrl = [(BeatAppDelegate*)NSApp.delegate appDataPath:@""];
@@ -262,6 +273,11 @@
 - (DynamicColor*)sectionTextColor { return _theme.sectionTextColor; }
 - (DynamicColor*)synopsisTextColor { return _theme.synopsisTextColor; }
 - (DynamicColor*)highlightColor { return _theme.highlightColor; }
+
+- (DynamicColor*)genderWomanColor { return _theme.genderWomanColor; }
+- (DynamicColor*)genderManColor { return _theme.genderManColor; }
+- (DynamicColor*)genderOtherColor { return _theme.genderOtherColor; }
+- (DynamicColor*)genderUnspecifiedColor { return _theme.genderUnspecifiedColor; }
 
 - (Theme*)currentTheme { return _theme; }
 - (DynamicColor*)currentBackgroundColor { return _theme.backgroundColor; }

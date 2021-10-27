@@ -21,6 +21,9 @@
 - (void)showEditor;
 
 - (Theme*)defaultTheme;
+- (Theme*)dictionaryToTheme:(NSDictionary*)values;
+- (void)revertToSaved; /// Loads default and saved custom themes and applies them
+- (void)readTheme:(Theme*)theme; /// Read a single, preprocessed theme
 - (void)loadThemeForAllDocuments;
 - (void)resetToDefault;
 - (void)saveTheme;
@@ -28,16 +31,17 @@
 //Access the current theme
 - (Theme*) theme;
 
-- (DynamicColor*) currentBackgroundColor;
-- (DynamicColor*) currentSelectionColor;
-- (DynamicColor*) currentTextColor;
-- (DynamicColor*) currentInvisibleTextColor;
-- (DynamicColor*) currentCaretColor;
-- (DynamicColor*) currentCommentColor;
-- (DynamicColor*) currentMarginColor;
-- (DynamicColor*) currentOutlineBackground;
-- (DynamicColor*) currentOutlineHighlight;
-- (DynamicColor*) currentHighlightColor;
+- (DynamicColor*)currentBackgroundColor;
+- (DynamicColor*)currentSelectionColor;
+- (DynamicColor*)currentTextColor;
+- (DynamicColor*)currentInvisibleTextColor;
+- (DynamicColor*)currentCaretColor;
+- (DynamicColor*)currentCommentColor;
+- (DynamicColor*)currentMarginColor;
+- (DynamicColor*)currentOutlineBackground;
+- (DynamicColor*)currentOutlineHighlight;
+- (DynamicColor*)currentHighlightColor;
+
 - (DynamicColor*)backgroundColor;
 - (DynamicColor*)marginColor;
 - (DynamicColor*)selectionColor;
@@ -51,4 +55,10 @@
 - (DynamicColor*)sectionTextColor;
 - (DynamicColor*)synopsisTextColor;
 - (DynamicColor*)highlightColor;
+
+- (DynamicColor*)genderWomanColor;
+- (DynamicColor*)genderManColor;
+- (DynamicColor*)genderOtherColor;
+- (DynamicColor*)genderUnspecifiedColor;
+
 @end

@@ -10,8 +10,6 @@
 #import "ThemeManager.h"
 
 @interface ThemeEditor ()
-@property (nonatomic) ThemeManager *themeManager;
-
 @property (nonatomic, weak) IBOutlet NSColorWell *backgroundLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *backgroundDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *textLight;
@@ -36,6 +34,12 @@
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineBackgroundDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineHighlightLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineHighlightDark;
+
+@property (nonatomic, weak) IBOutlet NSColorWell *genderWoman;
+@property (nonatomic, weak) IBOutlet NSColorWell *genderMan;
+@property (nonatomic, weak) IBOutlet NSColorWell *genderOther;
+@property (nonatomic, weak) IBOutlet NSColorWell *genderUnspecified;
+
 @end
 
 @implementation ThemeEditor
@@ -54,12 +58,12 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
-    
-	_themeManager = [ThemeManager sharedManager];
-	[self loadTheme:_themeManager.theme];
+	[self loadTheme:ThemeManager.sharedManager.theme];
+	
 }
 
 - (IBAction)cancel:(id)sender {
+	[ThemeManager.sharedManager revertToSaved];
 	[self.window close];
 }
 
@@ -68,10 +72,10 @@
 }
 
 - (void)loadDefaults {
-	Theme *defaultTheme = self.themeManager.defaultTheme;
+	Theme *defaultTheme = ThemeManager.sharedManager.defaultTheme;
 	[self loadTheme:defaultTheme];
-	[self.themeManager resetToDefault];
-	[self.themeManager loadThemeForAllDocuments];
+	[ThemeManager.sharedManager resetToDefault];
+	[ThemeManager.sharedManager loadThemeForAllDocuments];
 }
 - (void)loadTheme:(Theme*)theme {
 	[_backgroundLight setColor:theme.backgroundColor.aquaColor];
@@ -99,43 +103,62 @@
 	[_outlineHighlightLight setColor:theme.outlineHighlight.aquaColor];
 	[_outlineHighlightDark setColor:theme.outlineHighlight.darkAquaColor];
 	
-	//[self.themeManager resetToDefault];
-	//[self.themeManager loadThemeForAllDocuments];
+	[_genderWoman setColor:theme.genderWomanColor.aquaColor];
+	[_genderMan setColor:theme.genderManColor.aquaColor];
+	[_genderOther setColor:theme.genderOtherColor.aquaColor];
+	[_genderUnspecified setColor:theme.genderUnspecifiedColor.aquaColor];
 }
 
 -(IBAction)changeColor:(NSColorWell*)sender {
-	Theme *theme = _themeManager.theme;
+	Theme *theme = ThemeManager.sharedManager.theme;
 	if (sender == _backgroundLight) theme.backgroundColor.aquaColor = sender.color;
-	if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = sender.color;
-	if (sender == _textLight) theme.textColor.aquaColor = sender.color;
-	if (sender == _textDark) theme.textColor.darkAquaColor = sender.color;
-	if (sender == _marginLight) theme.marginColor.aquaColor = sender.color;
-	if (sender == _marginDark) theme.marginColor.darkAquaColor = sender.color;
-	if (sender == _selectionLight) theme.selectionColor.aquaColor = sender.color;
-	if (sender == _selectionDark) theme.selectionColor.darkAquaColor = sender.color;
-	if (sender == _invisibleTextLight) theme.invisibleTextColor.aquaColor = sender.color;
-	if (sender == _invisibleTextDark) theme.invisibleTextColor.darkAquaColor = sender.color;
-	if (sender == _commentLight) theme.commentColor.aquaColor = sender.color;
-	if (sender == _commentDark) theme.commentColor.darkAquaColor = sender.color;
-	if (sender == _caretLight) theme.caretColor.aquaColor = sender.color;
-	if (sender == _caretDark) theme.caretColor.darkAquaColor = sender.color;
-	if (sender == _pageNumberLight) theme.pageNumberColor.aquaColor = sender.color;
-	if (sender == _pageNumberDark) theme.pageNumberColor.darkAquaColor = sender.color;
-	if (sender == _synopsisLight) theme.synopsisTextColor.aquaColor = sender.color;
-	if (sender == _synopsisDark) theme.synopsisTextColor.darkAquaColor = sender.color;
-	if (sender == _sectionLight) theme.sectionTextColor.aquaColor = sender.color;
-	if (sender == _sectionDark) theme.sectionTextColor.darkAquaColor = sender.color;
+	else if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = sender.color;
+	else if (sender == _textLight) theme.textColor.aquaColor = sender.color;
+	else if (sender == _textDark) theme.textColor.darkAquaColor = sender.color;
+	else if (sender == _marginLight) theme.marginColor.aquaColor = sender.color;
+	else if (sender == _marginDark) theme.marginColor.darkAquaColor = sender.color;
+	else if (sender == _selectionLight) theme.selectionColor.aquaColor = sender.color;
+	else if (sender == _selectionDark) theme.selectionColor.darkAquaColor = sender.color;
+	else if (sender == _invisibleTextLight) theme.invisibleTextColor.aquaColor = sender.color;
+	else if (sender == _invisibleTextDark) theme.invisibleTextColor.darkAquaColor = sender.color;
+	else if (sender == _commentLight) theme.commentColor.aquaColor = sender.color;
+	else if (sender == _commentDark) theme.commentColor.darkAquaColor = sender.color;
+	else if (sender == _caretLight) theme.caretColor.aquaColor = sender.color;
+	else if (sender == _caretDark) theme.caretColor.darkAquaColor = sender.color;
+	else if (sender == _pageNumberLight) theme.pageNumberColor.aquaColor = sender.color;
+	else if (sender == _pageNumberDark) theme.pageNumberColor.darkAquaColor = sender.color;
+	else if (sender == _synopsisLight) theme.synopsisTextColor.aquaColor = sender.color;
+	else if (sender == _synopsisDark) theme.synopsisTextColor.darkAquaColor = sender.color;
+	else if (sender == _sectionLight) theme.sectionTextColor.aquaColor = sender.color;
+	else if (sender == _sectionDark) theme.sectionTextColor.darkAquaColor = sender.color;
 	
-	if (sender == _outlineHighlightLight) theme.outlineHighlight.aquaColor = sender.color;
-	if (sender == _outlineHighlightDark) theme.outlineHighlight.darkAquaColor = sender.color;
-	if (sender == _outlineBackgroundLight) theme.outlineBackground.aquaColor = sender.color;
-	if (sender == _outlineBackgroundDark) theme.outlineBackground.darkAquaColor = sender.color;
+	else if (sender == _outlineHighlightLight) theme.outlineHighlight.aquaColor = sender.color;
+	else if (sender == _outlineHighlightDark) theme.outlineHighlight.darkAquaColor = sender.color;
+	else if (sender == _outlineBackgroundLight) theme.outlineBackground.aquaColor = sender.color;
+	else if (sender == _outlineBackgroundDark) theme.outlineBackground.darkAquaColor = sender.color;
 	
-	[self.themeManager loadThemeForAllDocuments];
+	else if (sender == _genderWoman) {
+		theme.genderWomanColor.aquaColor = sender.color;
+		theme.genderWomanColor.darkAquaColor = sender.color;
+	}
+	else if (sender == _genderMan) {
+		theme.genderManColor.aquaColor = sender.color;
+		theme.genderManColor.darkAquaColor = sender.color;
+	}
+	else if (sender == _genderOther) {
+		theme.genderOtherColor.aquaColor = sender.color;
+		theme.genderOtherColor.darkAquaColor = sender.color;
+	}
+	else if (sender == _genderUnspecified) {
+		theme.genderUnspecifiedColor.aquaColor = sender.color;
+		theme.genderUnspecifiedColor.darkAquaColor = sender.color;
+	}
+	
+	[ThemeManager.sharedManager loadThemeForAllDocuments];
 }
 
 - (IBAction)apply:(id)sender {
-	[_themeManager saveTheme];
+	[ThemeManager.sharedManager saveTheme];
 	[self.window close];
 }
 

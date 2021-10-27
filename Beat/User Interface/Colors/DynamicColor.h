@@ -1,6 +1,6 @@
 #include <Cocoa/Cocoa.h>
 
-@interface DynamicColor : NSColor
+@interface DynamicColor : NSColor <NSCopying>
 @property (nonatomic, strong, nonnull) NSColor *aquaColor;
 @property (nonatomic, strong, nullable) NSColor *darkAquaColor;
 

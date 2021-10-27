@@ -10,9 +10,12 @@
 #import "Line.h"
 #import "BeatColors.h"
 #import "ContinuousFountainParser.h"
+#import "BeatPieGraph.h"
+#import "ThemeManager.h"
 
 @interface BeatCharacter : NSObject
 @property (nonatomic) NSString *name;
+@property (nonatomic) NSString *gender;
 @property (nonatomic) NSInteger lines;
 @property (nonatomic) NSMutableSet * scenes;
 @end
@@ -21,6 +24,7 @@
 
 @interface BeatLinesBarRowView : NSTableCellView
 @property (nonatomic) CGFloat barWidth;
+@property (nonatomic, weak) BeatCharacter *character;
 @end
 @implementation BeatLinesBarRowView
 
@@ -28,10 +32,19 @@
 
 -(void)drawRect:(NSRect)dirtyRect {
 	[super drawRect:dirtyRect];
+
 	
-	NSColor *color = [BeatColors color:@"cyan"];
+	NSDictionary *colorForGender = @{
+		@"woman": ThemeManager.sharedManager.genderWomanColor,
+		@"man": ThemeManager.sharedManager.genderManColor,
+		@"other": ThemeManager.sharedManager.genderOtherColor,
+		@"unspecified": ThemeManager.sharedManager.genderUnspecifiedColor
+	};
+	
+	NSColor *color = colorForGender[_character.gender];
 	CGFloat alpha = _barWidth * 1.0;
-		
+
+	
 	if (alpha > 1.0) alpha = 1.0;
 	if (alpha < 0.2) alpha = .2;
 	color = [color colorWithAlphaComponent:alpha];
@@ -54,6 +67,7 @@
 
 @interface BeatCharacterList ()
 @property (nonatomic, weak) IBOutlet NSTabView *masterTabView;
+@property (nonatomic, weak) IBOutlet BeatPieGraph *graphView;
 @property (nonatomic) NSDictionary<NSString*, BeatCharacter*> *characterNames;
 @property (nonatomic) NSTimer *reloadTimer;
 @property (nonatomic) NSInteger mostLines;
@@ -65,6 +79,8 @@
 @property (nonatomic) NSButton *radioMan;
 @property (nonatomic) NSButton *radioOther;
 
+@property (nonatomic) NSUInteger previouslySelected;
+
 @end
 
 @implementation BeatCharacterList
@@ -73,6 +89,9 @@
 	self = [super initWithCoder:coder];
 	self.dataSource = self;
 	self.delegate = self;
+	self.target = self;
+	self.action = @selector(didClick:);
+	self.previouslySelected = -1;
 	
 	[self setDoubleAction:@selector(showCharacterInfo:)];
 	
@@ -112,11 +131,11 @@
 	
 	if (tableColumn == tableView.tableColumns[1]) {
 		BeatLinesBarRowView *linesRow = [tableView makeViewWithIdentifier:@"LinesBarView" owner:nil];
+		linesRow.character = character;
 		linesRow.barWidth = (CGFloat)character.lines / (CGFloat)_mostLines;
 		linesRow.textField.stringValue = [NSString stringWithFormat:@"%lu", character.lines];
 		return linesRow;
 	} else {
-		//NSTableRowView *row = [[NSTableRowView alloc] initWithFrame:(NSRect){0,0, tableColumn.width, 20 }];
 		NSTableCellView *row = [tableView makeViewWithIdentifier:@"CharacterName" owner:nil];
 		row.textField.stringValue = character.name;
 		return row;
@@ -127,6 +146,8 @@
 	NSInteger selectedRow = self.selectedRow;
 	NSArray *lines = self.editorDelegate.lines.copy;
 	NSMutableDictionary *charactersAndLines = NSMutableDictionary.dictionary;
+	
+	NSMutableArray *genders = [NSMutableArray array];
 	
 	// Proces in a background thread
 	// (This is pretty light, but still
@@ -154,6 +175,13 @@
 					charactersAndLines[name] = character;
 				}
 				
+				NSString *gender;
+				if (self.editorDelegate.characterGenders[character.name]) gender = self.editorDelegate.characterGenders[character.name];
+				else gender = @"unspecified";
+				
+				[genders addObject:gender];
+				character.gender = gender.copy;
+				
 				if (scene) [character.scenes addObject:scene];
 				if (character.lines > self.mostLines) self.mostLines = character.lines;
 			}
@@ -164,6 +192,8 @@
 		// Reload data in main thread
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			[self reloadData];
+			[self.graphView pieChartForData:genders];
+			
 			if (selectedRow < self.numberOfRows) {
 				NSIndexSet *indexSet = [NSIndexSet indexSetWithIndex:selectedRow];
 				[self selectRowIndexes:indexSet byExtendingSelection:NO];
@@ -187,8 +217,16 @@
 	return sortedKeys;
 }
 
+-(void)didClick:(id)sender {
+	if (self.clickedRow == _previouslySelected) {
+		[_popover close];
+		_previouslySelected = -1;
+	} else {
+		_previouslySelected = self.clickedRow;
+	}
+}
+
 -(BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row {
-	[_popover close];
 	return YES;
 }
 
@@ -204,7 +242,8 @@
 	NSString *infoString = [NSString stringWithFormat:@"%@\nLines: %lu\nScenes: %lu", character.name, character.lines, character.scenes.count];
 	_infoTextView.string = infoString;
 	
-	NSString *gender = [(NSString*)_editorDelegate.characterGenders[character.name] lowercaseString];
+	NSString *gender = character.gender.lowercaseString;
+	
 	if (gender) {
 		if ([gender isEqualToString:@"woman"] || [gender isEqualToString:@"female"]) _radioWoman.state = NSOnState;
 		else if ([gender isEqualToString:@"man"] || [gender isEqualToString:@"male"]) _radioMan.state = NSOnState;
@@ -311,6 +350,7 @@
 	if (gender.length && character.name.length) {
 		// Set gender
 		_editorDelegate.characterGenders[character.name] = gender;
+		[self reload];
 	}
 }
 
@@ -361,6 +401,14 @@
 -(void)tableViewSelectionDidChange:(NSNotification *)notification {
 	// Hide popover when deselected
 	if (self.selectedRow == -1) [self.popover close];
+	else if (self.selectedRow != NSNotFound) {
+		[self showCharacterInfo:nil];
+	}
 }
 
 @end
+/*
+ 
+ 
+ 
+ */

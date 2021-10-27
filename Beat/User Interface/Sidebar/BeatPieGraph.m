@@ -9,34 +9,57 @@
 #import "BeatPieGraph.h"
 #import "BeatColors.h"
 #import <QuartzCore/QuartzCore.h>
+#import "ThemeManager.h"
 
 @interface BeatPieGraph ()
-@property (nonatomic) CAShapeLayer *pieLayer;
+@property (nonatomic, weak) IBOutlet NSTextField *textField;
+@property (nonatomic) NSMutableArray<CAShapeLayer*> *graphLayers;
+@property (nonatomic) NSDictionary<NSString*, NSColor*> *colors;
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *heightConstraint;
+@property (nonatomic) CGFloat fullHeight;
+@property (nonatomic) bool expanded;
 @end
 
 @implementation BeatPieGraph
 
+-(instancetype)initWithFrame:(NSRect)frameRect {
+	self = [super initWithFrame:frameRect];
+	[self setup];
+	return self;
+}
 -(instancetype)initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
-	
-	if (self) {
-		self.wantsLayer = YES;
-		_pieLayer = [CAShapeLayer layer];
-		CGRect rect = CGRectMake(3, 3, self.frame.size.width - 6, self.frame.size.height - 6);
-		CGPathRef path = CGPathCreateWithEllipseInRect(rect, nil);
-		
-		CGAffineTransform transform = _pieLayer.affineTransform;
-		[_pieLayer setAffineTransform:CGAffineTransformRotate(transform, 90)];
-		
-		_pieLayer.lineWidth = 3;
-		_pieLayer.strokeColor = [BeatColors color:@"blue"].CGColor;
-		_pieLayer.fillColor = nil;
-		_pieLayer.path = path;
-		self.layer = _pieLayer;
-		CGPathRelease(path);
-	}
-	
+	[self setup];
 	return self;
+}
+
+-(void)awakeFromNib {
+	// Collapse by default
+	_fullHeight = _heightConstraint.constant;
+	[_heightConstraint setConstant:0.0];
+}
+
+- (void)setup {
+	
+	self.wantsLayer = YES;
+	self.graphLayers = [NSMutableArray array];
+	self.colors = @{
+		@"woman": ThemeManager.sharedManager.genderWomanColor,
+		@"man": ThemeManager.sharedManager.genderManColor,
+		@"other": ThemeManager.sharedManager.genderOtherColor,
+		@"unspecified": ThemeManager.sharedManager.genderUnspecifiedColor
+	};
+
+}
+
+- (IBAction)show:(id)sender {
+	_expanded = !_expanded;
+	
+	if (_expanded) {
+		[_heightConstraint.animator setConstant:_fullHeight];
+	} else {
+		[_heightConstraint.animator setConstant:0.0];
+	}
 }
 
 - (void)pieChartForData:(NSArray*)items {
@@ -53,8 +76,56 @@
 		}
 	}
 	
-	for (NSString* key in data.allKeys) {
-		NSLog(@"%@ : %f", key, ((CGFloat)[(NSNumber*)data[key] integerValue] / (CGFloat)total));
+	NSArray *sortedValues = [data keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2){
+		return [obj2 compare:obj1];
+	}];
+	
+	NSInteger i = 0;
+	CGFloat offset = 0;
+	CGFloat height = _fullHeight * .7;
+	
+	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
+	
+	for (NSString * key in sortedValues) {
+		CGFloat percentage = ((CGFloat)[(NSNumber*)data[key] integerValue] / (CGFloat)total);
+		CAShapeLayer *graphLayer;
+		
+		if (i == _graphLayers.count) {
+			graphLayer = [CAShapeLayer layer];
+			CGRect rect = CGRectMake((_fullHeight - height) / 2 + 8, (_fullHeight - height) / 2, height, height);
+			CGPathRef path = CGPathCreateWithEllipseInRect(rect, nil);
+			graphLayer.lineWidth = 12.0;
+			graphLayer.fillColor = nil;
+			graphLayer.path = path;
+			graphLayer.strokeStart = 0;
+			
+			[self.layer insertSublayer:graphLayer atIndex:0];
+			[_graphLayers addObject:graphLayer];
+		} else {
+			graphLayer = _graphLayers[i];
+		}
+		
+		graphLayer.strokeEnd = offset + percentage;
+		graphLayer.strokeColor = _colors[key].CGColor;
+		
+		[attrStr appendAttributedString:[NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@ %lu%%", key.capitalizedString, (NSInteger)ceil(percentage * 100)] attributes:@{
+			NSForegroundColorAttributeName: _colors[key]
+		}]];
+		
+		if (key != sortedValues.lastObject) [attrStr appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+		
+		offset += percentage;
+		i++;
+	}
+	
+	_textField.attributedStringValue = attrStr;
+	
+	if (i < _graphLayers.count - 1) {
+		while (_graphLayers.count >= i) {
+			CAShapeLayer *excessLayer = _graphLayers.lastObject;
+			[excessLayer removeFromSuperlayer];
+			[_graphLayers removeLastObject];
+		}
 	}
 }
 
@@ -65,3 +136,11 @@
 }
 
 @end
+/*
+ 
+ för jag vill dricka, röka, glömma
+ hur jag såg på dig och hur du såg på mig
+ för jag vill ligga nu, hångla, glömma
+ fur jag fucka dig och hur du fuckat mig
+ 
+ */

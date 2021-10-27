@@ -89,6 +89,30 @@
 					<integer>129</integer>
 					<integer>239</integer>
 				</array>
+				<key>Woman</key>
+				<array>
+					<integer>0</integer>
+					<integer>223</integer>
+					<integer>121</integer>
+				</array>
+				<key>Man</key>
+				<array>
+					<integer>255</integer>
+					<integer>161</integer>
+					<integer>13</integer>
+				</array>
+				<key>Other</key>
+				<array>
+					<integer>236</integer>
+					<integer>0</integer>
+					<integer>140</integer>
+				</array>
+				<key>Unspecified</key>
+				<array>
+					<integer>0</integer>
+					<integer>129</integer>
+					<integer>239</integer>
+				</array>
 			</dict>
 			<key>Dark</key>
 			<dict>
@@ -165,6 +189,30 @@
 					<integer>80</integer>
 				</array>
 				<key>Highlight</key>
+				<array>
+					<integer>0</integer>
+					<integer>129</integer>
+					<integer>239</integer>
+				</array>
+				<key>Woman</key>
+				<array>
+					<integer>0</integer>
+					<integer>223</integer>
+					<integer>121</integer>
+				</array>
+				<key>Man</key>
+				<array>
+					<integer>255</integer>
+					<integer>161</integer>
+					<integer>13</integer>
+				</array>
+				<key>Other</key>
+				<array>
+					<integer>236</integer>
+					<integer>0</integer>
+					<integer>140</integer>
+				</array>
+				<key>Unspecified</key>
 				<array>
 					<integer>0</integer>
 					<integer>129</integer>
