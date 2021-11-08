@@ -116,7 +116,9 @@ static NSDictionary* patterns;
 	NSMutableString *content = [NSMutableString string];
 	
 	Line *previousLine;
-	for (Line *line in lines) {
+	for (Line* line in lines) {
+		if (!line) continue;
+		
 		NSString *string = line.string;
 		LineType type = line.type;
 		
@@ -134,6 +136,7 @@ static NSDictionary* patterns;
 		
 		previousLine = line;
 	}
+
 	return content;
 }
 
@@ -228,7 +231,7 @@ static NSDictionary* patterns;
     NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
     if (range.length == 0) { //Addition
 		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
-    } else if ([string length] == 0) { //Removal
+    } else if (string.length == 0) { //Removal
 		[changedIndices addIndexes:[self parseRemovalAt:range]];
 		
     } else { //Replacement
@@ -274,10 +277,7 @@ static NSDictionary* patterns;
 	Line* line = self.lines[lineIndex];
 	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = YES;
 	
-	// Cache old version of the string
-	[line savePreviousVersion];
-	
-    NSUInteger indexInLine = position - line.position;
+	NSUInteger indexInLine = position - line.position;
 	
 	// If the added string is a multi-line block, we need to optimize the addition.
 	// Else, just parse it character-by-character.
@@ -338,7 +338,6 @@ static NSDictionary* patterns;
 
 		// Find the current line and cache its previous version
 		Line* line = self.lines[lineIndex];
-		[line savePreviousVersion];
 		
         for (int i = 0; i < string.length; i++) {
             NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
@@ -426,10 +425,7 @@ static NSDictionary* patterns;
 		// If there are 2+ line breaks, optimize the operation
 		NSInteger lineIndex = [self lineIndexAtPosition:range.location];
 		Line *firstLine = self.lines[lineIndex];
-		
-		// Cache the previous version of the line
-		[firstLine savePreviousVersion];
-		
+				
 		// Change in outline
 		if (firstLine.type == heading || firstLine.type == section || firstLine.type == synopse) _changeInOutline = YES;
 		
@@ -485,7 +481,6 @@ static NSDictionary* patterns;
 		
 		// Cache previous version of the string
 		Line* line = self.lines[_editedIndex];
-		[line savePreviousVersion];
 		
 		// Parse removal character by character
 		for (int i = 0; i < range.length; i++) {
@@ -501,15 +496,9 @@ static NSDictionary* patterns;
 {
 	/*
 	 
-	 I have struggled to make this faster.
-	 The solution (for now) is to cache the result of lineIndexAtPosition,
-	 but it's not the ideal workaround.
-	 
-	 Creating the temporary strings here might be the problem, though.
-	 If I could skip those steps, iterating character by character might not be
-	 that heavy of an operation. We could have @property NSRange affectedRange
-	 and have this method check itself against that. If we'll be removing the next
-	 character, too, don't bother appending any strings anywhere.
+	 When less than one line is removed, we'll parse it character by character
+	 in this method.  lineIndex is cached so we don't have to find current
+	 line on every call.
 	 
 	 */
 		
@@ -519,28 +508,33 @@ static NSDictionary* patterns;
 	if (indexInLine > line.string.length) indexInLine = line.string.length;
 	
     if (indexInLine == line.string.length) {
-        //Get next line and put together
         if (lineIndex == self.lines.count - 1) {
             return nil; //Removed newline at end of document without there being an empty line - should never happen but to be sure...
         }
 		
+		// Find the next line and join it with current line
         Line* nextLine = self.lines[lineIndex+1];
         line.string = [line.string stringByAppendingString:nextLine.string];
-        if (nextLine.type == heading || nextLine.type == section || nextLine.type == synopse) {
-            _changeInOutline = YES;
-        }
-		
+        		
         [self.lines removeObjectAtIndex:lineIndex+1];
         [self decrementLinePositionsFromIndex:lineIndex+1 amount:1];
-        
-        return [[NSIndexSet alloc] initWithIndex:lineIndex];
+        		
+		if (nextLine.isOutlineElement) _changeInOutline = YES;
+		
+		if (nextLine.type == empty &&  lineIndex + 1 < self.lines.count) {
+			// An empty line was removed, which might affect parsing of follow elements, so
+			// let's be sure to parse whatever comes after the deleted line.
+			return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(lineIndex, 2)];
+		} else {
+			return [NSIndexSet indexSetWithIndex:lineIndex];
+		}
+		
     } else {
         NSArray* pieces = @[[line.string substringToIndex:indexInLine],
                             [line.string substringFromIndex:indexInLine + 1]];
         
         line.string = [pieces componentsJoinedByString:@""];
         [self decrementLinePositionsFromIndex:lineIndex+1 amount:1];
-        
         
         return [[NSIndexSet alloc] initWithIndex:lineIndex];
     }
@@ -742,7 +736,25 @@ static NSDictionary* patterns;
 	}
 	else if (currentLine.noteOut) {
 		// Something else was changed and note spills out of the block, so we need to reparse the whole block
+		for (NSInteger ni = [self.lines indexOfObject:currentLine]; ni<self.lines.count; ni++) {
+			Line *nextLine = self.lines[ni];
+			if (nextLine.noteIn && [nextLine.string containsString:@"]]"]) {
+				NSIndexSet *noteIndices = [self terminateNoteBlockAt:nextLine];
+				[self.changedIndices addIndexes:noteIndices];
+				break;
+			}
+		}
 		notesNeedParsing = YES;
+	}
+	else if (currentLine.noteOut != oldNoteOut && !currentLine.noteOut) {
+		for (NSInteger ni = [self.lines indexOfObject:currentLine]; ni < self.lines.count; ni++) {
+			Line *nextLine = self.lines[ni];
+			if (nextLine.noteIn && [nextLine.string containsString:@"]]"]) {
+				NSIndexSet *noteIndices = [self cancelNoteBlockAt:nextLine];
+				[self.changedIndices addIndexes:noteIndices];
+				break;
+			}
+		}
 	}
 	
 	if (currentLine.noteIn && [currentLine.string containsString:@"]]"]) {
@@ -893,7 +905,7 @@ static NSDictionary* patterns;
                                      withLength:UNDERLINE_PATTERN_LENGTH
                                excludingIndices:nil
 										   line:line];
-			
+	
 	line.strikeoutRanges = [self rangesInChars:charArray
 								 ofLength:length
 								  between:STRIKEOUT_OPEN_PATTERN
@@ -1047,7 +1059,11 @@ and incomprehensible system of recursion.
     //If not empty, check if contains only whitespace. Exception: two spaces indicate a continued whatever, so keep them
     if (containsOnlyWhitespace && !twoSpaces) {
         return empty;
-    }
+	}
+	// I don't know why this is needed and the previous doesn't catch this?
+	if (containsOnlyWhitespace && firstChar == ' ' && line.length == 1) {
+		return empty;
+	}
 	
 	// Reset to zero to avoid strange formatting issues
 	line.numberOfPrecedingFormattingCharacters = 0;
@@ -1271,10 +1287,9 @@ and incomprehensible system of recursion.
 			 preceedingLine.length > 0 &&
 			 preceedingLine.string.onlyUppercaseUntilParenthesis &&
 			 line.length > 0 &&
-			 !preceedingLine.forced) {
-		// Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when
-		// the text is changed to have some dialogue follow it.
-
+			 !preceedingLine.forced &&
+			 [self previousLine:preceedingLine].type == empty) {
+		// Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when the text is changed to have some dialogue follow it.
 		preceedingLine.type = character;
 		[_changedIndices addIndex:index-1];
 		return dialogue;
@@ -1983,6 +1998,11 @@ and incomprehensible system of recursion.
 		lines = self.lines;
 	}
 	
+	NSMutableArray *linesForPrinting = [NSMutableArray array];
+	for (Line* line in lines) {
+		[linesForPrinting addObject:line.clone];
+	}
+	
 	// Get scene number offset from the delegate/document settings
 	NSInteger sceneNumber = 1;
 	if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 1) {
@@ -1995,7 +2015,17 @@ and incomprehensible system of recursion.
 	
 	Line *previousLine;
 	
-	for (Line *line in lines) {
+	// Check for split paragraphs
+	NSInteger i = 0;
+	for (Line* line in linesForPrinting) {
+		if (i > 0 && line.type == action) {
+			Line *preceedingLine = lines[i - 1];
+			if (preceedingLine.type == action && preceedingLine.string.length > 0) line.isSplitParagraph = YES;
+		}
+		i++;
+	}
+	
+	for (Line *line in linesForPrinting) {
 		// Skip over certain elements
 		if (line.type == synopse || line.type == section || line.omitted || line.isTitlePage) {
 			continue;

@@ -3,7 +3,7 @@
 //	Modified for Beat
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
-//  Parts copyright (c) 2019 Lauri-Matti Parppei / KAPITAN!
+//  Parts copyright (c) 2019 Lauri-Matti Parppei / Lauri-Matti Parppei
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 

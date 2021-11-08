@@ -3,7 +3,7 @@
 //	Released under MIT License
 //
 //  Created by Lauri-Matti Parppei on 26.12.2019.
-//  Copyright © 2019 KAPITAN!. All rights reserved.
+//  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
 /*

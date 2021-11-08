@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 9.1.2021.
-//  Copyright © 2021 KAPITAN!. All rights reserved.
+//  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import "BeatAboutScreen.h"
@@ -22,6 +22,7 @@
     [super windowDidLoad];
 	
 	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
+	version = [version stringByAppendingFormat:@"\nBuild %@", NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"]];
 	_versionField.stringValue = [NSString stringWithFormat:@"Version %@", version];
 }
 - (void)show {

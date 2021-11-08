@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 15.10.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
 /*
@@ -109,7 +109,8 @@
 		[_radioA4 setState:NSOnState];
 		_paperSize = BeatA4;
 	}
-	_document.printInfo = [BeatPaperSizing setMargins:_document.printInfo];
+	//_document.printInfo = [BeatPaperSizing setSize:_paperSize printInfo:_document.printInfo];
+	[BeatPaperSizing setPageSize:_paperSize printInfo:_document.printInfo];
 	
 	// Show window
 	[self loadPreview];
@@ -162,20 +163,18 @@
 - (IBAction)selectPaperSize:(id)sender {
 	BeatPaperSize oldSize = _paperSize;
 	
-	NSLog(@"paper size %lu", oldSize);
-	
 	if ([(NSButton*)sender tag] == 1) {
 		// A4
-		_document.printInfo = [BeatPaperSizing setSize:BeatA4 printInfo:_document.printInfo];
+		//_document.printInfo = [BeatPaperSizing setSize:BeatA4 printInfo:_document.printInfo];
 		_paperSize = BeatA4;
+		[BeatPaperSizing setPageSize:_paperSize printInfo:_document.printInfo];
 	} else {
 		// US Letter
-		_document.printInfo = [BeatPaperSizing setSize:BeatUSLetter printInfo:_document.printInfo];
+		//_document.printInfo = [BeatPaperSizing setSize:BeatUSLetter printInfo:_document.printInfo];
 		_paperSize = BeatUSLetter;
+		[BeatPaperSizing setPageSize:_paperSize printInfo:_document.printInfo];
 	}
-	
-	NSLog(@"new size %lu", _paperSize);
-	
+		
 	// Preview needs refreshing
 	if (oldSize != _paperSize) {
 		[self loadPreview];

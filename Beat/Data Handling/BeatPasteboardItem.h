@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 19.9.2021.
-//  Copyright © 2021 KAPITAN!. All rights reserved.
+//  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>

@@ -96,7 +96,7 @@
 			[rawText appendFormat:@"%@\n", line.string];
 		}
 	} else {
-		if (_document) rawText = [NSMutableString stringWithString:[_document getText]];
+		if (_document) rawText = [NSMutableString stringWithString:_document.getText];
 	}
 	return rawText;
 }
@@ -130,7 +130,7 @@
 	}
 	
 	// Set script data
-	NSMutableDictionary *script = [NSMutableDictionary dictionaryWithDictionary:@{
+	NSMutableDictionary<NSString*, NSArray*> *script = [NSMutableDictionary dictionaryWithDictionary:@{
 		@"script": [parser preprocessForPrinting],
 		@"title page": parser.titlePage
 	}];
@@ -140,12 +140,8 @@
 		return nil;
 	}
 	
-	// Set header if sent
-	//if (header.length) [script setValue:header forKey:@"header"];
-	//if (header.length) settings.header = header;
-	
-	//BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPrint:script document:document printSceneNumbers:document.printSceneNumbers];
-	
+	// For empty documents, return empty HTML document
+	if (script[@"script"].count == 0 && script[@"title page"].count == 0) return @"<html></html>";
 	
 	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script settings:settings];
 	return html.html;
@@ -156,7 +152,7 @@
 - (BOOL)knowsPageRange:(NSRangePointer)range
 {
 	range->location = 0;
-	range->length = [self.subviews count] + 1;
+	range->length = self.subviews.count + 1;
 	return YES;
 }
 
@@ -171,7 +167,7 @@
 	
 	if (self.finishedWebViews == self.subviews.count) {
 		[self display];
-		
+				
 		// Print
 		if (!self.pdf) {
 			[self printDocument];
@@ -206,7 +202,7 @@
 	}
 }
 - (void)exportPDFtoURL:(NSURL*)url {
-	NSPrintInfo *printInfo = [self.document.printInfo copy];
+	NSPrintInfo *printInfo = self.document.printInfo.copy;
 	
 	[printInfo.dictionary addEntriesFromDictionary:@{
 													 NSPrintJobDisposition: NSPrintSaveJob,
@@ -238,7 +234,7 @@
 }
 
 - (void)createTemporaryPDF {
-	NSPrintInfo *printInfo = [self.document.printInfo copy];
+	NSPrintInfo *printInfo = self.document.printInfo.copy;
 	
 	NSURL *tempURL = [NSURL fileURLWithPath:[self pathForTemporaryFileWithPrefix:@"pdf"]];
 	
@@ -253,6 +249,7 @@
 	printOperation.showsProgressPanel = YES;
 	
 	[printOperation runOperation];
+	
 	[self.delegate didFinishPreviewAt:tempURL];
 }
 

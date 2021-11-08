@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 22.10.2021.
-//  Copyright © 2021 KAPITAN!. All rights reserved.
+//  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import "BeatCharacterList.h"
@@ -220,6 +220,7 @@
 -(void)didClick:(id)sender {
 	if (self.clickedRow == _previouslySelected) {
 		[_popover close];
+		[self deselectAll:nil];
 		_previouslySelected = -1;
 	} else {
 		_previouslySelected = self.clickedRow;
@@ -409,6 +410,14 @@
 @end
 /*
  
+ tänään aloitan laulamaan
+ tänään soitellen sotaan
+ soitellen sotaan
+ jossa ei tarvitse ketään vahingoittaa
  
+ jäähyväiset aseille joihin uskottiin
+ jäähyväiset aseille joilla synnit sovitettiin
+ jäähyväiset aseille joilla elämää suojellaan
+ jäähyväiset aseille joilla elämä tuhotaan
  
  */

@@ -4,6 +4,7 @@
 //
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
+//	Parts copyright © 2019-2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import "NSString+CharacterControl.h"

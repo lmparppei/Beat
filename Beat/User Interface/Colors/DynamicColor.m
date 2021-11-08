@@ -1,7 +1,7 @@
 /*
  
  Original code © Paulo Andrade
- Modified for Beat by Lauri-Matti Parppei
+ Heavily modified for Beat by Lauri-Matti Parppei
  
  No license information available, so I'm guessing this is public domain
  
@@ -66,10 +66,7 @@
 - (NSColor *)effectiveColor
 {
 	// Don't allow calls to this class from anywhere else than main thread
-	if (![NSThread isMainThread]) {
-		return self.aquaColor;
-	}
-	
+	if (![NSThread isMainThread]) return self.aquaColor;
 
 	if (@available(macOS 10.14, *)) {
 		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];

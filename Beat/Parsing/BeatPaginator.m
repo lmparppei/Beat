@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 18.5.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
 /*
@@ -253,7 +253,7 @@
 	}
 	
 	// Make sure we don't try and access an index that doesn't exist
-	if ([self.pages count] == 0 || (index > self.pages.count - 1)) {
+	if (self.pages.count == 0 || (index > self.pages.count - 1)) {
 		return @[];
 	}
 	
@@ -322,17 +322,17 @@
 	// Get paper size from the document
 	if (_document || _printInfo) {
 		NSPrintInfo *printInfo;
-		if (_document) printInfo = [_document.printInfo copy];
-		else printInfo = [_printInfo copy];
-		
+		if (_document) printInfo = _document.printInfo.copy;
+		else printInfo = _printInfo.copy;
+	
 		printInfo = [BeatPaperSizing setMargins:printInfo];
 		
 		// Check paper size
 		if (printInfo.paperSize.width > 595) _A4 = NO;
 		_A4 = YES;
 		
-		CGFloat w = printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin;
-		CGFloat h = printInfo.paperSize.height - printInfo.topMargin - printInfo.bottomMargin;
+		CGFloat w = roundf(printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin);
+		CGFloat h = roundf(printInfo.paperSize.height - printInfo.topMargin - printInfo.bottomMargin);
 		
 		_paperSize = CGSizeMake(w, h);
 	} else {
@@ -439,14 +439,13 @@
 			// Add whole block into temporary elements
 			[tmpElements addObjectsFromArray:blck];
 			
-			
 			#pragma mark Break elements onto pages
 			
 			// BREAKING ELEMENTS ONTO PAGES
 			// Figure out which element went overboard
 			if (currentY + fullHeight > maxPageHeight) {
 				CGFloat overflow = maxPageHeight - (currentY + fullHeight);
-
+				
 				// If it fits, just squeeze it on this page
 				if (fabs(overflow) < lineHeight * 1.5) {
 					// This wouldn't be needed with the new dialogue block system
@@ -500,7 +499,8 @@
 					NSInteger space = maxPageHeight - currentY;
 					
 					if (fabs(overflow) > limit && space > limit * 2 && !handled) {
-						NSArray *words = [spillerElement.stripFormatting componentsSeparatedByString:@" "];
+						NSMutableArray *words = [spillerElement.stripFormatting componentsSeparatedByString:@" "].mutableCopy;
+						
 						NSInteger space = maxPageHeight - currentY;
 						
 						// We substract heading line height from the remaining space
@@ -513,21 +513,40 @@
 						CGFloat breakPosition = 0;
 						
 						// Loop through words and count the height
-						int wIndex = 0;
-						for (NSString *word in words) {
-							if (wIndex == 0) text = [text stringByAppendingFormat:@"%@", word];
-							else text = [text stringByAppendingFormat:@" %@", word];
+						for (NSInteger wordIndex = 0; wordIndex < words.count; wordIndex++) {
+							NSString *word = words[wordIndex];
+							
+							if ([word containsString:@"\n"] && word.length > 1) {
+								// Move line break at end of the word and add a new word into array
+								NSArray *linebreak = [word componentsSeparatedByString:@"\n"];
+								word = [NSString stringWithFormat:@"%@\n", linebreak[0]];
+								[words insertObject:linebreak[1] atIndex:wordIndex+1];
+							}
+							
+							if (wordIndex == 0) text = [text stringByAppendingFormat:@"%@", word];
+							else {
+								// This is a very quick and dirty fix for weird edge cases
+								if (word.length) {
+									if ([word characterAtIndex:word.length-1] == '\n') text = [text stringByAppendingFormat:@"%@", word];
+									else text = [text stringByAppendingFormat:@" %@", word];
+								}
+								else text = [text stringByAppendingFormat:@" %@", word];
+							}
 							
 							Line *tempElement = [[Line alloc] initWithString:text type:action];
+							
 							NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
 							if (h < space) {
 								breakPosition = h;
-								if (wIndex == 0) retain = [retain stringByAppendingFormat:@"%@", word];
+								if (wordIndex == 0) retain = [retain stringByAppendingFormat:@"%@", word];
+								else if (word.length) {
+									if ([word characterAtIndex:word.length-1] == '\n') retain = [retain stringByAppendingFormat:@"%@", word];
+									else retain = [retain stringByAppendingFormat:@" %@", word];
+								}
 								else retain = [retain stringByAppendingFormat:@" %@", word];
 							} else {
 								split = [split stringByAppendingFormat:@" %@", word];
 							}
-							wIndex++;
 						}
 						
 						NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
@@ -791,6 +810,10 @@
 		
 		[_pages addObject:currentPage];
 	}
+	
+	// Remove last page if it's empty
+	NSArray *lastPage = _pages.lastObject;
+	if (lastPage.count == 0) [_pages removeLastObject];
 	
 	_lastPageHeight = (float)currentY / (float)maxPageHeight;
 }
@@ -1115,8 +1138,8 @@
 }
 
 - (NSDictionary*)splitDialogue:(NSArray*)dialogueBlock spiller:(Line*)spillerElement remainingSpace:(NSInteger)remainingSpace height:(NSInteger)dialogueHeight {
-	
 	// NOTE: Remember to calculate Y after this operation
+	// NOTE #2: ABANDON ALL HOPE
 	
 	Line *pageBreakItem;
 	NSInteger suggestedPageBreak = -1;
@@ -1207,7 +1230,7 @@
 			}
 			
 			if (postDialogue.length) {
-				// Add the remaining stuff on the next page and inherit dual dialogue stuff
+				// Add the remaining stuff on the next page and inherit dual dialogue boolean
 				Line *element = dialogueBlock.firstObject;
 				Line *postCue = [Line withString:[element.stripFormatting stringByAppendingString:@" (CONT'D)"] type:contdType pageSplit:YES];
 				
@@ -1219,8 +1242,9 @@
 				
 				[nextPageElements addObject:postCue];
 				[nextPageElements addObject:postDialogue];
-						
+				
 				// Add possible remaining dialogue elements
+				// IDK why this is different than the method below
 				NSInteger position = postDialogue.position + postDialogue.string.length;
 				for (NSInteger d = blockIndex + 1; d < dialogueBlock.count; d++) {
 					Line *postElement = dialogueBlock[d];
@@ -1232,17 +1256,17 @@
 					
 					[nextPageElements addObject:postBreak];
 				}
-				
-			}
-			
-			if (spillerElement != dialogueBlock.lastObject) {
-				NSInteger splitIdx = [dialogueBlock indexOfObject:spillerElement];
-				if (splitIdx < dialogueBlock.count - 1) {
-					NSArray *splitItems = [dialogueBlock subarrayWithRange:(NSRange){ splitIdx + 1, dialogueBlock.count - (splitIdx+1) }];
-					[nextPageElements addObjectsFromArray:splitItems];
+			} else {
+				// There is something else left to process in the dialogue block, even if we didn't split anything
+				// IDK why this is different than the method above ^
+				if (spillerElement != dialogueBlock.lastObject) {
+					NSInteger splitIdx = [dialogueBlock indexOfObject:spillerElement];
+					if (splitIdx < dialogueBlock.count - 1) {
+						NSArray *splitItems = [dialogueBlock subarrayWithRange:(NSRange){ splitIdx + 1, dialogueBlock.count - (splitIdx+1) }];
+						[nextPageElements addObjectsFromArray:splitItems];
+					}
 				}
 			}
-			
 		} else {
 			// Nothing to retain, move whole block on next page
 			[nextPageElements addObjectsFromArray:dialogueBlock];

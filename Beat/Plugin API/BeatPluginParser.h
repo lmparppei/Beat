@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 1.7.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import "BeatPluginManager.h"
@@ -76,6 +76,9 @@
 
 - (BeatPaginator*)paginator:(NSArray*)lines;
 
+- (void)reformat:(Line*)line;
+- (void)reformatRange:(NSInteger)loc len:(NSInteger)len;
+
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string);
@@ -98,6 +101,9 @@ JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(Outline
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
 JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
+
+JSExportAs(removeTextHighlight, - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len);
+JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len);
 
 @end
 
@@ -128,6 +134,8 @@ JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)h
 - (NSString*)getText;
 - (OutlineScene*)getCurrentScene;
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
+- (void)forceFormatChangesInRange:(NSRange)range;
+- (void)formatLineOfScreenplay:(Line*)line;
 @end
 
 @interface BeatPluginParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>

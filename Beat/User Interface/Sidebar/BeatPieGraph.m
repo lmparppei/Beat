@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 25.10.2021.
-//  Copyright © 2021 KAPITAN!. All rights reserved.
+//  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import "BeatPieGraph.h"
@@ -62,6 +62,13 @@
 	}
 }
 
+- (void)clearChart {
+	for (CAShapeLayer *layer in _graphLayers) {
+		[layer removeFromSuperlayer];
+	}
+	[_graphLayers removeAllObjects];
+}
+
 - (void)pieChartForData:(NSArray*)items {
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	NSInteger total = items.count;
@@ -76,6 +83,12 @@
 		}
 	}
 	
+	if (!data.count) {
+		_textField.stringValue = @"No characters";
+		[self clearChart];
+		return;
+	}
+		
 	NSArray *sortedValues = [data keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2){
 		return [obj2 compare:obj1];
 	}];
@@ -121,7 +134,7 @@
 	_textField.attributedStringValue = attrStr;
 	
 	if (i < _graphLayers.count - 1) {
-		while (_graphLayers.count >= i) {
+		while (_graphLayers.count >= i && _graphLayers.count > 0) {
 			CAShapeLayer *excessLayer = _graphLayers.lastObject;
 			[excessLayer removeFromSuperlayer];
 			[_graphLayers removeLastObject];
@@ -131,8 +144,6 @@
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-    
-    // Drawing code here.
 }
 
 @end

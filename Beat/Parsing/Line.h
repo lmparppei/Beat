@@ -79,7 +79,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, weak) id<LineDelegate> parser;
 @property LineType type;
 @property (strong) NSString* string;
-@property (nonatomic) NSString* previousString;
 @property (nonatomic) NSString* original;
 @property (nonatomic) NSUInteger position;
 @property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
@@ -88,6 +87,8 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSInteger sceneIndex;
 @property (nonatomic) NSString* color;
 @property (nonatomic) NSArray* storylines;
+
+@property (nonatomic) LineType formattedAs; /// The type which this line was previously formatted as
 
 @property (nonatomic) bool forcedCharacterCue;
 
@@ -166,6 +167,7 @@ typedef enum : NSUInteger {
 - (bool)isDialogueElement; /// returns TRUE for elements other than a character cue
 - (bool)isDualDialogue; /// returns TRUE for dual dialogue characters too
 - (bool)isDualDialogueElement;  /// returns TRUE for elements other than a character cue
+- (bool)isOutlineElement; /// returns true for scene heading, section and synopsis
 
 - (NSString*)stripSceneNumber;
 - (NSString*)stripFormattingCharacters;
@@ -199,9 +201,6 @@ typedef enum : NSUInteger {
 // (Is this still used?)
 @property (nonatomic) bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
-
-// For some undo operations
-- (void)savePreviousVersion;
 
 -(NSString *)description;
 @end

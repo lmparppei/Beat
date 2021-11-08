@@ -132,6 +132,7 @@
 @property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
 @property (nonatomic) NSString *contentCache;
+@property (nonatomic) NSData *dataCache;
 @property (nonatomic) NSAttributedString *attributedContentCache;
 
 // Plugin support
@@ -195,7 +196,7 @@
 @property (nonatomic) NSMutableArray *outline;
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
-@property BOOL outlineViewVisible;
+@property (nonatomic) BOOL sidebarVisible;
 @property (nonatomic) NSMutableArray *outlineClosedSections;
 @property (nonatomic, weak) IBOutlet NSMenu *colorMenu;
 
@@ -396,7 +397,7 @@
 }
 - (void)close {
 	if (!self.hasUnautosavedChanges) {
-		if (self.outlineViewVisible) {
+		if (self.sidebarVisible) {
 			// Don't save sidebar width
 			NSRect frame = self.thisWindow.frame;
 			frame.size.width -= self.splitHandle.bottomOrLeftView.frame.size.width;
@@ -472,6 +473,15 @@ void delay (double delay, CallbackBlock block) {
 				   dispatch_get_main_queue(), block);
 }
 */
+
+-(void)restoreDocumentWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier state:(NSCoder *)state completionHandler:(void (^)(NSWindow * _Nullable, NSError * _Nullable))completionHandler {
+	if (NSEvent.modifierFlags & NSEventModifierFlagShift) {
+		completionHandler(nil, nil);
+		[self close];
+	} else {
+		[super restoreDocumentWindowWithIdentifier:identifier state:state completionHandler:completionHandler];
+	}
+}
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
 	[super windowControllerDidLoadNib:aController];
@@ -609,12 +619,17 @@ void delay (double delay, CallbackBlock block) {
 	[self.undoManager disableUndoRegistration];
 
 	NSInteger pageSize;
-	if ([self.documentSettings has:@"Page Size"]) {
-		pageSize = [self.documentSettings getInt:@"Page Size"];
+	if ([self.documentSettings has:DocSettingPageSize]) {
+		pageSize = [self.documentSettings getInt:DocSettingPageSize];
+		NSLog(@"page size here %lu", pageSize);
 	} else {
 		pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
 	}
 	
+	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
+	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
+
+	/*
 	NSPrintInfo *printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
 	self.printInfo.paperSize = printInfo.paperSize;
 	self.printInfo.orientation = printInfo.orientation;
@@ -622,13 +637,15 @@ void delay (double delay, CallbackBlock block) {
 	self.printInfo.topMargin = printInfo.topMargin;
 	self.printInfo.rightMargin = printInfo.rightMargin;
 	self.printInfo.bottomMargin = printInfo.bottomMargin;
+	 */
+	//self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
 	
-	[self.documentSettings setInt:@"Page Size" as:pageSize];
 	
 	[self.undoManager enableUndoRegistration];
 	if (saved) [self updateChangeCount:NSChangeCleared];
 	
 	[self.textView.animator setAlphaValue:1.0];
+	[self updateQuickSettings];
 }
 
 -(void)awakeFromNib {
@@ -818,7 +835,7 @@ void delay (double delay, CallbackBlock block) {
 - (void)windowDidResize:(NSNotification *)notification
 {
 	CGFloat width = _thisWindow.frame.size.width;
-	if (self.outlineViewVisible) {
+	if (self.sidebarVisible) {
 		// Don't calculate sidebar width to saved document width
 		width -= self.splitHandle.bottomOrLeftView.frame.size.width;
 	}
@@ -857,7 +874,7 @@ void delay (double delay, CallbackBlock block) {
 
 - (void) setMinimumWindowSize {
 	// These are arbitratry values. Sorry, anyone reading this.
-	if (!_outlineViewVisible) {
+	if (!_sidebarVisible) {
 		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150, MIN_WINDOW_HEIGHT)];
 	} else {
 		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
@@ -898,7 +915,7 @@ void delay (double delay, CallbackBlock block) {
 	[_revisionModeSwitch setChecked:self.trackChanges];
 	[_darkModeSwitch setChecked:self.isDark];
 	
-	NSInteger paperSize = [self.documentSettings getInt:@"Page Size"];
+	NSInteger paperSize = [self.documentSettings getInt:DocSettingPageSize];
 
 	if (paperSize == BeatA4) [_pageSizePopup selectItemWithTitle:@"A4"];
 	else [_pageSizePopup selectItemWithTitle:@"US Letter"];
@@ -933,7 +950,7 @@ void delay (double delay, CallbackBlock block) {
 }
 
 
-#pragma mark - Zooming
+#pragma mark - Zooming & layout
 
 - (IBAction)zoomIn:(id)sender {
 	[self zoom:YES];
@@ -1086,12 +1103,26 @@ void delay (double delay, CallbackBlock block) {
     return @"Document";
 }
 
-
-
 - (NSData *)dataOfType:(NSString *)typeName error:(NSError **)outError {
-    // Insert code here to write your document to data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning nil.
-    // You can also choose to override -fileWrapperOfType:error:, -writeToURL:ofType:error:, or -writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
-    NSData *dataRepresentation = [[self createDocumentFile] dataUsingEncoding:NSUTF8StringEncoding];
+    // This method can crash the app in some instances, so I've tried to solve the issue
+	// by wrapping it in try-catch block. Let's see if it helps.
+	
+	NSData *dataRepresentation;
+	bool success = NO;
+	@try {
+		dataRepresentation = [[self createDocumentFile] dataUsingEncoding:NSUTF8StringEncoding];
+		success = YES;
+	} @catch (NSException *exception) {
+		NSLog(@"Error (auto)saving file: %@", exception);
+
+		// If there is data in the cache, return it
+		if (_dataCache != nil) return _dataCache;
+		else dataRepresentation = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
+	} @finally {
+		// If saving was successful, let's store the data into cache
+		if (success) _dataCache = dataRepresentation.copy;
+	}
+    
     return dataRepresentation;
 }
 
@@ -1287,7 +1318,7 @@ void delay (double delay, CallbackBlock block) {
     [saveDialog setNameFieldStringValue:[self fileNameString]];
     [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
-			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText attributedString:self.textView.attributedString includeTags:YES includeRevisions:YES];
+			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText attributedString:self.textView.attributedString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
             [fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
@@ -1332,6 +1363,7 @@ void delay (double delay, CallbackBlock block) {
 			return scene;
 		}
 		else if (position >= lastPosition && position < scene.position && lastScene) {
+			_currentScene = lastScene;
 			return lastScene;
 		}
 		
@@ -1425,6 +1457,11 @@ void delay (double delay, CallbackBlock block) {
  */
 
 # pragma mark - Text events
+
+- (IBAction)toggleAutoLineBreaks:(id)sender {
+	self.autoLineBreaks = !self.autoLineBreaks;
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+}
 
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
@@ -1683,11 +1720,6 @@ void delay (double delay, CallbackBlock block) {
 	}
 }
 
-- (IBAction)toggleAutoLineBreaks:(id)sender {
-	self.autoLineBreaks = !self.autoLineBreaks;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-}
-
 - (Line*)getCurrentLine {
 	NSInteger location = self.selectedRange.location;
 	if (location >= self.getText.length) return self.parser.lines.lastObject;
@@ -1696,7 +1728,6 @@ void delay (double delay, CallbackBlock block) {
 	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
 	else return [_parser lineAtPosition:location];
 }
-
 
 - (IBAction)reformatRange:(id)sender {
 	if (self.textView.selectedRange.length > 0) {
@@ -1726,20 +1757,7 @@ void delay (double delay, CallbackBlock block) {
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-	
-	/*
-	if (_postEditAction) {
-		NSLog(@"post edit %@", _postEditAction);
-		NSInteger index = [_postEditAction[@"index"] integerValue];
-		NSString *string = _postEditAction[@"string"];
-		_postEditAction = nil;
 		
-		if (index <= self.textView.string.length) {
-			[self addString:string atIndex:index];
-		}
-	}
-	*/
-	
 	// Register changes
 	if (_trackChanges) [self registerChangesInRange:_lastChangedRange];
 	
@@ -1748,7 +1766,7 @@ void delay (double delay, CallbackBlock block) {
 	
 	if (changeInOutline) {
 		[self.parser createOutline];
-		if (self.outlineViewVisible) [self reloadOutline];
+		if (self.sidebarVisible) [self reloadOutline];
 		if (self.timelineVisible) [self reloadTimeline];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
 		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
@@ -1785,7 +1803,7 @@ void delay (double delay, CallbackBlock block) {
 	_contentCache = [NSString stringWithString:self.textView.string];
 	
 	// A larger chunk of text was pasted. Ensure layout.
-	if (self.lastChangedRange.length > 5) [self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
+	if (self.lastChangedRange.length > 5) [self ensureLayout];
 	
 }
 
@@ -1806,7 +1824,7 @@ void delay (double delay, CallbackBlock block) {
 	
 	// We REALLY REALLY should make some sort of cache for these
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		if (self.outlineViewVisible || self.timelineVisible || self.runningPlugins) {
+		if (self.sidebarVisible || self.timelineVisible || self.runningPlugins) {
 			self.outline = [self getOutlineItems];
 			self.currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
 		}
@@ -1830,9 +1848,9 @@ void delay (double delay, CallbackBlock block) {
 	
 	// Locate current scene & reload outline without building it in parser
 	// I don't know what this is, to be honest
-	if (_outlineViewVisible && !_outlineEdit) {
+	if (_sidebarVisible && !_outlineEdit) {
 		
-		if (self.outlineViewVisible) {
+		if (self.sidebarVisible) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
 				[self reloadOutline];
 				if (self.currentScene) [self.outlineView scrollToScene:self.currentScene];
@@ -1856,10 +1874,12 @@ void delay (double delay, CallbackBlock block) {
 	if (_runningPlugins) [self updatePluginsWithSceneIndex:sceneIndex];
 }
 
+
+#pragma mark - TextView actions
+
 - (IBAction)showInfo:(id)sender {
 	[self.textView showInfo:self];
 }
-
 
 #pragma mark - Text I/O
 
@@ -1937,14 +1957,6 @@ void delay (double delay, CallbackBlock block) {
 {
 	return NSMakeRange(range->location + position, range->length);
 }
-- (NSString*)lastCharacter:(NSString*)string {
-	if (string.length < 1) return nil;
-	else if (string.length == 1) return string;
-	else {
-		return [string substringFromIndex:string.length - 1];
-	}
-}
-
 
 // There is no shortage of ugliness in the world.
 // If a person closed their eyes to it,
@@ -2274,13 +2286,17 @@ void delay (double delay, CallbackBlock block) {
 	 is stored into the attributed string in NSTextStorage.
 	 
 	 */
-	
-	// Don't go out of range
+		
+	// Don't go out of range (just a safety measure for plugins etc.)
 	if (line.position + line.string.length > self.textView.string.length) return;
 	
-	NSUInteger begin = line.position;
-	NSUInteger length = line.string.length;
-	NSRange range = NSMakeRange(begin, length);
+	// Do nothing for already formatted empty lines
+	if (line.type == empty && line.formattedAs == empty && line.string.length == 0) return;
+
+	// Store the type we are formatting for
+	line.formattedAs = line.type;
+	
+	NSRange range = line.textRange;
 		
 	// Let's do the real formatting now
 	NSLayoutManager *layoutMgr = _textView.layoutManager;
@@ -2293,6 +2309,7 @@ void delay (double delay, CallbackBlock block) {
 	
 	// Foreground color is TEMPORARY ATTRIBUTE
 	[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.textColor forCharacterRange:line.range];
+	[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 	
 	// Redo everything we just did for forced character input
 	if (_characterInput && _characterInputForLine == line) {
@@ -2454,13 +2471,16 @@ void delay (double delay, CallbackBlock block) {
 	} else if (line.type == action) {
 		// Take note if this is a paragraph split into two
 		// WIP: Check if this is needed
+		/*
 		NSInteger index = [_parser.lines indexOfObject:line];
 		if (index > 0) {
 			Line* preceedingLine = [_parser.lines objectAtIndex:index-1];
 			if (preceedingLine.type == action && preceedingLine.string.length > 0) {
+				NSLog(@"### %@ is split", line);
 				line.isSplitParagraph = YES;
 			}
 		}
+		*/
 		
 	} else if (line.type == empty) {
 		// Just to make sure that after second empty line we reset indents
@@ -2556,13 +2576,6 @@ void delay (double delay, CallbackBlock block) {
 	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:strikeoutSymbolOpen];
 	}];
-	
-	// Color markers
-	if (line.marker.length) {
-		NSColor *color = [BeatColors color:line.marker];
-		if (color) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:line.textRange];
-	}
-
 
 	// Foreground color attributes
 	if (line.isTitlePage && line.titleRange.length > 0) {
@@ -2605,12 +2618,22 @@ void delay (double delay, CallbackBlock block) {
 								   value:self.themeManager.invisibleTextColor
 					   forCharacterRange:NSMakeRange(line.position + line.string.length - 1, 1)];
 	}
-
 	
-	//[self renderTextBackgroundOnLine:line];
+	if (line.string.containsOnlyWhitespace && line.length >= 2) {
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor forCharacterRange:line.textRange];
+		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor range:line.textRange];
+	}
+		
+	// Color markers
+	if (line.marker.length) {
+		NSColor *color = [BeatColors color:line.marker];
+		if (color) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:line.textRange];
+	}
+
 	
 	// Render backgrounds according to text attributes
 	// This is AMAZINGLY slow
+	//[self renderTextBackgroundOnLine:line];
 
 	if (!firstTime && line.string.length) {
 		// Enumerate attributes
@@ -2644,9 +2667,9 @@ void delay (double delay, CallbackBlock block) {
 			// Revisions
 			if (attrs[revisionAttribute]) {
 				BeatRevisionItem *revision = attrs[revisionAttribute];
-				if (revision.type == RevisionAddition) [self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor range:range];
+				if (revision.type == RevisionAddition) [self.textView.layoutManager  addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
 				else if (revision.type == RevisionRemoval) {
-					[self.textView.textStorage addAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] range:range];
+					[self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
 					[self.textView.textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
 					[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:range];
 				}
@@ -2658,9 +2681,7 @@ void delay (double delay, CallbackBlock block) {
 				NSColor *tagColor = [BeatTagging colorFor:tag.type];
 				tagColor = [tagColor colorWithAlphaComponent:.6];
 				
-				NSLog(@"tag color %@", tagColor);
-				
-				if (tagColor) [self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
+				if (tagColor) [self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
 			}
 		}];
 	});
@@ -3332,9 +3353,7 @@ static NSString *revisionAttribute = @"Revision";
 			NSInteger len = [(NSNumber*)item[1] integerValue];
 			
 			// Load color if available
-			if (item.count > 2) {
-				color = item[2];
-			}
+			if (item.count > 2) color = item[2];
 			
 			// Ensure the revision is in range and then paint it 
 			if (len > 0 && loc + len <= self.getText.length) {
@@ -3614,7 +3633,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem newItem:@"Show Page Numbers" setting:@"showPageNumbers" target:self],
 		[ValidationItem newItem:@"Typewriter Mode" setting:@"typewriterMode" target:self],
 		[ValidationItem newItem:@"Print Automatic Scene Numbers" setting:@"printSceneNumbers" target:self],
-		[ValidationItem newItem:@"Show Outline" setting:@"outlineViewVisible" target:self],
+		[ValidationItem newItem:@"Sidebar" setting:@"sidebarVisible" target:self],
 		[ValidationItem newItem:@"Show Timeline" setting:@"timelineVisible" target:self],
 		[ValidationItem newItem:@"Autosave" setting:@"autosave" target:self],
 		[ValidationItem newItem:@"Revision Mode" setting:@"trackChanges" target:self],
@@ -3847,7 +3866,7 @@ static NSString *revisionAttribute = @"Revision";
 
 		[self resetSceneNumberLabels];
 		
-		if (_outlineViewVisible) [self.outlineView setNeedsDisplay:YES];
+		if (_sidebarVisible) [self.outlineView setNeedsDisplay:YES];
 	}
 	
 	//[self.textView setNeedsDisplay:true];
@@ -4045,13 +4064,13 @@ static NSString *revisionAttribute = @"Revision";
  
  */
 
-#pragma  mark - Outline Functions
+#pragma  mark - Sidebar methods
 
-- (IBAction)toggleOutlineView:(id)sender
+- (IBAction)toggleSidebarView:(id)sender
 {
-	self.outlineViewVisible = !self.outlineViewVisible;
+	self.sidebarVisible = !self.sidebarVisible;
 	
-	if (_outlineViewVisible) {
+	if (_sidebarVisible) {
 		[_outlineButton setState:NSOnState];
 		
 		// Show outline
@@ -4113,6 +4132,16 @@ static NSString *revisionAttribute = @"Revision";
 	[_thisWindow layoutIfNeeded];
 	[self updateLayout];
 }
+/*
+ WIP: cmd-1, cmd-2, cmd-... for sidebar views
+ 
+- (IBAction)showNotepad:(id)sender {
+	if (!_sidebarVisible) [self toggleSidebarView:nil];
+	[self.sidebar selectTab:1];
+}
+*/
+
+#pragma mark - Outline View
 
 - (void)setupOutlineView {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
@@ -4399,9 +4428,16 @@ static NSString *revisionAttribute = @"Revision";
 		}
 	} else {
 		// No color yet
-		if ([[color lowercaseString] isEqualToString:@"none"]) return; // Do nothing if set to none
+		if ([color.lowercaseString isEqualToString:@"none"]) return; // Do nothing if set to none
 		
-		NSString * colorString = [NSString stringWithFormat:@" [[COLOR %@]]", color];
+		NSString * colorString = [NSString stringWithFormat:@"[[COLOR %@]]", color];
+		NSString *heading = scene.line.string;
+		
+		// Add space before color if needed
+		if (heading.length > 1) {
+			if ([heading characterAtIndex:heading.length - 1] != ' ') colorString = [NSString stringWithFormat:@" %@", colorString];
+		}
+			
 		NSUInteger position = scene.line.position + scene.line.string.length;
 		
 		_outlineEdit = YES;
@@ -4524,7 +4560,7 @@ static NSString *revisionAttribute = @"Revision";
 		_cardsVisible = NO;
 		
 		// Reload outline + timeline in case there were any changes in outline
-		if (_outlineViewVisible) [self reloadOutline];
+		if (_sidebarVisible) [self reloadOutline];
 		if (_timelineVisible) [self reloadTimeline];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
 		
@@ -4924,40 +4960,6 @@ triangle walks
  */
 
 
-- (NSArray*)onlyPrintableElements:(NSArray*)lines {
-	NSMutableArray *result = [NSMutableArray array];
-	
-	bool hasDualDialogue = NO;
-	for (Line* line in lines) {
-		// Make a copy of the line so we don't fuck up the current parse
-		if (line.type != empty && !line.omitted) {
-			[result addObject:[line clone]];
-			if (line.type == dualDialogueCharacter) hasDualDialogue = YES;
-		}
-	}
-	
-	// Perform quick & dirty fix for missing dual dialogue info
-	if (hasDualDialogue) {
-		for (Line* line in result) {
-			if (line.type == dualDialogueCharacter) {
-				NSInteger index = [result indexOfObject:line] - 1;
-				while (index >= 0) {
-					Line *preceedingLine = [result objectAtIndex:index];
-					if (preceedingLine.type == character) {
-						preceedingLine.nextElementIsDualDialogue = YES;
-						break;
-					}
-					
-					// Break on action or scene heading
-					if (preceedingLine.type == action || preceedingLine.type == heading) break;
-					index--;
-				}
-			}
-		}
-	}
-	
-	return result;
-}
 - (void)paginate {
 	[self paginateAt:(NSRange){0,0} sync:NO];
 }
@@ -4995,11 +4997,11 @@ triangle walks
 	
 	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
 		// Make a copy of the array for thread-safety
-		NSArray *lines = [NSArray arrayWithArray:self.parser.lines];
+		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
 		
 		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^(void){
-			[self.paginator livePaginationFor:[self onlyPrintableElements:lines] changeAt:range];
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
+			[self.paginator livePaginationFor:lines changeAt:range];
 			
 			NSArray *pageBreaks = self.paginator.pageBreaks;
 			
@@ -5055,7 +5057,7 @@ triangle walks
 	if (printInfo.paperSize.width > 600) size = BeatUSLetter;
 	else size = BeatA4;
 	
-	[self.documentSettings setInt:@"Page Size" as:size];
+	[self.documentSettings setInt:DocSettingPageSize as:size];
 	if (size == BeatA4) _documentWidth = DOCUMENT_WIDTH_A4;
 	else _documentWidth = DOCUMENT_WIDTH_US;
 	
@@ -5072,14 +5074,16 @@ triangle walks
 	else size = BeatUSLetter;
 		
 	self.printInfo = [BeatPaperSizing setSize:size printInfo:self.printInfo];
-	[self.documentSettings setInt:@"Page Size" as:size];
+	[self.documentSettings setInt:DocSettingPageSize as:size];
 	[self updateLayout];
+	[self paginate];
+	_previewUpdated = NO;
 }
 
 - (NSInteger)numberOfPages {
 	// If pagination is not on, create temporary paginator
 	if (!self.showPageNumbers) {
-		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
+		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:self.parser.preprocessForPrinting];
 		return paginator.numberOfPages;
 	} else {
 		return self.paginator.numberOfPages;
@@ -5090,7 +5094,7 @@ triangle walks
 	
 	// If we don't have pagination turned on, create temporary paginator
 	if (!self.showPageNumbers) {
-		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:[self onlyPrintableElements:self.parser.lines]];
+		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:self.parser.preprocessForPrinting];
 		[paginator paginate];
 		return [paginator pageNumberFor:location];
 	} else {
@@ -5329,7 +5333,7 @@ triangle walks
 	[self updateLayout];
 }
 - (void)leftViewDidShow {
-	self.outlineViewVisible = YES;
+	self.sidebarVisible = YES;
 	[_outlineButton setState:NSOnState];
 	[self reloadOutline];
 }

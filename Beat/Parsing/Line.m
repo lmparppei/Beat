@@ -4,7 +4,7 @@
 //
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//  Parts copyright © 2019-2021 KAPITAN! / Lauri-Matti Parppei. All Rights reserved.
+//  Parts copyright © 2019-2021 Lauri-Matti Parppei / Lauri-Matti Parppei. All Rights reserved.
 
 /*
 
@@ -53,7 +53,17 @@
 		_string = string;
 		_type = type;
 		_position = position;
+		_formattedAs = -1;
 		//_parser = parser; // UNCOMMENT WHEN NEEDED
+		
+		_boldRanges = [NSMutableIndexSet indexSet];
+		_italicRanges = [NSMutableIndexSet indexSet];
+		_underlinedRanges = [NSMutableIndexSet indexSet];
+		_boldItalicRanges = [NSMutableIndexSet indexSet];
+		_strikeoutRanges = [NSMutableIndexSet indexSet];
+		_noteRanges = [NSMutableIndexSet indexSet];
+		_omittedRanges = [NSMutableIndexSet indexSet];
+		_escapeRanges = [NSMutableIndexSet indexSet];
 	}
 	return self;
 }
@@ -81,6 +91,7 @@
 		_string = string;
 		_type = type;
 		_unsafeForPageBreak = YES;
+		_formattedAs = -1;
 		
 		if (pageSplit) [self resetFormatting];
 	}
@@ -227,28 +238,23 @@
 	newLine.isSplitParagraph = self.isSplitParagraph;
 	newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
 	
-	if (self.italicRanges.count) newLine.italicRanges = [self.italicRanges copy];
-	if (self.boldRanges.count) newLine.boldRanges = [self.boldRanges copy];
-	if (self.boldItalicRanges.count) newLine.boldItalicRanges = [self.boldItalicRanges copy];
-	if (self.noteRanges.count) newLine.noteRanges = [self.noteRanges copy];
-	if (self.omittedRanges.count) newLine.omittedRanges = [self.omittedRanges copy];
-	//if (self.highlightRanges.count) newLine.highlightRanges = [self.highlightRanges copy];
-	if (self.strikeoutRanges.count) newLine.strikeoutRanges = [self.strikeoutRanges copy];
+	if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
+	if (self.boldRanges.count) newLine.boldRanges = self.boldRanges.mutableCopy;
+	if (self.boldItalicRanges.count) newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
+	if (self.noteRanges.count) newLine.noteRanges = self.noteRanges.mutableCopy;
+	if (self.omittedRanges.count) newLine.omittedRanges = self.omittedRanges.mutableCopy;
+	if (self.underlinedRanges.count) newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
 	
-	if (self.additionRanges.count) newLine.additionRanges = [self.additionRanges copy];
-	if (self.removalRanges.count) newLine.removalRanges = [self.removalRanges copy];
-	if (self.escapeRanges.count) newLine.escapeRanges = [self.escapeRanges copy];
+	if (self.strikeoutRanges.count) newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
+	
+	if (self.additionRanges.count) newLine.additionRanges = self.additionRanges.mutableCopy;
+	if (self.removalRanges.count) newLine.removalRanges = self.removalRanges.mutableCopy;
+	if (self.escapeRanges.count) newLine.escapeRanges = self.escapeRanges.mutableCopy;
 	
 	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
 	if (self.color) newLine.color = [NSString stringWithString:self.color];
 	
 	return newLine;
-}
-
-#pragma mark - Previous string lookup
-
-- (void)savePreviousVersion {
-	_previousString = [NSString stringWithString:self.string];
 }
 
 #pragma mark - Delegate methods
@@ -421,6 +427,13 @@
 
 
 #pragma mark - Element booleans
+
+- (bool)isOutlineElement {
+	if (self.type == heading ||
+		self.type == section ||
+		self.type == synopse) return YES;
+	else return NO;
+}
 
 - (bool)isTitlePage {
 	if (self.type == titlePageTitle ||
@@ -928,6 +941,7 @@
 		
 	// Add note ranges
 	if (includeNotes) [indices addIndexes:self.noteRanges];
+	[indices addIndexes:self.omittedRanges];
 	
 	return indices;
 }
@@ -952,6 +966,8 @@
 
 - (void)joinWithLine:(Line *)line
 {
+	if (!line) return;
+	
 	NSString *string = line.string;
 	if (line.numberOfPrecedingFormattingCharacters > 0 && string.length > 0) {
 		string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
@@ -965,6 +981,7 @@
 	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.boldRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
+	
 	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.italicRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
@@ -977,6 +994,7 @@
 	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.additionRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
+	
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];

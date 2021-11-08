@@ -3,12 +3,13 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 20.3.2021.
-//  Copyright © 2021 KAPITAN!. All rights reserved.
+//  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import "BeatEditorButton.h"
 #import "BeatAppDelegate.h"
 #import "BeatColors.h"
+#import "ThemeManager.h"
 
 IB_DESIGNABLE
 @interface BeatEditorButton ()
@@ -19,11 +20,6 @@ IB_DESIGNABLE
 @implementation BeatEditorButton
 
 - (void)awakeFromNib {
-	/*
-	_offColor = NSColor.darkGrayColor;
-	_onColor = NSColor.blackColor;
-	[self updateTint];
-	*/
 	if (@available(macOS 10.14, *)) {
 		if (_onOffButton) self.contentTintColor = [BeatColors color:@"blue"];
 	}
@@ -49,30 +45,17 @@ IB_DESIGNABLE
 
 - (void)setState:(NSControlStateValue)state {
 	[super setState:state];
-	//[self updateTint];
 }
-/*
-- (void)updateTint {
-	[self.layer setBackgroundColor:[NSColor clearColor].CGColor];
-	
-	if (!self.layer) [self setWantsLayer:YES];
-	if (!self.layer.mask) {
-		NSImage *template = [self.image copy];
-		[template setTemplate:YES];
-		[self setImage:nil];
-		CALayer *maskLayer = [CALayer layer];
-		[maskLayer setContents:template];
-		[maskLayer setFrame:CGRectMake(0, 0, self.frame.size.height, self.frame.size.height)];
-		[self.layer setMask:maskLayer];
-	}
-	
-	if (self.state == NSOnState) {
-		self.layer.backgroundColor = self.onColor.CGColor;
-	} else {
-		self.layer.backgroundColor = self.offColor.CGColor;
-	}
-}
- */
-
 
 @end
+/*
+ 
+ mä tarviin
+ nälkäisen pedon
+ jota ruokkia
+ mä tarviin
+ eläimen
+ joka nuolee
+ mun sormia
+ 
+ */

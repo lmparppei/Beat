@@ -1264,13 +1264,7 @@
 				B6E1E7B92700AF7700442CA7 /* Buttons etc */,
 				B6E1E7B72700AF3F00442CA7 /* Misc */,
 				B6E1E7BA2700AFC400442CA7 /* Colors */,
-				B6DCA86227219C3700CBE9BC /* BeatNotepad.h */,
-				B6DCA86327219C3700CBE9BC /* BeatNotepad.m */,
 				B6C0A5692214C09C00A8B33D /* RecentFiles.h */,
-				B69FCF62272314900022A9D9 /* BeatCharacterList.h */,
-				B69FCF63272314900022A9D9 /* BeatCharacterList.m */,
-				B69FCF6627233DAE0022A9D9 /* BeatCharacterView.h */,
-				B69FCF6727233DAE0022A9D9 /* BeatCharacterView.m */,
 				B6D2B71F2218B459005B8447 /* RecentFiles.m */,
 				B6A245E52517D5E80055A034 /* BeatAntilateralThoughts.h */,
 				B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */,
@@ -1486,6 +1480,12 @@
 				B6DCA85F2721882900CBE9BC /* BeatSegmentedCell.m */,
 				B6B80BDE2726949E00557461 /* BeatPieGraph.h */,
 				B6B80BDF2726949E00557461 /* BeatPieGraph.m */,
+				B6DCA86227219C3700CBE9BC /* BeatNotepad.h */,
+				B6DCA86327219C3700CBE9BC /* BeatNotepad.m */,
+				B69FCF62272314900022A9D9 /* BeatCharacterList.h */,
+				B69FCF63272314900022A9D9 /* BeatCharacterList.m */,
+				B69FCF6627233DAE0022A9D9 /* BeatCharacterView.h */,
+				B69FCF6727233DAE0022A9D9 /* BeatCharacterView.m */,
 			);
 			path = Sidebar;
 			sourceTree = "<group>";
@@ -1842,8 +1842,9 @@
 		B138B56B19E1C973000489C4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = Beat;
 				LastUpgradeCheck = 1240;
-				ORGANIZATIONNAME = "KAPITAN!";
+				ORGANIZATIONNAME = "Lauri-Matti Parppei";
 				TargetAttributes = {
 					B138B57219E1C973000489C4 = {
 						CreatedOnToolsVersion = 6.0.1;
@@ -2551,7 +2552,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13159;
+				CURRENT_PROJECT_VERSION = 13168;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2565,7 +2566,7 @@
 				INFOPLIST_FILE = Adhoc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.914;
+				MARKETING_VERSION = 1.916;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -2590,7 +2591,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13159;
+				CURRENT_PROJECT_VERSION = 13168;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2604,7 +2605,7 @@
 				INFOPLIST_FILE = Adhoc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.914;
+				MARKETING_VERSION = 1.916;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -2629,7 +2630,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13159;
+				CURRENT_PROJECT_VERSION = 13173;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2638,7 +2639,7 @@
 				INFOPLIST_FILE = fountainQuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.914;
+				MARKETING_VERSION = 1.918;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
@@ -2661,7 +2662,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13159;
+				CURRENT_PROJECT_VERSION = 13173;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2669,7 +2670,7 @@
 				INFOPLIST_FILE = fountainQuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.914;
+				MARKETING_VERSION = 1.918;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2690,7 +2691,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13159;
+				CURRENT_PROJECT_VERSION = 13173;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2698,7 +2699,7 @@
 				INFOPLIST_FILE = "Appstore/Beat APPSTORE Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.914;
+				MARKETING_VERSION = 1.918;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -2723,7 +2724,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13159;
+				CURRENT_PROJECT_VERSION = 13173;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2731,7 +2732,7 @@
 				INFOPLIST_FILE = "Appstore/Beat APPSTORE Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.914;
+				MARKETING_VERSION = 1.918;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

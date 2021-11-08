@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 30.10.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
 /*
@@ -36,6 +36,8 @@ NSString * const DocSettingCaretPosition = @"Caret Position";
 
 NSString * const DocSettingWindowWidth = @"Window Width";
 NSString * const DocSettingWindowHeight = @"Window Height";
+
+NSString * const DocSettingPageSize = @"Page Size";
 
 -(id)init
 {

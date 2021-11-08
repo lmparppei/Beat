@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 30.10.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -24,6 +24,7 @@ extern NSString * const DocSettingSceneNumberStart;
 extern NSString * const DocSettingTags;
 extern NSString * const DocSettingTagDefinitions;
 extern NSString * const DocSettingCaretPosition;
+extern NSString * const DocSettingPageSize;
 
 extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;

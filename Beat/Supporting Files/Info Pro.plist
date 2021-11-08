@@ -52,7 +52,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2019-2020 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
+	<string>© 2019-2020 Lauri-Matti Parppei / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

@@ -3,7 +3,7 @@
 //	Modified for Beat from FNHTMLScript
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
-//  Parts copyright © 2019-2020 Lauri-Matti Parppei / KAPITAN!
+//  Parts copyright © 2019-2020 Lauri-Matti Parppei / Lauri-Matti Parppei
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 

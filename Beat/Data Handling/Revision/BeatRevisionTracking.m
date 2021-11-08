@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 16.3.2021.
-//  Copyright © 2021 KAPITAN!. All rights reserved.
+//  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 /*
@@ -96,9 +96,22 @@
 	
 	[string enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem *item = value;
+		
 		if (item.type != RevisionNone) {
 			NSMutableArray *values = ranges[item.key];
-			[values addObject:@[@(range.location), @(range.length), item.colorName]];
+			
+			NSArray *lastItem = values.lastObject;
+			NSInteger lastLoc = [(NSNumber*)lastItem[0] integerValue];
+			NSInteger lastLen = [(NSNumber*)lastItem[1] integerValue];
+			NSString *lastColor = lastItem[2];
+			
+			if (lastLoc + lastLen == range.location && [lastColor isEqualToString:item.colorName]) {
+				// This is a continuation of the last range
+				values[values.count-1] = @[@(lastLoc), @(lastLen + range.length), item.colorName];
+			} else {
+				// This is a new range
+				[values addObject:@[@(range.location), @(range.length), item.colorName]];
+			}
 		}
 	}];
 	

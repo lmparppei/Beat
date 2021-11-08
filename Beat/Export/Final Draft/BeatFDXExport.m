@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 8.2.2021.
-//  Copyright © 2021 KAPITAN!. All rights reserved.
+//  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 //  Based on FDXInterface by Hendrik Noeller,
 //  originally translated to Objective C from: https://github.com/vilcans/screenplain/blob/master/screenplain/export/fdx.py
@@ -79,6 +79,7 @@
  Because the tagging system in Beat doesn't have literal definitions other than what's in the script,
  we'll just create a definition for each of the tags, UNLESS they are the same.
  
+ 
  */
 
 #import "BeatFDXExport.h"
@@ -87,6 +88,7 @@
 #import "BeatTag.h"
 #import "TagDefinition.h"
 #import "BeatRevisionItem.h"
+
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
 
 static NSDictionary *fdxIds;
@@ -107,11 +109,14 @@ static NSDictionary *fdxIds;
 @property (nonatomic) NSInteger tagNumber;
 
 @property (nonatomic) bool inDualDialogue;
+
+@property (nonatomic) BeatPaperSize paperSize;
+
 @end
 
 @implementation BeatFDXExport
 
-- (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions
+- (instancetype)initWithString:(NSString*)string attributedString:(NSAttributedString*)attrString includeTags:(bool)includeTags includeRevisions:(bool)includeRevisions paperSize:(BeatPaperSize)paperSize
 {
 	self = [super init];
 	
@@ -179,6 +184,7 @@ static NSDictionary *fdxIds;
 		}];
 	}
 	
+	self.paperSize = paperSize;
 	
 	self.tagData = [NSMutableDictionary dictionary];
 
@@ -249,13 +255,16 @@ static NSDictionary *fdxIds;
 	_preprocessedLines = [self preprocessLines];
 	
 	for (int i = 0; i < _preprocessedLines.count; i++) {
+		NSLog(@"Line: %@", _preprocessedLines[i]);
 		[self appendLineAtIndex:i];
 		//inDualDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDualDialogue:inDualDialogue tags:tags];
 	}
 	
 	[_result appendString:@"  </Content>\n"];
+	
 	[self appendTitlePage];
 	[self appendElementStyles];
+	[self appendPageLayout];
 	
 	// Tagging data
 	[_result appendString:@"  <TagData>\n"];
@@ -284,6 +293,16 @@ static NSDictionary *fdxIds;
 	return _result;
 }
 
+- (void)appendPageLayout {
+	[_result appendString:@"  <PageLayout BackgroundColor=\"#FFFFFFFFFFFF\" BottomMargin=\"45\" BreakDialogueAndActionAtSentences=\"Yes\" DocumentLeading=\"Normal\" FooterMargin=\"36\" ForegroundColor=\"#000000000000\" HeaderMargin=\"29\" InvisiblesColor=\"#808080808080\" TopMargin=\"0\" UsesSmartQuotes=\"Yes\">"];
+	
+	// Add correct paper size
+	if (self.paperSize == BeatA4) [_result appendString:@"    <PageSize Height=\"11.70\" Width=\"8.30\"/>"];
+	else [_result appendString:@"    <PageSize Height=\"11.00\" Width=\"8.50\"/>"];
+	
+	[_result appendString:@"  </PageLayout>"];
+}
+
 - (NSArray*)preprocessLines {
 	NSMutableArray *lines = [NSMutableArray array];
 	
@@ -295,8 +314,9 @@ static NSDictionary *fdxIds;
 			continue;
 		}
 
-		if ((line.type == action && previousLine.type == action) ||
-			(line.type == lyrics && previousLine.type == lyrics)) {
+		if (((line.type == action && previousLine.type == action) ||
+			(line.type == lyrics && previousLine.type == lyrics)) &&
+			previousLine.length > 0) {
 			[previousLine joinWithLine:line];
 			continue;
 		}

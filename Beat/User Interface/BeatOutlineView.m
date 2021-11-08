@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 07/10/2019.
-//  Copyright © 2019 KAPITAN!. All rights reserved.
+//  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
 /*
@@ -135,10 +135,10 @@
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
 	// If we have a search term, let's use the filtered array
-	if ([_filters activeFilters]) {
-		return [_filteredOutline count];
+	if (_filters.activeFilters) {
+		return _filteredOutline.count;
 	} else {
-		return [[self.editorDelegate getOutlineItems] count];
+		return self.outline.count;
 	}
 }
 
@@ -148,8 +148,16 @@
 	if (_filters.activeFilters) {
 		return [_filteredOutline objectAtIndex:index];
 	} else {
-		return [[self.editorDelegate getOutlineItems] objectAtIndex:index];
+		return [self.outline objectAtIndex:index];
 	}
+}
+
+- (NSArray*)outline {
+	NSArray *outline;
+	if (!self.editorDelegate.parser.outline.count) outline = [self.editorDelegate getOutlineItems];
+	else outline = self.editorDelegate.parser.outline;
+	
+	return outline;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
@@ -230,7 +238,7 @@
 	// Don't allow reordering a filtered list
 	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return NSDragOperationNone;
 	
-	NSMutableArray *outline = [self.editorDelegate getOutlineItems];
+	NSArray *outline = self.outline;
 	
 	NSInteger to = index;
 	NSInteger from = [outline indexOfObject:_draggedScene];
@@ -284,7 +292,6 @@
 	if (![_filters activeFilters]) return;
 	
 	if (_filters.character.length > 0) {
-		//[_filters setScript:self.editorDelegate.lines scenes:self.editorDelegate.getOutlineItems];
 		[_filters byCharacter:self.filters.character];
 	} else {
 		[_filters resetScenes];

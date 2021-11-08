@@ -150,7 +150,7 @@ body > p:first-child {
 .dialogue {
 	position: relative;
 	margin: 0 auto 0 90px; /* 15% */
-	width: 310px; /* 255 */
+	width: 315px; /* 255 */
 }
 
 .parenthetical {

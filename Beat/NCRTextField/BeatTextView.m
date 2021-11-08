@@ -37,6 +37,7 @@
 #import "ThemeManager.h"
 #import "BeatPasteboardItem.h"
 #import "BeatMeasure.h"
+#import "NSString+CharacterControl.h"
 
 #define DEFAULT_MAGNIFY 1.02
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -1550,7 +1551,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (line.colorRange.length) [mdIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
 	
 	// Nothing to do
-	if (!mdIndices.count && !(type == heading || type == transitionLine || type == character)) return 0;
+	if (!mdIndices.count &&
+		!(type == heading || type == transitionLine || type == character) &&
+		!(line.string.containsOnlyWhitespace && line.string.length > 1)
+		) return 0;
 	
 	// Get string reference
 	NSUInteger location = charIndexes[0];
@@ -1569,7 +1573,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Modified properties
 	NSGlyphProperty *modifiedProps;
 	
-	if (_editorDelegate.hideFountainMarkup) {
+	if (line.string.containsOnlyWhitespace && line.string.length >= 2) {
+		// Show bullets instead of spaces on lines which are only whitespace
+		CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
+		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
+		free(newGlyphs);
+	}
+	else if (_editorDelegate.hideFountainMarkup) {
 		modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
 				
 		// Hide markdown characters

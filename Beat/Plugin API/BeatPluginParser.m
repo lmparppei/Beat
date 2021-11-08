@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 1.7.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
 /*
@@ -1071,12 +1071,24 @@
 }
 
 
+#pragma mark - Formatting
+
+- (void)reformat:(Line *)line {
+	if (line) [_delegate formatLineOfScreenplay:line];
+}
+- (void)reformatRange:(NSInteger)loc len:(NSInteger)len {
+	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
+}
+
 #pragma mark - Temporary attributes
 
 - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
 {
 	NSColor *color = [BeatColors color:hexColor];
 	[_delegate.textView.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+}
+- (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len {
+	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
 }
 
 - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
@@ -1085,6 +1097,9 @@
 	[_delegate.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
 }
 
+- (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len {
+	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
+}
 
 #pragma mark - WebKit controller
 

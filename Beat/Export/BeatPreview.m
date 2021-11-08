@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 17.5.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 /*
  
@@ -33,7 +33,7 @@
 
 @implementation BeatPreview
 
-- (id) initWithDocument:(id)document {
+- (id)initWithDocument:(id)document {
 	self = [super init];
 	if (self) {
 		_document = document;
@@ -41,14 +41,14 @@
 	}
 	return self;
 }
-- (NSString*) createPreview {
+- (NSString*)createPreview {
 	if (self.delegate) {
 		NSString *rawText = [self.delegate getText];
 		return [self createPreviewFor:rawText type:BeatPrintPreview];
 	}
 	return @"";
 }
-- (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType {
+- (NSString*)createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType {
 	ContinuousFountainParser *parser;
 
 	if (_delegate) {

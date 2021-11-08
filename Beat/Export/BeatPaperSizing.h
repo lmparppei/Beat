@@ -3,7 +3,7 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 25.11.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSPrintInfo*)printInfoFor:(BeatPaperSize)size;
 + (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo;
 + (NSPrintInfo*)setSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
++ (void)setPageSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
 @end
 
 NS_ASSUME_NONNULL_END
