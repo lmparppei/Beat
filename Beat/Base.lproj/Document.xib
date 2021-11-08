@@ -464,7 +464,7 @@
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <size key="minSize" width="290" height="448"/>
+                                                                                            <size key="minSize" width="280" height="448"/>
                                                                                             <size key="maxSize" width="304" height="10000000"/>
                                                                                             <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                             <connections>
@@ -1079,15 +1079,15 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="BNa-TT-HYu">
-                                                                <rect key="frame" x="0.0" y="0.0" width="165" height="507"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView editable="NO" drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="dhb-rg-0uZ">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="165" height="507"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                        <size key="minSize" width="165" height="507"/>
+                                                                        <size key="minSize" width="180" height="507"/>
                                                                         <size key="maxSize" width="240" height="10000000"/>
                                                                         <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                     </textView>
@@ -1098,7 +1098,7 @@
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                             <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="mjg-be-mxt">
-                                                                <rect key="frame" x="165" y="0.0" width="15" height="507"/>
+                                                                <rect key="frame" x="164" y="0.0" width="16" height="507"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                         </scrollView>
@@ -1154,11 +1154,11 @@
                                                 <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="0.0" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="QR8-n6-ttq" customClass="HorizontalPinchView">
                                                     <rect key="frame" x="0.0" y="25" width="1173" height="95"/>
                                                     <clipView key="contentView" id="t0d-gw-Lny">
-                                                        <rect key="frame" x="0.0" y="0.0" width="1173" height="80"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="1173" height="95"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <view fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pm8-b1-sOe" customClass="BeatTimeline">
-                                                                <rect key="frame" x="0.0" y="0.0" width="1158" height="81"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="1158" height="96"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <connections>
                                                                     <outlet property="localHeightConstraint" destination="Sog-Rc-GyL" id="Fku-kw-bPO"/>
@@ -1172,7 +1172,7 @@
                                                         <constraint firstAttribute="height" constant="95" id="Sog-Rc-GyL"/>
                                                     </constraints>
                                                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PaI-Yw-G48">
-                                                        <rect key="frame" x="0.0" y="80" width="1173" height="15"/>
+                                                        <rect key="frame" x="0.0" y="79" width="1173" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="K8S-86-kEW">

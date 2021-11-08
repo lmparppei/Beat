@@ -181,6 +181,7 @@
 @property (nonatomic) CGFloat textInsetY;
 @property (nonatomic) NSMutableArray *recentCharacters;
 @property (nonatomic) NSRange lastChangedRange;
+@property (nonatomic) bool disableFormatting;
 
 @property (nonatomic) bool headingStyleBold;
 @property (nonatomic) bool headingStyleUnderline;
@@ -621,7 +622,6 @@ void delay (double delay, CallbackBlock block) {
 	NSInteger pageSize;
 	if ([self.documentSettings has:DocSettingPageSize]) {
 		pageSize = [self.documentSettings getInt:DocSettingPageSize];
-		NSLog(@"page size here %lu", pageSize);
 	} else {
 		pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
 	}
@@ -629,18 +629,7 @@ void delay (double delay, CallbackBlock block) {
 	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 
-	/*
-	NSPrintInfo *printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
-	self.printInfo.paperSize = printInfo.paperSize;
-	self.printInfo.orientation = printInfo.orientation;
-	self.printInfo.leftMargin = printInfo.leftMargin;
-	self.printInfo.topMargin = printInfo.topMargin;
-	self.printInfo.rightMargin = printInfo.rightMargin;
-	self.printInfo.bottomMargin = printInfo.bottomMargin;
-	 */
-	//self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
-	
-	
+	// Enable undo registration and clear any changes to the document (if needed)
 	[self.undoManager enableUndoRegistration];
 	if (saved) [self updateChangeCount:NSChangeCleared];
 	
@@ -650,7 +639,7 @@ void delay (double delay, CallbackBlock block) {
 
 -(void)awakeFromNib {
 	// Set up recovery file saving
-	[[NSDocumentController sharedDocumentController] setAutosavingDelay:AUTOSAVE_INTERVAL];
+	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
 }
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key {
@@ -2273,6 +2262,11 @@ void delay (double delay, CallbackBlock block) {
 	});
 }
 
+- (IBAction)toggleDisableFormatting:(id)sender {
+	_disableFormatting = !_disableFormatting;
+	[self formatAllLines];
+}
+
 - (void)formatLineOfScreenplay:(Line*)line { [self formatLineOfScreenplay:line firstTime:NO]; }
 
 - (void)formatLineOfScreenplay:(Line*)line firstTime:(bool)firstTime
@@ -2286,7 +2280,27 @@ void delay (double delay, CallbackBlock block) {
 	 is stored into the attributed string in NSTextStorage.
 	 
 	 */
+	
+	// Let's do the real formatting now
+	NSRange range = line.textRange;
+	NSLayoutManager *layoutMgr = _textView.layoutManager;
+	NSTextStorage *textStorage = _textView.textStorage;
+	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
+	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	
+	if (_disableFormatting) {
+		// Only add bare-bones stuff
 		
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.textColor forCharacterRange:line.range];
+		[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
+		[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		[attributes setValue:self.courier forKey:NSFontAttributeName];
+		
+		if (range.length > 0) [textStorage addAttributes:attributes range:range];
+		
+		return;
+	}
+	
 	// Don't go out of range (just a safety measure for plugins etc.)
 	if (line.position + line.string.length > self.textView.string.length) return;
 	
@@ -2296,15 +2310,7 @@ void delay (double delay, CallbackBlock block) {
 	// Store the type we are formatting for
 	line.formattedAs = line.type;
 	
-	NSRange range = line.textRange;
-		
-	// Let's do the real formatting now
-	NSLayoutManager *layoutMgr = _textView.layoutManager;
-	NSTextStorage *textStorage = _textView.textStorage;
-	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
-		
-	// Format layout & alignment
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	// Line height
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	
 	// Foreground color is TEMPORARY ATTRIBUTE
@@ -3639,6 +3645,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem newItem:@"Revision Mode" setting:@"trackChanges" target:self],
 		[ValidationItem newItem:@"Lock Document" setting:@"Locked" target:self.documentSettings],
 		[ValidationItem newItem:@"Hide Fountain Markup" setting:@"hideFountainMarkup" target:self],
+		[ValidationItem newItem:@"Disable Formatting" setting:@"disableFormatting" target:self],
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem

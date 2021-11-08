@@ -732,6 +732,13 @@ DQ
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="oJk-jp-R3x"/>
+                            <menuItem title="Disable Formatting" id="hAp-vJ-Myg">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleDisableFormatting:" target="-1" id="KSj-os-foW"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

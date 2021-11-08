@@ -66,7 +66,9 @@
 		@"printSceneNumbers": @[PRINT_SCENE_NUMBERS_KEY, @YES],
 		@"headingStyleBold": @[@"headingStyleBold", @YES],
 		@"headingStyleUnderline": @[@"headingStyleUnderline", @NO],
-		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)]
+		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)],
+		@"disableFormatting": @[@"disableFormatting", @NO]
+		
 	};
 }
 

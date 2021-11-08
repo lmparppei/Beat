@@ -1,0 +1,8 @@
+Target dependency graph (4 targets)
+UnzipKit-UnzipKitResources in Pods, no dependencies
+UnzipKit in Pods, depends on:
+UnzipKit-UnzipKitResources in Pods (explicit)
+Pods-Beat in Pods, depends on:
+UnzipKit in Pods (explicit)
+Pods-Beat Appstore in Pods, depends on:
+UnzipKit in Pods (explicit)

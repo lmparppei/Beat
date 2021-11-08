@@ -105,6 +105,28 @@
 		B667CD4026ED316100274660 /* BeatHTMLPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B667CD3E26ED316100274660 /* BeatHTMLPanel.m */; };
 		B667D57C2711EDF1006B1285 /* BeatClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B667D57B2711EDF1006B1285 /* BeatClipView.m */; };
 		B667D57D2711EDF1006B1285 /* BeatClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = B667D57B2711EDF1006B1285 /* BeatClipView.m */; };
+		B66B5AAF2739B75500BBC9C6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B66B5A932739B75500BBC9C6 /* LICENSE */; };
+		B66B5AB02739B75500BBC9C6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B66B5A932739B75500BBC9C6 /* LICENSE */; };
+		B66B5AB12739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B66B5A952739B75500BBC9C6 /* UnzipKitResources-Info.plist */; };
+		B66B5AB22739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B66B5A952739B75500BBC9C6 /* UnzipKitResources-Info.plist */; };
+		B66B5AB32739B75500BBC9C6 /* UnzipKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = B66B5A962739B75500BBC9C6 /* UnzipKit.strings */; };
+		B66B5AB42739B75500BBC9C6 /* UnzipKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = B66B5A962739B75500BBC9C6 /* UnzipKit.strings */; };
+		B66B5AB52739B75500BBC9C6 /* UZKArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B5A9A2739B75500BBC9C6 /* UZKArchive.m */; };
+		B66B5AB62739B75500BBC9C6 /* UZKArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B5A9A2739B75500BBC9C6 /* UZKArchive.m */; };
+		B66B5AB72739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B5A9E2739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m */; };
+		B66B5AB82739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B5A9E2739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m */; };
+		B66B5AB92739B75500BBC9C6 /* UZKFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA12739B75500BBC9C6 /* UZKFileInfo.m */; };
+		B66B5ABA2739B75500BBC9C6 /* UZKFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA12739B75500BBC9C6 /* UZKFileInfo.m */; };
+		B66B5ABB2739B75500BBC9C6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B66B5AA32739B75500BBC9C6 /* README.md */; };
+		B66B5ABC2739B75500BBC9C6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B66B5AA32739B75500BBC9C6 /* README.md */; };
+		B66B5ABD2739B75500BBC9C6 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA62739B75500BBC9C6 /* unzip.c */; };
+		B66B5ABE2739B75500BBC9C6 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA62739B75500BBC9C6 /* unzip.c */; };
+		B66B5ABF2739B75500BBC9C6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA72739B75500BBC9C6 /* zip.c */; };
+		B66B5AC02739B75500BBC9C6 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA72739B75500BBC9C6 /* zip.c */; };
+		B66B5AC12739B75500BBC9C6 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA82739B75500BBC9C6 /* ioapi.c */; };
+		B66B5AC22739B75500BBC9C6 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA82739B75500BBC9C6 /* ioapi.c */; };
+		B66B5AC32739B75500BBC9C6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA92739B75500BBC9C6 /* mztools.c */; };
+		B66B5AC42739B75500BBC9C6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA92739B75500BBC9C6 /* mztools.c */; };
 		B66B970E26C03E3200FB0B47 /* BeatDocumentSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */; };
 		B66DB76F2651690000E2C30B /* BeatPluginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66DB76E2651690000E2C30B /* BeatPluginWindow.m */; };
 		B66DB7702651690000E2C30B /* BeatPluginWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66DB76E2651690000E2C30B /* BeatPluginWindow.m */; };
@@ -338,28 +360,6 @@
 		B6D5D9002699A42F00B88D06 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
 		B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D74A6C24817518001E5AF4 /* Patch Notes.html */; };
-		B6DAF74826E8109600C4464B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72C26E8109600C4464B /* LICENSE */; };
-		B6DAF74926E8109600C4464B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72C26E8109600C4464B /* LICENSE */; };
-		B6DAF74A26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */; };
-		B6DAF74B26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */; };
-		B6DAF74C26E8109600C4464B /* UnzipKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72F26E8109600C4464B /* UnzipKit.strings */; };
-		B6DAF74D26E8109600C4464B /* UnzipKit.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF72F26E8109600C4464B /* UnzipKit.strings */; };
-		B6DAF74E26E8109600C4464B /* UZKArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73326E8109600C4464B /* UZKArchive.m */; };
-		B6DAF74F26E8109600C4464B /* UZKArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73326E8109600C4464B /* UZKArchive.m */; };
-		B6DAF75026E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */; };
-		B6DAF75126E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */; };
-		B6DAF75226E8109600C4464B /* UZKFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73A26E8109600C4464B /* UZKFileInfo.m */; };
-		B6DAF75326E8109600C4464B /* UZKFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73A26E8109600C4464B /* UZKFileInfo.m */; };
-		B6DAF75426E8109600C4464B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF73C26E8109600C4464B /* README.md */; };
-		B6DAF75526E8109600C4464B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B6DAF73C26E8109600C4464B /* README.md */; };
-		B6DAF75626E8109600C4464B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73F26E8109600C4464B /* unzip.c */; };
-		B6DAF75726E8109600C4464B /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF73F26E8109600C4464B /* unzip.c */; };
-		B6DAF75826E8109600C4464B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74026E8109600C4464B /* zip.c */; };
-		B6DAF75926E8109600C4464B /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74026E8109600C4464B /* zip.c */; };
-		B6DAF75A26E8109600C4464B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74126E8109600C4464B /* ioapi.c */; };
-		B6DAF75B26E8109600C4464B /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74126E8109600C4464B /* ioapi.c */; };
-		B6DAF75C26E8109600C4464B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74226E8109600C4464B /* mztools.c */; };
-		B6DAF75D26E8109600C4464B /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B6DAF74226E8109600C4464B /* mztools.c */; };
 		B6DCA85C272187E600CBE9BC /* BeatSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */; };
 		B6DCA85D272187E600CBE9BC /* BeatSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */; };
 		B6DCA8602721882900CBE9BC /* BeatSegmentedCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA85F2721882900CBE9BC /* BeatSegmentedCell.m */; };
@@ -496,10 +496,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1B111AF840E60FFC294D606D /* Pods-Beat Appstore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat Appstore.release.xcconfig"; path = "Target Support Files/Pods-Beat Appstore/Pods-Beat Appstore.release.xcconfig"; sourceTree = "<group>"; };
-		45EE83D3B178DEE9AD30F97F /* Pods-Beat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat.release.xcconfig"; path = "Target Support Files/Pods-Beat/Pods-Beat.release.xcconfig"; sourceTree = "<group>"; };
-		4F1AE424E75D9189A2D92CDF /* Pods-Beat Appstore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat Appstore.debug.xcconfig"; path = "Target Support Files/Pods-Beat Appstore/Pods-Beat Appstore.debug.xcconfig"; sourceTree = "<group>"; };
-		97F6E89FC0445762E5DB568A /* Pods-Beat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Beat.debug.xcconfig"; path = "Target Support Files/Pods-Beat/Pods-Beat.debug.xcconfig"; sourceTree = "<group>"; };
+		5DC48A23E8FE7D2E75E15529 /* libPods-Beat Appstore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Beat Appstore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B13111821CB2885200D07A0C /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeManager.h; sourceTree = "<group>"; };
 		B13111861CB289ED00D07A0C /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
 		B131118B1CB2A41800D07A0C /* ContinuousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinuousFountainParser.h; sourceTree = "<group>"; };
@@ -639,6 +636,29 @@
 		B667CD3E26ED316100274660 /* BeatHTMLPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLPanel.m; sourceTree = "<group>"; };
 		B667D57A2711EDF1006B1285 /* BeatClipView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatClipView.h; sourceTree = "<group>"; };
 		B667D57B2711EDF1006B1285 /* BeatClipView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatClipView.m; sourceTree = "<group>"; };
+		B66B5A912739B54800BBC9C6 /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		B66B5A932739B75500BBC9C6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		B66B5A952739B75500BBC9C6 /* UnzipKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UnzipKitResources-Info.plist"; sourceTree = "<group>"; };
+		B66B5A972739B75500BBC9C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UnzipKit.strings; sourceTree = "<group>"; };
+		B66B5A992739B75500BBC9C6 /* UnzipKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKit.h; sourceTree = "<group>"; };
+		B66B5A9A2739B75500BBC9C6 /* UZKArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKArchive.m; sourceTree = "<group>"; };
+		B66B5A9B2739B75500BBC9C6 /* UZKFileInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo.h; sourceTree = "<group>"; };
+		B66B5A9C2739B75500BBC9C6 /* UnzipKitMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKitMacros.h; sourceTree = "<group>"; };
+		B66B5A9E2739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+UnzipKitExtensions.m"; sourceTree = "<group>"; };
+		B66B5A9F2739B75500BBC9C6 /* NSURL+UnzipKitExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+UnzipKitExtensions.h"; sourceTree = "<group>"; };
+		B66B5AA02739B75500BBC9C6 /* UZKArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKArchive.h; sourceTree = "<group>"; };
+		B66B5AA12739B75500BBC9C6 /* UZKFileInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKFileInfo.m; sourceTree = "<group>"; };
+		B66B5AA22739B75500BBC9C6 /* UZKFileInfo_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo_Private.h; sourceTree = "<group>"; };
+		B66B5AA32739B75500BBC9C6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B66B5AA62739B75500BBC9C6 /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		B66B5AA72739B75500BBC9C6 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		B66B5AA82739B75500BBC9C6 /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		B66B5AA92739B75500BBC9C6 /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		B66B5AAA2739B75500BBC9C6 /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		B66B5AAB2739B75500BBC9C6 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		B66B5AAC2739B75500BBC9C6 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		B66B5AAD2739B75500BBC9C6 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		B66B5AAE2739B75500BBC9C6 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		B66DB76D2651690000E2C30B /* BeatPluginWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginWindow.h; sourceTree = "<group>"; };
 		B66DB76E2651690000E2C30B /* BeatPluginWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginWindow.m; sourceTree = "<group>"; };
 		B66ED8BC25AA5BF100C77A03 /* Credits.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = Credits.pdf; sourceTree = "<group>"; };
@@ -701,7 +721,6 @@
 		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = "Beat/User Interface/ScrollView.h"; sourceTree = SOURCE_ROOT; };
 		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = "Beat/User Interface/ScrollView.m"; sourceTree = SOURCE_ROOT; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		B69A92952319387B00FE6A3E /* CHANGELOG.md */ = {isa = PBXFileReference; explicitFileType = net.daringfireball.markdown; fileEncoding = 4; path = CHANGELOG.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		B69A929B2319609100FE6A3E /* dragula.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = dragula.js; sourceTree = "<group>"; };
 		B69AC76B233EB0AC00AC537C /* FountainAnalysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FountainAnalysis.h; sourceTree = "<group>"; };
 		B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FountainAnalysis.m; sourceTree = "<group>"; };
@@ -787,28 +806,6 @@
 		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/Parsing/OutlineScene.m; sourceTree = SOURCE_ROOT; };
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/Parsing/OutlineScene.h; sourceTree = SOURCE_ROOT; };
 		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "Patch Notes.html"; sourceTree = SOURCE_ROOT; };
-		B6DAF72C26E8109600C4464B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UnzipKitResources-Info.plist"; sourceTree = "<group>"; };
-		B6DAF73026E8109600C4464B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/UnzipKit.strings; sourceTree = "<group>"; };
-		B6DAF73226E8109600C4464B /* UnzipKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKit.h; sourceTree = "<group>"; };
-		B6DAF73326E8109600C4464B /* UZKArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKArchive.m; sourceTree = "<group>"; };
-		B6DAF73426E8109600C4464B /* UZKFileInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo.h; sourceTree = "<group>"; };
-		B6DAF73526E8109600C4464B /* UnzipKitMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnzipKitMacros.h; sourceTree = "<group>"; };
-		B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+UnzipKitExtensions.m"; sourceTree = "<group>"; };
-		B6DAF73826E8109600C4464B /* NSURL+UnzipKitExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+UnzipKitExtensions.h"; sourceTree = "<group>"; };
-		B6DAF73926E8109600C4464B /* UZKArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKArchive.h; sourceTree = "<group>"; };
-		B6DAF73A26E8109600C4464B /* UZKFileInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UZKFileInfo.m; sourceTree = "<group>"; };
-		B6DAF73B26E8109600C4464B /* UZKFileInfo_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UZKFileInfo_Private.h; sourceTree = "<group>"; };
-		B6DAF73C26E8109600C4464B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		B6DAF73F26E8109600C4464B /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
-		B6DAF74026E8109600C4464B /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
-		B6DAF74126E8109600C4464B /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
-		B6DAF74226E8109600C4464B /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
-		B6DAF74326E8109600C4464B /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
-		B6DAF74426E8109600C4464B /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		B6DAF74526E8109600C4464B /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
-		B6DAF74626E8109600C4464B /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
-		B6DAF74726E8109600C4464B /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		B6DCA85A272187E600CBE9BC /* BeatSegmentedControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedControl.h; sourceTree = "<group>"; };
 		B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSegmentedControl.m; sourceTree = "<group>"; };
 		B6DCA85E2721882900CBE9BC /* BeatSegmentedCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedCell.h; sourceTree = "<group>"; };
@@ -849,6 +846,7 @@
 		B6FF56D325AA507B004E4752 /* BeatBrowserView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatBrowserView.h; sourceTree = "<group>"; };
 		B6FF56D425AA507B004E4752 /* BeatBrowserView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatBrowserView.m; sourceTree = "<group>"; };
 		B6FF56D525AA507B004E4752 /* BeatBrowserView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatBrowserView.xib; sourceTree = "<group>"; };
+		C472B3D819D4A446F18E4015 /* libPods-Beat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Beat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -888,17 +886,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0849B67034DD3C5A7FE6077A /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				97F6E89FC0445762E5DB568A /* Pods-Beat.debug.xcconfig */,
-				45EE83D3B178DEE9AD30F97F /* Pods-Beat.release.xcconfig */,
-				4F1AE424E75D9189A2D92CDF /* Pods-Beat Appstore.debug.xcconfig */,
-				1B111AF840E60FFC294D606D /* Pods-Beat Appstore.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		B13111851CB2893F00D07A0C /* Themes */ = {
 			isa = PBXGroup;
 			children = (
@@ -935,7 +922,7 @@
 			children = (
 				B66682FE262369DD006473B9 /* TODO */,
 				B69A928B231915E900FE6A3E /* README.md */,
-				B69A92952319387B00FE6A3E /* CHANGELOG.md */,
+				B66B5A912739B54800BBC9C6 /* CHANGELOG.md */,
 				B63DC837260A1EC60092B472 /* Beat File Format Specification.md */,
 				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
 				B68B60C9260BA87000463AD8 /* Appstore */,
@@ -946,7 +933,6 @@
 				B138B62419E1D8A4000489C4 /* Frameworks */,
 				B6A61293256C106800E4AF92 /* Libraries */,
 				B138B57419E1C973000489C4 /* Products */,
-				0849B67034DD3C5A7FE6077A /* Pods */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
@@ -1012,6 +998,8 @@
 				B138B62019E1D6FA000489C4 /* Cocoa.framework */,
 				B138B61E19E1D6A7000489C4 /* WebKit.framework */,
 				B62ADC7423CCCE560015563A /* Quartz.framework */,
+				C472B3D819D4A446F18E4015 /* libPods-Beat.a */,
+				5DC48A23E8FE7D2E75E15529 /* libPods-Beat Appstore.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1301,6 +1289,75 @@
 			path = Import;
 			sourceTree = "<group>";
 		};
+		B66B5A922739B75500BBC9C6 /* UnzipKit */ = {
+			isa = PBXGroup;
+			children = (
+				B66B5A932739B75500BBC9C6 /* LICENSE */,
+				B66B5A942739B75500BBC9C6 /* Resources */,
+				B66B5A982739B75500BBC9C6 /* Source */,
+				B66B5AA32739B75500BBC9C6 /* README.md */,
+				B66B5AA42739B75500BBC9C6 /* Lib */,
+			);
+			path = UnzipKit;
+			sourceTree = "<group>";
+		};
+		B66B5A942739B75500BBC9C6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B66B5A952739B75500BBC9C6 /* UnzipKitResources-Info.plist */,
+				B66B5A962739B75500BBC9C6 /* UnzipKit.strings */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B66B5A982739B75500BBC9C6 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B66B5A992739B75500BBC9C6 /* UnzipKit.h */,
+				B66B5A9A2739B75500BBC9C6 /* UZKArchive.m */,
+				B66B5A9B2739B75500BBC9C6 /* UZKFileInfo.h */,
+				B66B5A9C2739B75500BBC9C6 /* UnzipKitMacros.h */,
+				B66B5A9D2739B75500BBC9C6 /* Extensions */,
+				B66B5AA02739B75500BBC9C6 /* UZKArchive.h */,
+				B66B5AA12739B75500BBC9C6 /* UZKFileInfo.m */,
+				B66B5AA22739B75500BBC9C6 /* UZKFileInfo_Private.h */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		B66B5A9D2739B75500BBC9C6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B66B5A9E2739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m */,
+				B66B5A9F2739B75500BBC9C6 /* NSURL+UnzipKitExtensions.h */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		B66B5AA42739B75500BBC9C6 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				B66B5AA52739B75500BBC9C6 /* MiniZip */,
+			);
+			path = Lib;
+			sourceTree = "<group>";
+		};
+		B66B5AA52739B75500BBC9C6 /* MiniZip */ = {
+			isa = PBXGroup;
+			children = (
+				B66B5AA62739B75500BBC9C6 /* unzip.c */,
+				B66B5AA72739B75500BBC9C6 /* zip.c */,
+				B66B5AA82739B75500BBC9C6 /* ioapi.c */,
+				B66B5AA92739B75500BBC9C6 /* mztools.c */,
+				B66B5AAA2739B75500BBC9C6 /* crypt.h */,
+				B66B5AAB2739B75500BBC9C6 /* zip.h */,
+				B66B5AAC2739B75500BBC9C6 /* unzip.h */,
+				B66B5AAD2739B75500BBC9C6 /* mztools.h */,
+				B66B5AAE2739B75500BBC9C6 /* ioapi.h */,
+			);
+			path = MiniZip;
+			sourceTree = "<group>";
+		};
 		B66F46212565AD57003748DA /* DiffMatchPatch */ = {
 			isa = PBXGroup;
 			children = (
@@ -1493,7 +1550,7 @@
 		B6A61293256C106800E4AF92 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				B6DAF72B26E8109600C4464B /* UnzipKit */,
+				B66B5A922739B75500BBC9C6 /* UnzipKit */,
 				B66F46212565AD57003748DA /* DiffMatchPatch */,
 				B6055CEA23CDBA3800F7D54C /* RegExCategories */,
 				B6B6C87E25650CDD005294FE /* TextBundle */,
@@ -1555,76 +1612,6 @@
 			);
 			name = Comparison;
 			path = ..;
-			sourceTree = "<group>";
-		};
-		B6DAF72B26E8109600C4464B /* UnzipKit */ = {
-			isa = PBXGroup;
-			children = (
-				B6DAF72C26E8109600C4464B /* LICENSE */,
-				B6DAF72D26E8109600C4464B /* Resources */,
-				B6DAF73126E8109600C4464B /* Source */,
-				B6DAF73C26E8109600C4464B /* README.md */,
-				B6DAF73D26E8109600C4464B /* Lib */,
-			);
-			name = UnzipKit;
-			path = Pods/UnzipKit;
-			sourceTree = SOURCE_ROOT;
-		};
-		B6DAF72D26E8109600C4464B /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				B6DAF72E26E8109600C4464B /* UnzipKitResources-Info.plist */,
-				B6DAF72F26E8109600C4464B /* UnzipKit.strings */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		B6DAF73126E8109600C4464B /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				B6DAF73226E8109600C4464B /* UnzipKit.h */,
-				B6DAF73326E8109600C4464B /* UZKArchive.m */,
-				B6DAF73426E8109600C4464B /* UZKFileInfo.h */,
-				B6DAF73526E8109600C4464B /* UnzipKitMacros.h */,
-				B6DAF73626E8109600C4464B /* Extensions */,
-				B6DAF73926E8109600C4464B /* UZKArchive.h */,
-				B6DAF73A26E8109600C4464B /* UZKFileInfo.m */,
-				B6DAF73B26E8109600C4464B /* UZKFileInfo_Private.h */,
-			);
-			path = Source;
-			sourceTree = "<group>";
-		};
-		B6DAF73626E8109600C4464B /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				B6DAF73726E8109600C4464B /* NSURL+UnzipKitExtensions.m */,
-				B6DAF73826E8109600C4464B /* NSURL+UnzipKitExtensions.h */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		B6DAF73D26E8109600C4464B /* Lib */ = {
-			isa = PBXGroup;
-			children = (
-				B6DAF73E26E8109600C4464B /* MiniZip */,
-			);
-			path = Lib;
-			sourceTree = "<group>";
-		};
-		B6DAF73E26E8109600C4464B /* MiniZip */ = {
-			isa = PBXGroup;
-			children = (
-				B6DAF73F26E8109600C4464B /* unzip.c */,
-				B6DAF74026E8109600C4464B /* zip.c */,
-				B6DAF74126E8109600C4464B /* ioapi.c */,
-				B6DAF74226E8109600C4464B /* mztools.c */,
-				B6DAF74326E8109600C4464B /* crypt.h */,
-				B6DAF74426E8109600C4464B /* zip.h */,
-				B6DAF74526E8109600C4464B /* unzip.h */,
-				B6DAF74626E8109600C4464B /* mztools.h */,
-				B6DAF74726E8109600C4464B /* ioapi.h */,
-			);
-			path = MiniZip;
 			sourceTree = "<group>";
 		};
 		B6DCB25526510E1000FE2447 /* HTML Window */ = {
@@ -1788,8 +1775,6 @@
 				B6E182852626BFCF00775FB6 /* PBXTargetDependency */,
 			);
 			name = Beat;
-			packageProductDependencies = (
-			);
 			productName = Writer;
 			productReference = B138B57319E1C973000489C4 /* Beat.app */;
 			productType = "com.apple.product-type.application";
@@ -1830,8 +1815,6 @@
 				B68B6022260B849300463AD8 /* PBXTargetDependency */,
 			);
 			name = "Beat Appstore";
-			packageProductDependencies = (
-			);
 			productName = Writer;
 			productReference = B68B60C5260B849300463AD8 /* Beat.app */;
 			productType = "com.apple.product-type.application";
@@ -1880,8 +1863,6 @@
 				Base,
 			);
 			mainGroup = B138B56A19E1C973000489C4;
-			packageReferences = (
-			);
 			productRefGroup = B138B57419E1C973000489C4 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1904,14 +1885,13 @@
 				B6E3894D270DDE130067DD0C /* printview.png in Resources */,
 				B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */,
 				B1F04ED91C88ACAD001C4D27 /* Courier Prime Bold.ttf in Resources */,
+				B66B5AB32739B75500BBC9C6 /* UnzipKit.strings in Resources */,
 				B65F02B325B82BF8009E1D04 /* BeatAnalysisPanel.xib in Resources */,
-				B6DAF74C26E8109600C4464B /* UnzipKit.strings in Resources */,
 				B68AE23926EDF7E300F6DF59 /* BeatPreferencesPanel.xib in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
-				B6DAF74A26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */,
 				B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
-				B6DAF75426E8109600C4464B /* README.md in Resources */,
+				B66B5ABB2739B75500BBC9C6 /* README.md in Resources */,
 				B6829BFC25AB727600C0595B /* BeatEpisodePrinter.xib in Resources */,
 				B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */,
 				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
@@ -1932,9 +1912,11 @@
 				B68B4C9E263F02F100AC4939 /* BeatConsole.xib in Resources */,
 				B629DBB4259CE8240007EA4E /* Gather Scenes by Color.beatPlugin in Resources */,
 				B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */,
+				B66B5AB12739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */,
 				B6E38951270DDE130067DD0C /* analysis.png in Resources */,
 				B60FF86A26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
+				B66B5AAF2739B75500BBC9C6 /* LICENSE in Resources */,
 				B6EAEDBC267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
 				B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */,
 				B6EAEDC0267A687900BBD2A2 /* CardWindow.html in Resources */,
@@ -1944,7 +1926,6 @@
 				B138B66D19E1E8CA000489C4 /* ScriptCSS.css in Resources */,
 				B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B6C16AFB25A72D3D003EF5A7 /* Plugin HTML template.html in Resources */,
-				B6DAF74826E8109600C4464B /* LICENSE in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
 				B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */,
@@ -1973,14 +1954,13 @@
 				B6E38948270DDE120067DD0C /* printview.png in Resources */,
 				B68B6090260B849300463AD8 /* ThemeEditor.xib in Resources */,
 				B68B6091260B849300463AD8 /* Courier Prime Bold.ttf in Resources */,
+				B66B5AB42739B75500BBC9C6 /* UnzipKit.strings in Resources */,
 				B68B6092260B849300463AD8 /* BeatAnalysisPanel.xib in Resources */,
-				B6DAF74D26E8109600C4464B /* UnzipKit.strings in Resources */,
 				B68AE23A26EDF7E300F6DF59 /* BeatPreferencesPanel.xib in Resources */,
 				B68B6093260B849300463AD8 /* Courier Prime Italic.ttf in Resources */,
-				B6DAF74B26E8109600C4464B /* UnzipKitResources-Info.plist in Resources */,
 				B68B6094260B849300463AD8 /* Courier Prime.ttf in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
-				B6DAF75526E8109600C4464B /* README.md in Resources */,
+				B66B5ABC2739B75500BBC9C6 /* README.md in Resources */,
 				B68B6096260B849300463AD8 /* BeatEpisodePrinter.xib in Resources */,
 				B68B6097260B849300463AD8 /* BeatDocumentIcon.iconset in Resources */,
 				B68B6098260B849300463AD8 /* CardCSS.css in Resources */,
@@ -2001,9 +1981,11 @@
 				B68B60A5260B849300463AD8 /* analysis.html in Resources */,
 				B6EAEDBD267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
 				B68B4C9F263F02F100AC4939 /* BeatConsole.xib in Resources */,
+				B66B5AB22739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */,
 				B6E3894C270DDE120067DD0C /* analysis.png in Resources */,
 				B68B60A8260B849300463AD8 /* Gather Scenes by Color.beatPlugin in Resources */,
 				B68B60A9260B849300463AD8 /* Big-Fish.fountain in Resources */,
+				B66B5AB02739B75500BBC9C6 /* LICENSE in Resources */,
 				B68B60AB260B849300463AD8 /* Document.xib in Resources */,
 				B68B60AE260B849300463AD8 /* Images.xcassets in Resources */,
 				B68B60AF260B849300463AD8 /* Courier Prime Sans.ttf in Resources */,
@@ -2013,7 +1995,6 @@
 				B68B60B4260B849300463AD8 /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B68B60B6260B849300463AD8 /* Plugin HTML template.html in Resources */,
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
-				B6DAF74926E8109600C4464B /* LICENSE in Resources */,
 				B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B60FF86B26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
 				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
@@ -2079,6 +2060,7 @@
 			files = (
 				B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */,
 				B606721125F5413C00CBDC7A /* ValidationItem.m in Sources */,
+				B66B5AB72739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m in Sources */,
 				B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */,
 				B69EF55124659FC000C5B78C /* SceneCards.m in Sources */,
 				B68AE23726EDF7E300F6DF59 /* BeatPreferencesPanel.m in Sources */,
@@ -2091,7 +2073,6 @@
 				B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */,
 				B69154652480EB7E002393D1 /* RoundedButton.m in Sources */,
 				B6F5420525E2A15900D14E85 /* TagTextView.m in Sources */,
-				B6DAF75826E8109600C4464B /* zip.c in Sources */,
 				B61F016E266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */,
 				B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */,
 				B6B80BE02726949E00557461 /* BeatPieGraph.m in Sources */,
@@ -2099,11 +2080,11 @@
 				B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */,
 				B6D2B7072218B308005B8447 /* BeatAppDelegate.m in Sources */,
-				B6DAF75026E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */,
 				B69C8C6524A12765007B55A7 /* BeatHTMLScript.m in Sources */,
 				B69FCF6C27234BF50022A9D9 /* BeatSidebarTabView.m in Sources */,
 				B6000DCE2562F0B300289676 /* CeltxImport.m in Sources */,
 				B60A592E259938C900207D00 /* BeatPluginManager.m in Sources */,
+				B66B5AB52739B75500BBC9C6 /* UZKArchive.m in Sources */,
 				B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */,
 				B66F463B2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */,
 				B663680524CE1E64009A1693 /* BeatTest.m in Sources */,
@@ -2111,20 +2092,23 @@
 				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* PrintView.m in Sources */,
 				B6F15CE525E7B13000176946 /* BeatTagItem.m in Sources */,
+				B66B5ABF2739B75500BBC9C6 /* zip.c in Sources */,
 				B64170EC270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
 				B69BFC782565336C007A7D2B /* FadeInImport.m in Sources */,
+				B66B5ABD2739B75500BBC9C6 /* unzip.c in Sources */,
 				B61061EA2590DB66001947D6 /* BeatModalInput.m in Sources */,
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */,
 				B6FD5D912563B5320037ACBA /* GTMNSString+HTML.m in Sources */,
+				B66B5AC12739B75500BBC9C6 /* ioapi.c in Sources */,
 				B62C1002262C9465007659F8 /* BeatDownloadManager.m in Sources */,
 				B66F46352565ADA0003748DA /* NSMutableDictionary+DMPExtensions.m in Sources */,
+				B66B5AB92739B75500BBC9C6 /* UZKFileInfo.m in Sources */,
 				B6FD5D932563B5320037ACBA /* HTMLNode.m in Sources */,
 				B66DB76F2651690000E2C30B /* BeatPluginWindow.m in Sources */,
 				B625686225ECE2F000A3A244 /* TagDefinition.m in Sources */,
 				B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */,
 				B6447CB124616C8400AA4EBC /* MasterView.m in Sources */,
-				B6DAF75226E8109600C4464B /* UZKFileInfo.m in Sources */,
 				B6D2B71C2218B430005B8447 /* OutlineExtractor.m in Sources */,
 				B6D2B7112218B389005B8447 /* NSString+CharacterControl.m in Sources */,
 				B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */,
@@ -2139,10 +2123,8 @@
 				B61BE98A271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
-				B6DAF75C26E8109600C4464B /* mztools.c in Sources */,
 				B6119C522682154F0049456D /* BeatExportSettings.m in Sources */,
 				B6FD5D8F2563B5320037ACBA /* HTMLParser.m in Sources */,
-				B6DAF75626E8109600C4464B /* unzip.c in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinuousFountainParser.m in Sources */,
 				B6FF56D625AA507B004E4752 /* BeatBrowserView.m in Sources */,
 				B62C0FFE262C945F007659F8 /* BDMCheckboxCell.m in Sources */,
@@ -2155,7 +2137,6 @@
 				B62392B1247FD351008E61D0 /* TouchTimelineView.m in Sources */,
 				B667CD3F26ED316100274660 /* BeatHTMLPanel.m in Sources */,
 				B6BBF3D024AC811600503EFB /* BeatPluginParser.m in Sources */,
-				B6DAF74E26E8109600C4464B /* UZKArchive.m in Sources */,
 				B63CF61625B43EDD00EFA3A2 /* ThemeEditor.m in Sources */,
 				B650D76D25CF349D0042010C /* BeatTagging.m in Sources */,
 				B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */,
@@ -2175,13 +2156,13 @@
 				B60FF86F26583B1F00886E06 /* VerticallyCenteredTextField.m in Sources */,
 				B6BA24402607A672008C9291 /* FDXElement.m in Sources */,
 				B661937026BE81FD00152CA1 /* BeatModalAccessoryView.m in Sources */,
+				B66B5AC32739B75500BBC9C6 /* mztools.c in Sources */,
 				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
 				B65F02B125B82BF8009E1D04 /* BeatAnalysisPanel.m in Sources */,
 				B662FC0924C22167003EF967 /* OSFImport.m in Sources */,
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */,
 				B6E47D8825028A4E00734A8D /* BeatPaginator.m in Sources */,
-				B6DAF75A26E8109600C4464B /* ioapi.c in Sources */,
 				B60FAD7626A1D4960019A77B /* BeatLockButton.m in Sources */,
 				B6DCA85C272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B6B6C88125650D05005294FE /* TextBundleWrapper.m in Sources */,
@@ -2245,6 +2226,7 @@
 			files = (
 				B68B6026260B849300463AD8 /* OutlineScene.m in Sources */,
 				B68B6027260B849300463AD8 /* ValidationItem.m in Sources */,
+				B66B5AB82739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m in Sources */,
 				B68B6028260B849300463AD8 /* ColorCheckbox.m in Sources */,
 				B68B6029260B849300463AD8 /* SceneCards.m in Sources */,
 				B68AE23826EDF7E300F6DF59 /* BeatPreferencesPanel.m in Sources */,
@@ -2257,7 +2239,6 @@
 				B68B602E260B849300463AD8 /* FDXInterface.m in Sources */,
 				B68B602F260B849300463AD8 /* RoundedButton.m in Sources */,
 				B68B6030260B849300463AD8 /* TagTextView.m in Sources */,
-				B6DAF75926E8109600C4464B /* zip.c in Sources */,
 				B61F016F266AB93A005A1B8A /* NSMutableArray+MoveItem.m in Sources */,
 				B68B6031260B849300463AD8 /* BeatOutlineView.m in Sources */,
 				B6B80BE12726949E00557461 /* BeatPieGraph.m in Sources */,
@@ -2265,11 +2246,11 @@
 				B68B6034260B849300463AD8 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B68B6035260B849300463AD8 /* BeatTimeline.m in Sources */,
 				B68B6036260B849300463AD8 /* BeatAppDelegate.m in Sources */,
-				B6DAF75126E8109600C4464B /* NSURL+UnzipKitExtensions.m in Sources */,
 				B68B6037260B849300463AD8 /* BeatHTMLScript.m in Sources */,
 				B69FCF6D27234BF50022A9D9 /* BeatSidebarTabView.m in Sources */,
 				B68B6038260B849300463AD8 /* CeltxImport.m in Sources */,
 				B68B6039260B849300463AD8 /* BeatPluginManager.m in Sources */,
+				B66B5AB62739B75500BBC9C6 /* UZKArchive.m in Sources */,
 				B68B603A260B849300463AD8 /* FountainAnalysis.m in Sources */,
 				B68B603B260B849300463AD8 /* DiffMatchPatchCFUtilities.c in Sources */,
 				B68B603C260B849300463AD8 /* BeatTest.m in Sources */,
@@ -2277,20 +2258,23 @@
 				B68B603D260B849300463AD8 /* Theme.m in Sources */,
 				B68B603E260B849300463AD8 /* PrintView.m in Sources */,
 				B68B603F260B849300463AD8 /* BeatTagItem.m in Sources */,
+				B66B5AC02739B75500BBC9C6 /* zip.c in Sources */,
 				B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */,
 				B68B6040260B849300463AD8 /* FadeInImport.m in Sources */,
+				B66B5ABE2739B75500BBC9C6 /* unzip.c in Sources */,
 				B68B6041260B849300463AD8 /* BeatModalInput.m in Sources */,
 				B68B6042260B849300463AD8 /* TKSplitHandle.m in Sources */,
 				B68B6043260B849300463AD8 /* RegExCategories.m in Sources */,
 				B68B6044260B849300463AD8 /* GTMNSString+HTML.m in Sources */,
+				B66B5AC22739B75500BBC9C6 /* ioapi.c in Sources */,
 				B62C1006262C9466007659F8 /* BeatDownloadManager.m in Sources */,
 				B68B6045260B849300463AD8 /* NSMutableDictionary+DMPExtensions.m in Sources */,
+				B66B5ABA2739B75500BBC9C6 /* UZKFileInfo.m in Sources */,
 				B68B6046260B849300463AD8 /* HTMLNode.m in Sources */,
 				B66DB7702651690000E2C30B /* BeatPluginWindow.m in Sources */,
 				B68B6047260B849300463AD8 /* TagDefinition.m in Sources */,
 				B68B6048260B849300463AD8 /* DynamicColor.m in Sources */,
 				B68B6049260B849300463AD8 /* MasterView.m in Sources */,
-				B6DAF75326E8109600C4464B /* UZKFileInfo.m in Sources */,
 				B68B604A260B849300463AD8 /* OutlineExtractor.m in Sources */,
 				B68B604B260B849300463AD8 /* NSString+CharacterControl.m in Sources */,
 				B68B604C260B849300463AD8 /* BeatColors.m in Sources */,
@@ -2305,10 +2289,8 @@
 				B61BE98B271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B68B6055260B849300463AD8 /* ThemeManager.m in Sources */,
 				B68B6056260B849300463AD8 /* BeatTag.m in Sources */,
-				B6DAF75D26E8109600C4464B /* mztools.c in Sources */,
 				B6119C542682154F0049456D /* BeatExportSettings.m in Sources */,
 				B68B6057260B849300463AD8 /* HTMLParser.m in Sources */,
-				B6DAF75726E8109600C4464B /* unzip.c in Sources */,
 				B68B6058260B849300463AD8 /* ContinuousFountainParser.m in Sources */,
 				B68B6059260B849300463AD8 /* BeatBrowserView.m in Sources */,
 				B62C1000262C945F007659F8 /* BDMCheckboxCell.m in Sources */,
@@ -2321,7 +2303,6 @@
 				B68B605E260B849300463AD8 /* TouchTimelineView.m in Sources */,
 				B667CD4026ED316100274660 /* BeatHTMLPanel.m in Sources */,
 				B68B605F260B849300463AD8 /* BeatPluginParser.m in Sources */,
-				B6DAF74F26E8109600C4464B /* UZKArchive.m in Sources */,
 				B68B6060260B849300463AD8 /* ThemeEditor.m in Sources */,
 				B68B6061260B849300463AD8 /* BeatTagging.m in Sources */,
 				B68B6062260B849300463AD8 /* ITSwitch.m in Sources */,
@@ -2341,13 +2322,13 @@
 				B60FF87026583B1F00886E06 /* VerticallyCenteredTextField.m in Sources */,
 				B68B606B260B849300463AD8 /* FDXElement.m in Sources */,
 				B661937126BE81FD00152CA1 /* BeatModalAccessoryView.m in Sources */,
+				B66B5AC42739B75500BBC9C6 /* mztools.c in Sources */,
 				B68B606D260B849300463AD8 /* WebPrinter.m in Sources */,
 				B68B606E260B849300463AD8 /* BeatAnalysisPanel.m in Sources */,
 				B68B606F260B849300463AD8 /* OSFImport.m in Sources */,
 				B68B6070260B849300463AD8 /* NSString+Regex.m in Sources */,
 				B68B6071260B849300463AD8 /* BeatAntilateralThoughts.m in Sources */,
 				B68B6072260B849300463AD8 /* BeatPaginator.m in Sources */,
-				B6DAF75B26E8109600C4464B /* ioapi.c in Sources */,
 				B60FAD7726A1D4960019A77B /* BeatLockButton.m in Sources */,
 				B6DCA85D272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B68B6073260B849300463AD8 /* TextBundleWrapper.m in Sources */,
@@ -2399,6 +2380,14 @@
 			name = PreviewViewController.xib;
 			sourceTree = "<group>";
 		};
+		B66B5A962739B75500BBC9C6 /* UnzipKit.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B66B5A972739B75500BBC9C6 /* en */,
+			);
+			name = UnzipKit.strings;
+			sourceTree = "<group>";
+		};
 		B66F46312565ADA0003748DA /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -2421,14 +2410,6 @@
 				B6D2B7302218B589005B8447 /* Base */,
 			);
 			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-		B6DAF72F26E8109600C4464B /* UnzipKit.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B6DAF73026E8109600C4464B /* en */,
-			);
-			name = UnzipKit.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -2542,7 +2523,6 @@
 		};
 		B138B59419E1C974000489C4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97F6E89FC0445762E5DB568A /* Pods-Beat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
@@ -2581,7 +2561,6 @@
 		};
 		B138B59519E1C974000489C4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 45EE83D3B178DEE9AD30F97F /* Pods-Beat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
@@ -2681,7 +2660,6 @@
 		};
 		B68B60C3260B849300463AD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4F1AE424E75D9189A2D92CDF /* Pods-Beat Appstore.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;
@@ -2714,7 +2692,6 @@
 		};
 		B68B60C4260B849300463AD8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1B111AF840E60FFC294D606D /* Pods-Beat Appstore.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CF_BUNDLE_SHORT_VERSION_STRING = 1.6;

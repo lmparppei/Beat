@@ -1,0 +1,267 @@
+﻿/* UZKErrorCodeOutputErrorPathIsAFile */
+"Attempted to extract the archive to a path that is a file, not a directory" = "Attempted to extract the archive to a path that is a file, not a directory";
+
+/* UZKErrorCodeMixedModeAccess */
+"Attempted to read before all writes have completed, or vise-versa" = "Attempted to read before all writes have completed, or vise-versa";
+
+/* Detailed error string */
+"Attempted to write to the archive while another write operation is already in progress" = "Attempted to write to the archive while another write operation is already in progress";
+
+/* UZKErrorCodeBadZipFile */
+"Bad zip file" = "Bad zip file";
+
+/* UZKErrorCodeFileNotFoundInArchive */
+"Can't find a file in the archive" = "Can't find a file in the archive";
+
+/* UZKErrorCodeArchiveNotFound */
+"Can't open archive" = "Can't open archive";
+
+/* Error message */
+"Cannot open archive, since it was compressed using the Deflate64 algorithm (method ID 9)" = "Cannot open archive, since it was compressed using the Deflate64 algorithm (method ID 9)";
+
+/* Detailed error string */
+"Error allocating buffer for file %@ while deleting %@" = "Error allocating buffer for file %1$@ while deleting %2$@";
+
+/* Detailed error string */
+"Error allocating buffer for file %@ while deleting %@. Is it too large?" = "Error allocating buffer for file %1$@ while deleting %2$@. Is it too large?";
+
+/* Detailed error string */
+"Error allocating commentary info of %@ while deleting %@" = "Error allocating commentary info of %1$@ while deleting %2$@";
+
+/* Detailed error string */
+"Error allocating extra_field info of %@ while deleting %@" = "Error allocating extra_field info of %1$@ while deleting %2$@";
+
+/* Detailed error string */
+"Error allocating extrafield info of %@ while deleting %@" = "Error allocating extrafield info of %1$@ while deleting %2$@";
+
+/* Detailed error string */
+"Error allocating local_extra for file %@ while deleting %@" = "Error allocating local_extra for file %1$@ while deleting %2$@";
+
+/* Detailed error string */
+"Error allocating the global comment during comment read" = "Error allocating the global comment during comment read";
+
+/* UZKErrorCodeFileCloseWriting */
+"Error clonsing a file in the archive after writing it" = "Error clonsing a file in the archive after writing it";
+
+/* Detailed error string */
+"Error closing %@ in destination zip while deleting %@ (%d)" = "Error closing %1$@ in destination zip while deleting %2$@ (%3$d)";
+
+/* Detailed error string */
+"Error closing %@ in source zip while deleting %@ (%d)" = "Error closing %1$@ in source zip while deleting %2$@ (%3$d)";
+
+/* Detailed error string */
+"Error closing current file during buffered read" = "Error closing current file during buffered read";
+
+/* Detailed error string */
+"Error closing file '%@' for write (%d)" = "Error closing file '%1$@' for write (%2$d)";
+
+/* Detailed error string */
+"Error closing file in archive after append (%d)" = "Error closing file in archive after append (%d)";
+
+/* Detailed error string */
+"Error closing file in archive after create (%d)" = "Error closing file in archive after create (%d)";
+
+/* Detailed error string */
+"Error closing file in archive after read (%d)" = "Error closing file in archive after read (%d)";
+
+/* Detailed error string */
+"Error closing file in archive in write mode %lu (%d)" = "Error closing file in archive in write mode %1$lu (%2$d)";
+
+/* Detailed error string */
+"Error creating bookmark to new archive file: %@" = "Error creating bookmark to new archive file: %@";
+
+/* Detailed error string */
+"Error creating current file (%d) '%@'" = "Error creating current file (%1$d) '%2$@'";
+
+/* UZKErrorCodeDeleteFile */
+"Error deleting a file in the archive" = "Error deleting a file in the archive";
+
+/* UZKErrorCodeOutputError */
+"Error extracting files from the archive" = "Error extracting files from the archive";
+
+/* Detailed error string */
+"Error getting current file info (%d)" = "Error getting current file info (%d)";
+
+/* Detailed error string */
+"Error getting current file info for archive (%d)" = "Error getting current file info for archive (%d)";
+
+/* Detailed error string */
+"Error getting file info of file while deleting %@ (%d)" = "Error getting file info of file while deleting %1$@ (%2$d)";
+
+/* Detailed error string */
+"Error getting global info (%d)" = "Error getting global info (%d)";
+
+/* Detailed error string */
+"Error getting global info of archive during comment read: %d" = "Error getting global info of archive during comment read: %d";
+
+/* Detailed error string */
+"Error getting local_extra for file %@ while deleting %@" = "Error getting local_extra for file %1$@ while deleting %2$@";
+
+/* Detailed error string */
+"Error getting size_local_extra for file while deleting %@" = "Error getting size_local_extra for file while deleting %@";
+
+/* Detailed error string */
+"Error getting the global info of the source file while deleting %@ (%d)" = "Error getting the global info of the source file while deleting %1$@ (%2$d)";
+
+/* Detailed error string */
+"Error going to first file in archive (%d)" = "Error going to first file in archive (%d)";
+
+/* Detailed error string */
+"Error locating file '%@' in archive" = "Error locating file '%@' in archive";
+
+/* UZKErrorCodeFileNavigationError */
+"Error navigating through the archive" = "Error navigating through the archive";
+
+/* Detailed error string */
+"Error navigating to next file (%d)" = "Error navigating to next file (%d)";
+
+/* Detailed error string */
+"Error opening %@ for raw reading while deleting %@ (%d)" = "Error opening %1$@ for raw reading while deleting %2$@ (%3$d)";
+
+/* Detailed error string */
+"Error opening %@ in destination zip while deleting %@ (%d)" = "Error opening %1$@ in destination zip while deleting %2$@ (%3$d)";
+
+/* UZKErrorCodeFileOpenForWrite */
+"Error opening a file in the archive to write it" = "Error opening a file in the archive to write it";
+
+/* Detailed error string */
+"Error opening archive (%d)" = "Error opening archive (%d)";
+
+/* Detailed error string */
+"Error opening file '%@' for write (%d)" = "Error opening file '%1$@' for write (%2$d)";
+
+/* Detailed error string */
+"Error opening the destination file while deleting %@" = "Error opening the destination file while deleting %@";
+
+/* Detailed error string */
+"Error opening the source file while deleting %@" = "Error opening the source file while deleting %@";
+
+/* Detailed error string */
+"Error opening zip file %@" = "Error opening zip file %@";
+
+/* Detailed error string */
+"Error opening zip file for write: %@" = "Error opening zip file for write: %@";
+
+/* Detailed error string */
+"Error reading %@ into buffer while deleting %@" = "Error reading %1$@ into buffer while deleting %2$@";
+
+/* UZKErrorCodeFileRead */
+"Error reading a file in the archive" = "Error reading a file in the archive";
+
+/* Detailed error string */
+"Error reading data from '%@' in archive" = "Error reading data from '%@' in archive";
+
+/* Detailed error string */
+"Error reading extra_field and commentary info of %@ while deleting %@ (%d)" = "Error reading extra_field and commentary info of %1$@ while deleting %2$@ (%3$d)";
+
+/* Detailed error string */
+"Error reading extrafield and commentary info of %@ while deleting %@ (%d)" = "Error reading extrafield and commentary info of %1$@ while deleting %2$@ (%3$d)";
+
+/* Detailed error string */
+"Error reading the comment (readGlobalComment)" = "Error reading the comment (readGlobalComment)";
+
+/* Detailed error string */
+"Error reading the global comment of the source file while deleting %@" = "Error reading the global comment of the source file while deleting %@";
+
+/* Detailed error string */
+"Error reading the global comment of the source file while deleting %@ (wrong size)" = "Error reading the global comment of the source file while deleting %@ (wrong size)";
+
+/* UZKErrorCodeZLibError */
+"Error reading/writing file" = "Error reading/writing file";
+
+/* Detailed error string */
+"Error seeking to file position (%d)" = "Error seeking to file position (%d)";
+
+/* Detailed error string */
+"Error writing %@ to destination zip while deleting %@ (%d)" = "Error writing %1$@ to destination zip while deleting %2$@ (%3$d)";
+
+/* UZKErrorCodeFileWrite */
+"Error writing a file in the archive" = "Error writing a file in the archive";
+
+/* Detailed error string */
+"Error writing to file  '%@' (%d)" = "Error writing to file  '%1$@' (%2$d)";
+
+/* Detailed error string */
+"Error writing to file: %@" = "Error writing to file: %@";
+
+/* Detailed error string */
+"Extract path exists, but is not a directory: %@" = "Extract path exists, but is not a directory: %@";
+
+/* Detailed error string */
+"Failed to copy archive to external volume '%@', after deleting '%@' from it" = "Failed to copy archive to external volume '%1$@', after deleting '%2$@' from it";
+
+/* Detailed error string */
+"Failed to copy archive to external volume '%@', after deleting '%@' from it (%@)" = "Failed to copy archive to external volume '%1$@', after deleting '%2$@' from it (%3$@)";
+
+/* Detailed error string */
+"Failed to create destination directory: %@" = "Failed to create destination directory: %@";
+
+/* Detailed error string */
+"Failed to create new file for archive: %@" = "Failed to create new file for archive: %@";
+
+/* Detailed error string */
+"Failed to locate '%@' in archive during buffered read" = "Failed to locate '%@' in archive during buffered read";
+
+/* Detailed error string */
+"Failed to locate '%@' in archive during-perform on-data operation" = "Failed to locate '%@' in archive during-perform on-data operation";
+
+/* Detailed error string */
+"Failed to read file %@ in zip" = "Failed to read file %@ in zip";
+
+/* Detailed error string */
+"Failed to remove archive from external volume '%@', after deleting '%@' from a new version to replace it" = "Failed to remove archive from external volume '%1$@', after deleting '%2$@' from a new version to replace it";
+
+/* Detailed error string */
+"Failed to remove original archive from external volume '%@', after deleting '%@' from a new version to replace it (%@)" = "Failed to remove original archive from external volume '%1$@', after deleting '%2$@' from a new version to replace it (%3$@)";
+
+/* Detailed error string */
+"Failed to replace the old archive with the new one, after deleting '%@' from it" = "Failed to replace the old archive with the new one, after deleting '%@' from it";
+
+/* Detailed error string */
+"Failed to replace the old archive with the new one, after deleting '%@' from it (%@)" = "Failed to replace the old archive with the new one, after deleting '%1$@' from it (%2$@)";
+
+/* Detailed error string */
+"Failed to seek to the next file, while deleting %@ from the archive" = "Failed to seek to the next file, while deleting %@ from the archive";
+
+/* Detailed error string */
+"Failed to store the new file bookmark to the archive after deleting '%@' from it: %@" = "Failed to store the new file bookmark to the archive after deleting '%1$@' from it: %2$@";
+
+/* Detailed error string */
+"File '%@' not found in archive" = "File '%@' not found in archive";
+
+/* CRC mismatch error detail */
+"Incorrect CRC provided\n%@ given\n%@ calculated" = "Incorrect CRC provided\n%1$@ given\n%2$@ calculated";
+
+/* UZKErrorCodeInvalidPassword */
+"Incorrect password provided" = "Incorrect password provided";
+
+/* UZKErrorCodeInternalError */
+"Internal error" = "Internal error";
+
+/* Detailed error string */
+"No file found at path %@" = "No file found at path %@";
+
+/* Detailed error string */
+"No file position found for '%@'" = "No file position found for '%@'";
+
+/* UZKErrorCodeParameterError */
+"Parameter error" = "Parameter error";
+
+/* UZKErrorCodeDeflate64 */
+"The archive was compressed with the Deflate64 method, which isn't supported" = "The archive was compressed with the Deflate64 method, which isn't supported";
+
+/* UZKErrorCodePreCRCMismatch */
+"The CRC given up front doesn't match the calculated CRC" = "The CRC given up front doesn't match the calculated CRC";
+
+/* UZKErrorCodeCRCError */
+"The data got corrupted during decompression" = "The data got corrupted during decompression";
+
+/* Detailed error string */
+"Unable to begin reading from the archive until all write operations have completed" = "Unable to begin reading from the archive until all write operations have completed";
+
+/* Detailed error string */
+"Unable to begin writing to the archive until all read operations have completed" = "Unable to begin writing to the archive until all read operations have completed";
+
+/* UnknownErrorCode */
+"Unknown error code: %ld" = "Unknown error code: %ld";
+
