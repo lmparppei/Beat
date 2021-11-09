@@ -67,8 +67,8 @@
 		@"headingStyleBold": @[@"headingStyleBold", @YES],
 		@"headingStyleUnderline": @[@"headingStyleUnderline", @NO],
 		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)],
-		@"disableFormatting": @[@"disableFormatting", @NO]
-		
+		@"disableFormatting": @[@"disableFormatting", @NO],
+		@"showMarkersInScrollbar": @[@"showMarkersInScrollbar", @NO]
 	};
 }
 

@@ -4782,13 +4782,14 @@ static NSString *revisionAttribute = @"Revision";
 - (NSArray*)markers {
 	NSMutableArray * markers = [NSMutableArray array];
 	for (Line* line in self.parser.lines) {
-		if (line.marker.length == 0) continue;
+		if (line.marker.length == 0 && line.color.length == 0) continue;
 
 		NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
 		CGFloat yPosition = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer].origin.y;
-		CGFloat relativeY = yPosition / self.textView.frame.size.height;
-			
-		[markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
+		CGFloat relativeY = yPosition / [self.textView.layoutManager usedRectForTextContainer:_textView.textContainer].size.height;
+		
+		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
+		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
 	}
 	
 	return markers;

@@ -19,6 +19,7 @@
 @property (nonatomic, weak) IBOutlet NSButton *matchParentheses;
 @property (nonatomic, weak) IBOutlet NSButton *autoLineBreaks;
 @property (nonatomic, weak) IBOutlet NSButton *autocomplete;
+@property (nonatomic, weak) IBOutlet NSButton *showMarkersInScrollbar;
 
 @property (nonatomic, weak) IBOutlet NSPopUpButton *useSansSerif;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *defaultPageSize;

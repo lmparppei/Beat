@@ -13,6 +13,8 @@
 
 #import "BeatMarkerScroller.h"
 #import "BeatColors.h"
+#import "BeatUserDefaults.h"
+
 @interface BeatMarkerScroller ()
 @property (nonatomic) NSArray *markers;
 @end
@@ -37,27 +39,49 @@
 - (void)setupView
 {
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
-																options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp | NSTrackingMouseMoved)
+																options:(NSTrackingMouseEnteredAndExited |
+																		 NSTrackingActiveInActiveApp |
+																		 NSTrackingMouseMoved)
 																  owner:self
 															   userInfo:nil];
 	[self addTrackingArea:trackingArea];
 }
 
+- (NSBezierPath*)triangle:(CGFloat)y {
+	CGFloat width = self.frame.size.width;
+	
+	NSBezierPath *path = [NSBezierPath bezierPath];
+	[path moveToPoint:NSMakePoint(width, y)];
+	[path lineToPoint:NSMakePoint(width / 2, y + 5)];
+	[path lineToPoint:NSMakePoint(width, y + 10)];
+	[path closePath];
+	return path;
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
 	
-	if (self.editorDelegate.hasChanged) {
-		_markers = _editorDelegate.markers;
-	}
-	
-	for (NSDictionary *marker in _markers) {
-		NSColor *color = [BeatColors color:marker[@"color"]];
-		if (color) {
-			CGFloat y = [(NSNumber*)marker[@"y"] floatValue] * self.frame.size.height;
-			NSRect rect = (NSRect){ 0, y, 25, 2 };
-			[color setFill];
-			NSRectFill(rect);
+	if ([BeatUserDefaults.sharedDefaults getBool:@"showMarkersInScrollbar"]) {
+		// Reload markers
+		if (self.editorDelegate.hasChanged) _markers = _editorDelegate.markers;
+		
+		for (NSDictionary *marker in _markers) {
+			NSColor *color = [BeatColors color:marker[@"color"]];
+			if (color) {
+				[color setFill];
+				CGFloat y = [(NSNumber*)marker[@"y"] floatValue] * self.frame.size.height;
+				
+				if (!marker[@"scene"]) {
+					NSBezierPath *path = [self triangle:y];
+					[path fill];
+				} else {
+					NSRect rect = (NSRect){ 0, y, 25, 2 };
+					NSRectFill(rect);
+				}
+			}
 		}
 	}
+	
+	//[NSColor.blueColor setFill];
 	
 	[self drawKnob];
 }

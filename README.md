@@ -63,10 +63,6 @@ Unfortunately no. Beat is written in Objective C and relies on native macOS APIs
 
 Please do! The person behind this project is not a real programmer but an artist and a filmmaker, and it really shows in the code. Coding assistance, bug reports, feature requests, ~~donations~~ and feedback are highly appreciated! 
 
-### Building
-
-The current project still has pod
-
 
 ### Support Beat
 
