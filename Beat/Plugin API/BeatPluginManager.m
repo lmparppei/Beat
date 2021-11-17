@@ -24,6 +24,7 @@
 #import "RegExCategories.h"
 #import "BDMCheckboxCell.h"
 #import "UnzipKit.h"
+#import <os/log.h>
 
 #define PLUGIN_LIBRARY_URL @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/Beat%20Plugins.json"
 #define DOWNLOAD_URL_BASE @"raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/"
@@ -499,9 +500,7 @@
 	
 	NSError *error;
 	[NSFileManager.defaultManager removeItemAtURL:url error:&error];
-	if (error) {
-		NSLog(@"Error deleting plugin: %@", name);
-	}
+	if (error) os_log(OS_LOG_DEFAULT, "Error deleting plugin: %@", name);
 }
 
 - (void)downloadPlugin:(NSString*)pluginName sender:(id)sender {
@@ -526,7 +525,7 @@
 		[data writeToURL:[NSURL fileURLWithPath:tempDir] options:0 error:&writeError];
 		
 		if (writeError) {
-			NSLog(@"Error writing temporary zip file: %@", writeError);
+			os_log(OS_LOG_DEFAULT, "Error writing temporary zip file: %@", writeError);
 		} else {
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				[cell downloadComplete];

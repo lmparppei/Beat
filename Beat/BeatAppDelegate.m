@@ -11,6 +11,7 @@
 #import <Sparkle/Sparkle.h>
 #endif
 
+#import <os/log.h>
 #import "BeatAppDelegate.h"
 #import "RecentFiles.h"
 #import "BeatFileImport.h"
@@ -233,7 +234,6 @@
 		appSupportDir = [appSupportDir stringByAppendingPathComponent:@"Autosave"];
 		
 		NSArray *files = [fileManager contentsOfDirectoryAtPath:appSupportDir error:nil];
-		NSLog(@"filwes %@", files);
 		
 		for (NSString *file in files) {
 			if (![file.pathExtension isEqualToString:@"fountain"]) continue;
@@ -690,21 +690,27 @@
 }
 -(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName {
 	if (!_console) return;
-	NSString *consoleValue = [NSString stringWithFormat:@"%@: %@\n", pluginName, string];
-	[_consoleTextView.textStorage replaceCharactersInRange:NSMakeRange(_consoleTextView.string.length, 0) withString:consoleValue];
-	[_consoleTextView.textStorage addAttribute:NSForegroundColorAttributeName value:NSColor.textColor range:(NSRange){ _consoleTextView.string.length - consoleValue.length, consoleValue.length }];
-
-	[_consoleTextView.layoutManager ensureLayoutForTextContainer:_consoleTextView.textContainer];
-	_consoleTextView.frame = [_consoleTextView.layoutManager usedRectForTextContainer:_consoleTextView.textContainer];
 	
-	// Get clip view
-	NSClipView *clipView = _consoleTextView.enclosingScrollView.contentView;
+	// Ensure main thread
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		os_log(OS_LOG_DEFAULT, "[plugin] %@: %@", pluginName, string);
+		
+		NSString *consoleValue = [NSString stringWithFormat:@"%@: %@\n", pluginName, string];
+		[self.consoleTextView.textStorage replaceCharactersInRange:NSMakeRange(self.consoleTextView.string.length, 0) withString:consoleValue];
+		[self.consoleTextView.textStorage addAttribute:NSForegroundColorAttributeName value:NSColor.textColor range:(NSRange){ self.consoleTextView.string.length - consoleValue.length, consoleValue.length }];
 
-	// Calculate the y position by subtracting clip view height from total document height
-	CGFloat scrollTo = _consoleTextView.frame.size.height - clipView.frame.size.height;
+		[self.consoleTextView.layoutManager ensureLayoutForTextContainer:self.consoleTextView.textContainer];
+		self.consoleTextView.frame = [self.consoleTextView.layoutManager usedRectForTextContainer:self.consoleTextView.textContainer];
+		
+		// Get clip view
+		NSClipView *clipView = self.consoleTextView.enclosingScrollView.contentView;
 
-	// Animate bounds
-	[clipView setBoundsOrigin:NSMakePoint(0, scrollTo)];
+		// Calculate the y position by subtracting clip view height from total document height
+		CGFloat scrollTo = self.consoleTextView.frame.size.height - clipView.frame.size.height;
+
+		// Animate bounds
+		[clipView setBoundsOrigin:NSMakePoint(0, scrollTo)];
+	});
 }
 -(void)clearConsole {
 	if (!_console) return;

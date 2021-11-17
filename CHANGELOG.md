@@ -1,5 +1,17 @@
 # Changelog
 
+## Beat 1.91.9
+
+- Plugin API now reports errors in the console rather than as modal alert messages. This is done to avoid some multithreading weirdness.
+
+## Beat 1.91.8
+
+- Fixed a serious bug in Final Draft export
+- Fixed minor parsing issues
+- Fixed a bug which caused extra spaces when setting color for a scene
+- Some other stuff I've forgotten
+
+
 ## Beat 1.91.4
 
 - Sidebar tabs with a notepad & dialogue/character list

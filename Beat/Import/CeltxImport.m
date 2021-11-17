@@ -18,6 +18,8 @@
 #define WIDTH 300
 #define SCRIPT_PREFIX @"script-"
 
+#import <os/log.h>
+
 @interface CeltxImport ()
 @property (nonatomic) UZKArchive *container;
 @property (nonatomic) NSMutableDictionary *scriptData;
@@ -50,6 +52,7 @@
 	_scriptData = [NSMutableDictionary dictionary];
 	_container = [[UZKArchive alloc] initWithURL:url error:&error];
 
+	if (error) os_log(OS_LOG_DEFAULT, "Celtx import: Error unarchiving file '%@'", url.lastPathComponent);
 	if (!_container) return;
 	
 	// Gather the data

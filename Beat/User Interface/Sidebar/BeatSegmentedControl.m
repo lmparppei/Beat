@@ -145,9 +145,13 @@
 	 */
 }
 
+- (void)setSelectedSegment:(NSInteger)selectedSegment {
+	[self setSelectedSegment:selectedSegment animate:NO];
+	[self selectTab:nil];
+}
+
 - (void)setSelectedSegment:(NSInteger)newSegment animate:(bool)animate
 {
-	
 	if (newSegment == self.selectedSegment) return;
 	
 	CGFloat maxX = self.frame.size.width - (self.frame.size.width / self.segmentCount);

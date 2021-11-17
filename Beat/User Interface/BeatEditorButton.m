@@ -21,7 +21,10 @@ IB_DESIGNABLE
 
 - (void)awakeFromNib {
 	if (@available(macOS 10.14, *)) {
-		if (_onOffButton) self.contentTintColor = [BeatColors color:@"blue"];
+		if (_onOffButton) {
+			self.contentTintColor = NSColor.controlAccentColor;
+			//self.contentTintColor = [BeatColors color:@"blue"];
+		}
 	}
 }
 
@@ -53,6 +56,7 @@ IB_DESIGNABLE
  mä tarviin
  nälkäisen pedon
  jota ruokkia
+ 
  mä tarviin
  eläimen
  joka nuolee

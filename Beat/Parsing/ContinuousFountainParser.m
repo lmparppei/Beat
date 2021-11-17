@@ -858,10 +858,10 @@ static NSDictionary* patterns;
 	// while omitIn and noteIn tell that they are part of a larger omitted/note block.
     if (index == 0) {
         line.omittedRanges = [self rangesOfOmitChars:charArray
-                                             ofLength:length
-                                               inLine:line
-                                      lastLineOmitOut:NO
-                                          saveStarsIn:excluded];
+											ofLength:length
+											  inLine:line
+									 lastLineOmitOut:NO
+										 saveStarsIn:excluded];
 		
 		line.noteRanges = [self noteRanges:charArray
 										 ofLength:length
@@ -870,15 +870,15 @@ static NSDictionary* patterns;
     } else {
         Line* previousLine = self.lines[index-1];
 		line.omittedRanges = [self rangesOfOmitChars:charArray
-											 ofLength:length
-											   inLine:line
-									  lastLineOmitOut:previousLine.omitOut
-										  saveStarsIn:excluded];
+											ofLength:length
+											  inLine:line
+									 lastLineOmitOut:previousLine.omitOut
+										 saveStarsIn:excluded];
 		
 		line.noteRanges = [self noteRanges:charArray
-										 ofLength:length
-										   inLine:line
-									  partOfBlock:previousLine.noteOut];
+								  ofLength:length
+									inLine:line
+							   partOfBlock:previousLine.noteOut];
 	}
     
 	line.escapeRanges = [NSMutableIndexSet indexSet];
@@ -998,7 +998,7 @@ and incomprehensible system of recursion.
     NSUInteger length = [string length];
 	NSString* trimmedString = [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
-	Line* preceedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
+	Line* precedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
 	
 	// So we need to pull all sorts of tricks out of our sleeve here.
 	// Usually Fountain files are parsed from bottom to up, but here we are parsing in a linear manner.
@@ -1012,7 +1012,7 @@ and incomprehensible system of recursion.
 	
 	// Check for all-caps actions mistaken for character cues
 	if (self.delegate && NSThread.isMainThread) {
-		if (preceedingLine.string.length == 0 &&
+		if (precedingLine.string.length == 0 &&
 			NSLocationInRange(self.delegate.selectedRange.location + 1, line.range)) {
 			// If the preceeding line is empty, we'll check the line before that, too, to be sure.
 			// This way we can check for false character cues
@@ -1020,7 +1020,7 @@ and incomprehensible system of recursion.
 				Line* lineBeforeThat = (Line*)self.lines[index - 2];
 				if (lineBeforeThat.type == character) {
 					lineBeforeThat.type = action;
-					preceedingLine.type = action;
+					precedingLine.type = action;
 					[self.changedIndices addIndex:index - 1];
 					[self.changedIndices addIndex:index - 2];
 				}
@@ -1032,17 +1032,17 @@ and incomprehensible system of recursion.
     if (length == 0) {
 		// If previous line is part of dialogue block, this line becomes dialogue right away
 		// Else it's just empty.
-		if (preceedingLine.type == character || preceedingLine.type == parenthetical || preceedingLine.type == dialogue) {
+		if (precedingLine.type == character || precedingLine.type == parenthetical || precedingLine.type == dialogue) {
 			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty.
-			if (preceedingLine.string.length > 0) {
+			if (precedingLine.string.length > 0) {
 				// If preceeded by character cue, return dialogue
-				if (preceedingLine.type == character) return dialogue;
+				if (precedingLine.type == character) return dialogue;
 				// If its a parenthetical line, return dialogue
-				else if (preceedingLine.type == parenthetical) return dialogue;
+				else if (precedingLine.type == parenthetical) return dialogue;
 				// AND if its just dialogue, return action.
 				else return action;
 			} else {
-//				preceedingLine.type = empty;
+//				precedingLine.type = empty;
 //				[self.changedIndices addIndex:index - 1];
 				return empty;
 			}
@@ -1112,10 +1112,10 @@ and incomprehensible system of recursion.
 	// '.' forces a heading. Because our American friends love to shoot their guns like we Finnish people love our booze, screenwriters might start dialogue blocks with such "words" as '.44'
 	// So, let's NOT return a scene heading IF the previous line is not empty OR is a character OR is a parenthetical AND is not an omit in...
     if (firstChar == '.' && length >= 2 && [string characterAtIndex:1] != '.') {
-		if (preceedingLine) {
-			if (preceedingLine.type == character) return dialogue;
-			else if (preceedingLine.type == parenthetical) return dialogue;
-			else if (preceedingLine.string.length > 0 && ![preceedingLine.trimmed isEqualToString:@"/*"]) return action;
+		if (precedingLine) {
+			if (precedingLine.type == character) return dialogue;
+			else if (precedingLine.type == parenthetical) return dialogue;
+			else if (precedingLine.string.length > 0 && ![precedingLine.trimmed isEqualToString:@"/*"]) return action;
 		}
 		
 		line.numberOfPrecedingFormattingCharacters = 1;
@@ -1123,11 +1123,11 @@ and incomprehensible system of recursion.
     }
 		
     //Check for scene headings (lines beginning with "INT", "EXT", "EST",  "I/E"). "INT./EXT" and "INT/EXT" are also inside the spec, but already covered by "INT".
-	if (preceedingLine.type == empty ||
-		preceedingLine.string.length == 0 ||
+	if (precedingLine.type == empty ||
+		precedingLine.string.length == 0 ||
 		line.position == 0 ||
-		[preceedingLine.trimmed isEqualToString:@"*/"] ||
-		[preceedingLine.trimmed isEqualToString:@"/*"]) {
+		[precedingLine.trimmed isEqualToString:@"*/"] ||
+		[precedingLine.trimmed isEqualToString:@"/*"]) {
         if (length >= 3) {
             NSString* firstChars = [[string substringToIndex:3] lowercaseString];
 			
@@ -1151,14 +1151,14 @@ and incomprehensible system of recursion.
 	
 	//Check for title page elements. A title page element starts with "Title:", "Credit:", "Author:", "Draft date:" or "Contact:"
 	//it has to be either the first line or only be preceeded by title page elements.
-	if (!preceedingLine ||
-		preceedingLine.type == titlePageTitle ||
-		preceedingLine.type == titlePageAuthor ||
-		preceedingLine.type == titlePageCredit ||
-		preceedingLine.type == titlePageSource ||
-		preceedingLine.type == titlePageContact ||
-		preceedingLine.type == titlePageDraftDate ||
-		preceedingLine.type == titlePageUnknown) {
+	if (!precedingLine ||
+		precedingLine.type == titlePageTitle ||
+		precedingLine.type == titlePageAuthor ||
+		precedingLine.type == titlePageCredit ||
+		precedingLine.type == titlePageSource ||
+		precedingLine.type == titlePageContact ||
+		precedingLine.type == titlePageDraftDate ||
+		precedingLine.type == titlePageUnknown) {
 		
 		//Check for title page key: value pairs
 		// - search for ":"
@@ -1206,17 +1206,17 @@ and incomprehensible system of recursion.
 			/*
 			 if (length >= 2 && [[string substringToIndex:2] isEqualToString:@"  "]) {
 			 line.numberOfPreceedingFormattingCharacters = 2;
-			 return preceedingLine.type;
+			 return precedingLine.type;
 			 } else if (length >= 1 && [[string substringToIndex:1] isEqualToString:@"\t"]) {
 			 line.numberOfPreceedingFormattingCharacters = 1;
-			 return preceedingLine.type;
+			 return precedingLine.type;
 			 } */
 			if (_openTitlePageKey) {
 				NSMutableDictionary* dict = [_titlePage lastObject];
 				[(NSMutableArray*)dict[_openTitlePageKey] addObject:line.string];
 			}
 			
-			return preceedingLine.type;
+			return precedingLine.type;
 		}
 		
 	}
@@ -1245,7 +1245,7 @@ and incomprehensible system of recursion.
     
     // Check if all uppercase (and at least 3 characters to not indent every capital leter before anything else follows) = character name.
 	// Also, note lines never constitute a character cue
-    if (preceedingLine.type == empty || preceedingLine.string.length == 0) {
+    if (precedingLine.type == empty || precedingLine.string.length == 0) {
 		if (length >= 3 && string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && ![line.noteRanges containsIndex:0]) {
             // A character line ending in ^ is a double dialogue character
             if (lastChar == '^') {
@@ -1283,14 +1283,14 @@ and incomprehensible system of recursion.
             }
         }
     }
-	else if (preceedingLine.type == action &&
-			 preceedingLine.length > 0 &&
-			 preceedingLine.string.onlyUppercaseUntilParenthesis &&
+	else if (precedingLine.type == action &&
+			 precedingLine.length > 0 &&
+			 precedingLine.string.onlyUppercaseUntilParenthesis &&
 			 line.length > 0 &&
-			 !preceedingLine.forced &&
-			 [self previousLine:preceedingLine].type == empty) {
+			 !precedingLine.forced &&
+			 [self previousLine:precedingLine].type == empty) {
 		// Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when the text is changed to have some dialogue follow it.
-		preceedingLine.type = character;
+		precedingLine.type = character;
 		[_changedIndices addIndex:index-1];
 		return dialogue;
 	}
@@ -1301,21 +1301,21 @@ and incomprehensible system of recursion.
     }
 
     //If it's just usual text, see if it might be (double) dialogue or a parenthetical, or section/synopsis
-    if (preceedingLine) {
-        if (preceedingLine.type == character ||
-			preceedingLine.type == dialogue ||
-			preceedingLine.type == parenthetical) {
+    if (precedingLine) {
+        if (precedingLine.type == character ||
+			precedingLine.type == dialogue ||
+			precedingLine.type == parenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
-			if (firstChar == '(' && [preceedingLine.string length] > 0) {
+			if (firstChar == '(' && [precedingLine.string length] > 0) {
                 return parenthetical;
             } else {
-				if ([preceedingLine.string length] > 0) {
+				if ([precedingLine.string length] > 0) {
 					return dialogue;
 				} else {
 					return action;
 				}
             }
-        } else if (preceedingLine.type == dualDialogueCharacter || preceedingLine.type == dualDialogue || preceedingLine.type == dualDialogueParenthetical) {
+        } else if (precedingLine.type == dualDialogueCharacter || precedingLine.type == dualDialogue || precedingLine.type == dualDialogueParenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
             if (firstChar == '(' && lastChar == ')') {
                 return dualDialogueParenthetical;
@@ -1326,9 +1326,9 @@ and incomprehensible system of recursion.
 		/*
 		// I beg to disagree with this.
 		// This is not a part of the Fountain syntax definition, if I'm correct.
-		else if (preceedingLine.type == section) {
+		else if (precedingLine.type == section) {
             return section;
-        } else if (preceedingLine.type == synopse) {
+        } else if (precedingLine.type == synopse) {
             return synopse;
         }
 		*/
@@ -1700,13 +1700,6 @@ and incomprehensible system of recursion.
 		if (item.line == line) {
 			return item;
 		}
-		else if ([item.scenes count]) {
-			for (OutlineScene * subItem in item.scenes) {
-				if (subItem.line == line) {
-					return subItem;
-				}
-			}
-		}
 	}
 	return nil;
 }
@@ -1714,7 +1707,11 @@ and incomprehensible system of recursion.
 	[self createOutline];
 	return self.outline;
 }
-- (void)createOutline
+
+- (void)createOutline {
+	[self createOutlineUsingLines:self.lines];
+}
+- (void)createOutlineUsingLines:(NSArray<Line*>*)lines
 {
 	//[_outline removeAllObjects];
 	[_storylines removeAllObjects];
@@ -1736,7 +1733,7 @@ and incomprehensible system of recursion.
 	
 	NSInteger sceneIndex = 0;
 	
-	for (Line* line in self.lines) {
+	for (Line* line in lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
 			OutlineScene *scene;
 			if (sceneIndex >= _outline.count) {
@@ -1779,9 +1776,9 @@ and incomprehensible system of recursion.
 						line.sceneNumber = @"";
 						
 						// Find out where the omission starts
-						NSInteger idx = [self.lines indexOfObject:line];
+						NSInteger idx = [lines indexOfObject:line];
 						for (NSInteger s = idx; s >= 0; s--) {
-							Line *prevLine = self.lines[s];
+							Line *prevLine = lines[s];
 							NSInteger omitLoc = [prevLine.string rangeOfString:@"/*"].location;
 							if (omitLoc != NSNotFound && prevLine.omitOut) {
 								scene.omissionStartsAt = prevLine.position + omitLoc;
@@ -1789,8 +1786,8 @@ and incomprehensible system of recursion.
 							}
 						}
 						
-						for (NSInteger s = idx + 1; s < self.lines.count; s++) {
-							Line *nextLine = self.lines[s];
+						for (NSInteger s = idx + 1; s < lines.count; s++) {
+							Line *nextLine = lines[s];
 							NSInteger omitEndLoc = [nextLine.string rangeOfString:@"*/"].location;
 							
 							if (omitEndLoc != NSNotFound && nextLine.omitIn) {
@@ -1879,6 +1876,8 @@ and incomprehensible system of recursion.
 }
 
 - (NSArray*)linesForScene:(OutlineScene*)scene {
+	if (scene == nil) return @[];
+	
 	NSMutableArray *lines = [NSMutableArray array];
 	
 	@try {
@@ -1983,7 +1982,7 @@ and incomprehensible system of recursion.
 }
 - (OutlineScene*)sceneAtPosition:(NSInteger)index {
 	for (OutlineScene *scene in self.outline) {
-		if (NSLocationInRange(index, scene.range)) return scene;
+		if (NSLocationInRange(index, scene.range) && scene.line) return scene;
 	}
 	return nil;
 }
@@ -2019,8 +2018,8 @@ and incomprehensible system of recursion.
 	NSInteger i = 0;
 	for (Line* line in linesForPrinting) {
 		if (i > 0 && line.type == action) {
-			Line *preceedingLine = lines[i - 1];
-			if (preceedingLine.type == action && preceedingLine.string.length > 0) line.isSplitParagraph = YES;
+			Line *precedingLine = lines[i - 1];
+			if (precedingLine.type == action && precedingLine.string.length > 0) line.isSplitParagraph = YES;
 		}
 		i++;
 	}
@@ -2057,9 +2056,9 @@ and incomprehensible system of recursion.
 		// one element.
 		
 		if (line.isSplitParagraph && [lines indexOfObject:line] > 0 && elements.count > 0) {
-			Line *preceedingLine = [elements objectAtIndex:elements.count - 1];
+			Line *precedingLine = [elements objectAtIndex:elements.count - 1];
 
-			[preceedingLine joinWithLine:line];
+			[precedingLine joinWithLine:line];
 			continue;
 		}
 		
@@ -2077,12 +2076,12 @@ and incomprehensible system of recursion.
 		if (line.isDualDialogueElement) {
 			NSInteger i = elements.count - 2; // Go for previous element
 			while (i > 0) {
-				Line *preceedingLine = [elements objectAtIndex:i];
+				Line *precedingLine = [elements objectAtIndex:i];
 				
-				if (!(preceedingLine.isDialogueElement || preceedingLine.isDualDialogueElement)) break;
+				if (!(precedingLine.isDialogueElement || precedingLine.isDualDialogueElement)) break;
 				
-				if (preceedingLine.type == character ) {
-					preceedingLine.nextElementIsDualDialogue = YES;
+				if (precedingLine.type == character ) {
+					precedingLine.nextElementIsDualDialogue = YES;
 					break;
 				}
 				i--;

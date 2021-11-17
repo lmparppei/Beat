@@ -68,6 +68,8 @@
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (NSArray*)availableTags;
 - (NSArray*)screen;
+- (void)async:(JSValue*)callback; /// Alias for dispatch
+- (void)sync:(JSValue*)callback; /// Alias for dispatch_syncb
 - (void)dispatch:(JSValue*)callback;
 - (void)dispatch_sync:(JSValue*)callback;
 - (void)focusEditor;

@@ -64,15 +64,18 @@
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
 
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
-		NSAlert *alert = [[NSAlert alloc] init];
-		alert.messageText = @"Error Running Script";
-		alert.informativeText = [NSString stringWithFormat:@"%@", exception];
-		[alert addButtonWithTitle:@"OK"];
-		[alert runModal];
+		if (NSThread.isMainThread) {
+			NSAlert *alert = [[NSAlert alloc] init];
+			alert.messageText = @"Error Running Script";
+			alert.informativeText = [NSString stringWithFormat:@"%@", exception];
+			[alert addButtonWithTitle:@"OK"];
+			[alert runModal];
+		} else {
+			NSString *errMsg = [NSString stringWithFormat:@"Error: %@", exception];
+			[(BeatAppDelegate*)NSApp.delegate logToConsole:errMsg pluginName:@"Plugin parser"];
+		}
 	}];
 
-	//[_context setObject:[Line class] forKeyedSubscript:@"Line"];
-	//[_context setObject:[OutlineScene class] forKeyedSubscript:@"OutlineScene"];
 	[_context setObject:self forKeyedSubscript:@"Beat"];
 	
 	return self;
@@ -234,6 +237,12 @@
 
 #pragma mark - Multithreading
 
+- (void)async:(JSValue*)callback {
+	[self dispatch:callback];
+}
+- (void)sync:(JSValue*)callback {
+	[self dispatch_sync:callback];
+}
 - (void)dispatch:(JSValue*)callback {
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 		[callback callWithArguments:nil];
@@ -442,7 +451,6 @@
 - (void)log:(NSString*)string
 {
 	[(BeatAppDelegate*)NSApp.delegate logToConsole:string pluginName:_pluginName];
-	NSLog(@"%@: %@", _pluginName, string);
 }
 
 - (void)scrollTo:(NSInteger)location
@@ -456,7 +464,7 @@
 		[_delegate scrollToLine:line];
 	}
 	@catch (NSException *e) {
-		[self alert:@"Can't find line" withText:@"Plugin tried to access an unknown line"];
+		[self reportError:@"Plugin tried to access an unknown line" withText:line.string];
 	}
 }
 - (void)scrollToLineIndex:(NSInteger)index
@@ -475,7 +483,7 @@
 		[self.delegate scrollToScene:scene];
 	}
 	@catch (NSException *e) {
-		[self alert:@"Can't find scene" withText:@"Plugin tried to access an unknown scene"];
+		[self reportError:@"Can't find scene" withText:@"Plugin tried to access an unknown scene"];
 	}
 }
 
@@ -491,7 +499,7 @@
 		[self.delegate replaceRange:range withString:string];
 	}
 	@catch (NSException *e) {
-		[self alert:@"Selection out of range" withText:@"Plugin tried to select something that was out of range. Further errors might ensue."];
+		[self reportError:@"Selection out of range" withText:@"Plugin tried to select something that was out of range. Further errors might ensue."];
 	}
 }
 
@@ -507,13 +515,20 @@
 		[self.delegate setSelectedRange:range];
 	}
 	@catch (NSException *exception) {
-		[self log:[NSString stringWithFormat:@"Out of range (position: %lu  length: %lu)", start, length]];
+		[self reportError:@"Out of range" withText:[NSString stringWithFormat:@"position: %lu  length: %lu", start, length]];
 	}
 }
 
 - (NSString*)getText
 {
 	return [_delegate getText];
+}
+
+- (void)reportError:(NSString*)title withText:(NSString*)string {
+	// In the main thread, display errors as a modal window
+	if (NSThread.isMainThread) [self alert:title withText:string];
+	// Inn a background thread errors are logged to console
+	else [self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
 }
 
 - (void)alert:(NSString*)title withText:(NSString*)info
@@ -645,7 +660,7 @@
 - (void)setUserDefault:(NSString*)settingName setting:(id)value
 {
 	if (!_pluginName) {
-		[self alert:@"No plugin name" withText:@"You need to specify plugin name before trying to save settings."];
+		[self reportError:@"setUserDefault: No plugin name" withText:@"You need to specify plugin name before trying to save settings."];
 		return;
 	}
 	
@@ -752,7 +767,7 @@
 	// (for both the developer and the user to understand that something isn't working right)
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2), dispatch_get_main_queue(), ^(void){
 		if (self.delegate.thisWindow.attachedSheet == self.sheet && self.delegate.thisWindow.attachedSheet != nil) {
-			[self alert:@"Plugin timed out" withText:@"Something went wrong with receiving data from the plugin"];
+			[self reportError:@"Plugin timed out" withText:@"Something went wrong with receiving data from the plugin"];
 			[self closePanel:nil];
 		}
 	});
@@ -783,7 +798,7 @@
 			[self runCallback:self.sheetCallback withArguments:@[jsonData]];
 		} else {
 			[self closePanel:nil];
-			[self alert:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
+			[self reportError:@"Error reading JSON data" withText:@"Plugin returned incompatible data and will terminate."];
 		}
 		
 		_sheetCallback = nil;
@@ -859,9 +874,6 @@
 	
 	BeatHTMLPanel *window = (BeatHTMLPanel*)sender;
 	window.isClosing = YES;
-	
-	NSInteger i = [self.pluginWindows indexOfObject:window];
-	NSLog(@"... index %lu", i);
 	
 	// Store callback
 	JSValue *callback = window.callback;
@@ -940,7 +952,7 @@
 		}
 	}
 	@catch (NSException *e) {
-		[self alert:@"Scene index out of range" withText:@"Plugin tried to access a nonexistent scene"];
+		[self reportError:@"Scene index out of range" withText:@"Plugin tried to access a nonexistent scene"];
 	}
 	return lines;
 }

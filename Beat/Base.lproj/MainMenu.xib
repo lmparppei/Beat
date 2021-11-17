@@ -653,11 +653,34 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="View" id="Rpw-TR-9FQ">
                         <items>
-                            <menuItem title="Sidebar" keyEquivalent="d" id="AiU-nN-4mA">
+                            <menuItem title="Show Sidebar" keyEquivalent="d" id="AiU-nN-4mA">
                                 <connections>
                                     <action selector="toggleSidebarView:" target="-1" id="Nev-qg-Jqa"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Sidebar" id="bng-yV-h71">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Sidebar" id="VbC-YB-YfH">
+                                    <items>
+                                        <menuItem title="Outline" keyEquivalent="1" id="imw-Bx-OVw">
+                                            <connections>
+                                                <action selector="showOutline:" target="-1" id="7Cl-ff-Xmk"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Notepad" keyEquivalent="2" id="4fZ-b1-hYG">
+                                            <connections>
+                                                <action selector="showNotepad:" target="-1" id="Uk0-KP-ee8"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Dialogue" keyEquivalent="3" id="Yd0-6c-3eE">
+                                            <connections>
+                                                <action selector="showCharactersAndDialogue:" target="-1" id="MOK-rA-PRf"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="8U3-o3-D1z"/>
                             <menuItem title="Show Cards" keyEquivalent="D" id="ab0-W3-2f9">
                                 <connections>
                                     <action selector="toggleCards:" target="-1" id="W45-hd-uTy"/>

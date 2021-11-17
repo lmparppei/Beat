@@ -72,6 +72,7 @@
  
 */
 
+#import <os/log.h>
 #import <QuartzCore/QuartzCore.h>
 #import "Document.h"
 #import "ScrollView.h"
@@ -189,7 +190,9 @@
 // Change query
 @property (nonatomic) NSString *bufferedText;
 
-// Outline view
+// Sidebar & Outline view
+@property (weak) IBOutlet NSSegmentedControl *sideBarTabControl;
+@property (weak) IBOutlet NSTabView *sideBarTabs;
 @property (weak) IBOutlet BeatOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (weak) NSArray *draggedNodes;
@@ -1102,7 +1105,7 @@ void delay (double delay, CallbackBlock block) {
 		dataRepresentation = [[self createDocumentFile] dataUsingEncoding:NSUTF8StringEncoding];
 		success = YES;
 	} @catch (NSException *exception) {
-		NSLog(@"Error (auto)saving file: %@", exception);
+		os_log(OS_LOG_DEFAULT, "Error (auto)saving file: %@", exception);
 
 		// If there is data in the cache, return it
 		if (_dataCache != nil) return _dataCache;
@@ -1457,8 +1460,10 @@ void delay (double delay, CallbackBlock block) {
 	// If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
 	if (range.length + range.location > self.textView.string.length) {
 		NSLog(@"replacement over bounds: %lu / %lu", range.location + range.length, self.textView.string.length);
+		
 		NSInteger length = self.textView.string.length - range.location;
 		range = NSMakeRange(range.location, length);
+		
 		NSLog(@"fixed to: %lu / %lu", range.location + range.length, self.textView.string.length);
 	}
 	
@@ -1471,10 +1476,7 @@ void delay (double delay, CallbackBlock block) {
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
 	// Don't allow editing the script while tagging
-	if (_mode != EditMode || self.contentLocked) {
-		NSLog(@"# Don't change text");
-		return NO;
-	}
+	if (_mode != EditMode || self.contentLocked) return NO;
 		
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
@@ -1506,7 +1508,7 @@ void delay (double delay, CallbackBlock block) {
 	}
 
     // If something is being inserted, check whether it is a "(" or a "[[" and auto close it
-    if (self.matchParentheses) {
+    if (self.matchParentheses && !self.undoManager.isRedoing) {
         if (affectedCharRange.length == 0) {
             if ([replacementString isEqualToString:@"("]) {
 				if (_currentLine.type != character) {
@@ -2480,8 +2482,8 @@ void delay (double delay, CallbackBlock block) {
 		/*
 		NSInteger index = [_parser.lines indexOfObject:line];
 		if (index > 0) {
-			Line* preceedingLine = [_parser.lines objectAtIndex:index-1];
-			if (preceedingLine.type == action && preceedingLine.string.length > 0) {
+			Line* precedingLine = [_parser.lines objectAtIndex:index-1];
+			if (precedingLine.type == action && precedingLine.string.length > 0) {
 				NSLog(@"### %@ is split", line);
 				line.isSplitParagraph = YES;
 			}
@@ -2493,8 +2495,8 @@ void delay (double delay, CallbackBlock block) {
 		NSInteger lineIndex = [_parser.lines indexOfObject:line];
 		
 		if (lineIndex > 1) {
-			Line* preceedingLine = [_parser.lines objectAtIndex:lineIndex - 1];
-			if (preceedingLine.string.length < 1) {
+			Line* precedingLine = [_parser.lines objectAtIndex:lineIndex - 1];
+			if (precedingLine.string.length < 1) {
 				[paragraphStyle setFirstLineHeadIndent:0];
 				[paragraphStyle setHeadIndent:0];
 				[paragraphStyle setTailIndent:0];
@@ -2833,7 +2835,6 @@ void delay (double delay, CallbackBlock block) {
 		[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 			[str appendString:[line.string substringWithRange:range]];
 		}];
-		NSLog(@"  --> %@", str);
 		
 		[self formatLineOfScreenplay:line];
 	}];
@@ -3639,7 +3640,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem newItem:@"Show Page Numbers" setting:@"showPageNumbers" target:self],
 		[ValidationItem newItem:@"Typewriter Mode" setting:@"typewriterMode" target:self],
 		[ValidationItem newItem:@"Print Automatic Scene Numbers" setting:@"printSceneNumbers" target:self],
-		[ValidationItem newItem:@"Sidebar" setting:@"sidebarVisible" target:self],
+		[ValidationItem newItem:@"Show Sidebar" setting:@"sidebarVisible" target:self],
 		[ValidationItem newItem:@"Show Timeline" setting:@"timelineVisible" target:self],
 		[ValidationItem newItem:@"Autosave" setting:@"autosave" target:self],
 		[ValidationItem newItem:@"Revision Mode" setting:@"trackChanges" target:self],
@@ -4139,14 +4140,20 @@ static NSString *revisionAttribute = @"Revision";
 	[_thisWindow layoutIfNeeded];
 	[self updateLayout];
 }
-/*
- WIP: cmd-1, cmd-2, cmd-... for sidebar views
- 
+
+- (IBAction)showOutline:(id)sender {
+	if (!_sidebarVisible) [self toggleSidebarView:nil];
+	[self.sideBarTabControl setSelectedSegment:0];
+}
 - (IBAction)showNotepad:(id)sender {
 	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sidebar selectTab:1];
+	[self.sideBarTabControl setSelectedSegment:1];
 }
-*/
+- (IBAction)showCharactersAndDialogue:(id)sender {
+	if (!_sidebarVisible) [self toggleSidebarView:nil];
+	[self.sideBarTabControl setSelectedSegment:2];
+}
+
 
 #pragma mark - Outline View
 
@@ -5252,25 +5259,6 @@ triangle walks
 + (BOOL)preservesVersions {
 	return YES;
 }
-- (IBAction)versions:(id)sender {
-	NSArray *versions = [NSFileVersion unresolvedConflictVersionsOfItemAtURL:self.fileURL];
-	versions = [NSFileVersion otherVersionsOfItemAtURL:self.fileURL];
-	
-	NSDateFormatter* df = [[NSDateFormatter alloc] init];
-	[df setTimeStyle:NSDateFormatterShortStyle];
-	
-	NSInteger count = 0;
-	
-	for (NSInteger i = versions.count - 1; i >= 0; i++) {
-		// Don't allow more than 10 versions
-		if (count > 10) break;
-		
-		NSFileVersion *version = versions[i];
-		NSLog(@"Version: %@", [df stringFromDate:version.modificationDate]);
-		
-		count++;
-	}
-}
 
 - (IBAction)toggleAutosave:(id)sender {
 	self.autosave = !self.autosave;
@@ -5368,9 +5356,10 @@ triangle walks
 	_pluginManager = BeatPluginManager.sharedManager;
 }
 - (IBAction)runPlugin:(id)sender {
-	NSLog(@"# RUN PLUGIN %@", sender);
 	NSMenuItem *menuItem = (NSMenuItem*)sender;
 	NSString *pluginName = menuItem.title;
+	
+	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
 
 	if (_runningPlugins[pluginName]) {
 		// Disable a running plugin and return

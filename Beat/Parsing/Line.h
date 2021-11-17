@@ -54,13 +54,17 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) bool noteIn; /// Wether the line terminates an unfinished note
 @property (nonatomic, readonly) bool noteOut; /// Wether the line starts a note and doesn't finish it
 
+@property (nonatomic, readonly) NSString *marker;
+
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
 - (NSString*)stripFormatting;
 - (bool)isTitlePage;
 - (bool)isInvisible;
+- (bool)isDialogue;
 - (bool)isDialogueElement;
 - (bool)isDualDialogueElement;
+- (bool)isOutlineElement;
 - (NSString*)typeAsString;
 - (NSString*)characterName;
 - (NSString*)stripInvisible;

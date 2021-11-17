@@ -43,6 +43,8 @@
                 <outlet property="sceneNumberStartInput" destination="MmF-s9-or8" id="Zr7-zx-nba"/>
                 <outlet property="sceneNumberingPanel" destination="IUI-JC-aZs" id="fnB-g1-4Eb"/>
                 <outlet property="sceneNumbersSwitch" destination="bKc-za-gPA" id="26c-hz-YMj"/>
+                <outlet property="sideBarTabControl" destination="a6t-MZ-KDr" id="6JW-AT-9UF"/>
+                <outlet property="sideBarTabs" destination="O3A-UT-VXf" id="Boy-Jm-5xk"/>
                 <outlet property="sideView" destination="Thg-Wg-JDd" id="9ox-4Z-GGY"/>
                 <outlet property="sideViewCostraint" destination="O0i-Sv-K16" id="Luf-X1-ZH5"/>
                 <outlet property="splitHandle" destination="lKQ-7H-w5w" id="CIA-nS-5Ik"/>

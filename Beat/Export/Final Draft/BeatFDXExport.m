@@ -325,12 +325,12 @@ static NSDictionary *fdxIds;
 		if (line.type == dualDialogueCharacter) {
 			NSInteger i = lines.count - 1;
 			while (i >= 0) {
-				Line *preceedingLine = lines[i];
+				Line *precedingLine = lines[i];
 				
 				if (!(previousLine.isDialogueElement || previousLine.isDualDialogueElement)) break;
 				
-				if (preceedingLine.type == character) {
-					preceedingLine.nextElementIsDualDialogue = YES;
+				if (precedingLine.type == character) {
+					precedingLine.nextElementIsDualDialogue = YES;
 					break;
 				}
 				i--;

@@ -180,3 +180,18 @@
 }
 
 @end
+/*
+ 
+ never loved  this hard this fast before
+ but then again
+ I've never loved a boy like you before
+ never had somebody sweep me off the floor
+ the way you do
+ 
+ never came this hard, this long before
+ but then again
+ I've never fucked a boy like you before
+ never had somebody I could fuck hardcore
+ until I met you
+ 
+ */

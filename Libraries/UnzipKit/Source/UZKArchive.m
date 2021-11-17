@@ -588,7 +588,7 @@ NS_DESIGNATED_INITIALIZER
                                                    attributes:nil];
 
                     if (!createSuccess) {
-                        NSString *detail = [NSString localizedStringWithFormat:NSLocalizedStringFromTableInBundle(@"Error creating current file (%d) '%@'", @"UnzipKit", _resources, @"Detailed error string"),
+						NSString *detail = [NSString localizedStringWithFormat:NSLocalizedStringFromTableInBundle(@"Error creating current file (%@) '%@'", @"Unzip%@t", _resources, @"Detailed error string"),
                                             strongError, info.filename];
                         UZKLogError("UZKErrorCodeOutputError: %{public}@", detail);
                         [welf assignError:&strongError code:UZKErrorCodeOutputError
@@ -1659,7 +1659,7 @@ compressionMethod:(UZKCompressionMethod)method
             int size_local_extra = unzGetLocalExtrafield(source_zip, NULL, 0);
             if (size_local_extra < 0) {
                 NSString *detail = [NSString localizedStringWithFormat:NSLocalizedStringFromTableInBundle(@"Error getting size_local_extra for file while deleting %@", @"UnzipKit", _resources, @"Detailed error string"),
-                                    currentFileName, filePath];
+                                    currentFileName];
                 UZKLogError("UZKErrorCodeDeleteFile: %{public}@", detail);
                 UZKLogDebug("Closing source_zip, dest_zip, freeing global_comment, extra_field, commentary");
                 zipClose(dest_zip, NULL);
@@ -2062,7 +2062,7 @@ compressionMethod:(UZKCompressionMethod)method
                                        &zi,
                                        NULL, 0, NULL, 0, NULL,
                                        (method != UZKCompressionMethodNone) ? Z_DEFLATED : 0,
-                                       method,
+                                       (int)method,
                                        0,
                                        -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY,
                                        passwordStr,
