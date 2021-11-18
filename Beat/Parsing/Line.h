@@ -37,6 +37,7 @@ typedef enum : NSUInteger {
 } LineType;
 
 @protocol LineExports <JSExport>
+@property (readonly) LineType type;
 @property (readonly) NSUInteger position;
 @property (readonly) NSString* sceneNumber;
 @property (readonly) NSString* color;
@@ -80,10 +81,11 @@ typedef enum : NSUInteger {
 @end
 
 @interface Line : NSObject <LineExports>
-@property (nonatomic, weak) id<LineDelegate> parser;
+@property (nonatomic, weak) id<LineDelegate> parser; // For future generations
+
 @property LineType type;
 @property (strong) NSString* string;
-@property (nonatomic) NSString* original;
+
 @property (nonatomic) NSUInteger position;
 @property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
 @property (nonatomic) NSUInteger sectionDepth;
@@ -110,6 +112,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSMutableIndexSet* removalRanges;
 
 @property (nonatomic) NSRange titleRange;
+@property (nonatomic) NSRange markerRange;
 @property (nonatomic) NSRange sceneNumberRange;
 @property (nonatomic) NSRange storylineRange;
 @property (nonatomic) NSRange colorRange;

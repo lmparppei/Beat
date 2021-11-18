@@ -15,7 +15,10 @@
 @protocol OutlineSceneExports <JSExport>
 @property (nonatomic, readonly) NSString * sceneNumber;
 @property (nonatomic, readonly) NSString * color;
+
 @property (nonatomic, readonly) Line * line;
+@property (nonatomic, readonly) LineType type;
+
 @property (strong, nonatomic, readonly) NSString * string;
 @property (nonatomic, readonly) NSString * stringForDisplay;
 @property (nonatomic, readonly) NSArray * storylines;
@@ -27,12 +30,15 @@
 @property (nonatomic, readonly) NSUInteger sceneLength; // backwards compatibility
 @property (nonatomic, readonly) NSInteger sectionDepth; // backwards compatibility
 
+@property (nonatomic, readonly) NSMutableSet *markerColors;
+
 @property (nonatomic, readonly) bool omitted;
 @property (nonatomic, readonly) bool omited; // Legacy compatibility
 @property (nonatomic, readonly) NSUInteger omissionStartsAt;
 @property (nonatomic, readonly) NSUInteger omissionEndsAt;
 
 @property (nonatomic, readonly) NSMutableArray * characters;
+
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;
 - (NSDictionary*)forSerialization;
@@ -40,14 +46,17 @@
 
 @interface OutlineScene : NSObject <OutlineSceneExports>
 + (OutlineScene*)withLine:(Line*)line;
++ (OutlineScene*)withLine:(Line*)line delegate:(id)delegate;
 
 @property (nonatomic) id<LineDelegate> delegate;
-@property (nonatomic) NSMutableArray * scenes;
+
 @property (strong, nonatomic) NSString * string;
 @property (nonatomic) LineType type;
 @property (nonatomic) NSString * sceneNumber;
 @property (nonatomic, readonly) NSString * color;
 @property (nonatomic) NSArray * storylines;
+
+@property (nonatomic) NSMutableSet *markerColors;
 
 @property (nonatomic, readonly) NSUInteger position;
 @property (nonatomic) NSUInteger length;

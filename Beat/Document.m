@@ -2633,15 +2633,18 @@ void delay (double delay, CallbackBlock block) {
 	}
 		
 	// Color markers
-	if (line.marker.length) {
+	if (line.marker.length && line.markerRange.length) {
 		NSColor *color = [BeatColors color:line.marker];
-		if (color) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:line.textRange];
+		NSRange markerRange = line.markerRange;
+		if (color) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+											  value:color
+								  forCharacterRange:[self globalRangeFromLocalRange:&markerRange inLineAtPosition:line.position]];
 	}
 
 	
 	// Render backgrounds according to text attributes
 	// This is AMAZINGLY slow
-	//[self renderTextBackgroundOnLine:line];
+	// [self renderTextBackgroundOnLine:line];
 
 	if (!firstTime && line.string.length) {
 		// Enumerate attributes

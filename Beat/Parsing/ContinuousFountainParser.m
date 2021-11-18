@@ -1565,10 +1565,16 @@ and incomprehensible system of recursion.
 - (NSString *)markerForLine:(Line*)line {
 	__block NSString *markerColor = @"";
 	
+	line.markerRange = (NSRange){0, 0};
+	line.marker = @"";
+	
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSString *note = [line.string substringWithRange:range].lowercaseString;
 		if ([note containsString:@"[[marker "] && note.length > @"[[marker ]]".length) {
 			markerColor = [note substringWithRange:(NSRange){ @"[[marker ".length, note.length - @"[[marker ".length - 2 }];
+			line.marker = markerColor;
+			line.markerRange = range;
+			*stop = YES;
 		}
 	}];
 
@@ -1687,12 +1693,57 @@ and incomprehensible system of recursion.
 	else return line.type;
 }
 
+#pragma mark - New Outline Data
+
+- (void)updateOutline {
+	[self updateOutlineWithLines:self.lines];
+}
+- (void)updateOutlineWithLines:(NSArray*)lines {
+	NSMutableArray *headings = NSMutableArray.array;
+	
+	// Gather heading, section and synopsis lines
+	for (Line* line in self.lines) {
+		if (line.isOutlineElement) [headings addObject:line];
+	}
+	
+	// Create the actual outline items
+	NSInteger index = 0;
+	NSInteger sceneNumber = 1;
+	
+	for (Line *line in headings) {
+		OutlineScene *scene;
+		if (index >= _outline.count) {
+			scene = [OutlineScene withLine:line];
+		} else {
+			scene = _outline[index];
+			scene.line = line;
+		}
+				
+		if (line.sceneNumberRange.length > 0) {
+			scene.sceneNumber = line.sceneNumber;
+		} else if (!line.omitted) {
+			scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+			line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+			sceneNumber++;
+		} else {
+			scene.sceneNumber = @"";
+			scene.line.sceneNumber = @"";
+		}
+		
+		//[self updateOutlineItem:scene];
+	}
+}
+- (void)updateOutlineItem:(OutlineScene*)scene {
+	
+}
+
 #pragma mark - Outline Data
+
 
 - (NSUInteger)numberOfOutlineItems
 {
 	[self createOutline];
-	return [_outline count];
+	return _outline.count;
 }
 
 - (OutlineScene*)getOutlineForLine: (Line *) line {
@@ -1727,17 +1778,14 @@ and incomprehensible system of recursion.
 	NSUInteger sectionDepth = 0;
 	
 	OutlineScene *previousScene;
-	
-	// This is for allowing us to include synopses INSIDE scenes when needed
-	Line *previousLine;
-	
+		
 	NSInteger sceneIndex = 0;
 	
 	for (Line* line in lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
 			OutlineScene *scene;
 			if (sceneIndex >= _outline.count) {
-				scene = [OutlineScene withLine:line];
+				scene = [OutlineScene withLine:line delegate:self];
 			} else {
 				scene = _outline[sceneIndex];
 				scene.line = line;
@@ -1774,55 +1822,22 @@ and incomprehensible system of recursion.
 					} else {
 						scene.sceneNumber = @"";
 						line.sceneNumber = @"";
-						
-						// Find out where the omission starts
-						NSInteger idx = [lines indexOfObject:line];
-						for (NSInteger s = idx; s >= 0; s--) {
-							Line *prevLine = lines[s];
-							NSInteger omitLoc = [prevLine.string rangeOfString:@"/*"].location;
-							if (omitLoc != NSNotFound && prevLine.omitOut) {
-								scene.omissionStartsAt = prevLine.position + omitLoc;
-								break;
-							}
-						}
-						
-						for (NSInteger s = idx + 1; s < lines.count; s++) {
-							Line *nextLine = lines[s];
-							NSInteger omitEndLoc = [nextLine.string rangeOfString:@"*/"].location;
-							
-							if (omitEndLoc != NSNotFound && nextLine.omitIn) {
-								scene.omissionEndsAt = nextLine.position + omitEndLoc;
-								break;
-							}
-						}
 					}
 				}
-				
-				// Create an array for character names
-				scene.characters = [NSMutableArray array];
+								
+				// Reset marker array
+				scene.markerColors = NSMutableSet.set;
 			}
-			
-			if (previousScene) {
-				// Calculate synopses inside the scenes
-				if (scene.type != synopse) previousScene.length = scene.position - previousScene.position;
-				else scene.length = line.string.length;
-
-			}
-			
-			// Set previous scene to point to the current one
-			if (scene.type != synopse) previousScene = scene;
 			
 			// This was a new scene
 			if (sceneIndex >= _outline.count) [_outline addObject:scene];
 			
+			previousScene = scene;
 			sceneIndex++;
 		}
-		
-		// Add characters if we are inside a scene.
-		// This is the PREVIOUS SCENE because it refers to the last found heading.
-		if (line.type == character && previousScene.type == heading) {
-			NSString *characterName = line.characterName;
-			if (characterName.length) [previousScene.characters addObject:characterName];
+				
+		if (line.marker.length) {
+			[previousScene.markerColors addObject:line.marker];
 		}
 		
 		if (!line.note && !line.omitted && line.type != empty) {
@@ -1831,9 +1846,6 @@ and incomprehensible system of recursion.
 			
 			if (previousScene) previousScene.printedLength += length;
 		}
-		
-		// Done. Set the previous line.
-		if (line.type != empty) previousLine = line;
 	}
 	
 	// Remove excess scene items

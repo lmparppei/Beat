@@ -75,13 +75,13 @@
 					[path fill];
 				} else {
 					NSRect rect = (NSRect){ 0, y, 25, 2 };
-					NSRectFill(rect);
+					NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:2 yRadius:2];
+					//NSRectFill(rect);
+					[path fill];
 				}
 			}
 		}
 	}
-	
-	//[NSColor.blueColor setFill];
 	
 	[self drawKnob];
 }

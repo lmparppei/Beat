@@ -6,19 +6,38 @@
 //  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
+/*
+ 
+ Ideas for redesign at some point:
+ Using delegation, we could calculate the length only when required.
+ Honstely, it's pretty unclear if this would actually give a performance boost or loss,
+ but it shouldn't be *that* bad. In some cases, like when typing on a heading line,
+ the new method would probably be a lot more efficient.
+ 
+ */
+
 #import <Foundation/Foundation.h>
 #import "OutlineScene.h"
 #import "ContinuousFountainParser.h"
 
 @implementation OutlineScene
 
++ (OutlineScene*)withLine:(Line*)line delegate:(id)delegate {
+	return [[OutlineScene alloc] initWithLine:line delegate:delegate];
+}
+
 + (OutlineScene*)withLine:(Line*)line {
 	return [[OutlineScene alloc] initWithLine:line];
 }
-- (id)initWithLine:(Line*)line
+- (id)initWithLine:(Line*)line {
+	return [self initWithLine:line delegate:nil];
+}
+- (id)initWithLine:(Line*)line delegate:(id)delegate
 {
 	if ((self = [super init]) == nil) { return nil; }
+
 	self.line = line;
+	self.delegate = delegate;
 	
 	return self;
 }
@@ -40,6 +59,8 @@
 	return self.line.typeAsString;
 }
 
+#pragma mark - JSON serialization
+
 // Plugin compatibility
 - (NSDictionary*)forSerialization {
 	return @{
@@ -51,7 +72,7 @@
 		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
 		@"color": (self.color) ? self.color.copy : @"",
 		@"sectionDepth": @(self.sectionDepth),
-
+		@"markerColors": (self.markerColors.count) ? self.markerColors.copy : @[],
 		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
 		@"sceneStart": @(self.position),
 		@"sceneLength": @(self.length),
@@ -59,6 +80,8 @@
 		@"line": self.line.forSerialization
 	};
 }
+
+#pragma mark - Forwarded properties
 
 // Forward these properties from line
 -(LineType)type {
@@ -82,6 +105,91 @@
 // Backwards compatibility
 -(NSUInteger)sceneStart { return self.position; }
 -(NSUInteger)sceneLength { return self.length; }
+
+#pragma mark - Generated properties
+
+-(NSUInteger)length {
+	if (!_delegate) return _length;
+	
+	if (self.type == synopse || self.type == section) return self.string.length;
+	
+	NSArray *lines = self.delegate.lines;
+	NSInteger index = [lines indexOfObject:self.line];
+	
+	NSInteger length = -1;
+	
+	for (NSInteger i = index + 1; i < lines.count; i++) {
+		if (!lines[i]) break;
+		
+		Line *line = lines[i];
+		if (line.isOutlineElement && line.type != synopse) {
+			return line.position - self.position;
+		}
+	}
+	
+	if (length == -1) return [(Line*)lines.lastObject position] - self.position;
+	
+	return length;
+}
+
+-(NSArray*)characters {
+	NSArray *lines = self.delegate.lines;
+	NSInteger index = [lines indexOfObject:self.line];
+	
+	NSMutableSet *names = NSMutableSet.set;
+	
+	for (NSInteger i = index; i < lines.count; i++) {
+		Line *line = lines[i];
+		if (line.isOutlineElement && line.type != synopse) break;
+		else if (line.type == character || line.type == dualDialogueCharacter) {
+			[names addObject:line.characterName];
+		}
+	}
+	
+	return names.allObjects;
+}
+
+-(NSUInteger)omissionStartsAt {
+	if (!self.omitted) return -1;
+	
+	NSArray *lines = self.delegate.lines;
+	NSInteger idx = [lines indexOfObject:self.line];
+	
+	// Find out where the omission starts
+	for (NSInteger s = idx; s >= 0; s--) {
+		Line *prevLine = lines[s];
+		NSInteger omitLoc = [prevLine.string rangeOfString:@"/*"].location;
+		if (omitLoc != NSNotFound && prevLine.omitOut) {
+			return prevLine.position + omitLoc;
+		}
+	}
+	
+	return -1;
+}
+
+-(NSUInteger)omissionEndsAt {
+	if (!self.omitted) return -1;
+	
+	NSArray *lines = self.delegate.lines;
+	NSInteger idx = [lines indexOfObject:self.line];
+	
+	// Find out where the omission ends
+	for (NSInteger s = idx + 1; s < lines.count; s++) {
+		Line *nextLine = lines[s];
+		NSInteger omitEndLoc = [nextLine.string rangeOfString:@"*/"].location;
+		
+		if (omitEndLoc != NSNotFound && nextLine.omitIn) {
+			return nextLine.position + omitEndLoc;
+			break;
+		}
+	}
+	
+	return -1;
+}
+
+
+
+#pragma mark - Synthesized properties
 
 @synthesize omited;
 
