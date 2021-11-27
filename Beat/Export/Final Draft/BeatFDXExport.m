@@ -511,6 +511,8 @@ static NSDictionary *fdxIds;
 			return @"More";
 		case dualDialogueMore:
 			return @"More";
+		case typeCount:
+			return @"";
 	}
 }
 

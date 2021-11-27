@@ -99,6 +99,7 @@ THE SOFTWARE.
 - (void)setColorCodePages:(bool)value;
 - (void)readUserSettings;
 - (void)applyUserSettings;
+- (void)setPaperSize:(BeatPaperSize)size;
 
 // Analysis
 @property (nonatomic) NSMutableDictionary<NSString*, NSString*> *characterGenders;

@@ -1713,7 +1713,7 @@ and incomprehensible system of recursion.
 	for (Line *line in headings) {
 		OutlineScene *scene;
 		if (index >= _outline.count) {
-			scene = [OutlineScene withLine:line];
+			scene = [OutlineScene withLine:line delegate:self];
 		} else {
 			scene = _outline[index];
 			scene.line = line;
@@ -1774,12 +1774,9 @@ and incomprehensible system of recursion.
 		sceneNumber = [self.documentSettings getInt:DocSettingSceneNumberStart];
 	}
 	
-	// We will store a section depth to adjust depth for scenes that come after a section
-	NSUInteger sectionDepth = 0;
-	
 	OutlineScene *previousScene;
-		
-	NSInteger sceneIndex = 0;
+	NSUInteger sectionDepth = 0; // We will store a section depth to adjust depth for scenes that come after a section
+	NSInteger sceneIndex = 0; // Calculate index for scene numbering
 	
 	for (Line* line in lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
@@ -1893,15 +1890,14 @@ and incomprehensible system of recursion.
 	NSMutableArray *lines = [NSMutableArray array];
 	
 	@try {
-		NSRange sceneRange = NSMakeRange(scene.position, scene.length);
-		
 		for (Line* line in self.lines) {
-			if (NSLocationInRange(line.position, sceneRange)) [lines addObject:line];
+			if (NSLocationInRange(line.position, scene.range)) [lines addObject:line];
 		}
 	}
 	@catch (NSException *e) {
 		NSLog(@"No lines found");
 	}
+		
 	return lines;
 }
 
@@ -1967,8 +1963,9 @@ and incomprehensible system of recursion.
 		return _prevLineAtLocation;
 	}
 	
+	// Iterate and find the line
 	for (Line* line in self.lines) {
-		if (position >= line.position && position < line.position + line.string.length + 1) {
+		if (NSLocationInRange(position, line.range)) {
 			_prevLineAtLocation = line;
 			return line;
 		}

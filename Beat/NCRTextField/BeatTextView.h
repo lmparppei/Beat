@@ -85,7 +85,6 @@ typedef enum : NSInteger {
 - (void)updateSceneLabelsFrom:(NSInteger)changedIndex;
 - (void)deleteSceneNumberLabels;
 - (void)resetSceneNumberLabels;
-- (void)updateSectionLayers;
 
 // Page numbering
 - (void)deletePageNumbers;

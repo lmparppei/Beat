@@ -30,6 +30,8 @@
 #import "BeatAppDelegate.h"
 //#import "BeatPluginWindow.h"
 #import "BeatModalAccessoryView.h"
+#import "WebPrinter.h"
+#import "BeatPaperSizing.h"
 #import <PDFKit/PDFKit.h>
 
 
@@ -52,6 +54,8 @@
 @property (nonatomic) bool inCallback;
 @property (nonatomic) bool terminateAfterCallback;
 @property (nonatomic) NSMutableArray *pluginWindows;
+@property (nonatomic) NSDictionary *type;
+@property (nonatomic) WebPrinter *printer;
 @end
 
 @implementation BeatPluginParser
@@ -162,6 +166,10 @@
 }
 - (IBAction)clearConsole:(id)sender {
 	[(BeatAppDelegate*)NSApp.delegate clearConsole];
+}
+
+- (bool)compatibleWith:(NSString *)version {
+	return [BeatPluginManager.sharedManager isCompatible:version];
 }
 
 #pragma mark - Resident plugin
@@ -926,11 +934,45 @@
 	return paginator;
 }
 
+#pragma mark - Printing interface
+
+- (void)printHTML:(NSString*)html settings:(NSDictionary*)settings {
+	_printer = WebPrinter.alloc.init;
+	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
+	
+	if (settings[@"orientation"]) {
+		NSString *orientation = [(NSString*)settings[@"orientation"] lowercaseString];
+		if ([orientation isEqualToString:@"landscape"]) printInfo.orientation = NSPaperOrientationLandscape;
+		else printInfo.orientation = NSPaperOrientationPortrait;
+	} else printInfo.orientation = NSPaperOrientationPortrait;
+	
+	if (settings[@"paperSize"]) {
+		NSString *paperSize = [(NSString*)settings[@"paperSize"] lowercaseString];
+		if ([paperSize isEqualToString:@"us letter"]) [BeatPaperSizing setPageSize:BeatUSLetter printInfo:printInfo];
+		else if ([paperSize isEqualToString:@"a4"]) [BeatPaperSizing setPageSize:BeatA4 printInfo:printInfo];
+	}
+	
+	[_printer printHtml:html printInfo:printInfo callback:^{
+		self.printer = nil;
+	}];
+}
+
 #pragma mark - Utilities
 
 - (NSArray*)screen {
 	NSRect screen = self.delegate.thisWindow.screen.frame;
 	return @[ @(screen.origin.x), @(screen.origin.y), @(screen.size.width), @(screen.size.height) ];
+}
+- (NSArray*)windowFrame {
+	NSRect frame = self.delegate.thisWindow.frame;
+	return @[ @(frame.origin.x), @(frame.origin.y), @(frame.size.width), @(frame.size.height) ];
+}
+
+- (void)setPropertyValue:(NSString*)key value:(id)value {
+	[self.delegate setPropertyValue:key value:value];
+}
+- (id)getPropertyValue:(NSString *)key {
+	return [self.delegate getPropertyValue:key];
 }
 
 #pragma mark - Parser data delegation
@@ -945,15 +987,14 @@
 	OutlineScene *scene = (OutlineScene*)sceneId;
 	
 	@try {
-		NSRange sceneRange = NSMakeRange(scene.position, scene.length);
-		
 		for (Line* line in self.delegate.parser.lines) {
-			if (NSLocationInRange(line.position, sceneRange)) [lines addObject:line];
+			if (NSLocationInRange(line.position, scene.range)) [lines addObject:line];
 		}
 	}
 	@catch (NSException *e) {
 		[self reportError:@"Scene index out of range" withText:@"Plugin tried to access a nonexistent scene"];
 	}
+	
 	return lines;
 }
 
@@ -974,6 +1015,11 @@
 }
 - (OutlineScene*)sceneAtIndex:(NSInteger)index {
 	return [_delegate.parser sceneAtIndex:index];
+}
+
+- (NSDictionary*)type {
+	if (!_type) _type = Line.typeDictionary;
+	return _type;
 }
 
 - (NSString*)scenesAsJSON {
@@ -1112,6 +1158,7 @@
 - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len {
 	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
 }
+
 
 #pragma mark - WebKit controller
 

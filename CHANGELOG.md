@@ -1,8 +1,24 @@
 # Changelog
 
+## Beat .1
+
+- Plugin API expansions (including printing HTML files)
+- Fixed more paper size bugs
+- Fixed bugs with turning autocomplete off
+- Fixed a bug which caused headings not be auto-capitalized
+- Printed revision markers on right side
+
+
+## Beat 1.92.1
+
+- Rewritten Plugin Library
+- Parsing fixes
+
+
 ## Beat 1.91.9
 
-- Plugin API now reports errors in the console rather than as modal alert messages. This is done to avoid some multithreading weirdness.
+- Plugin API now reports errors in the console rather than as modal alert messages when in a background thread.
+
 
 ## Beat 1.91.8
 

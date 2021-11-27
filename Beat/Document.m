@@ -1778,8 +1778,9 @@ void delay (double delay, CallbackBlock block) {
 	[self applyFormatChanges];
 	
 	// If the outline has changed, update all labels
-	if (changeInOutline) [self updateSceneNumberLabels:0];
-	else [self updateSceneNumberLabels:self.lastChangedRange.location];
+	//if (changeInOutline) [self updateSceneNumberLabels:self.lastChangedRange];
+	//else [self updateSceneNumberLabels:self.lastChangedRange.location];
+	[self updateSceneNumberLabels:self.lastChangedRange.location];
 	
 	// Update preview screen
 	[self updatePreview];
@@ -2281,7 +2282,7 @@ void delay (double delay, CallbackBlock block) {
 	 Colors are set using NSLayoutManager's temporary attributes, while everything else
 	 is stored into the attributed string in NSTextStorage.
 	 
-	 */
+	*/
 	
 	// Let's do the real formatting now
 	NSRange range = line.textRange;
@@ -4625,7 +4626,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)printCards {
-	[_sceneCards printCardsWithInfo:[self.printInfo copy]];
+	[_sceneCards printCardsWithInfo:self.printInfo.copy];
 	//[_sceneCards printCards:[self getSceneCards] printInfo:self.printInfo];
 }
 - (void) refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
@@ -5091,6 +5092,9 @@ triangle walks
 	if ([item.title isEqualToString:@"A4"]) size = BeatA4;
 	else size = BeatUSLetter;
 		
+	[self setPaperSize:size];
+}
+- (void)setPaperSize:(BeatPaperSize)size {
 	self.printInfo = [BeatPaperSizing setSize:size printInfo:self.printInfo];
 	[self.documentSettings setInt:DocSettingPageSize as:size];
 	[self updateLayout];
@@ -5430,6 +5434,14 @@ triangle walks
 		BeatPluginParser *plugin = _runningPlugins[pluginName];
 		[plugin updateOutline:outline];
 	}
+}
+
+// For those who REALLY, REALLY know what the fuck they are doing
+- (void)setPropertyValue:(NSString*)key value:(id)value {
+	[self setValue:value forKey:key];
+}
+- (id)getPropertyValue:(NSString*)key {
+	return [self valueForKey:key];
 }
 
 #pragma mark - Color Customization

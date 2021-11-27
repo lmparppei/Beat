@@ -48,7 +48,7 @@
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler  API_AVAILABLE(macos(10.14)){
 	if ([response.actionIdentifier isEqualToString:@"ShowPluginUpdates"]) {
-		[(BeatAppDelegate*)NSApp.delegate openPluginManager:nil];
+		[(BeatAppDelegate*)NSApp.delegate openPluginLibrary:nil];
 	}
 	completionHandler();
 }

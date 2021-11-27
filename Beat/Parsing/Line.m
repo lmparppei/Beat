@@ -116,58 +116,133 @@
 
 #pragma mark - Type
 
++ (NSDictionary*)typeDictionary /// Used by plugin API to create constants
+{
+	NSMutableDictionary *types = NSMutableDictionary.dictionary;
+	
+	NSInteger max = typeCount;
+	for (NSInteger i = 0; i < max; i++) {
+		LineType type = i;
+		
+		NSString *typeName = @"";
+		
+		switch (type) {
+			case empty:
+				typeName = @"empty"; break;
+			case section:
+				typeName = @"section"; break;
+			case synopse:
+				typeName = @"synopsis"; break;
+			case titlePageTitle:
+				typeName = @"titlePageTitle"; break;
+			case titlePageAuthor:
+				typeName = @"titlePageAuthor"; break;
+			case titlePageCredit:
+				typeName = @"titlePageCredit"; break;
+			case titlePageSource:
+				typeName = @"titlePageSource"; break;
+			case titlePageContact:
+				typeName = @"titlePageContact"; break;
+			case titlePageDraftDate:
+				typeName = @"titlePageDraftDate"; break;
+			case titlePageUnknown:
+				typeName = @"titlePageUnknown"; break;
+			case heading:
+				typeName = @"heading"; break;
+			case action:
+				typeName = @"action"; break;
+			case character:
+				typeName = @"character"; break;
+			case parenthetical:
+				typeName = @"parenthetical"; break;
+			case dialogue:
+				typeName = @"dialogue"; break;
+			case dualDialogueCharacter:
+				typeName = @"dualDialogueCharacter"; break;
+			case dualDialogueParenthetical:
+				typeName = @"dualDialogueParenthetical"; break;
+			case dualDialogue:
+				typeName = @"dualDialogue"; break;
+			case transitionLine:
+				typeName = @"transition"; break;
+			case lyrics:
+				typeName = @"lyrics"; break;
+			case pageBreak:
+				typeName = @"pageBreak"; break;
+			case centered:
+				typeName = @"centered"; break;
+			case more:
+				typeName = @"more"; break;
+			case dualDialogueMore:
+				typeName = @"dualDialogueMore"; break;
+			case typeCount:
+				typeName = @""; break;
+		}
+		
+		[types setValue:@(i) forKey:typeName];
+	}
+	
+	return types;
+}
+
++ (NSString*)typeAsString:(LineType)type {
+	switch (type) {
+		case empty:
+			return @"Empty";
+		case section:
+			return @"Section";
+		case synopse:
+			return @"Synopse";
+		case titlePageTitle:
+			return @"Title Page Title";
+		case titlePageAuthor:
+			return @"Title Page Author";
+		case titlePageCredit:
+			return @"Title Page Credit";
+		case titlePageSource:
+			return @"Title Page Source";
+		case titlePageContact:
+			return @"Title Page Contact";
+		case titlePageDraftDate:
+			return @"Title Page Draft Date";
+		case titlePageUnknown:
+			return @"Title Page Unknown";
+		case heading:
+			return @"Heading";
+		case action:
+			return @"Action";
+		case character:
+			return @"Character";
+		case parenthetical:
+			return @"Parenthetical";
+		case dialogue:
+			return @"Dialogue";
+		case dualDialogueCharacter:
+			return @"DD Character";
+		case dualDialogueParenthetical:
+			return @"DD Parenthetical";
+		case dualDialogue:
+			return @"DD Dialogue";
+		case transitionLine:
+			return @"Transition";
+		case lyrics:
+			return @"Lyrics";
+		case pageBreak:
+			return @"Page Break";
+		case centered:
+			return @"Centered";
+		case more:
+			return @"More";
+		case dualDialogueMore:
+			return @"DD More";
+		case typeCount:
+			return @"";
+	}
+}
+
 - (NSString*)typeAsString
 {
-   switch (self.type) {
-	   case empty:
-		   return @"Empty";
-	   case section:
-		   return @"Section";
-	   case synopse:
-		   return @"Synopse";
-	   case titlePageTitle:
-		   return @"Title Page Title";
-	   case titlePageAuthor:
-		   return @"Title Page Author";
-	   case titlePageCredit:
-		   return @"Title Page Credit";
-	   case titlePageSource:
-		   return @"Title Page Source";
-	   case titlePageContact:
-		   return @"Title Page Contact";
-	   case titlePageDraftDate:
-		   return @"Title Page Draft Date";
-	   case titlePageUnknown:
-		   return @"Title Page Unknown";
-	   case heading:
-		   return @"Heading";
-	   case action:
-		   return @"Action";
-	   case character:
-		   return @"Character";
-	   case parenthetical:
-		   return @"Parenthetical";
-	   case dialogue:
-		   return @"Dialogue";
-	   case dualDialogueCharacter:
-		   return @"DD Character";
-	   case dualDialogueParenthetical:
-		   return @"DD Parenthetical";
-	   case dualDialogue:
-		   return @"Double Dialogue";
-	   case transitionLine:
-		   return @"Transition";
-	   case lyrics:
-		   return @"Lyrics";
-	   case pageBreak:
-		   return @"Page Break";
-	   case centered:
-		   return @"Centered";
-	   case more:
-		   return @"More";
-	   case dualDialogueMore:
-		   return @"DD More";
-   }
+	return [Line typeAsString:self.type];
 }
 
 - (NSString*)typeAsFountainString
@@ -224,6 +299,8 @@
 			return @"More";
 		case dualDialogueMore:
 			return @"More";
+		case typeCount:
+			return @"";
 	}
 }
 
@@ -235,9 +312,12 @@
 	Line* newLine = [Line withString:self.string type:self.type];
 	newLine.position = self.position;
 	
+	newLine.changed = self.changed;
 	newLine.isSplitParagraph = self.isSplitParagraph;
 	newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
+	newLine.unsafeForPageBreak = self.unsafeForPageBreak;
 	
+	if (self.changedRanges) newLine.changedRanges = self.changedRanges.copy;
 	if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
 	if (self.boldRanges.count) newLine.boldRanges = self.boldRanges.mutableCopy;
 	if (self.boldItalicRanges.count) newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
@@ -253,6 +333,8 @@
 	
 	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
 	if (self.color) newLine.color = [NSString stringWithString:self.color];
+	
+	newLine.nextElementIsDualDialogue = self.nextElementIsDualDialogue;
 	
 	return newLine;
 }

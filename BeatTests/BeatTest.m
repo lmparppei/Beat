@@ -15,6 +15,7 @@
 #import "BeatHTMLScript.h"
 #import "BeatPluginParser.h"
 #import "NSString+Levenshtein.h"
+#import "UnzipKit.h"
 
 
 @implementation BeatTest
@@ -29,14 +30,12 @@
 }
 
 - (void) test {
-	NSString *string = @"Tämä on testi!";
-	NSArray *alt = @[@"Tämä on testi!", @"Tämäkin on testi", @"Pelkkä testi", @"Testi"];
-	
-	for (NSString *str in alt) {
-		CGFloat result = [str compareWithString:string];
-		NSLog(@"%@: result %f", str, result);
-	}
-	
+//	NSURL *pluginURL = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	NSURL* url = [NSBundle.mainBundle URLForResource:@"Test" withExtension:@"zip"];
+	UZKArchive *container = [[UZKArchive alloc] initWithURL:url error:nil];
+	NSArray* list = [container listFilenames:nil];
+	NSLog(@"### List: %@", list);
+	//[container extractFilesTo:pluginURL.path overwrite:YES error:&error];
 }
 
 - (NSString*)testString {

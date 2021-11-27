@@ -13,10 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WebPrinter : NSObject <WebFrameLoadDelegate>
 @property (nonatomic, weak) NSWindow *window;
-@property (strong) NSPrintInfo *printSettings;
 @property (strong) NSString *testi;
 @property (nonatomic, weak) NSPrintOperation *printOperation;
 - (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings;
+- (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings callback:(void (^ _Nullable)(void))callbackBlock;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -17,6 +17,22 @@ typedef enum : NSInteger {
 	ExportPlugin
 } BeatPluginType;
 
+@interface BeatPluginInfo : NSObject
+@property (nonatomic) NSString *name;
+@property (nonatomic) BeatPluginType type;
+@property (nonatomic) NSString *version;
+@property (nonatomic) NSString *copyright;
+@property (nonatomic) NSString *image;
+@property (nonatomic) NSString *text;
+@property (nonatomic) NSString *html;
+@property (nonatomic) NSURL *localURL;
+@property (nonatomic) bool installed;
+@property (nonatomic) NSString *requiredVersion;
+@property (nonatomic) bool compatible;
+@property (nonatomic) NSString* updateAvailable;
+- (NSDictionary*)json;
+@end
+
 @interface BeatPlugin : NSObject
 @property (nonatomic) NSString* name;
 @property (nonatomic) NSString* script;
@@ -27,6 +43,7 @@ typedef enum : NSInteger {
 @property (nonatomic, strong) NSMenuItem *menuItem;
 @property (nonatomic, strong) NSMenuItem *exportMenuItem;
 @property (nonatomic) NSMenuItem *importMenuItem;
+@property (nonatomic) NSMutableDictionary<NSString*, id> * availablePlugins;
 
 + (BeatPluginManager*)sharedManager;
 - (NSArray*)pluginNames;
@@ -35,15 +52,20 @@ typedef enum : NSInteger {
 - (NSString*)pathForPlugin:(NSString*)pluginName;
 - (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type;
 - (void)openPluginFolder;
+- (NSURL*)pluginFolderURL;
 
 - (NSArray*)disabledPlugins;
 - (void)disablePlugin:(NSString*)plugin;
 - (void)enablePlugin:(NSString*)plugin;
 - (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock;
 - (void)updateAvailablePlugins;
-- (void)downloadPlugin:(NSString*)pluginName sender:(id)sender;
+- (void)loadPlugins;
+- (void)downloadPlugin:(NSString*)pluginName library:(id)library withCallback:(void (^)(NSString* pluginName))callbackBlock;
+- (NSArray*)availablePluginNames;
 
 - (void)checkForUpdates;
+- (bool)isCompatible:(NSString*)requiredVersion current:(NSString*)currentVersion;
+- (bool)isCompatible:(NSString*)requiredVersion; /// Shorthand which automatically compares against currently installed version
 @end
 
 NS_ASSUME_NONNULL_END

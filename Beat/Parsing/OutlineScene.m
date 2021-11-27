@@ -72,7 +72,7 @@
 		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
 		@"color": (self.color) ? self.color.copy : @"",
 		@"sectionDepth": @(self.sectionDepth),
-		@"markerColors": (self.markerColors.count) ? self.markerColors.copy : @[],
+		@"markerColors": (self.markerColors.count) ? self.markerColors.allObjects.copy : @[],
 		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
 		@"sceneStart": @(self.position),
 		@"sceneLength": @(self.length),

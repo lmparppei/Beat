@@ -123,13 +123,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 // New scene numbering system
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
-@property (nonatomic) NSMutableArray *sectionBackgrounds;
 
 // Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
-
-// Section rects
-@property NSMutableArray* sections;
 
 // Page number fields
 @property (nonatomic) NSMutableArray *pageNumberLabels;
@@ -140,6 +136,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 // Scroll wheel behavior
 @property (nonatomic) bool scrolling;
 @property (nonatomic) bool selectionAtEnd;
+
+@property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
 
 @end
 
@@ -235,7 +233,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Arrays for special elements
 	self.masks = [NSMutableArray array];
-	self.sections = [NSMutableArray array];
 	
 	_trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
@@ -893,7 +890,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (NSRect)rectForRange:(NSRange)range {
 	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:nil];
-	return [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+	NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+
+	return rect;
 }
 
 - (NSArray*)rectsForChanges {
@@ -1048,10 +1047,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Don't do anything if the scene number labeling is not on
 	if (!self.editorDelegate.showSceneNumberLabels) return;
 
-	[_sections removeAllObjects];
+	_updatingSceneNumberLabels = YES;
 	
 	ContinuousFountainParser *parser = self.editorDelegate.parser;
-	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor;
+	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
 	
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
 	
@@ -1061,20 +1060,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSInteger index = 0;
 	for (OutlineScene *scene in parser.outline) {
 		if (scene.type == synopse || scene.type == section) continue;
-		/*
-		// Not in use for now
-		if (scene.type == section) {
-			[self addSectionMarker:scene];
-			continue;
-		}
-		*/
-
+		
 		// don't update scene labels if we are under the index
 		if (scene.line.position + scene.line.string.length < changedIndex) {
 			index++;
 			continue;
 		}
-				
+		
 		NSTextField *label;
 		
 		// Add new label if needed
@@ -1091,7 +1083,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			rect = [self rectForRange:scene.line.textRange];
 		} else {
 			// Hiding might be on, so let's calculate rect using only the first visible character
-			NSRange sceneRange = (NSRange){ scene.position + scene.line.numberOfPrecedingFormattingCharacters, 1  };
+			NSRange sceneRange = (NSRange){ scene.position + scene.line.contentRanges.firstIndex, 1  };
 			rect = [self rectForRange:sceneRange];
 		}
 		
@@ -1124,85 +1116,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
-	//[self updateSectionLayers];
+	_updatingSceneNumberLabels = NO;
 }
 
-- (void)addSectionMarker:(OutlineScene*)sectionItem {
-	// Don't draw breaks for less-important sections
-	if (sectionItem.sectionDepth > 1) return;
-	NSRange characterRange = NSMakeRange(sectionItem.line.position, sectionItem.line.string.length);
-	
-	NSRect rect = [self rectForRange:characterRange];
-
-	// If the next line is something we care about, include it in the rect for a nicer display
-	// If next line is NOT EMPTY, don't add the rect at all.
-	NSInteger index = [_editorDelegate.parser.lines indexOfObject:sectionItem.line];
-	
-	if (sectionItem.line != _editorDelegate.parser.lines.lastObject) {
-		Line* previousLine;
-		Line* nextLine = [_editorDelegate.parser.lines objectAtIndex:index + 1];
-		if (index > 0) previousLine = [_editorDelegate.parser.lines objectAtIndex:index - 1];
-		
-		if ((nextLine.type == synopse) && (previousLine.string.length < 1 || previousLine.type == section) ) {
-			characterRange = NSMakeRange(nextLine.position, nextLine.string.length);
-			NSRect nextRect = [self rectForRange:characterRange];
-			
-			rect.size.height += nextRect.size.height;
-			
-			[_sections addObject:[NSValue valueWithRect:rect]];
-		}
-		else if ((nextLine == empty || !nextLine.string.length || nextLine.type == section) && previousLine.string.length < 1 ) {
-			[_sections addObject:[NSValue valueWithRect:rect]];
-		}
-	}
-}
-
-
- // This isn't working, don't know why
-- (void)updateSectionLayers {
-	NSInteger index = 0;
-	self.wantsLayer = YES;
-	
-	if (!_sectionBackgrounds) _sectionBackgrounds = [NSMutableArray array];
-	CGFloat factor = 1 / _zoomLevel;
-	CGFloat width = self.frame.size.width * factor;
-	//NSRect rect = NSMakeRect(0, self.textContainerInset.height + sectionRect.origin.y - 7, width, sectionRect.size.height + 14);
-	
-	for (NSValue *rectValue in _sections) {
-		NSRect rect = rectValue.rectValue;
-		
-		CALayer *layer;
-		if (index >= _sectionBackgrounds.count) {
-			NSLog(@"Add new (%lu vs %lu)", index, _sectionBackgrounds.count);
-			// Add new section
-			layer = [[CALayer alloc] init];
-			layer.backgroundColor = self.editorDelegate.themeManager.marginColor.CGColor;
-			[self.layer addSublayer:layer];
-			layer.zPosition = -1;
-		} else {
-			NSLog(@"Use existing (%lu vs %lu)", index, _sectionBackgrounds.count);
-			layer = _sectionBackgrounds[index];
-		}
-		
-		layer.frame = CGRectMake(0, rect.origin.y + self.textContainerInset.height - 7, width, rect.size.height + 14);
-		layer.bounds = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
-		[_sectionBackgrounds addObject:layer];
-		
-		index++;
-	}
-	
-	// Remove excess backgrounds
-	if (_sectionBackgrounds.count >= _sections.count && _sectionBackgrounds.count > 0) {
-		NSInteger backgrounds = _sectionBackgrounds.count;
-		for (NSInteger i = index; i < backgrounds; i++) {
-			CALayer *bgLayer = _sectionBackgrounds[index];
-			[self.sectionBackgrounds removeObject:bgLayer];
-			[bgLayer removeFromSuperlayer];
-		}
-	}
-	
-	[self updateLayer];
-}
 
 /*
 - (void)updateSceneNumberLabelsWithLayer {
@@ -1540,8 +1456,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
-	LineType type = line.type;
+	if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine) return 0;
 	
+	LineType type = line.type;
+		
 	// Do nothing for section markers
 	if (line.type == section) return 0;
 	

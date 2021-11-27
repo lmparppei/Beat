@@ -34,6 +34,7 @@ typedef enum : NSUInteger {
     centered,
 	more,
 	dualDialogueMore,
+	typeCount
 } LineType;
 
 @protocol LineExports <JSExport>
@@ -158,6 +159,7 @@ typedef enum : NSUInteger {
 + (Line*)withString:(NSString*)string type:(LineType)type;
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
 + (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser;
++ (NSDictionary*)typeDictionary;
 
 // Copy element
 - (Line*)clone;

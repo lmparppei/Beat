@@ -20,7 +20,7 @@
 
 @protocol BeatPaginatorExports <JSExport>
 @property (nonatomic, readonly) NSUInteger numberOfPages;
-@property (strong, nonatomic) NSMutableArray *pages;
+@property (strong, nonatomic) NSMutableArray<NSMutableArray*> *pages;
 @property (readonly) CGFloat lastPageHeight;
 - (void)paginateLines:(NSArray*)lines;
 - (void)paginate;
@@ -40,7 +40,7 @@
 @property (nonatomic, readonly) NSArray* lengthInEights;
 @property (nonatomic) CGSize paperSize;
 @property (readonly) CGFloat lastPageHeight;
-@property (strong, nonatomic) NSMutableArray *pages;
+@property (strong, nonatomic) NSMutableArray<NSMutableArray*> *pages;
 
 // For live pagination
 @property (strong, nonatomic) NSMutableArray *pageBreaks;

@@ -174,7 +174,9 @@
 		_paperSize = BeatUSLetter;
 		[BeatPaperSizing setPageSize:_paperSize printInfo:_document.printInfo];
 	}
-		
+	
+	[_document setPaperSize:_paperSize];
+	
 	// Preview needs refreshing
 	if (oldSize != _paperSize) {
 		[self loadPreview];

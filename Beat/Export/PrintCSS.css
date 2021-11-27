@@ -210,7 +210,66 @@ body > p:first-child {
 	position: relative;
 }
 
-.changed::before {
+/* BELOW: asterisks to the RIGHT of text */
+
+.changed::after {
+
+	position: absolute;
+	/* display: block; */
+	
+	top: 0px;
+	right: -1px;
+	width: 8px;
+	height: calc(100% - 4px);
+	z-index: 999;
+	
+	content: '*********************';
+	overflow: hidden;
+}
+
+.transition.changed::after {
+	right: 0px;
+}
+
+.dialogue.changed::after {
+	right: -128px;
+}
+
+.character.changed::after {
+	right: -88px;
+}
+
+.parenthetical.changed::after {
+	right: -147px;
+}
+
+.dual-dialogue-right .changed::after{
+	right: 0px;
+}
+.dual-dialogue-left .changed::after{
+	right: -272px;
+}
+
+.dual-dialogue-left .character.changed::after {
+	right: -272px;
+}
+
+.dual-dialogue-right .character.changed::after {
+	right: 0px;
+}
+
+.dual-dialogue-left .parenthetical.changed::after {
+	right: -222px;
+}
+
+.dual-dialogue-right .parenthetical.changed::after {
+	right: 45px;
+}
+
+
+/* BELOW: Asterisks to the LEFT of text -- currently disabled */
+
+/* .changed::before {
 	position: absolute;
 	display: block;
 	
@@ -223,22 +282,6 @@ body > p:first-child {
 	overflow: hidden;
 }
 
-/*
-.changed::after {
-	position: absolute;
-	display: block;
-	
-	top: 0px;
-	right: -10px;
-	width: 1em;
-	height: 100%;
-	z-index: 999;
-	
-	content: '* * * * * * * * * * * * * * * * * * * * *';
-	overflow: hidden;
-}
- */
- 
 .dual-dialogue-right .changed::before {
 	left: auto;
 	right: -10px;
@@ -252,7 +295,7 @@ body > p:first-child {
 }
 .character.changed::before {
 	left: -240px;
-}
+}*/
 
 #script-title .title {
 	text-align: center;

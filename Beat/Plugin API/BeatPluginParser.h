@@ -28,6 +28,7 @@
 @property (nonatomic) bool onSelectionChangeDisabled;
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
+@property (nonatomic,readonly) NSDictionary *type;
 
 //@property (readonly) NSArray* scenes;
 //@property (readonly) NSArray* outline;
@@ -68,11 +69,14 @@
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (NSArray*)availableTags;
 - (NSArray*)screen;
+- (NSArray*)windowFrame;
 - (void)async:(JSValue*)callback; /// Alias for dispatch
 - (void)sync:(JSValue*)callback; /// Alias for dispatch_syncb
 - (void)dispatch:(JSValue*)callback;
 - (void)dispatch_sync:(JSValue*)callback;
 - (void)focusEditor;
+
+- (id)getPropertyValue:(NSString*)key; /// For those who REALLY know what they're doing
 
 - (ContinuousFountainParser*)parser:(NSString*)string;
 
@@ -81,6 +85,9 @@
 - (void)reformat:(Line*)line;
 - (void)reformatRange:(NSInteger)loc len:(NSInteger)len;
 
+- (bool)compatibleWith:(NSString*)version;
+
+JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value); /// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string);
@@ -101,9 +108,10 @@ JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)wid
 JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats);
 JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(OutlineScene *)scene);
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
+JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings);
+
 JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
-
 JSExportAs(removeTextHighlight, - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len);
 
@@ -138,6 +146,8 @@ JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteg
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
 - (void)forceFormatChangesInRange:(NSRange)range;
 - (void)formatLineOfScreenplay:(Line*)line;
+- (void)setPropertyValue:(NSString*)key value:(id)value;
+- (id)getPropertyValue:(NSString*)key;
 @end
 
 @interface BeatPluginParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>

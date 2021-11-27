@@ -317,6 +317,8 @@
 }
 - (void)paginateFromIndex:(NSInteger)fromIndex startFromLine:(Line*)firstLine page:(NSMutableArray*)firstPage
 {
+	bool test = NO;
+	
 	if (!self.script.count) return;
 	
 	// Get paper size from the document
@@ -369,7 +371,7 @@
 				
 		// create a tmp array that will hold elements to be added to the pages
 		NSMutableArray *tmpElements = [NSMutableArray array];
-				
+		
 		// walk through the elements array
 		for (NSInteger i = 0; i < self.script.count; i++) {
 			if (!_paginating && _livePagination) {
@@ -379,6 +381,7 @@
 			}
 			
 			Line *element  = (self.script)[i];
+			if ([element.string isEqualToString:@"INT. STJERNSBERG/MATSALEN -- KVÄLL[[COLOR GREEN]]"]) test = YES;
 			
 			// Skip element if it's not in the specified range
 			if (firstIndex > 0 && firstIndex > element.position + element.string.length) {
@@ -770,7 +773,7 @@
 				
 				currentY = 0;
 			}
-			
+						
 			NSInteger previousDialogueHeight = 0;
 			NSInteger dualDialogueHeight = 0;
 			
@@ -801,7 +804,7 @@
 				} else {
 					// Update y position
 					currentY += h;
-					if ([currentPage count] > 0) { currentY += [BeatPaginator spaceBeforeForLine:el]; }
+					if (currentPage.count > 0) currentY += [BeatPaginator spaceBeforeForLine:el];
 				}
 				
 				[currentPage addObject:el];
@@ -813,9 +816,16 @@
 	
 	// Remove last page if it's empty
 	NSArray *lastPage = _pages.lastObject;
-	if (lastPage.count == 0) [_pages removeLastObject];
 	
+	if (lastPage.count == 0) [_pages removeLastObject];
+		
 	_lastPageHeight = (float)currentY / (float)maxPageHeight;
+	if (_lastPageHeight == 0) _lastPageHeight = -1.0;
+	
+	// If there's only one page and the last page height is 0, make the last page height full
+	// if (_pages.count == 1 && _pages[0].count && currentY == 0) _lastPageHeight = 1.0;
+	// Else just return the normal calculation
+	// else _lastPageHeight = (float)currentY / (float)maxPageHeight;
 }
 
 

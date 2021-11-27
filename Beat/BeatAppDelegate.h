@@ -52,7 +52,7 @@
 
 - (void)openURLInWebBrowser:(NSString*)urlString;
 
-- (IBAction)openPluginManager:(id)sender;
+- (IBAction)openPluginLibrary:(id)sender;
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval;
 
 @end

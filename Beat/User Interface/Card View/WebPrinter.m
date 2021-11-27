@@ -12,24 +12,22 @@
 @interface WebPrinter ()
 {
     WebView *printView;
-	NSPrintInfo *printInfo;
+//	NSPrintInfo *printInfo;
 }
+@property (nonatomic) NSPrintInfo *printInfo;
+@property (nonatomic) void (^callback)(void);
 @end
 @implementation WebPrinter
 
+
 - (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings {
-	_printSettings = [NSPrintInfo sharedPrintInfo];
-	_printSettings.topMargin = 5;
-	
-	printInfo = [NSPrintInfo sharedPrintInfo];
-	printInfo.topMargin = 5;
-	printInfo.bottomMargin = 5;
-	printInfo.leftMargin = 5;
-	printInfo.rightMargin = 5;
-	printInfo.paperSize = printSettings.paperSize;
-	printInfo.orientation = NSPaperOrientationLandscape;
+	[self printHtml:html printInfo:printSettings callback:nil];
+}
+- (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings callback:(void (^ _Nullable)(void))callbackBlock {
+	_printInfo = printSettings.copy;
+	_callback = callbackBlock;
 		
-    NSRect printViewFrame = NSMakeRect(0, 0, printInfo.paperSize.width, printInfo.paperSize.height);
+    NSRect printViewFrame = NSMakeRect(0, 0, _printInfo.paperSize.width, _printInfo.paperSize.height);
     printView = [[WebView alloc] initWithFrame:printViewFrame frameName:@"printFrame" groupName:@"printGroup"];
     printView.shouldUpdateWhileOffscreen = true;
     printView.frameLoadDelegate = self;
@@ -55,11 +53,13 @@
         }
 		 */
 		
-		NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.frameView.documentView printInfo:printInfo];
+		NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.frameView.documentView printInfo:_printInfo];
 		[printOperation runOperation];
 		//NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.webView printInfo:_printInfo];
 		//[printOperation runOperationModalForWindow:_window delegate:nil didRunSelector:nil contextInfo:nil];
         //[printOperation runOperationModalForWindow:window delegate:window didRunSelector:nil contextInfo:nil];
+		
+		if (_callback) _callback();
     }
 }
 

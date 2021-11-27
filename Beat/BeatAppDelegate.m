@@ -19,13 +19,13 @@
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
-#import "BeatDownloadManager.h"
 #import "BeatPluginParser.h"
 #import "BeatPluginManager.h"
 #import "BeatNotifications.h"
 #import "BeatModalInput.h"
 #import "Document.h"
 #import "BeatPreferencesPanel.h"
+#import "BeatPluginLibrary.h"
 
 #import "BeatTest.h"
 
@@ -48,7 +48,9 @@
 @property (nonatomic) BeatBrowserView *browser;
 @property (nonatomic) BeatPreferencesPanel *preferencesPanel;
 @property (nonatomic) BeatAboutScreen *about;
-@property (nonatomic) BeatDownloadManager *downloadManager;
+// New plugin library
+@property (nonatomic) BeatPluginLibrary *pluginLibrary;
+
 @property (nonatomic) BeatEpisodePrinter *episodePrinter;
 
 @property (nonatomic) NSPanel *console;
@@ -79,7 +81,7 @@
 - (void) awakeFromNib {
 	[[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
 	
-	//BeatTest *test = BeatTest.alloc.init;
+	// BeatTest *test = BeatTest.alloc.init;
 	
 #ifdef ADHOC
 	// Ad hoc vector
@@ -406,6 +408,10 @@
 	else if (window == _preferencesPanel.window) {
 		_preferencesPanel = nil;
 	}
+	else if (window == _pluginLibrary.window) {
+		[_pluginLibrary clearWebView];
+		_pluginLibrary = nil;
+	}
 }
 
 - (IBAction)showPatchNotes:(id)sender {
@@ -656,9 +662,9 @@
 	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
 	[plugins openPluginFolder];
 }
-- (IBAction)openPluginManager:(id)sender {
-	_downloadManager = [[BeatDownloadManager alloc] init];
-	[_downloadManager show];
+- (IBAction)openPluginLibrary:(id)sender {
+	_pluginLibrary = BeatPluginLibrary.alloc.init;
+	[_pluginLibrary show];
 }
 
 - (IBAction)runStandalonePlugin:(id)sender {

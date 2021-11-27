@@ -205,7 +205,11 @@
 
 - (void)printCardsWithInfo:(NSPrintInfo *)printInfo {
 	// I'm not sure why this fixes a bug with the page sizing
-	printInfo.orientation = NSPaperOrientationPortrait;
+	printInfo.topMargin = 5;
+	printInfo.bottomMargin = 5;
+	printInfo.leftMargin = 5;
+	printInfo.rightMargin = 5;
+	printInfo.orientation = NSPaperOrientationLandscape;
 	
 	// This creates a HTML document for printing out the index cards
 	
@@ -282,7 +286,6 @@
 	
 	NSString* content = [NSString stringWithFormat:@"<html><head><style>%@</style></head><body><div id='container'><section>%@</section></div></body></html>", css, html];
 	
-	// Load up the HTML into a web view and print it out
 	[_webPrinter printHtml:content printInfo:printInfo];
 }
 
