@@ -212,7 +212,7 @@
 		}
 
 		#parentheses {
-			min-height: 4.5em;
+			min-height: 3.5em;
 		}
 
 		.inset {
@@ -225,7 +225,7 @@
 		}
 
 		#stylization {
-			min-height: 2.3em;
+			min-height: 3.5em;
 		}
 
 		.makeItalic .fItalic {
@@ -252,8 +252,12 @@
 			min-height: 1.2em;
 		}
 
-		.makeUnderline {
+		.makeUnderline .fUnderline {
 			text-decoration: underline;
+		}
+
+		.makeUnderline .symbol3 {
+			color: #ccc;
 		}
 
 		.centered {
@@ -476,8 +480,6 @@
 				<p>And of course, normal keyboard shortcuts work: <kbd>⌘cmd</kbd>+<kbd>B</kbd> for bold, <kbd>⌘cmd</kbd>+<kbd>I</kbd> for italic, and <kbd>⌘cmd</kbd>+<kbd>U</kbd> for underline.</p>
 
 				<div class='blockExample' id='stylization'></div>
-
-				<div class='blockExample' id='underlineFormatting'></div>
 
 				<p>And don't worry &mdash; the stylization characters are terminated at line break, so there's no risk of having the whole document in cursive if you forget to close it. Also, a single asterisk/star won't stylize anything, so this is totally OK:</p>
 
@@ -1112,7 +1114,8 @@ A gorgeous day.  The sun is shining.  But BRICK BRADDOCK, retired police detecti
 				var stylization = new textAnimation({
 					text:
 						"<span class='symbol'>*</span><span class='fItalic'>I am in italic</span><span class='symbol'>*</span>\n" +
-						"<span class='symbol2'>**</span><span class='fBold'>And I am bold</span><span class='symbol2'>**</span>",
+						"<span class='symbol2'>**</span><span class='fBold'>And I am bold</span><span class='symbol2'>**</span>\n" +
+						"<span class='symbol3'>_</span><span class='fUnderline'>You can underline stuff, too.</span><span class='symbol3'>_</span>",
 					wait: 15,
 					caret: caret,
 					speed: 120,
@@ -1120,24 +1123,10 @@ A gorgeous day.  The sun is shining.  But BRICK BRADDOCK, retired police detecti
 					container: "stylization",
 					events: {
 						20: function () { stylization.addClass('makeItalic'); },
-						44: function () { stylization.addClass('makeBold'); }
+						44: function () { stylization.addClass('makeBold'); },
+						79: function () { stylization.addClass('makeUnderline'); }
 					}
 				});
-
-				var underlineFormatting = new textAnimation({
-					text:
-						"<span class='symbol'>_</span><span class='fUnderline'>You can underline stuff, too.</span><span class='symbol'>_</span>\n",
-					wait: 15,
-					caret: caret,
-					speed: 120,
-					debug: true,
-					container: "underlineFormatting",
-					events: {
-						35: function () { underlineFormatting.addClass('makeUnderline'); },
-
-					}
-				});
-
 
 			</script>
 			<script>
