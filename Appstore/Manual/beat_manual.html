@@ -155,14 +155,26 @@
 			float: right;
 		}
 
+		kbd {
+			font-family: courier, monospace;
+			font-size: 1em;
+			padding-left: .2rem;
+			padding-right: .2rem;
+			background-color: #f7f7f7;
+			border: 0.1rem solid #a0a0a0;
+			border-radius: 3px;
+			box-shadow: 1px 1px 2px #808080;
+			white-space: pre-wrap;
+		}
+
 		code {
 			font-family: courier, monospace;
 			font-size: 1em;
-			min-height: 1.2em;
+			padding-left: .2rem;
+			padding-right: .2rem;
 			background-color: #f7f7f7;
 			border: 0.1rem solid #d7d7d7;
 			border-radius: 3px;
-
 			white-space: pre-wrap;
 		}
 
@@ -171,11 +183,9 @@
 			padding: 1rem;
 			font-family: courier, monospace;
 			font-size: 1em;
-			min-height: 1.2em;
 			background-color: #f7f7f7;
 			border: 0.1rem solid #d7d7d7;
 			border-radius: 3px;
-
 			white-space: pre-wrap;
 		}
 
@@ -443,12 +453,12 @@
 				<h1>Basic Formatting</h1>
 				<h2>Scenes</h2>
 				<p>Writing screenplays with Beat is made to be as simple and distraction-free as possible.</p>
-				<p>The basic idea is that if it looks like a screenplay, it is screenplay. If you type in <em>int. school room</em> on a new line, it magically becomes a scene heading.</p>
+				<p>The basic idea is that if it looks like a screenplay, it is screenplay. If you type in <code>int. school room</code> on a new line, it magically becomes a scene heading.</p>
 
 				<div class='blockExample' id='scene'></div>
 
 				<h2>Dialogue</h2>
-				<p>Dialogue works in the same way. You can either press <b>tab</b> to begin a character cue and start typing dialogue, or just type in a <em>CHARACTER NAME</em> (in all caps), followed by a line of dialogue. No need for special shortcut keys or anything, just keep on writing!</p>
+				<p>Dialogue works in the same way. You can either press <kbd>tab</kbd> to begin a character cue and start typing dialogue, or just type in a <code>CHARACTER NAME</code> (in all caps), followed by a line of dialogue. No need for special shortcut keys or anything, just keep on writing!</p>
 
 				<div class='blockExample' id='dialogue'></div>
 
@@ -456,18 +466,16 @@
 
 				<div class='blockExample' id='parentheses'></div>
 
-				<p>If you are wondering why your FADE IN is a character, don't worry. Keep on smashing the enter key, and after two line breaks Beat figures out that it's not a character. See this example from <em>Big Fish</em> by John August:</p>
+				<p>If you are wondering why your <code>FADE IN</code> is a character, don't worry. Keep on smashing the enter key, and after two line breaks Beat figures out that it's not a character. See this example from <em>Big Fish</em> by John August:</p>
 
 				<div class='blockExample' id='bigFish'></div>
 
 				<h2>Stylization</h2>
-				<p>Because Fountain is a plain-text format, bold, italic and underline all work with markup characters. This means that something inside <em>*apostrophes*</em> is in italic, two apostrophes mean <b>**bold**</b>.</p>
-				<p>And of course, normal keyboard shortcuts work: <b>⌘B</b> for bold and <b>⌘I</b> for italics.</p>
+				<p>Because Fountain is a plain-text format, bold, italic and underline all work with markup characters. This means that single apostrophes mean <i>*italic*</i>, double apostrophes mean <b>**bold**</b>, and underscores mean <span style='text-decoration: underline;'>underline</span>.</p>
 
-				<div class='blockExample' id='stylization'>
-				</div>
+				<p>And of course, normal keyboard shortcuts work: <kbd>⌘cmd</kbd>+<kbd>B</kbd> for bold, <kbd>⌘cmd</kbd>+<kbd>I</kbd> for italic, and <kbd>⌘cmd</kbd>+<kbd>U</kbd> for underline.</p>
 
-				<p>To use underlining, surround your text with _underscores_, or use shortcut (<b>⌘U</b>)</p>
+				<div class='blockExample' id='stylization'></div>
 
 				<div class='blockExample' id='underlineFormatting'></div>
 
