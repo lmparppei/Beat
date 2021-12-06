@@ -18,9 +18,11 @@
 <body lang="en">
 	<div id='mainContainer'>
 		<div id='menu'>
-			<div id='menuToc'>
-			</div>
+			<div id='menuToc'></div>
 		</div>
+
+		<button onclick="darkMode()">Dark Mode</button>
+
 		<div id='page'>
 			<section>
 				<h1>Welcome to Beat</h1>
@@ -62,7 +64,7 @@
 
 				<div class='blockExample' id='parentheses'></div>
 
-				<p>If you are wondering why your <code>FADE IN</code> is a character, don't worry. Keep on smashing the enter key, and after two line breaks Beat figures out that it's not a character. See this example from <em>Big Fish</em> by John August:</p>
+				<p>If you are wondering why your <code>FADE IN</code> is a character, don't worry. Keep on smashing <kbd>↩enter</kbd>, and after two line breaks Beat figures out that it's not a character. See this example from <em>Big Fish</em> by John August:</p>
 
 				<div class='blockExample' id='bigFish'></div>
 
@@ -98,7 +100,7 @@
 
 			<section>
 				<h1>Advanced Formatting</h1>
-				<p><b>Note:</b> At any time, you can open the <b>Force Elements</b> menu by pressing <kbd>⌥opt</kbd>+<kbd>⏎enter</kbd> while editing.</p>
+				<p><b>Note:</b> At any time, you can open the <b>Force Elements</b> menu by pressing <kbd>⌥opt</kbd>+<kbd>↩enter</kbd> while editing.</p>
 
 				<h2>Dual Dialogue</h2>
 				<p>Due to the linear and plain-text nature of Fountain screenplay format, writing dual dialogue requires a small trick. Type in <code>^</code> after the character cue you want to appear alongside the first dialogue.</p>
@@ -334,6 +336,7 @@ This scene is totally omitted. You can still have it in your screenplay, but it 
 				<p>Action, or scene description, is any text that does not meet the criteria for another element (i.e. scene heading, character, dialogue, etc.). Fountain takes every carriage return, space, and tab in an action element as intentional, except in centered text. Tabs are converted to four spaces.</p>
 				<p>Centered text is a line of action text in which the first character is a greater-than sign <code>></code> and the last character is a less-than sign <code><</code>. Leading and trailing spaces and tabs within these brackets are not preserved for centered text.</p>
 				<p>An action element can be forced by preceding it with an exclamation mark <code>!</code>. This is helpful when action is in uppercase and directly followed by another line of action, preventing the two from being interpreted as character and dialogue elements.</p>
+
 				<pre>He opens the card.  A simple little number inside of which is hand written:
 
           Scott --
@@ -362,6 +365,7 @@ Scott exasperatedly throws down the card on the table and picks up the phone, hi
 				<p>A scene heading can be forced by starting the line with a single <code>.</code> followed by an alphanumeric character. This allows the writer to begin action and dialogue elements with ellipses without worry that they will be interpreted as scene headings.</p>
 				<p>Scene Headings can optionally be appended with scene numbers, which are any alphanumerics, hyphens <code>-</code>, or periods <code>.</code> wrapped in hashes <code>#</code>. The opening <code>#</code> must be preceded by a space.</p>
 				<p>Here are a regular scene heading with a scene number, a forced scene heading, and an action element that starts with an ellipsis:</p>
+
 				<pre>EXT. BRICK'S POOL - DAY #.16--b#
 
 Steel, in the middle of a heated phone call:
@@ -381,10 +385,12 @@ Point Blank Sniper?
 				<h2>Character</h2>
 				<p>A character element is any line entirely in uppercase, with one empty line before it and without an empty line after it. Character names must include at least one alphabetical character — e.g. <code>R2D2</code> works, but <code>23</code> does not.</p>
 				<p>A character element can be forced by preceding it with an at sign <code>@</code>. The ability to force a character element is helpful for names that require lowercase letters, and for non-Roman languages.</p>
+
 				<pre>@McCLANE
 Yippie ki-yay! I got my lowercase C!</pre>
 				<p>Fountain will remove the <code>@</code> and interpret <code>McCLANE</code> as a character, preserving its mixed case.</p>
 				<p>Character extensions may be in uppercase or lowercase:</p>
+
 				<pre>MOM (O. S.)
 Luke! Come down for supper!
 
@@ -394,6 +400,7 @@ What was it you said?</pre>
 				<h2>Dialogue</h2>
 				<p>Dialogue is any text following a character or parenthetical element.</p>
 				<p>Dialogue can contain carriage returns, but blank lines must comprise two spaces to be recognized as the part of the preceding dialogue element. For example, in the following passage,</p>
+
 				<pre>DEALER
 Ten.
 Four.
@@ -405,6 +412,7 @@ MONKEY
 Dude, I'm a monkey.</pre>
 				<p>the blank line under <code>Dealer gets a seven.</code> must have two spaces in order for <code>Hit or stand sir?</code> not to be recognized as Action.</p>
 				<p>Dual, or simultaneous, dialogue is expressed by putting a caret <code>^</code> at the end of the line containing the second character element. Any number of spaces between the character name and the <code>^</code> are acceptable and will be ignored.</p>
+
 				<pre>BRICK
 Screw retirement.
 
@@ -413,12 +421,14 @@ Screw retirement.</pre>
 
 				<h2>Parentheticals</h2>
 				<p>Actor parentheticals, also known as "wrylies", follow character or dialogue elements and are enclosed in parentheses <code>()</code>.</p>
+
 				<pre>STEEL
 (starting the engine)
 So much for retirement!</pre>
 
 				<h2>Lyrics</h2>
 				<p>A lyric is created by starting a line with a tilde <code>~</code>. Fountain will remove the <code>~</code> and leave it up to the app to style the Lyric appropriately. Lyrics are always forced.</p>
+
 				<pre>~Willy Wonka! Willy Wonka! The amazing chocolatier!
 ~Willy Wonka! Willy Wonka! Everybody give a cheer!</pre>
 
@@ -438,6 +448,7 @@ So much for retirement!</pre>
 						a colon).</li>
 				</ul>
 				</p>
+
 				<pre>CUT TO:
 
 EXT. BRICK'S POOL - DAY
@@ -461,6 +472,7 @@ Brick and Steel regard one another.  A job well done.
 
 				<h2>Page Breaks</h2>
 				<p>Page breaks are indicated by a line containing three or more consecutive equals signs <code>=</code>. Page breaks are useful for television scripts, where act breaks are explicitly labeled, and for creating "vanity" first pages, which may feature quotations or prologue text.</p>
+
 				<pre>The General Lee flies through the air. FREEZE FRAME.
 
 NARRATOR
@@ -481,6 +493,7 @@ The General Lee hangs in the air, right where we left it.  The NARRATOR'S voice 
 				<p>The recommendation is that <code>Title</code>, <code>Credit</code>, <code>Author</code>, <code>Authors</code>, and <code>Source</code> be centered on the page in the formatted output, and <code>Contact</code> and <code>Draft date</code> be placed at the lower left.</p>
 				<p>Supported keys may differ by app, but those listed above comprise a minimal useful set. Unsupported keys, as well as any other text in a title page element that does not meet the criteria for a key-value pair, will be ignored in formatted output.</p>
 				<p>A title page element is ended with an empty line and is automatically followed by an implicit page break.</p>
+
 				<pre>Title:
     _**BRICK & STEEL**_
     _**FULL RETIRED**_
@@ -497,6 +510,7 @@ Contact:
 				<p>A note is created by enclosing some text with double brackets <code>[[]]</code>.</p>
 				<p>Notes can contain carriage returns, but blank lines must comprise two spaces to be recognized as the part of the preceding note element.</p>
 				<p>Empty lines immediately surrounding a Note on its own line, or lines, are removed in parsing.</p>
+
 				<pre>INT. TRAILER HOME - DAY
 
 This is the home of THE BOY BAND, AKA DAN and JACK[[Or did we think of actual names for these guys?]].  They too are drinking beer, and counting the take from their last smash-and-grab.  Money, drugs, and ridiculous props are strewn about the table.
@@ -513,6 +527,7 @@ JACK
 
 				<h2>Boneyard</h2>
 				<p>To make Fountain ignore some text, enclose the text in the starting tag <code>/*</code> and the ending tag <code>*/</code>. In this example, an entire scene is put in the "boneyard" and will be ignored completely on formatted output:</p>
+
 				<pre>COGNITO
 Everyone's coming after you mate!  Scorpio, The Boy Band, Sparrow, Point Blank Sniper...
 
@@ -535,6 +550,7 @@ An EXTREMELY HANDSOME MAN drinks a beer.  Shirtless, unfortunately.</pre>
 				<h2>Sections</h2>
 				<p>Sections are optional markers for managing the structure of a story. Some screenplay applications use these like nested folders in a navigation view. Fountain's Sections resemble Markdown's ATX-style headers, but differ in that they are completely ignored in formatted output.</p>
 				<p>Sections are created by preceding a line with one or more hashes <code>#</code>. Sections can be nested within other sections. Spaces between the last <code>#</code> and the text are ignored.</p>
+
 				<pre>#Act
 ##Sequence
 
@@ -551,6 +567,7 @@ INT. PALACE HALLWAY - NIGHT
 				<h2>Synopses</h2>
 				<p>Synopses are optional blocks of text to describe a section or scene.</p>
 				<p>Synopses are single lines prefixed by an equals sign <code>=</code>. They can be located anywhere within the screenplay and are completely ignored in formatted output. Spaces between the <code>=</code> and the text are ignored.</p>
+
 				<pre># ACT I
 
 =Set up the characters and the story.

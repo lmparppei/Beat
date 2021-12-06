@@ -7,6 +7,11 @@ body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+body.dark {
+	background-color: #0a0a0a;
+	color: #c4c4c4;
+}
+
 section {
 	background-color: #fefefe;
 	max-width: 38rem;
@@ -15,6 +20,10 @@ section {
 	margin-right: auto;
 	margin-bottom: 2em;
 	padding: 1.25rem 1.25rem 1.55rem 1.25rem;
+}
+
+section.dark {
+	background-color: #010101;
 }
 
 h1,
@@ -42,6 +51,10 @@ h2 {
 	font-family: "Courier Prime", Courier, monospace;
 	font-weight: normal;
 	border-bottom: solid 1px #ddd;
+}
+
+h2.dark {
+	border-bottom: solid 1px #2f2f2f;
 }
 
 h3 {
@@ -111,6 +124,10 @@ dd {
 	color: #888;
 }
 
+dd.dark {
+	color: #7f7f7f;
+}
+
 dt {
 	width: 85%;
 }
@@ -127,6 +144,10 @@ img {
 .shortcut {
 	font-family: Helvetica, sans-serif;
 	color: #888;
+}
+
+.shortcut.dark {
+	color: #7f7f7f;
 }
 
 h2 .shortcut {
@@ -146,10 +167,16 @@ kbd {
 	padding-left: .2rem;
 	padding-right: .2rem;
 	background-color: #f7f7f7;
-	border: 0.1rem solid #a0a0a0;
+	border: 0.1rem solid #aaa;
 	border-radius: 3px;
-	box-shadow: 1px 1px 2px #808080;
+	box-shadow: 1px 1px 2px #888;
 	white-space: pre-wrap;
+}
+
+code.dark {
+	background-color: #080808;
+	border: 0.1rem solid #5f5f5f;
+	box-shadow: 1px 1px 2px #7f7f7f;
 }
 
 code {
@@ -163,17 +190,12 @@ code {
 	white-space: pre-wrap;
 }
 
-pre {
-	margin: 1rem auto 1rem auto;
-	padding: 1rem;
-	font-family: courier, monospace;
-	font-size: 1em;
-	background-color: #f7f7f7;
-	border: 0.1rem solid #d7d7d7;
-	border-radius: 3px;
-	white-space: pre-wrap;
+code.dark {
+	background-color: #080808;
+	border: 0.1rem solid #282828;
 }
 
+pre,
 .blockExample {
 	margin: 1rem auto 1rem auto;
 	padding: 1rem;
@@ -185,6 +207,11 @@ pre {
 	border-radius: 3px;
 
 	white-space: pre-wrap;
+}
+
+pre.dark, .blockExample.dark {
+	background-color: #080808;
+	border: 0.1rem solid #282828;
 }
 
 .bold {
@@ -217,32 +244,20 @@ pre {
 	font-style: italic;
 }
 
-.makeItalic .symbol {
-	color: #ccc;
-}
-
-.fSymbol {
-	color: #ccc;
-}
-
-.makeBold .symbol2 {
-	color: #ccc;
-}
-
 .makeBold .fBold {
 	font-weight: bold;
-}
-
-#underlineFormatting {
-	min-height: 1.2em;
 }
 
 .makeUnderline .fUnderline {
 	text-decoration: underline;
 }
 
-.makeUnderline .symbol3 {
+.fSymbol, .makeItalic .symbol, .makeBold .symbol2, .makeUnderline .symbol3 {
 	color: #ccc;
+}
+
+.fSymbol .dark, .makeItalic .symbol .dark, .makeBold .symbol2 .dark, .makeUnderline .symbol3 .dark {
+	color: #3f3f3f;
 }
 
 .centered {
@@ -260,6 +275,10 @@ pre {
 
 #storyOutlining {
 	color: #666;
+}
+
+#storyOutlining.dark {
+	color: #9f9f9f;
 }
 
 #dualDialogue {
@@ -321,8 +340,8 @@ pre {
 	}
 }
 
-
 /* Table of contents */
+
 .toc {
 	margin-top: 0rem;
 }
@@ -331,11 +350,13 @@ pre {
 	color: #ccc;
 }
 
-
+.omit.dark {
+	color: #3f3f3f;
+}
 
 /*
-			MAIN CONTAINER
-			*/
+MAIN CONTAINER
+*/
 
 #mainContainer {
 	display: flex;

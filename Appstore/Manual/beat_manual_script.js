@@ -225,3 +225,15 @@ function tableOfContents(exclude) {
 
 let menu = document.getElementById('menuToc');
 menu.innerHTML = tableOfContents(["Welcome to Beat"]);
+
+/*
+
+Dark Mode
+
+*/
+
+function darkMode() {
+	var elements = document.getElementsByTagName('*');
+	for (var i = 0; i < elements.length; i++)
+		elements[i].classList.add("dark")
+}
