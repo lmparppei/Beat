@@ -17,6 +17,8 @@
 #import "BeatHTMLPanel.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
+#import "WebPrinter.h"
+#import "BeatPluginUIView.h"
 
 @class BeatPluginWindow;
 
@@ -60,16 +62,16 @@
 
 - (NSRange)selectedRange;
 - (NSArray*)linesForScene:(id)scene;
-- (NSString*)fileToString:(NSString*)path;
+- (NSString*)fileToString:(NSString*)path; /// Read a file into string variable
 - (NSString*)pdfToString:(NSString*)path;
 - (void)parse;
-- (NSString*)assetAsString:(NSString*)filename;
-- (NSString*)appAssetAsString:(NSString*)filename;
+- (NSString*)assetAsString:(NSString*)filename; /// Plugin bundle asset as string
+- (NSString*)appAssetAsString:(NSString*)filename; /// Asset from inside the container
 - (void)end;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (NSArray*)availableTags;
-- (NSArray*)screen;
-- (NSArray*)windowFrame;
+- (NSArray*)screen; /// Current screen dimensions
+- (NSArray*)windowFrame; /// Window dimensions
 - (void)async:(JSValue*)callback; /// Alias for dispatch
 - (void)sync:(JSValue*)callback; /// Alias for dispatch_syncb
 - (void)dispatch:(JSValue*)callback;
@@ -85,7 +87,9 @@
 - (void)reformat:(Line*)line;
 - (void)reformatRange:(NSInteger)loc len:(NSInteger)len;
 
-- (bool)compatibleWith:(NSString*)version;
+- (bool)compatibleWith:(NSString*)version; /// Check compatibility
+
+- (BeatPluginUIView*)widget:(CGFloat)height; /// Add widget into sidebar
 
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value); /// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
@@ -108,7 +112,7 @@ JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)wid
 JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats);
 JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(OutlineScene *)scene);
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
-JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings);
+JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
 
 JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
@@ -119,7 +123,7 @@ JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteg
 
 // Interfacing with the document
 @protocol BeatScriptingDelegate <NSObject>
-@property (nonatomic, strong, nonatomic) ContinuousFountainParser *parser;
+@property (nonatomic, strong) ContinuousFountainParser *parser;
 @property (nonatomic, weak, readonly) NSWindow *thisWindow;
 @property (nonatomic, readonly) BeatTagging *tagging;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
@@ -148,6 +152,7 @@ JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteg
 - (void)formatLineOfScreenplay:(Line*)line;
 - (void)setPropertyValue:(NSString*)key value:(id)value;
 - (id)getPropertyValue:(NSString*)key;
+- (void)addWidget:(id)widget;
 @end
 
 @interface BeatPluginParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>

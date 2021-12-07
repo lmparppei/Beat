@@ -3,22 +3,32 @@
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 8.5.2020.
-//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
+//  Copyright © 2020-2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import "WebPrinter.h"
 #import <WebKit/WebKit.h>
 
-@interface WebPrinter ()
-{
-    WebView *printView;
-//	NSPrintInfo *printInfo;
-}
+@interface WebPrinter () <WebFrameLoadDelegate>
+@property (nonatomic) WebView *printView;
 @property (nonatomic) NSPrintInfo *printInfo;
 @property (nonatomic) void (^callback)(void);
+
+@property (nonatomic) NSUInteger finishedWebViews;
 @end
 @implementation WebPrinter
 
+- (instancetype)init {
+	return [self initWithName:@"Unnamed"];
+}
+- (instancetype)initWithName:(NSString*)name {
+	self = [super init];
+	if (self) {
+		_finishedWebViews = 0;
+		_name = name;
+	}
+	return self;
+}
 
 - (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings {
 	[self printHtml:html printInfo:printSettings callback:nil];
@@ -28,39 +38,48 @@
 	_callback = callbackBlock;
 		
     NSRect printViewFrame = NSMakeRect(0, 0, _printInfo.paperSize.width, _printInfo.paperSize.height);
-    printView = [[WebView alloc] initWithFrame:printViewFrame frameName:@"printFrame" groupName:@"printGroup"];
-    printView.shouldUpdateWhileOffscreen = true;
-    printView.frameLoadDelegate = self;
-    [printView.mainFrame loadHTMLString:html baseURL:NSBundle.mainBundle.resourceURL];
+	WebView *printView = [[WebView alloc] initWithFrame:printViewFrame frameName:@"printFrame" groupName:@"printGroup"];
+	printView.shouldUpdateWhileOffscreen = true;
+	printView.frameLoadDelegate = self;
+	printView.mainFrame.frameView.allowsScrolling = NO;
+	_printView = printView;
+	
+	[self addSubview:printView];
+	
+	// Load HTML string
+    [_printView.mainFrame loadHTMLString:html baseURL:nil];
 }
+
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
-    if (frame != sender.mainFrame) {
-        return;
-    }
-
-    if (sender.isLoading) {
-        return;
-    }
-    if ([[sender stringByEvaluatingJavaScriptFromString:@"document.readyState"] isEqualToString:@"complete"]) {
+    if (frame != sender.mainFrame) return;
+    if (sender.isLoading) return;
+    
+    //if ([[sender stringByEvaluatingJavaScriptFromString:@"document.readyState"] isEqualToString:@"complete"]) {
+	self.finishedWebViews = self.finishedWebViews + 1;
 		
-        sender.frameLoadDelegate = nil;
-
-		/*
-        NSWindow *window = NSApp.mainWindow;
-        if (!window) {
-            window = NSApp.windows.firstObject;
-        }
-		 */
+	if (self.finishedWebViews == self.subviews.count) {
+        if (sender.frameLoadDelegate == self) sender.frameLoadDelegate = nil;
 		
-		NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.frameView.documentView printInfo:_printInfo];
+		NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.frameView.documentView printInfo:self.printInfo];
 		[printOperation runOperation];
-		//NSPrintOperation *printOperation = [NSPrintOperation printOperationWithView:frame.webView printInfo:_printInfo];
-		//[printOperation runOperationModalForWindow:_window delegate:nil didRunSelector:nil contextInfo:nil];
-        //[printOperation runOperationModalForWindow:window delegate:window didRunSelector:nil contextInfo:nil];
 		
-		if (_callback) _callback();
+		if (self.callback) _callback();
     }
 }
+
+- (BOOL)knowsPageRange:(NSRangePointer)range
+{
+	range->location = 0;
+	range->length = self.subviews.count + 1;
+	return YES;
+}
+
+- (NSRect)rectForPage:(NSInteger)page
+{
+	NSView *subview = self.subviews[page - 1];
+	return subview.frame;
+}
+
 
 @end

@@ -28,6 +28,7 @@
 
 @interface SceneCards ()
 @property (nonatomic) NSArray* cards;
+@property (nonatomic) WebPrinter *webPrinter;
 @end
 
 @implementation SceneCards
@@ -35,7 +36,7 @@
 - (instancetype) initWithWebView:(WKWebView *)webView {
 	self = [super init];
 	self.cardView = webView;
-	self.webPrinter = [[WebPrinter alloc] init];
+	self.webPrinter = [[WebPrinter alloc] initWithName:@"Scene Cards"];
 	[self screenView];
 	return self;
 }
@@ -204,22 +205,11 @@
 }
 
 - (void)printCardsWithInfo:(NSPrintInfo *)printInfo {
-	// I'm not sure why this fixes a bug with the page sizing
-	printInfo.topMargin = 5;
-	printInfo.bottomMargin = 5;
-	printInfo.leftMargin = 5;
-	printInfo.rightMargin = 5;
-	printInfo.orientation = NSPaperOrientationLandscape;
-	
 	// This creates a HTML document for printing out the index cards
-	
 	NSWindow *window = NSApp.mainWindow;
 	if (!window) window = NSApp.windows.firstObject;
 	
 	NSError *error = nil;
-	
-	// A4 842px
-
 	NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"CardPrintCSS.css" ofType:@""];
 	NSString *css = [NSString stringWithContentsOfFile:cssPath encoding:NSUTF8StringEncoding error:&error];
 	
@@ -227,7 +217,7 @@
 	
 	// Retrieve cards through the delegate and put them into a dictionary
 	_cards = [self getSceneCards];
-	
+		
 	// Create separate html snippets from all the cards
 	for (NSDictionary *scene in _cards) {
 		NSString * type = scene[@"type"];
@@ -264,7 +254,7 @@
 
 	// Orientation is ALWAYS LANDSCAPE
 	NSInteger maxRows = round((printInfo.paperSize.width - 20) / 165);
-		
+	
 	NSInteger cardsOnRow = 0;
 	NSInteger rows = 0;
 	
@@ -285,6 +275,13 @@
 	}
 	
 	NSString* content = [NSString stringWithFormat:@"<html><head><style>%@</style></head><body><div id='container'><section>%@</section></div></body></html>", css, html];
+	
+	// I'm not sure why this fixes a bug with the page sizing
+	printInfo.topMargin = 5;
+	printInfo.bottomMargin = 5;
+	printInfo.leftMargin = 5;
+	printInfo.rightMargin = 5;
+	printInfo.orientation = NSPaperOrientationLandscape;
 	
 	[_webPrinter printHtml:content printInfo:printInfo];
 }

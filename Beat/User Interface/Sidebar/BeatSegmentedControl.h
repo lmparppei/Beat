@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatSegmentedControl : NSSegmentedControl <NSAnimationDelegate, NSTabViewDelegate>
-
+@property (nonatomic, weak) IBOutlet NSTabView *tabView;
 @end
 
 NS_ASSUME_NONNULL_END

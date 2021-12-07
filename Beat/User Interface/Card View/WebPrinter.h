@@ -11,10 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WebPrinter : NSObject <WebFrameLoadDelegate>
-@property (nonatomic, weak) NSWindow *window;
-@property (strong) NSString *testi;
-@property (nonatomic, weak) NSPrintOperation *printOperation;
+@interface WebPrinter : NSView <WebFrameLoadDelegate>
+//@property (nonatomic, weak) NSPrintOperation *printOperation;
+@property (nonatomic) NSString *name;
+- (instancetype)initWithName:(NSString*)name;
 - (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings;
 - (void)printHtml:(NSString *)html printInfo:(NSPrintInfo*)printSettings callback:(void (^ _Nullable)(void))callbackBlock;
 @end

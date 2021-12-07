@@ -16,7 +16,11 @@
 #import "BeatPluginParser.h"
 #import "NSString+Levenshtein.h"
 #import "UnzipKit.h"
+#import "WebPrinter.h"
 
+@interface BeatTest()
+@property (nonatomic) WebPrinter* printer;
+@end
 
 @implementation BeatTest
 
@@ -24,18 +28,15 @@
 {
 	self = [super init];
 	if (self) {
+		NSLog(@"######### RUNNING TESTS #########");
 		[self test];
 	}
 	return self;
 }
 
 - (void) test {
-//	NSURL *pluginURL = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
-	NSURL* url = [NSBundle.mainBundle URLForResource:@"Test" withExtension:@"zip"];
-	UZKArchive *container = [[UZKArchive alloc] initWithURL:url error:nil];
-	NSArray* list = [container listFilenames:nil];
-	NSLog(@"### List: %@", list);
-	//[container extractFilesTo:pluginURL.path overwrite:YES error:&error];
+	_printer = [[WebPrinter alloc] init];
+	[_printer printHtml:@"<h1>Test!</h1>" printInfo:NSPrintInfo.sharedPrintInfo];
 }
 
 - (NSString*)testString {

@@ -115,7 +115,9 @@
 
 #import "BeatPluginParser.h"
 #import "BeatPluginManager.h"
+#import "BeatWidgetView.h"
 
+#import "BeatSegmentedControl.h"
 #import "BeatNotepad.h"
 
 #import "BeatUserDefaults.h"
@@ -138,6 +140,7 @@
 
 // Plugin support
 @property (assign) BeatPluginManager *pluginManager;
+@property (weak) IBOutlet BeatWidgetView *widgetView;
 
 // Quick Settings
 @property (nonatomic) NSPopover *quickSettingsPopover;
@@ -191,7 +194,7 @@
 @property (nonatomic) NSString *bufferedText;
 
 // Sidebar & Outline view
-@property (weak) IBOutlet NSSegmentedControl *sideBarTabControl;
+@property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
 @property (weak) IBOutlet NSTabView *sideBarTabs;
 @property (weak) IBOutlet BeatOutlineView *outlineView;
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
@@ -4157,6 +4160,11 @@ static NSString *revisionAttribute = @"Revision";
 	if (!_sidebarVisible) [self toggleSidebarView:nil];
 	[self.sideBarTabControl setSelectedSegment:2];
 }
+- (IBAction)showWidgets:(id)sender {
+	if (!_sidebarVisible) [self toggleSidebarView:nil];
+	
+	[self.sideBarTabControl.tabView selectTabViewItem:[self.sideBarTabControl.tabView tabViewItemAtIndex:3]];
+}
 
 
 #pragma mark - Outline View
@@ -4627,16 +4635,8 @@ static NSString *revisionAttribute = @"Revision";
 
 - (void)printCards {
 	[_sceneCards printCardsWithInfo:self.printInfo.copy];
-	//[_sceneCards printCards:[self getSceneCards] printInfo:self.printInfo];
 }
 - (void) refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
-	// Change style in card view if needed
-	if ([self isDark]) {
-		[_cardView evaluateJavaScript:@"nightModeOn();" completionHandler:nil]; // THE HOUSE IS BLACK.
-	} else {
-		[_cardView evaluateJavaScript:@"nightModeOff();" completionHandler:nil];
-	}
-		
 	[_sceneCards reloadCardsWithVisibility:alreadyVisible changed:changedIndex];
 }
 
@@ -5367,7 +5367,7 @@ triangle walks
 	NSString *pluginName = menuItem.title;
 	
 	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
-
+	
 	if (_runningPlugins[pluginName]) {
 		// Disable a running plugin and return
 		[(BeatPluginParser*)_runningPlugins[pluginName] forceEnd];
@@ -5380,7 +5380,7 @@ triangle walks
 	
 	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
 	[parser loadPlugin:plugin];
-	
+		
 	parser = nil;
 }
 
@@ -5434,6 +5434,10 @@ triangle walks
 		BeatPluginParser *plugin = _runningPlugins[pluginName];
 		[plugin updateOutline:outline];
 	}
+}
+
+- (void)addWidget:(id)widget {
+	[_widgetView addWidget:widget];
 }
 
 // For those who REALLY, REALLY know what the fuck they are doing

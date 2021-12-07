@@ -1885,19 +1885,36 @@ and incomprehensible system of recursion.
 }
 
 - (NSArray*)linesForScene:(OutlineScene*)scene {
+	// Return minimal results for non-scene elements
 	if (scene == nil) return @[];
+	if (scene.type == synopse) return @[scene.line];
+	else if (scene.type == section) return @[scene.line];
+		
+	NSInteger lineIndex = [self.lines indexOfObject:scene.line];
+	if (lineIndex == NSNotFound) return @[];
 	
+	// Automatically add the heading line and increment the index
 	NSMutableArray *lines = [NSMutableArray array];
+	[lines addObject:scene.line];
+	lineIndex++;
 	
+	// Iterate through scenes and find the next terminating outline element.
 	@try {
-		for (Line* line in self.lines) {
-			if (NSLocationInRange(line.position, scene.range)) [lines addObject:line];
+		while (lineIndex < self.lines.count) {
+			Line *line = self.lines[lineIndex];
+
+			if (line.type == heading || line.type == section) {
+				break;
+			}
+			[lines addObject:line];
+			
+			lineIndex++;
 		}
 	}
 	@catch (NSException *e) {
 		NSLog(@"No lines found");
 	}
-		
+	
 	return lines;
 }
 

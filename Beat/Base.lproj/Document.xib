@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19162" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19455" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="19016"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19162"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="19162"/>
-        <plugIn identifier="com.apple.pdfkit.ibplugin" version="19162"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19455"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="19455"/>
+        <plugIn identifier="com.apple.pdfkit.ibplugin" version="19455"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="the Touch Bar" minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
     </dependencies>
@@ -60,6 +60,7 @@
                 <outlet property="touchBar" destination="FXM-lH-N3d" id="WEh-pV-JrM"/>
                 <outlet property="touchbarTimeline" destination="LyB-YR-3Ea" id="zM3-ee-1Bq"/>
                 <outlet property="touchbarTimelineButton" destination="nWW-nu-Y7P" id="3zj-IU-5iw"/>
+                <outlet property="widgetView" destination="6cI-80-1yF" id="Hxz-A5-B9j"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -459,7 +460,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="458"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="448"/>
@@ -687,7 +688,7 @@
                                                                                 <rect key="frame" x="0.0" y="0.0" width="300" height="337"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="mfV-6r-KJe">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="337"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="systemDefault" viewBased="YES" id="QGY-eB-GWe" customClass="BeatCharacterList">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="337"/>
@@ -842,6 +843,18 @@
                                                                     <connections>
                                                                         <outlet property="reloadableView" destination="QGY-eB-GWe" id="ghL-vJ-qpq"/>
                                                                     </connections>
+                                                                </tabViewItem>
+                                                                <tabViewItem label="Item 3" identifier="" id="o1x-nn-5KN" userLabel="Widgets">
+                                                                    <view key="view" id="CLw-tN-LuF">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="300" height="473"/>
+                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                        <subviews>
+                                                                            <customView fixedFrame="YES" id="6cI-80-1yF" customClass="BeatWidgetView">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="300" height="473"/>
+                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                            </customView>
+                                                                        </subviews>
+                                                                    </view>
                                                                 </tabViewItem>
                                                             </tabViewItems>
                                                             <connections>
@@ -1278,7 +1291,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-x8E"/>
             </connections>
-            <point key="canvasLocation" x="270.5" y="154"/>
+            <point key="canvasLocation" x="270.5" y="153.5"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="ho8-td-WxP"/>
         <customObject id="rsQ-wl-KkE" customClass="BeatTimer">
