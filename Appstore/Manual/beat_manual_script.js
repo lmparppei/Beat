@@ -232,8 +232,35 @@ Dark Mode
 
 */
 
-function darkMode() {
+function toggleDarkMode() {
 	var elements = document.getElementsByTagName('*');
-	for (var i = 0; i < elements.length; i++)
-		elements[i].classList.add("dark")
+	if (document.getElementById('darkModeToggle').checked) {
+		for (var i = 0; i < elements.length; i++) {
+			elements[i].classList.add('dark');
+		}
+	}
+	else {
+		for (var i = 0; i < elements.length; i++) {
+			elements[i].classList.remove('dark');
+		}
+	}
 }
+
+/*
+
+function toggleDarkMode() {
+	var elements = document.getElementsByTagName('*');
+	for (var i = 0; i < elements.length; i++) {
+		if (elements[i].classList.contains('dark')) {
+			for (var i = 0; i < elements.length; i++) {
+				elements[i].classList.remove('dark');
+			}
+			return;
+		}
+	}
+	for (var i = 0; i < elements.length; i++) {
+		elements[i].classList.add('dark');
+	}
+}
+
+*/
