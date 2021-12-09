@@ -110,8 +110,7 @@
 
 -(NSUInteger)length {
 	if (!_delegate) return _length;
-	
-	if (self.type == synopse || self.type == section) return self.string.length;
+	if (self.type == synopse) return self.line.length;
 	
 	NSArray *lines = self.delegate.lines;
 	NSInteger index = [lines indexOfObject:self.line];
@@ -122,12 +121,14 @@
 		if (!lines[i]) break;
 		
 		Line *line = lines[i];
-		if (line.isOutlineElement && line.type != synopse) {
+		if ((line.type == heading || line.type == section) && line != self.line) {
 			return line.position - self.position;
 		}
 	}
 	
-	if (length == -1) return [(Line*)lines.lastObject position] - self.position;
+	if (length == -1) {
+		return [(Line*)lines.lastObject position] - self.position;
+	}
 	
 	return length;
 }

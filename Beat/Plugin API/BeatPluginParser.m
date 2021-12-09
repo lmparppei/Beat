@@ -56,6 +56,7 @@
 @property (nonatomic) NSMutableArray *pluginWindows;
 @property (nonatomic) NSDictionary *type;
 @property (nonatomic) WebPrinter *printer;
+@property (nonatomic) BeatPluginUIView *widgetView;
 @end
 
 @implementation BeatPluginParser
@@ -79,7 +80,7 @@
 			[(BeatAppDelegate*)NSApp.delegate logToConsole:errMsg pluginName:@"Plugin parser"];
 		}
 	}];
-
+		
 	[_context setObject:self forKeyedSubscript:@"Beat"];
 	
 	return self;
@@ -145,6 +146,9 @@
 	
 	// Stop any timers left
 	[self stopTimers];
+	
+	// Remove widget
+	if (_widgetView) [_widgetView remove];
 	
 	//_vm = nil;
 	_sheet = nil;
@@ -934,27 +938,47 @@
 	return paginator;
 }
 
+#pragma mark - Widget interface
+
+- (BeatPluginUIView*)widget:(CGFloat)height {
+	// Allow only one widget view
+	if (_widgetView) return _widgetView;
+	
+	self.resident = YES;
+	[self.delegate registerPlugin:self];
+	
+	BeatPluginUIView *view = [BeatPluginUIView.alloc initWithHeight:height];
+	_widgetView = view;
+	[_delegate addWidget:_widgetView];
+	
+	return view;
+}
+
+
 #pragma mark - Printing interface
 
-- (void)printHTML:(NSString*)html settings:(NSDictionary*)settings {
-	_printer = WebPrinter.alloc.init;
+- (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback {
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
 	
-	if (settings[@"orientation"]) {
-		NSString *orientation = [(NSString*)settings[@"orientation"] lowercaseString];
-		if ([orientation isEqualToString:@"landscape"]) printInfo.orientation = NSPaperOrientationLandscape;
-		else printInfo.orientation = NSPaperOrientationPortrait;
-	} else printInfo.orientation = NSPaperOrientationPortrait;
-	
-	if (settings[@"paperSize"]) {
-		NSString *paperSize = [(NSString*)settings[@"paperSize"] lowercaseString];
-		if ([paperSize isEqualToString:@"us letter"]) [BeatPaperSizing setPageSize:BeatUSLetter printInfo:printInfo];
-		else if ([paperSize isEqualToString:@"a4"]) [BeatPaperSizing setPageSize:BeatA4 printInfo:printInfo];
-	}
-	
-	[_printer printHtml:html printInfo:printInfo callback:^{
-		self.printer = nil;
-	}];
+	dispatch_async(dispatch_get_main_queue(), ^(void){
+		self.printer = [[WebPrinter alloc] init];
+		
+		if (settings[@"orientation"]) {
+			NSString *orientation = [(NSString*)settings[@"orientation"] lowercaseString];
+			if ([orientation isEqualToString:@"landscape"]) printInfo.orientation = NSPaperOrientationLandscape;
+			else printInfo.orientation = NSPaperOrientationPortrait;
+		} else printInfo.orientation = NSPaperOrientationPortrait;
+		
+		if (settings[@"paperSize"]) {
+			NSString *paperSize = [(NSString*)settings[@"paperSize"] lowercaseString];
+			if ([paperSize isEqualToString:@"us letter"]) [BeatPaperSizing setPageSize:BeatUSLetter printInfo:printInfo];
+			else if ([paperSize isEqualToString:@"a4"]) [BeatPaperSizing setPageSize:BeatA4 printInfo:printInfo];
+		}
+		
+		[self.printer printHtml:html printInfo:printInfo callback:^{
+			if (callback) [callback callWithArguments:nil];
+		}];
+	});
 }
 
 #pragma mark - Utilities
@@ -983,19 +1007,7 @@
 }
 - (NSArray*)linesForScene:(id)sceneId
 {
-	NSMutableArray *lines = [NSMutableArray array];
-	OutlineScene *scene = (OutlineScene*)sceneId;
-	
-	@try {
-		for (Line* line in self.delegate.parser.lines) {
-			if (NSLocationInRange(line.position, scene.range)) [lines addObject:line];
-		}
-	}
-	@catch (NSException *e) {
-		[self reportError:@"Scene index out of range" withText:@"Plugin tried to access a nonexistent scene"];
-	}
-	
-	return lines;
+	return [self.delegate.parser linesForScene:(OutlineScene*)sceneId];
 }
 
 - (NSArray*)scenes

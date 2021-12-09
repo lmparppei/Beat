@@ -1055,7 +1055,7 @@
 		string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
 	}
 	
-	NSInteger offset = self.string.length + 1;
+	NSInteger offset = self.string.length + 1 - line.numberOfPrecedingFormattingCharacters;
 	if (line.changed) self.changed = YES;
 	
 	self.string = [self.string stringByAppendingString:[NSString stringWithFormat:@"\n%@", string]];

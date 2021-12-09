@@ -44,14 +44,7 @@ typedef enum : NSUInteger {
 @end
 
 @interface PrintView : NSView
-@property (weak) id<PrintViewDelegate> delegate;
-/*
-- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript;
-- (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode compareWith:(NSString*)oldScript delegate:(id)delegate;
-- (id)initWithHTML:(NSString*)htmlString document:(NSDocument*)document operation:(BeatPrintOperation)mode;
-- (id)initWithHTML:(NSString *)htmlString document:(NSDocument *)document operation:(BeatPrintOperation)mode completion:(void (^)(void))completion;
-*/
- 
+@property (weak) id<PrintViewDelegate> delegate; 
 // Modern ways
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate;
 - (id)initWithHTML:(NSString*)htmlString settings:(BeatExportSettings*)settings operation:(BeatPrintOperation)mode completion:(void (^)(void))completion;

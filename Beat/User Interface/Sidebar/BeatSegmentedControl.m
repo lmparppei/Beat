@@ -13,7 +13,6 @@
 #import "BeatSidebarTabView.h"
 
 @interface BeatSegmentedControl ()
-@property (nonatomic, weak) IBOutlet NSTabView *tabView;
 @end
 
 @implementation BeatSegmentedControl

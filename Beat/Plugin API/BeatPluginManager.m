@@ -84,7 +84,7 @@
 	
 	if (self) {
 		_pluginURL = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
-		[self loadPlugins];
+		[self loadPlugins];		
 	}
 	
 	return self;
