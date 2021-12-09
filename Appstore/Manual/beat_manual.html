@@ -17,14 +17,18 @@
 
 <body lang="en">
 	<div id='mainContainer'>
-		<div id='menu'>
-			<div id='menuToc'></div>
+		<div id='menuContainer'>
+			<div id='menu'>
+				<div id='menuToc'></div>
+				<div id='darkMode'>
+					<span>Dark Mode</span>
+					<label class='switch'>
+						<input type='checkbox' id='darkModeToggle' onchange='toggleDarkMode()'>
+						<span class="slider"></span>
+					</label>
+				</div>
+			</div>
 		</div>
-
-		<label class='switch'>
-			<input type='checkbox' id='darkModeToggle' onchange='toggleDarkMode();'>
-			<span class="sliders"></span>
-		</label>
 
 		<div id='page'>
 			<section>

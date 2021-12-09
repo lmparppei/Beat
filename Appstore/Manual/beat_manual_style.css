@@ -188,6 +188,12 @@ kbd {
 	white-space: pre-wrap;
 }
 
+kbd.dark {
+	background-color: #080808;
+	border: 0.1rem solid #5f5f5f;
+	box-shadow: 1px 1px 2px #7f7f7f;
+}
+
 code.dark {
 	background-color: #080808;
 	border: 0.1rem solid #5f5f5f;
@@ -224,7 +230,8 @@ pre,
 	white-space: pre-wrap;
 }
 
-pre.dark, .blockExample.dark {
+pre.dark,
+.blockExample.dark {
 	background-color: #080808;
 	border: 0.1rem solid #282828;
 }
@@ -378,12 +385,12 @@ MAIN CONTAINER
 	justify-content: center;
 }
 
-#menu,
+#menuContainer,
 #page {
 	padding: 1rem;
 }
 
-#menu {
+#menuContainer {
 	width: auto;
 	max-width: 14rem;
 	min-width: 11rem;
@@ -392,8 +399,12 @@ MAIN CONTAINER
 	flex: 1;
 }
 
-#menu #menuToc {
+#menu {
 	position: fixed;
+}
+
+#menu #menuToc {
+	position: relative;
 	min-width: 200px;
 	max-width: 12rem;
 	width: 100%;
@@ -447,12 +458,11 @@ MAIN CONTAINER
 TOGGLE SWITCH
 
 */
-
+/*
 .switch {
-	position: fixed;
 	display: inline-block;
-	width: 60px;
-	height: 34px;
+	width: 30px;
+	height: 15px;
 }
 
 .switch input {
@@ -484,7 +494,7 @@ TOGGLE SWITCH
 	background-color: white;
 	-webkit-transition: .4s;
 	transition: .4s;
-	border-radius: 50%;
+	border-radius:34px;
 }
 
 input:checked+.slider {
