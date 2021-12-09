@@ -677,6 +677,11 @@ DQ
                                                 <action selector="showCharactersAndDialogue:" target="-1" id="MOK-rA-PRf"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Widgets" keyEquivalent="4" id="upd-G6-QM0">
+                                            <connections>
+                                                <action selector="showWidgets:" target="-1" id="P0d-zE-fee"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>

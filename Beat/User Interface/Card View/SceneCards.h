@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SceneCards : NSObject
 @property (weak) id<SceneCardDelegate> delegate;
 @property (nonatomic, weak) WKWebView *cardView;
-@property (nonatomic) WebPrinter *webPrinter;
 - (instancetype) initWithWebView:(WKWebView *)webView;
 - (void) screenView;
 

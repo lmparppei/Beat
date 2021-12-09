@@ -45,7 +45,6 @@ THE SOFTWARE.
 #import "BeatAnalysisPanel.h"
 #import "BeatEditorDelegate.h"
 
-
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
@@ -57,7 +56,7 @@ THE SOFTWARE.
 @property (nonatomic) CGFloat inset;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool trackChanges;
- 
+
 @property (nonatomic) bool contentLocked;
 
 // Fonts

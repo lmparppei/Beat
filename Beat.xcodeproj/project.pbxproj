@@ -38,6 +38,10 @@
 		B6119C522682154F0049456D /* BeatExportSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6119C512682154F0049456D /* BeatExportSettings.m */; };
 		B6119C532682154F0049456D /* BeatExportSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6119C512682154F0049456D /* BeatExportSettings.m */; };
 		B6119C542682154F0049456D /* BeatExportSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6119C512682154F0049456D /* BeatExportSettings.m */; };
+		B613BDF2275F6252007807E1 /* BeatPluginUIView.m in Sources */ = {isa = PBXBuildFile; fileRef = B613BDF1275F6252007807E1 /* BeatPluginUIView.m */; };
+		B613BDF3275F6252007807E1 /* BeatPluginUIView.m in Sources */ = {isa = PBXBuildFile; fileRef = B613BDF1275F6252007807E1 /* BeatPluginUIView.m */; };
+		B613BDF6275F62CE007807E1 /* BeatPluginUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B613BDF5275F62CE007807E1 /* BeatPluginUIButton.m */; };
+		B613BDF7275F62CE007807E1 /* BeatPluginUIButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B613BDF5275F62CE007807E1 /* BeatPluginUIButton.m */; };
 		B615E5E923CE022F00E61C54 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B138B66019E1E8CA000489C4 /* ScriptCSS.css */; };
 		B616493E26F7535600582671 /* BeatPasteboardItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B616493D26F7535600582671 /* BeatPasteboardItem.m */; };
 		B616493F26F7535800582671 /* BeatPasteboardItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B616493D26F7535600582671 /* BeatPasteboardItem.m */; };
@@ -73,6 +77,8 @@
 		B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */; };
 		B64170EC270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */; };
 		B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */; };
+		B641F5FB275F758500C66E2B /* BeatWidgetView.m in Sources */ = {isa = PBXBuildFile; fileRef = B641F5FA275F758500C66E2B /* BeatWidgetView.m */; };
+		B641F5FC275F758500C66E2B /* BeatWidgetView.m in Sources */ = {isa = PBXBuildFile; fileRef = B641F5FA275F758500C66E2B /* BeatWidgetView.m */; };
 		B6447CB124616C8400AA4EBC /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6447CB024616C8400AA4EBC /* MasterView.m */; };
 		B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBDD260511E10091AEAB /* ITSwitch.m */; };
 		B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBE3260605D30091AEAB /* BeatEditorButton.m */; };
@@ -550,6 +556,10 @@
 		B61061E92590DB66001947D6 /* BeatModalInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatModalInput.m; sourceTree = "<group>"; };
 		B6119C502682154F0049456D /* BeatExportSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
 		B6119C512682154F0049456D /* BeatExportSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatExportSettings.m; sourceTree = "<group>"; };
+		B613BDF0275F6252007807E1 /* BeatPluginUIView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUIView.h; sourceTree = "<group>"; };
+		B613BDF1275F6252007807E1 /* BeatPluginUIView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUIView.m; sourceTree = "<group>"; };
+		B613BDF4275F62CE007807E1 /* BeatPluginUIButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginUIButton.h; sourceTree = "<group>"; };
+		B613BDF5275F62CE007807E1 /* BeatPluginUIButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginUIButton.m; sourceTree = "<group>"; };
 		B616493B26F7389B00582671 /* BeatEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorDelegate.h; sourceTree = "<group>"; };
 		B616493C26F7535600582671 /* BeatPasteboardItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPasteboardItem.h; sourceTree = "<group>"; };
 		B616493D26F7535600582671 /* BeatPasteboardItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPasteboardItem.m; sourceTree = "<group>"; };
@@ -595,6 +605,8 @@
 		B63DC837260A1EC60092B472 /* Beat File Format Specification.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "Beat File Format Specification.md"; sourceTree = "<group>"; };
 		B64170EA270B6C0D0002FFA1 /* BeatTextStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextStorage.h; sourceTree = "<group>"; };
 		B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextStorage.m; sourceTree = "<group>"; };
+		B641F5F9275F758500C66E2B /* BeatWidgetView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatWidgetView.h; sourceTree = "<group>"; };
+		B641F5FA275F758500C66E2B /* BeatWidgetView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatWidgetView.m; sourceTree = "<group>"; };
 		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = "Beat/User Interface/Misc/MasterView.h"; sourceTree = SOURCE_ROOT; };
 		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = "Beat/User Interface/Misc/MasterView.m"; sourceTree = SOURCE_ROOT; };
 		B644DBDD260511E10091AEAB /* ITSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSwitch.m; sourceTree = "<group>"; };
@@ -1235,8 +1247,15 @@
 		B661936D26BE81B700152CA1 /* API UI */ = {
 			isa = PBXGroup;
 			children = (
+				B6DCB25526510E1000FE2447 /* HTML Window */,
 				B661936E26BE81FC00152CA1 /* BeatModalAccessoryView.h */,
 				B661936F26BE81FC00152CA1 /* BeatModalAccessoryView.m */,
+				B613BDF0275F6252007807E1 /* BeatPluginUIView.h */,
+				B613BDF1275F6252007807E1 /* BeatPluginUIView.m */,
+				B613BDF4275F62CE007807E1 /* BeatPluginUIButton.h */,
+				B613BDF5275F62CE007807E1 /* BeatPluginUIButton.m */,
+				B641F5F9275F758500C66E2B /* BeatWidgetView.h */,
+				B641F5FA275F758500C66E2B /* BeatWidgetView.m */,
 			);
 			path = "API UI";
 			sourceTree = "<group>";
@@ -1580,7 +1599,6 @@
 			children = (
 				B661936D26BE81B700152CA1 /* API UI */,
 				B671304F2676109B00B5FDC5 /* API Objects */,
-				B6DCB25526510E1000FE2447 /* HTML Window */,
 				B68B4CA1263F02F800AC4939 /* Console */,
 				B62C0FF4262C91C6007659F8 /* Plugin Library */,
 				B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */,
@@ -2098,6 +2116,8 @@
 				B6000DCE2562F0B300289676 /* CeltxImport.m in Sources */,
 				B60A592E259938C900207D00 /* BeatPluginManager.m in Sources */,
 				B66B5AB52739B75500BBC9C6 /* UZKArchive.m in Sources */,
+				B641F5FB275F758500C66E2B /* BeatWidgetView.m in Sources */,
+				B613BDF6275F62CE007807E1 /* BeatPluginUIButton.m in Sources */,
 				B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */,
 				B6F3117A274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */,
 				B66F463B2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */,
@@ -2152,6 +2172,7 @@
 				B6BBF3D024AC811600503EFB /* BeatPluginParser.m in Sources */,
 				B63CF61625B43EDD00EFA3A2 /* ThemeEditor.m in Sources */,
 				B650D76D25CF349D0042010C /* BeatTagging.m in Sources */,
+				B613BDF2275F6252007807E1 /* BeatPluginUIView.m in Sources */,
 				B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */,
 				B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */,
 				B6F0F3892714A2BA006A359D /* BeatDocumentController.m in Sources */,
@@ -2265,6 +2286,8 @@
 				B68B6038260B849300463AD8 /* CeltxImport.m in Sources */,
 				B68B6039260B849300463AD8 /* BeatPluginManager.m in Sources */,
 				B66B5AB62739B75500BBC9C6 /* UZKArchive.m in Sources */,
+				B641F5FC275F758500C66E2B /* BeatWidgetView.m in Sources */,
+				B613BDF7275F62CE007807E1 /* BeatPluginUIButton.m in Sources */,
 				B68B603A260B849300463AD8 /* FountainAnalysis.m in Sources */,
 				B6F3117B274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */,
 				B68B603B260B849300463AD8 /* DiffMatchPatchCFUtilities.c in Sources */,
@@ -2319,6 +2342,7 @@
 				B68B605F260B849300463AD8 /* BeatPluginParser.m in Sources */,
 				B68B6060260B849300463AD8 /* ThemeEditor.m in Sources */,
 				B68B6061260B849300463AD8 /* BeatTagging.m in Sources */,
+				B613BDF3275F6252007807E1 /* BeatPluginUIView.m in Sources */,
 				B68B6062260B849300463AD8 /* ITSwitch.m in Sources */,
 				B68B6063260B849300463AD8 /* FlatButton.swift in Sources */,
 				B6F0F38A2714A2BA006A359D /* BeatDocumentController.m in Sources */,
@@ -2623,7 +2647,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13182;
+				CURRENT_PROJECT_VERSION = 13186;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2655,7 +2679,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13182;
+				CURRENT_PROJECT_VERSION = 13186;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2683,7 +2707,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13182;
+				CURRENT_PROJECT_VERSION = 13186;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2715,7 +2739,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13182;
+				CURRENT_PROJECT_VERSION = 13186;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

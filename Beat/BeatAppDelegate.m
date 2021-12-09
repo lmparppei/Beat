@@ -56,6 +56,8 @@
 @property (nonatomic) NSPanel *console;
 @property (nonatomic) NSTextView *consoleTextView;
 
+@property (nonatomic) BeatTest *tests;
+
 #ifdef ADHOC
 // I'm supporting ad hoc distribution for now
 @property (nonatomic) IBOutlet SPUUpdater *updater;
@@ -80,9 +82,7 @@
 
 - (void) awakeFromNib {
 	[[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
-	
-	// BeatTest *test = BeatTest.alloc.init;
-	
+		
 #ifdef ADHOC
 	// Ad hoc vector
 	NSLog(@"# ADHOC");

@@ -820,7 +820,7 @@
 	if (lastPage.count == 0) [_pages removeLastObject];
 		
 	_lastPageHeight = (float)currentY / (float)maxPageHeight;
-	if (_lastPageHeight == 0) _lastPageHeight = -1.0;
+	//if (_lastPageHeight == 0) _lastPageHeight = -1.0;
 	
 	// If there's only one page and the last page height is 0, make the last page height full
 	// if (_pages.count == 1 && _pages[0].count && currentY == 0) _lastPageHeight = 1.0;
