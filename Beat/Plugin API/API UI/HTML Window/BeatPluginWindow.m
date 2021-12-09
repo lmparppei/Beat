@@ -73,6 +73,7 @@
 }
 
 - (void)focus {
+	[self makeKeyAndOrderFront:nil];
 	[self makeFirstResponder:self.contentView];
 }
 

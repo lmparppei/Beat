@@ -18,15 +18,16 @@
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
-	self.level = NSModalPanelWindowLevel;
+	self.level = NSPopUpMenuWindowLevel; // was modalpanel
 	self.delegate = host;
+	self.parentWindow = host.delegate.documentWindow;
 	
 	// We can't release the panel on close, because JSContext might hang onto it and cause a crash
 	self.releasedWhenClosed = NO;
+	//self.hidesOnDeactivate = NO;
 	
 	_host = host;
 	self.title = host.pluginName;
-
 	
 	WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
 	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
@@ -62,6 +63,7 @@
 }
 
 - (void)focus {
+	[self makeKeyAndOrderFront:nil];
 	[self makeFirstResponder:self.contentView];
 }
 

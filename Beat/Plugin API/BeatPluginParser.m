@@ -19,7 +19,6 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
 #import "BeatPluginParser.h"
 #import "Line.h"
@@ -32,8 +31,8 @@
 #import "BeatModalAccessoryView.h"
 #import "WebPrinter.h"
 #import "BeatPaperSizing.h"
-#import <PDFKit/PDFKit.h>
 
+#import <PDFKit/PDFKit.h>
 
 @interface BeatPluginParser ()
 @property (nonatomic) JSVirtualMachine *vm;
@@ -103,7 +102,7 @@
 	[self.context evaluateScript:string];
 
 	// Kill it if the plugin is not resident
-	if (!self.sheet && !self.resident && self.pluginWindows.count < 1) {
+	if (!self.sheet && !self.resident && self.pluginWindows.count < 1 && !self.widgetView) {
 		[self end];
 	}
 }
@@ -117,6 +116,9 @@
 			[window closeWindow];
 		}
 	}
+	
+	// Remove widget
+	if (_widgetView != nil) [_widgetView remove];
 	
 	_sheet = nil;
 	_sheetCallback = nil;
@@ -148,7 +150,7 @@
 	[self stopTimers];
 	
 	// Remove widget
-	if (_widgetView) [_widgetView remove];
+	if (_widgetView != nil) [_widgetView remove];
 	
 	//_vm = nil;
 	_sheet = nil;
@@ -311,7 +313,7 @@
 {
 	NSSavePanel *savePanel = [NSSavePanel savePanel];
 	savePanel.allowedFileTypes = @[format];
-	[savePanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse returnCode) {
+	[savePanel beginSheetModalForWindow:self.delegate.documentWindow completionHandler:^(NSModalResponse returnCode) {
 		if (returnCode == NSModalResponseOK) {
 			[savePanel close];
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
@@ -706,7 +708,7 @@
 
 - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton
 {
-	if (_delegate.thisWindow.attachedSheet) return;
+	if (_delegate.documentWindow.attachedSheet) return;
 	
 	if (width <= 0) width = 600;
 	if (width > 800) width = 1000;
@@ -761,7 +763,7 @@
 	_sheetWebView = webView;
 	_sheetCallback = callback;
 	
-	[self.delegate.thisWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
+	[self.delegate.documentWindow beginSheet:panel completionHandler:^(NSModalResponse returnCode) {
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
 		[webView.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
@@ -778,7 +780,7 @@
 	// The sheet will close automatically after that, but run an alert if the sheet didn't close in time
 	// (for both the developer and the user to understand that something isn't working right)
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2), dispatch_get_main_queue(), ^(void){
-		if (self.delegate.thisWindow.attachedSheet == self.sheet && self.delegate.thisWindow.attachedSheet != nil) {
+		if (self.delegate.documentWindow.attachedSheet == self.sheet && self.delegate.documentWindow.attachedSheet != nil) {
 			[self reportError:@"Plugin timed out" withText:@"Something went wrong with receiving data from the plugin"];
 			[self closePanel:nil];
 		}
@@ -787,8 +789,8 @@
 
 - (void)closePanel:(id)sender
 {
-	if (self.delegate.thisWindow.attachedSheet) {
-		[self.delegate.thisWindow endSheet:_sheet];
+	if (self.delegate.documentWindow.attachedSheet) {
+		[self.delegate.documentWindow endSheet:_sheet];
 	}
 }
 
@@ -821,11 +823,25 @@
 	}
 }
 
+#pragma mark - Window management
+
+- (void)showAllWindows {
+	for (NSWindow *window in self.pluginWindows) {
+		//[window setIsVisible:YES];
+		window.level = NSModalPanelWindowLevel;
+	}
+}
+- (void)hideAllWindows {
+	for (NSWindow *window in self.pluginWindows) {
+		//[window setIsVisible:NO];
+		window.level = NSNormalWindowLevel;
+	}
+}
+
 #pragma mark - HTML Window
 
 - (BeatHTMLPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
-
 	// This is a floating window, so the plugin has to be resident
 	_resident = YES;
 	
@@ -938,7 +954,7 @@
 	return paginator;
 }
 
-#pragma mark - Widget interface
+#pragma mark - Widget interface and Plugin UI API
 
 - (BeatPluginUIView*)widget:(CGFloat)height {
 	// Allow only one widget view
@@ -952,6 +968,19 @@
 	[_delegate addWidget:_widgetView];
 	
 	return view;
+}
+
+- (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame {
+	return [BeatPluginUIButton buttonWithTitle:name action:action frame:frame];
+}
+- (BeatPluginUIDropdown*)dropdown:(nonnull NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame {
+	return [BeatPluginUIDropdown withItems:items action:action frame:frame];
+}
+- (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame {
+	return [BeatPluginUICheckbox withTitle:title action:action frame:frame];
+}
+- (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName {
+	return [BeatPluginUILabel withText:title frame:frame color:color size:size font:fontName];
 }
 
 
@@ -984,11 +1013,11 @@
 #pragma mark - Utilities
 
 - (NSArray*)screen {
-	NSRect screen = self.delegate.thisWindow.screen.frame;
+	NSRect screen = self.delegate.documentWindow.screen.frame;
 	return @[ @(screen.origin.x), @(screen.origin.y), @(screen.size.width), @(screen.size.height) ];
 }
 - (NSArray*)windowFrame {
-	NSRect frame = self.delegate.thisWindow.frame;
+	NSRect frame = self.delegate.documentWindow.frame;
 	return @[ @(frame.origin.x), @(frame.origin.y), @(frame.size.width), @(frame.size.height) ];
 }
 
@@ -1132,12 +1161,23 @@
 
 #pragma mark - Document Settings
 
-- (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
-	[_delegate.documentSettings set:settingName as:value];
+// Plugin-specific document settings (prefixed by plugin name)
+- (id)getDocumentSetting:(NSString*)settingName {
+	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
+	return [_delegate.documentSettings valueForKey:key];
 }
 - (void)setDocumentSetting:(NSString*)settingName setting:(id)value {
 	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
 	[_delegate.documentSettings set:key as:value];
+}
+
+// Access to raw document settings (NOT prefixed by plugin name)
+- (id)getRawDocumentSetting:(NSString*)settingName {
+	return [_delegate.documentSettings valueForKey:settingName];
+}
+
+- (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
+	[_delegate.documentSettings set:settingName as:value];
 }
 
 

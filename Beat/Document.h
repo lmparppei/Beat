@@ -48,7 +48,7 @@ THE SOFTWARE.
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate>
+@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;

@@ -26,6 +26,7 @@
 #import "UnzipKit.h"
 #import "BeatPluginLibrary.h"
 #import "NSString+VersionNumber.h"
+#import "BeatPluginParser.h"
 #import <os/log.h>
 
 #define PLUGIN_LIBRARY_URL @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/Beat%20Plugins.json"
@@ -130,6 +131,7 @@
 	if ([disabledPlugins containsObject:plugin]) [disabledPlugins removeObject:plugin];
 	[NSUserDefaults.standardUserDefaults setValue:disabledPlugins forKey:DISABLED_KEY];
 }
+
 
 #pragma mark - Plugin library content
 

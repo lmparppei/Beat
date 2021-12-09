@@ -15,6 +15,13 @@
 @end
 @implementation BeatWidgetView
 
+-(void)awakeFromNib {
+	self.postsFrameChangedNotifications = YES;
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(frameDidChange) name:NSViewFrameDidChangeNotification object:self];
+}
+
+-(BOOL)isFlipped { return YES; }
+
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     
@@ -54,6 +61,12 @@
 	[self addSubview:widget];
 	[widget.animator setAlphaValue:1.0];
 	
+	/*
+	NSRect rect = self.frame;
+	rect.size.height = y + MARGIN;
+	self.enclosingScrollView.documentView.frame = rect;
+	 */
+	
 	[self setNeedsDisplay:YES];
 }
 
@@ -61,6 +74,11 @@
 	[_widgets removeObject:widget];
 	[widget removeFromSuperview];
 	
+	//[self repositionWidgets];
+	[self setNeedsDisplay:YES];
+}
+
+- (void)repositionWidgets {
 	CGFloat y = 0;
 	
 	for (BeatPluginUIView *view in _widgets) {
@@ -70,10 +88,14 @@
 		
 		y += MARGIN * 2;
 	}
+	
+	NSRect rect = self.frame;
+	rect.size.height = y + MARGIN;
+	self.enclosingScrollView.documentView.frame = rect;
 }
 
--(BOOL)isFlipped {
-	return YES;
+- (void)frameDidChange {
+	NSLog(@"Change");
 }
 
 @end

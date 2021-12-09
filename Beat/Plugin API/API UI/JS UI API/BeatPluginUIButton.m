@@ -22,19 +22,26 @@
 	button.jsMethod = action;
 	button.controlSize = NSControlSizeSmall;
 	
-	button.frame = frame;
+	if (!NSIsEmptyRect(frame)) button.frame = frame;
 	
 	return button;
 }
 
 - (void)runMethod {
-	[self.jsMethod callWithArguments:nil];
+	[self.jsMethod callWithArguments:@[self.title]];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     
     // Drawing code here.
+}
+- (void)remove {
+	[self removeFromSuperview];
+}
+-(void)setTitle:(NSString *)title {
+	[super setTitle:title];
+	[self setNeedsDisplay:YES];
 }
 
 -(BOOL)isFlipped {

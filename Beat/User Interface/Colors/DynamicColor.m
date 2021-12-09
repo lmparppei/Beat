@@ -9,6 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
+#import "BeatAppDelegate.h"
 
 #define FORWARD( PROP, TYPE ) \
 - (TYPE)PROP { return [self.effectiveColor PROP]; }
@@ -66,13 +67,16 @@
 - (NSColor *)effectiveColor
 {
 	// Don't allow calls to this class from anywhere else than main thread
-	if (![NSThread isMainThread]) return self.aquaColor;
+	if (!NSThread.isMainThread) return self.aquaColor;
 
 	if (@available(macOS 10.14, *)) {
 		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		
-		if (self.darkAquaColor != nil && [appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+		if (self.darkAquaColor != nil &&
+			([appearanceName isEqualToString:NSAppearanceNameDarkAqua] ||
+			[(BeatAppDelegate*)NSApp.delegate isDark]))
+		{
 			return self.darkAquaColor;
 		}
 	}

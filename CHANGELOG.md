@@ -1,6 +1,16 @@
 # Changelog
 
-## Beat .1
+
+## Beat 1.92.3
+
+- Added widget support to plugin API
+- Multiple API fixes
+- Fixes to outlining
+- Manual rewrites
+- Force symbols in joined paragraphs no longer break formatting
+
+
+## Beat 1.92.2
 
 - Plugin API expansions (including printing HTML files)
 - Fixed more paper size bugs

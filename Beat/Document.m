@@ -127,7 +127,7 @@
 @interface Document ()
 
 // Window
-@property (weak) NSWindow *thisWindow;
+@property (weak) NSWindow *documentWindow;
 @property (weak) IBOutlet TKSplitHandle *splitHandle;
 @property (nonatomic) NSArray *itemsToValidate; // Menu items
 
@@ -406,11 +406,11 @@
 	if (!self.hasUnautosavedChanges) {
 		if (self.sidebarVisible) {
 			// Don't save sidebar width
-			NSRect frame = self.thisWindow.frame;
+			NSRect frame = self.documentWindow.frame;
 			frame.size.width -= self.splitHandle.bottomOrLeftView.frame.size.width;
-			[self.thisWindow setFrame:frame display:NO];
+			[self.documentWindow setFrame:frame display:NO];
 		}
-		[self.thisWindow saveFrameUsingName:self.fileNameString];
+		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
 	
 	// Avoid retain cycles with WKWebView
@@ -442,7 +442,7 @@
 	// Null other stuff, just in case
 	self.parser = nil;
 	self.outlineView = nil;
-	self.thisWindow = nil;
+	self.documentWindow = nil;
 	self.contentBuffer = nil;
 	self.printView = nil;
 	self.analysisWindow = nil;
@@ -493,7 +493,8 @@ void delay (double delay, CallbackBlock block) {
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
 	[super windowControllerDidLoadNib:aController];
 	
-	_thisWindow = aController.window;
+	_documentWindow = aController.window;
+	_documentWindow.delegate = self;
 	
 	// Hide the welcome screen
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
@@ -558,7 +559,7 @@ void delay (double delay, CallbackBlock block) {
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			// Show a progress bar for longer documents
 			if (self.parser.lines.count > 1000) {
-				self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.thisWindow.screen.frame.size.width - 300) / 2, (self.thisWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
+				self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.documentWindow.screen.frame.size.width - 300) / 2, (self.documentWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
 				
 				// Dark mode
 				if (@available(macOS 10.14, *)) {
@@ -570,7 +571,7 @@ void delay (double delay, CallbackBlock block) {
 				self.progressIndicator.indeterminate = NO;
 				[self.progressPanel.contentView addSubview:self.progressIndicator];
 				
-				[self.thisWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
+				[self.documentWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
 			}
 			
 			// Apply document formatting
@@ -587,7 +588,7 @@ void delay (double delay, CallbackBlock block) {
 	// No animations
 	[CATransaction begin];
 	[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
-	if (self.progressPanel.visible) [self.thisWindow endSheet:self.progressPanel];
+	if (self.progressPanel.visible) [self.documentWindow endSheet:self.progressPanel];
 	[CATransaction commit];
 
 	
@@ -741,34 +742,34 @@ void delay (double delay, CallbackBlock block) {
 	[_splitHandle collapseBottomOrLeftView];
 	
 	// Recall window position
-	if (![self.fileNameString isEqualToString:@"Untitled"]) _thisWindow.frameAutosaveName = self.fileNameString;
+	if (![self.fileNameString isEqualToString:@"Untitled"]) _documentWindow.frameAutosaveName = self.fileNameString;
 	
-	CGFloat x = _thisWindow.frame.origin.x;
-	CGFloat y = _thisWindow.frame.origin.y;
+	CGFloat x = _documentWindow.frame.origin.x;
+	CGFloat y = _documentWindow.frame.origin.y;
 	CGFloat width = [_documentSettings getFloat:DocSettingWindowWidth];
 	CGFloat height = [_documentSettings getFloat:DocSettingWindowHeight];
 	
 	// Default size for new windows or those going over screen bounds
-	if (width < _documentWidth || x > _thisWindow.screen.frame.size.width) {
+	if (width < _documentWidth || x > _documentWindow.screen.frame.size.width) {
 		width = _documentWidth * 1.6;
-		x = (_thisWindow.screen.frame.size.width - width) / 2;
+		x = (_documentWindow.screen.frame.size.width - width) / 2;
 	}
-	if (height < MIN_WINDOW_HEIGHT || y + height > _thisWindow.screen.frame.size.height) {
-		height = _thisWindow.screen.frame.size.height * .85;
+	if (height < MIN_WINDOW_HEIGHT || y + height > _documentWindow.screen.frame.size.height) {
+		height = _documentWindow.screen.frame.size.height * .85;
 		
 		if (height < MIN_WINDOW_HEIGHT) height = MIN_WINDOW_HEIGHT;
 		if (height > _documentWidth * 2.5) height = _documentWidth * 1.75;
 		
-		y = (_thisWindow.screen.frame.size.height - height) / 2;
+		y = (_documentWindow.screen.frame.size.height - height) / 2;
 	}
 	
 	// Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
-	[_thisWindow setMinSize:CGSizeMake(_thisWindow.minSize.width, MIN_WINDOW_HEIGHT)];
+	[_documentWindow setMinSize:CGSizeMake(_documentWindow.minSize.width, MIN_WINDOW_HEIGHT)];
 	NSRect newFrame = NSMakeRect(x,
 								 y,
 								 width,
 								 height);
-	[_thisWindow setFrame:newFrame display:YES];
+	[_documentWindow setFrame:newFrame display:YES];
 }
 
 -(void)setupLayoutWithPagination:(bool)paginate {
@@ -809,34 +810,34 @@ void delay (double delay, CallbackBlock block) {
 - (void)setTab:(NSUInteger)index
 {
 	if (index == 0) {
-		_thisWindow.titlebarAppearsTransparent = YES;
+		_documentWindow.titlebarAppearsTransparent = YES;
 	} else {
-		_thisWindow.titlebarAppearsTransparent = NO;
+		_documentWindow.titlebarAppearsTransparent = NO;
 	}
 	[self.tabView selectTabViewItem:[self.tabView tabViewItemAtIndex:index]];
 }
 - (void)showTitleBar {
-	_thisWindow.titlebarAppearsTransparent = NO;
+	_documentWindow.titlebarAppearsTransparent = NO;
 }
 - (void)hideTitleBar {
-	_thisWindow.titlebarAppearsTransparent = YES;
+	_documentWindow.titlebarAppearsTransparent = YES;
 }
 
 - (bool)isFullscreen
 {
-	return (([_thisWindow styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
+	return (([_documentWindow styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-	CGFloat width = _thisWindow.frame.size.width;
+	CGFloat width = _documentWindow.frame.size.width;
 	if (self.sidebarVisible) {
 		// Don't calculate sidebar width to saved document width
 		width -= self.splitHandle.bottomOrLeftView.frame.size.width;
 	}
 	
 	[_documentSettings setFloat:DocSettingWindowWidth as:width];
-	[_documentSettings setFloat:DocSettingWindowHeight as:_thisWindow.frame.size.height];
+	[_documentSettings setFloat:DocSettingWindowHeight as:_documentWindow.frame.size.height];
 	[self updateLayout];
 }
 - (void)updateLayout
@@ -870,11 +871,27 @@ void delay (double delay, CallbackBlock block) {
 - (void) setMinimumWindowSize {
 	// These are arbitratry values. Sorry, anyone reading this.
 	if (!_sidebarVisible) {
-		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150, MIN_WINDOW_HEIGHT)];
+		[self.documentWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150, MIN_WINDOW_HEIGHT)];
 	} else {
-		[self.thisWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
+		[self.documentWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
 	}
 }
+
+#pragma mark - Window delegate
+
+- (void)windowDidBecomeMain:(NSNotification *)notification {
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		[(BeatPluginParser*)_runningPlugins[pluginName] showAllWindows];
+	}
+	
+	[self.documentWindow orderFrontRegardless];
+}
+- (void)windowDidResignKey:(NSNotification *)notification {
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		[(BeatPluginParser*)_runningPlugins[pluginName] hideAllWindows];
+	}
+}
+
 
 #pragma mark - Quick Settings Popup
 
@@ -1212,7 +1229,7 @@ void delay (double delay, CallbackBlock block) {
 	self.textView.taggingDelegate = self;
 	
 	// Make the text view first responder
-	[_thisWindow makeFirstResponder:self.textView];
+	[_documentWindow makeFirstResponder:self.textView];
 }
 
 - (NSString *)getText
@@ -2320,10 +2337,11 @@ void delay (double delay, CallbackBlock block) {
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	
 	// Foreground color is TEMPORARY ATTRIBUTE
-	[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.textColor forCharacterRange:line.range];
+	[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.currentTextColor forCharacterRange:line.range];
 	[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 	
 	// Redo everything we just did for forced character input
+	
 	if (_characterInput && _characterInputForLine == line) {
 		line.type = character;
 		
@@ -2333,9 +2351,12 @@ void delay (double delay, CallbackBlock block) {
 		// Foolproof fix for a strange, rare bug which changes multiple
 		// lines into character cues and the user is unable to undo the changes
 		if (range.location + range.length <= selectedRange.location) {
-			[_textView replaceCharactersInRange:range withString:[[textStorage.string substringWithRange:range] uppercaseString]];
+			[_textView replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
 			line.string = line.string.uppercaseString;
 			[self.textView setSelectedRange:selectedRange];
+			
+			// Reset attribute because we have replaced the text
+			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.currentTextColor forCharacterRange:line.range];
 		}
 	}
 	
@@ -2753,7 +2774,7 @@ void delay (double delay, CallbackBlock block) {
 
 - (IBAction)goToScene:(id)sender {
 	BeatModalInput *input = [[BeatModalInput alloc] init];
-	[input inputBoxWithMessage:@"Go to scene number..." text:@"" placeholder:@"e.g. 123" forWindow:_thisWindow completion:^(NSString * _Nonnull result) {
+	[input inputBoxWithMessage:@"Go to scene number..." text:@"" placeholder:@"e.g. 123" forWindow:_documentWindow completion:^(NSString * _Nonnull result) {
 		[self scrollToSceneNumber:result];
 	}];
 }
@@ -2773,7 +2794,7 @@ void delay (double delay, CallbackBlock block) {
 	[self.textView setSelectedRange:lineRange];
 	//[self.textView scrollRangeToVisible:lineRange];
 	[self.textView scrollToRange:lineRange];
-	[_thisWindow makeFirstResponder:_textView];
+	[_documentWindow makeFirstResponder:_textView];
 }
 - (void)scrollToRange:(NSRange)range {
 	[self.textView setSelectedRange:range];
@@ -2809,7 +2830,7 @@ void delay (double delay, CallbackBlock block) {
 }
 
 - (void)focusEditor {
-	[_thisWindow makeKeyWindow];
+	[_documentWindow makeKeyWindow];
 }
 
 
@@ -3128,7 +3149,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)forceSceneNumberForScene:(id)sender {
 	BeatModalInput *input = [[BeatModalInput alloc] init];
-	[input inputBoxWithMessage:@"Set Number For Scene"  text:@"Custom scene number (can include letters, or press space for a scene with no scene number)" placeholder:@"123A" forWindow:_thisWindow completion:^(NSString * _Nonnull result) {
+	[input inputBoxWithMessage:@"Set Number For Scene"  text:@"Custom scene number (can include letters, or press space for a scene with no scene number)" placeholder:@"123A" forWindow:_documentWindow completion:^(NSString * _Nonnull result) {
 		if (result.length > 0) {
 			OutlineScene *scene = [self getCurrentScene];
 			if (scene) {
@@ -3858,16 +3879,16 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)updateUIColors {
-	if (_thisWindow.frame.size.height == 0 || _thisWindow.frame.size.width == 0) return;
+	if (_documentWindow.frame.size.height == 0 || _documentWindow.frame.size.width == 0) return;
 		
 	if (@available(macOS 10.14, *)) {
 		// Force the whole window into dark mode if possible.
 		// This redraws everything by default.
-		if ([self isDark]) self.thisWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-		else self.thisWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+		if ([self isDark]) self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+		else self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
 	} else {
 		// Else, we need to force everything to redraw, in a very clunky way
-		[self.thisWindow setViewsNeedDisplay:true];
+		[self.documentWindow setViewsNeedDisplay:true];
 		
 		[self.masterView setNeedsDisplayInRect:_masterView.frame];
 		[self.backgroundView setNeedsDisplay:true];
@@ -3886,7 +3907,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	//[self.textView setNeedsDisplay:true];
 	[self.textScrollView layoutButtons];
-	[self.thisWindow setViewsNeedDisplay:true];
+	[self.documentWindow setViewsNeedDisplay:true];
 	[self.textView redrawUI];
 	
 	// Update background layers
@@ -3902,8 +3923,9 @@ static NSString *revisionAttribute = @"Revision";
 - (void)setThemeFor:(Document*)doc setTextColor:(bool)setTextColor {
 	if (!doc) doc = self;
 	
-	[doc.textView setMarginColor:self.themeManager.currentMarginColor];
-	[doc.textScrollView setMarginColor:self.themeManager.currentMarginColor];
+	doc.textView.textColor = self.themeManager.currentTextColor;
+	doc.textView.marginColor = self.themeManager.currentMarginColor;
+	doc.textScrollView.marginColor = self.themeManager.currentMarginColor;
 	
 	[doc.textView setSelectedTextAttributes:@{
 										  NSBackgroundColorAttributeName: self.themeManager.currentSelectionColor,
@@ -3922,6 +3944,7 @@ static NSString *revisionAttribute = @"Revision";
 	doc.backgroundView.fillColor = self.themeManager.currentOutlineBackground;
 		
 	[doc updateUIColors];
+
 	[doc.textView setNeedsDisplay:YES];
 }
 - (void)loadSelectedTheme:(bool)forAll
@@ -4096,8 +4119,8 @@ static NSString *revisionAttribute = @"Revision";
 		
 		if (![self isFullscreen]) {
 			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
-			CGFloat newWidth = _thisWindow.frame.size.width + sidebarWidth;
-			CGFloat newX = _thisWindow.frame.origin.x - sidebarWidth / 2;
+			CGFloat newWidth = _documentWindow.frame.size.width + sidebarWidth;
+			CGFloat newX = _documentWindow.frame.origin.x - sidebarWidth / 2;
 			CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
 						
 			// Ensure the main document won't go out of screen bounds when opening the sidebar
@@ -4115,10 +4138,10 @@ static NSString *revisionAttribute = @"Revision";
 			}
 			
 			NSRect newFrame = NSMakeRect(newX,
-										 _thisWindow.frame.origin.y,
+										 _documentWindow.frame.origin.y,
 										 newWidth,
-										 _thisWindow.frame.size.height);
-			[_thisWindow setFrame:newFrame display:YES];
+										 _documentWindow.frame.size.height);
+			[_documentWindow setFrame:newFrame display:YES];
 		}
 		
 		// Show sidebar
@@ -4131,20 +4154,20 @@ static NSString *revisionAttribute = @"Revision";
 		
 		if (![self isFullscreen]) {
 			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
-			CGFloat newX = _thisWindow.frame.origin.x + sidebarWidth / 2;
+			CGFloat newX = _documentWindow.frame.origin.x + sidebarWidth / 2;
 			NSRect newFrame = NSMakeRect(newX,
-										 _thisWindow.frame.origin.y,
-										 _thisWindow.frame.size.width - sidebarWidth,
-										 _thisWindow.frame.size.height);
+										 _documentWindow.frame.origin.y,
+										 _documentWindow.frame.size.width - sidebarWidth,
+										 _documentWindow.frame.size.height);
 
-			[_thisWindow setFrame:newFrame display:YES];
+			[_documentWindow setFrame:newFrame display:YES];
 		}
 		
 		[_splitHandle collapseBottomOrLeftView];
 	}
 	
 	// Fix layout
-	[_thisWindow layoutIfNeeded];
+	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 }
 
@@ -4742,10 +4765,10 @@ static NSString *revisionAttribute = @"Revision";
 	if ([_documentSettings getInt:DocSettingSceneNumberStart] > 0) {
 		[_sceneNumberStartInput setIntegerValue:[_documentSettings getInt:DocSettingSceneNumberStart]];
 	}
-	[_thisWindow beginSheet:_sceneNumberingPanel completionHandler:nil];
+	[_documentWindow beginSheet:_sceneNumberingPanel completionHandler:nil];
 }
 - (IBAction)closeSceneNumberStart:(id)sender {
-	[_thisWindow endSheet:_sceneNumberingPanel];
+	[_documentWindow endSheet:_sceneNumberingPanel];
 }
 - (IBAction)applySceneNumberStart:(id)sender {
 	if (_sceneNumberStartInput.integerValue > 1) {
@@ -4761,7 +4784,7 @@ static NSString *revisionAttribute = @"Revision";
 	[self updateSceneNumberLabels:0];
 	[self updateChangeCount:NSChangeDone];
 	
-	[_thisWindow endSheet:_sceneNumberingPanel];
+	[_documentWindow endSheet:_sceneNumberingPanel];
 }
 - (NSInteger)sceneNumberingStartsFrom {
 	return [self.documentSettings getInt:DocSettingSceneNumberStart];
@@ -4893,7 +4916,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)showAnalysis:(id)sender {
 	_analysisWindow = [[BeatAnalysisPanel alloc] initWithParser:self.parser delegate:self];
-	[_thisWindow beginSheet:_analysisWindow.window completionHandler:^(NSModalResponse returnCode) {
+	[_documentWindow beginSheet:_analysisWindow.window completionHandler:^(NSModalResponse returnCode) {
 		self.analysisWindow = nil;
 	}];
 }
@@ -5185,7 +5208,7 @@ triangle walks
 - (IBAction)editTitlePage:(id)sender {
 	_titlePageEditor = [[BeatTitlePageEditor alloc] initWithDelegate:self];
 	
-	[_thisWindow beginSheet:_titlePageEditor.window completionHandler:^(NSModalResponse returnCode) {
+	[_documentWindow beginSheet:_titlePageEditor.window completionHandler:^(NSModalResponse returnCode) {
 		if (returnCode != NSModalResponseOK) {
 			// User pressed cancel, dealloc the sheet
 			self.titlePageEditor = nil;
@@ -5476,7 +5499,7 @@ triangle walks
 		[self exitTagging:nil];
 	}
 	
-	[_thisWindow layoutIfNeeded];
+	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 	[self updateQuickSettings];
 }

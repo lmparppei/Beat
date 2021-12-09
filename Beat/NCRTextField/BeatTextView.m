@@ -1053,7 +1053,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
 	
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
-	
+
 	// We need to do this, unfortunately
 	[self.layoutManager ensureLayoutForCharacterRange:_editorDelegate.currentLine.textRange];
 	
@@ -1092,13 +1092,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
 		rect.origin.y += self.textInsetY + 2;
 		label.frame = rect;
-		
+				
 		// Set label color to be the same as scene color
 		if (scene.color.length) {
 			NSString *colorName = scene.color.lowercaseString;
 			NSColor *color = [BeatColors color:colorName];
-			if (!color) color = ThemeManager.sharedManager.currentTextColor;
-			[label setTextColor:color];
+			if (color) [label setTextColor:color];
+			else [label setTextColor:ThemeManager.sharedManager.currentTextColor];
 		} else {
 			[label setTextColor:textColor];
 		}

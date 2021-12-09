@@ -6,6 +6,7 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "BeatPluginManager.h"
 #import <Foundation/Foundation.h>
 #import "ContinuousFountainParser.h"
@@ -15,10 +16,16 @@
 #import "BeatPaginator.h"
 #import "BeatPluginTimer.h"
 #import "BeatHTMLPanel.h"
-#import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WebKit.h>
 #import "WebPrinter.h"
+
 #import "BeatPluginUIView.h"
+#import "BeatPluginUIButton.h"
+#import "BeatPluginUIDropdown.h"
+#import "BeatPluginUIView.h"
+#import "BeatPluginUICheckbox.h"
+#import "BeatPluginUILabel.h"
+
 
 @class BeatPluginWindow;
 
@@ -114,17 +121,25 @@ JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(Outline
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
 JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
 
+// Text highlights
 JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(removeTextHighlight, - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len);
+
+// Widget UI
+JSExportAs(button, - (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame);
+JSExportAs(dropdown, - (BeatPluginUIDropdown*)dropdown:(NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame);
+JSExportAs(checkbox, - (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame);
+JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName);
+
 
 @end
 
 // Interfacing with the document
 @protocol BeatScriptingDelegate <NSObject>
 @property (nonatomic, strong) ContinuousFountainParser *parser;
-@property (nonatomic, weak, readonly) NSWindow *thisWindow;
+@property (nonatomic, weak, readonly) NSWindow *documentWindow;
 @property (nonatomic, readonly) BeatTagging *tagging;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
 @property (nonatomic, readonly) Line* currentLine;
@@ -173,4 +188,7 @@ JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteg
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
+
+- (void)showAllWindows;
+- (void)hideAllWindows;
 @end

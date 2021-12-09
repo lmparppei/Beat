@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatWidgetView : NSView
 - (void)addWidget:(BeatPluginUIView*)widget;
 - (void)removeWidget:(BeatPluginUIView*)widget;
+- (void)repositionWidgets;
 @end
 
 
