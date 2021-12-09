@@ -232,6 +232,7 @@ Dark Mode
 
 */
 
+/*
 function toggleDarkMode() {
 	var elements = document.getElementsByTagName('*');
 	if (document.getElementById('darkModeToggle').checked) {
@@ -245,3 +246,4 @@ function toggleDarkMode() {
 		}
 	}
 }
+*/
