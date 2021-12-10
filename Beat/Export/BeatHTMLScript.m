@@ -102,6 +102,7 @@
 #import "BeatPaginator.h"
 #import "RegExCategories.h"
 #import "BeatUserDefaults.h"
+#import "BeatPaperSizing.h"
 
 #define BOLD_OPEN @"<b>"
 #define BOLD_CLOSE @"</b>"
@@ -123,6 +124,7 @@
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool coloredPages;
 @property (nonatomic) NSString* revisionColor;
+@property (nonatomic) BeatPaperSize paperSize;
 @end
 
 @implementation BeatHTMLScript
@@ -144,6 +146,9 @@
 		
 		_revisionColor = settings.revisionColor;
 		_coloredPages = settings.coloredPages;
+				
+		// Page size
+		_paperSize = settings.paperSize;
 		
 		// Simple boolean for later checks
 		if (_operation == ForPrint) _print = YES;
@@ -209,7 +214,12 @@
 	NSMutableString *html = [NSMutableString string];
 	
 	NSString *bodyClasses = @"";
+	
+	// Append body classes
 	if (_operation == ForQuickLook) bodyClasses = [bodyClasses stringByAppendingString:@" quickLook"];
+	// Paper size body class
+	if (_paperSize == BeatUSLetter) bodyClasses = [bodyClasses stringByAppendingString:@" us-letter"];
+	else bodyClasses = [bodyClasses stringByAppendingString:@" a4"];
 
 	[html appendString:@"<!DOCTYPE html>\n"];
 	[html appendString:@"<html>\n"];
@@ -273,151 +283,27 @@
 
 - (NSString *)bodyForScript
 {
-    NSMutableString *body = [NSMutableString string];
-
-    // Add title page
-    NSMutableDictionary *titlePage = [NSMutableDictionary dictionary];
-    
-	// Styles
-	bool boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
-	bool underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
+    NSMutableString *body = [NSMutableString string]; // Contains HTML content
+	NSMutableDictionary *titlePage = NSMutableDictionary.dictionary;
 	
+	// Put title page elements into a dictionary
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
-	
-    if ([titlePage count] > 0) {
-        [body appendString:@"<section id='script-title' class='page'>"];
-		[body appendFormat:@"<div class='mainTitle'>"];
-		
-        // Title
-        if (titlePage[@"title"]) {
-            NSArray *obj = titlePage[@"title"];
-            NSMutableString *values = [NSMutableString string];
-            for (NSString *val in obj) {
-                [values appendFormat:@"%@<br>", val];
-            }
-			
-            [body appendFormat:@"<p class='%@'>%@</p>", @"title", [self format:values]];
-			[titlePage removeObjectForKey:@"title"];
-        }
-        else {
-            [body appendFormat:@"<p class='%@'>%@</p>", @"title", @"Untitled"];
-        }
+	// Create title page
+	[self createTitlePage:titlePage body:body];
 
-		// Credit
-		// Add support for "author" (without the plural)
-        if (titlePage[@"credit"] || titlePage[@"authors"] || titlePage[@"author"]) {
-            if (titlePage[@"credit"]) {
-                NSArray *obj = titlePage[@"credit"];
-                NSMutableString *values = [NSMutableString string];
-                for (NSString *val in obj) {
-                    [values appendFormat:@"%@<br>", val];
-                }
-				[body appendFormat:@"<p class='%@'>%@</p>", @"credit", [self format:values]];
-				[titlePage removeObjectForKey:@"credit"];
-            }
-            else {
-                [body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
-            }
-            
-            // Authors
-            if (titlePage[@"authors"]) {
-                NSArray *obj = titlePage[@"authors"];
-                NSMutableString *values = [NSMutableString string];
-                for (NSString *val in obj) {
-                    [values appendFormat:@"%@<br>", val];
-                }
-                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self format:values]];
-				[titlePage removeObjectForKey:@"authors"];
-            }
-			else if (titlePage[@"author"]) {
-                NSArray *obj = titlePage[@"author"];
-                NSMutableString *values = [NSMutableString string];
-                for (NSString *val in obj) {
-                    [values appendFormat:@"%@<br>", val];
-                }
-                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self format:values]];
-				[titlePage removeObjectForKey:@"author"];
-            }
-            else {
-                [body appendFormat:@"<p class='%@'>%@</p>", @"authors", @""];
-            }
-        }
-		// Source
-		if (titlePage[@"source"]) {
-			NSArray *obj = titlePage[@"source"];
-			NSMutableString *values = [NSMutableString string];
-			for (NSString *val in obj) {
-				[values appendFormat:@"%@<br>", val];
-			}
-			[body appendFormat:@"<p class='%@'>%@</p>", @"source", [self format:values]];
-			[titlePage removeObjectForKey:@"source"];
-		}
-		
-		[body appendFormat:@"</div>"];
-		
-		// Draft date
-		[body appendFormat:@"<div class='versionInfo'>"];
-		if (titlePage[@"draft date"]) {
-			NSArray *obj = titlePage[@"draft date"];
-			NSMutableString *values = [NSMutableString string];
-			for (NSString *val in obj) {
-				[values appendFormat:@"%@<br>", val];
-			}
-			[body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", [self format:values]];
-			[titlePage removeObjectForKey:@"draft date"];
-		}
-		[body appendFormat:@"</div>"];
-		
-		
-		[body appendFormat:@"<div class='info'>"];
-        
-        // Contact
-        if (titlePage[@"contact"]) {
-            NSArray *obj = titlePage[@"contact"];
-            NSMutableString *values = [NSMutableString string];
-            for (NSString *val in obj) {
-                [values appendFormat:@"%@<br>", val];
-            }
-            [body appendFormat:@"<p class='%@'>%@</p>", @"contact", [self format:values]];
-			[titlePage removeObjectForKey:@"contact"];
-        }
-		
-		// Notes
-		if (titlePage[@"notes"]) {
-			NSArray *obj = titlePage[@"notes"];
-			NSMutableString *values = [NSMutableString string];
-			for (NSString *val in obj) {
-				[values appendFormat:@"%@<br>", val];
-			}
-			[body appendFormat:@"<p class='%@'>%@</p>", @"notes", [self format:values]];
-			[titlePage removeObjectForKey:@"notes"];
-		}
-		
-		// Append rest of the stuff
-		for (NSString* key in titlePage) {
-			NSArray *obj = titlePage[key];
-			NSMutableString *values = [NSMutableString string];
-
-			for (NSString *val in obj) {
-				[values appendFormat:@"%@<br>", val];
-			}
-			// We won't set a class value based on the custom key, because it might conflict with existing css styles
-			[body appendFormat:@"<p>%@</p>", [self format:values]];
-		}
-		
-		[body appendFormat:@"</div>"];
-		
-        [body appendString:@"</section>"];
-    }
+	// Heading styles
+	bool boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
+	bool underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
     
+	// Init other stuff
     NSInteger dualDialogueCharacterCount = 0;
     NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
 	
+	// Pagination
 	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:_script document:_document];
     NSUInteger maxPages = paginator.numberOfPages;
-	
 	_numberOfPages = maxPages;
 	
 	// Header string (make sure it's not null)
@@ -615,6 +501,134 @@
     }
 	
     return body;
+}
+
+- (void)createTitlePage:(NSMutableDictionary*)titlePage body:(NSMutableString*)body {
+	if (titlePage.count > 0) {
+		[body appendString:@"<section id='script-title' class='page'>"];
+		[body appendFormat:@"<div class='mainTitle'>"];
+		
+		// Title
+		if (titlePage[@"title"]) {
+			NSArray *obj = titlePage[@"title"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			
+			[body appendFormat:@"<p class='%@'>%@</p>", @"title", [self format:values]];
+			[titlePage removeObjectForKey:@"title"];
+		}
+		else {
+			[body appendFormat:@"<p class='%@'>%@</p>", @"title", @"Untitled"];
+		}
+
+		// Credit
+		// Add support for "author" (without the plural)
+		if (titlePage[@"credit"] || titlePage[@"authors"] || titlePage[@"author"]) {
+			if (titlePage[@"credit"]) {
+				NSArray *obj = titlePage[@"credit"];
+				NSMutableString *values = [NSMutableString string];
+				for (NSString *val in obj) {
+					[values appendFormat:@"%@<br>", val];
+				}
+				[body appendFormat:@"<p class='%@'>%@</p>", @"credit", [self format:values]];
+				[titlePage removeObjectForKey:@"credit"];
+			}
+			else {
+				[body appendFormat:@"<p class='%@'>%@</p>", @"credit", @""];
+			}
+			
+			// Authors
+			if (titlePage[@"authors"]) {
+				NSArray *obj = titlePage[@"authors"];
+				NSMutableString *values = [NSMutableString string];
+				for (NSString *val in obj) {
+					[values appendFormat:@"%@<br>", val];
+				}
+				[body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self format:values]];
+				[titlePage removeObjectForKey:@"authors"];
+			}
+			else if (titlePage[@"author"]) {
+				NSArray *obj = titlePage[@"author"];
+				NSMutableString *values = [NSMutableString string];
+				for (NSString *val in obj) {
+					[values appendFormat:@"%@<br>", val];
+				}
+				[body appendFormat:@"<p class='%@'>%@</p>", @"authors", [self format:values]];
+				[titlePage removeObjectForKey:@"author"];
+			}
+			else {
+				[body appendFormat:@"<p class='%@'>%@</p>", @"authors", @""];
+			}
+		}
+		// Source
+		if (titlePage[@"source"]) {
+			NSArray *obj = titlePage[@"source"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", @"source", [self format:values]];
+			[titlePage removeObjectForKey:@"source"];
+		}
+		
+		[body appendFormat:@"</div>"];
+		
+		// Draft date
+		[body appendFormat:@"<div class='versionInfo'>"];
+		if (titlePage[@"draft date"]) {
+			NSArray *obj = titlePage[@"draft date"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", [self format:values]];
+			[titlePage removeObjectForKey:@"draft date"];
+		}
+		[body appendFormat:@"</div>"];
+		
+		
+		[body appendFormat:@"<div class='info'>"];
+		
+		// Contact
+		if (titlePage[@"contact"]) {
+			NSArray *obj = titlePage[@"contact"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", @"contact", [self format:values]];
+			[titlePage removeObjectForKey:@"contact"];
+		}
+		
+		// Notes
+		if (titlePage[@"notes"]) {
+			NSArray *obj = titlePage[@"notes"];
+			NSMutableString *values = [NSMutableString string];
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			[body appendFormat:@"<p class='%@'>%@</p>", @"notes", [self format:values]];
+			[titlePage removeObjectForKey:@"notes"];
+		}
+		
+		// Append rest of the stuff
+		for (NSString* key in titlePage) {
+			NSArray *obj = titlePage[key];
+			NSMutableString *values = [NSMutableString string];
+
+			for (NSString *val in obj) {
+				[values appendFormat:@"%@<br>", val];
+			}
+			// We won't set a class value based on the custom key, because it might conflict with existing css styles
+			[body appendFormat:@"<p>%@</p>", [self format:values]];
+		}
+		
+		[body appendFormat:@"</div>"];
+		
+		[body appendString:@"</section>"];
+	}
 }
 
 #pragma mark - JavaScript functions

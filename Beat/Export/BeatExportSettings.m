@@ -41,6 +41,13 @@
 	}
 	return self;
 }
+
+- (BeatPaperSize)paperSize {
+	// Check paper size
+	if (self.document.printInfo.paperSize.width > 595) return BeatUSLetter;
+	else return BeatA4;
+}
+
 @end
 /*
 
