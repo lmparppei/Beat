@@ -648,6 +648,9 @@ void delay (double delay, CallbackBlock block) {
 	// Set up recovery file saving
 	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
+	
+	//NSWorkspace.shared.notificationCenter.addObserver(self, selector: @selector(spaceChange), name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
+	[NSWorkspace.sharedWorkspace.notificationCenter addObserver:self selector:@selector(spaceDidChange) name:NSWorkspaceActiveSpaceDidChangeNotification object:nil];
 }
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key {
 	NSLog(@"Document: Undefined key (%@) set. This might be intentional.", key);
@@ -810,9 +813,9 @@ void delay (double delay, CallbackBlock block) {
 - (void)setTab:(NSUInteger)index
 {
 	if (index == 0) {
-		_documentWindow.titlebarAppearsTransparent = YES;
+		//_documentWindow.titlebarAppearsTransparent = YES;
 	} else {
-		_documentWindow.titlebarAppearsTransparent = NO;
+		//_documentWindow.titlebarAppearsTransparent = NO;
 	}
 	[self.tabView selectTabViewItem:[self.tabView tabViewItemAtIndex:index]];
 }
@@ -880,16 +883,34 @@ void delay (double delay, CallbackBlock block) {
 #pragma mark - Window delegate
 
 - (void)windowDidBecomeMain:(NSNotification *)notification {
+	// Hide plugin windows
+	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
+		if (doc == self) continue;
+		for (NSString *pluginName in doc.runningPlugins.allKeys) {
+			[(BeatPluginParser*)doc.runningPlugins[pluginName] hideAllWindows];
+		}
+	}
+
+	// Show plugin windows for the current document
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		[(BeatPluginParser*)_runningPlugins[pluginName] showAllWindows];
 	}
-	
-	[self.documentWindow orderFrontRegardless];
+
+	[self.documentWindow orderFront:nil];
 }
-- (void)windowDidResignKey:(NSNotification *)notification {
+
+
+-(void)spaceDidChange {
+	NSLog(@"Space did change");
+	if (!self.documentWindow.onActiveSpace) [self.documentWindow resignMainWindow];
+
+	/*
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		[(BeatPluginParser*)_runningPlugins[pluginName] hideAllWindows];
 	}
+	
+	if (!self.documentWindow.onActiveSpace) [self.documentWindow resignMainWindow];
+	*/
 }
 
 

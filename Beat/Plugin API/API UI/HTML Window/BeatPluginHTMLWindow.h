@@ -22,14 +22,19 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 - (void)setHTML:(NSString*)html;
 - (void)close;
 - (void)focus;
+- (void)gangWithDocumentWindow;
+- (void)detachFromDocumentWindow;
+
 @end
 
 @protocol PluginWindowHost <NSObject, WKScriptMessageHandler>
 @property (readonly) NSString *pluginName;
+- (void)gangWithDocumentWindow:(NSWindow*)window;
+- (void)detachFromDocumentWindow:(NSWindow*)window;
 - (void)closePluginWindow:(id)sender;
 @end
 
-@interface BeatHTMLPanel : NSPanel <BeatHTMLPanelExports>
+@interface BeatPluginHTMLWindow : NSPanel <BeatHTMLPanelExports>
 @property (nonatomic, weak) id<PluginWindowHost> host;
 @property (nonatomic) bool isClosing;
 @property (nonatomic) JSValue* callback;

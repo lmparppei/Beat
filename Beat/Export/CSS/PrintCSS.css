@@ -1,0 +1,459 @@
+/*
+ Copyright (c) 2012-2013 Nima Yousefi & John August
+ Parts Copyright © 2019-2020 Lauri-Matti Parppei
+ Parts Copyright © 2021 Fredrik T Olsson
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ IN THE SOFTWARE.
+
+*/
+
+
+/*
+	Revisions for introduction of variable-based, typographic units and
+	in order to avoid WebKit re-sizing of content (c) 2021 Fredrik T Olsson
+
+	Some explanations for future reference:
+
+	As of this writing (December 2021) WebKit will demand there be margins
+	of the following sizes outside of the area to print:
+		Left:	50pt
+		Right: 	50pt 
+		Top:	30pt
+		Bottom:	40pt
+	Everything that exceeds the remaining width (i.e. paper size minus 
+	left+right margins) will cause the content to SHRINK to fit.
+
+	This CSS takes this into account by declaring the SECTION element as
+		calc (21cm - 100pt) for A4, and
+		calc (8.5in - 100pt) for USLetter.
+
+	When this CSS file is finalized, the idea is to be able to do most
+	tweaks to script element layouts from the variables in the body tag.
+*/
+
+/*  
+	ALSO NOTE: the CSS in this file correspond well to the line lengths
+ 	inside the Beat editing window, but with the important exception of 
+	DUAL DIALOGUE. These should still be considered work in progress.
+*/
+
+html {
+	margin: 0px;
+	padding: 0px;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0px;
+}
+
+body {
+
+	--action-width: 59.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
+	--character-width: 38ch;
+	--parenthetical-width: 28ch; /* includes leading parenthesis */
+	--dialogue-width: 35ch;
+
+	--action-indent: 0ch;
+	--character-indent: 20ch;
+	--parenthetical-indent: 16ch;
+	--dialogue-indent: 10ch;
+
+	--left-whitespace: calc(1.5in - 50pt);
+
+	--line-height: 12.5pt;
+
+
+	color: black;
+	font: 12pt 'Courier Prime', 'Courier', serif;
+	line-height: var(--line-height); 
+
+	padding: 0px;
+	margin: 0px;
+
+	width: calc(21cm - 100pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
+}
+
+body.us-letter{  /* all values not present here are the same as for A4 */
+
+	--action-width: 61.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
+	--character-width: 40ch;
+
+	width: calc(8.5in - 100pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
+}
+
+@page { 
+	margin: 0cm;
+}
+
+article {
+	margin-top: 0;
+	padding-bottom: 0;
+	margin-bottom: 0; 
+}
+
+section {
+
+	margin-left: -20pt; /* Hack to MOVE THE PAGE TO THE LEFT in order to fit overflowing stars without shrinking the page */
+
+	margin-bottom: 0;
+	page-break-after: always;
+}
+
+/* ================== */
+/*    REVISED PAGES   */
+/* ================== */
+
+section.revised {
+	-webkit-print-color-adjust: exact !important;
+	
+	border-right-width: 6px;
+	border-right-style: solid;
+}
+
+/*
+.revised.red .header-top {
+	background-color: rgba(255,25,0,0.1) !important;
+}
+*/
+
+.revised.red {
+	border-color: rgba(255,25,0,0.4);
+}
+section.cyan {
+	border-color: rgba(0,25,255,.4);
+}
+section.pink {
+	border-color: rgba(255,100,110,.4);
+}
+section.green {
+	border-color: rgba(0,255,0,.4);
+}
+section.orange {
+	border-color: rgba(255, 161, 13, .4);
+}
+
+/* =================== */
+/* SCREENPLAY ELEMENTS */
+/* =================== */
+
+p {
+	position: relative;
+
+	word-wrap: break-word;
+	white-space: pre-wrap;
+	
+	margin: 0px;
+	margin-top: var(--line-height);
+
+	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
+	padding-left: calc(var(--left-whitespace) + var(--action-indent));
+	
+	overflow-x: visible;
+}
+
+body > p:first-child {
+	margin-top: 0;
+}
+
+.debug {
+	display: none;
+	position: absolute;
+	left: -30px;
+	bottom: 0;
+	color: red;
+	font-size: .5em;
+}
+
+.debug:nth-of-type(1) {
+	top: 1px;
+}
+
+.scene-heading, .transition, .new-act, .end-of-act {
+	position: relative;
+	text-transform: uppercase;
+}
+
+.transition {
+	position: relative;
+	text-align: right;
+}
+
+.new-act, .end-of-act {
+	position: relative;
+	text-align: center;
+}
+
+.character, 
+.more {
+	position: relative;
+	left: 0px;
+
+	margin: 0px;
+	padding: 0px;
+
+	margin-top: var(--line-height);
+
+	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
+	padding-left: calc(var(--left-whitespace) + var(--character-indent));
+	padding-right: calc(var(--action-width) - (var(--character-indent) + var(--character-width)));
+}
+
+/* .character { clear: both; } */
+/* WHEN is the above needed? */
+
+.more, p.more {
+	margin-top: 0pt;
+}
+
+.dialogue {
+	position: relative;
+
+	margin: 0px;
+	padding: 0px;
+
+	margin-top: 0pt;
+	
+	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
+	padding-left: calc(var(--left-whitespace) + var(--dialogue-indent));
+	padding-right: calc(var(--action-width) - (var(--dialogue-indent) + var(--dialogue-width)));
+}
+
+.parenthetical {
+	position: relative;
+
+	margin: 0px;
+	padding: 0px;
+
+	margin-top: 0pt;
+	
+	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
+	padding-left: calc(var(--left-whitespace) + var(--parenthetical-indent));
+	padding-right: calc(var(--action-width) - (var(--parenthetical-indent) + var(--parenthetical-width)));
+}
+
+.scene-heading {
+	margin-top: calc(2 * var(--line-height));
+	position: relative;
+	white-space: pre-wrap;
+	margin-left: 0;
+}
+
+.scene-heading.bold {
+	font-weight: bold;
+}
+
+.scene-heading.underline {
+	text-decoration: underline;
+}
+
+.scene-heading.first {
+	margin-top: var(--line-height);
+}
+
+.scene-number-left {
+	float: left;
+	margin-left: -50px;
+}
+
+.scene-number-right {
+	position: absolute;
+	right: -4ch; 
+	top: 0;
+}
+
+.lyrics {
+	font-style: italic;
+	text-align: center;
+}
+
+/* ================== */
+/*   REV. ASTERISKS   */
+/* ================== */
+
+.changed::after {
+
+	position: absolute;
+	
+	top: 0px;
+	right: -32pt;
+	width: 8px;
+	height: calc(100% - 4px);
+	z-index: 999;
+	
+	content: '*********************';
+	overflow: hidden;
+	font-weight: normal;
+}
+
+.dual-dialogue-left .changed::after {
+
+	left: -4ch;
+}
+
+/* ================== */
+/*      TITLE PAGE    */
+/* ================== */
+
+#script-title {
+	overflow: hidden;
+	display: block;
+	position: relative;
+}
+
+#script-title * { white-space: pre-wrap; padding-left: 0;  }
+#script-title {
+	margin: 0;
+	padding: 0 0 2cm 0;
+	height: 23.5cm;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	position: relative;
+}
+
+.a4 #script-title {
+	height: 26.0cm;
+}
+
+#script-title .title {
+	text-align: center;
+	margin: 1em 0 0 0;
+	text-transform: uppercase;
+}
+#script-title .info {
+	margin: auto auto 0 0;
+	padding: 0;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 50%;
+}
+#script-title .versionInfo {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 40%;
+	text-align: right;
+}
+.versionInfo p {
+	position: relative;
+}
+#script-title .credit {
+	text-align: center;
+}
+#script-title .authors {
+	text-align: center;
+}
+#script-title .source {
+	text-align: center;
+	padding-top: 1em;
+}
+
+/*
+#script-title .notes {
+	padding-top: 2.6em;
+}
+
+#script-title .notes {
+	white-space: pre-line !important;
+}
+*/
+
+/* ================== */
+/*    DUAL DIALOGUE   */
+/* ================== */
+
+.center {
+	text-align: center !important;
+}
+hr {
+	height: 0px;
+	border: none;
+	border-bottom: 1px solid #ccc;
+}
+
+.dual-dialogue {
+	margin-top: var(--line-height);
+	overflow: hidden;
+}
+
+.dual-dialogue .dual-dialogue-left{
+	padding-left: calc(var(--left-whitespace) + 2ch);
+	width: calc(var(--left-whitespace) + (var(--action-width) / 2));
+	float: left;
+}
+
+.dual-dialogue .dual-dialogue-right {
+	padding-left: 2ch;
+	width: calc(var(--action-width) / 2);
+	float: left;
+}
+
+.dual-dialogue p {
+	width: auto;
+	margin: 0px;
+	padding: 0px;
+}
+
+.dual-dialogue .character {
+	text-align: center;
+	margin-top: 0;
+	padding: 0px;
+}
+
+.dual-dialogue .parenthetical {
+	padding-left: 4ch;
+	padding-right: 0ch;
+	width: calc(var(--action-width) / 2 - 4);
+}
+.dual-dialogue .more {
+	text-align: center;
+}
+
+/* ================== */
+/* PAGE-RELATED STUFF */
+/* ================== */
+
+p.page-break {
+	text-align: right;
+	border-top: 1px solid #ccc;
+	padding-top: 20px;
+	padding-right: 10px;
+	margin-top: 20px;
+}
+p.page-break-render {
+	text-align: right;
+	padding-top: 0px;
+	margin-top: 0px;
+	margin-bottom: 30px;
+	padding-right: 0px;
+}
+.header-top {
+	position: absolute;
+	top: 0; bottom: 0; left: 0;
+	width: calc(var(--left-whitespace) + var(--action-width));
+	padding-left: var(--left-whitespace);
+
+	background-color: transparent !important;
+	text-align: center;
+}

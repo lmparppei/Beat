@@ -159,7 +159,7 @@
 
 // The old methods should be abolished for the sake of clarity,
 // but they remain here for the sake of compatibility, for now:
-
+/*
 - (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers
 {
 	return [self initWithScript:script document:document scene:scene operation:ForPreview printSceneNumbers:printSceneNumbers];
@@ -192,7 +192,7 @@
 	
 	return self;
 }
-
+*/
 
 #pragma mark - HTML content
 
@@ -201,7 +201,7 @@
 }
 
 - (NSString *)html
-{	
+{
 	NSMutableString *html = [NSMutableString string];
 	[html appendString:[self htmlHeader]];
 	[html appendString:[self content]];
@@ -210,8 +210,9 @@
 	return html;
 }
 
-- (NSString *)htmlHeader {
-	NSMutableString *html = [NSMutableString string];
+- (NSString*)htmlHeader {
+	NSURL *templateUrl = [NSBundle.mainBundle URLForResource:@"HeaderTemplate" withExtension:@"html"];
+	NSString *template = [NSString stringWithContentsOfURL:templateUrl encoding:NSUTF8StringEncoding error:nil];
 	
 	NSString *bodyClasses = @"";
 	
@@ -220,29 +221,18 @@
 	// Paper size body class
 	if (_paperSize == BeatUSLetter) bodyClasses = [bodyClasses stringByAppendingString:@" us-letter"];
 	else bodyClasses = [bodyClasses stringByAppendingString:@" a4"];
-
-	[html appendString:@"<!DOCTYPE html>\n"];
-	[html appendString:@"<html>\n"];
-	[html appendString:@"<head><title>Print Preview</title>\n"];
-	[html appendString:@"<meta name='viewport' content='width=device-width, initial-scale=1.2'/>\n"];
 	
-	[html appendString:@"<style type='text/css'>\n"];
-	[html appendString:self.cssText];
-	[html appendString:@"</style>\n"];
-	[html appendString:@"</head>\n"];
-	[html appendFormat:@"<body class='%@'>", bodyClasses];
+	template = [template stringByReplacingOccurrencesOfString:@"#CSS#" withString:self.css];
+	template = [template stringByReplacingOccurrencesOfString:@"#BODYCLASSES#" withString:bodyClasses];
 	
-	return html;
+	return template;
 }
 
-- (NSString *)htmlFooter {
-	NSMutableString *html = [NSMutableString string];
-	[html appendString:[self previewJS]];
-	[html appendString:@"<script name='scrolling'></script>"];
-	[html appendString:@"</body>\n"];
-	[html appendString:@"</html>"];
-
-	return html;
+- (NSString*)htmlFooter {
+	NSURL *templateUrl = [NSBundle.mainBundle URLForResource:@"FooterTemplate" withExtension:@"html"];
+	NSString *template = [NSString stringWithContentsOfURL:templateUrl encoding:NSUTF8StringEncoding error:nil];
+	
+	return template;
 }
 
 - (NSString *)content {
@@ -255,7 +245,6 @@
 	
 	NSMutableString *html = [NSMutableString string];
 	[html appendString:@"<article>\n"];
-	if (_operation == ForPreview) [html appendString:[self previewUI]];	// Adds the 'close' button
 	[html appendString:self.bodyText];
 	[html appendString:@"</article>\n"];
 	
@@ -263,7 +252,7 @@
 }
 
 
-- (NSString *)cssText
+- (NSString *)css
 {    
 	NSString *cssFile;
 	if (!_print) cssFile = @"ScriptCSS.css";
@@ -583,7 +572,7 @@
 			for (NSString *val in obj) {
 				[values appendFormat:@"%@<br>", val];
 			}
-			[body appendFormat:@"<p class='%@'>%@</p>", @"draft-date", [self format:values]];
+			[body appendFormat:@"%@", [self format:values]];
 			[titlePage removeObjectForKey:@"draft date"];
 		}
 		[body appendFormat:@"</div>"];
@@ -629,23 +618,6 @@
 		
 		[body appendString:@"</section>"];
 	}
-}
-
-#pragma mark - JavaScript functions
-
-- (NSString*)previewUI {
-	return @"<div id='close' class='ui' onclick='closePreview();'>✕</div>";
-}
-
-- (NSString*)previewJS {
-	return @"" \
-	"<script>function scrollToScene(scene) { console.log('scroll to: ' + scene); var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>" \
-	"<script>var zoomLevel = 100;" \
-		"function zoomIn() { if (zoomLevel < 200) { zoomLevel += 10; document.body.style.zoom = zoomLevel + '%'; } }" \
-		"function zoomOut() { if (zoomLevel > 50) { zoomLevel -= 10;  document.body.style.zoom = zoomLevel + '%'; } }" \
-	"</script>" \
-	"<script>function selectScene(e) { window.webkit.messageHandlers.selectSceneFromScript.postMessage(e.getAttribute('sceneIndex')); }</script>" \
-	"<script>function closePreview () { window.webkit.messageHandlers.closePrintPreview.postMessage('close'); } </script>";
 }
 
 #pragma mark - Helper methods

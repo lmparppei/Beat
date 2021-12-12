@@ -1,0 +1,36 @@
+
+		<script>function scrollToScene(scene) { console.log('scroll to: ' + scene); var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>
+		<script>let zoomLevel = 100;
+			function zoomIn() { if (zoomLevel < 200) { zoomLevel += 10; document.body.style.zoom = zoomLevel + '%'; } }
+			function zoomOut() { if (zoomLevel > 50) { zoomLevel -= 10;  document.body.style.zoom = zoomLevel + '%'; } }
+		</script>
+		<script>function selectScene(e) { window.webkit.messageHandlers.selectSceneFromScript.postMessage(e.getAttribute('sceneIndex')); }</script>
+		<script>function closePreview () { window.webkit.messageHandlers.closePrintPreview.postMessage('close'); } </script>
+		<script>
+			/*
+			const zoomLevels = [".zoom-60", ".zoom-70", ".zoom-80", ".zoom-90", ".zoom-100"]
+
+			function zoomIn() {
+				const classes = document.body.classList
+				let currentZoom = ""
+				let defaultZoom = "zoom-70"
+				
+				for (let class of classes) {
+					if (class.indexOf("zoom-") {
+						currentZoom = class
+						break
+					}
+				}
+				
+				if (currentZoom = "") currentZoom = defaultZoom
+				document.body.classList.remove(currentZoom)
+				
+				const i = zoomLevels.indexOf(currentZoom)
+				if (i + 1 < zoomLevels.count) document.body.classList.add(zoomLevels[i+1])
+			}
+			*/
+		</script>
+
+		<script name='scrolling'></script>
+	</body>
+</html>

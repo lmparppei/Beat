@@ -1456,7 +1456,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
 	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
-	if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine) return 0;
+	
+	// If we are updating scene number labels AND we didn't just enter a scene heading, skip this
+	if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine && !NSLocationInRange(self.editorDelegate.currentLine.position - 4, line.range)) return 0;
 	
 	LineType type = line.type;
 		

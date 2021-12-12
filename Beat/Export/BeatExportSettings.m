@@ -44,7 +44,7 @@
 
 - (BeatPaperSize)paperSize {
 	// Check paper size
-	if (self.document.printInfo.paperSize.width > 595) return BeatUSLetter;
+	if (self.document.printInfo.paperSize.width > 596) return BeatUSLetter;
 	else return BeatA4;
 }
 

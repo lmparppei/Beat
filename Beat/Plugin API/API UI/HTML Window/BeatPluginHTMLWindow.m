@@ -1,37 +1,40 @@
 //
-//  BeatPluginWindow.m
+//  TestPanel.m
 //  Beat
 //
-//  Created by Lauri-Matti Parppei on 16.5.2021.
+//  Created by Lauri-Matti Parppei on 11.9.2021.
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import "BeatPluginWindow.h"
+#import "BeatPluginHTMLWindow.h"
+#import "BeatPluginParser.h"
 
-@interface BeatPluginWindow ()
-@property (weak) BeatPluginParser *host;
+@interface BeatPluginHTMLWindow ()
 @end
 
-@implementation BeatPluginWindow 
+@implementation BeatPluginHTMLWindow
 
 -(instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(BeatPluginParser*)host {
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
-	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
-	self.level = NSModalPanelWindowLevel;
+	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
+	self.level = NSFloatingWindowLevel;
+	
+	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
 	self.delegate = host;
 	
+	// We can't release the panel on close, because JSContext might hang onto it and cause a crash
 	self.releasedWhenClosed = NO;
 	
 	_host = host;
 	self.title = host.pluginName;
 
+	
 	WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
 	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
 	
 	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
-	[config.userContentController addScriptMessageHandler:self.host name:@"callAndLog"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"log"];
 
 	_webview = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
@@ -43,13 +46,6 @@
 	return self;
 }
 
-+ (BeatPluginWindow*)withHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host {
-	return [[BeatPluginWindow alloc] initWithHTML:html width:width height:height host:(BeatPluginParser*)host];
-}
-
-- (void)setTitle:(NSString *)title {
-	[super setTitle:title];
-}
 - (void)setHTML:(NSString*)html {
 	// Load template
 	NSURL *templateURL = [NSBundle.mainBundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
@@ -57,6 +53,26 @@
 	template = [template stringByReplacingOccurrencesOfString:@"<!-- CONTENT -->" withString:html];
 	
 	[_webview loadHTMLString:template baseURL:nil];
+}
+
+- (void)close {
+	[self.host closePluginWindow:self];
+}
+
+- (void)closeWindow {
+	[super close];
+}
+
+- (void)focus {
+	[self makeFirstResponder:self.contentView];
+}
+
+- (void)setTitle:(NSString *)title {
+	[super setTitle:title];
+}
+
+- (CGRect)getFrame {
+	return self.frame;
 }
 
 - (void)runJS:(nonnull NSString *)js callback:(nullable JSValue *)callback {
@@ -72,44 +88,20 @@
 	}
 }
 
-- (void)focus {
-	[self makeKeyAndOrderFront:nil];
-	[self makeFirstResponder:self.contentView];
+- (NSSize)screenSize {
+	return self.screen.frame.size;
 }
 
 - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
-	NSRect screen = self.screen.frame;
-	// Don't allow moving the windows out of view
-	if (x > screen.size.width) x = screen.size.width - 100;
-	if (y > screen.size.height) x = screen.size.height - height;
-	
-	if (x < 0) x = 0;
-	if (y < 0) y = 0;
-	
-	NSRect frame = NSMakeRect(x, y, width, height);
+	NSRect frame = (NSRect){ x, y, width, height };
 	[self setFrame:frame display:YES];
 }
 
-- (NSRect)getFrame {
-	//NSRect rect = self.frame;
-	return self.frame;
+- (void)gangWithDocumentWindow {
+	[self.host gangWithDocumentWindow:self];
 }
-- (NSSize)screenSize {
-	return self.screen.frame.size;
-	//return @[ @(self.screen.frame.size.width), @(self.screen.frame.size.height) ];
+- (void)detachFromDocumentWindow {
+	[self.host detachFromDocumentWindow:self];
 }
--(BOOL)canBecomeKeyWindow {
-	return  YES;
-}
--(void)cancelOperation:(id)sender {
-	[super cancelOperation:sender];
-}
--(void)close {
-	[self.host closePluginWindow:self];
-}
--(void)closeWindow {
-	[super close];
-}
-
 
 @end

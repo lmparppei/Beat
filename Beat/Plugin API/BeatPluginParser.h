@@ -15,7 +15,7 @@
 //#import "BeatPluginWindow.h"
 #import "BeatPaginator.h"
 #import "BeatPluginTimer.h"
-#import "BeatHTMLPanel.h"
+#import "BeatPluginHTMLWindow.h"
 #import <WebKit/WebKit.h>
 #import "WebPrinter.h"
 

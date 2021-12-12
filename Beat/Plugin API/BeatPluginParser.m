@@ -112,7 +112,7 @@
 	
 	_terminating = YES;
 	if (_pluginWindows.count) {
-		for (BeatHTMLPanel *window in _pluginWindows) {
+		for (BeatPluginHTMLWindow *window in _pluginWindows) {
 			[window closeWindow];
 		}
 	}
@@ -138,7 +138,7 @@
 	_terminating = YES;
 	
 	if (_pluginWindows.count) {
-		for (BeatHTMLPanel *window in _pluginWindows) {
+		for (BeatPluginHTMLWindow *window in _pluginWindows) {
 			// Don't perform any callbacks here
 			if (window.isVisible && !window.isClosing) {
 				[window closeWindow];
@@ -825,22 +825,34 @@
 
 #pragma mark - Window management
 
+- (void)gangWithDocumentWindow:(NSWindow*)window {
+	[self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
+}
+- (void)detachFromDocumentWindow:(NSWindow*)window {
+	[self.delegate.documentWindow removeChildWindow:window];
+}
+
 - (void)showAllWindows {
+	if (_terminating) return;
+	
 	for (NSWindow *window in self.pluginWindows) {
+		window.level = NSFloatingWindowLevel;
+
 		//[window setIsVisible:YES];
-		window.level = NSModalPanelWindowLevel;
 	}
 }
 - (void)hideAllWindows {
+	if (_terminating) return;
+	
 	for (NSWindow *window in self.pluginWindows) {
-		//[window setIsVisible:NO];
 		window.level = NSNormalWindowLevel;
+		//[window setIsVisible:NO];
 	}
 }
 
 #pragma mark - HTML Window
 
-- (BeatHTMLPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
+- (BeatPluginHTMLWindow*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback
 {
 	// This is a floating window, so the plugin has to be resident
 	_resident = YES;
@@ -850,25 +862,8 @@
 	if (height <= 0) height = 300;
 	if (height > 800) height = 800;
 	
-	/*
-	if (_pluginWindows == nil) {
-		_pluginWindows = [NSMutableArray array];
-		[_delegate registerPlugin:self];
-	}
-	
-	// Create window
-	BeatPluginWindow *window = [BeatPluginWindow withHTML:html width:width height:height host:self];
-	[_pluginWindows addObject:window];
-	
-	[window makeKeyAndOrderFront:nil];
-	
-	// Store callback
-	if (callback && !callback.isUndefined) window.callback = callback;
-	
-	return window;
-	 */
-	BeatHTMLPanel *panel = [BeatHTMLPanel.alloc initWithHTML:html width:width height:height host:self];
-	//NSPanel *panel = [[NSPanel alloc] initWithContentRect:(NSRect){0,0, width,height} styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
+	BeatPluginHTMLWindow *panel = [BeatPluginHTMLWindow.alloc initWithHTML:html width:width height:height host:self];
+	//[self.delegate.documentWindow addChildWindow:panel ordered:NSWindowAbove];
 	[panel makeKeyAndOrderFront:nil];
 	
 	if (_pluginWindows == nil) {
@@ -900,7 +895,7 @@
 - (void)closePluginWindow:(id)sender {
 	if (_terminating) return;
 	
-	BeatHTMLPanel *window = (BeatHTMLPanel*)sender;
+	BeatPluginHTMLWindow *window = (BeatPluginHTMLWindow*)sender;
 	window.isClosing = YES;
 	
 	// Store callback
@@ -920,7 +915,7 @@
 	NSLog(@"HTML window will close");
 	//_terminating = YES;
 	
-	BeatHTMLPanel *window = notification.object;
+	BeatPluginHTMLWindow *window = notification.object;
 	if (window == nil) return;
 	
 	window.isClosing = YES;

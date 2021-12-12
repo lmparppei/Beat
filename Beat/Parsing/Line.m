@@ -324,6 +324,7 @@
 	if (self.noteRanges.count) newLine.noteRanges = self.noteRanges.mutableCopy;
 	if (self.omittedRanges.count) newLine.omittedRanges = self.omittedRanges.mutableCopy;
 	if (self.underlinedRanges.count) newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
+	if (self.sceneNumberRange.length) newLine.sceneNumberRange = self.sceneNumberRange;
 	
 	if (self.strikeoutRanges.count) newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
 	
@@ -416,6 +417,7 @@
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[content appendString:[self.string substringWithRange:range]];
 	}];
+
 	return content;
 }
 
@@ -934,7 +936,7 @@
 	// Returns ranges with content ONLY (useful for reconstruction the string with no Fountain stylization)
 	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
 	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
-		
+	
 	NSIndexSet *formattingRanges = self.formattingRanges;
 	[contentRanges removeIndexes:formattingRanges];
 	
@@ -989,10 +991,10 @@
 	
 	// Scene number range
 	if (self.sceneNumberRange.length) {
-		[indices addIndexesInRange:self.sceneNumberRange];
+		[indices addIndexesInRange:(NSRange){ self.sceneNumberRange.location + offset, self.sceneNumberRange.length }];
 		// Also remove the surrounding #'s
-		[indices addIndex:self.sceneNumberRange.location - 1 +offset];
-		[indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length +offset];
+		[indices addIndex:self.sceneNumberRange.location + offset - 1];
+		[indices addIndex:self.sceneNumberRange.location + self.sceneNumberRange.length + offset];
 	}
 	
 	// Stylization ranges
@@ -1019,7 +1021,6 @@
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
 	}];
 	*/
-
 		
 	// Add note ranges
 	if (includeNotes) [indices addIndexes:self.noteRanges];
