@@ -311,14 +311,11 @@ body > p:first-child {
 /*      TITLE PAGE    */
 /* ================== */
 
-#script-title {
-	overflow: hidden;
-	display: block;
-	position: relative;
-}
-
 #script-title * { white-space: pre-wrap; padding-left: 0;  }
 #script-title {
+	overflow: hidden;
+	position: relative;
+
 	margin: 0;
 	padding: 0 0 2cm 0;
 	height: 23.5cm;

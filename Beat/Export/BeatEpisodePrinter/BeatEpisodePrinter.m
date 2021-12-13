@@ -259,7 +259,8 @@
 		
 		// Begin the document
 		// WIP: Add a toggle switch for scene number printing!!!
-		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:self.doc printSceneNumbers:YES];
+		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initWithScript:nil settings:settings];
+		//BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:self.doc printSceneNumbers:YES];
 		NSString *header = htmlScript.htmlHeader;
 		NSString *footer = htmlScript.htmlFooter;
 	

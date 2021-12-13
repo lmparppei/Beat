@@ -156,6 +156,11 @@
 	
 	return self;
 }
+- (id)initForQuickLook:(NSDictionary *)script {
+	//return [self initWithScript:script document:nil scene:nil operation:ForQuickLook printSceneNumbers:YES];
+	return [self initWithScript:script settings:[BeatExportSettings operation:ForQuickLook document:nil header:@"" printSceneNumbers:YES]];
+}
+
 
 // The old methods should be abolished for the sake of clarity,
 // but they remain here for the sake of compatibility, for now:
@@ -163,9 +168,6 @@
 - (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers
 {
 	return [self initWithScript:script document:document scene:scene operation:ForPreview printSceneNumbers:printSceneNumbers];
-}
-- (id)initForQuickLook:(NSDictionary *)script {
-	return [self initWithScript:script document:nil scene:nil operation:ForQuickLook printSceneNumbers:YES];
 }
 - (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers
 {

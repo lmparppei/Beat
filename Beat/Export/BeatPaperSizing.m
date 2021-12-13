@@ -12,7 +12,7 @@
 // Print margin definitions
 #define MARGIN_TOP 30
 #define MARGIN_LEFT 50
-#define MARGIN_RIGHT 50
+#define MARGIN_RIGHT 38
 #define MARGIN_BOTTOM 40
 
 #define PAPER_A4 595.0, 842.0

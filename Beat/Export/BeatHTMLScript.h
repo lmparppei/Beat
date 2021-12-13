@@ -56,8 +56,8 @@ typedef enum : NSUInteger {
 @property (copy, nonatomic) NSString *bodyText;
 
 - (id)initWithScript:(NSDictionary*)script settings:(id)settings; // The new way
-- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers;
-- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers;
+// - (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers;
+//- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers;
 - (id)initForQuickLook:(NSDictionary *)script;
 
 - (NSInteger)pages;

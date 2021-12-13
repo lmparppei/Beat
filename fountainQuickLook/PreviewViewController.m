@@ -44,7 +44,6 @@
 */
 
 - (void)preparePreviewOfFileAtURL:(NSURL *)url completionHandler:(void (^)(NSError * _Nullable))handler {	
-	// Read contents into file and then parse into FNHTMLScript
 	NSError *error;
 	NSString *file = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
 	
