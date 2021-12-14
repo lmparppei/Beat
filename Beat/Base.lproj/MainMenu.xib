@@ -115,19 +115,6 @@
                                     <action selector="toggleAutosave:" target="-1" id="UJw-ny-khR"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Revert To..." id="66O-OW-2gf">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Revert To..." id="dbF-KQ-yEw">
-                                    <items>
-                                        <menuItem title="Item" id="dSo-T0-bVH">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                        </menuItem>
-                                    </items>
-                                    <connections>
-                                        <outlet property="delegate" destination="vEX-2F-hcj" id="XDb-Zr-vaK"/>
-                                    </connections>
-                                </menu>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
                             <menuItem title="Lock Document" id="dTg-uk-VoW">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -1137,6 +1124,19 @@ DQ
             </connections>
             <point key="canvasLocation" x="523" y="72"/>
         </button>
+        <menuItem title="Revert To..." id="66O-OW-2gf">
+            <modifierMask key="keyEquivalentModifierMask"/>
+            <menu key="submenu" title="Revert To..." id="dbF-KQ-yEw">
+                <items>
+                    <menuItem title="Item" id="dSo-T0-bVH">
+                        <modifierMask key="keyEquivalentModifierMask"/>
+                    </menuItem>
+                </items>
+                <connections>
+                    <outlet property="delegate" destination="vEX-2F-hcj" id="XDb-Zr-vaK"/>
+                </connections>
+            </menu>
+        </menuItem>
     </objects>
     <resources>
         <image name="B_256" width="256" height="256"/>

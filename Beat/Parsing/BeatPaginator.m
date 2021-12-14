@@ -56,11 +56,39 @@
  
  */
 
+/*
+ 
+ UPDATE 2021-12-13:
+ 
+ A4: 59 charaters per line
+ US Letter: 61 characters per line
+ ... which means that one character equals 7,2 pt
+ 
+ For now, it might be clever to base our maths on characters per line.
+ 
+
+ */
+
 #import "BeatPaginator.h"
 #import "Line.h"
 #import "RegExCategories.h"
 
+#define CHARACTER_WIDTH 7.2033
 #define LINE_HEIGHT 12.5
+
+#define ACTION_A4 59
+#define ACTION_US 61
+#define CHARACTER 38
+#define PARENTHETICAL 28
+#define DIALOGUE 35
+
+#define DUAL_DIALOGUE_A4 27
+#define DUAL_DIALOGUE_US 28
+#define DUAL_DIALOGUE_CHARACTER_A4 20
+#define DUAL_DIALOGUE_CHARACTER_US 21
+#define DUAL_DIALOGUE_PARENTHETICAL_A4 25
+#define DUAL_DIALOGUE_PARENTHETICAL_US 26
+
 
 @interface BeatPaginator ()
 
@@ -871,10 +899,48 @@
 	return [BeatPaginator heightForString:string font:_font maxWidth:[self widthForElement:element] lineHeight:lineHeight];
 }
 
+- (NSInteger)cplToWidth:(Line*)element {
+	
+	NSInteger cpl = 0;
+	
+	switch (element.type) {
+		case dialogue:
+			cpl = DIALOGUE; break;
+		case character:
+			cpl = CHARACTER; break;
+		case parenthetical:
+			cpl = PARENTHETICAL; break;
+		case dualDialogue:
+			if (_A4) cpl = DUAL_DIALOGUE_A4;
+			else cpl = DUAL_DIALOGUE_US;
+			break;
+		case dualDialogueCharacter:
+			if (_A4) cpl = DUAL_DIALOGUE_CHARACTER_A4;
+			else cpl = DUAL_DIALOGUE_CHARACTER_US;
+			break;
+		case dualDialogueParenthetical:
+			if (_A4) cpl = DUAL_DIALOGUE_PARENTHETICAL_A4;
+			else cpl = DUAL_DIALOGUE_US;
+			break;
+			
+		default:
+			if (_A4) cpl = ACTION_A4;
+			else cpl = ACTION_US;
+			break;
+	}
+	
+	CGFloat width = cpl * CHARACTER_WIDTH;
+	
+	// Make space for scene number
+	if (element.type == heading) width -= 25.0;
+	
+	return (NSInteger)(roundf(width));
+}
+
 - (NSInteger)widthForElement:(Line *)element
 {
 	// This uses Fountain element keywords to make no difference between dual and normal dialogue etc.
-	
+	/*
 	NSInteger width = 0;
 	NSString *type  = element.typeAsFountainString;
 	
@@ -883,8 +949,8 @@
 		if (!_A4) width = 440;
 	}
 	if (element.type == heading) {
-		width = 425 - 32; // Make space for the scene number
-		if (!_A4) width = 440 - 32;
+		width = 425 - 25; // Make space for the scene number
+		if (!_A4) width = 440 - 25;
 	}
 	else if ([type isEqualToString:@"Character"]) {
 		width   = 144;
@@ -896,7 +962,12 @@
 		width   = 200;
 	}
 	
+	NSLog(@"%@ => %lu (new: %lu)", element.typeAsString, width, [self cplToWidth:element]);
 	return width;
+	 */
+	
+	// The above code is preserved for reference, but this is how we do it nowadays.
+	return [self cplToWidth:element];
 }
 
 /*
@@ -912,7 +983,7 @@
 	 method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
 	 */
 	
-	if ([string length] < 1) return lineHeight;
+	if (string.length < 1) return lineHeight;
 	
 	// set up the layout manager
 	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
@@ -939,7 +1010,7 @@
 		[layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
 		index = NSMaxRange(lineRange);
 	}
-		
+	
 	return numberOfLines * lineHeight;
 }
 - (void)pageBreak:(Line*)line position:(CGFloat)position type:(NSString*)reason {

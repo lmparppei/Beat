@@ -297,6 +297,8 @@
 		B69154652480EB7E002393D1 /* RoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154642480EB7E002393D1 /* RoundedButton.m */; };
 		B69154692480F68E002393D1 /* BeatRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154682480F68E002393D1 /* BeatRoundedButton.m */; };
 		B6916C0025D135930037EF6A /* BeatFDXExport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6916BFF25D135930037EF6A /* BeatFDXExport.m */; };
+		B69461172767C0B80000BDF0 /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B69461162767C0B80000BDF0 /* PrintCSS.css */; };
+		B69461182767C0B80000BDF0 /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B69461162767C0B80000BDF0 /* PrintCSS.css */; };
 		B6952C95232B89BE00448B57 /* ScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6952C94232B89BE00448B57 /* ScrollView.m */; };
 		B69A929C2319609100FE6A3E /* dragula.js in Resources */ = {isa = PBXBuildFile; fileRef = B69A929B2319609100FE6A3E /* dragula.js */; };
 		B69AC76D233EB1ED00AC537C /* FountainAnalysis.m in Sources */ = {isa = PBXBuildFile; fileRef = B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */; };
@@ -374,8 +376,6 @@
 		B6DCA86527219C3700CBE9BC /* BeatNotepad.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA86327219C3700CBE9BC /* BeatNotepad.m */; };
 		B6DF34B4259D0C2A0077041F /* About Plugins.md in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB1259CE3230007EA4E /* About Plugins.md */; };
 		B6E067D0222D7C4100CE425A /* PrintCSS 1.92.2.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS 1.92.2.css */; };
-		B6E099CE27661EEF005E7827 /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E099CD27661EEF005E7827 /* PrintCSS.css */; };
-		B6E099CF27661EEF005E7827 /* PrintCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E099CD27661EEF005E7827 /* PrintCSS.css */; };
 		B6E099D127667CAD005E7827 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D027667CAD005E7827 /* ScriptCSS.css */; };
 		B6E099D227667CAD005E7827 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D027667CAD005E7827 /* ScriptCSS.css */; };
 		B6E099D5276681B8005E7827 /* HeaderTemplate.html in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D4276681B8005E7827 /* HeaderTemplate.html */; };
@@ -741,6 +741,7 @@
 		B69154682480F68E002393D1 /* BeatRoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatRoundedButton.m; path = "Beat/User Interface/Buttons etc/BeatRoundedButton.m"; sourceTree = SOURCE_ROOT; };
 		B6916BFE25D135930037EF6A /* BeatFDXExport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFDXExport.h; sourceTree = "<group>"; };
 		B6916BFF25D135930037EF6A /* BeatFDXExport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFDXExport.m; sourceTree = "<group>"; };
+		B69461162767C0B80000BDF0 /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
 		B6952C93232B89BE00448B57 /* ScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ScrollView.h; path = "Beat/User Interface/ScrollView.h"; sourceTree = SOURCE_ROOT; };
 		B6952C94232B89BE00448B57 /* ScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ScrollView.m; path = "Beat/User Interface/ScrollView.m"; sourceTree = SOURCE_ROOT; };
 		B69A928B231915E900FE6A3E /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -843,7 +844,6 @@
 		B6DCA86227219C3700CBE9BC /* BeatNotepad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotepad.h; sourceTree = "<group>"; };
 		B6DCA86327219C3700CBE9BC /* BeatNotepad.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotepad.m; sourceTree = "<group>"; };
 		B6E067CF222D7C4100CE425A /* PrintCSS 1.92.2.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = "PrintCSS 1.92.2.css"; sourceTree = "<group>"; };
-		B6E099CD27661EEF005E7827 /* PrintCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = PrintCSS.css; sourceTree = "<group>"; };
 		B6E099D027667CAD005E7827 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScriptCSS.css; sourceTree = "<group>"; };
 		B6E099D4276681B8005E7827 /* HeaderTemplate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = HeaderTemplate.html; sourceTree = "<group>"; };
 		B6E099D72766861B005E7827 /* FooterTemplate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = FooterTemplate.html; sourceTree = "<group>"; };
@@ -1688,8 +1688,8 @@
 		B6E099CC27661EDB005E7827 /* CSS */ = {
 			isa = PBXGroup;
 			children = (
+				B69461162767C0B80000BDF0 /* PrintCSS.css */,
 				B6E099D027667CAD005E7827 /* ScriptCSS.css */,
-				B6E099CD27661EEF005E7827 /* PrintCSS.css */,
 				B6E067CF222D7C4100CE425A /* PrintCSS 1.92.2.css */,
 				B138B66019E1E8CA000489C4 /* ScriptCSS 1.92.2.css */,
 			);
@@ -1983,7 +1983,6 @@
 				B69A929C2319609100FE6A3E /* dragula.js in Resources */,
 				B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */,
 				B6E3894E270DDE130067DD0C /* cards.png in Resources */,
-				B6E099CE27661EEF005E7827 /* PrintCSS.css in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS 1.92.2.css in Resources */,
 				B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */,
 				B6F3117D274C058500D0840D /* Plugin Page.html in Resources */,
@@ -2018,6 +2017,7 @@
 				B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */,
 				B60A593325993FF000207D00 /* Find Longest Scene.beatPlugin in Resources */,
 				B6E3894F270DDE130067DD0C /* timeline.png in Resources */,
+				B69461172767C0B80000BDF0 /* PrintCSS.css in Resources */,
 				B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2057,7 +2057,6 @@
 				B68B609B260B849300463AD8 /* dragula.js in Resources */,
 				B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */,
 				B6E38949270DDE120067DD0C /* cards.png in Resources */,
-				B6E099CF27661EEF005E7827 /* PrintCSS.css in Resources */,
 				B68B609D260B849300463AD8 /* Patch Notes.html in Resources */,
 				B68B609E260B849300463AD8 /* PrintCSS 1.92.2.css in Resources */,
 				B6F3117E274C058500D0840D /* Plugin Page.html in Resources */,
@@ -2092,6 +2091,7 @@
 				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
 				B68B60B9260B849300463AD8 /* Find Longest Scene.beatPlugin in Resources */,
 				B6E3894A270DDE120067DD0C /* timeline.png in Resources */,
+				B69461182767C0B80000BDF0 /* PrintCSS.css in Resources */,
 				B68B60BA260B849300463AD8 /* Outlining.fountain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2713,7 +2713,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13192;
+				CURRENT_PROJECT_VERSION = 13193;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2745,7 +2745,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13192;
+				CURRENT_PROJECT_VERSION = 13193;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2773,7 +2773,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13192;
+				CURRENT_PROJECT_VERSION = 13193;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2805,7 +2805,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13192;
+				CURRENT_PROJECT_VERSION = 13193;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

@@ -472,15 +472,6 @@
 	[super close];
 }
 
-/*
-typedef void (^ CallbackBlock)(void);
-void delay (double delay, CallbackBlock block) {
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-		   (delay * (double)NSEC_PER_SEC)),
-				   dispatch_get_main_queue(), block);
-}
-*/
-
 -(void)restoreDocumentWindowWithIdentifier:(NSUserInterfaceItemIdentifier)identifier state:(NSCoder *)state completionHandler:(void (^)(NSWindow * _Nullable, NSError * _Nullable))completionHandler {
 	if (NSEvent.modifierFlags & NSEventModifierFlagShift) {
 		completionHandler(nil, nil);
@@ -588,7 +579,7 @@ void delay (double delay, CallbackBlock block) {
 	// No animations
 	[CATransaction begin];
 	[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
-	if (self.progressPanel.visible) [self.documentWindow endSheet:self.progressPanel];
+	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
 	[CATransaction commit];
 
 	
@@ -2301,7 +2292,9 @@ void delay (double delay, CallbackBlock block) {
 		
 		// If the document is done formatting, complete the loading process.
 		// Else render 400 more lines
-		if (line == self.parser.lines.lastObject || lastIndex >= self.parser.lines.count) [self loadingComplete];
+		if (line == self.parser.lines.lastObject || lastIndex >= self.parser.lines.count) {
+			[self loadingComplete];
+		}
 		else [self formatAllWithDelay:lastIndex + 1];
 	});
 }
@@ -5308,8 +5301,9 @@ triangle walks
 }
 
 + (BOOL)preservesVersions {
-	return YES;
+	return NO;
 }
+
 
 - (IBAction)toggleAutosave:(id)sender {
 	self.autosave = !self.autosave;
@@ -5354,7 +5348,6 @@ triangle walks
 - (void)initAutosave {
  	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
 }
-
 
 - (void)saveDocumentAs:(id)sender {
 	// Delete old drafts when saving under a new name

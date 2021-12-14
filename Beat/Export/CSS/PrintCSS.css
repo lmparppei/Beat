@@ -25,6 +25,7 @@
 
 
 /*
+ 
 	Revisions for introduction of variable-based, typographic units and
 	in order to avoid WebKit re-sizing of content (c) 2021 Fredrik T Olsson
 
@@ -45,12 +46,11 @@
 
 	When this CSS file is finalized, the idea is to be able to do most
 	tweaks to script element layouts from the variables in the body tag.
-*/
 
-/*  
 	ALSO NOTE: the CSS in this file correspond well to the line lengths
  	inside the Beat editing window, but with the important exception of 
 	DUAL DIALOGUE. These should still be considered work in progress.
+ 
 */
 
 html {
@@ -110,7 +110,7 @@ article {
 
 section {
 
-	margin-left: -20pt; /* Hack to MOVE THE PAGE TO THE LEFT in order to fit overflowing stars without shrinking the page */
+	margin-left: 0pt; /* Hack to MOVE THE PAGE TO THE LEFT in order to fit overflowing stars without shrinking the page */
 
 	margin-bottom: 0;
 	page-break-after: always;
@@ -188,6 +188,10 @@ body > p:first-child {
 .scene-heading, .transition, .new-act, .end-of-act {
 	position: relative;
 	text-transform: uppercase;
+}
+
+.scene-heading{
+	padding-right: 4ch; /*was nil, but added not to collide with scene numbers*/
 }
 
 .transition {
@@ -269,12 +273,12 @@ body > p:first-child {
 
 .scene-number-left {
 	float: left;
-	margin-left: -50px;
+	margin-left: -70px; /*was50*/
 }
 
 .scene-number-right {
 	position: absolute;
-	right: -4ch; 
+	right: 0ch; /*was-4*/
 	top: 0;
 }
 
@@ -292,7 +296,7 @@ body > p:first-child {
 	position: absolute;
 	
 	top: 0px;
-	right: -32pt;
+	right: -12pt;
 	width: 8px;
 	height: calc(100% - 4px);
 	z-index: 999;
@@ -317,7 +321,7 @@ body > p:first-child {
 	position: relative;
 
 	margin: 0;
-	padding: 0 0 2cm 0;
+	padding: 0 12px 2cm 0;
 	height: 23.5cm;
 
 	display: flex;
@@ -395,8 +399,8 @@ hr {
 }
 
 .dual-dialogue .dual-dialogue-left{
-	padding-left: calc(var(--left-whitespace) + 2ch);
-	width: calc(var(--left-whitespace) + (var(--action-width) / 2));
+	padding-left: calc(var(--left-whitespace) + 1ch);
+	width: calc(var(--left-whitespace) + (var(--action-width) / 2) - 1ch);
 	float: left;
 }
 
@@ -413,15 +417,16 @@ hr {
 }
 
 .dual-dialogue .character {
-	text-align: center;
 	margin-top: 0;
-	padding: 0px;
+	padding: 0;
+	margin-left: 8ch;
+	width: calc(var(--action-width) / 2 - 9ch); /* 1ch space on left */
 }
 
 .dual-dialogue .parenthetical {
-	padding-left: 4ch;
+	margin: 0 0 0 3ch;
 	padding-right: 0ch;
-	width: calc(var(--action-width) / 2 - 4);
+	width: calc(var(--action-width) / 2 - 4ch);
 }
 .dual-dialogue .more {
 	text-align: center;
