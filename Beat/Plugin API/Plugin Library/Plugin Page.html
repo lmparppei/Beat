@@ -1,0 +1,342 @@
+<html>
+	<head>	
+		<style>
+			* {	
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				background-color: #222;
+				color: #f0f0f0;
+				font-family: "SF Pro", Helvetica, sans-serif;
+				font-size: .8em;
+				user-select: none;
+			}
+			
+			#intro {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: column;
+				text-align: center;
+				height: 100vh;
+				padding: 2rem;
+			}
+			.visible #intro {
+				display: none;
+			}
+			.small {
+				font-size: .8em;
+			}
+			.gray {
+				color: #aaa;
+			}
+			
+			#content {
+				display: none;
+			}
+			.visible #content {
+				display: block;
+			}
+			
+			#plugin-warning {
+				display: none;
+			}
+			#plugin-warning.visible {
+				display: block;
+				border: solid 1px #F01000;
+				padding: .5rem;
+				border-radius: .5em;
+				margin-bottom: .5em;
+				color: #F01000;
+				font-size: .8em;
+			}
+			
+			section {
+				padding: 1.5rem;
+			}
+
+			h1 {
+				font-weight: lighter;
+				font-size: 2.2em;
+				margin: 0 0 .8rem 0;
+			}
+
+			a:link, a:visited {
+				color: rgba(#DOWNLOADCOLOR#);
+				text-decoration: none;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+			
+			h2 {
+				font-weight: normal;
+				font-size: 1.7em;
+				margin: 1.5em 0 1em 0;
+			}
+			h3 {
+				font-size: 1em;
+				margin: 1em 0 .5em 0;
+			}
+			
+			
+			p {
+				margin: 0 0 1rem 0;
+				line-height: 1.6em;
+			}
+			#plugin-info {
+				font-size: .8em;
+				color: #999;
+			}
+			#plugin-actions {
+				display: flex;
+				align-items: center;
+				padding-bottom: .6rem;
+				margin-bottom: .6rem;
+				
+				border-bottom: solid 1px #444;
+			}
+			
+			p.version {
+				margin: 0;
+				font-size: .8em;
+			}
+			
+			#plugin-image {
+				margin: 0 0 1.5em 0;
+			}
+			#plugin-image img {
+				max-width: 100%;
+			}
+
+			#actionButton {
+				background-color: rgb(#COLOR#);
+				border: none;
+				color: white;
+				padding: .7em 1.2em .7em 1.2em;
+				border-radius: 1em;
+				margin-right: 1.5em;
+			}
+			
+			button {
+				position: relative;
+				transition: all ease .15s;
+			}
+			button:active {
+				transform: translate(1px, 1px);
+				opacity: .8;
+			}
+			button:focus {
+				outline: 2px;
+			}
+			
+			.update {
+				background-color: rgba(#UPDATECOLOR#, .8);
+			}
+			.download {
+				background-color: rgba(#DOWNLOADCOLOR#, .8);
+			}
+			.download:hover {
+				background-color: rgba(#DOWNLOADCOLOR#, 1.0);
+			}
+			
+			.installed {
+				background-color: #333;
+			}
+			
+			#actionButton.downloading {
+				content: '';
+				width: 30px;
+				background-color: transparent;
+				color: rgba(0,0,0,0);
+			}
+			
+			.downloading .lds-ring {
+				opacity: 1;
+			}
+			.lds-ring {
+				opacity: 0;
+				
+				display: inline-block;
+				position: absolute;
+				/* width: 20px;*/
+				width: 25px;
+				height: 25px;
+				top: 0px;
+				left: 0px;
+				transition: opacity ease .15s;
+			}
+			.lds-ring div {
+				box-sizing: border-box;
+				display: block;
+				position: absolute;
+				width: 80%;
+				height: 80%;
+				margin: 10%;
+				border: 2px solid rgb(#DOWNLOADCOLOR#);
+				border-radius: 50%;
+				animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+				border-color: rgb(#DOWNLOADCOLOR#) transparent transparent transparent;
+			}
+			.lds-ring div:nth-child(1) {
+				animation-delay: -0.45s;
+			}
+			.lds-ring div:nth-child(2) {
+				animation-delay: -0.3s;
+			}
+			.lds-ring div:nth-child(3) {
+				animation-delay: -0.15s;
+			}
+			@keyframes lds-ring {
+				0% {
+					transform: rotate(0deg);
+				}
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+			
+		</style>
+	</head>
+	<body>
+		<section id='intro'>
+			<h1>Plugin Library</h1>
+			<p>A selection of official plugins for Beat. Enabled (checked) plugins will be shown under <b>Tools</b> menu. Grayed out plugins are not yet installed. Click on their label to install and learn more.</p>
+			<p class='small gray'>Click on the folder icon to manually manage your plugins. You can write your own plugins using JavaScript &mdash; learn more on Beat website.</p>
+		</section>
+			
+		<section id='content'>
+			<h1 id='plugin-name'></h1>
+			<div id='plugin-actions'>
+				
+				<button name="" id='actionButton' onclick='download()'>
+					<div id='loading' class="lds-ring"><div></div><div></div><div></div><div></div></div>
+					<span id='actionTitle'></span>
+				</button>
+				<p id='plugin-version' class='version'></p>
+			</div>
+			<div id='plugin-warning'></div>
+			<div id='plugin-image'>
+			</div>
+			
+			<p id='plugin-description'></p>
+			<p id='plugin-info'></p>
+		</section>
+
+		<script>
+			document.addEventListener( "contextmenu", function(e) {
+			    e.preventDefault();
+			});
+			
+			if (!String.prototype.replaceAll) {
+				String.prototype.replaceAll = function(str, newStr){
+					// If a regex pattern
+					if (Object.prototype.toString.call(str).toLowerCase() === '[object regexp]') {
+						return this.replace(str, newStr);
+					}
+
+					// If a string
+					return this.replace(new RegExp(str, 'g'), newStr);
+				};
+			}
+			
+			const pluginName = document.getElementById("plugin-name")
+			const pluginAction = document.getElementById("actionButton")
+			const pluginActionTitle = document.getElementById("actionTitle")
+			const pluginDescription = document.getElementById("plugin-description")
+			const pluginInfo = document.getElementById("plugin-info")
+			const pluginVersion = document.getElementById("plugin-version")
+			const pluginImage = document.getElementById("plugin-image")
+			const pluginWarning = document.getElementById("plugin-warning")
+			
+			let currentPlugin = ""
+			
+			function loadData(data) {
+				document.body.className = "visible"
+				
+				data = eval(data)
+				console.log(data)
+				
+				data.image = data.image.replaceAll("\\/", "/")
+				
+				pluginName.innerHTML = ""
+				pluginInfo.innerHTML = ""
+				pluginDescription.innerHTML = ""
+				pluginImage.innerHTML = ""
+				pluginVersion.innerHTML = ""
+				pluginWarning.innerHTML = ""
+				
+				// Set current plugin name
+				currentPlugin = data.name
+				pluginAction.setAttribute("name", data.name)
+				
+				setButtonStatus(data)
+				
+				if (!data.compatible) displayWarning()
+				else pluginWarning.className = ""
+				
+				if (data.name) pluginName.innerHTML = data.name
+				if (data.version) pluginVersion.innerHTML = "Version " + data.version
+				if (data.updateAvailable) pluginVersion.innerHTML = "<b>Update available: " + data.updateAvailable + "</b><br>(Currently installed: " + data.version + ")"
+				if (data.text) pluginDescription.innerHTML = data.text
+				if (data.html) pluginDescription.innerHTML = data.html
+				if (data.copyright) pluginInfo.innerHTML = "Copyright © " + data.copyright
+				if (data.image) pluginImage.innerHTML = "<img src='" + data.image + "'>"
+				
+
+				const links = document.querySelectorAll("a").forEach((link) => {
+					link.onclick = function (e) {
+						e.preventDefault()
+						window.webkit.messageHandlers.openLink.postMessage(link.href);
+					}
+				})
+			}
+			
+			function download() {
+				if (currentPlugin.length == 0) return
+				pluginAction.className = "downloading"
+				window.webkit.messageHandlers.download.postMessage(currentPlugin);
+			}
+			function downloadComplete(data) {
+				/*
+				 data = eval(data)
+				setButtonStatus(data)
+				
+				if (data.version) pluginVersion.innerHTML = "Version " + data.version
+				else pluginVersion.innerHTML = ""
+				
+				if (data.text) pluginDescription.innerHTML = data.text
+				if (data.html) pluginDescription.innerHTML = data.html
+				 */
+				loadData(data)
+			}
+			
+			function displayWarning () {
+				pluginWarning.className = "visible"
+				pluginWarning.innerHTML = "<b>Warning</b>: This plugin might not be compatible with your version of Beat. To ensure it works, download the latest version from App Store before continuing."
+			}
+			
+			function setButtonStatus(data) {
+				pluginActionTitle.innerHTML = ""
+				pluginAction.disabled = false
+				
+				if (data.localURL) {
+					pluginActionTitle.innerHTML = "Installed"
+					pluginAction.className = "installed"
+					pluginAction.disabled = true
+				} else {
+					pluginActionTitle.innerHTML = "Download"
+					pluginAction.className = "download"
+				}
+				
+				if (data.updateAvailable.length) {
+					pluginActionTitle.innerHTML = "Update"
+					pluginAction.className = "update"
+					pluginAction.disabled = false
+				}
+			}
+			
+		</script>
+	</body>
+</html>

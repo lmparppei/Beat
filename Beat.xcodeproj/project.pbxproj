@@ -74,6 +74,8 @@
 		B62ADC9E23CCF7790015563A /* NSString+CharacterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7102218B389005B8447 /* NSString+CharacterControl.m */; };
 		B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6632B33231710CF00100A44 /* NSMutableString+Regex.m */; };
 		B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
+		B63704FA2768A6A400BEAD53 /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B63704F92768A6A400BEAD53 /* Plugin Page.html */; };
+		B63704FB2768A6A400BEAD53 /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B63704F92768A6A400BEAD53 /* Plugin Page.html */; };
 		B63943912593FE59009BE3CA /* BeatPaperSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6779B74256EED1100CFD324 /* BeatPaperSizing.m */; };
 		B63CF61625B43EDD00EFA3A2 /* ThemeEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */; };
 		B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */; };
@@ -420,8 +422,6 @@
 		B6F31177274BF70400D0840D /* BeatPluginLibrary.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6F31173274BF70400D0840D /* BeatPluginLibrary.xib */; };
 		B6F3117A274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F31179274BFD3B00D0840D /* BeatCheckboxCell.m */; };
 		B6F3117B274BFD3B00D0840D /* BeatCheckboxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F31179274BFD3B00D0840D /* BeatCheckboxCell.m */; };
-		B6F3117D274C058500D0840D /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B6F3117C274C058500D0840D /* Plugin Page.html */; };
-		B6F3117E274C058500D0840D /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B6F3117C274C058500D0840D /* Plugin Page.html */; };
 		B6F360AB250127C1001ACAEE /* BeatTimeline.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F360AA250127C1001ACAEE /* BeatTimeline.m */; };
 		B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B138B62019E1D6FA000489C4 /* Cocoa.framework */; };
 		B6F4A2D4221EEDCD0065D9CB /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */; };
@@ -613,6 +613,7 @@
 		B62ADC8E23CCE20D0015563A /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
 		B6342D6525682D7B0034D54F /* OutlineViewItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B6342D6625682D7B0034D54F /* OutlineViewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
+		B63704F92768A6A400BEAD53 /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Plugin Page.html"; sourceTree = "<group>"; };
 		B63CF61325B43EDD00EFA3A2 /* ThemeEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeEditor.h; sourceTree = "<group>"; };
 		B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeEditor.m; sourceTree = "<group>"; };
 		B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ThemeEditor.xib; sourceTree = "<group>"; };
@@ -869,7 +870,6 @@
 		B6F31173274BF70400D0840D /* BeatPluginLibrary.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatPluginLibrary.xib; sourceTree = "<group>"; };
 		B6F31178274BFD3B00D0840D /* BeatCheckboxCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCheckboxCell.h; sourceTree = "<group>"; };
 		B6F31179274BFD3B00D0840D /* BeatCheckboxCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCheckboxCell.m; sourceTree = "<group>"; };
-		B6F3117C274C058500D0840D /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = "Plugin Page.html"; path = "../../../../../Desktop/Plugin Page.html"; sourceTree = "<group>"; };
 		B6F360A9250127C1001ACAEE /* BeatTimeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTimeline.h; sourceTree = "<group>"; };
 		B6F360AA250127C1001ACAEE /* BeatTimeline.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTimeline.m; sourceTree = "<group>"; };
 		B6F4A2D3221EEDCD0065D9CB /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
@@ -1185,7 +1185,7 @@
 		B62C0FF4262C91C6007659F8 /* Plugin Library */ = {
 			isa = PBXGroup;
 			children = (
-				B6F3117C274C058500D0840D /* Plugin Page.html */,
+				B63704F92768A6A400BEAD53 /* Plugin Page.html */,
 				B6F31178274BFD3B00D0840D /* BeatCheckboxCell.h */,
 				B6F31179274BFD3B00D0840D /* BeatCheckboxCell.m */,
 				B6F31171274BF70400D0840D /* BeatPluginLibrary.h */,
@@ -1985,7 +1985,6 @@
 				B6E3894E270DDE130067DD0C /* cards.png in Resources */,
 				B6E067D0222D7C4100CE425A /* PrintCSS 1.92.2.css in Resources */,
 				B623BD442549AF6500201BC9 /* Tutorial.fountain in Resources */,
-				B6F3117D274C058500D0840D /* Plugin Page.html in Resources */,
 				B688F2C9274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */,
 				B6BE1AD42567B93500F7476A /* Courier Prime Sans Bold.ttf in Resources */,
 				B6C84CA525AA566100BDF974 /* BeatAboutScreen.xib in Resources */,
@@ -2011,6 +2010,7 @@
 				B6F31176274BF70400D0840D /* BeatPluginLibrary.xib in Resources */,
 				B138B66D19E1E8CA000489C4 /* ScriptCSS 1.92.2.css in Resources */,
 				B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */,
+				B63704FA2768A6A400BEAD53 /* Plugin Page.html in Resources */,
 				B6C16AFB25A72D3D003EF5A7 /* Plugin HTML template.html in Resources */,
 				B623BD482549AFDA00201BC9 /* B_256_logo.png in Resources */,
 				B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */,
@@ -2059,7 +2059,6 @@
 				B6E38949270DDE120067DD0C /* cards.png in Resources */,
 				B68B609D260B849300463AD8 /* Patch Notes.html in Resources */,
 				B68B609E260B849300463AD8 /* PrintCSS 1.92.2.css in Resources */,
-				B6F3117E274C058500D0840D /* Plugin Page.html in Resources */,
 				B68B609F260B849300463AD8 /* Tutorial.fountain in Resources */,
 				B688F2CA274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */,
 				B68B60A0260B849300463AD8 /* Courier Prime Sans Bold.ttf in Resources */,
@@ -2085,6 +2084,7 @@
 				B6F31177274BF70400D0840D /* BeatPluginLibrary.xib in Resources */,
 				B68B60B4260B849300463AD8 /* Courier Prime Sans Bold Italic.ttf in Resources */,
 				B68B60B6260B849300463AD8 /* Plugin HTML template.html in Resources */,
+				B63704FB2768A6A400BEAD53 /* Plugin Page.html in Resources */,
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
 				B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B60FF86B26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
@@ -2713,7 +2713,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13193;
+				CURRENT_PROJECT_VERSION = 13194;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2745,7 +2745,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13193;
+				CURRENT_PROJECT_VERSION = 13194;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2773,7 +2773,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13193;
+				CURRENT_PROJECT_VERSION = 13194;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2805,7 +2805,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13193;
+				CURRENT_PROJECT_VERSION = 13194;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

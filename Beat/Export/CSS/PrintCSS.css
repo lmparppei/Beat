@@ -87,7 +87,7 @@ body {
 	padding: 0px;
 	margin: 0px;
 
-	width: calc(21cm - 100pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
+	width: calc(21cm - 88pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
 }
 
 body.us-letter{  /* all values not present here are the same as for A4 */
@@ -95,7 +95,7 @@ body.us-letter{  /* all values not present here are the same as for A4 */
 	--action-width: 61.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
 	--character-width: 40ch;
 
-	width: calc(8.5in - 100pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
+	width: calc(8.5in - 88pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
 }
 
 @page { 
@@ -307,7 +307,6 @@ body > p:first-child {
 }
 
 .dual-dialogue-left .changed::after {
-
 	left: -4ch;
 }
 

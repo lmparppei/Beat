@@ -13,7 +13,7 @@
 #define MARGIN_TOP 30
 #define MARGIN_LEFT 50
 #define MARGIN_RIGHT 38
-#define MARGIN_BOTTOM 40
+#define MARGIN_BOTTOM 20
 
 #define PAPER_A4 595.0, 842.0
 #define PAPER_USLETTER 612.0, 792.0

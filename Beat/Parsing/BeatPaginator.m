@@ -375,7 +375,7 @@
 	NSInteger currentY = initialY;
 	
 	NSInteger oneInchBuffer = 72;
-	NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer * 1.25);
+	NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer);
 			
 	//NSInteger lineHeight = font.pointSize * 1.1;
 	CGFloat lineHeight = LINE_HEIGHT;
@@ -882,9 +882,10 @@
 	NSString *type  = element.typeAsFountainString;
 	NSSet *set      = [NSSet setWithObjects:@"Action", @"General", @"Character", @"Transition", nil];
 	
-	if ([type isEqualToString:@"Scene Heading"]) {
+	if (element.type == heading) {
 		//spaceBefore = 3;
-		spaceBefore = 33;
+		//spaceBefore = 33;
+		spaceBefore = LINE_HEIGHT * 2;
 	}
 	else if ([set containsObject:type]) {
 		//spaceBefore = 1.1;
