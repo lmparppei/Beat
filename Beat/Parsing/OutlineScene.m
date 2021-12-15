@@ -118,7 +118,8 @@
 	NSInteger length = -1;
 	
 	for (NSInteger i = index + 1; i < lines.count; i++) {
-		if (!lines[i]) break;
+		// To avoid any race conditions, let's break this loop if the lines array was changed
+		if (!lines[i] || i >= lines.count) break;
 		
 		Line *line = lines[i];
 		if ((line.type == heading || line.type == section) && line != self.line) {

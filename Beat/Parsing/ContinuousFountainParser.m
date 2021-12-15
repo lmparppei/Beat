@@ -1888,7 +1888,6 @@ and incomprehensible system of recursion.
 	// Return minimal results for non-scene elements
 	if (scene == nil) return @[];
 	if (scene.type == synopse) return @[scene.line];
-	else if (scene.type == section) return @[scene.line];
 		
 	NSInteger lineIndex = [self.lines indexOfObject:scene.line];
 	if (lineIndex == NSNotFound) return @[];
@@ -1903,9 +1902,7 @@ and incomprehensible system of recursion.
 		while (lineIndex < self.lines.count) {
 			Line *line = self.lines[lineIndex];
 
-			if (line.type == heading || line.type == section) {
-				break;
-			}
+			if (line.type == heading || line.type == section) break;
 			[lines addObject:line];
 			
 			lineIndex++;
