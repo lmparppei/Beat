@@ -478,7 +478,7 @@
 				CGFloat overflow = maxPageHeight - (currentY + fullHeight);
 				
 				// If it fits, just squeeze it on this page
-				if (fabs(overflow) < lineHeight * 1.5) {
+				if (fabs(overflow) <= lineHeight * 1.01) {
 					// This wouldn't be needed with the new dialogue block system
 					if (element.nextElementIsDualDialogue) {
 						// We still have elements we have to handle, but this block WOULD fit on this page, however.
@@ -505,6 +505,8 @@
 				bool handled = NO;
 				
 				#pragma mark Split scene heading & paragraph
+				// NOTE TO SELF: This does NOT go well when the heading is followed by something else than action
+				// We should use blockFor:(Line*)line
 				
 				if (element.type == heading || element.type == action) {
 					bool headingBlock = NO;
@@ -516,9 +518,12 @@
 						if (blck.count > 1) spillerElement = blck.lastObject;
 						else spillerElement = element;
 						
+						NSLog(@"%@:   fullHeight: %lu     Overflow: %f    Fullheight-overflow: %f    /// line %f", spillerElement, fullHeight, fabs(overflow), fullHeight - fabs(overflow), lineHeight);
+						
 						// Push to next page if it would be only 1 line or something
-						if (fullHeight - fabs(overflow) < lineHeight * 3
-							&& fabs(overflow) > lineHeight * 2) {
+						if (fullHeight - fabs(overflow) < lineHeight * 4.5
+							&& fabs(overflow) >= lineHeight) {
+							NSLog(@"Push on next... %@", element);
 							handled = YES;
 						}
 					} else {
@@ -789,6 +794,9 @@
 					[_pages addObject:currentPage];
 					currentPage = [NSMutableArray array];
 					
+					// I'm pretty sure there will never be spiller element, but anyway
+					if (!spillerElement) spillerElement = element;
+					
 					[self pageBreak:spillerElement position:-1 type:@"Some action"];
 
 				} else {
@@ -796,7 +804,10 @@
 					[_pages addObject:currentPage];
 					currentPage = [NSMutableArray array];
 					
-					[self pageBreak:spillerElement position:0 type:@"Whatever, again"];
+					// I'm pretty sure there will never be spiller element, but anyway
+					if (!spillerElement) spillerElement = element;
+					
+					[self pageBreak:spillerElement position:-1 type:@"Whatever, again"];
 				}
 				
 				currentY = 0;
@@ -1222,6 +1233,11 @@
 - (NSDictionary*)splitDialogue:(NSArray*)dialogueBlock spiller:(Line*)spillerElement remainingSpace:(NSInteger)remainingSpace height:(NSInteger)dialogueHeight {
 	// NOTE: Remember to calculate Y after this operation
 	// NOTE #2: ABANDON ALL HOPE
+	
+	// So, what follows is a DUCT TAPE FIX.
+	// We do this to ensure that (MORE) does NOT fill up the page.
+	// This might cause other trouble later, just saying.
+	remainingSpace -= LINE_HEIGHT;
 	
 	Line *pageBreakItem;
 	NSInteger suggestedPageBreak = -1;

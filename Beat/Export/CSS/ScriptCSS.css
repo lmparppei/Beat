@@ -103,10 +103,12 @@ section {
 		/* min-height: 820px; */
 		/* margin: 1em auto 1em auto; */
 		/* padding: 2em 70px 6em 100px; */
+		/* padding-bottom: 6em; */
 	
 		min-height: var(--page-height);
-		padding-top: 2em;
-		padding-bottom: 6em;
+		height: var(--page-height);
+
+		padding-top: 4em;
 		margin-top: 1em;
 		margin-bottom: 1em;
 	
@@ -220,6 +222,8 @@ body > p:first-child {
 	position: relative;
 	white-space: pre-wrap;
 	margin-left: 0;
+
+	padding-right: 4ch;
 }
 
 .scene-heading.bold {
@@ -236,12 +240,12 @@ body > p:first-child {
 
 .scene-number-left {
 	float: left;
-	margin-left: -50px;
+	margin-left: -70px;
 }
 
 .scene-number-right {
 	position: absolute;
-	right: -4ch; 
+	right: 0ch; 
 	top: 0;
 }
 
@@ -259,7 +263,7 @@ body > p:first-child {
 	position: absolute;
 	
 	top: 0px;
-	right: -32pt;
+	right: -12pt;
 	width: 8px;
 	height: calc(100% - 4px);
 	z-index: 999;

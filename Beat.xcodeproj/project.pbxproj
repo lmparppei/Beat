@@ -76,6 +76,8 @@
 		B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
 		B63704FA2768A6A400BEAD53 /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B63704F92768A6A400BEAD53 /* Plugin Page.html */; };
 		B63704FB2768A6A400BEAD53 /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B63704F92768A6A400BEAD53 /* Plugin Page.html */; };
+		B63704FD27695F8800BEAD53 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B63704FC27695F8800BEAD53 /* ScriptCSS.css */; };
+		B63704FE27695F8800BEAD53 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B63704FC27695F8800BEAD53 /* ScriptCSS.css */; };
 		B63943912593FE59009BE3CA /* BeatPaperSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6779B74256EED1100CFD324 /* BeatPaperSizing.m */; };
 		B63CF61625B43EDD00EFA3A2 /* ThemeEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */; };
 		B63CF61825B43EDD00EFA3A2 /* ThemeEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */; };
@@ -378,8 +380,6 @@
 		B6DCA86527219C3700CBE9BC /* BeatNotepad.m in Sources */ = {isa = PBXBuildFile; fileRef = B6DCA86327219C3700CBE9BC /* BeatNotepad.m */; };
 		B6DF34B4259D0C2A0077041F /* About Plugins.md in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB1259CE3230007EA4E /* About Plugins.md */; };
 		B6E067D0222D7C4100CE425A /* PrintCSS 1.92.2.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E067CF222D7C4100CE425A /* PrintCSS 1.92.2.css */; };
-		B6E099D127667CAD005E7827 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D027667CAD005E7827 /* ScriptCSS.css */; };
-		B6E099D227667CAD005E7827 /* ScriptCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D027667CAD005E7827 /* ScriptCSS.css */; };
 		B6E099D5276681B8005E7827 /* HeaderTemplate.html in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D4276681B8005E7827 /* HeaderTemplate.html */; };
 		B6E099D6276681B8005E7827 /* HeaderTemplate.html in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D4276681B8005E7827 /* HeaderTemplate.html */; };
 		B6E099D82766861B005E7827 /* FooterTemplate.html in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D72766861B005E7827 /* FooterTemplate.html */; };
@@ -614,6 +614,7 @@
 		B6342D6525682D7B0034D54F /* OutlineViewItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B6342D6625682D7B0034D54F /* OutlineViewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
 		B63704F92768A6A400BEAD53 /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Plugin Page.html"; sourceTree = "<group>"; };
+		B63704FC27695F8800BEAD53 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScriptCSS.css; sourceTree = "<group>"; };
 		B63CF61325B43EDD00EFA3A2 /* ThemeEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeEditor.h; sourceTree = "<group>"; };
 		B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeEditor.m; sourceTree = "<group>"; };
 		B63CF61525B43EDD00EFA3A2 /* ThemeEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ThemeEditor.xib; sourceTree = "<group>"; };
@@ -845,7 +846,6 @@
 		B6DCA86227219C3700CBE9BC /* BeatNotepad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotepad.h; sourceTree = "<group>"; };
 		B6DCA86327219C3700CBE9BC /* BeatNotepad.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotepad.m; sourceTree = "<group>"; };
 		B6E067CF222D7C4100CE425A /* PrintCSS 1.92.2.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = "PrintCSS 1.92.2.css"; sourceTree = "<group>"; };
-		B6E099D027667CAD005E7827 /* ScriptCSS.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = ScriptCSS.css; sourceTree = "<group>"; };
 		B6E099D4276681B8005E7827 /* HeaderTemplate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = HeaderTemplate.html; sourceTree = "<group>"; };
 		B6E099D72766861B005E7827 /* FooterTemplate.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = FooterTemplate.html; sourceTree = "<group>"; };
 		B6E3246624B515670001273F /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -1688,8 +1688,8 @@
 		B6E099CC27661EDB005E7827 /* CSS */ = {
 			isa = PBXGroup;
 			children = (
+				B63704FC27695F8800BEAD53 /* ScriptCSS.css */,
 				B69461162767C0B80000BDF0 /* PrintCSS.css */,
-				B6E099D027667CAD005E7827 /* ScriptCSS.css */,
 				B6E067CF222D7C4100CE425A /* PrintCSS 1.92.2.css */,
 				B138B66019E1E8CA000489C4 /* ScriptCSS 1.92.2.css */,
 			);
@@ -1980,6 +1980,7 @@
 				B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */,
 				B69EF5532465AA2000C5B78C /* CardPrintCSS.css in Resources */,
 				B6D2B7322218B589005B8447 /* MainMenu.xib in Resources */,
+				B63704FD27695F8800BEAD53 /* ScriptCSS.css in Resources */,
 				B69A929C2319609100FE6A3E /* dragula.js in Resources */,
 				B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */,
 				B6E3894E270DDE130067DD0C /* cards.png in Resources */,
@@ -1994,7 +1995,6 @@
 				B6E38950270DDE130067DD0C /* outline.png in Resources */,
 				B68B4C9E263F02F100AC4939 /* BeatConsole.xib in Resources */,
 				B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */,
-				B6E099D127667CAD005E7827 /* ScriptCSS.css in Resources */,
 				B66B5AB12739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */,
 				B6E38951270DDE130067DD0C /* analysis.png in Resources */,
 				B60FF86A26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
@@ -2054,6 +2054,7 @@
 				B68B6098260B849300463AD8 /* CardCSS.css in Resources */,
 				B68B6099260B849300463AD8 /* CardPrintCSS.css in Resources */,
 				B68B609A260B849300463AD8 /* MainMenu.xib in Resources */,
+				B63704FE27695F8800BEAD53 /* ScriptCSS.css in Resources */,
 				B68B609B260B849300463AD8 /* dragula.js in Resources */,
 				B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */,
 				B6E38949270DDE120067DD0C /* cards.png in Resources */,
@@ -2068,7 +2069,6 @@
 				B6E3894B270DDE120067DD0C /* outline.png in Resources */,
 				B68B60A5260B849300463AD8 /* analysis.html in Resources */,
 				B6EAEDBD267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
-				B6E099D227667CAD005E7827 /* ScriptCSS.css in Resources */,
 				B68B4C9F263F02F100AC4939 /* BeatConsole.xib in Resources */,
 				B66B5AB22739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */,
 				B6E3894C270DDE120067DD0C /* analysis.png in Resources */,
@@ -2713,7 +2713,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13194;
+				CURRENT_PROJECT_VERSION = 13195;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2745,7 +2745,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13194;
+				CURRENT_PROJECT_VERSION = 13195;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2773,7 +2773,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13194;
+				CURRENT_PROJECT_VERSION = 13195;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2805,7 +2805,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13194;
+				CURRENT_PROJECT_VERSION = 13195;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

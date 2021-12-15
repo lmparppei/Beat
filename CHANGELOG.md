@@ -8,7 +8,7 @@
 - Fixes to outlining
 - Manual rewrites
 - Force symbols in joined paragraphs no longer break formatting
-- Fixes to pagination and screenplay rendering (with massive contribution by Fredrik T. Olsson)
+- Fixes to pagination and screenplay rendering (with a massive contribution by Fredrik T. Olsson)
 
 
 ## Beat 1.92.2
