@@ -3,12 +3,13 @@
 
 ## Beat 1.92.3
 
-- Added widget support to plugin API
+- Added widget support to plugin API (not yet publicly available)
 - Multiple API fixes
 - Fixes to outlining
 - Manual rewrites
 - Force symbols in joined paragraphs no longer break formatting
 - Fixes to pagination and screenplay rendering (with a massive contribution by Fredrik T. Olsson)
+- Manual now supports dark mode (contribution by BFLTP)
 
 
 ## Beat 1.92.2

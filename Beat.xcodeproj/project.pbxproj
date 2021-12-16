@@ -16,6 +16,10 @@
 		B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
 		B6000DCE2562F0B300289676 /* CeltxImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6000DCD2562F0B300289676 /* CeltxImport.m */; };
 		B600DD5F254C22F6006A09D0 /* BeatDocumentSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */; };
+		B605473D276A900D001E571F /* PreviewStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B605473B276A8DC7001E571F /* PreviewStyles.css */; };
+		B605473E276A900E001E571F /* PreviewStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B605473B276A8DC7001E571F /* PreviewStyles.css */; };
+		B605473F276A9011001E571F /* ScreenplayStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B605473C276A8DDD001E571F /* ScreenplayStyles.css */; };
+		B6054740276A9012001E571F /* ScreenplayStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B605473C276A8DDD001E571F /* ScreenplayStyles.css */; };
 		B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B6055CEE23CDBA3800F7D54C /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B606721125F5413C00CBDC7A /* ValidationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B606721025F5413C00CBDC7A /* ValidationItem.m */; };
@@ -546,6 +550,8 @@
 		B6000DCD2562F0B300289676 /* CeltxImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CeltxImport.m; sourceTree = "<group>"; };
 		B600DD5D254C22F6006A09D0 /* BeatDocumentSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentSettings.h; sourceTree = "<group>"; };
 		B600DD5E254C22F6006A09D0 /* BeatDocumentSettings.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentSettings.m; sourceTree = "<group>"; };
+		B605473B276A8DC7001E571F /* PreviewStyles.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = PreviewStyles.css; sourceTree = "<group>"; };
+		B605473C276A8DDD001E571F /* ScreenplayStyles.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = ScreenplayStyles.css; sourceTree = "<group>"; };
 		B6055CEB23CDBA3800F7D54C /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
 		B6055CEC23CDBA3800F7D54C /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
 		B606720F25F5413C00CBDC7A /* ValidationItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ValidationItem.h; sourceTree = "<group>"; };
@@ -1052,6 +1058,8 @@
 				B63DC83B260A34460092B472 /* Final Draft */,
 				B6829C0225AB728100C0595B /* BeatEpisodePrinter */,
 				B6D12FDB25379E880018A88F /* Comparison */,
+				B69C8C6324A1275B007B55A7 /* BeatHTMLScript.h */,
+				B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */,
 				B6779B73256EED1100CFD324 /* BeatPaperSizing.h */,
 				B6779B74256EED1100CFD324 /* BeatPaperSizing.m */,
 				B61875A32471BEDA00FB7646 /* BeatPreview.h */,
@@ -1062,8 +1070,6 @@
 				B6D2B71D2218B44A005B8447 /* PrintView.m */,
 				B1EC6B9C1CE3B33200B48CDB /* OutlineExtractor.h */,
 				B6D2B71B2218B430005B8447 /* OutlineExtractor.m */,
-				B69C8C6324A1275B007B55A7 /* BeatHTMLScript.h */,
-				B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */,
 				B6119C502682154F0049456D /* BeatExportSettings.h */,
 				B6119C512682154F0049456D /* BeatExportSettings.m */,
 			);
@@ -1688,6 +1694,8 @@
 		B6E099CC27661EDB005E7827 /* CSS */ = {
 			isa = PBXGroup;
 			children = (
+				B605473B276A8DC7001E571F /* PreviewStyles.css */,
+				B605473C276A8DDD001E571F /* ScreenplayStyles.css */,
 				B63704FC27695F8800BEAD53 /* ScriptCSS.css */,
 				B69461162767C0B80000BDF0 /* PrintCSS.css */,
 				B6E067CF222D7C4100CE425A /* PrintCSS 1.92.2.css */,
@@ -1972,6 +1980,7 @@
 				B68AE23926EDF7E300F6DF59 /* BeatPreferencesPanel.xib in Resources */,
 				B6E099D5276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
+				B6054740276A9012001E571F /* ScreenplayStyles.css in Resources */,
 				B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
 				B66B5ABB2739B75500BBC9C6 /* README.md in Resources */,
@@ -1996,6 +2005,7 @@
 				B68B4C9E263F02F100AC4939 /* BeatConsole.xib in Resources */,
 				B623BD3E2549AEDD00201BC9 /* Big-Fish.fountain in Resources */,
 				B66B5AB12739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */,
+				B605473E276A900E001E571F /* PreviewStyles.css in Resources */,
 				B6E38951270DDE130067DD0C /* analysis.png in Resources */,
 				B60FF86A26582D1500886E06 /* BeatTitlePageEditor.xib in Resources */,
 				B6D2B7312218B589005B8447 /* Document.xib in Resources */,
@@ -2046,6 +2056,7 @@
 				B68AE23A26EDF7E300F6DF59 /* BeatPreferencesPanel.xib in Resources */,
 				B6E099D6276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B68B6093260B849300463AD8 /* Courier Prime Italic.ttf in Resources */,
+				B605473F276A9011001E571F /* ScreenplayStyles.css in Resources */,
 				B68B6094260B849300463AD8 /* Courier Prime.ttf in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
 				B66B5ABC2739B75500BBC9C6 /* README.md in Resources */,
@@ -2070,6 +2081,7 @@
 				B68B60A5260B849300463AD8 /* analysis.html in Resources */,
 				B6EAEDBD267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
 				B68B4C9F263F02F100AC4939 /* BeatConsole.xib in Resources */,
+				B605473D276A900D001E571F /* PreviewStyles.css in Resources */,
 				B66B5AB22739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */,
 				B6E3894C270DDE120067DD0C /* analysis.png in Resources */,
 				B68B60A9260B849300463AD8 /* Big-Fish.fountain in Resources */,
@@ -2713,7 +2725,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13195;
+				CURRENT_PROJECT_VERSION = 13198;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2745,7 +2757,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13195;
+				CURRENT_PROJECT_VERSION = 13198;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2773,7 +2785,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13195;
+				CURRENT_PROJECT_VERSION = 13198;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2805,7 +2817,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13195;
+				CURRENT_PROJECT_VERSION = 13198;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

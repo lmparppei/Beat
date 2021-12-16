@@ -518,12 +518,9 @@
 						if (blck.count > 1) spillerElement = blck.lastObject;
 						else spillerElement = element;
 						
-						NSLog(@"%@:   fullHeight: %lu     Overflow: %f    Fullheight-overflow: %f    /// line %f", spillerElement, fullHeight, fabs(overflow), fullHeight - fabs(overflow), lineHeight);
-						
 						// Push to next page if it would be only 1 line or something
 						if (fullHeight - fabs(overflow) < lineHeight * 4.5
 							&& fabs(overflow) >= lineHeight) {
-							NSLog(@"Push on next... %@", element);
 							handled = YES;
 						}
 					} else {

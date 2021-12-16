@@ -104,6 +104,9 @@
 #import "BeatUserDefaults.h"
 #import "BeatPaperSizing.h"
 
+#define PRINT_CSS @"ScreenplayStyles"
+#define PREVIEW_CSS @"PreviewStyles"
+
 #define BOLD_OPEN @"<b>"
 #define BOLD_CLOSE @"</b>"
 #define ITALIC_OPEN @"<i>"
@@ -255,20 +258,21 @@
 
 
 - (NSString *)css
-{    
-	NSString *cssFile;
-	if (!_print) cssFile = @"ScriptCSS.css";
-	else cssFile = @"PrintCSS.css";
-
-	NSError *error;
-	NSString *path = [[NSBundle mainBundle] pathForResource:cssFile ofType:@""];
-	NSString *css = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-
-	if (error) {
-		NSLog(@"Couldn't load CSS");
-		css = @"";
+{
+	NSString * css = [NSString stringWithContentsOfURL:[NSBundle.mainBundle URLForResource:PRINT_CSS withExtension:@"css"]
+											  encoding:NSUTF8StringEncoding
+												 error:nil];
+	
+	NSString * previewCss = [NSString stringWithContentsOfURL:[NSBundle.mainBundle URLForResource:PREVIEW_CSS withExtension:@"css"]
+													 encoding:NSUTF8StringEncoding
+														error:nil];
+	
+	if (!_print) {
+		// Include additional preview styles and add some line breaks just in case
+		css = [css stringByAppendingString:@"\n\n"];
+		css = [css stringByAppendingString:previewCss];
 	}
-
+	
     return css;
 }
 
