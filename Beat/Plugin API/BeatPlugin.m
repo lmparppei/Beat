@@ -1,47 +1,35 @@
 //
-//  BeatScriptParser.m
+//  BeatPlugin.m
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 1.7.2020.
-//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
+//  Copyright © 2020-2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-/*
+/**
  
- A fantasy side-project for creating a JavaScript scripting possibility for Beat.
- The idea is to expose the lines & scenes to JavaScript (via JSON) and let the user
- make what they want with them. The trouble is, though, that easily manipulating the
- screenplay via JS would require resetting the whole text content after it' done.
+ This class provides JavaScript API for plugins.
  
- Also, I want to make it possible to open a window/panel with custom HTML content to
- make it easier to build some weird analytics / statistics tools.
+ One parser is created for one plugin. It has its own JSContext, and plugins
+ can open windows, set up timers and even show widgets.
+ 
+ Plugin manager provides a BeatPluginData object which contains
+ plugin name and URL. A plugin is then initialized using that data.
+ 
  
  */
 
-#import <Cocoa/Cocoa.h>
-#import <WebKit/WebKit.h>
-#import "BeatPluginParser.h"
-#import "Line.h"
-#import "OutlineScene.h"
-#import "BeatAppDelegate.h"
-#import "BeatPluginManager.h"
-#import "BeatTagging.h"
-#import "BeatAppDelegate.h"
-//#import "BeatPluginWindow.h"
-#import "BeatModalAccessoryView.h"
-#import "WebPrinter.h"
-#import "BeatPaperSizing.h"
+#import "BeatPlugin.h"
+#import <objc/runtime.h>
 
-#import <PDFKit/PDFKit.h>
-
-@interface BeatPluginParser ()
+@interface BeatPlugin ()
 @property (nonatomic) JSVirtualMachine *vm;
 @property (nonatomic) JSContext *context;
 @property (nonatomic) NSWindow *sheet;
 @property (nonatomic) JSValue *sheetCallback;
 @property (nonatomic) JSValue *windowCallback;
 @property (nonatomic) WKWebView *sheetWebView;
-@property (nonatomic) BeatPlugin *plugin;
+@property (nonatomic) BeatPluginData *plugin;
 @property (nonatomic) NSMutableArray *timers;
 @property (nonatomic, nullable) JSValue* updateMethod;
 @property (nonatomic, nullable) JSValue* updateSelectionMethod;
@@ -58,7 +46,7 @@
 @property (nonatomic) BeatPluginUIView *widgetView;
 @end
 
-@implementation BeatPluginParser
+@implementation BeatPlugin
 
 - (id)init
 {
@@ -87,7 +75,7 @@
 
 #pragma mark - Running Scripts
 
-- (void)loadPlugin:(BeatPlugin*)plugin
+- (void)loadPlugin:(BeatPluginData*)plugin
 {
 	self.plugin = plugin;
 	_pluginName = plugin.name;
@@ -1021,6 +1009,58 @@
 }
 - (id)getPropertyValue:(NSString *)key {
 	return [self.delegate getPropertyValue:key];
+}
+
+- (id)objc_call:(NSString*)methodName args:(NSArray*)arguments {
+	
+	Class class = self.delegate.class;
+	
+	SEL selector = NSSelectorFromString(methodName);
+	Method method = class_getClassMethod(class, selector);
+	
+	char returnType[10];
+	method_getReturnType(method, returnType, 10);
+	
+	if (![self.delegate.document respondsToSelector:selector]) {
+		[self log:[NSString stringWithFormat:@"Unknown selector: %@", methodName]];
+		return nil;
+	}
+	
+	//NSMethodSignature* signature = [NSMethodSignature signatureWithObjCTypes:"v@:BqfdIi"];
+	NSMethodSignature* signature = [self.delegate.document methodSignatureForSelector:selector];
+	
+	NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
+	invocation.target = self.delegate.document;
+	invocation.selector = selector;
+	
+	@try {
+		// Set arguments
+		for (NSInteger i=0; i < arguments.count; i++) {
+			id argument = arguments[i];
+			[invocation setArgument:&argument atIndex:i + 2]; // Offset by 2, because 0 = target, 1 = method
+		}
+
+		[invocation invoke];
+		
+		NSArray * __unsafe_unretained tempResultSet;
+		[invocation getReturnValue:&tempResultSet];
+		NSArray *resultSet = tempResultSet;
+		return resultSet;
+		
+	} @catch (NSException *exception) {
+		[self log:[NSString stringWithFormat:@"Objective-C call failed: %@", exception]];
+	}
+	
+	return nil;
+	
+
+	
+}
+
+#pragma mark - Document utilities
+
+- (NSString*)previewHTML {
+	return _delegate.previewHTML;
 }
 
 #pragma mark - Parser data delegation

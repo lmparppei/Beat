@@ -113,7 +113,7 @@
 #import "BeatLockButton.h"
 #import "BeatMeasure.h"
 
-#import "BeatPluginParser.h"
+#import "BeatPlugin.h"
 #import "BeatPluginManager.h"
 #import "BeatWidgetView.h"
 
@@ -419,7 +419,7 @@
 	
 	// Terminate running plugins
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPluginParser* plugin = _runningPlugins[pluginName];
+		BeatPlugin* plugin = _runningPlugins[pluginName];
 		[plugin end];
 		[_runningPlugins removeObjectForKey:pluginName];
 	}
@@ -878,13 +878,13 @@
 	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
 		if (doc == self) continue;
 		for (NSString *pluginName in doc.runningPlugins.allKeys) {
-			[(BeatPluginParser*)doc.runningPlugins[pluginName] hideAllWindows];
+			[(BeatPlugin*)doc.runningPlugins[pluginName] hideAllWindows];
 		}
 	}
 
 	// Show plugin windows for the current document
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		[(BeatPluginParser*)_runningPlugins[pluginName] showAllWindows];
+		[(BeatPlugin*)_runningPlugins[pluginName] showAllWindows];
 	}
 
 	[self.documentWindow orderFront:nil];
@@ -2686,6 +2686,8 @@
 	// [self renderTextBackgroundOnLine:line];
 
 	if (!firstTime && line.string.length) {
+		[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:range];
+		
 		// Enumerate attributes
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 			if (attrs[revisionAttribute]) {
@@ -3811,6 +3813,18 @@ static NSString *revisionAttribute = @"Revision";
 		menuItem.state = NSOffState;
 	}
 	
+	else if ([menuItem.title isEqualToString:@"Widgets"]) {
+		// Allow/disallow widget area menu item
+		if (self.widgetView.subviews.count > 0) {
+			menuItem.hidden = NO;
+			return YES;
+		} else {
+			menuItem.state = NSOffState;
+			menuItem.hidden = YES;
+			return NO;
+		}
+	}
+	
 	// So, I have overriden everything regarding undo (because I couldn't figure it out).
 	// That's why we need to handle enabling/disabling undo manually. This sucks.
 	else if ([menuItem.title rangeOfString:@"Undo"].location != NSNotFound) {
@@ -4008,6 +4022,16 @@ static NSString *revisionAttribute = @"Revision";
 	_preview = [[BeatPreview alloc] initWithDocument:self];
 }
 
+- (void)invalidatePreview {
+	// Mark the current preview as invalid
+	_previewUpdated = NO;
+	
+	// If preview is visible, recreate it
+	if (self.selectedTab == 1) {
+		[self updatePreviewAndUI:YES];
+	}
+}
+
 - (IBAction)preview:(id)sender
 {
     if (self.selectedTab == 0) {
@@ -4043,6 +4067,10 @@ static NSString *revisionAttribute = @"Revision";
 		[self ensureCaret];
 		_printPreview = NO;
     }
+}
+
+- (NSString*)previewHTML {
+	return _htmlString;
 }
 
 - (void)updatePreview  {
@@ -4139,7 +4167,7 @@ static NSString *revisionAttribute = @"Revision";
 						
 			// Ensure the main document won't go out of screen bounds when opening the sidebar
 			if (newWidth > screenWidth) {
-				newWidth = screenWidth * .9;
+				newWidth = screenWidth;
 				newX = screenWidth / 2 - newWidth / 2;
 			}
 			
@@ -5396,6 +5424,10 @@ triangle walks
  
  */
 
+- (id)document {
+	return self;
+}
+
 - (void)setupPlugins {
 	_pluginManager = BeatPluginManager.sharedManager;
 }
@@ -5407,28 +5439,28 @@ triangle walks
 	
 	if (_runningPlugins[pluginName]) {
 		// Disable a running plugin and return
-		[(BeatPluginParser*)_runningPlugins[pluginName] forceEnd];
+		[(BeatPlugin*)_runningPlugins[pluginName] forceEnd];
 		[_runningPlugins removeObjectForKey:pluginName];
 		return;
 	}
 	
-	BeatPluginParser *parser = [[BeatPluginParser alloc] init];
+	BeatPlugin *parser = [[BeatPlugin alloc] init];
 	parser.delegate = self;
 	
-	BeatPlugin *plugin = [_pluginManager pluginWithName:pluginName];
+	BeatPluginData *plugin = [_pluginManager pluginWithName:pluginName];
 	[parser loadPlugin:plugin];
 		
 	parser = nil;
 }
 
 - (void)registerPlugin:(id)plugin {
-	BeatPluginParser *parser = (BeatPluginParser*)plugin;
+	BeatPlugin *parser = (BeatPlugin*)plugin;
 	if (!_runningPlugins) _runningPlugins = [NSMutableDictionary dictionary];
 	
 	_runningPlugins[parser.pluginName] = parser;
 }
 - (void)deregisterPlugin:(id)plugin {
-	BeatPluginParser *parser = (BeatPluginParser*)plugin;
+	BeatPlugin *parser = (BeatPlugin*)plugin;
 	[_runningPlugins removeObjectForKey:parser.pluginName];
 	parser = nil;
 }
@@ -5438,7 +5470,7 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPluginParser *plugin = _runningPlugins[pluginName];
+		BeatPlugin *plugin = _runningPlugins[pluginName];
 		[plugin update:range];
 	}
 }
@@ -5448,7 +5480,7 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPluginParser *plugin = _runningPlugins[pluginName];
+		BeatPlugin *plugin = _runningPlugins[pluginName];
 		[plugin updateSelection:range];
 	}
 }
@@ -5458,7 +5490,7 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPluginParser *plugin = _runningPlugins[pluginName];
+		BeatPlugin *plugin = _runningPlugins[pluginName];
 		[plugin updateSceneIndex:index];
 	}
 }
@@ -5468,13 +5500,14 @@ triangle walks
 	if (!_runningPlugins) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPluginParser *plugin = _runningPlugins[pluginName];
+		BeatPlugin *plugin = _runningPlugins[pluginName];
 		[plugin updateOutline:outline];
 	}
 }
 
 - (void)addWidget:(id)widget {
 	[_widgetView addWidget:widget];
+	[self showWidgets:nil];
 }
 
 // For those who REALLY, REALLY know what the fuck they are doing

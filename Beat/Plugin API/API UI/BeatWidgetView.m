@@ -6,6 +6,12 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+/*
+ 
+ This is the master view for ALL WIDGETS in the sidebar
+ 
+ */
+
 #import "BeatWidgetView.h"
 
 #define MARGIN 5.0
@@ -96,6 +102,15 @@
 
 - (void)frameDidChange {
 	NSLog(@"Change");
+}
+
+- (void)show:(BeatPluginUIView*)widget {
+	// Show the widget view and scroll to the given widget
+	[self.enclosingScrollView scrollPoint:(NSPoint){0, widget.frame.origin.y }];
+}
+
+- (void)reload {
+	// Placeholder method
 }
 
 @end

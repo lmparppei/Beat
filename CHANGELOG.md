@@ -1,6 +1,19 @@
 # Changelog
 
 
+## Beat 1.92.5
+
+- Added a setting for changing scene heading spacing
+- New launch screen
+- Minor plugin API fixes
+
+
+## Beat 1.92.4
+
+- Fixed missing CSS and JS files for manual 
+- Harmonized CSS in HTML export
+
+
 ## Beat 1.92.3
 
 - Added widget support to plugin API (not yet publicly available)

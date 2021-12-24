@@ -10,6 +10,8 @@
 #import "BeatUserDefaults.h"
 #import "Document.h"
 
+#define HEADING_SAMPLE @"INT. SCENE - DAY"
+
 @interface BeatPreferencesPanel ()
 @property (nonatomic) NSArray* validationItems;
 
@@ -26,6 +28,9 @@
 
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleBold;
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleUnderline;
+
+@property (nonatomic, weak) IBOutlet NSButton *headingSpacing1;
+@property (nonatomic, weak) IBOutlet NSButton *headingSpacing2;
 
 @property (nonatomic, weak) IBOutlet NSTextField *sampleHeading;
 
@@ -69,15 +74,30 @@
 				if (value) button.state = NSOnState;
 				else button.state = NSOffState;
 			}
+		} else {
+			
+			if ([key isEqualToString:@"sceneHeadingSpacing"]) {
+				NSInteger value = [BeatUserDefaults.sharedDefaults getInteger:key];
+				if (value == 1) _headingSpacing1.state = NSOnState;
+				else _headingSpacing2.state = NSOnState;
+			}
+			
 		}
 	}
 	
 	[self.window.toolbar setSelectedItemIdentifier:@"General"];
-	[self updateHeadingSample];
+	[self updateHeadingSample:YES];
 }
+
 - (void)updateHeadingSample {
+	[self updateHeadingSample:NO];
+}
+- (void)updateHeadingSample:(bool)windowDidLoad {
+	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:HEADING_SAMPLE];
 	
-	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithAttributedString:_sampleHeading.attributedStringValue];
+	// Add line break for spacing 2
+	if (_headingSpacing2.state == NSOnState) attrStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"\n%@", HEADING_SAMPLE]];
+
 	if (_headingStyleBold.state == NSOnState) {
 		self.sampleHeading.font = [NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize];
 		[attrStr addAttribute:NSFontAttributeName value:[NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize] range:(NSRange){0,attrStr.length}];
@@ -89,8 +109,15 @@
 	} else {
 		[attrStr addAttribute:NSUnderlineStyleAttributeName value:@0 range:(NSRange){0,attrStr.length}];
 	}
-	
+
 	[self.sampleHeading setAttributedStringValue:attrStr];
+	
+	// Invalidate previews for all documents when layout settings are changed
+	if (!windowDidLoad) {
+		for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
+			[doc invalidatePreview];
+		}
+	}
 }
 - (void)show {
 	[self showWindow:self.window];
@@ -99,6 +126,12 @@
 //	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //		[NSApplication.sharedApplication runModalForWindow:self.window];
 //	});
+}
+
+- (IBAction)toggleHeadingSpacing:(id)sender {
+	if (sender == _headingSpacing1) [BeatUserDefaults.sharedDefaults saveInteger:1 forKey:@"sceneHeadingSpacing"];
+	else if (sender == _headingSpacing2) [BeatUserDefaults.sharedDefaults saveInteger:2 forKey:@"sceneHeadingSpacing"];
+	[self updateHeadingSample];
 }
 
 - (IBAction)toggle:(id)sender {

@@ -156,3 +156,16 @@
 }
 
 @end
+/*
+ 
+ I like the fact that you’re not mad about me,
+ I like the fact that I’m not mad for you,
+ and that the globe of planet earth is grounded
+ and will not drift away beneath our shoes.
+ 
+ I like the fact that I can be silly
+ play with words, feel unabashed and loose,
+ And never flush with stifling waves above me
+ When we brush sleeves, and not seek an excuse.
+ 
+ */

@@ -1,23 +1,32 @@
 //
-//  BeatScriptParser.h
+//  BeatPlugin.h
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 1.7.2020.
-//  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
+//  Copyright © 2020-2021 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "BeatPluginManager.h"
-#import <Foundation/Foundation.h>
-#import "ContinuousFountainParser.h"
+#import <Cocoa/Cocoa.h>
+#import <WebKit/WebKit.h>
+#import <PDFKit/PDFKit.h>
+
+#import "Line.h"
+#import "OutlineScene.h"
+#import "BeatAppDelegate.h"
+#import "BeatPluginManager.h"
 #import "BeatTagging.h"
+#import "BeatAppDelegate.h"
+#import "BeatModalAccessoryView.h"
+#import "WebPrinter.h"
+#import "BeatPaperSizing.h"
+
+#import "ContinuousFountainParser.h"
 #import "TagDefinition.h"
-//#import "BeatPluginWindow.h"
 #import "BeatPaginator.h"
 #import "BeatPluginTimer.h"
 #import "BeatPluginHTMLWindow.h"
-#import <WebKit/WebKit.h>
-#import "WebPrinter.h"
 
 #import "BeatPluginUIView.h"
 #import "BeatPluginUIButton.h"
@@ -85,6 +94,8 @@
 - (void)dispatch_sync:(JSValue*)callback;
 - (void)focusEditor;
 
+- (id)getDocumentSetting:(NSString*)key;
+- (id)getRawDocumentSetting:(NSString*)key;
 - (id)getPropertyValue:(NSString*)key; /// For those who REALLY know what they're doing
 
 - (ContinuousFountainParser*)parser:(NSString*)string;
@@ -97,6 +108,8 @@
 - (bool)compatibleWith:(NSString*)version; /// Check compatibility
 
 - (BeatPluginUIView*)widget:(CGFloat)height; /// Add widget into sidebar
+
+- (NSString*)previewHTML; /// Returns HTML string for current preview
 
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value); /// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
@@ -133,6 +146,8 @@ JSExportAs(dropdown, - (BeatPluginUIDropdown*)dropdown:(NSArray<NSString *> *)it
 JSExportAs(checkbox, - (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame);
 JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName);
 
+// Call objective C methods directly
+JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments);
 
 @end
 
@@ -146,6 +161,7 @@ JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)fra
 @property (nonatomic, readonly, weak) NSTextView *textView;
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 
+- (id)document; /// Returns self (document)
 - (void)registerPlugin:(id)parser;
 - (void)deregisterPlugin:(id)parser;
 - (NSRange)selectedRange;
@@ -168,9 +184,11 @@ JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)fra
 - (void)setPropertyValue:(NSString*)key value:(id)value;
 - (id)getPropertyValue:(NSString*)key;
 - (void)addWidget:(id)widget;
+- (IBAction)showWidgets:(id)sender;
+- (NSString*)previewHTML; /// Returns HTML string of the current preview. Only for debugging.
 @end
 
-@interface BeatPluginParser : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
+@interface BeatPlugin : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
 @property (weak) id<BeatScriptingDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
@@ -180,7 +198,7 @@ JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)fra
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
 
-- (void)loadPlugin:(BeatPlugin*)plugin;
+- (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;
 - (void)update:(NSRange)range;
 - (void)updateSelection:(NSRange)selection;

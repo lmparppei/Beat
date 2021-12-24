@@ -68,7 +68,8 @@
 		@"headingStyleUnderline": @[@"headingStyleUnderline", @NO],
 		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)],
 		@"disableFormatting": @[@"disableFormatting", @NO],
-		@"showMarkersInScrollbar": @[@"showMarkersInScrollbar", @NO]
+		@"showMarkersInScrollbar": @[@"showMarkersInScrollbar", @NO],
+		@"sceneHeadingSpacing": @[@"sceneHeadingSpacing", @2]
 	};
 }
 

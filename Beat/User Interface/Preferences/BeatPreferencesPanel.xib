@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19162" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19162"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -12,6 +12,8 @@
                 <outlet property="autoLineBreaks" destination="GfG-mn-QkH" id="bwh-s1-Emg"/>
                 <outlet property="autocomplete" destination="g8c-VD-hRA" id="zLg-J1-PCB"/>
                 <outlet property="defaultPageSize" destination="OOl-ZM-PBd" id="fxe-zL-gpN"/>
+                <outlet property="headingSpacing1" destination="IO7-Hz-k6N" id="kgE-0i-OlE"/>
+                <outlet property="headingSpacing2" destination="BHk-g1-cy2" id="CHZ-to-mfu"/>
                 <outlet property="headingStyleBold" destination="2IJ-xC-SPZ" id="Y4G-i8-6Mx"/>
                 <outlet property="headingStyleUnderline" destination="aHV-Ph-6Mp" id="K4K-QV-eeT"/>
                 <outlet property="hideFountainMarkup" destination="zb1-5Z-ZFC" id="LqH-52-9Md"/>
@@ -40,7 +42,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
-                            <tabViewItem label="Tab" identifier="" id="ok7-BF-Eme">
+                            <tabViewItem label="Tab" identifier="" id="ok7-BF-Eme" userLabel="General">
                                 <view key="view" id="a52-yh-n1m">
                                     <rect key="frame" x="0.0" y="0.0" width="553" height="318"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -186,7 +188,7 @@
                                     </subviews>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="View" identifier="" id="Mb6-nH-PQK">
+                            <tabViewItem label="View" identifier="" id="Mb6-nH-PQK" userLabel="Layout">
                                 <view key="view" id="gcD-3D-8Zp">
                                     <rect key="frame" x="0.0" y="0.0" width="553" height="318"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -195,6 +197,15 @@
                                             <rect key="frame" x="-1" y="235" width="181" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Heading Style" usesSingleLineMode="YES" id="yHb-oc-ujO">
+                                                <font key="font" usesAppearanceFont="YES"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Se-qY-uTA">
+                                            <rect key="frame" x="-1" y="177" width="181" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Heading Spacing" usesSingleLineMode="YES" id="EHa-PH-tc4">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -248,15 +259,62 @@
                                                 <action selector="toggle:" target="-2" id="ER1-3u-EPe"/>
                                             </connections>
                                         </button>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nle-UB-NWS">
-                                            <rect key="frame" x="198" y="177" width="219" height="18"/>
+                                        <button identifier="1" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IO7-Hz-k6N">
+                                            <rect key="frame" x="198" y="176" width="160" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="INT. SCENE - DAY" id="m9T-8O-t6l">
-                                                <font key="font" size="15" name="Courier"/>
-                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
+                                            <buttonCell key="cell" type="radio" title="1 line" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Yuw-0s-K2b">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="toggleHeadingSpacing:" target="-2" id="4IA-zM-REc"/>
+                                            </connections>
+                                        </button>
+                                        <button identifier="2" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BHk-g1-cy2">
+                                            <rect key="frame" x="198" y="154" width="160" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="radio" title="2 lines" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="fan-Jn-FOW">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="toggleHeadingSpacing:" target="-2" id="m9V-gB-WkX"/>
+                                            </connections>
+                                        </button>
+                                        <box fixedFrame="YES" boxType="custom" borderType="none" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="V8X-hl-rUl">
+                                            <rect key="frame" x="17" y="18" width="529" height="109"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <view key="contentView" id="Ce0-fk-YmF">
+                                                <rect key="frame" x="0.0" y="0.0" width="529" height="109"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nle-UB-NWS">
+                                                        <rect key="frame" x="55" y="16" width="441" height="49"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" title="INT. SCENE - DAY" id="m9T-8O-t6l">
+                                                            <font key="font" size="15" name="Courier"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="K2S-xs-OJc">
+                                                        <rect key="frame" x="55" y="78" width="472" height="23"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" title="as she walks to pick up the noodles." id="pUG-6V-246">
+                                                            <font key="font" size="15" name="Courier"/>
+                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                            </view>
+                                            <color key="fillColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </box>
+                                        <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eh2-ON-nrd">
+                                            <rect key="frame" x="17" y="75" width="529" height="48"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" image="Layout-Gradient" id="Qk1-Q5-dWh"/>
+                                        </imageView>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -290,6 +348,7 @@
         </window>
     </objects>
     <resources>
+        <image name="Layout-Gradient" width="800" height="50"/>
         <image name="SettingIcon_black" width="370" height="370"/>
         <image name="doc" catalog="system" width="14" height="16"/>
     </resources>

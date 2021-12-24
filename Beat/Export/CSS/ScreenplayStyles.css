@@ -253,7 +253,9 @@ body > p:first-child {
 }
 
 .scene-heading {
-	margin-top: calc(2 * var(--line-height));
+	/* margin-top: calc(2 * var(--line-height)); */
+	margin-top: calc(#sceneHeadingSpacing# * var(--line-height));
+	
 	position: relative;
 	white-space: pre-wrap;
 	margin-left: 0;

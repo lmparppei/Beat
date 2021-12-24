@@ -6,6 +6,12 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+/*
+ 
+ This is the view for a SINGLE WIDGET
+ 
+ */
+
 #import "BeatPluginUIView.h"
 #import "BeatColors.h"
 #import "BeatWidgetView.h"
@@ -47,6 +53,10 @@
 	BeatPluginUIButton *button = [BeatPluginUIButton buttonWithTitle:title action:action frame:frame];
 	[self addSubview:button];
 	return button;
+}
+
+- (void)show {
+	[(BeatWidgetView*)self.superview show:self];
 }
 
 #pragma mark - HTML view

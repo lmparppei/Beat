@@ -273,6 +273,10 @@
 		css = [css stringByAppendingString:previewCss];
 	}
 	
+	// Preprocess CSS
+	NSInteger spacingBeforeHeading = [BeatUserDefaults.sharedDefaults getInteger:@"sceneHeadingSpacing"];
+	css = [css stringByReplacingOccurrencesOfString:@"#sceneHeadingSpacing#" withString:[NSString stringWithFormat:@"%lu", spacingBeforeHeading]];
+	
     return css;
 }
 
@@ -330,36 +334,19 @@
 		int elementCount = 0;
 		
         if (self.customPage != nil) {
-            if ([self.customPage integerValue] == 0) {
-				if (self.print) {
-					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", header];
-                } else {
-                    [body appendFormat:@"<p class='page-break'></p>\n"];
-                }
+            if (self.customPage.integerValue == 0) {
+				[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", header];
             } else {
-                if (self.print) {
-					// I don't understand this part. For some reason certain elements are cut off the page and have a random page number there when rendering. So, as a rational and solution-oriented person, I just removed the page number altogether if this happens.
-					// - Lauri-Matti
-					if (index < 2) {
-                    	[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, [self.customPage intValue]];
-					}
-                } else {
-                    [body appendFormat:@"<p class='page-break'>%d.</p>\n", [self.customPage intValue]];
-                }
+				// I don't understand this part. For some reason certain elements are cut off the page and have a random page number there when rendering. So, as a rational and solution-oriented person, I just removed the page number altogether if this happens.
+				// - Lauri-Matti
+				if (index < 2) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, [self.customPage intValue]];
             }
         } else {
 			int pageNumber = (int)pageIndex + 1;
 			// Only print page numbers after first page
 			
-			if (self.print) {
-				if (pageNumber > 1)
-					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, (int)pageIndex+1];
-				else
-					[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", header];
-            } else {
-				if (pageNumber > 1) [body appendFormat:@"<p class='page-break'>%d.</p>\n", (int)pageIndex+1];
-				else [body appendFormat:@"<p class='page-break'></p>\n"];
-            }
+			if (pageNumber > 1) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, (int)pageIndex+1];
+			else [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", header];
         }
 		
 		// We need to catch lyrics not to make them fill up a paragraph
@@ -378,7 +365,7 @@
                 continue;
             }
 			
-			if ([line.typeAsFountainString isEqualToString:@"Page Break"]) {
+			if (line.type == pageBreak) {
 				// Close possible blocks
 				if (isLyrics) {
 					// Close lyrics block

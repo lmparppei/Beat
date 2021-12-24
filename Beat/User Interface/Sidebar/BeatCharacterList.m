@@ -105,7 +105,7 @@
 
 -(void)viewWillDraw {
 	// Reload (in sync) on draw
-	if (!_characterNames) [self reload];
+	if (!_characterNames) [self reloadView];
 }
 
 -(bool)visibleInTab {
@@ -142,7 +142,7 @@
 	}
 }
 
--(void)reload {
+-(void)reloadView {
 	NSInteger selectedRow = self.selectedRow;
 	NSArray *lines = self.editorDelegate.lines.copy;
 	NSMutableDictionary *charactersAndLines = NSMutableDictionary.dictionary;
@@ -206,7 +206,7 @@
 	if (_reloadTimer.valid) [_reloadTimer invalidate];
 	
 	_reloadTimer = [NSTimer scheduledTimerWithTimeInterval:.5 repeats:NO block:^(NSTimer * _Nonnull timer) {
-		[self reload];
+		[self reloadView];
 	}];
 }
 
@@ -351,7 +351,7 @@
 	if (gender.length && character.name.length) {
 		// Set gender
 		_editorDelegate.characterGenders[character.name] = gender;
-		[self reload];
+		[self reloadView];
 	}
 }
 

@@ -33,7 +33,7 @@ typedef enum : NSInteger {
 - (NSDictionary*)json;
 @end
 
-@interface BeatPlugin : NSObject
+@interface BeatPluginData : NSObject
 @property (nonatomic) NSString* name;
 @property (nonatomic) NSString* script;
 @property (nonatomic) NSArray* files;
@@ -48,7 +48,7 @@ typedef enum : NSInteger {
 + (BeatPluginManager*)sharedManager;
 - (NSArray*)pluginNames;
 - (NSString*)scriptForPlugin:(NSString*)pluginName;
-- (BeatPlugin*)pluginWithName:(NSString*)name;
+- (BeatPluginData*)pluginWithName:(NSString*)name;
 - (NSString*)pathForPlugin:(NSString*)pluginName;
 - (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type;
 - (void)openPluginFolder;

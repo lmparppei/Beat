@@ -72,6 +72,7 @@
 #import "BeatPaginator.h"
 #import "Line.h"
 #import "RegExCategories.h"
+#import "BeatUserDefaults.h"
 
 #define CHARACTER_WIDTH 7.2033
 #define LINE_HEIGHT 12.5
@@ -883,25 +884,6 @@
 + (CGFloat)lineHeight {
 	return LINE_HEIGHT;
 }
-+ (CGFloat)spaceBeforeForElement:(Line *)element
-{
-	CGFloat spaceBefore = 0;
-	
-	NSString *type  = element.typeAsFountainString;
-	NSSet *set      = [NSSet setWithObjects:@"Action", @"General", @"Character", @"Transition", nil];
-	
-	if (element.type == heading) {
-		//spaceBefore = 3;
-		//spaceBefore = 33;
-		spaceBefore = LINE_HEIGHT * 2;
-	}
-	else if ([set containsObject:type]) {
-		//spaceBefore = 1.1;
-		spaceBefore = LINE_HEIGHT;
-	}
-	
-	return spaceBefore;
-}
 
 - (CGFloat)elementHeight:(Line *)element lineHeight:(CGFloat)lineHeight {
 	NSString *string = element.stripFormatting;
@@ -1049,7 +1031,11 @@
 
 + (CGFloat)spaceBeforeForLine:(Line*)line {
 	if (line.isSplitParagraph) return 0;
-	else if (line.type == heading) return LINE_HEIGHT * 2;
+	else if (line.type == heading) {
+		// Get user default for scene heading spacing
+		NSInteger spacingBeforeHeading = [BeatUserDefaults.sharedDefaults getInteger:@"sceneHeadingSpacing"];
+		return LINE_HEIGHT * spacingBeforeHeading;
+	}
 	else if (line.type == character || line.type == dualDialogueCharacter) return LINE_HEIGHT;
 	else if (line.type == dialogue) return 0;
 	else if (line.type == parenthetical) return 0;

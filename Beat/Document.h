@@ -40,7 +40,7 @@ THE SOFTWARE.
 #import "BeatTimer.h"
 #import "BeatDocumentSettings.h"
 #import "BeatPreview.h"
-#import "BeatPluginParser.h"
+#import "BeatPlugin.h"
 #import "BeatOutlineView.h"
 #import "BeatAnalysisPanel.h"
 #import "BeatEditorDelegate.h"
@@ -85,6 +85,8 @@ THE SOFTWARE.
 
 - (NSString*)getText;
 - (NSString*)fileNameString;
+- (void)invalidatePreview;
+
 // Make some of the actions available for text view
 // (wtf btw, why aren't we using these through delegation?)
 - (IBAction)forceAction:(id)sender;

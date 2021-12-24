@@ -29,7 +29,6 @@
 
 -(void)drawCenteredImage:(NSImage*)image inFrame:(NSRect)frame
 {
-	[NSColor.redColor setFill];
 	NSRectFill(frame);
 	
 	CGSize imageSize = image.size;

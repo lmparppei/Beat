@@ -13,11 +13,9 @@
  Also handles downloading plugins from the GitHub repository. The address is HARD-CODED.
  For now, I'm the only admin in that repository. There is a risk of it becoming an attack-vector
  for malicious purposes, but Beat is sandboxed, so even while the API allows the plugins to
- write files, the operations have to be approved by the user. So probably we are on safe
- waters for now.
+ write files, the operations have to be approved by the user.
  
  */
-
 
 #import "BeatPluginManager.h"
 #import "BeatAppDelegate.h"
@@ -26,9 +24,10 @@
 #import "UnzipKit.h"
 #import "BeatPluginLibrary.h"
 #import "NSString+VersionNumber.h"
-#import "BeatPluginParser.h"
+#import "BeatPlugin.h"
 #import <os/log.h>
 
+// Hard-coded JSON file URL
 #define PLUGIN_LIBRARY_URL @"https://raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/Beat%20Plugins.json"
 
 #define DOWNLOAD_URL_BASE @"raw.githubusercontent.com/lmparppei/BeatPlugins/master/Dist/"
@@ -36,7 +35,7 @@
 #define PLUGIN_FOLDER @"Plugins"
 #define DISABLED_KEY @"Disabled Plugins"
 
-@implementation BeatPlugin
+@implementation BeatPluginData
 
 @end
 
@@ -292,8 +291,8 @@
 	return [self.plugins.allKeys sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
 }
 
-- (BeatPlugin*)pluginWithName:(NSString*)name {
-	BeatPlugin *plugin = [[BeatPlugin alloc] init];
+- (BeatPluginData*)pluginWithName:(NSString*)name {
+	BeatPluginData *plugin = [[BeatPluginData alloc] init];
 	plugin.name = name;
 	
 	// Uh. Let's reload the plugin array. The user might have installed new ones.

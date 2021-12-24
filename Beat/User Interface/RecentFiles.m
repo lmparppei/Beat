@@ -16,6 +16,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "RecentFiles.h"
+#import "BeatRecentFileCell.h"
 
 #pragma mark - Recent files
 
@@ -79,15 +80,30 @@
 	return _items[index];
 }
 
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
-	bool selected = NO;
-	if ([_items indexOfObject:item] == outlineView.selectedRow) selected = YES;
-	
+- (NSView*)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
 	NSDictionary *fileItem = item;
-	
 	NSURL *url = fileItem[@"url"];
 	NSString *date = fileItem[@"date"];
 	
+	BeatRecentFileCell* cell = [outlineView makeViewWithIdentifier:@"RecentFile" owner:self];
+	cell.filename.stringValue = url.lastPathComponent.stringByDeletingPathExtension;
+	cell.date.stringValue = date;
+	
+	return cell;
+	
+}
+/*
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+	bool selected = NO;
+	if ([_items indexOfObject:item] == outlineView.selectedRow) selected = YES;
+
+	 
+	NSDictionary *fileItem = item;
+	NSURL *url = fileItem[@"url"];
+	NSString *date = fileItem[@"date"];
+
+		
 	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
 	paragraphStyle.lineSpacing = 1;
 			
@@ -123,6 +139,7 @@
  
 	return fileResult;
 }
+*/
 
 - (CGFloat)widthOfString:(NSString *)string withFont:(NSFont *)font {
 	 NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];

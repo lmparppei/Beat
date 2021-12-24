@@ -1,7 +1,6 @@
 /*
 Copyright (c) 2012-2013 Nima Yousefi & John August
 Parts © 2019-2021 Lauri-Matti Parppei
-Parts © 2021 Fredrik T Olsson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy 
 of this software and associated documentation files (the "Software"), to 
@@ -24,43 +23,17 @@ IN THE SOFTWARE.
 
 * {
 	/* -webkit-touch-callout: none; */
-	-webkit-user-select: none;/Users/lmp/Koodaus/Beat/Beat/Export/CSS/PreviewStyles.css
-	box-sizing: border-box;
-	margin: 0px
+	-webkit-user-select: none;
 }
 
-html {
-	margin: 0;
-	padding: 0;
-}
 body {
 
 	zoom: 70%;
 
-	--action-width: 59.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
-	--character-width: 38ch;
-	--parenthetical-width: 28ch; /* includes leading parenthesis */
-	--dialogue-width: 35ch;
-
-	--action-indent: 0ch;
-	--character-indent: 20ch;
-	--parenthetical-indent: 16ch;
-	--dialogue-indent: 10ch;
-
-	--left-whitespace: calc(1.5in);
-
-	--line-height: 12.5pt;
-	
 	--page-height: 29.7cm;
-
 
 	background: #333;
 	color: #3e3e3e;
-	font: 12pt 'Courier Prime', 'Courier', serif;
-	line-height: var(--line-height); 
-
-	padding: 0;
-	margin: 0;
 
 	margin-right: auto;
 	margin-left: auto;
@@ -70,11 +43,7 @@ body {
 
 body.us-letter{  /* all values not present here are the same as for A4 */
 
-	--action-width: 61.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
-	--character-width: 40ch;
-
 	--page-height: 11in;
-
 	width: 8.5in; /* this differs from the printCSS, which removes 2 x 50pt to avoid shrinkage */
 }
 
@@ -85,264 +54,56 @@ article {
 }
 
 section {
-
 	background-color: #f0f0f0;
 
-	/* probably change this */
-	/* margin-right: auto;
-	margin-left: auto; */
-	
-	/* max-width: 100%; */
+	min-height: var(--page-height);
+	height: var(--page-height);
 
-	/* margin-left: -200px; */
-
-	/* THE STUFF BELOW MERGED FROM SECOND SECTION TAG. */
-
+	padding-top: 5pt;
+	padding-left: 50pt;
 	
-		background-color: #f0f0f0;
-		/* width: 620px; */
-		/* min-height: 820px; */
-		/* margin: 1em auto 1em auto; */
-		/* padding: 2em 70px 6em 100px; */
-		/* padding-bottom: 6em; */
+	margin-top: 0pt;
+	margin-bottom: 1em;
 	
-		min-height: var(--page-height);
-		height: var(--page-height);
-
-		padding-top: 4em;
-		margin-top: 1em;
-		margin-bottom: 1em;
-	
-		border: solid 1px #ccc;
+	border: solid 1px #ccc;
 		
-		box-shadow: 0 3px 10px #111;
-	
-}
-
-/* =================== */
-/* SCREENPLAY ELEMENTS */
-/* =================== */
-
-p {
-	position: relative;
-
-	word-wrap: break-word;
-	white-space: pre-wrap;
-	
-	margin: 0px;
-	margin-top: var(--line-height);
-
-	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
-	padding-left: calc(var(--left-whitespace) + var(--action-indent));
-	
-	overflow-x: visible;
-}
-
-body > p:first-child {
-	margin-top: 0;
-}
-
-.debug {
-	display: none;
-	position: absolute;
-	left: -30px;
-	bottom: 0;
-	color: red;
-	font-size: .5em;
-}
-
-.debug:nth-of-type(1) {
-	top: 1px;
-}
-
-.scene-heading, .transition, .new-act, .end-of-act {
-	position: relative;
-	text-transform: uppercase;
-}
-
-.transition {
-	position: relative;
-	text-align: right;
-}
-
-.new-act, .end-of-act {
-	position: relative;
-	text-align: center;
-}
-
-.character, 
-.more {
-	position: relative;
-	left: 0px;
-
-	margin: 0px;
-	padding: 0px;
-
-	margin-top: var(--line-height);
-
-	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
-	padding-left: calc(var(--left-whitespace) + var(--character-indent));
-	padding-right: calc(var(--action-width) - (var(--character-indent) + var(--character-width)));
-}
-
-/* .character { clear: both; } */
-/* WHEN is the above needed? */
-
-.more, p.more {
-	margin-top: 0pt;
-}
-
-.dialogue {
-	position: relative;
-
-	margin: 0px;
-	padding: 0px;
-
-	margin-top: 0pt;
-	
-	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
-	padding-left: calc(var(--left-whitespace) + var(--dialogue-indent));
-	padding-right: calc(var(--action-width) - (var(--dialogue-indent) + var(--dialogue-width)));
-}
-
-.parenthetical {
-	position: relative;
-
-	margin: 0px;
-	padding: 0px;
-
-	margin-top: 0pt;
-	
-	width: calc(var(--left-whitespace) + var(--action-indent) + var(--action-width));
-	padding-left: calc(var(--left-whitespace) + var(--parenthetical-indent));
-	padding-right: calc(var(--action-width) - (var(--parenthetical-indent) + var(--parenthetical-width)));
-}
-
-.scene-heading {
-	margin-top: calc(2 * var(--line-height));
-	position: relative;
-	white-space: pre-wrap;
-	margin-left: 0;
-
-	padding-right: 4ch;
-}
-
-.scene-heading.bold {
-	font-weight: bold;
-}
-
-.scene-heading.underline {
-	text-decoration: underline;
-}
-
-.scene-heading.first {
-	margin-top: var(--line-height);
-}
-
-.scene-number-left {
-	float: left;
-	margin-left: -70px;
-}
-
-.scene-number-right {
-	position: absolute;
-	right: 0ch; 
-	top: 0;
-}
-
-.lyrics {
-	font-style: italic;
-	text-align: center;
-}
-
-/* ================== */
-/*   REV. ASTERISKS   */
-/* ================== */
-
-.changed::after {
-
-	position: absolute;
-	
-	top: 0px;
-	right: -12pt;
-	width: 8px;
-	height: calc(100% - 4px);
-	z-index: 999;
-	
-	content: '*********************';
-	overflow: hidden;
-	font-weight: normal;
-}
-
-.dual-dialogue-left .changed::after {
-
-	left: -4ch;
+	box-shadow: 0 3px 10px #111;
 }
 
 /* ================== */
 /*      TITLE PAGE    */
 /* ================== */
 
-#script-title {
-	position: relative;
-    overflow: hidden;
-    display: flex;
-    
-    padding: 0; 
-    padding-bottom: 2.6em;
-    margin-bottom: 2.6em;
-	
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-}
 #script-title * {
-	white-space: pre-wrap;
 	width: 100%;
+	padding: 0;
 }
+
+#script-title {
+    padding-bottom: 2.6em;
+    margin-bottom: 2.6em;	
+}
+
 #script-title .mainTitle {
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
 	flex: 1;
 	margin-bottom: 6em;
-	padding: 0;
 }
 #script-title .title {
-    text-align: center;
     margin: 1.3em 0;
-	padding: 0;
-    text-transform: uppercase;
-	white-space: pre-wrap;
 }
-#script-title .credit {
-    text-align: center;
-	white-space: pre-wrap;
-	padding: 0;
-}
-#script-title .authors {
-    text-align: center;
-	white-space: pre-wrap;
-	padding: 0;
-}
+
 #script-title p.source {
-    text-align: center;
-	padding: 0;
 	margin: 0 0 .5em 0;
-	white-space: pre-wrap;
 }
 #script-title .versionInfo {
-	position: absolute;
 	bottom: 3em;
 	right: 4em;
-	white-space: pre-wrap;
-
-	width: 40%;
-
 	margin: 0;
-	padding: 0;
-	text-align: right;
 }
+
 #script-title .info {
 	position: absolute;
 	bottom: 3em;
@@ -351,61 +112,30 @@ body > p:first-child {
 	width: 40%;
 
 	margin: 0;
-	padding: 0;
 }
+
 #script-title .info p {
-	padding: 0;
 	margin: 0 0 .5em 0;
 }
+
 #script-title .versionInfo p {
-	padding: 0;
 	margin: 0 0 .5em 0;
 }
 
 #script-title p.notes {
     white-space: pre-line !important;
-	padding: 0;
 }
 
 /* ================== */
 /*    DUAL DIALOGUE   */
 /* ================== */
 
-.center {
-	text-align: center !important;
-}
-hr {
-	height: 0px;
-	border: none;
-}
-
-.dual-dialogue {
-	margin-top: var(--line-height);
-	overflow: hidden;
-}
-
 .dual-dialogue .dual-dialogue-left{
 	padding-left: calc(var(--left-whitespace) + 2ch);
-	width: calc(var(--left-whitespace) + (var(--action-width) / 2));
-	float: left;
-}
-
-.dual-dialogue .dual-dialogue-right {
-	padding-left: 2ch;
-	width: calc(var(--action-width) / 2);
-	float: left;
-}
-
-.dual-dialogue p {
-	width: auto;
-	margin: 0px;
-	padding: 0px;
 }
 
 .dual-dialogue .character {
 	text-align: center;
-	margin-top: 0;
-	padding: 0px;
 }
 
 .dual-dialogue .parenthetical {
@@ -413,28 +143,26 @@ hr {
 	padding-right: 0ch;
 	width: calc(var(--action-width) / 2 - 4);
 }
-.dual-dialogue .more {
-	text-align: center;
-}
 
 /* ================== */
 /* PAGE-RELATED STUFF */
 /* ================== */
 
-p.page-break {
+p.page-break-render {
 	padding-right: 0;
 	margin-top: 0;
-    text-align: right;
-    /* border-top: 1px solid #ccc;
-    padding-top: 20px;
-    margin-top: 20px;
-	 */
+
+	/* padding-top: ? */
+	/* border-top: ? */
+
 }
+
+/*
 p.page-break-render {
-    text-align: right;
     padding-top: 20px;
     margin-top: 20px;
 }
+*/
 
 .quickLook section {
 	background-color: white;

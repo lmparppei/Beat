@@ -19,7 +19,7 @@
 #import "BeatBrowserView.h"
 #import "BeatAboutScreen.h"
 #import "BeatEpisodePrinter.h"
-#import "BeatPluginParser.h"
+#import "BeatPlugin.h"
 #import "BeatPluginManager.h"
 #import "BeatNotifications.h"
 #import "BeatModalInput.h"
@@ -672,8 +672,8 @@
 	NSMenuItem *item = sender;
 	NSString *pluginName = item.title;
 	
-	BeatPluginParser *parser = [[BeatPluginParser alloc] init];
-	BeatPlugin *plugin = [BeatPluginManager.sharedManager pluginWithName:pluginName];
+	BeatPlugin *parser = [[BeatPlugin alloc] init];
+	BeatPluginData *plugin = [BeatPluginManager.sharedManager pluginWithName:pluginName];
 	[parser loadPlugin:plugin];
 	parser = nil;
 }

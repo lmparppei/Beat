@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol BeatReloadableView <NSObject>
-- (void)reload;
+- (void)reloadView;
 @end
 
 @interface BeatSidebarTabView : NSTabViewItem

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19455" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19455"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -664,7 +665,7 @@ DQ
                                                 <action selector="showCharactersAndDialogue:" target="-1" id="MOK-rA-PRf"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Widgets" hidden="YES" keyEquivalent="4" id="upd-G6-QM0">
+                                        <menuItem title="Widgets" keyEquivalent="4" id="upd-G6-QM0">
                                             <connections>
                                                 <action selector="showWidgets:" target="-1" id="P0d-zE-fee"/>
                                             </connections>
@@ -948,16 +949,16 @@ DQ
                 <outlet property="importMenu" destination="xR8-x2-hNB" id="9Pt-Ay-c1K"/>
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
-                <outlet property="recentFiles" destination="2RT-wl-dQJ" id="2Y1-AI-GVM"/>
-                <outlet property="startModal" destination="Tq0-bd-4zX" id="EIH-WD-4kV"/>
-                <outlet property="versionField" destination="TYI-Wq-8Wy" id="uXG-1x-yVE"/>
+                <outlet property="recentFiles" destination="4CT-K1-GgI" id="GVK-Hp-NeQ"/>
+                <outlet property="startModal" destination="HnS-W5-z1w" id="Hnz-lZ-ZRH"/>
+                <outlet property="versionField" destination="N9i-dM-ih2" id="dAs-ED-J0i"/>
                 <outlet property="versionMenu" destination="dbF-KQ-yEw" id="zp5-mG-MLs"/>
             </connections>
         </customObject>
         <window title="(beat)" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" titlebarAppearsTransparent="YES" toolbarStyle="compact" titleVisibility="hidden" id="Tq0-bd-4zX">
             <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="196" y="240" width="613" height="368"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="vpm-hd-eID">
                 <rect key="frame" x="0.0" y="0.0" width="613" height="368"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1122,7 +1123,7 @@ DQ
             <connections>
                 <action selector="showSupport:" target="vEX-2F-hcj" id="Vhs-VY-00f"/>
             </connections>
-            <point key="canvasLocation" x="523" y="72"/>
+            <point key="canvasLocation" x="194" y="132"/>
         </button>
         <menuItem title="Revert To..." id="66O-OW-2gf">
             <modifierMask key="keyEquivalentModifierMask"/>
@@ -1137,8 +1138,199 @@ DQ
                 </connections>
             </menu>
         </menuItem>
+        <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" tabbingMode="disallowed" titlebarAppearsTransparent="YES" id="HnS-W5-z1w">
+            <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
+            <rect key="contentRect" x="179" y="217" width="704" height="404"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <view key="contentView" appearanceType="darkAqua" id="A0B-k4-6ul">
+                <rect key="frame" x="0.0" y="0.0" width="704" height="404"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box boxType="custom" borderType="none" borderWidth="0.0" title="Box" titlePosition="noTitle" id="5sX-jE-qVy">
+                        <rect key="frame" x="0.0" y="0.0" width="704" height="404"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <view key="contentView" id="iNL-pQ-hM2">
+                            <rect key="frame" x="0.0" y="0.0" width="704" height="404"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <button verticalHuggingPriority="750" id="Hxx-uA-o84">
+                                    <rect key="frame" x="15" y="35" width="99" height="16"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="bevel" title="→ Support Beat" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="BHh-Gd-iwg">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                    <connections>
+                                        <action selector="showSupport:" target="vEX-2F-hcj" id="QBk-Kh-TcM"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" id="Snd-dA-mmf">
+                                    <rect key="frame" x="15" y="15" width="118" height="16"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="bevel" title="→ Discord Community" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="AnS-fX-6Kx">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                    <connections>
+                                        <action selector="openDiscord:" target="vEX-2F-hcj" id="JQK-dO-rpq"/>
+                                    </connections>
+                                </button>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="N9i-dM-ih2">
+                                    <rect key="frame" x="254" y="39" width="102" height="13"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Version" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="9FA-i7-Voq">
+                                        <font key="font" metaFont="system" size="10"/>
+                                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="cfv-ik-EJK">
+                                    <rect key="frame" x="15" y="59" width="339" height="5"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                </box>
+                                <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="49" horizontalPageScroll="10" verticalLineScroll="49" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c1g-T3-uJw">
+                                    <rect key="frame" x="368" y="0.0" width="336" height="404"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
+                                    <clipView key="contentView" id="d8W-Sp-gT7">
+                                        <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="qwK-zh-2Ns" id="4CT-K1-GgI">
+                                                <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <size key="intercellSpacing" width="17" height="0.0"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                <tableColumns>
+                                                    <tableColumn width="304" minWidth="40" maxWidth="1000" id="qwK-zh-2Ns">
+                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" enabled="NO" title="Text Cell" id="3Iw-My-Ycz">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                        <prototypeCellViews>
+                                                            <tableCellView identifier="RecentFile" id="DI2-5g-G8g" customClass="BeatRecentFileCell">
+                                                                <rect key="frame" x="18" y="0.0" width="299" height="49"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                <subviews>
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C8i-pt-TKc">
+                                                                        <rect key="frame" x="36" y="25" width="264" height="16"/>
+                                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                        <textFieldCell key="cell" lineBreakMode="clipping" allowsUndo="NO" title="Filename" id="y6T-oH-LI7">
+                                                                            <font key="font" usesAppearanceFont="YES"/>
+                                                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                        </textFieldCell>
+                                                                    </textField>
+                                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ST9-8C-5OL">
+                                                                        <rect key="frame" x="36" y="11" width="264" height="11"/>
+                                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                        <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Date" id="ttD-Fm-hoX">
+                                                                            <font key="font" metaFont="miniSystem"/>
+                                                                            <color key="textColor" name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                        </textFieldCell>
+                                                                    </textField>
+                                                                    <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jde-JT-23j">
+                                                                        <rect key="frame" x="-2" y="3" width="32" height="41"/>
+                                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                        <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="BeatDocumentIcon" id="TzX-5w-K99"/>
+                                                                    </imageView>
+                                                                </subviews>
+                                                                <connections>
+                                                                    <outlet property="date" destination="ST9-8C-5OL" id="PeF-3K-u7Y"/>
+                                                                    <outlet property="filename" destination="C8i-pt-TKc" id="EAf-lC-UXc"/>
+                                                                </connections>
+                                                            </tableCellView>
+                                                        </prototypeCellViews>
+                                                    </tableColumn>
+                                                </tableColumns>
+                                            </outlineView>
+                                        </subviews>
+                                    </clipView>
+                                    <edgeInsets key="contentInsets" left="0.0" right="0.0" top="0.0" bottom="0.0"/>
+                                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="g2p-y7-YgM">
+                                        <rect key="frame" x="0.0" y="381" width="317" height="16"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="C4Z-4o-c5u">
+                                        <rect key="frame" x="224" y="17" width="15" height="102"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                </scrollView>
+                                <imageView focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hFX-YC-6wT">
+                                    <rect key="frame" x="82" y="196" width="205" height="179"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                    <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="B_256" id="Uu0-2U-0yD"/>
+                                </imageView>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ka6-S9-rpy">
+                                    <rect key="frame" x="208" y="29" width="148" height="9"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="© Lauri-Matti Parppei 2019–2021" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="s0C-aA-CL4">
+                                        <font key="font" metaFont="system" size="8"/>
+                                        <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="KIB-4J-Y4d">
+                                    <rect key="frame" x="208" y="18" width="148" height="9"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Released under GPL license" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="bjG-UL-fIR">
+                                        <font key="font" metaFont="system" size="8"/>
+                                        <color key="textColor" white="0.2770926339" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <button verticalHuggingPriority="750" id="HqP-iP-fMT">
+                                    <rect key="frame" x="74" y="143" width="220" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="bevel" title="New Screenplay" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="bnB-eX-Tot" customClass="BeatLaunchButton">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                        <imageReference key="image" image="doc" catalog="system" symbolScale="large"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="subtitle" value="Create a new blank document"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="newDocument:" target="-1" id="Yxi-wC-85t"/>
+                                    </connections>
+                                </button>
+                                <button verticalHuggingPriority="750" id="dY6-Yz-XtP">
+                                    <rect key="frame" x="74" y="92.5" width="220" height="42"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                    <buttonCell key="cell" type="bevel" title="Tutorial" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="tfW-lO-cpW" customClass="BeatLaunchButton">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                        <imageReference key="image" image="map" catalog="system" symbolScale="large"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="string" keyPath="subtitle" value="Start here if you are new to Beat"/>
+                                        </userDefinedRuntimeAttributes>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="showReference:" target="vEX-2F-hcj" id="oNs-Qh-7ge"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <color key="fillColor" red="0.086274509799999996" green="0.090196078430000007" blue="0.098039215690000001" alpha="1" colorSpace="calibratedRGB"/>
+                    </box>
+                </subviews>
+            </view>
+            <point key="canvasLocation" x="752" y="-97"/>
+        </window>
     </objects>
     <resources>
         <image name="B_256" width="256" height="256"/>
+        <image name="BeatDocumentIcon" width="512" height="512"/>
+        <image name="doc" catalog="system" width="17" height="20"/>
+        <image name="map" catalog="system" width="20" height="18"/>
     </resources>
 </document>

@@ -11,8 +11,12 @@
 #import "ThemeManager.h"
 #import "BeatEditorDelegate.h"
 #import "BeatSidebarTabView.h"
+#import "BeatWidgetView.h"
+
+#define WIDGET_SEGMENT 3
 
 @interface BeatSegmentedControl ()
+@property (nonatomic, weak) IBOutlet BeatWidgetView* widgetView;
 @end
 
 @implementation BeatSegmentedControl
@@ -81,6 +85,8 @@
 	CGFloat width = rect.size.width / [self segmentCount];
 	
 	for (NSInteger i = 0; i < self.segmentCount; i++) {
+		if (i == WIDGET_SEGMENT && ![self widgetsVisible]) continue;
+		
 		NSImage *img = [self imageForSegment:i].copy;
 		NSColor *tint = NSColor.tertiaryLabelColor;
 		if (i == self.selectedSegment) tint = NSColor.whiteColor;
@@ -114,6 +120,11 @@
 	return nil;
 }
 
+- (bool)widgetsVisible {
+	if (self.widgetView.subviews.count > 0) return YES;
+	else return NO;
+}
+
 - (void)animateTo:(NSInteger)x
 {
 
@@ -145,6 +156,9 @@
 }
 
 - (void)setSelectedSegment:(NSInteger)selectedSegment {
+	// Don't allow selecting widget view when no widgets are visible
+	if (selectedSegment == WIDGET_SEGMENT && ![self widgetsVisible]) return;
+	
 	[self setSelectedSegment:selectedSegment animate:NO];
 	[self selectTab:nil];
 }
@@ -176,12 +190,22 @@
 }
 
 -(void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem {
+	// Forcibly select the correct segment
+	
+	NSInteger selectedTab = [tabView.tabViewItems indexOfObject:tabViewItem];
+	
+	if (self.selectedSegment != selectedTab && selectedTab < self.segmentCount) {
+		[self setSelectedSegment:selectedTab];
+		return;
+	}
+	
 	if ([tabView respondsToSelector:@selector(reload)]) {
 		BeatSidebarTabView *view = (BeatSidebarTabView *)tabView;
-		[view.reloadableView reload];
+		[view.reloadableView reloadView];
 	}
 }
--(void)reload {
+
+-(void)reloadView {
 	// Faux method
 }
 
