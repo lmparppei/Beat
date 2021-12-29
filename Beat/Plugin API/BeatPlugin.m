@@ -1199,7 +1199,7 @@
 // Plugin-specific document settings (prefixed by plugin name)
 - (id)getDocumentSetting:(NSString*)settingName {
 	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
-	return [_delegate.documentSettings valueForKey:key];
+	return [_delegate.documentSettings get:key];
 }
 - (void)setDocumentSetting:(NSString*)settingName setting:(id)value {
 	NSString *key = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
@@ -1208,7 +1208,7 @@
 
 // Access to raw document settings (NOT prefixed by plugin name)
 - (id)getRawDocumentSetting:(NSString*)settingName {
-	return [_delegate.documentSettings valueForKey:settingName];
+	return [_delegate.documentSettings get:settingName];
 }
 
 - (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
