@@ -31,9 +31,6 @@ body {
 	display: flex;
 	flex-direction: column;
 }
-body.nightMode {
-	background-color: #26282a;
-}
 
 h2 {
 	width: 100%;
@@ -132,14 +129,6 @@ section {
 #close:hover {
 	color: white;
 }
-.nightMode #close {
-	background-color: rgba(100,100,100,.9);
-	color: #333;
-}
-.nightmode #close:hover {
-	background-color: rgba(150,150,150,.9);
-	color: black;
-}
 
 .sceneNumber {
 	width: 1.5rem;
@@ -166,14 +155,6 @@ section {
 }
 .card.selected .sceneNumber { background-color: #222; color: #ddd; }
 /* .card:hover .sceneNumber { background-color: #eee;  } */
-
-.nightMode .sceneNumber {
-	background-color: #eee;
-	color: #222;
-}
-
-/* .nightMode .card:hover .sceneNumber { background-color: #999; } */
-.nightMode .card.selected .sceneNumber { background-color: black; color: #ddd; }
 
 
 .header {
@@ -228,11 +209,6 @@ section {
 	border-radius: .25rem;
 }
 
-.nightMode .card {
-	background-color: #111;
-	color: #ddd;
-	border: solid 1px #333;
-}
 @media screen and (max-width: 900px) {
 	/* .card, .synopse { width: calc(100% / 3 - 1.4rem); } */
 	.cardContainer, .sectionCardContainer { width: calc(100% / 3);	}
@@ -257,8 +233,6 @@ section {
 .color.none { background-color: transparent; }
 
 .selected h3 { color: #333 !important; }
-.nightMode .colored h3 { color: #111 !important; }
-.nightMode .colored p, .nightMode .card.colored:hover p { color: #111 !important; }
 
 /*
 .card.red, .red.selected .sceneNumber, .color.red { background-color: rgb(239,0,73); color: white; }
@@ -389,9 +363,6 @@ section {
 	width: 100%; height: 100%;
 	z-index: 100;
 }
-.nightMode .card:after {
-	opacity: 0;
-}
 .card h3 {
 	text-transform: uppercase;
 	margin: 0;
@@ -430,11 +401,6 @@ section {
 }
 /* .card:hover p { color: #222; } */
 
-.nightMode p {
-	color: #999;
-}
-.nightMode .card:hover p { color: #ddd; }
-
 .synopse {
 	background-color: #111;
 	box-shadow: none;
@@ -457,14 +423,9 @@ section {
 	border: solid 4px #0085ca;
 }
 .card.selected p { color: #222; }
-.nightMode .card.selected {
-	background-color: #f0f0f0;
-}
-
-.nightMode .card.selected p { color: #222; }
 
 .card.indexChanged {
-	animation: changedAnimation ease 2s;
+	animation: changedAnimation ease 1s;
 }
 
 @keyframes changedAnimation {
@@ -476,7 +437,6 @@ section {
 		box-shadow: 0 0 50px 20px rgba(255,255,255,0);
 	}
 	80% {
-		background-color: inherit;
 	}
 }
 

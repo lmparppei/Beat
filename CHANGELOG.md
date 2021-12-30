@@ -1,6 +1,11 @@
 # Changelog
 
 
+## Beat 1.92.6
+
+- Fixed a bug with drag & drop in Index Card View
+
+
 ## Beat 1.92.5
 
 - Added a setting for changing scene heading spacing

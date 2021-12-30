@@ -134,7 +134,7 @@ function initDragDrop () {
 		scenes.sort((a, b) => (a.sceneIndex > b.sceneIndex) ? 1 : -1)
 		
 		// Post move action to main window
-		//window.webkit.messageHandlers.move.postMessage(sceneIndex + "," + nextIndex);
+		window.webkit.messageHandlers.move.postMessage(sceneIndex + "," + nextIndex);
 
 		// Disable editing until the operation is complete
 		wait.className = "waiting";
