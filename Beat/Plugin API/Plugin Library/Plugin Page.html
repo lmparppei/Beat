@@ -201,9 +201,8 @@
 	</head>
 	<body>
 		<section id='intro'>
-			<h1>Plugin Library</h1>
-			<p>A selection of official plugins for Beat. Enabled (checked) plugins will be shown under <b>Tools</b> menu. Grayed out plugins are not yet installed. Click on their label to install and learn more.</p>
-			<p class='small gray'>Click on the folder icon to manually manage your plugins. You can write your own plugins using JavaScript &mdash; learn more on Beat website.</p>
+			<h1>#TITLE_LIBRARY#</h1>
+			#TEXT_LIBRARY_WELCOME#
 		</section>
 			
 		<section id='content'>
@@ -277,11 +276,11 @@
 				else pluginWarning.className = ""
 				
 				if (data.name) pluginName.innerHTML = data.name
-				if (data.version) pluginVersion.innerHTML = "Version " + data.version
-				if (data.updateAvailable) pluginVersion.innerHTML = "<b>Update available: " + data.updateAvailable + "</b><br>(Currently installed: " + data.version + ")"
+				if (data.version) pluginVersion.innerHTML = "#TITLE_VERSION# " + data.version
+				if (data.updateAvailable) pluginVersion.innerHTML = "<b>#TITLE_UPDATE_AVAILABLE#: " + data.updateAvailable + "</b><br>(#TITLE_CURRENTLY_INSTALLED#: " + data.version + ")"
 				if (data.text) pluginDescription.innerHTML = data.text
 				if (data.html) pluginDescription.innerHTML = data.html
-				if (data.copyright) pluginInfo.innerHTML = "Copyright © " + data.copyright
+				if (data.copyright) pluginInfo.innerHTML = "© " + data.copyright
 				if (data.image) pluginImage.innerHTML = "<img src='" + data.image + "'>"
 				
 
@@ -314,7 +313,7 @@
 			
 			function displayWarning () {
 				pluginWarning.className = "visible"
-				pluginWarning.innerHTML = "<b>Warning</b>: This plugin might not be compatible with your version of Beat. To ensure it works, download the latest version from App Store before continuing."
+				pluginWarning.innerHTML = "#COMPATIBILITY_WARNING#"
 			}
 			
 			function setButtonStatus(data) {
@@ -322,16 +321,16 @@
 				pluginAction.disabled = false
 				
 				if (data.localURL) {
-					pluginActionTitle.innerHTML = "Installed"
+					pluginActionTitle.innerHTML = "#TITLE_INSTALLED#"
 					pluginAction.className = "installed"
 					pluginAction.disabled = true
 				} else {
-					pluginActionTitle.innerHTML = "Download"
+					pluginActionTitle.innerHTML = "#TITLE_DOWNLOAD#"
 					pluginAction.className = "download"
 				}
 				
 				if (data.updateAvailable.length) {
-					pluginActionTitle.innerHTML = "Update"
+					pluginActionTitle.innerHTML = "#TITLE_UPDATE#"
 					pluginAction.className = "update"
 					pluginAction.disabled = false
 				}

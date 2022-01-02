@@ -3678,19 +3678,19 @@ static NSString *revisionAttribute = @"Revision";
 - (void)setupMenuItems {
 	// Menu items which need to check their on/off state against bool properties in this class
 	_itemsToValidate = @[
-		[ValidationItem newItem:@"Match Parentheses" setting:@"matchParentheses" target:self],
-		[ValidationItem newItem:@"Automatic Paragraph Breaks" setting:@"autoLineBreaks" target:self],
-		[ValidationItem newItem:@"Show Scene Numbers" setting:@"showSceneNumberLabels" target:self],
-		[ValidationItem newItem:@"Show Page Numbers" setting:@"showPageNumbers" target:self],
-		[ValidationItem newItem:@"Typewriter Mode" setting:@"typewriterMode" target:self],
-		[ValidationItem newItem:@"Print Automatic Scene Numbers" setting:@"printSceneNumbers" target:self],
-		[ValidationItem newItem:@"Show Sidebar" setting:@"sidebarVisible" target:self],
-		[ValidationItem newItem:@"Show Timeline" setting:@"timelineVisible" target:self],
-		[ValidationItem newItem:@"Autosave" setting:@"autosave" target:self],
-		[ValidationItem newItem:@"Revision Mode" setting:@"trackChanges" target:self],
-		[ValidationItem newItem:@"Lock Document" setting:@"Locked" target:self.documentSettings],
-		[ValidationItem newItem:@"Hide Fountain Markup" setting:@"hideFountainMarkup" target:self],
-		[ValidationItem newItem:@"Disable Formatting" setting:@"disableFormatting" target:self],
+		[ValidationItem withAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
+		[ValidationItem withAction:@selector(toggleAutoLineBreaks:) setting:@"autoLineBreaks" target:self],
+		[ValidationItem withAction:@selector(toggleSceneLabels:) setting:@"showSceneNumberLabels" target:self],
+		[ValidationItem withAction:@selector(togglePageNumbers:) setting:@"showPageNumbers" target:self],
+		[ValidationItem withAction:@selector(toggleTypewriterMode:) setting:@"typewriterMode" target:self],
+		[ValidationItem withAction:@selector(togglePrintSceneNumbers:) setting:@"printSceneNumbers" target:self],
+		[ValidationItem withAction:@selector(toggleSidebar:) setting:@"sidebarVisible" target:self],
+		[ValidationItem withAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
+		[ValidationItem withAction:@selector(toggleAutosave:) setting:@"autosave" target:self],
+		[ValidationItem withAction:@selector(toggleTrackChanges:) setting:@"trackChanges" target:self],
+		[ValidationItem withAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
+		[ValidationItem withAction:@selector(toggleHideFountainMarkup:) setting:@"hideFountainMarkup" target:self],
+		[ValidationItem withAction:@selector(toggleDisableFormatting:) setting:@"disableFormatting" target:self],
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -3706,23 +3706,27 @@ static NSString *revisionAttribute = @"Revision";
 		// If CARD VIEW is enabled
 		if ([self selectedTab] == 2) {
 			//
-			if ([menuItem.title isEqualToString:@"Show Index Cards"]) {
+			if (menuItem.action == @selector(toggleCards:)) {
 				menuItem.state = NSOnState;
 				return YES;
 			}
 			
 			// Allow undoing scene move in card view, but nothing else
-			if ([menuItem.title rangeOfString:@"Undo"].location != NSNotFound) {
+			if (menuItem.action == @selector(undoEdit:)) {
+			//if ([menuItem.title rangeOfString:@"Undo"].location != NSNotFound) {
 				if ([[self.undoManager undoActionName] isEqualToString:@"Move Scene"]) {
-					menuItem.title = [NSString stringWithFormat:@"Undo %@", [self.undoManager undoActionName]];
+					NSString *title = NSLocalizedString(@"general.undo", nil);
+					menuItem.title = [NSString stringWithFormat:@"%@ %@", title, [self.undoManager undoActionName]];
 					return YES;
 				}
 			}
 			
 			// Allow redoing, too
-			if ([menuItem.title rangeOfString:@"Redo"].location != NSNotFound) {
+			if (menuItem.action == @selector(redoEdit:)) {
+			//if ([menuItem.title rangeOfString:@"Redo"].location != NSNotFound) {
 				if ([[self.undoManager redoActionName] isEqualToString:@"Move Scene"]) {
-					menuItem.title = [NSString stringWithFormat:@"Redo %@", [self.undoManager redoActionName]];
+					NSString *title = NSLocalizedString(@"general.redo", nil);
+					menuItem.title = [NSString stringWithFormat:@"%@ %@", title, [self.undoManager redoActionName]];
 					return YES;
 				}
 			}
@@ -3746,33 +3750,41 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
 	if (_mode == TaggingMode) {
-		NSArray *markerMenuItems = @[@"Mark as Revised", @"Mark for Removal", @"Clear Markers"];
-		if ([markerMenuItems containsObject:menuItem.title]) return NO;
+		if (menuItem.action == @selector(markRangeForRemoval:) ||
+			menuItem.action == @selector(markRangeAsAddition:) ||
+			menuItem.action == @selector(clearMarkings:)) return NO;
 	}
 	
-	if ([menuItem.title isEqualToString:@"Tagging Mode"]) {
+	if (menuItem.action == @selector(toggleTagging:)) {
+	//if ([menuItem.title isEqualToString:@"Tagging Mode"]) {
 		if (_mode == TaggingMode) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 	
-	} else if ([menuItem.title isEqualToString:@"Autosave"]) {
+	}
+	//else if ([menuItem.title isEqualToString:@"Autosave"]) {
+	else if (menuItem.action == @selector(toggleAutosave:)) {
 		if (_autosave) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 		
-	} else if ([menuItem.title isEqualToString:@"Sans Serif"]) {
+	}
+	else if (menuItem.action == @selector(selectSansSerif:)) {
 		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:@"useSansSerif"];
 		if (sansSerif) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
-		
-	} else if ([menuItem.title isEqualToString:@"Serif"]) {
+	}
+	else if (menuItem.action == @selector(selectSerif:)) {
 		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:@"useSansSerif"];
 		if (!sansSerif) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 		
-	} else if ([menuItem.title isEqualToString:@"Dark Mode"]) {
+	}
+	else if (menuItem.action == @selector(toggleDarkMode:)) {
 		if ([(BeatAppDelegate *)[NSApp delegate] isDark]) [menuItem setState:NSOnState];
 		else [menuItem setState:NSOffState];
 	
-	} else if ([menuItem.title isEqualToString:@"Share"]) {
+	}
+	else if (menuItem.submenu.itemArray.firstObject.action == @selector(shareFromService:)) {
+	//else if ([menuItem.title isEqualToString:@"Share"]) {
         [menuItem.submenu removeAllItems];
         NSArray *services = @[];
 		
@@ -3788,19 +3800,21 @@ static NSString *revisionAttribute = @"Revision";
                 [menuItem.submenu addItem:item];
             }
         }
-        if ([services count] == 0) {
+        if (services.count == 0) {
             NSMenuItem *noThingPleaseSaveItem = [[NSMenuItem alloc] initWithTitle:@"Please save the file to share" action:nil keyEquivalent:@""];
             noThingPleaseSaveItem.enabled = NO;
             [menuItem.submenu addItem:noThingPleaseSaveItem];
         }
 		
-	} else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"Create PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
+	}
+	else if (menuItem.action == @selector(print:) || menuItem.action == @selector(openPDFExport:)) {
+	//else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"Create PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
 		// Some magic courtesy of Hendrik Noeller
-        NSArray* words = [[self getText] componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSArray* words = [self.getText componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         NSString* visibleCharacters = [words componentsJoinedByString:@""];
-        if ([visibleCharacters length] == 0) return NO;
-		
-	} else if ([menuItem.title isEqualToString:@"Dual Dialogue"]) {
+        if (visibleCharacters.length == 0) return NO;
+	}
+	else if (menuItem.action == @selector(dualDialogue:)) {
 		if (_currentLine.type == character ||
 			_currentLine.type == dialogue ||
 			_currentLine.type == parenthetical ||
@@ -3809,11 +3823,12 @@ static NSString *revisionAttribute = @"Revision";
 			_currentLine.type == dualDialogue) return YES;
 		else return NO;
 		
-    } else if ([menuItem.title isEqualToString:@"Show Index Cards"]) {
+    }
+	else if (menuItem.action == @selector(toggleCards:)) {
 		menuItem.state = NSOffState;
 	}
 	
-	else if ([menuItem.title isEqualToString:@"Widgets"]) {
+	else if (menuItem.action == @selector(showWidgets:)) {
 		// Allow/disallow widget area menu item
 		if (self.widgetView.subviews.count > 0) {
 			menuItem.hidden = NO;
@@ -3827,12 +3842,12 @@ static NSString *revisionAttribute = @"Revision";
 	
 	// So, I have overriden everything regarding undo (because I couldn't figure it out).
 	// That's why we need to handle enabling/disabling undo manually. This sucks.
-	else if ([menuItem.title rangeOfString:@"Undo"].location != NSNotFound) {
-		menuItem.title = [NSString stringWithFormat:@"Undo %@", [self.undoManager undoActionName]];
+	else if (menuItem.action == @selector(undoEdit:)) {
+		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.undo", nil), [self.undoManager undoActionName]];
 		if (![self.undoManager canUndo]) return NO;
 	}
-	else if ([menuItem.title rangeOfString:@"Redo"].location != NSNotFound) {
-		menuItem.title = [NSString stringWithFormat:@"Redo %@", [self.undoManager redoActionName]];
+	else if (menuItem.action == @selector(redoEdit:)) {
+		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.redo", nil), [self.undoManager redoActionName]];
 		if (![self.undoManager canRedo]) return NO;
 	}
 	
@@ -5667,11 +5682,11 @@ triangle walks
 }
 - (void)unlock {
 	NSAlert *alert = [[NSAlert alloc] init];
-	alert.messageText = @"Unlock Document";
-	alert.informativeText = @"Are you sure you want to unlock the document and allow changes?";
+	alert.messageText = NSLocalizedString(@"unlock_document.title", nil);
+	alert.informativeText = NSLocalizedString(@"unlock_document.confirm", nil);
 	
-	[alert addButtonWithTitle:@"Yes"];
-	[alert addButtonWithTitle:@"No"];
+	[alert addButtonWithTitle:NSLocalizedString(@"general.yes", nil)];
+	[alert addButtonWithTitle:NSLocalizedString(@"general.no", nil)];
 	
 	NSModalResponse response = [alert runModal];
 	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {

@@ -74,6 +74,13 @@
 
 #pragma mark - Help
 
++(void)load {
+	//NSString *lang = [NSUserDefaults.standardUserDefaults valueForKey:@"Language"];
+	//[NSUserDefaults.standardUserDefaults setValue:@[@"en"] forKey:@"AppleLanguages"];
+	//[NSUserDefaults.standardUserDefaults removeObjectForKey:@"AppleLanguages"];
+	[super load];
+}
+
 - (instancetype) init {
 	self = [super init];
 	
@@ -421,7 +428,7 @@
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"Patch Notes" withExtension:@"html"];
-	[_browser showBrowser:url withTitle:@"Patch Notes" width:550 height:640];
+	[_browser showBrowser:url withTitle:NSLocalizedString(@"app.patchNotes", nil) width:550 height:640];
 }
 
 - (IBAction)showManual:(id)sender {
@@ -430,7 +437,7 @@
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"beat_manual" withExtension:@"html"];
-	[_browser showBrowser:url withTitle:@"(beat manual)" width:850 height:600];
+	[_browser showBrowser:url withTitle:NSLocalizedString(@"app.manual", nil) width:850 height:600];
 }
 
 - (IBAction)showFountainSyntax:(id)sender

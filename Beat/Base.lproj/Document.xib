@@ -461,7 +461,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="470"/>
@@ -689,7 +689,7 @@
                                                                                 <rect key="frame" x="0.0" y="0.0" width="300" height="359"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="mfV-6r-KJe">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="359"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="systemDefault" viewBased="YES" id="QGY-eB-GWe" customClass="BeatCharacterList">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="359"/>
@@ -862,7 +862,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="g8V-yU-9TJ">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <view id="ol0-Ui-RVn" customClass="BeatWidgetView">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="299" height="495"/>
@@ -2037,7 +2037,7 @@ Gw
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="djE-wS-Oh2">
-                    <rect key="frame" x="65" y="198" width="125" height="16"/>
+                    <rect key="frame" x="65" y="199" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbers" id="FcY-wT-YPP">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2046,7 +2046,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ce8-Oa-473">
-                    <rect key="frame" x="65" y="168" width="125" height="16"/>
+                    <rect key="frame" x="65" y="169" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Page Numbers" usesSingleLineMode="YES" id="JLw-Th-DgB">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2055,7 +2055,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="IdW-3r-Koe">
-                    <rect key="frame" x="65" y="49" width="125" height="16"/>
+                    <rect key="frame" x="65" y="50" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Revision Mode" id="fPt-b4-RaB">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2118,7 +2118,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ems-vl-Z7w">
-                    <rect key="frame" x="18" y="25" width="75" height="11"/>
+                    <rect key="frame" x="18" y="26" width="75" height="11"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Revision Color" id="Teo-oJ-Dwq">
                         <font key="font" metaFont="miniSystem"/>
@@ -2153,15 +2153,6 @@ Gw
                         <action selector="selectRevisionColor:" target="-2" id="hrf-a4-FEG"/>
                     </connections>
                 </popUpButton>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WY3-fe-OfP">
-                    <rect key="frame" x="18" y="91" width="75" height="16"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" title="Paper Size" id="6Yb-zo-0AS">
-                        <font key="font" usesAppearanceFont="YES"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
                 <popUpButton verticalHuggingPriority="750" id="UOV-VP-tY1" userLabel="Paper Size">
                     <rect key="frame" x="97" y="85" width="102" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -2190,7 +2181,7 @@ Gw
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WkG-bA-E2d">
-                    <rect key="frame" x="65" y="138" width="125" height="16"/>
+                    <rect key="frame" x="65" y="139" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Dark Mode" id="vbP-uh-iii">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2210,6 +2201,15 @@ Gw
                         <action selector="toggleQuickSetting:" target="-2" id="eWb-VD-Qgj"/>
                     </connections>
                 </customView>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WY3-fe-OfP">
+                    <rect key="frame" x="18" y="91" width="75" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" lineBreakMode="clipping" title="Paper Size" id="6Yb-zo-0AS">
+                        <font key="font" usesAppearanceFont="YES"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <point key="canvasLocation" x="525" y="-376.5"/>
         </customView>

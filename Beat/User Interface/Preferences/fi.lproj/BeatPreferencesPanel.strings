@@ -1,0 +1,93 @@
+
+/* Class = "NSToolbarItem"; label = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.label" = "Yleiset";
+
+/* Class = "NSToolbarItem"; paletteLabel = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.paletteLabel" = "Yleiset";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "3O7-zn-jUw"; */
+"3O7-zn-jUw.title" = "US Letter";
+
+/* Class = "NSButtonCell"; title = "Automatic paragraph breaks"; ObjectID = "5Bc-al-gWv"; */
+"5Bc-al-gWv.title" = "Automaattiset kappalejaot";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "7Xj-J1-Y92"; */
+"7Xj-J1-Y92.title" = "A4";
+
+/* Class = "NSTextFieldCell"; title = "Heading Spacing"; ObjectID = "EHa-PH-tc4"; */
+"EHa-PH-tc4.title" = "Otsikon välit";
+
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "Asetukset";
+
+/* Class = "NSButtonCell"; title = "Match parentheses"; ObjectID = "Gir-t4-vbC"; */
+"Gir-t4-vbC.title" = "Täydennä parenteesit";
+
+/* Class = "NSButtonCell"; title = "Automatically hide Fountain markup"; ObjectID = "KAa-hh-Rua"; */
+"KAa-hh-Rua.title" = "Kätke Fountain-muotoilu";
+
+/* Class = "NSButtonCell"; title = "Bold"; ObjectID = "MPF-7c-b3u"; */
+"MPF-7c-b3u.title" = "Lihavoitu";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "Mb6-nH-PQK"; */
+"Mb6-nH-PQK.label" = "Näkymä";
+
+/* Class = "NSTextFieldCell"; title = "Editor View"; ObjectID = "O3D-76-kt4"; */
+"O3D-76-kt4.title" = "Editorinäkymä";
+
+/* Class = "NSMenuItem"; title = "Courier Prime"; ObjectID = "VTU-wq-qyb"; */
+"VTU-wq-qyb.title" = "Courier Prime";
+
+/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Editorin fontti";
+
+/* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
+"Yuw-0s-K2b.title" = "1 rivi";
+
+/* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
+"Zfa-HM-161.title" = "Alleviivattu";
+
+/* Class = "NSButtonCell"; title = "Show scene numbers"; ObjectID = "a44-hn-h2m"; */
+"a44-hn-h2m.title" = "Näytä kohtausnumerot";
+
+/* Class = "NSButtonCell"; title = "Auto-complete scene headings and characters"; ObjectID = "d0m-zv-bHH"; */
+"d0m-zv-bHH.title" = "Ehdota kohtausotsikoita ja hahmoja";
+
+/* Class = "NSButtonCell"; title = "2 lines"; ObjectID = "fan-Jn-FOW"; */
+"fan-Jn-FOW.title" = "2 riviä";
+
+/* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
+"fxb-nx-hJp.title" = "Sulkee automaattisesti sulkeet ja hakasulkeet, kuten () ja [[]]";
+
+/* Class = "NSToolbarItem"; label = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.label" = "Asettelu";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.paletteLabel" = "Asettelu";
+
+/* Class = "NSTextFieldCell"; title = "Editor Behavior"; ObjectID = "lzW-qc-hjs"; */
+"lzW-qc-hjs.title" = "Editorin toiminta";
+
+/* Class = "NSTextFieldCell"; title = "INT. SCENE - DAY"; ObjectID = "m9T-8O-t6l"; */
+"m9T-8O-t6l.title" = "INT. KOHTAUS - PÄIVÄ";
+
+/* Class = "NSTextFieldCell"; title = "Default Paper Size"; ObjectID = "nUl-8Q-mMa"; */
+"nUl-8Q-mMa.title" = "Oletuspaperikoko";
+
+/* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "ok7-BF-Eme"; */
+"ok7-BF-Eme.label" = "Välilehti";
+
+/* Class = "NSTextFieldCell"; title = "as she walks to pick up the noodles."; ObjectID = "pUG-6V-246"; */
+"pUG-6V-246.title" = "as she walks to pick up the noodles.";
+
+/* Class = "NSMenuItem"; title = "Courier Prime Sans"; ObjectID = "w8y-6i-bdp"; */
+"w8y-6i-bdp.title" = "Courier Prime Sans";
+
+/* Class = "NSButtonCell"; title = "Show scene colors in scroll bar"; ObjectID = "xYL-rJ-JMw"; */
+"xYL-rJ-JMw.title" = "Näytä kohtausten värit vierityspalkissa";
+
+/* Class = "NSTextFieldCell"; title = "Heading Style"; ObjectID = "yHb-oc-ujO"; */
+"yHb-oc-ujO.title" = "Kohtausotsikon tyyli";
+
+/* Class = "NSButtonCell"; title = "Show page numbers"; ObjectID = "yde-p1-D3O"; */
+"yde-p1-D3O.title" = "Näytä sivunumerot";

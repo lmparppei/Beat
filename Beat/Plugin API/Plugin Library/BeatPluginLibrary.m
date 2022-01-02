@@ -76,6 +76,19 @@
 	page = [page stringByReplacingOccurrencesOfString:@"#UPDATECOLOR#" withString:[NSString stringWithFormat:@"%f, %f, %f", updateColor.redComponent * 256, updateColor.greenComponent * 256, updateColor.blueComponent * 256]];
 	page = [page stringByReplacingOccurrencesOfString:@"#DOWNLOADCOLOR#" withString:[NSString stringWithFormat:@"%f, %f, %f", downloadColor.redComponent * 256, downloadColor.greenComponent * 256, downloadColor.blueComponent * 256]];
 	
+	page = [page stringByReplacingOccurrencesOfString:@"#TITLE_LIBRARY#" withString:NSLocalizedString(@"plugins.library", nil)];
+	
+	page = [page stringByReplacingOccurrencesOfString:@"#COMPATIBILITY_WARNING#" withString:NSLocalizedString(@"plugins.compatibilityWarning", nil)];
+	page = [page stringByReplacingOccurrencesOfString:@"#TITLE_INSTALLED#" withString:NSLocalizedString(@"plugins.installed", nil)];
+	page = [page stringByReplacingOccurrencesOfString:@"#TITLE_DOWNLOAD#" withString:NSLocalizedString(@"plugins.download", nil)];
+	page = [page stringByReplacingOccurrencesOfString:@"#TITLE_UPDATE#" withString:NSLocalizedString(@"plugins.update", nil)];
+	page = [page stringByReplacingOccurrencesOfString:@"#TITLE_VERSION#" withString:NSLocalizedString(@"plugins.version", nil)];
+	page = [page stringByReplacingOccurrencesOfString:@"#TITLE_UPDATE_AVAILABLE#" withString:NSLocalizedString(@"plugins.updateAvailable", nil)];
+	page = [page stringByReplacingOccurrencesOfString:@"#TITLE_CURRENTLY_INSTALLED#" withString:NSLocalizedString(@"plugins.currentVersion", nil)];
+	
+	page = [page stringByReplacingOccurrencesOfString:@"#TEXT_LIBRARY_WELCOME#" withString:NSLocalizedString(@"plugins.libraryWelcome", nil)];
+
+	
 	[self.webview loadHTMLString:page baseURL:self.pluginManager.pluginFolderURL];
 }
 

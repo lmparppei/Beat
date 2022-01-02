@@ -12,7 +12,7 @@
 @implementation BeatDocumentController
 
 + (void)load {
-	[BeatDocumentController new];
+	//[BeatDocumentController new];
 }
 
 -(void)reopenDocumentForURL:(NSURL *)urlOrNil withContentsOfURL:(NSURL *)contentsURL display:(BOOL)displayDocument completionHandler:(void (^)(NSDocument * _Nullable, BOOL, NSError * _Nullable))completionHandler {

@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatLaunchButton : NSButtonCell
-
+@property (nonatomic) IBInspectable NSString *localizationId;
 @end
 
 NS_ASSUME_NONNULL_END

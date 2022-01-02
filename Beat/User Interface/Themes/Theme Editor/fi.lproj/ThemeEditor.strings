@@ -1,0 +1,75 @@
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "0hH-er-0kR"; */
+"0hH-er-0kR.title" = "Peruuta";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis Text"; ObjectID = "7vv-ql-pEx"; */
+"7vv-ql-pEx.title" = "Synopsis";
+
+/* Class = "NSTextFieldCell"; title = "Paper"; ObjectID = "B8Z-S8-DXC"; */
+"B8Z-S8-DXC.title" = "Paperi";
+
+/* Class = "NSTextFieldCell"; title = "Outline Background"; ObjectID = "BS2-mF-IoS"; */
+"BS2-mF-IoS.title" = "Sivupalkin tausta";
+
+/* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "DDr-T3-GTD"; */
+"DDr-T3-GTD.title" = "Tumma";
+
+/* Class = "NSWindow"; title = "Customize Colors"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "Muokkaa värejä";
+
+/* Class = "NSTextFieldCell"; title = "Genders"; ObjectID = "Ghh-a5-XuU"; */
+"Ghh-a5-XuU.title" = "Sukupuolet";
+
+/* Class = "NSTextFieldCell"; title = "Text"; ObjectID = "KtE-ZB-M0o"; */
+"KtE-ZB-M0o.title" = "Teksti";
+
+/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "MhL-0X-jUG"; */
+"MhL-0X-jUG.title" = "Sivunumero";
+
+/* Class = "NSTextFieldCell"; title = "Section Text"; ObjectID = "QCU-q7-Dab"; */
+"QCU-q7-Dab.title" = "Osio";
+
+/* Class = "NSTextFieldCell"; title = "Customize Colours"; ObjectID = "W10-WX-mev"; */
+"W10-WX-mev.title" = "Muokkaa värejä";
+
+/* Class = "NSTextFieldCell"; title = "Unspec."; ObjectID = "Whr-tU-Und"; */
+"Whr-tU-Und.title" = "Ei määrit.";
+
+/* Class = "NSTextFieldCell"; title = "Outline Highlight"; ObjectID = "ZgE-Rl-TTE"; */
+"ZgE-Rl-TTE.title" = "Sivupalkin korostus";
+
+/* Class = "NSButtonCell"; title = "Save"; ObjectID = "aZc-lr-r9i"; */
+"aZc-lr-r9i.title" = "Tallenna";
+
+/* Class = "NSTextFieldCell"; title = "Woman"; ObjectID = "e7b-TI-SvW"; */
+"e7b-TI-SvW.title" = "Nainen";
+
+/* Class = "NSTextFieldCell"; title = "Other"; ObjectID = "eoU-fi-QOQ"; */
+"eoU-fi-QOQ.title" = "Muu";
+
+/* Class = "NSTextFieldCell"; title = "Note: Changes to text colours may require reopening documents"; ObjectID = "j5y-Wf-te4"; */
+"j5y-Wf-te4.title" = "Huomaa: Jotkin tekstin värit muuttuvat vasta uudelleenavauksen jälkeen";
+
+/* Class = "NSTextFieldCell"; title = "Man"; ObjectID = "jaw-Da-IBj"; */
+"jaw-Da-IBj.title" = "Mies";
+
+/* Class = "NSTextFieldCell"; title = "Margin"; ObjectID = "jiK-x1-9Kb"; */
+"jiK-x1-9Kb.title" = "Tausta";
+
+/* Class = "NSTextFieldCell"; title = "Light"; ObjectID = "lFB-D9-I3Z"; */
+"lFB-D9-I3Z.title" = "Vaalea";
+
+/* Class = "NSButtonCell"; title = "Reset to Default"; ObjectID = "neE-Mb-Rip"; */
+"neE-Mb-Rip.title" = "Palauta";
+
+/* Class = "NSTextFieldCell"; title = "Comment"; ObjectID = "omc-Qp-Wls"; */
+"omc-Qp-Wls.title" = "Kommentti";
+
+/* Class = "NSTextFieldCell"; title = "Invisible Text"; ObjectID = "pol-nH-YUx"; */
+"pol-nH-YUx.title" = "Näkymätön teksti";
+
+/* Class = "NSTextFieldCell"; title = "Selection"; ObjectID = "vMr-Yo-A4o"; */
+"vMr-Yo-A4o.title" = "Valinta";
+
+/* Class = "NSTextFieldCell"; title = "Caret"; ObjectID = "zHa-4e-Vuo"; */
+"zHa-4e-Vuo.title" = "Osoitin";

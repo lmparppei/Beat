@@ -116,6 +116,12 @@
 	[NSAppearance setCurrentAppearance:appearance];
 }
 
+- (NSString*)subtitle {
+	NSString *str = NSLocalizedString(self.localizationId, nil);
+	if (str.length) return str;
+	else return _subtitle;
+}
+
 @end
 /*
  

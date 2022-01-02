@@ -1,0 +1,30 @@
+/* 
+  Localizable.strings
+  Beat
+
+  Created by Lauri-Matti Parppei on 2.1.2022.
+  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
+*/
+
+"launch.newDocument.subtitle" = "Luo uusi projekti";
+"launch.tutorial.subtitle" = "Aloita tästä, jos olet uusi käyttäjä";
+"app.manual" = "Manuaali";
+"app.patchNotes" = "Päivityksen tiedot";
+
+"unlock_document.title" = "Avaa dokumentin lukitus";
+"unlock_document.confirm" = "Haluatko varmasti avata lukituksen ja sallia muutokset käsikirjoitukseen?";
+"general.yes" = "Kyllä";
+"general.no" = "Ei";
+"general.undo" = "Peru";
+"general.redo" = "Tee sittenkin";
+
+"plugins.library" = "Laajennuskirjasto";
+"plugins.installed" = "Asennettu";
+"plugins.download" = "Lataa";
+"plugins.update" = "Päivitä";
+"plugins.version" = "Versio";
+"plugins.updateAvailable" = "Päivitys saatavilla";
+"plugins.currentVersion" = "Nykyinen versio";
+"plugins.compatibilityWarning" = "<b>Varoitus</b>: Tämä liitännäinen ei välttämättä ole yhteensopiva nykyisen version kanssa. Päivitä Beat ennen jatkamista.";
+"plugins.libraryWelcome" = "<p>Tämä on valikoima Beatin virallisia laajennuksia. Aktivoidut laajennukset näkyvät <b>Työkalut</b>-valikossa. Harmaita laajennuksia ei ole vielä asennettu. Näet lisätietoja laajennuksista valitsemalla niiden nimen.</p>\
+   <p class='small gray'>Voit hallinnoida laajennuksia käsin klikkaamalla kansioikonia. Voit tehdä myös omia laajennuksiasi JavaScriptin avulla &mdash; lue lisää Beatin kotisivuilta.</p>";

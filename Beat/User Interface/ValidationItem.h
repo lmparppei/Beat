@@ -12,10 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ValidationItem : NSObject
 @property (nonatomic) NSString *title;
+@property (nonatomic) SEL selector;
 @property (nonatomic) NSInteger tab;
 @property (nonatomic) NSString* setting;
 @property (weak) id target;
-+ (ValidationItem*)newItem:(NSString*)title setting:(NSString*)setting target:(id)target;
++ (ValidationItem*)newItem:(NSString*)title setting:(NSString*)setting target:(id)target; // Legacy, deprecated
++ (ValidationItem*)withAction:(SEL)selector setting:(NSString*)setting target:(id)target;
 - (bool)validate;
 @end
 
