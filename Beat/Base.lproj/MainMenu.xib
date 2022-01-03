@@ -937,23 +937,6 @@ DQ
                 <outlet property="versionMenu" destination="dbF-KQ-yEw" id="zp5-mG-MLs"/>
             </connections>
         </customObject>
-        <button verticalHuggingPriority="750" id="bvh-bI-vIn" customClass="BeatRoundedButton">
-            <rect key="frame" x="0.0" y="0.0" width="92" height="32"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-            <buttonCell key="cell" type="push" title="Support Beat" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="N3l-7q-8US" customClass="RoundedButton">
-                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                <font key="font" size="10" name="HelveticaNeue"/>
-                <userDefinedRuntimeAttributes>
-                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                        <color key="value" red="0.70564453477189071" green="0.72868766191709844" blue="0.72160768075639858" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                    </userDefinedRuntimeAttribute>
-                </userDefinedRuntimeAttributes>
-            </buttonCell>
-            <connections>
-                <action selector="showSupport:" target="vEX-2F-hcj" id="Vhs-VY-00f"/>
-            </connections>
-            <point key="canvasLocation" x="194" y="132"/>
-        </button>
         <menuItem title="Revert To..." id="66O-OW-2gf">
             <modifierMask key="keyEquivalentModifierMask"/>
             <menu key="submenu" title="Revert To..." id="dbF-KQ-yEw">

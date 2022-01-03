@@ -18,6 +18,9 @@
 "general.undo" = "Peru";
 "general.redo" = "Tee sittenkin";
 
+"language.alert" = "Käynnistä Beat uudelleen";
+"language.informative" = "Kielen vaihtaminen vaatii ohjelman uudelleenkäynnistyksen.";
+
 "plugins.library" = "Laajennuskirjasto";
 "plugins.installed" = "Asennettu";
 "plugins.download" = "Lataa";
@@ -28,3 +31,11 @@
 "plugins.compatibilityWarning" = "<b>Varoitus</b>: Tämä liitännäinen ei välttämättä ole yhteensopiva nykyisen version kanssa. Päivitä Beat ennen jatkamista.";
 "plugins.libraryWelcome" = "<p>Tämä on valikoima Beatin virallisia laajennuksia. Aktivoidut laajennukset näkyvät <b>Työkalut</b>-valikossa. Harmaita laajennuksia ei ole vielä asennettu. Näet lisätietoja laajennuksista valitsemalla niiden nimen.</p>\
    <p class='small gray'>Voit hallinnoida laajennuksia käsin klikkaamalla kansioikonia. Voit tehdä myös omia laajennuksiasi JavaScriptin avulla &mdash; lue lisää Beatin kotisivuilta.</p>";
+
+"gender.unspecified" = "Määrittelemätön";
+"gender.other" = "Muu";
+"gender.woman" = "Nainen";
+"gender.man" = "Mies";
+
+"statistics.lines" = "Repliikit";
+"statistics.scenes" = "Kohtaukset";

@@ -734,7 +734,7 @@
 		B6763E8D2782317600284907 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatEpisodePrinter.xib; sourceTree = "<group>"; };
 		B6763E902782317A00284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatEpisodePrinter.strings; sourceTree = "<group>"; };
 		B6763E932782482400284907 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatPreferencesPanel.xib; sourceTree = "<group>"; };
-		B6763E962782482800284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatPreferencesPanel.strings; sourceTree = "<group>"; };
+		B6763EA82782545400284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatPreferencesPanel.strings; sourceTree = "<group>"; };
 		B6764B2D251367BF00731A36 /* TKSplitHandle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TKSplitHandle.m; path = "Beat/User Interface/TKSplitHandle/TKSplitHandle.m"; sourceTree = SOURCE_ROOT; };
 		B6764B2E251367BF00731A36 /* NSArray+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSArray+Additions.h"; path = "Beat/User Interface/TKSplitHandle/NSArray+Additions.h"; sourceTree = SOURCE_ROOT; };
 		B6764B2F251367BF00731A36 /* TKSplitHandle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TKSplitHandle.h; path = "Beat/User Interface/TKSplitHandle/TKSplitHandle.h"; sourceTree = SOURCE_ROOT; };
@@ -2620,7 +2620,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				B6763E932782482400284907 /* Base */,
-				B6763E962782482800284907 /* fi */,
+				B6763EA82782545400284907 /* fi */,
 			);
 			name = BeatPreferencesPanel.xib;
 			sourceTree = "<group>";

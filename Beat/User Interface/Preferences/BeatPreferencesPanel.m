@@ -9,6 +9,7 @@
 #import "BeatPreferencesPanel.h"
 #import "BeatUserDefaults.h"
 #import "Document.h"
+#import "BeatModalInput.h"
 
 #define HEADING_SAMPLE @"INT. SCENE - DAY"
 
@@ -25,6 +26,7 @@
 
 @property (nonatomic, weak) IBOutlet NSPopUpButton *useSansSerif;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *defaultPageSize;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *language;
 
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleBold;
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleUnderline;
@@ -37,6 +39,8 @@
 @property (nonatomic) NSMutableDictionary *controls;
 
 @property (weak) IBOutlet NSTabView *tabView;
+
+@property (nonatomic) NSMutableDictionary *locales;
 
 @end
 
@@ -52,7 +56,8 @@
 	// Get user default names
 	NSDictionary *userDefaults = BeatUserDefaults.userDefaults;
 	
-	_controls = [NSMutableDictionary dictionary];
+	_controls = NSMutableDictionary.new;
+	_locales = NSMutableDictionary.new;
 	
 	for (NSString *key in userDefaults.allKeys) {
 		if ([self valueForKey:key]) {
@@ -85,8 +90,29 @@
 		}
 	}
 	
+	[self setupLanguages];
+	
 	[self.window.toolbar setSelectedItemIdentifier:@"General"];
 	[self updateHeadingSample:YES];
+}
+
+- (void)setupLanguages {
+	NSString *language = NSBundle.mainBundle.preferredLocalizations.firstObject;
+	
+	[_language removeAllItems];
+	
+	for (NSString *loc in NSBundle.mainBundle.localizations) {
+		if ([loc isEqualToString:@"Base"]) continue;
+
+		NSLocale *locale = [NSLocale localeWithLocaleIdentifier:loc];
+		NSString *name = [locale displayNameForKey:NSLocaleIdentifier value:loc];
+		
+		[_locales setValue:loc forKey:name];
+		[_language addItemWithTitle:name];
+		
+		// Select current language
+		if ([loc isEqualToString:language]) [_language selectItem:_language.itemArray.lastObject];
+	}
 }
 
 - (void)updateHeadingSample {
@@ -160,6 +186,31 @@
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
 		[doc applyUserSettings];
 	}
+}
+
+- (IBAction)toggleLanguage:(id)sender {
+	NSPopUpButton *btn = sender;
+	
+	// Get selected locale
+	NSString* selected = btn.selectedItem.title;
+	NSString* locale = _locales[selected];
+	
+	// Store into user defaults
+	NSArray *langs = @[locale, @"en"];
+	[NSUserDefaults.standardUserDefaults setValue:langs forKey:@"AppleLanguages"];
+	
+	// Show an alert with the SELECTED LOCALE about the need to restart the app
+	NSString *localePath = [NSBundle.mainBundle pathForResource:locale ofType:@"lproj"];
+	NSBundle *localeBundle = [NSBundle bundleWithPath:localePath];
+	
+	NSString *message = [localeBundle localizedStringForKey:@"language.alert" value:nil table:nil];
+	NSString *informative = [localeBundle localizedStringForKey:@"language.informative" value:nil table:nil];
+	
+	// Display modal
+	NSAlert *alert = [NSAlert.alloc init];
+	alert.messageText = message;
+	alert.informativeText = informative;
+	[alert runModal];
 }
 
 - (IBAction)toggleTab:(id)sender {

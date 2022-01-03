@@ -101,6 +101,13 @@ function log(message) {
 	debugElement.innerHTML = message;
 }
 
+function findSceneWithIndex(index) {
+	for (const scene of scenes) {
+		if (index == scene.sceneIndex) return scene;
+	}
+	return null
+}
+
 function initDragDrop () {
 	// Init dragula
 	drake = dragula({
@@ -113,21 +120,26 @@ function initDragDrop () {
 
 	// Handle drop
 	drake.on('drop', function (el, target, source, sibling) {
-
-		var sceneIndex = el.getAttribute('sceneIndex');
+		console.log("dropping...");
 		
-		if (sibling) {
-			var nextIndex = sibling.getAttribute('sceneIndex');
-		} else {
-			var nextIndex = scenes.length;
-		}
+		var sceneIndex = el.getAttribute('sceneIndex');
+		var nextIndex;
+		
+		if (sibling) nextIndex = sibling.getAttribute('sceneIndex');
+		else nextIndex = scenes.length;
 
 		if (!nextIndex) {
 			scenes[sceneIndex].sceneIndex;
+			
 		} else {
-			scenes[sceneIndex].sceneIndex = nextIndex;
-			for (var i = nextIndex; i < scenes.count; i++) {
-				scenes[i].sceneIndex += 1;
+			let thisScene = findSceneWithIndex(sceneIndex);
+			thisScene.sceneIndex = nextIndex;
+			
+			for (var i = scenes.indexOf(thisScene); i < scenes.count; i++) {
+				let nextScene = scenes[i];
+				if (nextScene.type != 'synopse') {
+					scenes[i].sceneIndex += 1;
+				}
 			}
 		}
 
@@ -290,7 +302,7 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	
 	// Iterate through index card data
 	for (let card of cards) {
-		if (!card.name) continue; // Skip empty
+		if (!card.name)	continue; // Skip empty
 		
 		index = card.sceneIndex;
 		

@@ -219,16 +219,13 @@
 "QvQ-v2-0Mq.title" = "muuta pieniksi kirjaimiksi";
 
 /* Class = "NSMenuItem"; title = "Revision Mode"; ObjectID = "R8Y-SU-vpO"; */
-"R8Y-SU-vpO.title" = "Merkitse muutokset";
+"R8Y-SU-vpO.title" = "Merkitse korjaukset";
 
 /* Class = "NSMenuItem"; title = "Export"; ObjectID = "RGT-hK-aoo"; */
 "RGT-hK-aoo.title" = "Vie";
 
 /* Class = "NSMenu"; title = "View"; ObjectID = "Rpw-TR-9FQ"; */
 "Rpw-TR-9FQ.title" = "Näytä";
-
-/* Class = "NSMenuItem"; title = "TOOL PLUGIN PLACEHOLDER"; ObjectID = "S1k-gz-zdn"; */
-"S1k-gz-zdn.title" = "TOOL PLUGIN PLACEHOLDER";
 
 /* Class = "NSMenuItem"; title = "Find Previous"; ObjectID = "S6f-Ft-GW9"; */
 "S6f-Ft-GW9.title" = "Etsi edellinen";
@@ -267,16 +264,13 @@
 "Vdr-fp-XzO.title" = "Kätke muut";
 
 /* Class = "NSMenuItem"; title = "Zoom In"; ObjectID = "Vt3-Oc-Iy3"; */
-"Vt3-Oc-Iy3.title" = "Suurenna";
+"Vt3-Oc-Iy3.title" = "Lähennä";
 
 /* Class = "NSMenuItem"; title = "Force Scene Heading"; ObjectID = "WPf-Ao-Wcs"; */
 "WPf-Ao-Wcs.title" = "Pakota kohtausotsikko";
 
 /* Class = "NSMenuItem"; title = "New"; ObjectID = "Was-JA-tGl"; */
 "Was-JA-tGl.title" = "Uusi";
-
-/* Class = "NSMenuItem"; title = "EXPORT PLUGIN PLACEHOLDER"; ObjectID = "YDF-BB-4gm"; */
-"YDF-BB-4gm.title" = "EXPORT PLUGIN PLACEHOLDER";
 
 /* Class = "NSMenuItem"; title = "Dialogue"; ObjectID = "Yd0-6c-3eE"; */
 "Yd0-6c-3eE.title" = "Dialogi";
@@ -417,7 +411,7 @@
 "kjc-fS-FOY.title" = "Rajaa etsintä valintaan";
 
 /* Class = "NSMenuItem"; title = "Export Outline..."; ObjectID = "lAo-B9-uaU"; */
-"lAo-B9-uaU.title" = "Vie rakenne...";
+"lAo-B9-uaU.title" = "Vie pelkkä rakenne…";
 
 /* Class = "NSMenuItem"; title = "Find…"; ObjectID = "ltr-sy-WI6"; */
 "ltr-sy-WI6.title" = "Etsi…";
@@ -447,7 +441,7 @@
 "noH-xX-7MC.title" = "Muunnokset";
 
 /* Class = "NSMenu"; title = "Export"; ObjectID = "o7H-J0-CK2"; */
-"o7H-J0-CK2.title" = "Vie";
+"o7H-J0-CK2.title" = "Vie muodossa…";
 
 /* Class = "NSMenuItem"; title = "Help"; ObjectID = "oC7-oi-xzg"; */
 "oC7-oi-xzg.title" = "Ohje";

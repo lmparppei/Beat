@@ -3742,7 +3742,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	// Validate on/off items
 	for (ValidationItem *item in _itemsToValidate) {
-		if ([menuItem.title isEqualTo:item.title]) {
+		if (menuItem.action == item.selector) {
 			bool on = [item validate];
 			if (on) [menuItem setState:NSOnState];
 			else [menuItem setState:NSOffState];

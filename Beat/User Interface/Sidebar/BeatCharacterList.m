@@ -240,7 +240,12 @@
 	NSRect rowFrame = [self frameOfCellAtColumn:1 row:self.selectedRow];
 	
 	BeatCharacter *character = _characterNames[[self sortCharactersByLines][self.selectedRow]];
-	NSString *infoString = [NSString stringWithFormat:@"%@\nLines: %lu\nScenes: %lu", character.name, character.lines, character.scenes.count];
+	NSString *infoString = [NSString stringWithFormat:@"%@\n%@: %lu\n%@: %lu",
+							character.name,
+							NSLocalizedString(@"statistics.lines", nil),
+							character.lines,
+							NSLocalizedString(@"statistics.scenes", nil),
+							character.scenes.count];
 	_infoTextView.string = infoString;
 	
 	NSString *gender = character.gender.lowercaseString;
@@ -317,7 +322,14 @@
 }
 
 - (NSArray<NSButton*>*)buttonsForGenders {
-	NSArray *genders = @[@"Unspecified", @"Woman", @"Man", @"Other"];
+	/*
+	"gender.unspecified" = "Määrittelemätön";
+	"gender.other" = "Muu";
+	"gender.woman" = "Nainen";
+	"gender.man" = "Mies";
+*/
+	
+	NSArray *genders = @[NSLocalizedString(@"gender.unspecified", nil), NSLocalizedString(@"gender.woman", nil), NSLocalizedString(@"gender.man", nil), NSLocalizedString(@"gender.other", nil)];
 	NSMutableArray *buttons = [NSMutableArray array];
 	
 	CGFloat y = genders.count * 35;
@@ -332,9 +344,9 @@
 		//button.target = self;
 		button.action = @selector(selectGender:);
 		
-		if ([gender isEqualToString:@"Unspecified"]) _radioUnspecified = button;
-		else if ([gender isEqualToString:@"Woman"]) _radioWoman = button;
-		else if ([gender isEqualToString:@"Man"]) _radioMan = button;
+		if ([gender isEqualToString:NSLocalizedString(@"gender.unspecified", nil)]) _radioUnspecified = button;
+		else if ([gender isEqualToString:NSLocalizedString(@"gender.woman", nil)]) _radioWoman = button;
+		else if ([gender isEqualToString:NSLocalizedString(@"gender.man", nil)]) _radioMan = button;
 		else _radioOther = button;
 		
 		i++;
@@ -343,8 +355,11 @@
 	return buttons;
 }
 - (IBAction)selectGender:(id)sender {
-	NSButton *btn = sender;
-	NSString *gender = btn.title.lowercaseString;
+	NSString *gender;
+	if (sender == _radioOther) gender = @"other";
+	else if (sender == _radioWoman) gender = @"woman";
+	else if (sender == _radioMan) gender = @"man";
+	else gender = @"unspecified";
 	
 	BeatCharacter *character = _characterNames[[self sortCharactersByLines][self.selectedRow]];
 	

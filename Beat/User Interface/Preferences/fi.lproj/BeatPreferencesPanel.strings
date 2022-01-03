@@ -1,9 +1,14 @@
 
+
+
 /* Class = "NSToolbarItem"; label = "General"; ObjectID = "2No-Jf-9GH"; */
 "2No-Jf-9GH.label" = "Yleiset";
 
 /* Class = "NSToolbarItem"; paletteLabel = "General"; ObjectID = "2No-Jf-9GH"; */
 "2No-Jf-9GH.paletteLabel" = "Yleiset";
+
+/* Class = "NSTextFieldCell"; title = "Language"; ObjectID = "5o4-U4-n7H"; */
+"5o4-U4-n7H.title" = "Kieli";
 
 /* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "3O7-zn-jUw"; */
 "3O7-zn-jUw.title" = "US Letter";

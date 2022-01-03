@@ -121,7 +121,10 @@
 		graphLayer.strokeEnd = offset + percentage;
 		graphLayer.strokeColor = _colors[key].CGColor;
 		
-		[attrStr appendAttributedString:[NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@ %lu%%", key.capitalizedString, (NSInteger)ceil(percentage * 100)] attributes:@{
+		NSString *localizationKey = [NSString stringWithFormat:@"gender.%@", key];
+		NSString *displayName = NSLocalizedString(localizationKey, nil);
+		
+		[attrStr appendAttributedString:[NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"%@ %lu%%", displayName, (NSInteger)ceil(percentage * 100)] attributes:@{
 			NSForegroundColorAttributeName: _colors[key]
 		}]];
 		
