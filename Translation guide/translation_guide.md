@@ -2,11 +2,11 @@
 
 Thank you for your interest in making Beat more accessible to speakers of other languages! The following is a guide for translating everything in the app.
 
-The best way to do this is with [Xcode](https://developer.apple.com/xcode/). Open `Beat.xcworkspace` with Xcode, and see the Info on the project as below:
+The best way to do this is with [Xcode](https://developer.apple.com/xcode/). Open `Beat.xcworkspace` with Xcode, and see the Info on the project as below:\
 ![](images/project_info.png)
 
-The Localizations section will show the languages that the app currently supports. The base language is English. To add a new language, click on the plus sign. This will open the localization creation window:
-![](images/create_localization.png)
+The Localizations section will show the languages that the app currently supports. The base language is English. To add a new language, click on the plus sign. This will open the localization creation window:\
+![](images/create_localization.png)\
 Uncheck `PreviewViewController.xib`, `UnzipKit.strings`, and `InfoPlist.strings` as shown in the image above—those are not necessary. Within the Xcode project, these are the locations of the seven other files, which you must update to your contributed language:
 - Beat ▸ Localizable.strings
 - Beat ▸ Beat ▸ Document.xib
@@ -17,8 +17,8 @@ Uncheck `PreviewViewController.xib`, `UnzipKit.strings`, and `InfoPlist.strings`
 - Beat ▸ Beat ▸ Export ▸ BeatEpisodePrinter ▸ BeatEpisodePrinter.xib
 For each file, choose the existing language that you would like to use as reference when translating terms in all the files.
 
-Click Finish. The STRINGS files corresponding to the newly-added language will be created under the XIB directories.
-![](images/strings_files.png)
+Click Finish. The STRINGS files corresponding to the newly-added language will be created under the XIB directories.\
+![](images/strings_files.png)\
 These are the files that you must edit. Their paths from the repo directory in the file system are
 - `[lang].lproj/Localizable.strings`
 - `Beat/[lang].lproj/Document.strings`
