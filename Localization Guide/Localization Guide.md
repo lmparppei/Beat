@@ -1,6 +1,6 @@
 # Translation Guide
 
-Thank you for your interest in making Beat more accessible to speakers of other languages! The following is a guide for translating everything in the app.
+Thank you for your interest in making Beat more accessible to speakers of other languages! The following is a guide for translating UI elements in the app.
 
 The best way to do this is with [Xcode](https://developer.apple.com/xcode/). Open `Beat.xcworkspace` with Xcode, and see the Info on the project as below:\
 ![](images/project_info.png)
@@ -48,4 +48,12 @@ The contents of each STRINGS file will look like the following:
 ```
 The values outside of the comments (enclosed between `/*` and `*/`) will be in the reference language that you selected. These are the values for you to edit.
 
-Make sure that your translations are accurate!
+## Guidelines
+
+Make sure that your translations are accurate. Try to use standardized language for common UI elements (such as *Copy*, *Paste* etc.), and strive for clarity and unity.
+
+Screenwriting jargon is often full of anglicisms, and many writers can be accustomed to using English-language words for certain terms (such as *slugline*, *logline* etc.) It's still highly encouraged to use native counterparts and translations for the industry terms.
+
+Note that Beat is a work in progress. Some things might change over time, so the localizations need to be kept up to date. Most UI elements will fall back to the original English values when localization data is not available.
+
+
