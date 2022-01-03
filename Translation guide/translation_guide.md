@@ -18,7 +18,7 @@ Uncheck `PreviewViewController.xib`, `UnzipKit.strings`, and `InfoPlist.strings`
 For each file, choose the existing language that you would like to use as reference when translating terms in all the files.
 
 Click Finish. The STRINGS files corresponding to the newly-added language will be created under the XIB directories.
-![](strings_files.png)
+![](images/strings_files.png)
 These are the files that you must edit. Their paths from the repo directory in the file system are
 - `[lang].lproj/Localizable.strings`
 - `Beat/[lang].lproj/Document.strings`
