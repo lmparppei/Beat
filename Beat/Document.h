@@ -42,7 +42,7 @@ THE SOFTWARE.
 #import "BeatPreview.h"
 #import "BeatPlugin.h"
 #import "BeatOutlineView.h"
-#import "BeatAnalysisPanel.h"
+#import "BeatStatisticsPanel.h"
 #import "BeatEditorDelegate.h"
 
 // Forward declaration to make parser available for text view

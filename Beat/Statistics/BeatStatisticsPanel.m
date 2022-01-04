@@ -6,20 +6,21 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import "BeatAnalysisPanel.h"
+#import "BeatStatisticsPanel.h"
 #import "FountainAnalysis.h"
+#import "BeatLocalization.h"
 #import "ContinuousFountainParser.h"
 
-@interface BeatAnalysisPanel ()
+@interface BeatStatisticsPanel ()
 @property (nonatomic) FountainAnalysis *analysis;
 @property (nonatomic) ContinuousFountainParser *parser;
 @property (weak) IBOutlet WKWebView *analysisView;
 @end
 
-@implementation BeatAnalysisPanel
+@implementation BeatStatisticsPanel
 
 - (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatEditorDelegate>)delegate {
-	self = [super initWithWindowNibName:@"BeatAnalysisPanel" owner:self];
+	self = [super initWithWindowNibName:@"BeatStatisticsPanel" owner:self];
 	
 	self.delegate = delegate;
 	
@@ -31,9 +32,11 @@
 
 - (void)windowDidLoad {
     [super windowDidLoad];
-    
-	NSString *analysisPath = [NSBundle.mainBundle pathForResource:@"analysis.html" ofType:@""];
+	
+	NSString *analysisPath = [NSBundle.mainBundle pathForResource:@"BeatStatisticsPanel" ofType:@"html"];
 	NSString *content = [NSString stringWithContentsOfFile:analysisPath encoding:NSUTF8StringEncoding error:nil];
+	content = [BeatLocalization localizeString:content];
+	
 	[self.analysisView.configuration.userContentController addScriptMessageHandler:self name:@"setGender"];
 	[self.analysisView loadHTMLString:content baseURL:nil];
 }

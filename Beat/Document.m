@@ -233,7 +233,7 @@
 @property (nonatomic) BeatPreview *preview;
 
 // Analysis
-@property (nonatomic) BeatAnalysisPanel *analysisWindow;
+@property (nonatomic) BeatStatisticsPanel *analysisWindow;
 
 // Card view
 @property (nonatomic) SceneCards *sceneCards;
@@ -4972,7 +4972,7 @@ static NSString *revisionAttribute = @"Revision";
 // This is a horrible mess, but whatever
 
 - (IBAction)showAnalysis:(id)sender {
-	_analysisWindow = [[BeatAnalysisPanel alloc] initWithParser:self.parser delegate:self];
+	_analysisWindow = [[BeatStatisticsPanel alloc] initWithParser:self.parser delegate:self];
 	[_documentWindow beginSheet:_analysisWindow.window completionHandler:^(NSModalResponse returnCode) {
 		self.analysisWindow = nil;
 	}];

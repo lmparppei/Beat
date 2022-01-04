@@ -301,7 +301,7 @@
 
 	<body lang="fi">
 
-		<h1>Screenplay Analysis</h1>
+		<h1>#statisticsPanel.title#</h1>
 
 		<div id='top'>
 			
@@ -386,7 +386,7 @@
 				getDocumentInfo(data.statistics);
 				
 				if (!data.characters) {
-					characterTable.innerHTML = "<tr><td>No dialogue</td><td><td></td></tr>";
+					characterTable.innerHTML = "<tr><td>#statisticsPanel.noDialogue#</td><td><td></td></tr>";
 				} else {
 					characterGender = data.genders;
 					characterLines = data.characters;
@@ -426,14 +426,12 @@
 
 			function getDocumentInfo (statistics) {
 				let html = ""
+					
+				html += "<p>#statisticsPanel.averageSceneLength#: <b>" + statistics.avgLength.pages + " " + getEight(statistics.avgLength.eights * 8) + "</b> #statisticsPanel.shortForPages#<br>";
+				html += "#statisticsPanel.longestScene#: <b>" + statistics.longestScene.pages + " " + getEight(statistics.longestScene.eights * 8) + "</b> #statisticsPanel.shortForPages#</p>";
 				
-				
-				
-				html += "<p>Average scene length: <b>" + statistics.avgLength.pages + " " + getEight(statistics.avgLength.eights * 8) + "</b> pgs<br>";
-				html += "Longest scene: <b>" + statistics.longestScene.pages + " " + getEight(statistics.longestScene.eights * 8) + "</b> pgs</p>";
-				
-				html += "<p class='statsSmall'><b>" + statistics.scenes + "</b> scenes<br>"+
-						   "<b>" + statistics.words + "</b> words<br><b>" + statistics.glyphs + "</b> characters</p>";
+				html += "<p class='statsSmall'><b>" + statistics.scenes + "</b> #statisticsPanel.stats.scenes#<br>"+
+						   "<b>" + statistics.words + "</b> #statisticsPanel.stats.words#<br><b>" + statistics.glyphs + "</b> #statisticsPanel.stats.characters#</p>";
 						   
 				
 				documentInfo.innerHTML = html;
@@ -485,15 +483,15 @@
 				
 				if (!noGenderData) {
 					genderLegend.innerHTML =
-					"<h3>Lines by Gender</h3>" +
-					"<span class='textWoman'>Women " + chartValues.woman + "%</span>" +
-					"<span class='textMan'>Men " + chartValues.man + "%</span>" +
-					"<span class='textOther'>Other " + chartValues.other + "%</span>" +
-					"<span class='textGray'>Unknown " + chartValues.unspecified + "%</span>";
+					"<h3>#statisticsPanel.linesByGender#</h3>" +
+					"<span class='textWoman'>#gender.woman.plural# " + chartValues.woman + "%</span>" +
+					"<span class='textMan'>#gender.man.plural# " + chartValues.man + "%</span>" +
+					"<span class='textOther'>#gender.other.plural# " + chartValues.other + "%</span>" +
+					"<span class='textGray'>#gender.unspecified.plural# " + chartValues.unspecified + "%</span>";
 				} else {
 					genderLegend.innerHTML =
-					"<h3>Lines by Gender</h3>" +
-					"<span>Set gender for characters on the left side</span>"
+					"<h3>#statisticsPanel.linesByGender</h3>" +
+					"<span>#statisticsPanel.setGenderInfo#</span>"
 				}
 
 				// Draw donut chart
@@ -528,8 +526,8 @@
 				characterList.reverse();
 
 				characterTable.innerHTML =
-				"<tr class='header'><td colspan='3'><h2>Lines per Character</h2></td>" +
-				"<td class='gender'><span>undefined</span></td><td class='gender'><span class='textOther'>other</span></td><td class='gender'><span class='textWoman'>woman</span></td><td class='gender'><span class='textMan'>man</span></td></tr>"
+				"<tr class='header'><td colspan='3'><h2>#statisticsPanel.linesPerCharacter#</h2></td>" +
+				"<td class='gender'><span>#gender.unspecified#</span></td><td class='gender'><span class='textOther'>#gender.other#</span></td><td class='gender'><span class='textWoman'>#gender.woman#</span></td><td class='gender'><span class='textMan'>#gender.man#</span></td></tr>"
 				
 				;
 
@@ -662,10 +660,10 @@
 				drawChart(sceneCanvas, data, colors);
 
 				sceneLegend.innerHTML = 
-					"<h3>Locations</h3>" +
-					"<span class='textMagenta'>Interior " + scenes.interior + "</span>"+
-					"<span class='textBlue'>Exterior " + scenes.exterior + "</span>"+
-					"<span class='textGray'>Other " + scenes.other + "</span>";
+					"<h3>#statisticsPanel.locations#</h3>" +
+					"<span class='textMagenta'>#statisticsPanel.locations.interior# " + scenes.interior + "</span>"+
+					"<span class='textBlue'>#statisticsPanel.locations.exterior# " + scenes.exterior + "</span>"+
+					"<span class='textGray'>#statisticsPanel.locations.other# " + scenes.other + "</span>";
 
 			}
 

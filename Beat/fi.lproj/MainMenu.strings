@@ -239,8 +239,8 @@
 /* Class = "NSMenu"; title = "Tools"; ObjectID = "T42-tx-tAb"; */
 "T42-tx-tAb.title" = "Työkalut";
 
-/* Class = "NSMenuItem"; title = "Screenplay Analysis"; ObjectID = "TCn-De-Kk7"; */
-"TCn-De-Kk7.title" = "Käsikirjoituksen analyysi";
+/* Class = "NSMenuItem"; title = "Screenplay Statistics"; ObjectID = "TCn-De-Kk7"; */
+"TCn-De-Kk7.title" = "Käsikirjoituksen tilastot";
 
 /* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
 "Td7-aD-5lo.title" = "Ikkuna";

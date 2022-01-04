@@ -32,10 +32,34 @@
 "plugins.libraryWelcome" = "<p>Tämä on valikoima Beatin virallisia laajennuksia. Aktivoidut laajennukset näkyvät <b>Työkalut</b>-valikossa. Harmaita laajennuksia ei ole vielä asennettu. Näet lisätietoja laajennuksista valitsemalla niiden nimen.</p>\
    <p class='small gray'>Voit hallinnoida laajennuksia käsin klikkaamalla kansioikonia. Voit tehdä myös omia laajennuksiasi JavaScriptin avulla &mdash; lue lisää Beatin kotisivuilta.</p>";
 
-"gender.unspecified" = "Määrittelemätön";
+"gender.unspecified" = "Tuntematon";
 "gender.other" = "Muu";
 "gender.woman" = "Nainen";
 "gender.man" = "Mies";
 
+"gender.other.plural" = "Muut";
+"gender.woman.plural" = "Naiset";
+"gender.man.plural" = "Miehet";
+"gender.unspecified.plural" = "Määrittämätön";
+
 "statistics.lines" = "Repliikit";
 "statistics.scenes" = "Kohtaukset";
+
+"lock.clickToUnlock" = "Klikkaa avataksesi";
+"lock.documentLocked" = "Dokumentti on lukittu";
+
+"statisticsPanel.title" = "Tilastot";
+"statisticsPanel.averageSceneLength" = "Kohtausten keskipituus";
+"statisticsPanel.shortForPages" = "s.";
+"statisticsPanel.longestScene" = "Pisin kohtaus";
+"statisticsPanel.stats.words" = "sanaa";
+"statisticsPanel.stats.scenes" = "kohtausta";
+"statisticsPanel.stats.characters" = "merkkiä";
+"statisticsPanel.linesByGender" = "Sukupuolittain";
+"statisticsPanel.setGenderInfo" = "Aseta hahmojen sukupuoli vasemmalta";
+"statisticsPanel.linesPerCharacter" = "Dialogi";
+"statisticsPanel.locations" = "Lokaatiot";
+"statisticsPanel.locations.interior" = "Sisätila";
+"statisticsPanel.locations.exterior" = "Ulkotila";
+"statisticsPanel.locations.other" = "Muu";
+"statisticsPanel.noDialogue" = "Ei dialogia";

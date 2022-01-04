@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatAnalysisPanel : NSWindowController <WKScriptMessageHandler, WKNavigationDelegate>
+@interface BeatStatisticsPanel : NSWindowController <WKScriptMessageHandler, WKNavigationDelegate>
 @property (weak) id<BeatEditorDelegate> delegate;
 - (instancetype)initWithParser:(ContinuousFountainParser*)parser delegate:(id<BeatEditorDelegate>)delegate;
 @end

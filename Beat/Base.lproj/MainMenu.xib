@@ -744,7 +744,7 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Tools" id="T42-tx-tAb">
                         <items>
-                            <menuItem title="Screenplay Analysis" id="TCn-De-Kk7">
+                            <menuItem title="Screenplay Statistics" id="TCn-De-Kk7">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showAnalysis:" target="-1" id="fsX-Fc-sal"/>

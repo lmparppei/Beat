@@ -35,6 +35,31 @@
 "gender.other" = "Other";
 "gender.woman" = "Woman";
 "gender.man" = "Man";
+"gender.unspecified" = "Unspecified";
+
+"gender.other.plural" = "Other";
+"gender.woman.plural" = "Women";
+"gender.man.plural" = "Men";
+"gender.unspecified.plural" = "Unspecified";
 
 "statistics.lines" = "Lines";
 "statistics.scenes" = "Scenes";
+
+"lock.clickToUnlock" = "Click to unlock";
+"lock.documentLocked" = "Document is locked";
+
+"statisticsPanel.title" = "Screenplay Statistics";
+"statisticsPanel.averageSceneLength" = "Average scene length";
+"statisticsPanel.shortForPages" = "pgs";
+"statisticsPanel.longestScene" = "Longest scene";
+"statisticsPanel.stats.words" = "words";
+"statisticsPanel.stats.scenes" = "scenes";
+"statisticsPanel.stats.characters" = "characters";
+"statisticsPanel.linesByGender" = "Lines by Gender";
+"statisticsPanel.setGenderInfo" = "Set gender for characters on the left side";
+"statisticsPanel.linesPerCharacter" = "Lines per Character";
+"statisticsPanel.locations" = "Locations";
+"statisticsPanel.locations.interior" = "Interior";
+"statisticsPanel.locations.exterior" = "Exterior";
+"statisticsPanel.locations.other" = "Other";
+"statisticsPanel.noDialogue" = "No dialogue";
