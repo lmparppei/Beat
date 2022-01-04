@@ -60,7 +60,7 @@ Make sure that your translations are accurate. Try to use standardized language 
 
 Screenwriting jargon is often full of anglicisms, and many writers can be accustomed to using English-language words for certain terms (such as *slugline*, *logline* etc.) It's still highly encouraged to use native counterparts and translations for the industry terms.
 
-Silly case in point: In Finnish, people often use the loanwords *"interiööri"* and *"eksteriööri"* in place of interior and exterior, even when more accessible words *sisätila* and *ulkotila* are just as common. Beat localization opts for the native words.
+Silly case in point: In Finnish, people often use the loanwords *"interiööri"* and *"eksteriööri"* in place of interior and exterior, even if the more accessible alternatives *sisätila* and *ulkotila* express the same with less effort. Beat localization opts for the native words.
 
 Note that Beat is a work in progress. Some things might change over time, so the localizations need to be kept up to date. Most UI elements will fall back to the original English values when localization data is not available.
 
