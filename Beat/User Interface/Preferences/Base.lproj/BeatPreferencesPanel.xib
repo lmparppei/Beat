@@ -319,8 +319,8 @@
                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="K2S-xs-OJc">
-                                                        <rect key="frame" x="55" y="78" width="472" height="23"/>
+                                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="K2S-xs-OJc">
+                                                        <rect key="frame" x="55" y="78" width="456" height="23"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" title="as she walks to pick up the noodles." id="pUG-6V-246">
                                                             <font key="font" size="15" name="Courier"/>

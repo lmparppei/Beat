@@ -1,6 +1,13 @@
 # Changelog
 
 
+## Beat 1.92.7
+
+- Localization support
+- Minor note parsing fixes
+- Further index card bugs fixed
+
+
 ## Beat 1.92.6
 
 - Fixed a bug with drag & drop in Index Card View

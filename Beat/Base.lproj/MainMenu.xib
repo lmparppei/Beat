@@ -297,7 +297,7 @@
                                     <action selector="paste:" target="-1" id="dcI-Bn-pVe"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Paste and Match Style" keyEquivalent="V" id="NLE-HM-5a7">
+                            <menuItem title="Paste and Match Style" hidden="YES" keyEquivalent="V" id="NLE-HM-5a7">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="pasteAsPlainText:" target="-1" id="4Po-3S-Z2n"/>
@@ -966,7 +966,7 @@ DQ
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" id="Hxx-uA-o84">
-                                    <rect key="frame" x="15" y="35" width="99" height="16"/>
+                                    <rect key="frame" x="15" y="35" width="135" height="16"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="→ Support Beat" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="BHh-Gd-iwg">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -978,7 +978,7 @@ DQ
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" id="Snd-dA-mmf">
-                                    <rect key="frame" x="15" y="15" width="118" height="16"/>
+                                    <rect key="frame" x="15" y="17" width="135" height="14"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="→ Discord Community" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="AnS-fX-6Kx">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1083,7 +1083,7 @@ DQ
                                     <imageCell key="cell" refusesFirstResponder="YES" focusRingType="none" alignment="left" imageScaling="proportionallyDown" image="B_256" id="Uu0-2U-0yD"/>
                                 </imageView>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ka6-S9-rpy">
-                                    <rect key="frame" x="208" y="29" width="148" height="9"/>
+                                    <rect key="frame" x="208" y="28" width="148" height="10"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="© Lauri-Matti Parppei 2019–2021" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="s0C-aA-CL4">
                                         <font key="font" metaFont="system" size="8"/>
@@ -1092,7 +1092,7 @@ DQ
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="KIB-4J-Y4d">
-                                    <rect key="frame" x="208" y="18" width="148" height="9"/>
+                                    <rect key="frame" x="208" y="15" width="148" height="12"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Released under GPL license" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="bjG-UL-fIR">
                                         <font key="font" metaFont="system" size="8"/>

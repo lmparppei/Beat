@@ -12,6 +12,7 @@
 @interface BeatAntilateralThoughts ()
 @property bool loaded;
 @property (nonatomic) NSArray *thoughts;
+@property (nonatomic) NSMutableArray *availableThoughts;
 @property (weak) IBOutlet NSTextField *textField;
 @property (nonatomic) NSTimer *timer;
 @property (nonatomic) NSString *textToAnimate;
@@ -194,23 +195,59 @@
 		@"Put in everything you are thinking now",
 		@"A childhood swing still keeps swinging",
 		@"If water is black, what color is the sky?",
-		@"How would they feel about the story?",
+		@"How would that one person feel about the story?",
 		@"Postcard from this world to you",
 		@"A quiet evening alone (who?)",
 		@"What is it without the mystery?",
 		@"Do something you'd never do",
-		@"The story is like a caterpillar"
+		@"The story is like a caterpillar",
+		@"Make them pet an inanimate object",
+		@"Make it *supra-natural*",
+		@"Put yourself in the story",
+		@"Sunbathers keep on bathing as the world ends",
+		@"Good intentions but different approaches",
+		@"Chain reactions from insignificant events",
+		@"Every success is a failure",
+		@"(as ominous music rises)",
+		@"In walks a doppelgänger",
+		@"Living in somebody else's body",
+		@"Leave everything behind and follow",
+		@"Floating above ground",
+		@"Abrupt interruption",
+		@"Cut every other scene, does it work?",
+		@"The snow burned all night",
+		@"Silly justifications for actions",
+		@"Waiting for a better weather",
+		@"Faking an amnesia",
+		@"Empty streets",
+		@"Awful sounds all around",
+		@"A circular river",
+		@"It is dark all the time, no use for clocks",
+		@"Start your story after the end",
+		@"How would the story unfold in medieval age?",
+		@"Sitting at windows, waiting"
 	];
-	
-	_loaded = YES;
+
+	_availableThoughts = _thoughts.mutableCopy;
 	
 	return [super init];
 }
 
+-(void)awakeFromNib {
+	[self refresh:self];
+	
+	_loaded = YES;
+}
+
 - (IBAction)refresh:(id)sender {
-	int i = arc4random_uniform((uint32_t)self.thoughts.count - 1);
-	//[_textField setStringValue:[_thoughts objectAtIndex:i]];
-	[self animateText:[_thoughts objectAtIndex:i]];
+	int i = arc4random_uniform((uint32_t)self.availableThoughts.count - 1);
+	NSString *text = _availableThoughts[i];
+	[_availableThoughts removeObjectAtIndex:i];
+	
+	// We've run out of thoughts
+	if (_availableThoughts.count == 0) _availableThoughts = _thoughts.mutableCopy;
+
+	[self animateText:text];
 }
 
 - (void)animateText:(NSString*)string {

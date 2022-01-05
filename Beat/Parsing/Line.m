@@ -592,8 +592,7 @@
 - (bool)note {
 	// This should be used only in conjuction with .omited to check that, yeah, it's omited but it's a note:
 	// if (line.omited && !line.note) ...
-	// Compared also using trimmed length, to make lines like "[[note]] " be notes.
-	
+	// Compared also using trimmed length, to make lines like "[[note]] " be notes.		  
 	if (self.noteRanges.count >= self.trimmed.length && self.noteRanges.count && self.string.length >= 2) {
 		return YES;
 	} else {
@@ -601,6 +600,9 @@
 	}
 }
 
+-(void)setNoteRanges:(NSMutableIndexSet *)noteRanges {
+	_noteRanges = noteRanges;
+}
 
 #pragma mark Centered
 

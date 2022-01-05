@@ -63,3 +63,7 @@
 "statisticsPanel.locations.exterior" = "Exterior";
 "statisticsPanel.locations.other" = "Other";
 "statisticsPanel.noDialogue" = "No dialogue";
+
+"print.print" = "Print";
+"print.createPDF" = "Create PDF";
+"print.pdfButton" = "Create PDF";

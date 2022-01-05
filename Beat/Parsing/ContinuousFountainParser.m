@@ -629,8 +629,17 @@ static NSDictionary* patterns;
 	return [self terminateNoteBlockAt:line index:i];
 }
 - (NSIndexSet*)terminateNoteBlockAt:(Line*)line index:(NSInteger)idx {
-	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
+	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSetWithIndex:idx];
 	if (idx == NSNotFound) return changedIndices;
+	
+	if (idx == 0) {
+		// This is the first line, can't terminate a note block
+		return changedIndices;
+	} else {
+		Line *prevLine = self.lines[idx - 1];
+		// This line doesn't have a preceeding note block, ignore
+		if (!prevLine.noteOut || prevLine.length == 0) return changedIndices;
+	}
 	
 	[line.noteRanges addIndexes:line.noteInIndices];
 		
@@ -660,10 +669,27 @@ static NSDictionary* patterns;
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
 	if (idx == NSNotFound) return changedIndices;
 	
+	line.noteOut = NO;
+	
+	// Look behind for note ranges
 	for (NSInteger i = idx-1; i >= 0; i--) {
 		Line *l = self.lines[i];
+		
 		if ([l.string containsString:@"[["]) {
 			[l.noteRanges removeIndexes:l.noteOutIndices];
+			[changedIndices addIndex:i];
+			break;
+		} else {
+			[l.noteRanges removeIndexesInRange:(NSRange){ 0, l.string.length }];
+			[changedIndices addIndex:i];
+		}
+	}
+	
+	// Look forward for note ranges
+	for (NSInteger i = idx; i < self.lines.count; i++) {
+		Line *l = self.lines[i];
+		if ([l.string containsString:@"]]"] && l.noteIn) {
+			[l.noteRanges removeIndexes:l.noteInIndices];
 			[changedIndices addIndex:i];
 			break;
 		} else {
@@ -717,7 +743,7 @@ static NSDictionary* patterns;
 		[_changedIndices addIndex:index - 1];
 	}
 	
-	// Parse multiline note ranges
+	// Parse multi-line note ranges
 	// This is a mess, and written using trial & error. Dread lightly.
 	
 	if (currentLine.endsNoteBlock != oldEndsNoteBlock) {
@@ -728,7 +754,7 @@ static NSDictionary* patterns;
 	}
 	
 	if (currentLine.noteIn && (currentLine.type == empty || currentLine == _lines.lastObject)) {
-		// Empty line automatically cancels a note block
+		// Empty (or last) line automatically cancels a note block
 		currentLine.cancelsNoteBlock = YES;
 		currentLine.noteOut = NO;
 		NSIndexSet *noteIndices = [self cancelNoteBlockAt:currentLine];
@@ -757,7 +783,7 @@ static NSDictionary* patterns;
 		}
 	}
 	
-	if (currentLine.noteIn && [currentLine.string containsString:@"]]"]) {
+	if (currentLine.noteIn && [currentLine.string containsString:@"]]"] && [self.lines indexOfObject:currentLine] > 0) {
 		// This line potentially terminates a note block
 		NSIndexSet *noteIndices = [self terminateNoteBlockAt:currentLine];
 		[self.changedIndices addIndexes:noteIndices];
@@ -805,6 +831,7 @@ static NSDictionary* patterns;
 				notesNeedParsing ||
 				currentLine.endsNoteBlock != oldEndsNoteBlock
 				) {
+
                 [self correctParseInLine:index+1 indicesToDo:indices];
             }
         }
@@ -1455,12 +1482,14 @@ and incomprehensible system of recursion.
 {
 	// If a note block is bleeding into this line, noteIn is true
 	line.noteIn = partOfBlock;
-	
+		
 	// Reset all indices
 	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
 	
 	line.cancelsNoteBlock = NO;
 	line.endsNoteBlock = NO;
+	
+	[line.noteRanges removeAllIndexes];
 	[line.noteInIndices removeAllIndexes];
 	[line.noteOutIndices removeAllIndexes];
 	
@@ -1504,9 +1533,12 @@ and incomprehensible system of recursion.
 				rangeBegin = -1;
 			}
 			else {
-				match = YES;
-				[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + NOTE_PATTERN_LENGTH)];
-				rangeBegin = -1;
+				// Make sure there is a range where it all began
+				if (rangeBegin != -1) {
+					match = YES;
+					[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + NOTE_PATTERN_LENGTH)];
+					rangeBegin = -1;
+				}
 			}
 		}
 	}
@@ -1528,8 +1560,7 @@ and incomprehensible system of recursion.
 		line.noteOut = NO;
 		[line.noteOutIndices removeAllIndexes];
 	}
-	
-	
+		
 	return indexSet;
 }
 

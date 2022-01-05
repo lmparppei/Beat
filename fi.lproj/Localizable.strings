@@ -63,3 +63,7 @@
 "statisticsPanel.locations.exterior" = "Ulkotila";
 "statisticsPanel.locations.other" = "Muu";
 "statisticsPanel.noDialogue" = "Ei dialogia";
+
+"print.print" = "Tulosta";
+"print.createPDF" = "Luo PDF";
+"print.pdfButton" = "Luo PDF";

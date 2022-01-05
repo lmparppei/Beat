@@ -22,11 +22,6 @@
 #import "PrintView.h"
 #import "BeatPaperSizing.h"
 
-#define TITLE_PRINT @"Print"
-#define TITLE_PDF @"Create PDF"
-#define PDF_BUTTON_WHEN_PRINTING @"PDF"
-#define PDF_BUTTON @"Create PDF..."
-
 #define ADVANCED_PRINT_OPTIONS_KEY @"Show Advanced Print Options"
 
 #define PAPER_A4 595, 842
@@ -63,7 +58,7 @@
 
 - (IBAction)open:(id)sender {
 	// Change panel title
-	[_title setStringValue:TITLE_PRINT];
+	[_title setStringValue:NSLocalizedString(@"print.print", nil)];
 	
 	// Hide the PDF button and reset keyboard shortcut
 	[_pdfButton setHidden:YES];
@@ -74,13 +69,13 @@
 }
 - (IBAction)openForPDF:(id)sender {
 	// Change panel title
-	[_title setStringValue:TITLE_PDF];
+	[_title setStringValue:NSLocalizedString(@"print.createPDF", nil)];
 	
 	// Hide print button
 	[_printButton setHidden:YES];
 	
 	// Change value for the PDF button
-	[_pdfButton setTitle:PDF_BUTTON];
+	[_pdfButton setTitle:NSLocalizedString(@"print.pdfButton", nil)];
 	[_pdfButton setHidden:NO];
 	
 	// Set Create PDF as the  default button

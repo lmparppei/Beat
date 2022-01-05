@@ -11,7 +11,7 @@
 #import "Document.h"
 #import "BeatModalInput.h"
 
-#define HEADING_SAMPLE @"INT. SCENE - DAY"
+//#define HEADING_SAMPLE @"INT. SCENE - DAY"
 
 @interface BeatPreferencesPanel ()
 @property (nonatomic) NSArray* validationItems;
@@ -41,6 +41,8 @@
 @property (weak) IBOutlet NSTabView *tabView;
 
 @property (nonatomic) NSMutableDictionary *locales;
+
+@property (nonatomic) NSString *headingSample;
 
 @end
 
@@ -119,10 +121,12 @@
 	[self updateHeadingSample:NO];
 }
 - (void)updateHeadingSample:(bool)windowDidLoad {
-	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:HEADING_SAMPLE];
+	if (!_headingSample) _headingSample = self.sampleHeading.stringValue.copy;
+	
+	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:_headingSample];
 	
 	// Add line break for spacing 2
-	if (_headingSpacing2.state == NSOnState) attrStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"\n%@", HEADING_SAMPLE]];
+	if (_headingSpacing2.state == NSOnState) attrStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"\n%@", _headingSample]];
 
 	if (_headingStyleBold.state == NSOnState) {
 		self.sampleHeading.font = [NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize];

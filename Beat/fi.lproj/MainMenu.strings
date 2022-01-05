@@ -98,6 +98,12 @@
 /* Class = "NSMenuItem"; title = "Mark Selection as Revised"; ObjectID = "Ah1-Kr-xrQ"; */
 "Ah1-Kr-xrQ.title" = "Merkitse valinta korjatuksi";
 
+/* Class = "NSMenuItem"; title = "Revision Mode"; ObjectID = "R8Y-SU-vpO"; */
+"R8Y-SU-vpO.title" = "Merkitse uudet korjaukset";
+
+/* Class = "NSMenuItem"; title = "Clear Selected Markers"; ObjectID = "hrl-ti-1fN"; */
+"hrl-ti-1fN.title" = "Poista valitut korjausmerkinnät";
+
 /* Class = "NSMenuItem"; title = "Show Sidebar"; ObjectID = "AiU-nN-4mA"; */
 "AiU-nN-4mA.title" = "Näytä sivupalkki";
 
@@ -218,9 +224,6 @@
 /* Class = "NSMenuItem"; title = "Make Lower Case"; ObjectID = "QvQ-v2-0Mq"; */
 "QvQ-v2-0Mq.title" = "muuta pieniksi kirjaimiksi";
 
-/* Class = "NSMenuItem"; title = "Revision Mode"; ObjectID = "R8Y-SU-vpO"; */
-"R8Y-SU-vpO.title" = "Merkitse korjaukset";
-
 /* Class = "NSMenuItem"; title = "Export"; ObjectID = "RGT-hK-aoo"; */
 "RGT-hK-aoo.title" = "Vie";
 
@@ -240,7 +243,7 @@
 "T42-tx-tAb.title" = "Työkalut";
 
 /* Class = "NSMenuItem"; title = "Screenplay Statistics"; ObjectID = "TCn-De-Kk7"; */
-"TCn-De-Kk7.title" = "Käsikirjoituksen tilastot";
+"TCn-De-Kk7.title" = "Tilastot…";
 
 /* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
 "Td7-aD-5lo.title" = "Ikkuna";
@@ -367,9 +370,6 @@
 
 /* Class = "NSMenuItem"; title = "Disable Formatting"; ObjectID = "hAp-vJ-Myg"; */
 "hAp-vJ-Myg.title" = "Poista muotoilu käytöstä";
-
-/* Class = "NSMenuItem"; title = "Clear Selected Markers"; ObjectID = "hrl-ti-1fN"; */
-"hrl-ti-1fN.title" = "Poista valitut korjausmerkinnät";
 
 /* Class = "NSMenu"; title = "Services"; ObjectID = "hz9-B4-Xy5"; */
 "hz9-B4-Xy5.title" = "Palvelut";

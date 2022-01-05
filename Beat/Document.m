@@ -3916,6 +3916,8 @@ static NSString *revisionAttribute = @"Revision";
 	for (Document* doc in openDocuments) {
 		[doc updateUIColors];
 	}
+	
+	[self updateSceneNumberLabels:0];
 }
 - (bool)isDark {
 	return [(BeatAppDelegate *)[NSApp delegate] isDark];

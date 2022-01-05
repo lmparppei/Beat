@@ -122,11 +122,11 @@ function initDragDrop () {
 	drake.on('drop', function (el, target, source, sibling) {
 		console.log("dropping...");
 		
-		var sceneIndex = el.getAttribute('sceneIndex');
-		var nextIndex;
+		var sceneIndex = el.getAttribute('sceneIndex')
+		var nextIndex
 		
-		if (sibling) nextIndex = sibling.getAttribute('sceneIndex');
-		else nextIndex = scenes.length;
+		if (sibling) nextIndex = sibling.getAttribute('sceneIndex')
+		else nextIndex =  scenes[scenes.length - 1].sceneIndex
 
 		if (!nextIndex) {
 			scenes[sceneIndex].sceneIndex;

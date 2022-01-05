@@ -62,9 +62,7 @@
 
 // Helper methods
 + (CGFloat)lineHeight;
-+ (CGFloat)spaceBeforeForElement:(Line *)element;
 + (CGFloat)spaceBeforeForLine:(Line *)line;
-//+ (NSInteger)leftMarginForElement:(FNElement *)element;
 - (NSInteger)widthForElement:(Line *)element;
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
 
