@@ -43,6 +43,7 @@
 - (NSInteger)numberOfScenes;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (OutlineScene*)sceneAtPosition:(NSInteger)index;
+- (NSArray*)scenesInRange:(NSRange)range;
 
 - (Line*)previousLine:(Line*)line;
 - (Line*)nextLine:(Line*)line;
@@ -103,6 +104,7 @@
 //Convenience Methods for Other Stuff
 - (Line*)lineAtPosition:(NSInteger)position;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
+- (NSArray*)scenesInRange:(NSRange)range;
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSString*)cleanedString;
 - (NSDictionary*)scriptForPrinting;

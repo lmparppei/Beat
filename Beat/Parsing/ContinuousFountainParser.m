@@ -218,6 +218,13 @@ static NSDictionary* patterns;
  there are two different methods for parsing the changes, and the other one is still used
  for parsing single-character edits. parseAddition/parseRemovalAt methods fall back to
  them when needed.
+
+ Flow:
+ parseChangeInRange ->
+	parseAddition/parseRemoval
+	-> changedIndices
+	-> correctParsesInLines
+		
  
  */
 
@@ -342,7 +349,8 @@ static NSDictionary* patterns;
         for (int i = 0; i < string.length; i++) {
             NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
 			[changedIndices addIndexes:[self parseCharacterAdded:character
-													  atPosition:position+i  line:line]];
+													  atPosition:position+i
+															line:line]];
         }
 	}
 	
@@ -377,22 +385,30 @@ static NSDictionary* patterns;
 	
     if ([character isEqualToString:@"\n"]) {
         NSString* cutOffString;
-        if (indexInLine == [line.string length]) {
+        // Split the edited line in two if needed
+		if (indexInLine == line.string.length) {
+			// Return key was pressed at the end of line
             cutOffString = @"";
         } else {
+			// Line break mid-line, split in two
             cutOffString = [line.string substringFromIndex:indexInLine];
             line.string = [line.string substringToIndex:indexInLine];
         }
         
+		// Create the new line
+		// NOTE TO SELF: It would be preferrable to create one reliable method of adding
+		// a string into the parser. This is now a mess with pretty obfuscated code here and there.
         Line* newLine = [[Line alloc] initWithString:cutOffString
                                             position:position+1
 											  parser:self];
-        [self.lines insertObject:newLine atIndex:lineIndex+1];
         
+		// Add line into place and increment positions
+		[self.lines insertObject:newLine atIndex:lineIndex+1];
         [self incrementLinePositionsFromIndex:lineIndex+2 amount:1];
         
         return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(lineIndex, 2)];
     } else {
+		// Add characters into the string
         NSArray* pieces = @[[line.string substringToIndex:indexInLine],
                             character,
                             [line.string substringFromIndex:indexInLine]];
@@ -669,13 +685,23 @@ static NSDictionary* patterns;
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
 	if (idx == NSNotFound) return changedIndices;
 	
+	if (!self.staticParser) NSLog(@"   ---> cancel at %@", line);
+	
+	Line *prevLine = [self previousLine:line];
+	
 	line.noteOut = NO;
+	bool actuallyCancelsBlock = NO; // If the block was previously ACTUALLY formatted as a block
+	if (prevLine.noteOut) {
+		NSLog(@"!!! Note out from %@", prevLine);
+		actuallyCancelsBlock = YES;
+	}
 	
 	// Look behind for note ranges
 	for (NSInteger i = idx-1; i >= 0; i--) {
 		Line *l = self.lines[i];
 		
 		if ([l.string containsString:@"[["]) {
+			if (!self.staticParser) NSLog(@"  ... %@", l);
 			[l.noteRanges removeIndexes:l.noteOutIndices];
 			[changedIndices addIndex:i];
 			break;
@@ -684,11 +710,21 @@ static NSDictionary* patterns;
 			[changedIndices addIndex:i];
 		}
 	}
-	
+		
+	// Don't look forward if the current line had no note ranges to begin with.
+	if (!line.noteRanges.count && !actuallyCancelsBlock) {
+		if (!self.staticParser) NSLog(@"   ..not looking forward");
+		return changedIndices;
+	}
+
 	// Look forward for note ranges
 	for (NSInteger i = idx; i < self.lines.count; i++) {
 		Line *l = self.lines[i];
-		if ([l.string containsString:@"]]"] && l.noteIn) {
+		if (!self.staticParser) NSLog(@"looking at %@", l);
+		
+		if ([l.string containsString:@"]]"] ||
+			[l.string containsString:@"[["] // Another note begins, don't look further
+			) {
 			[l.noteRanges removeIndexes:l.noteInIndices];
 			[changedIndices addIndex:i];
 			break;
@@ -697,10 +733,19 @@ static NSDictionary* patterns;
 			[changedIndices addIndex:i];
 		}
 	}
+
 	
 	[_changedIndices addIndexes:changedIndices];
 	
 	return changedIndices;
+}
+
+- (void)listLines {
+	for (Line* line in _lines) {
+		printf("%s\n", line.string.UTF8String);
+		printf("	noteIn: %s\n", (line.noteIn) ? "YES" : "NO" );
+		printf("	noteOut: %s\n", (line.noteOut) ? "YES" : "NO" );
+	}
 }
 
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
@@ -725,7 +770,7 @@ static NSDictionary* patterns;
 	bool oldEndsNoteBlock = currentLine.endsNoteBlock;
 	bool oldNoteTermination = currentLine.cancelsNoteBlock;
 	bool notesNeedParsing = NO;
-		
+			
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
     
     if (!self.changeInOutline && (oldType == heading || oldType == section || oldType == synopse ||
@@ -745,7 +790,7 @@ static NSDictionary* patterns;
 	
 	// Parse multi-line note ranges
 	// This is a mess, and written using trial & error. Dread lightly.
-	
+		
 	if (currentLine.endsNoteBlock != oldEndsNoteBlock) {
 		// A note block which was previously terminated, is no longer that
 		if (!currentLine.endsNoteBlock && currentLine.noteIn) currentLine.noteOut = YES;
@@ -756,7 +801,6 @@ static NSDictionary* patterns;
 	if (currentLine.noteIn && (currentLine.type == empty || currentLine == _lines.lastObject)) {
 		// Empty (or last) line automatically cancels a note block
 		currentLine.cancelsNoteBlock = YES;
-		currentLine.noteOut = NO;
 		NSIndexSet *noteIndices = [self cancelNoteBlockAt:currentLine];
 		[self.changedIndices addIndexes:noteIndices];
 	}
@@ -769,17 +813,23 @@ static NSDictionary* patterns;
 				[self.changedIndices addIndexes:noteIndices];
 				break;
 			}
+			else if (nextLine.type == empty) {
+				[self.changedIndices addIndexes:[self cancelNoteBlockAt:nextLine]];
+				break;
+			}
 		}
 		notesNeedParsing = YES;
 	}
 	else if (currentLine.noteOut != oldNoteOut && !currentLine.noteOut) {
-		for (NSInteger ni = [self.lines indexOfObject:currentLine]; ni < self.lines.count; ni++) {
+		// Note no longer bleeds out of this line
+		for (NSInteger ni = [self.lines indexOfObject:currentLine] + 1; ni < self.lines.count; ni++) {
 			Line *nextLine = self.lines[ni];
 			if (nextLine.noteIn && [nextLine.string containsString:@"]]"]) {
 				NSIndexSet *noteIndices = [self cancelNoteBlockAt:nextLine];
 				[self.changedIndices addIndexes:noteIndices];
 				break;
 			}
+			else if (!nextLine.noteIn) break;
 		}
 	}
 	
@@ -2018,7 +2068,7 @@ and incomprehensible system of recursion.
 	return nil;
 }
 - (NSArray*)linesInRange:(NSRange)range {
-	NSMutableArray *lines = [NSMutableArray array];
+	NSMutableArray *lines = NSMutableArray.array;
 	for (Line* line in self.lines) {
 		if ((NSLocationInRange(line.position, range) ||
 			NSLocationInRange(range.location, line.textRange) ||
@@ -2031,6 +2081,18 @@ and incomprehensible system of recursion.
 	return lines;
 }
 
+- (NSArray*)scenesInRange:(NSRange)range {
+	NSMutableArray *scenes = NSMutableArray.new;
+	
+	[self createOutline];
+	
+	for (OutlineScene* scene in self.outline) {
+		NSRange intersection = NSIntersectionRange(range, scene.range);
+		if (intersection.length > 0) [scenes addObject:scene];
+	}
+	
+	return scenes;
+}
 - (OutlineScene*)sceneAtIndex:(NSInteger)index {
 	return [self sceneAtPosition:index];
 }

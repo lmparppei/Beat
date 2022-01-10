@@ -68,6 +68,7 @@
 }
 
 - (void)setTitle:(NSString *)title {
+	if (!title) title = @"";
 	[super setTitle:title];
 }
 

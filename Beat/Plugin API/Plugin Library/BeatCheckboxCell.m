@@ -37,7 +37,7 @@
 	}
 	
 	if (_enabled) [_checkbox setState:NSOnState]; else [_checkbox setState:NSOffState];
-	[_pluginName setStringValue:_name];
+	if (_name) [_pluginName setStringValue:_name];
 	
 	if (_updateAvailable) [_pluginName setTextColor:[BeatColors color:@"green"]];
 	else [_pluginName setTextColor:NSColor.labelColor];

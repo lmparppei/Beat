@@ -6,6 +6,10 @@
 - Localization support
 - Minor note parsing fixes
 - Further index card bugs fixed
+- Some autocomplete weirdness with scene headings fixed
+- Fixed dual dialogue symbol rendering in editor
+- Assign scene colors from context menu in editor 
+- File names in launch screen truncated from middle
 
 
 ## Beat 1.92.6

@@ -1532,9 +1532,11 @@
 		
 	// Also, if it's an enter key and we are handling a CHARACTER, force dialogue if needed
 	bool forceDialogue = NO;
-	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && _currentLine.type == character) {
+	if ([replacementString isEqualToString:@"\n"] &&
+		affectedCharRange.length == 0 &&
+		(_currentLine.type == character || _currentLine.type == dualDialogueCharacter)) {
 		Line *nextLine = [_parser nextLine:_currentLine];
-		if (nextLine.type == dialogue && nextLine.string.length) {
+		if ((nextLine.type == dialogue || nextLine.type == dualDialogue) && nextLine.string.length) {
 			forceDialogue = YES;
 		}
 	}
@@ -1617,7 +1619,7 @@
 	bool processDoubleBreak = NO;
 		
 	// Enter key
-	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && ![self.undoManager isUndoing] && !self.documentIsLoading) {
+	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && !self.undoManager.isUndoing && !self.documentIsLoading) {
 		_currentLine = [self getCurrentLine];
 		
 		// Process line break after a forced character input
@@ -2355,9 +2357,10 @@
 	[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 	
 	// Redo everything we just did for forced character input
-	
 	if (_characterInput && _characterInputForLine == line) {
-		line.type = character;
+		// Do some extra checks for dual dialogue
+		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
+		else line.type = character;
 		
 		NSRange selectedRange = self.textView.selectedRange;
 		
@@ -2664,6 +2667,11 @@
 		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
 								   value:self.themeManager.invisibleTextColor
 					   forCharacterRange:NSMakeRange(line.position + line.string.length - 1, 1)];
+	}
+	if (line.type == dualDialogueCharacter) {
+		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
+								   value:self.themeManager.invisibleTextColor
+					   forCharacterRange:NSMakeRange(line.position + line.length - 1, 1)];
 	}
 	
 	if (line.string.containsOnlyWhitespace && line.length >= 2) {
@@ -4471,9 +4479,7 @@ static NSString *revisionAttribute = @"Revision";
 	NSString *pickedColor;
 
 	for (NSString *color in [self colors]) {
-		if ([_colorPicker.color isEqualTo:[BeatColors color:color]]) {
-			pickedColor = color;
-		}
+		if ([_colorPicker.color isEqualTo:[BeatColors color:color]]) pickedColor = color;
 	}
 	
 	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) pickedColor = @"none"; // THE HOUSE IS BLACK.
@@ -4482,12 +4488,24 @@ static NSString *revisionAttribute = @"Revision";
 	if (!_currentScene) return;
 	
 	if (pickedColor != nil) [self setColor:pickedColor forScene:_currentScene];
+}
 
+- (IBAction)setSceneColorForRange:(id)sender {
+	// Called from text view context menu
+	NSMenuItem *menuItem = sender;
+	NSString *color = menuItem.identifier.uppercaseString;
+	
+	NSRange range = self.selectedRange;
+	NSArray *scenes = [_parser scenesInRange:range];
+	
+	for (OutlineScene* scene in scenes) {
+		[self setColor:color forScene:scene];
+	}
 }
 
 - (IBAction)setSceneColor:(id)sender {
 	NSMenuItem *item = sender;
-	NSString *colorName = item.title.uppercaseString;
+	NSString *colorName = item.accessibilityIdentifier;
 	
 	if (self.outlineView.clickedRow > -1) {
 		id selectedScene = nil;

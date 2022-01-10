@@ -689,7 +689,7 @@
                                                                                 <rect key="frame" x="0.0" y="0.0" width="300" height="359"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="mfV-6r-KJe">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="359"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="24" rowSizeStyle="systemDefault" viewBased="YES" id="QGY-eB-GWe" customClass="BeatCharacterList">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="359"/>
@@ -1244,7 +1244,7 @@
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <popUpButtonCell key="cell" type="roundTextured" title="Track Storyline" bezelStyle="texturedRounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="4L1-KD-A0S">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                        <font key="font" metaFont="system" size="9"/>
+                                                        <font key="font" metaFont="miniSystem"/>
                                                         <menu key="menu" id="d4g-pX-ef2">
                                                             <items>
                                                                 <menuItem title="Track Storyline" state="on" hidden="YES" id="9RQ-zI-QP5"/>
@@ -1306,7 +1306,7 @@
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Cards" identifier="3" id="798-ya-EGc" userLabel="Cards Tab">
-                                <view key="view" id="fPc-ie-Xae">
+                                <view key="view" appearanceType="darkAqua" id="fPc-ie-Xae">
                                     <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -1318,6 +1318,17 @@
                                                 <wkPreferences key="preferences"/>
                                             </wkWebViewConfiguration>
                                         </wkWebView>
+                                        <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mUG-iU-q9L">
+                                            <rect key="frame" x="1130" y="620" width="23" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="xmark.circle.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="tR8-CK-23v">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="toggleCards:" target="-2" id="itP-Gm-Q7I"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -1374,7 +1385,7 @@
             <touchBarItems>
                 <touchBarItem id="Yl5-KN-N3x">
                     <viewController key="viewController" id="1lb-pf-av9">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kVd-IJ-8g1">
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kVd-IJ-8g1">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="OutlineIcon_white" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OS4-Pc-U6L">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1388,7 +1399,7 @@
                 </touchBarItem>
                 <touchBarItem id="rWL-n1-Ejl">
                     <viewController key="viewController" id="2hM-bM-hIJ">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="q8P-yB-ZHg">
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q8P-yB-ZHg">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="CardsIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="b8j-5x-Bvp">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1402,7 +1413,7 @@
                 </touchBarItem>
                 <touchBarItem id="BZs-Eh-v5e">
                     <viewController key="viewController" id="s2w-pc-SMc">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LJ9-op-UOF">
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LJ9-op-UOF">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="TimelineIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ysm-8B-b7r">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1417,7 +1428,7 @@
                 <touchBarSpacerItem identifier="NSTouchBarItemIdentifierFixedSpaceSmall" id="oww-Pu-Ief"/>
                 <touchBarItem id="0AV-2P-83z">
                     <viewController key="viewController" id="4Ye-z8-Rbe">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EX8-3T-2S9">
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EX8-3T-2S9">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoUpTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w9h-KQ-O8T">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1431,7 +1442,7 @@
                 </touchBarItem>
                 <touchBarItem id="vDN-00-so2">
                     <viewController key="viewController" id="f5E-6W-jOD">
-                        <button key="view" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zLo-23-u8a">
+                        <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zLo-23-u8a">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoDownTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TaB-Om-lXF">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1454,7 +1465,7 @@
                         <touchBarItems>
                             <touchBarItem id="uhS-Jd-N5J">
                                 <viewController key="viewController" id="qZl-5L-L5S">
-                                    <button key="view" verticalHuggingPriority="750" misplaced="YES" id="2UL-8x-cZM">
+                                    <button key="view" verticalHuggingPriority="750" id="2UL-8x-cZM">
                                         <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSRefreshTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8QI-Kv-tiu">
@@ -1918,54 +1929,63 @@ Gw
                 </menuItem>
                 <menuItem title="None" image="Color_None" id="LgM-Xa-gig">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="none"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="0km-xA-isH"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Red" image="Color_Red" id="2lb-aO-myG">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="red"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="3EU-2z-nJW"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Blue" image="Color_Blue" id="EzC-hd-0ex">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="blue"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="Tgm-R1-5nz"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Green" image="Color_Green" id="tLV-bS-9E1">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="green"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="nB2-Sd-Csd"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Pink" image="Color_Pink" id="Zu3-Fk-iUY">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="pink"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="7TF-nf-pXW"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Brown" image="Color_Brown" id="Uq4-Ad-AU8">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="brown"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="kQz-iP-7xB"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Cyan" image="Color_Cyan" id="aEe-qy-xc9">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="cyan"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="hYd-rb-hdL"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Orange" image="Color_Orange" id="PtV-0l-a6v">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="orange"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="Ysw-nz-RrY"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Magenta" image="Color_Magenta" id="KUg-Bv-fNP">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="magenta"/>
                     <connections>
                         <action selector="setSceneColor:" target="-2" id="ON0-nL-umH"/>
                     </connections>
@@ -1978,38 +1998,117 @@ Gw
         </menu>
         <menu id="4zR-Lb-D4A" userLabel="Timeline Context Menu">
             <items>
-                <menuItem title="None" image="Color_None" id="X1d-1b-z0n">
+                <menuItem title="None" image="Color_None" identifier="none" id="X1d-1b-z0n">
                     <modifierMask key="keyEquivalentModifierMask"/>
                 </menuItem>
-                <menuItem title="Red" image="Color_Red" id="ndy-dL-efa">
+                <menuItem title="Red" image="Color_Red" identifier="red" id="ndy-dL-efa">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="red"/>
                 </menuItem>
-                <menuItem title="Blue" image="Color_Blue" id="bJU-Vk-ZPT">
+                <menuItem title="Blue" image="Color_Blue" identifier="blue" id="bJU-Vk-ZPT">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="blue"/>
                 </menuItem>
-                <menuItem title="Green" image="Color_Green" id="8n7-A7-WU4">
+                <menuItem title="Green" image="Color_Green" identifier="green" id="8n7-A7-WU4">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="green"/>
                 </menuItem>
-                <menuItem title="Pink" image="Color_Pink" id="cGw-JR-l1k">
+                <menuItem title="Pink" image="Color_Pink" identifier="pink" id="cGw-JR-l1k">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="pink"/>
                 </menuItem>
-                <menuItem title="Brown" image="Color_Brown" id="8rU-6s-EUe">
+                <menuItem title="Brown" image="Color_Brown" identifier="brown" id="8rU-6s-EUe">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="brown"/>
                 </menuItem>
-                <menuItem title="Cyan" image="Color_Cyan" id="2UR-53-QPX">
+                <menuItem title="Cyan" image="Color_Cyan" identifier="cyan" id="2UR-53-QPX">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="cyan"/>
                 </menuItem>
-                <menuItem title="Orange" image="Color_Orange" id="uq9-i5-BtV">
+                <menuItem title="Orange" image="Color_Orange" identifier="orange" id="uq9-i5-BtV">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="orange"/>
                 </menuItem>
-                <menuItem title="Magenta" image="Color_Magenta" id="uIu-iR-xUP">
+                <menuItem title="Magenta" image="Color_Magenta" identifier="magenta" id="uIu-iR-xUP">
                     <modifierMask key="keyEquivalentModifierMask"/>
+                    <accessibility identifier="magenta"/>
                 </menuItem>
             </items>
             <point key="canvasLocation" x="-423" y="88"/>
         </menu>
-        <menu id="DrH-zx-R7H">
+        <menu id="DrH-zx-R7H" userLabel="TextView Context Menu">
             <items>
+                <menuItem title="Scene Color" id="xjT-UK-F6b">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Scene Color" id="cAg-Ag-Ivb">
+                        <items>
+                            <menuItem title="None" image="Color_None" identifier="none" id="N2F-gE-zqw">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="none"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="uhc-cv-wGm"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Red" image="Color_Red" identifier="red" id="D3I-np-42U">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="red"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="gD7-Ep-y2j"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Blue" image="Color_Blue" identifier="blue" id="xmV-DE-c1g">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="blue"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="sbc-2y-NiY"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Green" image="Color_Green" identifier="green" id="Y9s-uT-czv">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="green"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="aYA-qC-Trd"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Pink" image="Color_Pink" identifier="pink" id="8rC-im-g9Q">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="pink"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="C4A-eT-1I2"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Brown" image="Color_Brown" identifier="brown" id="IfA-Gs-aGd">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="brown"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="iIL-eI-7KG"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Cyan" image="Color_Cyan" identifier="cyan" id="fE1-Z4-bDc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="cyan"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="PN0-4H-B8V"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Orange" image="Color_Orange" identifier="orange" id="S2S-kO-ppA">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="orange"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="aYv-zi-cyw"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Magenta" image="Color_Magenta" identifier="magenta" id="xYu-On-Cas">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <accessibility identifier="magenta"/>
+                                <connections>
+                                    <action selector="setSceneColorForRange:" target="-2" id="zrT-ka-zIz"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="aGT-Yt-FZn"/>
                 <menuItem title="Mark as Revised" id="BqD-vz-DpD">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -2029,7 +2128,7 @@ Gw
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-502" y="321"/>
+            <point key="canvasLocation" x="-644" y="303"/>
         </menu>
         <customView id="zD2-lE-mgt" userLabel="Quick Settings">
             <rect key="frame" x="0.0" y="0.0" width="208" height="267"/>

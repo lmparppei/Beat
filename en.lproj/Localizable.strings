@@ -67,3 +67,18 @@
 "print.print" = "Print";
 "print.createPDF" = "Create PDF";
 "print.pdfButton" = "Create PDF";
+
+"cardView.noScenes" = "No Scenes";
+"cardView.noScenesInformation" = "When you write some scenes, they will be visible as cards in this view";
+"cardView.print" = "Print";
+
+"color.none" = "None";
+"color.red" = "Red";
+"color.green" = "Green";
+"color.blue" = "Blue";
+"color.pink" = "Pink";
+"color.yellow" = "Yellow";
+"color.brown" = "Brown";
+"color.cyan" = "Cyan";
+"color.orange" = "Orange";
+"color.magenta" = "Magenta";

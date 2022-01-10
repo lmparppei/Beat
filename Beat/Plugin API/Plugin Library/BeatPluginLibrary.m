@@ -112,7 +112,6 @@
 	BeatPluginInfo *pluginInfo = self.pluginManager.availablePlugins[name];
 	
 	BeatCheckboxCell* cell = [outlineView makeViewWithIdentifier:@"PluginCell" owner:self];
-	
 	cell.name = pluginInfo.name;
 	
 	// Set enabled state

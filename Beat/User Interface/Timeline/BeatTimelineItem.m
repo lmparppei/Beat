@@ -359,7 +359,7 @@
 }
 
 - (void)setSceneColor:(id)sender {
-    NSString *color = [(NSMenuItem*)sender title].uppercaseString;
+    NSString *color = [(NSMenuItem*)sender identifier].uppercaseString;
 	[_delegate setSceneColor:color for:self.representedItem];
 }
 

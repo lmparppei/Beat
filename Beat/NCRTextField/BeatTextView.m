@@ -1342,6 +1342,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		for (NSMenuItem *item in _contextMenu.itemArray) {
 			[_contextMenu removeItem:item];
+			
+			
+			for (NSMenuItem * i in item.submenu.itemArray) {
+				NSLog(@" item -> %@", i.identifier);
+				NSLog(@" item -> %@", i.accessibilityIdentifier);
+			}
+			
 			[defaultMenu addItem:item];
 		}
 		
@@ -1571,19 +1578,22 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 
 - (void)handleTextCheckingResults:(NSArray<NSTextCheckingResult *> *)results forRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount {
 	
+	Line *currentLine = _editorDelegate.currentLine;
+	
 	// Avoid capitalizing parentheticals
-	if (self.editorDelegate.currentLine.type == parenthetical && range.location == self.editorDelegate.currentLine.position) {
+	if (currentLine.type == parenthetical && range.location == currentLine.position) {
+		NSLog(@"fuckedy fuck");
 		NSMutableArray<NSTextCheckingResult*> *newResults;
 		
 		for (NSTextCheckingResult *result in results) {
-			if (result.resultType == NSTextCheckingTypeCorrection && _editorDelegate.currentLine.length > 2) {
+			if (result.resultType == NSTextCheckingTypeCorrection && currentLine.length > 2) {
 				// Strip () from the line for testing, then get first word and capitalize it
 				NSString *textToChange = [[self.textStorage.string substringWithRange:(NSRange){ range.location + 1, range.length - 2 }] componentsSeparatedByString:@" "].firstObject;
 				textToChange = textToChange.capitalizedString;
 				
 				// This is actually the first word in parenthetical, so let's not add it into the suggestions.
 				// Otherwise, add the replacement suggestion
-				if (![result.replacementString isEqualToString:textToChange] || result.range.location == _editorDelegate.currentLine.position + 1) {
+				if (![result.replacementString isEqualToString:textToChange] || result.range.location == currentLine.position + 1) {
 					[newResults addObject:result];
 				}
 			} else {
@@ -1591,6 +1601,8 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 			}
 		}
 		[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
+	} else if (currentLine.type == heading && self.popupMode == Autocomplete) {
+		// Do nothing when heading autocomplete is visible
 	} else {
 		// default behaviors, including auto-correct
 		[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];

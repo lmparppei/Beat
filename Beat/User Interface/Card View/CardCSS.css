@@ -23,7 +23,7 @@ body {
 	-webkit-user-select: none;
 	
 	padding-top: 2rem;
-	margin: 3rem 2.25rem 1rem 2.25rem;
+	margin: 3rem 1.7rem 1rem 1.7rem;
 	background-color: #26282a;
 	font-family: Courier, monospace;
 	font-size: .85em;
@@ -57,6 +57,8 @@ section {
 
 	transition: linear .1s all;
 }
+
+/* UI #################################################### */
 
 #menu {
 	position: fixed;
@@ -108,27 +110,28 @@ section {
 	border-radius: .5em;
 }
 
-#close {
-	margin-left: auto;
-
-	content: '╳';
-	font-family: helvetica, sans-serif;
-	font-weight: bold;
-
+#zoom {
+	margin-left: 1.5rem;
 	display: flex;
-	justify-content: center;
 	align-items: center;
-
-	width: 2rem;
-	height: 2rem;
-	background-color: rgba(0,0,0,.9);
-	color: #eee;
-
+	justify-content: center;
+}
+#zoom button {
 	border-radius: 50%;
-}
-#close:hover {
+	border: none;
+	background-color: #111;
 	color: white;
+	font-size: 1em;
+	width: 2em;
+	height: 2em;
+	margin-right: .25em;
 }
+#zoom button:hover {
+	background-color: #333;
+}
+
+
+/* CARDS ################################################ */
 
 .sceneNumber {
 	width: 1.5rem;
@@ -154,7 +157,6 @@ section {
 	font-weight: bold;
 }
 .card.selected .sceneNumber { background-color: #222; color: #ddd; }
-/* .card:hover .sceneNumber { background-color: #eee;  } */
 
 
 .header {
@@ -181,14 +183,29 @@ section {
 
 /* Card element styles*/
 
-.cardContainer, .sectionCardContainer {
-	width: 25%;
-	padding: .5rem;
+.cardWrapper {
+	padding: .5em;
 }
+.zoomLevel-1 .cardWrapper {
+	width: 20%;
+	padding: .25rem;
+	font-size: .85em;
+}
+.zoomLevel-1 .basicCard {
+	height: 10rem;
+}
+.zoomLevel-1 h2 { font-size: 1.8em; }
 
-.section .card {
-	
+.zoomLevel-0 .cardWrapper {
+	width: 15%;
+	padding: .20rem;
+	font-size: .7em;
 }
+.zoomLevel-0 .basicCard {
+	height: 8rem;
+}
+.zoomLevel-0 h2 { font-size: 1.5em; }
+
 
 .card, .synopse, .sectionCard {
 	position: relative;
@@ -204,30 +221,47 @@ section {
 	overflow: hidden;
 	z-index: 1;
 
-	transition: linear .1s all;
+	transition: linear .1s box-shadow width color;
 
 	border-radius: .25rem;
 }
 
-@media screen and (max-width: 900px) {
-	/* .card, .synopse { width: calc(100% / 3 - 1.4rem); } */
-	.cardContainer, .sectionCardContainer { width: calc(100% / 3);	}
-}
+
+
 @media screen and (max-width: 700px) {
 	/* .card, .synopse { width: calc(100% / 2 - 1.4rem); } */
-	.cardContainer, .sectionCardContainer { width: calc(100% / 2);	}
+	.cardWrapper { width: calc(100% / 2);	}
+	.zoomLevel-1 .cardWrapper { width: calc(100% / 3);	}
+	.zoomLevel-0 .cardWrapper { width: calc(100% / 4);	}
+}
+@media screen and (max-width: 900px) {
+	/* .card, .synopse { width: calc(100% / 3 - 1.4rem); } */
+	.cardWrapper { width: calc(100% / 3);	}
+	.zoomLevel-1 .cardWrapper { width: calc(100% / 4);	}
+	.zoomLevel-0 .cardWrapper { width: calc(100% / 5);	}
+}
+@media screen and (min-width: 901px) and (max-width: 1249px) {
+	.cardWrapper { width: calc(100% / 4);   }
+	.zoomLevel-1 .cardWrapper { width: calc(100% / 5);	}
+	.zoomLevel-0 .cardWrapper { width: calc(100% / 6);	}
 }
 @media screen and (min-width: 1250px) {
 	/* .card, .synopse { width: calc(100% / 5 - 1.4rem); } */
-	.cardContainer, .sectionCardContainer { width: calc(100% / 5);	}
+	.cardWrapper { width: calc(100% / 5);	}
+	.zoomLevel-1 .cardWrapper { width: calc(100% / 6);	}
+	.zoomLevel-0 .cardWrapper { width: calc(100% / 7);	}
 }
 @media screen and (min-width: 1500px) {
 	/* .card, .synopse { width: calc(100% / 6 - 1.4rem); } */
-	.cardContainer, .sectionCardContainer { width: calc(100% / 6);	}
+	.cardWrapper { width: calc(100% / 6);	}
+	.zoomLevel-1 .cardWrapper { width: calc(100% / 7);	}
+	.zoomLevel-0 .cardWrapper { width: calc(100% / 8);	}
 }
 @media screen and (min-width: 1800px) {
 	/* .card, .synopse { width: calc(100% / 6 - 1.4rem); } */
-	.cardContainer, .sectionCardContainer { width: calc(100% / 7);	}
+	.cardWrapper { width: calc(100% / 7);	}
+	.zoomLevel-1 .cardWrapper { width: calc(100% / 8);	}
+	.zoomLevel-0 .cardWrapper { width: calc(100% / 9);	}
 }
 
 .color.none { background-color: transparent; }
@@ -349,7 +383,7 @@ section {
 
 
 .card * {
-	transition: linear .05s all;
+	transition: linear .05s width height background-color box-shadow;
 }
 .card:hover {
 	/* background-color: #f0f0f0; */

@@ -277,8 +277,20 @@
 	for (NSString *file in files) {
 		if (![file.pathExtension isEqualToString:@"beatPlugin"]) continue;
 		
+		BOOL folderPlugin;
+		
 		NSString *filepath = [_pluginURL.path stringByAppendingPathComponent:file];
-		[plugins addObject:filepath];
+		if ([fileManager fileExistsAtPath:filepath isDirectory:&folderPlugin]) {
+			if (!folderPlugin) [plugins addObject:filepath];
+			else {
+				// If it's a folder-type plugin, we need to check its contents for a file of the same name:
+				// SamplePlugin.beatPlugin/SamplePlugin.beatPlugin
+				NSString *pluginName = filepath.lastPathComponent;
+				NSString *fullpath = [filepath stringByAppendingPathComponent:pluginName];
+				
+				if ([fileManager fileExistsAtPath:fullpath]) [plugins addObject:filepath];
+			}
+		}
 	}
 	
 	NSMutableDictionary *pluginsWithNames = [NSMutableDictionary dictionary];
@@ -412,13 +424,16 @@
 	}
 	
 	if (matchImage) {
+		NSError *error;
 		NSString *image = [[(RxMatchGroup*)matchImage.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 		NSString *imagePath = [(NSString*)_plugins[plugin] stringByAppendingPathComponent:image];
-		NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:imagePath]];
+		NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:imagePath] options:0 error:&error];
 		
-		// Create base64 representation
-		NSString *imgData = [NSString stringWithFormat:@"data:image/png;base64, %@", [data base64EncodedStringWithOptions:0]];
-		pluginInfo.image = imgData;
+		if (!error) {
+			// Create base64 representation
+			NSString *imgData = [NSString stringWithFormat:@"data:image/png;base64, %@", [data base64EncodedStringWithOptions:0]];
+			pluginInfo.image = imgData;
+		}
 	}
 	
 	if (matchType) {

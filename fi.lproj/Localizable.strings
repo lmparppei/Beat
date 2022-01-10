@@ -67,3 +67,18 @@
 "print.print" = "Tulosta";
 "print.createPDF" = "Luo PDF";
 "print.pdfButton" = "Luo PDF";
+
+"cardView.noScenes" = "Ei kohtauksia";
+"cardView.noScenesInformation" = "Kohtauskortit tulevat näkyviin, kun lisäät ensimmäisen kohtauksen käsikirjoitukseesi";
+"cardView.print" = "Tulosta";
+
+"color.none" = "Ei mitään";
+"color.red" = "Punainen";
+"color.green" = "Vihreä";
+"color.blue" = "Sininen";
+"color.pink" = "Pinkki";
+"color.yellow" = "Keltainen";
+"color.brown" = "Ruskea";
+"color.cyan" = "Syaani";
+"color.orange" = "Oranssi";
+"color.magenta" = "Magenta";

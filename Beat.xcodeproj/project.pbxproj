@@ -723,7 +723,6 @@
 		B670E20A24BF689A006375BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6713050267610CC00B5FDC5 /* BeatPluginTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPluginTimer.h; sourceTree = "<group>"; };
 		B6713051267610CC00B5FDC5 /* BeatPluginTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginTimer.m; sourceTree = "<group>"; };
-		B6763E4527820BF500284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Document.strings; sourceTree = "<group>"; };
 		B6763E4627820BF600284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/MainMenu.strings; sourceTree = "<group>"; };
 		B6763E4727820BF600284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/PreviewViewController.strings; sourceTree = "<group>"; };
 		B6763E4D27820CCF00284907 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -873,6 +872,7 @@
 		B6D2B72E2218B589005B8447 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/Document.xib; sourceTree = SOURCE_ROOT; };
 		B6D2B7302218B589005B8447 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Beat/Base.lproj/MainMenu.xib; sourceTree = SOURCE_ROOT; };
 		B6D2B7332218B5DC005B8447 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Beat/Images.xcassets; sourceTree = SOURCE_ROOT; };
+		B6D4BB142788B09100915682 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Document.strings; sourceTree = "<group>"; };
 		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/Parsing/OutlineScene.m; sourceTree = SOURCE_ROOT; };
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/Parsing/OutlineScene.h; sourceTree = SOURCE_ROOT; };
 		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "Patch Notes.html"; sourceTree = SOURCE_ROOT; };
@@ -2654,7 +2654,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				B6D2B72E2218B589005B8447 /* Base */,
-				B6763E4527820BF500284907 /* fi */,
+				B6D4BB142788B09100915682 /* fi */,
 			);
 			name = Document.xib;
 			sourceTree = "<group>";
@@ -2865,7 +2865,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13203;
+				CURRENT_PROJECT_VERSION = 13206;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2897,7 +2897,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13203;
+				CURRENT_PROJECT_VERSION = 13206;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2925,7 +2925,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13203;
+				CURRENT_PROJECT_VERSION = 13206;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -2957,7 +2957,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13203;
+				CURRENT_PROJECT_VERSION = 13206;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

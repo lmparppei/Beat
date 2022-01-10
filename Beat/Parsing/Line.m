@@ -398,6 +398,10 @@
 	return string;
 }
 
+-(unichar)lastCharacter {
+	return [_string characterAtIndex:self.length - 1];
+}
+
 #pragma mark - Strip formatting
 
 /*

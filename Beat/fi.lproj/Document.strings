@@ -301,3 +301,35 @@
 
 /* Class = "NSWindow"; title = "Window"; ObjectID = "xOd-HO-29H"; */
 "xOd-HO-29H.title" = "Ikkuna";
+
+
+/* Class = "NSMenuItem"; title = "Magenta"; ObjectID = "xYu-On-Cas"; */
+"xYu-On-Cas.title" = "Magenta";
+
+/* Class = "NSMenuItem"; title = "Scene Color"; ObjectID = "xjT-UK-F6b"; */
+"xjT-UK-F6b.title" = "Kohtauksen väri";
+
+/* Class = "NSMenuItem"; title = "Blue"; ObjectID = "xmV-DE-c1g"; */
+"xmV-DE-c1g.title" = "Sininen";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "D3I-np-42U"; */
+"D3I-np-42U.title" = "Punainen";
+
+/* Class = "NSMenuItem"; title = "Pink"; ObjectID = "8rC-im-g9Q"; */
+"8rC-im-g9Q.title" = "Pinkki";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "S2S-kO-ppA"; */
+"S2S-kO-ppA.title" = "Oranssi";
+
+/* Class = "NSMenuItem"; title = "Brown"; ObjectID = "IfA-Gs-aGd"; */
+"IfA-Gs-aGd.title" = "Ruskea";
+
+/* Class = "NSMenuItem"; title = "None"; ObjectID = "N2F-gE-zqw"; */
+"N2F-gE-zqw.title" = "Ei mitään";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "fE1-Z4-bDc"; */
+"fE1-Z4-bDc.title" = "Syaani";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "Y9s-uT-czv"; */
+"Y9s-uT-czv.title" = "Vihreä";
+

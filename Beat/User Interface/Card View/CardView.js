@@ -26,17 +26,20 @@ let textColors = {
 let blackTextFor = ["yellow", "orange", "pink", "green"];
 let customStyles = 0;
 
-var colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
+let colors = ['none', 'red', 'blue', 'green', 'pink', 'brown', 'cyan', 'orange', 'magenta'];
+let colorName = ['#color.none#', '#color.red#', '#color.blue#', '#color.green#', '#color.pink#', '#color.brown#', '#color.cyan#', '#color.orange#', '#color.magenta#'];
 
-var scenes,
+let scenes,
 	container,
 	closeButton,
 	printButton,
-	contextMenu;
+	contextMenu,
+	drake,
+	debugElement,
+	wait;
 
-var drake;
-var debugElement;
-var wait;
+let zoomLevel = 2;
+
 
 // Polyfills, just in case
 if (!Object.entries) {
@@ -86,9 +89,7 @@ function init () {
 			window.webkit.messageHandlers.cardClick.postMessage('exit');
 		}
 	}
-	
-	document.body.setAttribute('oncontextmenu', 'event.preventDefault();');
-	
+		
 	// Init context menut
 	contextMenu.init();
 	document.body.onclick = function (e) { contextMenu.close(); }
@@ -177,7 +178,7 @@ contextMenu.init = function () {
 	for (var i in colors) {
 		var color = colors[i];
 		if (typeof color === 'string') {
-			content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + color + "</div>";
+			content += "<div onclick=\"contextMenu.setColor('" + color + "')\"" + " class='menuItem " + color + "'><div class='color " + color + "'></div> " + colorName[i] + "</div>";
 		}
 	}
 	
@@ -267,10 +268,14 @@ function setupCards () {
 			}
 			else Beat.call("Beat.custom.goToScene(" + index + ")")
 		}
-				  
+		
+		document.body.oncontextmenu = function (e) {
+			e.preventDefault()
+		}
+		
 		card.oncontextmenu = function (e) {
-			e.preventDefault();
-			contextMenu.toggle(e);
+			e.preventDefault()
+			contextMenu.toggle(e)
 		}
 	});
 }
@@ -298,7 +303,7 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	debugElement.innerHTML = '';
 
 	// No cards
-	if (cards.length < 1) html += "<div id='noData'><h2>No scenes</h2><p>When you write some scenes, they will be visible as cards in this view</p></div>";
+	if (cards.length < 1) html += "<div id='noData'><h2>#cardView.noScenes#</h2><p></p></div>";
 	
 	// Iterate through index card data
 	for (let card of cards) {
@@ -345,10 +350,10 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 				if (card.depth > 3) depth = 3;
 				let sectionCardClass = " section-" + card.depth;
 				
-				html += "<div sceneIndex='" + card.sceneIndex + "' class='sectionCardContainer " + sectionCardClass + style.color + "'><div lineIndex='" +
+				html += "<div sceneIndex='" + card.sceneIndex + "' class='cardWrapper sectionCardContainer " + sectionCardClass + style.color + "'><div lineIndex='" +
 						card.lineIndex + "' pos='" + card.position + "' " +
 						"sceneIndex='" + card.sceneIndex + "' " +
-						"class='sectionCard" + sectionCardClass + style.color + style.status + style.changed +
+						"class='basicCard sectionCard" + sectionCardClass + style.color + style.status + style.changed +
 						"'>"+
 					"<p>" + card.name + "</p></div></div>";
 			}
@@ -360,10 +365,10 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 		}
 		else {
 			// Normal card
-			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardContainer'><div lineIndex='" +
+			html += "<div sceneIndex='" + card.sceneIndex + "' class='cardWrapper cardContainer'><div lineIndex='" +
 					card.lineIndex + "' pos='" + card.position + "' " +
 					"sceneIndex='" + card.sceneIndex + "' " +
-					"class='card" + style.color + style.status + style.changed +
+					"class='basicCard card" + style.color + style.status + style.changed +
 					"'>"+
 				"<div class='header'><div class='sceneNumber'>" + card.sceneNumber	+ "</div>" +
 				"<h3>" + card.name + "</h3></div>" +
@@ -374,7 +379,6 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 
 	// Set page HTML nad update drag & drop objects
 	container.innerHTML = html;
-	if (dragDrop) drake.containers = [document.getElementById("cardContainer")];
 
 	// If the view is already visible, don't scroll to selected scene
 	if (selected && !alreadyVisible) {
@@ -387,6 +391,8 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 
 	// Setup drag & drop and context menus
 	setupCards();
+	
+	if (dragDrop) drake.containers = [document.getElementById("cardContainer")];
 }
 
 function select(index) {
@@ -452,10 +458,16 @@ function createStyles() {
 	document.head.appendChild(element);
 }
 
-function changeZoom(el) {
-	let zoomLevel = el.value
-	let zoomClass = 'zoomLevel-' + zoomLevel
+function zoomIn () {
+	if (zoomLevel < 3) zoomLevel++;
 	
+	let zoomClass = 'zoomLevel-' + zoomLevel
+	document.body.className = zoomClass
+}
+function zoomOut () {
+	if (zoomLevel > 0) zoomLevel--;
+	
+	let zoomClass = 'zoomLevel-' + zoomLevel
 	document.body.className = zoomClass
 }
 

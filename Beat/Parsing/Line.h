@@ -151,6 +151,8 @@ typedef enum : NSUInteger {
 - (NSString*)trimmed;
 - (bool)forced;
 
+- (unichar)lastCharacter; /// Return last character (NOTE: Be careful not to go out of range!)
+
 - (NSRange)range; /// Range of the whole line, including line break
 - (NSRange)textRange; /// The range of string only, excluding line break
 - (NSRange)globalRangeToLocal:(NSRange)range;

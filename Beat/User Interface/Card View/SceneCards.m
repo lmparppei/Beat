@@ -22,6 +22,7 @@
 #import "WebPrinter.h"
 #import "OutlineScene.h"
 #import "RegExCategories.h"
+#import "BeatLocalization.h"
 #import <WebKit/WebKit.h>
 
 #define SNIPPET_LENGTH 190
@@ -56,7 +57,7 @@
 
 	NSString* content = [NSString stringWithFormat:@"<html><head><title>Index Cards</title><style>%@</style>", css];
 	content = [content stringByAppendingFormat:@"<script>%@</script>", dragula];
-	content = [content stringByAppendingFormat:@"</head><body>"];
+	content = [content stringByAppendingFormat:@"</head><body class='zoomLevel-2'>"];
 	
 	// Spinner
 	content = [content stringByAppendingFormat:@"<div id='wait'><div class='lds-spinner'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>"];
@@ -66,22 +67,26 @@
 	content = [content stringByAppendingString:@"<div id='debug'></div><div id='container'>"];
 	content = [content stringByAppendingFormat:@"</div><script>let standalone = false;\n%@</script></body></html>", javaScript];
 	
+	// Replace placeholders
+	content = [BeatLocalization localizeString:content];
+	
 	[_cardView loadHTMLString:content baseURL:nil];
 }
 
 - (NSString*)createMenu {
 	return @"<div id='menu'>\
-			 <div id='print' class='ui'>⎙ Print</div>\
+			 <div id='print' class='ui'>⎙ #cardView.print#</div>\
 			 <div id='filters'>\
 				<input type='checkbox' name='scenes' onclick='filter(this)' checked> 🎬 \
 				<input type='checkbox' name='sections' onclick='filter(this)' checked> # \
 				<input type='checkbox' name='lowerSections' onclick='filter(this)' checked> ## \
 				<input type='checkbox' name='lowestSections' onclick='filter(this)' checked> ### \
 			 </div>\
-			 <!--<div id='zoom'>\
-				<input type='range' min='1' max='3' value='3' onchange='changeZoom(this)'>\
-			 </div>-->\
-			 <div id='close' class='ui'>✕</div><div id='debug'></div>\
+			 <div id='zoom'>\
+				<button onclick='zoomOut()'>-</button>\
+				<button onclick='zoomIn()'>+</button>\
+			 </div>\
+			 <!-- <div id='close' class='ui'>✕</div><div id='debug'></div> -->\
 			</div>";
 }
 
