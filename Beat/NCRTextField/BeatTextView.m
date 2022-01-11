@@ -1342,13 +1342,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		for (NSMenuItem *item in _contextMenu.itemArray) {
 			[_contextMenu removeItem:item];
-			
-			
-			for (NSMenuItem * i in item.submenu.itemArray) {
-				NSLog(@" item -> %@", i.identifier);
-				NSLog(@" item -> %@", i.accessibilityIdentifier);
-			}
-			
 			[defaultMenu addItem:item];
 		}
 		
@@ -1582,7 +1575,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	
 	// Avoid capitalizing parentheticals
 	if (currentLine.type == parenthetical && range.location == currentLine.position) {
-		NSLog(@"fuckedy fuck");
 		NSMutableArray<NSTextCheckingResult*> *newResults;
 		
 		for (NSTextCheckingResult *result in results) {

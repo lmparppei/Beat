@@ -3170,6 +3170,13 @@ static NSString *revisionAttribute = @"Revision";
         [self format:cursorLocation beginningSymbol:omitOpen endSymbol:omitClose];
     }
 }
+- (IBAction)omitScene:(id)sender {
+	OutlineScene *scene = [self.parser sceneAtPosition:self.selectedRange.location];
+	if (scene.omitted) return;
+	
+	[self addString:@"/*\n" atIndex:scene.position];
+	[self addString:@"*/\n\n" atIndex:scene.position + scene.range.length];
+}
 
 - (IBAction)forceSceneNumberForScene:(id)sender {
 	BeatModalInput *input = [[BeatModalInput alloc] init];

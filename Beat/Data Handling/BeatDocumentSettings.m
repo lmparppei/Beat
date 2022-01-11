@@ -37,6 +37,8 @@ NSString * const DocSettingCaretPosition = @"Caret Position";
 NSString * const DocSettingWindowWidth = @"Window Width";
 NSString * const DocSettingWindowHeight = @"Window Height";
 
+NSString * const DocSettingActivePlugins = @"Active Plugins";
+
 NSString * const DocSettingPageSize = @"Page Size";
 
 -(id)init

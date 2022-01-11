@@ -82,3 +82,6 @@
 "color.cyan" = "Syaani";
 "color.orange" = "Oranssi";
 "color.magenta" = "Magenta";
+
+"contextMenu.omitScene" = "Piilota kohtaus";
+

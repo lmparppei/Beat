@@ -333,3 +333,5 @@
 /* Class = "NSMenuItem"; title = "Green"; ObjectID = "Y9s-uT-czv"; */
 "Y9s-uT-czv.title" = "Vihreä";
 
+// Omit Scene
+"ANY-cT-k2w.title" = "Piilota kohtaus";

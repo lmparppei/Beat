@@ -2086,6 +2086,9 @@ and incomprehensible system of recursion.
 	
 	[self createOutline];
 	
+	// When length is zero, return just the scene at the beginning of range
+	if (range.length == 0) return @[ [self sceneAtPosition:range.location] ];
+	
 	for (OutlineScene* scene in self.outline) {
 		NSRange intersection = NSIntersectionRange(range, scene.range);
 		if (intersection.length > 0) [scenes addObject:scene];
