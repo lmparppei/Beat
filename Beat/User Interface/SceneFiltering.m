@@ -104,8 +104,9 @@
 	bool matchColor = NO;
 	
 	// NOTE: the prefiltered scene array has to be updated EVERY TIME the outline is reloaded
-	if ([self filterCharacter]) {
-		if ([scene.characters containsObject:self.character]) matchCharacter = YES;
+	if (self.filterCharacter) {
+		NSArray * characters = scene.characters;
+		if ([characters containsObject:self.character]) matchCharacter = YES;
 		else matchCharacter = NO;
 	}
 		

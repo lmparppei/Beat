@@ -3,7 +3,8 @@
 A simple and elegant screenwriting app for macOS, using the plain-text Fountain screenplay format. It's fast, lightweight and, above all, has a distraction-free, minimalistic UI. Beat is also **free and open source** under GPL.
 
 [Official website](https://kapitan.fi/beat/)  
-[Download releases on **App Store**](https://apps.apple.com/fi/app/beat/id1549538329)  
+[Download releases on **App Store**](https://apps.apple.com/fi/app/beat/id1549538329)   
+[Discord Community](https://discord.gg/FPHjfH7ms3)
 
 **Plugin API documentation**  
 Read more on public plugin repository: https://github.com/lmparppei/BeatPlugins/  

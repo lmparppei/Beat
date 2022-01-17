@@ -20,9 +20,6 @@
                 <outlet property="characterList" destination="QGY-eB-GWe" id="w1u-3z-HN2"/>
                 <outlet property="colorMenu" destination="Tqc-M2-IZ5" id="p8e-fo-mfZ"/>
                 <outlet property="darkModeSwitch" destination="S22-Mw-UkV" id="LjC-kx-glN"/>
-                <outlet property="documentWindow" destination="xOd-HO-29H" id="E6O-We-snv"/>
-                <outlet property="filterView" destination="YvO-D4-qDL" id="kCA-z3-eE5"/>
-                <outlet property="filterViewHeight" destination="sbe-Kj-AAo" id="mTs-pr-qX1"/>
                 <outlet property="lockButton" destination="ftJ-Zm-jkE" id="naF-WT-rXK"/>
                 <outlet property="marginView" destination="Sy0-kF-Tby" id="3Mt-n8-mIL"/>
                 <outlet property="masterView" destination="gIp-Ho-8D9" id="s3n-ER-Rgi"/>
@@ -124,7 +121,7 @@
                                                                                                 <font key="font" metaFont="system"/>
                                                                                             </buttonCell>
                                                                                             <connections>
-                                                                                                <action selector="toggleFilterView:" target="-2" id="8fO-pS-WLH"/>
+                                                                                                <action selector="toggleFilterView:" target="7yW-8d-gb9" id="5Rz-jB-dZa"/>
                                                                                             </connections>
                                                                                         </button>
                                                                                         <searchField wantsLayer="YES" focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" id="wQe-ic-Dmm">
@@ -408,6 +405,7 @@
                                                                                                 <outlet property="cyanCheck" destination="vqm-UG-kIN" id="SLE-sn-bTo"/>
                                                                                                 <outlet property="editorDelegate" destination="-2" id="FY9-Fe-Bz0"/>
                                                                                                 <outlet property="filterView" destination="YvO-D4-qDL" id="R7W-Mq-ord"/>
+                                                                                                <outlet property="filterViewHeight" destination="sbe-Kj-AAo" id="3Lk-yd-q6Y"/>
                                                                                                 <outlet property="greenCheck" destination="vch-pB-KcR" id="itm-eJ-lT5"/>
                                                                                                 <outlet property="magentaCheck" destination="Qh9-lw-g46" id="wJQ-JK-Sgd"/>
                                                                                                 <outlet property="menu" destination="Tqc-M2-IZ5" id="e7B-0a-jMc"/>
@@ -963,13 +961,8 @@
                                                             </scroller>
                                                             <connections>
                                                                 <outlet property="buttonView" destination="MJt-fS-Zk9" id="Ymd-Hv-bWE"/>
-                                                                <outlet property="cardsButton" destination="ZL1-eS-Zb2" id="Bvs-MS-k7k"/>
                                                                 <outlet property="editorDelegate" destination="-2" id="2Ox-rh-327"/>
-                                                                <outlet property="outlineButton" destination="ULq-c1-qrj" id="CuS-Gp-cWK"/>
                                                                 <outlet property="outlineButtonY" destination="zrM-cS-i7r" id="1lk-Iy-qXE"/>
-                                                                <outlet property="previewButton" destination="DOv-x4-OK1" id="9jU-o9-8xZ"/>
-                                                                <outlet property="quickSettingsButton" destination="piN-SW-wNh" id="r7C-8M-g3m"/>
-                                                                <outlet property="timelineButton" destination="SU7-uh-HJD" id="cka-oG-7P8"/>
                                                                 <outlet property="timerView" destination="hjj-OY-sw5" id="MrE-Zu-lSD"/>
                                                             </connections>
                                                         </scrollView>

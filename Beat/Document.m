@@ -211,8 +211,6 @@
 @property (nonatomic, weak) IBOutlet BeatCharacterList *characterList;
 
 // Outline view filtering
-@property (nonatomic, weak) IBOutlet NSBox *filterView;
-@property (nonatomic, weak) IBOutlet NSLayoutConstraint *filterViewHeight;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
 
 // Notepad
@@ -1971,6 +1969,91 @@
 - (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
 {
 	return NSMakeRange(range->location + position, range->length);
+}
+
+- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
+	// FOLLOWING CODE IS A MESS. Dread lightly.
+	// Thanks for the heads up, past me, but I'll just dive right in
+	
+	// NOTE FROM BEAT 1.1 r4:
+	// The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
+	
+	// On to the very dangerous stuff :-) fuck me :----)
+	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
+	NSString *string = [self.text substringWithRange:range];
+	
+	NSInteger omissionStartsAt = NSNotFound;
+	NSInteger omissionEndsAt = NSNotFound;
+	
+	if (sceneToMove.omitted) {
+		// We need to find out where the omission begins & ends
+		NSInteger idx = [self.parser.lines indexOfObject:sceneToMove.line];
+		if (idx == NSNotFound) return; // Shouldn't happen
+		
+		if (idx > 0) {
+			// Look for start of omission, but break when encountering an outline item
+			for (NSInteger i = idx - 1; i >= 0; i++) {
+				Line *prevLine = self.lines[i];
+				if (prevLine.type == heading || prevLine.type == synopse || prevLine.type == section) break;
+				else if (prevLine.omitOut && [prevLine.string rangeOfString:@"/*"].location != NSNotFound) {
+					omissionStartsAt = prevLine.position + [prevLine.string rangeOfString:@"/*"].location;
+					break;
+				}
+			}
+			
+			// Look for end of omission
+			for (NSInteger i = idx + 1; i < self.lines.count; i++) {
+				Line *nextLine = self.lines[i];
+				if (nextLine.type == heading || nextLine.type == section) break;
+				else if (nextLine.omitIn && [nextLine.string rangeOfString:@"*/"].location != NSNotFound) {
+					omissionEndsAt = nextLine.position + [nextLine.string rangeOfString:@"*/"].location + 2;
+				}
+			}
+		}
+		
+	
+		// Recreate range to represent the actual range with omission symbols
+		// (if applicable)
+		NSInteger loc = (omissionStartsAt == NSNotFound) ? sceneToMove.position : omissionStartsAt;
+		NSInteger len = (omissionEndsAt == NSNotFound) ? (sceneToMove.position + sceneToMove.length) - loc : omissionEndsAt - loc;
+		
+		range = (NSRange){ loc, len };
+		
+		string = [self.text substringWithRange:range];
+		
+		// Add omission markup if needed
+		if (omissionStartsAt == NSNotFound) string = [NSString stringWithFormat:@"\n/*\n\n%@", string];
+		if (omissionEndsAt == NSNotFound) string = [string stringByAppendingString:@"\n*/\n\n"];
+		
+		// Normal omitted blocks end with */, so add some line breaks if needed
+		if ([[string substringFromIndex:string.length - 2] isEqualToString:@"*/"]) string = [string stringByAppendingString:@"\n\n"];
+	}
+	
+	// Create a new outline before trusting it
+	NSMutableArray *outline = [self getOutlineItems];
+	
+	// When an item is dropped at the end, its target index will be +1 from the last item
+	bool moveToEnd = false;
+	if (to >= outline.count) {
+		to = outline.count - 1;
+		moveToEnd = true;
+	}
+		
+	if (sceneToMove.type == synopse) {
+		// We need to add a line break for synopsis lines, because they only span for a single line.
+		// Moving them around could possibly break parsing.
+		string = [string stringByAppendingString:@"\n"];
+	}
+	
+	// Scene before which this scene will be moved, if not moved to the end
+	OutlineScene *sceneAfter;
+	if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
+	
+	if (!moveToEnd) {
+		[self moveStringFrom:range to:sceneAfter.position actualString:string];
+	} else {
+		[self moveStringFrom:range to:self.text.length actualString:string];
+	}
 }
 
 // There is no shortage of ugliness in the world.
@@ -4256,8 +4339,7 @@ static NSString *revisionAttribute = @"Revision";
 #pragma mark - Outline View
 
 - (void)setupOutlineView {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
-	[self hideFilterView];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(searchOutline) name:NSControlTextDidChangeNotification object:self.outlineSearchField];
 }
 
 - (NSMutableArray *)getOutlineItems {
@@ -4273,7 +4355,8 @@ static NSString *revisionAttribute = @"Revision";
 - (void)searchOutline {
 	// This should probably be moved to BeatOutlineView, too.
 	// Don't search if it's only spaces
-	if ([_outlineSearchField.stringValue containsOnlyWhitespace] || _outlineSearchField.stringValue.length < 1) {
+	if (_outlineSearchField.stringValue.containsOnlyWhitespace ||
+		_outlineSearchField.stringValue.length < 1) {
         [self.outlineView.filters byText:@""];
 	}
 	
@@ -4284,14 +4367,6 @@ static NSString *revisionAttribute = @"Revision";
 	[self maskScenes];
 }
 
-#pragma mark - Outline View data source, delegation & other madness
-
-/*
- 
- Could we move all of this into another class? Just hook it in IB and so on.
- 
- */
-
 - (void)reloadOutline {
 	// Create outline
 	_outline = [self getOutlineItems];
@@ -4299,100 +4374,6 @@ static NSString *revisionAttribute = @"Revision";
 	return;
 }
 
-- (void)scrollOutlineToCurrentScene:(OutlineScene*)scene {
-	if (!scene) scene = _currentScene;
-	
-	// Check if we have filtering turned on, and do nothing if scene is not in the filter results
-	if (self.filteredOutline.count) {
-		if (![self.filteredOutline containsObject:scene]) return;
-	}
-
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
-			context.allowsImplicitAnimation = YES;
-			[self.outlineView scrollRowToVisible:[self.outlineView rowForItem:scene]];
-		} completionHandler:NULL];
-	});
-}
-
-- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
-	// FOLLOWING CODE IS A MESS. Dread lightly.
-	// Thanks for the heads up, past me, but I'll just dive right in
-	
-	// NOTE FROM BEAT 1.1 r4:
-    // The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
-	
-	// On to the very dangerous stuff :-) fuck me :----)
-	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
-	NSString *string = [self.text substringWithRange:range];
-	
-	NSInteger omissionStartsAt = NSNotFound;
-	NSInteger omissionEndsAt = NSNotFound;
-	
-	if (sceneToMove.omitted) {
-		// We need to find out where the omission begins & ends
-		NSInteger idx = [self.parser.lines indexOfObject:sceneToMove.line];
-		if (idx == NSNotFound) return; // Shouldn't happen
-		
-		if (idx > 0) {
-			// Look for start of omission, but break when encountering an outline item
-			for (NSInteger i = idx - 1; i >= 0; i++) {
-				Line *prevLine = self.lines[i];
-				if (prevLine.type == heading || prevLine.type == synopse || prevLine.type == section) break;
-				else if (prevLine.omitOut && [prevLine.string rangeOfString:@"/*"].location != NSNotFound) {
-					omissionStartsAt = prevLine.position + [prevLine.string rangeOfString:@"/*"].location;
-					break;
-				}
-			}
-			
-			// Look for end of omission
-			for (NSInteger i = idx + 1; i < self.lines.count; i++) {
-				Line *nextLine = self.lines[i];
-				if (nextLine.type == heading || nextLine.type == section) break;
-				else if (nextLine.omitIn && [nextLine.string rangeOfString:@"*/"].location != NSNotFound) {
-					omissionEndsAt = nextLine.position + [nextLine.string rangeOfString:@"*/"].location + 2;
-				}
-			}
-		}
-		
-	
-		// Recreate range to represent the actual range with omission symbols
-		// (if applicable)
-		NSInteger loc = (omissionStartsAt == NSNotFound) ? sceneToMove.position : omissionStartsAt;
-		NSInteger len = (omissionEndsAt == NSNotFound) ? (sceneToMove.position + sceneToMove.length) - loc : omissionEndsAt - loc;
-		
-		range = (NSRange){ loc, len };
-		
-		string = [self.text substringWithRange:range];
-		
-		// Add omission markup if needed
-		if (omissionStartsAt == NSNotFound) string = [NSString stringWithFormat:@"\n/*\n\n%@", string];
-		if (omissionEndsAt == NSNotFound) string = [string stringByAppendingString:@"\n*/\n\n"];
-		
-		// Normal omitted blocks end with */, so add some line breaks if needed
-		if ([[string substringFromIndex:string.length - 2] isEqualToString:@"*/"]) string = [string stringByAppendingString:@"\n\n"];
-	}
-	
-	// Create a new outline before trusting it
-	NSMutableArray *outline = [self getOutlineItems];
-	
-	// When an item is dropped at the end, its target index will be +1 from the last item
-	bool moveToEnd = false;
-	if (to >= outline.count) {
-		to = outline.count - 1;
-		moveToEnd = true;
-	}
-	
-	// Scene before which this scene will be moved, if not moved to the end
-	OutlineScene *sceneAfter;
-	if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
-		
-	if (!moveToEnd) {
-		[self moveStringFrom:range to:sceneAfter.position actualString:string];
-	} else {
-		[self moveStringFrom:range to:self.text.length actualString:string];
-	}
-}
 
 /*
  
@@ -5010,18 +4991,6 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Advanced Filtering
 
-- (IBAction)toggleFilterView:(id)sender {
-	NSButton *button = (NSButton*)sender;
-	
-	if (button.state == NSControlStateValueOn) {
-		[self.filterViewHeight.animator setConstant:75.0];
-	} else {
-		[_filterViewHeight.animator setConstant:0.0];
-	}
-}
-- (void)hideFilterView {
-	[_filterViewHeight setConstant:0.0];
-}
 
 - (void)maskScenes {
 	// If there is no filtered outline, just reset everything

@@ -8,7 +8,8 @@
 
 /*
  
- I'm in the process of moving all of the outline stuff here and out of the Document
+ BeatOutlineView uses a temporary structure (BeatSceneTree + BeatSceneTreeItem)
+ to handle the sections. Represented item is still always an OutlineScene.
  
  */
 
@@ -53,6 +54,10 @@
 //    2021 edit: YOU STILL HAVEN'T FIXED ANY OF THE PROBLEMS STATED ABOVE.
 //	  If you can't make a big enough profit without using slave labour, maybe
 //    you should go FUCK YOURSELVES.
+//
+//	  2022 edit: Ok, so your latest OS versions support IBOutletCollection,
+//	  but you are STILL using basically slave labour in China and other countries.
+//	  FUCK YOU. Bring down capitalism, please.
 
 //    So, back to the code:
 
@@ -81,12 +86,14 @@
 	self.delegate = self;
 	self.dataSource = self;
 	
-	self.filters = [[SceneFiltering alloc] init];
+	self.filters = SceneFiltering.new;
 	_filters.editorDelegate = self.editorDelegate;
 	self.filteredOutline = [NSMutableArray array];
 	
 	[self registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
+	
+	[self hideFilterView];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
@@ -112,6 +119,7 @@
 - (NSTouchBar*)makeTouchBar {
 	return _touchBar;
 }
+
 
 #pragma mark - Reload data
 
@@ -143,7 +151,6 @@
 	OutlineScene *expandedSection = [notification.userInfo valueForKey:@"NSObject"];
 	[_collapsed removeObject:expandedSection.line];
 }
-
 
 
 #pragma mark - Delegation
@@ -221,11 +228,10 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	_editing = NO;
+		
+	if (![item isKindOfClass:[OutlineScene class]]) return NO;
 	
-	if ([item isKindOfClass:[OutlineScene class]]) {
-		[self.editorDelegate scrollToScene:item];
-	}
-	
+	[self.editorDelegate scrollToScene:item];
 	return YES;
 }
 
@@ -304,8 +310,16 @@
 			position = scene.position;
 		}
 		else {
-			to = self.outline.count;
-			position = self.editorDelegate.text.length;
+			if (targetItem) {
+				// Dropped at the end of a section
+				BeatSceneTreeItem *sceneTreeItem = [_sceneTree itemWithScene:targetItem];
+				to = [self.outline indexOfObject:sceneTreeItem.lastScene] + 1;
+				position = sceneTreeItem.lastScene.position + sceneTreeItem.lastScene.length;
+				
+			} else {
+				to = self.outline.count;
+				position = self.editorDelegate.text.length;
+			}
 		}
 	}
 	
@@ -353,6 +367,10 @@
 	if (self.filteredOutline.count) {
 		if (![self.filteredOutline containsObject:scene]) return;
 	}
+	
+	// If the current scene is inside a section, show the section
+	BeatSceneTreeItem *treeItem = [_sceneTree itemWithScene:scene];
+	if (treeItem.parent) [self expandItem:treeItem.parent];
 
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
@@ -367,7 +385,7 @@
 - (void) filterOutline {
 	// We don't need to GET outline at this point, let's use the cached one
 	[_filteredOutline removeAllObjects];
-	if (![_filters activeFilters]) return;
+	if (!_filters.activeFilters) return;
 	
 	if (_filters.character.length > 0) {
 		[_filters byCharacter:self.filters.character];

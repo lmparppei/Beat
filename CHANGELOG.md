@@ -1,5 +1,11 @@
 # Changelog
 
+## Beat 1.92.8
+
+- Some localization bugs fixed
+- Collapsing sections in Outline View, with reorganizing whole sections
+- Fixed a bug with filtering scenes by character in OutlineScene objects
+
 
 ## Beat 1.92.7
 

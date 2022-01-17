@@ -110,7 +110,7 @@
 
 -(NSUInteger)length {
 	if (!_delegate) return _length;
-	if (self.type == synopse) return self.line.length;
+	if (self.type == synopse) return self.line.range.length;
 	
 	NSArray *lines = self.delegate.lines;
 	NSInteger index = [lines indexOfObject:self.line];
@@ -140,11 +140,12 @@
 	
 	NSMutableSet *names = NSMutableSet.set;
 	
-	for (NSInteger i = index; i < lines.count; i++) {
+	for (NSInteger i = index + 1; i < lines.count; i++) {
 		Line *line = lines[i];
 		if (line.isOutlineElement && line.type != synopse) break;
 		else if (line.type == character || line.type == dualDialogueCharacter) {
-			[names addObject:line.characterName];
+			NSString *characterName = line.characterName;
+			if (characterName.length) [names addObject:line.characterName];
 		}
 	}
 	

@@ -1204,7 +1204,8 @@ and incomprehensible system of recursion.
 		precedingLine.string.length == 0 ||
 		line.position == 0 ||
 		[precedingLine.trimmed isEqualToString:@"*/"] ||
-		[precedingLine.trimmed isEqualToString:@"/*"]) {
+		[precedingLine.trimmed isEqualToString:@"/*"] ||
+		(precedingLine.type == synopse || precedingLine.type == section)) {
         if (length >= 3) {
             NSString* firstChars = [[string substringToIndex:3] lowercaseString];
 			
