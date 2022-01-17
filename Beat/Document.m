@@ -112,6 +112,7 @@
 #import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
 #import "BeatMeasure.h"
+#import "BeatColorMenuItem.h"
 
 #import "BeatPlugin.h"
 #import "BeatPluginManager.h"
@@ -810,12 +811,6 @@
 	}
 	[self.tabView selectTabViewItem:[self.tabView tabViewItemAtIndex:index]];
 }
-- (void)showTitleBar {
-	_documentWindow.titlebarAppearsTransparent = NO;
-}
-- (void)hideTitleBar {
-	_documentWindow.titlebarAppearsTransparent = YES;
-}
 
 - (bool)isFullscreen
 {
@@ -1244,7 +1239,7 @@
 	[_documentWindow makeFirstResponder:self.textView];
 }
 
-- (NSString *)getText
+- (NSString *)text
 {
     return self.textView.string;
 }
@@ -1342,7 +1337,7 @@
     [saveDialog setNameFieldStringValue:[self fileNameString]];
     [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
-			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.getText attributedString:self.textView.attributedString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
+			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.text attributedString:self.textView.attributedString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
             [fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
     }];
@@ -1373,7 +1368,7 @@
 		return self.currentScene;
 	}
 	
-	if (position >= self.getText.length) {
+	if (position >= self.text.length) {
 		return self.parser.outline.lastObject;
 	}
 	
@@ -1568,7 +1563,7 @@
                     }
                 }
             } else if ([replacementString isEqualToString:@")"] || [replacementString isEqualToString:@"]"]) {
-				if (affectedCharRange.location < [self getText].length) {
+				if (affectedCharRange.location < self.text.length) {
 					unichar currentCharacter = [[self.textView string] characterAtIndex:affectedCharRange.location];
 					if (currentCharacter == ')' && [replacementString isEqualToString:@")"]) {
 						[self.textView setSelectedRange:NSMakeRange(affectedCharRange.location + 1, 0)];
@@ -1747,7 +1742,7 @@
 
 - (Line*)getCurrentLine {
 	NSInteger location = self.selectedRange.location;
-	if (location >= self.getText.length) return self.parser.lines.lastObject;
+	if (location >= self.text.length) return self.parser.lines.lastObject;
 	
 	// Don't fetch the line if we already know it
 	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
@@ -1879,13 +1874,7 @@
 		if (self.sidebarVisible) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
 				[self reloadOutline];
-				if (self.currentScene) [self.outlineView scrollToScene:self.currentScene];
-				
-				if (self.outlineView.filteredOutline.count < 1) {
-					self.outlineView.currentScene = sceneIndex;
-				} else {
-					self.outlineView.currentScene = [self.outlineView.filteredOutline indexOfObject:self.currentScene];
-				}
+				if (self.currentScene) [self.outlineView scrollToScene:self.currentScene];				
 			});
 		}
 	}
@@ -1912,39 +1901,39 @@
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index
 {
 	[self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
-	[[[self undoManager] prepareWithInvocationTarget:self] removeString:string atIndex:index];
+	[[self.undoManager prepareWithInvocationTarget:self] removeString:string atIndex:index];
 }
 
 - (void)removeString:(NSString*)string atIndex:(NSUInteger)index
 {
-	[self replaceCharactersInRange:NSMakeRange(index, [string length]) withString:@""];
-	[[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:index];
+	[self replaceCharactersInRange:NSMakeRange(index, string.length) withString:@""];
+	[[self.undoManager prepareWithInvocationTarget:self] addString:string atIndex:index];
 }
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString
 {
 	// Replace with undo registration
 	NSString *oldString = [self.textView.string substringWithRange:range];
 	[self replaceCharactersInRange:range withString:newString];
-	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
+	[[self.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
 }
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
 {
 	// Replace with undo registration
-	NSRange range = NSMakeRange(index, [string length]);
+	NSRange range = NSMakeRange(index, string.length);
 	[self replaceCharactersInRange:range withString:newString];
-	[[[self undoManager] prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
+	[[self.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
 }
 - (void)removeRange:(NSRange)range {
-	NSString *string = [self.getText substringWithRange:range];
+	NSString *string = [self.text substringWithRange:range];
 	[self replaceCharactersInRange:range withString:@""];
-	[[[self undoManager] prepareWithInvocationTarget:self] addString:string atIndex:range.location];
+	[[self.undoManager prepareWithInvocationTarget:self] addString:string atIndex:range.location];
 }
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string {
 	_moving = YES;
-	NSString *oldString = [self.getText substringWithRange:range];
+	NSString *oldString = [self.text substringWithRange:range];
 	
 	NSString *stringToMove = string;
-	NSInteger length = self.getText.length;
+	NSInteger length = self.text.length;
 	
 	if (position > length) position = length;
 	
@@ -1969,13 +1958,13 @@
 		undoPosition = range.location;
 	}
 	
-	[[[self undoManager] prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldString];
-	[[self undoManager] setActionName:@"Move Scene"];
+	[[self.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldString];
+	[self.undoManager setActionName:@"Move Scene"];
 	
 	_moving = NO;
 }
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
-	NSString *stringToMove = [self.getText substringWithRange:range];
+	NSString *stringToMove = [self.text substringWithRange:range];
 	[self moveStringFrom:range to:position actualString:stringToMove];
 }
 
@@ -3038,10 +3027,10 @@ static NSString *revisionAttribute = @"Revision";
 - (IBAction)addTitlePage:(id)sender
 {
     if ([self selectedTab] == 0) {
-        if ([[self getText] length] < 6) {
+        if (self.text.length < 6) {
             [self addString:[self titlePage] atIndex:0];
             self.textView.selectedRange = NSMakeRange(7, 0);
-        } else if (![[[self getText] substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
+        } else if (![[self.text substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
             [self addString:[self titlePage] atIndex:0];
         }
     }
@@ -3103,12 +3092,12 @@ static NSString *revisionAttribute = @"Revision";
         if (cursorLocation.location != NSNotFound) {
             //Step forward to end of line
             NSUInteger location = cursorLocation.location + cursorLocation.length;
-            NSUInteger length = [[self getText] length];
+            NSUInteger length = self.text.length;
             while (true) {
                 if (location == length) {
                     break;
                 }
-                NSString *nextChar = [[self getText] substringWithRange:NSMakeRange(location, 1)];
+                NSString *nextChar = [self.text substringWithRange:NSMakeRange(location, 1)];
                 if ([nextChar isEqualToString:@"\n"]) {
                     break;
                 }
@@ -3212,57 +3201,57 @@ static NSString *revisionAttribute = @"Revision";
 - (void)format:(NSRange)cursorLocation beginningSymbol:(NSString*)beginningSymbol endSymbol:(NSString*)endSymbol
 {
     //Checking if the cursor location is vaild
-    if (cursorLocation.location  + cursorLocation.length <= [[self getText] length]) {
+    if (cursorLocation.location  + cursorLocation.length <= self.text.length) {
         //Checking if the selected text is allready formated in the specified way
         NSString *selectedString = [self.textView.string substringWithRange:cursorLocation];
-        NSInteger selectedLength = [selectedString length];
-        NSInteger symbolLength = [beginningSymbol length] + [endSymbol length];
+        NSInteger selectedLength = selectedString.length;
+        NSInteger symbolLength = beginningSymbol.length + endSymbol.length;
         
         NSInteger addedCharactersBeforeRange;
         NSInteger addedCharactersInRange;
         
         if (selectedLength >= symbolLength &&
-            [[selectedString substringToIndex:[beginningSymbol length]] isEqualToString:beginningSymbol] &&
-            [[selectedString substringFromIndex:selectedLength - [endSymbol length]] isEqualToString:endSymbol]) {
+            [[selectedString substringToIndex:beginningSymbol.length] isEqualToString:beginningSymbol] &&
+            [[selectedString substringFromIndex:selectedLength - endSymbol.length] isEqualToString:endSymbol]) {
             
             //The Text is formated, remove the formatting
             [self replaceCharactersInRange:cursorLocation
-                                withString:[selectedString substringWithRange:NSMakeRange([beginningSymbol length],
-                                                                                          selectedLength - [beginningSymbol length] - [endSymbol length])]];
+                                withString:[selectedString substringWithRange:NSMakeRange(beginningSymbol.length,
+                                                                                          selectedLength - beginningSymbol.length - endSymbol.length)]];
             //Put a corresponding undo action
-            [[[self undoManager] prepareWithInvocationTarget:self] format:NSMakeRange(cursorLocation.location,
-                                                                                      cursorLocation.length - [beginningSymbol length] - [endSymbol length])
-                                                          beginningSymbol:beginningSymbol
-                                                                endSymbol:endSymbol];
+            [[self.undoManager prepareWithInvocationTarget:self] format:NSMakeRange(cursorLocation.location,
+																					cursorLocation.length - beginningSymbol.length - endSymbol.length)
+														beginningSymbol:beginningSymbol
+															  endSymbol:endSymbol];
             addedCharactersBeforeRange = 0;
-            addedCharactersInRange = -([beginningSymbol length] + [endSymbol length]);
+            addedCharactersInRange = -(beginningSymbol.length + endSymbol.length);
         } else {
             //The Text isn't formated, but let's alter the cursor range and check again because there might be formatting right outside the selected area
             NSRange modifiedCursorLocation = cursorLocation;
             
-            if (cursorLocation.location >= [beginningSymbol length] &&
-                (cursorLocation.location + cursorLocation.length) <= ([[self getText] length] - [endSymbol length])) {
+            if (cursorLocation.location >= beginningSymbol.length &&
+                (cursorLocation.location + cursorLocation.length) <= (self.text.length - endSymbol.length)) {
                 
-                if (modifiedCursorLocation.location + modifiedCursorLocation.length + [endSymbol length] - 1 <= [[self getText] length]) {
-                    modifiedCursorLocation = NSMakeRange(modifiedCursorLocation.location - [beginningSymbol length],
-                                                         modifiedCursorLocation.length + [beginningSymbol length]  + [endSymbol length]);
+                if (modifiedCursorLocation.location + modifiedCursorLocation.length + endSymbol.length - 1 <= self.text.length) {
+                    modifiedCursorLocation = NSMakeRange(modifiedCursorLocation.location - beginningSymbol.length,
+                                                         modifiedCursorLocation.length + beginningSymbol.length  + endSymbol.length);
                 }
             }
             NSString *newSelectedString = [self.textView.string substringWithRange:modifiedCursorLocation];
             //Repeating the check from above
-            if ([newSelectedString length] >= symbolLength &&
-                [[newSelectedString substringToIndex:[beginningSymbol length]] isEqualToString:beginningSymbol] &&
-                [[newSelectedString substringFromIndex:[newSelectedString length] - [endSymbol length]] isEqualToString:endSymbol]) {
+            if (newSelectedString.length >= symbolLength &&
+                [[newSelectedString substringToIndex:beginningSymbol.length] isEqualToString:beginningSymbol] &&
+                [[newSelectedString substringFromIndex:newSelectedString.length - endSymbol.length] isEqualToString:endSymbol]) {
                 
                 //The Text is formated outside of the original selection, remove!!!
                 [self replaceCharactersInRange:modifiedCursorLocation
-                                    withString:[newSelectedString substringWithRange:NSMakeRange([beginningSymbol length],
-                                                                                                 [newSelectedString length] - [beginningSymbol length] - [endSymbol length])]];
-                [[[self undoManager] prepareWithInvocationTarget:self] format:NSMakeRange(modifiedCursorLocation.location,
-                                                                                          modifiedCursorLocation.length - [beginningSymbol length] - [endSymbol length])
-                                                              beginningSymbol:beginningSymbol
-                                                                    endSymbol:endSymbol];
-                addedCharactersBeforeRange = - [beginningSymbol length];
+                                    withString:[newSelectedString substringWithRange:NSMakeRange(beginningSymbol.length,
+                                                                                                 newSelectedString.length - beginningSymbol.length - endSymbol.length)]];
+                [[self.undoManager prepareWithInvocationTarget:self] format:NSMakeRange(modifiedCursorLocation.location,
+																						modifiedCursorLocation.length - beginningSymbol.length - endSymbol.length)
+															beginningSymbol:beginningSymbol
+																  endSymbol:endSymbol];
+                addedCharactersBeforeRange = - beginningSymbol.length;
                 addedCharactersInRange = 0;
             } else {
                 //The text really isn't formatted. Just add the formatting using the original data.
@@ -3270,11 +3259,11 @@ static NSString *revisionAttribute = @"Revision";
                                     withString:endSymbol];
                 [self replaceCharactersInRange:NSMakeRange(cursorLocation.location, 0)
                                     withString:beginningSymbol];
-                [[[self undoManager] prepareWithInvocationTarget:self] format:NSMakeRange(cursorLocation.location,
-                                                                                          cursorLocation.length + [beginningSymbol length] + [endSymbol length])
+                [[self.undoManager prepareWithInvocationTarget:self] format:NSMakeRange(cursorLocation.location,
+                                                                                          cursorLocation.length + beginningSymbol.length + endSymbol.length)
                                                               beginningSymbol:beginningSymbol
                                                                     endSymbol:endSymbol];
-                addedCharactersBeforeRange = [beginningSymbol length];
+                addedCharactersBeforeRange = beginningSymbol.length;
                 addedCharactersInRange = 0;
             }
         }
@@ -3331,7 +3320,7 @@ static NSString *revisionAttribute = @"Revision";
         if (indexOfLineBeginning == 0) {
             break;
         }
-        NSString *characterBefore = [[self getText] substringWithRange:NSMakeRange(indexOfLineBeginning - 1, 1)];
+        NSString *characterBefore = [self.text substringWithRange:NSMakeRange(indexOfLineBeginning - 1, 1)];
         if ([characterBefore isEqualToString:@"\n"]) {
             break;
         }
@@ -3345,14 +3334,14 @@ static NSString *revisionAttribute = @"Revision";
     // (because the beginning of the line is the end of the document or is indicated by the next character being a newline)
     // The range for the first charater in line needs to be an empty string
 	
-    if (indexOfLineBeginning == [[self getText] length]) {
+    if (indexOfLineBeginning == self.text.length) {
         firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
-    } else if ([[[self getText] substringWithRange:NSMakeRange(indexOfLineBeginning, 1)] isEqualToString:@"\n"]){
+    } else if ([[self.text substringWithRange:NSMakeRange(indexOfLineBeginning, 1)] isEqualToString:@"\n"]){
         firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
     } else {
         firstCharacterRange = NSMakeRange(indexOfLineBeginning, 1);
     }
-    NSString *firstCharacter = [[self getText] substringWithRange:firstCharacterRange];
+    NSString *firstCharacter = [self.text substringWithRange:firstCharacterRange];
     
     // If the line is already forced to the desired type, remove the force
     if ([firstCharacter isEqualToString:symbol]) {
@@ -3393,7 +3382,7 @@ static NSString *revisionAttribute = @"Revision";
 	[self format:range beginningSymbol:strikeoutSymbolOpen endSymbol:strikeoutSymbolClose];
 }
 - (NSRange)rangeUntilLineBreak:(NSRange)range {
-	NSString *text = [self.getText substringWithRange:range];
+	NSString *text = [self.text substringWithRange:range];
 	if ([text rangeOfString:@"\n"].location != NSNotFound) {
 		NSInteger lineBreakIndex = [text rangeOfString:@"\n"].location;
 		return (NSRange){ range.location, lineBreakIndex };
@@ -3422,7 +3411,7 @@ static NSString *revisionAttribute = @"Revision";
 			if (item.count > 2) color = item[2];
 			
 			// Ensure the revision is in range and then paint it 
-			if (len > 0 && loc + len <= self.getText.length) {
+			if (len > 0 && loc + len <= self.text.length) {
 				RevisionType type;
 				NSRange range = (NSRange){loc, len};
 				if ([key isEqualToString:@"Addition"]) type = RevisionAddition;
@@ -3621,7 +3610,7 @@ static NSString *revisionAttribute = @"Revision";
 	_sceneNumberLabelUpdateOff = true;
 	for (OutlineScene * scene in self.parser.scenes) {
 		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
-			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, [scene.line.string length])];
+			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, scene.line.length)];
 			if ([results count]) {
 				NSTextCheckingResult * result = [results objectAtIndex:0];
 				NSRange sceneNumberRange = NSMakeRange(scene.line.position + result.range.location, result.range.length);
@@ -3637,7 +3626,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)lockSceneNumbers:(id)sender
 {
-	NSString *originalText = [NSString  stringWithString:[self getText]];
+	NSString *originalText = [NSString  stringWithString:self.text];
 	NSMutableString *text = [NSMutableString string];
 	
 	NSInteger sceneNumber = [self.documentSettings getInt:@"Scene Numbering Starts From"];
@@ -3664,7 +3653,7 @@ static NSString *revisionAttribute = @"Revision";
 	[self ensureLayout];
 	[self.undoManager enableUndoRegistration];
 	
-	[[[self undoManager] prepareWithInvocationTarget:self] undoSceneNumbering:originalText];
+	[[self.undoManager prepareWithInvocationTarget:self] undoSceneNumbering:originalText];
 	
 	[self.parser createOutline];
 	[self updateSceneNumberLabels:0];
@@ -3825,7 +3814,7 @@ static NSString *revisionAttribute = @"Revision";
 	else if (menuItem.action == @selector(print:) || menuItem.action == @selector(openPDFExport:)) {
 	//else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"Create PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
 		// Some magic courtesy of Hendrik Noeller
-        NSArray* words = [self.getText componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSArray* words = [self.text componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         NSString* visibleCharacters = [words componentsJoinedByString:@""];
         if (visibleCharacters.length == 0) return NO;
 	}
@@ -4129,7 +4118,7 @@ static NSString *revisionAttribute = @"Revision";
 		self.outline = [self getOutlineItems];
 		self.currentScene = [self getCurrentScene];
 		
-		NSString *rawText = [self getText];
+		NSString *rawText = self.text;
 		
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 			__block NSString *html = [self.preview createPreviewFor:rawText type:BeatPrintPreview];
@@ -4284,7 +4273,7 @@ static NSString *revisionAttribute = @"Revision";
 - (void)searchOutline {
 	// This should probably be moved to BeatOutlineView, too.
 	// Don't search if it's only spaces
-	if ([_outlineSearchField.stringValue containsOnlyWhitespace] || [_outlineSearchField.stringValue length] < 1) {
+	if ([_outlineSearchField.stringValue containsOnlyWhitespace] || _outlineSearchField.stringValue.length < 1) {
         [self.outlineView.filters byText:@""];
 	}
 	
@@ -4335,7 +4324,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	// On to the very dangerous stuff :-) fuck me :----)
 	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
-	NSString *string = [self.getText substringWithRange:range];
+	NSString *string = [self.text substringWithRange:range];
 	
 	NSInteger omissionStartsAt = NSNotFound;
 	NSInteger omissionEndsAt = NSNotFound;
@@ -4374,7 +4363,7 @@ static NSString *revisionAttribute = @"Revision";
 		
 		range = (NSRange){ loc, len };
 		
-		string = [self.getText substringWithRange:range];
+		string = [self.text substringWithRange:range];
 		
 		// Add omission markup if needed
 		if (omissionStartsAt == NSNotFound) string = [NSString stringWithFormat:@"\n/*\n\n%@", string];
@@ -4401,7 +4390,7 @@ static NSString *revisionAttribute = @"Revision";
 	if (!moveToEnd) {
 		[self moveStringFrom:range to:sceneAfter.position actualString:string];
 	} else {
-		[self moveStringFrom:range to:self.getText.length actualString:string];
+		[self moveStringFrom:range to:self.text.length actualString:string];
 	}
 }
 
@@ -4499,8 +4488,8 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)setSceneColorForRange:(id)sender {
 	// Called from text view context menu
-	NSMenuItem *menuItem = sender;
-	NSString *color = menuItem.identifier.uppercaseString;
+	BeatColorMenuItem *item = sender;
+	NSString *color = item.colorKey;
 	
 	NSRange range = self.selectedRange;
 	NSArray *scenes = [_parser scenesInRange:range];
@@ -4511,8 +4500,8 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (IBAction)setSceneColor:(id)sender {
-	NSMenuItem *item = sender;
-	NSString *colorName = item.accessibilityIdentifier;
+	BeatColorMenuItem *item = sender;
+	NSString *colorName = item.colorKey;
 	
 	if (self.outlineView.clickedRow > -1) {
 		id selectedScene = nil;
@@ -5052,7 +5041,7 @@ static NSString *revisionAttribute = @"Revision";
 		if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) {
 			continue;
 		}
-		NSRange sceneRange = NSMakeRange([scene position], [scene length]);
+		NSRange sceneRange = NSMakeRange([scene position], scene.length);
 
 		// Add scene ranges to TextView's masks
 		NSValue* rangeValue = [NSValue valueWithRange:sceneRange];
@@ -5148,7 +5137,7 @@ triangle walks
 
 					CGFloat position = [pageBreak[@"position"] floatValue];
 					
-					NSRange characterRange = NSMakeRange(line.position, [line.string length]);
+					NSRange characterRange = NSMakeRange(line.position, line.string.length);
 					NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 					
 					NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
@@ -5302,10 +5291,10 @@ triangle walks
 		NSString *titlePage = self.titlePageEditor.result;
 		
 		// Find the range
-		if (self.getText.length < 6) {
+		if (self.text.length < 6) {
 			// If there is not much text in the script, just add the title page in the beginning of the document, followed by newlines
 			[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
-		} else if (![[[self getText] substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
+		} else if (![[self.text substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
 			// There is no title page present here either. We're just careful not to cause errors with ranges
 			[self addString:[NSString stringWithFormat:@"%@\n\n", titlePage] atIndex:0];
 		} else {
@@ -5317,10 +5306,10 @@ triangle walks
 					break;
 				}
 			}
-			if (titlePageEnd < 0) titlePageEnd = self.getText.length;
+			if (titlePageEnd < 0) titlePageEnd = self.text.length;
 			
 			NSRange titlePageRange = NSMakeRange(0, titlePageEnd);
-			NSString *oldTitlePage = [self.getText substringWithRange:titlePageRange];
+			NSString *oldTitlePage = [self.text substringWithRange:titlePageRange];
 
 			[self replaceString:oldTitlePage withString:titlePage atIndex:0];
 		}

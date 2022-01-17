@@ -9,6 +9,7 @@
 #import "BeatTimelineItem.h"
 #import "BeatColors.h"
 #import "OutlineScene.h"
+#import "BeatColorMenuItem.h"
 #import <Quartz/Quartz.h>
 
 #define TEXT_PADDING 4.0
@@ -299,12 +300,13 @@
 }
 - (BOOL)isFlipped { return YES; }
 
+
 #pragma mark - Contextual Menus
 
 -(NSMenu *)menuForEvent:(NSEvent *)event {
 	_delegate.clickedItem = self.representedItem;
 
-	NSMenu *menu = [self.menu copy];
+	NSMenu *menu = self.menu.copy;
 	[menu addItem:NSMenuItem.separatorItem];
 	
     for (NSMenuItem *menuItem in menu.itemArray) {
@@ -314,7 +316,6 @@
 	// List Storylines
 	for (NSString *storyline in _delegate.storylines) {
 		[menu addItemWithTitle:storyline action:@selector(addStoryline:) keyEquivalent:@""];
-		
 		
 		if (self.delegate.selectedItems.count > 1) {
 			// Check state of multiple items
@@ -359,7 +360,8 @@
 }
 
 - (void)setSceneColor:(id)sender {
-    NSString *color = [(NSMenuItem*)sender identifier].uppercaseString;
+	BeatColorMenuItem *item = sender;
+	NSString *color = item.colorKey;
 	[_delegate setSceneColor:color for:self.representedItem];
 }
 

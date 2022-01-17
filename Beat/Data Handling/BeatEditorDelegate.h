@@ -35,7 +35,7 @@
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
 - (NSMutableArray*)lines;
-- (NSString*)getText;
+- (NSString*)text;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 
 - (NSInteger)lineTypeAt:(NSInteger)index;
@@ -59,8 +59,8 @@
 - (bool)hasChanged;
 - (NSArray*)markers;
 
-- (void)showTitleBar;
-- (void)hideTitleBar;
+//- (void)showTitleBar;
+//- (void)hideTitleBar;
 
 - (void)scrollToLine:(Line*)line;
 

@@ -28,10 +28,7 @@
 
 - (void)awakeFromNib {
 	_buttonDefaultY = _outlineButtonY.constant;
-	
-	// Save buttons for later use
-	_editorButtons = @[_outlineButton, _cardsButton, _timelineButton, _previewButton, _quickSettingsButton];
-		
+			
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:trackingArea];
@@ -78,33 +75,14 @@
 }
 
 - (void)hideButtons {
-	/*
-	if ([self isFullSize]) {
-		NSView *topBar = [self.window standardWindowButton:NSWindowCloseButton].superview;
-		[topBar.animator setAlphaValue:0];
-		[self.window setTitlebarAppearsTransparent:YES];
-	}
-	 */
-	
-	for (NSButton *button in _editorButtons) {
-		[button.animator setAlphaValue:0.0];
-	}
+	[_buttonView.animator setAlphaValue:0.0];
 }
 - (void)hideTimer {
 	[_timerView.animator setAlphaValue:0.0];
 }
 
 - (void)showButtons {
-	/*
-	if ([self isFullSize]) {
-		NSView *topBar = [self.window standardWindowButton:NSWindowCloseButton].superview;
-		[topBar.animator setAlphaValue:1];
-		[self.window setTitlebarAppearsTransparent:NO];
-	}
-	 */
-	for (NSButton *button in _editorButtons) {
-		[button.animator setAlphaValue:1.0];
-	}
+	[_buttonView.animator setAlphaValue:1.0];
 }
 - (void)showTimer {
 	[_timerView.animator setAlphaValue:1.0];
@@ -142,24 +120,25 @@
 // Listen to find bar open/close and move the outline / card view buttons accordingly
 - (void)setFindBarVisible:(BOOL)findBarVisible {
 	[super setFindBarVisible:findBarVisible];
-	CGFloat height = [self findBarView].frame.size.height;
+	CGFloat height = self.findBarView.frame.size.height;
 	
 	// Save original constant
 	if (_buttonDefaultY == 0) _buttonDefaultY = _outlineButtonY.constant;
 	
 	if (!findBarVisible) {
 		_outlineButtonY.constant = _buttonDefaultY;
-		[_editorDelegate hideTitleBar];
+		// [_editorDelegate hideTitleBar];
 		[self.window makeFirstResponder:self.documentView];
 	} else {
 		_outlineButtonY.constant += height;
-		[_editorDelegate showTitleBar];
+		// [_editorDelegate showTitleBar];
 	}
 	
 }
 
-- (void) findBarViewDidChangeHeight {
+- (void)findBarViewDidChangeHeight {
 	if (self.findBarVisible) {
+		NSLog(@"Yo");
 		CGFloat height = self.findBarView.frame.size.height;
 		_outlineButtonY.constant = _buttonDefaultY + height;
 	}

@@ -14,6 +14,9 @@
 "app.manual" = "Manual";
 "app.patchNotes" = "Patch Notes";
 
+"launch.newDocument.subtitle" = "Start a new, blank project";
+"launch.tutorial.subtitle" = "Begin here, if you are new to Beat";
+
 "unlock_document.title" = "Unlock Document";
 "unlock_document.confirm" = "Are you sure you want to unlock the document and allow changes?";
 

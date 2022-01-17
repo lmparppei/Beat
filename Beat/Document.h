@@ -83,7 +83,7 @@ THE SOFTWARE.
 // Tagging
 @property (nonatomic) BeatTagging *tagging;
 
-- (NSString*)getText;
+- (NSString*)text;
 - (NSString*)fileNameString;
 - (void)invalidatePreview;
 

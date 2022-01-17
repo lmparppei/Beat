@@ -14,12 +14,7 @@
 
 @property (weak) IBOutlet id<BeatEditorDelegate> editorDelegate;
 
-// Buttons to hide
-@property (weak) IBOutlet NSButton *outlineButton;
-@property (weak) IBOutlet NSButton *cardsButton;
-@property (weak) IBOutlet NSButton *timelineButton;
-@property (weak) IBOutlet NSButton *previewButton;
-@property (weak) IBOutlet NSButton *quickSettingsButton;
+@property (weak) IBOutlet NSView *buttonView;
 @property (weak) IBOutlet NSView *timerView;
 
 @property (weak) IBOutlet NSLayoutConstraint *outlineButtonY;

@@ -10,7 +10,7 @@
 #import "BeatTimerView.h"
 
 @protocol BeatTimerDelegate <NSObject>
-- (NSString*) getText;
+- (NSString*)text;
 @end
 
 @interface BeatTimer : NSObject <BeatTimerViewDelegate>

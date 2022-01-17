@@ -33,7 +33,7 @@
 }
 
 - (void)edit {
-	[_comparison compare:_delegate.parser.lines with:self.delegate.getText];
+	[_comparison compare:_delegate.parser.lines with:self.delegate.text];
 	
 	for (Line* line in _delegate.parser.lines) {
 		if (line.changed) NSLog(@"changed");

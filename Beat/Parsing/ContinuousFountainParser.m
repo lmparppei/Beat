@@ -2106,6 +2106,25 @@ and incomprehensible system of recursion.
 	return nil;
 }
 
+- (NSArray*)scenesInSection:(OutlineScene*)topSection {
+	if (topSection.type != section) return @[];
+	
+	NSArray *outline = self.outline;
+	NSMutableArray *scenes = NSMutableArray.new;
+	NSInteger idx = [outline indexOfObject:topSection];
+	
+	[scenes addObject:topSection];
+	
+	for (NSInteger i=idx+1; i<outline.count; i++) {
+		OutlineScene* scene = outline[i];
+		if (scene.type == section && scene.sectionDepth <= topSection.sectionDepth) break;
+		
+		[scenes addObject:scene];
+	}
+	
+	return scenes;
+}
+
 - (NSArray*)preprocessForPrinting {
 	[self createOutline];
 	return [self preprocessForPrintingWithLines:self.lines];

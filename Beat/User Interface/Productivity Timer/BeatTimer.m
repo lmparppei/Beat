@@ -45,7 +45,7 @@
 		
 		// Save the script at start to allow for some statistics
 		_charactersTyped = 0;
-		if (self.delegate) _scriptAtStart = [NSString stringWithString:_delegate.getText];
+		if (self.delegate) _scriptAtStart = [NSString stringWithString:_delegate.text];
 				
 		// Set timer
 		[self timerFor:round(seconds)];
@@ -146,7 +146,7 @@
 	[_timerView finish];
 	
 	// Get string for comparison
-	if (self.delegate) _scriptNow = [NSString stringWithString:_delegate.getText];
+	if (self.delegate) _scriptNow = [NSString stringWithString:_delegate.text];
 	
 	[self showAlert];
 	

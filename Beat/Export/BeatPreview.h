@@ -22,7 +22,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (readonly) NSAttributedString *attrTextCache;
-- (NSString*) getText;
+- (NSString*)text;
 
 @end
 

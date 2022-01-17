@@ -523,7 +523,7 @@
 
 - (NSString*)getText
 {
-	return [_delegate getText];
+	return _delegate.text;
 }
 
 - (void)reportError:(NSString*)title withText:(NSString*)string {

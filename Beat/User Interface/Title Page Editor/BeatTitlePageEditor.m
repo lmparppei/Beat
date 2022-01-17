@@ -37,7 +37,7 @@
 }
 
 - (void)parseTitlePage {
-	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:[self.editorDelegate getText]];
+	ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initWithString:self.editorDelegate.text];
 
 	// List of applicable fields
 	NSDictionary* fields = @{

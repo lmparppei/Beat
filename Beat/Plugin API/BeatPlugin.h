@@ -176,7 +176,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
 - (void)focusEditor;
-- (NSString*)getText;
+- (NSString*)text;
 - (OutlineScene*)getCurrentScene;
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
 - (void)forceFormatChangesInRange:(NSRange)range;

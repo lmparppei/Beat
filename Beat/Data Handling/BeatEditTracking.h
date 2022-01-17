@@ -13,7 +13,7 @@
 
 @protocol BeatEditTrackingDelegate <NSObject>
 @property (weak, readonly) ContinuousFountainParser *parser;
-- (NSString*)getText;
+- (NSString*)text;
 @end
 
 @interface BeatEditTracking : NSObject

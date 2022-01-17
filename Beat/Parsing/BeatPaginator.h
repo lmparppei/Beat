@@ -30,7 +30,7 @@
 
 @protocol BeatPaginatorDelegate <NSObject>
 - (NSArray*)lines;
-- (NSString*)getText;
+- (NSString*)text;
 @end
 
 @interface BeatPaginator : NSObject <BeatPaginatorExports>

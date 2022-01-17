@@ -929,10 +929,10 @@ DQ
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
                 <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>
                 <outlet property="importMenu" destination="xR8-x2-hNB" id="9Pt-Ay-c1K"/>
+                <outlet property="launchScreen" destination="HnS-W5-z1w" id="Hnz-lZ-ZRH"/>
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
                 <outlet property="recentFiles" destination="4CT-K1-GgI" id="GVK-Hp-NeQ"/>
-                <outlet property="startModal" destination="HnS-W5-z1w" id="Hnz-lZ-ZRH"/>
                 <outlet property="versionField" destination="N9i-dM-ih2" id="dAs-ED-J0i"/>
                 <outlet property="versionMenu" destination="dbF-KQ-yEw" id="zp5-mG-MLs"/>
             </connections>
@@ -953,7 +953,7 @@ DQ
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" tabbingMode="disallowed" titlebarAppearsTransparent="YES" id="HnS-W5-z1w">
             <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="179" y="217" width="704" height="404"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" appearanceType="darkAqua" id="A0B-k4-6ul">
                 <rect key="frame" x="0.0" y="0.0" width="704" height="404"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1007,7 +1007,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                     <clipView key="contentView" id="d8W-Sp-gT7">
                                         <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <autoresizingMask key="autoresizingMask"/>
                                         <subviews>
                                             <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="qwK-zh-2Ns" id="4CT-K1-GgI">
                                                 <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
@@ -1144,7 +1144,7 @@ DQ
     <resources>
         <image name="B_256" width="256" height="256"/>
         <image name="BeatDocumentIcon" width="512" height="512"/>
-        <image name="doc" catalog="system" width="18" height="20"/>
-        <image name="map" catalog="system" width="21" height="18"/>
+        <image name="doc" catalog="system" width="17" height="20"/>
+        <image name="map" catalog="system" width="20" height="18"/>
     </resources>
 </document>

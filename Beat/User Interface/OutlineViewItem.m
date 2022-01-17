@@ -33,7 +33,7 @@
 	
 	// Create padding for entry
 	NSString *padding = @"";
-	NSString *paddingSpace = @"   ";
+	NSString *paddingSpace = @"";
 	
 	padding = [@"" stringByPaddingToLength:(scene.sectionDepth * paddingSpace.length) withString: paddingSpace startingAtIndex:0];
 	
@@ -68,11 +68,11 @@
 		// Create a HEADER part for the scene
 		NSString *sceneHeader;
 		if (!omited) {
-			sceneHeader = [NSString stringWithFormat:@" %@%@.", padding, line.sceneNumber];
+			sceneHeader = [NSString stringWithFormat:@"%@%@.", padding, line.sceneNumber];
 			string = [NSString stringWithFormat:@"%@ %@", sceneHeader, string];
 		} else {
 			// If scene is omited, put it in brackets
-			sceneHeader = [NSString stringWithFormat:@" %@", padding];
+			sceneHeader = [NSString stringWithFormat:@"%@", padding];
 			string = [NSString stringWithFormat:@"%@(%@)", sceneHeader, string];
 		}
 		
@@ -114,7 +114,7 @@
 			while (string.length && [string characterAtIndex:0] == ' ') {
 				string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
 			}
-			string = [NSString stringWithFormat:@" %@%@", padding, string];
+			string = [NSString stringWithFormat:@"%@%@", padding, string];
 			//string = [@"  " stringByAppendingString:string];
 			
 			NSFont *font = [NSFont systemFontOfSize:SYNOPSE_FONTSIZE];

@@ -17,6 +17,7 @@
 #import "SceneFiltering.h"
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
+#import "BeatSceneTree.h"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
@@ -64,6 +65,9 @@
 @property (weak) IBOutlet ColorCheckbox *magentaCheck;
 @property (weak) IBOutlet ColorCheckbox *pinkCheck;
 
+@property (nonatomic) BeatSceneTree *sceneTree;
+@property (nonatomic) NSMutableArray *collapsed;
+
 @end
 
 @implementation BeatOutlineView
@@ -91,10 +95,14 @@
 - (void)drawBackgroundInClipRect:(NSRect)clipRect {
 	//[super drawBackgroundInClipRect:clipRect];
 	
-	if (self.currentScene != NSNotFound) {
-		NSRect rect = [self rectOfRow:self.currentScene];
+	// Get current scene and represented row
+	OutlineScene *currentScene = self.editorDelegate.currentScene;
+	NSInteger row = [self rowForItem:currentScene];
+	
+	if (row != NSNotFound) {
+		NSRect rect = [self rectOfRow:row];
 		
-		NSColor* fillColor = [[ThemeManager sharedManager] outlineHighlight];
+		NSColor* fillColor = ThemeManager.sharedManager.outlineHighlight;
 		[fillColor setFill];
 		
 		NSRectFill(rect);
@@ -114,9 +122,28 @@
 	[self filterOutline];
 	[self reloadData];
 	
+	if (!_collapsed) _collapsed = NSMutableArray.new;
+	
+	for (OutlineScene *scene in self.outline) {
+		// Sections are expanded by default
+		if (![_collapsed containsObject:scene.line]) [self expandItem:scene expandChildren:YES];
+	}
+	
 	// Scroll back to original position after reload
 	[self.enclosingScrollView.contentView scrollPoint:scrollPosition];
 }
+
+-(void)outlineViewItemDidCollapse:(NSNotification *)notification {
+	// We use lines rather than outline objects to keep track of collapsed an expanded sections
+	OutlineScene *collapsedSection = [notification.userInfo valueForKey:@"NSObject"];
+	[_collapsed addObject:collapsedSection.line];
+}
+
+- (void)outlineViewItemDidExpand:(NSNotification *)notification {
+	OutlineScene *expandedSection = [notification.userInfo valueForKey:@"NSObject"];
+	[_collapsed removeObject:expandedSection.line];
+}
+
 
 
 #pragma mark - Delegation
@@ -138,7 +165,13 @@
 	if (_filters.activeFilters) {
 		return _filteredOutline.count;
 	} else {
-		return self.outline.count;
+		_sceneTree = [BeatSceneTree fromOutline:self.outline];
+		
+		if (!item) return _sceneTree.items.count;
+		else {
+			BeatSceneTreeItem *section = [_sceneTree itemWithScene:item];
+			return section.children.count;
+		}
 	}
 }
 
@@ -148,7 +181,13 @@
 	if (_filters.activeFilters) {
 		return [_filteredOutline objectAtIndex:index];
 	} else {
-		return [self.outline objectAtIndex:index];
+		if (item) {
+			OutlineScene *section = item;
+			return [_sceneTree sceneInSection:section index:index];
+		} else {
+			BeatSceneTreeItem *sceneItem = _sceneTree.items[index];
+			return sceneItem.scene;
+		}
 	}
 }
 
@@ -160,9 +199,12 @@
 	return outline;
 }
 
+
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
-	return NO;
+	OutlineScene *scene = item;
+	if (scene.type == section) return YES;
+	else return NO;
 }
 
 // Outline items
@@ -183,8 +225,10 @@
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		[self.editorDelegate scrollToScene:item];
 	}
+	
 	return YES;
 }
+
 /*
 -(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
 	_editing = NO;
@@ -212,7 +256,7 @@
 
 - (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item{
 	// Don't allow reordering a filtered list
-	if ([_filters activeFilters]) return nil;
+	if (_filters.activeFilters) return nil;
 	
 	OutlineScene *scene = (OutlineScene*)item;
 	_draggedScene = scene;
@@ -223,29 +267,63 @@
 }
 
 - (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index{
-	
 	// Don't allow reordering a filtered list
-	if ([_filters activeFilters]) return NSDragOperationNone;
+	if (_filters.activeFilters) return NSDragOperationNone;
 	
-	// Don't allow dropping INTO scenes
+	// Don't allow dropping into non-nested scenes
 	OutlineScene *targetScene = (OutlineScene*)targetItem;
-	if ([targetScene.string length] > 0 || index < 0) return NSDragOperationNone;
+	if (targetScene.type == section) return NSDragOperationMove;
+	else if (targetScene.string.length > 0 || index < 0) return NSDragOperationNone;
 	
 	return NSDragOperationMove;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index{
 	// Don't allow reordering a filtered list
-	if ([_filteredOutline count] > 0 || [_outlineSearchField.stringValue length] > 0) return NSDragOperationNone;
-	
+	if (_filteredOutline.count > 0 || _outlineSearchField.stringValue.length > 0) return NSDragOperationNone;
+	OutlineScene *scene;
 	NSArray *outline = self.outline;
+		
+	if (index < [self numberOfChildrenOfItem:targetItem]) scene = [self outlineView:self child:index ofItem:targetItem];
 	
 	NSInteger to = index;
 	NSInteger from = [outline indexOfObject:_draggedScene];
+	NSInteger position; // Used for sections
+	
+	if (index == NSNotFound) {
+		// Dropped directly into a section
+		BeatSceneTreeItem *sceneTreeItem = [_sceneTree itemWithScene:targetItem];
+		OutlineScene *lastInSection = sceneTreeItem.lastScene;
+		position = lastInSection.position + lastInSection.length;
+		
+		to = [self.outline indexOfObject:lastInSection];
+	} else {
+		// Dropped normally
+		if (scene) {
+			to = [self.outline indexOfObject:scene];
+			position = scene.position;
+		}
+		else {
+			to = self.outline.count;
+			position = self.editorDelegate.text.length;
+		}
+	}
 	
 	if (from == to || from  == to - 1) return NO;
 	
-	// Let's move the scene
+	// If it's a section, let's move everything it contains
+	if (_draggedScene.type == section) {
+		NSArray <OutlineScene*>*scenesInSection = [self.editorDelegate.parser scenesInSection:_draggedScene];
+		
+		NSInteger location = scenesInSection.firstObject.position;
+		NSInteger length = scenesInSection.lastObject.position + scenesInSection.lastObject.length - location;
+		NSRange sectionRange = (NSRange){ location, length };
+				
+		[self.editorDelegate moveStringFrom:sectionRange to:position actualString:[self.editorDelegate.text substringWithRange:sectionRange]];
+		return YES;
+	}
+	
+	// Move a single scene
 	self.editorDelegate.outlineEdit = YES;
 	[self.editorDelegate moveScene:_draggedScene from:from to:to];
 	self.editorDelegate.outlineEdit = NO;
@@ -362,7 +440,7 @@
 - (IBAction)filterByCharacter:(id)sender {
 	NSString *characterName = _characterBox.selectedItem.title;
 
-	if ([characterName isEqualToString:@" "] || [characterName length] == 0) {
+	if ([characterName isEqualToString:@" "] || characterName.length == 0) {
 		[self resetCharacterFilter:nil];
 		return;
 	}

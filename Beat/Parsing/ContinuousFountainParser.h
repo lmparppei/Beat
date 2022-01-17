@@ -106,6 +106,7 @@
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (NSArray*)scenesInRange:(NSRange)range;
 - (NSArray*)linesInRange:(NSRange)range;
+- (NSArray*)scenesInSection:(OutlineScene*)topSection;
 - (NSString*)cleanedString;
 - (NSDictionary*)scriptForPrinting;
 - (NSString*)scriptForSaving;

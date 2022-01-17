@@ -414,18 +414,19 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (self.needsLayout) [self layout];
 	[self.layoutManager ensureLayoutForCharacterRange:self.editorDelegate.currentLine.range];
 
-	// So, we'll try to center the caret.
-	// Trouble is, line heights get fucked up for some reason. This probably needs some sort of hack :-(
-	
+	NSClipView *clipView = self.enclosingScrollView.documentView;
+
+	// Find the rect for current range
 	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
 	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 
+	// Calculate correct scroll position
 	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize / 2 - 10) * self.editorDelegate.magnification;
 	
+	// Take find & replace bar height into account
+	CGFloat findBarHeight = (self.enclosingScrollView.findBarVisible) ? self.enclosingScrollView.findBarView.frame.size.height : 0;
 	
-	// Fix some silliness
-	NSClipView *clipView = self.enclosingScrollView.documentView;
-	CGFloat boundsY = clipView.bounds.size.height + clipView.bounds.origin.y;
+	CGFloat boundsY = clipView.bounds.size.height + findBarHeight + clipView.bounds.origin.y;
 	CGFloat maxY = self.frame.size.height;
 	CGFloat pixelsToBottom = maxY - boundsY;
 	if (pixelsToBottom < self.editorDelegate.fontSize * _editorDelegate.magnification * 0.5 && pixelsToBottom > 0) {
@@ -443,7 +444,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	CGFloat fontSize = self.editorDelegate.fontSize * self.editorDelegate.magnification;
 	if (scrollY < containerHeight && delta > fontSize) {
 		//scrollY = containerHeight - _textClipView.frame.size.height;
-		[self.superview.animator setBoundsOrigin:NSMakePoint(0, scrollY)];
+		[self.superview.animator setBoundsOrigin:NSMakePoint(self.superview.bounds.origin.x, scrollY)];
 	}
 }
 -(void)scrollWheel:(NSEvent *)event {

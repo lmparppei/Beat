@@ -26,6 +26,7 @@
 #import "Document.h"
 #import "BeatPreferencesPanel.h"
 #import "BeatPluginLibrary.h"
+#import <StoreKit/StoreKit.h>
 
 #import "BeatTest.h"
 
@@ -34,7 +35,7 @@
 @interface BeatAppDelegate ()
 @property (nonatomic) RecentFiles *recentFilesSource;
 
-@property (weak) IBOutlet NSWindow* startModal;
+@property (weak) IBOutlet NSWindow* launchScreen;
 @property (weak) IBOutlet NSOutlineView* recentFiles;
 
 @property (weak) IBOutlet NSMenuItem *checkForUpdatesItem;
@@ -118,15 +119,11 @@
 	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
 	[_versionField setStringValue:versionString];
 	
-	// Show/hide pro content
-	// NOTE: This was an old concept, but still remains here in the code for some reason.
-	// if (_proMode) { [self.menuManual setHidden:NO]; }
-	
 	// Show welcome screen
-	[self.startModal becomeKeyWindow];
-	[self.startModal setAcceptsMouseMovedEvents:YES];
-	[self.startModal setMovable:YES];
-	[self.startModal setMovableByWindowBackground:YES];
+	[self.launchScreen becomeKeyWindow];
+	[self.launchScreen setAcceptsMouseMovedEvents:YES];
+	[self.launchScreen setMovable:YES];
+	[self.launchScreen setMovableByWindowBackground:YES];
 	
 	// Populate plugin menu
 	[self setupPlugins];
@@ -150,24 +147,31 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	_recentFilesSource = [[RecentFiles alloc] init];
+	// Setup launch screen
+	_recentFilesSource = RecentFiles.new;
 	self.recentFiles.dataSource = _recentFilesSource;
 	self.recentFiles.delegate = _recentFilesSource;
 	[self.recentFiles setDoubleAction:@selector(doubleClickDocument)];
-	[self.recentFilesSource reload];
-	[self.recentFiles reloadData];
-	
+		
 	[self setupDocumentOpenListener];
 	[self checkDarkMode];
 
 	// Only open splash screen if no documents were opened by default
 	NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
-	if (openDocuments.count == 0 && self.startModal && !self.startModal.isVisible) {
-		[self.startModal setIsVisible:true];
+	if (openDocuments.count == 0 && self.launchScreen && !self.launchScreen.isVisible) {
+		[self.launchScreen setIsVisible:YES];
 	}
+	
+	// Show launch screen
+	[self showLaunchScreen];
 	
 	// Lastly, open patch notes if the app was recently updated
 	[self checkVersion];
+	
+	// Add to launch count
+	NSInteger timesLaunched = [NSUserDefaults.standardUserDefaults integerForKey:@"LaunchCount"];
+	timesLaunched++;
+	[NSUserDefaults.standardUserDefaults setInteger:timesLaunched forKey:@"LaunchCount"];
 }
 
 -(void)checkForUpdates:(id)sender {
@@ -175,6 +179,13 @@
 	// Only allow this in ad hoc distribution
 	[self.updater checkForUpdates];
 #endif
+}
+
+-(void)showLaunchScreen {
+	[self.launchScreen setIsVisible:YES];
+	[self.recentFiles deselectAll:nil];
+	[self.recentFilesSource reload];
+	[self.recentFiles reloadData];
 }
 
 -(void)checkDarkMode {
@@ -194,7 +205,7 @@
 
 -(void)checkVersion {
 	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
-	NSInteger currentVersion = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
+	NSInteger currentVersion = [[NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleVersion"] integerValue];
 	
 	// Show patch notes if it's the first time running Beat
 	if (latestVersion == 0 || currentVersion > latestVersion) {
@@ -206,22 +217,40 @@
 -(void)setupDocumentOpenListener {
 	// Let's close the welcome screen if any sort of document has been opened
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		if (self.startModal && [self.startModal isVisible]) {
+		if (self.launchScreen && self.launchScreen.isVisible) {
 			[self closeStartModal];
 		}
 	}];
 	
 	// And show modal if all documents were closed
-	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	[NSNotificationCenter.defaultCenter addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
+		NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
 		
-		if (openDocuments.count == 1 && self.startModal && !self.startModal.isVisible) {
-			[self.startModal setIsVisible:true];
-			[self.recentFiles deselectAll:nil];
-			[self.recentFilesSource reload];
-			[self.recentFiles reloadData];
+		if (openDocuments.count == 1 && self.launchScreen && !self.launchScreen.isVisible) {
+			[self showLaunchScreen];
 		}
+		
+		[self requestAppReview];
 	}];
+}
+
+- (void)requestAppReview {
+	// The user has either clicked that they never want to review the app
+	bool dontShowReviewPrompt = [NSUserDefaults.standardUserDefaults boolForKey:@"DontAskForReview"];
+	if (dontShowReviewPrompt) return;
+	
+	// So, we'll see if the user has launched the app at least 50 times before requesting a review,
+	// and _never_ again for the same version.
+	NSInteger timesLaunched = [NSUserDefaults.standardUserDefaults integerForKey:@"LaunchCount"];
+	NSString *lastVersionPrompted = [NSUserDefaults.standardUserDefaults valueForKey:@"LastVersionPromptedForReview"];
+	NSString *currentVersion = [NSBundle.mainBundle.infoDictionary valueForKey:(NSString*)kCFBundleVersionKey];
+	
+	if (timesLaunched  % 51 == 50 && ![currentVersion isEqualToString:lastVersionPrompted]) {
+		[NSUserDefaults.standardUserDefaults setValue:currentVersion forKey:@"LastVersionPromptedForReview"];
+		
+		if (@available(macOS 10.14, *)) [SKStoreReviewController requestReview];
+	}
+	
 }
 
 - (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)sender {
@@ -234,7 +263,7 @@
 	// We will run this operation in another thread, so that the app can start and opening recovered documents won't mess up any other logic built into the app.
 	
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-		__block NSFileManager *fileManager = [NSFileManager defaultManager];
+		__block NSFileManager *fileManager = NSFileManager.defaultManager;
 		
 		NSString *appName = [NSBundle.mainBundle.infoDictionary objectForKey:(id)kCFBundleNameKey];
 		NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
@@ -251,7 +280,7 @@
 			
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				
-				NSAlert *alert = [[NSAlert alloc] init];
+				NSAlert *alert = NSAlert.new;
 				alert.messageText = [NSString stringWithFormat:@"%@", filename];
 				alert.informativeText = @"An unsaved script was found. Do you want to open the latest autosaved version of this file?";
 				[alert addButtonWithTitle:@"Open"];
@@ -423,7 +452,7 @@
 
 - (IBAction)showPatchNotes:(id)sender {
 	if (!_browser) {
-		_browser = [[BeatBrowserView alloc] init];
+		_browser = BeatBrowserView.new;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_browser.window];
 	}
 	
@@ -433,7 +462,7 @@
 
 - (IBAction)showManual:(id)sender {
 	if (!_browser) {
-		_browser = [[BeatBrowserView alloc] init];
+		_browser = BeatBrowserView.new;
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"beat_manual" withExtension:@"html"];
@@ -486,19 +515,19 @@
 // Close welcome screen
 - (IBAction)closeStartModal
 {
-	[_startModal close];
+	[_launchScreen close];
 }
 
 - (IBAction)showAboutScreen:(id) sender {
 	if (!_about) {
-		_about = [[BeatAboutScreen alloc] init];
+		_about = BeatAboutScreen.new;
 	}
 	[_about show];
 }
 
 - (IBAction)openPreferences:(id)sender {
 	if (!_preferencesPanel) {
-		_preferencesPanel = [[BeatPreferencesPanel alloc] init];
+		_preferencesPanel = BeatPreferencesPanel.new;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_preferencesPanel.window];
 	}
 	[_preferencesPanel show];
@@ -508,22 +537,22 @@
 
 - (IBAction)importFDX:(id)sender
 {
-	BeatFileImport *import = [[BeatFileImport alloc] init];
+	BeatFileImport *import = BeatFileImport.new;
 	[import fdx];
 }
 - (IBAction)importCeltx:(id)sender
 {
-	BeatFileImport *import = [[BeatFileImport alloc] init];
+	BeatFileImport *import = BeatFileImport.new;
 	[import celtx];
 }
 - (IBAction)importHighland:(id)sender
 {
-	BeatFileImport *import = [[BeatFileImport alloc] init];
+	BeatFileImport *import = BeatFileImport.new;
 	[import highland];
 }
 - (IBAction)importFadeIn:(id)sender
 {
-	BeatFileImport *import = [[BeatFileImport alloc] init];
+	BeatFileImport *import = BeatFileImport.new;
 	[import fadeIn];
 }
 
@@ -534,7 +563,7 @@
 	NSError *error;
 	
 	[string writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
-	[[NSDocumentController sharedDocumentController] duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+	[NSDocumentController.sharedDocumentController duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
 }
 
 - (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix
@@ -573,6 +602,8 @@
 
 #pragma mark - Version control
 
+// NOTE: This is not in use currently, because of weird autosave errors
+
 - (void)versionMenuItems {
 	[_versionMenu removeAllItems];
 	
@@ -583,7 +614,7 @@
 	// Get available versions
 	NSArray *versions = [NSFileVersion otherVersionsOfItemAtURL:url];
 	
-	NSDateFormatter* df = [[NSDateFormatter alloc] init];
+	NSDateFormatter* df = NSDateFormatter.new;
 	[df setDateStyle:NSDateFormatterShortStyle];
 	[df setTimeStyle:NSDateFormatterShortStyle];
 	
@@ -679,7 +710,7 @@
 	NSMenuItem *item = sender;
 	NSString *pluginName = item.title;
 	
-	BeatPlugin *parser = [[BeatPlugin alloc] init];
+	BeatPlugin *parser = BeatPlugin.new;
 	BeatPluginData *plugin = [BeatPluginManager.sharedManager pluginWithName:pluginName];
 	[parser loadPlugin:plugin];
 	parser = nil;
@@ -738,7 +769,7 @@
 
 - (IBAction)printEpisodes:(id)sender {
 	if (!_episodePrinter) {
-		_episodePrinter = [[BeatEpisodePrinter alloc] init];
+		_episodePrinter = BeatEpisodePrinter.new;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_episodePrinter.window];
 	}
 	//[_episodePrinter showWindow:_episodePrinter.window];
@@ -824,7 +855,7 @@
 #pragma mark - Show notifications
 
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval {
-	if (!_notifications) _notifications = [[BeatNotifications alloc] init];
+	if (!_notifications) _notifications = BeatNotifications.new;
 	[_notifications showNotification:title body:body identifier:identifier oneTime:showOnce interval:interval];
 }
 

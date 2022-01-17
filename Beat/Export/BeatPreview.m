@@ -43,7 +43,7 @@
 }
 - (NSString*)createPreview {
 	if (self.delegate) {
-		NSString *rawText = [self.delegate getText];
+		NSString *rawText = self.delegate.text;
 		return [self createPreviewFor:rawText type:BeatPrintPreview];
 	}
 	return @"";

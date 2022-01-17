@@ -96,7 +96,7 @@
 			[rawText appendFormat:@"%@\n", line.string];
 		}
 	} else {
-		if (_document) rawText = [NSMutableString stringWithString:_document.getText];
+		if (_document) rawText = [NSMutableString stringWithString:_document.text];
 	}
 	return rawText;
 }
