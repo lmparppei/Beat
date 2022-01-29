@@ -111,6 +111,10 @@
 
 - (NSString*)previewHTML; /// Returns HTML string for current preview
 
+- (void)nextTab;
+- (void)previousTab;
+
+
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value); /// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);

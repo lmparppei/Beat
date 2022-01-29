@@ -300,17 +300,17 @@
 
 
 -(NSString*)htmlForDocument:(NSString*)text settings:(BeatExportSettings*)exportSettings {
-	BeatDocumentSettings *settings = [[BeatDocumentSettings alloc] init];
+	BeatDocumentSettings *settings = BeatDocumentSettings.new;
 	[settings readSettingsAndReturnRange:text];
 	
-	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initStaticParsingWithString:text settings:settings];
+	ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initStaticParsingWithString:text settings:settings];
 	
 	// Bake revision data into the document
 	NSDictionary *revisions = [settings get:DocSettingRevisions];
 	if (revisions.count) [BeatRevisionTracking bakeRevisionsIntoLines:parser.lines revisions:revisions string:text parser:parser];
 		
-	NSDictionary *script = [parser scriptForPrinting];
-	BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initWithScript:script settings:exportSettings];
+	BeatScreenplay *script = parser.forPrinting;
+	BeatHTMLScript *htmlScript = [BeatHTMLScript.alloc initWithScript:script settings:exportSettings];
 	
 	return htmlScript.content;
 }

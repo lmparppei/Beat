@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -760,7 +759,7 @@ DQ
                             <menuItem title="Revision Mode" id="R8Y-SU-vpO">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="toggleTrackChanges:" target="-1" id="G7q-gJ-aE7"/>
+                                    <action selector="toggleRevisionMode:" target="-1" id="G7q-gJ-aE7"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Mark Selection as Revised" keyEquivalent="k" id="Ah1-Kr-xrQ">
@@ -963,7 +962,7 @@ DQ
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" drawsBackground="NO" id="d8W-Sp-gT7">
                             <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="qwK-zh-2Ns" id="4CT-K1-GgI">
                                     <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
@@ -984,12 +983,12 @@ DQ
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
-                                                <tableCellView identifier="RecentFile" id="DI2-5g-G8g" customClass="BeatRecentFileCell">
-                                                    <rect key="frame" x="18" y="0.0" width="230" height="49"/>
+                                                <tableCellView identifier="RecentFile" id="DI2-5g-G8g" customClass="BeatRecentFileCell" customModule="Beat" customModuleProvider="target">
+                                                    <rect key="frame" x="18" y="0.0" width="299" height="49"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="C8i-pt-TKc">
-                                                            <rect key="frame" x="36" y="25" width="194" height="16"/>
+                                                            <rect key="frame" x="36" y="25" width="263" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingMiddle" truncatesLastVisibleLine="YES" allowsUndo="NO" title="Filename" id="y6T-oH-LI7">
                                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -998,7 +997,7 @@ DQ
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ST9-8C-5OL">
-                                                            <rect key="frame" x="36" y="11" width="195" height="11"/>
+                                                            <rect key="frame" x="36" y="11" width="264" height="11"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Date" id="ttD-Fm-hoX">
                                                                 <font key="font" metaFont="miniSystem"/>

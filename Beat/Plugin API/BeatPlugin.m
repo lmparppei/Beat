@@ -993,6 +993,15 @@
 	});
 }
 
+#pragma mark - Window interface
+
+- (void)nextTab {
+	[self.delegate.documentWindow selectNextTab:nil];
+}
+- (void)previousTab {
+	[self.delegate.documentWindow selectPreviousTab:nil];
+}
+
 #pragma mark - Utilities
 
 - (NSArray*)screen {

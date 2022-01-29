@@ -76,9 +76,6 @@
 #pragma mark - Help
 
 +(void)load {
-	//NSString *lang = [NSUserDefaults.standardUserDefaults valueForKey:@"Language"];
-	//[NSUserDefaults.standardUserDefaults setValue:@[@"en"] forKey:@"AppleLanguages"];
-	//[NSUserDefaults.standardUserDefaults removeObjectForKey:@"AppleLanguages"];
 	[super load];
 }
 
@@ -89,7 +86,7 @@
 }
 
 - (void) awakeFromNib {
-	[[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
+	[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
 		
 #ifdef ADHOC
 	// Ad hoc vector

@@ -23,7 +23,7 @@
 @property (nonatomic, readonly) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
 @property (nonatomic, readonly) bool typewriterMode;
-@property ContinuousFountainParser *parser;
+@property (readonly) ContinuousFountainParser *parser;
 
 @property (nonatomic, readonly) CGFloat magnification;
 @property (nonatomic) CGFloat inset;

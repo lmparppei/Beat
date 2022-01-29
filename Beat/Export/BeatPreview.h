@@ -11,11 +11,11 @@
 #import "BeatDocumentSettings.h"
 #import "BeatEditorDelegate.h"
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 	BeatPrintPreview = 0,
 	BeatQuickLookPreview,
 	BeatComparisonPreview
-} BeatPreviewType;
+};
 
 @protocol BeatPreviewDelegate
 @property (atomic) BeatDocumentSettings *documentSettings;

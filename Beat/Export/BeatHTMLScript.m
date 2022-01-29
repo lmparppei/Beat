@@ -97,7 +97,6 @@
 */
 
 #import "BeatHTMLScript.h"
-#import "Line.h"
 #import "FountainRegexes.h"
 #import "BeatPaginator.h"
 #import "RegExCategories.h"
@@ -115,6 +114,8 @@
 #define UNDERLINE_CLOSE @"</u>"
 #define STRIKEOUT_OPEN @"<del>"
 #define STRIKEOUT_CLOSE @"</del>"
+#define NOTE_OPEN @"<span class='note'>"
+#define NOTE_CLOSE @"</span>"
 
 @interface BeatHTMLScript ()
 
@@ -128,17 +129,27 @@
 @property (nonatomic) bool coloredPages;
 @property (nonatomic) NSString* revisionColor;
 @property (nonatomic) BeatPaperSize paperSize;
+
+@property (nonatomic) BeatExportSettings *settings;
+
+@property (nonatomic) bool printNotes;
+
 @end
 
 @implementation BeatHTMLScript
 
 // The new, modernized way
-- (id)initWithScript:(NSDictionary*)script settings:(BeatExportSettings*)settings {
+- (id)initWithScript:(BeatScreenplay*)script settings:(BeatExportSettings*)settings {
 	self = [super init];
 	
 	if (settings) {
-		_script = script[@"script"];
-		_titlePage = script[@"title page"];
+		_script = script.lines;
+		_titlePage = script.titlePage;
+		
+		_settings = settings;
+		
+		// We could ignore everything below here and acces the values using .settings but...
+		// It's the job for future me.
 		
 		_document = settings.document;
 		
@@ -146,10 +157,11 @@
 		_currentScene = settings.currentScene;
 		_operation = settings.operation;
 		_printSceneNumbers = settings.printSceneNumbers;
+		_printNotes = settings.printNotes;
 		
 		_revisionColor = settings.revisionColor;
 		_coloredPages = settings.coloredPages;
-				
+		
 		// Page size
 		_paperSize = settings.paperSize;
 		
@@ -159,45 +171,10 @@
 	
 	return self;
 }
-- (id)initForQuickLook:(NSDictionary *)script {
-	//return [self initWithScript:script document:nil scene:nil operation:ForQuickLook printSceneNumbers:YES];
+- (id)initForQuickLook:(BeatScreenplay*)script {
 	return [self initWithScript:script settings:[BeatExportSettings operation:ForQuickLook document:nil header:@"" printSceneNumbers:YES]];
 }
 
-
-// The old methods should be abolished for the sake of clarity,
-// but they remain here for the sake of compatibility, for now:
-/*
-- (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers
-{
-	return [self initWithScript:script document:document scene:scene operation:ForPreview printSceneNumbers:printSceneNumbers];
-}
-- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers
-{
-	return [self initWithScript:script document:document scene:nil operation:ForPrint printSceneNumbers:printSceneNumbers];
-}
-
-- (id)initWithScript:(NSDictionary*)script document:(NSDocument*)document scene:(NSString*)currentScene operation:(BeatHTMLOperation)operation printSceneNumbers:(bool)printSceneNumbers {
-	self = [super init];
-	
-	if (self) {
-		_script = script[@"script"];
-		_titlePage = script[@"title page"];
-		_header = script[@"header"];
-		_currentScene = currentScene;
-		
-		_font = [NSFont fontWithName:@"Courier" size:12];
-		_document = document;
-		_operation = operation;
-		
-		_printSceneNumbers = printSceneNumbers;
-		
-		if (_operation == ForPrint) _print = YES;
-	}
-	
-	return self;
-}
-*/
 
 #pragma mark - HTML content
 
@@ -284,7 +261,7 @@
 {
     NSMutableString *body = [NSMutableString string]; // Contains HTML content
 	NSMutableDictionary *titlePage = NSMutableDictionary.dictionary;
-	
+		
 	// Put title page elements into a dictionary
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
@@ -301,7 +278,7 @@
     NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
 	
 	// Pagination
-	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:_script document:_document];
+	BeatPaginator *paginator = [BeatPaginator.alloc initWithScript:_script settings:_settings];
     NSUInteger maxPages = paginator.numberOfPages;
 	_numberOfPages = maxPages;
 	
@@ -417,7 +394,6 @@
 			
 			// To avoid underlining heading tails, let's trim the text if needed
 			if (line.type == heading && underlinedHeading) [text setString:[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
-
 			
 			// Preview shortcuts
 			if (line.type == heading && _operation == ForPreview) {
@@ -452,7 +428,12 @@
 				if (elementCount == 0) [additionalClasses appendString:@" first"];
 				
 				// Mark as changed, if comparing against another file or the line contains added/removed text
-				if (line.changed || line.additionRanges.count || line.removalRanges.count) [additionalClasses appendString:@" changed"];
+				if (line.changed || line.additionRanges.count || line.removalRanges.count) {
+					[additionalClasses appendString:@" changed"];
+					
+					// Add revision color if available
+					if (line.revisionColor.length > 0) [additionalClasses appendFormat:@" %@", line.revisionColor.lowercaseString];
+				}
 				
 				// If this line isn't part of a larger block, output it as paragraph
 				if (!beginBlock && !isLyrics) {
@@ -643,7 +624,15 @@
 	
 	// Ignore any formatting and only include CONTENT ranges
 	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
-	[line.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+	
+	NSIndexSet *indices;
+	if (!_printNotes) indices = line.contentRanges;
+	else {
+		indices = line.contentRangesWithNotes;
+	}
+	
+	
+	[indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[result appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
 		
@@ -682,6 +671,10 @@
 			if ([styleArray containsObject:@"Removal"]) {
 				open = [open stringByAppendingString:STRIKEOUT_OPEN];
 				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
+			}
+			if ([styleArray containsObject:@"Note"]) {
+				open = [open stringByAppendingString:NOTE_OPEN];
+				close = [close stringByAppendingString:NOTE_CLOSE];
 			}
 		}
 		

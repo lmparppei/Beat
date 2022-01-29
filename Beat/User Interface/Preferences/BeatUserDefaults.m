@@ -69,7 +69,11 @@
 		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)],
 		@"disableFormatting": @[@"disableFormatting", @NO],
 		@"showMarkersInScrollbar": @[@"showMarkersInScrollbar", @NO],
-		@"sceneHeadingSpacing": @[@"sceneHeadingSpacing", @2]
+		@"sceneHeadingSpacing": @[@"sceneHeadingSpacing", @2],
+		@"screenplayItemMore": @[@"screenplayItemMore", @"MORE"],
+		@"screenplayItemContd": @[@"screenplayItemMore", @"CONT'D"],
+		@"showRevisions": @[@"showRevisions", @YES],
+		@"showTags": @[@"showTags", @YES]
 	};
 }
 

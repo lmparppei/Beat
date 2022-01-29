@@ -41,7 +41,24 @@
 
 #define NEW_NOTES YES
 
-@interface  ContinuousFountainParser ()
+@implementation BeatScreenplay
+
++(instancetype)from:(ContinuousFountainParser*)parser {
+	return [self from:parser settings:nil];
+}
++(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings {
+	BeatScreenplay *screenplay = BeatScreenplay.new;
+	screenplay.titlePage = parser.titlePage;
+	
+	if (settings.printNotes) screenplay.lines = [parser preprocessForPrintingPrintNotes:YES];
+	else screenplay.lines = parser.preprocessForPrinting;
+	
+	return screenplay;
+}
+
+@end
+
+@interface ContinuousFountainParser ()
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) Line *editedLine;
 @property (nonatomic) Line *lastEditedLine;
@@ -164,8 +181,12 @@ static NSDictionary* patterns;
 			if (previousLine.type == character) previousLine.type = action;
 		}
 		
-		// For a quick scene index lookup (wtf is this, later me)
 		if (line.type == heading || line.type == synopse || line.type == section) {
+			// A cloned version of the screenplay is used for preview & printing.
+			// sceneIndex ensures we know which scene heading is which, even when there are hidden outline items.
+			// This is used to jump into corresponding scenes from preview mode. There are smarter ways
+			// to do this, but this is how it was done back in the day and still remains so.
+			
 			sceneIndex++;
 			line.sceneIndex = sceneIndex;
 		}
@@ -352,6 +373,12 @@ static NSDictionary* patterns;
 													  atPosition:position+i
 															line:line]];
         }
+		
+		if ([string isEqualToString:@"\n"]) {
+			// After a line break is added, parse the next line too, because
+			// some elements may have changed their type.
+			[changedIndices addIndex:lineIndex + 2];
+		}
 	}
 	
 	// Log any problems faced during parsing (safety measure for debugging)
@@ -501,6 +528,13 @@ static NSDictionary* patterns;
 		// Parse removal character by character
 		for (int i = 0; i < range.length; i++) {
 			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location line:line]];
+		}
+		
+		if ([stringToRemove isEqualToString:@"\n"]) {
+			// Parse previous line again too, because removing a line break can cause
+			// some elements change their type.
+			NSInteger lineIndex = [self lineIndexAtPosition:range.location];
+			[changedIndices addIndex:lineIndex - 1];
 		}
 	}
 	
@@ -750,6 +784,14 @@ static NSDictionary* patterns;
 
 - (void)correctParseInLine:(NSUInteger)index indicesToDo:(NSMutableIndexSet*)indices
 {
+	// Do nothing if we went out of range.
+	// Note: for code convenience and clarity, some methods can ask to reformat lineIndex-2 etc.,
+	// so this check is needed. 
+	if (index < 0 || index == NSNotFound || index >= self.lines.count) {
+		[indices removeIndex:index];
+		return;
+	}
+	
 	bool lastToParse = YES;
 	if (indices.count) lastToParse = NO;
 	  
@@ -1842,7 +1884,8 @@ and incomprehensible system of recursion.
 }
 
 - (void)createOutline {
-	[self createOutlineUsingLines:self.lines];
+	if (NSThread.isMainThread) [self createOutlineUsingLines:self.lines];
+	else [self createOutlineUsingLines:self.lines.copy];
 }
 - (void)createOutlineUsingLines:(NSArray<Line*>*)lines
 {
@@ -1860,9 +1903,14 @@ and incomprehensible system of recursion.
 	NSUInteger sectionDepth = 0; // We will store a section depth to adjust depth for scenes that come after a section
 	NSInteger sceneIndex = 0; // Calculate index for scene numbering
 	
+	OutlineScene *lastFoundSection;
+	OutlineScene *lastFoundScene;
+	NSMutableArray *sectionTree = NSMutableArray.new;
+	
 	for (Line* line in lines) {
 		if (line.type == section || line.type == synopse || line.type == heading) {
 			OutlineScene *scene;
+			
 			if (sceneIndex >= _outline.count) {
 				scene = [OutlineScene withLine:line delegate:self];
 			} else {
@@ -1870,6 +1918,11 @@ and incomprehensible system of recursion.
 				scene.line = line;
 			}
 			
+			// Reset parent
+			scene.parent = nil;
+			scene.children = NSMutableArray.new;
+			
+			// Create scene heading (for display)
 			if (!scene.omitted) scene.string = line.stripInvisible;
 			else scene.string = line.stripNotes;
 			
@@ -1879,9 +1932,34 @@ and incomprehensible system of recursion.
 			}
 			
 			if (scene.type == section) {
+				// Check setion depth
+				if (sectionDepth < line.sectionDepth) {
+					// This is deeper than the previous one
+					scene.parent = sectionTree.lastObject;
+					[sectionTree addObject:scene];
+				} else {
+					// This is a higher-level section, so remove anything that's lower-level
+					while (sectionTree.count) {
+						OutlineScene *pSection = sectionTree.lastObject;
+						if (pSection.sectionDepth >= scene.sectionDepth) {
+							[sectionTree removeLastObject];
+						} else {
+							[sectionTree removeLastObject];
+							break;
+						}
+					}
+					
+					scene.parent = sectionTree.lastObject;
+					
+					[sectionTree addObject:scene];
+				}
+				
 				// Save section depth
 				sectionDepth = line.sectionDepth;
 				scene.sectionDepth = sectionDepth;
+				
+				lastFoundSection = scene;
+				lastFoundScene = nil; // Reset last found scene so we won't orphan synopsis lines
 			} else {
 				scene.sectionDepth = sectionDepth;
 			}
@@ -1903,18 +1981,32 @@ and incomprehensible system of recursion.
 						line.sceneNumber = @"";
 					}
 				}
-								
+				
+				// Set parent (NOTE: can be nil)
+				scene.parent = lastFoundSection;
+				
 				// Reset marker array
 				scene.markerColors = NSMutableSet.set;
+				
+				lastFoundScene = scene;
+			}
+			
+			if (line.type == synopse) {
+				// For synopsis lines, we set the parent to be either the preceeding scene or latest section
+				if (lastFoundScene) scene.parent = lastFoundScene;
+				else scene.parent = lastFoundSection;
 			}
 			
 			// This was a new scene
 			if (sceneIndex >= _outline.count) [_outline addObject:scene];
 			
+			// Add this object to the children of its parent
+			if (scene.parent) [scene.parent.children addObject:scene];
+			
 			previousScene = scene;
 			sceneIndex++;
 		}
-				
+		
 		if (line.marker.length) {
 			[previousScene.markerColors addObject:line.marker];
 		}
@@ -1949,18 +2041,48 @@ and incomprehensible system of recursion.
     return NO;
 }
 
+
+#pragma mark - Thread-safety for arrays
+
+/**
+ 
+ safeLines and safeOutline create a copy of the respective array when called from a background thread.
+ Because Beat now supports plugins with direct access to the parser, we need to be extra careful with our threads.
+ 
+ An example:
+ We want to build a view of all the scenes and update it in the background. While the background
+ thread calls something like linesForScene:, the user edits the screenplay. This causes a crash,
+ because our .lines array was mutated while being enumerated.
+ 
+ */
+
+- (NSArray*)safeLines {
+	if (NSThread.isMainThread) return self.lines;
+	else return self.lines.copy;
+}
+- (NSArray*)safeOutline {
+	if (NSThread.isMainThread) return self.outline;
+	else return self.outline.copy;
+}
+
+
 #pragma mark - Convenience
 
 - (NSInteger)numberOfScenes {
+	NSArray *lines = self.safeLines; // Use thread-safe lines
 	NSInteger scenes = 0;
-	for (Line *line in self.lines) {
+	
+	for (Line *line in lines) {
 		if (line.type == heading) scenes++;
 	}
+	
 	return scenes;
 }
-- (NSArray*) scenes {
+- (NSArray*)scenes {
+	NSArray *outline = self.safeOutline; // Use thread-safe lines
 	NSMutableArray *scenes = [NSMutableArray array];
-	for (OutlineScene *scene in self.outline) {
+	
+	for (OutlineScene *scene in outline) {
 		if (scene.type == heading) [scenes addObject:scene];
 	}
 	return scenes;
@@ -1970,22 +2092,25 @@ and incomprehensible system of recursion.
 	// Return minimal results for non-scene elements
 	if (scene == nil) return @[];
 	if (scene.type == synopse) return @[scene.line];
+	
+	// Make a copy of the lines array IF we are not in the main thread.
+	NSArray *lines = self.safeLines;
 		
-	NSInteger lineIndex = [self.lines indexOfObject:scene.line];
+	NSInteger lineIndex = [lines indexOfObject:scene.line];
 	if (lineIndex == NSNotFound) return @[];
 	
 	// Automatically add the heading line and increment the index
-	NSMutableArray *lines = [NSMutableArray array];
-	[lines addObject:scene.line];
+	NSMutableArray *linesInScene = [NSMutableArray array];
+	[linesInScene addObject:scene.line];
 	lineIndex++;
 	
 	// Iterate through scenes and find the next terminating outline element.
 	@try {
-		while (lineIndex < self.lines.count) {
-			Line *line = self.lines[lineIndex];
+		while (lineIndex < lines.count) {
+			Line *line = lines[lineIndex];
 
 			if (line.type == heading || line.type == section) break;
-			[lines addObject:line];
+			[linesInScene addObject:line];
 			
 			lineIndex++;
 		}
@@ -1994,23 +2119,25 @@ and incomprehensible system of recursion.
 		NSLog(@"No lines found");
 	}
 	
-	return lines;
+	return linesInScene;
 }
 
 - (Line*)previousLine:(Line*)line {
-	NSInteger lineIndex = [self.lines indexOfObject:line];
+	NSArray *lines = self.safeLines; // Use thread-safe lines
+	NSInteger lineIndex = [lines indexOfObject:line];
 	
-	if (line == self.lines.firstObject || lineIndex == 0 || lineIndex == NSNotFound) return nil;
+	if (line == lines.firstObject || lineIndex == 0 || lineIndex == NSNotFound) return nil;
 	
-	return self.lines[lineIndex - 1];
+	return lines[lineIndex - 1];
 }
 
 - (Line*)nextLine:(Line*)line {
-	NSInteger lineIndex = [self.lines indexOfObject:line];
+	NSArray *lines = self.safeLines; // Use thread-safe lines
+	NSInteger lineIndex = [lines indexOfObject:line];
 	
-	if (line == self.lines.lastObject || self.lines.count < 2 || lineIndex == NSNotFound) return nil;
+	if (line == lines.lastObject || lines.count < 2 || lineIndex == NSNotFound) return nil;
 	
-	return self.lines[lineIndex + 1];
+	return lines[lineIndex + 1];
 }
 
 
@@ -2019,18 +2146,16 @@ and incomprehensible system of recursion.
 - (NSString *)description
 {
     NSString *result = @"";
-    NSUInteger index = 0;
+    NSInteger index = 0;
+	
     for (Line *l in self.lines) {
         //For whatever reason, %lu doesn't work with a zero
-        if (index == 0) {
-            result = [result stringByAppendingString:@"0 "];
-        } else {
-            result = [result stringByAppendingFormat:@"%lu ", (unsigned long) index];
-        }
+        result = [result stringByAppendingFormat:@"%lu ", index];
 		
         result = [[result stringByAppendingString:[NSString stringWithFormat:@"%@", l]] stringByAppendingString:@"\n"];
         index++;
     }
+	
     //Cut off the last newline
     result = [result substringToIndex:result.length - 1];
     return result;
@@ -2059,8 +2184,10 @@ and incomprehensible system of recursion.
 		return _prevLineAtLocation;
 	}
 	
+	NSArray *lines = self.safeLines; // Use thread safe lines for this lookup
+	
 	// Iterate and find the line
-	for (Line* line in self.lines) {
+	for (Line* line in lines) {
 		if (NSLocationInRange(position, line.range)) {
 			_prevLineAtLocation = line;
 			return line;
@@ -2069,28 +2196,31 @@ and incomprehensible system of recursion.
 	return nil;
 }
 - (NSArray*)linesInRange:(NSRange)range {
-	NSMutableArray *lines = NSMutableArray.array;
-	for (Line* line in self.lines) {
+	NSArray *lines = self.safeLines;
+	NSMutableArray *linesInRange = NSMutableArray.array;
+	
+	for (Line* line in lines) {
 		if ((NSLocationInRange(line.position, range) ||
 			NSLocationInRange(range.location, line.textRange) ||
 			NSLocationInRange(range.location + range.length, line.textRange)) &&
 			NSIntersectionRange(range, line.textRange).length > 0) {
-			[lines addObject:line];
+			[linesInRange addObject:line];
 		}
 	}
 	
-	return lines;
+	return linesInRange;
 }
 
 - (NSArray*)scenesInRange:(NSRange)range {
 	NSMutableArray *scenes = NSMutableArray.new;
 	
 	[self createOutline];
+	NSArray *outline = self.safeOutline; // Thread-safe outline
 	
 	// When length is zero, return just the scene at the beginning of range
 	if (range.length == 0) return @[ [self sceneAtPosition:range.location] ];
 	
-	for (OutlineScene* scene in self.outline) {
+	for (OutlineScene* scene in outline) {
 		NSRange intersection = NSIntersectionRange(range, scene.range);
 		if (intersection.length > 0) [scenes addObject:scene];
 	}
@@ -2101,7 +2231,7 @@ and incomprehensible system of recursion.
 	return [self sceneAtPosition:index];
 }
 - (OutlineScene*)sceneAtPosition:(NSInteger)index {
-	for (OutlineScene *scene in self.outline) {
+	for (OutlineScene *scene in self.safeOutline) {
 		if (NSLocationInRange(index, scene.range) && scene.line) return scene;
 	}
 	return nil;
@@ -2110,7 +2240,7 @@ and incomprehensible system of recursion.
 - (NSArray*)scenesInSection:(OutlineScene*)topSection {
 	if (topSection.type != section) return @[];
 	
-	NSArray *outline = self.outline;
+	NSArray *outline = self.safeOutline;
 	NSMutableArray *scenes = NSMutableArray.new;
 	NSInteger idx = [outline indexOfObject:topSection];
 	
@@ -2126,14 +2256,20 @@ and incomprehensible system of recursion.
 	return scenes;
 }
 
+- (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes {
+	[self createOutline];
+	
+	return [self preprocessForPrintingWithLines:self.safeLines printNotes:printNotes];
+}
+
 - (NSArray*)preprocessForPrinting {
 	[self createOutline];
-	return [self preprocessForPrintingWithLines:self.lines];
+	return [self preprocessForPrintingWithLines:self.safeLines printNotes:NO];
 }
-- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines {
+- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes {
 	if (!lines) {
 		NSLog(@"WARNING: No lines issued for preprocessing, using all parsed lines");
-		lines = self.lines;
+		lines = self.safeLines;
 	}
 	
 	NSMutableArray *linesForPrinting = [NSMutableArray array];
@@ -2164,10 +2300,9 @@ and incomprehensible system of recursion.
 	}
 	
 	for (Line *line in linesForPrinting) {
-		// Skip over certain elements
-		if (line.type == synopse || line.type == section || line.omitted || line.isTitlePage) {
-			continue;
-		}
+		// Skip over certain elements. Leave notes if needed.
+		if (line.type == synopse || line.type == section || (line.omitted && !line.note)  || line.isTitlePage) continue;
+		if (!printNotes && line.note) continue;
 		
 		// Add scene numbers
 		if (line.type == heading) {
@@ -2188,11 +2323,15 @@ and incomprehensible system of recursion.
 			continue;
 		}
 		
-		// This is a paragraph with a line break, so append the line to the previous one
-		// A quick explanation for this practice: We generally skip empty lines and instead
-		// calculate margins before elements. This is a legacy of the old Fountain parser,
-		// but is actually somewhat sensitive approach. That's why we join the lines into
-		// one element.
+		/**
+		 This is a paragraph with a line break, so append the line to the previous one.
+		
+		 A quick explanation for this practice:
+		 The pagination skips empty lines and instead calculates margins before elements.
+		 This is a legacy of the old Fountain parser, but is actually somewhat sensitive approach,
+		 because extraneous newlines should be ignored anyway. The caveat is that it requires
+		 an extra sttep of joining action lines with no empty line between them into one element.
+		*/
 		
 		if (line.isSplitParagraph && [lines indexOfObject:line] > 0 && elements.count > 0) {
 			Line *precedingLine = [elements objectAtIndex:elements.count - 1];
@@ -2207,7 +2346,7 @@ and incomprehensible system of recursion.
 			previousLine = line;
 			continue;
 		}
-		
+				
 		[elements addObject:line];
 		
 		// If this is dual dialogue character cue,
@@ -2243,9 +2382,16 @@ and incomprehensible system of recursion.
 
 #pragma mark - Separate title page & content for printing
 
+- (BeatScreenplay*)forPrinting {
+	return [BeatScreenplay from:self];
+}
+
 - (NSDictionary*)scriptForPrinting {
 	// NOTE: Use ONLY for static parsing
-	return @{ @"title page": self.titlePage, @"script": [self preprocessForPrinting] };
+	return @{
+		@"title page": self.titlePage,
+		@"script": [self preprocessForPrinting]
+	};
 }
 
 #pragma mark - String result for saving the screenplay

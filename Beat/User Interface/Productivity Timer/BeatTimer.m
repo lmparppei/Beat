@@ -162,7 +162,7 @@
 
 	NSMutableAttributedString *removals = [[NSMutableAttributedString alloc] initWithString:@""];
 	if (self.delegate && _scriptAtStart.length > 0 && _scriptNow.length > 0) {
-		BeatComparison *comparison = [[BeatComparison alloc] init];
+		BeatComparison *comparison = BeatComparison.new;
 		NSDictionary *changes = [comparison changeListFrom:_scriptAtStart to:_scriptNow];
 		NSInteger numberOfRemovals = [(NSNumber*)changes[@"removed"] integerValue];
 		

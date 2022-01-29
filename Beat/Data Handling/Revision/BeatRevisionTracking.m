@@ -75,6 +75,8 @@
 					NSArray *linesInRange = [parser linesInRange:range];
 					for (Line* line in linesInRange) {
 						line.changed = YES;
+						line.revisionColor = revision.colorName;
+						
 						if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
 						
 						NSRange localRange = [line globalRangeToLocal:range];

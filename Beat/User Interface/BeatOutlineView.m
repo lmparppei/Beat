@@ -344,21 +344,21 @@
 	return YES;
 }
 
+/*
 -(BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item {
 	// For those who come after
-	/*
+	
 	OutlineScene *outlineItem = item;
 	if (outlineItem.type == section) {
-		_outlineView.editing = YES;
+		self.editing = YES;
 		return YES;
 	}
 	else {
-		_outlineView.editing = NO;
+		self.editing = NO;
 		return NO;
 	}
-	 */
-	return NO;
 }
+ */
 
 - (void)scrollToScene:(OutlineScene*)scene {
 	if (!scene) scene = self.editorDelegate.currentScene;
@@ -382,7 +382,7 @@
 
 #pragma mark - Filtering
 
-- (void) filterOutline {
+- (void)filterOutline {
 	// We don't need to GET outline at this point, let's use the cached one
 	[_filteredOutline removeAllObjects];
 	if (!_filters.activeFilters) return;
@@ -486,6 +486,18 @@
 	[_characterBox selectItem:[_characterBox.itemArray objectAtIndex:0]];
 }
 
+
+- (IBAction)expandAll:(id)sender {
+	for (OutlineScene *scene in self.editorDelegate.outline) {
+		if ([self isExpandable:scene]) [self expandItem:scene expandChildren:YES];
+	}
+}
+
+- (IBAction)collapseAll:(id)sender {
+	for (OutlineScene *scene in self.editorDelegate.outline) {
+		if ([self isExpandable:scene]) [self collapseItem:scene collapseChildren:YES];
+	}
+}
 
 @end
 /*

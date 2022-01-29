@@ -36,14 +36,7 @@
 #import <Foundation/Foundation.h>
 #import "BeatEditorDelegate.h"
 #import "BeatExportSettings.h"
-
-/*
-typedef enum : NSUInteger {
-	ForPrint = 0,
-	ForPreview,
-	ForQuickLook
-} BeatHTMLOperation;
-*/
+#import "ContinuousFountainParser.h"
  
 @interface BeatHTMLScript : NSObject
 
@@ -55,10 +48,10 @@ typedef enum : NSUInteger {
 @property (strong, nonatomic) NSNumber *forRendering;
 @property (copy, nonatomic) NSString *bodyText;
 
-- (id)initWithScript:(NSDictionary*)script settings:(id)settings; // The new way
+- (id)initWithScript:(BeatScreenplay*)script settings:(id)settings; // The new way
 // - (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers;
 //- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers;
-- (id)initForQuickLook:(NSDictionary *)script;
+- (id)initForQuickLook:(BeatScreenplay*)script;
 
 - (NSInteger)pages;
 - (NSString *)html;

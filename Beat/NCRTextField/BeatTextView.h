@@ -14,13 +14,13 @@
 #import "BeatTagging.h"
 #import "BeatTextStorage.h"
 
-typedef enum : NSInteger {
-	NoPopup = 0,
+typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
+	NoPopup,
 	Autocomplete,
 	ForceElement,
 	Tagging,
 	SelectTag
-} BeatTextviewPopupMode;
+};
 
 
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
@@ -31,11 +31,11 @@ typedef enum : NSInteger {
 
 @protocol BeatTextViewDelegate <NSTextViewDelegate>
 
-typedef enum : NSInteger {
-	EditMode = 0,
+typedef NS_ENUM(NSInteger, BeatEditorMode) {
+	EditMode,
 	TaggingMode,
 	ReviewMode
-} BeatEditorMode;
+};
 
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic, readonly) NSUInteger documentWidth;

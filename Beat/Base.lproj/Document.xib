@@ -309,8 +309,8 @@
                                                                                             </textFieldCell>
                                                                                         </textField>
                                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="f5e-1x-hsg">
-                                                                                            <rect key="frame" x="12" y="59" width="77" height="14"/>
-                                                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                                            <rect key="frame" x="12" y="59" width="270" height="14"/>
+                                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Filter Scenes" id="NAI-kd-UO5">
                                                                                                 <font key="font" metaFont="smallSystemBold"/>
                                                                                                 <color key="textColor" red="0.68876219934423444" green="0.6853692821060855" blue="0.69215511658238338" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -1069,7 +1069,7 @@
                                                                     </textFieldCell>
                                                                 </textField>
                                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="afZ-Mw-gsE">
-                                                                    <rect key="frame" x="4" y="4.5" width="30" height="30"/>
+                                                                    <rect key="frame" x="3" y="4.5" width="30" height="30"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSLockLockedTemplate" id="pVq-ze-Jbh"/>
                                                                     <color key="contentTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1380,7 +1380,8 @@
                 <touchBarItem id="Yl5-KN-N3x">
                     <viewController key="viewController" id="1lb-pf-av9">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kVd-IJ-8g1">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="OutlineIcon_white" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OS4-Pc-U6L">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1394,7 +1395,8 @@
                 <touchBarItem id="rWL-n1-Ejl">
                     <viewController key="viewController" id="2hM-bM-hIJ">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q8P-yB-ZHg">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="CardsIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="b8j-5x-Bvp">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1408,7 +1410,8 @@
                 <touchBarItem id="BZs-Eh-v5e">
                     <viewController key="viewController" id="s2w-pc-SMc">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LJ9-op-UOF">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="TimelineIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ysm-8B-b7r">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1423,7 +1426,8 @@
                 <touchBarItem id="0AV-2P-83z">
                     <viewController key="viewController" id="4Ye-z8-Rbe">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EX8-3T-2S9">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoUpTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w9h-KQ-O8T">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1437,7 +1441,8 @@
                 <touchBarItem id="vDN-00-so2">
                     <viewController key="viewController" id="f5E-6W-jOD">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zLo-23-u8a">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoDownTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TaB-Om-lXF">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1459,8 +1464,8 @@
                         <touchBarItems>
                             <touchBarItem id="uhS-Jd-N5J">
                                 <viewController key="viewController" id="qZl-5L-L5S">
-                                    <button key="view" verticalHuggingPriority="750" id="2UL-8x-cZM">
-                                        <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                                    <button key="view" verticalHuggingPriority="750" misplaced="YES" id="2UL-8x-cZM">
+                                        <rect key="frame" x="7" y="-5" width="72" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSRefreshTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8QI-Kv-tiu">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1474,8 +1479,8 @@
                             </touchBarItem>
                             <touchBarItem id="SBD-rY-fAc">
                                 <viewController key="viewController" id="cAF-5m-zuN">
-                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="hPv-kP-W8a">
-                                        <rect key="frame" x="0.0" y="0.0" width="244" height="18"/>
+                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="hPv-kP-W8a">
+                                        <rect key="frame" x="0.0" y="0.0" width="246" height="18"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Refresh for an anti-lateral thought" id="ebZ-HO-Ch9">
                                             <font key="font" usesAppearanceFont="YES"/>
@@ -2002,6 +2007,25 @@ Gw
                         <action selector="setSceneColor:" target="-2" id="ON0-nL-umH"/>
                     </connections>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="mGX-1I-E46"/>
+                <menuItem title="Expand All" id="ps4-nn-ia5">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="expandAll:" target="7yW-8d-gb9" id="49u-Ia-qy4"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Collapse All" id="9Hu-ZZ-R2Y">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="collapseAll:" target="7yW-8d-gb9" id="q4K-qH-NvJ"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add Section" id="fAX-F7-N9t">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addSection:" target="-2" id="Dwe-Cb-2iU"/>
+                    </connections>
+                </menuItem>
             </items>
             <connections>
                 <outlet property="delegate" destination="-2" id="QLP-DS-JdJ"/>
@@ -2183,7 +2207,7 @@ Gw
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-644" y="303"/>
+            <point key="canvasLocation" x="-873" y="446"/>
         </menu>
         <customView id="zD2-lE-mgt" userLabel="Quick Settings">
             <rect key="frame" x="0.0" y="0.0" width="208" height="267"/>
@@ -2287,17 +2311,29 @@ Gw
                         <font key="font" metaFont="menu"/>
                         <menu key="menu" id="lCd-Rs-g3k">
                             <items>
-                                <menuItem title="Blue" state="on" image="Color_Blue" id="Thz-O0-hCD">
+                                <menuItem title="Blue" state="on" image="Color_Blue" id="Thz-O0-hCD" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="blue"/>
+                                    </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Orange" image="Color_Orange" id="NfX-B5-spN">
+                                <menuItem title="Orange" image="Color_Orange" id="NfX-B5-spN" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="orange"/>
+                                    </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Purple" image="Color_Purple" id="bbu-dp-keE">
+                                <menuItem title="Purple" image="Color_Purple" id="bbu-dp-keE" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="purple"/>
+                                    </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Green" image="Color_Green" id="gJz-gC-KoS">
+                                <menuItem title="Green" image="Color_Green" id="gJz-gC-KoS" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="green"/>
+                                    </userDefinedRuntimeAttributes>
                                 </menuItem>
                             </items>
                         </menu>

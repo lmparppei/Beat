@@ -11,13 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef enum : NSInteger {
+typedef NS_ENUM(NSInteger, BeatTimelineItemType) {
 	TimelineScene = 1,
 	TimelineSection,
 	TimelineLowerSection,
 	TimelineSynopsis,
 	TimelineStoryline
-} BeatTimelineItemType;
+};
 
 @protocol BeatTimelineItemDelegate <NSObject>
 @property (nonatomic) NSColor *backgroundColor;

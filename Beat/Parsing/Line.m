@@ -42,6 +42,7 @@
 #define UNDERLINE_STYLE @"Underline"
 #define STRIKEOUT_STYLE @"Strikeout"
 #define OMIT_STYLE @"Omit"
+#define NOTE_STYLE @"Note"
 
 @implementation Line
 
@@ -316,6 +317,9 @@
 	newLine.isSplitParagraph = self.isSplitParagraph;
 	newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
 	newLine.unsafeForPageBreak = self.unsafeForPageBreak;
+	newLine.sceneIndex = self.sceneIndex;
+	
+	newLine.revisionColor = self.revisionColor.copy;
 	
 	if (self.changedRanges) newLine.changedRanges = self.changedRanges.copy;
 	if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
@@ -415,8 +419,16 @@
 
 - (NSString*)stripFormatting {
 	// A better version of stripFormattingCharacters
-	NSIndexSet *contentRanges = self.contentRanges;
-
+	NSIndexSet *contentRanges;
+	
+	// This is an experimental thing
+	if (self.paginator) {
+		if ([_paginator boolForKey:@"printNotes"]) contentRanges = self.contentRangesWithNotes;
+		else contentRanges = self.contentRanges;
+	} else {
+		contentRanges = self.contentRanges;
+	}
+	
 	__block NSMutableString *content = [NSMutableString string];
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[content appendString:[self.string substringWithRange:range]];
@@ -733,14 +745,14 @@
 	if (self.type == character || self.type == dualDialogueCharacter) {
 		[string replaceCharactersInRange:self.characterNameRange withString:[self.string substringWithRange:self.characterNameRange].uppercaseString];
 	}
-	
+		
+	// Add font stylization
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addAttr:ITALIC_STYLE toString:string range:range];
 		}
 	}];
-	
-	// Add font stylization
+
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > BOLD_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addAttr:BOLD_STYLE toString:string range:range];
@@ -761,7 +773,7 @@
 	
 	[self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > NOTE_PATTERN.length * 2) {
-			if ([self rangeInStringRange:range]) [self addAttr:OMIT_STYLE toString:string range:range];
+			if ([self rangeInStringRange:range]) [self addAttr:NOTE_STYLE toString:string range:range];
 		}
 	}];
 		
@@ -770,19 +782,11 @@
 			if ([self rangeInStringRange:range]) [self addAttr:STRIKEOUT_STYLE toString:string range:range];
 		}
 	}];
-	
+		
 	[self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if ([self rangeInStringRange:range]) [self addAttr:OMIT_STYLE toString:string range:range];
 	}];
-	
-	/*
-	[self.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.length > HIGHLIGHT_PATTERN.length * 2) {
-			[self addAttr:@"Highlight" toString:string range:range];
-		}
-	}];
-	*/
-	 
+		 
 	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if ([self rangeInStringRange:range]) [self addAttr:@"Addition" toString:string range:range];
 	}];
@@ -817,21 +821,22 @@
 }
 
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
+	
 	NSAttributedString *string = [self attributedStringForFDX];
-	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
 	
 	[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > 0) [attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
-	
-	NSAttributedString *second = [[NSMutableAttributedString alloc] initWithString:@""];
+		
+	NSAttributedString *second = [NSMutableAttributedString.alloc initWithString:@""];
 	
 	// Safeguard index (this could happen to numerous reasons, extra spaces etc.)
 	if (index > attrStr.length) index = attrStr.length;
 		
 	NSAttributedString *first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
-	
+		
 	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
 	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
 		
@@ -937,6 +942,7 @@
 	else return NO;
 }
 
+
 - (NSIndexSet*)contentRanges
 {
 	// Returns ranges with content ONLY (useful for reconstruction the string with no Fountain stylization)
@@ -944,6 +950,16 @@
 	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
 	
 	NSIndexSet *formattingRanges = self.formattingRanges;
+	[contentRanges removeIndexes:formattingRanges];
+	
+	return contentRanges;
+}
+- (NSIndexSet*)contentRangesWithNotes {
+	// Returns content ranges WITH notes included
+	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
+	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
+	
+	NSIndexSet *formattingRanges = [self formattingRangesWithGlobalRange:NO includeNotes:NO];
 	[contentRanges removeIndexes:formattingRanges];
 	
 	return contentRanges;

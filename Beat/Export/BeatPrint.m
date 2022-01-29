@@ -247,7 +247,6 @@
 	
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:header  printSceneNumbers:self.document.printSceneNumbers revisionColor:revisionColor coloredPages:coloredPages compareWith:_compareWith];
 	
-	
 	return settings;
 }
 

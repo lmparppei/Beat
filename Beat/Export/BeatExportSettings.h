@@ -11,17 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 	ForPrint = 0,
 	ForPreview,
 	ForQuickLook
-} BeatHTMLOperation;
+};
 
 @interface BeatExportSettings : NSObject
 @property (nonatomic) NSString *header;
 @property (nonatomic) BeatHTMLOperation operation;
 @property (nonatomic) NSString * _Nullable revisionColor;
 @property (nonatomic) bool coloredPages;
+@property (nonatomic) bool printNotes;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, weak) NSDocument  * _Nullable document;
 @property (nonatomic) NSString * _Nullable currentScene;
@@ -30,7 +31,8 @@ typedef enum : NSUInteger {
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument* _Nullable)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers;
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages;
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages scene:(NSString*)scene;
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument* _Nullable )doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages compareWith:(NSString*)oldScript;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages compareWith:(NSString*)oldScript;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument* _Nullable)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages compareWith:(NSString*)oldScript;
 - (BeatPaperSize)paperSize; /// Get page size. For safety reasons, the value is checked from the actual print settings
 
 @end

@@ -11,11 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef enum : NSInteger {
+typedef NS_ENUM(NSInteger, BeatPluginType) {
 	ToolPlugin = 0,
 	ImportPlugin,
 	ExportPlugin
-} BeatPluginType;
+};
 
 @interface BeatPluginInfo : NSObject
 @property (nonatomic) NSString *name;

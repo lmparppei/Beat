@@ -393,7 +393,7 @@ static NSDictionary *fdxIds;
 	}
 	else if (line.type == heading) {
 		// Strip possible scene number
-		if (line.sceneNumber) line.string = [line.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
+		//if (line.sceneNumber) line.string = [line.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
 		
 		[paragraphStyles addObject:[NSString stringWithFormat:@"Number=\"%@\"", line.sceneNumber]];
 	}
@@ -666,7 +666,7 @@ static NSDictionary *fdxIds;
 	}];
 	
 	NSMutableString *xmlString = [NSMutableString string];
-	
+		
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSMutableString* text = [[result.string substringWithRange:range] mutableCopy];
 		

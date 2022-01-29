@@ -11,7 +11,15 @@
 #import "Line.h"
 #import "OutlineScene.h"
 #import "BeatDocumentSettings.h"
+#import "BeatExportSettings.h"
 @class OutlineScene;
+
+@interface BeatScreenplay : NSObject
++(instancetype)from:(ContinuousFountainParser*)parser;
++(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings;
+@property (nonatomic) NSArray <Line*>* lines;
+@property (nonatomic) NSArray *titlePage;
+@end
 
 @protocol ContinuousFountainParserDelegate <NSObject>
 @property (nonatomic) bool printSceneNumbers;
@@ -39,6 +47,7 @@
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSString*)cleanedString;
 - (NSDictionary*)scriptForPrinting;
+- (BeatScreenplay*)forPrinting;
 - (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
@@ -51,9 +60,7 @@
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
-// A new structure to avoid having thousands of loopbacks & recursion.
-// Slowly being implemented into the code.
-@property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate;
+@property (nonatomic, weak) id 	<ContinuousFountainParserDelegate> delegate; /// Parser delegate. Basically it's the document.
 
 @property (atomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
 @property (nonatomic) NSMutableIndexSet *changedIndices; //Stores every line that needs to be formatted according to the type
@@ -85,10 +92,14 @@
 - (Line*)nextLine:(Line*)line;
 - (void)correctParsesForLines:(NSArray*)lines;
 
+// Thread safety convenience methods
+- (NSArray*)safeLines;
+- (NSArray*)safeOutline;
+
 // Preprocess for printing & saving
 - (NSString*)screenplayForSaving;
 - (NSArray*)preprocessForPrinting;
-- (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines;
+- (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes;
 
 // Parselinetype is available for some testing
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive;
@@ -108,7 +119,8 @@
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSArray*)scenesInSection:(OutlineScene*)topSection;
 - (NSString*)cleanedString;
-- (NSDictionary*)scriptForPrinting;
+
+- (BeatScreenplay*)forPrinting;
 - (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
 - (LineType)lineTypeAt:(NSInteger)index;

@@ -11,12 +11,15 @@
 #import "Line.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
+@class OutlineScene;
+
 // JavaScript interface
 @protocol OutlineSceneExports <JSExport>
 @property (nonatomic, readonly) NSString * sceneNumber;
 @property (nonatomic, readonly) NSString * color;
 
 @property (nonatomic, readonly) Line * line;
+@property (nonatomic, readonly) OutlineScene * parent;
 @property (nonatomic, readonly) LineType type;
 
 @property (strong, nonatomic, readonly) NSString * string;
@@ -50,7 +53,11 @@
 
 @property (nonatomic) id<LineDelegate> delegate;
 
-@property (strong, nonatomic) NSString * string;
+@property (nonatomic, weak) Line * line; /// The heading line of this scene
+@property (nonatomic, weak) OutlineScene * parent; /// Either a SECTION (for scenes) or a HEADING for synopsis lines
+@property (nonatomic) NSMutableArray <OutlineScene*>* children; /// Children of this scene (if a section, or if it contains synopsis lines)
+
+@property (strong, nonatomic) NSString * string; /// Clean string representation of the line
 @property (nonatomic) LineType type;
 @property (nonatomic) NSString * sceneNumber;
 @property (nonatomic, readonly) NSString * color;
@@ -71,8 +78,6 @@
 @property (nonatomic) NSMutableArray * characters;
 
 @property (nonatomic) bool omitted;
-
-@property (nonatomic, weak) Line * line;
 
 - (NSString*)stringForDisplay;
 - (NSRange)range;

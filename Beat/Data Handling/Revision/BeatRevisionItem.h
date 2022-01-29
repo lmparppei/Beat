@@ -19,12 +19,12 @@
     #define BeatColor NSColor
 #endif
 
-typedef enum : NSInteger {
-	RevisionNone = 0,
+typedef NS_ENUM(NSInteger, RevisionType) {
+	RevisionNone ,
 	RevisionAddition,
 	RevisionRemoval,
 	RevisionComment
-} RevisionType;
+};
 
 @interface BeatRevisionItem : NSObject <NSCoding, NSCopying>
 @property (nonatomic) RevisionType type;

@@ -45,6 +45,15 @@ THE SOFTWARE.
 #import "BeatStatisticsPanel.h"
 #import "BeatEditorDelegate.h"
 
+
+typedef NS_ENUM(NSUInteger, BeatFormatting) {
+	Block = 0,
+	Bold,
+	Italic,
+	Underline,
+	Note
+};
+
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
@@ -55,7 +64,9 @@ THE SOFTWARE.
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) CGFloat inset;
 @property (nonatomic) bool printSceneNumbers;
-@property (nonatomic) bool trackChanges;
+@property (nonatomic) bool revisionMode;
+@property (nonatomic) bool showRevisions;
+@property (nonatomic) bool showTags;
 
 @property (nonatomic) bool contentLocked;
 

@@ -10,6 +10,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "Line.h"
 #import "BeatPaperSizing.h"
+#import "BeatExportSettings.h"
 
 #if TARGET_OS_IOS
     #define BeatFont UIFont
@@ -47,6 +48,7 @@
 @property (strong, nonatomic) NSMutableArray *pageInfo;
 
 - (id)initWithScript:(NSArray*)elements;
+- (id)initWithScript:(NSArray *)elements settings:(BeatExportSettings*)settings;
 - (id)initForLivePagination:(NSDocument*)document;
 - (id)initForLivePagination:(NSDocument*)document withElements:(NSArray*)elements;
 - (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;

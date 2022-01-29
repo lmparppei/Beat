@@ -459,3 +459,7 @@ p.page-break-render {
 	background-color: transparent !important;
 	text-align: center;
 }
+
+.note {
+	color: gray;
+}

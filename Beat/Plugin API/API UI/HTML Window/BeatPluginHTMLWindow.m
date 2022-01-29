@@ -23,6 +23,9 @@
 	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
 	self.delegate = host;
 	
+	// Disable tabs for these types of windows
+	self.tabbingMode = NSWindowTabbingModeDisallowed;
+	
 	// We can't release the panel on close, because JSContext might hang onto it and cause a crash
 	self.releasedWhenClosed = NO;
 	

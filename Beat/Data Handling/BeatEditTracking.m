@@ -14,18 +14,8 @@
 	self = [super init];
 	
 	if (self) {
-		/*
-		NSMutableArray *lines = [NSMutableArray array];
-		
-		for (Line* line in array) {
-			Line *copy = [line copy];
-			[lines addObject:copy];
-		}
-		
-		_origin = [NSArray arrayWithArray:lines];
-		 */
 		_delegate = delegate;
-		_comparison = [[BeatComparison alloc] init];
+		_comparison = BeatComparison.new;
 		_text = [NSString stringWithString:text];
 	}
 	
@@ -34,10 +24,6 @@
 
 - (void)edit {
 	[_comparison compare:_delegate.parser.lines with:self.delegate.text];
-	
-	for (Line* line in _delegate.parser.lines) {
-		if (line.changed) NSLog(@"changed");
-	}
 }
 
 @end

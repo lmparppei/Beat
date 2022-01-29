@@ -130,10 +130,7 @@
 	}
 	
 	// Set script data
-	NSMutableDictionary<NSString*, NSArray*> *script = [NSMutableDictionary dictionaryWithDictionary:@{
-		@"script": [parser preprocessForPrinting],
-		@"title page": parser.titlePage
-	}];
+	BeatScreenplay *script = [BeatScreenplay from:parser settings:settings];
 
 	if (!settings) {
 		NSLog(@"NO SETTINGS FOUND WHEN PRINTING.");
@@ -141,7 +138,7 @@
 	}
 	
 	// For empty documents, return empty HTML document
-	if (script[@"script"].count == 0 && script[@"title page"].count == 0) return @"<html></html>";
+	if (script.lines.count == 0 && script.titlePage.count == 0) return @"<html></html>";
 	
 	BeatHTMLScript *html = [[BeatHTMLScript alloc] initWithScript:script settings:settings];
 	return html.html;

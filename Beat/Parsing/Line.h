@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, LineType) {
     empty = 0,
     section,
     synopse,
@@ -35,7 +35,7 @@ typedef enum : NSUInteger {
 	more,
 	dualDialogueMore,
 	typeCount
-} LineType;
+};
 
 @protocol LineExports <JSExport>
 @property (readonly) LineType type;
@@ -75,6 +75,9 @@ typedef enum : NSUInteger {
 - (NSString*)trimmed;
 - (bool)forced;
 - (id)clone;
+- (NSIndexSet*)contentRanges;
+- (NSIndexSet*)contentRangesWithNotes;
+
 @end
 
 @protocol LineDelegate <NSObject>
@@ -82,7 +85,9 @@ typedef enum : NSUInteger {
 @end
 
 @interface Line : NSObject <LineExports>
+
 @property (nonatomic, weak) id<LineDelegate> parser; // For future generations
+@property (nonatomic, weak) id paginator; // For future generations
 
 @property LineType type;
 @property (strong) NSString* string;
@@ -199,6 +204,7 @@ typedef enum : NSUInteger {
 - (NSIndexSet*)formattingRanges;
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes;
 - (NSIndexSet*)contentRanges;
+- (NSIndexSet*)contentRangesWithNotes;
 - (NSString*)characterName;
 - (NSRange)characterNameRange;
 
@@ -208,10 +214,10 @@ typedef enum : NSUInteger {
 
 - (NSDictionary*)forSerialization; /// A JSON object for plugin use
 
-// For comparing with another version
-// (Is this still used?)
+// For revision data
 @property (nonatomic) bool changed;
 @property (nonatomic) NSMutableIndexSet *changedRanges;
+@property (nonatomic) NSString *revisionColor;
 
 -(NSString *)description;
 @end

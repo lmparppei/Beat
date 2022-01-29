@@ -8,10 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef enum : NSInteger {
+typedef NS_ENUM(NSInteger, BeatPaperSize) {
 	BeatA4 = 0,
 	BeatUSLetter
-} BeatPaperSize;
+};
 
 NS_ASSUME_NONNULL_BEGIN
 

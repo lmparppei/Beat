@@ -65,7 +65,7 @@
 	}
 	
 	// Create a script dict required by the HTML module
-	NSDictionary *script = [parser scriptForPrinting];
+	BeatScreenplay *script = parser.forPrinting;
 	
 	if (previewType == BeatQuickLookPreview) {
 		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForQuickLook:script];

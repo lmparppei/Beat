@@ -33,11 +33,11 @@
 #import "BeatComparison.h"
 #import "BeatExportSettings.h"
 
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, BeatPrintOperation) {
 	BeatToPDF = 0,
 	BeatToPrint,
 	BeatToPreview,
-} BeatPrintOperation;
+};
 
 @protocol PrintViewDelegate
 - (void) didFinishPreviewAt:(NSURL*)url;

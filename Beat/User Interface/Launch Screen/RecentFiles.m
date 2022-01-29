@@ -16,7 +16,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "RecentFiles.h"
-#import "BeatRecentFileCell.h"
+#import "Beat-Swift.h"
 
 #pragma mark - Recent files
 
@@ -85,7 +85,7 @@
 	NSURL *url = fileItem[@"url"];
 	NSString *date = fileItem[@"date"];
 	
-	BeatRecentFileCell* cell = [outlineView makeViewWithIdentifier:@"RecentFile" owner:self];
+	BeatRecentFileCell *cell = [outlineView makeViewWithIdentifier:@"RecentFile" owner:self];
 	cell.filename.stringValue = url.lastPathComponent.stringByDeletingPathExtension;
 	cell.date.stringValue = date;
 	

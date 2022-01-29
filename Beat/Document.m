@@ -929,7 +929,7 @@
 - (void)updateQuickSettings {
 	[_sceneNumbersSwitch setChecked:self.showSceneNumberLabels];
 	[_pageNumbersSwitch setChecked:self.showPageNumbers];
-	[_revisionModeSwitch setChecked:self.trackChanges];
+	[_revisionModeSwitch setChecked:self.revisionMode];
 	[_darkModeSwitch setChecked:self.isDark];
 	
 	NSInteger paperSize = [self.documentSettings getInt:DocSettingPageSize];
@@ -940,8 +940,8 @@
 	if (self.mode == TaggingMode) [_taggingModeSwitch setChecked:YES]; else [_taggingModeSwitch setChecked:NO];
 	
 	if (_revisionColor) {
-		for (NSMenuItem* item in _revisionColorPopup.itemArray) {
-			if ([item.title.lowercaseString isEqualToString:_revisionColor]) [_revisionColorPopup selectItem:item];
+		for (BeatColorMenuItem* item in _revisionColorPopup.itemArray) {
+			if ([item.colorKey.lowercaseString isEqualToString:_revisionColor.lowercaseString]) [_revisionColorPopup selectItem:item];
 		}
 	}
 	
@@ -959,7 +959,7 @@
 	
 	if (button == _sceneNumbersSwitch) [self toggleSceneLabels:nil];
 	else if (button == _pageNumbersSwitch) [self togglePageNumbers:nil];
-	else if (button == _revisionModeSwitch) [self toggleTrackChanges:nil];
+	else if (button == _revisionModeSwitch) [self toggleRevisionMode:nil];
 	else if (button == _taggingModeSwitch) [self toggleTagging:nil];
 	else if (button == _darkModeSwitch) [self toggleDarkMode:nil];
 	
@@ -1757,9 +1757,6 @@
 }
 
 - (void)registerChangesInRange:(NSRange)range {
-	//NSColor *changeColor = [[BeatColors color:@"pink"] colorWithAlphaComponent:0.2];
-	//[_textView.textStorage addAttribute:NSBackgroundColorAttributeName value:changeColor range:range];
-	//[self markRangeAsAddition:range];
 	[_textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionAddition color:_revisionColor] range:range];
 }
 - (bool)inRange:(NSRange)range {
@@ -1777,7 +1774,7 @@
 	if (_documentIsLoading) return;
 		
 	// Register changes
-	if (_trackChanges) [self registerChangesInRange:_lastChangedRange];
+	if (_revisionMode) [self registerChangesInRange:_lastChangedRange];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
@@ -2768,36 +2765,41 @@
 	if (!firstTime && line.string.length) {
 		[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:range];
 		
-		// Enumerate attributes
-		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			if (attrs[revisionAttribute]) {
-				BeatRevisionItem *revision = attrs[revisionAttribute];
-				if (revision.type == RevisionAddition) {
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
+		if (_showRevisions || _showTags) {
+			// Enumerate attributes
+			[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+				if (attrs[revisionAttribute] && _showRevisions) {
+					BeatRevisionItem *revision = attrs[revisionAttribute];
+					if (revision.type == RevisionAddition) {
+						[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
+					}
+					else if (revision.type == RevisionRemoval) {
+						[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
+						[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
+						[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.1] forCharacterRange:range];
+					}
 				}
-				else if (revision.type == RevisionRemoval) {
-					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] forCharacterRange:range];
+				
+				if (attrs[tagAttribute] && _showTags) {
+					BeatTag *tag = attrs[tagAttribute];
+					NSColor *tagColor = [BeatTagging colorFor:tag.type];
+					tagColor = [tagColor colorWithAlphaComponent:.6];
+				   
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
 				}
-			}
-			if (attrs[tagAttribute]) {
-				BeatTag *tag = attrs[tagAttribute];
-				NSColor *tagColor = [BeatTagging colorFor:tag.type];
-				tagColor = [tagColor colorWithAlphaComponent:.6];
-			   
-				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
-			}
-		}];
+			}];
+		}
 	}
 }
 
 - (void)initialTextBackgroundRender {
+	if (!_showTags && _showRevisions) return;
+	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[self.textView.textStorage enumerateAttributesInRange:(NSRange){0,self.textView.string.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 			
 			// Revisions
-			if (attrs[revisionAttribute]) {
+			if (attrs[revisionAttribute] && self.showRevisions) {
 				BeatRevisionItem *revision = attrs[revisionAttribute];
 				if (revision.type == RevisionAddition) [self.textView.layoutManager  addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
 				else if (revision.type == RevisionRemoval) {
@@ -2808,7 +2810,7 @@
 			}
 			
 			// Tags
-			if (attrs[tagAttribute]) {
+			if (attrs[tagAttribute] && self.showTags) {
 				BeatTag *tag = attrs[tagAttribute];
 				NSColor *tagColor = [BeatTagging colorFor:tag.type];
 				tagColor = [tagColor colorWithAlphaComponent:.6];
@@ -3198,7 +3200,7 @@ static NSString *revisionAttribute = @"Revision";
 	// Only allow this for editor view
     if ([self selectedTab] == 0) {
 		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-        [self format:range beginningSymbol:boldSymbol endSymbol:boldSymbol];
+        [self format:range beginningSymbol:boldSymbol endSymbol:boldSymbol style:Bold];
     }
 }
 
@@ -3208,7 +3210,7 @@ static NSString *revisionAttribute = @"Revision";
     if ([self selectedTab] == 0) {
         //Retreiving the cursor location
 		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-        [self format:range beginningSymbol:italicSymbol endSymbol:italicSymbol];
+		[self format:range beginningSymbol:italicSymbol endSymbol:italicSymbol style:Italic];
     }
 }
 
@@ -3218,7 +3220,7 @@ static NSString *revisionAttribute = @"Revision";
     if ([self selectedTab] == 0) {
         //Retreiving the cursor location
 		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-        [self format:range beginningSymbol:underlinedSymbol endSymbol:underlinedSymbol];
+		[self format:range beginningSymbol:underlinedSymbol endSymbol:underlinedSymbol style:Underline];
     }
 }
 
@@ -3229,7 +3231,7 @@ static NSString *revisionAttribute = @"Revision";
     if ([self selectedTab] == 0) {
         //Retreiving the cursor location
 		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-        [self format:range beginningSymbol:noteOpen endSymbol:noteClose];
+		[self format:range beginningSymbol:noteOpen endSymbol:noteClose style:Note];
     }
 }
 
@@ -3239,7 +3241,7 @@ static NSString *revisionAttribute = @"Revision";
     if ([self selectedTab] == 0) {
         //Retreiving the cursor location
 		NSRange cursorLocation = self.selectedRange;
-        [self format:cursorLocation beginningSymbol:omitOpen endSymbol:omitClose];
+		[self format:cursorLocation beginningSymbol:omitOpen endSymbol:omitClose style:Block];
     }
 }
 - (IBAction)omitScene:(id)sender {
@@ -3281,77 +3283,91 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-- (void)format:(NSRange)cursorLocation beginningSymbol:(NSString*)beginningSymbol endSymbol:(NSString*)endSymbol
+- (bool)rangeHasFormatting:(NSRange)range open:(NSString*)open end:(NSString*)end {
+	if (range.location < 0 || range.location == NSNotFound) return NO;
+	
+	// Check that the range actually intersects with text
+	if (NSIntersectionRange(range, (NSRange){ 0, self.text.length }).length == range.length) {
+		// Grab formatting symbols in given range
+		NSString *leftSide = [self.text substringWithRange:(NSRange){ range.location, open.length }];
+		NSString *rightSide = [self.text substringWithRange:(NSRange){ range.location + range.length - end.length, end.length }];
+		
+		if ([leftSide isEqualToString:open] && [rightSide isEqualToString:end]) return YES;
+		else return NO;
+	
+	} else {
+		return NO;
+	}
+}
+
+- (void)format:(NSRange)cursorLocation beginningSymbol:(NSString*)beginningSymbol endSymbol:(NSString*)endSymbol style:(BeatFormatting)style
 {
-    //Checking if the cursor location is vaild
-    if (cursorLocation.location  + cursorLocation.length <= self.text.length) {
-        //Checking if the selected text is allready formated in the specified way
-        NSString *selectedString = [self.textView.string substringWithRange:cursorLocation];
-        NSInteger selectedLength = selectedString.length;
-        NSInteger symbolLength = beginningSymbol.length + endSymbol.length;
-        
-        NSInteger addedCharactersBeforeRange;
-        NSInteger addedCharactersInRange;
-        
-        if (selectedLength >= symbolLength &&
-            [[selectedString substringToIndex:beginningSymbol.length] isEqualToString:beginningSymbol] &&
-            [[selectedString substringFromIndex:selectedLength - endSymbol.length] isEqualToString:endSymbol]) {
-            
-            //The Text is formated, remove the formatting
-            [self replaceCharactersInRange:cursorLocation
-                                withString:[selectedString substringWithRange:NSMakeRange(beginningSymbol.length,
-                                                                                          selectedLength - beginningSymbol.length - endSymbol.length)]];
-            //Put a corresponding undo action
-            [[self.undoManager prepareWithInvocationTarget:self] format:NSMakeRange(cursorLocation.location,
-																					cursorLocation.length - beginningSymbol.length - endSymbol.length)
-														beginningSymbol:beginningSymbol
-															  endSymbol:endSymbol];
-            addedCharactersBeforeRange = 0;
-            addedCharactersInRange = -(beginningSymbol.length + endSymbol.length);
-        } else {
-            //The Text isn't formated, but let's alter the cursor range and check again because there might be formatting right outside the selected area
-            NSRange modifiedCursorLocation = cursorLocation;
-            
-            if (cursorLocation.location >= beginningSymbol.length &&
-                (cursorLocation.location + cursorLocation.length) <= (self.text.length - endSymbol.length)) {
-                
-                if (modifiedCursorLocation.location + modifiedCursorLocation.length + endSymbol.length - 1 <= self.text.length) {
-                    modifiedCursorLocation = NSMakeRange(modifiedCursorLocation.location - beginningSymbol.length,
-                                                         modifiedCursorLocation.length + beginningSymbol.length  + endSymbol.length);
-                }
-            }
-            NSString *newSelectedString = [self.textView.string substringWithRange:modifiedCursorLocation];
-            //Repeating the check from above
-            if (newSelectedString.length >= symbolLength &&
-                [[newSelectedString substringToIndex:beginningSymbol.length] isEqualToString:beginningSymbol] &&
-                [[newSelectedString substringFromIndex:newSelectedString.length - endSymbol.length] isEqualToString:endSymbol]) {
-                
-                //The Text is formated outside of the original selection, remove!!!
-                [self replaceCharactersInRange:modifiedCursorLocation
-                                    withString:[newSelectedString substringWithRange:NSMakeRange(beginningSymbol.length,
-                                                                                                 newSelectedString.length - beginningSymbol.length - endSymbol.length)]];
-                [[self.undoManager prepareWithInvocationTarget:self] format:NSMakeRange(modifiedCursorLocation.location,
-																						modifiedCursorLocation.length - beginningSymbol.length - endSymbol.length)
-															beginningSymbol:beginningSymbol
-																  endSymbol:endSymbol];
-                addedCharactersBeforeRange = - beginningSymbol.length;
-                addedCharactersInRange = 0;
-            } else {
-                //The text really isn't formatted. Just add the formatting using the original data.
-                [self replaceCharactersInRange:NSMakeRange(cursorLocation.location + cursorLocation.length, 0)
-                                    withString:endSymbol];
-                [self replaceCharactersInRange:NSMakeRange(cursorLocation.location, 0)
-                                    withString:beginningSymbol];
-                [[self.undoManager prepareWithInvocationTarget:self] format:NSMakeRange(cursorLocation.location,
-                                                                                          cursorLocation.length + beginningSymbol.length + endSymbol.length)
-                                                              beginningSymbol:beginningSymbol
-                                                                    endSymbol:endSymbol];
-                addedCharactersBeforeRange = beginningSymbol.length;
-                addedCharactersInRange = 0;
-            }
-        }
-        self.textView.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
-    }
+    // Don't go out of range
+	if (cursorLocation.location  + cursorLocation.length > self.text.length) return;
+	
+	// Check if the selected text is already formated in the specified way
+	NSString *selectedString = [self.textView.string substringWithRange:cursorLocation];
+	NSInteger selectedLength = selectedString.length;
+	NSInteger symbolLength = beginningSymbol.length + endSymbol.length;
+	
+	NSInteger addedCharactersBeforeRange;
+	NSInteger addedCharactersInRange;
+	
+	// See if the selected range already has formatting INSIDE the selected area
+	bool alreadyFormatted = NO;
+	if (selectedLength >= symbolLength) {
+		alreadyFormatted = [self rangeHasFormatting:cursorLocation open:beginningSymbol end:endSymbol];
+		
+		if (style == Italic) {
+			// Bold and Italic have similar stylization, so weed to do an additional check
+			if ([self rangeHasFormatting:cursorLocation open:boldSymbol end:boldSymbol]) alreadyFormatted = NO;
+		}
+	}
+	
+	if (alreadyFormatted) {
+		NSString *replacementString = [selectedString substringWithRange:NSMakeRange(beginningSymbol.length, selectedLength - beginningSymbol.length - endSymbol.length)];
+		
+		//The Text is formatted, remove the formatting
+		[self replaceRange:cursorLocation withString:replacementString];
+
+		addedCharactersBeforeRange = 0;
+		addedCharactersInRange = -(beginningSymbol.length + endSymbol.length);
+		
+	} else {
+		//The Text isn't formatted, but let's alter the cursor range and check again because there might be formatting right outside the selected area
+		alreadyFormatted = NO;
+		
+		NSRange safeRange = (NSRange) { cursorLocation.location - beginningSymbol.length, cursorLocation.length + beginningSymbol.length + endSymbol.length };
+		
+		if (NSIntersectionRange(safeRange, (NSRange){ 0, self.text.length }).length == safeRange.length) {
+			alreadyFormatted = [self rangeHasFormatting:safeRange open:beginningSymbol end:endSymbol];
+			
+			if (style == Italic) {
+				// Additional check for italic
+				if ([self rangeHasFormatting:safeRange open:boldSymbol end:boldSymbol]) alreadyFormatted = NO;
+				// One more additional check for BOLD-ITALIC lol
+				if ([self rangeHasFormatting:(NSRange){ safeRange.location - 1, safeRange.length + 2 } open:italicSymbol end:italicSymbol]) alreadyFormatted = YES;
+			}
+		}
+		
+		if (alreadyFormatted) {
+			//NSString *replacementString = [selectedString substringWithRange:NSMakeRange(beginningSymbol.length, selectedLength - beginningSymbol.length - endSymbol.length)];
+			
+			[self replaceRange:safeRange withString:selectedString];
+			addedCharactersBeforeRange = - beginningSymbol.length;
+			addedCharactersInRange = 0;
+		} else {
+			//The text really isn't formatted. Just add the formatting using the original data.
+			[self addString:endSymbol atIndex:cursorLocation.location + cursorLocation.length];
+			[self addString:beginningSymbol atIndex:cursorLocation.location];
+			
+			addedCharactersBeforeRange = beginningSymbol.length;
+			addedCharactersInRange = 0;
+		}
+	}
+	
+	// Return range to how it was
+	self.textView.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
 }
 
 - (void) forceElement:(NSString*)element {
@@ -3456,13 +3472,13 @@ static NSString *revisionAttribute = @"Revision";
 	// Only allow this for editor view
 	if ([self selectedTab] != 0) return;
 	NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-	[self format:range beginningSymbol:highlightSymbolOpen endSymbol:highlightSymbolClose];
+	[self format:range beginningSymbol:highlightSymbolOpen endSymbol:highlightSymbolClose style:Block];
 }
 - (IBAction)addStrikeout:(id)sender {
 	// Only allow this for editor view
 	if ([self selectedTab] != 0) return;
 	NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-	[self format:range beginningSymbol:strikeoutSymbolOpen endSymbol:strikeoutSymbolClose];
+	[self format:range beginningSymbol:strikeoutSymbolOpen endSymbol:strikeoutSymbolClose style:Block];
 }
 - (NSRange)rangeUntilLineBreak:(NSRange)range {
 	NSString *text = [self.text substringWithRange:range];
@@ -3509,7 +3525,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	bool revisionMode = [_documentSettings getBool:DocSettingRevisionMode];
 	if (revisionMode) {
-		self.trackChanges = YES;
+		self.revisionMode = YES;
 		[self updateQuickSettings];
 	}
 }
@@ -3567,11 +3583,15 @@ static NSString *revisionAttribute = @"Revision";
 	[self forceFormatChangesInRange:range];
 }
 
--(IBAction)toggleTrackChanges:(id)sender {
-	_trackChanges = !_trackChanges;
+-(IBAction)toggleRevisionMode:(id)sender {
+	_revisionMode = !_revisionMode;
+	_showRevisions = YES;
+		
 	[self updateQuickSettings];
 	
-	[_documentSettings setBool:DocSettingRevisionMode as:_trackChanges];
+	// Save user default + document setting
+	[BeatUserDefaults.sharedDefaults saveBool:YES forKey:@"showRevisions"];
+	[_documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
 }
 
 - (void)saveRevisionRanges {
@@ -3586,7 +3606,8 @@ static NSString *revisionAttribute = @"Revision";
 }
 - (IBAction)selectRevisionColor:(id)sender {
 	NSPopUpButton *button = sender;
-	_revisionColor = button.selectedItem.title.lowercaseString;
+	BeatColorMenuItem *item = (BeatColorMenuItem *)button.selectedItem;
+	_revisionColor = item.colorKey;
 	
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
 }
@@ -3774,7 +3795,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem withAction:@selector(toggleSidebar:) setting:@"sidebarVisible" target:self],
 		[ValidationItem withAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
 		[ValidationItem withAction:@selector(toggleAutosave:) setting:@"autosave" target:self],
-		[ValidationItem withAction:@selector(toggleTrackChanges:) setting:@"trackChanges" target:self],
+		[ValidationItem withAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
 		[ValidationItem withAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
 		[ValidationItem withAction:@selector(toggleHideFountainMarkup:) setting:@"hideFountainMarkup" target:self],
 		[ValidationItem withAction:@selector(toggleDisableFormatting:) setting:@"disableFormatting" target:self],
@@ -4374,6 +4395,23 @@ static NSString *revisionAttribute = @"Revision";
 	return;
 }
 
+-(IBAction)addSection:(id)sender {
+	if (self.outlineView.clickedRow > -1) {
+		id selectedScene = nil;
+		selectedScene = [self.outlineView itemAtRow:self.outlineView.clickedRow];
+		
+		if (selectedScene != nil && [selectedScene isKindOfClass:[OutlineScene class]]) {
+			OutlineScene *scene = selectedScene;
+			
+			NSInteger pos = scene.position + scene.length;
+			NSString *newSection = @"\n# Section \n\n";
+			[self addString:newSection atIndex:pos];
+		}
+		
+		_timeline.clickedItem = nil;
+		_timelineClickedScene = -1;
+	}
+}
 
 /*
  
@@ -4721,7 +4759,7 @@ static NSString *revisionAttribute = @"Revision";
 #pragma mark - JavaScript message listeners
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
-	if ([message.body  isEqual: @"exit"]) {
+	if ([message.body isEqual: @"exit"]) {
 		[self toggleCards:nil];
 		return;
 	}
@@ -4733,16 +4771,16 @@ static NSString *revisionAttribute = @"Revision";
 	
 	if ([message.name isEqualToString:@"selectSceneFromScript"]) {
 		NSInteger sceneIndex = [message.body integerValue];
-		
+				
 		[self preview:nil];
-		if (sceneIndex < [self getOutlineItems].count) {
-			OutlineScene *scene = [[self getOutlineItems] objectAtIndex:sceneIndex];
+		if (sceneIndex < self.getOutlineItems.count) {
+			OutlineScene *scene = [self.getOutlineItems objectAtIndex:sceneIndex];
 			if (scene) [self scrollToScene:scene];
 		}
 	}
 	
 	if ([message.name isEqualToString:@"jumpToScene"]) {
-		OutlineScene *scene = [[self getOutlineItems] objectAtIndex:[message.body intValue]];
+		OutlineScene *scene = [self.getOutlineItems objectAtIndex:[message.body intValue]];
 		[self scrollToScene:scene];
 		return;
 	}
@@ -4797,18 +4835,6 @@ static NSString *revisionAttribute = @"Revision";
 			[self setColor:color forScene:scene];
 		}
 	}
-	/*
-	
-	if ([message.name isEqualToString:@"setGender"]) {
-		if ([message.body rangeOfString:@":"].location != NSNotFound) {
-			NSArray *nameAndGender = [message.body componentsSeparatedByString:@":"];
-			NSString *name = [nameAndGender objectAtIndex:0];
-			NSString *gender = [nameAndGender objectAtIndex:1];
-			[self setGenderFor:name gender:gender];
-		}
-	}
-	 
-	*/
 }
 
 #pragma mark - Scene numbering for NSTextView

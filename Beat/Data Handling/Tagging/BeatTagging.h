@@ -14,7 +14,7 @@
 
 @class BeatTag;
 
-typedef enum : NSInteger {
+typedef NS_ENUM(NSInteger, BeatTagType) {
 	NoTag = 0,
 	CharacterTag,
 	PropTag,
@@ -27,7 +27,7 @@ typedef enum : NSInteger {
 	VehicleTag,
 	MusicTag,
 	GenericTag
-} BeatTagType;
+};
 
 @class BeatTagging;
 @protocol BeatTaggingDelegate <NSObject>

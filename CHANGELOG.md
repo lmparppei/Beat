@@ -1,5 +1,16 @@
 # Changelog
 
+## Beat 1.92.9
+
+- Converted a single class to Swift (BeatRecentFileCell)
+- Bugs with jumping to scene from preview fixed
+- New class BeatScreenplay for transferring data between the document and PDF export/print. This should be expanded to contain document settings etc.  
+- Sanitized formatting code in Document.m
+- Fixed pagination issues with dialogue containing parentheticals mid-block 
+- Fixed bugs with toggling bold/italic formatting
+- Fixed bugs with localized revision colors
+
+
 ## Beat 1.92.8
 
 - Some localization bugs fixed

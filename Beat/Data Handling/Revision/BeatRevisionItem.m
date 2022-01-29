@@ -69,7 +69,7 @@
 
 - (BeatColor*)backgroundColor {
 	if (_backgroundColor) return _backgroundColor;
-	_backgroundColor = [[self color] colorWithAlphaComponent:0.2];
+	_backgroundColor = [self.color colorWithAlphaComponent:0.1];
 	return _backgroundColor;
 }
 
