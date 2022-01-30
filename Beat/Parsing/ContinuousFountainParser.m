@@ -592,31 +592,27 @@ static NSDictionary* patterns;
 
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position
 {
-	// First check the line we edited last
-	//bool wouldReturnMatch = NO;
-	NSUInteger match = -1;
+	// Hey, past me. I rewrote this in 1.929, because the previous iteration didn't seem to actually work.
 	
+	// First check if we are still on the cached line
 	if (_lastEditedLine) {
-		if (_lastEditedLine.position > position &&
-			position < _lastEditedLine.string.length + _lastEditedLine.position) {
-			match = [self.lines indexOfObject:_lastEditedLine] - 1;
-			if (match < self.lines.count && match >= 0) {
-				//wouldReturnMatch = YES;
-				return match;
-			}
+		if (NSLocationInRange(position, _lastEditedLine.range)) {
+			return [self.lines indexOfObject:_lastEditedLine];
 		}
 	}
 	
-    for (int i = 0; i < [self.lines count]; i++) {
+	// Else just iterate through lines and cache the result
+    for (int i = 0; i < self.lines.count; i++) {
         Line* line = self.lines[i];
         
-        if (line.position > position) {
+        if (NSLocationInRange(position, line.range)) {
 			_lastEditedLine = line;
-						
-            return i-1;
+            return i;
         }
     }
-    return [self.lines count] - 1;
+	
+	// Return last line
+    return self.lines.count - 1;
 }
 
 - (void)incrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount

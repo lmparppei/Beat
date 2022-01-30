@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 @property (nonatomic, readonly) ContinuousFountainParser *parser;
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) BeatEditorMode mode;	
-@property (readonly) bool trackChanges;
+@property (readonly) bool revisionMode;
 @property (readonly) bool showSceneNumberLabels;
 @property (readonly) bool showPageNumbers;
 @property (readonly) NSMutableIndexSet *changes;

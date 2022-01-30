@@ -15,6 +15,14 @@ typedef NS_ENUM(NSInteger, BeatPaperSize) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface BeatMargins : NSObject
+@property (nonatomic) CGFloat top;
+@property (nonatomic) CGFloat left;
+@property (nonatomic) CGFloat right;
+@property (nonatomic) CGFloat bottom;
++ (BeatMargins*)margins;
+@end
+
 @interface BeatPaperSizing : NSObject
 + (NSPrintInfo*)printInfoFor:(BeatPaperSize)size;
 + (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo;

@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2012-2013 Nima Yousefi & John August
- Parts Copyright © 2019-2020 Lauri-Matti Parppei
- Parts Copyright © 2021 Fredrik T Olsson
+ Parts Copyright © 2019-2022 Lauri-Matti Parppei
+ Parts Copyright © 2021-2022 Fredrik T Olsson
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to
@@ -34,10 +34,10 @@
 	As of this writing (December 2021) WebKit will demand there be margins
 	of the following sizes outside of the area to print:
 		Left:	50pt
-		Right: 	50pt 
+		Right: 	38pt
 		Top:	30pt
-		Bottom:	40pt
-	Everything that exceeds the remaining width (i.e. paper size minus 
+		Bottom:	20pt
+	Everything that exceeds the remaining width (i.e. paper size minus
 	left+right margins) will cause the content to SHRINK to fit.
 
 	This CSS takes this into account by declaring the SECTION element as
@@ -48,7 +48,7 @@
 	tweaks to script element layouts from the variables in the body tag.
 
 	ALSO NOTE: the CSS in this file correspond well to the line lengths
- 	inside the Beat editing window, but with the important exception of 
+	inside the Beat editing window, but with the important exception of
 	DUAL DIALOGUE. These should still be considered work in progress.
  
 */
@@ -82,7 +82,7 @@ body {
 
 	color: black;
 	font: 12pt 'Courier Prime', 'Courier', serif;
-	line-height: var(--line-height); 
+	line-height: var(--line-height);
 
 	padding: 0px;
 	margin: 0px;
@@ -98,14 +98,14 @@ body.us-letter{  /* all values not present here are the same as for A4 */
 	width: calc(8.5in - 88pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
 }
 
-@page { 
+@page {
 	margin: 0cm;
 }
 
 article {
 	margin-top: 0;
 	padding-bottom: 0;
-	margin-bottom: 0; 
+	margin-bottom: 0;
 }
 
 section {
@@ -204,7 +204,7 @@ body > p:first-child {
 	text-align: center;
 }
 
-.character, 
+.character,
 .more {
 	position: relative;
 	left: 0px;
@@ -298,7 +298,7 @@ body > p:first-child {
 	position: absolute;
 	
 	top: 0px;
-	right: -12pt;
+	right: -20pt;
 	width: 8px;
 	height: calc(100% - 4px);
 	z-index: 999;
@@ -306,10 +306,51 @@ body > p:first-child {
 	content: '*********************';
 	overflow: hidden;
 	font-weight: normal;
+	text-align: right !important;
+
+	letter-spacing: -1pt;
+}
+
+.changed::after{
+	/* color: grey */
+}
+.changed.blue::after{
+	/* color: blue; */
+}
+.changed.orange::after{
+	/* color: orange; */
+	width: 20px;
+	content: '******************************************';
+}
+.changed.purple::after{
+	/* color: purple; */
+	content: '+++++++++++++++++++++';
+}
+.changed.green::after{
+	/* color: green; */
+	width: 20px;
+	content: '++++++++++++++++++++++++++++++++++++++++++';
 }
 
 .dual-dialogue-left .changed::after {
 	left: -4ch;
+}
+
+.dual-dialogue-right .changed::after{
+	right: -27pt;
+}
+
+.dual-dialogue-right .character.changed::after,
+.dual-dialogue-right .parenthetical.changed::after {
+	right: -20pt;
+}
+
+.dual-dialogue-left .parenthetical.changed::after {
+	left: calc(-4ch - 21.5pt);
+}
+
+.dual-dialogue-left .character.changed::after{
+	left: calc(-9ch - 21.5pt);
 }
 
 /* ================== */

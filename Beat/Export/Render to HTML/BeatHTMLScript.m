@@ -2,8 +2,7 @@
 //  BeatHTMLScript.m
 //	Modified for Beat from FNHTMLScript
 //
-//  Copyright (c) 2012-2013 Nima Yousefi & John August
-//  Parts copyright © 2019-2020 Lauri-Matti Parppei / Lauri-Matti Parppei
+//  Copyright © 2019-2020 Lauri-Matti Parppei / Lauri-Matti Parppei
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -32,7 +31,9 @@
  more reliable.
   
  Note that HTML output links to either screen or print CSS depending on the target format.
- Print & PDF versions rely on PrintCSS.css and preview mode uses ScriptCSS.css.
+ Print & PDF versions rely on ScreenplayStyles.css and preview mode add PreviewStyles.css
+ on top of that.
+ 
  Pagination is a bit messy, but generally speaking, it inherits print settings
  and page size either from the original Document class or defaults to A4.
  
@@ -432,7 +433,9 @@
 					[additionalClasses appendString:@" changed"];
 					
 					// Add revision color if available
-					if (line.revisionColor.length > 0) [additionalClasses appendFormat:@" %@", line.revisionColor.lowercaseString];
+					if (line.revisionColor.length > 0) {
+						[additionalClasses appendFormat:@" %@", line.revisionColor.lowercaseString];
+					}
 				}
 				
 				// If this line isn't part of a larger block, output it as paragraph

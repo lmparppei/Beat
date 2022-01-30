@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -684,6 +685,12 @@ DQ
                                     <action selector="togglePageNumbers:" target="-1" id="gdh-dA-GH1"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Show Revisions" id="nSA-Ck-Viv">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleShowRevisions:" target="-1" id="Hdw-sb-cKK"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="5k0-hN-7vj"/>
                             <menuItem title="Hide Fountain Markup" id="ayj-TQ-Go1">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -962,7 +969,7 @@ DQ
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" drawsBackground="NO" id="d8W-Sp-gT7">
                             <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
-                            <autoresizingMask key="autoresizingMask"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="qwK-zh-2Ns" id="4CT-K1-GgI">
                                     <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>

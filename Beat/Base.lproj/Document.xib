@@ -2210,11 +2210,11 @@ Gw
             <point key="canvasLocation" x="-873" y="446"/>
         </menu>
         <customView id="zD2-lE-mgt" userLabel="Quick Settings">
-            <rect key="frame" x="0.0" y="0.0" width="208" height="267"/>
+            <rect key="frame" x="0.0" y="0.0" width="208" height="271"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="djE-wS-Oh2">
-                    <rect key="frame" x="65" y="199" width="125" height="16"/>
+                    <rect key="frame" x="65" y="203" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Scene Numbers" id="FcY-wT-YPP">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2223,7 +2223,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ce8-Oa-473">
-                    <rect key="frame" x="65" y="169" width="125" height="16"/>
+                    <rect key="frame" x="65" y="173" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Page Numbers" usesSingleLineMode="YES" id="JLw-Th-DgB">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2232,7 +2232,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="IdW-3r-Koe">
-                    <rect key="frame" x="65" y="50" width="125" height="16"/>
+                    <rect key="frame" x="65" y="49" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Revision Mode" id="fPt-b4-RaB">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2241,7 +2241,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <customView id="bKc-za-gPA" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="195" width="35" height="22"/>
+                    <rect key="frame" x="20" y="199" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="checked" value="YES"/>
@@ -2254,7 +2254,7 @@ Gw
                     </connections>
                 </customView>
                 <customView id="Mef-QD-NsX" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="165" width="35" height="22"/>
+                    <rect key="frame" x="20" y="169" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
@@ -2266,7 +2266,7 @@ Gw
                     </connections>
                 </customView>
                 <customView id="EIZ-TU-2Aq" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="46" width="35" height="22"/>
+                    <rect key="frame" x="20" y="45" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
@@ -2278,15 +2278,15 @@ Gw
                     </connections>
                 </customView>
                 <box verticalHuggingPriority="750" boxType="separator" id="AYf-SB-Uer">
-                    <rect key="frame" x="12" y="119" width="184" height="5"/>
+                    <rect key="frame" x="12" y="123" width="184" height="5"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
                 <box verticalHuggingPriority="750" boxType="separator" id="Bgb-ne-OA9">
-                    <rect key="frame" x="12" y="74" width="184" height="5"/>
+                    <rect key="frame" x="12" y="78" width="184" height="5"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ZZf-h8-5r0">
-                    <rect key="frame" x="18" y="231" width="125" height="16"/>
+                    <rect key="frame" x="18" y="235" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Quick Settings" id="mg9-HW-sgj">
                         <font key="font" metaFont="systemBold"/>
@@ -2295,41 +2295,41 @@ Gw
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Ems-vl-Z7w">
-                    <rect key="frame" x="18" y="26" width="75" height="11"/>
+                    <rect key="frame" x="18" y="25" width="75" height="11"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Revision Color" id="Teo-oJ-Dwq">
+                    <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Revision" id="Teo-oJ-Dwq">
                         <font key="font" metaFont="miniSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" id="qQI-Yr-iVj" userLabel="Revision Color">
-                    <rect key="frame" x="95" y="17" width="104" height="25"/>
+                    <rect key="frame" x="95" y="16" width="104" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <popUpButtonCell key="cell" type="push" title="Blue" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="Thz-O0-hCD" id="RQ5-js-cwq">
+                    <popUpButtonCell key="cell" type="push" title="First" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="Thz-O0-hCD" id="RQ5-js-cwq">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
                         <menu key="menu" id="lCd-Rs-g3k">
                             <items>
-                                <menuItem title="Blue" state="on" image="Color_Blue" id="Thz-O0-hCD" customClass="BeatColorMenuItem">
+                                <menuItem title="First" state="on" image="Color_Blue" id="Thz-O0-hCD" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="blue"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Orange" image="Color_Orange" id="NfX-B5-spN" customClass="BeatColorMenuItem">
+                                <menuItem title="Second" image="Color_Orange" id="NfX-B5-spN" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="orange"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Purple" image="Color_Purple" id="bbu-dp-keE" customClass="BeatColorMenuItem">
+                                <menuItem title="Third" image="Color_Purple" id="bbu-dp-keE" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="purple"/>
                                     </userDefinedRuntimeAttributes>
                                 </menuItem>
-                                <menuItem title="Green" image="Color_Green" id="gJz-gC-KoS" customClass="BeatColorMenuItem">
+                                <menuItem title="Fourth" image="Color_Green" id="gJz-gC-KoS" customClass="BeatColorMenuItem">
                                     <modifierMask key="keyEquivalentModifierMask"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="colorKey" value="green"/>
@@ -2343,7 +2343,7 @@ Gw
                     </connections>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" id="UOV-VP-tY1" userLabel="Paper Size">
-                    <rect key="frame" x="97" y="85" width="102" height="25"/>
+                    <rect key="frame" x="97" y="89" width="102" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="A4" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" arrowPosition="arrowAtCenter" selectedItem="bd3-1f-TNb" id="5tR-G3-0Nu" userLabel="Menu">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -2370,7 +2370,7 @@ Gw
                     </connections>
                 </popUpButton>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WkG-bA-E2d">
-                    <rect key="frame" x="65" y="139" width="125" height="16"/>
+                    <rect key="frame" x="65" y="143" width="125" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Dark Mode" id="vbP-uh-iii">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2379,7 +2379,7 @@ Gw
                     </textFieldCell>
                 </textField>
                 <customView id="S22-Mw-UkV" customClass="ITSwitch">
-                    <rect key="frame" x="20" y="135" width="35" height="22"/>
+                    <rect key="frame" x="20" y="139" width="35" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
@@ -2391,7 +2391,7 @@ Gw
                     </connections>
                 </customView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="WY3-fe-OfP">
-                    <rect key="frame" x="18" y="91" width="75" height="16"/>
+                    <rect key="frame" x="18" y="95" width="75" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Paper Size" id="6Yb-zo-0AS">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -2400,7 +2400,7 @@ Gw
                     </textFieldCell>
                 </textField>
             </subviews>
-            <point key="canvasLocation" x="525" y="-376.5"/>
+            <point key="canvasLocation" x="566" y="-436"/>
         </customView>
     </objects>
     <resources>

@@ -123,7 +123,7 @@
 "NLd-GN-ebP.title" = "Hahmo";
 
 /* Class = "NSMenuItem"; title = "Orange"; ObjectID = "NfX-B5-spN"; */
-"NfX-B5-spN.title" = "Oranssi";
+"NfX-B5-spN.title" = "Toinen";
 
 /* Class = "NSTabViewItem"; label = "Outline"; ObjectID = "O5H-I2-RI4"; */
 "O5H-I2-RI4.label" = "Rakenne";
@@ -147,10 +147,10 @@
 "SU7-uh-HJD.ibShadowedToolTip" = "Näytä aikajana";
 
 /* Class = "NSTextFieldCell"; title = "Revision Color"; ObjectID = "Teo-oJ-Dwq"; */
-"Teo-oJ-Dwq.title" = "Korjausväri";
+"Teo-oJ-Dwq.title" = "Korjausversio";
 
 /* Class = "NSMenuItem"; title = "Blue"; ObjectID = "Thz-O0-hCD"; */
-"Thz-O0-hCD.title" = "Sininen";
+"Thz-O0-hCD.title" = "Ensimäinen";
 
 /* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "Tol-77-c6p"; */
 "Tol-77-c6p.title" = "US Letter";
@@ -216,7 +216,7 @@
 "bJU-Vk-ZPT.title" = "Sininen";
 
 /* Class = "NSMenuItem"; title = "Purple"; ObjectID = "bbu-dp-keE"; */
-"bbu-dp-keE.title" = "Violetti";
+"bbu-dp-keE.title" = "Kolmas";
 
 /* Class = "NSMenuItem"; title = "A4"; ObjectID = "bd3-1f-TNb"; */
 "bd3-1f-TNb.title" = "A4";
@@ -246,7 +246,7 @@
 "g4z-ZF-efk.title" = "Vihreä";
 
 /* Class = "NSMenuItem"; title = "Green"; ObjectID = "gJz-gC-KoS"; */
-"gJz-gC-KoS.title" = "Vihreä";
+"gJz-gC-KoS.title" = "Neljäs";
 
 /* Class = "NSTextFieldCell"; title = "Start Scene Numbers From"; ObjectID = "mRh-Qz-Ja7"; */
 "mRh-Qz-Ja7.title" = "Aloita kohtausnumerointi numerosta…";

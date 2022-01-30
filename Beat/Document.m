@@ -2763,6 +2763,7 @@
 	// [self renderTextBackgroundOnLine:line];
 
 	if (!firstTime && line.string.length) {
+		/*
 		[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:range];
 		
 		if (_showRevisions || _showTags) {
@@ -2789,11 +2790,51 @@
 				}
 			}];
 		}
+		 */
+		[self renderBackgroundForLine:line clearFirst:NO];
+	}
+}
+
+- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
+	NSRange range = line.range;
+	NSLayoutManager *layoutMgr = self.textView.layoutManager;
+	NSTextStorage *textStorage = self.textView.textStorage;
+	
+	if (clear) {
+		// First clear the background attribute if needed
+		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
+	}
+	
+	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:range];
+	
+	if (_showRevisions || _showTags) {
+		// Enumerate attributes
+		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+			if (attrs[revisionAttribute] && _showRevisions) {
+				BeatRevisionItem *revision = attrs[revisionAttribute];
+				if (revision.type == RevisionAddition) {
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
+				}
+				else if (revision.type == RevisionRemoval) {
+					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
+					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.1] forCharacterRange:range];
+				}
+			}
+			
+			if (attrs[tagAttribute] && _showTags) {
+				BeatTag *tag = attrs[tagAttribute];
+				NSColor *tagColor = [BeatTagging colorFor:tag.type];
+				tagColor = [tagColor colorWithAlphaComponent:.6];
+			   
+				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
+			}
+		}];
 	}
 }
 
 - (void)initialTextBackgroundRender {
-	if (!_showTags && _showRevisions) return;
+	if (!_showTags && !_showRevisions) return;
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[self.textView.textStorage enumerateAttributesInRange:(NSRange){0,self.textView.string.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
@@ -3490,7 +3531,44 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-#pragma mark - Edit Tracking
+#pragma mark - Revision Tracking
+
+// UI side
+
+-(IBAction)toggleShowRevisions:(id)sender {
+	_showRevisions = !_showRevisions;
+	
+	if (_showRevisions) {
+		// Show revisions
+		[self initialTextBackgroundRender];
+	} else {
+		// Hide revisions
+		for (Line* line in self.parser.lines) [self renderBackgroundForLine:line clearFirst:YES];
+	}
+	
+	[self updateQuickSettings];
+	
+	// Save user default
+	[BeatUserDefaults.sharedDefaults saveBool:_showRevisions forKey:@"showRevisions"];
+}
+
+-(IBAction)toggleRevisionMode:(id)sender {
+	_revisionMode = !_revisionMode;
+	
+	if (!_showRevisions) {
+		// Revisions were hidden, bring them back
+		_showRevisions = YES;
+		for (Line* line in self.parser.lines) [self renderBackgroundForLine:line clearFirst:YES];
+	}
+	
+	[self updateQuickSettings];
+	
+	// Save user default + document setting
+	[BeatUserDefaults.sharedDefaults saveBool:YES forKey:@"showRevisions"];
+	[_documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
+}
+
+// Revision tracking
 
 - (void)setupRevision {
 	_revisionColor = [_documentSettings getString:DocSettingRevisionColor];
@@ -3583,17 +3661,6 @@ static NSString *revisionAttribute = @"Revision";
 	[self forceFormatChangesInRange:range];
 }
 
--(IBAction)toggleRevisionMode:(id)sender {
-	_revisionMode = !_revisionMode;
-	_showRevisions = YES;
-		
-	[self updateQuickSettings];
-	
-	// Save user default + document setting
-	[BeatUserDefaults.sharedDefaults saveBool:YES forKey:@"showRevisions"];
-	[_documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
-}
-
 - (void)saveRevisionRanges {
 	[self saveRevisionRangesUsing:self.textView.attributedString];
 }
@@ -3611,6 +3678,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
 }
+/*
 - (IBAction)commitChanges:(id)sender {
 	NSAttributedString *attrStr = self.textView.attributedString;
 
@@ -3655,6 +3723,7 @@ static NSString *revisionAttribute = @"Revision";
 		}
 	}
 }
+ */
 
 
 #pragma mark - Lock & Force Scene Numbering
@@ -3799,6 +3868,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem withAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
 		[ValidationItem withAction:@selector(toggleHideFountainMarkup:) setting:@"hideFountainMarkup" target:self],
 		[ValidationItem withAction:@selector(toggleDisableFormatting:) setting:@"disableFormatting" target:self],
+		[ValidationItem withAction:@selector(toggleShowRevisions:) setting:@"showRevisions" target:self],
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem

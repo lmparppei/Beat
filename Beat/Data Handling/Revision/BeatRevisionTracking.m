@@ -16,6 +16,8 @@
 #import "BeatRevisionItem.h"
 #import "Line.h"
 
+#define DEFAULT_COLOR @"blue"
+
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>
 #else
@@ -34,6 +36,11 @@
 			NSArray *linesInRange = [parser linesInRange:range];
 			for (Line* line in linesInRange) {
 				line.changed = YES;
+				
+				// Set revision color
+				line.revisionColor = item.colorName;
+				if (!line.revisionColor.length) line.revisionColor = DEFAULT_COLOR;
+								
 				if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
 				
 				NSRange localRange = [line globalRangeToLocal:range];
@@ -75,7 +82,10 @@
 					NSArray *linesInRange = [parser linesInRange:range];
 					for (Line* line in linesInRange) {
 						line.changed = YES;
+						
+						// Set revision color
 						line.revisionColor = revision.colorName;
+						if (!line.revisionColor.length) line.revisionColor = DEFAULT_COLOR;
 						
 						if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
 						

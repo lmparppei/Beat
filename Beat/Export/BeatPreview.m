@@ -61,14 +61,14 @@
 		[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
 	} else {
 		// This is probably a QuickLook preview
-		parser = [[ContinuousFountainParser alloc] initWithString:rawScript];
+		parser = [ContinuousFountainParser.alloc initWithString:rawScript];
 	}
 	
 	// Create a script dict required by the HTML module
 	BeatScreenplay *script = parser.forPrinting;
 	
 	if (previewType == BeatQuickLookPreview) {
-		BeatHTMLScript *html = [[BeatHTMLScript alloc] initForQuickLook:script];
+		BeatHTMLScript *html = [BeatHTMLScript.alloc initForQuickLook:script];
 		return html.html;
 	} else {
 		BeatHTMLScript *html = [BeatHTMLScript.alloc initWithScript:script settings:[BeatExportSettings operation:ForPreview  document:_document header:@"" printSceneNumbers:_delegate.showSceneNumberLabels revisionColor:@"" coloredPages:NO scene:_delegate.currentScene.sceneNumber]];
