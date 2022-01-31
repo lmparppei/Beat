@@ -172,7 +172,7 @@ class BeatParser: NSObject <LineDelegate> {
 		var changedIndices:NSMutableIndexSet = NSMutableIndexSet()
 		var lineIndex:UInt = lineIndexAtPosition(position: position)
 		
-		let line:Line = self.liens[lineIndex]
+		let line:Line = lines[lineIndex]
 		
 		if (line.type == LineType.heading || line.type == LineType.synopse || line.type == LineType.section) {
 			changeInOutline = true

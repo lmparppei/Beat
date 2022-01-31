@@ -9,6 +9,7 @@
 - Fixed pagination issues with dialogue containing parentheticals mid-block 
 - Fixed bugs with toggling bold/italic formatting
 - Fixed bugs with localized revision colors
+- New revision markers when exporting
 
 
 ## Beat 1.92.8

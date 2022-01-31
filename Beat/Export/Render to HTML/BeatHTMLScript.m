@@ -408,13 +408,9 @@
 				NSString *printedSceneNumber;
 				if (self.printSceneNumbers) printedSceneNumber = line.sceneNumber;
 				else printedSceneNumber = @"";
-				
-				NSString* sceneNumberLeft = @"";
-				NSString* sceneNumberRight = @"";
-				
-				sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
-				// We dont print the right-hand scene number if the line has been changed, to make space for an asterisk
-				if (!line.changed) sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
+								
+				NSString* sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
+				NSString* sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
 				
 				[text setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, text, sceneNumberRight]];
 				

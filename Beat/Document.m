@@ -2412,8 +2412,11 @@
 	// Don't go out of range (just a safety measure for plugins etc.)
 	if (line.position + line.string.length > self.textView.string.length) return;
 	
-	// Do nothing for already formatted empty lines
-	if (line.type == empty && line.formattedAs == empty && line.string.length == 0) return;
+	// Do nothing for already formatted empty lines (except remove the background)
+	if (line.type == empty && line.formattedAs == empty && line.string.length == 0) {
+		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
+		return;
+	}
 
 	// Store the type we are formatting for
 	line.formattedAs = line.type;

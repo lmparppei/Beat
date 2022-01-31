@@ -103,7 +103,6 @@
 - (BeatPaginator*)paginator:(NSArray*)lines;
 
 - (void)reformat:(Line*)line;
-- (void)reformatRange:(NSInteger)loc len:(NSInteger)len;
 
 - (bool)compatibleWith:(NSString*)version; /// Check compatibility
 
@@ -143,6 +142,7 @@ JSExportAs(textHighlight, - (void)textHighlight:(NSString*)hexColor loc:(NSInteg
 JSExportAs(textBackgroundHighlight, - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(removeTextHighlight, - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len);
 JSExportAs(removeBackgroundHighlight, - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len);
+JSExportAs(reformatRange, - (void)reformatRange:(NSInteger)loc len:(NSInteger)len);
 
 // Widget UI
 JSExportAs(button, - (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame);
