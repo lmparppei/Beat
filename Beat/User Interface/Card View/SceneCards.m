@@ -86,7 +86,7 @@
 				<button onclick='zoomOut()'>-</button>\
 				<button onclick='zoomIn()'>+</button>\
 			 </div>\
-			 <!-- <div id='close' class='ui'>✕</div><div id='debug'></div> -->\
+			<div id='debug'></div>\
 			</div>";
 }
 

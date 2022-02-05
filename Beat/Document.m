@@ -1758,6 +1758,13 @@
 
 - (void)registerChangesInRange:(NSRange)range {
 	[_textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionAddition color:_revisionColor] range:range];
+	
+	// An die Nachgeborenen. Tuleville sukupolville. For generations to come.
+//	 Line *line = [self.parser lineAtPosition:range.location];
+//	 if (line) {
+//		line.changed = YES;
+//		line.revisionColor = self.revisionColor;
+//	 }
 }
 - (bool)inRange:(NSRange)range {
 	NSRange intersection = NSIntersectionRange(range, (NSRange){0, _textView.string.length  });
@@ -1802,9 +1809,8 @@
 	[self applyFormatChanges];
 	
 	// If the outline has changed, update all labels
-	//if (changeInOutline) [self updateSceneNumberLabels:self.lastChangedRange];
-	//else [self updateSceneNumberLabels:self.lastChangedRange.location];
 	[self updateSceneNumberLabels:self.lastChangedRange.location];
+	[self.textView updateChangeMarkersFrom:self.lastChangedRange.location];
 	
 	// Update preview screen
 	[self updatePreview];
@@ -2300,6 +2306,8 @@
 }
 - (void)forceFormatChangesInRange:(NSRange)range
 {
+	[self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:range];
+	
 	NSArray *lines = [self.parser linesInRange:range];
 	for (Line* line in lines) {
 		[self formatLineOfScreenplay:line];
@@ -2411,7 +2419,7 @@
 	
 	// Don't go out of range (just a safety measure for plugins etc.)
 	if (line.position + line.string.length > self.textView.string.length) return;
-	
+		
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0) {
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
@@ -2793,13 +2801,12 @@
 				}
 			}];
 		}
-		 */
+		*/
 		[self renderBackgroundForLine:line clearFirst:NO];
 	}
 }
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	NSRange range = line.range;
 	NSLayoutManager *layoutMgr = self.textView.layoutManager;
 	NSTextStorage *textStorage = self.textView.textStorage;
 	
@@ -2808,7 +2815,7 @@
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 	}
 	
-	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:range];
+	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:line.range];
 	
 	if (_showRevisions || _showTags) {
 		// Enumerate attributes
@@ -2842,12 +2849,19 @@
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[self.textView.textStorage enumerateAttributesInRange:(NSRange){0,self.textView.string.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 			
+			if (range.location+range.length - 1 < self.textView.string.length) {
+				unichar chr = [self.textView.string characterAtIndex:range.location+range.length - 1];
+				
+				if (chr == '\n') {
+					range = (NSRange){ range.location, range.length - 1 };
+				}
+			}
+			
 			// Revisions
 			if (attrs[revisionAttribute] && self.showRevisions) {
 				BeatRevisionItem *revision = attrs[revisionAttribute];
 				if (revision.type == RevisionAddition) [self.textView.layoutManager  addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
 				else if (revision.type == RevisionRemoval) {
-					[self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
 					[self.textView.textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
 					[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:range];
 				}
@@ -3575,8 +3589,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (void)setupRevision {
 	_revisionColor = [_documentSettings getString:DocSettingRevisionColor];
-	if (![_revisionColor isKindOfClass:NSString.class]) _revisionColor = @"";
-	if (!_revisionColor) _revisionColor = @"";
+	if (![_revisionColor isKindOfClass:NSString.class] || !_revisionColor) _revisionColor = BeatRevisionTracking.defaultRevisionColor;
 		
 	NSDictionary *revisions = [_documentSettings get:DocSettingRevisions];
 	
@@ -3668,11 +3681,24 @@ static NSString *revisionAttribute = @"Revision";
 	[self saveRevisionRangesUsing:self.textView.attributedString];
 }
 - (void)saveRevisionRangesUsing:(NSAttributedString*)string {
-	// This saves the review ranges into Document Settings
+	// This saves the revised ranges into Document Settings
 	NSDictionary *ranges = [BeatRevisionTracking rangesForSaving:string];
 	
 	[_documentSettings set:DocSettingRevisions as:ranges];
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
+
+	// Save changed indices.
+	// Tuleville sukupolville. An die Nachgeborenen.
+	/*
+	NSArray *lines = self.lines;
+	
+	NSMutableDictionary *changedLines = NSMutableDictionary.new;
+	for (NSInteger i=0; i < lines.count; i++) {
+		Line *line = lines[i];
+		if (line.changed) [changedLines setValue:line.revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
+	}
+	[_documentSettings set:DocSettingChangedIndices as:changedLines];
+	*/
 }
 - (IBAction)selectRevisionColor:(id)sender {
 	NSPopUpButton *button = sender;
@@ -3832,7 +3858,9 @@ static NSString *revisionAttribute = @"Revision";
 	[[self.undoManager prepareWithInvocationTarget:self] undoSceneNumbering:originalText];
 	
 	[self.parser createOutline];
+	
 	[self updateSceneNumberLabels:0];
+	[self.textView updateChangeMarkers];
 }
 
 - (void)undoSceneNumbering:(NSString*)rawText
@@ -3845,7 +3873,9 @@ static NSString *revisionAttribute = @"Revision";
 	
 	[self ensureLayout];
 	[self.parser createOutline];
+	
 	[self updateSceneNumberLabels:0];
+	[self.textView updateChangeMarkers];
 }
 
 
@@ -4099,6 +4129,7 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
 	[self updateSceneNumberLabels:0];
+	[self.textView updateChangeMarkers];
 }
 - (bool)isDark {
 	return [(BeatAppDelegate *)[NSApp delegate] isDark];
@@ -4935,6 +4966,7 @@ static NSString *revisionAttribute = @"Revision";
 	[self reloadOutline];
 	[self reloadTimeline];
 	[self updateSceneNumberLabels:0];
+	[self.textView updateChangeMarkers];
 	[self updateChangeCount:NSChangeDone];
 	
 	[_documentWindow endSheet:_sceneNumberingPanel];

@@ -166,6 +166,7 @@
 
 - (void)saveToDocument {
 	[self.editorDelegate.documentSettings set:@"Notes" as:[self stringForSaving]];
+	NSLog(@".... %@", [self.editorDelegate.documentSettings get:@"Notes"]);
 }
 
 - (NSString*)stringForSaving {

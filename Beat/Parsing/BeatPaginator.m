@@ -361,8 +361,6 @@
 }
 - (void)paginateFromIndex:(NSInteger)fromIndex startFromLine:(Line*)firstLine page:(NSMutableArray*)firstPage
 {
-	bool test = NO;
-	
 	if (!self.script.count) return;
 	
 	if (!_livePagination) {

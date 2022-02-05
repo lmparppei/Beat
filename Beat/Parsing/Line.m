@@ -314,6 +314,7 @@
 	newLine.position = self.position;
 	
 	newLine.changed = self.changed;
+	
 	newLine.isSplitParagraph = self.isSplitParagraph;
 	newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
 	newLine.unsafeForPageBreak = self.unsafeForPageBreak;

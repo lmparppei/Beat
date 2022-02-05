@@ -7,16 +7,19 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "ContinuousFountainParser.h"
 
 @protocol BeatTextStorageDelegate <NSTextStorageDelegate>
+@property (nonatomic, readonly, weak) ContinuousFountainParser *parser;
 - (void)didPerformEdit:(NSRange)range;
+@end
+
+@interface BeatParagraph : NSObject
+@property (nonatomic) NSRect rect;
 @end
 
 @interface BeatTextStorage : NSTextStorage {
 	NSMutableAttributedString *storage;
 }
 @property (weak) id<BeatTextStorageDelegate> delegate;
--(NSDictionary<NSAttributedStringKey,id> *)beatAttributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range;
--(NSDictionary<NSAttributedStringKey,id> *)beatAttributesAtIndex:(NSUInteger)location longestEffectiveRange:(NSRangePointer)range inRange:(NSRange)rangeLimit;
-
 @end

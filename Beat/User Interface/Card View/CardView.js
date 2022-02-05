@@ -34,9 +34,10 @@ let scenes,
 	closeButton,
 	printButton,
 	contextMenu,
-	drake,
 	debugElement,
 	wait;
+
+let drake = "none..."
 
 let zoomLevel = 2;
 
@@ -68,13 +69,12 @@ if (!String.prototype.replaceAll) {
 
 function init () {
 	debugElement = document.getElementById('debug');
-	
 	scenes = [];
 	
 	createStyles();
 	container = document.getElementById('container');
 	wait = document.getElementById('wait');
-
+	
 	// Only allow printing & closing for the standalone, windowed version
 	if (!standalone) {
 		printButton = document.getElementById('print');
@@ -83,19 +83,18 @@ function init () {
 			var html = "<html>" + document.getElementsByTagName('html')[0].innerHTML + "</html>";
 			window.webkit.messageHandlers.printCards.postMessage(html);
 		}
-		
-		closeButton = document.getElementById('close');
-		closeButton.onclick = function () {
-			window.webkit.messageHandlers.cardClick.postMessage('exit');
-		}
 	}
-		
+	
 	// Init context menut
 	contextMenu.init();
 	document.body.onclick = function (e) { contextMenu.close(); }
 	
 	// Init drag & drop
-	if (dragDrop) initDragDrop();
+	
+	if (dragDrop) {
+		initDragDrop()
+	}
+	
 }
 
 function log(message) {
@@ -118,11 +117,9 @@ function initDragDrop () {
 			return el.tagName === "H2";
 		}
 	});
-
+		
 	// Handle drop
 	drake.on('drop', function (el, target, source, sibling) {
-		console.log("dropping...");
-		
 		var sceneIndex = el.getAttribute('sceneIndex')
 		var nextIndex
 		
@@ -154,7 +151,6 @@ function initDragDrop () {
 
 		//createCards(scenes);
 	});
-
 }
 
 // Night mode
@@ -392,7 +388,10 @@ function createCards (cards, alreadyVisible = false, changedIndex = -1) {
 	// Setup drag & drop and context menus
 	setupCards();
 	
-	if (dragDrop) drake.containers = [document.getElementById("cardContainer")];
+	if (dragDrop) {
+		const container = document.getElementById("cardContainer")
+		drake.containers = [container]
+	}
 }
 
 function select(index) {

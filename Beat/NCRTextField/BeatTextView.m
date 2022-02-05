@@ -38,6 +38,7 @@
 #import "BeatPasteboardItem.h"
 #import "BeatMeasure.h"
 #import "NSString+CharacterControl.h"
+#import "BeatRevisionItem.h"
 
 #define DEFAULT_MAGNIFY 1.02
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -114,7 +115,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @property (nonatomic) BeatTextviewPopupMode popupMode;
 @property (nonatomic) BeatTagType currentTagType;
 
-// Used to highlight typed characters and insert text
+// Used to highlight typed characters when autocompleting and insert text
 @property (nonatomic, copy) NSString *substring;
 
 // Used to keep track of when the insert cursor has moved so we
@@ -138,6 +139,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @property (nonatomic) bool selectionAtEnd;
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
+
+@property (nonatomic) NSMutableArray *changeMarkers;
 
 @end
 
@@ -896,17 +899,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return rect;
 }
 
-- (NSArray*)rectsForChanges {
-	NSMutableArray *rects = [NSMutableArray array];
-
-	[self.editorDelegate.changes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSRect rect = [self rectForRange:range];
-		NSRect highlight = NSMakeRect(self.textContainerInset.width - 20, self.textContainerInset.height + rect.origin.y, 2, rect.size.height);
-		[rects addObject:[NSValue valueWithRect:highlight]];
-	}];
-		
-	return rects;
-}
 
 -(void)viewDidEndLiveResize {
 	//[super viewDidEndLiveResize];
@@ -931,31 +923,122 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			
 			NSRect rect = [self.layoutManager boundingRectForGlyphRange:value.rangeValue inTextContainer:self.textContainer];
 			rect.origin.x = self.textContainerInset.width;
-			// You say: never hardcode a value, but YOU DON'T KNOW ME, DO YOU!!!
-			rect.origin.y += self.textContainerInset.height - 12;
+			rect.origin.y += self.textContainerInset.height - 12; // You say: never hardcode a value, but YOU DON'T KNOW ME, DO YOU!!!
 			rect.size.width = self.textContainer.size.width;
 			
-			//NSRectFill(rect);
 			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 		}
 	}
-}
-
-
-- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag {
-	aRect.size.width = CARET_WIDTH;
-	[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
-}
- 
-- (void)setNeedsDisplayInRect:(NSRect)invalidRect {
-	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
-	[super setNeedsDisplayInRect:invalidRect];
 }
 
 -(void)redrawUI {
 	[self displayRect:self.frame];
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 }
+
+
+#pragma mark - Change Markers
+
+// Both of these methods kind of work, but need additional tweaking.
+
+-(void)updateChangeMarkers {
+	/*
+	[self updateChangeMarkersFrom:0];
+	 */
+}
+-(void)updateChangeMarkersFrom:(NSInteger)idx {
+	/*
+	idx = 0;
+	self.wantsLayer = YES;
+	if (!_changeMarkers) _changeMarkers = NSMutableArray.array;
+	
+	NSInteger changeIdx = 0;
+	Line *line = [self.parser lineAtPosition:idx];
+	NSInteger lineIndex = [self.parser.lines indexOfObject:line];
+	
+	for (NSInteger i=lineIndex; i<self.editorDelegate.parser.lines.count; i++) {
+		Line *line = self.editorDelegate.parser.lines[i];
+
+		if (line.changed) {
+			CGRect rect = [self rectForLine:line];
+			NSRect changeMarkerRect = NSMakeRect(rect.origin.x - 20, rect.origin.y, 1,rect.size.height);
+			
+			CATextLayer *layer;
+			
+			@try {
+				layer = _changeMarkers[changeIdx];
+			} @catch (NSException *exception) {
+				layer = CATextLayer.layer;
+				[layer setAnchorPoint:(CGPoint){0,0}];
+				[self.layer addSublayer:layer];
+				[_changeMarkers addObject:layer];
+			}
+						
+			NSRect frame = layer.frame;
+			NSRect bounds = layer.bounds;
+			
+			frame.size.width = 22; bounds.size.width = 22;
+			frame.size.height = changeMarkerRect.size.height; bounds.size.height = changeMarkerRect.size.height;
+			frame.origin.x = changeMarkerRect.origin.x;
+			frame.origin.y = changeMarkerRect.origin.y;
+			
+			layer.wrapped = YES;
+			layer.string = @"**********************************************************************";
+			layer.foregroundColor = NSColor.blackColor.CGColor;
+			[layer setFont:@"Courier"];
+			layer.fontSize = 12.6;
+			
+			[layer setBounds:bounds];
+			[layer setFrame:frame];
+			
+			changeIdx++;
+		}
+	}
+	
+	if (_changeMarkers.count >= changeIdx) {
+		NSInteger labels = _changeMarkers.count;
+		for (NSInteger i = changeIdx; i < labels; i++) {
+			CATextLayer *label = _changeMarkers.lastObject;
+			[_changeMarkers removeObject:label];
+			[label removeFromSuperlayer];
+		}
+	}
+	 */
+	
+}
+
+
+#pragma mark - Rect for line
+
+-(CGRect)rectForLine:(Line*)line {
+	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
+	NSTextContainer *container = self.textContainer;
+
+	CGRect charRect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:container];
+	
+	CGRect rect = CGRectMake(charRect.origin.x + self.textContainerInset.width,
+							 fabs(charRect.origin.y + self.textContainerInset.height),
+							 charRect.size.width,
+							 charRect.size.height
+							 );
+	
+	return rect;
+}
+
+
+
+#pragma mark - Draw custom caret
+
+- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag {
+	aRect.size.width = CARET_WIDTH;
+	[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
+}
+
+- (void)setNeedsDisplayInRect:(NSRect)invalidRect {
+	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
+	[super setNeedsDisplayInRect:invalidRect];
+}
+
 
 #pragma mark - Scene & page numbering
 
@@ -1255,6 +1338,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[_sceneNumberLabels removeAllObjects];
 }
 
+
 #pragma mark - Mouse events
 
 - (void)mouseMoved:(NSEvent *)event {
@@ -1341,12 +1425,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (_contextMenu.itemArray.count) {
 		[defaultMenu addItem:[NSMenuItem separatorItem]];
 		
-		for (NSMenuItem *item in _contextMenu.itemArray) {
+		for (id item in _contextMenu.itemArray) {
 			[_contextMenu removeItem:item];
 			[defaultMenu addItem:item];
 		}
 		
-		[defaultMenu addItem:[NSMenuItem separatorItem]];
+		[defaultMenu addItem:NSMenuItem.separatorItem];
 	}
 	
 	return defaultMenu;
@@ -1568,6 +1652,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 }
 */
 
+
 #pragma mark - Spell Checking
 
 - (void)handleTextCheckingResults:(NSArray<NSTextCheckingResult *> *)results forRange:(NSRange)range types:(NSTextCheckingTypes)checkingTypes options:(NSDictionary<NSTextCheckingOptionKey,id> *)options orthography:(NSOrthography *)orthography wordCount:(NSInteger)wordCount {
@@ -1601,6 +1686,14 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 		[super handleTextCheckingResults:results forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
 	}
 }
+
+
+#pragma mark - Text storage delegation
+
+- (ContinuousFountainParser*)parser {
+	return self.editorDelegate.parser;
+}
+
 
 @end
 /*

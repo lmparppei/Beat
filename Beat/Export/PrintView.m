@@ -118,9 +118,24 @@
 	// Parse the input again
 	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:rawText delegate:document];
 
+	/*
+	// Tuleville sukupolville. Für die Nachgeborenen. For those who come after.
+	 
+	// Mark changes from editor
+	NSArray *docLines = document.lines;
+	for (NSInteger i=0; i<docLines.count; i++) {
+		Line *editorLine = docLines[i];
+		Line *printedLine = parser.lines[i];
+		if (editorLine.changed) {
+			printedLine.changed = YES;
+			printedLine.revisionColor = editorLine.revisionColor;
+		}
+	}
+	 */
+	
 	// Track revisions
 	[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser];
-	
+
 	
 	// See if we want to compare it with something
 	// BeatComparison marks the Line objects as changed

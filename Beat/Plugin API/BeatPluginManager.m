@@ -172,7 +172,8 @@
 	while (newComp.count > pos || oldComp.count > pos) {
 		NSInteger v1 = newComp.count > pos ? [[newComp objectAtIndex:pos] integerValue] : 0;
 		NSInteger v2 = oldComp.count > pos ? [[oldComp objectAtIndex:pos] integerValue] : 0;
-		if (v1 <= v2) {
+		
+		if (v1 < v2) {
 			return NO;
 		}
 		else if (v1 > v2) {

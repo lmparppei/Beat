@@ -6,10 +6,18 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+/*
+ 
+ Some ideas and tests. Unused for now.
+ 
+ */
+
 #import "BeatTextStorage.h"
 
 @interface BeatTextStorage ()
 @property (nonatomic, readonly) NSString* string;
+@property (nonatomic) NSMutableDictionary <NSValue*,NSNumber*> *rects;
+@property (nonatomic, weak) Line* previouslyEdited;
 @end
 
 @implementation BeatTextStorage
@@ -25,11 +33,11 @@
  return self;
 }
 
-- (NSString *) string {
+- (NSString *)string {
 	return [storage string];
 }
 
-- (void) replaceCharactersInRange:(NSRange)range withString:(NSString *)str {
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)str {
 	[storage replaceCharactersInRange:range withString:str];
 	[self edited:NSTextStorageEditedCharacters range:range changeInLength:[str length] - range.length];
 }
@@ -43,42 +51,22 @@
 	return [storage attributesAtIndex:location longestEffectiveRange:range inRange:rangeLimit];
 }
 
+-(void)edited:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+	[super edited:editedMask range:editedRange changeInLength:delta];
+	
+	if (NSIntersectionRange(editedRange, _previouslyEdited.range).length != editedRange.length) {
+		NSArray *lines = [self.delegate.parser linesInRange:editedRange];
+		
+//		for (Line* line in lines) {
+//			
+//		}
+	}
+	
+}
+
 -(void)endEditing {
 	[super endEditing];
-	[self.delegate didPerformEdit:self.editedRange];
 }
-
--(NSDictionary<NSAttributedStringKey,id> *)beatAttributesAtIndex:(NSUInteger)location longestEffectiveRange:(NSRangePointer)range inRange:(NSRange)rangeLimit {
-	NSDictionary<NSAttributedStringKey,id> * attributes = [storage attributesAtIndex:location longestEffectiveRange:range inRange:rangeLimit];
-	if (attributes[@"Revision"] || attributes[@"Tag"]) {
-		NSMutableDictionary *beatAttrs = [NSMutableDictionary dictionary];
-		
-		if (attributes[@"Revision"] != nil) beatAttrs[@"Revision"] = attributes[@"Revision"];
-		if (attributes[@"BeatTag"] != nil) beatAttrs[@"BeatTag"] = attributes[@"BeatTag"];
-		
-		return beatAttrs;
-	} else {
-		return attributes;
-	}
-}
-
--(NSDictionary<NSAttributedStringKey,id> *)beatAttributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range {
-	NSDictionary<NSAttributedStringKey,id> * attributes = [storage attributesAtIndex:location effectiveRange:range];
-	
-	if (attributes[@"Revision"] || attributes[@"Tag"]) {
-		NSMutableDictionary *beatAttrs = [NSMutableDictionary dictionary];
-		
-		if (attributes[@"Revision"] != nil) beatAttrs[@"Revision"] = attributes[@"Revision"];
-		if (attributes[@"BeatTag"] != nil) beatAttrs[@"BeatTag"] = attributes[@"BeatTag"];
-		
-		return beatAttrs;
-	} else {
-		return attributes;
-	}
-	
-	return [storage attributesAtIndex:location effectiveRange:range];
-}
-
 
 -(NSDictionary<NSAttributedStringKey,id> *)attributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range {
 	return [storage attributesAtIndex:location effectiveRange:range];
@@ -86,6 +74,16 @@
 
 -(NSAttributedString *)attributedSubstringFromRange:(NSRange)range {
 	return [super attributedSubstringFromRange:range];
+}
+
+-(void)setRectForRange:(Line*)line {
+	
+}
+
+-(NSRect)rectForLine:(Line*)line {
+	NSValue *key = [NSValue valueWithNonretainedObject:line];
+	NSRect rect = _rects[key].rectValue;
+	return rect;
 }
 
 @end

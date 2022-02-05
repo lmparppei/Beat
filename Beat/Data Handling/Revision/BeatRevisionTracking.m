@@ -17,6 +17,7 @@
 #import "Line.h"
 
 #define DEFAULT_COLOR @"blue"
+#define REVISION_ORDER @[@"blue", @"orange", @"purple", @"green"]
 
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>
@@ -25,6 +26,15 @@
 #endif
 
 @implementation BeatRevisionTracking
+
++ (NSString*)defaultRevisionColor {
+	return DEFAULT_COLOR;
+}
+
++ (NSArray*)revisionColors {
+	return REVISION_ORDER;
+}
+
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser
 {
 	[string enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
@@ -38,8 +48,17 @@
 				line.changed = YES;
 				
 				// Set revision color
-				line.revisionColor = item.colorName;
-				if (!line.revisionColor.length) line.revisionColor = DEFAULT_COLOR;
+				NSString *revisionColor = item.colorName;
+				if (!revisionColor.length) revisionColor = DEFAULT_COLOR;
+				
+				if (line.revisionColor.length) {
+					// The line already has a revision color, apply the higher one
+					NSInteger currentRevision = [REVISION_ORDER indexOfObject:line.revisionColor];
+					NSInteger thisRevision = [REVISION_ORDER indexOfObject:revisionColor];
+					
+					if (thisRevision != NSNotFound && thisRevision > currentRevision) line.revisionColor = revisionColor;
+				}
+				else line.revisionColor = revisionColor;
 								
 				if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
 				
@@ -100,13 +119,33 @@
 }
 
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string {
+	NSMutableAttributedString *str = string.mutableCopy;
+	
 	NSDictionary *ranges = @{
 		@"Addition": [NSMutableArray array],
 		@"Removal": [NSMutableArray array],
 		@"Comment": [NSMutableArray array]
 	};
 	
-	[string enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+	// Find all line breaks and remove the revision attributes
+	NSRange searchRange = NSMakeRange(0,1);
+	NSRange foundRange;
+	
+	while (searchRange.location < string.length) {
+		searchRange.length = string.length-searchRange.location;
+		foundRange = [string.string rangeOfString:@"\n" options:0 range:searchRange];
+		
+		if (foundRange.location != NSNotFound) {
+			[str setAttributes:nil range:foundRange]; // Remove attributes from line berak
+			searchRange.location = foundRange.location+foundRange.length; // Continue the search
+		} else {
+			// Done
+			break;
+		}
+	}
+	
+	// Enumerate through revisions and save them.
+	[str enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem *item = value;
 		
 		if (item.type != RevisionNone) {

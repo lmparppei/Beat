@@ -13,6 +13,7 @@
 #import "ThemeManager.h"
 #import "BeatTagging.h"
 #import "BeatTextStorage.h"
+#import "Beat-Swift.h"
 
 typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	NoPopup,
@@ -107,5 +108,11 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 @property NSInteger autocompleteIndex;
 
 @property (weak) IBOutlet NSMenu *contextMenu;
+//@property (nonatomic, readonly, weak) ContinuousFountainParser *parser;
+
+
+-(void)updateChangeMarkers;
+-(void)updateChangeMarkersFrom:(NSInteger)idx;
+
 
 @end

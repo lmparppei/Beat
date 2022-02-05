@@ -12,6 +12,8 @@ Released under GPL license.
 
 #debug {
 	color: white;
+	content: "...";
+	display: block;
 }
 
 * {

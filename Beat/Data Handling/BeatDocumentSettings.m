@@ -33,6 +33,7 @@ NSString * const DocSettingRevisedPageColor = @"Revised Page Color";
 NSString * const DocSettingRevisionMode = @"Revision Mode";
 NSString * const DocSettingColorCodePages = @"Color-code Pages";
 NSString * const DocSettingCaretPosition = @"Caret Position";
+NSString * const DocSettingChangedIndices = @"Changed Indices";
 
 NSString * const DocSettingWindowWidth = @"Window Width";
 NSString * const DocSettingWindowHeight = @"Window Height";
