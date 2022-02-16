@@ -44,6 +44,12 @@
 @property (weak) IBOutlet NSStackView *advancedOptions;
 @property (weak) IBOutlet NSButton* advancedOptionsButton;
 @property (weak) IBOutlet NSLayoutConstraint *advancedOptionsHeightConstraint;
+
+@property (weak) IBOutlet NSButton* revisionFirst;
+@property (weak) IBOutlet NSButton* revisionSecond;
+@property (weak) IBOutlet NSButton* revisionThird;
+@property (weak) IBOutlet NSButton* revisionFourth;
+
 @property (nonatomic) IBInspectable CGFloat advancedOptionsHeight;
 
 @property (nonatomic) NSString *compareWith;
@@ -228,6 +234,10 @@
 	[self loadPreview];
 }
 
+- (IBAction)toggleRevision:(id)sender {
+	[self loadPreview];
+}
+
 
 - (void)didFinishPreviewAt:(NSURL *)url {
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
@@ -245,9 +255,20 @@
 	// Set header
 	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:header  printSceneNumbers:self.document.printSceneNumbers revisionColor:revisionColor coloredPages:coloredPages compareWith:_compareWith];
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:header printSceneNumbers:self.document.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
 	
 	return settings;
+}
+
+- (NSArray*)printedRevisions {
+	NSMutableArray *printedRevisions = NSMutableArray.new;
+	NSArray *colors = BeatRevisionTracking.revisionColors;
+	if (self.revisionFirst.state == NSOnState) [printedRevisions addObject:colors[0]];
+	if (self.revisionSecond.state == NSOnState) [printedRevisions addObject:colors[1]];
+	if (self.revisionThird.state == NSOnState) [printedRevisions addObject:colors[2]];
+	if (self.revisionFourth.state == NSOnState) [printedRevisions addObject:colors[3]];
+	
+	return printedRevisions;
 }
 
 @end

@@ -160,7 +160,7 @@
 		_printSceneNumbers = settings.printSceneNumbers;
 		_printNotes = settings.printNotes;
 		
-		_revisionColor = settings.revisionColor;
+		_revisionColor = settings.pageRevisionColor;
 		_coloredPages = settings.coloredPages;
 		
 		// Page size

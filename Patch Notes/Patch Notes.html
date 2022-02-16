@@ -26,12 +26,21 @@
 				min-width: 20rem;
 				margin-left: auto;
 				margin-right: auto;
-				margin-bottom: 3em;
-				padding: .4rem .8rem 1.2rem .8rem;
+				margin-bottom: 2em;
+				padding: .4rem .7rem 1rem .8rem;
 			}
 			
 			.logo { max-height: 5rem; margin: 0 auto 1rem auto; text-align: center; }
 			.logo img { max-height: 5rem; width: auto; }
+			
+			#heading {
+				display: flex;
+				align-items: center;
+				margin-left: 1rem;
+				margin-right: 1rem;
+				margin-bottom: 1rem;
+			}
+			#heading img { max-height: 5rem; width: auto; margin-right: 2rem; }
 		
 			#intro section { padding-top: 1rem; background: transparent; padding-bottom: 0; }
 			#intro { background-color: #f5f5f5; }
@@ -53,7 +62,7 @@
 				margin-top: 1.4rem;
 				margin-bottom: .5em;
 				font-size: 1.3em;
-				font-family: "Courier Prime", Courier, monospace;
+				/* font-family: "Courier Prime", Courier, monospace; */
 				font-weight: normal;
 			}
 
@@ -63,7 +72,7 @@
 			}
 
 			p, li {
-				line-height: 1.5em;
+				line-height: 1.4em;
 				margin-bottom: .75em;
 				margin-top: 0;
 			}
@@ -321,34 +330,49 @@
 		<div id='mainContainer'>
 			<div id='intro'>
 				<section>
-					<div class='logo'><img src='B_256_logo.png' alt='b'></div>
-					<h1>Welcome to Beat 1.93.1!</h1>
+					<div id='heading'>
+						<img src='B_256_logo.png' alt='b'>
+						<h1>Welcome to Beat 1.93.1!</h1>
+					</div>
 
-					<h2>A word from the developer</h2>
-					<p>The development of Beat was started about three years ago. I want to thank everyone who has contributed, reported bugs or suggested new features, and I'm grateful for all of the patience and support from the user base.</p>
-					<p>If you'd like to support the project, I've opened <a href='#' onclick='openLink("http://kapitan.fi/beat/support.html")'>donations</a> again. All of the funds will be used to cover development costs, including future license and hosting fees. </p>
-					
+
+					<!-- <p><b>Support Beat:</b> If you enjoy Beat, please consider <a href='#' onclick='openLink("http://kapitan.fi/beat/support.html")'>donating</a> some loose change to help the project alive. All of the funds will be used to cover development costs, including future license and hosting fees. And occasional cups of coffee.</p> -->
 					
 					<h2>New Features</h2>
 					<ul>
-						<li>Revision marker on right side for revised lines</li>
-						<li>Revisions preserved in Final Draft export</li>
-						<li>Support for importing modern Celtx screenplays</li>
+						<li><b>New menu structure</b>: Stuff related to workflow and production have been moved under the new <b>Screenplay</b> menu
+						<li><b>Revisions</b> have been completely revised <em>(Pun intended, read more below)</em>
+						<li>Revisions preserved in Final Draft export
+						<li>Support for importing modern Celtx screenplays
+					</ul>
+					<h2>Bug Fixes</h2>
+					<ul>
+						<li>Fixed a bug with colors not changing when macOS is switched to dark mode
+						<li>Fixed bugs and performance issues with locking and unlocking scene numbers
 					</ul>
 					
 
 <!--
-					<div id='goodie'>
-						<h3>New Year's Special!</h3>
-						<p>Read the screenplay for <b>Silent as Murderers</b> and watch the resulting short film. Available only in this version of the app.</p>
-						<p><button onclick='openTemplate("Silent as Murderers")'>Open The Screenplay</button></p>
-					</div>
+					
+					<p><button onclick='openTemplate("Filename")'>Open The Screenplay</button></p>
+					
 -->
 												
 				</section>
 			</div>
 			<div>
 				<section>
+					<h2>Introducing New Revisions</h2>
+					
+					<img src='revisions_2022.jpg' class='image'>
+					
+					<p>Beat now exports multiple generations of revisions, with markers for each generation on revised lines. Markers are visible both in editor and export. Quickly navigate between revisions using <em>Ctrl-Cmd-Up/Down</em>. Revision markers in editor can be hidden under <em>Screenplay</em> menu.</p>
+					<p>Sadly, this marks the end of comparing two files, but instead, you can now select which revisions to include when printing and exporting to PDF, which should offer more reliable revision control.</p>
+					
+					<h2>Screenplay menu</h2>
+					<p>Stuff related to production and workflow, like revisions, scene numbering and title page have been moved under a new menu called <em>Screenplay</em>.</p>
+					
+					
 					<h2>Join The Community</h2>
 					<p>Beat now has a <b><a href='#' onclick='openLink("http://discord.gg/FPHjfH7ms3")'>Discord Community</a></b>! You are welcome to suggest new features, report bugs or chat about screenwriting in general. You can also follow Beat on Twitter for latest updates on development: <b>@beatScreenplay</b></p>
 					

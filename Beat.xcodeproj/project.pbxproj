@@ -78,6 +78,8 @@
 		B62CD512279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */; };
 		B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
 		B636AEE627BD35E10018C6CC /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B686919E2784477700C8D5A2 /* BeatLocalization.m */; };
+		B636AEEA27BD56500018C6CC /* revisions_2022.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B636AEE927BD56500018C6CC /* revisions_2022.jpg */; };
+		B636AEEB27BD56500018C6CC /* revisions_2022.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B636AEE927BD56500018C6CC /* revisions_2022.jpg */; };
 		B63704FA2768A6A400BEAD53 /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B63704F92768A6A400BEAD53 /* Plugin Page.html */; };
 		B63704FB2768A6A400BEAD53 /* Plugin Page.html in Resources */ = {isa = PBXBuildFile; fileRef = B63704F92768A6A400BEAD53 /* Plugin Page.html */; };
 		B63943912593FE59009BE3CA /* BeatPaperSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6779B74256EED1100CFD324 /* BeatPaperSizing.m */; };
@@ -643,6 +645,7 @@
 		B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLaunchScreenButton.swift; sourceTree = "<group>"; };
 		B6342D6525682D7B0034D54F /* OutlineViewItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B6342D6625682D7B0034D54F /* OutlineViewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
+		B636AEE927BD56500018C6CC /* revisions_2022.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = revisions_2022.jpg; sourceTree = "<group>"; };
 		B63704F92768A6A400BEAD53 /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Plugin Page.html"; sourceTree = "<group>"; };
 		B63CF61325B43EDD00EFA3A2 /* ThemeEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeEditor.h; sourceTree = "<group>"; };
 		B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeEditor.m; sourceTree = "<group>"; };
@@ -894,7 +897,7 @@
 		B6D4BB142788B09100915682 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Document.strings; sourceTree = "<group>"; };
 		B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineScene.m; path = Beat/Parsing/OutlineScene.m; sourceTree = SOURCE_ROOT; };
 		B6D6E5F7221B305300A1C9BE /* OutlineScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OutlineScene.h; path = Beat/Parsing/OutlineScene.h; sourceTree = SOURCE_ROOT; };
-		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "Patch Notes.html"; sourceTree = SOURCE_ROOT; };
+		B6D74A6C24817518001E5AF4 /* Patch Notes.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "Patch Notes.html"; path = "Patch Notes/Patch Notes.html"; sourceTree = SOURCE_ROOT; };
 		B6DCA85A272187E600CBE9BC /* BeatSegmentedControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedControl.h; sourceTree = "<group>"; };
 		B6DCA85B272187E600CBE9BC /* BeatSegmentedControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSegmentedControl.m; sourceTree = "<group>"; };
 		B6DCA85E2721882900CBE9BC /* BeatSegmentedCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSegmentedCell.h; sourceTree = "<group>"; };
@@ -1028,7 +1031,7 @@
 				B69A928B231915E900FE6A3E /* README.md */,
 				B66B5A912739B54800BBC9C6 /* CHANGELOG.md */,
 				B63DC837260A1EC60092B472 /* Beat File Format Specification.md */,
-				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
+				B636AEE727BD56360018C6CC /* Patch Notes */,
 				B68B60C9260BA87000463AD8 /* Appstore */,
 				B6D062E3260CAC9500DEF6FB /* Adhoc */,
 				B138B57519E1C973000489C4 /* Beat */,
@@ -1253,6 +1256,23 @@
 				B6F31173274BF70400D0840D /* BeatPluginLibrary.xib */,
 			);
 			path = "Plugin Library";
+			sourceTree = "<group>";
+		};
+		B636AEE727BD56360018C6CC /* Patch Notes */ = {
+			isa = PBXGroup;
+			children = (
+				B6D74A6C24817518001E5AF4 /* Patch Notes.html */,
+				B636AEE827BD56470018C6CC /* Images */,
+			);
+			path = "Patch Notes";
+			sourceTree = "<group>";
+		};
+		B636AEE827BD56470018C6CC /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				B636AEE927BD56500018C6CC /* revisions_2022.jpg */,
+			);
+			path = Images;
 			sourceTree = "<group>";
 		};
 		B63CF61225B43ECA00EFA3A2 /* Theme Editor */ = {
@@ -2105,6 +2125,7 @@
 				B6054740276A9012001E571F /* ScreenplayStyles.css in Resources */,
 				B1F04EDB1C88ACAD001C4D27 /* Courier Prime.ttf in Resources */,
 				B6FF56D825AA507B004E4752 /* BeatBrowserView.xib in Resources */,
+				B636AEEA27BD56500018C6CC /* revisions_2022.jpg in Resources */,
 				B66B5ABB2739B75500BBC9C6 /* README.md in Resources */,
 				B6763E8B2782317600284907 /* BeatEpisodePrinter.xib in Resources */,
 				B6B893D6235F09230007C5C1 /* BeatDocumentIcon.iconset in Resources */,
@@ -2179,6 +2200,7 @@
 				B605473F276A9011001E571F /* ScreenplayStyles.css in Resources */,
 				B68B6094260B849300463AD8 /* Courier Prime.ttf in Resources */,
 				B68B6095260B849300463AD8 /* BeatBrowserView.xib in Resources */,
+				B636AEEB27BD56500018C6CC /* revisions_2022.jpg in Resources */,
 				B66B5ABC2739B75500BBC9C6 /* README.md in Resources */,
 				B6763E8C2782317600284907 /* BeatEpisodePrinter.xib in Resources */,
 				B68B6097260B849300463AD8 /* BeatDocumentIcon.iconset in Resources */,
@@ -2925,7 +2947,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13225;
+				CURRENT_PROJECT_VERSION = 13227;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -2957,7 +2979,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13225;
+				CURRENT_PROJECT_VERSION = 13227;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -2985,7 +3007,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13225;
+				CURRENT_PROJECT_VERSION = 13227;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3017,7 +3039,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13225;
+				CURRENT_PROJECT_VERSION = 13227;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

@@ -71,7 +71,9 @@
 		BeatHTMLScript *html = [BeatHTMLScript.alloc initForQuickLook:script];
 		return html.html;
 	} else {
-		BeatHTMLScript *html = [BeatHTMLScript.alloc initWithScript:script settings:[BeatExportSettings operation:ForPreview  document:_document header:@"" printSceneNumbers:_delegate.showSceneNumberLabels revisionColor:@"" coloredPages:NO scene:_delegate.currentScene.sceneNumber]];
+		BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:_document header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisionTracking.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
+		
+		BeatHTMLScript *html = [BeatHTMLScript.alloc initWithScript:script settings:settings];
 		//BeatHTMLScript *html = [[BeatHTMLScript alloc] initForPreview:script document:_document scene:_delegate.currentScene.sceneNumber printSceneNumbers:_delegate.showSceneNumberLabels];
 		
 		return html.html;

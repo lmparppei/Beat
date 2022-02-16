@@ -5,7 +5,7 @@
 - New *Screenplay* menu, which contains production and workflow related actions
 - Revision system has been rethought, with change markers for only the changed ranges in both editor and print/export
 - Lot of optimization in editor
-- New API elements
+- New API calls
 
 
 ## Beat 1.92.9

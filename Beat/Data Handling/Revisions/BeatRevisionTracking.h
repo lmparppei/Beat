@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatRevisionTracking : NSObject
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser;
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser includeRevisions:(NSArray*)includedRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string parser:(ContinuousFountainParser*)parser;
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
 

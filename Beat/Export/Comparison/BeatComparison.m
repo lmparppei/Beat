@@ -39,6 +39,7 @@
 //#import <DiffMatchPatch/DiffMatchPatch.h>
 #import "BeatComparison.h"
 #import "DiffMatchPatch.h"
+#import "BeatRevisionTracking.h"
 
 #import "ContinuousFountainParser.h"
 
@@ -81,11 +82,11 @@
 	return changes;
 }
 
-- (void)compare:(NSArray*)script with:(NSString*)oldScript {
-	[self compare:script with:oldScript fromIndex:0];
+- (NSAttributedString*)getRevisionsComparing:(NSArray*)script with:(NSString*)oldScript {
+	return [self getRevisionsComparing:script with:oldScript fromIndex:0];
 }
 
-- (void)compare:(NSArray*)script with:(NSString*)oldScript fromIndex:(NSInteger)startIndex {
+- (NSAttributedString*)getRevisionsComparing:(NSArray*)script with:(NSString*)oldScript fromIndex:(NSInteger)startIndex {
 	NSMutableString *newScript = [NSMutableString string];
 	for (Line *line in script) {
 		if (line.position >= startIndex) {
@@ -96,6 +97,8 @@
 	
 	oldScript = [oldScript substringFromIndex:startIndex];
 	NSArray *diffs = [self diffReportFrom:newScript with:oldScript];
+	
+	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:newScript];
 	
 	// Go through the changed indices and calculate their positions
 	// NB: We are running diff-match-patch in line mode, so basically the line indices for inserts should do.
@@ -132,20 +135,25 @@
 		
 		bool changed = NO;
 		
-		NSRange lineRange = NSMakeRange(l.position, l.string.length);
+		NSRange lineRange = l.textRange;
 		for (NSNumber *rangeNum in changedRanges) {
 			NSRange range = rangeNum.rangeValue;
 			range = (NSRange){ range.location + startIndex, range.length };
 			
 			if (NSIntersectionRange(range, lineRange).length > 0) {
 				changed = YES;
+				BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition color:BeatRevisionTracking.defaultRevisionColor];
+				[attrStr addAttribute:BeatRevisionTracking.revisionAttribute value:revision range:range];
 			}
 		}
-		
+		/*
 		// Mark the line as changed
 		if (changed) l.changed = YES;
 		else l.changed = NO;
+		*/
 	}
+	
+	return attrStr;
 }
 
 @end

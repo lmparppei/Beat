@@ -13,6 +13,7 @@
 @class Document;
 
 @interface BeatComparison : NSObject
-- (void)compare:(NSArray*)script with:(NSString*)olderFilePath;
 - (NSDictionary*)changeListFrom:(NSString*)oldScript to:(NSString*)newScript;
+- (NSAttributedString*)getRevisionsComparing:(NSArray*)script with:(NSString*)oldScript;
+- (NSAttributedString*)getRevisionsComparing:(NSArray*)script with:(NSString*)oldScript fromIndex:(NSInteger)startIndex;
 @end

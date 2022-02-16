@@ -235,8 +235,9 @@
 		revisedPageColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
 	}
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.doc header:header printSceneNumbers:YES revisionColor:revisedPageColor coloredPages:colorCodePages];
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.doc header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisionTracking.revisionColors scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
 	return settings;
+	
 }
 
 - (void)printDocuments:(bool)toPDF {

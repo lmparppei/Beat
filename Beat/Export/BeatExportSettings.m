@@ -10,27 +10,23 @@
 
 @implementation BeatExportSettings
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisionColor:@"" coloredPages:NO scene:@"" compareWith:nil];
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument* _Nullable)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers {
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:@[] scene:@"" coloredPages:NO revisedPageColor:@""];
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages  {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisionColor:revisionColor coloredPages:coloredPages scene:@"" compareWith:nil];
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions {
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:@"" coloredPages:NO revisedPageColor:@""];
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages scene:(NSString*)scene {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisionColor:revisionColor coloredPages:coloredPages scene:scene compareWith:nil];
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene {
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisions:revisions scene:scene coloredPages:NO revisedPageColor:@""];
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages compareWith:(NSString*)oldScript {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:NO revisionColor:revisionColor coloredPages:coloredPages scene:nil compareWith:oldScript];
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor {
+	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:printNotes revisions:revisions scene:nil coloredPages:coloredPages revisedPageColor:revisedPagecolor];
 }
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages compareWith:(NSString*)oldScript {
-	return [[BeatExportSettings alloc] initWithOperation:operation document:doc header:header printSceneNumbers:printSceneNumbers printNotes:printNotes revisionColor:revisionColor coloredPages:coloredPages scene:nil compareWith:oldScript];
-}
-
--(instancetype)initWithOperation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisionColor:(NSString*)revisionColor coloredPages:(bool)coloredPages scene:(NSString* _Nullable )scene compareWith:(NSString* _Nullable)oldScript {
+-(instancetype)initWithOperation:(BeatHTMLOperation)operation document:(NSDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPageColor {
 	self = [super init];
 	
 	if (self) {
@@ -38,11 +34,11 @@
 		_operation = operation;
 		_header = (header.length) ? header : @"";
 		_printSceneNumbers = printSceneNumbers;
-		_revisionColor = (revisionColor) ? revisionColor : @"";
-		_coloredPages = coloredPages;
+		_revisions = revisions.copy;
 		_currentScene = scene;
-		_oldScript = oldScript;
 		_printNotes = printNotes;
+		_coloredPages = coloredPages;
+		_pageRevisionColor = revisedPageColor;
 	}
 	return self;
 }

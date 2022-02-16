@@ -118,31 +118,19 @@
 	// Parse the input again
 	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:rawText delegate:document];
 
-	/*
-	// Tuleville sukupolville. Für die Nachgeborenen. For those who come after.
-	 
-	// Mark changes from editor
-	NSArray *docLines = document.lines;
-	for (NSInteger i=0; i<docLines.count; i++) {
-		Line *editorLine = docLines[i];
-		Line *printedLine = parser.lines[i];
-		if (editorLine.changed) {
-			printedLine.changed = YES;
-			printedLine.revisionColor = editorLine.revisionColor;
-		}
-	}
-	 */
-	
 	// Track revisions
-	[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser];
+	[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser includeRevisions:settings.revisions];
 
-	
-	// See if we want to compare it with something
-	// BeatComparison marks the Line objects as changed
+	/*
+	// See if we want to compare it with something.
+	// Bake the revisions into lines.
+	// Nope. Let's rather create some sort of "import revisions" type of thing some day.
 	if (settings.oldScript.length > 0) {
 		BeatComparison *comparison = [[BeatComparison alloc] init];
-		[comparison compare:parser.lines with:settings.oldScript];
+		NSAttributedString *revisedString = [comparison getRevisionsComparing:parser.lines with:settings.oldScript];
+		[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:revisedString parser:parser];
 	}
+	*/
 	
 	// Set script data
 	BeatScreenplay *script = [BeatScreenplay from:parser settings:settings];

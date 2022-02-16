@@ -54,13 +54,18 @@
 	else if (oldIdx == NSNotFound) return YES;
 	else return NO;
 }
-
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser
+{
+	[self bakeRevisionsIntoLines:lines text:string parser:parser includeRevisions:[self revisionColors]];
+}
+
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser includeRevisions:(nonnull NSArray *)includedRevisions
 {
 	[string enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		if (range.length < 1 || range.location == NSNotFound || range.location + range.length > string.length) return;
 		
 		BeatRevisionItem *item = value;
+		if (![includedRevisions containsObject:item.colorName]) return; // Skip if the color is not included
 		
 		if (item.type != RevisionNone) {
 			NSArray *linesInRange = [parser linesInRange:range];
