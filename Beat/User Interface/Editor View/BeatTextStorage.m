@@ -55,7 +55,7 @@
 	[super edited:editedMask range:editedRange changeInLength:delta];
 	
 	if (NSIntersectionRange(editedRange, _previouslyEdited.range).length != editedRange.length) {
-		NSArray *lines = [self.delegate.parser linesInRange:editedRange];
+		//NSArray *lines = [self.delegate.parser linesInRange:editedRange];
 		
 //		for (Line* line in lines) {
 //			

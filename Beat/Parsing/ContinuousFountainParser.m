@@ -39,8 +39,6 @@
 #import "OutlineScene.h"
 #import "BeatMeasure.h"
 
-#define NEW_NOTES YES
-
 @implementation BeatScreenplay
 
 +(instancetype)from:(ContinuousFountainParser*)parser {
@@ -62,6 +60,7 @@
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) Line *editedLine;
 @property (nonatomic) Line *lastEditedLine;
+@property (nonatomic) NSUInteger lastLineIndex;
 @property (nonatomic) NSUInteger editedIndex;
 
 // Title page parsing
@@ -75,10 +74,10 @@
 // For testing
 @property (nonatomic) NSDate *executionTime;
 
-// Caches for often requested elements
-@property (nonatomic) Line *prevLineAtLocation;
-
 @property (nonatomic) bool nonContinuous;
+
+// Line cache
+@property (nonatomic, weak) Line *prevLineAtLocation;
 
 @end
 
@@ -106,17 +105,18 @@ static NSDictionary* patterns;
 	self = [super init];
 	
 	if (self) {
-		_lines = [NSMutableArray array];
-		_outline = [NSMutableArray array];
-		_changedIndices = [NSMutableIndexSet indexSet];
-		_titlePage = [NSMutableArray array];
-		_storylines = [NSMutableArray array];
+		_lines = NSMutableArray.array;
+		_outline = NSMutableArray.array;
+		_changedIndices = NSMutableIndexSet.indexSet;
+		_titlePage = NSMutableArray.array;
+		_storylines = NSMutableSet.set;
 		_delegate = delegate;
 		_nonContinuous = nonContinuous;
 		_staticDocumentSettings = settings;
 		 
 		// Inform that this parser is STATIC and not continuous (wtf, why is this done using dual values?)
-		if (_nonContinuous) _staticParser = YES; else _staticParser = NO;
+		if (_nonContinuous) _staticParser = YES;
+		else _staticParser = NO;
 		
 		[self parseText:string];
 	}
@@ -590,6 +590,20 @@ static NSDictionary* patterns;
     }
 }
 
+- (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index {
+	NSUInteger outlineIndex = -1;
+	
+	NSArray *lines = self.safeLines;
+	
+	for (NSInteger i=0; i<lines.count; i++) {
+		Line *l = lines[i];
+		if (l.isOutlineElement) outlineIndex++;
+		if (i == index) return outlineIndex;
+	}
+	
+	return 0;
+}
+
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position
 {
 	// Hey, past me. I rewrote this in 1.929, because the previous iteration didn't seem to actually work.
@@ -597,7 +611,7 @@ static NSDictionary* patterns;
 	// First check if we are still on the cached line
 	if (_lastEditedLine) {
 		if (NSLocationInRange(position, _lastEditedLine.range)) {
-			return [self.lines indexOfObject:_lastEditedLine];
+			return _lastLineIndex;
 		}
 	}
 	
@@ -607,6 +621,7 @@ static NSDictionary* patterns;
         
         if (NSLocationInRange(position, line.range)) {
 			_lastEditedLine = line;
+			_lastLineIndex = i;
             return i;
         }
     }
@@ -808,11 +823,11 @@ static NSDictionary* patterns;
 	bool oldEndsNoteBlock = currentLine.endsNoteBlock;
 	bool oldNoteTermination = currentLine.cancelsNoteBlock;
 	bool notesNeedParsing = NO;
-			
+	
     [self parseTypeAndFormattingForLine:currentLine atIndex:index];
     
-    if (!self.changeInOutline && (oldType == heading || oldType == section || oldType == synopse ||
-        currentLine.type == heading || currentLine.type == section || currentLine.type == synopse)) {
+    if (!self.changeInOutline &&
+		(oldType == heading || oldType == section || oldType == synopse || currentLine.type == heading || currentLine.type == section || currentLine.type == synopse || currentLine.beats.count)) {
         self.changeInOutline = YES;
     }
     
@@ -1041,8 +1056,6 @@ static NSDictionary* patterns;
         } else {
             line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
         }
-		
-		line.storylines = [self storylinesForHeading:line];
     }
 	
 	// set color for outline elements
@@ -1052,6 +1065,13 @@ static NSDictionary* patterns;
 	
 	// Markers
 	line.marker = [self markerForLine:line];
+	
+	// Beats
+	line.beatRanges = NSMutableIndexSet.indexSet;
+	NSArray *beats = [self beatsFor:line];
+	NSArray *storylines = [self storylinesFor:line]; // Include storylines for backwards-compatibility
+	line.beats = [beats arrayByAddingObjectsFromArray:storylines];
+	
 	
 	if (line.isTitlePage) {
 		if ([line.string containsString:@":"] && line.string.length > 0) {
@@ -1517,6 +1537,70 @@ and incomprehensible system of recursion.
     return indexSet;
 }
 
+- (NSMutableIndexSet*)asymRangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
+{
+	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+	
+	NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
+	NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
+	
+	for (int i = 0;; i++) {
+		if (i > lastIndex) break;
+		
+		// If this index is contained in the omit character indexes, skip
+		if ([excludes containsIndex:i]) continue;
+		
+		// No range is currently inspected
+		if (rangeBegin == -1) {
+			bool match = YES;
+			for (int j = 0; j < startLength; j++) {
+				// IF the characters in range are correct, check for an escape character (\)
+				if (string[j+i] == startString[j] && i > 0 &&
+					string[j + i - 1] == '\\') {
+					match = NO;
+					[line.escapeRanges addIndex:j+i - 1];
+					break;
+				}
+				
+				if (string[j+i] != startString[j]) {
+					match = NO;
+					break;
+				}
+			}
+			if (match) {
+				rangeBegin = i;
+				i += delimLength - 1;
+			}
+		// We have found a range
+		} else {
+			bool match = YES;
+			for (int j = 0; j < delimLength; j++) {
+				if (string[j+i] != endString[j]) {
+					match = NO;
+					break;
+				} else {
+					// Check for escape characters again
+					if (i > 0 && string[j+i - 1] == '\\') {
+						[line.escapeRanges addIndex:j+i - 1];
+						match = NO;
+					}
+				}
+			}
+			if (match) {
+				// Add the current formatting ranges to future excludes
+				[excludes addIndexesInRange:(NSRange){ rangeBegin, delimLength }];
+				[excludes addIndexesInRange:(NSRange){ i, delimLength }];
+				
+				[indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
+				rangeBegin = -1;
+				i += delimLength - 1;
+			}
+		}
+	}
+	
+	return indexSet;
+}
+
 - (NSMutableIndexSet*)rangesOfOmitChars:(unichar*)string ofLength:(NSUInteger)length inLine:(Line*)line lastLineOmitOut:(bool)lastLineOut saveStarsIn:(NSMutableIndexSet*)stars
 {
     NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
@@ -1687,13 +1771,23 @@ and incomprehensible system of recursion.
 	
 	line.markerRange = (NSRange){0, 0};
 	line.marker = @"";
+	line.markerDescription = @"";
 	
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSString *note = [line.string substringWithRange:range].lowercaseString;
 		if ([note containsString:@"[[marker "] && note.length > @"[[marker ]]".length) {
-			markerColor = [note substringWithRange:(NSRange){ @"[[marker ".length, note.length - @"[[marker ".length - 2 }];
-			line.marker = markerColor;
+			NSString *markerInfo = [note substringWithRange:(NSRange){ @"[[marker ".length, note.length - @"[[marker ".length - 2 }];
+			if ([markerInfo containsString:@":"]) {
+				NSArray *markerComponents = [markerInfo componentsSeparatedByString:@":"];
+				line.marker = markerComponents[0];
+				if (markerComponents.count > 1) line.markerDescription = markerComponents[1];
+			} else {
+				line.marker = markerInfo;
+			}
+			
 			line.markerRange = range;
+			markerColor = line.marker;
+			
 			*stop = YES;
 		}
 	}];
@@ -1726,41 +1820,58 @@ and incomprehensible system of recursion.
 
 	return color;
 }
-- (NSArray *)storylinesForHeading:(Line *)line {
-	__block NSMutableArray *storylines = [NSMutableArray array];
+- (NSArray *)beatsFor:(Line *)line {
+	NSUInteger length = line.string.length;
+	unichar string[length];
+	[line.string.lowercaseString getCharacters:string]; // Make it lowercase for range enumeration
 	
-	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSString * note = [line.string substringWithRange:range];
-
-		NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
-		note =  [note substringWithRange:noteRange];
-        
-		if ([note localizedCaseInsensitiveContainsString:@STORYLINE_PATTERN] == true) {
-			// Make sure it is really a storyline block with space & all
-			if ([note length] > [@STORYLINE_PATTERN length] + 1) {
-				line.storylineRange = range; // Save for editor use
-				
-				// Only the storylines
-				NSRange storylineRange = [note rangeOfString:@STORYLINE_PATTERN options:NSCaseInsensitiveSearch];
-			
-				NSString *storylineString = [note substringWithRange:NSMakeRange(storylineRange.length, [note length] - storylineRange.length)];
-				
-				// Check that the user didn't mistype it "storylines"
-				if (storylineString.length > 2) {
-					NSString *firstChrs = [storylineString.uppercaseString substringToIndex:2];
-					if ([firstChrs isEqualToString:@"S "]) storylineString = [storylineString substringFromIndex:2];
-				}
-				
-				NSArray *components = [storylineString componentsSeparatedByString:@","];
-				// Make uppercase & trim
-				for (NSString* string in components) {
-					[storylines addObject:[string.uppercaseString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
-				}
-			}
+	NSMutableIndexSet *set = [self asymRangesInChars:string ofLength:length between:"[[beat" and:"]]" startLength:@"[[beat".length endLength:2 excludingIndices:nil line:line];
+	
+	NSMutableArray *beats = NSMutableArray.array;
+	
+	[set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSString *storylineStr = [line.string substringWithRange:range];
+		NSUInteger loc = @"[[beat".length;
+		NSString *rawBeats = [storylineStr substringWithRange:(NSRange){ loc, storylineStr.length - loc - 2 }];
+		
+		NSArray *components = [rawBeats componentsSeparatedByString:@","];
+		for (NSString *component in components) {
+			Storybeat *beat = [Storybeat line:line scene:nil string:component range:range];
+			[beats addObject:beat];
 		}
+		
+		[line.beatRanges addIndexesInRange:range];
 	}];
 	
-	return storylines;
+	return beats;
+}
+- (NSArray *)storylinesFor:(Line *)line {
+	// This is here for backwards-compatibility with older documents.
+	// These are nowadays called BEATS.
+	NSUInteger length = line.string.length;
+	unichar string[length];
+	[line.string.lowercaseString getCharacters:string]; // Make it lowercase for range enumeration
+		
+	NSMutableIndexSet *set = [self asymRangesInChars:string ofLength:length between:"[[storyline" and:"]]" startLength:@"[[storyline".length endLength:2 excludingIndices:nil line:line];
+	
+	NSMutableArray *beats = NSMutableArray.array;
+	
+	[set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSString *storylineStr = [line.string substringWithRange:range];
+		NSUInteger loc = @"[[storyline".length;
+		NSString *rawStorylines = [storylineStr substringWithRange:(NSRange){ loc, storylineStr.length - loc - 2 }];
+		
+		NSArray *components = [rawStorylines componentsSeparatedByString:@","];
+		
+		for (NSString *component in components) {
+			Storybeat *beat = [Storybeat line:line scene:nil string:component range:range];
+			[beats addObject:beat];
+		}
+		
+		[line.beatRanges addIndexesInRange:range];
+	}];
+	
+	return beats;
 }
 
 #pragma mark - Data access
@@ -1887,6 +1998,9 @@ and incomprehensible system of recursion.
 {
 	//[_outline removeAllObjects];
 	[_storylines removeAllObjects];
+	[_storybeats removeAllObjects];
+	
+	if (!_storybeats) _storybeats = NSMutableDictionary.new;
 	
 	// Get first scene number
 	NSUInteger sceneNumber = 1;
@@ -1923,9 +2037,12 @@ and incomprehensible system of recursion.
 			else scene.string = line.stripNotes;
 			
 			// Add storylines to the storyline bank
-			for (NSString* storyline in scene.storylines) {
-				if (![_storylines containsObject:storyline]) [_storylines addObject:storyline];
-			}
+			// scene.storylines = NSMutableArray.array;
+			[scene.beats addObjectsFromArray:line.beats];
+			[_storylines addObjectsFromArray:line.storylines];
+			
+			// Remove story beats
+			[scene.beats removeAllObjects];
 			
 			if (scene.type == section) {
 				// Check setion depth
@@ -2006,6 +2123,33 @@ and incomprehensible system of recursion.
 		if (line.marker.length) {
 			[previousScene.markerColors addObject:line.marker];
 		}
+		
+		if (line.beats.count) {
+			for (Storybeat *beat in line.beats) {
+				if (![previousScene.beats containsObject:beat]) [previousScene.beats addObject:beat];
+			}
+		}
+		
+		/*
+		if (line.storylines.count) {
+			for (NSString *storyline in line.storylines) {
+				Storybeat *beat = [Storybeat line:line scene:previousScene beat:@""];
+				if (![previousScene.storylines doesContain:storyline]) [previousScene.storylines addObject:storyline];
+			}
+		}
+		
+		if (line.hasBeat) {
+			NSDictionary *beatData = line.beats;
+			for (NSString *storyline in beatData.allKeys) {
+				Storybeat *beat = [Storybeat line:line scene:previousScene beat:beatData[storyline]];
+				if (!_storybeats[storyline]) _storybeats[storyline] = NSMutableArray.array;
+				[_storybeats[storyline] addObject:beat];
+				
+				if (![previousScene.storylines containsObject:storyline]) [previousScene.storylines addObject:storyline];
+				[previousScene.storybeats addObject:beat];
+			}
+		}
+		*/
 		
 		if (!line.note && !line.omitted && line.type != empty) {
 			NSInteger length = line.range.length;
@@ -2174,23 +2318,95 @@ and incomprehensible system of recursion.
 - (Line*)lineAtIndex:(NSInteger)position {
 	return [self lineAtPosition:position];
 }
-- (Line*)lineAtPosition:(NSInteger)position {
-	// Let's check the cached line first
-	if (NSLocationInRange(position, _prevLineAtLocation.range)) {
-		return _prevLineAtLocation;
+
+- (id)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item))compare  {
+	
+	// Don't go out of range
+	if (NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
+		return nil;
 	}
+		
+	NSInteger i = searchOrigin;
+	NSInteger origin = i - 1;
+		
+	bool stop = NO;
+	bool looped = NO;
 	
-	NSArray *lines = self.safeLines; // Use thread safe lines for this lookup
-	
-	// Iterate and find the line
-	for (Line* line in lines) {
-		if (NSLocationInRange(position, line.range)) {
-			_prevLineAtLocation = line;
-			return line;
+	do {
+		if (!descending) {
+			i++;
+			if (i >= array.count) {
+				i = 0;
+				looped = YES;
+			}
+		} else {
+			i--;
+			if (i < 0) {
+				i = array.count - 1;
+				looped = YES;
+			}
 		}
-	}
+				
+		id item = array[i];
+		
+		if (compare(item)) {
+			*cacheIndex = i;
+			return item;
+		}
+		
+		if (i == origin && looped) {
+			break;
+		}
+		
+	} while (stop != YES);
+		
 	return nil;
 }
+
+// Cached line
+NSUInteger prevLineAtLocationIndex = 0;
+- (Line*)lineAtPosition:(NSInteger)position {
+	// Let's check the cached line first
+	if (NSLocationInRange(position, _prevLineAtLocation.range) && _prevLineAtLocation != nil) {
+		return _prevLineAtLocation;
+	}
+		
+	NSArray *lines = self.safeLines; // Use thread safe lines for this lookup
+	if (prevLineAtLocationIndex >= lines.count) prevLineAtLocationIndex = 0;
+	
+	
+	// Quick lookups for first object
+	if (position == 0) return lines.firstObject;
+	
+	// We'll use a circular lookup here.
+	// It's HIGHLY possible that we are not just randomly looking for lines,
+	// but that we're looking for close neighbours in a for loop.
+	// That's why we'll either loop the array forward or backward to avoid
+	// unnecessary looping from beginning, which soon becomes VERY inefficient.
+	
+	NSUInteger cachedIndex;
+	
+	bool descending = NO;
+	if (_prevLineAtLocation && position < _prevLineAtLocation.position) {
+		descending = YES;
+	}
+		
+	Line *line = [self findNeighbourIn:lines origin:prevLineAtLocationIndex descending:descending cacheIndex:&cachedIndex block:^BOOL(id item) {
+		Line *l = item;
+		if (NSLocationInRange(position, l.range)) return YES;
+		else return NO;
+	}];
+	
+	if (line) {
+		_prevLineAtLocation = line;
+		prevLineAtLocationIndex = cachedIndex;
+		return line;
+	}
+	
+	return nil;
+}
+
+
 - (NSArray*)linesInRange:(NSRange)range {
 	NSArray *lines = self.safeLines;
 	NSMutableArray *linesInRange = NSMutableArray.array;

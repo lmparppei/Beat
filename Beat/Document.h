@@ -44,7 +44,8 @@ THE SOFTWARE.
 #import "BeatOutlineView.h"
 #import "BeatStatisticsPanel.h"
 #import "BeatEditorDelegate.h"
-
+#import "BeatRevisionTracking.h"
+#import "BeatRevisionItem.h"
 
 typedef NS_ENUM(NSUInteger, BeatFormatting) {
 	Block = 0,
@@ -115,6 +116,10 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 // Analysis
 @property (nonatomic) NSMutableDictionary<NSString*, NSString*> *characterGenders;
+
+// Revision Tracking
+@property (nonatomic) IBOutlet BeatRevisionTracking *revisionTracking;
+@property (nonatomic) NSString *revisionColor;
 
 // Set document colors
 - (void)updateTheme;

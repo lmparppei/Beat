@@ -1,5 +1,13 @@
 # Changelog
 
+## Beat 1.93.1
+
+- New *Screenplay* menu, which contains production and workflow related actions
+- Revision system has been rethought, with change markers for only the changed ranges in both editor and print/export
+- Lot of optimization in editor
+- New API elements
+
+
 ## Beat 1.92.9
 
 - Converted a single class to Swift (BeatRecentFileCell)

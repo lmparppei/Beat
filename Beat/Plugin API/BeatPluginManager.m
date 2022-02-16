@@ -93,7 +93,7 @@
 - (void)checkForUpdates {
 	NSArray *disabled = [self disabledPlugins];
 	
-	[self updateAvailablePlugins];
+	[self refreshAvailablePlugins];
 	[self getPluginLibraryWithCallback:^{
 		NSMutableArray *availableUpdates = [NSMutableArray array];
 		
@@ -103,12 +103,12 @@
 			// Don't check updates for disabled plugins
 			if ([disabled containsObject:name]) continue;
 			
-			if (plugin.updateAvailable) {
-				[availableUpdates addObject:name];
-			}
+			// If the plugin has a update available, add it to the list
+			if (plugin.updateAvailable) [availableUpdates addObject:name];
 		}
 		
 		if (availableUpdates.count > 0) {
+			// Show notification
 			NSString *text = [NSString stringWithFormat:@"%@", [availableUpdates componentsJoinedByString:@", "]];
 			[(BeatAppDelegate*)NSApp.delegate showNotification:@"Update Available" body:text identifier:@"PluginUpdates" oneTime:YES interval:5.0];
 		}
@@ -134,7 +134,7 @@
 
 #pragma mark - Plugin library content
 
-- (void)updateAvailablePlugins {
+- (void)refreshAvailablePlugins {
 	self.availablePlugins = [NSMutableDictionary dictionary];
 	
 	for (NSString *pluginName in self.plugins.allKeys) {
@@ -142,7 +142,7 @@
 	}
 }
 
-- (void)updateAvailablePluginsWithExternalLibrary {
+- (void)refreshAvailablePluginsWithExternalLibrary {
 	for (NSString *pluginName in self.externalLibrary.allKeys) {
 		BeatPluginInfo *remotePlugin = self.externalLibrary[pluginName];
 		
@@ -154,7 +154,11 @@
 			// NSLog(@"%@ / %@ – %@", remotePlugin[@"version"], existingPlugin[@"version"], remotePlugin[@"name"]);
 			
 			if ([self isNewerVersion:remotePlugin.version old:existingPlugin.version]) {
+				// There's an update available, so show the remote info instead
 				existingPlugin.updateAvailable = remotePlugin.version;
+				existingPlugin.text = (remotePlugin.text) ? remotePlugin.text : @"";
+				existingPlugin.html = (remotePlugin.html) ? remotePlugin.html : @"";
+				existingPlugin.image = (remotePlugin.image) ? remotePlugin.image : @"";
 			}
 			[_availablePlugins setValue:existingPlugin forKey:pluginName];
 		} else {
@@ -218,6 +222,7 @@
 - (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock {
 	NSString *urlAsString = PLUGIN_LIBRARY_URL;
 
+	// Download external JSON data
 	NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration ephemeralSessionConfiguration]];
 	[[session dataTaskWithURL:[NSURL URLWithString:urlAsString]
 			completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -225,15 +230,17 @@
 		// No data available (we are offline)
 		if (error || data == nil) return;
 		
-		NSMutableDictionary *plugins = [NSMutableDictionary dictionary];
+		// Read JSON data and init the local dictionary
 		NSDictionary *pluginData = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+		NSMutableDictionary *plugins = [NSMutableDictionary dictionary];
 		
+		// Iterate through remote plugin data
 		for (NSString *pluginName in pluginData.allKeys) {
 			NSDictionary *data = pluginData[pluginName];
 			NSString *name = pluginName.stringByDeletingPathExtension;
 			
 			// Never add stuff with no name
-			if (!name) continue;
+			if (name.length == 0) continue;
 			
 			// Plugin image URL
 			NSString *imageURL = @"";
@@ -253,9 +260,11 @@
 			[plugins setValue:info forKey:name];
 		}
 		
+		// Save the downloaded data and append it to local plugin information
 		self.externalLibrary = plugins;
-		[self updateAvailablePluginsWithExternalLibrary];
+		[self refreshAvailablePluginsWithExternalLibrary];
 		
+		// Run callback
 		dispatch_async(dispatch_get_main_queue(), ^(void){
 			callbackBlock();
 		});

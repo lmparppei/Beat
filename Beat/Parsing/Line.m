@@ -39,6 +39,7 @@
 // For FDX compatibility & attribution
 #define BOLD_STYLE @"Bold"
 #define ITALIC_STYLE @"Italic"
+#define BOLDITALIC_STYLE @"BoldItalic"
 #define UNDERLINE_STYLE @"Underline"
 #define STRIKEOUT_STYLE @"Strikeout"
 #define OMIT_STYLE @"Omit"
@@ -57,14 +58,15 @@
 		_formattedAs = -1;
 		//_parser = parser; // UNCOMMENT WHEN NEEDED
 		
-		_boldRanges = [NSMutableIndexSet indexSet];
-		_italicRanges = [NSMutableIndexSet indexSet];
-		_underlinedRanges = [NSMutableIndexSet indexSet];
-		_boldItalicRanges = [NSMutableIndexSet indexSet];
-		_strikeoutRanges = [NSMutableIndexSet indexSet];
-		_noteRanges = [NSMutableIndexSet indexSet];
-		_omittedRanges = [NSMutableIndexSet indexSet];
-		_escapeRanges = [NSMutableIndexSet indexSet];
+		_boldRanges = NSMutableIndexSet.indexSet;
+		_italicRanges = NSMutableIndexSet.indexSet;
+		_underlinedRanges = NSMutableIndexSet.indexSet;
+		_boldItalicRanges = NSMutableIndexSet.indexSet;
+		_strikeoutRanges = NSMutableIndexSet.indexSet;
+		_noteRanges = NSMutableIndexSet.indexSet;
+		_omittedRanges = NSMutableIndexSet.indexSet;
+		_escapeRanges = NSMutableIndexSet.indexSet;
+		_removalSuggestionRanges = NSMutableIndexSet.indexSet;
 	}
 	return self;
 }
@@ -309,6 +311,10 @@
 
 /* This should be implemented as NSCopying */
 
+-(id)copy {
+	return [self clone];
+}
+
 - (Line*)clone {
 	Line* newLine = [Line withString:self.string type:self.type];
 	newLine.position = self.position;
@@ -320,9 +326,9 @@
 	newLine.unsafeForPageBreak = self.unsafeForPageBreak;
 	newLine.sceneIndex = self.sceneIndex;
 	
-	newLine.revisionColor = self.revisionColor.copy;
+	newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
+	if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy; // This is a dictionary of revision color names and their respective ranges
 	
-	if (self.changedRanges) newLine.changedRanges = self.changedRanges.copy;
 	if (self.italicRanges.count) newLine.italicRanges = self.italicRanges.mutableCopy;
 	if (self.boldRanges.count) newLine.boldRanges = self.boldRanges.mutableCopy;
 	if (self.boldItalicRanges.count) newLine.boldItalicRanges = self.boldItalicRanges.mutableCopy;
@@ -330,11 +336,8 @@
 	if (self.omittedRanges.count) newLine.omittedRanges = self.omittedRanges.mutableCopy;
 	if (self.underlinedRanges.count) newLine.underlinedRanges = self.underlinedRanges.mutableCopy;
 	if (self.sceneNumberRange.length) newLine.sceneNumberRange = self.sceneNumberRange;
-	
 	if (self.strikeoutRanges.count) newLine.strikeoutRanges = self.strikeoutRanges.mutableCopy;
-	
-	if (self.additionRanges.count) newLine.additionRanges = self.additionRanges.mutableCopy;
-	if (self.removalRanges.count) newLine.removalRanges = self.removalRanges.mutableCopy;
+	if (self.removalSuggestionRanges.count) newLine.removalSuggestionRanges = self.removalSuggestionRanges.mutableCopy;
 	if (self.escapeRanges.count) newLine.escapeRanges = self.escapeRanges.mutableCopy;
 	
 	if (self.sceneNumber) newLine.sceneNumber = [NSString stringWithString:self.sceneNumber];
@@ -660,6 +663,48 @@
 	return inRange;
 }
 
+#pragma mark - Story beats
+
+- (bool)hasBeat {
+	if ([self.string.lowercaseString containsString:@"[[beat "] ||
+		[self.string.lowercaseString containsString:@"[[beat:"])
+		return YES;
+	else
+		return NO;
+}
+- (bool)hasBeatForStoryline:(NSString*)storyline {
+	for (Storybeat *beat in self.beats) {
+		if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return YES;
+	}
+	return NO;
+}
+- (NSArray*)storylines {
+	NSMutableArray *storylines = NSMutableArray.array;
+	for (Storybeat *beat in self.beats) {
+		[storylines addObject:beat.storyline];
+	}
+	return storylines;
+}
+- (Storybeat*)storyBeatWithStoryline:(NSString*)storyline {
+	for (Storybeat *beat in self.beats) {
+		if ([beat.storyline.lowercaseString isEqualToString:storyline.lowercaseString]) return beat;
+	}
+	return nil;
+}
+ 
+- (NSRange)firstBeatRange {
+	__block NSRange beatRange = NSMakeRange(NSNotFound, 0);
+	
+	[self.beatRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		// Find first range
+		if (range.length > 0) {
+			beatRange = range;
+			*stop = YES;
+		}
+	}];
+	
+	return beatRange;
+}
 
 #pragma mark - Formatting & attribution
 
@@ -739,7 +784,7 @@
 
 - (NSAttributedString*)attributedStringForFDX {
 	// N.B. This is NOT a Cocoa-compatible attributed string.
-	// The attributes are used to 	create a string for FDX/HTML conversion.
+	// The attributes are used to create a string for FDX/HTML conversion.
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
 	
 	// Make (forced) character names uppercase
@@ -757,6 +802,12 @@
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > BOLD_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addAttr:BOLD_STYLE toString:string range:range];
+		}
+	}];
+	
+	[self.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > ITALIC_PATTERN.length * 2) {
+			if ([self rangeInStringRange:range]) [self addAttr:BOLDITALIC_STYLE toString:string range:range];
 		}
 	}];
 	
@@ -787,14 +838,19 @@
 	[self.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if ([self rangeInStringRange:range]) [self addAttr:OMIT_STYLE toString:string range:range];
 	}];
-		 
-	[self.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if ([self rangeInStringRange:range]) [self addAttr:@"Addition" toString:string range:range];
+		
+	[self.removalSuggestionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if ([self rangeInStringRange:range]) [self addAttr:@"RemovalSuggestion" toString:string range:range];
 	}];
 	
-	[self.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if ([self rangeInStringRange:range]) [self addAttr:@"Removal" toString:string range:range];
-	}];
+	if (self.revisedRanges.count) {
+		for (NSString *key in _revisedRanges.allKeys) {
+			[_revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+				NSString *attrName = [NSString stringWithFormat:@"Revision:%@", key];
+				if ([self rangeInStringRange:range]) [self addAttr:attrName toString:string range:range];
+			}];
+		}
+	}
 	
 	// Loop through tags and apply
 	for (NSDictionary *tag in self.tags) {
@@ -1097,13 +1153,24 @@
 	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.strikeoutRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
+	/*
 	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.additionRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
-	
+	 */
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
+	
+	// Copy and offset revised ranges
+	for (NSString* key in line.revisedRanges.allKeys) {
+		if (!self.revisedRanges) self.revisedRanges = NSMutableDictionary.dictionary;
+		if (!self.revisedRanges[key]) self.revisedRanges[key] = NSMutableIndexSet.indexSet;
+		
+		[line.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+			[self.revisedRanges[key] addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+		}];
+	}
 }
 
 - (NSString*)characterName
@@ -1134,8 +1201,32 @@
 		@"sectionDepth": @(self.sectionDepth),
 		@"textRange": @{ @"location": @(self.textRange.location), @"length": @(self.textRange.length) },
 		@"typeAsString": self.typeAsString,
-		@"omitted": @(self.omitted)
+		@"omitted": @(self.omitted),
+		@"marker": (self.marker.length) ? self.marker : @"",
+		@"markerDescription": (self.markerDescription.length) ? self.markerDescription : @""
 	};
+}
+
+-(NSDictionary*)ranges {
+	// This returns a dictionary of ranges for plugins
+	return @{
+		@"notes": [self indexSetAsArray:self.noteRanges],
+		@"omitted": [self indexSetAsArray:self.omittedRanges],
+		@"bold": [self indexSetAsArray:self.boldRanges],
+		@"italic": [self indexSetAsArray:self.italicRanges],
+		@"underlined": [self indexSetAsArray:self.underlinedRanges],
+	};
+}
+
+-(NSArray*)indexSetAsArray:(NSIndexSet*)set {
+	NSMutableArray *array = NSMutableArray.array;
+	[set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length > 0) {
+			[array addObject:[NSNumber valueWithRange:range]];
+		}
+	}];
+	
+	return array;
 }
 
 #pragma mark - for debugging

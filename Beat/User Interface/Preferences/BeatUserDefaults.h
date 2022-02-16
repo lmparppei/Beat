@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatUserDefaults*)sharedDefaults;
 + (NSDictionary*)userDefaults;
 - (void)readUserDefaultsFor:(id)target;
+- (void)save:(id)value forKey:(NSString*)key;
+- (BOOL)isSuppressed:(NSString*)key;
+- (void)setSuppressed:(NSString*)key value:(bool)value;
 - (void)saveBool:(bool)value forKey:(NSString*)key;
 - (id)get:(NSString*)docKey;
 - (BOOL)getBool:(NSString*)docKey;

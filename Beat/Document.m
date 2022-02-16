@@ -106,8 +106,6 @@
 #import "TagDefinition.h"
 #import "BeatFDXExport.h"
 #import "ValidationItem.h"
-#import "BeatRevisionTracking.h"
-#import "BeatRevisionItem.h"
 #import "ITSwitch.h"
 #import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
@@ -328,10 +326,6 @@
 @property (nonatomic) NSTimeInterval executionTimeCache;
 @property (nonatomic) Line* lineCache;
 
-// Revision Tracking
-@property (nonatomic) BeatRevisionTracking *revision;
-@property (nonatomic) NSString *revisionColor;
-
 // Debug flags
 @property (nonatomic) bool debug;
 
@@ -348,8 +342,8 @@
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
 #define SECTION_FONT_SIZE 20.0 // base value for section sizes
-#define FONT_SIZE 17.92 // 19.5 for Inconsolata
-#define LINE_HEIGHT 1.1 // 1.15 for Inconsolata
+#define FONT_SIZE 17.92
+#define LINE_HEIGHT 1.1
 
 #define DOCUMENT_WIDTH_MODIFIER 630
 #define DOCUMENT_WIDTH_A4 620
@@ -545,7 +539,10 @@
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
 		// Initialize parser
 		self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
-
+		
+		// Load revision markers
+		[self.revisionTracking loadRevisionMarkers];
+		
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			// Show a progress bar for longer documents
 			if (self.parser.lines.count > 1000) {
@@ -581,14 +578,13 @@
 	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
 	[CATransaction commit];
 
-	
 	self.progressPanel = nil;
 	
 	[self updateLayout];
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 
 	// Initialize edit tracking
-	[self setupRevision];
+	[self.revisionTracking setupRevisions];
 			
 	// Load tags
 	[self setupTagging];
@@ -640,7 +636,8 @@
 	[self scheduleAutosaving];
 	
 	//NSWorkspace.shared.notificationCenter.addObserver(self, selector: @selector(spaceChange), name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
-	[NSWorkspace.sharedWorkspace.notificationCenter addObserver:self selector:@selector(spaceDidChange) name:NSWorkspaceActiveSpaceDidChangeNotification object:nil];
+	//[NSWorkspace.sharedWorkspace.notificationCenter addObserver:self selector:@selector(spaceDidChange) name:NSWorkspaceActiveSpaceDidChangeNotification object:nil];
+	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
 }
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key {
 	NSLog(@"Document: Undefined key (%@) set. This might be intentional.", key);
@@ -720,9 +717,9 @@
 	// It's used here and there for proportional measurement.
 	
 	if ([(NSNumber*)[BeatUserDefaults.sharedDefaults get:@"defaultPageSize"] integerValue] == BeatA4) {
-		_documentWidth = DOCUMENT_WIDTH_A4;
+		_documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
 	} else {
-		_documentWidth = DOCUMENT_WIDTH_US;
+		_documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
 	}
 	
 	
@@ -1179,9 +1176,7 @@
 }
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError reverting:(BOOL)reverting {
 	// Read settings
-	if (!_documentSettings) {
-		_documentSettings = [[BeatDocumentSettings alloc] init];
-	}
+	if (!_documentSettings) _documentSettings = BeatDocumentSettings.new;
 	
 	// Load text & remove settings block
 	NSString *text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"];
@@ -1535,7 +1530,7 @@
 	}
 
     // If something is being inserted, check whether it is a "(" or a "[[" and auto close it
-    if (self.matchParentheses && !self.undoManager.isRedoing) {
+    else if (self.matchParentheses && !self.undoManager.isRedoing) {
         if (affectedCharRange.length == 0) {
             if ([replacementString isEqualToString:@"("]) {
 				if (_currentLine.type != character) {
@@ -1628,10 +1623,6 @@
 				else {
 					_characterInputForLine.forcedCharacterCue = YES;
 				}
-				// If the character is less than 3 characters long, we need to force it.
-//				else if (_characterInputForLine.string.length < 3) {
-//					//_postEditAction = @{ @"index": [NSNumber numberWithInteger:_characterInputForLine.position], @"string": @"@" };
-//				}
 			}
 		}
 		
@@ -1720,6 +1711,7 @@
 	}
 
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
+	if (processDoubleBreak) _lastChangedRange = (NSRange){ affectedCharRange.location - 1, replacementString.length + 1 };
 	
 	_previewUpdated = NO;
     return YES;
@@ -1756,16 +1748,6 @@
 	}
 }
 
-- (void)registerChangesInRange:(NSRange)range {
-	[_textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionAddition color:_revisionColor] range:range];
-	
-	// An die Nachgeborenen. Tuleville sukupolville. For generations to come.
-//	 Line *line = [self.parser lineAtPosition:range.location];
-//	 if (line) {
-//		line.changed = YES;
-//		line.revisionColor = self.revisionColor;
-//	 }
-}
 - (bool)inRange:(NSRange)range {
 	NSRange intersection = NSIntersectionRange(range, (NSRange){0, _textView.string.length  });
 	if (intersection.length == range.length) return YES;
@@ -1776,7 +1758,7 @@
 {
 	// Save attributed text to cache
 	_attrTextCache = [self getAttributedText];
-	
+
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 		
@@ -1809,8 +1791,8 @@
 	[self applyFormatChanges];
 	
 	// If the outline has changed, update all labels
-	[self updateSceneNumberLabels:self.lastChangedRange.location];
-	[self.textView updateChangeMarkersFrom:self.lastChangedRange.location];
+	[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
+	//[self.textView updateChangeMarkersFrom:self.lastChangedRange.location];
 	
 	// Update preview screen
 	[self updatePreview];
@@ -1825,8 +1807,15 @@
 	_contentCache = [NSString stringWithString:self.textView.string];
 	
 	// A larger chunk of text was pasted. Ensure layout.
-	if (self.lastChangedRange.length > 5) [self ensureLayout];
+	if (self.lastChangedRange.length > 3) [self ensureLayout];
 	
+	//[self.textView refreshLayoutElementsFrom:self.lastChangedRange.location];
+	//[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
+}
+
+-(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+	// Faux delegate method forwarded from NSTextView.
+	// Use if needed.
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
@@ -1912,6 +1901,8 @@
 }
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString
 {
+	if (self.undoManager.isRedoing) NSLog(@"is redoing!");
+	
 	// Replace with undo registration
 	NSString *oldString = [self.textView.string substringWithRange:range];
 	[self replaceCharactersInRange:range withString:newString];
@@ -2059,6 +2050,17 @@
 	}
 }
 
+- (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet {
+	__block NSUInteger offset = 0;
+	[indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		// Remove beats on any line
+		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
+		[self removeRange:(NSRange){ globalRange.location - offset, globalRange.length }];
+		offset += range.length;
+	}];
+}
+
+
 // There is no shortage of ugliness in the world.
 // If a person closed their eyes to it,
 // there would be even more.
@@ -2080,10 +2082,7 @@
      Characters are also collected for the filtering feature, so we will
 	 just strip away everything after the name (such as V.O. or O.S.), and
 	 hope for the best.
-	 
-	 NB: We need some sort of a system to organize autocomplete hits
-	 according to the character's line count.
-     
+	      
      */
 	
 	[_characterNames removeAllObjects];
@@ -2273,6 +2272,14 @@
 
 #pragma mark - Formatting
 
+/*
+ 
+ WIP:
+ This should probably be moved into a separate class.
+ Work has already begun in the class BeatEditorFormatting.
+ 
+ */
+
 - (IBAction)reformatEverything:(id)sender {
 	[self.parser resetParsing];
 	[self applyFormatChanges];
@@ -2313,32 +2320,6 @@
 		[self formatLineOfScreenplay:line];
 	}
 }
-
-/*
-- (void)didPerformEdit:(NSRange)range {
-	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-		//[self formatLineOfScreenplay:self.parser.lines[idx]];
-		[self setTemporaryAttributes:self.parser.lines[idx]];
-	}];
-		
-	[self.parser.changedIndices removeAllIndexes];
-}
-
-- (void)setTemporaryAttributes:(Line*)line {
-	NSLog(@"line %@", line);
-	NSString *lineTypeAttrName = @"BeatLineType";
-	NSString *colorAttrName = @"BeatColor";
-	
-	NSMutableDictionary *attrs = [NSMutableDictionary dictionary];
-	
-	if (line.type == heading) {
-		[attrs setObject:self.boldCourier forKey:NSFontAttributeName];
-	}
-	[attrs setObject:NSColor.redColor forKey:NSForegroundColorAttributeName];
-	
-	[self.textView.layoutManager setTemporaryAttributes:attrs forCharacterRange:line.range];
-}
- */
 
 -(void)applyInitialFormatting {
 	if (self.parser.lines.count == 0) {
@@ -2774,35 +2755,19 @@
 	// [self renderTextBackgroundOnLine:line];
 
 	if (!firstTime && line.string.length) {
-		/*
-		[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:range];
-		
-		if (_showRevisions || _showTags) {
-			// Enumerate attributes
-			[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-				if (attrs[revisionAttribute] && _showRevisions) {
-					BeatRevisionItem *revision = attrs[revisionAttribute];
-					if (revision.type == RevisionAddition) {
-						[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
-					}
-					else if (revision.type == RevisionRemoval) {
-						[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
-						[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
-						[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.1] forCharacterRange:range];
-					}
-				}
-				
-				if (attrs[tagAttribute] && _showTags) {
-					BeatTag *tag = attrs[tagAttribute];
-					NSColor *tagColor = [BeatTagging colorFor:tag.type];
-					tagColor = [tagColor colorWithAlphaComponent:.6];
-				   
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
-				}
-			}];
-		}
-		*/
 		[self renderBackgroundForLine:line clearFirst:NO];
+	}
+}
+
+- (void)renderBackgroundForLines {
+	for (Line* line in self.lines) {
+		[self renderBackgroundForLine:line clearFirst:YES];
+	}
+}
+- (void)renderBackgroundForRange:(NSRange)range {
+	NSArray *lines = [self.parser linesInRange:range];
+	for (Line* line in lines) {
+		[self renderBackgroundForLine:line clearFirst:YES];
 	}
 }
 
@@ -2825,17 +2790,17 @@
 				if (revision.type == RevisionAddition) {
 					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
 				}
-				else if (revision.type == RevisionRemoval) {
+				else if (revision.type == RevisionRemovalSuggestion) {
 					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
 					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.1] forCharacterRange:range];
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.15] forCharacterRange:range];
 				}
 			}
 			
 			if (attrs[tagAttribute] && _showTags) {
 				BeatTag *tag = attrs[tagAttribute];
 				NSColor *tagColor = [BeatTagging colorFor:tag.type];
-				tagColor = [tagColor colorWithAlphaComponent:.6];
+				tagColor = [tagColor colorWithAlphaComponent:.5];
 			   
 				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
 			}
@@ -2847,35 +2812,7 @@
 	if (!_showTags && !_showRevisions) return;
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[self.textView.textStorage enumerateAttributesInRange:(NSRange){0,self.textView.string.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			
-			if (range.location+range.length - 1 < self.textView.string.length) {
-				unichar chr = [self.textView.string characterAtIndex:range.location+range.length - 1];
-				
-				if (chr == '\n') {
-					range = (NSRange){ range.location, range.length - 1 };
-				}
-			}
-			
-			// Revisions
-			if (attrs[revisionAttribute] && self.showRevisions) {
-				BeatRevisionItem *revision = attrs[revisionAttribute];
-				if (revision.type == RevisionAddition) [self.textView.layoutManager  addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
-				else if (revision.type == RevisionRemoval) {
-					[self.textView.textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
-					[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.2] range:range];
-				}
-			}
-			
-			// Tags
-			if (attrs[tagAttribute] && self.showTags) {
-				BeatTag *tag = attrs[tagAttribute];
-				NSColor *tagColor = [BeatTagging colorFor:tag.type];
-				tagColor = [tagColor colorWithAlphaComponent:.6];
-				
-				if (tagColor) [self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
-			}
-		}];
+		[self renderBackgroundForLines];
 	});
 }
 
@@ -2923,6 +2860,30 @@
 		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
 					   forCharacterRange:[self globalRangeFromLocalRange:&closeRange inLineAtPosition:line.position]];
 	}
+}
+
+#pragma mark - Revisions
+
+- (void)registerChangesInRange:(NSRange)range {
+	NSString * change = [self.text substringWithRange:range];
+
+	if (range.length < 2) {
+		Line * line = [self.parser lineAtPosition:range.location];
+		
+		if ([change isEqualToString:@"\n"]) {
+			// This was a line break. If it was at the end of a line, reduce that line from the range.
+			if (NSMaxRange(range) == NSMaxRange(line.range)) return;
+		}
+	}
+	
+	[_textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionAddition color:_revisionColor] range:range];
+}
+
+- (IBAction)nextRevision:(id)sender {
+	[self.revisionTracking nextRevision];
+}
+- (IBAction)previousRevision:(id)sender {
+	[self.revisionTracking previousRevision];
 }
 
 
@@ -3558,6 +3519,7 @@ static NSString *revisionAttribute = @"Revision";
 	if (_showRevisions) {
 		// Show revisions
 		[self initialTextBackgroundRender];
+		[self.textView refreshLayoutElements];
 	} else {
 		// Hide revisions
 		for (Line* line in self.parser.lines) [self renderBackgroundForLine:line clearFirst:YES];
@@ -3584,97 +3546,22 @@ static NSString *revisionAttribute = @"Revision";
 	[BeatUserDefaults.sharedDefaults saveBool:YES forKey:@"showRevisions"];
 	[_documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
 }
-
-// Revision tracking
-
-- (void)setupRevision {
-	_revisionColor = [_documentSettings getString:DocSettingRevisionColor];
-	if (![_revisionColor isKindOfClass:NSString.class] || !_revisionColor) _revisionColor = BeatRevisionTracking.defaultRevisionColor;
-		
-	NSDictionary *revisions = [_documentSettings get:DocSettingRevisions];
-	
-	for (NSString *key in revisions.allKeys) {
-		NSArray *items = revisions[key];
-		for (NSArray *item in items) {
-			NSString *color;
-			NSInteger loc = [(NSNumber*)item[0] integerValue];
-			NSInteger len = [(NSNumber*)item[1] integerValue];
-			
-			// Load color if available
-			if (item.count > 2) color = item[2];
-			
-			// Ensure the revision is in range and then paint it 
-			if (len > 0 && loc + len <= self.text.length) {
-				RevisionType type;
-				NSRange range = (NSRange){loc, len};
-				if ([key isEqualToString:@"Addition"]) type = RevisionAddition;
-				else if ([key isEqualToString:@"Removal"]) type = RevisionRemoval;
-				else type = RevisionNone;
-				
-				BeatRevisionItem *revisionItem = [BeatRevisionItem type:type color:color];
-				if (revisionItem) [self.textView.textStorage addAttribute:revisionAttribute value:revisionItem range:range];
-			}
-		}
-	}
-	
-	bool revisionMode = [_documentSettings getBool:DocSettingRevisionMode];
-	if (revisionMode) {
-		self.revisionMode = YES;
-		[self updateQuickSettings];
-	}
-}
-
 - (IBAction)markAddition:(id)sender
 {
-	if (!self.contentLocked) [self markerAction:RevisionAddition];
+	if (!self.contentLocked) [self.revisionTracking markerAction:RevisionAddition];
 }
 - (IBAction)markRemoval:(id)sender
 {
-	if (!self.contentLocked) [self markerAction:RevisionRemoval];
+	if (!self.contentLocked) [self.revisionTracking markerAction:RevisionRemovalSuggestion];
 }
-- (IBAction)clearMarkings:(id)sender {
-	[self markerAction:RevisionNone];
-}
-- (void)markerAction:(RevisionType)type {
-	// Content can't be marked as revised when locked.
-	if (self.contentLocked) return;
-	
-	// Only allow this for editor view
-	if ([self selectedTab] != 0) return;
-	
-	NSRange range = [self selectedRange];
-	if (range.length == 0) return;
-
-	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
-	
-	if (type == RevisionRemoval) [self markRangeForRemoval:range];
-	else if (type == RevisionAddition) [self markRangeAsAddition:range];
-	else [self clearReviewMarkers:range];
-	
-	[self.textView setSelectedRange:(NSRange){range.location + range.length, 0}];
-	[self updateChangeCount:NSChangeDone];
-	[self updatePreview];
-	
-	// Create an undo step
-	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-		[self.textView.textStorage setAttributes:oldAttributes range:range];
-	}];
+- (IBAction)clearMarkings:(id)sender
+{
+	// Remove markers
+	if (!self.contentLocked) [self.revisionTracking markerAction:RevisionNone];
 }
 
-- (void)markRangeAsAddition:(NSRange)range {
-	BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition color:_revisionColor];
-	if (revision) [_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
-	[self forceFormatChangesInRange:range];
-}
-- (void)markRangeForRemoval:(NSRange)range {
-	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionRemoval];
-	if (revision) [_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
-	[self forceFormatChangesInRange:range];
-}
-- (void)clearReviewMarkers:(NSRange)range {
-	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionNone];
-	if (revision) [_textView.textStorage addAttribute:revisionAttribute value:revision range:range];
-	[self forceFormatChangesInRange:range];
+- (IBAction)commitRevisions:(id)sender {
+	[self.revisionTracking commitRevisions];
 }
 
 - (void)saveRevisionRanges {
@@ -3687,19 +3574,24 @@ static NSString *revisionAttribute = @"Revision";
 	[_documentSettings set:DocSettingRevisions as:ranges];
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
 
-	// Save changed indices.
-	// Tuleville sukupolville. An die Nachgeborenen.
-	/*
+	// Save changed indices
 	NSArray *lines = self.lines;
-	
 	NSMutableDictionary *changedLines = NSMutableDictionary.new;
+	
 	for (NSInteger i=0; i < lines.count; i++) {
 		Line *line = lines[i];
-		if (line.changed) [changedLines setValue:line.revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
+		//if (line.type == empty) continue;
+		
+		if (line.changed) {
+			NSString *revisionColor = line.revisionColor;
+			if (revisionColor.length == 0) revisionColor = BeatRevisionTracking.defaultRevisionColor;
+			[changedLines setValue:line.revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
+		}
 	}
+	
 	[_documentSettings set:DocSettingChangedIndices as:changedLines];
-	*/
 }
+
 - (IBAction)selectRevisionColor:(id)sender {
 	NSPopUpButton *button = sender;
 	BeatColorMenuItem *item = (BeatColorMenuItem *)button.selectedItem;
@@ -3803,21 +3695,18 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)unlockSceneNumbers:(id)sender
 {
-	NSString *sceneNumberPatternString = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
-	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPatternString];
-	
-	NSError *error = nil;
-	NSRegularExpression *sceneNumberPattern = [NSRegularExpression regularExpressionWithPattern: @" (\\#([0-9A-Za-z\\.\\)-]+)\\#)" options: NSRegularExpressionCaseInsensitive error: &error];
-	
-	_sceneNumberLabelUpdateOff = true;
-	for (OutlineScene * scene in self.parser.scenes) {
-		if ([testSceneNumber evaluateWithObject:scene.line.string]) {
-			NSArray * results = [sceneNumberPattern matchesInString:scene.line.string options: NSMatchingReportCompletion range:NSMakeRange(0, scene.line.length)];
-			if ([results count]) {
-				NSTextCheckingResult * result = [results objectAtIndex:0];
-				NSRange sceneNumberRange = NSMakeRange(scene.line.position + result.range.location, result.range.length);
-				[self replaceCharactersInRange:sceneNumberRange withString:@""];
-			}
+	_sceneNumberLabelUpdateOff = YES;
+	for (Line *line in self.lines) {
+		if (line.type != heading) continue;
+		
+		NSRange sceneNumberRange = line.sceneNumberRange;
+		if (sceneNumberRange.length) {
+			// Scene number range is only the range of the actual number (no idea why, I was young
+			// and naive), so we need to expand it.
+			sceneNumberRange.location -= 1;
+			sceneNumberRange.length += 2;
+			NSIndexSet *sceneNumberIndices = [NSIndexSet indexSetWithIndexesInRange:sceneNumberRange];
+			[self removeTextOnLine:line inLocalIndexSet:sceneNumberIndices];
 		}
 	}
 	
@@ -3828,39 +3717,22 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)lockSceneNumbers:(id)sender
 {
-	NSString *originalText = [NSString  stringWithString:self.text];
-	NSMutableString *text = [NSMutableString string];
-	
 	NSInteger sceneNumber = [self.documentSettings getInt:@"Scene Numbering Starts From"];
 	if (sceneNumber == 0) sceneNumber = 1;
 	
 	for (Line* line in self.parser.lines) {
-		if (line.type != heading) [text appendFormat:@"%@\n", line.string];
-		else {
-			if (line.sceneNumberRange.length == 0) {
-				[text appendFormat:@"%@ #%lu#\n", line.string, sceneNumber];
-				sceneNumber++;
-			} else {
-				[text appendFormat:@"%@\n", line.string];
-			}
+		if (line.type != heading) continue;
+		
+		if (line.sceneNumberRange.length == 0) {
+			NSString * sn = [NSString stringWithFormat:@" #%lu#", sceneNumber];
+			[self addString:sn atIndex:line.textRange.location + line.textRange.length];
+			sceneNumber++;
+		} else {
+			
 		}
 	}
-	
-	[self.undoManager disableUndoRegistration];
-	
-	[self.textView replaceCharactersInRange:NSMakeRange(0, self.textView.string.length) withString:text];
-	[self.parser parseText:text];
-	[self applyFormatChanges];
-	
 	[self ensureLayout];
-	[self.undoManager enableUndoRegistration];
-	
-	[[self.undoManager prepareWithInvocationTarget:self] undoSceneNumbering:originalText];
-	
-	[self.parser createOutline];
-	
-	[self updateSceneNumberLabels:0];
-	[self.textView updateChangeMarkers];
+	[self.textView refreshLayoutElements];
 }
 
 - (void)undoSceneNumbering:(NSString*)rawText
@@ -3874,8 +3746,7 @@ static NSString *revisionAttribute = @"Revision";
 	[self ensureLayout];
 	[self.parser createOutline];
 	
-	[self updateSceneNumberLabels:0];
-	[self.textView updateChangeMarkers];
+	[self.textView refreshLayoutElements];
 }
 
 
@@ -4128,8 +3999,14 @@ static NSString *revisionAttribute = @"Revision";
 		[doc updateUIColors];
 	}
 	
-	[self updateSceneNumberLabels:0];
-	[self.textView updateChangeMarkers];
+	[self.textView refreshLayoutElements];
+}
+
+- (void)didChangeAppearance {
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+			[self updateUIColors];
+			[self.textView refreshLayoutElements];
+	});
 }
 - (bool)isDark {
 	return [(BeatAppDelegate *)[NSApp delegate] isDark];
@@ -4694,43 +4571,81 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene {
-	if (scene.storylines.count > 0) {
-		// Check if the storyline was already there
-		if (![scene.storylines containsObject:storyline]) {
-			NSArray *storylines = [scene.storylines arrayByAddingObject:storyline];
-			[self setStorylines:storylines for:scene];
+	NSMutableArray *storylines = scene.storylines.copy;
+	
+	// Do nothing if the storyline is already there
+	if ([storylines containsObject:storyline]) return;
+	
+	if (storylines.count > 0) {
+		// If the scene already has any storylines, we'll have to add the beat somewhere.
+		// Check if scene heading has note ranges, and if not, add it. Otherwise stack into that range.
+		if (!scene.line.beatRanges.count) {
+			// No beat note in heading yet
+			NSString *beatStr = [Storybeat stringWithStorylineNames:@[storyline]];
+			beatStr = [@" " stringByAppendingString:beatStr];
+			[self addString:beatStr atIndex:NSMaxRange(scene.line.textRange)];
+		} else {
+			NSMutableArray <Storybeat*>*beats = scene.line.beats.mutableCopy;
+			NSRange replaceRange = beats.firstObject.rangeInLine;
+			
+			// This is fake storybeat object to handle the string creation correctly.
+			[beats addObject:[Storybeat line:scene.line scene:scene string:storyline range:replaceRange]];
+			NSString *beatStr = [Storybeat stringWithBeats:beats];
+			
+			[self replaceRange:[self globalRangeFromLocalRange:&replaceRange inLineAtPosition:scene.line.position] withString:beatStr];
 		}
+		
 	} else {
-		[self setStorylines:@[storyline] for:scene];
+		// There are no storylines yet. Create a beat note and add it at the end of scene heading.
+		NSString *beatStr = [Storybeat stringWithStorylineNames:@[storyline]];
+		beatStr = [@" " stringByAppendingString:beatStr];
+		[self addString:beatStr atIndex:NSMaxRange(scene.line.textRange)];
 	}
 }
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene {
-	if (scene.storylines.count > 0) {
-		// Is the storyline there really?
-		if ([scene.storylines containsObject:storyline]) {
-			NSMutableArray *storylines = [NSMutableArray arrayWithArray:scene.storylines];
-			[storylines removeObject:storyline];
-			[self setStorylines:storylines for:scene];
-		}
-	}
-}
-- (void)setStorylines:(NSArray*)storylines for:(OutlineScene*)scene {
-	// Create storyline list
-	NSString *storylineString = [NSString stringWithFormat:@"[[STORYLINE %@]]", [storylines componentsJoinedByString:@", "]];
+	// This is unnecessarily complicated.
 	
-	// New storyline
-	if (scene.storylines.count == 0 && storylines.count) {
-		[self addString:[NSString stringWithFormat:@" %@", storylineString] atIndex:scene.line.position + scene.line.string.length];
-	}
-	// Remove all storylines
-	else if (scene.storylines.count && storylines.count == 0) {
-		[self removeString:[scene.line.string substringWithRange:scene.line.storylineRange] atIndex:scene.line.position + scene.line.storylineRange.location];
-	}
-	// Add storyline
-	else if (scene.storylines.count && storylines.count) {
-		[self replaceString:[scene.line.string substringWithRange:scene.line.storylineRange]
-				 withString:storylineString
-					atIndex:scene.line.position + scene.line.storylineRange.location];
+	NSMutableArray *storylines = scene.storylines.copy;
+	
+	if (storylines.count > 0) {
+		if ([storylines containsObject:storyline]) 		// Is the storyline really there?
+		{
+			if (storylines.count - 1 <= 0) {
+				// No storylines left. Clear ALL storyline notes.
+				for (Line *line in [self.parser linesForScene:scene]) {
+					[self removeTextOnLine:line inLocalIndexSet:line.beatRanges];
+				}
+			}
+			else {
+				// Find the specified beat note
+				Line *lineWithBeat;
+				for (Line *line in [self.parser linesForScene:scene]) {
+					if ([line hasBeatForStoryline:storyline]) {
+						lineWithBeat = line;
+						break;
+					}
+				}
+				if (!lineWithBeat) return;
+				
+				NSMutableArray *beats = lineWithBeat.beats.mutableCopy;
+				Storybeat *beatToRemove = [lineWithBeat storyBeatWithStoryline:storyline];
+				[beats removeObject:beatToRemove];
+				
+				// Multiple beats can be tucked into a single note. Store the other beats.
+				NSMutableArray *stackedBeats = NSMutableArray.new;
+				for (Storybeat *beat in beats) {
+					if (NSEqualRanges(beat.rangeInLine, beatToRemove.rangeInLine)) [stackedBeats addObject:beat];
+				}
+				
+				// If any beats were left, recreate the beat note with the leftovers.
+				// Otherwise, just remove it.
+				NSString *beatStr = @"";
+				if (stackedBeats.count) beatStr = [Storybeat stringWithBeats:stackedBeats];
+				
+				NSRange removalRange = beatToRemove.rangeInLine;
+				[self replaceRange:[self globalRangeFromLocalRange:&removalRange inLineAtPosition:lineWithBeat.position] withString:beatStr];
+			}
+		}
 	}
 }
 
@@ -4965,8 +4880,8 @@ static NSString *revisionAttribute = @"Revision";
 	[self.parser createOutline];
 	[self reloadOutline];
 	[self reloadTimeline];
-	[self updateSceneNumberLabels:0];
-	[self.textView updateChangeMarkers];
+	
+	[self.textView refreshLayoutElements];
 	[self updateChangeCount:NSChangeDone];
 	
 	[_documentWindow endSheet:_sceneNumberingPanel];
@@ -4977,10 +4892,6 @@ static NSString *revisionAttribute = @"Revision";
 - (void)resetSceneNumberLabels {
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	[self.textView resetSceneNumberLabels];
-}
-- (void)updateSceneNumberLabels:(NSInteger)changedIndex {
-	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
-	[self.textView updateSceneLabelsFrom:changedIndex];
 }
 
 - (IBAction)toggleSceneLabels: (id) sender {
@@ -4994,6 +4905,13 @@ static NSString *revisionAttribute = @"Revision";
 	self.previewUpdated = NO;
 	
 	[self updateQuickSettings];
+}
+
+- (void)refreshTextViewLayoutElements {
+	[_textView refreshLayoutElements];
+}
+- (void)refreshTextViewLayoutElementsFrom:(NSInteger)location {
+	[_textView refreshLayoutElementsFrom:location];
 }
 
 #pragma mark - Markers
@@ -5273,8 +5191,8 @@ triangle walks
 	else size = BeatA4;
 	
 	[self.documentSettings setInt:DocSettingPageSize as:size];
-	if (size == BeatA4) _documentWidth = DOCUMENT_WIDTH_A4;
-	else _documentWidth = DOCUMENT_WIDTH_US;
+	if (size == BeatA4) _documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
+	else _documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
 	
 	[self updateLayout];
 }

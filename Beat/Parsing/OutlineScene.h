@@ -62,6 +62,7 @@
 @property (nonatomic) NSString * sceneNumber;
 @property (nonatomic, readonly) NSString * color;
 @property (nonatomic) NSArray * storylines;
+@property (nonatomic) NSMutableArray * beats;
 
 @property (nonatomic) NSMutableSet *markerColors;
 

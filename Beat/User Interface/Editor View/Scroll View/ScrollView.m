@@ -16,6 +16,7 @@
 #import "ScrollView.h"
 #import "DynamicColor.h"
 #import "BeatTextView.h"
+#import "Beat-Swift.h"
 
 @implementation ScrollView
 
@@ -28,11 +29,12 @@
 
 - (void)awakeFromNib {
 	_buttonDefaultY = _outlineButtonY.constant;
-			
+	
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:trackingArea];
 }
+
 - (void)removeFromSuperview {
 	[_mouseMoveTimer invalidate];
 	[_timerMouseMoveTimer invalidate];

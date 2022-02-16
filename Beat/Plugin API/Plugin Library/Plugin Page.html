@@ -3,6 +3,8 @@
 		<style>
 			* {	
 				box-sizing: border-box;
+				user-select: none;
+				cursor: default;
 			}
 			body {
 				margin: 0;
@@ -10,8 +12,10 @@
 				color: #f0f0f0;
 				font-family: "SF Pro", Helvetica, sans-serif;
 				font-size: .8em;
-				user-select: none;
+				-webkit-user-select: none;
 			}
+			
+			h1, p { -webkit-user-select: none; user-select: none; }
 			
 			#intro {
 				display: flex;
@@ -58,8 +62,8 @@
 
 			h1 {
 				font-weight: lighter;
-				font-size: 2.2em;
-				margin: 0 0 .8rem 0;
+				font-size: 2.1em;
+				margin: 0 0 .4rem 0;
 			}
 
 			a:link, a:visited {
@@ -92,8 +96,8 @@
 			#plugin-actions {
 				display: flex;
 				align-items: center;
-				padding-bottom: .6rem;
-				margin-bottom: .6rem;
+				padding-bottom: .4rem;
+				margin-bottom: .4rem;
 				
 				border-bottom: solid 1px #444;
 			}

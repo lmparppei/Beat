@@ -293,7 +293,127 @@ body > p:first-child {
 /*   REV. ASTERISKS   */
 /* ================== */
 
-.changed::after {
+.changedDetail {
+	position: relative !important;
+	/* background-color: rgba(255, 128, 0, 0.3);    only for showing the changed text here */
+	display: inline;
+	height: auto;
+}
+
+.revisionMarker{
+	float: left;
+	width: 100%;
+	left: initial;
+	height: inherit;
+}
+
+.revisionMarker::after {
+	position: absolute;
+	top: 0px;
+	left: initial;
+	  
+	width: 8px !important;
+	height: calc(100% - 4px);
+
+	content: '*********************';
+	overflow: hidden !important;
+	font-weight: normal !important;
+	font-style: normal !important;
+	text-align: right !important;
+	letter-spacing: -1pt;
+
+	z-index: 1001;
+	/* color: blue !important; for debugging */
+
+	transform: translateX(calc(var(--action-width) + 18px)) !important;
+}
+
+.orange > .revisionMarker::after {
+	/* color: orange !important; for debugging */
+	width: 20px !important;
+	margin-left: -12px !important; /*to make up for the extra 12px width*/
+
+	content: '******************************************';
+
+	z-index: 1002;
+	background: white !important;
+}
+
+.purple > .revisionMarker::after {
+	/* color: purple !important; for debugging */
+	width: 8px !important;
+	margin-left: -12px !important; /*to make up for the extra 12px width*/
+	padding-left: 12px !important; /*to fill those extra 12px width, if double-star underneath*/
+
+	content: '+++++++++++++++++++++';
+
+	z-index: 1003;
+	background: white !important;
+}
+
+.green > .revisionMarker::after {
+	/* color: green !important; for debugging */
+	width: 20px !important;
+	margin-left: -12px !important; /*to make up for the extra 12px width*/
+
+	content: '++++++++++++++++++++++++++++++++++++++++++';
+
+	z-index: 1004;
+	background: white !important;
+}
+
+.dialogue .revisionMarker::after{
+	transform: translateX(calc(var(--action-width) - var(--dialogue-indent) + 18px)) !important;
+}
+
+.character .revisionMarker::after{
+	transform: translateX(calc(var(--action-width) - var(--character-indent) + 18px)) !important;
+}
+
+.parenthetical .revisionMarker::after{
+	transform: translateX(calc(var(--action-width) - var(--parenthetical-indent) + 18px)) !important;
+}
+
+.transition .revisionMarker::after{
+	transform: translateX(calc(18px)) !important;
+}
+
+.dual-dialogue-right .revisionMarker::after{
+	transform: translateX(calc(var(--action-width)/2 + 9px)) !important;
+}
+
+.dual-dialogue-right .character .revisionMarker::after {
+	transform: translateX(calc(var(--action-width)/2 - 68px)) !important;
+}
+
+.dual-dialogue-right .parenthetical .revisionMarker::after {
+	transform: translateX(calc(var(--action-width)/2 - 20px)) !important;
+}
+
+.dual-dialogue-left .revisionMarker::after{
+	transform: translateX(calc(var(--action-width)/2 + 9px)) !important;
+	transform: translateX(calc(-21.5pt)) !important;
+}
+
+.dual-dialogue-left .character .revisionMarker::after{
+	transform: translateX(calc(-8ch - 21.5pt)) !important;
+}
+
+.dual-dialogue-left .parenthetical .revisionMarker::after{
+	transform: translateX(calc(-3ch - 21.5pt)) !important;
+}
+
+.lyrics .revisionMarker::after{
+	transform: translateX(calc(var(--action-width) / 2 + 18px)) !important;
+
+}
+
+/* ================== */
+/*   OLD. ASTERISKS   */
+/* ================== */
+
+
+/*.changed::after {
 
 	position: absolute;
 	
@@ -312,22 +432,17 @@ body > p:first-child {
 }
 
 .changed::after{
-	/* color: grey */
 }
 .changed.blue::after{
-	/* color: blue; */
 }
 .changed.orange::after{
-	/* color: orange; */
 	width: 20px;
 	content: '******************************************';
 }
 .changed.purple::after{
-	/* color: purple; */
 	content: '+++++++++++++++++++++';
 }
 .changed.green::after{
-	/* color: green; */
 	width: 20px;
 	content: '++++++++++++++++++++++++++++++++++++++++++';
 }
@@ -351,7 +466,7 @@ body > p:first-child {
 
 .dual-dialogue-left .character.changed::after{
 	left: calc(-9ch - 21.5pt);
-}
+} */
 
 /* ================== */
 /*      TITLE PAGE    */

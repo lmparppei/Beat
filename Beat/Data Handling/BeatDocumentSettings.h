@@ -27,6 +27,7 @@ extern NSString * const DocSettingCaretPosition;
 extern NSString * const DocSettingPageSize;
 extern NSString * const DocSettingActivePlugins;
 extern NSString * const DocSettingChangedIndices;
+extern NSString * const DocSettingChangedIndices;
 
 extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;

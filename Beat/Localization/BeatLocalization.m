@@ -32,7 +32,9 @@
 	
 	// Add missing stuff
 	for (NSString *key in fallbackDictionary) {
-		if (!dictionary[key]) dictionary[key] = fallbackDictionary[key];
+		if (!dictionary[key]) {
+			dictionary[key] = fallbackDictionary[key];
+		}
 	}
 	
 	// Iterate through localized strings and replace them in the string

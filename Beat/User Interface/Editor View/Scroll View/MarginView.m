@@ -35,7 +35,7 @@
 	
 	if (!_paper) {
 		// Setup background
-		_paper = [CALayer layer];
+		_paper = CALayer.layer;
 		_paper.frame = CGRectMake(marginWidth, -50, self.frame.size.width - marginWidth * 2, self.frame.size.height + 100);
 		_paper.bounds = CGRectMake(0, 0, _paper.frame.size.width, _paper.frame.size.height);
 		

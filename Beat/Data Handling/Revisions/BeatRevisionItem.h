@@ -22,7 +22,8 @@
 typedef NS_ENUM(NSInteger, RevisionType) {
 	RevisionNone ,
 	RevisionAddition,
-	RevisionRemoval,
+	RevisionRemovalSuggestion,
+	RevisionCharacterRemoved,
 	RevisionComment
 };
 

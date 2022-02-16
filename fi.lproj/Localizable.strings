@@ -13,8 +13,10 @@
 
 "unlock_document.title" = "Avaa dokumentin lukitus";
 "unlock_document.confirm" = "Haluatko varmasti avata lukituksen ja sallia muutokset käsikirjoitukseen?";
+"general.OK" = "OK";
 "general.yes" = "Kyllä";
 "general.no" = "Ei";
+"general.cancel" = "Peruuta";
 "general.undo" = "Peru";
 "general.redo" = "Tee sittenkin";
 

@@ -39,7 +39,8 @@
 @property (nonatomic, readonly) NSMutableArray *outline;
 @property (nonatomic, readonly) NSMutableArray *scenes;
 @property (nonatomic, readonly) NSMutableArray *titlePage;
-@property (nonatomic, readonly) NSMutableArray *storylines;
+@property (nonatomic, readonly) NSMutableSet *storylines;
+@property (nonatomic, readonly) NSMutableDictionary *storybeats;
 @property (nonatomic, readonly) bool hasTitlePage;
 - (void)parseText:(NSString*)text;
 - (Line*)lineAtIndex:(NSInteger)index;
@@ -66,7 +67,8 @@
 @property (nonatomic) NSMutableIndexSet *changedIndices; //Stores every line that needs to be formatted according to the type
 @property (nonatomic) NSMutableArray *outline;
 @property (nonatomic) NSMutableArray *titlePage;
-@property (nonatomic) NSMutableArray *storylines;
+@property (nonatomic) NSMutableSet *storylines;
+@property (nonatomic) NSMutableDictionary <NSString*, NSMutableArray<Storybeat*>*>*storybeats;
 @property (nonatomic) bool hasTitlePage;
 
 // For STATIC parsing without a document
@@ -114,6 +116,8 @@
 
 //Convenience Methods for Other Stuff
 - (Line*)lineAtPosition:(NSInteger)position;
+- (NSUInteger)lineIndexAtPosition:(NSUInteger)position;
+- (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (NSArray*)scenesInRange:(NSRange)range;
 - (NSArray*)linesInRange:(NSRange)range;

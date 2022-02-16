@@ -17,6 +17,7 @@
 
 @interface BeatMarkerScroller ()
 @property (nonatomic) NSArray *markers;
+@property (nonatomic) NSMutableArray *labels;
 @end
 @implementation BeatMarkerScroller
 
@@ -38,6 +39,18 @@
 
 - (void)setupView
 {
+	self.window.acceptsMouseMovedEvents = YES;
+	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
+																options:(NSTrackingMouseEnteredAndExited |
+																		 NSTrackingActiveInActiveApp |
+																		 NSTrackingMouseMoved)
+																  owner:self
+															   userInfo:nil];
+	[self addTrackingArea:trackingArea];
+}
+
+-(void)updateTrackingAreas {
+	[super updateTrackingAreas];
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
 																options:(NSTrackingMouseEnteredAndExited |
 																		 NSTrackingActiveInActiveApp |
@@ -58,8 +71,20 @@
 	return path;
 }
 
-- (void)drawRect:(NSRect)dirtyRect {
+- (NSBezierPath*)marker:(CGFloat)y {
+	CGFloat width = self.frame.size.width;
 	
+	NSBezierPath *path = [NSBezierPath bezierPath];
+	[path moveToPoint:NSMakePoint(width, y)];
+	[path lineToPoint:NSMakePoint(0, y)];
+	[path lineToPoint:NSMakePoint(width / 2, y + 5)];
+	[path lineToPoint:NSMakePoint(0, y + 10)];
+	[path lineToPoint:NSMakePoint(width, y + 10)];
+	[path closePath];
+	return path;
+}
+
+- (void)drawRect:(NSRect)dirtyRect {
 	if ([BeatUserDefaults.sharedDefaults getBool:@"showMarkersInScrollbar"]) {
 		// Reload markers
 		if (self.editorDelegate.hasChanged) _markers = _editorDelegate.markers;
@@ -71,7 +96,7 @@
 				CGFloat y = [(NSNumber*)marker[@"y"] floatValue] * self.frame.size.height;
 				
 				if (!marker[@"scene"]) {
-					NSBezierPath *path = [self triangle:y];
+					NSBezierPath *path = [self marker:y];
 					[path fill];
 				} else {
 					NSRect rect = (NSRect){ 0, y, 25, 2 };
@@ -86,15 +111,63 @@
 	[self drawKnob];
 }
 
+/*
+- (void)showLabels {
+	_labels = NSMutableArray.array;
+	
+	for (NSDictionary *marker in _markers) {
+		NSColor *color = [BeatColors color:marker[@"color"]];
+		
+		if (color) {
+			CGFloat y = [(NSNumber*)marker[@"y"] floatValue] * self.frame.size.height;
+			NSPopover *popover = [self newLabelWithString:marker[@"color"] y:y];
+			[popover showRelativeToRect:(NSRect){ 0, y, self.frame.size.width, 1 } ofView:self preferredEdge:NSRectEdgeMinX];
+			[_labels addObject:popover];
+		}
+	}
+	
+}
+
+- (void)hideLabels {
+	for (NSPopover* popover in _labels) {
+		[popover close];
+	}
+	
+	[_labels removeAllObjects];
+}
+
+- (NSPopover*)newLabelWithString:(NSString*)string y:(CGFloat)y {
+	NSTextField *label = [NSTextField labelWithString:string];
+	label.controlSize = NSControlSizeMini;
+	label.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
+
+	NSView *contentView = [NSView.alloc initWithFrame:NSMakeRect(300, y, label.attributedStringValue.size.width + 20, label.attributedStringValue.size.height * 1.5)];
+	[contentView addSubview:label];
+	
+	NSViewController *contentViewController = [[NSViewController alloc] init];
+	[contentViewController setView:contentView];
+		
+	// Autocomplete popover
+	NSPopover *popover = [[NSPopover alloc] init];
+	
+	if (@available(macOS 10.14, *)) popover.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+	
+	//popover.animates = NO;
+	popover.contentViewController = contentViewController;
+	
+	return popover;
+}
+*/
+
 - (void)drawKnobSlotInRect:(NSRect)slotRect highlight:(BOOL)flag
 {
 	// Do nothing
 }
 
-
 - (void)mouseExited:(NSEvent *)theEvent
 {
 	[super mouseExited:theEvent];
+	// [self hideLabels];
 	[self fadeOut];
 }
 
@@ -107,6 +180,8 @@
 	} completionHandler:^{
 	}];
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(fadeOut) object:nil];
+	
+	//if (_labels.count == 0) [self showLabels];
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent

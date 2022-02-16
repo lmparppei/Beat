@@ -44,6 +44,8 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) BeatEditorMode mode;	
 @property (readonly) bool revisionMode;
+@property (readonly) bool showRevisions;
+@property (readonly) bool sceneNumberLabelUpdateOff;
 @property (readonly) bool showSceneNumberLabels;
 @property (readonly) bool showPageNumbers;
 @property (readonly) NSMutableIndexSet *changes;
@@ -51,6 +53,9 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 @property (readonly) NSUInteger fontSize;
 @property (readonly) bool typewriterMode;
 @property (readonly) bool hideFountainMarkup;
+@property (readonly) bool documentIsLoading;
+
+@property (readonly) NSRange lastChangedRange;
 
 @property (readonly, nonatomic) NSFont *courier;
 @property (readonly, nonatomic) NSFont *boldCourier;
@@ -70,13 +75,19 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 - (LineType)lineTypeAt:(NSInteger)index;
 - (Line*)lineAt:(NSInteger)index;
 
-- (void)didPerformEdit:(NSRange)range;
+- (NSInteger)getPageNumber:(NSInteger)location;
+- (NSInteger)numberOfPages;
+
+-(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
+- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 
 @end
 
 @protocol BeatTaggingDelegate;
 
-@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, BeatTextStorageDelegate>
+@interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
++ (CGFloat)linePadding;
+
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
 - (CGFloat)setInsets;
@@ -111,8 +122,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 //@property (nonatomic, readonly, weak) ContinuousFountainParser *parser;
 
 
--(void)updateChangeMarkers;
--(void)updateChangeMarkersFrom:(NSInteger)idx;
-
+- (void)refreshLayoutElementsFrom:(NSInteger)location;
+- (void)refreshLayoutElements;
 
 @end

@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "ContinuousFountainParser.h"
+#import "BeatEditorDelegate.h"
+#import "BeatRevisionItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,10 +19,26 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
 
 + (NSString*)defaultRevisionColor;
-+ (NSString*)revisionColors;
++ (NSArray*)revisionColors;
++ (NSDictionary*)revisionMarkers;
++ (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
++ (NSString*)revisionAttribute;
+
+@property (weak) IBOutlet id<BeatEditorDelegate> delegate;
 
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;
+- (void)loadRevisionMarkers;
+- (void)setupRevisions;
+- (void)markerAction:(RevisionType)type;
+- (void)markRangeAsAddition:(NSRange)range;
+- (void)markRangeForRemoval:(NSRange)range;
+- (void)clearReviewMarkers:(NSRange)range;
+
+- (void)nextRevision;
+- (void)previousRevision;
+
+- (void)commitRevisions;
 @end
 
 NS_ASSUME_NONNULL_END

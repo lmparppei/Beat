@@ -30,8 +30,8 @@
 		_type = type;
 		_text = text;
 		
-		if (color) _colorName = color;
-		else _colorName = @"";
+		if (color.length) _colorName = color;
+		else _colorName = BeatRevisionItem.availableColors.firstObject;
 	}
 	return self;
 }
@@ -50,7 +50,7 @@
 }
 
 - (NSString*)key {
-	if (self.type == RevisionRemoval) return @"Removal";
+	if (self.type == RevisionRemovalSuggestion) return @"RemovalSuggestion";
 	else if (self.type == RevisionAddition) return @"Addition";
 	else if (self.type == RevisionComment) return @"Comment";
 	return @"";
@@ -63,13 +63,13 @@
 - (BeatColor*)color {
 	if (_color) return _color;
 	if (self.colorName.length) _color = [BeatColors color:self.colorName];
-	if (!_color) _color = [BeatColors color:@"cyan"];
+	if (!_color) _color = [BeatColors color:[BeatRevisionItem availableColors].firstObject];
 	return _color;
 }
 
 - (BeatColor*)backgroundColor {
 	if (_backgroundColor) return _backgroundColor;
-	_backgroundColor = [self.color colorWithAlphaComponent:0.1];
+	_backgroundColor = [self.color colorWithAlphaComponent:0.09];
 	return _backgroundColor;
 }
 

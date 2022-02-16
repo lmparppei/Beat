@@ -87,9 +87,10 @@
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
-#import "BeatRevisionItem.h"
+#import "BeatRevisionTracking.h"
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
+#define RevisionColors @[@"none", @"blue", @"orange", @"purple", @"green"]
 
 static NSDictionary *fdxIds;
 
@@ -174,12 +175,17 @@ static NSDictionary *fdxIds;
 			NSLog(@"%@: %@!", item.key, lines);
 			
 			for (Line *line in lines) {
-				if (!line.additionRanges) line.additionRanges = [NSMutableIndexSet indexSet];
-				if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
+				if (!line.revisedRanges) line.revisedRanges = NSMutableDictionary.new;
+				if (!line.removalSuggestionRanges) line.removalSuggestionRanges = NSMutableIndexSet.indexSet;
 				
 				NSRange rangeInLine = [line globalRangeToLocal:range];
-				if (item.type == RevisionAddition) [line.additionRanges addIndexesInRange:rangeInLine];
-				else if (item.type == RevisionRemoval) [line.removalRanges addIndexesInRange:rangeInLine];
+				
+				if (item.type == RevisionAddition) {
+					// Add different revisions into the line
+					if (!line.revisedRanges[item.colorName]) line.revisedRanges[item.colorName] = NSMutableIndexSet.new;
+					[line.revisedRanges[item.colorName] addIndexesInRange:rangeInLine];
+				}
+				else if (item.type == RevisionRemovalSuggestion) [line.removalSuggestionRanges addIndexesInRange:rangeInLine];
 			}
 		}];
 	}
@@ -282,6 +288,9 @@ static NSDictionary *fdxIds;
 	// Revision data
 	[_result appendString:@"	<Revisions ActiveSet=\"1\" Location=\"7.75\" RevisionsShown=\"Active\" ShowAllMarks=\"No\" ShowAllSets=\"No\">\n"];
 	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"1\" Mark=\"*\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"blue"])];
+	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"2\" Mark=\"**\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"orange"])];
+	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"3\" Mark=\"+\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"purple"])];
+	[_result appendString:format(@"		<Revision Color=\"#%@\" FullRevision=\"No\" ID=\"4\" Mark=\"++\" Name=\"First Revision\" PageColor=\"#FFFFFFFFFFFF\" Style=\"\"/>\n", [BeatColors colorWith16bitHex:@"green"])];
 	[_result appendString:@"	</Revisions>\n"];
 	/*
 	<Revisions ActiveSet="1" Location="7.75" RevisionMode="No" RevisionsShown="Active" ShowAllMarks="No" ShowAllSets="No" ShowPageColor="No">
@@ -445,11 +454,6 @@ static NSDictionary *fdxIds;
 	NSString *string = [self lineToXML:line];
 	if (string.length) [_result appendString:string];
 }
-
-// These are no longer used because the attributes a
-#define BOLD_STYLE @"Bold"
-#define ITALIC_STYLE @"Italic"
-#define UNDERLINE_STYLE @"Underline"
 
 - (void)escapeString:(NSMutableString*)string
 {
@@ -686,16 +690,26 @@ static NSDictionary *fdxIds;
 				NSString *highlightColor = [BeatColors colorWith16bitHex:@"blue"];
 				additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\"", highlightColor.uppercaseString];
 			}
-			if ([styleArray containsObject:@"Addition"]) {
-				[styleArray removeObject:@"Addition"];
-				NSString *highlightColor = [BeatColors colorWith16bitHex:@"cyan"];
-				additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"1\"", highlightColor.uppercaseString];
-			}
-			if ([styleArray containsObject:@"Removal"]) {
-				[styleArray removeObject:@"Removal"];
+			if ([styleArray containsObject:@"RemovalSuggestion"]) {
+				[styleArray removeObject:@"RemovalSuggestion"];
 				[styleArray addObject:@"Strikeout"];
 				NSString *highlightColor = [BeatColors colorWith16bitHex:@"fdxRemoval"];
 				additionalStyles = [additionalStyles stringByAppendingFormat:@" Background=\"#%@\"", highlightColor.uppercaseString];
+			}
+			
+			for (NSString *key in styleArray.copy) {
+				if ([key containsString:@"Revision:"]) {
+					[styleArray removeObject:key];
+					
+					NSArray *revisionComponents = [key componentsSeparatedByString:@":"];
+					if (revisionComponents.count < 2) continue;
+					NSString *revColor = revisionComponents[1];
+
+					NSString *highlightColor = [BeatColors colorWith16bitHex:revColor];
+					
+					NSInteger revisionNumber = [BeatRevisionTracking.revisionColors indexOfObject:revColor] + 1;
+					additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"%lu\"", highlightColor.uppercaseString, revisionNumber];
+				}
 			}
 			
 			styles = [NSString stringWithFormat:@" Style=\"%@\"%@", [styleArray componentsJoinedByString:@"+"], additionalStyles];

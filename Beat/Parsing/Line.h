@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import "Storybeat.h"
 
 typedef NS_ENUM(NSUInteger, LineType) {
     empty = 0,
@@ -53,10 +54,15 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
 
-@property (nonatomic, readonly) bool noteIn; /// Wether the line terminates an unfinished note
-@property (nonatomic, readonly) bool noteOut; /// Wether the line starts a note and doesn't finish it
+@property (nonatomic, readonly) bool noteIn;
+@property (nonatomic, readonly) bool noteOut;
 
 @property (nonatomic, readonly) NSString *marker;
+@property (nonatomic, readonly) NSString *markerDescription;
+
+@property (nonatomic, readonly) NSDictionary* ranges;
+
+@property (nonatomic) NSArray<Storybeat*>* beats;
 
 - (NSString*)cleanedString;
 - (NSString*)stripFormattingCharacters;
@@ -78,11 +84,17 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (NSIndexSet*)contentRanges;
 - (NSIndexSet*)contentRangesWithNotes;
 
+- (bool)hasBeat;
+- (bool)hasBeatForStoryline:(NSString*)storyline;
+- (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
+
 @end
 
 @protocol LineDelegate <NSObject>
 @property (readonly) NSMutableArray *lines;
 @end
+
+@class Storybeat;
 
 @interface Line : NSObject <LineExports>
 
@@ -114,14 +126,14 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic) NSMutableIndexSet* strikeoutRanges;
 @property (nonatomic) NSMutableIndexSet* escapeRanges;
 
-@property (nonatomic) NSMutableIndexSet* additionRanges;
-@property (nonatomic) NSMutableIndexSet* removalRanges;
+@property (nonatomic) NSMutableIndexSet* removalSuggestionRanges;
 
 @property (nonatomic) NSRange titleRange;
 @property (nonatomic) NSRange markerRange;
 @property (nonatomic) NSRange sceneNumberRange;
-@property (nonatomic) NSRange storylineRange;
 @property (nonatomic) NSRange colorRange;
+//@property (nonatomic) NSMutableIndexSet *storylineRanges;
+@property (nonatomic) NSMutableIndexSet *beatRanges;
 
 @property (nonatomic, readonly) NSUInteger index; /// Index of line in parser, experimental
 
@@ -129,11 +141,11 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 @property (nonatomic) NSInteger length;
 
-@property (nonatomic) bool omitIn; /// Wether the line terminates an unfinished omit
-@property (nonatomic) bool omitOut; /// Wether the line starts a note and doesn't finish it
+@property (nonatomic) bool omitIn; /// Whether the line terminates an unfinished omit
+@property (nonatomic) bool omitOut; /// Whether the line starts a note and doesn't finish it
 
-@property (nonatomic) bool noteIn; /// Wether the line terminates an unfinished note
-@property (nonatomic) bool noteOut; /// Wether the line starts a note and doesn't finish it
+@property (nonatomic) bool noteIn; /// Whether the line terminates an unfinished note
+@property (nonatomic) bool noteOut; /// Whether the line starts a note and doesn't finish it
 @property (nonatomic) bool cancelsNoteBlock;
 @property (nonatomic) bool beginsNoteBlock;
 @property (nonatomic) bool endsNoteBlock;
@@ -198,6 +210,10 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 // Markers
 @property (nonatomic) NSString *marker;
+@property (nonatomic) NSString *markerDescription;
+
+// Beats
+@property (nonatomic) NSArray<Storybeat*>* beats;
 
 // For FDX export
 - (NSAttributedString*)attributedStringForFDX;
@@ -216,8 +232,14 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 // For revision data
 @property (nonatomic) bool changed;
-@property (nonatomic) NSMutableIndexSet *changedRanges;
+@property (nonatomic) NSMutableDictionary <NSString*, NSMutableIndexSet*>* revisedRanges;
 @property (nonatomic) NSString *revisionColor;
+
+// Story beats
+- (bool)hasBeat;
+- (bool)hasBeatForStoryline:(NSString*)storyline;
+- (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
+- (NSRange)firstBeatRange;
 
 -(NSString *)description;
 @end

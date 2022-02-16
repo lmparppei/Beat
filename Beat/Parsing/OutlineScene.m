@@ -38,6 +38,7 @@
 
 	self.line = line;
 	self.delegate = delegate;
+	self.beats = NSMutableArray.array;
 	
 	return self;
 }
@@ -77,8 +78,17 @@
 		@"sceneStart": @(self.position),
 		@"sceneLength": @(self.length),
 		@"omitted": @(self.omitted),
+		@"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
 		@"line": self.line.forSerialization
 	};
+}
+
+- (NSArray*)serializedBeats {
+	NSMutableArray *beats = NSMutableArray.new;
+	for (Storybeat *beat in self.beats) {
+		[beats addObject:beat.forSerialization];
+	}
+	return beats;
 }
 
 #pragma mark - Forwarded properties
@@ -89,9 +99,6 @@
 }
 -(NSUInteger)position {
 	return self.line.position;
-}
--(NSArray*)storylines {
-	return self.line.storylines;
 }
 
 -(bool)omitted {return self.line.omitted; }
@@ -188,6 +195,14 @@
 	}
 	
 	return -1;
+}
+
+- (NSArray*)storylines {
+	NSMutableArray *storylines = NSMutableArray.array;
+	for (Storybeat *beat in self.beats) {
+		[storylines addObject:beat.storyline];
+	}
+	return storylines;
 }
 
 

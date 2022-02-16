@@ -38,11 +38,27 @@
 		bool fileIsZip = [UZKArchive urlIsAZip:url];
 		
 		if (fileIsZip) {
+			// Legacy Celtx file
 			[self readContainerAt:url];
+		} else {
+			// Modern Celtx file
+			[self readSingleScreenplayAt:url];
 		}
 	}
 	
 	return self;
+}
+
+- (void)readSingleScreenplayAt:(NSURL*)url {
+	NSLog(@"reading single...");
+	
+	NSData *data = [NSData dataWithContentsOfURL:url];
+	NSLog(@"DATA: %@", data);
+	
+	NSDictionary *screenplay = [self parseContents:data];
+	
+	self.script = screenplay[@"screenplay"];
+	NSLog(@"screenplay %@", screenplay);
 }
 
 - (void)readContainerAt:(NSURL*)url {
@@ -156,35 +172,41 @@
 
 - (void)parseScripts:(NSArray*)scripts {
 	_scripts = [NSMutableArray array];
-	NSError *error;
 	
 	for (NSData *data in scripts) {
-		NSMutableString *screenplay = [NSMutableString string];
-		HTMLParser *parser = [[HTMLParser alloc] initWithData:data error:&error];
+		NSDictionary *script = [self parseContents:data];
+		[_scripts addObject:script];
+	}
+}
+
+- (NSDictionary*)parseContents:(NSData*)data {
+	NSError *error;
+	NSMutableString *screenplay = [NSMutableString string];
+	HTMLParser *parser = [HTMLParser.alloc initWithData:data error:&error];
+	
+	HTMLNode *htmlNode = [parser html];
+	NSString *title = [htmlNode findChildWithTag:@"title"].allContents;
+	
+	HTMLNode *bodyNode = [parser body];
+	NSArray *paragraphs = [bodyNode findChildrenWithTag:@"p"];
+	
+	NSString *previousType;
+	
+	for (HTMLNode *node in paragraphs) {
+		NSString *contents = [self contentsFor:node previousType:previousType];
+		[screenplay appendString:contents];
 		
-		HTMLNode *htmlNode = [parser html];
-		NSString *title = [htmlNode findChildWithTag:@"title"].allContents;
-		
-		HTMLNode *bodyNode = [parser body];
-		NSArray *paragraphs = [bodyNode findChildrenWithTag:@"p"];
-		
-		NSString *previousType;
-		
-		for (HTMLNode *node in paragraphs) {
-			NSString *contents = [self contentsFor:node previousType:previousType];
-			[screenplay appendString:contents];
-			
-			previousType = node.className;;
-		}
-		
-		// Remove dual line breaks
-		[screenplay replaceOccurrencesOfString:@"\n\n\n" withString:@"\n\n" options:NSCaseInsensitiveSearch range:NSMakeRange(0, screenplay.length)];
-		
-		// Add whole text to the dictionary
-		if (screenplay.length) {
-			NSDictionary *script = @{ @"title": title, @"screenplay": screenplay };
-			[_scripts addObject:script];
-		}
+		previousType = node.className;;
+	}
+	
+	// Remove dual line breaks
+	[screenplay replaceOccurrencesOfString:@"\n\n\n" withString:@"\n\n" options:NSCaseInsensitiveSearch range:NSMakeRange(0, screenplay.length)];
+	
+	// Add whole text to the dictionary
+	if (screenplay.length) {
+		return @{ @"title": (title.length) ? title : @"", @"screenplay": screenplay };
+	} else {
+		return nil;
 	}
 }
 

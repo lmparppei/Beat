@@ -85,14 +85,14 @@
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict{
 	_lastFoundElement = elementName;
 	
-	// So oh my fucking god. Fade In uses (sometimes) lower-case
-	// attribute & element names, while OSF specifies changing case,
-	// ie. sceneNumber and not scenenumber.
+	// Fade In (sometimes) uses lower-case attribute & element names, while
+	// OSF documentation explicitly specifies changing case, ie. "sceneNumber" vs "scenenumber".
 	// So fuck everything, let's create a new dictionary out of the attributes
-	// with lowercase counterparts.
+	// with lowercase counterparts. Style names are correctly capitalized, though.
 	
 	elementName = elementName.lowercaseString;
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+	
 	for (id key in attributeDict) {
 		[attributes setValue:[attributeDict objectForKey:key] forKey:[key lowercaseString]];
 	}
@@ -178,7 +178,7 @@
 		NSString *result = [NSString stringWithFormat:@"%@", _elementText];
 		
 		// Add empty rows before required elements.
-		if ([_scriptLines count] > 0) {
+		if (_scriptLines.count > 0) {
 			NSString *previousLine = [_scriptLines lastObject];
 			
 			if (previousLine.length > 0 && _elementText.length > 0) {

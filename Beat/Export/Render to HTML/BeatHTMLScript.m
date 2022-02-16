@@ -425,7 +425,7 @@
 				if (elementCount == 0) [additionalClasses appendString:@" first"];
 				
 				// Mark as changed, if comparing against another file or the line contains added/removed text
-				if (line.changed || line.additionRanges.count || line.removalRanges.count) {
+				if (line.changed || line.revisedRanges.count || line.removalSuggestionRanges.count) {
 					[additionalClasses appendString:@" changed"];
 					
 					// Add revision color if available
@@ -667,14 +667,34 @@
 				open = [open stringByAppendingString:STRIKEOUT_OPEN];
 				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
 			}
-			if ([styleArray containsObject:@"Removal"]) {
+			if ([styleArray containsObject:@"RemovalSuggestion"]) {
 				open = [open stringByAppendingString:STRIKEOUT_OPEN];
 				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
+			}
+			if ([styleArray containsObject:@"Addition"]) {
+				//open = [open stringByAppendingString:ADDITION_OPEN];
+				//close = [close stringByAppendingString:ADDITION_OPEN];
 			}
 			if ([styleArray containsObject:@"Note"]) {
 				open = [open stringByAppendingString:NOTE_OPEN];
 				close = [close stringByAppendingString:NOTE_CLOSE];
 			}
+			
+			// Iterate through possible revisions baked into the line
+			for (NSString *key in styleArray.copy) {
+				// A revision style attribute is formatted as "Revision:color"
+				if ([key containsString:@"Revision:"]) {
+					[styleArray removeObject:key];
+					
+					NSArray *revisionComponents = [key componentsSeparatedByString:@":"];
+					if (revisionComponents.count < 2) continue;
+					NSString *revColor = revisionComponents[1];
+					
+					open = [open stringByAppendingFormat:@"<span class='changedDetail %@'><a class='revisionMarker'></a>", revColor];
+					close = [close stringByAppendingFormat:@"</span>"];
+				}
+			}
+			
 		}
 		
 		// Append snippet to paragraph

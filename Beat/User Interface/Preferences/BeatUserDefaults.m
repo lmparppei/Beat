@@ -73,7 +73,7 @@
 		@"screenplayItemMore": @[@"screenplayItemMore", @"MORE"],
 		@"screenplayItemContd": @[@"screenplayItemMore", @"CONT'D"],
 		@"showRevisions": @[@"showRevisions", @YES],
-		@"showTags": @[@"showTags", @YES]
+		@"showTags": @[@"showTags", @YES],
 	};
 }
 
@@ -151,6 +151,24 @@
 	}
 }
 
+- (BOOL)isSuppressed:(NSString*)key {
+	NSDictionary *suppressions = [NSUserDefaults.standardUserDefaults objectForKey:@"suppressedAlerts"];
+	if (![suppressions objectForKey:key]) {
+		return NO;
+	} else {
+		return [(NSNumber*)[suppressions objectForKey:key] boolValue];
+	}
+}
+
+- (void)setSuppressed:(NSString *)key value:(bool)value {
+	NSMutableDictionary *suppressions = [[NSUserDefaults.standardUserDefaults objectForKey:@"suppressedAlerts"] mutableCopy];
+	if (!suppressions) suppressions = NSMutableDictionary.new;
+		
+
+	[suppressions setObject:@(value) forKey:key];
+	[NSUserDefaults.standardUserDefaults setValue:suppressions forKey:@"suppressedAlerts"];
+}
+
 - (void)saveBool:(bool)value forKey:(NSString*)key
 {
 	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
@@ -169,6 +187,15 @@
 	if (values) {
 		NSString *settingKey = values[0];
 		[NSUserDefaults.standardUserDefaults setInteger:value forKey:settingKey];
+	}
+}
+- (void)save:(id)value forKey:(NSString *)key {
+	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSArray *values = userDefaults[key];
+	
+	if (values) {
+		NSString *settingKey = values[0];
+		[NSUserDefaults.standardUserDefaults setValue:value forKey:settingKey];
 	}
 }
 

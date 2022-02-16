@@ -39,6 +39,9 @@
 #import "BeatMeasure.h"
 #import "NSString+CharacterControl.h"
 #import "BeatRevisionItem.h"
+#import "BeatRevisionTracking.h"
+#import "BeatLayoutManager.h"
+#import "Beat-Swift.h"
 
 #define DEFAULT_MAGNIFY 1.02
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
@@ -124,6 +127,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 // New scene numbering system
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
+@property (nonatomic) NSUInteger linesBeforeLayout;
 
 // Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
@@ -140,20 +144,28 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 @property (nonatomic) bool updatingSceneNumberLabels; /// YES if scene number labels are being updated
 
-@property (nonatomic) NSMutableArray *changeMarkers;
+@property (nonatomic) NSMutableDictionary *markerLayers;
 
 @end
 
 @implementation BeatTextView
 
++ (CGFloat)linePadding {
+	return 30;
+}
+
 -(instancetype)initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
+	self.textStorage.delegate = self;
 	
-//	BeatTextStorage * textStorage = [[BeatTextStorage alloc] init];
-//	[textStorage addLayoutManager:self.layoutManager];
-//	self.layoutManager.textStorage = textStorage;
-//	textStorage.delegate = self;
-		
+	// Load custom layout manager and set a bit bigger line fragment padding
+	// to fit our revision markers in the margin
+	
+	BeatLayoutManager *layoutMgr = BeatLayoutManager.new;
+	layoutMgr.textView = self;
+	[self.textContainer replaceLayoutManager:layoutMgr];
+	self.textContainer.lineFragmentPadding = [BeatTextView linePadding];
+	
 	return self;
 }
 
@@ -276,7 +288,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 - (nullable NSTouchBarItem *)touchBar:(NSTouchBar *)touchBar makeItemForIdentifier:(NSTouchBarItemIdentifier)identifier
 {
-    if ([identifier isEqualToString:ColorPickerItemIdentifier]) {
+	if ([identifier isEqualToString:ColorPickerItemIdentifier]) {
 		// What?
 	}
 	return nil;
@@ -420,8 +432,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSClipView *clipView = self.enclosingScrollView.documentView;
 
 	// Find the rect for current range
-	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
-	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+	NSRect rect = [self rectForRange:self.selectedRange];
+	//NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
+	//NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
 
 	// Calculate correct scroll position
 	CGFloat scrollY = (rect.origin.y - self.editorDelegate.fontSize / 2 - 10) * self.editorDelegate.magnification;
@@ -498,10 +511,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 	// Get number of pages / page number for selection
 	if (wholeDocument) {
-		NSInteger pages = [self numberOfPages];
+		NSInteger pages = _editorDelegate.numberOfPages;
 		if (pages > 0) infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", pages];
 	} else {
-		NSInteger page = [self getPageNumber:self.selectedRange.location];
+		NSInteger page = [_editorDelegate getPageNumber:self.selectedRange.location];
 		if (page > 0) infoString = [infoString stringByAppendingFormat:@"\nPage: %lu", page];
 	}
 	
@@ -552,21 +565,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		self.autocompletePopover.appearance = [NSAppearance appearanceNamed: NSAppearanceNameVibrantLight];
 	}
 	 */
-}
-
-#pragma mark - Page numbering
-
-- (NSInteger)getPageNumber:(NSInteger)location {
-	if ([self.delegate respondsToSelector:@selector(getPageNumber:)]) {
-		return [(id)self.delegate getPageNumber:location];
-	}
-	return 0;
-}
-- (NSInteger)numberOfPages {
-	if ([self.delegate respondsToSelector:@selector(numberOfPages)]) {
-		return [(id)self.delegate numberOfPages];
-	}
-	return 0;
 }
 
 #pragma mark - Insert
@@ -936,111 +934,249 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
 }
 
+#pragma mark - Scene numbering
 
-#pragma mark - Change Markers
+/**
+ 
+ Scene numbers are NSTextFields. We have a NSMutableSet which contains all the labels for heading lines,
+ with an NSValue object key. That's why we need to iterate through all of the lines and to make sure we don't
+ leave any extra labels behind. Earlier, this was based on the number of scenes and calculated indices,
+ but this seems a *bit* faster. By a fraction of a millisecond.
+ 
+ */
 
-// Both of these methods kind of work, but need additional tweaking.
-
--(void)updateChangeMarkers {
-	/*
-	[self updateChangeMarkersFrom:0];
-	 */
+- (void)resetSceneNumberLabels {
+	[self deleteSceneNumberLabels];
+	
+	[self updateSceneLabelsFrom:0];
 }
--(void)updateChangeMarkersFrom:(NSInteger)idx {
-	/*
-	idx = 0;
-	self.wantsLayer = YES;
-	if (!_changeMarkers) _changeMarkers = NSMutableArray.array;
-	
-	NSInteger changeIdx = 0;
-	Line *line = [self.parser lineAtPosition:idx];
-	NSInteger lineIndex = [self.parser.lines indexOfObject:line];
-	
-	for (NSInteger i=lineIndex; i<self.editorDelegate.parser.lines.count; i++) {
-		Line *line = self.editorDelegate.parser.lines[i];
 
-		if (line.changed) {
-			CGRect rect = [self rectForLine:line];
-			NSRect changeMarkerRect = NSMakeRect(rect.origin.x - 20, rect.origin.y, 1,rect.size.height);
-			
-			CATextLayer *layer;
-			
-			@try {
-				layer = _changeMarkers[changeIdx];
-			} @catch (NSException *exception) {
-				layer = CATextLayer.layer;
-				[layer setAnchorPoint:(CGPoint){0,0}];
-				[self.layer addSublayer:layer];
-				[_changeMarkers addObject:layer];
-			}
-						
-			NSRect frame = layer.frame;
-			NSRect bounds = layer.bounds;
-			
-			frame.size.width = 22; bounds.size.width = 22;
-			frame.size.height = changeMarkerRect.size.height; bounds.size.height = changeMarkerRect.size.height;
-			frame.origin.x = changeMarkerRect.origin.x;
-			frame.origin.y = changeMarkerRect.origin.y;
-			
-			layer.wrapped = YES;
-			layer.string = @"**********************************************************************";
-			layer.foregroundColor = NSColor.blackColor.CGColor;
-			[layer setFont:@"Courier"];
-			layer.fontSize = 12.6;
-			
-			[layer setBounds:bounds];
-			[layer setFrame:frame];
-			
-			changeIdx++;
+- (void)updateSceneLabelsFrom:(NSInteger)changedIndex {
+	// Don't do anything if the scene number labeling is not on
+	if (!self.editorDelegate.showSceneNumberLabels) return;
+	
+	_updatingSceneNumberLabels = YES;
+	
+	ContinuousFountainParser *parser = self.editorDelegate.parser;
+	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
+	if (!self.sceneNumberLabels) self.sceneNumberLabels = NSMutableArray.array;
+	
+	bool layoutEnsured = NO;
+	bool noRepositionNeeded = NO;
+	
+	NSInteger index = -1;
+	for (OutlineScene *scene in parser.outline) {
+		if (scene.type == synopse || scene.type == section) continue;
+		
+		index++; // Add to total scene heading count
+		
+		// don't update scene labels if we are under the index
+		if (scene.line.position + scene.line.string.length < changedIndex) {
+			continue;
+		}
+		
+		// We'll have to ensure the layout from the changed character position to the next heading
+		// to correctly calculate the y position of the first scene. No idea why, but let's do
+		// this only once to save CPU time.
+		if (!layoutEnsured) {
+			[self.layoutManager ensureLayoutForCharacterRange:NSMakeRange(changedIndex, scene.position - changedIndex)];
+			layoutEnsured = YES;
+		}
+				
+		// Find label and add a new one if needed
+		NSTextField *label;
+		if (index >= self.sceneNumberLabels.count) {
+			label = [self createLabel:scene];
+			[_sceneNumberLabels addObject:label];
+		}
+		else label = self.sceneNumberLabels[index];
+		
+		// Set scene number to be displayed
+		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber];
+		
+		// Set label color to be the same as scene color
+		if (scene.color.length) {
+			NSString *colorName = scene.color.lowercaseString;
+			NSColor *color = [BeatColors color:colorName];
+			if (color) [label setTextColor:color];
+			else [label setTextColor:ThemeManager.sharedManager.currentTextColor];
+		} else {
+			[label setTextColor:textColor];
+		}
+		
+		// If we don't have to reposition anything any more, just continue the loop.
+		if (noRepositionNeeded) continue;
+		
+		// Calculate and set actual pixel position of the label
+		NSRect rect;
+		if (!self.editorDelegate.hideFountainMarkup && scene.line.numberOfPrecedingFormattingCharacters == 0) {
+			// This is a normal scene heading, just grab the visible text range
+			rect = [self rectForRange:scene.line.range];
+		} else if (scene.line.string.length > 1) {
+			// For forced scene headings, let's calculate rect using only the first visible character.
+			// This ensures that we're not trying to calculate rectangle for a invisible character (.)
+			// when hiding Fountain markup is on.
+			NSRange sceneRange = (NSRange){ scene.position + scene.line.contentRanges.firstIndex, 1  };
+			rect = [self rectForRange:sceneRange];
+		}
+		
+		CGPoint originalPosition = label.frame.origin;
+		
+		// Some hardcoded values, which seem to work (lol)
+		rect.size.width = 20 * scene.sceneNumber.length;
+		rect.origin.x = self.textContainerInset.width - rect.size.width;
+		rect.origin.y += self.textInsetY + 2;
+		label.frame = rect;
+		
+		// If we are past the edited heading, check if we didn't move the following label at all.
+		// We don't have to calculate further headings in this case.
+		if (rect.origin.x == originalPosition.x && rect.origin.y == originalPosition.y &&
+			!NSLocationInRange(changedIndex, scene.line.range)) {
+			noRepositionNeeded = YES;
+		}
+	}
+
+	// Remove excess labels
+	index++;
+	if (_sceneNumberLabels.count >= index) {
+		NSInteger labels = _sceneNumberLabels.count;
+		for (NSInteger i = index; i < labels; i++) {
+			NSTextField *label = _sceneNumberLabels[index];
+			[self.sceneNumberLabels removeObject:label];
+			[label removeFromSuperview];
 		}
 	}
 	
-	if (_changeMarkers.count >= changeIdx) {
-		NSInteger labels = _changeMarkers.count;
-		for (NSInteger i = changeIdx; i < labels; i++) {
-			CATextLayer *label = _changeMarkers.lastObject;
-			[_changeMarkers removeObject:label];
-			[label removeFromSuperlayer];
+	_updatingSceneNumberLabels = NO;
+}
+
+/*
+- (void)updateSceneTextLabelsFrom:(NSInteger)changedIndex {
+	return;
+	
+	// Don't do anything if the scene number labeling is not on
+	if (!self.editorDelegate.showSceneNumberLabels) return;
+	_updatingSceneNumberLabels = YES;
+
+	// Init label dictionary
+	if (!self.sceneNumberLabels) self.sceneNumberLabels = NSMutableDictionary.new;
+	// Text color for labels
+	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
+	
+	NSMutableIndexSet *headingIndices = NSMutableIndexSet.indexSet;
+	NSInteger sceneNumber = [self.editorDelegate.parser.delegate.documentSettings getInt:DocSettingSceneNumberStart];
+	
+	Line *originalLine = self.editorDelegate.parser.lines[changedIndex];
+	
+	// Ensure layout for this line. This is a required step, unfortunately. Slows things down a lot.
+	[self.layoutManager ensureLayoutForCharacterRange:originalLine.range];
+	
+	bool noRepositionNeeded = NO;
+	
+	for (NSInteger i = 0; i<self.editorDelegate.parser.lines.count; i++) {
+		Line *l = self.editorDelegate.parser.lines[i];
+		if (l.type != heading) continue;
+		
+		[headingIndices addIndex:i];
+		if (i < changedIndex) continue;
+		else if (noRepositionNeeded) {
+			continue;
+		}
+		
+
+		// Add to scene number
+		if (!l.omitted) sceneNumber++;
+		
+		NSValue *key = [NSNumber numberWithInteger:i];
+		NSTextField *label;
+		if (_sceneNumberLabels[key]) {
+			label = _sceneNumberLabels[key];
+		} else {
+			label = [self createLabel:l];
+			[_sceneNumberLabels setObject:label forKey:key];
+		}
+		
+		if (l.sceneNumber) [label setStringValue:l.sceneNumber];
+		else [label setStringValue:[NSString stringWithFormat:@"%lu", sceneNumber]];
+		
+		if (l.color.length) {
+			NSString *colorName = l.color.lowercaseString;
+			NSColor *color = [BeatColors color:colorName];
+			if (color) [label setTextColor:color];
+			else [label setTextColor:ThemeManager.sharedManager.currentTextColor];
+		} else {
+			[label setTextColor:textColor];
+		}
+		
+		// Set pixel position of the label
+		NSRect rect;
+		CGPoint originalPosition = CGPointMake(label.frame.origin.x, label.frame.origin.y); // Save original position
+		CGFloat width = 20 * label.stringValue.length;
+				
+		if (!self.editorDelegate.hideFountainMarkup && l.numberOfPrecedingFormattingCharacters == 0) {
+			// Hiding markup is not on, just grab the text range
+			rect = [self rectForRange:l.range];
+		} else {
+			// Hiding is on, so let's calculate rect using only the first visible character.
+			// We only need the Y position, so this *should* be completely viable.
+			NSRange sceneRange = (NSRange){ l.position + l.contentRanges.firstIndex, 1  };
+			rect = [self rectForRange:sceneRange];
+		}
+		
+		// Some hardcoded values, which seem to work (lol)
+		rect.size.width = width;
+		rect.origin.x = self.textContainerInset.width - 10 - rect.size.width;
+		rect.origin.y += self.textInsetY + 2;
+		label.frame = rect;
+		
+		if (originalPosition.x == rect.origin.x && originalPosition.y == rect.origin.y && i > changedIndex) {
+			// We didn't actually reposition the label,
+			// so let's dont do it for other labels, either.
+			//noRepositionNeeded = YES;
 		}
 	}
-	 */
 	
-}
-
-
-#pragma mark - Rect for line
-
--(CGRect)rectForLine:(Line*)line {
-	NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
-	NSTextContainer *container = self.textContainer;
-
-	CGRect charRect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:container];
+	for (NSNumber *key in _sceneNumberLabels.allKeys.copy) {
+		NSInteger i = key.integerValue;
+		if (![headingIndices containsIndex:i]) {
+			NSTextField *label = _sceneNumberLabels[key];
+			[_sceneNumberLabels removeObjectForKey:key];
+			[label removeFromSuperview];
+		}
+	}
+ }
+ */
 	
-	CGRect rect = CGRectMake(charRect.origin.x + self.textContainerInset.width,
-							 fabs(charRect.origin.y + self.textContainerInset.height),
-							 charRect.size.width,
-							 charRect.size.height
-							 );
+
+
+- (NSTextField *)createLabel:(id)item {
+	Line *line;
+	if ([item isKindOfClass:Line.class]) line = item;
+	else line = [(OutlineScene*)item line];
 	
-	return rect;
+	NSTextField * label;
+	label = NSTextField.new;
+	
+	label.stringValue = @"";
+	[label setBezeled:NO];
+	[label setSelectable:NO];
+	[label setDrawsBackground:NO];
+	[label setFont:self.editorDelegate.courier];
+	[label setAlignment:NSTextAlignmentRight];
+	[self addSubview:label];
+	
+	return label;
+}
+
+- (void)deleteSceneNumberLabels {
+	for (NSTextField *label in _sceneNumberLabels) {
+		[label removeFromSuperview];
+	}
+	[_sceneNumberLabels removeAllObjects];
 }
 
 
-
-#pragma mark - Draw custom caret
-
-- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag {
-	aRect.size.width = CARET_WIDTH;
-	[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
-}
-
-- (void)setNeedsDisplayInRect:(NSRect)invalidRect {
-	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
-	[super setNeedsDisplayInRect:invalidRect];
-}
-
-
-#pragma mark - Scene & page numbering
+#pragma mark - Page numbering
 
 - (void)resetPageNumberLabels {
 	for (NSInteger i = 0; i < _pageNumberLabels.count; i++) {
@@ -1070,7 +1206,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	NSInteger pageNumber = 1;
 
-	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 35;
+	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 20;
 	// Compact page numbers if needed
 	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
 		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;
@@ -1113,203 +1249,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 }
 
-- (void)resetSceneNumberLabels {
-	for (NSInteger i = 0; i < _sceneNumberLabels.count; i++) {
-		NSTextField *label = _sceneNumberLabels[i];
-		[label removeFromSuperview];
-	}
-	[_sceneNumberLabels removeAllObjects];
-	
-	[self updateSceneLabelsFrom:0];
-}
-
-- (void)updateSceneLabelsFrom:(NSInteger)changedIndex {
-	[self updateSceneTextLabelsFrom:changedIndex];
-}
-
-- (void)updateSceneTextLabelsFrom:(NSInteger)changedIndex {
-	// Don't do anything if the scene number labeling is not on
-	if (!self.editorDelegate.showSceneNumberLabels) return;
-
-	_updatingSceneNumberLabels = YES;
-	
-	ContinuousFountainParser *parser = self.editorDelegate.parser;
-	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
-	
-	if (!self.sceneNumberLabels) self.sceneNumberLabels = [NSMutableArray array];
-
-	// We need to do this, unfortunately
-	[self.layoutManager ensureLayoutForCharacterRange:_editorDelegate.currentLine.textRange];
-	
-	NSInteger index = 0;
-	for (OutlineScene *scene in parser.outline) {
-		if (scene.type == synopse || scene.type == section) continue;
-		
-		// don't update scene labels if we are under the index
-		if (scene.line.position + scene.line.string.length < changedIndex) {
-			index++;
-			continue;
-		}
-		
-		NSTextField *label;
-		
-		// Add new label if needed
-		if (index >= self.sceneNumberLabels.count) label = [self createLabel:scene];
-		else label = self.sceneNumberLabels[index];
-		
-		// Set scene number to be displayed
-		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber];
-				
-		// Actual pixel position of the label
-		NSRect rect;
-		if (!self.editorDelegate.hideFountainMarkup && scene.line.numberOfPrecedingFormattingCharacters == 0) {
-			// Hiding markup is not on, just grab the text range
-			rect = [self rectForRange:scene.line.textRange];
-		} else {
-			// Hiding might be on, so let's calculate rect using only the first visible character
-			NSRange sceneRange = (NSRange){ scene.position + scene.line.contentRanges.firstIndex, 1  };
-			rect = [self rectForRange:sceneRange];
-		}
-		
-		// Some hardcoded values, which seem to work
-		rect.size.width = 20 * scene.sceneNumber.length;
-		rect.origin.x = self.textContainerInset.width - 40 - rect.size.width + 10;
-		rect.origin.y += self.textInsetY + 2;
-		label.frame = rect;
-				
-		// Set label color to be the same as scene color
-		if (scene.color.length) {
-			NSString *colorName = scene.color.lowercaseString;
-			NSColor *color = [BeatColors color:colorName];
-			if (color) [label setTextColor:color];
-			else [label setTextColor:ThemeManager.sharedManager.currentTextColor];
-		} else {
-			[label setTextColor:textColor];
-		}
-
-		index++;
-	}
-
-	// Remove excess labels
-	if (_sceneNumberLabels.count >= index) {
-		NSInteger labels = _sceneNumberLabels.count;
-		for (NSInteger i = index; i < labels; i++) {
-			NSTextField *label = _sceneNumberLabels[index];
-			[self.sceneNumberLabels removeObject:label];
-			[label removeFromSuperview];
-		}
-	}
-	
-	_updatingSceneNumberLabels = NO;
-}
-
-
-/*
-- (void)updateSceneNumberLabelsWithLayer {
-	// Alternative scene numbering system.
-	// Gives some performance advantage, but also takes a bigger hit sometimes.
-
-	self.wantsLayer = YES;
-	if (!self.editorDelegate.parser.outline.count) [self.editorDelegate.parser createOutline];
-	
-	// This is pretty fast, but I'm not sure. Still kind of hard to figure out.
-	if (!_sceneNumberLabels.count || !_sceneNumberLabels) _sceneNumberLabels = [NSMutableArray array];
-	
-	NSInteger difference = _sceneNumberLabels.count - self.editorDelegate.parser.scenes.count;
-
-	// There are extra scene number labels, remove them from superlayer
-	if (difference > 0) {
-		for (NSInteger i = 0; i <= difference; i++) {
-			[_sceneNumberLabels.lastObject removeFromSuperlayer];
-			[_sceneNumberLabels removeLastObject];
-		}
-	}
-	
-	// Begin moving layers
-	[CATransaction begin];
-	[CATransaction setValue: (id) kCFBooleanTrue forKey: kCATransactionDisableActions];
-	
-	NSInteger index = 0;
-	for (OutlineScene* scene in self.editorDelegate.parser.scenes) {
-		NSString *number = scene.sceneNumber;
-		
-		NSRange characterRange = NSMakeRange(scene.line.position, scene.line.string.length);
-		NSRange range = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
-		
-		// Create frame
-		rect.size.width = 90;
-		rect.origin.y += self.textContainerInset.height;
-		CGFloat factor = 1 / self.enclosingScrollView.magnification;
-		rect.origin.x += (self.textContainerInset.width - 140) * factor;
-		
-		
-		// Color
-		NSColor *color;
-		if (scene.color) [BeatColors color:scene.color];
-		else color = ThemeManager.sharedManager.textColor;
-			
-		// Retrieve or create layer
-		CATextLayer *label;
-		if (_sceneNumberLabels.count > index) {
-			label = [_sceneNumberLabels objectAtIndex:index];
-			[label setString:number];
-			[label setFrame:rect];
-			[label setForegroundColor:color.CGColor];
-		} else {
-			label = [CATextLayer layer];
-			[label setShouldRasterize:YES];
-			[label setFont:@"Courier Prime"];
-			[label setRasterizationScale:4.0];
-			[label setFontSize:17.2];
-			[label setAlignmentMode:kCAAlignmentRight];
-			
-			[self.layer addSublayer:label];
-			[_sceneNumberLabels addObject:label];
-		}
-
-		[label setContentsScale:1 / self.enclosingScrollView.magnification];
-		[label setFrame:rect];
-		[label setString:number];
-		[label setForegroundColor:color.CGColor];
-			
-		index++;
-	}
-	[CATransaction commit];
-	[self updateLayer];
-}
-*/
-
-
-- (NSTextField *)createLabel:(OutlineScene *)scene {
-	NSTextField * label;
-	label = [[NSTextField alloc] init];
-	
-	if (scene != nil) {
-		NSRange characterRange = NSMakeRange(scene.line.position, scene.line.string.length);
-		NSRange range = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-		
-		if (scene.sceneNumber) [label setStringValue:scene.sceneNumber]; else [label setStringValue:@""];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
-		rect.origin.y += _textInsetY;
-		rect.size.width = 20 * scene.sceneNumber.length;
-		rect.origin.x = self.textContainerInset.width - 80 - rect.size.width;
-	}
-	
-	[label setBezeled:NO];
-	[label setSelectable:NO];
-	[label setDrawsBackground:NO];
-	[label setFont:self.editorDelegate.courier];
-	[label setAlignment:NSTextAlignmentRight];
-	[self addSubview:label];
-	
-	[self.sceneNumberLabels addObject:label];
-	return label;
-}
-
 - (NSTextField *)createPageLabel: (NSString*) numberStr {
 	NSTextField * label;
-	label = [[NSTextField alloc] init];
+	label = NSTextField.new;
 	
 	[label setStringValue:numberStr];
 	[label setBezeled:NO];
@@ -1324,18 +1266,50 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 
-- (void)createAllLabels {
-	ContinuousFountainParser *parser = self.editorDelegate.parser;
+#pragma mark - Rect for line
+
+CGRect cachedRect;
+Line *cachedRectLine;
+-(CGRect)rectForLine:(Line*)line {
+	if (cachedRectLine.position == line.position && cachedRectLine.length == line.length) return cachedRect;
 	
-	for (OutlineScene * scene in parser.outline) {
-		[self createLabel:scene];
-	}
+	CGRect charRect = [self rectForRange:line.textRange];
+	CGRect rect = CGRectMake(charRect.origin.x + self.textContainerInset.width,
+							 fabs(charRect.origin.y + self.textContainerInset.height),
+							 charRect.size.width,
+							 charRect.size.height
+							 );
+	
+	cachedRectLine = line.copy;
+	cachedRect = rect;
+	
+	return rect;
 }
-- (void) deleteSceneNumberLabels {
-	for (NSTextField * label in _sceneNumberLabels) {
-		[label removeFromSuperview];
-	}
-	[_sceneNumberLabels removeAllObjects];
+
+
+
+#pragma mark - Draw custom caret
+
+- (void)drawInsertionPointInRect:(NSRect)aRect color:(NSColor *)aColor turnedOn:(BOOL)flag {
+	aRect.size.width = CARET_WIDTH;
+	[super drawInsertionPointInRect:aRect color:aColor turnedOn:flag];
+}
+
+- (void)setNeedsDisplayInRect:(NSRect)invalidRect {
+	invalidRect = NSMakeRect(invalidRect.origin.x, invalidRect.origin.y, invalidRect.size.width + CARET_WIDTH - 1, invalidRect.size.height);
+	[super setNeedsDisplayInRect:invalidRect];
+}
+
+#pragma mark - Update layout elements
+
+- (void)refreshLayoutElements {
+	[self refreshLayoutElementsFrom:0];
+}
+- (void)refreshLayoutElementsFrom:(NSInteger)location {
+	//)NSInteger index = [self.editorDelegate.parser lineIndexAtPosition:location];
+	
+	//if (_editorDelegate.showPageNumbers) [self updatePageNumbers];
+	if (_editorDelegate.showSceneNumberLabels && !_editorDelegate.sceneNumberLabelUpdateOff) [self updateSceneLabelsFrom:location];
 }
 
 
@@ -1378,6 +1352,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (CGFloat)setInsets {
 	/*
 	// Some ideas for using a layer to achieve the "page look"
+	// Requires moving away from content insets, which could be nice.
 	 
 	CGFloat factor = 1.0;
 	if (_editorDelegate.magnification > 0) factor = 1 / _editorDelegate.magnification;
@@ -1404,6 +1379,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self resetCursorRects];
 	[self addCursorRect:(NSRect){0,0, 200, 2500} cursor:NSCursor.crosshairCursor];
 	[self addCursorRect:(NSRect){self.frame.size.width * .5,0, self.frame.size.width * .5, self.frame.size.height} cursor:NSCursor.crosshairCursor];
+	
 	return width;
 }
 
@@ -1501,11 +1477,22 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			NSInteger pos = self.selectedRange.location;
 			[self.editorDelegate replaceRange:self.selectedRange withString:str.string];
 			
-			// Enumerate custom attributes
+			// Enumerate custom attributes from copied text and render backgrounds as needed
+			NSMutableSet *linesToRender = NSMutableSet.new;
 			[str enumerateAttributesInRange:(NSRange){0, str.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 				if (attrs[@"Revision"]) [self.textStorage addAttribute:@"Revision" value:attrs[@"Revision"] range:(NSRange){ pos + range.location, range.length }];
 				if (attrs[@"BeatTag"]) [self.textStorage addAttribute:@"BeatTag" value:attrs[@"BeatTag"] range:(NSRange){ pos + range.location, range.length }];
+				
+				if (attrs[@"BeatTag"] || attrs[@"Revision"]) {
+					Line *l = [self.parser lineAtPosition:pos + range.location];
+					[linesToRender addObject:l];
+				}
 			}];
+			
+			// Render background for pasted text where needed
+			for (Line* l in linesToRender) {
+				[self.editorDelegate renderBackgroundForLine:l clearFirst:YES];
+			}
 			
 		}
 	}
@@ -1540,10 +1527,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
-	Line *line = [self.editorDelegate lineAt:charIndexes[0]];
-	
+	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
+	if (!line) return 0;
+		
 	// If we are updating scene number labels AND we didn't just enter a scene heading, skip this
-	if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine && !NSLocationInRange(self.editorDelegate.currentLine.position - 4, line.range)) return 0;
+	//if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine && !NSLocationInRange(self.editorDelegate.currentLine.position - 4, line.range)) return 0;
 	
 	LineType type = line.type;
 		
@@ -1638,8 +1626,62 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 
 #pragma mark - Text Storage delegation
 
-- (void)didPerformEdit:(NSRange)range {
-	[self.editorDelegate didPerformEdit:range];
+-(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
+	[_editorDelegate textStorage:textStorage didProcessEditing:editedMask range:editedRange changeInLength:delta];
+}
+
+- (void)layoutManagerDidInvalidateLayout:(NSLayoutManager *)sender {
+	//if (_editorDelegate.documentIsLoading) return;
+	//[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
+	/*
+	if (_editorDelegate.documentIsLoading) return;
+	
+	NSInteger numberOfLines = [self numberOfLines];
+	
+	if (self.linesBeforeLayout != numberOfLines || self.editorDelegate.lastChangedRange.length > 2 ||
+		self.editorDelegate.currentLine.type == heading) {
+		[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
+	}
+	else if (_editorDelegate.revisionMode) {
+		// If the user is revising stuff, let's enforce refreshing the elements.
+		[self refreshLayoutElementsFrom:self.editorDelegate.lastChangedRange.location];
+	}
+	
+	self.linesBeforeLayout = numberOfLines;
+	 */
+}
+
+- (NSInteger)numberOfLines {
+	// This causes jitter. Unusable.
+	
+	NSLayoutManager *layoutManager = self.layoutManager;
+	NSString *string = self.string;
+	NSUInteger numberOfLines, index, stringLength = string.length;
+		
+	for (index = 0, numberOfLines = 0; index < stringLength; numberOfLines++) {
+		NSRange tmpRange;
+		
+		[layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&tmpRange withoutAdditionalLayout:YES];
+		index = NSMaxRange(tmpRange);
+	}
+	
+	return numberOfLines;
+}
+
+- (NSRange)lineFragmentRangeAtLocation:(NSUInteger)location {
+	NSRange tmpRange;
+	[self.layoutManager lineFragmentRectForGlyphAtIndex:location
+										 effectiveRange:&tmpRange];
+	return tmpRange;
+}
+- (NSMutableSet*)lineFragmentRangesFrom:(NSUInteger)location {
+	NSMutableSet *lineFragments = NSMutableSet.new;
+	for (NSInteger index = location; index < self.string.length;) {
+		NSRange fragmentRange = [self lineFragmentRangeAtLocation:index];
+		[lineFragments addObject:[NSNumber valueWithRange:fragmentRange]];
+		index = NSMaxRange(fragmentRange);
+	}
+	return lineFragments;
 }
 
 /*

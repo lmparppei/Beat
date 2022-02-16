@@ -9,6 +9,7 @@
 
 "general.yes" = "Yes";
 "general.no" = "No";
+"general.cancel" = "Cancel";
 "general.undo" = "Undo";
 "general.redo" = "Redo";
 "app.manual" = "Manual";
@@ -85,3 +86,11 @@
 "color.cyan" = "Cyan";
 "color.orange" = "Orange";
 "color.magenta" = "Magenta";
+
+"revisionMode.reviseLine" = "Mark Current Line as Revised";
+"revisionMode.reviseSelection" = "Mark Current Selection as Revised";
+"revisionMode.clearSelection" = "Clear Revision Markers in Selection";
+"revisionMode.clearLine" = "Clear Revision Markers in Line";
+
+"revisions.commitPrompt.title" = "Commit all revisions";
+"revisions.commitPrompt.text" = "This will clear all revision markers and remove all ranges marked for removal. Are you sure you want to continue?";
