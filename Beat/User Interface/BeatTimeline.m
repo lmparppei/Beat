@@ -70,7 +70,14 @@
 
 @implementation BeatTimeline
 
+- (void)setup {
+	//self.enclosingScrollView.hasHorizontalScroller = NO;
+	//[self hide];
+}
+
 - (void)awakeFromNib {
+	self.enclosingScrollView.hasHorizontalScroller = NO;
+	
 	// No item selected
 	_clickedItem = nil;
 	
@@ -125,7 +132,7 @@
 	
 	[self updateStorylineLabels];
 	
-	// Create storyline
+	[self hide];
 }
 
 - (void)refreshWithDelay {
@@ -155,8 +162,7 @@
 		_totalLength = 0;
 		_hasSections = NO;
 		NSInteger scenes = 0;
-				
-		_currentScene = self.delegate.currentScene;
+		
 		NSInteger storylineBlocks = 0;
 		
 		// Calculate total length
@@ -169,6 +175,7 @@
 			if (scene.type == section) {
 				// Having sections transforms the view, so save the depth, too
 				_hasSections = YES;
+				NSLog(@"...has sections");
 				if (scene.sectionDepth > _sectionDepth) _sectionDepth = scene.sectionDepth;
 			}
 			if (scene.storylines.count) {
@@ -185,7 +192,7 @@
 		// We need more items
 		if (diff > 0) {
 			for (int i = 0; i < diff; i++) {
-				BeatTimelineItem *item = [[BeatTimelineItem alloc] initWithDelegate:self];
+				BeatTimelineItem *item = [BeatTimelineItem.alloc initWithDelegate:self];
 				[_scenes addObject:item];
 				[self addSubview:item];
 			}
@@ -492,7 +499,7 @@
 - (BOOL)isFlipped { return YES; }
 
 - (void)reload {
-	_outline = [_delegate getOutlineItems];
+	_outline = _delegate.getOutlineItems;
 	
 	[self updateScenesAndRebuild:YES];
 	[self updateStorylines];
@@ -601,10 +608,15 @@
 	[self reload];
 	self.enclosingScrollView.hasHorizontalScroller = YES;
 	[self setNeedsLayout:YES];
+	
+	self.visible = YES;
 }
 - (void)hide {
 	self.enclosingScrollView.hasHorizontalScroller = NO;
+	_localHeightConstraint.constant = 0;
 	_heightConstraint.constant = 0;
+	
+	self.visible = NO;
 }
 
 - (void)desiredHeight {

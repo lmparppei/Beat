@@ -363,9 +363,13 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				
 			} else {
 				// Call delegate to handle normal tab press
-				if ([self.delegate respondsToSelector:@selector(handleTabPress)]) {
-					[(id)self.delegate handleTabPress];
+				NSUInteger flags = theEvent.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
+
+				if (flags == 0) {
+					[self.editorDelegate handleTabPress];
 					return; // skip default
+				} else {
+					return;
 				}
 			}
 			break;
@@ -412,9 +416,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 }
-
-// Phantom methods
-- (void)handleTabPress { }
 
 - (void)clickPopupItem:(id)sender {
 	if (_popupMode == Autocomplete)	[self insert:sender];
@@ -1394,22 +1395,41 @@ Line *cachedRectLine;
 #pragma mark - Context Menu
 
 -(NSMenu *)menu {
+	/*
 	NSMenu *defaultMenu = [super menu];
+	NSMenu *menu = defaultMenu.copy;
+	
+	for (NSMenuItem *item in menu.itemArray) {
+		NSLog(@"%@ - selector=%s", item.title, sel_getName(item.action));
+		
+		for (NSMenuItem *subItem in item.submenu.itemArray) {
+			NSLog(@"       %@ - selector=%s", subItem.title, sel_getName(subItem.action));
+			if (subItem.action == @selector(changeLayoutOrientation:) ||
+				subItem.action == NULL) {
+				[menu removeItem:item];
+				break;
+			}
+		}
+	}
 	
 	// Add items from context menu prototype to the default menu
 	// (This is run only once)
 	if (_contextMenu.itemArray.count) {
-		[defaultMenu addItem:[NSMenuItem separatorItem]];
+		[menu addItem:[NSMenuItem separatorItem]];
 		
-		for (id item in _contextMenu.itemArray) {
-			[_contextMenu removeItem:item];
-			[defaultMenu addItem:item];
+		for (NSMenuItem *item in _contextMenu.itemArray) {
+			NSMenuItem *newItem = item.copy;
+			
+			[menu addItem:newItem];
 		}
 		
-		[defaultMenu addItem:NSMenuItem.separatorItem];
+		[menu addItem:NSMenuItem.separatorItem];
 	}
 	
-	return defaultMenu;
+	return menu;
+	*/
+	
+	return self.contextMenu.copy;
 }
 
 #pragma mark - Scrolling interface

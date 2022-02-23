@@ -5,11 +5,18 @@
 //  Created by Lauri-Matti Parppei on 8.4.2021.
 //
 
-#import <Cocoa/Cocoa.h>
 #import <TargetConditionals.h>
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
+    #define BeatFont UIFont
+    #define BeatChangeType UIDocumentChangeKind
+    #define BeatDocTextView UITextView
+#else
+    #import <Cocoa/Cocoa.h>
+    #define BeatFont NSFont
+    #define BeatChangeType NSDocumentChangeType
+    #define BeatDocTextView NSTextView
 #endif
 
 @class ContinuousFountainParser;
@@ -33,14 +40,14 @@
 @property (nonatomic) NSString *revisionColor;
 @property (nonatomic) bool revisionMode;
 @property (atomic) BeatDocumentSettings *documentSettings;
-@property (nonatomic, weak, readonly) NSTextView *textView;
+@property (nonatomic, weak, readonly) BeatDocTextView *textView;
 
 @property (nonatomic, readonly) NSUndoManager *undoManager;
 
-@property (readonly, nonatomic) NSFont *courier;
-@property (readonly, nonatomic) NSFont *boldCourier;
-@property (readonly, nonatomic) NSFont *boldItalicCourier;
-@property (readonly, nonatomic) NSFont *italicCourier;
+@property (readonly, nonatomic) BeatFont *courier;
+@property (readonly, nonatomic) BeatFont *boldCourier;
+@property (readonly, nonatomic) BeatFont *boldItalicCourier;
+@property (readonly, nonatomic) BeatFont *italicCourier;
 
 @property (nonatomic, readonly) bool disableFormatting;
 
@@ -53,9 +60,9 @@
 @property (nonatomic, readonly) bool showRevisions;
 @property (nonatomic, readonly) bool showTags;
 
-@property (strong, nonatomic, readonly) NSFont *sectionFont;
+@property (strong, nonatomic, readonly) BeatFont *sectionFont;
 @property (strong, nonatomic, readonly) NSMutableDictionary *sectionFonts;
-@property (strong, nonatomic, readonly) NSFont *synopsisFont;
+@property (strong, nonatomic, readonly) BeatFont *synopsisFont;
 
 
 - (NSMutableArray*)scenes;
@@ -91,7 +98,7 @@
 - (void)scrollToRange:(NSRange)range;
 
 // Document compatibility
--(void)updateChangeCount:(NSDocumentChangeType)change;
+-(void)updateChangeCount:(BeatChangeType)change;
 -(void)updatePreview;
 -(void)forceFormatChangesInRange:(NSRange)range;
 - (void)refreshTextViewLayoutElements;
@@ -99,7 +106,7 @@
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (void)renderBackgroundForLines;
 - (void)renderBackgroundForRange:(NSRange)range;
-- (NSFont*)sectionFontWithSize:(CGFloat)size;
+- (BeatFont*)sectionFontWithSize:(CGFloat)size;
 
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 

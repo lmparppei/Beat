@@ -860,7 +860,7 @@
 		NSRange range = [(NSValue*)tag[@"range"] rangeValue];
 		[string addAttribute:@"BeatTag" value:tagValue range:range];
 	}
-		
+	
 	return string;
 }
 
@@ -868,16 +868,36 @@
 	// We are going out of range. Abort.
 	if (range.location + range.length > string.length || range.length < 1 || range.location == NSNotFound) return;
 	
-	NSDictionary *styles = [string attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
-
-	NSString *style;
-	if (styles[@"Style"]) style = [NSString stringWithFormat:@"%@,%@", styles[@"Style"], name];
-	else style = name;
-	
-	[string addAttribute:@"Style" value:style range:range];
+	// Make a copy and enumerate attributes.
+	// Add style to the corresponding range while retaining the existing attributes, if applicable.
+	[string.copy enumerateAttributesInRange:range options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+		NSString *style = @"";
+		if (attrs[@"Style"]) style = [NSString stringWithFormat:@"%@,%@", attrs[@"Style"], name];
+		else style = name;
+		
+		[string addAttribute:@"Style" value:style range:range];
+	}];
 }
 
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
+	/**
+	 
+	 This method  splits a line at a given PRINTING index, meaning that the index was calculated from
+	 the actually printing string, with all formatting removed. That's why we'll first create an attributed string,
+	 and then format it back to Fountain.
+	 
+	 The whole practice is silly, because we could actually just put attributed strings into the paginated
+	 result — with revisions et al. I don't know why I'm just thinking about this now. Well, Beat is not
+	 the result of clever thinking and design, but trial and error. Fuck you, past me, for leaving all
+	 this to me.
+	 
+	 We could actually send attributed strings to the PAGINATOR and make it easier to calculate the ----
+	 it's 22.47 in the evening, I have to work tomorrow and I'm sitting alone in my kitchen. It's not
+	 a problem for present me.
+	 
+	 See you in the future.
+	 
+	 */
 	
 	NSAttributedString *string = [self attributedStringForFDX];
 	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
@@ -885,15 +905,17 @@
 	[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > 0) [attrStr appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
-		
+	
+	NSAttributedString *first  = [NSMutableAttributedString.alloc initWithString:@""];
 	NSAttributedString *second = [NSMutableAttributedString.alloc initWithString:@""];
 	
 	// Safeguard index (this could happen to numerous reasons, extra spaces etc.)
 	if (index > attrStr.length) index = attrStr.length;
-		
-	NSAttributedString *first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
+	
+	// Put strings into the split strings
+	first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
-		
+	
 	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
 	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
 		
@@ -903,6 +925,34 @@
 	}
 	retain.position = self.position;
 	split.position = self.position + retain.string.length;
+	
+	// Now we'll have to go through some extra trouble to keep the revised ranges intact.
+	if (self.revisedRanges.count) {
+		NSRange firstRange = NSMakeRange(0, index);
+		NSRange secondRange = NSMakeRange(index, split.string.length);
+		split.revisedRanges = NSMutableDictionary.new;
+		retain.revisedRanges = NSMutableDictionary.new;
+		
+		for (NSString *key in self.revisedRanges.allKeys) {
+			retain.revisedRanges[key] = NSMutableIndexSet.indexSet;
+			split.revisedRanges[key] = NSMutableIndexSet.indexSet;
+			
+			// Iterate through revised ranges, calculate intersections and add to their respective line items
+			[self.revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+				NSRange firstIntersct = NSIntersectionRange(range, firstRange);
+				NSRange secondIntersct = NSIntersectionRange(range, secondRange);
+				
+				if (firstIntersct.length > 0) {
+					[retain.revisedRanges[key] addIndexesInRange:firstIntersct];
+				}
+				if (secondIntersct.length > 0) {
+					// Substract offset from the split range to get it back to zero
+					NSRange actualRange = NSMakeRange(secondIntersct.location - index, secondIntersct.length);
+					[split.revisedRanges[key] addIndexesInRange:actualRange];
+				}
+			}];
+		}
+	}
 	
 	return @[ retain, split ];
 }

@@ -23,27 +23,31 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didSelectTimelineItem:(NSInteger)index;
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
-- (void) setColor:(NSString *) color forScene:(OutlineScene *) scene;
+- (void)setColor:(NSString *) color forScene:(OutlineScene *) scene;
 - (bool)caretAtEnd;
+- (void)registerEditorView:(id)view;
+
 @end
 
 @interface BeatTimeline : NSView <BeatTimelineItemDelegate, NSTextFieldDelegate>
+
+@property (nonatomic) bool visible;
 
 @property (nonatomic, weak) IBOutlet NSMenu *sceneMenu;
 
 @property (nonatomic) NSMutableArray<BeatTimelineItem*> *selectedItems;
 
 @property (nonatomic) NSArray* outline;
-@property (weak) id<BeatTimelineDelegate> delegate;
+@property (weak) IBOutlet id<BeatTimelineDelegate> delegate;
 @property (nonatomic) NSColor *backgroundColor;
-@property (nonatomic) OutlineScene *currentScene;
-@property NSLayoutConstraint *heightConstraint;
+@property (weak) IBOutlet NSLayoutConstraint *heightConstraint;
 
 // Storylines
 @property (nonatomic) NSMutableArray *storylines;
 @property (nonatomic) NSMutableArray *visibleStorylines;
 @property (nonatomic) OutlineScene * _Nullable clickedItem;
 
+- (void)setup;
 - (void)show;
 - (void)hide;
 - (void)reload;

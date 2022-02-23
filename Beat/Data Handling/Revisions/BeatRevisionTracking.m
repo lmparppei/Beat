@@ -332,6 +332,13 @@
 }
 
 - (void)nextRevision {
+    NSString *string;
+#if TARGET_OS_IOS
+    string = _delegate.textView.text;
+#else
+    string = _delegate.textView.string;
+#endif
+    
 	NSRange selectedRange = _delegate.selectedRange;
 	
 	// Find out if we are inside or at the beginning of a revision right now
@@ -343,7 +350,7 @@
 	
 	__block NSRange revisionRange = NSMakeRange(NSNotFound, 0);
 	[_delegate.textView.textStorage enumerateAttribute:@"Revision"
-											   inRange:NSMakeRange(searchLocation, _delegate.textView.string.length - searchLocation)
+											   inRange:NSMakeRange(searchLocation, string.length - searchLocation)
 											   options:0
 											usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem *revision = value;
@@ -390,6 +397,11 @@
 }
 
 #pragma mark - Actions
+
+#if TARGET_OS_IOS
+
+
+#else
 
 - (void)markerAction:(RevisionType)type {
 	[self markerAction:type range:_delegate.selectedRange];
@@ -478,9 +490,9 @@
 		
 		if (revision.type == RevisionRemovalSuggestion && range.length > 0) {
 			[self markerAction:RevisionNone range:range];
-			[_delegate replaceRange:range withString:@""];
+			[self.delegate replaceRange:range withString:@""];
 			
-			[_delegate renderBackgroundForLines];
+			[self.delegate renderBackgroundForLines];
 		}
 	}];
 	
@@ -489,6 +501,8 @@
 	for (Line* line in _delegate.lines) [_delegate renderBackgroundForLine:line clearFirst:YES];
 
 }
+
+#endif
 
 @end
 /*

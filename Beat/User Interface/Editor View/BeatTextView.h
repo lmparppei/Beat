@@ -74,6 +74,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 - (void)showLockStatus;
 - (LineType)lineTypeAt:(NSInteger)index;
 - (Line*)lineAt:(NSInteger)index;
+- (void)handleTabPress;
 
 - (NSInteger)getPageNumber:(NSInteger)location;
 - (NSInteger)numberOfPages;
@@ -118,7 +119,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 @property CGFloat zoomLevel;
 @property NSInteger autocompleteIndex;
 
-@property (weak) IBOutlet NSMenu *contextMenu;
+@property (nonatomic) IBOutlet NSMenu *contextMenu;
 //@property (nonatomic, readonly, weak) ContinuousFountainParser *parser;
 
 

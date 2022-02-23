@@ -7,7 +7,7 @@
 //
 /*
  
- Minimal tagging implementation. This relies on adding attributes into the NSTextView string,
+ Minimal tagging implementation. This relies on adding attributes into the BeatEditorView string,
  and tagging data is NOT present in the screenplay text. It is saved as a separate JSON string
  inside the document settings.
  
@@ -36,7 +36,6 @@
  
  */
 
-#import <Cocoa/Cocoa.h>
 #import "BeatTagging.h"
 #import "RegExCategories.h"
 #import "BeatTagItem.h"
@@ -70,6 +69,15 @@
 	return self;
 }
 
+-(void)awakeFromNib {
+#if TARGET_OS_IOS
+	self.textView.textContainerInset = UIEdgeInsetsMake(8, 8, 8, 8);
+#else
+	self.textView.textContainerInset = (NSSize){ 8, 8 };
+#endif
+
+}
+
 + (NSArray*)tags {
 	return @[@"Cast", @"Prop", @"Costume", @"Makeup", @"VFX", @"Animal", @"Extras", @"Vehicle"];
 }
@@ -87,14 +95,14 @@
 	return styledTags;
 }
 + (NSAttributedString*)styledTagFor:(NSString*)tag {
-	NSColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
+	TagColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
 	
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@", tag]];
 	if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
 	return string;
 }
-+ (NSAttributedString*)styledListTagFor:(NSString*)tag color:(NSColor*)textColor {
-	NSColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
++ (NSAttributedString*)styledListTagFor:(NSString*)tag color:(TagColor*)textColor {
+	TagColor *color = [(NSDictionary*)[BeatTagging tagColors] valueForKey:tag];
 	
 	NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
 	paragraph.paragraphSpacing = 3.0;
@@ -102,7 +110,7 @@
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"● %@\n", tag]];
 	if (color) [string addAttribute:NSForegroundColorAttributeName value:color range:(NSRange){0, 1}];
 	[string addAttribute:NSForegroundColorAttributeName value:textColor range:(NSRange){1, string.length - 1}];
-	[string addAttribute:NSFontAttributeName value:[NSFont boldSystemFontOfSize:UIFontSize] range:(NSRange){0, string.length}];
+	[string addAttribute:NSFontAttributeName value:[TagFont boldSystemFontOfSize:UIFontSize] range:(NSRange){0, string.length}];
 	[string addAttribute:NSParagraphStyleAttributeName value:paragraph range:(NSRange){0, string.length}];
 	[string addAttribute:@"TagTitle" value:@"Yes" range:(NSRange){0, string.length - 1}];
 	return string;
@@ -155,15 +163,15 @@
 	else if (tag == NoTag) return @"";
 	else return @"Generic";
 }
-+ (NSColor*)colorFor:(BeatTagType)tag {
++ (TagColor*)colorFor:(BeatTagType)tag {
 	NSDictionary *colors = [self tagColors];
-	NSColor *color = [colors valueForKey:[self keyFor:tag]];
+	TagColor *color = [colors valueForKey:[self keyFor:tag]];
 	if (!color) color = colors[@"generic"];
 	
 	return color;
 }
 + (NSString*)hexForKey:(NSString*)key {
-	NSColor *color = [self tagColors][key];
+	TagColor *color = [self tagColors][key];
 	return [BeatColors get16bitHex:color];
 }
 
@@ -259,7 +267,12 @@
 
 - (NSArray*)allTags {
 	NSMutableArray *tags = [NSMutableArray array];
+    
+#if TARGET_OS_IOS
+    NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.delegate.textView.attributedText];
+#else
 	NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.delegate.textView.attributedString];
+#endif
 	
 	[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
@@ -275,7 +288,12 @@
 
 - (NSDictionary*)sortedTagsInRange:(NSRange)searchRange {
 	NSDictionary *tags = [BeatTagging tagDictionary];
-	NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.delegate.textView.attributedString];
+    
+#if TARGET_OS_IOS
+    NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.delegate.textView.attributedText];
+#else
+    NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.delegate.textView.attributedString];
+#endif
 	
 	[string enumerateAttribute:@"BeatTag" inRange:searchRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
@@ -333,8 +351,13 @@
 }
 
 - (void)bakeTags {
-	[BeatTagging bakeAllTagsInString:self.delegate.textView.attributedString toLines:self.delegate.parser.lines];
-	//[BeatTagging bakeTags:[self individualTags] inString:self.delegate.textView.attributedString toLines:self.delegate.parser.lines];
+#if TARGET_OS_IOS
+    NSAttributedString *string = self.delegate.textView.attributedText;
+#else
+    NSAttributedString *string = self.delegate.textView.attributedString;
+#endif
+
+	[BeatTagging bakeAllTagsInString:string toLines:self.delegate.parser.lines];
 }
 
 #pragma mark - UI methods for displaying tags in editor
@@ -369,7 +392,7 @@
 	// List cast first
 	NSArray *cast = tags[@"Cast"];
 	if (cast.count) {
-		[result appendAttributedString:[BeatTagging styledListTagFor:@"Cast" color:NSColor.whiteColor]];
+		[result appendAttributedString:[BeatTagging styledListTagFor:@"Cast" color:TagColor.whiteColor]];
 		
 		for (TagDefinition *tag in cast) {
 			[result appendAttributedString:[self str:tag.name]];
@@ -383,7 +406,7 @@
 	for (NSString* tagKey in tags.allKeys) {
 		NSArray *items = tags[tagKey];
 		if (items.count) {
-			[result appendAttributedString:[BeatTagging styledListTagFor:tagKey color:NSColor.whiteColor]];
+			[result appendAttributedString:[BeatTagging styledListTagFor:tagKey color:TagColor.whiteColor]];
 			
 			for (TagDefinition *tag in items) {
 				[result appendAttributedString:[self str:tag.name]];
@@ -395,30 +418,26 @@
 	}
 	
 	if (result.length == headingLength) {
-		[result appendAttributedString:[self string:@"No tagging data. Select a range in the screenplay to start tagging." withColor:NSColor.systemGrayColor]];
+		[result appendAttributedString:[self string:@"No tagging data. Select a range in the screenplay to start tagging." withColor:TagColor.systemGrayColor]];
 	}
 	
 	return result;
 }
 
-- (void)setupTextView:(NSTextView*)textView {
-	textView.textContainerInset = (NSSize){ 8, 8 };
-}
-
 // String helpers
 - (NSAttributedString*)str:(NSString*)string {
-	return [self string:string withColor:NSColor.whiteColor];
+	return [self string:string withColor:TagColor.whiteColor];
 }
-- (NSAttributedString*)string:(NSString*)string withColor:(NSColor*)color {
-	if (!color) color = NSColor.whiteColor;
-	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:UIFontSize], NSForegroundColorAttributeName: color }];
+- (NSAttributedString*)string:(NSString*)string withColor:(TagColor*)color {
+	if (!color) color = TagColor.whiteColor;
+	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [TagFont systemFontOfSize:UIFontSize], NSForegroundColorAttributeName: color }];
 }
-- (NSAttributedString*)boldedString:(NSString*)string color:(NSColor*)color {
-	if (!color) color = NSColor.whiteColor;
-	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [NSFont boldSystemFontOfSize:UIFontSize], NSForegroundColorAttributeName: color }];
+- (NSAttributedString*)boldedString:(NSString*)string color:(TagColor*)color {
+	if (!color) color = TagColor.whiteColor;
+	return [[NSAttributedString alloc] initWithString:string attributes:@{ NSFontAttributeName: [TagFont boldSystemFontOfSize:UIFontSize], NSForegroundColorAttributeName: color }];
 }
 
-#pragma mark - New Tagging
+#pragma mark - Actual tagging
 
 - (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type {
 	if (type == NoTag) return nil;
@@ -569,5 +588,37 @@
 	}
 	return nil;
 }
+
+#pragma mark - Saving into Fountain file
+
+- (NSDictionary*)tagsForSaving {
+	NSArray *tags = self.allTags;
+	
+	NSMutableDictionary <NSString*, NSMutableArray*>*tagDict = NSMutableDictionary.new;
+	NSMutableArray *definitions = NSMutableArray.new;
+	NSMutableDictionary <NSValue*, NSString*> *ranges = NSMutableDictionary.new;
+	
+	for (BeatTag *tag in tags) {
+		if (tag.definition) {
+			if (!tagDict[tag.key]) tagDict[tag.key] = NSMutableArray.new;
+			
+			// Save a JSON-compatible dictionary into definition array
+			NSMutableArray *tagDefinitions = tagDict[tag.key];
+			if (![tagDefinitions containsObject:tag.definition]) [tagDefinitions addObject:tag.definition.serialized];
+			
+			// Save range + ID for the definition
+			NSValue *r = [NSValue valueWithRange:tag.range];
+			NSValue *rangeKey = [NSValue valueWithNonretainedObject:r];
+			ranges[rangeKey] = tag.definition.defId;
+		}
+		
+	}
+	
+	return @{
+		@"definitions": definitions,
+		@"taggedRanges": ranges
+	};
+}
+
 
 @end

@@ -250,6 +250,11 @@
 		css = [css stringByAppendingString:@"\n\n"];
 		css = [css stringByAppendingString:previewCss];
 	}
+	if (_settings.customCSS.length) {
+		// Print settings included custom CSS styles, add them in
+		css = [css stringByAppendingString:@"\n\n"];
+		css = [css stringByAppendingString:_settings.customCSS];
+	}
 	
 	// Preprocess CSS
 	NSInteger spacingBeforeHeading = [BeatUserDefaults.sharedDefaults getInteger:@"sceneHeadingSpacing"];

@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *defId;
 @property (nonatomic, readonly) NSString *name;
 - (NSString*)typeAsString;
+- (NSDictionary*)serialized;
 //- (NSString*)typeAsString;
 //- (bool)hasId:(NSString*)tagId;
 @end
@@ -30,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString*)typeAsString;
 - (instancetype)initWithName:(NSString*)name type:(BeatTagType)type identifier:(NSString*)tagId; 
 - (bool)hasId:(NSString*)tagId;
+- (NSDictionary*)serialized;
 @end
 
 NS_ASSUME_NONNULL_END

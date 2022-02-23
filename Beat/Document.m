@@ -192,6 +192,9 @@
 // Change query
 @property (nonatomic) NSString *bufferedText;
 
+// Views
+@property (nonatomic) NSMutableSet *registeredViews;
+
 // Sidebar & Outline view
 @property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
 @property (weak) IBOutlet NSTabView *sideBarTabs;
@@ -239,9 +242,6 @@
 
 // Timeline view
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
-@property (nonatomic) NSInteger timelineClickedScene;
-@property (nonatomic) NSInteger timelineSelection;
-@property (nonatomic) bool timelineVisible;
 @property (weak) IBOutlet NSTouchBar *touchBar;
 @property (weak) IBOutlet NSTouchBar *timelineBar;
 @property (weak) IBOutlet TouchTimelineView *touchbarTimeline;
@@ -409,7 +409,7 @@
 	// Avoid retain cycles with WKWebView
 	[self deallocPreview];
 	[self deallocCards];
-	
+		
 	// Terminate running plugins
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		BeatPlugin* plugin = _runningPlugins[pluginName];
@@ -450,14 +450,16 @@
 	self.tagging = nil;
 	self.itemsToValidate = nil;
 	self.documentSettings = nil;
-	
+		
 	// Terminate autosave timer
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
 	self.autosaveTimer = nil;
 	
 	// Kill observers
-	[NSNotificationCenter.defaultCenter removeObserver:self.marginView];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self.marginView];
+	[NSNotificationCenter.defaultCenter removeObserver:self.widgetView];
+	[NSDistributedNotificationCenter.defaultCenter removeObserver:self];
 		
 	// ApplicationDelegate will show welcome screen when no documents are open
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document close" object:nil];
@@ -506,7 +508,6 @@
 	[self setupOutlineView];
 	[self setupCards];
 	[self setupPreview];
-	[self setupTimeline];
 	[self setupTouchTimeline];
 	[self setupAnalysis];
 	[self setupColorPicker];
@@ -865,33 +866,33 @@
 
 - (void)windowDidBecomeMain:(NSNotification *)notification {
 	// Hide plugin windows
+	[self showPluginWindowsForCurrentDocument];
+}
+- (void)showPluginWindowsForCurrentDocument {
 	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
 		if (doc == self) continue;
 		for (NSString *pluginName in doc.runningPlugins.allKeys) {
 			[(BeatPlugin*)doc.runningPlugins[pluginName] hideAllWindows];
 		}
 	}
-
+	
 	// Show plugin windows for the current document
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		[(BeatPlugin*)_runningPlugins[pluginName] showAllWindows];
 	}
-
 	[self.documentWindow orderFront:nil];
+}
+- (void)hideAllPluginWindows {
+	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
+		for (NSString *pluginName in doc.runningPlugins.allKeys) {
+			[(BeatPlugin*)doc.runningPlugins[pluginName] hideAllWindows];
+		}
+	}
 }
 
 
 -(void)spaceDidChange {
-	NSLog(@"Space did change");
 	if (!self.documentWindow.onActiveSpace) [self.documentWindow resignMainWindow];
-
-	/*
-	for (NSString *pluginName in _runningPlugins.allKeys) {
-		[(BeatPluginParser*)_runningPlugins[pluginName] hideAllWindows];
-	}
-	
-	if (!self.documentWindow.onActiveSpace) [self.documentWindow resignMainWindow];
-	*/
 }
 
 
@@ -1189,6 +1190,11 @@
     return YES;
 }
 
+- (void)registerEditorView:(id)view {
+	if (_registeredViews == nil) _registeredViews = NSMutableSet.set;;
+	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
+}
+
 /*
  
  But if the while I think on thee,
@@ -1328,12 +1334,13 @@
     NSSavePanel *saveDialog = [NSSavePanel savePanel];
     [saveDialog setAllowedFileTypes:@[@"fdx"]];
     [saveDialog setNameFieldStringValue:[self fileNameString]];
-    [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
+
+	[saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
         if (result == NSFileHandlingPanelOKButton) {
 			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.text attributedString:self.textView.attributedString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
             [fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
-    }];
+	}];
 }
 
 - (IBAction)exportOutline:(id)sender
@@ -1771,11 +1778,11 @@
 	if (changeInOutline) {
 		[self.parser createOutline];
 		if (self.sidebarVisible) [self reloadOutline];
-		if (self.timelineVisible) [self reloadTimeline];
+		if (self.timeline.visible) [self.timeline reload];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
 		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
 	} else {
-		if (self.timelineVisible) [_timeline refreshWithDelay];
+		if (self.timeline.visible) [_timeline refreshWithDelay];
 	}
 
 	// Idea for the future:
@@ -1835,7 +1842,7 @@
 	
 	// We REALLY REALLY should make some sort of cache for these
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		if (self.sidebarVisible || self.timelineVisible || self.runningPlugins) {
+		if (self.sidebarVisible || self.timeline.visible || self.runningPlugins) {
 			self.outline = [self getOutlineItems];
 			self.currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
 		}
@@ -1854,7 +1861,7 @@
 	__block NSInteger sceneIndex = [self.outline indexOfObject:self.currentScene];
 	
 	// Update Timeline & TouchBar Timeline
-	if (self.timelineVisible) [_timeline scrollToScene:sceneIndex];
+	if (self.timeline.visible) [_timeline scrollToScene:sceneIndex];
 	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_outline indexOfObject:_currentScene]];
 	
 	// Locate current scene & reload outline without building it in parser
@@ -2751,9 +2758,6 @@
 
 	
 	// Render backgrounds according to text attributes
-	// This is AMAZINGLY slow
-	// [self renderTextBackgroundOnLine:line];
-
 	if (!firstTime && line.string.length) {
 		[self renderBackgroundForLine:line clearFirst:NO];
 	}
@@ -3599,52 +3603,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
 }
-/*
-- (IBAction)commitChanges:(id)sender {
-	NSAttributedString *attrStr = self.textView.attributedString;
 
-	// Bake revision ranges into lines
-	[attrStr enumerateAttribute:revisionAttribute inRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		BeatRevisionItem *item = value;
-		
-		if (item.type == RevisionRemoval) {
-			NSArray *lines = [self.parser linesInRange:range];
-			for (Line* line in lines) {
-				NSRange lineRange = [line globalRangeToLocal:range];
-				if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
-				[line.removalRanges addIndexesInRange:lineRange];
-			}
-		}
-	}];
-	
-	
-	for (Line *line in [NSArray arrayWithArray:self.parser.lines]) {
-		NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
-		
-		if (line.removalRanges.count) {
-			[line.removalRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-				[indices addIndexesInRange:range];
-			}];
-		}
-		
-		if (indices.count) {
-			NSMutableString *string = [NSMutableString string];
-			NSMutableIndexSet *result = [NSMutableIndexSet indexSetWithIndexesInRange:(NSRange){0, line.string.length}];
-			[result removeIndexes:indices];
-			
-			[result enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-				[string appendString:[line.string substringWithRange:range]];
-			}];
-			
-			// Remove resulting double spaces and add a line break for the editor
-			[string replaceOccurrencesOfString:@"  " withString:@" " options:0 range:(NSRange){0, string.length}];
-			[string appendString:@"\n"];
-			
-			[self replaceRange:line.range withString:string];
-		}
-	}
-}
- */
 
 
 #pragma mark - Lock & Force Scene Numbering
@@ -3982,6 +3941,11 @@ static NSString *revisionAttribute = @"Revision";
 - (void)setColorCodePages:(bool)value {
 	[_documentSettings setBool:DocSettingColorCodePages as:value];
 }
+
+-(NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex {
+	return self.textView.contextMenu;
+}
+
 
 #pragma mark - Themes & UI outlook
 
@@ -4390,7 +4354,6 @@ static NSString *revisionAttribute = @"Revision";
 		}
 		
 		_timeline.clickedItem = nil;
-		_timelineClickedScene = -1;
 	}
 }
 
@@ -4423,17 +4386,15 @@ static NSString *revisionAttribute = @"Revision";
 // We are using this same menu for both outline & timeline view
 - (void) menuDidClose:(NSMenu *)menu {
 	// Reset timeline selection, to be on the safe side
-	_timelineClickedScene = -1;
+	_timeline.clickedItem = nil;
 }
-- (void) menuNeedsUpdate:(NSMenu *)menu {
+- (void)menuNeedsUpdate:(NSMenu *)menu {
 	id item = nil;
 	
-	if ([self.outlineView clickedRow] >= 0) {
+	if (self.outlineView.clickedRow >= 0) {
 		item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
-		_timelineSelection = -1;
-	} else if (_timelineClickedScene >= 0) {
-		item = [[self getOutlineItems] objectAtIndex:_timelineClickedScene];
-		_timelineSelection = _timelineClickedScene;
+	} else if (_timeline.clickedItem != nil) {
+		item = _timeline.clickedItem;
 	}
 	
 	if (item != nil && [item isKindOfClass:[OutlineScene class]]) {
@@ -4510,12 +4471,11 @@ static NSString *revisionAttribute = @"Revision";
 		if (selectedScene != nil && [selectedScene isKindOfClass:[OutlineScene class]]) {
 			OutlineScene *scene = selectedScene;
 			[self setColor:colorName forScene:scene];
-			if (_timelineClickedScene >= 0) [self reloadTimeline];
+			if (_timeline.clickedItem != nil) [_timeline reload];
 			if (self.timelineBar.visible) [self reloadTouchTimeline];
 		}
 		
 		_timeline.clickedItem = nil;
-		_timelineClickedScene = -1;
 	}
 }
 
@@ -4721,7 +4681,7 @@ static NSString *revisionAttribute = @"Revision";
 		
 		// Reload outline + timeline in case there were any changes in outline
 		if (_sidebarVisible) [self reloadOutline];
-		if (_timelineVisible) [self reloadTimeline];
+		if (_timeline.visible) [self.timeline reload];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
 		
 		[self setTab:0];
@@ -4879,7 +4839,7 @@ static NSString *revisionAttribute = @"Revision";
 	// Rebuild outline everywhere
 	[self.parser createOutline];
 	[self reloadOutline];
-	[self reloadTimeline];
+	[self.timeline reload];
 	
 	[self.textView refreshLayoutElements];
 	[self updateChangeCount:NSChangeDone];
@@ -4936,11 +4896,9 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)toggleTimeline:(id)sender
 {
-	_timelineVisible = !_timelineVisible;
-	
 	NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
 		
-	if (_timelineVisible) {
+	if (!_timeline.visible) {
 	
 		[_timeline show];
 		[self ensureLayout];
@@ -4959,24 +4917,9 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-- (void) setupTouchTimeline {
+- (void)setupTouchTimeline {
 	self.touchbarTimeline.delegate = self;
 	self.touchbarTimelineButton.delegate = self;
-}
-
-- (void) setupTimeline {
-	// New timeline
-	_timeline.delegate = self;
-	_timeline.heightConstraint = _timelineViewHeight;
-	self.timeline.enclosingScrollView.hasHorizontalScroller = NO;
-	
-	[_timeline hide];
-	_timelineClickedScene = -1;
-}
-
-- (void) reloadTimeline {
-	[self.timeline reload];
-	return;
 }
 
 /*
@@ -4991,7 +4934,7 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Timeline Delegation
 
-- (void) reloadTouchTimeline {
+- (void)reloadTouchTimeline {
 	[_touchbarTimeline setData:[self getOutlineItems]];
 }
 - (void)didSelectTouchTimelineItem:(NSInteger)index {
@@ -5443,6 +5386,19 @@ triangle walks
 	}
 }
 
+-(void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation delegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
+	[super runModalSavePanelForSaveOperation:saveOperation delegate:delegate didSaveSelector:didSaveSelector contextInfo:contextInfo];
+}
+
+-(void)windowWillBeginSheet:(NSNotification *)notification {
+	[self hideAllPluginWindows];
+	[self.documentWindow makeKeyAndOrderFront:self];
+}
+
+-(void)windowDidEndSheet:(NSNotification *)notification {
+	[self showPluginWindowsForCurrentDocument];
+}
+
 
 #pragma mark - split view listener
 
@@ -5575,12 +5531,12 @@ triangle walks
 
 #pragma mark - Tagging
 
+// NOTE: Move all of this into BeatTagging class
+
 - (void)setupTagging {
 	[_sideView setFillColor:[BeatColors color:@"backgroundGray"]];
 	
-	_tagging = [[BeatTagging alloc] initWithDelegate:self];
-	[_tagging setupTextView:self.tagTextView];
-
+	// Move these into a class living in IB
 	[_tagging loadTags:[_documentSettings get:DocSettingTags] definitions:[_documentSettings get:DocSettingTagDefinitions]];
 }
 
@@ -5678,7 +5634,6 @@ triangle walks
 - (bool)tagExists:(NSString*)string type:(BeatTagType)type { return [self.tagging tagExists:string type:type]; }
 - (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type { return [self.tagging searchTagsByTerm:string type:type]; }
 
-
 - (void)saveTags {
 	NSArray *tags = [_tagging getTags];	
 	NSArray *definitions = [_tagging getDefinitions];
@@ -5688,7 +5643,7 @@ triangle walks
 }
 
 - (void)updateTaggingData {
-	[_tagging setupTextView:self.tagTextView];
+	// Move this into tagging class
 	[_tagTextView.textStorage setAttributedString:[_tagging displayTagsForScene:[self getCurrentScene]]];
 }
 

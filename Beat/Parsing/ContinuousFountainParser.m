@@ -2478,6 +2478,18 @@ NSUInteger prevLineAtLocationIndex = 0;
 	[self createOutline];
 	return [self preprocessForPrintingWithLines:self.safeLines printNotes:NO];
 }
+- (NSArray*)preprocessWithBlock:(NSArray* (^)(NSArray* lines))preprocessBlock {
+	// This could one day be used to create custom preprocessing through a plugin.
+	
+	NSArray *lines = self.safeLines;
+	NSMutableArray *preprocessed = NSMutableArray.new;
+	for (Line* line in lines) {
+		if (line.type == empty || line.isTitlePage) continue;
+		[preprocessed addObject:line.clone];
+	}
+	
+	return preprocessBlock(lines);
+}
 - (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes {
 	if (!lines) {
 		NSLog(@"WARNING: No lines issued for preprocessing, using all parsed lines");

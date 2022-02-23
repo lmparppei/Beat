@@ -93,7 +93,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) NSURL *revertedTo;
 
 // Tagging
-@property (nonatomic) BeatTagging *tagging;
+@property (nonatomic) IBOutlet BeatTagging *tagging;
 
 - (NSString*)text;
 - (NSString*)fileNameString;
@@ -126,7 +126,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (bool)isDark;
 - (void)updateUIColors;
 
-// Tagging
+// Mode
 @property (nonatomic) BeatEditorMode mode;
 
 @property (nonatomic, readwrite) bool outlineEdit;

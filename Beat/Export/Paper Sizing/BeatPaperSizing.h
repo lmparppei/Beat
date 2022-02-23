@@ -6,7 +6,15 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IOS
+    #import <UIKit/UIKit.h>
+    #define BeatPrintInfo UIPrintInfo
+#else
+    #import <Cocoa/Cocoa.h>
+    #define BeatPrintInfo NSPrintInfo
+#endif
 
 typedef NS_ENUM(NSInteger, BeatPaperSize) {
 	BeatA4 = 0,
@@ -24,10 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface BeatPaperSizing : NSObject
-+ (NSPrintInfo*)printInfoFor:(BeatPaperSize)size;
-+ (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo;
-+ (NSPrintInfo*)setSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
-+ (void)setPageSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
+
++ (BeatPrintInfo*)printInfoFor:(BeatPaperSize)size;
++ (BeatPrintInfo*)setMargins:(BeatPrintInfo*)printInfo;
++ (BeatPrintInfo*)setSize:(BeatPaperSize)size printInfo:(BeatPrintInfo*)printInfo;
++ (void)setPageSize:(BeatPaperSize)size printInfo:(BeatPrintInfo*)printInfo;
 @end
 
 NS_ASSUME_NONNULL_END

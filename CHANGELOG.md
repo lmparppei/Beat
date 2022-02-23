@@ -1,5 +1,12 @@
 # Changelog
 
+## Beat 1.93.2
+
+- Fixed some memory leaks with documents
+- Fixed character stylization bugs with revised lines
+- Fixed issues with editor context menu
+
+
 ## Beat 1.93.1
 
 - New *Screenplay* menu, which contains production and workflow related actions

@@ -45,7 +45,7 @@
 		}
 		
 		// Setup layer
-		_textLayer = [CATextLayer layer];
+		_textLayer = CATextLayer.layer;
 		_textLayer.wrapped = NO;
 		_textLayer.fontSize = FONTSIZE_SCENE;
 		_textLayer.contentsScale = NSScreen.mainScreen.backingScaleFactor;

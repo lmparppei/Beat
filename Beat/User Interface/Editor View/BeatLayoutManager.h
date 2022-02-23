@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatLayoutManager : NSLayoutManager
-@property (nonatomic) BeatTextView * textView;
+@property (nonatomic, weak) BeatTextView * textView;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -51,7 +51,7 @@
 + (OutlineScene*)withLine:(Line*)line;
 + (OutlineScene*)withLine:(Line*)line delegate:(id)delegate;
 
-@property (nonatomic) id<LineDelegate> delegate;
+@property (nonatomic, weak) id<LineDelegate> delegate;
 
 @property (nonatomic, weak) Line * line; /// The heading line of this scene
 @property (nonatomic, weak) OutlineScene * parent; /// Either a SECTION (for scenes) or a HEADING for synopsis lines

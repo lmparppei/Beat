@@ -6,7 +6,19 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
+#if TARGET_OS_IOS
+    #import <UIKit/UIKit.h>
+    #define TagColor UIColor
+    #define TagFont UIFont
+    #define BeatEditorView UITextView
+#else
+    #import <Cocoa/Cocoa.h>
+    #define TagColor NSColor
+    #define TagFont NSFont
+    #define BeatTagView NSTextView
+#endif
+
 #import "DynamicColor.h"
 #import "BeatColors.h"
 #import "BeatTextView.h"
@@ -32,7 +44,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 @class BeatTagging;
 @protocol BeatTaggingDelegate <NSObject>
 @property (readonly, weak) ContinuousFountainParser *parser;
-@property (readonly, weak) NSTextView *textView;
+@property (readonly, weak) BeatTagView *textView;
 
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type;
@@ -51,7 +63,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 @end
 
 @interface BeatTagging : NSObject
-@property (weak) id<BeatTaggingDelegate> delegate;
+@property (weak) IBOutlet id<BeatTaggingDelegate> delegate;
+@property (weak) IBOutlet BeatTagView* textView;
 
 + (NSArray*)tags;
 + (BeatTagType)tagFor:(NSString*)tag;
@@ -59,7 +72,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 + (NSArray*)styledTags;
 + (void)bakeAllTagsInString:(NSAttributedString*)textViewString toLines:(NSArray*)lines;
 + (NSDictionary*)tagColors;
-+ (NSColor*)colorFor:(BeatTagType)tag;
++ (TagColor*)colorFor:(BeatTagType)tag;
 + (NSString*)keyFor:(BeatTagType)tag;
 + (NSArray*)definitionsForTags:(NSArray*)tags;
 + (NSString*)newId;
@@ -69,7 +82,6 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (void)bakeTags;
 - (NSAttributedString*)displayTagsForScene:(OutlineScene*)scene;
-- (void)setupTextView:(NSTextView*)textView;
 - (NSArray*)getDefinitions;
 - (void)loadTags:(NSArray*)tags definitions:(NSArray*)definitions;
 - (BeatTag*)addTag:(NSString*)name type:(BeatTagType)type;

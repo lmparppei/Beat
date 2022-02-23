@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, BeatTimelineItemType) {
 
 @protocol BeatTimelineItemDelegate <NSObject>
 @property (nonatomic) NSColor *backgroundColor;
-@property (readonly) OutlineScene *currentScene;
 @property (nonatomic, weak) IBOutlet NSMenu *sceneMenu;
 @property (nonatomic) OutlineScene *clickedItem;
 @property (nonatomic) NSMutableArray *storylines;

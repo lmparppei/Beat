@@ -20,7 +20,7 @@
 #endif
 
 typedef NS_ENUM(NSInteger, RevisionType) {
-	RevisionNone ,
+	RevisionNone,
 	RevisionAddition,
 	RevisionRemovalSuggestion,
 	RevisionCharacterRemoved,

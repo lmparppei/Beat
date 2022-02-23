@@ -60,5 +60,12 @@
 	return self;
 }
 
+- (NSDictionary*)serialized {
+	return @{
+		@"type": [BeatTagging keyFor:self.type],
+		@"name": (self.name) ? self.name : @"",
+		@"id": (self.defId) ? self.defId : @""
+	};
+}
 
 @end

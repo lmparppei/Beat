@@ -90,11 +90,3 @@
 "revisions.commitPrompt.title" = "Hyväksy korjaukset";
 "revisions.commitPrompt.text" = "Korjausten hyväksyntä pyyhkii kaikki korjausmerkinnät ja poistettavaksi merkityt alueet. Haluatko varmasti jatkaa?";
 
-"H1U-Aa-dJH.title" = "Hyväksy korjaukset";
-
-"UVZ-Sz-uiD.title" = "Korjausmerkinnät";
-"mRd-QX-B6B.title" = "Ensimmäinen";
-"sB3-he-rhX.title" = "Toinen";
-"8A0-q8-cDx.title" = "Kolmas";
-"vh6-A9-UnL.title" = "Neljäs";
-
