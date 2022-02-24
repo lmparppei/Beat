@@ -294,6 +294,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	return nil;
 }
 
+-(void)setBounds:(NSRect)bounds {
+	[self setBounds:bounds];
+}
+-(void)setFrame:(NSRect)frame {
+	// I don't know why this happens, but text view frame can sometimes become wider than
+	// its enclosing view, causing some weird horizontal scrolling. Let's clamp the value.
+	if (frame.size.width > self.superview.frame.size.width) frame.size.width = self.superview.frame.size.width;
+	[super setFrame:frame];
+}
+
+
 #pragma mark - Key events
 
 

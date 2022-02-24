@@ -140,7 +140,6 @@
 
 - (void)findBarViewDidChangeHeight {
 	if (self.findBarVisible) {
-		NSLog(@"Yo");
 		CGFloat height = self.findBarView.frame.size.height;
 		_outlineButtonY.constant = _buttonDefaultY + height;
 	}

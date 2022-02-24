@@ -25,7 +25,7 @@
 @implementation MarginView
 
 -(void)awakeFromNib {
-	self.themeManager = [ThemeManager sharedManager];
+	self.themeManager = ThemeManager.sharedManager;
 }
 
 - (void)viewWillDraw {

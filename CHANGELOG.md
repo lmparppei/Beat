@@ -5,6 +5,8 @@
 - Fixed some memory leaks with documents
 - Fixed character stylization bugs with revised lines
 - Fixed issues with editor context menu
+- FDX export issues with split-paragraph omissions fixed
+- 
 
 
 ## Beat 1.93.1

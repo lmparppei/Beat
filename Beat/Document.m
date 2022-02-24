@@ -988,7 +988,7 @@
 	
 	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	if (zoomIn) {
-		if (_magnification < 1.2) _magnification += 0.04;
+		if (_magnification < 1.3) _magnification += 0.04;
 	} else {
 		if (_magnification > 0.8) _magnification -= 0.04;
 	}
@@ -3868,7 +3868,6 @@ static NSString *revisionAttribute = @"Revision";
 	else if (menuItem.action == @selector(toggleCards:)) {
 		menuItem.state = NSOffState;
 	}
-	
 	else if (menuItem.action == @selector(showWidgets:)) {
 		// Allow/disallow widget area menu item
 		if (self.widgetView.subviews.count > 0) {

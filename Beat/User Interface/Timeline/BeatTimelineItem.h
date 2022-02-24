@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, BeatTimelineItemType) {
 - (void)deselect:(id)item;
 - (void)selectTo:(id)item;
 
+- (CGFloat)timelineHeight;
+
 @end
 
 @interface BeatTimelineItem : NSView

@@ -1189,7 +1189,7 @@ and incomprehensible system of recursion.
     char firstChar = [string characterAtIndex:0];
     char lastChar = [string characterAtIndex:length-1];
     
-    bool containsOnlyWhitespace = [string containsOnlyWhitespace]; // Save to use again later
+    bool containsOnlyWhitespace = string.containsOnlyWhitespace; // Save to use again later
     bool twoSpaces = (firstChar == ' ' && lastChar == ' '); // Contains at least two spaces
     //If not empty, check if contains only whitespace. Exception: two spaces indicate a continued whatever, so keep them
     if (containsOnlyWhitespace && !twoSpaces) {
@@ -2524,6 +2524,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 	}
 	
 	for (Line *line in linesForPrinting) {
+		// Fix a weird bug for first line
+		if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
+		
 		// Skip over certain elements. Leave notes if needed.
 		if (line.type == synopse || line.type == section || (line.omitted && !line.note)  || line.isTitlePage) continue;
 		if (!printNotes && line.note) continue;

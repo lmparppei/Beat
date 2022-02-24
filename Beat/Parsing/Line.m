@@ -786,7 +786,7 @@
 	// N.B. This is NOT a Cocoa-compatible attributed string.
 	// The attributes are used to create a string for FDX/HTML conversion.
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
-	
+		
 	// Make (forced) character names uppercase
 	if (self.type == character || self.type == dualDialogueCharacter) {
 		[string replaceCharactersInRange:self.characterNameRange withString:[self.string substringWithRange:self.characterNameRange].uppercaseString];

@@ -633,6 +633,10 @@
 	[self setNeedsDisplay:YES];
 }
 
+- (CGFloat)timelineHeight {
+	return _originalHeight;
+}
+
 #pragma mark - Color controls
 
 

@@ -88,6 +88,7 @@
 #import "BeatTag.h"
 #import "TagDefinition.h"
 #import "BeatRevisionTracking.h"
+#import "NSString+CharacterControl.h"
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
 #define RevisionColors @[@"none", @"blue", @"orange", @"purple", @"green"]
@@ -261,7 +262,6 @@ static NSDictionary *fdxIds;
 	_preprocessedLines = [self preprocessLines];
 	
 	for (int i = 0; i < _preprocessedLines.count; i++) {
-		NSLog(@"Line: %@", _preprocessedLines[i]);
 		[self appendLineAtIndex:i];
 		//inDualDialogue = [self appendLineAtIndex:i fromLines:parser.lines toString:result inDualDialogue:inDualDialogue tags:tags];
 	}
@@ -317,9 +317,12 @@ static NSDictionary *fdxIds;
 	
 	Line *previousLine;
 	for (Line* line in self.parser.lines) {
+		// Fix a weird bug
+		if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
+		
 		// Skip omited lines
 		if (line.omitted) {
-			previousLine = line;
+			//previousLine = line;
 			continue;
 		}
 

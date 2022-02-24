@@ -204,7 +204,7 @@
 	self.layer.backgroundColor = NSColor.clearColor.CGColor;
 	self.layer.opacity = 1.0;
 	
-	self.frame = NSMakeRect(rect.origin.x, SECTION_Y, size.width + 100, self.superview.superview.superview.frame.size.height);
+	self.frame = NSMakeRect(rect.origin.x, SECTION_Y, size.width + 100, self.delegate.timelineHeight);
 }
 - (void)updateSectionPosition:(NSRect)rect {
 	NSRect frame = self.frame;
