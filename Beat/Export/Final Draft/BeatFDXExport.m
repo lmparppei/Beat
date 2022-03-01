@@ -322,13 +322,13 @@ static NSDictionary *fdxIds;
 		
 		// Skip omited lines
 		if (line.omitted) {
-			//previousLine = line;
+			if (line.type == empty) previousLine = line;
 			continue;
 		}
 
 		if (((line.type == action && previousLine.type == action) ||
 			(line.type == lyrics && previousLine.type == lyrics)) &&
-			previousLine.length > 0) {
+			(previousLine.length > 0 && previousLine.type == action)) {
 			[previousLine joinWithLine:line];
 			continue;
 		}

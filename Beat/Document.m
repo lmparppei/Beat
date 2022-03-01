@@ -5133,8 +5133,12 @@ triangle walks
 	else size = BeatA4;
 	
 	[self.documentSettings setInt:DocSettingPageSize as:size];
-	if (size == BeatA4) _documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
-	else _documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
+	
+	// I have no idea what's with these values, but here they are.
+	// documentWidth determines how the insets are set, while linePadding makes some space for revision markers.
+	// Everything is terrible. BeatTextView inset scheme should be reworked.
+	if (size == BeatA4) _documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * (2 - .5);
+	else _documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * (2 - .5);
 	
 	[self updateLayout];
 }
