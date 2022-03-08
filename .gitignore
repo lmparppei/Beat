@@ -5,3 +5,5 @@ Sparkle.framework/
 Sparkle.framework
 Pro/
 Pods/
+build/XCBuildData
+build/
