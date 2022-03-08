@@ -1,0 +1,33 @@
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "5Am-V1-s4C"; */
+"5Am-V1-s4C.title" = "Text Cell";
+
+/* Class = "NSTextFieldCell"; title = "© Lauri-Matti Parppei 2019–2021"; ObjectID = "5XR-Rf-IWg"; */
+"5XR-Rf-IWg.title" = "© Lauri-Matti Parppei 2019–2021";
+
+/* Class = "NSTextFieldCell"; title = "Date"; ObjectID = "8Jp-kw-Q5K"; */
+"8Jp-kw-Q5K.title" = "Date";
+
+/* Class = "NSTextFieldCell"; title = "Released under GPL license"; ObjectID = "Is1-E5-tFV"; */
+"Is1-E5-tFV.title" = "Released under GPL license";
+
+/* Class = "NSButtonCell"; title = "Tutorial"; ObjectID = "PFH-yS-FMe"; */
+"PFH-yS-FMe.title" = "Tutorial";
+
+/* Class = "NSButtonCell"; title = "New Screenplay"; ObjectID = "Tq7-Xj-tBS"; */
+"Tq7-Xj-tBS.title" = "New Screenplay";
+
+/* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "bKv-3N-ZwV"; */
+"bKv-3N-ZwV.title" = "Version";
+
+/* Class = "NSButtonCell"; title = "→ Support Beat"; ObjectID = "guu-nG-SXu"; */
+"guu-nG-SXu.title" = "→ Support Beat";
+
+/* Class = "NSButtonCell"; title = "→ Discord Community"; ObjectID = "msh-MK-CMo"; */
+"msh-MK-CMo.title" = "→ Discord Community";
+
+/* Class = "NSTextFieldCell"; title = "Filename"; ObjectID = "zWH-Fi-sua"; */
+"zWH-Fi-sua.title" = "Filename";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "znV-Hg-QWK"; */
+"znV-Hg-QWK.title" = "Box";

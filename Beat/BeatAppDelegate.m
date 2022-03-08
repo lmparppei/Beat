@@ -12,6 +12,8 @@
 #endif
 
 #import <os/log.h>
+#import <StoreKit/StoreKit.h>
+
 #import "BeatAppDelegate.h"
 #import "RecentFiles.h"
 #import "BeatFileImport.h"
@@ -26,29 +28,24 @@
 #import "Document.h"
 #import "BeatPreferencesPanel.h"
 #import "BeatPluginLibrary.h"
-#import <StoreKit/StoreKit.h>
+#import "Beat-Swift.h"
 
 #import "BeatTest.h"
 
 #define APPNAME @"Beat"
 
 @interface BeatAppDelegate ()
-@property (nonatomic) RecentFiles *recentFilesSource;
-
-@property (weak) IBOutlet NSWindow* launchScreen;
-@property (weak) IBOutlet NSOutlineView* recentFiles;
-
 @property (weak) IBOutlet NSMenuItem *checkForUpdatesItem;
 @property (weak) IBOutlet NSMenuItem *menuManual;
 @property (nonatomic) BeatPluginManager *pluginManager; // Set main ownership to avoid leaks
 
 @property (nonatomic) BeatNotifications *notifications;
 
-@property (weak) IBOutlet NSTextField* versionField;
-
+@property (nonatomic) BeatLaunchScreen *welcomeWindow;
 @property (nonatomic) BeatBrowserView *browser;
 @property (nonatomic) BeatPreferencesPanel *preferencesPanel;
 @property (nonatomic) BeatAboutScreen *about;
+
 // New plugin library
 @property (nonatomic) BeatPluginLibrary *pluginLibrary;
 
@@ -110,17 +107,9 @@
 	[_checkForUpdatesItem.menu removeItem:_checkForUpdatesItem];
 	_checkForUpdatesItem = nil;
 #endif
-	
-	NSString *version = NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"];
-	
-	NSString *versionString = [NSString stringWithFormat:@"beat %@", version];
-	[_versionField setStringValue:versionString];
-	
+		
 	// Show welcome screen
-	[self.launchScreen becomeKeyWindow];
-	[self.launchScreen setAcceptsMouseMovedEvents:YES];
-	[self.launchScreen setMovable:YES];
-	[self.launchScreen setMovableByWindowBackground:YES];
+	[self showLaunchScreen];
 	
 	// Populate plugin menu
 	[self setupPlugins];
@@ -144,21 +133,9 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	// Setup launch screen
-	_recentFilesSource = RecentFiles.new;
-	self.recentFiles.dataSource = _recentFilesSource;
-	self.recentFiles.delegate = _recentFilesSource;
-	[self.recentFiles setDoubleAction:@selector(doubleClickDocument)];
-		
 	[self setupDocumentOpenListener];
 	[self checkDarkMode];
 
-	// Only open splash screen if no documents were opened by default
-	NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
-	if (openDocuments.count == 0 && self.launchScreen && !self.launchScreen.isVisible) {
-		[self.launchScreen setIsVisible:YES];
-	}
-	
 	// Show launch screen
 	[self showLaunchScreen];
 	
@@ -176,13 +153,6 @@
 	// Only allow this in ad hoc distribution
 	[self.updater checkForUpdates];
 #endif
-}
-
--(void)showLaunchScreen {
-	[self.launchScreen setIsVisible:YES];
-	[self.recentFiles deselectAll:nil];
-	[self.recentFilesSource reload];
-	[self.recentFiles reloadData];
 }
 
 -(void)checkDarkMode {
@@ -214,16 +184,14 @@
 -(void)setupDocumentOpenListener {
 	// Let's close the welcome screen if any sort of document has been opened
 	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
-		if (self.launchScreen && self.launchScreen.isVisible) {
-			[self closeStartModal];
-		}
+		[self closeLaunchScreen];
 	}];
 	
 	// And show modal if all documents were closed
 	[NSNotificationCenter.defaultCenter addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
 		
-		if (openDocuments.count == 1 && self.launchScreen && !self.launchScreen.isVisible) {
+		if (openDocuments.count == 1 && !self.welcomeWindow) {
 			[self showLaunchScreen];
 		}
 		
@@ -502,30 +470,26 @@
 
 #pragma mark - Misc UI
 
-
- 
-// Why is this here? Anyway, a method for the NSOutlineView showing recent files
-- (void)doubleClickDocument {
-	[_recentFilesSource doubleClickDocument:nil];
+-(void)showLaunchScreen {
+	if (!self.welcomeWindow) self.welcomeWindow = BeatLaunchScreen.alloc.init;
+	[self.welcomeWindow.window makeKeyAndOrderFront:nil];
 }
 
-// Close welcome screen
-- (IBAction)closeStartModal
+- (void)closeLaunchScreen
 {
-	[_launchScreen close];
+	[self.welcomeWindow close];
+	_welcomeWindow = nil;
 }
 
 - (IBAction)showAboutScreen:(id) sender {
-	if (!_about) {
-		_about = BeatAboutScreen.new;
-	}
+	if (!_about) _about = BeatAboutScreen.new;
 	[_about show];
 }
 
 - (IBAction)openPreferences:(id)sender {
 	if (!_preferencesPanel) {
 		_preferencesPanel = BeatPreferencesPanel.new;
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_preferencesPanel.window];
+		[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_preferencesPanel.window];
 	}
 	[_preferencesPanel show];
 }
@@ -713,6 +677,8 @@
 	parser = nil;
 }
 
+#pragma mark - Plugin developer console
+
 -(void)openConsole {
 	// This is written very quickly on a train and is VERY hacky and shady. Works for now, though.
 	if (!_console) {
@@ -771,6 +737,27 @@
 	}
 	//[_episodePrinter showWindow:_episodePrinter.window];
 	[NSApp runModalForWindow:_episodePrinter.window];
+}
+
+
+#pragma mark - Clear user defaults
+
+- (void)removeUserDefaults
+{
+	NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
+	NSDictionary * dict = [userDefaults dictionaryRepresentation];
+	for (id key in dict)
+	{
+		[userDefaults removeObjectForKey:key];
+	}
+	[userDefaults synchronize];
+}
+
+#pragma mark - Show notifications
+
+- (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval {
+	if (!_notifications) _notifications = BeatNotifications.new;
+	[_notifications showNotification:title body:body identifier:identifier oneTime:showOnce interval:interval];
 }
 
 #pragma mark - Supporting methods
@@ -834,26 +821,6 @@
 	CFRelease(uuid);
 
 	return result;
-}
-
-#pragma mark - Clear user defaults
-
-- (void)removeUserDefaults
-{
-	NSUserDefaults * userDefaults = [NSUserDefaults standardUserDefaults];
-	NSDictionary * dict = [userDefaults dictionaryRepresentation];
-	for (id key in dict)
-	{
-		[userDefaults removeObjectForKey:key];
-	}
-	[userDefaults synchronize];
-}
-
-#pragma mark - Show notifications
-
-- (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval {
-	if (!_notifications) _notifications = BeatNotifications.new;
-	[_notifications showNotification:title body:body identifier:identifier oneTime:showOnce interval:interval];
 }
 
 @end

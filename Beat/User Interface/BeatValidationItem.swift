@@ -20,7 +20,6 @@ class BeatValidationItem: NSObject {
 	var selector:Selector?
 	var target:AnyObject!
 
-	// override func drawTitle(_ title: NSAttributedString, withFrame frame: NSRect, in controlView: NSView) -> NSRect {
 	init(title:String, setting:String, target:AnyObject ) {
 		self.title = title
 		self.setting = setting

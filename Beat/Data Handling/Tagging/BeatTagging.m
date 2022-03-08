@@ -589,6 +589,8 @@
 	return nil;
 }
 
+/*
+// Alternate code
 #pragma mark - Saving into Fountain file
 
 - (NSDictionary*)tagsForSaving {
@@ -619,6 +621,7 @@
 		@"taggedRanges": ranges
 	};
 }
+ */
 
 
 @end

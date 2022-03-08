@@ -1475,6 +1475,10 @@ and incomprehensible system of recursion.
 
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
 {
+	// Let's use the asym method here, just put in our symmetric delimiters.
+	return [self asymRangesInChars:string ofLength:length between:startString and:startString startLength:delimLength endLength:delimLength excludingIndices:excludes line:line];
+	
+	/*
     NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
     
     NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
@@ -1535,11 +1539,22 @@ and incomprehensible system of recursion.
     }
 	
     return indexSet;
+	 */
 }
 
 - (NSMutableIndexSet*)asymRangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
 {
-	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+	/*
+	 
+	 NOTE:
+	 
+	 This is a confusing method name, but only because it is based on the old rangesInChars method. However, it's basically the same code, but I've put in the ability to seek ranges between two delimiters that are **not** the same, and can have asymmetrical length.
+	 
+	 The original method now just calls this using the symmetrical delimiters.
+	 
+	 */
+	
+	NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
 	
 	NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
 	NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning

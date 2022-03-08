@@ -79,6 +79,29 @@
 	return self.frame;
 }
 
+- (void)setDark:(bool)dark {
+	_dark = dark;
+
+	if (@available(macOS 10.14, *)) {
+		if (_dark) self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+		else self.appearance = NSAppearance.currentAppearance;
+	}
+}
+
+- (void)setResizable:(BOOL)resizable {
+	_resizable = resizable;
+	
+	if (resizable) {
+		self.styleMask |= NSWindowStyleMaskResizable;
+		[[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:NO];
+		[[self standardWindowButton:NSWindowZoomButton] setHidden:NO];
+	} else {
+		self.styleMask &= ~NSWindowStyleMaskResizable;
+		[[self standardWindowButton:NSWindowMiniaturizeButton] setHidden:YES];
+		[[self standardWindowButton:NSWindowZoomButton] setHidden:YES];
+	}
+}
+
 - (void)runJS:(nonnull NSString *)js callback:(nullable JSValue *)callback {
 	if (callback && !callback.isUndefined) {
 		[_webview evaluateJavaScript:js completionHandler:^(id _Nullable data, NSError * _Nullable error) {

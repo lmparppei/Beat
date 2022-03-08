@@ -62,6 +62,8 @@
 }
 
 - (IBAction)doubleClickDocument:(id)sender {
+	NSLog(@"wat");
+	
 	void (^completionHander)(NSDocument * _Nullable, BOOL, NSError * _Nullable) = ^void(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
 	};
 	

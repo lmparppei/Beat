@@ -715,7 +715,14 @@ static NSDictionary *fdxIds;
 				}
 			}
 			
-			styles = [NSString stringWithFormat:@" Style=\"%@\"%@", [styleArray componentsJoinedByString:@"+"], additionalStyles];
+			NSString *styleClasses = @"";
+			// Set stylization for action, dialogue and dual dialogue elements.
+			// Ignore other blocks, because Final Draft doesn't like additional styles in those.
+			if (styleArray.count &&
+				(line.type == action || line.type == dialogue || line.type == dualDialogue))
+				styleClasses = [NSString stringWithFormat:@"Style=\"%@\"", [styleArray componentsJoinedByString:@"+"]];
+			
+			styles = [NSString stringWithFormat:@" %@%@", styleClasses, additionalStyles];
 		}
 		
 		// Tags for the current range

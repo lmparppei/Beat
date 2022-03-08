@@ -33,7 +33,6 @@
 // You could think that one can just change this byte to true in the open source version, but actually the "pro" stuff is just additional content and not really restricting any other functionality in the app, so it's no use.
 @property (nonatomic) bool proMode;
 
-- (IBAction)closeStartModal;
 - (IBAction)showPatchNotes:(id)sender;
 
 - (bool)isDark;
@@ -55,5 +54,7 @@
 
 - (IBAction)openPluginLibrary:(id)sender;
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval;
+
+- (IBAction)showReference:(id)sender;
 
 @end
