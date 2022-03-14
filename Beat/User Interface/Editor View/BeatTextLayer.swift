@@ -22,6 +22,10 @@ class BeatTextLayer: CATextLayer {
 			NSAttributedString.Key.paragraphStyle: paragraph
 		]
 		
+		if (self.string == nil) {
+			self.string = ""
+		}
+		
 		let str = NSMutableAttributedString.init(string: self.string as! String)
 		str.addAttributes(attrs as [NSAttributedString.Key : Any], range: NSMakeRange(0, str.length))
 		self.attrString = str

@@ -366,7 +366,7 @@
 	if (!scene) return [[NSAttributedString alloc] initWithString:@""];
 	
 	NSMutableDictionary *tags = [NSMutableDictionary dictionaryWithDictionary:[self tagsForScene:scene]];
-	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *result = NSMutableAttributedString.new;
 	
 	[result appendAttributedString:[self boldedString:scene.stringForDisplay.uppercaseString color:nil]];
 	[result appendAttributedString:[self str:@"\n\n"]];

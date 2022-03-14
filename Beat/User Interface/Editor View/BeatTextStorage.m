@@ -27,7 +27,7 @@
 	self = [super init];
 
  if (self != nil) {
-	 storage = [[NSMutableAttributedString alloc] init];
+	 storage = NSMutableAttributedString.new;
  }
 
  return self;

@@ -257,7 +257,7 @@
 - (NSString*)scriptAsString {
 	if (_script.count < 1) return @"";
 	
-	NSMutableAttributedString *attributedScript = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *attributedScript = NSMutableAttributedString.new;
 	
 	for (FDXElement *element in _script) {
 		[attributedScript appendAttributedString:element.attributedFountainString];

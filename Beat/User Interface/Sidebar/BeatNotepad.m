@@ -109,7 +109,7 @@
 	unichar string[length];
 	[fullString getCharacters:string];
 
-	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
 	
 	NSArray *colors = BeatColors.colors.allKeys;
 	

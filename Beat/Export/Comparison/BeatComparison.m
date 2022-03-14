@@ -98,7 +98,7 @@
 	oldScript = [oldScript substringFromIndex:startIndex];
 	NSArray *diffs = [self diffReportFrom:newScript with:oldScript];
 	
-	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:newScript];
+	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:(newScript) ? newScript : @""];
 	
 	// Go through the changed indices and calculate their positions
 	// NB: We are running diff-match-patch in line mode, so basically the line indices for inserts should do.

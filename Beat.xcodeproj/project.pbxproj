@@ -373,6 +373,8 @@
 		B6C84CA525AA566100BDF974 /* BeatAboutScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6C84CA225AA566100BDF974 /* BeatAboutScreen.xib */; };
 		B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
 		B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */; };
+		B6CD61E127DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
+		B6CD61E227DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
 		B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
 		B6CE54BF26010D5B006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
 		B6CE54C326010FC1006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
@@ -871,6 +873,8 @@
 		B6CB9735254ED61900C310CC /* HorizontalPinchView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HorizontalPinchView.m; path = Timeline/HorizontalPinchView.m; sourceTree = "<group>"; };
 		B6CB9739254EEB4000C310CC /* BeatTimelineItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimelineItem.h; path = Timeline/BeatTimelineItem.h; sourceTree = "<group>"; };
 		B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimelineItem.m; path = Timeline/BeatTimelineItem.m; sourceTree = "<group>"; };
+		B6CD61DF27DAA02400912F09 /* BeatSpeak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSpeak.h; sourceTree = "<group>"; };
+		B6CD61E027DAA02400912F09 /* BeatSpeak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSpeak.m; sourceTree = "<group>"; };
 		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = "Beat/User Interface/TouchTimelinePopover.h"; sourceTree = SOURCE_ROOT; };
 		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = "Beat/User Interface/TouchTimelinePopover.m"; sourceTree = SOURCE_ROOT; };
 		B6CE54BD26010D5A006F1E0B /* BeatRevisionTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionTracking.h; sourceTree = "<group>"; };
@@ -1559,6 +1563,8 @@
 			children = (
 				B6713050267610CC00B5FDC5 /* BeatPluginTimer.h */,
 				B6713051267610CC00B5FDC5 /* BeatPluginTimer.m */,
+				B6CD61DF27DAA02400912F09 /* BeatSpeak.h */,
+				B6CD61E027DAA02400912F09 /* BeatSpeak.m */,
 			);
 			path = "API Objects";
 			sourceTree = "<group>";
@@ -2439,6 +2445,7 @@
 				B69EF54E2465925C00C5B78C /* WebPrinter.m in Sources */,
 				B65F02B125B82BF8009E1D04 /* BeatStatisticsPanel.m in Sources */,
 				B662FC0924C22167003EF967 /* OSFImport.m in Sources */,
+				B6CD61E127DAA02400912F09 /* BeatSpeak.m in Sources */,
 				B645A97F23CD03CC00F13710 /* NSString+Regex.m in Sources */,
 				B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */,
 				B6E47D8825028A4E00734A8D /* BeatPaginator.m in Sources */,
@@ -2626,6 +2633,7 @@
 				B68B606D260B849300463AD8 /* WebPrinter.m in Sources */,
 				B68B606E260B849300463AD8 /* BeatStatisticsPanel.m in Sources */,
 				B68B606F260B849300463AD8 /* OSFImport.m in Sources */,
+				B6CD61E227DAA02400912F09 /* BeatSpeak.m in Sources */,
 				B68B6070260B849300463AD8 /* NSString+Regex.m in Sources */,
 				B68B6071260B849300463AD8 /* BeatAntilateralThoughts.m in Sources */,
 				B68B6072260B849300463AD8 /* BeatPaginator.m in Sources */,
@@ -2979,7 +2987,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13233;
+				CURRENT_PROJECT_VERSION = 13234;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3011,7 +3019,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13233;
+				CURRENT_PROJECT_VERSION = 13234;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3039,7 +3047,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13233;
+				CURRENT_PROJECT_VERSION = 13234;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3071,7 +3079,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13233;
+				CURRENT_PROJECT_VERSION = 13234;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

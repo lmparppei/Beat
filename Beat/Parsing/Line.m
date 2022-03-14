@@ -52,6 +52,8 @@
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position parser:(id<LineDelegate>)parser {
 	self = [super init];
 	if (self) {
+		if (string == nil) string = @"";
+		
 		_string = string;
 		_type = type;
 		_position = position;
@@ -785,7 +787,7 @@
 - (NSAttributedString*)attributedStringForFDX {
 	// N.B. This is NOT a Cocoa-compatible attributed string.
 	// The attributes are used to create a string for FDX/HTML conversion.
-	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.string];
+	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
 		
 	// Make (forced) character names uppercase
 	if (self.type == character || self.type == dualDialogueCharacter) {

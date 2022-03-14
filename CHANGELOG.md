@@ -1,5 +1,12 @@
 # Changelog
 
+## Beat 1.93.4
+
+- Fixed average scene length in *Screenplay Statistics*
+- Fixed the *Lock/Unlock Document* button
+- Fixed time of day stats in *Screenplay Statistics*
+
+
 ## Beat 1.93.3
 
 - Fixed a bug in FDX export which joined almost every line

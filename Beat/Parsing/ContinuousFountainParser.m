@@ -730,14 +730,14 @@ static NSDictionary* patterns;
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
 	if (idx == NSNotFound) return changedIndices;
 	
-	if (!self.staticParser) NSLog(@"   ---> cancel at %@", line);
+	//if (!self.staticParser) NSLog(@"   ---> cancel at %@", line);
 	
 	Line *prevLine = [self previousLine:line];
 	
 	line.noteOut = NO;
 	bool actuallyCancelsBlock = NO; // If the block was previously ACTUALLY formatted as a block
 	if (prevLine.noteOut) {
-		NSLog(@"!!! Note out from %@", prevLine);
+		//NSLog(@"!!! Note out from %@", prevLine);
 		actuallyCancelsBlock = YES;
 	}
 	
@@ -746,7 +746,7 @@ static NSDictionary* patterns;
 		Line *l = self.lines[i];
 		
 		if ([l.string containsString:@"[["]) {
-			if (!self.staticParser) NSLog(@"  ... %@", l);
+			//if (!self.staticParser) NSLog(@"  ... %@", l);
 			[l.noteRanges removeIndexes:l.noteOutIndices];
 			[changedIndices addIndex:i];
 			break;
@@ -758,14 +758,14 @@ static NSDictionary* patterns;
 		
 	// Don't look forward if the current line had no note ranges to begin with.
 	if (!line.noteRanges.count && !actuallyCancelsBlock) {
-		if (!self.staticParser) NSLog(@"   ..not looking forward");
+		//if (!self.staticParser) NSLog(@"   ..not looking forward");
 		return changedIndices;
 	}
 
 	// Look forward for note ranges
 	for (NSInteger i = idx; i < self.lines.count; i++) {
 		Line *l = self.lines[i];
-		if (!self.staticParser) NSLog(@"looking at %@", l);
+		//if (!self.staticParser) NSLog(@"looking at %@", l);
 		
 		if ([l.string containsString:@"]]"] ||
 			[l.string containsString:@"[["] // Another note begins, don't look further

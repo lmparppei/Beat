@@ -62,6 +62,9 @@
 }
 
 - (void)updateBackground {
+	// This shouldn't happen but just to be sure
+	if (!_paper) return;
+		
 	[CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
 		
@@ -69,6 +72,7 @@
 	CGFloat documentWidth = (_editor.documentWidth + WHITESPACE * 2) * _editor.magnification;
 	//CGFloat marginWidth = (_editor.inset - WHITESPACE) * _editor.magnification;
 	CGFloat x = (self.frame.size.width - documentWidth) / 2;
+	
 	_paper.frame = CGRectMake(x, -50, documentWidth, self.frame.size.height + 100);
 	_paper.bounds = CGRectMake(0, 0, _paper.frame.size.width, _paper.frame.size.height);
 	

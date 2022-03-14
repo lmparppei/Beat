@@ -65,7 +65,7 @@
 	}
 
 	NSInteger opts = (NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways);
-	NSTrackingArea *trackingArea = trackingArea = [[NSTrackingArea alloc]initWithRect:(NSRect){ 0, 0, self.frame.size.width, self.frame.size.height } options:opts owner:self userInfo:nil];
+	NSTrackingArea *trackingArea = trackingArea = [NSTrackingArea.alloc initWithRect:(NSRect){ 0, 0, self.frame.size.width, self.frame.size.height } options:opts owner:self userInfo:nil];
 	[self addTrackingArea:trackingArea];
 }
 

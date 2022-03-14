@@ -70,9 +70,9 @@ static NSString *strikeoutSymbolClose = @"}}";
 
 static NSString *tagAttribute = @"BeatTag";
 
-- (void)formatLineOfScreenplay:(Line*)line { [self formatLineOfScreenplay:line firstTime:NO]; }
+- (void)formatLine:(Line*)line { [self formatLine:line firstTime:NO]; }
 
-- (void)formatLineOfScreenplay:(Line*)line firstTime:(bool)firstTime
+- (void)formatLine:(Line*)line firstTime:(bool)firstTime
 {
 	/*
 	 
@@ -469,6 +469,15 @@ static NSString *tagAttribute = @"BeatTag";
 	}
 }
 
+
+#pragma mark - Text backgrounds (for revisions + tagging)
+
+- (void)renderBackgroundForLines {
+	for (Line* line in self.delegate.lines) {
+		[self renderBackgroundForLine:line clearFirst:YES];
+	}
+}
+
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
 	NSLayoutManager *layoutMgr = _delegate.textView.layoutManager;
 	NSTextStorage *textStorage = _delegate.textView.textStorage;
@@ -509,43 +518,11 @@ static NSString *tagAttribute = @"BeatTag";
 - (void)initialTextBackgroundRender {
 	if (!_delegate.showTags && !_delegate.showRevisions) return;
 	
-	NSTextView *textView = self.delegate.textView;
-	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[textView.textStorage enumerateAttributesInRange:(NSRange){ 0, textView.string.length } options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			
-			if (range.location+range.length - 1 < textView.string.length) {
-				unichar chr = [textView.string characterAtIndex:range.location+range.length - 1];
-				
-				if (chr == '\n') {
-					range = (NSRange){ range.location, range.length - 1 };
-				}
-			}
-			
-			// Revisions
-			if (attrs[BeatRevisionTracking.revisionAttribute] && self.delegate.showRevisions) {
-				BeatRevisionItem *revision = attrs[BeatRevisionTracking.revisionAttribute];
-				if (revision.type == RevisionAddition) [textView.layoutManager  addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
-				else if (revision.type == RevisionRemovalSuggestion) {
-					[textView.textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
-					[textView.textStorage addAttribute:NSBackgroundColorAttributeName
-												 value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.15] range:range];
-				}
-			}
-			
-			// Tags
-			if (attrs[tagAttribute] && self.delegate.showTags) {
-				BeatTag *tag = attrs[tagAttribute];
-				NSColor *tagColor = [BeatTagging colorFor:tag.type];
-				tagColor = [tagColor colorWithAlphaComponent:.5];
-				
-				if (tagColor) [textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
-																	  value:tagColor
-														  forCharacterRange:range];
-			}
-		}];
+		[self renderBackgroundForLines];
 	});
 }
+
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
 	// Don't add a nil value

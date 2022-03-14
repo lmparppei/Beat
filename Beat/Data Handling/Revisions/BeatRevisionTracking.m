@@ -160,7 +160,7 @@
 }
 
 + (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string {
-	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:string];
+	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:(string) ? string : @""];
 	
 	for (NSString *key in revisions.allKeys) {
 		NSArray *items = revisions[key];

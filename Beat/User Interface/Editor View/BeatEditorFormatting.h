@@ -15,6 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 
+- (void)formatLine:(Line*)line;
+- (void)formatLine:(Line*)line firstTime:(bool)firstTime;
+- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
+- (void)initialTextBackgroundRender;
 @end
 
 NS_ASSUME_NONNULL_END

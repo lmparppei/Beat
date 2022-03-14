@@ -10,7 +10,6 @@
 #import <WebKit/WebKit.h>
 #import <UserNotifications/UserNotifications.h>
 #import "BeatDocumentController.h"
-#import "Beat-Swift.h"
 
 @interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate>
 
@@ -56,5 +55,7 @@
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval;
 
 - (IBAction)showReference:(id)sender;
+- (IBAction)openDiscord:(id)sender;
+- (IBAction)showSupport:(id)sender;
 
 @end

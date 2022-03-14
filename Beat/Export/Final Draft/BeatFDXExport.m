@@ -667,7 +667,7 @@ static NSDictionary *fdxIds;
 
 - (NSString*)lineToXML:(Line*)line {
 	NSAttributedString *string = line.attributedStringForFDX;
-	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *result = NSMutableAttributedString.new;
 	[line.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[result appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];

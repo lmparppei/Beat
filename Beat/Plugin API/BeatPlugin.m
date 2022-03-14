@@ -31,6 +31,7 @@
 @property (nonatomic) WKWebView *sheetWebView;
 @property (nonatomic) BeatPluginData *plugin;
 @property (nonatomic) NSMutableArray *timers;
+@property (nonatomic) NSMutableArray *speakSynths;
 @property (nonatomic, nullable) JSValue* updateMethod;
 @property (nonatomic, nullable) JSValue* updateSelectionMethod;
 @property (nonatomic, nullable) JSValue* updateOutlineMethod;
@@ -112,7 +113,7 @@
 	_sheetCallback = nil;
 	_plugin = nil;
 	
-	[self stopTimers];
+	[self stopBackgroundInstances];
 	[_delegate deregisterPlugin:self];
 }
 
@@ -135,7 +136,7 @@
 	}
 	
 	// Stop any timers left
-	[self stopTimers];
+	[self stopBackgroundInstances];
 	
 	// Remove widget
 	if (_widgetView != nil) [_widgetView remove];
@@ -260,6 +261,17 @@
 	return nil;
 }
 
+#pragma mark - Speak
+
+- (BeatSpeak*)speakSynth {
+	if (!_speakSynths) _speakSynths = NSMutableArray.new;	
+	
+	BeatSpeak *synth = BeatSpeak.new;
+	[_speakSynths addObject:synth];
+	
+	return synth;
+}
+
 #pragma mark - Timer
 
 - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats {
@@ -286,12 +298,18 @@
 	
 	_timers = timers;
 }
-- (void)stopTimers {
+- (void)stopBackgroundInstances {
 	for (BeatPluginTimer *timer in _timers) {
 		[timer invalidate];
 	}
 	[_timers removeAllObjects];
 	_timers = nil;
+	
+	for (BeatSpeak *synth in _speakSynths) {
+		[synth stopSpeaking];
+	}
+	[_speakSynths removeAllObjects];
+	_speakSynths = nil;
 }
 
 
@@ -1228,7 +1246,7 @@
 #pragma mark - Formatting
 
 - (void)reformat:(Line *)line {
-	if (line) [_delegate formatLineOfScreenplay:line];
+	if (line) [_delegate formatLine:line];
 }
 - (void)reformatRange:(NSInteger)loc len:(NSInteger)len {
 	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];

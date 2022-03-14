@@ -13,14 +13,14 @@
 -(instancetype)initWithText:(NSString*)text
 {
 	self = [super init];
-	_text = [[NSMutableAttributedString alloc] initWithString:text];
+	_text = [[NSMutableAttributedString alloc] initWithString:(text) ? text : @""];
 	return self;
 }
 
 -(instancetype)initWithAttributedText:(NSAttributedString*)text
 {
 	self = [super init];
-	_text = [[NSMutableAttributedString alloc] initWithAttributedString:text];
+	_text = [[NSMutableAttributedString alloc] initWithAttributedString:(text) ? text : NSAttributedString.new];
 	return self;
 }
 
@@ -125,7 +125,7 @@
 
 - (NSAttributedString*)attributedFountainString
 {
-	NSMutableAttributedString *attrResult = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *attrResult = NSMutableAttributedString.new;
 	
 	// Enumerate string attributes, find previously set stylization and convert it to Fountain
 	[self.text enumerateAttributesInRange:(NSRange){0, self.text.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {

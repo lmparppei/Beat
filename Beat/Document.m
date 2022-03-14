@@ -111,17 +111,14 @@
 #import "BeatLockButton.h"
 #import "BeatMeasure.h"
 #import "BeatColorMenuItem.h"
-
 #import "BeatPlugin.h"
 #import "BeatPluginManager.h"
 #import "BeatWidgetView.h"
-
 #import "BeatSegmentedControl.h"
 #import "BeatNotepad.h"
-
 #import "BeatUserDefaults.h"
-
 #import "BeatCharacterList.h"
+#import "BeatEditorFormatting.h"
 
 @interface Document ()
 
@@ -326,11 +323,15 @@
 @property (nonatomic) NSTimeInterval executionTimeCache;
 @property (nonatomic) Line* lineCache;
 
+@property (nonatomic) NSPanel* progressPanel;
+@property (nonatomic) NSProgressIndicator *progressIndicator;
+
+@property (nonatomic) BeatEditorFormatting *formatting;
+
 // Debug flags
 @property (nonatomic) bool debug;
 
-@property (nonatomic) NSPanel* progressPanel;
-@property (nonatomic) NSProgressIndicator *progressIndicator;
+
 @end
 
 #define APP_NAME @"Beat"
@@ -482,8 +483,12 @@
 	_documentWindow = aController.window;
 	_documentWindow.delegate = self;
 	
+	// Setup formatting
+	_formatting = BeatEditorFormatting.new;
+	_formatting.delegate = self;
+	
 	// Hide the welcome screen
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"Document open" object:nil];
+	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
 		
 	// Initialize document settings if needed
 	if (!self.documentSettings) self.documentSettings = [[BeatDocumentSettings alloc] init];
@@ -571,11 +576,11 @@
 
 -(void)loadingComplete {
 	[_parser.changedIndices removeAllIndexes];
-	[self initialTextBackgroundRender];
+	[self.formatting initialTextBackgroundRender];
 	
 	// No animations
 	[CATransaction begin];
-	[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
+	//[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
 	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
 	[CATransaction commit];
 
@@ -1518,7 +1523,7 @@
 			// If the character cue was left empty, remove its type
 			if (_characterInputForLine.string.length == 0) {
 				_characterInputForLine.type = action;
-				[self formatLineOfScreenplay:_characterInputForLine];
+				[_formatting formatLine:_characterInputForLine];
 			}
 
 			[self cancelCharacterInput];
@@ -1603,7 +1608,7 @@
 			if (chr == ')') {
 				[self addString:@"\n" atIndex:affectedCharRange.location + 1];
 				Line *nextLine = [self getNextLine:_currentLine];
-				[self formatLineOfScreenplay:nextLine];
+				[_formatting formatLine:nextLine];
 				[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
 				return NO;
 			}
@@ -1625,7 +1630,7 @@
 				// If the cue is empty, reset it
 				if (_characterInputForLine.string.length == 0) {
 					_characterInputForLine.type = empty;
-					[self formatLineOfScreenplay:_characterInputForLine];
+					[_formatting formatLine:_characterInputForLine];
 				}
 				else {
 					_characterInputForLine.forcedCharacterCue = YES;
@@ -2238,7 +2243,7 @@
 	_characterInput = YES;
 	
 	// Format the line (if mid-screenplay)
-	[self formatLineOfScreenplay:_currentLine];
+	[_formatting formatLine:_currentLine];
 
 	// Set typing attributes (just in case, and if at the end)
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
@@ -2279,13 +2284,10 @@
 
 #pragma mark - Formatting
 
-/*
- 
- WIP:
- This should probably be moved into a separate class.
- Work has already begun in the class BeatEditorFormatting.
- 
- */
+- (void)formatLine:(Line*)line {
+	// Forwarding for delegation
+	[_formatting formatLine:line];
+}
 
 - (IBAction)reformatEverything:(id)sender {
 	[self.parser resetParsing];
@@ -2296,7 +2298,7 @@
 - (void)formatAllLinesOfType:(LineType)type
 {
 	for (Line* line in self.parser.lines) {
-		if (line.type == type) [self formatLineOfScreenplay:line];
+		if (line.type == type) [_formatting formatLine:line];
 	}
 	
 	[self ensureLayout];
@@ -2305,7 +2307,7 @@
 - (void)formatAllLines
 {
 	for (Line* line in self.parser.lines) {
-		[self formatLineOfScreenplay:line];
+		[_formatting formatLine:line];
 	}
 	
 	[self ensureLayout];
@@ -2313,7 +2315,7 @@
 - (void)applyFormatChanges
 {
 	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
-		[self formatLineOfScreenplay:self.parser.lines[idx]];
+		[_formatting formatLine:self.parser.lines[idx]];
 	}];
         
     [self.parser.changedIndices removeAllIndexes];
@@ -2324,7 +2326,7 @@
 	
 	NSArray *lines = [self.parser linesInRange:range];
 	for (Line* line in lines) {
-		[self formatLineOfScreenplay:line];
+		[_formatting formatLine:line];
 	}
 }
 
@@ -2352,7 +2354,7 @@
 			
 			line = self.parser.lines[i + idx];
 			lastIndex = i + idx;
-			[self formatLineOfScreenplay:line firstTime:YES];
+			[self.formatting formatLine:line firstTime:YES];
 		}
 		
 		[self.progressIndicator incrementBy:400.0 / self.parser.lines.count];
@@ -2371,403 +2373,12 @@
 	[self formatAllLines];
 }
 
-- (void)formatLineOfScreenplay:(Line*)line { [self formatLineOfScreenplay:line firstTime:NO]; }
-
-- (void)formatLineOfScreenplay:(Line*)line firstTime:(bool)firstTime
-{
-	/*
-	 
-	 This method uses a mixture of permanent text attributes and temporary attributes
-	 to optimize performance.
-	 
-	 Colors are set using NSLayoutManager's temporary attributes, while everything else
-	 is stored into the attributed string in NSTextStorage.
-	 
-	*/
-	
-	// Let's do the real formatting now
-	NSRange range = line.textRange;
-	NSLayoutManager *layoutMgr = _textView.layoutManager;
-	NSTextStorage *textStorage = _textView.textStorage;
-	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] init];
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	
-	if (_disableFormatting) {
-		// Only add bare-bones stuff
-		
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.textColor forCharacterRange:line.range];
-		[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-		[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		[attributes setValue:self.courier forKey:NSFontAttributeName];
-		
-		if (range.length > 0) [textStorage addAttributes:attributes range:range];
-		
-		return;
-	}
-	
-	// Don't go out of range (just a safety measure for plugins etc.)
-	if (line.position + line.string.length > self.textView.string.length) return;
-		
-	// Do nothing for already formatted empty lines (except remove the background)
-	if (line.type == empty && line.formattedAs == empty && line.string.length == 0) {
-		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
-		return;
-	}
-
-	// Store the type we are formatting for
-	line.formattedAs = line.type;
-	
-	// Line height
-	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	
-	// Foreground color is TEMPORARY ATTRIBUTE
-	[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.currentTextColor forCharacterRange:line.range];
-	[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
-	
-	// Redo everything we just did for forced character input
-	if (_characterInput && _characterInputForLine == line) {
-		// Do some extra checks for dual dialogue
-		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
-		else line.type = character;
-		
-		NSRange selectedRange = self.textView.selectedRange;
-		
-		// Only do this if we are REALLY typing at this location
-		// Foolproof fix for a strange, rare bug which changes multiple
-		// lines into character cues and the user is unable to undo the changes
-		if (range.location + range.length <= selectedRange.location) {
-			[_textView replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
-			line.string = line.string.uppercaseString;
-			[self.textView setSelectedRange:selectedRange];
-			
-			// Reset attribute because we have replaced the text
-			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:_themeManager.currentTextColor forCharacterRange:line.range];
-		}
-	}
-	
-	if (line.type == heading) {
-		// Format heading
-		
-		// Stylize according to settings
-		if (self.headingStyleBold) [attributes setObject:self.boldCourier forKey:NSFontAttributeName];
-		if (self.headingStyleUnderline) [attributes setObject:@1 forKey:NSUnderlineStyleAttributeName];
-		
-		// If the scene has a color, let's color it
-		if (line.color.length) {
-			NSColor* headingColor = [BeatColors color:line.color.lowercaseString];
-			if (headingColor != nil) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:headingColor forCharacterRange:line.textRange];
-		}
-	} else if (line.type == pageBreak) {
-		// Format page break - bold
-		[attributes setObject:self.boldCourier forKey:NSFontAttributeName];
-		
-	} else if (line.type == lyrics) {
-		// Format lyrics - italic
-		[attributes setObject:self.italicCourier forKey:NSFontAttributeName];
-		[paragraphStyle setAlignment:NSTextAlignmentCenter];
-	}
-
-	// Handle title page block
-	if (line.type == titlePageTitle  ||
-		line.type == titlePageAuthor ||
-		line.type == titlePageCredit ||
-		line.type == titlePageSource ||
-		
-		line.type == titlePageUnknown ||
-		line.type == titlePageContact ||
-		line.type == titlePageDraftDate) {
-		
-		[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		
-		// Indent lines following a first-level title page element a bit more
-		if ([line.string rangeOfString:@":"].location != NSNotFound) {
-			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
-			[paragraphStyle setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
-		} else {
-			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * 1.25 * DOCUMENT_WIDTH_MODIFIER];
-			[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * DOCUMENT_WIDTH_MODIFIER];
-		}
-	} else if (line.type == transitionLine) {
-		// Transitions
-		[paragraphStyle setAlignment:NSTextAlignmentRight];
-		
-	} else if (line.type == centered || line.type == lyrics) {
-		// Lyrics & centered text
-		[paragraphStyle setAlignment:NSTextAlignmentCenter];
-	
-	} else if (line.type == character) {
-		// Character cue
-		[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-	} else if (line.type == parenthetical) {
-		// Parenthetical after character
-		[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
-		
-	} else if (line.type == dialogue) {
-		// Dialogue block
-		[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
-		
-	} else if (line.type == dualDialogueCharacter) {
-		[paragraphStyle setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
-		
-	} else if (line.type == dualDialogueParenthetical) {
-		[paragraphStyle setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
-		
-	} else if (line.type == dualDialogue) {
-		[paragraphStyle setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
-		
-	} else if (line.type == section || line.type == synopse) {
-		// Stylize sections & synopses
-
-		if (line.type == section) {
-			CGFloat size = SECTION_FONT_SIZE;
-			
-			NSColor *sectionColor;
-			
-			if (line.sectionDepth == 1) {
-				[paragraphStyle setParagraphSpacingBefore:30];
-				[paragraphStyle setParagraphSpacing:0];
-				
-				// Black or custom for high-level sections
-				
-				if (line.color) {
-					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
-				} else sectionColor = self.themeManager.sectionTextColor;
-				
-
-				[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:sectionColor forCharacterRange:line.textRange];
-				//[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
-				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
-			} else {
-				if (line.sectionDepth == 2) {
-					[paragraphStyle setParagraphSpacingBefore:20];
-					[paragraphStyle setParagraphSpacing:0];
-				}
-				
-				// And custom or gray for others
-				if (line.color) {
-					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = self.themeManager.sectionTextColor;
-				} else sectionColor = self.themeManager.commentColor;
-				
-				//[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
-				[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:sectionColor forCharacterRange:line.textRange];
-				
-				// Also, make lower sections a bit smaller
-				size = size - line.sectionDepth;
-				if (size < 15) size = 15.0;
-				
-				[attributes setObject:[self sectionFontWithSize:size] forKey:NSFontAttributeName];
-			}
-		}
-		
-		if (line.type == synopse) {
-			NSColor* synopsisColor;
-			if (line.color) {
-				if (!(synopsisColor = [BeatColors color:line.color])) synopsisColor = self.themeManager.sectionTextColor;
-			} else synopsisColor = self.themeManager.synopsisTextColor;
-			
-			//if (synopsisColor) [attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
-			if (synopsisColor) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:synopsisColor forCharacterRange:line.textRange];
-			
-			[attributes setObject:self.synopsisFont forKey:NSFontAttributeName];
-		}
-		
-	} else if (line.type == action) {
-		// Take note if this is a paragraph split into two
-		// WIP: Check if this is needed
-		/*
-		NSInteger index = [_parser.lines indexOfObject:line];
-		if (index > 0) {
-			Line* precedingLine = [_parser.lines objectAtIndex:index-1];
-			if (precedingLine.type == action && precedingLine.string.length > 0) {
-				NSLog(@"### %@ is split", line);
-				line.isSplitParagraph = YES;
-			}
-		}
-		*/
-		
-	} else if (line.type == empty) {
-		// Just to make sure that after second empty line we reset indents
-		NSInteger lineIndex = [_parser.lines indexOfObject:line];
-		
-		if (lineIndex > 1) {
-			Line* precedingLine = [_parser.lines objectAtIndex:lineIndex - 1];
-			if (precedingLine.string.length < 1) {
-				[paragraphStyle setFirstLineHeadIndent:0];
-				[paragraphStyle setHeadIndent:0];
-				[paragraphStyle setTailIndent:0];
-			}
-		}
-	}
-	
-	// Apply paragraph styles set above
-	[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-	
-	// Overwrite fonts if they are not set yet
-	if (![attributes valueForKey:NSFontAttributeName]) {
-		[attributes setObject:self.courier forKey:NSFontAttributeName];
-	}
-	if (![attributes valueForKey:NSUnderlineStyleAttributeName]) {
-		[attributes setObject:@0 forKey:NSUnderlineStyleAttributeName];
-	}
-	if (![attributes valueForKey:NSStrikethroughStyleAttributeName]) {
-		[attributes setObject:@0 forKey:NSStrikethroughStyleAttributeName];
-	}
-	if (!attributes[NSBackgroundColorAttributeName]) {
-		[textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
-	}
-	
-	// Add selected attributes
-	if (range.length > 0) {
-		[textStorage addAttributes:attributes range:range];
-	} else {
-		// Add attributes ahead
-		if (range.location + 1 < textStorage.string.length) {
-			range = NSMakeRange(range.location, range.length + 1);
-			[textStorage addAttributes:attributes range:range];
-		}
-	}
-	
-	//[self endMeasure:@"Add attributes"];
-	
-	// INPUT ATTRIBUTES FOR CARET / CURSOR
-	if (line.string.length == 0 && !firstTime) {
-		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
-		Line* previousLine;
-		NSInteger lineIndex = [_parser.lines indexOfObject:line];
-		if (lineIndex > 0) previousLine = [_parser.lines objectAtIndex:lineIndex - 1];
-		
-		//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-
-		// Keep dialogue input for character blocks
-		if ((previousLine.type == dialogue || previousLine.type == character || previousLine.type == parenthetical)
-			&& previousLine.string.length) {
-			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
-		} else {
-			[paragraphStyle setFirstLineHeadIndent:0];
-			[paragraphStyle setHeadIndent:0];
-			[paragraphStyle setTailIndent:0];
-		}
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		[self.textView setTypingAttributes:attributes];
-	}
-	
-	// Format scene number as invisible
-	if (line.sceneNumberRange.length > 0) {
-		NSRange sceneNumberRange = NSMakeRange(line.sceneNumberRange.location - 1, line.sceneNumberRange.length + 2);
-		// Don't go out of range, please, please
-		if (sceneNumberRange.location + sceneNumberRange.length <= line.string.length && sceneNumberRange.location >= 0) {
-			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.currentInvisibleTextColor
-								forCharacterRange:[self globalRangeFromLocalRange:&sceneNumberRange inLineAtPosition:line.position]];
-		}
-	}
-	
-	//Add in bold, underline, italics and other stylization
-	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSFontAttributeName value:self.italicCourier line:line range:range formattingSymbol:italicSymbol];
-	}];
-	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSFontAttributeName value:self.boldCourier line:line range:range formattingSymbol:boldSymbol];
-	}];
-	[line.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSFontAttributeName value:self.boldItalicCourier line:line range:range formattingSymbol:@""];
-	}];
-	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
-	}];
-	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:strikeoutSymbolOpen];
-	}];
-
-	// Foreground color attributes
-	if (line.isTitlePage && line.titleRange.length > 0) {
-		NSRange titleRange = line.titleRange;
-			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.commentColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
-	}
-	
-	[line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
-	}];
-	
-	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.commentColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
-	}];
-	
-	[line.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&range
-												 inLineAtPosition:line.position]];
-	}];
-
-
-	// Format force element symbols
-	if (line.numberOfPrecedingFormattingCharacters > 0 && line.string.length >= line.numberOfPrecedingFormattingCharacters) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position, line.numberOfPrecedingFormattingCharacters)];
-	} else if (line.type == centered && line.string.length > 1) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position, 1)];
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position + line.string.length - 1, 1)];
-	}
-	if (line.type == dualDialogueCharacter) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position + line.length - 1, 1)];
-	}
-	
-	if (line.string.containsOnlyWhitespace && line.length >= 2) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor forCharacterRange:line.textRange];
-		[textStorage addAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor range:line.textRange];
-	}
-		
-	// Color markers
-	if (line.marker.length && line.markerRange.length) {
-		NSColor *color = [BeatColors color:line.marker];
-		NSRange markerRange = line.markerRange;
-		if (color) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-											  value:color
-								  forCharacterRange:[self globalRangeFromLocalRange:&markerRange inLineAtPosition:line.position]];
-	}
-
-	
-	// Render backgrounds according to text attributes
-	if (!firstTime && line.string.length) {
-		[self renderBackgroundForLine:line clearFirst:NO];
-	}
-}
-
 - (void)renderBackgroundForLines {
 	for (Line* line in self.lines) {
-		[self renderBackgroundForLine:line clearFirst:YES];
+		[_formatting renderBackgroundForLine:line clearFirst:YES];
 	}
 }
+
 - (void)renderBackgroundForRange:(NSRange)range {
 	NSArray *lines = [self.parser linesInRange:range];
 	for (Line* line in lines) {
@@ -2776,95 +2387,11 @@
 }
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	NSLayoutManager *layoutMgr = self.textView.layoutManager;
-	NSTextStorage *textStorage = self.textView.textStorage;
-	
-	if (clear) {
-		// First clear the background attribute if needed
-		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
-	}
-	
-	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:line.range];
-	
-	if (_showRevisions || _showTags) {
-		// Enumerate attributes
-		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			if (attrs[revisionAttribute] && _showRevisions) {
-				BeatRevisionItem *revision = attrs[revisionAttribute];
-				if (revision.type == RevisionAddition) {
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
-				}
-				else if (revision.type == RevisionRemovalSuggestion) {
-					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.15] forCharacterRange:range];
-				}
-			}
-			
-			if (attrs[tagAttribute] && _showTags) {
-				BeatTag *tag = attrs[tagAttribute];
-				NSColor *tagColor = [BeatTagging colorFor:tag.type];
-				tagColor = [tagColor colorWithAlphaComponent:.5];
-			   
-				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
-			}
-		}];
-	}
+	// Forward (for delegation)
+	[_formatting renderBackgroundForLine:line clearFirst:clear];
 }
 
-- (void)initialTextBackgroundRender {
-	if (!_showTags && !_showRevisions) return;
-	
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[self renderBackgroundForLines];
-	});
-}
 
-- (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
-	// Don't add a nil value
-	if (!value) return;
-	
-	NSLayoutManager *layoutMgr = _textView.layoutManager;
-	
-	NSUInteger symLen = sym.length;
-	NSRange openRange = (NSRange){ range.location, symLen };
-	NSRange closeRange = (NSRange){ range.location + range.length - symLen, symLen };
-	
-	NSRange effectiveRange;
-	
-	if (symLen == 0) {
-		// Format full range
-		effectiveRange = NSMakeRange(range.location, range.length);
-	}
-	else if (range.length >= 2 * symLen) {
-		// Format between characters (ie. *italic*)
-		effectiveRange = NSMakeRange(range.location + symLen, range.length - 2 * symLen);
-	} else {
-		// Format nothing
-		effectiveRange = NSMakeRange(range.location + symLen, 0);
-	}
-	
-	if (key.length) [self.textView.textStorage addAttribute:key value:value
-						range:[self globalRangeFromLocalRange:&effectiveRange
-											 inLineAtPosition:line.position]];
-	
-	if (openRange.length) {
-		// Fuck. We need to format these ranges twice, because there is a weird bug in glyph setter.
-		[_textView.textStorage addAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   range:[self globalRangeFromLocalRange:&openRange
-											 inLineAtPosition:line.position]];
-		[_textView.textStorage addAttribute:NSForegroundColorAttributeName
-								   value:self.themeManager.invisibleTextColor
-					   range:[self globalRangeFromLocalRange:&closeRange
-											 inLineAtPosition:line.position]];
-		
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&openRange inLineAtPosition:line.position]];
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:self.themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&closeRange inLineAtPosition:line.position]];
-	}
-}
 
 #pragma mark - Revisions
 
@@ -2985,7 +2512,7 @@
 			[str appendString:[line.string substringWithRange:range]];
 		}];
 		
-		[self formatLineOfScreenplay:line];
+		[_formatting formatLine:line];
 	}];
 }
 
@@ -3522,7 +3049,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	if (_showRevisions) {
 		// Show revisions
-		[self initialTextBackgroundRender];
+		[self.formatting initialTextBackgroundRender];
 		[self.textView refreshLayoutElements];
 	} else {
 		// Hide revisions
@@ -4776,6 +4303,7 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
 	// Move scene via card view
+	// Why is this here, oh my.
 	if ([message.name isEqualToString:@"move"]) {
 		if ([message.body rangeOfString:@","].location != NSNotFound) {
 			NSArray *fromTo = [message.body componentsSeparatedByString:@","];
@@ -4807,7 +4335,7 @@ static NSString *revisionAttribute = @"Revision";
 			NSUInteger index = [[indexAndColor objectAtIndex:0] integerValue];
 			NSString *color = [indexAndColor objectAtIndex:1];
 			
-			Line *line = [[self.parser lines] objectAtIndex:index];
+			Line *line = [self.parser.lines objectAtIndex:index];
 			OutlineScene *scene = [self findSceneByLine:line];
 			
 			[self setColor:color forScene:scene];
@@ -4816,6 +4344,12 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 #pragma mark - Scene numbering for NSTextView
+
+/*
+ 
+ Please, future me, if you are stil here, move all of this to the text view
+ 
+ */
 
 - (IBAction)showSceneNumberStart:(id)sender {
 	// Load previous setting
@@ -4873,10 +4407,14 @@ static NSString *revisionAttribute = @"Revision";
 	[_textView refreshLayoutElementsFrom:location];
 }
 
+
 #pragma mark - Markers
 
 - (NSArray*)markers {
-	NSMutableArray * markers = [NSMutableArray array];
+	// This could be inquired from the text view, too.
+	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
+	NSMutableArray * markers = NSMutableArray.new;
+	
 	for (Line* line in self.parser.lines) {
 		if (line.marker.length == 0 && line.color.length == 0) continue;
 
@@ -4967,6 +4505,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)setupAnalysis {
+	// Move this to the analysis/statistics class
 	NSMutableDictionary *genders = [(NSDictionary*)[self.documentSettings get:@"CharacterGenders"] mutableCopy];
 	
 	if (!genders) _characterGenders = [NSMutableDictionary dictionary];
@@ -4982,6 +4521,11 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Advanced Filtering
 
+/*
+ 
+ Fuck all of this. The filtering should be rewritten and rethought.
+ 
+ */
 
 - (void)maskScenes {
 	// If there is no filtered outline, just reset everything
@@ -5057,12 +4601,6 @@ triangle walks
 	 
 	 The above is already implemented, but doesn't work. Lol.
 	 
-	 
-	 Idea for rewrite:
-	 Set up a delegate for live pagination. It has a timer and a method for checking whethe
-	 the text has changed. If it has, it will repaginate the document. OR even better, use
-	 changed indices from the parser.
-	 
 	 */
 	
 	// Null the timer so we don't have too many of these operations queued
@@ -5092,6 +4630,7 @@ triangle walks
 				for (NSDictionary *pageBreak in pageBreaks) { @autoreleasepool {
 					CGFloat lineHeight = 13; // Line height from pagination
 					CGFloat UIlineHeight = 20;
+					CGFloat y;
 					
 					Line *line = pageBreak[@"line"];
 
@@ -5101,8 +4640,6 @@ triangle walks
 					NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 					
 					NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
-					
-					CGFloat y;
 					
 					// We return -1 for elements that should have page break after them
 					if (position >= 0) {
@@ -5116,8 +4653,6 @@ triangle walks
 				} }
 				
 				[self.textView updatePageNumbers:breakPositions];
-
-				//[self ensureLayout];
 				[self.textView setNeedsDisplay:YES];
 			});
 		});
@@ -5241,6 +4776,13 @@ triangle walks
  */
 
 #pragma mark - Title page editor
+
+/*
+ 
+ Move most of this to the title page editor class.
+ Should be easy using BeatEditorDelegate.
+ 
+ */
 
 - (IBAction)editTitlePage:(id)sender {
 	_titlePageEditor = [[BeatTitlePageEditor alloc] initWithDelegate:self];

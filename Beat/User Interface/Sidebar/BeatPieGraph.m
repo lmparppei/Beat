@@ -97,7 +97,7 @@
 	CGFloat offset = 0;
 	CGFloat height = _fullHeight * .7;
 	
-	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
 	
 	for (NSString * key in sortedValues) {
 		CGFloat percentage = ((CGFloat)[(NSNumber*)data[key] integerValue] / (CGFloat)total);

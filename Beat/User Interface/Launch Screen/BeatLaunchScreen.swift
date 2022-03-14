@@ -46,6 +46,18 @@ class BeatLaunchScreen : NSWindowController {
 		let appDelegate:BeatAppDelegate = NSApp.delegate as! BeatAppDelegate
 		appDelegate.showReference(self)
 	}
+
+	@IBAction func openDiscord(sender: Any) {
+		let appDelegate:BeatAppDelegate = NSApp.delegate as! BeatAppDelegate
+		appDelegate.openDiscord(self)
+	}
+	
+	@IBAction func openSupport(sender: Any) {
+		let appDelegate:BeatAppDelegate = NSApp.delegate as! BeatAppDelegate
+		appDelegate.showSupport(self)
+	}
+
+	
 }
 
 /*

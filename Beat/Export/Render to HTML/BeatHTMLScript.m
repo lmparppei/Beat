@@ -627,7 +627,7 @@
 	NSAttributedString *string = line.attributedStringForFDX;
 	
 	// Ignore any formatting and only include CONTENT ranges
-	NSMutableAttributedString *result = [[NSMutableAttributedString alloc] init];
+	NSMutableAttributedString *result = NSMutableAttributedString.new;
 	
 	NSIndexSet *indices;
 	if (!_printNotes) indices = line.contentRanges;

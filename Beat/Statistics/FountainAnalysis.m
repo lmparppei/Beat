@@ -126,10 +126,11 @@
 		
 		if (line.type == heading) {
 			// Map the times of day
-			NSRange todRange = [line.string rangeOfString:@"- " options:NSBackwardsSearch];
+			NSString *str = line.stripFormatting;
+			NSRange todRange = [str rangeOfString:@"- " options:NSBackwardsSearch];
 			
 			if (todRange.location + 2 < line.string.length) {
-				NSString *tod = [line.string substringFromIndex:todRange.location + 2];
+				NSString *tod = [str substringFromIndex:todRange.location + 2];
 				
 				// Replace things like [STORY] and [[COLOR RED]], NIGHT (PRESENT DAY)
 				tod = [tod replace:RX(@"\\[(.*)\\]") with:@""];
@@ -213,7 +214,7 @@
 	
 	CGFloat lngPages = floorf(longest);
 	CGFloat lngEights = longest - lngPages;
-	
+		
 	_avgLength = @[ @(avgPages), @(avgEights) ];
 	_longestLength = @[ @(lngPages), @(lngEights) ];
 	

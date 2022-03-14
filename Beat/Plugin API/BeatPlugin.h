@@ -34,6 +34,7 @@
 #import "BeatPluginUIView.h"
 #import "BeatPluginUICheckbox.h"
 #import "BeatPluginUILabel.h"
+#import "BeatSpeak.h"
 
 
 @class BeatPluginWindow;
@@ -113,6 +114,8 @@
 - (void)nextTab;
 - (void)previousTab;
 
+// Speak synth
+- (BeatSpeak*)speakSynth;
 
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value); /// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
@@ -184,7 +187,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (OutlineScene*)getCurrentScene;
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
 - (void)forceFormatChangesInRange:(NSRange)range;
-- (void)formatLineOfScreenplay:(Line*)line;
+- (void)formatLine:(Line*)line;
 - (void)setPropertyValue:(NSString*)key value:(id)value;
 - (id)getPropertyValue:(NSString*)key;
 - (void)addWidget:(id)widget;

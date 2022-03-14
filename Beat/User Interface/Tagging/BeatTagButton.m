@@ -48,7 +48,7 @@
 	NSString *titleText = [NSString stringWithString:self.title];
 
 	NSRect textRect = NSMakeRect(0, 0, rect.size.width, rect.size.height);
-	NSMutableAttributedString *title = [[NSMutableAttributedString alloc] initWithString:titleText];
+	NSMutableAttributedString *title = [[NSMutableAttributedString alloc] initWithString:(titleText) ? titleText : @""];
 	
 	NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
 	//style.alignment = NSTextAlignmentCenter;
