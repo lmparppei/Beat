@@ -20,7 +20,7 @@ class BeatValidationItem: NSObject {
 	var selector:Selector?
 	var target:AnyObject!
 
-	init(title:String, setting:String, target:AnyObject ) {
+	@objc init(title:String, setting:String, target:AnyObject ) {
 		self.title = title
 		self.setting = setting
 		self.target = target
@@ -28,7 +28,7 @@ class BeatValidationItem: NSObject {
 		super.init()
 	}
 	
-	init(action:Selector, setting:String, target:AnyObject) {
+	@objc init(action:Selector, setting:String, target:AnyObject) {
 		self.selector = action
 		self.setting = setting
 		self.target = target

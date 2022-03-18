@@ -1708,17 +1708,19 @@
 	// Fire up autocomplete at the end of string and
 	// create cached lists of scene headings / character names
 	
-	if (_textView.selectedRange.location == _currentLine.position + _currentLine.string.length - 1) {
-		if (_currentLine.type == character) {
-			if (!_characterNames.count) [self collectCharacterNames];
-			[self.textView setAutomaticTextCompletionEnabled:YES];
-		} else if (_currentLine.type == heading) {
-			if (!_sceneHeadings.count) [self collectHeadings];
-			[self.textView setAutomaticTextCompletionEnabled:YES];
-		} else {
-			[_characterNames removeAllObjects];
-			[_sceneHeadings removeAllObjects];
-			[self.textView setAutomaticTextCompletionEnabled:NO];
+	if (self.autocomplete) {
+		if (_textView.selectedRange.location == _currentLine.position + _currentLine.string.length - 1) {
+			if (_currentLine.type == character) {
+				if (!_characterNames.count) [self collectCharacterNames];
+				[self.textView setAutomaticTextCompletionEnabled:YES];
+			} else if (_currentLine.type == heading) {
+				if (!_sceneHeadings.count) [self collectHeadings];
+				[self.textView setAutomaticTextCompletionEnabled:YES];
+			} else {
+				[_characterNames removeAllObjects];
+				[_sceneHeadings removeAllObjects];
+				[self.textView setAutomaticTextCompletionEnabled:NO];
+			}
 		}
 	}
 
@@ -1819,7 +1821,7 @@
 	_contentCache = [NSString stringWithString:self.textView.string];
 	
 	// A larger chunk of text was pasted. Ensure layout.
-	if (self.lastChangedRange.length > 3) [self ensureLayout];
+	if (_lastChangedRange.length > 3) [self ensureLayout];
 	
 	//[self.textView refreshLayoutElementsFrom:self.lastChangedRange.location];
 	//[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
@@ -3245,6 +3247,8 @@ static NSString *revisionAttribute = @"Revision";
 - (void)setupMenuItems {
 	// Menu items which need to check their on/off state against bool properties in this class
 	_itemsToValidate = @[
+		// Swift class alternative:
+		// [BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
 		[ValidationItem withAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
 		[ValidationItem withAction:@selector(toggleAutoLineBreaks:) setting:@"autoLineBreaks" target:self],
 		[ValidationItem withAction:@selector(toggleSceneLabels:) setting:@"showSceneNumberLabels" target:self],

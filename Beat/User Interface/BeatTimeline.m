@@ -175,7 +175,6 @@
 			if (scene.type == section) {
 				// Having sections transforms the view, so save the depth, too
 				_hasSections = YES;
-				NSLog(@"...has sections");
 				if (scene.sectionDepth > _sectionDepth) _sectionDepth = scene.sectionDepth;
 			}
 			if (scene.storylines.count) {
@@ -313,7 +312,7 @@
 		}
 		
 		// Clip sections & synopsis markers for same and higher level sections
-		if (scene.type == section) {
+		if (scene.type == section || scene.type == synopse) {
 			if (previousSection && previousSection.representedItem.sectionDepth >= scene.sectionDepth) {
 				if (previousSection.frame.origin.x + previousSection.frame.size.width > item.frame.origin.x) {
 					CGFloat difference = previousSection.frame.origin.x + previousSection.frame.size.width - item.frame.origin.x;

@@ -33,7 +33,7 @@
 #define FONT_STYLE_KEY @"Sans Serif"
 #define HIDE_FOUNTAIN_MARKUP_KEY @"Hide Fountain Markup"
 #define AUTOSAVE_KEY @"Autosave"
-#define AUTOCOMPLETE_KEY @"Autosave"
+#define AUTOCOMPLETE_KEY @"Autocomplete"
 
 
 + (BeatUserDefaults*)sharedDefaults

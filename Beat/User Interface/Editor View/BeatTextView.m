@@ -827,10 +827,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSString *firstChar = [self.substring substringToIndex:1];
 		NSSize firstCharSize = [firstChar sizeWithAttributes:@{NSFontAttributeName:self.font}];
 		rect.size.width = firstCharSize.width;
-		
+			
 		_popupMode = Autocomplete;
 		[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
-	
+		[self.window makeFirstResponder:self];
 	} else {
 		[self.autocompletePopover close];
 	}

@@ -23,16 +23,21 @@
 @interface RecentFiles()
 @property (nonatomic) NSURL *selectedURL;
 @property (nonatomic) NSMutableArray *items;
+@property (nonatomic) NSArray *recentFiles;
 @end
 
 @implementation RecentFiles
+
+-(void)awakeFromNib {
+	_recentFiles = NSDocumentController.sharedDocumentController.recentDocumentURLs.copy;
+}
 
 - (void)reload {
 	// We'll cache the date results to avoid sandboxing file access problems.
 	
 	_items = [NSMutableArray array];
 	
-	NSArray *files = [NSDocumentController.sharedDocumentController recentDocumentURLs];
+	NSArray *files = _recentFiles;
 
 	for (NSURL *fileUrl in files) {
 		NSDate *fileDate;
@@ -92,54 +97,6 @@
 	return cell;
 	
 }
-/*
-
-- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
-	bool selected = NO;
-	if ([_items indexOfObject:item] == outlineView.selectedRow) selected = YES;
-
-	 
-	NSDictionary *fileItem = item;
-	NSURL *url = fileItem[@"url"];
-	NSString *date = fileItem[@"date"];
-
-		
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	paragraphStyle.lineSpacing = 1;
-			
-	NSDictionary *fileAttributes = @{
-		NSParagraphStyleAttributeName: paragraphStyle,
-		NSFontAttributeName: [NSFont systemFontOfSize:13.0]
-	};
-	
-	NSMutableAttributedString *fileResult = [[NSMutableAttributedString alloc] initWithString:url.URLByDeletingPathExtension.lastPathComponent attributes:fileAttributes];
-	
-	if (fileResult.size.width > outlineView.frame.size.width - 40) {
-		NSInteger i = url.URLByDeletingPathExtension.lastPathComponent.length;
-		while (fileResult.size.width > outlineView.frame.size.width - 40 && i > 0) {
-			[fileResult setAttributedString:[fileResult attributedSubstringFromRange:(NSRange){0, i}]];
-			[fileResult appendAttributedString:[[NSAttributedString alloc] initWithString:@"..." attributes:fileAttributes]];
-			i--;
-		}
-	}
-	
-	NSColor *dateColor = NSColor.grayColor;
-	if (selected) {
-		dateColor = NSColor.lightGrayColor;
-	}
-	
-	// Format date string
-	NSMutableAttributedString *dateResult = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"\n%@", date] attributes:@{
-		NSParagraphStyleAttributeName: paragraphStyle,
-		NSForegroundColorAttributeName: dateColor,
-		NSFontAttributeName: [NSFont systemFontOfSize:10.0]
-	}];
-
-	[fileResult appendAttributedString:dateResult];
- 
-	return fileResult;
-}
-*/
 
 - (CGFloat)widthOfString:(NSString *)string withFont:(NSFont *)font {
 	 NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:font, NSFontAttributeName, nil];

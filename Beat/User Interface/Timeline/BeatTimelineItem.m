@@ -50,11 +50,11 @@
 		_textLayer.fontSize = FONTSIZE_SCENE;
 		_textLayer.contentsScale = NSScreen.mainScreen.backingScaleFactor;
 		_textLayer.backgroundColor = NSColor.clearColor.CGColor;
-		
+				
 		self.wantsLayer = YES;
 		[self.layer addSublayer:_textLayer];
 
-		NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
+		NSTrackingArea *trackingArea = [NSTrackingArea.alloc initWithRect:self.frame options:(NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 		[self.window setAcceptsMouseMovedEvents:YES];
 		[self addTrackingArea:trackingArea];
 	}
@@ -87,6 +87,8 @@
 		// Uppercase text for scenes
 		if (scene.type == heading) self.text = [scene.stringForDisplay uppercaseString];
 		else self.text = scene.stringForDisplay;
+		
+		self.toolTip = scene.stringForDisplay;
 	}
 
 	if (forcedColor) self.color = forcedColor;

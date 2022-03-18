@@ -45,6 +45,7 @@ typedef NS_ENUM(NSInteger, BeatTimelineItemType) {
 @property (weak) OutlineScene *representedItem;
 @property (nonatomic) bool selected;
 @property (nonatomic) BeatTimelineItemType type;
+
 - (id)initWithDelegate:(id<BeatTimelineItemDelegate>)delegate;
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset;
 - (void)setItem:(OutlineScene*)scene rect:(NSRect)rect reset:(bool)reset storyline:(bool)storyline forceColor:(NSColor* __nullable)forcedColor;
