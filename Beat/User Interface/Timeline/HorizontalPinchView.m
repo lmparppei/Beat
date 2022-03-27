@@ -22,6 +22,7 @@
 @implementation HorizontalPinchView
 
 -(void)awakeFromNib {
+	_horizontalMagnification = 1.0;
 	_magnificationDelta = 1.0;
 	_recognizer = [[NSMagnificationGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
 	self.translatesAutoresizingMaskIntoConstraints = NO;
@@ -48,13 +49,11 @@
 		locationInView = self.frame.size.width / 2;
 	}
 	
-	// We should rather get the timeline playhead position:
-	// _timeline.playheadPosition
-	
 	// Set new size
 	CGFloat originalWidth = self.frame.size.width;
 	CGFloat newWidth = originalWidth * self.horizontalMagnification;
 	self.documentView.frame = NSMakeRect(0, 0, newWidth, self.documentView.frame.size.height);
+	self.documentView.needsDisplay = YES;
 	
 	// Scroll back into view
 	CGFloat zoomXscaled = newWidth * locationNormalized;

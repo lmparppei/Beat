@@ -577,7 +577,7 @@
 -(void)loadingComplete {
 	[_parser.changedIndices removeAllIndexes];
 	[self.formatting initialTextBackgroundRender];
-	
+		
 	// No animations
 	[CATransaction begin];
 	//[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
@@ -718,16 +718,13 @@
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
 	[_sideViewCostraint setConstant:0];
-		
-	// The document width constant is ca. A4 width compared to the font size.
-	// It's used here and there for proportional measurement.
 	
+	// We'll calculate the document width based on paper size
 	if ([(NSNumber*)[BeatUserDefaults.sharedDefaults get:@"defaultPageSize"] integerValue] == BeatA4) {
 		_documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
 	} else {
 		_documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
 	}
-	
 	
 	// Reset zoom
 	[self setZoom];
@@ -737,7 +734,7 @@
 	_splitHandle.delegate = self;
 	[_splitHandle collapseBottomOrLeftView];
 	
-	// Recall window position
+	// Recall window position for saved documents
 	if (![self.fileNameString isEqualToString:@"Untitled"]) _documentWindow.frameAutosaveName = self.fileNameString;
 	
 	CGFloat x = _documentWindow.frame.origin.x;
@@ -1078,8 +1075,8 @@
 	CGFloat scaler = newScale / oldScale;
 	[self.textView scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
 	
-	NSLayoutManager* lm = [self.textView layoutManager];
-	NSTextContainer* tc = [self.textView textContainer];
+	NSLayoutManager* lm = self.textView.layoutManager;
+	NSTextContainer* tc = self.textView.textContainer;
 	[lm ensureLayoutForTextContainer:tc];
 }
 

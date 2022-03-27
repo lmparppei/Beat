@@ -57,6 +57,10 @@
 	return (([self.window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
+-(void)setFrame:(NSRect)frame {
+	[super setFrame:frame];
+}
+
 - (void)shouldHideButtons:(NSTimer *) timer {
 	NSPoint mouseLoc = [NSEvent mouseLocation];
 	NSPoint location = [self convertPoint:mouseLoc toView:nil];

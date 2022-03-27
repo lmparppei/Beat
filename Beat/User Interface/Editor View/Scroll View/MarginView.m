@@ -63,11 +63,11 @@
 
 - (void)updateBackground {
 	// This shouldn't happen but just to be sure
-	if (!_paper) return;
-		
+	if (!_paper || !_editor) return;
+	
 	[CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-		
+	
 	// Set background paper size
 	CGFloat documentWidth = (_editor.documentWidth + WHITESPACE * 2) * _editor.magnification;
 	//CGFloat marginWidth = (_editor.inset - WHITESPACE) * _editor.magnification;
@@ -126,7 +126,7 @@
 	 */
 }
 - (bool)isFullscreen {
-	return (([self.window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
+	return ((self.window.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 @end

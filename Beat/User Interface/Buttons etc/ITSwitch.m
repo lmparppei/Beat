@@ -181,6 +181,8 @@ static CGFloat const kDisabledOpacity = 0.5f;
 // ----------------------------------------------------
 
 - (void)reloadLayer {
+	if (!_backgroundLayer || !_knobLayer || !_knobInsideLayer) return;
+	
     [CATransaction begin];
     [CATransaction setAnimationDuration:kAnimationDuration];
     {
@@ -191,11 +193,11 @@ static CGFloat const kDisabledOpacity = 0.5f;
         
         // ------------------------------- Animate Colors
         if (([self hasDragged] && [self isDraggingTowardsOn]) || (![self hasDragged] && [self checked])) {
-            _backgroundLayer.borderColor = [self.tintColor CGColor];
-            _backgroundLayer.backgroundColor = [self.tintColor CGColor];
+            _backgroundLayer.borderColor = self.tintColor.CGColor;
+            _backgroundLayer.backgroundColor = self.tintColor.CGColor;
         } else {
-            _backgroundLayer.borderColor = [self.disabledBorderColor CGColor];
-            _backgroundLayer.backgroundColor = [kDisabledBackgroundColor CGColor];
+            _backgroundLayer.borderColor = self.disabledBorderColor.CGColor;
+            _backgroundLayer.backgroundColor = kDisabledBackgroundColor.CGColor;
         }
         
         // ------------------------------- Animate Enabled-Disabled state
@@ -214,6 +216,8 @@ static CGFloat const kDisabledOpacity = 0.5f;
 }
 
 - (void)reloadLayerSize {
+	if (!_backgroundLayer || !_knobLayer || !_knobInsideLayer) return;
+	
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
     {

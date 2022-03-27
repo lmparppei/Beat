@@ -79,11 +79,15 @@
 - (instancetype) init {
 	self = [super init];
 	
+	// Use these to reset any user defaults (for debugging purposes)
+	//[NSUserDefaults.standardUserDefaults removePersistentDomainForName:NSBundle.mainBundle.bundleIdentifier];
+	//[NSUserDefaults.standardUserDefaults removeObjectForKey:@"AppleLanguages"];
+	
 	return self;
 }
 
 - (void) awakeFromNib {
-	[NSUserDefaults.standardUserDefaults setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
+	// [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
 		
 #ifdef ADHOC
 	// Ad hoc vector

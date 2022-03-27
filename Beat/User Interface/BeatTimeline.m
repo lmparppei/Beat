@@ -25,6 +25,7 @@
 #import "OutlineScene.h"
 #import "BeatColors.h"
 #import "BeatTimelineItem.h"
+#import "HorizontalPinchView.h"
 #import <Quartz/Quartz.h>
 
 #define STORYLINE_TITLE @"Track Storyline"
@@ -307,12 +308,11 @@
 					storylineIndex++;
 				}
 				storylineTrack++;
-			}
-			
+			}	
 		}
 		
 		// Clip sections & synopsis markers for same and higher level sections
-		if (scene.type == section || scene.type == synopse) {
+		if (scene.type == section) {
 			if (previousSection && previousSection.representedItem.sectionDepth >= scene.sectionDepth) {
 				if (previousSection.frame.origin.x + previousSection.frame.size.width > item.frame.origin.x) {
 					CGFloat difference = previousSection.frame.origin.x + previousSection.frame.size.width - item.frame.origin.x;
@@ -377,6 +377,14 @@
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
 	if (!NSIsEmptyRect(selectionRect)) [self movePlayhead:selectionRect];
 	[CATransaction commit];
+}
+
+-(void)setFrame:(NSRect)frame {
+	CGFloat magnification = [(HorizontalPinchView*)self.enclosingScrollView horizontalMagnification];
+	CGFloat newWidth = self.enclosingScrollView.frame.size.width * magnification;
+	frame.size.width = newWidth;
+	
+	[super setFrame:frame];
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
