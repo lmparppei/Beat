@@ -56,7 +56,22 @@
 {
 	NSInteger noteLoc = [self rangeOfString:@"[["].location;
 	NSInteger parenthesisLoc = [self rangeOfString:@"("].location;
-	NSInteger parenthesisEnd = [self rangeOfString:@")"].location;
+	NSInteger parenthesisEnd = NSNotFound;
+	
+	bool openParenthesis = NO;
+	
+	for (NSInteger i=self.length - 1; i >= 0; i--) {
+		unichar c = [self characterAtIndex:i];
+		if (c == ' ') continue;
+		else if (c == '(') {
+			openParenthesis = YES;
+			break;
+		}
+		else if (c == ')') {
+			parenthesisEnd = i;
+			break;
+		}
+	}
 	
 	// Don't let note lines become characters
 	if (noteLoc == 0) return NO;
@@ -65,12 +80,17 @@
 		// No parenthesis
 		return [self containsOnlyUppercase];
 	}
+	else if (parenthesisEnd == NSNotFound && openParenthesis) {
+		return YES;
+	}
 	else if (parenthesisEnd != NSNotFound &&
 			 parenthesisEnd + 1 < self.length) {
 		// The line continues after parenthesis
 		NSString* tail = [self substringFromIndex:parenthesisEnd + 1];
 		
+		// Tail is empty
 		if ([tail containsOnlyWhitespace]) return YES;
+		// Dual dialogue
 		else if ([self characterAtIndex:self.length - 1] == '^') return YES;
 		else return NO;
 	}

@@ -855,7 +855,7 @@
 }
 
 
-- (void) setMinimumWindowSize {
+- (void)setMinimumWindowSize {
 	// These are arbitratry values. Sorry, anyone reading this.
 	if (!_sidebarVisible) {
 		[self.documentWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150, MIN_WINDOW_HEIGHT)];

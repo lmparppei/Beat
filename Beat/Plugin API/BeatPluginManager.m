@@ -59,6 +59,11 @@
 @end
 
 @interface BeatPluginManager ()
+
+@property (nonatomic, weak) IBOutlet NSMenu *pluginMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *exportMenu;
+@property (nonatomic, weak) IBOutlet NSMenu *importMenu;
+
 @property (nonatomic) NSDictionary *plugins;
 @property (nonatomic) NSURL *pluginURL;
 @property (nonatomic) NSMutableSet *incompleteDownloads;
@@ -67,28 +72,125 @@
 
 @implementation BeatPluginManager
 
+// NB: Plugin manager is a singleton, and first loaded in MainMenu.xib
+
+static BeatPluginManager *sharedManager;
+
 + (BeatPluginManager*)sharedManager
 {
-	static BeatPluginManager* sharedManager;
-	if (!sharedManager) {
-		sharedManager = [[BeatPluginManager alloc] init];
-	}
+	if (!sharedManager) sharedManager = [[BeatPluginManager alloc] init];
 	return sharedManager;
 }
 
++ (void)initialize
+{
+	static BOOL initialized = NO;
+	if(!initialized)
+	{
+		initialized = YES;
+		sharedManager = BeatPluginManager.new;
+	}
+}
+
 - (BeatPluginManager*)init {
-	static BeatPluginManager* sharedManager;
-	if (sharedManager) return sharedManager;
-	
 	self = [super init];
 	
 	if (self) {
-		_pluginURL = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+		_pluginURL = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
 		[self loadPlugins];		
 	}
 	
 	return self;
 }
+
+
+#pragma mark - UI Side (menu items)
+
+- (void)setupPluginMenus {
+	[self setupPluginMenu:_pluginMenu];
+	[self setupPluginMenu:_exportMenu];
+	[self setupPluginMenu:_importMenu];
+	
+	[self checkForUpdates];
+}
+
+-(void)menuWillOpen:(NSMenu *)menu {
+	[self setupPluginMenu:menu];
+}
+
+-(void)setupPluginMenu:(NSMenu*)menu {
+	BeatPluginType type = ToolPlugin;
+	if (menu == _exportMenu) type = ExportPlugin;
+	else if (menu == _importMenu) type = ImportPlugin;
+	
+	[self pluginMenuItemsFor:menu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"] type:type];
+}
+
+- (IBAction)runStandalonePlugin:(id)sender {
+	// This runs a plugin which is NOT tied to the document
+	NSMenuItem *item = sender;
+	NSString *pluginName = item.title;
+	
+	BeatPlugin *parser = BeatPlugin.new;
+	BeatPluginData *plugin = [BeatPluginManager.sharedManager pluginWithName:pluginName];
+	[parser loadPlugin:plugin];
+	parser = nil;
+}
+
+- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type {
+	// Remove existing plugin menu items
+	NSArray *menuItems = [NSArray arrayWithArray:parentMenu.itemArray];
+	for (NSMenuItem *item in menuItems) {
+		if (item.tag == 1) {
+			// Save prototype for plugin type
+			if (type == ToolPlugin && !_menuItem) _menuItem = item;
+			else if (type == ImportPlugin && !_importMenuItem) _importMenuItem = item;
+			else if (type == ExportPlugin && !_exportMenuItem) _exportMenuItem = item;
+			
+			[parentMenu removeItem:item];
+		}
+	}
+	
+	NSString *filter;
+	if (type == ExportPlugin) filter = @"Export";
+	else if (type == ImportPlugin) filter = @"Import";
+	
+	[self loadPlugins];
+	
+	NSArray *disabledPlugins = [self disabledPlugins];
+	
+	for (NSString *pluginName in self.pluginNames) {
+		if (filter.length) {
+			if ([pluginName rangeOfString:filter].location != 0) continue;
+		}
+		
+		// Don't show this plugin in menu
+		if ([disabledPlugins containsObject:pluginName]) continue;
+		
+		NSMenuItem *item = [_menuItem copy];
+		item.state = NSOffState;
+		item.title = pluginName;
+		
+		// If the plugin is running, display a tick next to it
+		if (runningPlugins[pluginName]) item.state = NSOnState;
+		
+		[parentMenu addItem:item];
+	}
+}
+
+- (IBAction)openPluginFolderAction:(id)sender {
+	[self openPluginFolder];
+}
+- (void)openPluginFolder {
+	NSURL *url = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	[NSWorkspace.sharedWorkspace openURL:url];
+}
+- (NSURL*)pluginFolderURL {
+	return [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+}
+
+
+#pragma mark - Check for plugin updates
 
 - (void)checkForUpdates {
 	NSArray *disabled = [self disabledPlugins];
@@ -279,13 +381,15 @@
 	for (NSURL *url in bundledPlugins) {
 		[plugins addObject:url.path];
 	}
-	
+		
 	// Get user-installed plugins
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSArray *files = [fileManager contentsOfDirectoryAtPath:_pluginURL.path error:nil];
 	
 	for (NSString *file in files) {
 		if (![file.pathExtension isEqualToString:@"beatPlugin"]) continue;
+		
+		NSLog(@" ---> %@", file);
 		
 		BOOL folderPlugin;
 		
@@ -481,59 +585,6 @@
 }
 */
  
-#pragma mark - Provide Menu Items
-
-- (void)pluginMenuItemsFor:(NSMenu*)parentMenu runningPlugins:(NSDictionary*)runningPlugins type:(BeatPluginType)type {
-	// Remove existing plugin menu items
-	NSArray *menuItems = [NSArray arrayWithArray:parentMenu.itemArray];
-	for (NSMenuItem *item in menuItems) {
-		if (item.tag == 1) {
-			// Save prototype for plugin type
-			if (type == ToolPlugin && !_menuItem) _menuItem = item;
-			else if (type == ImportPlugin && !_importMenuItem) _importMenuItem = item;
-			else if (type == ExportPlugin && !_exportMenuItem) _exportMenuItem = item;
-			
-			[parentMenu removeItem:item];
-		}
-	}
-	
-	NSString *filter;
-	if (type == ExportPlugin) filter = @"Export";
-	else if (type == ImportPlugin) filter = @"Import";
-	
-	[self loadPlugins];
-	
-	NSArray *disabledPlugins = [self disabledPlugins];
-	
-	for (NSString *pluginName in self.pluginNames) {
-		if (filter.length) {
-			if ([pluginName rangeOfString:filter].location != 0) continue;
-		}
-		
-		// Don't show this plugin in menu
-		if ([disabledPlugins containsObject:pluginName]) continue;
-		
-		NSMenuItem *item = [_menuItem copy];
-		item.state = NSOffState;
-		item.title = pluginName;
-		
-		// If the plugin is running, display a tick next to it
-		if (runningPlugins[pluginName]) item.state = NSOnState;
-		
-		[parentMenu addItem:item];
-	}
-}
-
-- (IBAction)openPluginFolderAction:(id)sender {
-	[self openPluginFolder];
-}
-- (void)openPluginFolder {
-	NSURL *url = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
-	[NSWorkspace.sharedWorkspace openURL:url];
-}
-- (NSURL*)pluginFolderURL {
-	return [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
-}
 
 #pragma mark - Data Source
 

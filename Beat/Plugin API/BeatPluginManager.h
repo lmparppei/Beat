@@ -39,13 +39,15 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) NSArray* files;
 @end
 
-@interface BeatPluginManager : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate>
+@interface BeatPluginManager : NSObject <NSOutlineViewDataSource, NSOutlineViewDelegate, NSMenuDelegate>
 @property (nonatomic, strong) NSMenuItem *menuItem;
 @property (nonatomic, strong) NSMenuItem *exportMenuItem;
 @property (nonatomic) NSMenuItem *importMenuItem;
 @property (nonatomic) NSMutableDictionary<NSString*, id> * availablePlugins;
 
 + (BeatPluginManager*)sharedManager;
+- (void)setupPluginMenus;
+
 - (NSArray*)pluginNames;
 - (NSString*)scriptForPlugin:(NSString*)pluginName;
 - (BeatPluginData*)pluginWithName:(NSString*)name;

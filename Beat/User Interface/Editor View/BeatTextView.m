@@ -321,8 +321,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Key events
 
-
-
 -(void)keyUp:(NSEvent *)event {
 	if (self.editorDelegate.typewriterMode) [self typewriterScroll];
 }
@@ -1664,7 +1662,9 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
  
 	// Get the glyphs for the characters.
 	CTFontGetGlyphsForCharacters(font, characters, glyphs, count);
- 
+	
+	free(characters);
+	
 	return glyphs;
 }
 

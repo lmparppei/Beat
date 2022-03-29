@@ -187,7 +187,7 @@
                                         </menuItem>
                                     </items>
                                     <connections>
-                                        <outlet property="delegate" destination="vEX-2F-hcj" id="Q0K-RW-bar"/>
+                                        <outlet property="delegate" destination="MpY-Uw-HUk" id="a2G-SM-8im"/>
                                     </connections>
                                 </menu>
                             </menuItem>
@@ -221,7 +221,7 @@
                                         </menuItem>
                                     </items>
                                     <connections>
-                                        <outlet property="delegate" destination="vEX-2F-hcj" id="GIg-YB-4ek"/>
+                                        <outlet property="delegate" destination="MpY-Uw-HUk" id="dlS-3n-52o"/>
                                     </connections>
                                 </menu>
                                 <connections>
@@ -830,7 +830,7 @@ DQ
                             </menuItem>
                         </items>
                         <connections>
-                            <outlet property="delegate" destination="vEX-2F-hcj" id="LFB-Ux-Zrc"/>
+                            <outlet property="delegate" destination="MpY-Uw-HUk" id="NdN-Ya-UPR"/>
                         </connections>
                     </menu>
                 </menuItem>
@@ -953,12 +953,20 @@ DQ
             <point key="canvasLocation" x="82" y="-6"/>
         </menu>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+        <customObject id="MpY-Uw-HUk" customClass="BeatPluginManager">
+            <connections>
+                <outlet property="exportMenu" destination="o7H-J0-CK2" id="DDK-o7-QFc"/>
+                <outlet property="importMenu" destination="xR8-x2-hNB" id="4b8-l6-ETo"/>
+                <outlet property="pluginMenu" destination="T42-tx-tAb" id="yxt-VN-DfL"/>
+            </connections>
+        </customObject>
         <customObject id="vEX-2F-hcj" customClass="BeatAppDelegate">
             <connections>
                 <outlet property="checkForUpdatesItem" destination="34f-vH-vWb" id="PhQ-ms-bF3"/>
                 <outlet property="exportMenu" destination="o7H-J0-CK2" id="Y3h-9I-iR6"/>
                 <outlet property="importMenu" destination="xR8-x2-hNB" id="9Pt-Ay-c1K"/>
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
+                <outlet property="pluginManager" destination="MpY-Uw-HUk" id="LTu-gv-i9k"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
                 <outlet property="versionMenu" destination="dbF-KQ-yEw" id="zp5-mG-MLs"/>
             </connections>

@@ -37,7 +37,7 @@
 @interface BeatAppDelegate ()
 @property (weak) IBOutlet NSMenuItem *checkForUpdatesItem;
 @property (weak) IBOutlet NSMenuItem *menuManual;
-@property (nonatomic) BeatPluginManager *pluginManager; // Set main ownership to avoid leaks
+@property (nonatomic) IBOutlet BeatPluginManager *pluginManager; // Set main ownership to avoid leaks
 
 @property (nonatomic) BeatNotifications *notifications;
 
@@ -116,7 +116,7 @@
 	[self showLaunchScreen];
 	
 	// Populate plugin menu
-	[self setupPlugins];
+	[self.pluginManager setupPluginMenus];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification {
@@ -160,11 +160,11 @@
 }
 
 -(void)checkDarkMode {
-	_darkMode = [[NSUserDefaults standardUserDefaults] boolForKey:DARKMODE_KEY];
+	_darkMode = [NSUserDefaults.standardUserDefaults boolForKey:DARKMODE_KEY];
 	
 	// If the OS is set to dark mode, we'll force it
 	if (@available(macOS 10.14, *)) {
-		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		NSAppearance *appearance = NSAppearance.currentAppearance ?: NSApp.effectiveAppearance;
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
 			_darkMode = true;
@@ -325,6 +325,7 @@
 #pragma mark - Dark mode stuff
 
 // At all times, we have to check if OS is set to dark AND if the user has forced either mode
+// This is horribly dated, but seems to work ---- for now.
 
 - (bool)isForcedDarkMode {
 	if (![self OSisDark]) return _forceDarkMode;
@@ -374,7 +375,7 @@
 		else _forceDarkMode = NO;
 	}
 	
-	[[NSUserDefaults standardUserDefaults] setBool:_darkMode forKey:DARKMODE_KEY];
+	[NSUserDefaults.standardUserDefaults setBool:_darkMode forKey:DARKMODE_KEY];
 }
 
 #pragma mark - Tutorial and templates
@@ -466,10 +467,9 @@
 	[self openURLInWebBrowser:@"http://discord.gg/FPHjfH7ms3"];
 }
 
-
 - (void)openURLInWebBrowser:(NSString*)urlString
 {
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:urlString]];
+    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:urlString]];
 }
 
 #pragma mark - Misc UI
@@ -559,8 +559,8 @@
 #pragma mark - Menu delegation
 
 -(void)menuWillOpen:(NSMenu *)menu {
-	if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
-	else if (menu == _versionMenu) {
+	//if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
+	if (menu == _versionMenu) {
 		[self versionMenuItems];
 	}
 }
@@ -645,6 +645,8 @@
 
 #pragma mark - Plugin support
 
+// Why isn't here just a single IB object for the shared plugin manager? We could toss all of this stuff there.
+/*
 - (void)setupPlugins {
 	[self setupPlugins:_pluginMenu];
 	[self setupPlugins:_exportMenu];
@@ -653,7 +655,7 @@
 	[_pluginManager checkForUpdates];
 }
 - (void)setupPlugins:(NSMenu*)menu {
-	if (!_pluginManager) _pluginManager = [BeatPluginManager sharedManager];
+	if (!_pluginManager) _pluginManager = BeatPluginManager.sharedManager;
 	
 	BeatPluginType type = ToolPlugin;
 	if (menu == _exportMenu) type = ExportPlugin;
@@ -665,6 +667,7 @@
 	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
 	[plugins openPluginFolder];
 }
+ */
 - (IBAction)openPluginLibrary:(id)sender {
 	_pluginLibrary = BeatPluginLibrary.alloc.init;
 	[_pluginLibrary show];
@@ -767,24 +770,7 @@
 #pragma mark - Supporting methods
 
 - (NSURL*)appDataPath:(NSString*)subPath {
-	//NSString* pathComponent = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
-	NSString* pathComponent = APPNAME;
-	
-	if ([subPath length] > 0) pathComponent = [pathComponent stringByAppendingPathComponent:subPath];
-	
-	NSArray<NSString*>* searchPaths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-																		  NSUserDomainMask,
-																		  YES);
-	NSString* appSupportDir = [searchPaths firstObject];
-	appSupportDir = [appSupportDir stringByAppendingPathComponent:pathComponent];
-	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
-	if (![fileManager fileExistsAtPath:appSupportDir]) {
-		[fileManager createDirectoryAtPath:appSupportDir withIntermediateDirectories:YES attributes:nil error:nil];
-	}
-	
-	return [NSURL fileURLWithPath:appSupportDir isDirectory:YES];
+	return [BeatAppDelegate appDataPath:subPath];
 }
 + (NSURL*)appDataPath:(NSString*)subPath {
 	NSString* pathComponent = APPNAME;
@@ -807,6 +793,10 @@
 }
 
 - (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
+{
+	return [BeatAppDelegate pathForTemporaryFileWithPrefix:prefix];
+}
++ (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
 {
 	NSString *  result;
 	CFUUIDRef   uuid;

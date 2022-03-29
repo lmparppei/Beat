@@ -17,7 +17,7 @@ This started as a personal project as I needed a simple, multi-window, lightweig
 Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Writer/) by Hendrik Noeller and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.92.x
+## Latest release: Beat 1.93.x
 
 **Features**
 * Minimalistic UI with as little distractions as possible
@@ -43,7 +43,12 @@ Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Wri
 * Automatic paragraphs & tab key for auto character cue
 * Timer for measuring your productivity
 
+
+## Building from repo
+
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
+
+When building for development, use the *Beat Appstore* target. The ad hoc distribution is currently not maintained. No external libraries or frameworks should be needed, and everything is included in the project.
 
 
 ## FAQ
@@ -72,6 +77,7 @@ Please do! The person behind this project is not a real programmer but an artist
 ### Support Beat
 
 The creator of this app is a well-off person from a social-democratic welfare country, and with everything going on in the world, donations are no longer accepted. If you've ever wanted to support the project monetarily, it's preferrable to direct those funds to NGOs helping underprivileged people struggling with the COVID-19 pandemic in crisis zones. 
+
 
 ## Post-mortem
 
