@@ -182,6 +182,8 @@
 
 }
 
+
+
 -(NSArray*)rectsForGlyphRange:(NSRange)glyphsToShow {
 	NSMutableArray *rects = NSMutableArray.new;
 	

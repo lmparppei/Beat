@@ -23,14 +23,12 @@ typedef NS_ENUM(NSInteger, RevisionType) {
 	RevisionNone,
 	RevisionAddition,
 	RevisionRemovalSuggestion,
-	RevisionCharacterRemoved,
-	RevisionComment
+	RevisionCharacterRemoved
 };
 
 @interface BeatRevisionItem : NSObject <NSCoding, NSCopying>
 @property (nonatomic) RevisionType type;
 @property (nonatomic) NSString *colorName;
-@property (nonatomic) NSString *text; // Support for additional comments - unrealized, for now
 + (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color;
 + (BeatRevisionItem*)type:(RevisionType)type;
 + (NSArray<NSString*>*)availableColors;

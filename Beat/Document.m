@@ -119,6 +119,7 @@
 #import "BeatUserDefaults.h"
 #import "BeatCharacterList.h"
 #import "BeatEditorFormatting.h"
+#import "Beat-Swift.h"
 
 @interface Document ()
 
@@ -546,9 +547,6 @@
 		// Initialize parser
 		self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
 		
-		// Load revision markers
-		[self.revisionTracking loadRevisionMarkers];
-		
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			// Show a progress bar for longer documents
 			if (self.parser.lines.count > 1000) {
@@ -592,8 +590,9 @@
 	// Initialize edit tracking
 	[self.revisionTracking setupRevisions];
 			
-	// Load tags
+	// Load tagging & review systems
 	[self setupTagging];
+	[self setupReview];
 		
 	// Document loading has ended
 	self.documentIsLoading = NO;
@@ -864,13 +863,33 @@
 	}
 }
 
+#pragma mark - Update Editor View by Mode
+
+- (void)updateEditorMode {
+	/// This updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
+	
+	if (_mode == TaggingMode) {
+		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
+		[_sideViewCostraint setConstant:180];
+	} else {
+		[self closeTagging:nil];
+	}
+	
+	[_documentWindow layoutIfNeeded];
+	[self updateLayout];
+	[self updateQuickSettings];
+}
+
 #pragma mark - Window delegate
 
 - (void)windowDidBecomeMain:(NSNotification *)notification {
-	// Hide plugin windows
+	// Show all plugin windows associated with the current document
 	[self showPluginWindowsForCurrentDocument];
 }
+
 - (void)showPluginWindowsForCurrentDocument {
+	// When document becomes main window, iterate through all documents.
+	// If they have plugin windows open, hide those windows behind the current document window.
 	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
 		if (doc == self) continue;
 		for (NSString *pluginName in doc.runningPlugins.allKeys) {
@@ -878,12 +897,13 @@
 		}
 	}
 	
-	// Show plugin windows for the current document
+	// Reveal all plugin windows for the current document
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		[(BeatPlugin*)_runningPlugins[pluginName] showAllWindows];
 	}
 	[self.documentWindow orderFront:nil];
 }
+
 - (void)hideAllPluginWindows {
 	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
 		for (NSString *pluginName in doc.runningPlugins.allKeys) {
@@ -891,7 +911,6 @@
 		}
 	}
 }
-
 
 -(void)spaceDidChange {
 	if (!self.documentWindow.onActiveSpace) [self.documentWindow resignMainWindow];
@@ -1361,13 +1380,19 @@
 
 # pragma mark - Scene Data
 
-- (OutlineScene*)getCurrentScene {
-	NSInteger position = self.textView.selectedRange.location;
-	return [self getCurrentSceneWithPosition:position];
+- (OutlineScene*)currentScene {
+	// If we are not on the main thread, return the latest known scene
+	if (!NSThread.isMainThread) return _currentScene;
+	
+	OutlineScene *scene = [self getCurrentSceneWithPosition:self.textView.selectedRange.location];
+
+	_currentScene = scene;
+	return scene;
 }
+
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
-	if (self.currentScene && NSLocationInRange(position, self.currentScene.range)) {
-		return self.currentScene;
+	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
+		return _currentScene;
 	}
 	
 	if (position >= self.text.length) {
@@ -1380,11 +1405,9 @@
 	// Remember to create outline first
 	for (OutlineScene *scene in self.outline) {
 		if (NSLocationInRange(position, scene.range)) {
-			_currentScene = scene;
 			return scene;
 		}
 		else if (position >= lastPosition && position < scene.position && lastScene) {
-			_currentScene = lastScene;
 			return lastScene;
 		}
 		
@@ -1392,7 +1415,6 @@
 		lastScene = scene;
 	}
 
-	_currentScene = nil;
 	return nil;
 }
 
@@ -1526,14 +1548,15 @@
 			[self cancelCharacterInput];
 		}
 	}
-		
+	
 	// Also, if it's an enter key and we are handling a CHARACTER, force dialogue if needed
 	bool forceDialogue = NO;
 	if ([replacementString isEqualToString:@"\n"] &&
 		affectedCharRange.length == 0 &&
 		(_currentLine.type == character || _currentLine.type == dualDialogueCharacter)) {
+		
 		Line *nextLine = [_parser nextLine:_currentLine];
-		if ((nextLine.type == dialogue || nextLine.type == dualDialogue) && nextLine.string.length) {
+		if ((nextLine.type == dialogue || nextLine.type == dualDialogue || nextLine.type == empty) && (nextLine.string.length == 0 || nextLine == nil)) {
 			forceDialogue = YES;
 		}
 	}
@@ -1682,15 +1705,21 @@
 		}
 	}
 	
-	if (_characterInput) replacementString = [replacementString uppercaseString];
+	if (_characterInput) replacementString = replacementString.uppercaseString;
 	
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-		
-	// Why are we constantly checkin for current line?
+
+	// Store the affected line and get current line. These can be the same.
+	//Line *affectedLine = _currentLine;
 	_currentLine = [self getCurrentLine];
 	
-	if (processDoubleBreak) {
+	if (forceDialogue) {
+		// Force the next line to become dialogue
+		//if (affectedLine.type == character) _currentLine.type = dialogue;
+		//else if (affectedLine.type == dualDialogueCharacter) _currentLine.type = dualDialogue;
+	}
+	else if (processDoubleBreak) {
 		// This is here to fix a formatting error with dialogue.
 		// If the caret is at the end of the document, we need to parse one step behind
 		// to correctly format the extra line break we just added.
@@ -1767,14 +1796,20 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
+	
 	// Save attributed text to cache
 	_attrTextCache = [self getAttributedText];
-
+	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 		
 	// Register changes
 	if (_revisionMode) [self registerChangesInRange:_lastChangedRange];
+	
+	// Update formatting
+	//[self.textView.textStorage beginEditing];
+	[self applyFormatChanges];
+	//[self.textView.textStorage endEditing];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
@@ -1798,9 +1833,7 @@
 
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
-	
-	[self applyFormatChanges];
-	
+		
 	// If the outline has changed, update all labels
 	[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
 	//[self.textView updateChangeMarkersFrom:self.lastChangedRange.location];
@@ -1832,11 +1865,12 @@
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-	
-	// Close popups
+		
+	// Close any popups
 	if (_quickSettingsPopover.shown) [self closeQuickSettings];
 
-	self.previouslySelectedLine = _currentLine;
+	// We've cached the previous current line, so let's just see if we're in range. Otherwise, update current line.
+	_previouslySelectedLine = _currentLine;
 	if (!_currentLine || !NSLocationInRange(_textView.selectedRange.location, _currentLine.range)) {
 		self.currentLine = [self getCurrentLine];
 	}
@@ -1846,6 +1880,7 @@
 	
 	// We REALLY REALLY should make some sort of cache for these
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		// Update all views which are affected by the caret position
 		if (self.sidebarVisible || self.timeline.visible || self.runningPlugins) {
 			self.outline = [self getOutlineItems];
 			self.currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
@@ -1853,8 +1888,10 @@
 		
 		[self updateUIwithCurrentScene];
 		
+		// Update tag view
 		if (self.mode == TaggingMode) [self updateTaggingData];
 		
+		// Update running plugins
 		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
 	});
 	
@@ -1864,9 +1901,11 @@
 - (void)updateUIwithCurrentScene {
 	__block NSInteger sceneIndex = [self.outline indexOfObject:self.currentScene];
 	
+	OutlineScene *currentScene = self.currentScene;
+	
 	// Update Timeline & TouchBar Timeline
 	if (self.timeline.visible) [_timeline scrollToScene:sceneIndex];
-	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_outline indexOfObject:_currentScene]];
+	if (self.timelineBar.visible) [_touchbarTimeline selectItem:[_outline indexOfObject:currentScene]];
 	
 	// Locate current scene & reload outline without building it in parser
 	// I don't know what this is, to be honest
@@ -1875,15 +1914,15 @@
 		if (self.sidebarVisible) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
 				[self reloadOutline];
-				if (self.currentScene) [self.outlineView scrollToScene:self.currentScene];				
+				if (currentScene) [self.outlineView scrollToScene:currentScene];
 			});
 		}
 	}
 	
 	// Update touch bar color if needed
-	if (_currentScene.color) {
-		if ([BeatColors color:[_currentScene.color lowercaseString]]) {
-			[_colorPicker setColor:[BeatColors color:[_currentScene.color lowercaseString]]];
+	if (currentScene.color) {
+		if ([BeatColors color:currentScene.color.lowercaseString]) {
+			[_colorPicker setColor:[BeatColors color:currentScene.color.lowercaseString]];
 		}
 	}
 	
@@ -2102,7 +2141,7 @@
 	NSString *selectedCharacter = _characterBox.selectedItem.title;
     
     NSMutableArray *characterList = [NSMutableArray array];
-	NSMutableDictionary *charactersAndLines = [NSMutableDictionary dictionary];
+	NSMutableDictionary <NSString*, NSNumber*>* charactersAndLines = [NSMutableDictionary dictionary];
     
 	[_characterBox removeAllItems];
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
@@ -2117,11 +2156,12 @@
 			
 			// Character name, INCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
 			NSString *character = line.characterName;
+			// For some reason there are random misinterpretations of character cues, so skip empty lines
 			if (character.length == 0) continue;
 			
 			// Add the character + suffix into dict and calculate number of appearances
 			if (charactersAndLines[character]) {
-				NSInteger lines = [charactersAndLines[character] integerValue] + 1;
+				NSInteger lines = charactersAndLines[character].integerValue + 1;
 				charactersAndLines[character] = [NSNumber numberWithInteger:lines];
 			} else {
 				charactersAndLines[character] = [NSNumber numberWithInteger:1];
@@ -2245,8 +2285,8 @@
 	[_formatting formatLine:_currentLine];
 
 	// Set typing attributes (just in case, and if at the end)
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
+	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 	
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
@@ -2254,7 +2294,7 @@
 	
 	[self.textView setTypingAttributes:attributes];
 }
-- (void) cancelCharacterInput {
+- (void)cancelCharacterInput {
 	_characterInput = NO;
 	
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
@@ -2267,8 +2307,10 @@
 }
 
 - (void)addRecentCharacter:(NSString*)name {
+	// Update 2022/03: WTF is this?
+	
 	// Init array if needed
-	if (_recentCharacters == nil) _recentCharacters = [NSMutableArray array];
+	if (_recentCharacters == nil) _recentCharacters = NSMutableArray.new;
 	
 	// Remove any suffixes
 	name = [name replace:RX(@"\\((.*)\\)") with:@""];
@@ -2316,7 +2358,7 @@
 	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
 		[_formatting formatLine:self.parser.lines[idx]];
 	}];
-        
+	
     [self.parser.changedIndices removeAllIndexes];
 }
 - (void)forceFormatChangesInRange:(NSRange)range
@@ -2439,7 +2481,6 @@
 - (void)scrollToScene:(OutlineScene*)scene {
 	NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
 	[self.textView setSelectedRange:lineRange];
-	//[self.textView scrollRangeToVisible:lineRange];
 	[self.textView scrollToRange:lineRange];
 	[_documentWindow makeFirstResponder:_textView];
 }
@@ -2487,6 +2528,11 @@
 	return self.textView.selectedRange;
 }
 - (void)setSelectedRange:(NSRange)range {
+	[self setSelectedRange:range withoutTriggeringChangedEvent:NO];
+}
+- (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent {
+	_skipSelectionChangeEvent = triggerChangedEvent;
+
 	@try {
 		[self.textView setSelectedRange:range];
 	}
@@ -2805,7 +2851,8 @@ static NSString *revisionAttribute = @"Revision";
 	BeatModalInput *input = [[BeatModalInput alloc] init];
 	[input inputBoxWithMessage:@"Set Number For Scene"  text:@"Custom scene number (can include letters, or press space for a scene with no scene number)" placeholder:@"123A" forWindow:_documentWindow completion:^(NSString * _Nonnull result) {
 		if (result.length > 0) {
-			OutlineScene *scene = [self getCurrentScene];
+			OutlineScene *scene = self.currentScene;
+			
 			if (scene) {
 				if (scene.line.sceneNumberRange.length) {
 					// Remove existing scene number
@@ -2820,7 +2867,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (IBAction)makeSceneNonNumbered:(id)sender {
-	OutlineScene *scene = [self getCurrentScene];
+	OutlineScene *scene = self.currentScene;
 	if (!scene) return;
 	
 	if (scene.line.sceneNumberRange.length) {
@@ -3094,6 +3141,12 @@ static NSString *revisionAttribute = @"Revision";
 	[self.revisionTracking commitRevisions];
 }
 
+/*
+ 
+ WIP: Make the following code more functional
+ 
+ */
+
 - (void)saveRevisionRanges {
 	[self saveRevisionRangesUsing:self.textView.attributedString];
 }
@@ -3104,13 +3157,13 @@ static NSString *revisionAttribute = @"Revision";
 	[_documentSettings set:DocSettingRevisions as:ranges];
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
 
-	// Save changed indices
+	/*
+	// Save changed indices (why do we need this? asking for myself)
 	NSArray *lines = self.lines;
 	NSMutableDictionary *changedLines = NSMutableDictionary.new;
 	
 	for (NSInteger i=0; i < lines.count; i++) {
 		Line *line = lines[i];
-		//if (line.type == empty) continue;
 		
 		if (line.changed) {
 			NSString *revisionColor = line.revisionColor;
@@ -3120,6 +3173,7 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
 	[_documentSettings set:DocSettingChangedIndices as:changedLines];
+	*/
 }
 
 - (IBAction)selectRevisionColor:(id)sender {
@@ -3325,12 +3379,15 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
 	if (menuItem.action == @selector(toggleTagging:)) {
-	//if ([menuItem.title isEqualToString:@"Tagging Mode"]) {
 		if (_mode == TaggingMode) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
-	
 	}
-	//else if ([menuItem.title isEqualToString:@"Autosave"]) {
+	
+	else if (menuItem.action == @selector(toggleReview:)) {
+		if (_mode == ReviewMode) menuItem.state = NSOnState;
+		else menuItem.state = NSOffState;
+	}
+	
 	else if (menuItem.action == @selector(toggleAutosave:)) {
 		if (_autosave) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
@@ -3566,7 +3623,9 @@ static NSString *revisionAttribute = @"Revision";
 	[doc.textView setInsertionPointColor:self.themeManager.caretColor];
 			
 	// Set global background
-	doc.backgroundView.fillColor = self.themeManager.currentOutlineBackground;
+	//doc.backgroundView.fillColor = self.themeManager.outlineBackground;
+	//doc.backgroundView.fillColor = NSColor.redColor;
+	doc.backgroundView.layer.backgroundColor = self.themeManager.outlineBackground.effectiveColor.CGColor;
 		
 	[doc updateUIColors];
 
@@ -3641,9 +3700,9 @@ static NSString *revisionAttribute = @"Revision";
 			
 			// Create JS scroll function call and append it straight into the HTML
 			self.outline = [self getOutlineItems];
-			self.currentScene = [self getCurrentScene];
+			OutlineScene * currentScene = self.currentScene;
 						
-			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene('%@');</script>", self.currentScene.sceneNumber];
+			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene('%@');</script>", currentScene.sceneNumber];
 			
 			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
 			[self.printWebView loadHTMLString:_htmlString baseURL:nil]; // Load HTML
@@ -3653,7 +3712,7 @@ static NSString *revisionAttribute = @"Revision";
 			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
 			
 			// Evaluate JS in window to be sure it shows the correct scene
-			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToScene(%@);", _currentScene.sceneNumber] completionHandler:nil];
+			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToScene(%@);", currentScene.sceneNumber] completionHandler:nil];
 		}
 	
         [self setTab:1];
@@ -3692,7 +3751,7 @@ static NSString *revisionAttribute = @"Revision";
 		self.previewCanceled = NO;
 		
 		self.outline = [self getOutlineItems];
-		self.currentScene = [self getCurrentScene];
+		OutlineScene *currentScene = self.currentScene;
 		
 		NSString *rawText = self.text;
 		
@@ -3705,7 +3764,7 @@ static NSString *revisionAttribute = @"Revision";
 			if (updateUI || self.printPreview) {
 				dispatch_async(dispatch_get_main_queue(), ^(void){
 					//[[self.webView mainFrame] loadHTMLString:html baseURL:nil];
-					NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene(%@);</script>", self.currentScene.sceneNumber];
+					NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene(%@);</script>", currentScene.sceneNumber];
 					html = [html stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
 					[self.printWebView loadHTMLString:html baseURL:nil];
 				});
@@ -3807,6 +3866,7 @@ static NSString *revisionAttribute = @"Revision";
 	
 	// Fix layout
 	[_documentWindow layoutIfNeeded];
+	
 	[self updateLayout];
 }
 
@@ -3837,7 +3897,7 @@ static NSString *revisionAttribute = @"Revision";
 
 - (NSMutableArray *)getOutlineItems {
 	// Make a copy of the outline to avoid threading issues
-	NSMutableArray * outlineItems = [NSMutableArray arrayWithArray:self.parser.outline];
+	NSMutableArray * outlineItems = self.parser.outline.mutableCopy;
 	return outlineItems;
 }
 
@@ -3962,16 +4022,15 @@ static NSString *revisionAttribute = @"Revision";
 - (IBAction)pickColor:(id)sender {
 	NSString *pickedColor;
 
-	for (NSString *color in [self colors]) {
+	for (NSString *color in self.colors) {
 		if ([_colorPicker.color isEqualTo:[BeatColors color:color]]) pickedColor = color;
 	}
 	
 	if ([_colorPicker.color isEqualTo:NSColor.blackColor]) pickedColor = @"none"; // THE HOUSE IS BLACK.
 	
-	_currentScene = [self getCurrentScene];
-	if (!_currentScene) return;
+	if (self.currentScene == nil) return;
 	
-	if (pickedColor != nil) [self setColor:pickedColor forScene:_currentScene];
+	if (pickedColor != nil) [self setColor:pickedColor forScene:self.currentScene];
 }
 
 - (IBAction)setSceneColorForRange:(id)sender {
@@ -5075,7 +5134,33 @@ triangle walks
 	[_themeManager showEditor];
 }
 
-#pragma mark - Tagging
+#pragma mark - Review Mode
+
+- (void)setupReview {
+	_review = [BeatReview.alloc initWithEditorDelegate:self];
+}
+
+- (IBAction)toggleReview:(id)sender {
+	if (_mode == ReviewMode) self.mode = EditMode;
+	else self.mode = ReviewMode;
+	
+	[self updateEditorMode];
+}
+
+-(void)setMode:(BeatEditorMode)mode {
+	_mode = mode;
+}
+
+- (IBAction)addComment:(id)sender {
+	if (self.selectedRange.length == 0) return;
+	[_review showReviewItemWithRange:self.selectedRange forEditing:YES];
+}
+- (IBAction)clearComments:(id)sender {
+	if (self.selectedRange.length == 0) return;
+	// Clear comments...
+}
+
+#pragma mark - Tagging Mode
 
 // NOTE: Move all of this into BeatTagging class
 
@@ -5090,19 +5175,10 @@ triangle walks
 	if (_mode == TaggingMode) _mode = EditMode;
 	else _mode = TaggingMode;
 	
-	if (_mode == TaggingMode) {
-		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-		[_sideViewCostraint setConstant:180];
-	} else {
-		[self exitTagging:nil];
-	}
-	
-	[_documentWindow layoutIfNeeded];
-	[self updateLayout];
-	[self updateQuickSettings];
+	[self updateEditorMode];
 }
-- (IBAction)exitTagging:(id)sender {
-	_mode = EditMode;
+- (IBAction)closeTagging:(id)sender {
+	if (_mode == TaggingMode) self.mode = EditMode;
 	
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_sideViewCostraint setConstant:0];
@@ -5190,7 +5266,7 @@ triangle walks
 
 - (void)updateTaggingData {
 	// Move this into tagging class
-	[_tagTextView.textStorage setAttributedString:[_tagging displayTagsForScene:[self getCurrentScene]]];
+	[_tagTextView.textStorage setAttributedString:[_tagging displayTagsForScene:self.currentScene]];
 }
 
 #pragma mark - Locking The Document

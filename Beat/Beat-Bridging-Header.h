@@ -14,5 +14,7 @@
 #import "OutlineScene.h"
 #import "RecentFiles.h"
 #import "BeatAppDelegate.h"
+#import "Document.h"
+#import "BeatNotepad.h"
 
 #endif /* Beat_Bridging_Header_h */

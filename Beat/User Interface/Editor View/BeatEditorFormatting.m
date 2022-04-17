@@ -20,6 +20,7 @@
 #import "BeatRevisionTracking.h"
 #import "BeatTagging.h"
 #import "BeatTag.h"
+#import "Beat-Swift.h"
 
 @implementation BeatEditorFormatting
 
@@ -69,6 +70,7 @@ static NSString *strikeoutSymbolOpen = @"{{";
 static NSString *strikeoutSymbolClose = @"}}";
 
 static NSString *tagAttribute = @"BeatTag";
+static NSString *reviewAttribute = @"BeatReview";
 
 - (void)formatLine:(Line*)line { [self formatLine:line firstTime:NO]; }
 
@@ -110,7 +112,7 @@ static NSString *tagAttribute = @"BeatTag";
 	
 	// Don't go out of range (just a safety measure for plugins etc.)
 	if (line.position + line.string.length > textView.string.length) return;
-		
+	
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0) {
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
@@ -169,7 +171,7 @@ static NSString *tagAttribute = @"BeatTag";
 		[attributes setObject:_delegate.italicCourier forKey:NSFontAttributeName];
 		[paragraphStyle setAlignment:NSTextAlignmentCenter];
 	}
-
+	
 	// Handle title page block
 	if (line.type == titlePageTitle  ||
 		line.type == titlePageAuthor ||
@@ -232,7 +234,6 @@ static NSString *tagAttribute = @"BeatTag";
 		[paragraphStyle setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
 		[paragraphStyle setHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
 		[paragraphStyle setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
-		
 	} else if (line.type == section || line.type == synopse) {
 		// Stylize sections & synopses
 
@@ -289,20 +290,6 @@ static NSString *tagAttribute = @"BeatTag";
 			[attributes setObject:_delegate.synopsisFont forKey:NSFontAttributeName];
 		}
 		
-	} else if (line.type == action) {
-		// Take note if this is a paragraph split into two
-		// WIP: Check if this is needed
-		/*
-		NSInteger index = [_parser.lines indexOfObject:line];
-		if (index > 0) {
-			Line* precedingLine = [_parser.lines objectAtIndex:index-1];
-			if (precedingLine.type == action && precedingLine.string.length > 0) {
-				NSLog(@"### %@ is split", line);
-				line.isSplitParagraph = YES;
-			}
-		}
-		*/
-		
 	} else if (line.type == empty) {
 		// Just to make sure that after second empty line we reset indents
 		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
@@ -331,6 +318,7 @@ static NSString *tagAttribute = @"BeatTag";
 		[attributes setObject:@0 forKey:NSStrikethroughStyleAttributeName];
 	}
 	if (!attributes[NSBackgroundColorAttributeName]) {
+		//[attributes setObject:NSColor.clearColor forKey:NSBackgroundColorAttributeName];
 		[textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
 	}
 	
@@ -344,7 +332,7 @@ static NSString *tagAttribute = @"BeatTag";
 			[textStorage addAttributes:attributes range:range];
 		}
 	}
-	
+		
 	//[self endMeasure:@"Add attributes"];
 	
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
@@ -500,7 +488,16 @@ static NSString *tagAttribute = @"BeatTag";
 				else if (revision.type == RevisionRemovalSuggestion) {
 					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
 					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.15] forCharacterRange:range];
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.125] forCharacterRange:range];
+				}
+			}
+			
+			if (attrs[reviewAttribute]) {
+				BeatReviewItem *review = attrs[reviewAttribute];
+				if (!review.emptyReview) {
+					NSColor *reviewColor = BeatReview.reviewColor;
+					reviewColor = [reviewColor colorWithAlphaComponent:.5];
+					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:reviewColor forCharacterRange:range];
 				}
 			}
 			

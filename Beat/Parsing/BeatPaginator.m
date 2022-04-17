@@ -730,8 +730,8 @@
 							
 							// If there is something to retain, do it, otherwise just push everything on the next page
 							if ([(NSArray*)split[@"retained"] count]) {
-								[retainedLines addObjectsFromArray:(NSArray*)split[@"retained"]];
 								[retainedLines addObjectsFromArray:dual[0]];
+								[retainedLines addObjectsFromArray:(NSArray*)split[@"retained"]];
 								
 								pageBreakElement = (Line*)split[@"page break item"];
 								pageBreakPosition = [(NSNumber*)split[@"position"] integerValue];
@@ -1301,25 +1301,6 @@
 			NSArray *onPrevPage = [self retainDialogueInBlock:dialogueBlock to:blockIndex addMORE:addMORE splitDialogue:preDialogue spillerElement:spillerElement];
 			[retainedElements addObjectsFromArray:onPrevPage];
 
-			/*
-			// Add on the previous page
-			 for (NSInteger d = 0; d < blockIndex; d++) {
-				 Line *preBreak = [Line withString:[dialogueBlock[d] string] type:[(Line*)dialogueBlock[d] type]  pageSplit:YES];
-				 [retainedElements addObject:preBreak];
-			 }
-			 
-			Line *preMore;
-			
-			LineType moreType = (spillerElement.isDialogue) ? more : dualDialogueMore;
-			if (postDialogue.length > 0) {
-				preMore = [Line withString:@"(MORE)" type:moreType pageSplit:YES];
-				preMore.position = spillerElement.position;
-			}
-						
-			[retainedElements addObject:preDialogue];
-			if (preMore != nil) [retainedElements addObject:preMore];
-			*/
-
 			// Set correct dialogue type
 			LineType contdType;
 			LineType dialogueType;
@@ -1335,7 +1316,7 @@
 			if (postDialogue.length) {
 				// Add the remaining stuff on the next page and inherit dual dialogue boolean
 				Line *element = dialogueBlock.firstObject;
-				Line *postCue = [Line withString:[element.characterName stringByAppendingString:@" (CONT'D)"] type:contdType pageSplit:YES];
+				Line *postCue = [Line withString:[element.stripFormatting stringByAppendingString:@" (CONT'D)"] type:contdType pageSplit:YES];
 				
 				if (element.nextElementIsDualDialogue) postCue.nextElementIsDualDialogue = YES;
 				postDialogue.type = dialogueType;
@@ -1421,7 +1402,7 @@
 			@"retained": retainedElements,
 			@"next page": nextPageElements
 		};
-				
+
 		return result;
 	}
 	
@@ -1438,7 +1419,7 @@
 	if (retainedDialogue) [retainedElements addObject:retainedDialogue];
 	
 	if (addMore) {
-		LineType moreType = (spillerElement.isDialogue) ? more : dualDialogueMore;
+		LineType moreType = (!spillerElement.isDualDialogue) ? more : dualDialogueMore;
 		
 		Line *preMore = [Line withString:@"(MORE)" type:moreType pageSplit:YES];
 		preMore.position = spillerElement.position;

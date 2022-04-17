@@ -209,6 +209,8 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
+	if (_filteredOutline.count > 0) return NO;
+	
 	OutlineScene *scene = item;
 	if (scene.type == section) return YES;
 	else return NO;

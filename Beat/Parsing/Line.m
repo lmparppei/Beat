@@ -791,7 +791,8 @@
 		
 	// Make (forced) character names uppercase
 	if (self.type == character || self.type == dualDialogueCharacter) {
-		[string replaceCharactersInRange:self.characterNameRange withString:[self.string substringWithRange:self.characterNameRange].uppercaseString];
+		NSString *name = [self.string substringWithRange:self.characterNameRange].uppercaseString;
+		if (name) [string replaceCharactersInRange:self.characterNameRange withString:name];
 	}
 		
 	// Add font stylization
@@ -1105,7 +1106,7 @@
 	}
 	
 	// Catch dual dialogue force symbol
-	if (self.type == dualDialogueCharacter && self.string.length > 0) {
+	if (self.type == dualDialogueCharacter && self.string.length > 0 && [self.string characterAtIndex:self.string.length - 1] == '^') {
 		[indices addIndex:self.string.length - 1 +offset];
 	}
 	
@@ -1229,14 +1230,21 @@
 {
 	// This removes any extra suffixes from character name, ie. (V.O.), (CONT'D) etc.
 	// We'll allow the method to run for lines under 4 characters, even if not parsed as character cues
-	if (self.type != character && self.string.length > 3) return nil;
+	// (update in 2022: why do we do this, past me?)
+	if ((self.type != character && self.type != dualDialogueCharacter) && self.string.length > 3) return nil;
 	
 	// Strip formatting (such as symbols for forcing element types)
 	NSString *name = [self stripFormatting];
-	
+	if (name.length == 0) return @"";
+		
 	// Find and remove suffix
 	NSRange suffixRange = [name rangeOfString:@"("];
 	if (suffixRange.location != NSNotFound && suffixRange.location > 0) name = [name substringWithRange:(NSRange){0, suffixRange.location}];
+	
+	// Remove dual dialogue character if needed
+	if (self.type == dualDialogueCharacter && [name characterAtIndex:name.length-1] == '^') {
+		name = [name substringToIndex:name.length - 1];
+	}
 	
 	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }

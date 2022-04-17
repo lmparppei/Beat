@@ -1142,7 +1142,8 @@ and incomprehensible system of recursion.
 	// Check if this line was forced to become a character cue
 	if (line.forcedCharacterCue) {
 		line.forcedCharacterCue = NO;
-		return character;
+		if (line.lastCharacter == '^') return dualDialogueCharacter;
+		else return character;
 	}
 	
 	// Check for all-caps actions mistaken for character cues
@@ -1426,7 +1427,9 @@ and incomprehensible system of recursion.
 			 !precedingLine.forced &&
 			 [self previousLine:precedingLine].type == empty) {
 		// Make all-caps lines with < 2 characters character cues and/or make all-caps actions character cues when the text is changed to have some dialogue follow it.
-		precedingLine.type = character;
+		if (precedingLine.lastCharacter == '^') precedingLine.type = dualDialogueCharacter;
+		else precedingLine.type = character;
+		
 		[_changedIndices addIndex:index-1];
 		return dialogue;
 	}

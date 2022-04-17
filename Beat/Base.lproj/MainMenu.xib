@@ -182,7 +182,7 @@
                                         <menuItem title="IMPORT PLUGIN PLACEHOLDER" tag="1" id="r2v-xc-qum">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
-                                                <action selector="runStandalonePlugin:" target="vEX-2F-hcj" id="2AU-um-39i"/>
+                                                <action selector="runStandalonePlugin:" target="MpY-Uw-HUk" id="xdj-LI-MMr"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -662,10 +662,16 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" hidden="YES" id="ooU-ON-iUL"/>
-                            <menuItem title="Tagging Mode" hidden="YES" id="Fdy-fO-lco">
+                            <menuItem title="Tagging Mode" id="Fdy-fO-lco">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Review Mode" id="dmq-UY-1zc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="toggleReview:" target="-1" id="tGA-Vl-ZiI"/>
                                 </connections>
                             </menuItem>
                         </items>

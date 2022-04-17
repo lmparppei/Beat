@@ -167,6 +167,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (nonatomic, readonly) Line* currentLine;
 @property (nonatomic, readonly, weak) NSTextView *textView;
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
+@property (nonatomic, readonly) OutlineScene *currentScene;
 
 - (id)document; /// Returns self (document)
 - (void)registerPlugin:(id)parser;
@@ -184,7 +185,6 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
 - (void)focusEditor;
 - (NSString*)text;
-- (OutlineScene*)getCurrentScene;
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
 - (void)forceFormatChangesInRange:(NSRange)range;
 - (void)formatLine:(Line*)line;

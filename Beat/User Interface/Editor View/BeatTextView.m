@@ -156,7 +156,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 -(instancetype)initWithCoder:(NSCoder *)coder {
 	self = [super initWithCoder:coder];
-	self.textStorage.delegate = self;
 	
 	// Load custom layout manager and set a bit bigger line fragment padding
 	// to fit our revision markers in the margin
@@ -165,6 +164,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	layoutMgr.textView = self;
 	[self.textContainer replaceLayoutManager:layoutMgr];
 	self.textContainer.lineFragmentPadding = [BeatTextView linePadding];
+	
+	// Initialize custom text storage
+	//[self.layoutManager replaceTextStorage:BeatTextStorage.new];
+	self.textStorage.delegate = self;
 	
 	return self;
 }
@@ -244,10 +247,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 	self.lastPos = -1;
 		
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
 	
 	// Arrays for special elements
-	self.masks = [NSMutableArray array];
+	self.masks = NSMutableArray.new;
 	
 	_trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
@@ -296,7 +299,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 -(void)setBounds:(NSRect)bounds {
-	[self setBounds:bounds];
+	[super setBounds:bounds];
 }
 -(void)setFrame:(NSRect)frame {
 	// There is a strange bug (?) in macOS Monterey which causes some weird sizing errors.
@@ -306,7 +309,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	static CGSize sizeBeforeThat;
 		
 	if (prevSize.width > 0 && frame.size.height == prevSize.height) {
-		if (frame.size.width == sizeBeforeThat.width) return;
+		// Some duct-tape which might have not worked, or dunno
+		//if (frame.size.width == sizeBeforeThat.width) return;
 	}
 	
 	// I don't know why this happens, but text view frame can sometimes become wider than
@@ -317,7 +321,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	sizeBeforeThat = prevSize;
 	prevSize = frame.size;
 }
-
 
 #pragma mark - Key events
 
@@ -430,9 +433,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	
 	if (self.infoPopover.isShown) [self closePopovers];
-	
+		
+	// Run superclass method for the event
 	[super keyDown:theEvent];
 	
+	// Run completion block
 	if (shouldComplete && self.popupMode != Tagging) {
 		if (self.automaticTextCompletionEnabled) {
 			[self complete:self];
@@ -448,6 +453,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 #pragma mark - Typewriter scroll
+
+- (void)updateTypewriterView {
+	NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
+	NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
+	
+	CGFloat viewOrigin = self.enclosingScrollView.documentVisibleRect.origin.y;
+	CGFloat viewHeight = self.enclosingScrollView.documentVisibleRect.size.height;
+	CGFloat y = rect.origin.y + self.textContainerInset.height;
+	if (y < viewOrigin || y > viewOrigin + viewHeight) [self typewriterScroll];
+}
 
 - (void)typewriterScroll {
 	if (self.needsLayout) [self layout];
@@ -496,6 +511,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	[super scrollWheel:event];
 }
+
 -(NSRect)adjustScroll:(NSRect)newVisible {
 	if (self.editorDelegate.typewriterMode && !_scrolling && _selectionAtEnd) {
 		if (self.selectedRange.location == self.string.length) {
@@ -503,7 +519,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		}
 	}
 	
-	return newVisible;
+	return [super adjustScroll:newVisible];
 }
 
 #pragma mark - Info popup
@@ -608,7 +624,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		} else {
 			beginningOfWord = self.selectedRange.location - self.substring.length;
 		}
-				
+		
 		NSRange range = NSMakeRange(beginningOfWord, self.substring.length);
 		
 		if ([self shouldChangeTextInRange:range replacementString:string]) {
@@ -621,28 +637,37 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)didChangeSelection:(NSNotification *)notification {
+	// Skip event when needed
+	if (_editorDelegate.skipSelectionChangeEvent) {
+		_editorDelegate.skipSelectionChangeEvent = NO;
+		return;
+	}
+	
+	// Update view position if needed
+	if (self.editorDelegate.typewriterMode) {
+		[self updateTypewriterView];
+	}
+	
+	// If selection moves by more than just one character, hide autocomplete
 	if ((self.selectedRange.location - self.lastPos) > 1) {
-		// If selection moves by more than just one character, hide autocomplete
 		if (self.autocompletePopover.shown) [self setAutomaticTextCompletionEnabled:NO];
 		[self.autocompletePopover close];
 	}
 	
-	if (self.editorDelegate.mode == TaggingMode) {
+	// Show tagging/review options for selected range
+	if (_editorDelegate.mode == TaggingMode) {
+		// Show tag list
 		[self showTaggingOptions];
 	}
-	
-	if (self.editorDelegate.typewriterMode) {
-		NSRange range = [self.layoutManager glyphRangeForCharacterRange:self.selectedRange actualCharacterRange:nil];
-		NSRect rect = [self.layoutManager boundingRectForGlyphRange:range inTextContainer:self.textContainer];
-		
-		CGFloat viewOrigin = self.enclosingScrollView.documentVisibleRect.origin.y;
-		CGFloat viewHeight = self.enclosingScrollView.documentVisibleRect.size.height;
-		CGFloat y = rect.origin.y + self.textContainerInset.height;
-		if (y < viewOrigin || y > viewOrigin + viewHeight) [self typewriterScroll];
+	else if (_editorDelegate.mode == ReviewMode) {
+		// Show review editor
+		[_editorDelegate.review showReviewItemWithRange:self.selectedRange forEditing:YES];
 	}
-	
-	if (self.selectedRange.location == self.string.length) _selectionAtEnd = YES;
-	else _selectionAtEnd = NO;
+}
+
+- (bool)selectionAtEnd {
+	if (self.selectedRange.location == self.string.length) return YES;
+	else return NO;
 }
 
 #pragma mark - Tagging / Force Element menu
@@ -1396,6 +1421,7 @@ Line *cachedRectLine;
 	 
 	return 0;
 	*/
+	
 	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
 	self.textContainer.size = NSMakeSize(_editorDelegate.documentWidth, self.textContainer.size.height);
@@ -1461,7 +1487,7 @@ Line *cachedRectLine;
 	NSRect rect = [self rectForRange:range];
 	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
 	
-	[[self.enclosingScrollView.contentView animator] setBoundsOrigin:NSMakePoint(0, y)];
+	[self.enclosingScrollView.contentView.animator setBoundsOrigin:NSMakePoint(0, y)];
 }
 
 #pragma mark - Layout Delegation

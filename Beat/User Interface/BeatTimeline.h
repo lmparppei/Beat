@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSRange)selectedRange;
 - (NSMutableArray*)getOutlineItems;
 - (NSArray*)getOutline; // ???
-- (OutlineScene*)getCurrentScene;
 - (void)didSelectTimelineItem:(NSInteger)index;
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;

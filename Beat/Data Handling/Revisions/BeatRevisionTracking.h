@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;
-- (void)loadRevisionMarkers;
 - (void)setupRevisions;
 - (void)markerAction:(RevisionType)type;
 - (void)markRangeAsAddition:(NSRange)range;

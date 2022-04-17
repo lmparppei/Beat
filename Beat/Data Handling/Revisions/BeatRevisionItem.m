@@ -23,12 +23,11 @@
 
 @implementation BeatRevisionItem
 
--(instancetype)initWithType:(RevisionType)type text:(NSString*)text color:(NSString*)color {
+-(instancetype)initWithType:(RevisionType)type color:(NSString*)color {
 	self = [super init];
 	if (self) {
 		//_themeManager = [ThemeManager sharedManager];
 		_type = type;
-		_text = text;
 		
 		if (color.length) _colorName = color;
 		else _colorName = BeatRevisionItem.availableColors.firstObject;
@@ -41,18 +40,17 @@
 }
 + (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color
 {
-	return [[BeatRevisionItem alloc] initWithType:type text:@"" color:color];
+	return [[BeatRevisionItem alloc] initWithType:type color:color];
 }
 
 + (BeatRevisionItem*)type:(RevisionType)type
 {
-	return [[BeatRevisionItem alloc] initWithType:type text:@"" color:@""];
+	return [[BeatRevisionItem alloc] initWithType:type color:@""];
 }
 
 - (NSString*)key {
 	if (self.type == RevisionRemovalSuggestion) return @"RemovalSuggestion";
 	else if (self.type == RevisionAddition) return @"Addition";
-	else if (self.type == RevisionComment) return @"Comment";
 	return @"";
 }
 
@@ -77,7 +75,6 @@
 
 -(void)encodeWithCoder:(NSCoder *)coder {
 	[coder encodeInteger:self.type forKey:@"type"];
-	[coder encodeObject:self.text forKey:@"text"];
 	[coder encodeObject:self.colorName forKey:@"colorName"];
 }
 
@@ -87,7 +84,6 @@
 	if (self) {
 		_type = [coder decodeIntForKey:@"type"];
 		_colorName = [coder decodeObjectForKey:@"colorName"];
-		_text = [coder decodeObjectForKey:@"text"];
 	}
 	
 	return self;
@@ -96,7 +92,7 @@
 
 
 -(id)copyWithZone:(NSZone *)zone {
-	BeatRevisionItem *newItem = [[[self class] alloc] initWithType:(RevisionType)self.type text:(NSString*)[self.text copyWithZone:zone] color:(NSString*)[self.colorName copyWithZone:zone]];
+	BeatRevisionItem *newItem = [[[self class] alloc] initWithType:(RevisionType)self.type color:(NSString*)[self.colorName copyWithZone:zone]];
 	return newItem;
 }
 
@@ -116,7 +112,7 @@
  täytyy mennä ulos postiin
  hän on sileänaama, poikanen vielä
  lunastaa tulleen paketin
- jonka sisältö muutta
+ jonka sisältö muuttaa
  K A I K E N
  hän viettää
  15 seuraava vuottansa matkalla...

@@ -143,17 +143,25 @@ static BeatPluginManager *sharedManager;
 	for (NSMenuItem *item in menuItems) {
 		if (item.tag == 1) {
 			// Save prototype for plugin type
-			if (type == ToolPlugin && !_menuItem) _menuItem = item;
-			else if (type == ImportPlugin && !_importMenuItem) _importMenuItem = item;
-			else if (type == ExportPlugin && !_exportMenuItem) _exportMenuItem = item;
+			if (type == ToolPlugin && _menuItem == nil) _menuItem = item;
+			else if (type == ImportPlugin && _importMenuItem == nil) _importMenuItem = item;
+			else if (type == ExportPlugin && _exportMenuItem == nil) _exportMenuItem = item;
 			
 			[parentMenu removeItem:item];
 		}
 	}
+		
+	NSMenuItem *prototypeItem = _menuItem;
 	
 	NSString *filter;
-	if (type == ExportPlugin) filter = @"Export";
-	else if (type == ImportPlugin) filter = @"Import";
+	if (type == ExportPlugin) {
+		filter = @"Export";
+		prototypeItem = _exportMenuItem;
+	}
+	else if (type == ImportPlugin) {
+		filter = @"Import";
+		prototypeItem = _importMenuItem;
+	}
 	
 	[self loadPlugins];
 	
@@ -161,13 +169,15 @@ static BeatPluginManager *sharedManager;
 	
 	for (NSString *pluginName in self.pluginNames) {
 		if (filter.length) {
+			// For Import/Export, only display plugins called "Import ..." or "Export ..."
+			// (This is an old concept and should be replaced)
 			if ([pluginName rangeOfString:filter].location != 0) continue;
 		}
 		
 		// Don't show this plugin in menu
 		if ([disabledPlugins containsObject:pluginName]) continue;
 		
-		NSMenuItem *item = [_menuItem copy];
+		NSMenuItem *item = prototypeItem.copy;
 		item.state = NSOffState;
 		item.title = pluginName;
 		
@@ -388,8 +398,6 @@ static BeatPluginManager *sharedManager;
 	
 	for (NSString *file in files) {
 		if (![file.pathExtension isEqualToString:@"beatPlugin"]) continue;
-		
-		NSLog(@" ---> %@", file);
 		
 		BOOL folderPlugin;
 		

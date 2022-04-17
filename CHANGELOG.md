@@ -1,5 +1,16 @@
 # Changelog
 
+## Beat 1.94.2
+
+- Started work on review mode
+- Fixed a bug with scene filtering 
+
+
+## Beat 1.94.0
+
+- Lots of weirdness and Big Sur crashes fixed
+
+
 ## Beat 1.93.4
 
 - Fixed average scene length in *Screenplay Statistics*

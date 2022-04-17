@@ -15,9 +15,7 @@
 #import "BeatTextStorage.h"
 
 @interface BeatTextStorage ()
-@property (nonatomic, readonly) NSString* string;
-@property (nonatomic) NSMutableDictionary <NSValue*,NSNumber*> *rects;
-@property (nonatomic, weak) Line* previouslyEdited;
+@property (nonatomic) bool processing;
 @end
 
 @implementation BeatTextStorage
@@ -53,15 +51,6 @@
 
 -(void)edited:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
 	[super edited:editedMask range:editedRange changeInLength:delta];
-	
-	if (NSIntersectionRange(editedRange, _previouslyEdited.range).length != editedRange.length) {
-		//NSArray *lines = [self.delegate.parser linesInRange:editedRange];
-		
-//		for (Line* line in lines) {
-//			
-//		}
-	}
-	
 }
 
 -(void)endEditing {
@@ -76,14 +65,5 @@
 	return [super attributedSubstringFromRange:range];
 }
 
--(void)setRectForRange:(Line*)line {
-	
-}
-
--(NSRect)rectForLine:(Line*)line {
-	NSValue *key = [NSValue valueWithNonretainedObject:line];
-	NSRect rect = _rects[key].rectValue;
-	return rect;
-}
 
 @end

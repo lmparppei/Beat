@@ -1173,7 +1173,7 @@
 }
 
 - (OutlineScene*)getCurrentScene {
-	return _delegate.getCurrentScene;
+	return _delegate.currentScene;
 }
 - (OutlineScene*)getSceneAt:(NSInteger)position {
 	return [_delegate getCurrentSceneWithPosition:position];

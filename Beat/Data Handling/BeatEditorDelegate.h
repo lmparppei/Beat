@@ -76,7 +76,6 @@
 - (void)setSelectedRange:(NSRange)range;
 - (NSRange)selectedRange;
 - (NSArray*)getOutline; // ???
-- (OutlineScene*)getCurrentScene;
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;

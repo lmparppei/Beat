@@ -13,7 +13,6 @@
 #import "ThemeManager.h"
 #import "BeatTagging.h"
 #import "BeatTextStorage.h"
-#import "Beat-Swift.h"
 
 typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	NoPopup,
@@ -54,6 +53,9 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 @property (readonly) bool typewriterMode;
 @property (readonly) bool hideFountainMarkup;
 @property (readonly) bool documentIsLoading;
+@property (nonatomic) bool skipSelectionChangeEvent;
+
+@property (nonatomic) id review;
 
 @property (readonly) NSRange lastChangedRange;
 
@@ -121,7 +123,6 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
 //@property (nonatomic, readonly, weak) ContinuousFountainParser *parser;
-
 
 - (void)refreshLayoutElementsFrom:(NSInteger)location;
 - (void)refreshLayoutElements;

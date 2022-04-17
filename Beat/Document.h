@@ -104,7 +104,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (IBAction)forceAction:(id)sender;
 - (IBAction)forceHeading:(id)sender;
 - (IBAction)forceCharacter:(id)sender;
-- (OutlineScene*)getCurrentScene;
 
 - (void)setPrintSceneNumbers:(bool)value;
 - (IBAction)togglePrintSceneNumbers:(id)sender;
@@ -129,7 +128,13 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Mode
 @property (nonatomic) BeatEditorMode mode;
 
+// Review
+@property (nonatomic) id review;
+
 @property (nonatomic, readwrite) bool outlineEdit;
 - (NSMutableArray*)filteredOutline;
+
+// Skip selection change events when needed
+@property (nonatomic) bool skipSelectionChangeEvent;
 
 @end

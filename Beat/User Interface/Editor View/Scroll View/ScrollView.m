@@ -51,10 +51,10 @@
     [super drawRect:dirtyRect];
 }
 - (bool)isFullSize {
-	return (([self.window styleMask] & NSWindowStyleMaskFullSizeContentView) == NSWindowStyleMaskFullSizeContentView);
+	return ((self.window.styleMask & NSWindowStyleMaskFullSizeContentView) == NSWindowStyleMaskFullSizeContentView);
 }
 - (bool)isFullscreen {
-	return (([self.window styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
+	return ((self.window.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 -(void)setFrame:(NSRect)frame {
@@ -123,31 +123,42 @@
 	}
 }
 
+
 // Listen to find bar open/close and move the outline / card view buttons accordingly
 - (void)setFindBarVisible:(BOOL)findBarVisible {
 	[super setFindBarVisible:findBarVisible];
+	
+	NSRect frame = _buttonView.frame;
 	CGFloat height = self.findBarView.frame.size.height;
 	
 	// Save original constant
-	if (_buttonDefaultY == 0) _buttonDefaultY = _outlineButtonY.constant;
+	if (_buttonDefaultY == 0) _buttonDefaultY = _buttonView.frame.origin.y;
 	
 	if (!findBarVisible) {
-		_outlineButtonY.constant = _buttonDefaultY;
+		frame.origin.y = _buttonDefaultY;
+		
+		//_outlineButtonY.constant = _buttonDefaultY;
 		// [_editorDelegate hideTitleBar];
 		[self.window makeFirstResponder:self.documentView];
 	} else {
-		_outlineButtonY.constant += height;
+		frame.origin.y -= height;
+		//_outlineButtonY.constant += height;
 		// [_editorDelegate showTitleBar];
 	}
+	
+	_buttonView.frame = frame;
 	
 }
 
 - (void)findBarViewDidChangeHeight {
 	if (self.findBarVisible) {
+		NSRect frame = _buttonView.frame;
 		CGFloat height = self.findBarView.frame.size.height;
-		_outlineButtonY.constant = _buttonDefaultY + height;
+		frame.origin.y = _buttonDefaultY - height;
+		_buttonView.frame = frame;
 	}
 	
+	[super findBarViewDidChangeHeight];
 }
 
 

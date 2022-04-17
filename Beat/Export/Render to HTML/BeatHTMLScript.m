@@ -334,7 +334,7 @@
 		
 		// We need to catch lyrics not to make them fill up a paragraph
 		bool isLyrics = false;
-	
+		
         for (Line *line in elementsOnPage) {
 			bool beginBlock = false;
 			

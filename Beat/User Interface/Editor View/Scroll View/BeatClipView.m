@@ -18,8 +18,12 @@
 	// We are not laying out the clip view, because it can cause an endless layout loop on some systems.
 	// No idea about the possible reprecussions, but this is the way now. Uncomment if needed, but you'll
 	// probably kill support for many computers. Greetings from March 2022.
-	
-	// [super layout];
+
+	if (@available(macOS 11.0, *)) {
+		// [super layout];
+	} else {
+		[super layout];
+	}
 }
 
 @end

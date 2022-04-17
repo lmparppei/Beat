@@ -248,34 +248,12 @@
 
 #pragma mark - Editor methods
 
-- (void)loadRevisionMarkers {
-
-	// Load changed indices
-	NSDictionary *changedIndices = [self.delegate.documentSettings get:DocSettingChangedIndices];
-	for (NSString* val in changedIndices.allKeys) {
-		NSString *revisionColor = changedIndices[val];
-		if (revisionColor) {
-			@try {
-				Line *l = self.delegate.parser.lines[val.integerValue];
-				l.changed = YES;
-				l.revisionColor = revisionColor;
-			}
-			@catch (NSException *e) {
-				NSLog(@"ERROR: Changed index outside of range");
-			}
-		}
-	}
-}
-
 - (void)setupRevisions {
 	// This loads revisions from the file
 	_delegate.revisionColor = [_delegate.documentSettings getString:DocSettingRevisionColor];
 	if (![_delegate.revisionColor isKindOfClass:NSString.class] || !_delegate.revisionColor) _delegate.revisionColor = BeatRevisionTracking.defaultRevisionColor;
 	
-	// First load all changed indices
-	// [self loadRevisionMarkers];
-	
-	// Second, get revised ranges from document settings and iterate through them
+	// Get revised ranges from document settings and iterate through them
 	NSDictionary *revisions = [_delegate.documentSettings get:DocSettingRevisions];
 	
 	for (NSString *key in revisions.allKeys) {
