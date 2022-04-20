@@ -109,54 +109,6 @@
 	
 	NSAttributedString *attrStr = [self attrStringWithRevisions:revisions string:string];
 	[self bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
-	
-	/*
-	if (revisions.count && !string.length) NSLog(@"NOTE: No string available for baking the revisions.");
-
-	for (NSString *key in revisions.allKeys) {
-		NSArray *items = revisions[key];
-		for (NSArray *item in items) {
-			NSString *color;
-			NSInteger loc = [(NSNumber*)item[0] integerValue];
-			NSInteger len = [(NSNumber*)item[1] integerValue];
-			
-			// Load color if available
-			if (item.count > 2) {
-				color = item[2];
-			}
-			
-			// Ensure the revision is in range, find lines in range and bake revisions
-			if (len > 0 && loc + len <= string.length) {
-				RevisionType type;
-				NSRange range = (NSRange){loc, len};
-				
-				if ([key isEqualToString:@"Addition"]) type = RevisionAddition;
-				else if ([key isEqualToString:@"Removal"]) type = RevisionRemoval;
-				else type = RevisionNone;
-				
-				BeatRevisionItem *revision = [BeatRevisionItem type:type color:color];
-				//if (revisionItem) [self.textView.textStorage addAttribute:revisionAttribute value:revisionItem range:range];
-				
-				if (revision.type != RevisionNone) {
-					NSArray *linesInRange = [parser linesInRange:range];
-					for (Line* line in linesInRange) {
-						line.changed = YES;
-						
-						// Set revision color
-						line.revisionColor = revision.colorName;
-						if (!line.revisionColor.length) line.revisionColor = DEFAULT_COLOR;
-						
-						if (!line.removalRanges) line.removalRanges = [NSMutableIndexSet indexSet];
-						
-						NSRange localRange = [line globalRangeToLocal:range];
-						if (revision.type == RevisionRemoval) [line.removalRanges addIndexesInRange:localRange];
-						else if (revision.type == RevisionAddition) [line.additionRanges addIndexesInRange:localRange];
-					}
-				}
-			}
-		}
-	}
-	 */
 }
 
 + (NSAttributedString*)attrStringWithRevisions:(NSDictionary*)revisions string:(NSString*)string {
@@ -192,6 +144,23 @@
 	}
 	
 	return attrStr;
+}
+
++ (NSMutableDictionary*)changedLinesForSaving:(NSArray*)lines {
+	// These are lines that have been changed, but not added to
+	NSMutableDictionary *changedLines = NSMutableDictionary.new;
+		
+	for (NSInteger i=0; i < lines.count; i++) {
+		Line *line = lines[i];
+		
+		if (line.changed) {
+			NSString *revisionColor = line.revisionColor;
+			if (revisionColor.length == 0) revisionColor = BeatRevisionTracking.defaultRevisionColor;
+			[changedLines setValue:line.revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
+		}
+	}
+	
+	return changedLines;
 }
 
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string {
@@ -302,12 +271,34 @@
 		}
 	}
 	
+	// Load changed indices (legacy support + handles REMOVALS rather than additions)
+	NSDictionary *changedIndices = [self.delegate.documentSettings get:DocSettingChangedIndices];
+	
+	// Check for correct class
+	if ([changedIndices isKindOfClass:NSDictionary.class]) {
+		for (NSString* val in changedIndices.allKeys) {
+			NSString *revisionColor = changedIndices[val];
+			if (revisionColor) {
+				@try {
+					Line *l = self.delegate.parser.lines[val.integerValue];
+					l.changed = YES;
+					l.revisionColor = revisionColor;
+				}
+				@catch (NSException *e) {
+					NSLog(@"ERROR: Changed index outside of range");
+				}
+			}
+		}
+	}
+		
 	bool revisionMode = [_delegate.documentSettings getBool:DocSettingRevisionMode];
 	if (revisionMode) {
 		self.delegate.revisionMode = YES;
 		[self.delegate updateQuickSettings];
 	}
 }
+
+
 
 - (void)nextRevision {
     NSString *string;

@@ -90,3 +90,6 @@
 "revisions.commitPrompt.title" = "Hyväksy korjaukset";
 "revisions.commitPrompt.text" = "Korjausten hyväksyntä pyyhkii kaikki korjausmerkinnät ja poistettavaksi merkityt alueet. Haluatko varmasti jatkaa?";
 
+"mode.taggingMode" = "Merkintätila";
+"mode.reviewMode" = "Kommenttitila";
+

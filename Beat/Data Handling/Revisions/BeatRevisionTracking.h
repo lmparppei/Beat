@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser includeRevisions:(NSArray*)includedRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string parser:(ContinuousFountainParser*)parser;
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
++ (NSMutableDictionary*)changedLinesForSaving:(NSArray*)lines;
 
 + (NSString*)defaultRevisionColor;
 + (NSArray*)revisionColors;
@@ -25,11 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
 + (NSString*)revisionAttribute;
 
+
 @property (weak) IBOutlet id<BeatEditorDelegate> delegate;
 
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;
 - (void)setupRevisions;
+
 - (void)markerAction:(RevisionType)type;
 - (void)markRangeAsAddition:(NSRange)range;
 - (void)markRangeForRemoval:(NSRange)range;
@@ -39,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)previousRevision;
 
 - (void)commitRevisions;
+
 @end
 
 NS_ASSUME_NONNULL_END

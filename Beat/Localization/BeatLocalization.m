@@ -21,6 +21,21 @@
 
 + (NSString*)localizeString:(NSString*)string
 {
+	NSDictionary *dictionary = [BeatLocalization dictionary];
+	
+	// Iterate through localized strings and replace them in the string
+	for (NSString *key in dictionary) {
+		// Find all occurences of #keys#, as in #plugins.title#
+		NSString *stringToFind = [NSString stringWithFormat:@"#%@#", key];
+		NSString *localization = dictionary[key];
+				
+		string = [string stringByReplacingOccurrencesOfString:stringToFind withString:localization];
+	}
+	
+	return string;
+}
+
++ (NSDictionary*)dictionary {
 	// Get localization dictionary
 	NSString *stringsPath = [NSBundle.mainBundle pathForResource:@"Localizable" ofType:@"strings"];
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithContentsOfFile:stringsPath];
@@ -37,16 +52,13 @@
 		}
 	}
 	
-	// Iterate through localized strings and replace them in the string
-	for (NSString *key in dictionary) {
-		// Find all occurences of #keys#, as in #plugins.title#
-		NSString *stringToFind = [NSString stringWithFormat:@"#%@#", key];
-		NSString *localization = dictionary[key];
-				
-		string = [string stringByReplacingOccurrencesOfString:stringToFind withString:localization];
-	}
-	
-	return string;
+	return dictionary;
+}
+
++ (NSString*)localizedStringForKey:(NSString*)key {
+	NSDictionary *dictionary = [BeatLocalization dictionary];
+	if (dictionary[key]) return dictionary[key];
+	else return @"";
 }
 
 @end

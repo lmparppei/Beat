@@ -7,15 +7,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol BeatReloadableView <NSObject>
-- (void)reloadView;
-@end
-
 @interface BeatSidebarTabView : NSTabViewItem
-@property (nonatomic, weak) IBOutlet id reloadableView;
+@property (nonatomic, weak) IBOutlet id<BeatEditorView> reloadableView;
 @end
 
 NS_ASSUME_NONNULL_END

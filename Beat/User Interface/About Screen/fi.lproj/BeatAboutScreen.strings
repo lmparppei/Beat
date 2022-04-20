@@ -1,0 +1,21 @@
+
+/* Class = "NSWindow"; title = "About Beat"; ObjectID = "2ip-76-u7o"; */
+"2ip-76-u7o.title" = "Tietoja: Beat";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "7rY-cc-HqE"; */
+"7rY-cc-HqE.title" = "Box";
+
+/* Class = "NSTextFieldCell"; title = "beat"; ObjectID = "IhX-oQ-xOK"; */
+"IhX-oQ-xOK.title" = "beat";
+
+/* Class = "NSTextFieldCell"; title = "© Lauri-Matti Parppei 2019–2021"; ObjectID = "Vew-4a-6k0"; */
+"Vew-4a-6k0.title" = "© Lauri-Matti Parppei 2019–2022";
+
+/* Class = "NSTextFieldCell"; title = "Released under GPL license"; ObjectID = "kFC-VJ-RDd"; */
+"kFC-VJ-RDd.title" = "Julkaistu GPL-lisenssillä";
+
+/* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "p0n-Zp-SgA"; */
+"p0n-Zp-SgA.title" = "Versio";
+
+/* Class = "NSButtonCell"; title = "Acknowledgements"; ObjectID = "umj-be-CzI"; */
+"umj-be-CzI.title" = "Lisenssitiedot";

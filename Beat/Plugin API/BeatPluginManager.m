@@ -78,15 +78,18 @@ static BeatPluginManager *sharedManager;
 
 + (BeatPluginManager*)sharedManager
 {
-	if (!sharedManager) sharedManager = [[BeatPluginManager alloc] init];
+	if (!sharedManager) {
+		sharedManager = [[BeatPluginManager alloc] init];
+	}
 	return sharedManager;
 }
 
 + (void)initialize
 {
 	static BOOL initialized = NO;
-	if(!initialized)
+	if (!initialized)
 	{
+		NSLog(@"Initializing plugin manager...");
 		initialized = YES;
 		sharedManager = BeatPluginManager.new;
 	}
@@ -94,6 +97,8 @@ static BeatPluginManager *sharedManager;
 
 - (BeatPluginManager*)init {
 	self = [super init];
+	
+	if (sharedManager) return sharedManager;
 	
 	if (self) {
 		_pluginURL = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];

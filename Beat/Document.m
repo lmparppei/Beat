@@ -136,7 +136,7 @@
 @property (nonatomic) NSAttributedString *attributedContentCache;
 
 // Plugin support
-@property (assign) BeatPluginManager *pluginManager;
+@property (weak) BeatPluginManager *pluginManager;
 @property (weak) IBOutlet BeatWidgetView *widgetView;
 
 // Quick Settings
@@ -147,6 +147,7 @@
 @property (nonatomic, weak) IBOutlet ITSwitch *revisionModeSwitch;
 @property (nonatomic, weak) IBOutlet ITSwitch *taggingModeSwitch;
 @property (nonatomic, weak) IBOutlet ITSwitch *darkModeSwitch;
+@property (nonatomic, weak) IBOutlet ITSwitch *reviewModeSwitch;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *revisionColorPopup;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *pageSizePopup;
 
@@ -238,6 +239,9 @@
 @property (weak) IBOutlet WKWebView *cardView;
 @property (nonatomic) bool cardsVisible;
 
+// Mode display
+@property (weak) IBOutlet BeatModeDisplay *modeIndicator;
+
 // Timeline view
 @property (weak) IBOutlet NSLayoutConstraint *timelineViewHeight;
 @property (weak) IBOutlet NSTouchBar *touchBar;
@@ -328,6 +332,14 @@
 @property (nonatomic) NSProgressIndicator *progressIndicator;
 
 @property (nonatomic) BeatEditorFormatting *formatting;
+
+
+// Sidebar tabs
+@property (nonatomic, weak) IBOutlet NSTabViewItem *tabOutline;
+@property (nonatomic, weak) IBOutlet NSTabViewItem *tabNotepad;
+@property (nonatomic, weak) IBOutlet NSTabViewItem *tabDialogue;
+@property (nonatomic, weak) IBOutlet NSTabViewItem *tabReviews;
+@property (nonatomic, weak) IBOutlet NSTabViewItem *tabWidgets;
 
 // Debug flags
 @property (nonatomic) bool debug;
@@ -429,6 +441,13 @@
 	
 	self.preview = nil;
 	
+	self.formatting = nil;
+
+	for (NSView* view in _registeredViews) {
+		[view removeFromSuperview];
+	}
+	[_registeredViews removeAllObjects];
+	
 	[self.textScrollView.mouseMoveTimer invalidate];
 	[self.textScrollView.timerMouseMoveTimer invalidate];
 	self.textScrollView.mouseMoveTimer = nil;
@@ -452,6 +471,7 @@
 	self.tagging = nil;
 	self.itemsToValidate = nil;
 	self.documentSettings = nil;
+	self.review = nil;
 		
 	// Terminate autosave timer
 	if (_autosaveTimer) [self.autosaveTimer invalidate];
@@ -867,12 +887,25 @@
 
 - (void)updateEditorMode {
 	/// This updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
-	
 	if (_mode == TaggingMode) {
 		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 		[_sideViewCostraint setConstant:180];
 	} else {
 		[self closeTagging:nil];
+	}
+	
+	// Show mode indicator
+	if (_mode != EditMode) {
+		NSString *modeName = @"";
+		if (_mode == TaggingMode) modeName = [BeatLocalization localizedStringForKey:@"mode.taggingMode"];
+		else if (_mode == ReviewMode) modeName = [BeatLocalization localizedStringForKey:@"mode.reviewMode"];
+		
+		[_modeIndicator showModeWithModeName:modeName];
+		
+		_modeIndicator.hidden = NO;
+		
+	} else {
+		_modeIndicator.hidden = YES;
 	}
 	
 	[_documentWindow layoutIfNeeded];
@@ -971,6 +1004,12 @@
 		[_revisionColorPopup setEnabled:YES];
 		[_revisionModeSwitch setEnabled:YES];
 	}
+	
+	if (self.mode == ReviewMode) {
+		[_reviewModeSwitch setChecked:YES];
+	} else {
+		[_reviewModeSwitch setChecked:NO];
+	}
 }
 
 - (IBAction)toggleQuickSetting:(id)sender {
@@ -981,6 +1020,7 @@
 	else if (button == _revisionModeSwitch) [self toggleRevisionMode:nil];
 	else if (button == _taggingModeSwitch) [self toggleTagging:nil];
 	else if (button == _darkModeSwitch) [self toggleDarkMode:nil];
+	else if (button == _reviewModeSwitch) [self toggleReview:nil];
 	
 	[self updateQuickSettings];
 }
@@ -1175,7 +1215,19 @@
 	if (content == nil) content = self.contentCache;
 	
 	// Save added/removed ranges
-	[self saveRevisionRangesUsing:_attrTextCache];
+	// This saves the revised ranges into Document Settings
+	NSDictionary *revisions = [BeatRevisionTracking rangesForSaving:_attrTextCache];
+	[_documentSettings set:DocSettingRevisions as:revisions];
+
+	// Save current revision color
+	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
+	
+	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
+	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisionTracking changedLinesForSaving:self.lines]];
+	
+	// Save reviewed ranges
+	NSArray *reviews = [_review rangesForSavingWithString:_attrTextCache];
+	[_documentSettings set:DocSettingReviews as:reviews];
 	
 	// Save caret position
 	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
@@ -1211,7 +1263,7 @@
     return YES;
 }
 
-- (void)registerEditorView:(id)view {
+- (void)registerEditorView:(id<BeatEditorView>)view {
 	if (_registeredViews == nil) _registeredViews = NSMutableSet.set;;
 	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
 }
@@ -1795,8 +1847,7 @@
 }
 
 - (void)textDidChange:(NSNotification *)notification
-{
-	
+{	
 	// Save attributed text to cache
 	_attrTextCache = [self getAttributedText];
 	
@@ -1824,12 +1875,11 @@
 		if (self.timeline.visible) [_timeline refreshWithDelay];
 	}
 
-	// Idea for the future:
-	// Have views register themselves with the document. They would all have
-	// a standardized reloadInBackground method, which would then be called here
-	// when needed. This approach would remove the need for massive amount of conditionals
-	// in textDidChange.
-	if (self.characterList.visibleInTab) [self.characterList reloadInBackground];
+	// Editor views can register themselves and have to conform to BeatEditorView protocol,
+	// which includes methods for reloading both in sync and async
+	for (id<BeatEditorView> view in _registeredViews) {
+		if (view.visible) [view reloadInBackground];
+	}
 
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
@@ -3147,34 +3197,6 @@ static NSString *revisionAttribute = @"Revision";
  
  */
 
-- (void)saveRevisionRanges {
-	[self saveRevisionRangesUsing:self.textView.attributedString];
-}
-- (void)saveRevisionRangesUsing:(NSAttributedString*)string {
-	// This saves the revised ranges into Document Settings
-	NSDictionary *ranges = [BeatRevisionTracking rangesForSaving:string];
-	
-	[_documentSettings set:DocSettingRevisions as:ranges];
-	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
-
-	/*
-	// Save changed indices (why do we need this? asking for myself)
-	NSArray *lines = self.lines;
-	NSMutableDictionary *changedLines = NSMutableDictionary.new;
-	
-	for (NSInteger i=0; i < lines.count; i++) {
-		Line *line = lines[i];
-		
-		if (line.changed) {
-			NSString *revisionColor = line.revisionColor;
-			if (revisionColor.length == 0) revisionColor = BeatRevisionTracking.defaultRevisionColor;
-			[changedLines setValue:line.revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
-		}
-	}
-	
-	[_documentSettings set:DocSettingChangedIndices as:changedLines];
-	*/
-}
 
 - (IBAction)selectRevisionColor:(id)sender {
 	NSPopUpButton *button = sender;
@@ -3386,6 +3408,10 @@ static NSString *revisionAttribute = @"Revision";
 	else if (menuItem.action == @selector(toggleReview:)) {
 		if (_mode == ReviewMode) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
+	}
+	else if (menuItem.action == @selector(reviewSelectedRange:)) {
+		if (self.selectedRange.length == 0) menuItem.state = NSOffState;
+		else menuItem.state = NSOnState;
 	}
 	
 	else if (menuItem.action == @selector(toggleAutosave:)) {
@@ -3872,20 +3898,23 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)showOutline:(id)sender {
 	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabControl setSelectedSegment:0];
+	[self.sideBarTabs selectTabViewItem:_tabOutline];
 }
 - (IBAction)showNotepad:(id)sender {
 	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabControl setSelectedSegment:1];
+	[self.sideBarTabs selectTabViewItem:_tabNotepad];
 }
 - (IBAction)showCharactersAndDialogue:(id)sender {
 	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	[self.sideBarTabControl setSelectedSegment:2];
+	[self.sideBarTabs selectTabViewItem:_tabDialogue];
+}
+- (IBAction)showReviews:(id)sender {
+	if (!_sidebarVisible) [self toggleSidebarView:nil];
+	[self.sideBarTabs selectTabViewItem:_tabReviews];
 }
 - (IBAction)showWidgets:(id)sender {
 	if (!_sidebarVisible) [self toggleSidebarView:nil];
-	
-	[self.sideBarTabControl.tabView selectTabViewItem:[self.sideBarTabControl.tabView tabViewItemAtIndex:3]];
+	[self.sideBarTabs selectTabViewItem:_tabWidgets];
 }
 
 
@@ -5138,26 +5167,23 @@ triangle walks
 
 - (void)setupReview {
 	_review = [BeatReview.alloc initWithEditorDelegate:self];
+	[_review setupReviewsWithRanges:[_documentSettings get:DocSettingReviews]];
 }
 
 - (IBAction)toggleReview:(id)sender {
 	if (_mode == ReviewMode) self.mode = EditMode;
 	else self.mode = ReviewMode;
-	
-	[self updateEditorMode];
+	[self updateQuickSettings];
 }
 
 -(void)setMode:(BeatEditorMode)mode {
 	_mode = mode;
+	[self updateEditorMode];
 }
 
-- (IBAction)addComment:(id)sender {
+- (IBAction)reviewSelectedRange:(id)sender {
 	if (self.selectedRange.length == 0) return;
 	[_review showReviewItemWithRange:self.selectedRange forEditing:YES];
-}
-- (IBAction)clearComments:(id)sender {
-	if (self.selectedRange.length == 0) return;
-	// Clear comments...
 }
 
 #pragma mark - Tagging Mode

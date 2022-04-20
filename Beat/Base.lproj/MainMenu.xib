@@ -544,7 +544,8 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ccp-HV-yr1"/>
-                            <menuItem title="Reformat Selected" hidden="YES" keyEquivalent="r" id="OYT-mJ-6Jc">
+                            <menuItem title="Reformat Selected" hidden="YES" id="OYT-mJ-6Jc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="reformatRange:" target="-1" id="QHM-Pf-WuS"/>
                                 </connections>
@@ -661,8 +662,8 @@ DQ
                                     <action selector="nextRevision:" target="-1" id="kg3-2b-OGl"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" hidden="YES" id="ooU-ON-iUL"/>
-                            <menuItem title="Tagging Mode" id="Fdy-fO-lco">
+                            <menuItem isSeparatorItem="YES" id="ooU-ON-iUL"/>
+                            <menuItem title="Tagging Mode" hidden="YES" id="Fdy-fO-lco">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleTagging:" target="-1" id="Os9-l2-o57"/>
@@ -672,6 +673,11 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleReview:" target="-1" id="tGA-Vl-ZiI"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Review Selection" keyEquivalent="r" id="SxS-6o-8ac">
+                                <connections>
+                                    <action selector="reviewSelectedRange:" target="-1" id="GKi-dB-4b4"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -705,7 +711,12 @@ DQ
                                                 <action selector="showCharactersAndDialogue:" target="-1" id="MOK-rA-PRf"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Widgets" keyEquivalent="4" id="upd-G6-QM0">
+                                        <menuItem title="Review Notes" keyEquivalent="4" id="Otr-Sx-8w0">
+                                            <connections>
+                                                <action selector="showReviews:" target="-1" id="7LD-9h-H7A"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Widgets" keyEquivalent="5" id="upd-G6-QM0">
                                             <connections>
                                                 <action selector="showWidgets:" target="-1" id="P0d-zE-fee"/>
                                             </connections>

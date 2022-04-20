@@ -26,6 +26,7 @@
 @property (nonatomic) CGFloat barWidth;
 @property (nonatomic, weak) BeatCharacter *character;
 @end
+
 @implementation BeatLinesBarRowView
 
 #define POPOVER_WIDTH 150
@@ -94,9 +95,15 @@
 	self.previouslySelected = -1;
 	
 	[self setDoubleAction:@selector(showCharacterInfo:)];
-	
+		
 	return self;
 }
+
+-(void)awakeFromNib {
+	[self.editorDelegate registerEditorView:self];
+}
+
+
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     
@@ -108,14 +115,13 @@
 	if (!_characterNames) [self reloadView];
 }
 
--(bool)visibleInTab {
+-(bool)visible {
 	if (_masterTabView.selectedTabViewItem.view == self.enclosingScrollView.superview) {
 		return YES;
 	} else {
 		return NO;
 	}
 }
-
 
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
 

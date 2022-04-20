@@ -12,11 +12,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatCharacterList : NSTableView <NSTableViewDataSource, NSTableViewDelegate, BeatReloadableView>
+@interface BeatCharacterList : NSTableView <NSTableViewDataSource, NSTableViewDelegate, BeatEditorView>
 
 @property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> editorDelegate;
--(void)reloadInBackground;
--(bool)visibleInTab;
+
 @end
 
 NS_ASSUME_NONNULL_END

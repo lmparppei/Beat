@@ -17,7 +17,7 @@ This started as a personal project as I needed a simple, multi-window, lightweig
 Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Writer/) by Hendrik Noeller and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.93.x
+## Latest release: Beat 1.94.x
 
 **Features**
 * Minimalistic UI with as little distractions as possible

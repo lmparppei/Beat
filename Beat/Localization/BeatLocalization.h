@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatLocalization : NSObject
 + (NSString*)localizeString:(NSString*)string;
++ (NSString*)localizedStringForKey:(NSString*)key;
 @end
 
 NS_ASSUME_NONNULL_END

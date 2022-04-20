@@ -24,6 +24,12 @@
 @class OutlineScene;
 @class BeatDocumentSettings;
 
+@protocol BeatEditorView
+- (void)reloadInBackground;
+- (void)reloadView;
+- (bool)visible;
+@end
+
 @protocol BeatEditorDelegate <NSObject>
 
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
@@ -64,6 +70,7 @@
 @property (strong, nonatomic, readonly) NSMutableDictionary *sectionFonts;
 @property (strong, nonatomic, readonly) BeatFont *synopsisFont;
 
+@property (nonatomic) NSInteger mode;
 
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
@@ -76,6 +83,7 @@
 - (void)setSelectedRange:(NSRange)range;
 - (NSRange)selectedRange;
 - (NSArray*)getOutline; // ???
+- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
@@ -107,9 +115,11 @@
 - (void)renderBackgroundForRange:(NSRange)range;
 - (BeatFont*)sectionFontWithSize:(CGFloat)size;
 
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
-
 - (void)formatAllLines;
+
+- (void)registerEditorView:(id)view;
+
+- (void)textDidChange:(NSNotification *)notification;
 
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;
@@ -134,4 +144,3 @@
  yhä läsnä
  
  */
-

@@ -94,3 +94,6 @@
 
 "revisions.commitPrompt.title" = "Commit all revisions";
 "revisions.commitPrompt.text" = "This will clear all revision markers and remove all ranges marked for removal. Are you sure you want to continue?";
+
+"mode.taggingMode" = "Tagging Mode";
+"mode.reviewMode" = "Review Mode";

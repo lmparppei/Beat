@@ -637,6 +637,17 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)didChangeSelection:(NSNotification *)notification {
+	/*
+	 
+	 There are TWO different didChangeSelection listeners, here and in Document.
+	 This one deals with text editor events, such as tagging, typewriter scroll,
+	 closing autocomplete and displaying reviews.
+	 
+	 The one in Document handles other UI-related stuff, such as updating views
+	 that are hooked into the parsed screenplay contents, and also updates plugins.
+	 
+	 */
+	
 	// Skip event when needed
 	if (_editorDelegate.skipSelectionChangeEvent) {
 		_editorDelegate.skipSelectionChangeEvent = NO;
@@ -663,11 +674,41 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// Show review editor
 		[_editorDelegate.review showReviewItemWithRange:self.selectedRange forEditing:YES];
 	}
+	else {
+		// We are in editor mode. Run any required events.
+		[self selectionEvents];
+	}
 }
 
 - (bool)selectionAtEnd {
 	if (self.selectedRange.location == self.string.length) return YES;
 	else return NO;
+}
+
+- (void)selectionEvents {
+	/*
+	 
+	 NB: I could/should make this one a registered event, too.
+	 
+	 */
+	
+	// Don't go out of range. We can't check for attributes at the last index.
+	NSUInteger pos = self.selectedRange.location;
+	if (NSMaxRange(self.selectedRange) >= self.string.length) pos = self.string.length - 1;
+	if (pos < 0) pos = 0;
+	
+	// Review items
+	if (self.string.length > 0) {
+		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.reviewAttribute atIndex:pos effectiveRange:nil];
+		if (reviewItem && !reviewItem.emptyReview) {
+			[_editorDelegate.review showReviewItemWithRange:NSMakeRange(pos, 0) forEditing:NO];
+			[self.window makeFirstResponder:self];
+		} else {
+			[[_editorDelegate.review popover] close];
+		}
+	}
+	
+	
 }
 
 #pragma mark - Tagging / Force Element menu

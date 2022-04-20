@@ -65,6 +65,9 @@
 - (void)showBrowser {
 	[self.window setIsVisible:true];
 	
+	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openTemplate"];
+	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openLink"];
+	
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openTemplate"];
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openLink"];
 	

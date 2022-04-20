@@ -13,8 +13,6 @@
 #import "BeatSidebarTabView.h"
 #import "BeatWidgetView.h"
 
-#define WIDGET_SEGMENT 3
-
 @interface BeatSegmentedControl ()
 @property (nonatomic, weak) IBOutlet BeatWidgetView* widgetView;
 @end
@@ -85,7 +83,7 @@
 	CGFloat width = rect.size.width / [self segmentCount];
 	
 	for (NSInteger i = 0; i < self.segmentCount; i++) {
-		if (i == WIDGET_SEGMENT && ![self widgetsVisible]) continue;
+		if (i == self.segmentCount - 1 && ![self widgetsVisible]) continue;
 		
 		NSImage *img = [self imageForSegment:i].copy;
 		NSColor *tint = NSColor.tertiaryLabelColor;
@@ -157,7 +155,7 @@
 
 - (void)setSelectedSegment:(NSInteger)selectedSegment {
 	// Don't allow selecting widget view when no widgets are visible
-	if (selectedSegment == WIDGET_SEGMENT && ![self widgetsVisible]) return;
+	if (selectedSegment == self.segmentCount - 1 && ![self widgetsVisible]) return;
 	
 	[self setSelectedSegment:selectedSegment animate:NO];
 	[self selectTab:nil];
@@ -199,9 +197,13 @@
 		return;
 	}
 	
-	if ([tabView respondsToSelector:@selector(reload)]) {
-		BeatSidebarTabView *view = (BeatSidebarTabView *)tabView;
-		[view.reloadableView reloadView];
+	// We have to run some magic here to get the correct class name
+	NSInteger i = [tabView.tabViewItems indexOfObject:tabViewItem];
+	id tab = tabView.tabViewItems[i];
+
+	if ([tab isKindOfClass:BeatSidebarTabView.class]) {
+		BeatSidebarTabView *sidebarTab = tab;
+		[sidebarTab.reloadableView reloadView];
 	}
 }
 
