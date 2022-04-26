@@ -28,7 +28,10 @@
 #import "Document.h"
 #import "BeatPreferencesPanel.h"
 #import "BeatPluginLibrary.h"
+
+#ifndef QUICKLOOK
 #import "Beat-Swift.h"
+#endif
 
 #import "BeatTest.h"
 
@@ -560,15 +563,18 @@
 
 -(void)menuWillOpen:(NSMenu *)menu {
 	//if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
+	/*
 	if (menu == _versionMenu) {
 		[self versionMenuItems];
 	}
+	*/
 }
 
 #pragma mark - Version control
 
 // NOTE: This is not in use currently, because of weird autosave errors
 
+/*
 - (void)versionMenuItems {
 	[_versionMenu removeAllItems];
 	
@@ -642,32 +648,10 @@
 		}
 	} buttons:@[@"Revert", @"Cancel"]];
 }
-
+*/
+ 
 #pragma mark - Plugin support
 
-// Why isn't here just a single IB object for the shared plugin manager? We could toss all of this stuff there.
-/*
-- (void)setupPlugins {
-	[self setupPlugins:_pluginMenu];
-	[self setupPlugins:_exportMenu];
-	[self setupPlugins:_importMenu];
-	
-	[_pluginManager checkForUpdates];
-}
-- (void)setupPlugins:(NSMenu*)menu {
-	if (!_pluginManager) _pluginManager = BeatPluginManager.sharedManager;
-	
-	BeatPluginType type = ToolPlugin;
-	if (menu == _exportMenu) type = ExportPlugin;
-	else if (menu == _importMenu) type = ImportPlugin;
-	
-	[_pluginManager pluginMenuItemsFor:menu runningPlugins:[NSDocumentController.sharedDocumentController.currentDocument valueForKey:@"runningPlugins"] type:type];
-}
-- (void)openPluginFolder {
-	BeatPluginManager *plugins = [BeatPluginManager sharedManager];
-	[plugins openPluginFolder];
-}
- */
 - (IBAction)openPluginLibrary:(id)sender {
 	_pluginLibrary = BeatPluginLibrary.alloc.init;
 	[_pluginLibrary show];

@@ -17,7 +17,6 @@ import Cocoa
 
 
 class BeatLaunchScreenButton: NSButtonCell {
-	//@property (nonatomic) IBInspectable NSString *localizationId;
 	private var subtitleString: String {
 		let str:String = NSLocalizedString(self.localizationId, comment: "")
 		

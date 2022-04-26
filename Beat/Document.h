@@ -60,6 +60,8 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 @interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
 
+@property (strong, nonatomic) BeatPrintView *printView; //To keep the asynchronously working print data generator in memory
+
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
 @property (nonatomic) CGFloat magnification;
@@ -107,8 +109,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 - (void)setPrintSceneNumbers:(bool)value;
 - (IBAction)togglePrintSceneNumbers:(id)sender;
-- (void)setRevisedPageColor:(NSString*)color;
-- (void)setColorCodePages:(bool)value;
 - (void)readUserSettings;
 - (void)applyUserSettings;
 - (void)setPaperSize:(BeatPaperSize)size;

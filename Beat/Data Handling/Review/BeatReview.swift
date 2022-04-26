@@ -189,8 +189,6 @@ class BeatReview: NSObject {
 			// Calculate appropriate size for the content
 			let textSize = editorView.editor?.attributedString().height(containerWidth: editorContentSize.width) ?? 60
 			let insetHeight = editorView.editor?.textContainerInset.height ?? 0
-			let editorSize = editorView.editor!.frame
-			let margin = abs(editorContentSize.height - editorSize.height)
 			
 			popover.contentSize = NSMakeSize(editorContentSize.width, 40 + textSize * 1.1 + insetHeight * 2)
 		}

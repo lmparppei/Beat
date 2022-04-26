@@ -40,10 +40,10 @@ typedef NS_ENUM(NSUInteger, BeatPrintOperation) {
 };
 
 @protocol PrintViewDelegate
-- (void) didFinishPreviewAt:(NSURL*)url;
+- (void)didFinishPreviewAt:(NSURL*)url;
 @end
 
-@interface PrintView : NSView
+@interface BeatPrintView : NSView
 @property (weak) id<PrintViewDelegate> delegate; 
 // Modern ways
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate;

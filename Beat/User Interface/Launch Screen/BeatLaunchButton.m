@@ -44,12 +44,19 @@
 	[NSAppearance setCurrentAppearance:controlView.window.effectiveAppearance];
 	
 	// Text colors
-	NSColor *color = [NSColor.controlTextColor colorWithAlphaComponent:.6];
-	NSColor *topColor = [NSColor.controlTextColor colorWithAlphaComponent:.9];
-	
-	if (button.isHighlighted) {
-		color = [color colorWithAlphaComponent:1.0];
-		topColor = [NSColor.controlTextColor colorWithAlphaComponent:1.0];
+	NSColor *color; NSColor *topColor;
+	if (@available(macOS 10.14, *)) {
+		color = [NSColor.controlTextColor colorWithAlphaComponent:.6];
+		topColor = [NSColor.controlTextColor colorWithAlphaComponent:.9];
+		
+		if (button.isHighlighted) {
+			color = [color colorWithAlphaComponent:1.0];
+			topColor = [NSColor.controlTextColor colorWithAlphaComponent:1.0];
+		}
+	} else {
+		// Legacy colors for Mojave
+		color = [NSColor.lightGrayColor colorWithAlphaComponent:.6];
+		topColor = [NSColor.lightGrayColor colorWithAlphaComponent:.9];
 	}
 	
 	// Create the label using both button title & tooltip

@@ -23,13 +23,13 @@
 
  */
 
-#import "PrintView.h"
+#import "BeatPrintView.h"
 #import "BeatHTMLScript.h"
 #import "Document.h"
 #import "BeatRevisionTracking.h"
 #import "BeatExportSettings.h"
 
-@interface PrintView () <WebFrameLoadDelegate>
+@interface BeatPrintView () <WebFrameLoadDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
 @property (weak, nonatomic) Document *document;
 @property (weak, nonatomic) WebView *webView;
@@ -43,7 +43,7 @@
 
 @end
 
-@implementation PrintView
+@implementation BeatPrintView
 
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate {
 	// New, modern way
@@ -120,17 +120,6 @@
 
 	// Track revisions
 	[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser includeRevisions:settings.revisions];
-
-	/*
-	// See if we want to compare it with something.
-	// Bake the revisions into lines.
-	// Nope. Let's rather create some sort of "import revisions" type of thing some day.
-	if (settings.oldScript.length > 0) {
-		BeatComparison *comparison = [[BeatComparison alloc] init];
-		NSAttributedString *revisedString = [comparison getRevisionsComparing:parser.lines with:settings.oldScript];
-		[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:revisedString parser:parser];
-	}
-	*/
 	
 	// Set script data
 	BeatScreenplay *script = [BeatScreenplay from:parser settings:settings];

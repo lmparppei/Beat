@@ -21,12 +21,9 @@
 #import "BeatPrint.h"
 #import "PrintView.h"
 #import "BeatPaperSizing.h"
+#import "Beat-Swift.h"
 
 #define ADVANCED_PRINT_OPTIONS_KEY @"Show Advanced Print Options"
-
-#define PAPER_A4 595, 842
-#define PAPER_USLETTER 612, 792
-
 
 @interface BeatPrint ()
 @property (weak) IBOutlet NSButton* printSceneNumbers;
@@ -45,10 +42,14 @@
 @property (weak) IBOutlet NSButton* advancedOptionsButton;
 @property (weak) IBOutlet NSLayoutConstraint *advancedOptionsHeightConstraint;
 
+@property (weak) IBOutlet NSLayoutConstraint *advancedOptionsWidthConstraint;
+
 @property (weak) IBOutlet NSButton* revisionFirst;
 @property (weak) IBOutlet NSButton* revisionSecond;
 @property (weak) IBOutlet NSButton* revisionThird;
 @property (weak) IBOutlet NSButton* revisionFourth;
+
+@property (weak) IBOutlet BeatCustomExportStyles* exportStyles;
 
 @property (nonatomic) IBInspectable CGFloat advancedOptionsHeight;
 
@@ -61,6 +62,19 @@
 @end
 
 @implementation BeatPrint
+
+static CGFloat panelWidth;
+
+-(void)awakeFromNib {
+	panelWidth = self.panel.frame.size.width;
+	
+	bool showAdvancedOptions = [NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY];
+	if (showAdvancedOptions) _advancedOptionsButton.state = NSOnState; else _advancedOptionsButton.state = NSOffState;
+	
+	[self toggleAdvancedOptions:_advancedOptionsButton];
+
+	//frame.size.width -= _advancedOptionsWidthConstraint.constant;
+}
 
 - (IBAction)open:(id)sender {
 	// Change panel title
@@ -92,14 +106,13 @@
 - (void)openPanel {
 	// Remove the previous preview
 	[_pdfView setDocument:nil];
-	
-	bool showAdvancedOptions = [NSUserDefaults.standardUserDefaults valueForKey:ADVANCED_PRINT_OPTIONS_KEY];
-	if (showAdvancedOptions) _advancedOptionsButton.state = NSOnState; else _advancedOptionsButton.state = NSOffState;
-	[self toggleAdvancedOptions:_advancedOptionsButton];
-	
+			
 	// Get setting from document
 	if (_document.printSceneNumbers) [_printSceneNumbers setState:NSOnState];
 	else [_printSceneNumbers setState:NSOffState];
+	
+	// Update export styles
+	[_exportStyles reloadData];
 	
 	// Check the paper size
 	// WIP: Unify these so the document knows its BeatPaperSize too
@@ -123,13 +136,13 @@
 }
 - (IBAction)print:(id)sender {
 	//self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint compareWith:_compareWith];
-	self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
+	self.printView = [[PrintView alloc] initWithDocument:_document.document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
 
 	[self.window endSheet:_panel];
 }
 - (IBAction)pdf:(id)sender {
 	//self.printView = [[PrintView alloc] initWithDocument:_document script:nil operation:BeatToPDF compareWith:_compareWith];
-	self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
+	self.printView = [[PrintView alloc] initWithDocument:_document.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
 	[self.window endSheet:_panel];
 }
 
@@ -139,7 +152,7 @@
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		//self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPreview compareWith:self.compareWith delegate:self];
-		self.printView = [[PrintView alloc] initWithDocument:self.document script:nil operation:BeatToPreview settings:settings delegate:self];
+		self.printView = [[PrintView alloc] initWithDocument:self.document.document script:nil operation:BeatToPreview settings:settings delegate:self];
 	});
 }
 
@@ -195,34 +208,23 @@
 
 - (IBAction)toggleAdvancedOptions:(id)sender {
 	NSButton *button = sender;
+	
+	NSRect frame = self.panel.frame;
 	if (button.state == NSOffState) {
-		[NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
-			context.duration = 0.25;
-			context.allowsImplicitAnimation = YES;
-			
-			[_advancedOptions.arrangedSubviews.lastObject setHidden:YES];
-			[self.window.contentView layoutSubtreeIfNeeded];
-		}];
-		
+		frame.size.width = panelWidth - _advancedOptionsWidthConstraint.constant;
 		[NSUserDefaults.standardUserDefaults setBool:NO forKey:ADVANCED_PRINT_OPTIONS_KEY];
 	} else {
-		[NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
-			context.duration = 0.25;
-			context.allowsImplicitAnimation = YES;
-			
-			[_advancedOptions.arrangedSubviews.lastObject setHidden:NO];
-			[self.window.contentView layoutSubtreeIfNeeded];
-		}];
-		
+		frame.size.width = panelWidth;
 		[NSUserDefaults.standardUserDefaults setBool:YES forKey:ADVANCED_PRINT_OPTIONS_KEY];
 	}
 	
+	[self.panel.animator setFrame:frame display:YES];
 }
 
 - (IBAction)toggleColorCodePages:(id)sender {
 	NSButton *checkbox = sender;
-	if (checkbox.state == NSOnState) [_document setColorCodePages:YES];
-	else [_document setColorCodePages:NO];
+	if (checkbox.state == NSOnState) [_document.documentSettings setBool:DocSettingColorCodePages as:YES];
+	else [_document.documentSettings setBool:DocSettingColorCodePages as:NO];
 
 	[self loadPreview];
 }
@@ -230,7 +232,7 @@
 	NSPopUpButton *menu = sender;
 	NSString *color = menu.selectedItem.title.lowercaseString;
 	
-	[_document setRevisedPageColor:color];
+	[_document.documentSettings set:DocSettingRevisedPageColor as:color];
 	[self loadPreview];
 }
 
@@ -255,7 +257,11 @@
 	// Set header
 	NSString *header = (self.headerText.stringValue.length > 0) ? self.headerText.stringValue : @"";
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document header:header printSceneNumbers:self.document.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
+	// Get custom CSS
+	NSString *css = self.exportStyles.customCSS;
+	
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.document.document header:header printSceneNumbers:self.document.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
+	settings.customCSS = css;
 	
 	return settings;
 }

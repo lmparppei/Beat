@@ -77,7 +77,7 @@
 #import "Document.h"
 #import "ScrollView.h"
 #import "FDXInterface.h"
-#import "PrintView.h"
+#import "BeatPrintView.h"
 #import "ColorView.h"
 #import "ThemeManager.h"
 #import "OutlineScene.h"
@@ -95,7 +95,6 @@
 #import "RegExCategories.h"
 #import "MarginView.h"
 #import "BeatColors.h"
-#import "BeatPrint.h"
 #import "OutlineViewItem.h"
 #import "BeatPaperSizing.h"
 #import "BeatModalInput.h"
@@ -119,6 +118,7 @@
 #import "BeatUserDefaults.h"
 #import "BeatCharacterList.h"
 #import "BeatEditorFormatting.h"
+#import "BeatPrintDialog.h"
 #import "Beat-Swift.h"
 
 @interface Document ()
@@ -218,10 +218,11 @@
 
 // Views
 @property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
-@property (weak) IBOutlet BeatPrint *printing; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet ColorView *backgroundView; // Master background
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
 @property (weak) IBOutlet MasterView *masterView; // View which contains every other view
+
+@property (nonatomic) BeatPrintDialog *printDialog;
 
 // Print preview
 @property (weak) IBOutlet WKWebView *printWebView; // Print preview
@@ -276,7 +277,6 @@
 // Printing
 @property (nonatomic) bool printPreview;
 @property (nonatomic, readwrite) NSString *preprocessedText;
-@property (strong, nonatomic) PrintView *printView; //To keep the asynchronously working print data generator in memory
 
 // Some settings for edit view behaviour
 @property (nonatomic) bool matchParentheses;
@@ -404,6 +404,12 @@
 @implementation Document
 
 #pragma mark - Document Initialization
+
+-(Document*)document {
+	// WARNING: This is only for transferring the document from a delegate to another place.
+	// Handle with care.
+	return self;
+}
 
 - (instancetype)init {
     self = [super init];
@@ -550,7 +556,7 @@
 		
 	// Pagination etc.
 	self.paginator = [[BeatPaginator alloc] initForLivePagination:self];
-	self.printing.document = self;
+	self.printDialog.document = nil;
 	
 	//Put any previously loaded data into the text view
 	self.documentIsLoading = YES;
@@ -1049,7 +1055,7 @@
 	
 	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	if (zoomIn) {
-		if (_magnification < 1.3) _magnification += 0.04;
+		if (_magnification < 1.5) _magnification += 0.04;
 	} else {
 		if (_magnification > 0.8) _magnification -= 0.04;
 	}
@@ -1393,14 +1399,23 @@
 	return fileName;
 }
 
-- (IBAction)openPrintSettings:(id)sender {
+- (IBAction)openPrintPanel:(id)sender {
 	_attrTextCache = [self getAttributedText];
-	[self.printing open:self];
+	self.printDialog = [BeatPrintDialog showForPrinting:self];
 }
-- (IBAction)openPDFExport:(id)sender {
+- (IBAction)openPDFPanel:(id)sender {
 	_attrTextCache = [self getAttributedText];
-	[self.printing openForPDF:self];
+	self.printDialog = [BeatPrintDialog showForPDF:self];
 }
+
+- (void)releasePrintDialog {
+	_printDialog = nil;
+}
+
+- (void)printDialogDidFinishPreview:(void (^)(void))block {
+	block();
+}
+
 
 - (IBAction)exportFDX:(id)sender
 {
@@ -3410,8 +3425,15 @@ static NSString *revisionAttribute = @"Revision";
 		else menuItem.state = NSOffState;
 	}
 	else if (menuItem.action == @selector(reviewSelectedRange:)) {
-		if (self.selectedRange.length == 0) menuItem.state = NSOffState;
-		else menuItem.state = NSOnState;
+		if (self.selectedRange.length == 0) return NO;
+		else return YES;
+	}
+	
+	else if (menuItem.action == @selector(omitScene:)) {
+		if (self.currentScene) {
+			if (self.currentScene.omitted) return NO;
+			else return YES;
+		}
 	}
 	
 	else if (menuItem.action == @selector(toggleAutosave:)) {
@@ -3544,12 +3566,6 @@ static NSString *revisionAttribute = @"Revision";
 		doc.printSceneNumbers = !doc.printSceneNumbers;
 	}
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-}
-- (void)setRevisedPageColor:(NSString*)color {
-	[_documentSettings setString:DocSettingRevisedPageColor as:color];
-}
-- (void)setColorCodePages:(bool)value {
-	[_documentSettings setBool:DocSettingColorCodePages as:value];
 }
 
 -(NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex {
@@ -5062,10 +5078,6 @@ triangle walks
  if they have any change listeners.
  
  */
-
-- (id)document {
-	return self;
-}
 
 - (void)setupPlugins {
 	_pluginManager = BeatPluginManager.sharedManager;

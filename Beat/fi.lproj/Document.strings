@@ -352,16 +352,16 @@
 "Lwv-Iv-oxi.title" = "Kopioi";
 "cDb-FF-7Yh.title" = "Liitä";
 
-"3Ww-vZ-GWB.title" = "Muunnokset";
+"hsK-HD-ZF6.title" = "Muunnokset";
 "gYW-We-YV1.title" = "Muuta isoiksi kirjaimiksi";
 "jZI-02-ygY.title" = "Muuta pieniksi kirjaimiksi";
 "KCV-1L-Tgi.title" = "Jokainen sana isolla alkukirjaimella";
 
-"ALA-vh-Qmm.title" = "Puhe";
+"zdG-bo-7vy.title" = "Puhe";
 "iSJ-Qh-fbM.title" = "Aloita puhuminen";
 "OBz-up-lLC.title" = "Lopeta puhuminen";
 
-"NGQ-s0-1UN.title" = "Oikeinkirjoitus ja kielioppi";
+"9mq-p8-xgn.title" = "Oikeinkirjoitus ja kielioppi";
 "NCB-Un-1Sv.title" = "Näytä oikeinkirjoitus ja kielioppi";
 "PI0-iU-WRM.title" = "Tarkista dokumentti nyt";
 "QNX-Vh-rk0.title" = "Tarkista oikeinkirjoitus kirjoittaessa";
@@ -372,4 +372,7 @@
 
 "2DV-H2-pU8.title" = "Kommenttitila";
 "KZo-wr-Yqv.title" = "Ei kommentteja";
-"M5R-75-VTw.title" = "Kun lisäät käsikirjoitukseen kommentteja, ne listataan tässä näkymässä."
+"M5R-75-VTw.title" = "Kun lisäät käsikirjoitukseen kommentteja, ne listataan tässä näkymässä.";
+
+"z15-hg-1Mt.title" = "Lisää kommentti valintaan";
+

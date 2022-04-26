@@ -17,10 +17,6 @@
 			<string>BeatDocumentIcon</string>
 			<key>CFBundleTypeName</key>
 			<string>Fountain script</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>.fountain</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
@@ -30,6 +26,7 @@
 			<key>NSDocumentClass</key>
 			<string>Document</string>
 		</dict>
+		<dict/>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

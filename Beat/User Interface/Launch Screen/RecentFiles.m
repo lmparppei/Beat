@@ -16,7 +16,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import "RecentFiles.h"
+#ifndef QUICKLOOK
 #import "Beat-Swift.h"
+#endif
 
 #pragma mark - Recent files
 

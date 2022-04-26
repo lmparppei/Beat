@@ -99,7 +99,7 @@ static BeatPluginManager *sharedManager;
 	self = [super init];
 	
 	if (sharedManager) return sharedManager;
-	
+		
 	if (self) {
 		_pluginURL = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
 		[self loadPlugins];		
@@ -252,7 +252,7 @@ static BeatPluginManager *sharedManager;
 #pragma mark - Plugin library content
 
 - (void)refreshAvailablePlugins {
-	self.availablePlugins = [NSMutableDictionary dictionary];
+	self.availablePlugins = NSMutableDictionary.new;
 	
 	for (NSString *pluginName in self.plugins.allKeys) {
 		[_availablePlugins setValue:[self pluginInfoFor:pluginName] forKey:pluginName];
@@ -398,7 +398,7 @@ static BeatPluginManager *sharedManager;
 	}
 		
 	// Get user-installed plugins
-	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSFileManager *fileManager = NSFileManager.defaultManager;
 	NSArray *files = [fileManager contentsOfDirectoryAtPath:_pluginURL.path error:nil];
 	
 	for (NSString *file in files) {

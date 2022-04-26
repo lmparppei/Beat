@@ -19,6 +19,7 @@
     #define BeatDocTextView NSTextView
 #endif
 
+@class BeatPrintView;
 @class ContinuousFountainParser;
 @class Line;
 @class OutlineScene;
@@ -33,7 +34,7 @@
 @protocol BeatEditorDelegate <NSObject>
 
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
-@property (nonatomic, readonly) bool printSceneNumbers;
+@property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
 @property (nonatomic, readonly) bool typewriterMode;
 @property (readonly) ContinuousFountainParser *parser;
@@ -71,6 +72,17 @@
 @property (strong, nonatomic, readonly) BeatFont *synopsisFont;
 
 @property (nonatomic) NSInteger mode;
+
+@property (strong, nonatomic) BeatPrintView *printView;
+
+@property (weak) NSWindow* documentWindow;
+
+- (id)document;
+
+- (NSPrintInfo*)printInfo;
+- (void)setPaperSize:(NSInteger)size;
+- (void)setPrintSceneNumbers:(bool)value;
+- (void)releasePrintDialog;
 
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;

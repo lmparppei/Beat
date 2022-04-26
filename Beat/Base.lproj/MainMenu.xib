@@ -127,20 +127,14 @@
                                     <action selector="runPageLayout:" target="-1" id="Din-rz-gC5"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Print…" hidden="YES" id="aTl-1u-JFS">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="printDocument:" target="-1" id="qaZ-4w-aoO"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Print..." keyEquivalent="p" id="30L-NJ-b29">
                                 <connections>
-                                    <action selector="openPrintSettings:" target="-1" id="Be2-OO-k0X"/>
+                                    <action selector="openPrintPanel:" target="-1" id="Ztm-BM-HfZ"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Create PDF..." keyEquivalent="P" id="qUE-cb-x1G">
                                 <connections>
-                                    <action selector="openPDFExport:" target="-1" id="IUp-n4-Zms"/>
+                                    <action selector="openPDFPanel:" target="-1" id="fdP-tp-VxH"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" hidden="YES" id="2p6-MU-Gqq"/>

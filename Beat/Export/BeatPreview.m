@@ -21,9 +21,7 @@
 #import "BeatPreview.h"
 #import "Line.h"
 #import "ContinuousFountainParser.h"
-#import "OutlineScene.h"
 #import "BeatHTMLScript.h"
-#import "BeatDocumentSettings.h"
 #import "BeatRevisionTracking.h"
 #import "BeatExportSettings.h"
 

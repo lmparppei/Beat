@@ -19,5 +19,6 @@
 #import "BeatNotepad.h"
 #import "BeatLocalization.h"
 #import "ThemeManager.h"
+#import "BeatPrintDialog.h"
 
 #endif /* Beat_Bridging_Header_h */

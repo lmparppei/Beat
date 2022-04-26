@@ -68,6 +68,40 @@ Outline has to be rebuilt each time when a change is made, and often it's safe t
 I recommend reading the plugin wiki (https://github.com/lmparppei/BeatPlugins/wiki) which has document model examples. Theyare in JavaScript, but basic logic still applies.
 
 
+# Exporting
+
+The weakest link in Beat is the export code. It is based on the original Fountain repository stuff, although rewritten from scratch. The issue is the legacy `WebView`, which is still used for printing. The class has been deprecated for years, and Apple might drop support at any given moment. The modern equivalent, `WKWebView`, doesn't support printing out of the box, and creating a PDF through it requires resorting to all sorts of hacks and tricks.
+
+The export pipeline works as follows:
+
+`BeatPrintView`
+	The print view receives either a document (which can be a fake one, too, to print out raw text) or a pure HTML string. It takes in `BeatExportSettings`, which can have all sorts of options for the process, such as operation type (preview, print, PDF) and even custom CSS for further along the line.
+	
+	PrintView then parses the text from scratch using `ContinuousFountainParser`. `Document` class provides attributed text, which has revision ranges as attributes. After the plain text has been parsed, revision ranges are saved into the `Line` objects as local ranges.
+	
+	We then create a `BeatScreenplay` object, which does some preprocessing through parser, such as removing all invisible lines, including empty and omitted ones. We then forward that object to...
+	
+`BeatHTMLScript`
+	Before creating a HTML representation of the screenplay, the content has to be paginated. All lines, excluding title page, are sent to...
+	
+`BeatPaginator`
+	The paginator is a mess. It's a very complicated process, and some of the code might not be for the faint of heart. Pagination lays out the screenplay, and splits elements across multiple pages while handling things like `(MORE)` and `(CONT'D)`. It works in an imaginary space and does not have any sort of graphical view, which makes the process a bit esoteric.   
+	 
+	An array of pages (which are just arrays of lines) is then returned back to...
+	
+`BeatHTMLScript`
+	... which starts iterating through the pages and creates HTML code out of attributed versions of `Line` objects.
+	
+	After that process is done, a HTML document is returned to...
+	
+`BeatPrintView`
+	The now-deprecated `WebView` loads up the HTML string, and as it has loaded, a print process is created asynchronously. At this point we should have a nicely formatted screenplay either on paper or as a PDF file.
+	
+## Custom Styles
+
+`.beatStyle` files can be added either into the app container, or to the container library folder `Styles/`, to create custom stylization. The files are plain CSS, and are added after the actual stylesheet. Using custom styles is highly discouraged if you don't know what you are doing. The paginator/HTML process is more fragile than white masculinity.   
+
+
 # Plugins
 
 Plugins work through `JavaScriptCore`. It's a convoluted system, but the actual plugins relatively simple. They are run using a single class, `BeatPlugin`, and most relevant classes have `JSExports` protocols to make them compatible with the plugin API.
@@ -107,6 +141,12 @@ If encoded correctly, document settings can contain almost any sort of informati
 There are standard keywords for certain settings, which you can see in the class itself, but the block can contain other settings too. For example, plugins can write their own settings into the file, usually prefixed by plugin name, ie. `"PluginName: setting"`.
 
 
+## Future Considerations
+
+As you might notice, TextBundle is included in the project. We *could* have a Beat-specific file format, which could include any sort of attachments and data along with the screenplay, and even multiple versions of the document. However, using plain-text UTF-8 files makes things much easier for the user, and could give the illusion that your files are actually safe and readable on any computer.
+
+It would of course be possible to support both plain Fountain files and `.beat` (TextBundle) wrappers, and that might be the way to go. Just alert the user that they will need to save the project in a wrapper file format when they include data that isn't convenient to save at the end of a plain-text screenplay.  
+
 
 # Post-mortem
 
@@ -125,5 +165,5 @@ All the best,
 Lauri-Matti
 
 Helsinki, Finland
-March 2022  
+March/April 2022  
 

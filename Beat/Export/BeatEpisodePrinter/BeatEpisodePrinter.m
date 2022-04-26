@@ -12,7 +12,7 @@
 #import "BeatHTMLScript.h"
 #import "BeatDocumentSettings.h"
 #import "BeatPaperSizing.h"
-#import "PrintView.h"
+#import "BeatPrintView.h"
 #import "BeatRevisionTracking.h"
 #import "BeatRevisionItem.h"
 #import "BeatExportSettings.h"
@@ -24,7 +24,7 @@
 
 @property (nonatomic) NSMutableArray<NSURL*> *urls;
 @property (nonatomic) NSDocument *doc; // Faux document for paper sizing info
-@property (nonatomic) PrintView *printView;
+@property (nonatomic) BeatPrintView *printView;
 
 @property (weak) IBOutlet NSProgressIndicator *progressBar;
 
@@ -288,10 +288,10 @@
 		html = [html stringByAppendingString:footer];
 		
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			if (toPDF) self.printView = [[PrintView alloc] initWithHTML:html settings:settings operation:BeatToPDF completion:^{
+			if (toPDF) self.printView = [[BeatPrintView alloc] initWithHTML:html settings:settings operation:BeatToPDF completion:^{
 				[self close];
 			}];
-			else self.printView = [[PrintView alloc] initWithHTML:html settings:settings operation:BeatToPrint completion:^{
+			else self.printView = [[BeatPrintView alloc] initWithHTML:html settings:settings operation:BeatToPrint completion:^{
 				[self close];
 			}];
 		});

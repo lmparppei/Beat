@@ -1,8 +1,19 @@
 # Changelog
 
+## Beat 1.94.4
+
+- New print dialog + custom styles
+
+
+## Beat 1.94.3
+
+- Hotfix for weird UTI issues
+- Added context menu item for adding reviews
+
+
 ## Beat 1.94.2
 
-- Started work on review mode
+- Review mode
 - Fixed a bug with scene filtering 
 
 

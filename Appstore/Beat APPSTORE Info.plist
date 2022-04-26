@@ -16,7 +16,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>BeatDocumentIcon</string>
 			<key>CFBundleTypeName</key>
-			<string>Fountain Screenplay</string>
+			<string>Fountain script</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>.fountain</string>
@@ -25,10 +25,6 @@
 			<string>Editor</string>
 			<key>LSHandlerRank</key>
 			<string>Owner</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>fi.KAPITAN.fountain</string>
-			</array>
 			<key>LSTypeIsPackage</key>
 			<integer>0</integer>
 			<key>NSDocumentClass</key>
@@ -75,7 +71,7 @@
 		</dict>
 	</dict>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2019-2022 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
+	<string>© 2019-2021 KAPITAN! / Lauri-Matti Parppei. Based on Writer, © 2016 Hendrik Noeller. Released under GPL license.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
@@ -86,31 +82,19 @@
 	<array>
 		<dict>
 			<key>UTTypeConformsTo</key>
-			<array>
-				<string>public.plain-text</string>
-			</array>
+			<array/>
 			<key>UTTypeDescription</key>
-			<string>Fountain Screenplay</string>
+			<string></string>
 			<key>UTTypeIconFile</key>
-			<string>BeatDocumentIcon</string>
-			<key>UTTypeIcons</key>
-			<dict>
-				<key>UTTypeIconBadgeName</key>
-				<string></string>
-			</dict>
+			<string></string>
 			<key>UTTypeIdentifier</key>
-			<string>fi.KAPITAN.fountain</string>
+			<string></string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
-				<array>
-					<string>fountain</string>
-					<string>Fountain</string>
-				</array>
+				<array/>
 				<key>public.mime-type</key>
-				<array>
-					<string>text/plain</string>
-				</array>
+				<array/>
 			</dict>
 		</dict>
 	</array>

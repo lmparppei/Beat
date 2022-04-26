@@ -13,7 +13,7 @@
 #import "BeatAppDelegate.h"
 
 @interface BeatPluginLibrary ()
-@property (nonatomic) IBOutlet BeatPluginManager *pluginManager;
+@property (nonatomic) BeatPluginManager *pluginManager;
 @property (nonatomic, weak) IBOutlet WKWebView *webview;
 @end
 
@@ -23,9 +23,19 @@
 	self = [super initWithWindowNibName:@"BeatPluginLibrary" owner:self];
 	
 	if (self) {
+		self.pluginManager = BeatPluginManager.sharedManager;
 		self.pluginView.dataSource = self.pluginManager;
 		self.pluginView.delegate = self;
 	}
+		
+	return self;
+}
+- (instancetype)initWithCoder:(NSCoder *)coder {
+	self = [super initWithCoder:coder];
+	
+	self.pluginManager = BeatPluginManager.sharedManager;
+	self.pluginView.dataSource = BeatPluginManager.sharedManager;
+	self.pluginView.delegate = self;
 	
 	return self;
 }
@@ -54,8 +64,10 @@
 	self.pluginView.dataSource = self.pluginManager;
 	
 	[self.pluginManager refreshAvailablePlugins];
+	
 	[self.pluginManager getPluginLibraryWithCallback:^{
 		// Reload again when external data has been loaded
+
 		[self.pluginView reloadData];
 	}];
 	
@@ -101,6 +113,12 @@
 - (void)displayPluginPage:(NSString*)pluginName {
 	NSString *jsonString = [self pluginJSON:pluginName];
 	[_webview evaluateJavaScript:[NSString stringWithFormat:@"loadData(%@)", jsonString] completionHandler:nil];
+}
+
+#pragma mark - Open plugin folder
+
+- (IBAction)openPluginFolder:(id)sender {
+	[self.pluginManager openPluginFolder];
 }
 
 #pragma mark - Outline View delegation

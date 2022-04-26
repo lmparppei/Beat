@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "PrintView.h"
+#import "BeatPrintView.h"
 #import "Line.h"
 
 @class Document;

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
-        <plugIn identifier="com.apple.WebKit2IBPlugin" version="19529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <plugIn identifier="com.apple.WebKit2IBPlugin" version="20037"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="BeatPluginLibrary">
             <connections>
-                <outlet property="pluginManager" destination="iFI-NJ-q23" id="3U1-b4-8mh"/>
                 <outlet property="pluginView" destination="5HQ-dn-bnK" id="vmn-tX-nrR"/>
                 <outlet property="webview" destination="xQi-lW-eLo" id="eAE-wN-RWj"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
@@ -24,7 +23,7 @@
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="666" height="465"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <splitView arrangesAllSubviews="NO" dividerStyle="thin" vertical="YES" id="Ryw-qg-XVY">
                         <rect key="frame" x="0.0" y="0.0" width="666" height="465"/>
@@ -94,7 +93,6 @@
                                                         </tableColumn>
                                                     </tableColumns>
                                                     <connections>
-                                                        <outlet property="dataSource" destination="iFI-NJ-q23" id="sxn-HQ-VgG"/>
                                                         <outlet property="delegate" destination="-2" id="eEV-UN-C2Y"/>
                                                     </connections>
                                                 </outlineView>
@@ -117,7 +115,7 @@
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                         <connections>
-                                            <action selector="openPluginFolderAction:" target="iFI-NJ-q23" id="f76-zF-OPa"/>
+                                            <action selector="openPluginFolder:" target="-2" id="F6b-GD-5b3"/>
                                         </connections>
                                     </button>
                                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="cBa-Q6-KR1">
@@ -157,7 +155,6 @@
             </connections>
             <point key="canvasLocation" x="232" y="237.5"/>
         </window>
-        <customObject id="iFI-NJ-q23" customClass="BeatPluginManager"/>
     </objects>
     <resources>
         <image name="Folder" width="56" height="52"/>

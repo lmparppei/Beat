@@ -71,6 +71,8 @@
 "print.print" = "Print";
 "print.createPDF" = "Create PDF";
 "print.pdfButton" = "Create PDF";
+"print.printButton" = "Print";
+"print.pdfButton" = "PDF";
 
 "cardView.noScenes" = "No Scenes";
 "cardView.noScenesInformation" = "When you write some scenes, they will be visible as cards in this view";
