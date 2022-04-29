@@ -40,21 +40,36 @@
 + (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo {
 	BeatMargins *margins = BeatMargins.margins;
 	
-	printInfo.topMargin = margins.top;
+	CGSize offset = CGSizeMake(0, 0);
+	CGFloat reference = 12.5;
+	CGSize imageableSize = CGSizeMake(printInfo.imageablePageBounds.origin.x, printInfo.imageablePageBounds.origin.y);
+	
+	// The user's system has less visible space on paper than it should (???), so let's fix that in margins.
+	if (imageableSize.width - reference > 0 || imageableSize.height - reference > 0) {
+		offset.width = imageableSize.width - reference;
+		offset.width = imageableSize.height - reference;
+	}
+	
+	printInfo.topMargin = margins.top - offset.height;
 	printInfo.bottomMargin = margins.bottom;
-	printInfo.leftMargin = margins.left;
+	printInfo.leftMargin = margins.left - offset.width;
 	printInfo.rightMargin = margins.right;
+	
+	
 	return printInfo;
 }
 + (NSPrintInfo*)setPaperSize:(NSPrintInfo*)printInfo size:(BeatPaperSize)size {
-	if (size == BeatA4) printInfo.paperSize = NSMakeSize(595.0, 842.0);
-	else printInfo.paperSize = CGSizeMake(PAPER_USLETTER);
+	
+	if (size == BeatA4) [printInfo setPaperName:@"A4"];
+	else [printInfo setPaperName:@"Letter"];
+	
 	return printInfo;
 }
 
 + (NSPrintInfo*)setSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo {
 	printInfo = [BeatPaperSizing setPaperSize:printInfo size:size];
 	printInfo = [BeatPaperSizing setMargins:printInfo];
+	
 	return printInfo;
 }
 
@@ -62,11 +77,14 @@
 	if (size == BeatA4) printInfo.paperSize = NSMakeSize(PAPER_A4);
 	else printInfo.paperSize = NSMakeSize(PAPER_USLETTER);
 	
+	printInfo = [self setMargins:printInfo];
+	/*
 	BeatMargins *margins = BeatMargins.margins;
 	printInfo.topMargin = margins.top;
 	printInfo.bottomMargin = margins.bottom;
 	printInfo.leftMargin = margins.left;
 	printInfo.rightMargin = margins.right;
+	*/
 }
 
 @end

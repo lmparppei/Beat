@@ -10,9 +10,9 @@
  
  WORK IN PROGRESS.
 
- This is very loosely based on the original FNPaginator code, with heavy
- modifications to the whole logic behind it, and rewritten to use the
- Line class driving ContinuousFountainParser.
+ This is very loosely based on the original FNPaginator code, with heavy modifications
+ to the whole logic behind it, and rewritten to use the Line class driving
+ ContinuousFountainParser.
   
  Original Fountain repository pagination code was totally convoluted and had
  many obvious bugs and stuff that really didn't work in many places.
@@ -46,7 +46,7 @@
  - Element widths are 80% of the CSS size. I don't know why, but this
    is the only way I got them to match with the real WebKit sizing.
  - There is a specific splitting / joining logic built into the Line class. Joining lines
-   happens in the parser, while SPLITTING is taken care of here. This happens in a
+   happens in the Line class, while SPLITTING is handled here. This happens in a
    very convoluted manner, with differing logic for dialogue and actions, but
    I'm looking into it.
  
@@ -54,18 +54,16 @@
  the bird may die
  (Forough Farrokhzad)
  
- */
-
-/*
  
  UPDATE 2021-12-13:
- 
+
+ Max sizes per action line:
+
  A4: 59 charaters per line
  US Letter: 61 characters per line
  ... which means that one character equals 7,2 pt
  
  For now, it might be clever to base our maths on characters per line.
- 
 
  */
 
@@ -1316,7 +1314,7 @@
 			if (postDialogue.length) {
 				// Add the remaining stuff on the next page and inherit dual dialogue boolean
 				Line *element = dialogueBlock.firstObject;
-				Line *postCue = [Line withString:[element.stripFormatting stringByAppendingString:@" (CONT'D)"] type:contdType pageSplit:YES];
+				Line *postCue = [Line withString:[element.stripFormatting stringByAppendingString:[self contdString]] type:contdType pageSplit:YES];
 				
 				if (element.nextElementIsDualDialogue) postCue.nextElementIsDualDialogue = YES;
 				postDialogue.type = dialogueType;
@@ -1409,6 +1407,15 @@
 	return nil;
 }
 
+- (NSString*)moreString {
+	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemMore"];
+	return [NSString stringWithFormat:@"(%@)", moreStr];
+}
+- (NSString*)contdString {
+	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
+	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue
+}
+
 - (NSArray*)retainDialogueInBlock:(NSArray*)dialogueBlock to:(NSInteger)blockIndex addMORE:(bool)addMore splitDialogue:(Line*)retainedDialogue spillerElement:(Line*)spillerElement {
 	NSMutableArray *retainedElements = NSMutableArray.array;
 	for (NSInteger d = 0; d < blockIndex; d++) {
@@ -1420,8 +1427,8 @@
 	
 	if (addMore) {
 		LineType moreType = (!spillerElement.isDualDialogue) ? more : dualDialogueMore;
-		
-		Line *preMore = [Line withString:@"(MORE)" type:moreType pageSplit:YES];
+				
+		Line *preMore = [Line withString:[self moreString] type:moreType pageSplit:YES];
 		preMore.position = spillerElement.position;
 		
 		[retainedElements addObject:preMore];
@@ -1447,7 +1454,7 @@
 	}
 	
 	Line *element = dialogueBlock.firstObject;
-	Line *postCue = [Line withString:[element.characterName stringByAppendingString:@" (CONT'D)"] type:contdType pageSplit:YES];
+	Line *postCue = [Line withString:[element.characterName stringByAppendingString:[self contdString]] type:contdType pageSplit:YES];
 	if (element.nextElementIsDualDialogue) postCue.nextElementIsDualDialogue = YES;
 	
 	// Position indexes for live pagination

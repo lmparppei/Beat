@@ -98,9 +98,12 @@ body.us-letter{  /* all values not present here are the same as for A4 */
 	width: calc(8.5in - 88pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
 }
 
+
 @page {
 	margin: 0cm;
+	overflow: hidden;
 }
+
 
 article {
 	margin-top: 0;
@@ -109,7 +112,6 @@ article {
 }
 
 section {
-
 	margin-left: 0pt; /* Hack to MOVE THE PAGE TO THE LEFT in order to fit overflowing stars without shrinking the page */
 
 	margin-bottom: 0;
@@ -408,65 +410,10 @@ body > p:first-child {
 
 }
 
-/* ================== */
-/*   OLD. ASTERISKS   */
-/* ================== */
-
-
-/*.changed::after {
-
-	position: absolute;
-	
-	top: 0px;
-	right: -20pt;
-	width: 8px;
-	height: calc(100% - 4px);
-	z-index: 999;
-	
-	content: '*********************';
-	overflow: hidden;
-	font-weight: normal;
-	text-align: right !important;
-
-	letter-spacing: -1pt;
+.center .revisionMarker::after {
+	transform: translateX(calc(var(--action-width) / 2 + 18px)) !important;
 }
 
-.changed::after{
-}
-.changed.blue::after{
-}
-.changed.orange::after{
-	width: 20px;
-	content: '******************************************';
-}
-.changed.purple::after{
-	content: '+++++++++++++++++++++';
-}
-.changed.green::after{
-	width: 20px;
-	content: '++++++++++++++++++++++++++++++++++++++++++';
-}
-
-.dual-dialogue-left .changed::after {
-	left: -4ch;
-}
-
-.dual-dialogue-right .changed::after{
-	right: -27pt;
-}
-
-.dual-dialogue-right .character.changed::after,
-.dual-dialogue-right .parenthetical.changed::after {
-	right: -20pt;
-}
-
-.dual-dialogue-left .parenthetical.changed::after {
-	left: calc(-4ch - 21.5pt);
-}
-
-.dual-dialogue-left .character.changed::after{
-	left: calc(-9ch - 21.5pt);
-} */
 
 /* ================== */
 /*      TITLE PAGE    */

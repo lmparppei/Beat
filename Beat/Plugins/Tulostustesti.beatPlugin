@@ -1,0 +1,16 @@
+/*
+
+Test plugin
+© Lauri-Matti Parppei
+
+Plugin Type: Standalone
+
+*/
+
+Beat.openConsole()
+
+var screenplay = Beat.screenplayHTML()
+
+Beat.saveFile("html", function (filePath) {
+	Beat.writeToFile(filePath, screenplay)
+})

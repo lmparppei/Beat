@@ -14,7 +14,9 @@
 "3O7-zn-jUw.title" = "US Letter";
 
 /* Class = "NSButtonCell"; title = "Automatic paragraph breaks"; ObjectID = "5Bc-al-gWv"; */
-"5Bc-al-gWv.title" = "Automaattiset kappalejaot";
+"Br1-nj-6zn.title" = "Automaattiset kappalejaot";
+
+"5Bc-al-gWv.title" = "Automaattiset CONT'D-päätteet";
 
 /* Class = "NSMenuItem"; title = "A4"; ObjectID = "7Xj-J1-Y92"; */
 "7Xj-J1-Y92.title" = "A4";
@@ -96,3 +98,7 @@
 
 /* Class = "NSButtonCell"; title = "Show page numbers"; ObjectID = "yde-p1-D3O"; */
 "yde-p1-D3O.title" = "Näytä sivunumerot";
+
+"Ump-3W-bbM.title" = "Jatketun dialogin pääte";
+
+"0oB-rC-ac3.title" = "Dialogin sivunvaihdon merkintä";

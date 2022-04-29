@@ -13,13 +13,14 @@
 
 //#define HEADING_SAMPLE @"INT. SCENE - DAY"
 
-@interface BeatPreferencesPanel ()
+@interface BeatPreferencesPanel () <NSTextFieldDelegate>
 @property (nonatomic) NSArray* validationItems;
 
 @property (nonatomic, weak) IBOutlet NSButton *hideFountainMarkup;
 @property (nonatomic, weak) IBOutlet NSButton *showSceneNumberLabels;
 @property (nonatomic, weak) IBOutlet NSButton *showPageNumbers;
 @property (nonatomic, weak) IBOutlet NSButton *matchParentheses;
+@property (nonatomic, weak) IBOutlet NSButton *automaticContd;
 @property (nonatomic, weak) IBOutlet NSButton *autoLineBreaks;
 @property (nonatomic, weak) IBOutlet NSButton *autocomplete;
 @property (nonatomic, weak) IBOutlet NSButton *showMarkersInScrollbar;
@@ -35,6 +36,9 @@
 @property (nonatomic, weak) IBOutlet NSButton *headingSpacing2;
 
 @property (nonatomic, weak) IBOutlet NSTextField *sampleHeading;
+
+@property (nonatomic, weak) IBOutlet NSTextField *screenplayItemContd;
+@property (nonatomic, weak) IBOutlet NSTextField *screenplayItemMore;
 
 @property (nonatomic) NSMutableDictionary *controls;
 
@@ -63,11 +67,13 @@
 	
 	for (NSString *key in userDefaults.allKeys) {
 		if ([self valueForKey:key]) {
+			// Find an object in the NIB by the name of this value
 			id item = [self valueForKey:key];
 			
-			// Add control into dictionary
+			// Add control into dictionary by the default name
 			[_controls setValue:item forKey:key];
 			
+			// Check control type
 			if ([item isKindOfClass:NSPopUpButton.class]) {
 				// We need to check for subclasses of NSButton first
 				NSPopUpButton *button = item;
@@ -80,6 +86,13 @@
 				
 				if (value) button.state = NSOnState;
 				else button.state = NSOffState;
+			}
+			else if ([item isKindOfClass:NSTextField.class]) {
+				NSTextField *textField = item;
+				NSString *value = [BeatUserDefaults.sharedDefaults get:key];
+				
+				textField.delegate = self;
+				textField.stringValue = value;
 			}
 		} else {
 			
@@ -96,6 +109,14 @@
 	
 	[self.window.toolbar setSelectedItemIdentifier:@"General"];
 	[self updateHeadingSample:YES];
+}
+
+- (NSString*)keyForControl:(id)control {
+	for (NSString* key in _controls.allKeys) {
+		if (_controls[key] == control) return key;
+	}
+	
+	return nil;
 }
 
 - (void)setupLanguages {
@@ -170,6 +191,7 @@
 		
 		if (sender == control) {
 			if ([sender isKindOfClass:NSPopUpButton.class]) {
+				// Dropdown
 				NSPopUpButton *button = sender;
 				[BeatUserDefaults.sharedDefaults saveInteger:[button.itemArray indexOfObject:button.selectedItem] forKey:key];
 			}
@@ -180,6 +202,28 @@
 					[BeatUserDefaults.sharedDefaults saveBool:YES forKey:key];
 				} else {
 					[BeatUserDefaults.sharedDefaults saveBool:NO forKey:key];
+				}
+			}
+			else if ([sender isKindOfClass:NSTextField.class]) {
+				// Text field
+				NSTextField *textField = sender;
+				
+				NSString *currentValue = [BeatUserDefaults.sharedDefaults get:key];
+				NSString *newValue = [textField.stringValue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+				NSString *defaultValue = [BeatUserDefaults.sharedDefaults defaultValueFor:key];
+				
+				// Get default value if the string is empty
+				if (newValue.length == 0) {
+					newValue = defaultValue;
+				}
+				
+				// If the value is equal to default value, remove it, because we might
+				// want to change the default at some point in the future.
+				if ([newValue isEqualToString:defaultValue]) {
+					[BeatUserDefaults.sharedDefaults save:@"" forKey:key];
+				}
+				else if (![newValue isEqualToString:currentValue]) {
+					[BeatUserDefaults.sharedDefaults save:newValue forKey:key];
 				}
 			}
 		}
@@ -241,6 +285,34 @@
 	
 	if (value) button.state = NSOnState;
 	else button.state = NSOffState;
+}
+
+#pragma mark - Text field delegation
+
+-(void)controlTextDidChange:(NSNotification *)obj {
+	NSTextField *textField = obj.object;
+	
+	// Make contents uppercase
+	NSRange selectedRange = textField.currentEditor.selectedRange;
+	textField.stringValue = textField.stringValue.uppercaseString;
+		
+	textField.currentEditor.selectedRange = selectedRange;
+	
+	NSString *key = [self keyForControl:textField];
+	
+	NSLog(@"(%@)... %@", key, textField.stringValue);
+	
+	[self toggle:textField];
+}
+- (void)controlTextDidEndEditing:(NSNotification *)obj {
+	NSTextField *textField = obj.object;
+	
+	// Read default value when the string value is empty
+	if (textField.stringValue.length == 0) {
+		NSString *key = [self keyForControl:textField];
+		NSString *defaultValue = [BeatUserDefaults.sharedDefaults defaultValueFor:key];
+		textField.stringValue = defaultValue;
+	}
 }
 
 @end

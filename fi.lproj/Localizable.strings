@@ -68,7 +68,8 @@
 
 "print.print" = "Tulosta";
 "print.createPDF" = "Luo PDF";
-"print.pdfButton" = "Luo PDF";
+"print.pdfButton" = "PDF";
+"print.printButton" = "Tulosta";
 
 "cardView.noScenes" = "Ei kohtauksia";
 "cardView.noScenesInformation" = "Kohtauskortit tulevat näkyviin, kun lisäät ensimmäisen kohtauksen käsikirjoitukseesi";

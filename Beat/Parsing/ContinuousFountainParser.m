@@ -40,6 +40,11 @@
 #import "BeatMeasure.h"
 
 @implementation BeatScreenplay
+/**
+ 
+ Usage: [BeatScreenplay from:parser settings:settings];
+ 
+ */
 
 +(instancetype)from:(ContinuousFountainParser*)parser {
 	return [self from:parser settings:nil];

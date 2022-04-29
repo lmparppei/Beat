@@ -20,6 +20,7 @@
  */
 
 #import "BeatPlugin.h"
+#import "BeatRevisionTracking.h"
 #import <objc/runtime.h>
 
 @interface BeatPlugin ()
@@ -1090,6 +1091,27 @@
 	return _delegate.previewHTML;
 }
 
+- (NSString*)screenplayHTML:(NSDictionary*)exportSettings {
+	
+	BeatExportSettings *settings = [BeatExportSettings
+									operation:ForPrint
+									document:self.delegate.document
+									header:(exportSettings[@"header"]) ? exportSettings[@"header"] : @""
+									printSceneNumbers:(exportSettings[@"printSceneNumbers"]) ? ((NSNumber*)exportSettings[@"printSceneNumbers"]).boolValue : true
+									printNotes:(exportSettings[@"printNotes"]) ? ((NSNumber*)(exportSettings[@"printNotes"])).boolValue : false
+									revisions:(exportSettings[@"revisions"]) ? (NSArray*)exportSettings[@"revisions"] : BeatRevisionTracking.revisionColors
+									scene:nil
+									coloredPages:(exportSettings[@"coloredPages"]) ? ((NSNumber*)(exportSettings[@"coloredPages"])).boolValue : false
+									revisedPageColor:(exportSettings[@"revisedPageColor"]) ? (exportSettings[@"revisedPageColor"]) : @""];
+	
+	BeatScreenplay *screenplay = [BeatScreenplay from:self.delegate.parser settings:settings];
+	NSString * html = [BeatHTMLScript.alloc initWithScript:screenplay settings:settings].html;
+	
+	if (html) return html;
+	return @"";
+	
+}
+
 #pragma mark - Parser data delegation
 
 - (NSArray*)lines
@@ -1240,6 +1262,16 @@
 
 - (void)setRawDocumentSetting:(NSString*)settingName setting:(id)value {
 	[_delegate.documentSettings set:settingName as:value];
+}
+
+- (NSDictionary*)printInfo {
+	return @{
+		@"paperSize": @[@(_delegate.printInfo.paperSize.width), @(_delegate.printInfo.paperSize.height)],
+		@"imageableSize": @[@(_delegate.printInfo.imageablePageBounds.origin.x),
+							@(_delegate.printInfo.imageablePageBounds.origin.y),
+							@(_delegate.printInfo.imageablePageBounds.size.width),
+							@(_delegate.printInfo.imageablePageBounds.size.height)]
+	};
 }
 
 

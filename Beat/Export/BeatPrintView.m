@@ -28,12 +28,17 @@
 #import "Document.h"
 #import "BeatRevisionTracking.h"
 #import "BeatExportSettings.h"
+#import <PDFKit/PDFKit.h>
+#import <Webkit/Webkit.h>
 
-@interface BeatPrintView () <WebFrameLoadDelegate>
+#define WEBKIT false
+
+@interface BeatPrintView () <WebFrameLoadDelegate, WKNavigationDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
 @property (weak, nonatomic) Document *document;
-@property (weak, nonatomic) WebView *webView;
+@property (weak, nonatomic) id webView;
 @property (nonatomic) BeatExportSettings *settings;
+@property (nonatomic) NSPrintInfo *printInfo;
 @property bool pdf;
 @property bool preview;
 
@@ -60,6 +65,7 @@
 
 		_finishedWebViews = 0;
 		_document = document;
+		_printInfo = document.printInfo.copy;
 		
 		// NOTE: Lines can be nil, in which case this returns the text from delegate/document
 		// Later we bake revisions into the text
@@ -80,6 +86,7 @@
 		
 		_finishedWebViews = 0;
 		_document = (Document*)settings.document;
+		_printInfo = _document.printInfo.copy;
 		_completion = completion;
 		[self printHTML:htmlString];
 	}
@@ -102,14 +109,30 @@
 }
 
 - (void)printHTML:(NSString*)htmlString {
-	WebView *pageWebView = [[WebView alloc] init];
-	pageWebView.frameLoadDelegate = self;
-	pageWebView.mainFrame.frameView.allowsScrolling = NO;
-	[self addSubview:pageWebView];
+	id webView;
 	
-	_webView = pageWebView;
+	if (WEBKIT) {
+		if (@available(macOS 11.0, *)) {
+			webView = WKWebView.new;
+			((WKWebView*)webView).navigationDelegate = self;
+			[(WKWebView*)webView loadHTMLString:htmlString baseURL:nil];
+		}
+		else {
+			webView = WebView.new;
+			((WebView*)webView).frameLoadDelegate = self;
+			((WebView*)webView).mainFrame.frameView.allowsScrolling = NO;
+			[((WebView*)webView).mainFrame loadHTMLString:htmlString baseURL:nil];
+		}
+	}
+	else {
+		webView = WebView.new;
+		((WebView*)webView).frameLoadDelegate = self;
+		((WebView*)webView).mainFrame.frameView.allowsScrolling = NO;
+		[((WebView*)webView).mainFrame loadHTMLString:htmlString baseURL:nil];
+	}
 	
-	[pageWebView.mainFrame loadHTMLString:htmlString baseURL:nil];
+	[self addSubview:webView];
+	self.webView = webView;
 }
 
 - (NSString*)createPrint:(NSString*)rawText settings:(BeatExportSettings*)settings {
@@ -140,6 +163,7 @@
 
 - (BOOL)knowsPageRange:(NSRangePointer)range
 {
+	// Never called?
 	range->location = 0;
 	range->length = self.subviews.count + 1;
 	return YES;
@@ -147,20 +171,20 @@
 
 - (NSRect)rectForPage:(NSInteger)page
 {
+	// Never called?
 	NSView *subview = self.subviews[page - 1];
 	return subview.frame;
 }
 
-- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+- (void)webView:(id)sender didFinishLoadForFrame:(WebFrame *)frame {
+	// Delegate method for legacy WebView
 	self.finishedWebViews = self.finishedWebViews + 1;
 	
 	if (self.finishedWebViews == self.subviews.count) {
 		[self display];
 				
 		// Print
-		if (!self.pdf) {
-			[self printDocument];
-		}
+		if (!self.pdf) [self printDocument];
 		// Export PDF
 		else {
 			if (_preview) {
@@ -171,6 +195,28 @@
 		}
 	}
 }
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+	// Delegate method for modern WKWebView
+	self.finishedWebViews = self.finishedWebViews + 1;
+	
+	if (self.finishedWebViews == self.subviews.count) {
+		[self display];
+				
+		// Print
+		if (!self.pdf) [self printDocument];
+		// Export PDF
+		else {
+			if (_preview) {
+				NSURL *tempURL = [NSURL fileURLWithPath:[self pathForTemporaryFileWithPrefix:@"pdf"]];
+				[self exportPDFtoURL:tempURL forPreview:YES];
+			} else {
+				[self savePDF];
+			}
+		}
+	}
+}
+
 
 - (void)savePDF {
 	NSSavePanel *saveDialog = [NSSavePanel savePanel];
@@ -190,35 +236,70 @@
 		if (result == NSFileHandlingPanelOKButton) [self exportPDFtoURL:saveDialog.URL];
 	}
 }
-- (void)exportPDFtoURL:(NSURL*)url {
-	NSPrintInfo *printInfo = self.document.printInfo.copy;
+
+- (void)printDocument {
+	NSPrintInfo *printInfo = [self.document.printInfo copy];
+	printInfo.verticalPagination = NSFitPagination;
+	printInfo.horizontalPagination = NSFitPagination;
 	
+	NSPrintOperation *printOperation;
+		
+	if (WEBKIT) {
+		if (@available(macOS 11.0, *)) {
+			printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
+			printOperation.view.frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
+		} else {
+			printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
+		}
+	} else {
+		printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	}
+	
+	printOperation.showsPrintPanel = YES;
+	
+	if (self.document.windowControllers.count) {
+		[printOperation runOperationModalForWindow:self.document.documentWindow delegate:nil didRunSelector:nil contextInfo:nil];
+	} else {
+		[printOperation runOperation];
+	}
+	
+	if (_completion) _completion();
+}
+
+- (void)exportPDFtoURL:(NSURL*)url {
+	[self exportPDFtoURL:url forPreview:NO];
+}
+
+- (void)exportPDFtoURL:(NSURL*)url forPreview:(bool)preview {
+	NSPrintInfo *printInfo = self.document.printInfo.copy;
+	printInfo.verticalPagination = NSFitPagination;
+	printInfo.horizontalPagination = NSFitPagination;
+				
 	[printInfo.dictionary addEntriesFromDictionary:@{
 													 NSPrintJobDisposition: NSPrintSaveJob,
 													 NSPrintJobSavingURL: url
 													 }];
-
-	NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	
+	NSPrintOperation *printOperation;
 		
+	if (WEBKIT) {
+		if (@available(macOS 11.0, *)) {
+			printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
+			printOperation.view.frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
+		} else {
+			printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
+		}
+	} else {
+		printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	}
+	
+	
 	printOperation.showsPrintPanel = NO;
 	printOperation.showsProgressPanel = YES;
 	
 	[printOperation runOperation];
 	
-	if (_completion) _completion();
-}
-
-- (void)printDocument {
-	NSPrintInfo *printInfo = [self.document.printInfo copy];
-	NSPrintOperation *printOperation = [_webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
-	
-	//[printOperation runOperationModalForWindow:((NSWindowController*)self.document.windowControllers[0]).window delegate:nil didRunSelector:nil contextInfo:nil];
-	if (self.document.windowControllers.count) {
-		[printOperation runOperationModalForWindow:((NSWindowController*)self.document.windowControllers[0]).window delegate:nil didRunSelector:nil contextInfo:nil];
-	} else {
-		[printOperation runOperation];
-	}
-	
+	if (preview) [self.delegate didFinishPreviewAt:url];
 	if (_completion) _completion();
 }
 
@@ -232,14 +313,30 @@
 													 NSPrintJobSavingURL: tempURL
 													 }];
 	
-	NSPrintOperation *printOperation = [self.webView.mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	NSPrintOperation *printOperation;
+	
+	if (WEBKIT) {
+		if (@available(macOS 11.0, *)) {
+			NSRect frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
+			printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
+			printOperation.view.frame = frame;
+		} else {
+			printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
+		}
+	} else {
+		printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
+	}
 	
 	printOperation.showsPrintPanel = NO;
 	printOperation.showsProgressPanel = YES;
 	
-	[printOperation runOperation];
-	
-	[self.delegate didFinishPreviewAt:tempURL];
+	if (WEBKIT) {
+		//[printOperation runOperation];
+		[self.delegate didFinishPreviewAt:tempURL];
+	} else {
+		[printOperation runOperation];
+		[self.delegate didFinishPreviewAt:tempURL];
+	}
 }
 
 - (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix

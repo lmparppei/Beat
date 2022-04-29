@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)saveSettingsFrom:(id)target;
 - (NSInteger)getInteger:(NSString*)docKey;
 - (void)saveInteger:(NSInteger)value forKey:(NSString*)key;
+- (id)defaultValueFor:(NSString*)key;
 @end
 
 NS_ASSUME_NONNULL_END

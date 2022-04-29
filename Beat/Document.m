@@ -169,12 +169,12 @@
 @property (nonatomic) BeatPaginator *paginator;
 @property (nonatomic) NSTimer *paginationTimer;
 @property (nonatomic) bool autocomplete;
-@property (nonatomic) bool newScene;
 @property (nonatomic) bool moving;
 @property (nonatomic) bool sceneHeadingEdited;
 @property (nonatomic) bool sceneHeadingUndoString;
 @property (nonatomic) bool showPageNumbers;
 @property (nonatomic) bool autoLineBreaks;
+@property (nonatomic) bool automaticContd;
 @property (nonatomic) bool characterInput;
 @property (nonatomic) Line* characterInputForLine;
 @property (nonatomic) NSDictionary *postEditAction;
@@ -650,7 +650,8 @@
 		pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
 	}
 	
-	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
+	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
+	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:printInfo];	
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 
 	// Enable undo registration and clear any changes to the document (if needed)
@@ -1616,15 +1617,47 @@
 		}
 	}
 	
-	// Also, if it's an enter key and we are handling a CHARACTER, force dialogue if needed
+	// Also, if it's an enter key and we are handling a CHARACTER, we have some special rules:
 	bool forceDialogue = NO;
 	if ([replacementString isEqualToString:@"\n"] &&
 		affectedCharRange.length == 0 &&
 		(_currentLine.type == character || _currentLine.type == dualDialogueCharacter)) {
 		
+		// Force dialogue type for the empty line if needed
 		Line *nextLine = [_parser nextLine:_currentLine];
 		if ((nextLine.type == dialogue || nextLine.type == dualDialogue || nextLine.type == empty) && (nextLine.string.length == 0 || nextLine == nil)) {
 			forceDialogue = YES;
+		}
+		
+		// Look back to see if we should add (cont'd)
+		if (self.automaticContd) {
+			NSInteger lineIndex = [self.parser.lines indexOfObject:_currentLine] - 1;
+			if (lineIndex != NSNotFound) {
+				NSString *charName = _currentLine.characterName;
+				
+				while (lineIndex > 0) {
+					Line * prevLine = self.parser.lines[lineIndex];
+					
+					// Stop at headings
+					if (prevLine.type == heading) break;
+
+					if (prevLine.type == character) {
+						// Stop if the previous character is not the current one
+						if (![prevLine.characterName isEqualToString:charName]) break;
+						
+						// This is the character. Put in CONT'D and a line break and return NO
+						NSString *contd = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
+						NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
+						
+						if (![_currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
+							[self addString:contdString atIndex:_currentLine.position + _currentLine.length];
+							return NO;
+						}
+					}
+					
+					lineIndex--;
+				}
+			}
 		}
 	}
 
@@ -1688,7 +1721,7 @@
         }
     }
 		
-	// When on a parenthetical, stay on the line when pressing enter
+	// When on a parenthetical, don't split it when pressing enter but move downwards
 	if (_currentLine.type == parenthetical && [replacementString isEqualToString:@"\n"] && self.selectedRange.length == 0) {
 		if (self.textView.string.length >= affectedCharRange.location + 1) {
 			char chr = [self.textView.string characterAtIndex:affectedCharRange.location];
@@ -1701,10 +1734,7 @@
 			}
 		}
 	}
-	
-	// Add an extra line break after some elements
-	bool processDoubleBreak = NO;
-		
+			
 	// Enter key
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && !self.undoManager.isUndoing && !self.documentIsLoading) {
 		_currentLine = [self getCurrentLine];
@@ -1730,44 +1760,39 @@
 		// ... This is future me writing from the present, and I have no idea what you've going after, either.
 		//     This REALLY should be rewritten.
 		//           This is future me again, and what the actual fuck???
+		//					This is present me in Apr 2022. I made it a bit more sensible.
 		if (self.autoLineBreaks) {
 			// Test if we should add a new line
 			// (We are not in the process of adding a dual line break and shift is not pressed)
-			if (!_newScene && _currentLine.string.length > 0 && !([NSEvent modifierFlags] & NSEventModifierFlagShift)) {
+			if (_currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
 				
+				// Add double breaks for outline element lines
 				if (_currentLine.type == heading ||
-					//_currentLine.type == section ||
+					_currentLine.type == section ||
 					_currentLine.type == synopse) {
-					// No shift down, add two breaks afer a scene heading, heading and synopsis
-					_newScene = YES;
-					[self addString:@"\n" atIndex:affectedCharRange.location];
-				} else if (_currentLine.type == action) {
+					[self addString:@"\n\n" atIndex:affectedCharRange.location];
+					return NO;
+				}
+				
+				// Action lines need to perform some checks
+				else if (_currentLine.type == action) {
 					NSUInteger currentIndex = [self.parser.lines indexOfObject:_currentLine];
 					
 					// Perform double-check if there is a next line
 					if (currentIndex < self.parser.lines.count - 2 && currentIndex != NSNotFound) {
 						Line* nextLine = [self.parser.lines objectAtIndex:currentIndex + 1];
 						if (nextLine.string.length == 0) {
-							_newScene = YES;
-							[self addString:@"\n" atIndex:affectedCharRange.location];
-						} else {
-							_newScene = NO;
+							[self addString:@"\n\n" atIndex:affectedCharRange.location];
+							return NO;
 						}
 					} else {
-						_newScene = YES;
-						[self addString:@"\n" atIndex:affectedCharRange.location];
+						[self addString:@"\n\n" atIndex:affectedCharRange.location];
+						return NO;
 					}
 				} else if (_currentLine.type == dialogue) {
-					_newScene = YES;
-					[self addString:@"\n" atIndex:affectedCharRange.location];
-					processDoubleBreak = YES;
-				} else {
-					// Nothing applies, go on
-					_newScene = NO;
+					[self addString:@"\n\n" atIndex:affectedCharRange.location];
+					return NO;
 				}
-			} else {
-				//if (_newScene) processDoubleBreak = YES;
-				_newScene = NO;
 			}
 		}
 	}
@@ -1786,43 +1811,35 @@
 		//if (affectedLine.type == character) _currentLine.type = dialogue;
 		//else if (affectedLine.type == dualDialogueCharacter) _currentLine.type = dualDialogue;
 	}
-	else if (processDoubleBreak) {
-		// This is here to fix a formatting error with dialogue.
-		// If the caret is at the end of the document, we need to parse one step behind
-		// to correctly format the extra line break we just added.
-		@try {
-			[self.parser parseChangeInRange:NSMakeRange(affectedCharRange.location + 1, 1) withString:@"\n"];
-		}
-		@catch (NSException *e) {
-			NSLog(@"out of bounds: %@", _currentLine.string);
-		}
-	}
+
 	
 	// Fire up autocomplete at the end of string and
 	// create cached lists of scene headings / character names
 	
-	if (self.autocomplete) {
-		if (_textView.selectedRange.location == _currentLine.position + _currentLine.string.length - 1) {
-			if (_currentLine.type == character) {
-				if (!_characterNames.count) [self collectCharacterNames];
-				[self.textView setAutomaticTextCompletionEnabled:YES];
-			} else if (_currentLine.type == heading) {
-				if (!_sceneHeadings.count) [self collectHeadings];
-				[self.textView setAutomaticTextCompletionEnabled:YES];
-			} else {
-				[_characterNames removeAllObjects];
-				[_sceneHeadings removeAllObjects];
-				[self.textView setAutomaticTextCompletionEnabled:NO];
-			}
-		}
-	}
+	if (self.autocomplete) [self autocompleteAtCurrentLine];
 
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	if (processDoubleBreak) _lastChangedRange = (NSRange){ affectedCharRange.location - 1, replacementString.length + 1 };
-	
 	_previewUpdated = NO;
+	
     return YES;
 }
+
+- (void)autocompleteAtCurrentLine {
+	if (_textView.selectedRange.location == _currentLine.position + _currentLine.string.length - 1) {
+		if (_currentLine.type == character) {
+			if (!_characterNames.count) [self collectCharacterNames];
+			[self.textView setAutomaticTextCompletionEnabled:YES];
+		} else if (_currentLine.type == heading) {
+			if (!_sceneHeadings.count) [self collectHeadings];
+			[self.textView setAutomaticTextCompletionEnabled:YES];
+		} else {
+			[_characterNames removeAllObjects];
+			[_sceneHeadings removeAllObjects];
+			[self.textView setAutomaticTextCompletionEnabled:NO];
+		}
+	}
+}
+
 - (Line*)getPreviousLine:(Line*)line {
 	NSInteger i = [self.parser.lines indexOfObject:line];
 	if (i > 0) return self.parser.lines[i - 1];
@@ -2217,7 +2234,10 @@
 			) {
 			// Don't add this line if it's just a character with cont'd.
 			// We'll account for other things later, such as V.O., O.S. etc.
-			if ([line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound) continue;
+			NSString *contdExtension = [NSString stringWithFormat:@"(%@)", [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]];
+			if ([line.string rangeOfString:contdExtension options:NSCaseInsensitiveSearch].location != NSNotFound &&
+				[line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound
+				) continue;
 			
 			// Character name, INCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
 			NSString *character = line.characterName;
@@ -2246,7 +2266,7 @@
 	}];
 	for (NSString *character in characters) {
 		[_characterNames addObject:character];
-		[_characterNames addObject:[NSString stringWithFormat:@"%@ (CONT'D)", character]];
+		[_characterNames addObject:[NSString stringWithFormat:@"%@ (%@)", character, [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]]];
 	}
 	
     // There was a character selected in the filtering menu, so select it again (if applicable)
@@ -3481,7 +3501,7 @@ static NSString *revisionAttribute = @"Revision";
         }
 		
 	}
-	else if (menuItem.action == @selector(print:) || menuItem.action == @selector(openPDFExport:)) {
+	else if (menuItem.action == @selector(openPrintPanel:) || menuItem.action == @selector(openPDFPanel:)) {
 	//else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"Create PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
 		// Some magic courtesy of Hendrik Noeller
         NSArray* words = [self.text componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];

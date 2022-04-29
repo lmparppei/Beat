@@ -56,7 +56,7 @@
 - (NSInteger)pages;
 - (NSString *)html;
 - (NSString *)htmlClassForType:(NSString *)elementType;
-- (NSString *)bodyForScript;
+- (NSString *)htmlBody;
 - (NSString *)content; // Returns only the ARTICLE part
 - (NSString *)htmlHeader;
 - (NSString *)htmlFooter;

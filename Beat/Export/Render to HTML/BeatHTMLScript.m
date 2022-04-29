@@ -128,6 +128,7 @@
 @property (nonatomic) BeatHTMLOperation operation;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool coloredPages;
+@property (nonatomic) NSArray* htmlPages;
 @property (nonatomic) NSString* revisionColor;
 @property (nonatomic) BeatPaperSize paperSize;
 
@@ -138,6 +139,9 @@
 @end
 
 @implementation BeatHTMLScript
+
+static bool boldedHeading;
+static bool underlinedHeading;
 
 // The new, modernized way
 - (id)initWithScript:(BeatScreenplay*)script settings:(BeatExportSettings*)settings {
@@ -154,7 +158,7 @@
 		
 		_document = settings.document;
 		
-		_header = settings.header;
+		_header = (settings.header.length) ? settings.header : @"";
 		_currentScene = settings.currentScene;
 		_operation = settings.operation;
 		_printSceneNumbers = settings.printSceneNumbers;
@@ -168,6 +172,11 @@
 		
 		// Simple boolean for later checks
 		if (_operation == ForPrint) _print = YES;
+		
+		// Styles
+		boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
+		underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
+
 	}
 	
 	return self;
@@ -192,6 +201,7 @@
 
 	return html;
 }
+
 
 - (NSString*)htmlHeader {
 	NSURL *templateUrl = [NSBundle.mainBundle URLForResource:@"HeaderTemplate" withExtension:@"html"];
@@ -220,10 +230,10 @@
 
 - (NSString *)content {
 	// N.B. this method can be called alone by itself to return pure content,
-	// as can bodyForScript. Dont' include anything that could break that functionality.
+	// as can htmlBody. Dont' include anything that could break that functionality.
 	
 	if (!self.bodyText) {
-		self.bodyText = [self bodyForScript];
+		self.bodyText = [self htmlBody];
 	}
 	
 	NSMutableString *html = [NSMutableString string];
@@ -232,6 +242,24 @@
 	[html appendString:@"</article>\n"];
 	
 	return html;
+}
+
+- (NSArray*)singlePages {
+	if (self.htmlPages == nil) self.htmlPages = [self createAllPages];
+	
+	NSMutableArray *everyPageAsDocument = NSMutableArray.new;
+	
+	for (NSString *page in self.htmlPages) {
+		NSMutableString *html = [NSMutableString string];
+		[html appendString:[self htmlHeader]];
+		[html appendString:@"<article>\n"];
+		[html appendString:page];
+		[html appendString:@"</article>\n"];
+		[html appendString:[self htmlFooter]];
+		[everyPageAsDocument addObject:html];
+	}
+	
+	return everyPageAsDocument;
 }
 
 
@@ -263,26 +291,202 @@
     return css;
 }
 
-- (NSString *)bodyForScript
-{
-    NSMutableString *body = [NSMutableString string]; // Contains HTML content
-	NSMutableDictionary *titlePage = NSMutableDictionary.dictionary;
+- (NSString*)singlePage:(NSArray*)elementsOnPage pageNumber:(NSInteger)pageNumber {
+	NSMutableString *body = NSMutableString.string;
+	NSInteger dualDialogueCharacterCount = 0;
+	NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
+	
+	NSString *pageClass = @"";
+	
+	// If we are coloring the revised pages, check for any changed lines here
+	if (_coloredPages && _revisionColor.length && self.operation == ForPrint) {
+		bool revised = NO;
+		for (Line* line in elementsOnPage) {
+			if (line.changed) {
+				revised = YES; break;
+			}
+		}
 		
+		if (revised) pageClass = [NSString stringWithFormat:@"revised %@", _revisionColor];
+	}
+	
+	
+	// Begin page
+	[body appendFormat:@"<section class='%@'>", pageClass];
+	
+	int elementCount = 0;
+	
+	if (self.customPage != nil) {
+		if (self.customPage.integerValue == 0) {
+			[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", _header];
+		} else {
+			// I don't understand this part. For some reason certain elements are cut off the page and have a random page number there when rendering. So, as a rational and solution-oriented person, I just removed the page number altogether if this happens.
+			// - Lauri-Matti
+			if (pageNumber < 3) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", _header, [self.customPage intValue]];
+		}
+	} else {
+		// Only print page numbers after first page
+		
+		if (pageNumber > 1) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %lu.</p>\n", _header, pageNumber];
+		else [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", _header];
+	}
+	
+	// We need to catch lyrics not to make them fill up a paragraph
+	bool isLyrics = false;
+	
+	for (Line *line in elementsOnPage) {
+		bool beginBlock = false;
+		
+		if ([ignoringTypes containsObject:line.typeAsFountainString]) {
+			// Close possible blocks
+			if (isLyrics) {
+				// Close lyrics block
+				[body appendFormat:@"</p>\n"];
+				isLyrics = false;
+			}
+			continue;
+		}
+		
+		if (line.type == pageBreak) {
+			// Close possible blocks
+			if (isLyrics) {
+				// Close lyrics block
+				[body appendFormat:@"</p>\n"];
+				isLyrics = false;
+			}
+			continue;
+		}
+		
+		// Stop dual dialogue
+		if (dualDialogueCharacterCount == 2 &&
+			!(line.type == dualDialogueParenthetical ||
+			 line.type == dualDialogue || line.type == dualDialogueMore)) {
+			[body appendString:@"</div></div>\n"];
+			dualDialogueCharacterCount = 0;
+		}
+		
+		// Catch dual dialogue
+		if (line.type == character && line.nextElementIsDualDialogue) {
+			dualDialogueCharacterCount++;
+			[body appendString:@"<div class='dual-dialogue'>\n"];
+			[body appendString:@"<div class='dual-dialogue-left'>\n"];
+		}
+		
+		if (line.type == dualDialogueCharacter && dualDialogueCharacterCount == 1) {
+			dualDialogueCharacterCount++;
+				[body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
+		}
+		
+		NSMutableString *text = [NSMutableString string];
+	
+
+		// Begin lyrics block
+		if (line.type == lyrics) {
+			if (!isLyrics) {
+				beginBlock = true;
+				isLyrics = true;
+			}
+		} else {
+			// Close lyrics block
+			if (isLyrics) {
+				[body appendFormat:@"</p>\n"];
+				isLyrics = false;
+			}
+		}
+		
+		// Format string for HTML (if it's not a heading)
+		[text setString:[self htmlStringFor:line]];
+		
+		// To avoid underlining heading tails, let's trim the text if needed
+		if (line.type == heading && underlinedHeading) [text setString:[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
+		
+		// Preview shortcuts
+		if (line.type == heading && _operation == ForPreview) {
+			[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
+		}
+
+		NSMutableString *additionalClasses = [NSMutableString string];
+		
+		if (line.type == heading && line.sceneNumber) {
+			// Add scene number ID to HTML, but don't print it if it's toggled off
+			NSString *printedSceneNumber;
+			if (self.printSceneNumbers) printedSceneNumber = line.sceneNumber;
+			else printedSceneNumber = @"";
+							
+			NSString* sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
+			NSString* sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
+			
+			[text setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, text, sceneNumberRight]];
+			
+			if (boldedHeading) [additionalClasses appendString:@" bold"];
+			if (underlinedHeading) [additionalClasses appendString:@" underline"];
+		}
+		
+		if (![text isEqualToString:@""]) {
+			if (line.type == centered) {
+				[additionalClasses appendString:@" center"];
+			}
+			if (elementCount == 0) [additionalClasses appendString:@" first"];
+			
+			// Mark as changed, if comparing against another file or the line contains added/removed text
+			if (line.changed || line.revisedRanges.count || line.removalSuggestionRanges.count) {
+				[additionalClasses appendString:@" changed"];
+				
+				// Add revision color if available
+				if (line.revisionColor.length > 0) {
+					[additionalClasses appendFormat:@" %@", line.revisionColor.lowercaseString];
+				}
+			}
+			
+			// If this line isn't part of a larger block, output it as paragraph
+			if (!beginBlock && !isLyrics) {
+				[body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
+			} else {
+				if (beginBlock) {
+					// Begin new block
+					[body appendFormat:@"<p class='%@%@'>%@<br>", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
+				} else {
+					// Continue the block
+					// note: we can't use \n after the lines to make it more easy read, because we want to preserve the white space
+					[body appendFormat:@"%@<br>", text];
+				}
+			}
+		} else {
+			// Just in case
+			if (isLyrics) {
+				// Close lyrics block
+				[body appendFormat:@"</p>\n"];
+				isLyrics = false;
+			}
+		}
+		
+		elementCount++;
+	}
+	
+	[body appendString:@"</section>"];
+	
+	return body;
+}
+
+- (NSString*)htmlBody {
+	_htmlPages = [self createAllPages];
+	return [_htmlPages componentsJoinedByString:@"\n"];
+}
+
+- (NSArray*)createAllPages
+{
+	NSMutableArray *pages = NSMutableArray.new;
+	
+	NSMutableDictionary *titlePage = NSMutableDictionary.dictionary;
+	
 	// Put title page elements into a dictionary
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
 	// Create title page
-	[self createTitlePage:titlePage body:body];
-
-	// Heading styles
-	bool boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
-	bool underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
+	NSString * titlePageString = [self createTitlePage:titlePage];
+	[pages addObject:titlePageString];
     
-	// Init other stuff
-    NSInteger dualDialogueCharacterCount = 0;
-    NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
-	
 	// Pagination
 	BeatPaginator *paginator = [BeatPaginator.alloc initWithScript:_script settings:_settings];
     NSUInteger maxPages = paginator.numberOfPages;
@@ -292,185 +496,19 @@
 	NSString *header = (self.header) ? self.header : @"";
 	if (header.length) header = [header stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	
-	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) { @autoreleasepool {
+	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
         NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
-		
-		NSString *pageClass = @"";
-		
-		// If we are coloring the revised pages, check for any changed lines here
-		if (_coloredPages && _revisionColor.length && self.operation == ForPrint) {
-			bool revised = NO;
-			for (Line* line in elementsOnPage) {
-				if (line.changed) {
-					revised = YES; break;
-				}
-			}
-			
-			if (revised) pageClass = [NSString stringWithFormat:@"revised %@", _revisionColor];
-		}
-		
-        
-        // Begin page
-		[body appendFormat:@"<section class='%@'>", pageClass];
-		
-		int index = (int)pageIndex+1;
-		int elementCount = 0;
-		
-        if (self.customPage != nil) {
-            if (self.customPage.integerValue == 0) {
-				[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", header];
-            } else {
-				// I don't understand this part. For some reason certain elements are cut off the page and have a random page number there when rendering. So, as a rational and solution-oriented person, I just removed the page number altogether if this happens.
-				// - Lauri-Matti
-				if (index < 2) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, [self.customPage intValue]];
-            }
-        } else {
-			int pageNumber = (int)pageIndex + 1;
-			// Only print page numbers after first page
-			
-			if (pageNumber > 1) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", header, (int)pageIndex+1];
-			else [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", header];
-        }
-		
-		// We need to catch lyrics not to make them fill up a paragraph
-		bool isLyrics = false;
-		
-        for (Line *line in elementsOnPage) {
-			bool beginBlock = false;
-			
-			if ([ignoringTypes containsObject:line.typeAsFountainString]) {
-				// Close possible blocks
-				if (isLyrics) {
-					// Close lyrics block
-					[body appendFormat:@"</p>\n"];
-					isLyrics = false;
-				}
-                continue;
-            }
-			
-			if (line.type == pageBreak) {
-				// Close possible blocks
-				if (isLyrics) {
-					// Close lyrics block
-					[body appendFormat:@"</p>\n"];
-					isLyrics = false;
-				}
-                continue;
-            }
-			
-			// Stop dual dialogue
-			if (dualDialogueCharacterCount == 2 &&
-				!(line.type == dualDialogueParenthetical ||
-				 line.type == dualDialogue || line.type == dualDialogueMore)) {
-				[body appendString:@"</div></div>\n"];
-				dualDialogueCharacterCount = 0;
-			}
-			
-			// Catch dual dialogue
-			if (line.type == character && line.nextElementIsDualDialogue) {
-				dualDialogueCharacterCount++;
-				[body appendString:@"<div class='dual-dialogue'>\n"];
-				[body appendString:@"<div class='dual-dialogue-left'>\n"];
-            }
-			
-			if (line.type == dualDialogueCharacter && dualDialogueCharacterCount == 1) {
-				dualDialogueCharacterCount++;
-                    [body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
-			}
-            
-            NSMutableString *text = [NSMutableString string];
-		
-
-			// Begin lyrics block
-			if (line.type == lyrics) {
-				if (!isLyrics) {
-					beginBlock = true;
-					isLyrics = true;
-				}
-			} else {
-				// Close lyrics block
-				if (isLyrics) {
-					[body appendFormat:@"</p>\n"];
-					isLyrics = false;
-				}
-			}
-            
-			// Format string for HTML (if it's not a heading)
-			[text setString:[self htmlStringFor:line]];
-			
-			// To avoid underlining heading tails, let's trim the text if needed
-			if (line.type == heading && underlinedHeading) [text setString:[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
-			
-			// Preview shortcuts
-			if (line.type == heading && _operation == ForPreview) {
-				[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
-			}
-
-			NSMutableString *additionalClasses = [NSMutableString string];
-			
-			if (line.type == heading && line.sceneNumber) {
-				// Add scene number ID to HTML, but don't print it if it's toggled off
-				NSString *printedSceneNumber;
-				if (self.printSceneNumbers) printedSceneNumber = line.sceneNumber;
-				else printedSceneNumber = @"";
-								
-				NSString* sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
-				NSString* sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
-				
-				[text setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, text, sceneNumberRight]];
-				
-				if (boldedHeading) [additionalClasses appendString:@" bold"];
-				if (underlinedHeading) [additionalClasses appendString:@" underline"];
-			}
-			
-            if (![text isEqualToString:@""]) {
-				if (line.type == centered) {
-                    [additionalClasses appendString:@" center"];
-                }
-				if (elementCount == 0) [additionalClasses appendString:@" first"];
-				
-				// Mark as changed, if comparing against another file or the line contains added/removed text
-				if (line.changed || line.revisedRanges.count || line.removalSuggestionRanges.count) {
-					[additionalClasses appendString:@" changed"];
-					
-					// Add revision color if available
-					if (line.revisionColor.length > 0) {
-						[additionalClasses appendFormat:@" %@", line.revisionColor.lowercaseString];
-					}
-				}
-				
-				// If this line isn't part of a larger block, output it as paragraph
-				if (!beginBlock && !isLyrics) {
-					[body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
-				} else {
-					if (beginBlock) {
-						// Begin new block
-						[body appendFormat:@"<p class='%@%@'>%@<br>", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
-					} else {
-						// Continue the block
-						// note: we can't use \n after the lines to make it more easy read, because we want to preserve the white space
-						[body appendFormat:@"%@<br>", text];
-					}
-				}
-			} else {
-				// Just in case
-				if (isLyrics) {
-					// Close lyrics block
-					[body appendFormat:@"</p>\n"];
-					isLyrics = false;
-				}
-			}
-			
-			elementCount++;
-		} }
-		
-		[body appendFormat:@"</section>"];
+		NSString *pageAsString = [self singlePage:elementsOnPage pageNumber:pageIndex + 1];
+		[pages addObject:pageAsString];
     }
 	
-    return body;
+	_htmlPages = pages;
+	return pages;
 }
 
-- (void)createTitlePage:(NSMutableDictionary*)titlePage body:(NSMutableString*)body {
+- (NSString*)createTitlePage:(NSMutableDictionary*)titlePage {
+	NSMutableString *body = NSMutableString.new;
+	
 	if (titlePage.count > 0) {
 		[body appendString:@"<section id='script-title' class='page'>"];
 		[body appendFormat:@"<div class='mainTitle'>"];
@@ -596,6 +634,8 @@
 		
 		[body appendString:@"</section>"];
 	}
+	
+	return body;
 }
 
 #pragma mark - Helper methods

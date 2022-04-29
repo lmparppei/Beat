@@ -1,0 +1,49 @@
+/*
+
+Idea / Work in progress.
+
+*/
+
+
+Action {
+	width-a4: 59;
+	width-letter: 61;
+}
+
+Dialogue {
+	width: 35;
+}
+
+Character {
+	width: 38;
+}
+
+Parenthetical {
+	width: 28;
+}
+
+Dual-Dialogue {
+	width-a4: 27;
+	width-letter: 28;
+}
+
+Dual-Dialogue-Character {
+	width-a4: 20;
+	width-letter: 21;
+}
+
+
+/*
+#define ACTION_A4 59
+#define ACTION_US 61
+#define CHARACTER 38
+#define PARENTHETICAL 28
+#define DIALOGUE 35
+
+#define DUAL_DIALOGUE_A4 27
+#define DUAL_DIALOGUE_US 28
+#define DUAL_DIALOGUE_CHARACTER_A4 20
+#define DUAL_DIALOGUE_CHARACTER_US 21
+#define DUAL_DIALOGUE_PARENTHETICAL_A4 25
+#define DUAL_DIALOGUE_PARENTHETICAL_US 26
+*/

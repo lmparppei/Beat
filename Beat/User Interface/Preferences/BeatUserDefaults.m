@@ -71,9 +71,10 @@
 		@"showMarkersInScrollbar": @[@"showMarkersInScrollbar", @NO],
 		@"sceneHeadingSpacing": @[@"sceneHeadingSpacing", @2],
 		@"screenplayItemMore": @[@"screenplayItemMore", @"MORE"],
-		@"screenplayItemContd": @[@"screenplayItemMore", @"CONT'D"],
+		@"screenplayItemContd": @[@"screenplayItemContd", @"CONT'D"],
 		@"showRevisions": @[@"showRevisions", @YES],
 		@"showTags": @[@"showTags", @YES],
+		@"automaticContd": @[@"automaticContd", @YES],
 	};
 }
 
@@ -91,12 +92,12 @@
 		NSArray *values = userDefaults[docKey];
 		
 		NSString *settingKey = values[0];
-		bool defaultValue = [(NSNumber*)values[1] boolValue];
+		id defaultValue = values[1];
 		id value;
 		
 		if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
 			// Use default
-			value = @(defaultValue);
+			value = defaultValue;
 		} else {
 			value = [NSUserDefaults.standardUserDefaults objectForKey:settingKey];
 			
@@ -104,15 +105,30 @@
 				// We need to jump through some weird backwards compatibility hoops here.
 				// Let's convert "YES" and "NO" string values to bool and save them.
 				NSString *str = value;
+				
 				if ([str isEqualToString:@"YES"] || [str isEqualToString:@"NO"]) {
 					if ([str isEqualToString:@"YES"]) value = @YES;
 					else value = @NO;
 				}
+				
+				// Use default when the string is empty
+				if (str.length == 0) value = defaultValue;
 			}
 		}
 		
 		[target setValue:value forKey:docKey];
 	}
+}
+
+- (id)defaultValueFor:(NSString*)key {
+	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	if (!userDefaults[key]) {
+		NSLog(@"WARNING: User default key does not exist: %@", key);
+		return nil;
+	}
+
+	NSArray *values = userDefaults[key];
+	return values[1];
 }
 
 - (NSInteger)getInteger:(NSString*)docKey
@@ -147,6 +163,15 @@
 	if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
 		return values[1];
 	} else {
+		id setting = [NSUserDefaults.standardUserDefaults objectForKey:settingKey];
+		
+		// Return default value for empty strings
+		if ([setting isKindOfClass:NSString.class]) {
+			NSString *settingStr = setting;
+			if (settingStr.length == 0) return values[1];
+			else return settingStr;
+		}
+		// Otherwise just return the saved value
 		return [NSUserDefaults.standardUserDefaults valueForKey:settingKey];
 	}
 }

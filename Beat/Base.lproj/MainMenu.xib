@@ -132,6 +132,11 @@
                                     <action selector="openPrintPanel:" target="-1" id="Ztm-BM-HfZ"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="PRINT TEST" keyEquivalent="p" id="kIo-v9-zdg">
+                                <connections>
+                                    <action selector="printTest:" target="-1" id="BGa-Ts-Byv"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Create PDF..." keyEquivalent="P" id="qUE-cb-x1G">
                                 <connections>
                                     <action selector="openPDFPanel:" target="-1" id="fdP-tp-VxH"/>

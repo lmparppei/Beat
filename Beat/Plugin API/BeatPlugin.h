@@ -36,6 +36,7 @@
 #import "BeatPluginUILabel.h"
 #import "BeatSpeak.h"
 
+#import "BeatHTMLScript.h"
 
 @class BeatPluginWindow;
 
@@ -69,6 +70,9 @@
 - (void)scrollToSceneIndex:(NSInteger)index;
 - (void)newDocument:(NSString*)string;
 - (NSString*)getText;
+
+- (NSPrintInfo*)printInfo;
+- (NSString*)screenplayHTML:(NSDictionary*)exportSettings;
 
 - (NSArray*)lines;
 - (NSArray*)outline;
@@ -168,6 +172,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (nonatomic, readonly, weak) NSTextView *textView;
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) OutlineScene *currentScene;
+@property (nonatomic) BeatPrintView *printView;
 
 - (id)document; /// Returns self (document)
 - (void)registerPlugin:(id)parser;
