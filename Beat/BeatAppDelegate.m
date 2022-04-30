@@ -526,12 +526,13 @@
 
 #pragma mark - Generic methods for opening a plain-text file
 
-- (void)newDocumentWithContents:(NSString*)string {
+- (id)newDocumentWithContents:(NSString*)string {
 	NSURL *tempURL = [self URLForTemporaryFileWithPrefix:@"fountain"];
 	NSError *error;
 	
 	[string writeToURL:tempURL atomically:NO encoding:NSUTF8StringEncoding error:&error];
-	[NSDocumentController.sharedDocumentController duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+	id document = [NSDocumentController.sharedDocumentController duplicateDocumentWithContentsOfURL:tempURL copying:YES displayName:@"Untitled" error:nil];
+	return document;
 }
 
 - (NSURL *)URLForTemporaryFileWithPrefix:(NSString *)prefix
@@ -556,7 +557,7 @@
 }
 
 - (IBAction)newDocument:(id)sender {
-	[NSDocumentController.sharedDocumentController newDocument:nil];
+	[NSDocumentController.sharedDocumentController newDocument:sender];
 }
 
 #pragma mark - Menu delegation

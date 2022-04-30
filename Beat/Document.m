@@ -1210,6 +1210,9 @@
 }
 
 - (NSString*)createDocumentFile {
+	return [self createDocumentFileWithAdditionalSettings:nil];
+}
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings {
 	// This puts together string content & settings block. It is returned to dataOfType:
 	
 	// Save tagged ranges
@@ -1244,7 +1247,8 @@
 	
 	[self unblockUserInteraction];
 	
-	return [NSString stringWithFormat:@"%@%@", content, (self.documentSettings.getSettingsString) ? self.documentSettings.getSettingsString : @""];
+	NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
+	return [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
 }
 
 
@@ -3420,7 +3424,9 @@ static NSString *revisionAttribute = @"Revision";
 	bool uneditable = NO;
 	if (_mode == TaggingMode || _mode == ReviewMode) uneditable = YES;
 	
-	// Validate on/off items
+	
+	// Validate ALL on/of items
+	// This is a specific class which matches given methods against a property in this class, ie. toggleSomething -> .something
 	for (ValidationItem *item in _itemsToValidate) {
 		if (menuItem.action == item.selector) {
 			bool on = [item validate];
@@ -3429,7 +3435,8 @@ static NSString *revisionAttribute = @"Revision";
 		}
 	}
 	
-	if (_mode == TaggingMode) {
+	// Settings for EDIT MODE
+	if (_mode != EditMode) {
 		if (menuItem.action == @selector(markRangeForRemoval:) ||
 			menuItem.action == @selector(markRangeAsAddition:) ||
 			menuItem.action == @selector(clearMarkings:)) return NO;
@@ -3502,27 +3509,23 @@ static NSString *revisionAttribute = @"Revision";
 		
 	}
 	else if (menuItem.action == @selector(openPrintPanel:) || menuItem.action == @selector(openPDFPanel:)) {
-	//else if ([menuItem.title isEqualToString:@"Print…"] || [menuItem.title isEqualToString:@"Create PDF"] || [menuItem.title isEqualToString:@"HTML"]) {
-		// Some magic courtesy of Hendrik Noeller
-        NSArray* words = [self.text componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+		// Don't allow printing empty documents
+        NSArray* words = [self.text componentsSeparatedByCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
         NSString* visibleCharacters = [words componentsJoinedByString:@""];
         if (visibleCharacters.length == 0) return NO;
 	}
+	
 	else if (menuItem.action == @selector(dualDialogue:)) {
-		if (_currentLine.type == character ||
-			_currentLine.type == dialogue ||
-			_currentLine.type == parenthetical ||
-			_currentLine.type == dualDialogueCharacter ||
-			_currentLine.type == dualDialogueParenthetical ||
-			_currentLine.type == dualDialogue) return YES;
+		// Allow dual dialogue only when inside a dialogue block
+		if (_currentLine.isDialogueElement || _currentLine.isDualDialogueElement) return YES;
 		else return NO;
-		
     }
+	
 	else if (menuItem.action == @selector(toggleCards:)) {
 		menuItem.state = NSOffState;
 	}
 	else if (menuItem.action == @selector(showWidgets:)) {
-		// Allow/disallow widget area menu item
+		// Don't show menu item for widget view, if no widgets are visible
 		if (self.widgetView.subviews.count > 0) {
 			menuItem.hidden = NO;
 			return YES;
@@ -3537,11 +3540,11 @@ static NSString *revisionAttribute = @"Revision";
 	// That's why we need to handle enabling/disabling undo manually. This sucks.
 	else if (menuItem.action == @selector(undoEdit:)) {
 		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.undo", nil), [self.undoManager undoActionName]];
-		if (![self.undoManager canUndo]) return NO;
+		if (!self.undoManager.canUndo) return NO;
 	}
 	else if (menuItem.action == @selector(redoEdit:)) {
 		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.redo", nil), [self.undoManager redoActionName]];
-		if (![self.undoManager canRedo]) return NO;
+		if (!self.undoManager.canRedo) return NO;
 	}
 	
     return YES;
@@ -3563,30 +3566,7 @@ static NSString *revisionAttribute = @"Revision";
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
-- (IBAction)togglePageNumbers:(id)sender {
-	self.showPageNumbers = !self.showPageNumbers;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-	
-	if (self.showPageNumbers) [self paginateAt:(NSRange){ 0,0 } sync:YES];
-	else {
-		self.textView.pageBreaks = nil;
-		[self.textView deletePageNumbers];
-	}
-	
-	[self updateQuickSettings];
-}
-- (void)setPrintSceneNumbers:(bool)value {
-	_printSceneNumbers = value;
-	[BeatUserDefaults.sharedDefaults saveBool:value forKey:@"printSceneNumbers"];
-}
-- (IBAction)togglePrintSceneNumbers:(id)sender
-{
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	for (Document* doc in openDocuments) {
-		doc.printSceneNumbers = !doc.printSceneNumbers;
-	}
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-}
+
 
 -(NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex {
 	return self.textView.contextMenu;
@@ -4468,13 +4448,20 @@ static NSString *revisionAttribute = @"Revision";
 	}
 }
 
-#pragma mark - Scene numbering for NSTextView
+#pragma mark - Scene numbering
 
-/*
- 
- Please, future me, if you are stil here, move all of this to the text view
- 
- */
+- (void)setPrintSceneNumbers:(bool)value {
+	_printSceneNumbers = value;
+	[BeatUserDefaults.sharedDefaults saveBool:value forKey:@"printSceneNumbers"];
+}
+- (IBAction)togglePrintSceneNumbers:(id)sender
+{
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	for (Document* doc in openDocuments) {
+		doc.printSceneNumbers = !doc.printSceneNumbers;
+	}
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+}
 
 - (IBAction)showSceneNumberStart:(id)sender {
 	// Load previous setting
@@ -4484,9 +4471,11 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	[_documentWindow beginSheet:_sceneNumberingPanel completionHandler:nil];
 }
+
 - (IBAction)closeSceneNumberStart:(id)sender {
 	[_documentWindow endSheet:_sceneNumberingPanel];
 }
+
 - (IBAction)applySceneNumberStart:(id)sender {
 	if (_sceneNumberStartInput.integerValue > 1) {
 		[_documentSettings setInt:DocSettingSceneNumberStart as:_sceneNumberStartInput.integerValue];
@@ -4504,9 +4493,11 @@ static NSString *revisionAttribute = @"Revision";
 	
 	[_documentWindow endSheet:_sceneNumberingPanel];
 }
+
 - (NSInteger)sceneNumberingStartsFrom {
 	return [self.documentSettings getInt:DocSettingSceneNumberStart];
 }
+
 - (void)resetSceneNumberLabels {
 	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
 	[self.textView resetSceneNumberLabels];
@@ -4528,6 +4519,7 @@ static NSString *revisionAttribute = @"Revision";
 - (void)refreshTextViewLayoutElements {
 	[_textView refreshLayoutElements];
 }
+
 - (void)refreshTextViewLayoutElementsFrom:(NSInteger)location {
 	[_textView refreshLayoutElementsFrom:location];
 }
@@ -4703,6 +4695,18 @@ triangle walks
  
  */
 
+- (IBAction)togglePageNumbers:(id)sender {
+	self.showPageNumbers = !self.showPageNumbers;
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+	
+	if (self.showPageNumbers) [self paginateAt:(NSRange){ 0,0 } sync:YES];
+	else {
+		self.textView.pageBreaks = nil;
+		[self.textView deletePageNumbers];
+	}
+	
+	[self updateQuickSettings];
+}
 
 - (void)paginate {
 	[self paginateAt:(NSRange){0,0} sync:NO];
@@ -4737,9 +4741,9 @@ triangle walks
 		// Make a copy of the array for thread-safety
 		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
 		
-		// Dispatch to another thread (though we are already in timer, so I'm not sure?)
+		// Dispatch to a background thread
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
-			[self.paginator livePaginationFor:lines changeAt:range];
+			[self.paginator livePaginationFor:lines changeAt:range.location];
 			
 			NSArray *pageBreaks = self.paginator.pageBreaks;
 			
@@ -4749,7 +4753,6 @@ triangle walks
 			
 			dispatch_async(dispatch_get_main_queue(), ^(void){
 				// Update UI in main thread
-				
 				NSMutableArray *breakPositions = [NSMutableArray array];
 				
 				for (NSDictionary *pageBreak in pageBreaks) { @autoreleasepool {

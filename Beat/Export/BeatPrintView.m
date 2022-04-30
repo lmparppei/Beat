@@ -21,6 +21,9 @@
  BeatToPreview -> temporary PDF, URL sent to delegate after finish
  BeatToPrint -> the screenplay will enter physical world through some ancient technology called "printer"
 
+ This class still supports both legacy WebView and WKWebView to maintain
+ backwards compatibility with macOS <11.0.
+ 
  */
 
 #import "BeatPrintView.h"
@@ -31,7 +34,7 @@
 #import <PDFKit/PDFKit.h>
 #import <Webkit/Webkit.h>
 
-#define WEBKIT false
+#define WEBKIT true
 
 @interface BeatPrintView () <WebFrameLoadDelegate, WKNavigationDelegate>
 @property (nonatomic) NSUInteger finishedWebViews;
@@ -50,19 +53,18 @@
 
 @implementation BeatPrintView
 
+static NSURL *pdfURL;
+
 - (id)initWithDocument:(Document*)document script:(NSArray*)lines operation:(BeatPrintOperation)mode settings:(BeatExportSettings*)settings delegate:(id<PrintViewDelegate>)delegate {
-	// New, modern way
 	self = [super init];
 		
 	if (self) {
 		if (delegate) self.delegate = delegate;
 		
-		if (mode == BeatToPDF) self.pdf = YES;
-		else if (mode == BeatToPreview) {
-			self.preview = YES; // Preview returns a temporary pdf file to the delegate
-			self.pdf = YES;
-		}
-
+		// See if we are creating a PDF, and if it's a temporary preview
+		self.pdf = (mode == BeatToPDF || mode == BeatToPreview) ? YES : NO;
+		self.preview = (mode == BeatToPreview) ? YES : NO;
+		
 		_finishedWebViews = 0;
 		_document = document;
 		_printInfo = document.printInfo.copy;
@@ -111,18 +113,10 @@
 - (void)printHTML:(NSString*)htmlString {
 	id webView;
 	
-	if (WEBKIT) {
-		if (@available(macOS 11.0, *)) {
-			webView = WKWebView.new;
-			((WKWebView*)webView).navigationDelegate = self;
-			[(WKWebView*)webView loadHTMLString:htmlString baseURL:nil];
-		}
-		else {
-			webView = WebView.new;
-			((WebView*)webView).frameLoadDelegate = self;
-			((WebView*)webView).mainFrame.frameView.allowsScrolling = NO;
-			[((WebView*)webView).mainFrame loadHTMLString:htmlString baseURL:nil];
-		}
+	if (@available(macOS 11.0, *)) {
+		webView = WKWebView.new;
+		((WKWebView*)webView).navigationDelegate = self;
+		[(WKWebView*)webView loadHTMLString:htmlString baseURL:nil];
 	}
 	else {
 		webView = WebView.new;
@@ -188,7 +182,8 @@
 		// Export PDF
 		else {
 			if (_preview) {
-				[self createTemporaryPDF];
+				NSURL *tempURL = [NSURL fileURLWithPath:[self pathForTemporaryFileWithPrefix:@"pdf"]];
+				[self exportPDFtoURL:tempURL forPreview:YES];
 			} else {
 				[self savePDF];
 			}
@@ -243,14 +238,10 @@
 	printInfo.horizontalPagination = NSFitPagination;
 	
 	NSPrintOperation *printOperation;
-		
-	if (WEBKIT) {
-		if (@available(macOS 11.0, *)) {
-			printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
-			printOperation.view.frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
-		} else {
-			printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
-		}
+	
+	if (@available(macOS 11.0, *)) {
+		printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
+		printOperation.view.frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
 	} else {
 		printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
 	}
@@ -271,6 +262,9 @@
 }
 
 - (void)exportPDFtoURL:(NSURL*)url forPreview:(bool)preview {
+	// Save the url for asynchronous operation
+	pdfURL = url;
+	
 	NSPrintInfo *printInfo = self.document.printInfo.copy;
 	printInfo.verticalPagination = NSFitPagination;
 	printInfo.horizontalPagination = NSFitPagination;
@@ -282,62 +276,32 @@
 	
 	NSPrintOperation *printOperation;
 		
-	if (WEBKIT) {
-		if (@available(macOS 11.0, *)) {
-			printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
-			printOperation.view.frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
-		} else {
-			printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
-		}
+	if (@available(macOS 11.0, *)) {
+		printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
+		printOperation.view.frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
 	} else {
 		printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
 	}
-	
+
 	
 	printOperation.showsPrintPanel = NO;
 	printOperation.showsProgressPanel = YES;
 	
-	[printOperation runOperation];
-	
-	if (preview) [self.delegate didFinishPreviewAt:url];
+	// Support for both WebView (legacy) and WKWebView (modern systems)
+	if (@available(macOS 11.0, *)) {
+		[printOperation runOperationModalForWindow:self.window delegate:self didRunSelector:@selector(printOperationDidRun:success:contextInfo:) contextInfo:nil];
+	} else {
+		[printOperation runOperation];
+		if (preview) [self.delegate didFinishPreviewAt:url];
+		if (_completion) _completion();
+	}
+}
+
+- (void)printOperationDidRun:(id)operation success:(bool)success contextInfo:(nullable void *)contextInfo {
+	if (_preview) [self.delegate didFinishPreviewAt:pdfURL];
 	if (_completion) _completion();
 }
 
-- (void)createTemporaryPDF {
-	NSPrintInfo *printInfo = self.document.printInfo.copy;
-	
-	NSURL *tempURL = [NSURL fileURLWithPath:[self pathForTemporaryFileWithPrefix:@"pdf"]];
-	
-	[printInfo.dictionary addEntriesFromDictionary:@{
-													 NSPrintJobDisposition: NSPrintSaveJob,
-													 NSPrintJobSavingURL: tempURL
-													 }];
-	
-	NSPrintOperation *printOperation;
-	
-	if (WEBKIT) {
-		if (@available(macOS 11.0, *)) {
-			NSRect frame = NSMakeRect(0,0, printInfo.paperSize.width, printInfo.paperSize.height);
-			printOperation = [(WKWebView*)_webView printOperationWithPrintInfo:printInfo];
-			printOperation.view.frame = frame;
-		} else {
-			printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
-		}
-	} else {
-		printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
-	}
-	
-	printOperation.showsPrintPanel = NO;
-	printOperation.showsProgressPanel = YES;
-	
-	if (WEBKIT) {
-		//[printOperation runOperation];
-		[self.delegate didFinishPreviewAt:tempURL];
-	} else {
-		[printOperation runOperation];
-		[self.delegate didFinishPreviewAt:tempURL];
-	}
-}
 
 - (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix
 {

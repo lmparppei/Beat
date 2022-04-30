@@ -54,7 +54,7 @@
 - (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;
 - (id)initWithScript:(NSArray *)elements printInfo:(NSPrintInfo*)printInfo;
 
-- (void)livePaginationFor:(NSArray*)script changeAt:(NSRange)range;
+- (void)livePaginationFor:(NSArray*)script changeAt:(NSUInteger)location;
 - (void)paginate;
 - (NSArray *)pageAtIndex:(NSUInteger)index;
 - (void)setPageSize:(BeatPaperSize)pageSize;

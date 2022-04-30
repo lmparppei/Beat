@@ -105,10 +105,20 @@ NSString * const DocSettingPageSize = @"Page Size";
 }
 
 
-- (NSString*)getSettingsString
+- (NSString*)getSettingsString {
+	return [self getSettingsStringWithAdditionalSettings:nil];
+}
+- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary*)additionalSettings
 {
+	NSDictionary *settings = _settings.copy;
+	if (additionalSettings != nil) {
+		NSMutableDictionary *merged = settings.mutableCopy;
+		[merged addEntriesFromDictionary:additionalSettings];
+		settings = merged;
+	}
+	
 	NSError *error;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_settings options:0 error:&error]; // Do NOT pretty print this to make the block more compact
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:settings options:0 error:&error]; // Do NOT pretty print this to make the block more compact
 
 	if (! jsonData) {
 		NSLog(@"%s: error: %@", __func__, error.localizedDescription);

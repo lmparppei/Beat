@@ -97,6 +97,7 @@
 		_type = type;
 		_unsafeForPageBreak = YES;
 		_formattedAs = -1;
+		_uuid = NSUUID.UUID;
 		
 		if (pageSplit) [self resetFormatting];
 	}
@@ -319,6 +320,8 @@
 
 - (Line*)clone {
 	Line* newLine = [Line withString:self.string type:self.type];
+	newLine.representedLine = self; // For live pagination, refers to the line in PARSER
+	newLine.uuid = self.uuid;
 	newLine.position = self.position;
 	
 	newLine.changed = self.changed;
@@ -327,6 +330,7 @@
 	newLine.numberOfPrecedingFormattingCharacters = self.numberOfPrecedingFormattingCharacters;
 	newLine.unsafeForPageBreak = self.unsafeForPageBreak;
 	newLine.sceneIndex = self.sceneIndex;
+	
 	
 	newLine.revisionColor = self.revisionColor.copy; // This is the HIGHEST revision color on the line
 	if (self.revisedRanges) newLine.revisedRanges = self.revisedRanges.mutableCopy; // This is a dictionary of revision color names and their respective ranges
@@ -1047,6 +1051,11 @@
 
 #pragma mark - Ranges
 
+-(NSUInteger)position {
+	if (_representedLine == nil) return _position;
+	else return _representedLine.position;
+}
+
 - (bool)rangeInStringRange:(NSRange)range {
 	if (range.location + range.length <= self.string.length) return YES;
 	else return NO;
@@ -1287,6 +1296,20 @@
 	}];
 	
 	return array;
+}
+
+#pragma mark - Custom data
+
+- (NSDictionary*)setCustomData:(NSString*)key value:(id)value {
+	if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
+	
+	if (!value)	return _customDataDictionary[key];
+	else _customDataDictionary[key] = value;
+	return nil;
+}
+- (id)getCustomData:(NSString*)key {
+	if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
+	return _customDataDictionary[key];
 }
 
 #pragma mark - for debugging

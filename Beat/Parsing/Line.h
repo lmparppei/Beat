@@ -39,6 +39,8 @@ typedef NS_ENUM(NSUInteger, LineType) {
 };
 
 @protocol LineExports <JSExport>
+@property (nonatomic) NSUUID *uuid; // You can actually write into the UUID
+
 @property (readonly) LineType type;
 @property (readonly) NSUInteger position;
 @property (readonly) NSString* sceneNumber;
@@ -88,6 +90,9 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (bool)hasBeatForStoryline:(NSString*)storyline;
 - (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
 
+JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(id)value);
+- (id)getCustomData:(NSString*)key;
+
 @end
 
 @protocol LineDelegate <NSObject>
@@ -100,9 +105,12 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 @property (nonatomic, weak) id<LineDelegate> parser; // For future generations
 @property (nonatomic, weak) id paginator; // For future generations
+@property (nonatomic, weak) Line *representedLine; /// The line in editor/parser from which this one was copied from, can be nil
 
 @property LineType type;
 @property (strong) NSString* string;
+
+@property (nonatomic) NSUUID *uuid;
 
 @property (nonatomic) NSUInteger position;
 @property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
@@ -151,6 +159,8 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic) bool endsNoteBlock;
 @property (nonatomic) NSMutableIndexSet *noteOutIndices;
 @property (nonatomic) NSMutableIndexSet *noteInIndices;
+
+@property (nonatomic) NSMutableDictionary* customDataDictionary;
 
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser;

@@ -1087,6 +1087,13 @@
 
 #pragma mark - Document utilities
 
+- (NSString*)createDocumentFile {
+	return _delegate.createDocumentFile;
+}
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings {
+	return [_delegate createDocumentFileWithAdditionalSettings:additionalSettings];
+}
+
 - (NSString*)previewHTML {
 	return _delegate.previewHTML;
 }
@@ -1209,7 +1216,12 @@
 - (void)newDocument:(NSString*)string
 {
 	if (string.length) [(BeatAppDelegate*)NSApp.delegate newDocumentWithContents:string];
-	else [NSDocumentController.sharedDocumentController newDocument:nil];
+	[NSDocumentController.sharedDocumentController newDocument:nil];
+}
+- (id)newDocumentObject:(NSString*)string
+{
+	if (string.length) return [(BeatAppDelegate*)NSApp.delegate newDocumentWithContents:string];
+	else return [NSDocumentController.sharedDocumentController openUntitledDocumentAndDisplay:YES error:nil];
 }
 
 - (Line*)currentLine {

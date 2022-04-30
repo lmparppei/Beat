@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
 #import "TouchTimelinePopover.h"
@@ -58,7 +59,13 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 
-@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate>
+@protocol DocumentExports <JSExport>
+@property (nonatomic, readonly) ContinuousFountainParser *parser;
+@property (atomic) BeatDocumentSettings *documentSettings;
+- (NSArray*)lines;
+@end
+
+@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
 
 @property (strong, nonatomic) BeatPrintView *printView; //To keep the asynchronously working print data generator in memory
 

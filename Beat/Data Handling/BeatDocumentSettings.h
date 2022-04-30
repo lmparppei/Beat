@@ -48,6 +48,7 @@ extern NSString * const DocSettingWindowHeight;
 - (void)remove:(NSString *)key;
 
 - (NSString*)getSettingsString;
+- (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary*)additionalSettings;
 - (NSRange)readSettingsAndReturnRange:(NSString*)string;
 @end
 

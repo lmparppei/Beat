@@ -69,6 +69,7 @@
 - (void)scrollToScene:(OutlineScene*)scene;
 - (void)scrollToSceneIndex:(NSInteger)index;
 - (void)newDocument:(NSString*)string;
+- (id)newDocumentObject:(NSString*)string;
 - (NSString*)getText;
 
 - (NSPrintInfo*)printInfo;
@@ -175,6 +176,8 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (nonatomic) BeatPrintView *printView;
 
 - (id)document; /// Returns self (document)
+- (NSString*)createDocumentFile;
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
 - (void)registerPlugin:(id)parser;
 - (void)deregisterPlugin:(id)parser;
 - (NSRange)selectedRange;
