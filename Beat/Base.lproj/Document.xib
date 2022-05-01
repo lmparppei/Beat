@@ -80,7 +80,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <customView wantsLayer="YES" id="3qa-Wg-PsD" customClass="ColorView">
+                    <customView id="3qa-Wg-PsD" customClass="ColorView">
                         <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>

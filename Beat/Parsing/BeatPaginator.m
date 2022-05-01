@@ -346,6 +346,9 @@
 	[self paginate];
 }
 - (void)paginate {
+	NSLog(@"Pagination...");
+	NSLog(@"Lines: %lu", self.script.count);
+	self.pages = NSMutableArray.new;
 	[self paginateFromIndex:0];
 }
 
@@ -367,6 +370,7 @@
 	if (!_livePagination) {
 		// Make lines know their paginator
 		for (Line* line in self.script) line.paginator = self;
+		self.pages = NSMutableArray.new;
 	}
 	
 	// Get paper size from the document
@@ -401,313 +405,352 @@
 	NSMutableArray *currentPage = NSMutableArray.new;
 	bool hasStartedANewPage = NO;
 	 
-	@autoreleasepool {
-		CGFloat spaceBefore;
-				
-		// create a tmp array that will hold elements to be added to the pages
-		NSMutableArray *tmpElements = [NSMutableArray array];
+	
+	CGFloat spaceBefore;
+			
+	// create a tmp array that will hold elements to be added to the pages
+	NSMutableArray *tmpElements = [NSMutableArray array];
+	
+	NSLog(@"Pages: %lu", _pages.count);
+	
+	// walk through the elements array
+	for (NSInteger i = 0; i < self.script.count; i++) { @autoreleasepool {
+		if (!_paginating && _livePagination) {
+			// An experiment in canceling background-thread pagination
+			[self cancel];
+			return;
+		}
 		
-		// walk through the elements array
-		for (NSInteger i = 0; i < self.script.count; i++) {
-			if (!_paginating && _livePagination) {
-				// An experiment in canceling background-thread pagination
-				[self cancel];
-				return;
-			}
-			
-			// Move to the next element in screenplay
-			Line *element  = self.script[i];
-			
-			// Skip element if it's not in the specified range
-			if (fromIndex > 0 && NSMaxRange(element.textRange) < fromIndex) {
-				continue;
-			}
+		// Move to the next element in screenplay
+		Line *element  = self.script[i];
 		
-			// If we've already handled this element, carry on
-			if ([tmpElements containsObject:element]) {
-				continue;
-			} else [tmpElements removeAllObjects];
+		// Skip element if it's not in the specified range
+		if (fromIndex > 0 && NSMaxRange(element.textRange) < fromIndex) {
+			continue;
+		}
+	
+		// If we've already handled this element, carry on
+		if ([tmpElements containsObject:element]) {
+			continue;
+		} else [tmpElements removeAllObjects];
+		
+		// Skip invisible elements (unless we are printing notes)
+		if (element.type == empty) continue;
+		else if (element.isInvisible) {
+			if (!(self.printNotes && element.note)) continue;
+		}
+		
+		// If this is the FIRST page, add a break to mark for the end of title page and beginning of document
+		if (_pageBreaks.count == 0 && _livePagination) [self pageBreak:element position:0 type:@"First page"];
+		
+		// If we've started a new page since we began paginating, see if the rest of the page is intact.
+		// If so, we can just use our cached results.
+		if (hasStartedANewPage && currentPage.count == 0 &&
+			!element.unsafeForPageBreak && _pageCache.count >= self.pages.count) {
+			NSLog(@"...");
+			Line *firstLineOnCachedPage = _pageCache[self.pages.count-1].firstObject;
 			
-			// Skip invisible elements (unless we are printing notes)
-			if (element.type == empty) continue;
-			else if (element.isInvisible) {
-				if (!(self.printNotes && element.note)) continue;
+			if (firstLineOnCachedPage.uuid == element.uuid) {
+				[self useCachedPaginationFrom:self.pages.count - 1];
+				// Stop pagination
+				break;
 			}
-			
-			// If this is the FIRST page, add a break to mark for the end of title page and beginning of document
-			if (_pageBreaks.count == 0 && _livePagination) [self pageBreak:element position:0 type:@"First page"];
-			
-			// If we've started a new page since we began paginating, see if the rest of the page is intact.
-			// If so, we can just use our cached results.
-			if (hasStartedANewPage && currentPage.count == 0 &&
-				!element.unsafeForPageBreak && _pageCache.count >= self.pages.count) {
-				Line *firstLineOnCachedPage = _pageCache[self.pages.count-1].firstObject;
-				
-				if (firstLineOnCachedPage.uuid == element.uuid) {
-					[self useCachedPaginationFrom:self.pages.count - 1];
-					// Stop pagination
-					break;
-				}
-			}
+		}
 
-			// Reset Y if the page is empty.
-			if (currentPage.count == 0) {
-				currentY = initialY;
-				hasStartedANewPage = YES;
-			}
-			
-			// catch page breaks immediately
-			if (element.type == pageBreak) {
-				// close the open page
-				[currentPage addObject:element];
-				[self.pages addObject:currentPage];
+		// Reset Y if the page is empty.
+		if (currentPage.count == 0) {
+			currentY = initialY;
+			hasStartedANewPage = YES;
+		}
+		
+		// catch page breaks immediately
+		if (element.type == pageBreak) {
+			// close the open page
+			[currentPage addObject:element];
+			[self.pages addObject:currentPage];
 
-				[self pageBreak:element position:-1 type:@"Forced page break"];
-				
-				// reset currentPage and the currentY value
-				currentPage = [NSMutableArray array];
-				currentY    = initialY;
-				
-				continue;
-			}
+			[self pageBreak:element position:-1 type:@"Forced page break"];
 			
+			// reset currentPage and the currentY value
+			currentPage = [NSMutableArray array];
+			currentY    = initialY;
 			
-			#pragma mark Calculate block height
+			continue;
+		}
+		
+		
+		#pragma mark Calculate block height
+		
+		// Catch wrong parsing.
+		// We SHOULD NOT have orphaned dialogue. This can happen with live pagination, though.
+		if (element.type == dialogue && element.string.length == 0) continue;
+		 
+		// Get whole block
+		NSArray *blck = [self blockFor:element];
+		
+		// Calculate block height
+		NSInteger fullHeight = [self heightForBlock:blck page:currentPage];
+		if (fullHeight <= 0) continue; // Ignore this block if it's empty
+		
+		// Save space before for this line
+		spaceBefore = [BeatPaginator spaceBeforeForLine:element];
+		
+		// Fix to get styling to show up in PDFs. I have no idea.
+		// (wtf is this, wondering in 2022? Might originate from original Fountain repo)
+		if (![element.string isMatch:RX(@" $")]) element.string = [NSString stringWithFormat:@"%@%@", element.string, @""];
+		
+		// Add whole block into temporary element queue
+		[tmpElements addObjectsFromArray:blck];
+		
+		
+		#pragma mark Break elements onto pages
+		
+		// BREAKING ELEMENTS ONTO PAGES
+		// Figure out which element went overboard
+		if (currentY + fullHeight > maxPageHeight) {
+			CGFloat overflow = maxPageHeight - (currentY + fullHeight);
 			
-			
-			// Catch wrong parsing.
-			// We SHOULD NOT have orphaned dialogue. This can happen with non-forced text.
-			if (element.type == dialogue && element.string.length == 0) continue;
-			 
-			// Get whole block
-			NSArray *blck = [self blockFor:element];
-			
-			// Calculate block height
-			NSInteger fullHeight = [self heightForBlock:blck page:currentPage];
-			if (fullHeight <= 0) continue; // Ignore this block if it's empty
-			
-			// Save space before for this line
-			spaceBefore = [BeatPaginator spaceBeforeForLine:element];
-			
-			// Fix to get styling to show up in PDFs. I have no idea.
-			// (wtf is this, wondering in 2022? Might originate from original Fountain repo)
-			if (![element.string isMatch:RX(@" $")]) element.string = [NSString stringWithFormat:@"%@%@", element.string, @""];
-			
-			// Add whole block into temporary elements
-			[tmpElements addObjectsFromArray:blck];
-			
-			#pragma mark Break elements onto pages
-			
-			//   671 -> 74 |
-			// BREAKING ELEMENTS ONTO PAGES
-			// Figure out which element went overboard
-			if (currentY + fullHeight > maxPageHeight) {
-				CGFloat overflow = maxPageHeight - (currentY + fullHeight);
-				
-				// If it fits, just squeeze it on this page
-				if (fabs(overflow) <= lineHeight * 1.01) {
-					// This wouldn't be needed with the new dialogue block system
-					if (element.nextElementIsDualDialogue) {
-						// We still have elements we have to handle, but this block WOULD fit on this page, however.
-						// Let's just continue with our loop.
-						[currentPage addObjectsFromArray:tmpElements];
-						continue;
-					}
-					
+			// If it fits, just squeeze it on this page
+			if (fabs(overflow) <= lineHeight * 1.01) {
+				/*
+				if (element.nextElementIsDualDialogue) {
+					// We still have elements we have to handle, but this block WOULD fit on this page, however.
+					// Let's just continue with our loop.
 					[currentPage addObjectsFromArray:tmpElements];
-					
-					[_pages addObject:currentPage];
-					
-					// Add page break for live pagination (-1 means the break is AFTER the element)
-					[self pageBreak:(Line*)tmpElements.lastObject position:-1 type:@"Generally squeezed"];
-					
-					currentPage = [NSMutableArray array];
-					currentY = 0;
 					continue;
 				}
+				*/
+				 
+				[currentPage addObjectsFromArray:tmpElements];
 				
-				// Find out the spiller
-				Line *spillerElement;
+				[_pages addObject:currentPage];
 				
-				bool handled = NO;
+				// Add page break for live pagination (-1 means the break is AFTER the element)
+				[self pageBreak:(Line*)tmpElements.lastObject position:-1 type:@"Generally squeezed"];
 				
-				#pragma mark Split scene heading & paragraph
-				// NOTE TO SELF: This does NOT go well when the heading is followed by something else than action
-				// We should use blockFor:(Line*)line
+				// Reset page
+				currentPage = [NSMutableArray array];
+				currentY = 0;
+				continue;
+			}
+			
+			// Find out the spiller
+			Line *spillerElement;
+			
+			bool handled = NO;
+			
+			#pragma mark Split scene heading & paragraph
+			// NOTE TO SELF: This does NOT go well when the heading is followed by something else than action
+			// We should use blockFor:(Line*)line
+			
+			if (element.type == heading || element.type == action) {
+				bool headingBlock = NO;
 				
-				if (element.type == heading || element.type == action) {
-					bool headingBlock = NO;
+				// If it's a scene heading, spiller element is the line after heading line
+				if (element.type == heading) {
+					headingBlock = YES;
 					
-					// If it's a scene heading, spiller element is the line after heading line
-					if (element.type == heading) {
-						headingBlock = YES;
-						
-						if (blck.count > 1) spillerElement = blck.lastObject;
-						else spillerElement = element;
-												
-						// Push to next page if it the split would be only 1 line or something
-						if ((fullHeight - fabs(overflow) < lineHeight * 4.5
-							&& fabs(overflow) >= lineHeight) ||
-							fabs(overflow) < lineHeight * 2) {
-							handled = YES;
-						}
-					} else {
-						spillerElement = element;
+					if (blck.count > 1) spillerElement = blck.lastObject;
+					else spillerElement = element;
+											
+					// Push to next page if it the split would be only 1 line or something
+					if ((fullHeight - fabs(overflow) < lineHeight * 4.5
+						&& fabs(overflow) >= lineHeight) ||
+						fabs(overflow) < lineHeight * 2) {
+						handled = YES;
 					}
-										
-					// Split first paragraph scene into two if it's higher than one line
-					NSInteger limit = lineHeight;
+				} else {
+					spillerElement = element;
+				}
+									
+				// Split first paragraph scene into two if it's higher than one line
+				NSInteger limit = lineHeight;
+				NSInteger space = maxPageHeight - currentY;
+				
+				if (fabs(overflow) > limit && space > limit * 2 && !handled) {
+					NSMutableArray *words = [spillerElement.stripFormatting componentsSeparatedByString:@" "].mutableCopy;
+					
 					NSInteger space = maxPageHeight - currentY;
 					
-					if (fabs(overflow) > limit && space > limit * 2 && !handled) {
-						NSMutableArray *words = [spillerElement.stripFormatting componentsSeparatedByString:@" "].mutableCopy;
+					// We substract heading line height from the remaining space
+					if (headingBlock) space -= [self heightForBlock:@[element] page:currentPage];
+					
+					NSMutableString *text = NSMutableString.new;
+					NSMutableString *retain = NSMutableString.new;
+					NSMutableString *split = NSMutableString.new;
+					
+					CGFloat breakPosition = 0;
+					
+					// Loop through words and count the height
+					for (NSInteger wordIndex = 0; wordIndex < words.count; wordIndex++) {
+						NSString *word = words[wordIndex];
 						
-						NSInteger space = maxPageHeight - currentY;
-						
-						// We substract heading line height from the remaining space
-						if (headingBlock) space -= [self heightForBlock:@[element] page:currentPage];
-						
-						NSString *text = @"";
-						NSString *retain = @"";
-						NSString *split = @"";
-						
-						CGFloat breakPosition = 0;
-						
-						// Loop through words and count the height
-						for (NSInteger wordIndex = 0; wordIndex < words.count; wordIndex++) {
-							NSString *word = words[wordIndex];
-							
-							if ([word containsString:@"\n"] && word.length > 1) {
-								// Move line break at end of the word and add a new word into array
-								NSArray *linebreak = [word componentsSeparatedByString:@"\n"];
-								word = [NSString stringWithFormat:@"%@\n", linebreak[0]];
-								[words insertObject:linebreak[1] atIndex:wordIndex+1];
-							}
-							
-							if (wordIndex == 0) text = [text stringByAppendingFormat:@"%@", word];
-							else {
-								// This is a very quick and dirty fix for weird edge cases
-								if (word.length) {
-									if ([word characterAtIndex:word.length-1] == '\n') text = [text stringByAppendingFormat:@"%@", word];
-									else text = [text stringByAppendingFormat:@" %@", word];
-								}
-								else text = [text stringByAppendingFormat:@" %@", word];
-							}
-							
-							Line *tempElement = [[Line alloc] initWithString:text type:action];
-							
-							NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
-							if (h < space) {
-								breakPosition = h;
-								if (wordIndex == 0) retain = [retain stringByAppendingFormat:@"%@", word];
-								else if (word.length) {
-									if ([word characterAtIndex:word.length-1] == '\n') retain = [retain stringByAppendingFormat:@"%@", word];
-									else retain = [retain stringByAppendingFormat:@" %@", word];
-								}
-								else retain = [retain stringByAppendingFormat:@" %@", word];
-							} else {
-								split = [split stringByAppendingFormat:@" %@", word];
-							}
+						if ([word containsString:@"\n"] && word.length > 1) {
+							// Move line break at end of the word and add a new word into array
+							NSArray *linebreak = [word componentsSeparatedByString:@"\n"];
+							word = [NSString stringWithFormat:@"%@\n", linebreak[0]];
+							[words insertObject:linebreak[1] atIndex:wordIndex+1];
 						}
 						
-						NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
-						Line *prePageBreak = splitElements[0];
-						Line *postPageBreak = splitElements[1];
-
-						// If it's a heading we need special rules
-						if (headingBlock) {
-							// We had something remain on the original page
-							if (retain.length) {
-								[currentPage addObject:element];
-								[currentPage addObject:prePageBreak];
-								[_pages addObject:currentPage];
-								
-								// Add page break for live pagination
-								[self pageBreak:spillerElement position:breakPosition type:@"Heading block"];
-								
-								// Reset page
-								currentPage = NSMutableArray.array;
-								[currentPage addObject:postPageBreak];
-								currentY = [self elementHeight:postPageBreak lineHeight:lineHeight];
+						if (wordIndex == 0) [text appendFormat:@"%@", word];
+						else {
+							// This is a very quick and dirty fix for weird edge cases
+							if (word.length) {
+								if ([word characterAtIndex:word.length-1] == '\n') [text appendFormat:@"%@", word];
+								else [text appendFormat:@" %@", word];
 							}
-							// Nothing remained, move whole scene heading to next page
-							else {
-								[_pages addObject:currentPage];
-								
-								// Page break for live pagination
-								[self pageBreak:element position:0 type:@"Heading block moved on next page"];
-								
-								// Reset page
-								currentPage = NSMutableArray.new;
-								[currentPage addObject:element];
-								[currentPage addObject:postPageBreak];
-								
-								currentY = fullHeight - spaceBefore; // Remove space from beginning, because this will be the first element
+							else [text appendFormat:@" %@", word];
+						}
+						
+						Line *tempElement = [[Line alloc] initWithString:text type:action];
+						
+						NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
+						if (h < space) {
+							breakPosition = h;
+							if (wordIndex == 0) [retain appendFormat:@"%@", word];
+							else if (word.length) {
+								if ([word characterAtIndex:word.length-1] == '\n') [retain appendFormat:@"%@", word];
+								else [retain appendFormat:@" %@", word];
 							}
+							else [retain appendFormat:@" %@", word];
 						} else {
+							[split appendFormat:@" %@", word];
+						}
+					}
+					
+					NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
+					Line *prePageBreak = splitElements[0];
+					Line *postPageBreak = splitElements[1];
+
+					// If it's a heading we need special rules
+					if (headingBlock) {
+						// We had something remain on the original page
+						if (retain.length) {
+							[currentPage addObject:element];
 							[currentPage addObject:prePageBreak];
 							[_pages addObject:currentPage];
 							
-							// Add page break info (for live pagination if in use)
-							[self pageBreak:spillerElement position:breakPosition type:@"Action or heading"];
+							// Add page break for live pagination
+							[self pageBreak:spillerElement position:breakPosition type:@"Heading block"];
 							
 							// Reset page
-							currentPage = NSMutableArray.new;
+							currentPage = NSMutableArray.array;
 							[currentPage addObject:postPageBreak];
 							currentY = [self elementHeight:postPageBreak lineHeight:lineHeight];
 						}
-												
-						continue;
-						
+						// Nothing remained, move whole scene heading to next page
+						else {
+							[_pages addObject:currentPage];
+							
+							// Page break for live pagination
+							[self pageBreak:element position:0 type:@"Heading block moved on next page"];
+							
+							// Reset page
+							currentPage = NSMutableArray.new;
+							[currentPage addObject:element];
+							[currentPage addObject:postPageBreak];
+							
+							currentY = fullHeight - spaceBefore; // Remove space from beginning, because this will be the first element
+						}
 					} else {
-						// Close page
+						[currentPage addObject:prePageBreak];
 						[_pages addObject:currentPage];
+						
+						// Add page break info (for live pagination if in use)
+						[self pageBreak:spillerElement position:breakPosition type:@"Action or heading"];
+						
 						// Reset page
 						currentPage = NSMutableArray.new;
-						currentY = 0;
+						[currentPage addObject:postPageBreak];
+						currentY = [self elementHeight:postPageBreak lineHeight:lineHeight];
+					}
+											
+					continue;
+					
+				} else {
+					// Everything fits. Close page.
+					
+					// Reset page
+					[_pages addObject:currentPage];
+					currentPage = NSMutableArray.new;
+					currentY = 0;
 
-						// Add page break info (for live pagination if in use)
-						[self pageBreak:element position:0 type:@"Whatever"];
+					// Add page break info (for live pagination if in use)
+					[self pageBreak:element position:0 type:@"Unknown"];
+				}
+			}
+			
+			#pragma mark Split dialogue
+			// This is a convoluted system because of the way Fountain handles dual dialogue.
+			// Try to keep up.
+			
+			else if (element.type == character || element.type == dualDialogueCharacter) {
+				NSInteger remainingSpace = maxPageHeight - currentY;
+			
+				NSMutableArray *retainedLines = [NSMutableArray array];
+				NSMutableArray *nextPageLines = [NSMutableArray array];
+				
+				Line *pageBreakElement;
+				NSInteger pageBreakPosition = 0;
+				
+				NSArray *dialogueBlock = [self dialogueBlockFor:element];
+				NSInteger dialogueH = [self heightForDialogueBlock:dialogueBlock page:currentPage];
+				
+				// Squeeze the block on page
+				if (labs(remainingSpace - dialogueH) <= LINE_HEIGHT) {
+					[currentPage addObjectsFromArray:dialogueBlock];
+					[_pages addObject:currentPage];
+					
+					// Reset page
+					currentPage = NSMutableArray.new;
+					currentY = 0;
+					
+					// Add page break info (for live pagination if in use)
+					[self pageBreak:dialogueBlock.lastObject position:-1 type:@"Squeezed dialogue"];
+					continue; // Don't let the loop take care of the tmp buffer here
+				}
+				
+				// Normal, single dialogue
+				if (!element.nextElementIsDualDialogue) {
+					Line *spillEl = [self findDialogueSpiller:dialogueBlock remainingSpace:remainingSpace];
+								
+					NSDictionary *split = [self splitDialogue:dialogueBlock spiller:spillEl remainingSpace:remainingSpace height:[self heightForDialogueBlock:dialogueBlock page:currentPage]];
+					
+					if ([(NSArray*)split[@"retained"] count]) {
+						[retainedLines addObjectsFromArray:(NSArray*)split[@"retained"]];
+						
+						pageBreakElement = (Line*)split[@"page break item"];
+						pageBreakPosition = [(NSNumber*)split[@"position"] integerValue];
+						
+						[nextPageLines addObjectsFromArray:(NSArray*)split[@"next page"]];
+					} else {
+						pageBreakElement = dialogueBlock.lastObject;
+						[nextPageLines addObjectsFromArray:dialogueBlock];
 					}
 				}
 				
-				#pragma mark Split dialogue
-				// This is a convoluted system because of the way Fountain handles dual dialogue.
-				// Try to keep up.
+				// Split dual dialogue (this is a *bit* more complicated)
+				else if (element.nextElementIsDualDialogue) {
+					NSArray *dual = [self separateDualDialogue:dialogueBlock];
+					
+					bool leftSideFits = NO;
+					bool rightSideFits = NO;
+					
+					Line *spillEl = [self findDialogueSpiller:dual[0] remainingSpace:remainingSpace];
+					Line *spillEl2 = [self findDialogueSpiller:dual[1] remainingSpace:remainingSpace];
 				
-				else if (element.type == character || element.type == dualDialogueCharacter) {
-					NSInteger remainingSpace = maxPageHeight - currentY;
-				
-					NSMutableArray *retainedLines = [NSMutableArray array];
-					NSMutableArray *nextPageLines = [NSMutableArray array];
+					if (!spillEl) leftSideFits = YES;
+					if (!spillEl2) rightSideFits = YES;
+											
+					NSDictionary *split;
 					
-					Line *pageBreakElement;
-					NSInteger pageBreakPosition = 0;
-					
-					NSArray *dialogueBlock = [self dialogueBlockFor:element];
-					NSInteger dialogueH = [self heightForDialogueBlock:dialogueBlock page:currentPage];
-					
-					// Squeeze the block on page
-					if (labs(remainingSpace - dialogueH) <= LINE_HEIGHT) {
-						[currentPage addObjectsFromArray:dialogueBlock];
-						[_pages addObject:currentPage];
+					if (leftSideFits && !rightSideFits) {
+						// Left side fits, split right side
+						split = [self splitDialogue:dual[1] spiller:spillEl2 remainingSpace:remainingSpace height:[self heightForDialogueBlock:dual[1] page:currentPage]];
 						
-						// Reset page
-						currentPage = NSMutableArray.new;
-						currentY = 0;
-						
-						// Add page break info (for live pagination if in use)
-						[self pageBreak:dialogueBlock.lastObject position:-1 type:@"Squeezed dialogue"];
-						continue; // Don't let the loop take care of the tmp buffer here
-					}
-					
-					// Normal, single dialogue
-					if (!element.nextElementIsDualDialogue) {
-						Line *spillEl = [self findDialogueSpiller:dialogueBlock remainingSpace:remainingSpace];
-									
-						NSDictionary *split = [self splitDialogue:dialogueBlock spiller:spillEl remainingSpace:remainingSpace height:[self heightForDialogueBlock:dialogueBlock page:currentPage]];
-						
+						// If there is something to retain, do it, otherwise just push everything on the next page
 						if ([(NSArray*)split[@"retained"] count]) {
+							[retainedLines addObjectsFromArray:dual[0]];
 							[retainedLines addObjectsFromArray:(NSArray*)split[@"retained"]];
 							
 							pageBreakElement = (Line*)split[@"page break item"];
@@ -715,179 +758,147 @@
 							
 							[nextPageLines addObjectsFromArray:(NSArray*)split[@"next page"]];
 						} else {
-							pageBreakElement = dialogueBlock.lastObject;
-							[nextPageLines addObjectsFromArray:dialogueBlock];
+							[nextPageLines setArray:dialogueBlock];
+						}
+					}
+					else if (!leftSideFits && rightSideFits) {
+						// Right side firts, split left side
+						
+						split = [self splitDialogue:dual[0] spiller:spillEl remainingSpace:remainingSpace height:[self heightForDialogueBlock:dual[0] page:currentPage]];
+						
+						// If there is something to retain, do it, otherwise just push everything on the next page
+						if ([(NSArray*)split[@"retained"] count]) {
+							[retainedLines addObjectsFromArray:(NSArray*)split[@"retained"]];
+							[retainedLines addObjectsFromArray:dual[1]];
+							
+							pageBreakElement = (Line*)split[@"page break item"];
+							pageBreakPosition = ((NSNumber*)split[@"position"]).integerValue;
+							
+							[nextPageLines addObjectsFromArray:(NSArray*)split[@"next page"]];
+						} else {
+							[nextPageLines setArray:dialogueBlock];
+						}
+					}
+					else if (!leftSideFits && !rightSideFits) {
+						// Split BOTH dialogue blocks
+						NSArray *leftDialogue = dual[0];
+						NSArray *rightDialogue = dual[1];
+						
+						NSDictionary *splitLeft = [self splitDialogue:leftDialogue spiller:spillEl remainingSpace:remainingSpace height:[self heightForDialogueBlock:leftDialogue page:currentPage]];
+						NSDictionary *splitRight = [self splitDialogue:rightDialogue spiller:spillEl2 remainingSpace:remainingSpace height:[self heightForDialogueBlock:rightDialogue page:currentPage]];
+						
+						// Figure out where to put the actual page break
+						NSArray *retainLeft = (NSArray*)splitLeft[@"retained"];
+						NSArray *retainRight = (NSArray*)splitRight[@"retained"];
+						NSArray *nextPageLeft = (NSArray*)splitLeft[@"next page"];
+						NSArray *nextPageRight = (NSArray*)splitRight[@"next page"];
+						
+						//NSInteger leftHeight = [self heightForDialogueBlock:retainLeft];
+						//NSInteger rightHeight = [self heightForDialogueBlock:retainRight];
+
+						// If both sides have somethign to retain, do it
+						if (retainLeft.count && retainRight.count) {
+							[retainedLines addObjectsFromArray:retainLeft];
+							[retainedLines addObjectsFromArray:retainRight];
+							
+							[nextPageLines addObjectsFromArray:nextPageLeft];
+							[nextPageLines addObjectsFromArray:nextPageRight];
+						} else {
+							[nextPageLines setArray:dialogueBlock];
 						}
 					}
 					
-					// Split dual dialogue (this is a *bit* more complicated)
-					else if (element.nextElementIsDualDialogue) {
-						NSArray *dual = [self separateDualDialogue:dialogueBlock];
-						
-						bool leftSideFits = NO;
-						bool rightSideFits = NO;
-						
-						Line *spillEl = [self findDialogueSpiller:dual[0] remainingSpace:remainingSpace];
-						Line *spillEl2 = [self findDialogueSpiller:dual[1] remainingSpace:remainingSpace];
-					
-						if (!spillEl) leftSideFits = YES;
-						if (!spillEl2) rightSideFits = YES;
-												
-						NSDictionary *split;
-						
-						if (leftSideFits && !rightSideFits) {
-							// Left side fits, split right side
-							split = [self splitDialogue:dual[1] spiller:spillEl2 remainingSpace:remainingSpace height:[self heightForDialogueBlock:dual[1] page:currentPage]];
-							
-							// If there is something to retain, do it, otherwise just push everything on the next page
-							if ([(NSArray*)split[@"retained"] count]) {
-								[retainedLines addObjectsFromArray:dual[0]];
-								[retainedLines addObjectsFromArray:(NSArray*)split[@"retained"]];
-								
-								pageBreakElement = (Line*)split[@"page break item"];
-								pageBreakPosition = [(NSNumber*)split[@"position"] integerValue];
-								
-								[nextPageLines addObjectsFromArray:(NSArray*)split[@"next page"]];
-							} else {
-								[nextPageLines setArray:dialogueBlock];
-							}
-						}
-						else if (!leftSideFits && rightSideFits) {
-							// Right side firts, split left side
-							
-							split = [self splitDialogue:dual[0] spiller:spillEl remainingSpace:remainingSpace height:[self heightForDialogueBlock:dual[0] page:currentPage]];
-							
-							// If there is something to retain, do it, otherwise just push everything on the next page
-							if ([(NSArray*)split[@"retained"] count]) {
-								[retainedLines addObjectsFromArray:(NSArray*)split[@"retained"]];
-								[retainedLines addObjectsFromArray:dual[1]];
-								
-								pageBreakElement = (Line*)split[@"page break item"];
-								pageBreakPosition = ((NSNumber*)split[@"position"]).integerValue;
-								
-								[nextPageLines addObjectsFromArray:(NSArray*)split[@"next page"]];
-							} else {
-								[nextPageLines setArray:dialogueBlock];
-							}
-						}
-						else if (!leftSideFits && !rightSideFits) {
-							// Split BOTH dialogue blocks
-							NSArray *leftDialogue = dual[0];
-							NSArray *rightDialogue = dual[1];
-							
-							NSDictionary *splitLeft = [self splitDialogue:leftDialogue spiller:spillEl remainingSpace:remainingSpace height:[self heightForDialogueBlock:leftDialogue page:currentPage]];
-							NSDictionary *splitRight = [self splitDialogue:rightDialogue spiller:spillEl2 remainingSpace:remainingSpace height:[self heightForDialogueBlock:rightDialogue page:currentPage]];
-							
-							// Figure out where to put the actual page break
-							NSArray *retainLeft = (NSArray*)splitLeft[@"retained"];
-							NSArray *retainRight = (NSArray*)splitRight[@"retained"];
-							NSArray *nextPageLeft = (NSArray*)splitLeft[@"next page"];
-							NSArray *nextPageRight = (NSArray*)splitRight[@"next page"];
-							
-							//NSInteger leftHeight = [self heightForDialogueBlock:retainLeft];
-							//NSInteger rightHeight = [self heightForDialogueBlock:retainRight];
-
-							// If both sides have somethign to retain, do it
-							if (retainLeft.count && retainRight.count) {
-								[retainedLines addObjectsFromArray:retainLeft];
-								[retainedLines addObjectsFromArray:retainRight];
-								
-								[nextPageLines addObjectsFromArray:nextPageLeft];
-								[nextPageLines addObjectsFromArray:nextPageRight];
-							} else {
-								[nextPageLines setArray:dialogueBlock];
-							}
-						}
-						
-						// For some reason, this information is lost like tears in the rain, so we'll reset it, just in case
-						if (element.nextElementIsDualDialogue) {
-							Line* firstLine = (Line*)retainedLines.firstObject;
-							firstLine.nextElementIsDualDialogue = YES;
-						}
+					// For some reason, this information is lost like tears in the rain, so we'll reset it, just in case
+					if (element.nextElementIsDualDialogue) {
+						Line* firstLine = (Line*)retainedLines.firstObject;
+						firstLine.nextElementIsDualDialogue = YES;
 					}
-					
-					// Add objects on current page
-					[currentPage addObjectsFromArray:retainedLines];
-					[_pages addObject:currentPage];
-					
-					// Add page break for live pagination
-					if (retainedLines.count) [self pageBreak:pageBreakElement position:pageBreakPosition type:@"Dialogue"];
-					else [self pageBreak:dialogueBlock.firstObject position:0 type:@"Dialogue moved on next page"];
-					
-					// Reset page
-					currentPage = NSMutableArray.new;
-					currentY = [self heightForDialogueBlock:nextPageLines page:currentPage];
-					[currentPage addObjectsFromArray:nextPageLines];
-										
-					// Ignore the rest of the block
-					[tmpElements setArray:dialogueBlock];
-					
-					continue;
-				}
-				else if (element.type == action) {
-					// Reset page
-					[_pages addObject:currentPage];
-					currentPage = NSMutableArray.new;
-					
-					// I'm pretty sure there will never be spiller element, but anyway
-					if (!spillerElement) spillerElement = element;
-					
-					[self pageBreak:spillerElement position:-1 type:@"Some action"];
-
-				} else {
-					// Whatever, let's just push this element on the next page
-					// Reset page
-					[_pages addObject:currentPage];
-					currentPage = NSMutableArray.new;
-					
-					// I'm pretty sure there will never be spiller element, but anyway
-					if (!spillerElement) spillerElement = element;
-					
-					[self pageBreak:spillerElement position:-1 type:@"Whatever, again"];
 				}
 				
-				currentY = 0;
+				// Add objects on current page
+				[currentPage addObjectsFromArray:retainedLines];
+				[_pages addObject:currentPage];
+				
+				// Add page break for live pagination
+				if (retainedLines.count) [self pageBreak:pageBreakElement position:pageBreakPosition type:@"Dialogue"];
+				else [self pageBreak:dialogueBlock.firstObject position:0 type:@"Dialogue moved on next page"];
+				
+				// Reset page
+				currentPage = NSMutableArray.new;
+				currentY = [self heightForDialogueBlock:nextPageLines page:currentPage];
+				[currentPage addObjectsFromArray:nextPageLines];
+									
+				// Ignore the rest of the block
+				[tmpElements setArray:dialogueBlock];
+				
+				continue;
 			}
-						
-			NSInteger previousDialogueHeight = 0;
-			NSInteger dualDialogueHeight = 0;
+			else if (element.type == action) {
+				// Reset page
+				[_pages addObject:currentPage];
+				currentPage = NSMutableArray.new;
+				
+				// I'm pretty sure there will never be spiller element, but anyway
+				if (!spillerElement) spillerElement = element;
+				
+				[self pageBreak:spillerElement position:-1 type:@"Some action"];
+
+			} else {
+				// Whatever, let's just push this element on the next page
+				// Reset page
+				[_pages addObject:currentPage];
+				currentPage = NSMutableArray.new;
+				
+				// I'm pretty sure there will never be spiller element, but anyway
+				if (!spillerElement) spillerElement = element;
+				
+				[self pageBreak:spillerElement position:-1 type:@"Whatever, again"];
+			}
 			
-			// Add remaining elements
-			for (Line *el in tmpElements) {
-				NSInteger h = [self elementHeight:el lineHeight:lineHeight];
+			currentY = 0;
+		}
+					
+		NSInteger previousDialogueHeight = 0;
+		NSInteger dualDialogueHeight = 0;
+		
+		// Add remaining elements
+		for (Line *el in tmpElements) {
+			NSInteger h = [self elementHeight:el lineHeight:lineHeight];
+			
+			// Catch dual dialogue
+			if (el.type == character || el.isDialogueElement) {
+				if (el.type == character) previousDialogueHeight = 0;
+				// Save dialogue block height for later use
+				previousDialogueHeight += h;
 				
-				// Catch dual dialogue
-				if (el.type == character || el.isDialogueElement) {
-					if (el.type == character) previousDialogueHeight = 0;
-					// Save dialogue block height for later use
-					previousDialogueHeight += h;
-					
-					// Append y position
-					currentY += h;
-					if (currentPage.count > 0) { currentY += [BeatPaginator spaceBeforeForLine:el]; }
-				}
-				else if (el.type == dualDialogueCharacter || el.isDualDialogueElement) {
-					if (el.type == dualDialogueCharacter) dualDialogueHeight = 0;
-					
-					// Add to this block height
-					dualDialogueHeight += h;
-					
-					// If this block is higher, add the height difference only
-					if (dualDialogueHeight > previousDialogueHeight) {
-						currentY += dualDialogueHeight - previousDialogueHeight;
-					}
-				} else {
-					// Update y position
-					currentY += h;
-					if (currentPage.count > 0) currentY += [BeatPaginator spaceBeforeForLine:el];
-				}
-				
-				[currentPage addObject:el];
+				// Append y position
+				currentY += h;
+				if (currentPage.count > 0) { currentY += [BeatPaginator spaceBeforeForLine:el]; }
 			}
+			else if (el.type == dualDialogueCharacter || el.isDualDialogueElement) {
+				if (el.type == dualDialogueCharacter) dualDialogueHeight = 0;
+				
+				// Add to this block height
+				dualDialogueHeight += h;
+				
+				// If this block is higher, add the height difference only
+				if (dualDialogueHeight > previousDialogueHeight) {
+					currentY += dualDialogueHeight - previousDialogueHeight;
+				}
+			} else {
+				// Update y position
+				currentY += h;
+				if (currentPage.count > 0) currentY += [BeatPaginator spaceBeforeForLine:el];
+			}
+			
+			[currentPage addObject:el];
 		}
 		
 		[_pages addObject:currentPage];
-	}
+		
+	} } // Autoreleasepool end
+	
+	NSLog(@" ----> %lu", _pages.count);
 	
 	// Remove last page if it's empty
 	NSArray *lastPage = _pages.lastObject;
@@ -1079,6 +1090,14 @@
 }
 
 - (NSArray*)blockFor:(Line*)line {
+	/**
+	 This finds the screenplay block for an element.
+	 
+	 It can be either a DIALOGUE (including its dual dialogue sibling), single action, or heading + action.
+	 The behavior should be expanded so that a heading will ALSO retrieve its following item, be it a dialogue block or something else.
+	 I'm unsure how that would affect the surrounding logic.
+	*/
+	
 	NSMutableArray *block = [NSMutableArray array];
 	
 	NSInteger i = [self.script indexOfObject:line];
@@ -1222,13 +1241,7 @@
 - (NSDictionary*)splitDialogue:(NSArray<Line*>*)dialogueBlock spiller:(Line*)spillerElement remainingSpace:(NSInteger)remainingSpace height:(NSInteger)dialogueHeight {
 	// NOTE: Remember to calculate Y after this operation
 	// NOTE #2: ABANDON ALL HOPE
-	
-	// So, what follows is a DUCT TAPE FIX.
-	// We do this to ensure that (MORE) does NOT fill up the page.
-	// This might cause other trouble later, just saying.
-	
-	//remainingSpace -= BeatPaginator.lineHeight;
-	
+		
 	Line *pageBreakItem;
 	NSInteger suggestedPageBreak = -1;
 	NSInteger blockIndex = [dialogueBlock indexOfObject:spillerElement];
@@ -1238,9 +1251,12 @@
 	
 	LineType type = spillerElement.type;
 	
+	// Earlier, we did this:
+	// remainingSpace -= BeatPaginator.lineHeight;
+	// I don't know what thas was about. Now, instead, we'll calculate remaining space AFTER the
+	// element that is spilling.
 	NSArray *blockUntilSpiller = [dialogueBlock subarrayWithRange:NSMakeRange(0, blockIndex)];
 	remainingSpace -= [self heightForBlock:blockUntilSpiller];
-	
 	
 	// If we are out of space at character cue or first parenthetical, throw the whole block on the next page
 	if (((type == parenthetical || type == dualDialogueParenthetical) && blockIndex < 2) || type == character) {
@@ -1274,15 +1290,13 @@
 		if (!sentences.count && stripped.length) [sentences addObject:stripped];
 		
 		NSString *text = @"";
-		NSString *retain = @"";
-		NSString *split = @"";
+		NSMutableString *retain = NSMutableString.new;
+		NSMutableString *split = NSMutableString.new;
 		CGFloat breakPosition = 0;
 		
 		int sIndex = 0;
 		bool forceNextpage = NO;
-		
-		NSLog(@"#### Space left: %lu  --  spiller: %@", remainingSpace, spillerElement);
-		
+				
 		for (NSString *rawSentence in sentences) {
 			NSString *sentence = [rawSentence stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 			if (sIndex == 0) text = [text stringByAppendingFormat:@"%@", sentence];
@@ -1303,11 +1317,11 @@
 			
 			if (h < remainingSpace) {
 				breakPosition = h;
-				if (sIndex == 0) retain = [retain stringByAppendingFormat:@"%@", sentence];
-				else retain = [retain stringByAppendingFormat:@" %@", sentence];
+				if (sIndex == 0) [retain appendFormat:@"%@", sentence];
+				else [retain appendFormat:@" %@", sentence];
 			} else {
-				if (sIndex == 0) split = [split stringByAppendingFormat:@"%@", sentence];
-				else split = [split stringByAppendingFormat:@" %@", sentence];
+				if (sIndex == 0) [split appendFormat:@"%@", sentence];
+				else [split appendFormat:@" %@", sentence];
 			}
 			
 			sIndex++;
@@ -1350,119 +1364,6 @@
 			suggestedPageBreak = 0;
 			pageBreakItem = dialogueBlock.firstObject;
 		}
-		
-		/*
-		 
-		// I cut the following code to just that seen above.
-		 // I hope I didn't break anything in the process.
-		 
-		// If we have something to retain, do it, otherwise just break to next page
-		if (retain.length > 0) {
-			spillerElement.unsafeForPageBreak = YES;
-			suggestedPageBreak = breakPosition;
-			pageBreakItem = spillerElement;
-
-			bool addMORE = NO;
-			if (postDialogue.length) addMORE = YES;
-			
-			NSArray *onPrevPage = [self retainDialogueInBlock:dialogueBlock to:blockIndex addMORE:addMORE splitDialogue:preDialogue spillerElement:spillerElement];
-			[retainedElements addObjectsFromArray:onPrevPage];
-
-			// Set correct dialogue type
-			LineType contdType;
-			LineType dialogueType;
-			if (spillerElement.isDualDialogue) {
-				dialogueType = dualDialogue;
-				contdType = dualDialogueCharacter;
-			}
-			else {
-				dialogueType = dialogue;
-				contdType = character;
-			}
-			
-			if (postDialogue.length) {
-				// Add the remaining stuff on the next page and inherit dual dialogue boolean
-				Line *element = dialogueBlock.firstObject;
-				Line *postCue = [Line withString:[element.stripFormatting stringByAppendingString:[self contdString]] type:contdType pageSplit:YES];
-				
-				if (element.nextElementIsDualDialogue) postCue.nextElementIsDualDialogue = YES;
-				postDialogue.type = dialogueType;
-								
-				// Position indexes for live pagination
-				postCue.position = preDialogue.position + preDialogue.string.length;
-				
-				[nextPageElements addObject:postCue];
-				[nextPageElements addObject:postDialogue];
-				
-				// Add possible remaining dialogue elements
-				// IDK why this is different than the method below
-				NSInteger position = postDialogue.position + postDialogue.string.length;
-				for (NSInteger d = blockIndex + 1; d < dialogueBlock.count; d++) {
-					Line *postElement = dialogueBlock[d];
-					
-					Line *postBreak = [Line.alloc initWithString:postElement.string type:postElement.type pageSplit:YES];
-					postBreak.changed = postElement.changed;
-					postBreak.position = position; // String index from file
-					position += postBreak.string.length;
-					
-					[nextPageElements addObject:postBreak];
-				}
-			} else {
-				// There is something else left to process in the dialogue block, even if we didn't split anything
-				// IDK why this is different than the method above ^
-				if (spillerElement != dialogueBlock.lastObject) {
-					NSInteger splitIdx = [dialogueBlock indexOfObject:spillerElement];
-					if (splitIdx < dialogueBlock.count - 1) {
-						NSArray *splitItems = [dialogueBlock subarrayWithRange:(NSRange){ splitIdx + 1, dialogueBlock.count - (splitIdx+1) }];
-						[nextPageElements addObjectsFromArray:splitItems];
-					}
-				}
-			}
-		}
-		else if (retain.length == 0 && blockIndex > 2) {
-			// A line of dialogue deeper in the block, probably after a parenthesis OR a split-up dialogue.
-			// Let's figure out what was the previous object and decide what to do based on that.
-			// NOTE: There's reusable code here with universal methods for the convoluted part above. Just dread lightly.
-						
-			pageBreakItem = spillerElement;
-			spillerElement.unsafeForPageBreak = YES;
-			suggestedPageBreak = -1;
-			
-			Line *preceedingItem = dialogueBlock[blockIndex-1];
-			
-			if (preceedingItem.type == parenthetical || preceedingItem.type == dualDialogueParenthetical) {
-				// Previous item is parenthetical. Throw that on next page, as well as the rest of the block.
-				NSArray *onPrevPage = [self retainDialogueInBlock:dialogueBlock to:blockIndex-1 addMORE:YES splitDialogue:nil spillerElement:preceedingItem];
-				
-				NSArray *onNextPage = [self nextPageBlockForDialogueBlock:dialogueBlock from:blockIndex-1 spiller:preceedingItem prevPageDialogue:preDialogue nextPageDialogue:nil];
-				
-				[retainedElements addObjectsFromArray:onPrevPage];
-				[nextPageElements addObjectsFromArray:onNextPage];
-				
-			} else {
-				// This is just dialogue.
-				
-				// Check if we should add (MORE) on the previous page.
-				bool addMORE = NO;
-				if (postDialogue.length > 0) addMORE = YES;
-				
-				// Elements on prev page.
-				NSArray *onPrevPage = [self retainDialogueInBlock:dialogueBlock to:blockIndex addMORE:addMORE splitDialogue:preDialogue spillerElement:spillerElement];
-				[retainedElements addObjectsFromArray:onPrevPage];
-				
-				// Elements split to next page.
-				NSArray *onNextPage = [self nextPageBlockForDialogueBlock:dialogueBlock from:blockIndex+1 spiller:spillerElement prevPageDialogue:preDialogue nextPageDialogue:postDialogue];
-				[nextPageElements addObjectsFromArray:onNextPage];
-			}
-			
-		}
-		else {
-			// Nothing to retain, move whole block on next page
-			[nextPageElements addObjectsFromArray:dialogueBlock];
-			suggestedPageBreak = 0;
-			pageBreakItem = dialogueBlock.firstObject;
-		}
-		 */
 	}
 	
 	NSDictionary *result =  @{

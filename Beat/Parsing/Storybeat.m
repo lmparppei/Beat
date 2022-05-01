@@ -41,9 +41,10 @@
 	return storybeat;
 }
 + (NSString*)stringWithStorylineNames:(NSArray<NSString*>*)storylineNames {
-	NSString *string = @"[[Beat ";
-	string = [string stringByAppendingString:[storylineNames componentsJoinedByString:@", "]];
-	string = [string stringByAppendingString:@"]]"];
+	
+	NSMutableString *string = [NSMutableString stringWithString:@"[[Beat "];
+	[string appendString:[storylineNames componentsJoinedByString:@", "]];
+	[string appendString:@"]]"];
 	return string;
 }
 + (NSString*)stringWithBeats:(NSArray<Storybeat*>*)beats {

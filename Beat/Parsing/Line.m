@@ -761,19 +761,20 @@
 	[attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSString *string = [attrStr attributedSubstringFromRange:range].string;
 				
-		NSString *open = @"";
-		NSString *close = @"";
-		NSString *openClose = @"";
+		NSMutableString *open = NSMutableString.new;
+		NSMutableString *close = NSMutableString.new;
+		NSMutableString *openClose = NSMutableString.new;
 		
 		NSString *styleString = attrs[@"Style"];
 		NSArray *styles = [styleString componentsSeparatedByString:@","];
 		
-		if ([styles containsObject:BOLD_STYLE]) openClose = [openClose stringByAppendingString:BOLD_PATTERN];
-		if ([styles containsObject:ITALIC_STYLE]) openClose = [openClose stringByAppendingString:ITALIC_PATTERN];
-		if ([styles containsObject:UNDERLINE_STYLE]) openClose = [openClose stringByAppendingString:UNDERLINE_PATTERN];
+		if ([styles containsObject:BOLD_STYLE]) [openClose appendString:BOLD_PATTERN];
+		if ([styles containsObject:ITALIC_STYLE]) [openClose appendString:ITALIC_PATTERN];
+		if ([styles containsObject:UNDERLINE_STYLE]) [openClose appendString:UNDERLINE_PATTERN];
+		
 		if ([styles containsObject:STRIKEOUT_STYLE]) {
-			open = [open stringByAppendingString:STRIKEOUT_PATTERN];
-			close = [close stringByAppendingString:STRIKEOUT_CLOSE_PATTERN];
+			[open appendString:STRIKEOUT_PATTERN];
+			[close appendString:STRIKEOUT_CLOSE_PATTERN];
 		}
 		
 		[result appendString:open];

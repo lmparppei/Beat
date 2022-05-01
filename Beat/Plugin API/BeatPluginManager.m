@@ -52,7 +52,7 @@
 		@"html": (self.html) ? self.html : @"",
 
 		// If a required version is set, we have already checked compatibility.
-		// Otherwise, let's always assume the plugin is cmopatible.
+		// Otherwise, let's always assume the plugin is comppatible.
 		@"compatible": (self.requiredVersion) ? @(self.compatible) : @(YES)
 	};
 }

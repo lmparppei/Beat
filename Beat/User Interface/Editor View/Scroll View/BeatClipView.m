@@ -10,6 +10,11 @@
 
 @implementation BeatClipView
 
+-(void)awakeFromNib {
+	[super awakeFromNib];
+	self.wantsLayer = NO;
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
 }

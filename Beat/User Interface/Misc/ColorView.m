@@ -31,6 +31,7 @@
 
 @implementation ColorView
 
+/*
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
@@ -40,6 +41,12 @@
         NSRectFill(dirtyRect);
     }
 }
+ */
+-(void)awakeFromNib {
+	self.wantsLayer = YES;
+	self.layer.backgroundColor = self.fillColor.CGColor;
+}
+
 /*
 - (CGSize)intrinsicContentSize
 {

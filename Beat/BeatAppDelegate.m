@@ -426,7 +426,7 @@
 - (IBAction)showPatchNotes:(id)sender {
 	if (!_browser) {
 		_browser = BeatBrowserView.new;
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:_browser.window];
+		_browser.window.delegate = self;
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"Patch Notes" withExtension:@"html"];
@@ -436,6 +436,7 @@
 - (IBAction)showManual:(id)sender {
 	if (!_browser) {
 		_browser = BeatBrowserView.new;
+		_browser.window.delegate = self;
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"beat_manual" withExtension:@"html"];
@@ -574,6 +575,8 @@
 #pragma mark - Version control
 
 // NOTE: This is not in use currently, because of weird autosave errors
+// To put it back, you need a REVERT menu, set its outlet to _versionMenu and
+// set this class as the delegate.
 
 /*
 - (void)versionMenuItems {
@@ -655,6 +658,7 @@
 
 - (IBAction)openPluginLibrary:(id)sender {
 	_pluginLibrary = BeatPluginLibrary.alloc.init;
+	_pluginLibrary.window.delegate = self;
 	[_pluginLibrary show];
 }
 

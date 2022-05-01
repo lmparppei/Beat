@@ -334,7 +334,7 @@ static bool underlinedHeading;
 	// We need to catch lyrics not to make them fill up a paragraph
 	bool isLyrics = false;
 	
-	for (Line *line in elementsOnPage) {
+	for (Line *line in elementsOnPage) { @autoreleasepool {
 		bool beginBlock = false;
 		
 		if ([ignoringTypes containsObject:line.typeAsFountainString]) {
@@ -461,7 +461,7 @@ static bool underlinedHeading;
 		}
 		
 		elementCount++;
-	}
+	} }
 	
 	[body appendString:@"</section>"];
 	
@@ -686,8 +686,8 @@ static bool underlinedHeading;
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSMutableString* text = [result.string substringWithRange:range].mutableCopy;
 		// Opening and closing tags
-		NSString *open = @"";
-		NSString *close = @"";
+		NSMutableString *open = NSMutableString.new;
+		NSMutableString *close = NSMutableString.new;
 		
 		NSString *styleString = attrs[@"Style"];
 
@@ -697,32 +697,32 @@ static bool underlinedHeading;
 			[styleArray removeObject:@""];
 						
 			if ([styleArray containsObject:@"Bold"]) {
-				open = [open stringByAppendingString:BOLD_OPEN];
-				close = [close stringByAppendingString:BOLD_CLOSE];
+				[open appendString:BOLD_OPEN];
+				[close appendString:BOLD_CLOSE];
 			}
 			if ([styleArray containsObject:@"Italic"]) {
-				open = [open stringByAppendingString:ITALIC_OPEN];
-				close = [close stringByAppendingString:ITALIC_CLOSE];
+				[open appendString:ITALIC_OPEN];
+				[close appendString:ITALIC_CLOSE];
 			}
 			if ([styleArray containsObject:@"Underline"]) {
-				open = [open stringByAppendingString:UNDERLINE_OPEN];
-				close = [close stringByAppendingString:UNDERLINE_CLOSE];
+				[open appendString:UNDERLINE_OPEN];
+				[close appendString:UNDERLINE_CLOSE];
 			}
 			if ([styleArray containsObject:@"Strikeout"]) {
-				open = [open stringByAppendingString:STRIKEOUT_OPEN];
-				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
+				[open appendString:STRIKEOUT_OPEN];
+				[close appendString:STRIKEOUT_CLOSE];
 			}
 			if ([styleArray containsObject:@"RemovalSuggestion"]) {
-				open = [open stringByAppendingString:STRIKEOUT_OPEN];
-				close = [close stringByAppendingString:STRIKEOUT_CLOSE];
+				[open appendString:STRIKEOUT_OPEN];
+				[close appendString:STRIKEOUT_CLOSE];
 			}
 			if ([styleArray containsObject:@"Addition"]) {
 				//open = [open stringByAppendingString:ADDITION_OPEN];
 				//close = [close stringByAppendingString:ADDITION_OPEN];
 			}
 			if ([styleArray containsObject:@"Note"]) {
-				open = [open stringByAppendingString:NOTE_OPEN];
-				close = [close stringByAppendingString:NOTE_CLOSE];
+				[open appendString:NOTE_OPEN];
+				[close appendString:NOTE_CLOSE];
 			}
 			
 			// Iterate through possible revisions baked into the line
@@ -735,8 +735,8 @@ static bool underlinedHeading;
 					if (revisionComponents.count < 2) continue;
 					NSString *revColor = revisionComponents[1];
 					
-					open = [open stringByAppendingFormat:@"<span class='changedDetail %@'><a class='revisionMarker'></a>", revColor];
-					close = [close stringByAppendingFormat:@"</span>"];
+					[open appendFormat:@"<span class='changedDetail %@'><a class='revisionMarker'></a>", revColor];
+					[close appendString:@"</span>"];
 				}
 			}
 			

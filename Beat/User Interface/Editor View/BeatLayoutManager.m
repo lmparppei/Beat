@@ -28,7 +28,7 @@
 	
 	// Save text container margins
 	NSSize offset = self.textContainers.firstObject.textView.textContainerInset;
-	
+		
 	/*
 	 
 	 This works in a peculiar way:
@@ -44,7 +44,7 @@
 	 */
 	NSMutableDictionary<NSString*, NSMutableSet<NSValue*>*> *revisions = NSMutableDictionary.new;
 	for (NSString *string in BeatRevisionTracking.revisionColors) revisions[string] = NSMutableSet.new;
-		
+	
 	while (glyphRange.length > 0) {
 		NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL], attributeCharRange, attributeGlyphRange;
 		
@@ -81,11 +81,11 @@
 		
 		[rects enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
 			NSRect rect = [(NSValue*)obj rectValue];
-			NSString *markerStr = @"";
+			NSMutableString *markerStr = NSMutableString.new;
 			NSUInteger lineCount = round(rect.size.height / 22); // line height is 22, based on my scientific reasearch lol
 			
 			// Create markers by line count
-			for (NSUInteger i=0; i<lineCount; i++) markerStr = [markerStr stringByAppendingFormat:@"%@\n", marker];
+			for (NSUInteger i=0; i<lineCount; i++) [markerStr appendFormat:@"%@\n", marker];
 
 			// Draw a background rect under the marker to block out earlier markers
 			[bgColor setFill];

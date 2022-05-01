@@ -4328,6 +4328,8 @@ static NSString *revisionAttribute = @"Revision";
 	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
 	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"printCards"];
 	
+	_cardView.configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
+	
 	_sceneCards = [[SceneCards alloc] initWithWebView:_cardView];
 	_sceneCards.delegate = self;
 }

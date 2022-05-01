@@ -984,21 +984,7 @@ DQ
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginManager" destination="MpY-Uw-HUk" id="LTu-gv-i9k"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
-                <outlet property="versionMenu" destination="dbF-KQ-yEw" id="zp5-mG-MLs"/>
             </connections>
         </customObject>
-        <menuItem title="Revert To..." id="66O-OW-2gf">
-            <modifierMask key="keyEquivalentModifierMask"/>
-            <menu key="submenu" title="Revert To..." id="dbF-KQ-yEw">
-                <items>
-                    <menuItem title="Item" id="dSo-T0-bVH">
-                        <modifierMask key="keyEquivalentModifierMask"/>
-                    </menuItem>
-                </items>
-                <connections>
-                    <outlet property="delegate" destination="vEX-2F-hcj" id="XDb-Zr-vaK"/>
-                </connections>
-            </menu>
-        </menuItem>
     </objects>
 </document>

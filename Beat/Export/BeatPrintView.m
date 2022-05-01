@@ -117,6 +117,8 @@ static NSURL *pdfURL;
 		webView = WKWebView.new;
 		((WKWebView*)webView).navigationDelegate = self;
 		[(WKWebView*)webView loadHTMLString:htmlString baseURL:nil];
+		
+		((WKWebView*)webView).configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
 	}
 	else {
 		webView = WebView.new;
@@ -300,6 +302,17 @@ static NSURL *pdfURL;
 - (void)printOperationDidRun:(id)operation success:(bool)success contextInfo:(nullable void *)contextInfo {
 	if (_preview) [self.delegate didFinishPreviewAt:pdfURL];
 	if (_completion) _completion();
+	
+	if ([_webView isKindOfClass:WKWebView.class]) [self deinitWebView];
+	
+	_webView = nil;
+}
+
+- (void)deinitWebView {
+	WKWebView *webView = _webView;
+	webView.navigationDelegate = nil;
+	[webView.configuration.userContentController removeAllUserScripts];
+	
 }
 
 

@@ -20,6 +20,15 @@
 @property (nonatomic) CALayer *paper;
 @property (weak) ThemeManager *themeManager;
 @property (nonatomic) NSSize oldSize;
+
+/*
+@property (nonatomic) CGColorRef darkPaper;
+@property (nonatomic) CGColorRef lightPaper;
+
+@property (nonatomic) CGColorRef darkBackground;
+@property (nonatomic) CGColorRef lightBackground;
+*/
+ 
 @end
 
 @implementation MarginView

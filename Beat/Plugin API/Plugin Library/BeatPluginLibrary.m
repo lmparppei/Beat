@@ -46,6 +46,7 @@
 - (void)clearWebView {
 	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"download"];
 	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openLink"];
+	[self.webview.configuration.userContentController removeAllUserScripts];
 	self.webview = nil;
 }
 
@@ -73,8 +74,10 @@
 	
 	[self.pluginView reloadData];
 	
+	self.webview.configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"download"];
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openLink"];
+	[self.webview.configuration.userContentController removeAllUserScripts];
 	[self createPluginPageTemplate];
 }
 

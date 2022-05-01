@@ -128,6 +128,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 // New scene numbering system
 @property (nonatomic) NSMutableArray *sceneNumberLabels;
 @property (nonatomic) NSUInteger linesBeforeLayout;
+@property (nonatomic) NSMutableArray <CATextLayer*>*sceneLayerLabels;
 
 // Text container tracking area
 @property (nonatomic) NSTrackingArea *trackingArea;
@@ -256,7 +257,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:_trackingArea];
 	
-	self.wantsLayer = YES;
+	// Turn layers on if you want to use CATextLayer labels.
+	// self.wantsLayer = YES;
 	
 	[self setInsets];
 }
@@ -1029,9 +1031,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 /**
  
  Scene numbers are NSTextFields. We have a NSMutableSet which contains all the labels for heading lines,
- with an NSValue object key. That's why we need to iterate through all of the lines and to make sure we don't
+ with an NSValue object key. That's why we need to iterate through all of the lines, and to make sure we don't
  leave any extra labels behind. Earlier, this was based on the number of scenes and calculated indices,
  but this seems a *bit* faster. By a fraction of a millisecond.
+ 
+ There is an alternative implementation below which uses CATextLayers, but it's a little less efficient, but
+ consumes a little less memory.
  
  */
 
@@ -1045,6 +1050,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// Don't do anything if the scene number labeling is not on
 	if (!self.editorDelegate.showSceneNumberLabels) return;
 	
+	// Uncomment if you'd like to use layers instead of labels
+	// [self updateSceneLayerLabelsFrom:changedIndex];
+	// return;
+	
 	_updatingSceneNumberLabels = YES;
 	
 	ContinuousFountainParser *parser = self.editorDelegate.parser;
@@ -1055,7 +1064,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	bool noRepositionNeeded = NO;
 	
 	NSInteger index = -1;
-	for (OutlineScene *scene in parser.outline) {
+	for (OutlineScene *scene in parser.outline) { @autoreleasepool {
 		if (scene.type == synopse || scene.type == section) continue;
 		
 		index++; // Add to total scene heading count
@@ -1124,7 +1133,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			!NSLocationInRange(changedIndex, scene.line.range)) {
 			noRepositionNeeded = YES;
 		}
-	}
+	} }
 
 	// Remove excess labels
 	index++;
@@ -1139,105 +1148,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	_updatingSceneNumberLabels = NO;
 }
-
-/*
-- (void)updateSceneTextLabelsFrom:(NSInteger)changedIndex {
-	return;
-	
-	// Don't do anything if the scene number labeling is not on
-	if (!self.editorDelegate.showSceneNumberLabels) return;
-	_updatingSceneNumberLabels = YES;
-
-	// Init label dictionary
-	if (!self.sceneNumberLabels) self.sceneNumberLabels = NSMutableDictionary.new;
-	// Text color for labels
-	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
-	
-	NSMutableIndexSet *headingIndices = NSMutableIndexSet.indexSet;
-	NSInteger sceneNumber = [self.editorDelegate.parser.delegate.documentSettings getInt:DocSettingSceneNumberStart];
-	
-	Line *originalLine = self.editorDelegate.parser.lines[changedIndex];
-	
-	// Ensure layout for this line. This is a required step, unfortunately. Slows things down a lot.
-	[self.layoutManager ensureLayoutForCharacterRange:originalLine.range];
-	
-	bool noRepositionNeeded = NO;
-	
-	for (NSInteger i = 0; i<self.editorDelegate.parser.lines.count; i++) {
-		Line *l = self.editorDelegate.parser.lines[i];
-		if (l.type != heading) continue;
-		
-		[headingIndices addIndex:i];
-		if (i < changedIndex) continue;
-		else if (noRepositionNeeded) {
-			continue;
-		}
-		
-
-		// Add to scene number
-		if (!l.omitted) sceneNumber++;
-		
-		NSValue *key = [NSNumber numberWithInteger:i];
-		NSTextField *label;
-		if (_sceneNumberLabels[key]) {
-			label = _sceneNumberLabels[key];
-		} else {
-			label = [self createLabel:l];
-			[_sceneNumberLabels setObject:label forKey:key];
-		}
-		
-		if (l.sceneNumber) [label setStringValue:l.sceneNumber];
-		else [label setStringValue:[NSString stringWithFormat:@"%lu", sceneNumber]];
-		
-		if (l.color.length) {
-			NSString *colorName = l.color.lowercaseString;
-			NSColor *color = [BeatColors color:colorName];
-			if (color) [label setTextColor:color];
-			else [label setTextColor:ThemeManager.sharedManager.currentTextColor];
-		} else {
-			[label setTextColor:textColor];
-		}
-		
-		// Set pixel position of the label
-		NSRect rect;
-		CGPoint originalPosition = CGPointMake(label.frame.origin.x, label.frame.origin.y); // Save original position
-		CGFloat width = 20 * label.stringValue.length;
-				
-		if (!self.editorDelegate.hideFountainMarkup && l.numberOfPrecedingFormattingCharacters == 0) {
-			// Hiding markup is not on, just grab the text range
-			rect = [self rectForRange:l.range];
-		} else {
-			// Hiding is on, so let's calculate rect using only the first visible character.
-			// We only need the Y position, so this *should* be completely viable.
-			NSRange sceneRange = (NSRange){ l.position + l.contentRanges.firstIndex, 1  };
-			rect = [self rectForRange:sceneRange];
-		}
-		
-		// Some hardcoded values, which seem to work (lol)
-		rect.size.width = width;
-		rect.origin.x = self.textContainerInset.width - 10 - rect.size.width;
-		rect.origin.y += self.textInsetY + 2;
-		label.frame = rect;
-		
-		if (originalPosition.x == rect.origin.x && originalPosition.y == rect.origin.y && i > changedIndex) {
-			// We didn't actually reposition the label,
-			// so let's dont do it for other labels, either.
-			//noRepositionNeeded = YES;
-		}
-	}
-	
-	for (NSNumber *key in _sceneNumberLabels.allKeys.copy) {
-		NSInteger i = key.integerValue;
-		if (![headingIndices containsIndex:i]) {
-			NSTextField *label = _sceneNumberLabels[key];
-			[_sceneNumberLabels removeObjectForKey:key];
-			[label removeFromSuperview];
-		}
-	}
- }
- */
-	
-
 
 - (NSTextField *)createLabel:(id)item {
 	Line *line;
@@ -1263,6 +1173,132 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		[label removeFromSuperview];
 	}
 	[_sceneNumberLabels removeAllObjects];
+}
+
+#pragma mark - Layer labels for scene numbers
+
+// This is a bit slower than the old NSTextField-based system.
+ 
+- (void)updateSceneLayerLabelsFrom:(NSInteger)changedIndex {
+	[CATransaction begin];
+	[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
+	
+	// Don't do anything if the scene number labeling is not on
+	if (!self.editorDelegate.showSceneNumberLabels) return;
+	
+	_updatingSceneNumberLabels = YES;
+	
+	ContinuousFountainParser *parser = self.editorDelegate.parser;
+	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
+	if (!self.sceneLayerLabels) self.sceneLayerLabels = NSMutableArray.array;
+	
+	bool layoutEnsured = NO;
+	bool noRepositionNeeded = NO;
+	
+	NSInteger index = -1;
+	for (OutlineScene *scene in parser.outline) {
+		if (scene.type == synopse || scene.type == section) continue;
+		
+		index++; // Add to total scene heading count
+		
+		// don't update scene labels if we are under the index
+		if (scene.line.position + scene.line.string.length < changedIndex) continue;
+		
+		// We'll have to ensure the layout from the changed character position to the next heading
+		// to correctly calculate the y position of the first scene. No idea why, but let's do
+		// this only once to save CPU time.
+		if (!layoutEnsured) {
+			[self.layoutManager ensureLayoutForCharacterRange:NSMakeRange(changedIndex, scene.position - changedIndex)];
+			layoutEnsured = YES;
+		}
+		
+		// Find label and add a new one if needed
+		CATextLayer *label;
+		if (index >= self.sceneLayerLabels.count) {
+			label = [self createLayerLabel:scene];
+			[_sceneLayerLabels addObject:label];
+			[self.layer addSublayer:label];
+		}
+		else label = self.sceneLayerLabels[index];
+		
+		
+		// Set content scale
+		label.contentsScale = NSScreen.mainScreen.backingScaleFactor;
+		
+		// Set scene number to be displayed
+		if (scene.sceneNumber) label.string = scene.sceneNumber;
+		
+		// Set label color to be the same as scene color
+		if (scene.color.length) {
+			NSString *colorName = scene.color.lowercaseString;
+			NSColor *color = [BeatColors color:colorName];
+			if (color) label.foregroundColor = color.CGColor;
+			else label.foregroundColor = ThemeManager.sharedManager.currentTextColor.effectiveColor.CGColor;
+		} else {
+			label.foregroundColor = textColor.CGColor;
+		}
+		
+		// If we don't have to reposition anything any more, just continue the loop.
+		if (noRepositionNeeded) continue;
+		
+		// Calculate and set actual pixel position of the label
+		NSRect rect;
+		if (!self.editorDelegate.hideFountainMarkup && scene.line.numberOfPrecedingFormattingCharacters == 0) {
+			// This is a normal scene heading, just grab the visible text range
+			rect = [self rectForRange:scene.line.range];
+		} else if (scene.line.string.length > 1) {
+			// For forced scene headings, let's calculate rect using only the first visible character.
+			// This ensures that we're not trying to calculate rectangle for a invisible character (.)
+			// when hiding Fountain markup is on.
+			NSRange sceneRange = (NSRange){ scene.position + scene.line.contentRanges.firstIndex, 1  };
+			rect = [self rectForRange:sceneRange];
+		}
+		
+		CGPoint originalPosition = label.frame.origin;
+		
+		// Some hardcoded values, which seem to work (lol)
+		rect.size.width = 20 * scene.sceneNumber.length;
+		rect.origin.x = self.textContainerInset.width - rect.size.width;
+		rect.origin.y += self.textInsetY + 2;
+		label.frame = rect;
+		
+		// If we are past the edited heading, check if we didn't move the following label at all.
+		// We don't have to calculate further headings in this case.
+		if (rect.origin.x == originalPosition.x && rect.origin.y == originalPosition.y &&
+			!NSLocationInRange(changedIndex, scene.line.range)) {
+			noRepositionNeeded = YES;
+		}
+	}
+
+	// Remove excess labels
+	index++;
+	if (_sceneLayerLabels.count >= index) {
+		NSInteger labels = _sceneLayerLabels.count;
+		for (NSInteger i = index; i < labels; i++) {
+			CATextLayer *label = _sceneLayerLabels[index];
+			[self.sceneLayerLabels removeObject:label];
+			[label removeFromSuperlayer];
+		}
+	}
+	
+	[CATransaction commit];
+	
+	_updatingSceneNumberLabels = NO;
+}
+
+- (CATextLayer *)createLayerLabel:(id)item {
+	Line *line;
+	if ([item isKindOfClass:Line.class]) line = item;
+	else line = [(OutlineScene*)item line];
+	
+	CATextLayer * label = CATextLayer.new;
+	label.anchorPoint = CGPointMake(0, 1);
+	label.string = @"";
+	label.alignmentMode = kCAAlignmentRight;
+	label.font = CGFontCreateWithFontName((CFStringRef)self.editorDelegate.courier.fontName);
+	label.fontSize =  self.editorDelegate.fontSize;
+	
+	return label;
 }
 
 
@@ -1449,7 +1485,6 @@ Line *cachedRectLine;
 	
 	CGFloat x = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
 	
-	
 	NSRect frame = self.layer.frame;
 	frame.size.width =  _editorDelegate.documentWidth * factor;
 	frame.origin.x = x;
@@ -1485,40 +1520,6 @@ Line *cachedRectLine;
 #pragma mark - Context Menu
 
 -(NSMenu *)menu {
-	/*
-	NSMenu *defaultMenu = [super menu];
-	NSMenu *menu = defaultMenu.copy;
-	
-	for (NSMenuItem *item in menu.itemArray) {
-		NSLog(@"%@ - selector=%s", item.title, sel_getName(item.action));
-		
-		for (NSMenuItem *subItem in item.submenu.itemArray) {
-			NSLog(@"       %@ - selector=%s", subItem.title, sel_getName(subItem.action));
-			if (subItem.action == @selector(changeLayoutOrientation:) ||
-				subItem.action == NULL) {
-				[menu removeItem:item];
-				break;
-			}
-		}
-	}
-	
-	// Add items from context menu prototype to the default menu
-	// (This is run only once)
-	if (_contextMenu.itemArray.count) {
-		[menu addItem:[NSMenuItem separatorItem]];
-		
-		for (NSMenuItem *item in _contextMenu.itemArray) {
-			NSMenuItem *newItem = item.copy;
-			
-			[menu addItem:newItem];
-		}
-		
-		[menu addItem:NSMenuItem.separatorItem];
-	}
-	
-	return menu;
-	*/
-	
 	return self.contextMenu.copy;
 }
 

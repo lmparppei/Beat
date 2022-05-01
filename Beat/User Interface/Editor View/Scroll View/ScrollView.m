@@ -28,11 +28,11 @@
 }
 
 - (void)awakeFromNib {
-	_buttonDefaultY = _outlineButtonY.constant;
-	
 	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:trackingArea];
+	
+	self.wantsLayer = NO;
 }
 
 - (void)removeFromSuperview {
@@ -135,15 +135,10 @@
 	if (_buttonDefaultY == 0) _buttonDefaultY = _buttonView.frame.origin.y;
 	
 	if (!findBarVisible) {
-		frame.origin.y = _buttonDefaultY;
-		
-		//_outlineButtonY.constant = _buttonDefaultY;
-		// [_editorDelegate hideTitleBar];
+		frame.origin.y = _buttonDefaultY;		
 		[self.window makeFirstResponder:self.documentView];
 	} else {
 		frame.origin.y -= height;
-		//_outlineButtonY.constant += height;
-		// [_editorDelegate showTitleBar];
 	}
 	
 	_buttonView.frame = frame;

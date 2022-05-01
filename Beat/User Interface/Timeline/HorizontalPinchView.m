@@ -83,7 +83,7 @@
 	[super scrollWheel:event];
 	
 	// Zoom in only when alt is pressed
-	if ([NSEvent modifierFlags] == NSEventModifierFlagOption) {
+	if (NSEvent.modifierFlags == NSEventModifierFlagOption) {
 		CGFloat amount = .15;
 		
 		if (event.deltaY > 0) {

@@ -16,6 +16,9 @@
  AND, MIGHT I ADD some time later, this is a bunch of horrible spaghetti. I have no idea
  what I've been thinking while writing this shit. The whole class should rewritten ASAP.
  
+ Update 2022:
+ Yes, this is very dated and should absolutely be rethought.
+ 
  */
 
 #import "SceneCards.h"

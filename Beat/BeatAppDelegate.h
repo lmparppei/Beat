@@ -11,7 +11,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import "BeatDocumentController.h"
 
-@interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate>
+@interface BeatAppDelegate : NSObject <NSApplicationDelegate, NSStreamDelegate, NSMenuDelegate, UNUserNotificationCenterDelegate, NSWindowDelegate>
 
 @property (nonatomic) bool darkMode;
 @property (nonatomic) bool forceLightMode;

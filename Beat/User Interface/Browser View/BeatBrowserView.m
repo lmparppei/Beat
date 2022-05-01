@@ -71,8 +71,16 @@
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openTemplate"];
 	[self.webview.configuration.userContentController addScriptMessageHandler:self name:@"openLink"];
 	
+	self.webview.configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
+	
 	[self showWindow:self.window];
 	[self.window makeKeyAndOrderFront:self.window];
+}
+
+- (void)close {
+	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openTemplate"];
+	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openLink"];
+	[super close];
 }
 
 - (void)loadURL:(NSURL*)url {

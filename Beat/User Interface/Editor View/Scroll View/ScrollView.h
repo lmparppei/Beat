@@ -17,8 +17,6 @@
 @property (weak) IBOutlet NSView *buttonView;
 @property (weak) IBOutlet NSView *timerView;
 
-@property (weak) IBOutlet NSLayoutConstraint *outlineButtonY;
-
 @property (nonatomic) NSView *taggingView;
 
 @property (nonatomic, weak) DynamicColor *marginColor;
