@@ -507,7 +507,7 @@ static bool underlinedHeading;
 }
 
 - (NSString*)createTitlePage:(NSMutableDictionary*)titlePage {
-	NSMutableString *body = NSMutableString.new;
+	NSMutableString *body = [NSMutableString stringWithString:@""];;
 	
 	if (titlePage.count > 0) {
 		[body appendString:@"<section id='script-title' class='page'>"];
@@ -686,8 +686,8 @@ static bool underlinedHeading;
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSMutableString* text = [result.string substringWithRange:range].mutableCopy;
 		// Opening and closing tags
-		NSMutableString *open = NSMutableString.new;
-		NSMutableString *close = NSMutableString.new;
+		NSMutableString *open = [NSMutableString stringWithString:@""];
+		NSMutableString *close = [NSMutableString stringWithString:@""];
 		
 		NSString *styleString = attrs[@"Style"];
 

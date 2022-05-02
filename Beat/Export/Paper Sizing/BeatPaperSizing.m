@@ -15,9 +15,7 @@
 
 + (BeatMargins*)margins {
 	static BeatMargins* margins;
-	if (!margins) {
-		margins = BeatMargins.new;
-	}
+	if (!margins) margins = BeatMargins.new;
 	
 	NSDictionary *contents = [NSDictionary dictionaryWithContentsOfURL:[NSBundle.mainBundle URLForResource:@"Page Sizing" withExtension:@"plist"]];
 	margins.top = [(NSNumber*)contents[@"Margin Top"] floatValue];

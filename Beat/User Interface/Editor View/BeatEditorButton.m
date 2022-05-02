@@ -26,6 +26,8 @@ IB_DESIGNABLE
 			//self.contentTintColor = [BeatColors color:@"blue"];
 		}
 	}
+	
+	[self.image setTemplate:YES];
 }
 
 
@@ -35,14 +37,12 @@ IB_DESIGNABLE
 
 - (void)layout {
 	BeatAppDelegate *appDelegate = (BeatAppDelegate*)NSApp.delegate;
-	NSImage *image = self.image;
 	
 	if (@available(macOS 10.14, *)) {
 		if (appDelegate.isDark) [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
 		else [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameAqua]];
 	}
 	
-	[image setTemplate:YES];
 	[super layout];
 }
 

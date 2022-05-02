@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, BeatPaperSize) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatMargins : NSObject
+@interface BeatMargins: NSObject
 @property (nonatomic) CGFloat top;
 @property (nonatomic) CGFloat left;
 @property (nonatomic) CGFloat right;

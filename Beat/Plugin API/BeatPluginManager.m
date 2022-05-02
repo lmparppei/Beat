@@ -48,13 +48,41 @@
 		@"version": (self.version) ? self.version : @"",
 		@"localURL": (self.localURL) ? self.localURL.path : @"",
 		@"updateAvailable": (self.updateAvailable) ? self.updateAvailable : @"",
-		@"image": (self.image) ? self.image : @"",
+		@"imagePath": (self.imagePath) ? self.imagePath : @"",
+		@"image": [self imageDataOrURL], // sends either a base64 data or a URL
 		@"html": (self.html) ? self.html : @"",
 
 		// If a required version is set, we have already checked compatibility.
 		// Otherwise, let's always assume the plugin is comppatible.
 		@"compatible": (self.requiredVersion) ? @(self.compatible) : @(YES)
 	};
+}
+
+- (NSString*)imageDataOrURL {
+	NSString *imagePath;
+	
+	// No image
+	if (self.imagePath.length == 0) return @"";
+	
+	// Return remote url
+	else if ([self.imagePath rangeOfString:@"http"].location != NSNotFound) {
+		return (self.imagePath) ? self.imagePath : @"";
+	}
+	
+	// Return base64 representation
+	else if (_localURL) {
+		imagePath = [_bundleURL.path stringByAppendingPathComponent:self.imagePath];
+		
+		NSError *error;
+		NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:imagePath] options:0 error:&error];
+		
+		if (!error) {
+			NSString *imgData = [NSString stringWithFormat:@"data:image/png;base64, %@", [data base64EncodedStringWithOptions:0]];
+			return imgData;
+		}
+	}
+	
+	return @"";
 }
 @end
 
@@ -275,7 +303,7 @@ static BeatPluginManager *sharedManager;
 				existingPlugin.updateAvailable = remotePlugin.version;
 				existingPlugin.text = (remotePlugin.text) ? remotePlugin.text : @"";
 				existingPlugin.html = (remotePlugin.html) ? remotePlugin.html : @"";
-				existingPlugin.image = (remotePlugin.image) ? remotePlugin.image : @"";
+				existingPlugin.imagePath = (remotePlugin.imagePath) ? remotePlugin.imagePath : @"";
 			}
 			[_availablePlugins setValue:existingPlugin forKey:pluginName];
 		} else {
@@ -369,7 +397,7 @@ static BeatPluginManager *sharedManager;
 				@"version": (data[@"version"]) ? data[@"version"] : @"",
 				@"copyright": (data[@"copyright"]) ? data[@"copyright"] : @"",
 				@"text": (data[@"description"]) ? data[@"description"] : @"",
-				@"image": imageURL,
+				@"imagePath": imageURL,
 				@"html": (data[@"html"]) ? data[@"html"] : @"",
 				@"installed": @(NO)
 			}];
@@ -514,6 +542,7 @@ static BeatPluginManager *sharedManager;
 	
 	pluginInfo.name = plugin;
 	pluginInfo.localURL = [NSURL fileURLWithPath:path];
+	pluginInfo.bundleURL = [NSURL fileURLWithPath:_plugins[plugin]];
 	pluginInfo.installed = YES;
 
 	// Regexes for getting plugin info
@@ -551,8 +580,12 @@ static BeatPluginManager *sharedManager;
 	}
 	
 	if (matchImage) {
-		NSError *error;
+		
 		NSString *image = [[(RxMatchGroup*)matchImage.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+		pluginInfo.imagePath = image;
+		
+		/*
+		NSError *error;
 		NSString *imagePath = [(NSString*)_plugins[plugin] stringByAppendingPathComponent:image];
 		NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:imagePath] options:0 error:&error];
 		
@@ -561,6 +594,8 @@ static BeatPluginManager *sharedManager;
 			NSString *imgData = [NSString stringWithFormat:@"data:image/png;base64, %@", [data base64EncodedStringWithOptions:0]];
 			pluginInfo.image = imgData;
 		}
+		*/
+		
 	}
 	
 	if (matchType) {
@@ -574,29 +609,6 @@ static BeatPluginManager *sharedManager;
 	
 	return pluginInfo;
 }
-
-/*
-- (BeatPluginType)pluginTypeFor:(NSString*)plugin {
-	NSString *path = _plugins[plugin];
-	
-	NSError *error;
-	NSString *script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-	if (error) return ToolPlugin;
-	
-	Rx* rx = [Rx rx:@"\nPlugin type:([\\w|\\s]+)\n" options:NSRegularExpressionCaseInsensitive];
-	RxMatch* match = [script firstMatchWithDetails:rx];
-	
-	if (match) {
-		NSString *type = [[[(RxMatchGroup*)match.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet] lowercaseString];
-		
-		if ([type isEqualToString:@"import"]) return ImportPlugin;
-		else if ([type isEqualToString:@"export"]) return ExportPlugin;
-		else return ToolPlugin;
-	} else {
-		return ToolPlugin;
-	}
-}
-*/
  
 
 #pragma mark - Data Source

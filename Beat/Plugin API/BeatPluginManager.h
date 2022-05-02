@@ -22,15 +22,17 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 @property (nonatomic) BeatPluginType type;
 @property (nonatomic) NSString *version;
 @property (nonatomic) NSString *copyright;
-@property (nonatomic) NSString *image;
+@property (nonatomic) NSString *imagePath;
 @property (nonatomic) NSString *text;
 @property (nonatomic) NSString *html;
 @property (nonatomic) NSURL *localURL;
+@property (nonatomic) NSURL *bundleURL;
 @property (nonatomic) bool installed;
 @property (nonatomic) NSString *requiredVersion;
 @property (nonatomic) bool compatible;
 @property (nonatomic) NSString* updateAvailable;
 - (NSDictionary*)json;
+- (NSString*)imageDataOrURL;
 @end
 
 @interface BeatPluginData : NSObject

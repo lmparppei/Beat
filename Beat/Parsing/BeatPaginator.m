@@ -346,8 +346,6 @@
 	[self paginate];
 }
 - (void)paginate {
-	NSLog(@"Pagination...");
-	NSLog(@"Lines: %lu", self.script.count);
 	self.pages = NSMutableArray.new;
 	[self paginateFromIndex:0];
 }
@@ -363,17 +361,7 @@
 	[self.pageBreaks addObjectsFromArray:cachedLineBreaks];
 }
 
-- (void)paginateFromIndex:(NSInteger)fromIndex
-{
-	if (!self.script.count) return;
-	
-	if (!_livePagination) {
-		// Make lines know their paginator
-		for (Line* line in self.script) line.paginator = self;
-		self.pages = NSMutableArray.new;
-	}
-	
-	// Get paper size from the document
+- (void)getPaperSizeFromDocument {
 	if (_document || _printInfo) {
 		NSPrintInfo *printInfo;
 		if (_document) printInfo = _document.printInfo.copy;
@@ -392,28 +380,37 @@
 	} else {
 		_paperSize = CGSizeMake(595, 821);
 	}
+}
+
+- (void)paginateFromIndex:(NSInteger)fromIndex
+{
+	if (!self.script.count) return;
+	
+	if (!_livePagination) {
+		// Make lines know their paginator
+		for (Line* line in self.script) line.paginator = self;
+		self.pages = NSMutableArray.new;
+	}
+	
+	[self getPaperSizeFromDocument];
 			
-	NSInteger initialY = 0; // initial starting point on page
-	NSInteger currentY = initialY;
+	CGFloat spaceBefore = 0;
+	NSInteger currentY = 0;
 	
 	NSInteger oneInchBuffer = 72;
 	NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer);
-			
-	//NSInteger lineHeight = font.pointSize * 1.1;
 	CGFloat lineHeight = LINE_HEIGHT;
 	
 	NSMutableArray *currentPage = NSMutableArray.new;
 	bool hasStartedANewPage = NO;
-	 
+
 	
-	CGFloat spaceBefore;
 			
 	// create a tmp array that will hold elements to be added to the pages
 	NSMutableArray *tmpElements = [NSMutableArray array];
 	
-	NSLog(@"Pages: %lu", _pages.count);
 	
-	// walk through the elements array
+	// Walk through the elements array and place them on pages.
 	for (NSInteger i = 0; i < self.script.count; i++) { @autoreleasepool {
 		if (!_paginating && _livePagination) {
 			// An experiment in canceling background-thread pagination
@@ -421,18 +418,14 @@
 			return;
 		}
 		
-		// Move to the next element in screenplay
 		Line *element  = self.script[i];
 		
-		// Skip element if it's not in the specified range
-		if (fromIndex > 0 && NSMaxRange(element.textRange) < fromIndex) {
-			continue;
-		}
+		// Skip element if it's not in the specified range for pagination
+		if (fromIndex > 0 && NSMaxRange(element.textRange) < fromIndex) continue;
 	
-		// If we've already handled this element, carry on
-		if ([tmpElements containsObject:element]) {
-			continue;
-		} else [tmpElements removeAllObjects];
+		// If the element is already in the queue, continue. Otherwise flush the queue.
+		if ([tmpElements containsObject:element]) continue;
+		else [tmpElements removeAllObjects];
 		
 		// Skip invisible elements (unless we are printing notes)
 		if (element.type == empty) continue;
@@ -447,7 +440,6 @@
 		// If so, we can just use our cached results.
 		if (hasStartedANewPage && currentPage.count == 0 &&
 			!element.unsafeForPageBreak && _pageCache.count >= self.pages.count) {
-			NSLog(@"...");
 			Line *firstLineOnCachedPage = _pageCache[self.pages.count-1].firstObject;
 			
 			if (firstLineOnCachedPage.uuid == element.uuid) {
@@ -459,11 +451,11 @@
 
 		// Reset Y if the page is empty.
 		if (currentPage.count == 0) {
-			currentY = initialY;
+			currentY = 0;
 			hasStartedANewPage = YES;
 		}
 		
-		// catch page breaks immediately
+		// catch forced page breaks first
 		if (element.type == pageBreak) {
 			// close the open page
 			[currentPage addObject:element];
@@ -471,9 +463,10 @@
 
 			[self pageBreak:element position:-1 type:@"Forced page break"];
 			
+			// reset page
 			// reset currentPage and the currentY value
 			currentPage = [NSMutableArray array];
-			currentY    = initialY;
+			currentY    = 0;
 			
 			continue;
 		}
@@ -575,9 +568,9 @@
 					// We substract heading line height from the remaining space
 					if (headingBlock) space -= [self heightForBlock:@[element] page:currentPage];
 					
-					NSMutableString *text = NSMutableString.new;
-					NSMutableString *retain = NSMutableString.new;
-					NSMutableString *split = NSMutableString.new;
+					NSMutableString *text = [NSMutableString stringWithString:@""];
+					NSMutableString *retain = [NSMutableString stringWithString:@""];
+					NSMutableString *split = [NSMutableString stringWithString:@""];
 					
 					CGFloat breakPosition = 0;
 					
@@ -626,57 +619,28 @@
 					if (headingBlock) {
 						// We had something remain on the original page
 						if (retain.length) {
-							[currentPage addObject:element];
-							[currentPage addObject:prePageBreak];
-							[_pages addObject:currentPage];
-							
-							// Add page break for live pagination
+							[self resetPage:currentPage onCurrentPage:@[element, prePageBreak] onNextPage:@[postPageBreak] currentY:&currentY];
 							[self pageBreak:spillerElement position:breakPosition type:@"Heading block"];
-							
-							// Reset page
-							currentPage = NSMutableArray.array;
-							[currentPage addObject:postPageBreak];
-							currentY = [self elementHeight:postPageBreak lineHeight:lineHeight];
 						}
 						// Nothing remained, move whole scene heading to next page
 						else {
-							[_pages addObject:currentPage];
-							
-							// Page break for live pagination
+							[self resetPage:currentPage onCurrentPage:@[] onNextPage:@[element, postPageBreak] currentY:&currentY];
 							[self pageBreak:element position:0 type:@"Heading block moved on next page"];
-							
-							// Reset page
-							currentPage = NSMutableArray.new;
-							[currentPage addObject:element];
-							[currentPage addObject:postPageBreak];
-							
-							currentY = fullHeight - spaceBefore; // Remove space from beginning, because this will be the first element
 						}
 					} else {
-						[currentPage addObject:prePageBreak];
-						[_pages addObject:currentPage];
-						
-						// Add page break info (for live pagination if in use)
+						[self resetPage:currentPage onCurrentPage:@[prePageBreak] onNextPage:@[postPageBreak] currentY:&currentY];
 						[self pageBreak:spillerElement position:breakPosition type:@"Action or heading"];
-						
-						// Reset page
-						currentPage = NSMutableArray.new;
-						[currentPage addObject:postPageBreak];
-						currentY = [self elementHeight:postPageBreak lineHeight:lineHeight];
 					}
 											
 					continue;
 					
 				} else {
-					// Everything fits. Close page.
-					
-					// Reset page
-					[_pages addObject:currentPage];
-					currentPage = NSMutableArray.new;
-					currentY = 0;
-
+					// Reset page and go on
+					[self resetPage:currentPage onCurrentPage:@[] onNextPage:@[] currentY:&currentY];
 					// Add page break info (for live pagination if in use)
 					[self pageBreak:element position:0 type:@"Unknown"];
+					
+					// Go on with the loop
 				}
 			}
 			
@@ -815,49 +779,29 @@
 					}
 				}
 				
-				// Add objects on current page
-				[currentPage addObjectsFromArray:retainedLines];
-				[_pages addObject:currentPage];
+				[self resetPage:currentPage onCurrentPage:retainedLines onNextPage:nextPageLines currentY:&currentY];
+				[tmpElements setArray:dialogueBlock]; // Ignore rest of the unprocessed block
 				
 				// Add page break for live pagination
 				if (retainedLines.count) [self pageBreak:pageBreakElement position:pageBreakPosition type:@"Dialogue"];
 				else [self pageBreak:dialogueBlock.firstObject position:0 type:@"Dialogue moved on next page"];
 				
-				// Reset page
-				currentPage = NSMutableArray.new;
-				currentY = [self heightForDialogueBlock:nextPageLines page:currentPage];
-				[currentPage addObjectsFromArray:nextPageLines];
-									
-				// Ignore the rest of the block
-				[tmpElements setArray:dialogueBlock];
-				
 				continue;
-			}
-			else if (element.type == action) {
-				// Reset page
-				[_pages addObject:currentPage];
-				currentPage = NSMutableArray.new;
-				
-				// I'm pretty sure there will never be spiller element, but anyway
-				if (!spillerElement) spillerElement = element;
-				
-				[self pageBreak:spillerElement position:-1 type:@"Some action"];
-
 			} else {
 				// Whatever, let's just push this element on the next page
 				// Reset page
-				[_pages addObject:currentPage];
-				currentPage = NSMutableArray.new;
-				
+				[self resetPage:currentPage onCurrentPage:@[] onNextPage:@[] currentY:&currentY];
+								
 				// I'm pretty sure there will never be spiller element, but anyway
 				if (!spillerElement) spillerElement = element;
 				
-				[self pageBreak:spillerElement position:-1 type:@"Whatever, again"];
+				[self pageBreak:spillerElement position:0 type:@"Unknown page beak reason"];
 			}
-			
-			currentY = 0;
 		}
-					
+			
+	
+		#pragma mark Add elements in queue on page
+		
 		NSInteger previousDialogueHeight = 0;
 		NSInteger dualDialogueHeight = 0;
 		
@@ -894,11 +838,10 @@
 			[currentPage addObject:el];
 		}
 		
-		[_pages addObject:currentPage];
-		
 	} } // Autoreleasepool end
 	
-	NSLog(@" ----> %lu", _pages.count);
+	// Add the last page
+	[_pages addObject:currentPage];
 	
 	// Remove last page if it's empty
 	NSArray *lastPage = _pages.lastObject;
@@ -933,7 +876,7 @@
 }
 
 - (NSInteger)cplToWidth:(Line*)element {
-	
+	// Characters per line to with
 	NSInteger cpl = 0;
 	
 	switch (element.type) {
@@ -1290,8 +1233,8 @@
 		if (!sentences.count && stripped.length) [sentences addObject:stripped];
 		
 		NSString *text = @"";
-		NSMutableString *retain = NSMutableString.new;
-		NSMutableString *split = NSMutableString.new;
+		NSMutableString *retain = [NSMutableString stringWithString:@""];
+		NSMutableString *split = [NSMutableString stringWithString:@""];
 		CGFloat breakPosition = 0;
 		
 		int sIndex = 0;
@@ -1376,15 +1319,16 @@
 	return result;
 }
 
-- (void)resetPage:(NSMutableArray*)currentPage itemsOnNextPage:(NSArray*)items currentY:(NSInteger*)currentY {
+- (void)resetPage:(NSMutableArray*)currentPage onCurrentPage:(NSArray*)prevPageItems onNextPage:(NSArray*)nextPageItems currentY:(NSInteger*)currentY {
 	// Idea for a global page reset.
 	// Usage: [self resetpage:currentPage itemsOnNextPage:@[item, item] currentY:&currentY];
+	if (prevPageItems.count) [currentPage addObjectsFromArray:prevPageItems];
 	[_pages addObject:currentPage.copy];
 	
 	[currentPage removeAllObjects];
 	
-	*currentY = [self heightForBlock:items];
-	[currentPage addObjectsFromArray:items];
+	*currentY = [self heightForBlock:nextPageItems page:currentPage];
+	if (nextPageItems.count) [currentPage addObjectsFromArray:nextPageItems];
 }
 
 - (NSString*)moreString {

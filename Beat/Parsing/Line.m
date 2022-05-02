@@ -761,9 +761,9 @@
 	[attrStr enumerateAttributesInRange:(NSRange){0, attrStr.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSString *string = [attrStr attributedSubstringFromRange:range].string;
 				
-		NSMutableString *open = NSMutableString.new;
-		NSMutableString *close = NSMutableString.new;
-		NSMutableString *openClose = NSMutableString.new;
+		NSMutableString *open = [NSMutableString stringWithString:@""];
+		NSMutableString *close = [NSMutableString stringWithString:@""];
+		NSMutableString *openClose = [NSMutableString stringWithString:@""];
 		
 		NSString *styleString = attrs[@"Style"];
 		NSArray *styles = [styleString componentsSeparatedByString:@","];

@@ -667,8 +667,6 @@
 	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
 	
-	//NSWorkspace.shared.notificationCenter.addObserver(self, selector: @selector(spaceChange), name: NSWorkspace.activeSpaceDidChangeNotification, object: nil)
-	//[NSWorkspace.sharedWorkspace.notificationCenter addObserver:self selector:@selector(spaceDidChange) name:NSWorkspaceActiveSpaceDidChangeNotification object:nil];
 	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
 }
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key {
