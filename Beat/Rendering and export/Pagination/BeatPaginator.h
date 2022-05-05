@@ -19,6 +19,24 @@
     #import <Cocoa/Cocoa.h>
 #endif
 
+@protocol BeatPageDelegate
+@property (nonatomic, readonly) bool A4;
+@property (nonatomic, readonly) BeatFont *font;
+@property (nonatomic) bool livePagination;
+- (NSInteger)heightForBlock:(NSArray*)block;
+@end
+
+@interface BeatPage:NSObject
+@property (nonatomic, weak) id<BeatPageDelegate> delegate;
+@property (nonatomic) NSMutableArray *items;
+@property (nonatomic) NSInteger y;
+@property (nonatomic) NSInteger maxHeight;
+- (NSUInteger)count;
+- (NSMutableArray*)contents;
+- (NSInteger)remainingSpace;
+- (NSInteger)remainingSpaceWithBlock:(NSArray<Line*>*)block;
+@end
+
 @protocol BeatPaginatorExports <JSExport>
 @property (nonatomic, readonly) NSUInteger numberOfPages;
 @property (strong, nonatomic) NSMutableArray<NSMutableArray*> *pages;
@@ -30,11 +48,11 @@
 @end
 
 @protocol BeatPaginatorDelegate <NSObject>
-- (NSArray*)lines;
+- (NSMutableArray<Line*>*)lines;
 - (NSString*)text;
 @end
 
-@interface BeatPaginator : NSObject <BeatPaginatorExports>
+@interface BeatPaginator : NSObject <BeatPaginatorExports, BeatPageDelegate>
 
 @property (weak) id<BeatPaginatorDelegate> delegate;
 @property (nonatomic, readonly) NSUInteger numberOfPages;
@@ -42,16 +60,15 @@
 @property (nonatomic) CGSize paperSize;
 @property (readonly) CGFloat lastPageHeight;
 @property (strong, nonatomic) NSMutableArray<NSMutableArray*> *pages;
+@property (nonatomic) bool livePagination;
 
 // For live pagination
 @property (strong, nonatomic) NSMutableArray *pageBreaks;
 @property (strong, nonatomic) NSMutableArray *pageInfo;
 
-- (id)initWithScript:(NSArray*)elements;
 - (id)initWithScript:(NSArray *)elements settings:(BeatExportSettings*)settings;
 - (id)initForLivePagination:(NSDocument*)document;
 - (id)initForLivePagination:(NSDocument*)document withElements:(NSArray*)elements;
-- (id)initWithScript:(NSArray*)elements document:(NSDocument*)document;
 - (id)initWithScript:(NSArray *)elements printInfo:(NSPrintInfo*)printInfo;
 
 - (void)livePaginationFor:(NSArray*)script changeAt:(NSUInteger)location;

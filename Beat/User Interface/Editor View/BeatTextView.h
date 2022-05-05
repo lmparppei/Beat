@@ -78,6 +78,8 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 - (Line*)lineAt:(NSInteger)index;
 - (void)handleTabPress;
 
+- (void)moveSelectedLinesDown;
+
 - (NSInteger)getPageNumber:(NSInteger)location;
 - (NSInteger)numberOfPages;
 

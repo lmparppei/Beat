@@ -199,7 +199,7 @@
 	@autoreleasepool {
 		for (OutlineScene* scene in self.scenes) {
 			NSArray * lines = [self.delegate linesForScene:scene];
-			BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines];
+			BeatPaginator *paginator = [BeatPaginator.alloc initWithScript:lines printInfo:self.delegate.printInfo];
 			NSArray *length = paginator.lengthInEights;
 			
 			CGFloat sceneLength = ([(NSNumber*)length[0] floatValue]) + ([(NSNumber*)length[1] floatValue] * 0.125);

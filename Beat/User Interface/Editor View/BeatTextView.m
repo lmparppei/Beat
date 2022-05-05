@@ -356,9 +356,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			return; // Skip default behavior
 		case 125:
 			// Down
-			if (row + 1 >= self.autocompleteTableView.numberOfRows) row = -1;
-			
-			if (self.autocompletePopover.isShown) {
+			if (theEvent.modifierFlags & NSEventModifierFlagOption) {
+				NSLog(@"Move line down");
+				[self.editorDelegate moveSelectedLinesDown];
+			}
+			else if (self.autocompletePopover.isShown) {
+				if (row + 1 >= self.autocompleteTableView.numberOfRows) row = -1;
 				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row+1] byExtendingSelection:NO];
 				[self.autocompleteTableView scrollRowToVisible:self.autocompleteTableView.selectedRow];
 				return; // Skip default behavior

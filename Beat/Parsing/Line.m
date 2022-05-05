@@ -572,7 +572,7 @@
 #pragma mark Dialogue
 
 - (bool)isDialogue {
-	if (self.type == character || self.type == parenthetical || self.type == dialogue) return YES;
+	if (self.type == character || self.type == parenthetical || self.type == dialogue || self.type == more) return YES;
 	else return NO;
 }
 - (bool)isDialogueElement {
@@ -581,14 +581,26 @@
 	else return NO;
 }
 - (bool)isDualDialogue {
-	if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical) return YES;
+	if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogueMore) return YES;
 	else return NO;
 }
 - (bool)isDualDialogueElement {
-	if (self.type == dualDialogueParenthetical || self.type == dualDialogue) return YES;
+	if (self.type == dualDialogueParenthetical || self.type == dualDialogue || self.type == dualDialogueMore) return YES;
 	else return NO;
 }
 
+- (bool)isAnyCharacter {
+	if (self.type == character || self.type == dualDialogueCharacter) return YES;
+	else return NO;
+}
+- (bool)isAnyParenthetical {
+	if (self.type == parenthetical || self.type == dualDialogueParenthetical) return YES;
+	return NO;
+}
+- (bool)isAnyDialogue {
+	if (self.type == dialogue || self.type == dualDialogue) return YES;
+	else return NO;
+}
 
 #pragma mark Omissions & notes
 
@@ -1312,6 +1324,7 @@
 	if (!_customDataDictionary) _customDataDictionary = NSMutableDictionary.new;
 	return _customDataDictionary[key];
 }
+
 
 #pragma mark - for debugging
 

@@ -162,6 +162,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @property (nonatomic) NSMutableDictionary* customDataDictionary;
 
+@property (nonatomic) NSInteger heightInPaginator;
+
+
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
 - (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser;
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position parser:(id<LineDelegate>)parser;
@@ -206,6 +209,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)isDualDialogue; /// returns TRUE for dual dialogue characters too
 - (bool)isDualDialogueElement;  /// returns TRUE for elements other than a character cue
 - (bool)isOutlineElement; /// returns true for scene heading, section and synopsis
+- (bool)isAnyCharacter; /// returns true for single and dual dialogue character cue
+- (bool)isAnyParenthetical; /// returns true for single and dual dialogue parenthetical
+- (bool)isAnyDialogue; /// returns true for single and dual dialogue
 
 - (NSString*)stripSceneNumber;
 - (NSString*)stripFormattingCharacters;

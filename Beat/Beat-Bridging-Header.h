@@ -20,5 +20,6 @@
 #import "BeatLocalization.h"
 #import "ThemeManager.h"
 #import "BeatPrintDialog.h"
+#import "BeatPaginator.h"
 
 #endif /* Beat_Bridging_Header_h */

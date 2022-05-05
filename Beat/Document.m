@@ -2035,8 +2035,6 @@
 }
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString
 {
-	if (self.undoManager.isRedoing) NSLog(@"is redoing!");
-	
 	// Replace with undo registration
 	NSString *oldString = [self.textView.string substringWithRange:range];
 	[self replaceCharactersInRange:range withString:newString];
@@ -2092,6 +2090,37 @@
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
 	NSString *stringToMove = [self.text substringWithRange:range];
 	[self moveStringFrom:range to:position actualString:stringToMove];
+}
+
+- (void)moveSelectedLinesDown {
+	NSArray <Line*>* lines;
+	if (self.selectedRange.length) {
+		lines = [self.parser linesInRange:self.selectedRange];
+	} else {
+		lines = @[[self.parser lineAtIndex:self.selectedRange.location]];
+	}
+	
+	[self moveLinesDown:lines];
+}
+
+- (void)moveLinesDown:(NSArray<Line*>*)lines {
+	// Don't move downward if we're already at the last object
+	if (lines.lastObject == self.lines.lastObject) return;
+	
+	NSUInteger nextIndex = [self.lines indexOfObject:lines.lastObject];
+	Line * nextLine = self.lines[nextIndex];
+	
+	NSRange range = NSMakeRange(lines.firstObject.position, NSMaxRange(lines.lastObject.range) - lines.firstObject.position);
+	NSString *moved = [self.text substringWithRange:range];
+	
+	[self replaceRange:range withString:@""];
+	[self addString:moved atIndex:NSMaxRange(nextLine.range)];
+	
+	if (self.selectedRange.length) {
+		self.selectedRange = NSMakeRange(NSMaxRange(nextLine.range), moved.length);
+	} else {
+		self.selectedRange = NSMakeRange(NSMaxRange(nextLine.range), 0);
+	}
 }
 
 - (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
@@ -4013,6 +4042,8 @@ static NSString *revisionAttribute = @"Revision";
 
 */
 
+// Note from 2022: Why is this here and not in the associated class?
+
 // We are using this same menu for both outline & timeline view
 - (void) menuDidClose:(NSMenu *)menu {
 	// Reset timeline selection, to be on the safe side
@@ -4274,7 +4305,7 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Editor Delegate methods
 
-- (NSMutableArray*)lines {
+- (NSMutableArray<Line*>*)lines {
 	return self.parser.lines;
 }
 

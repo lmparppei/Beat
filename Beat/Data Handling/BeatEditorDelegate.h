@@ -86,7 +86,7 @@
 
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
-- (NSMutableArray*)lines;
+- (NSMutableArray<Line*>*)lines;
 - (NSString*)text;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
 

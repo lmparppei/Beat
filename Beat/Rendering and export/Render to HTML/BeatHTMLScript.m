@@ -358,9 +358,9 @@ static bool underlinedHeading;
 		}
 		
 		// Stop dual dialogue
-		if (dualDialogueCharacterCount == 2 &&
-			!(line.type == dualDialogueParenthetical ||
-			 line.type == dualDialogue || line.type == dualDialogueMore)) {
+		if ((dualDialogueCharacterCount == 2 && !line.isDualDialogueElement) ||
+			(dualDialogueCharacterCount == 1 && line.type == character)) {
+			NSLog(@"terminating dual at : %@ (type %@)", line.string, line.typeAsString);
 			[body appendString:@"</div></div>\n"];
 			dualDialogueCharacterCount = 0;
 		}
@@ -440,7 +440,7 @@ static bool underlinedHeading;
 			
 			// If this line isn't part of a larger block, output it as paragraph
 			if (!beginBlock && !isLyrics) {
-				[body appendFormat:@"<p class='%@%@'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
+				[body appendFormat:@"<p class='%@%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, line.heightInPaginator, text];
 			} else {
 				if (beginBlock) {
 					// Begin new block

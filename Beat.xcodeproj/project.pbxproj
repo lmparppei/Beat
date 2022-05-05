@@ -640,10 +640,10 @@
 		B616493B26F7389B00582671 /* BeatEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorDelegate.h; sourceTree = "<group>"; };
 		B616493C26F7535600582671 /* BeatPasteboardItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPasteboardItem.h; sourceTree = "<group>"; };
 		B616493D26F7535600582671 /* BeatPasteboardItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPasteboardItem.m; sourceTree = "<group>"; };
-		B61875A32471BEDA00FB7646 /* BeatPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = Beat/Export/BeatPreview.h; sourceTree = SOURCE_ROOT; };
-		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = Beat/Export/BeatPreview.m; sourceTree = SOURCE_ROOT; };
-		B61B693B2472DEE800DCDBFA /* BeatPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPaginator.h; path = Beat/Parsing/BeatPaginator.h; sourceTree = SOURCE_ROOT; };
-		B61B693C2472DEE800DCDBFA /* BeatPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPaginator.m; path = Beat/Parsing/BeatPaginator.m; sourceTree = SOURCE_ROOT; };
+		B61875A32471BEDA00FB7646 /* BeatPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = "Beat/Rendering and export/BeatPreview.h"; sourceTree = SOURCE_ROOT; };
+		B61875A42471BEDA00FB7646 /* BeatPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = "Beat/Rendering and export/BeatPreview.m"; sourceTree = SOURCE_ROOT; };
+		B61B693B2472DEE800DCDBFA /* BeatPaginator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatPaginator.h; path = "Beat/Rendering and export/Pagination/BeatPaginator.h"; sourceTree = SOURCE_ROOT; };
+		B61B693C2472DEE800DCDBFA /* BeatPaginator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatPaginator.m; path = "Beat/Rendering and export/Pagination/BeatPaginator.m"; sourceTree = SOURCE_ROOT; };
 		B61BE988271D5053008FFA0F /* BeatMeasure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatMeasure.h; sourceTree = "<group>"; };
 		B61BE989271D5053008FFA0F /* BeatMeasure.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMeasure.m; sourceTree = "<group>"; };
 		B61F016C266AB93A005A1B8A /* NSMutableArray+MoveItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+MoveItem.m"; sourceTree = "<group>"; };
@@ -710,6 +710,9 @@
 		B65027EF256EAAAF00862A14 /* Info Pro.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info Pro.plist"; sourceTree = "<group>"; };
 		B650D76B25CF349D0042010C /* BeatTagging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagging.h; sourceTree = "<group>"; };
 		B650D76C25CF349D0042010C /* BeatTagging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagging.m; sourceTree = "<group>"; };
+		B652FDA82821776C0028712F /* BeatPaginatorDebugger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginatorDebugger.h; sourceTree = "<group>"; };
+		B652FDA92821776C0028712F /* BeatPaginatorDebugger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginatorDebugger.m; sourceTree = "<group>"; };
+		B652FDAA2821776C0028712F /* BeatPaginatorDebugger.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatPaginatorDebugger.xib; sourceTree = "<group>"; };
 		B655B1042714607700BA52ED /* BeatMarkerScroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatMarkerScroller.h; sourceTree = "<group>"; };
 		B655B1052714607700BA52ED /* BeatMarkerScroller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMarkerScroller.m; sourceTree = "<group>"; };
 		B65B148325FF815E0087834F /* BeatRevisionItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionItem.h; sourceTree = "<group>"; };
@@ -920,8 +923,8 @@
 		B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionTracking.m; sourceTree = "<group>"; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
-		B6D12FEA2537A04C0018A88F /* BeatComparison.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatComparison.h; path = Beat/Export/Comparison/BeatComparison.h; sourceTree = SOURCE_ROOT; };
-		B6D12FEB2537A04C0018A88F /* BeatComparison.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatComparison.m; path = Beat/Export/Comparison/BeatComparison.m; sourceTree = SOURCE_ROOT; };
+		B6D12FEA2537A04C0018A88F /* BeatComparison.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatComparison.h; path = "Beat/Rendering and export/Comparison/BeatComparison.h"; sourceTree = SOURCE_ROOT; };
+		B6D12FEB2537A04C0018A88F /* BeatComparison.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatComparison.m; path = "Beat/Rendering and export/Comparison/BeatComparison.m"; sourceTree = SOURCE_ROOT; };
 		B6D26BDF24B9E7350041402B /* BeatTimerView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimerView.h; path = "Beat/User Interface/Productivity Timer/BeatTimerView.h"; sourceTree = SOURCE_ROOT; };
 		B6D26BE024B9E7350041402B /* BeatTimerView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimerView.m; path = "Beat/User Interface/Productivity Timer/BeatTimerView.m"; sourceTree = SOURCE_ROOT; };
 		B6D26BE324B9ED830041402B /* BeatTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimer.h; path = "Beat/User Interface/Productivity Timer/BeatTimer.h"; sourceTree = SOURCE_ROOT; };
@@ -930,14 +933,14 @@
 		B6D2B7082218B320005B8447 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = "Beat/User Interface/Themes/Theme.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B70A2218B342005B8447 /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Line.m; path = Beat/Parsing/Line.m; sourceTree = SOURCE_ROOT; };
 		B6D2B70C2218B359005B8447 /* ColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorView.m; path = "Beat/User Interface/Misc/ColorView.m"; sourceTree = SOURCE_ROOT; };
-		B6D2B70E2218B377005B8447 /* FDXInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FDXInterface.m; path = "Beat/Export/Final Draft/FDXInterface.m"; sourceTree = SOURCE_ROOT; };
+		B6D2B70E2218B377005B8447 /* FDXInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FDXInterface.m; path = "Beat/Rendering and export/Final Draft/FDXInterface.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B7102218B389005B8447 /* NSString+CharacterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+CharacterControl.m"; path = "Beat/Categories/NSString+CharacterControl.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B7122218B39A005B8447 /* Document.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Document.m; path = Beat/Document.m; sourceTree = SOURCE_ROOT; };
 		B6D2B7142218B3AD005B8447 /* ThemeManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ThemeManager.m; path = "Beat/User Interface/Themes/ThemeManager.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B7162218B3BC005B8447 /* ContinuousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContinuousFountainParser.m; path = Beat/Parsing/ContinuousFountainParser.m; sourceTree = SOURCE_ROOT; };
 		B6D2B7192218B408005B8447 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		B6D2B71B2218B430005B8447 /* OutlineExtractor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineExtractor.m; path = Beat/Export/Other/OutlineExtractor.m; sourceTree = SOURCE_ROOT; };
-		B6D2B71D2218B44A005B8447 /* BeatPrintView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatPrintView.m; path = Beat/Export/BeatPrintView.m; sourceTree = SOURCE_ROOT; };
+		B6D2B71B2218B430005B8447 /* OutlineExtractor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineExtractor.m; path = "Beat/Rendering and export/Other/OutlineExtractor.m"; sourceTree = SOURCE_ROOT; };
+		B6D2B71D2218B44A005B8447 /* BeatPrintView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatPrintView.m; path = "Beat/Rendering and export/BeatPrintView.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B71F2218B459005B8447 /* RecentFiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentFiles.m; sourceTree = "<group>"; };
 		B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMutableIndexSet+Lowest.m"; path = "Beat/Categories/NSMutableIndexSet+Lowest.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B7232218B4A0005B8447 /* Themes.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Themes.plist; path = "Beat/User Interface/Themes/Themes.plist"; sourceTree = SOURCE_ROOT; };
@@ -1071,8 +1074,6 @@
 				B6D2B70A2218B342005B8447 /* Line.m */,
 				B138B65B19E1E8CA000489C4 /* FountainRegexes.h */,
 				B138B65C19E1E8CA000489C4 /* FountainRegexes.m */,
-				B61B693B2472DEE800DCDBFA /* BeatPaginator.h */,
-				B61B693C2472DEE800DCDBFA /* BeatPaginator.m */,
 				B607B7FB2792EFE50036120B /* BeatSceneTree.h */,
 				B607B7FC2792EFE50036120B /* BeatSceneTree.m */,
 				B606FDCE2818507900D89CD6 /* BeatPaginatorStyles.paginatorStyle */,
@@ -1125,7 +1126,7 @@
 				B667796223C5D10B0029D508 /* User Interface */,
 				B6907E39233FE16200741071 /* Statistics */,
 				B13111911CB2A41B00D07A0C /* Parsing */,
-				B1509A3D1CB5C0B400884918 /* Export */,
+				B1509A3D1CB5C0B400884918 /* Rendering and export */,
 				B667796623C5D1D20029D508 /* Import */,
 				B6BBF3CD24AC80E800503EFB /* Plugin API */,
 				B138B57619E1C973000489C4 /* Supporting Files */,
@@ -1174,9 +1175,10 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B1509A3D1CB5C0B400884918 /* Export */ = {
+		B1509A3D1CB5C0B400884918 /* Rendering and export */ = {
 			isa = PBXGroup;
 			children = (
+				B652FDA7282172A30028712F /* Pagination */,
 				B66CDF1928170EBF00EF4137 /* Print Dialog */,
 				B64663F527A5D534008D7F90 /* Paper Sizing */,
 				B6E099D3276681A3005E7827 /* Render to HTML */,
@@ -1193,7 +1195,7 @@
 				B66CDF102816DE5500EF4137 /* BeatCustomExportStyles.swift */,
 				B606FDC12817EBBF00D89CD6 /* Legacy */,
 			);
-			path = Export;
+			path = "Rendering and export";
 			sourceTree = "<group>";
 		};
 		B600DD5C254C22CC006A09D0 /* Data Handling */ = {
@@ -1413,6 +1415,18 @@
 				B6F15CE425E7B13000176946 /* BeatTagItem.m */,
 			);
 			path = Tagging;
+			sourceTree = "<group>";
+		};
+		B652FDA7282172A30028712F /* Pagination */ = {
+			isa = PBXGroup;
+			children = (
+				B61B693B2472DEE800DCDBFA /* BeatPaginator.h */,
+				B61B693C2472DEE800DCDBFA /* BeatPaginator.m */,
+				B652FDA82821776C0028712F /* BeatPaginatorDebugger.h */,
+				B652FDA92821776C0028712F /* BeatPaginatorDebugger.m */,
+				B652FDAA2821776C0028712F /* BeatPaginatorDebugger.xib */,
+			);
+			path = Pagination;
 			sourceTree = "<group>";
 		};
 		B65B148225FF81400087834F /* Revisions */ = {

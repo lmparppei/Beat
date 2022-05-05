@@ -18,7 +18,7 @@
 @property (nonatomic) bool outlineEdit;
 @property (readonly, nonatomic) NSMutableArray *outline;
 @property (nonatomic, strong, readonly) ContinuousFountainParser *parser;
-- (NSMutableArray*)lines;
+- (NSMutableArray<Line*>*)lines;
 - (NSMutableArray*)getOutlineItems;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 - (void)scrollToScene:(OutlineScene*)scene;

@@ -106,7 +106,7 @@ NSString * const DocSettingPageSize = @"Page Size";
 
 
 - (NSString*)getSettingsString {
-	return [self getSettingsStringWithAdditionalSettings:nil];
+	return [self getSettingsStringWithAdditionalSettings:@{}];
 }
 - (NSString*)getSettingsStringWithAdditionalSettings:(NSDictionary*)additionalSettings
 {

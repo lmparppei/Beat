@@ -27,6 +27,25 @@ IN THE SOFTWARE.
 	-webkit-user-select: none;
 }
 
+/*
+body p {
+	background: repeating-linear-gradient(
+	  0deg,
+	  white 0px,
+	  white 12pt,
+	  #465298 12.1pt,
+	  #465298 12.5pt
+	);
+}
+
+body p::after {
+	display: absolute;
+	left: -10px;
+	color: red;
+	content: attr(paginatedHeight);
+}
+*/
+
 body {
 
 	zoom: 70%;
@@ -54,7 +73,7 @@ article {
 }
 
 section {
-	background-color: #f0f0f0;
+	background-color: #fafafa;
 
 	min-height: var(--page-height);
 	height: var(--page-height);
