@@ -69,6 +69,7 @@
 		_omittedRanges = NSMutableIndexSet.indexSet;
 		_escapeRanges = NSMutableIndexSet.indexSet;
 		_removalSuggestionRanges = NSMutableIndexSet.indexSet;
+		_uuid = NSUUID.UUID;
 	}
 	return self;
 }
@@ -943,6 +944,8 @@
 		retain.changed = YES;
 		split.changed = YES;
 	}
+	
+	retain.uuid = self.uuid;
 	retain.position = self.position;
 	split.position = self.position + retain.string.length;
 	

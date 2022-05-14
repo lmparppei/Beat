@@ -1,5 +1,12 @@
 # Changelog
 
+## Beat 1.94.6
+
+- New dialogue pagination system
+- A lot of minor memory optimization etc
+
+
+
 ## Beat 1.94.4
 
 - New print dialog + custom styles

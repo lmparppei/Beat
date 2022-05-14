@@ -54,6 +54,10 @@
 		// Parse script
 		parser = [[ContinuousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate nonContinuous:YES];
 		
+		// Get identifiers
+		NSArray *uuids = [self.delegate.parser lineIdentifiers:nil];
+		if (uuids.count) [parser setIdentifiers:uuids];
+		
 		// Bake revision attributes
 		NSAttributedString *attrStr = self.delegate.attrTextCache;
 		[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];

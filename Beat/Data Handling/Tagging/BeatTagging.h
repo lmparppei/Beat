@@ -12,6 +12,7 @@
     #define TagColor UIColor
     #define TagFont UIFont
     #define BeatEditorView UITextView
+    #define BeatTagView UITextView
 #else
     #import <Cocoa/Cocoa.h>
     #define TagColor NSColor
@@ -44,7 +45,11 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 @class BeatTagging;
 @protocol BeatTaggingDelegate <NSObject>
 @property (readonly, weak) ContinuousFountainParser *parser;
+#if !TARGET_OS_IOS
 @property (readonly, weak) BeatTagView *textView;
+#else
+@property (readonly, weak) UITextView *textView;
+#endif
 
 - (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type;
@@ -64,7 +69,9 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 
 @interface BeatTagging : NSObject
 @property (weak) IBOutlet id<BeatTaggingDelegate> delegate;
+#if !TARGET_OS_IOS
 @property (weak) IBOutlet BeatTagView* textView;
+#endif
 
 + (NSArray*)tags;
 + (BeatTagType)tagFor:(NSString*)tag;

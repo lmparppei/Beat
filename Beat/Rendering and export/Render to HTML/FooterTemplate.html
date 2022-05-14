@@ -1,5 +1,35 @@
 
-		<script>function scrollToScene(scene) { console.log('scroll to: ' + scene); var el = document.getElementById('scene-' + scene); el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' }); }</script>
+		<script>
+			function scrollToScene(scene) {
+				console.log('scroll to: ' + scene)
+				var el = document.getElementById('scene-' + scene)
+				el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' })
+			}
+			function scrollToIdentifier(uuid) {
+				console.log('scroll to id: ' + uuid)
+				const paragraphs = document.querySelectorAll('p')
+				
+				const el = document.querySelector("p[uuid='"+ uuid +"']")
+				el.scrollIntoView({ behavior:'auto',block:'center',inline:'center' })
+				
+				highlight(el)
+			}
+			function highlight(element) {
+				let defaultBG = element.style.backgroundColor;
+				let defaultTransition = element.style.transition;
+
+				element.style.transition = "background 1s";
+				element.style.backgroundColor = "rgba(7, 189, 235, 0.25)";
+
+				setTimeout(function()
+				{
+					element.style.backgroundColor = defaultBG;
+					setTimeout(function() {
+						element.style.transition = defaultTransition;
+					}, 1000);
+				}, 1000);
+			}
+		</script>
 		<script>let zoomLevel = 100;
 			function zoomIn() { if (zoomLevel < 200) { zoomLevel += 10; document.body.style.zoom = zoomLevel + '%'; } }
 			function zoomOut() { if (zoomLevel > 50) { zoomLevel -= 10;  document.body.style.zoom = zoomLevel + '%'; } }

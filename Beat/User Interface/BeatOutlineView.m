@@ -166,6 +166,15 @@
 	*/
 }
 
+/*
+- (CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item {
+	NSMutableAttributedString *viewItem = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene];
+	CGRect size = [viewItem boundingRectWithSize:CGSizeMake(self.frame.size.width, CGFLOAT_MAX) options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading) context:nil];
+	
+	return size.size.height + 4;
+}
+ */
+
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
 	// If we have a search term, let's use the filtered array

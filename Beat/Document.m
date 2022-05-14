@@ -1034,10 +1034,20 @@
 #pragma mark - Zooming & layout
 
 - (IBAction)zoomIn:(id)sender {
-	[self zoom:YES];
+	if ([self selectedTab] == 0) [self zoom:YES];
+	
+	// Web preview zoom
+	if (@available(macOS 11.0, *)) {
+		if ([self selectedTab] == 1) self.printWebView.pageZoom += .1;
+	}
 }
 - (IBAction)zoomOut:(id)sender {
-	[self zoom:NO];
+	if ([self selectedTab] == 0) [self zoom:NO];
+	
+	// Web preview zoom
+	if (@available(macOS 11.0, *)) {
+		if ([self selectedTab] == 1) self.printWebView.pageZoom -= .1;
+	}
 }
 - (IBAction)resetZoom:(id)sender {
 	_magnification = DEFAULT_MAGNIFY;
@@ -1396,9 +1406,8 @@
 {
 	NSString* fileName = [self lastComponentOfFileName];
 	NSUInteger lastDotIndex = [fileName rangeOfString:@"." options:NSBackwardsSearch].location;
-	if (lastDotIndex != NSNotFound) {
-		fileName = [fileName substringToIndex:lastDotIndex];
-	}
+	if (lastDotIndex != NSNotFound) fileName = [fileName substringToIndex:lastDotIndex];
+	
 	return fileName;
 }
 
@@ -2092,37 +2101,6 @@
 	[self moveStringFrom:range to:position actualString:stringToMove];
 }
 
-- (void)moveSelectedLinesDown {
-	NSArray <Line*>* lines;
-	if (self.selectedRange.length) {
-		lines = [self.parser linesInRange:self.selectedRange];
-	} else {
-		lines = @[[self.parser lineAtIndex:self.selectedRange.location]];
-	}
-	
-	[self moveLinesDown:lines];
-}
-
-- (void)moveLinesDown:(NSArray<Line*>*)lines {
-	// Don't move downward if we're already at the last object
-	if (lines.lastObject == self.lines.lastObject) return;
-	
-	NSUInteger nextIndex = [self.lines indexOfObject:lines.lastObject];
-	Line * nextLine = self.lines[nextIndex];
-	
-	NSRange range = NSMakeRange(lines.firstObject.position, NSMaxRange(lines.lastObject.range) - lines.firstObject.position);
-	NSString *moved = [self.text substringWithRange:range];
-	
-	[self replaceRange:range withString:@""];
-	[self addString:moved atIndex:NSMaxRange(nextLine.range)];
-	
-	if (self.selectedRange.length) {
-		self.selectedRange = NSMakeRange(NSMaxRange(nextLine.range), moved.length);
-	} else {
-		self.selectedRange = NSMakeRange(NSMaxRange(nextLine.range), 0);
-	}
-}
-
 - (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
 {
 	return NSMakeRange(range->location + position, range->length);
@@ -2227,6 +2205,81 @@
 // There is no shortage of ugliness in the world.
 // If a person closed their eyes to it,
 // there would be even more.
+
+#pragma mark - Block / paragraph methods
+
+- (IBAction)moveSelectedLinesUp:(id)sender {
+	NSArray *lines = [self.parser blockFor:[self.parser lineAtIndex:self.selectedRange.location]];
+	[self moveBlockUp:lines];
+}
+- (IBAction)moveSelectedLinesDown:(id)sender {
+	NSArray *lines = [self.parser blockFor:[self.parser lineAtIndex:self.selectedRange.location]];
+	[self moveBlockDown:lines];
+}
+
+- (void)moveBlockUp:(NSArray<Line*>*)lines {
+	if (lines.firstObject == self.lines.firstObject) return;
+	
+	NSUInteger prevIndex = [self.lines indexOfObject:lines.firstObject] - 1;
+	Line* prevLine = self.lines[prevIndex];
+	
+	NSArray *prevBlock = [self.parser blockFor:prevLine];
+	Line *firstLine = prevBlock.firstObject;
+	NSInteger position = firstLine.position; // Save the position so we don't move the block at the wrong position
+	
+	// If the block doesn't have an empty line at the end, create one
+	if (lines.lastObject.length > 0) [self addString:@"\n" atIndex:position];
+	
+	NSRange blockRange = [self rangeForBlock:lines];
+	[self moveStringFrom:blockRange to:position];
+	if (blockRange.length > 0) [self setSelectedRange:NSMakeRange(position, blockRange.length - 1)];
+}
+
+- (void)moveBlockDown:(NSArray<Line*>*)lines {
+	// Don't move downward if we're already at the last object
+	if (lines.lastObject == self.lines.lastObject ||
+		lines.count == 0) return;
+		
+	NSUInteger nextIndex = [self.lines indexOfObject:lines.lastObject] + 1;
+	Line* nextLine = self.lines[nextIndex];
+	
+	// Get the next block (paragraph/dialogue block)
+	NSArray* nextBlock = [self.parser blockFor:nextLine];
+	Line *endLine = nextBlock.lastObject;
+	if (endLine == nil) return;
+	
+	NSRange blockRange = [self rangeForBlock:lines];
+	
+	if (endLine.string.length > 0) {
+		// Add a line break if we're moving a block at the end
+		[self addString:@"" atIndex:NSMaxRange(endLine.textRange)];
+	}
+		
+	[self moveStringFrom:blockRange to:NSMaxRange(endLine.range)];
+	if (blockRange.length > 0)[self setSelectedRange:NSMakeRange(NSMaxRange(endLine.range), blockRange.length - 1)];
+}
+
+- (IBAction)copyBlock:(id)sender {
+	Line *currentLine = [_parser lineAtIndex:self.selectedRange.location];
+	NSArray *block = [_parser blockFor:currentLine];
+	NSRange range = [self rangeForBlock:block];
+	
+	[self setSelectedRange:range];
+	[self.textView copy:self];
+}
+- (IBAction)cutBlock:(id)sender {
+	Line *currentLine = [_parser lineAtIndex:self.selectedRange.location];
+	NSArray *block = [_parser blockFor:currentLine];
+	NSRange range = [self rangeForBlock:block];
+	
+	[self setSelectedRange:range];
+	[self.textView cut:self];
+}
+
+- (NSRange)rangeForBlock:(NSArray<Line*>*)block {
+	NSRange range = NSMakeRange(block.firstObject.position, NSMaxRange(block.lastObject.range) - block.firstObject.position);
+	return range;
+}
 
 
 # pragma mark - Autocomplete
@@ -3409,9 +3462,14 @@ static NSString *revisionAttribute = @"Revision";
 	// Special conditions for other than normal edit view
 	if ([self selectedTab] != 0) {
 		// If PRINT PREVIEW is enabled
-		if ([self selectedTab] == 1 && [menuItem.title isEqualToString:@"Show Preview"]) {
-			[menuItem setState:NSOnState];
-			return YES;
+		if ([self selectedTab] == 1) {
+			
+			if (menuItem.action == @selector(preview:)) {
+				[menuItem setState:NSOnState];
+				return YES;
+			}
+			if (menuItem.action == @selector(zoomIn:)) return YES;
+			if (menuItem.action == @selector(zoomOut:)) return YES;
 		}
 
 		// If CARD VIEW is enabled
@@ -3425,7 +3483,7 @@ static NSString *revisionAttribute = @"Revision";
 			// Allow undoing scene move in card view, but nothing else
 			if (menuItem.action == @selector(undoEdit:)) {
 			//if ([menuItem.title rangeOfString:@"Undo"].location != NSNotFound) {
-				if ([[self.undoManager undoActionName] isEqualToString:@"Move Scene"]) {
+				if ([self.undoManager.undoActionName isEqualToString:@"Move Scene"]) {
 					NSString *title = NSLocalizedString(@"general.undo", nil);
 					menuItem.title = [NSString stringWithFormat:@"%@ %@", title, [self.undoManager undoActionName]];
 					return YES;
@@ -3435,7 +3493,7 @@ static NSString *revisionAttribute = @"Revision";
 			// Allow redoing, too
 			if (menuItem.action == @selector(redoEdit:)) {
 			//if ([menuItem.title rangeOfString:@"Redo"].location != NSNotFound) {
-				if ([[self.undoManager redoActionName] isEqualToString:@"Move Scene"]) {
+				if ([self.undoManager.redoActionName isEqualToString:@"Move Scene"]) {
 					NSString *title = NSLocalizedString(@"general.redo", nil);
 					menuItem.title = [NSString stringWithFormat:@"%@ %@", title, [self.undoManager redoActionName]];
 					return YES;
@@ -3600,7 +3658,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 
-#pragma mark - Themes & UI outlook
+#pragma mark - Themes & UI
 
 - (IBAction)toggleDarkMode:(id)sender {
 	[(BeatAppDelegate *)NSApp.delegate toggleDarkMode];
@@ -3744,6 +3802,10 @@ static NSString *revisionAttribute = @"Revision";
 	
 	[_printWebView loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
 	
+	if (@available(macOS 11.0, *)) {
+		self.printWebView.pageZoom = 1.2;
+	}
+	
 	_preview = [[BeatPreview alloc] initWithDocument:self];
 }
 
@@ -3759,19 +3821,21 @@ static NSString *revisionAttribute = @"Revision";
 
 - (IBAction)preview:(id)sender
 {
-    if (self.selectedTab == 0) {
+	/*
+	 
+	 We should put all of this into a separate class: Create a preview object that
+	 handles previews and builds the preview on per-page basis, similar to live pagination.
+	 Perhaps even connect preview + live pagination?
+	 
+	 This is a *VERY* hacky and convoluted system right now.
+	 
+	 */
+    if (self.selectedTab != 1) {
 		// Do a synchronous refresh of the preview if the preview is not available
 		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
 		else {
-			// So uh... yeah. Fuck commenting my code at this point.
-			// (Thanks, past me. We will insert JS to automatically scroll to the edited scene.
-			// HTML template has a placeholder for the inserted script, don't remove it.)
-			
 			// Create JS scroll function call and append it straight into the HTML
-			self.outline = [self getOutlineItems];
-			OutlineScene * currentScene = self.currentScene;
-						
-			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene('%@');</script>", currentScene.sceneNumber];
+			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", self.currentLine.uuid.UUIDString.lowercaseString];
 			
 			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
 			[self.printWebView loadHTMLString:_htmlString baseURL:nil]; // Load HTML
@@ -3781,7 +3845,8 @@ static NSString *revisionAttribute = @"Revision";
 			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
 			
 			// Evaluate JS in window to be sure it shows the correct scene
-			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToScene(%@);", currentScene.sceneNumber] completionHandler:nil];
+			//[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToScene(%@);", currentScene.sceneNumber] completionHandler:nil];
+			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", self.currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
 		}
 	
         [self setTab:1];
@@ -5028,7 +5093,6 @@ triangle walks
 	return NO;
 }
 
-
 - (IBAction)toggleAutosave:(id)sender {
 	self.autosave = !self.autosave;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
@@ -5046,8 +5110,12 @@ triangle walks
 
 - (NSURL *)autosavedContentsFileURL {
 	//NSURL *autosavePath = [(BeatAppDelegate*)NSApp.delegate autosavePath];
+	
+	NSString *filename = [self fileNameString];
+	if (!filename) filename = @"Untitled";
+	
 	NSURL *autosavePath = [self autosavePath];
-	autosavePath = [autosavePath URLByAppendingPathComponent:[self fileNameString]];
+	autosavePath = [autosavePath URLByAppendingPathComponent:filename];
 	autosavePath = [autosavePath URLByAppendingPathExtension:@"fountain"];
 	
 	return autosavePath;

@@ -360,7 +360,6 @@ static bool underlinedHeading;
 		// Stop dual dialogue
 		if ((dualDialogueCharacterCount == 2 && !line.isDualDialogueElement) ||
 			(dualDialogueCharacterCount == 1 && line.type == character)) {
-			NSLog(@"terminating dual at : %@ (type %@)", line.string, line.typeAsString);
 			[body appendString:@"</div></div>\n"];
 			dualDialogueCharacterCount = 0;
 		}
@@ -440,11 +439,11 @@ static bool underlinedHeading;
 			
 			// If this line isn't part of a larger block, output it as paragraph
 			if (!beginBlock && !isLyrics) {
-				[body appendFormat:@"<p class='%@%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses, line.heightInPaginator, text];
+				[body appendFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, text];
 			} else {
 				if (beginBlock) {
 					// Begin new block
-					[body appendFormat:@"<p class='%@%@'>%@<br>", [self htmlClassForType:line.typeAsFountainString], additionalClasses, text];
+					[body appendFormat:@"<p class='%@%@' uuid='%@'>%@<br>", [self htmlClassForType:line.typeAsFountainString], additionalClasses, line.uuid.UUIDString, text];
 				} else {
 					// Continue the block
 					// note: we can't use \n after the lines to make it more easy read, because we want to preserve the white space

@@ -7,7 +7,6 @@
 //
 
 #import "BeatColors.h"
-#import "ThemeManager.h"
 
 @interface BeatColors ()
 @property (nonatomic) NSDictionary *colorValues;
@@ -32,8 +31,8 @@
 			 @"green": [BeatColors colorWithRed:0 green:223 blue:121],
 			 @"pink": [BeatColors colorWithRed:250 green:111 blue:193],
 			 @"magenta": [BeatColors colorWithRed:236 green:0 blue:140],
-			 @"gray": NSColor.grayColor,
-			 @"grey": NSColor.grayColor, // for the illiterate
+			 @"gray": BeatColor.grayColor,
+			 @"grey": BeatColor.grayColor, // for the illiterate
 			 @"purple": [BeatColors colorWithRed:181 green:32 blue:218],
 			 @"prince": [BeatColors colorWithRed:181 green:32 blue:218], // for the purple one
 			 @"yellow": [BeatColors colorWithRed:251 green:193 blue:35],
@@ -55,16 +54,23 @@
 	BeatColors *colors = [self sharedColors];
 	return colors.colorValues;
 }
-+ (NSColor *)colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
-	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
++ (BeatColor *)colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
+	#if TARGET_OS_IOS
+		return [UIColor colorWithRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
+	#else
+		return [BeatColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
+	#endif
 }
-+ (NSColor *)randomColor {
+/*
++ (BeatColor*)randomColor {
 	NSArray * colors = [BeatColors attributeKeys];
 	NSUInteger index = arc4random_uniform((uint32_t)(colors.count - 1));
 	return [BeatColors valueForKey:colors[index]];
 }
-+ (NSColor *)color:(NSString*)name {
-	NSColor *color = [BeatColors.colors valueForKey:name.lowercaseString];
+ */
+
++ (BXColor*)color:(NSString*)name {
+	BXColor* color = [BeatColors.colors valueForKey:name.lowercaseString];
 	if (color) {
 		return color;
 	} else {
@@ -80,9 +86,9 @@
 }
 
 // Thanks to Zlatan @ stackoverflow
-+ (NSColor*)colorWithHexColorString:(NSString*)inColorString
++ (BXColor*)colorWithHexColorString:(NSString*)inColorString
 {
-    NSColor* result = nil;
+	BXColor* result = nil;
     unsigned colorCode = 0;
     unsigned char redByte, greenByte, blueByte;
 
@@ -95,26 +101,40 @@
     greenByte = (unsigned char)(colorCode >> 8);
     blueByte = (unsigned char)(colorCode); // masks off high bits
 
-    result = [NSColor
-		colorWithCalibratedRed:(CGFloat)redByte / 0xff
-		green:(CGFloat)greenByte / 0xff
-		blue:(CGFloat)blueByte / 0xff
-		alpha:1.0
-	];
+#if TARGET_OS_IOS
+	result = [UIColor colorWithRed:(CGFloat)redByte / 0xff
+							 green:(CGFloat)greenByte / 0xff
+							  blue:(CGFloat)blueByte / 0xff
+							 alpha:1.0];
+#else
+    result = [NSColor colorWithCalibratedRed:(CGFloat)redByte / 0xff
+									   green:(CGFloat)greenByte / 0xff
+										blue:(CGFloat)blueByte / 0xff
+									   alpha:1.0];
+#endif
     return result;
 }
 
 + (NSString*)colorWith16bitHex:(NSString*)colorName {
 	// Only use COLOR NAMES here
-	NSColor *color = [self color:colorName];
+	BXColor *color = [self color:colorName];
 	return [self get16bitHex:color];
 	
 }
-+ (NSString*)get16bitHex:(NSColor *)color {
++ (NSString*)get16bitHex:(BXColor *)color {
+#if TARGET_OS_IOS
+	CGFloat red; CGFloat green; CGFloat blue;
+	[color getRed:&red green:&green blue:&blue alpha:nil];
+#else
+	CGFloat red = color.redComponent;
+	CGFloat green = color.greenComponent;
+	CGFloat blue = color.blueComponent;
+#endif
+	
 	NSString* hexString = [NSString stringWithFormat:@"%04X%04X%04X",
-						   (int) (color.redComponent * 0xFFFF),
-						   (int) (color.greenComponent * 0xFFFF),
-						   (int) (color.blueComponent * 0xFFFF)];
+						   (int) (red * 0xFFFF),
+						   (int) (green * 0xFFFF),
+						   (int) (blue * 0xFFFF)];
 	return hexString;
 }
 

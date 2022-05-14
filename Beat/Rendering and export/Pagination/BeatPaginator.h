@@ -14,8 +14,13 @@
 
 #if TARGET_OS_IOS
     #define BeatFont UIFont
+	#define BeatDocument UIDocument
+	#define BetPrintInfo UIPrintInfo
+	#import <UIKit/UIKit.h>
 #else
     #define BeatFont NSFont
+	#define BeatDocument NSDocument
+	#define BetPrintInfo NSPrintInfo
     #import <Cocoa/Cocoa.h>
 #endif
 
@@ -67,9 +72,9 @@
 @property (strong, nonatomic) NSMutableArray *pageInfo;
 
 - (id)initWithScript:(NSArray *)elements settings:(BeatExportSettings*)settings;
-- (id)initForLivePagination:(NSDocument*)document;
-- (id)initForLivePagination:(NSDocument*)document withElements:(NSArray*)elements;
-- (id)initWithScript:(NSArray *)elements printInfo:(NSPrintInfo*)printInfo;
+- (id)initForLivePagination:(BeatDocument*)document;
+- (id)initForLivePagination:(BeatDocument*)document withElements:(NSArray*)elements;
+- (id)initWithScript:(NSArray *)elements printInfo:(BeatPrintInfo*)printInfo;
 
 - (void)livePaginationFor:(NSArray*)script changeAt:(NSUInteger)location;
 - (void)paginate;

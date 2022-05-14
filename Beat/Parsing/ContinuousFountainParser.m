@@ -2304,6 +2304,55 @@ and incomprehensible system of recursion.
 }
 
 
+#pragma mark - Element blocks
+
+- (NSArray<Line*>*)blockFor:(Line*)line {
+	// The "block" includes the empty line at the end
+	
+	NSArray *lines = self.lines;
+	NSMutableArray *block = NSMutableArray.new;
+	NSInteger blockBegin = [lines indexOfObject:line];
+	
+	// At an empty line, iterate uprwards and find out where the block begins
+	if (line.type == empty) {
+		NSInteger h = blockBegin - 1;
+		while (h >= 0) {
+			Line *l = lines[h];
+			if (l.type == empty) {
+				blockBegin = h + 1;
+				break;
+			}
+			h--;
+		}
+	}
+	
+	if (line.isDialogueElement || line.isDualDialogueElement) {
+		if (!line.isAnyCharacter) {
+			NSInteger i = blockBegin - 1;
+			while (i >= 0) {
+				Line *precedingLine = lines[i];
+				if (!(precedingLine.isDualDialogueElement || precedingLine.isDialogueElement)) {
+					blockBegin = i;
+					break;
+				}
+				
+				i--;
+			}
+		}
+	}
+	
+	NSInteger i = blockBegin;
+	while (i < lines.count) {
+		Line *l = lines[i];
+		[block addObject:l];
+		if (l.type == empty || l.length == 0) break;
+		
+		i++;
+	}
+	
+	return block;
+}
+
 #pragma mark - Utility
 
 - (NSString *)description
@@ -2620,6 +2669,32 @@ NSUInteger prevLineAtLocationIndex = 0;
 	}
 	
 	return elements;
+}
+- (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines {
+	if (lines == nil) lines = self.lines;
+	
+	NSMutableArray *uuids = NSMutableArray.new;
+	for (Line *line in lines) {
+		[uuids addObject:line.uuid];
+	}
+	return uuids;
+}
+- (void)setIdentifiers:(NSArray*)uuids {
+	for (NSInteger i = 0; i < uuids.count; i++) {
+		id item = uuids[i];
+		NSUUID *uuid;
+		
+		if ([item isKindOfClass:NSString.class]) {
+			uuid = [NSUUID.alloc initWithUUIDString:item];
+		} else {
+			uuid = item;
+		}
+		
+		if (i < self.lines.count) {
+			Line *line = self.lines[i];
+			line.uuid = uuid;
+		}
+	}
 }
 
 #pragma mark - Document settings

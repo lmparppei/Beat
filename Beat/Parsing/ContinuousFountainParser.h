@@ -129,6 +129,11 @@
 - (NSInteger)numberOfScenes;
 - (LineType)lineTypeAt:(NSInteger)index;
 
+- (NSArray<Line*>*)blockFor:(Line*)line;
+
+- (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines;
+- (void)setIdentifiers:(NSArray*)uuids;
+
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;
 - (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view

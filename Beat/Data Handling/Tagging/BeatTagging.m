@@ -70,12 +70,10 @@
 }
 
 -(void)awakeFromNib {
-#if TARGET_OS_IOS
-	self.textView.textContainerInset = UIEdgeInsetsMake(8, 8, 8, 8);
-#else
+    [super awakeFromNib];
+#if !TARGET_OS_IOS
 	self.textView.textContainerInset = (NSSize){ 8, 8 };
 #endif
-
 }
 
 + (NSArray*)tags {

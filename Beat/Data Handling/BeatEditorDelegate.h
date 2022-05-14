@@ -12,11 +12,15 @@
     #define BeatFont UIFont
     #define BeatChangeType UIDocumentChangeKind
     #define BeatDocTextView UITextView
+    #define BeatWindow UIWindow
+    #define BeatPrintInfo UIPrintInfo
 #else
     #import <Cocoa/Cocoa.h>
     #define BeatFont NSFont
     #define BeatChangeType NSDocumentChangeType
     #define BeatDocTextView NSTextView
+    #define BeatWindow NSWindow
+    #define BeatPrintInfo NSPrintInfo
 #endif
 
 @class BeatPrintView;
@@ -75,11 +79,13 @@
 
 @property (strong, nonatomic) BeatPrintView *printView;
 
-@property (weak) NSWindow* documentWindow;
+@property (weak) BeatWindow* documentWindow;
 
 - (id)document;
 
+#if !TARGET_OS_IOS
 - (NSPrintInfo*)printInfo;
+#endif
 - (void)setPaperSize:(NSInteger)size;
 - (void)setPrintSceneNumbers:(bool)value;
 - (void)releasePrintDialog;

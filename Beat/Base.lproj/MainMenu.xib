@@ -311,6 +311,31 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="k4P-sZ-FUO"/>
+                            <menuItem title="Copy Current Paragraph/Block" keyEquivalent="c" id="soE-DO-Gl8">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="copyBlock:" target="-1" id="UAv-ze-MY5"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Cut Current Paragraph/Block" keyEquivalent="x" id="3wC-eS-bpF">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                <connections>
+                                    <action selector="cutBlock:" target="-1" id="aNU-h6-Ar9"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Move Paragraph/Block Up" keyEquivalent="" id="P2e-v3-Dx2">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
+                                <connections>
+                                    <action selector="moveSelectedLinesUp:" target="-1" id="i7U-aP-KG5"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Move Paragraph/Block Down" keyEquivalent="" id="fVz-La-McU">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
+                                <connections>
+                                    <action selector="moveSelectedLinesDown:" target="-1" id="C7e-Lv-7NL"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Khe-DG-pCL"/>
                             <menuItem title="Find" id="AVO-sB-rdP">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Find" id="jxo-3x-AhN">
