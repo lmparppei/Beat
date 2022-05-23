@@ -6,30 +6,43 @@
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
-#import "DynamicColor.h"
-#import "Theme.h"
-#import "ThemeEditor.h"
+#import <TargetConditionals.h>
 
+#if TARGET_OS_IOS
+	#import <UIKit/UIKit.h>
+	#define BXColor UIColor
+#else
+	#import <Cocoa/Cocoa.h>
+	#define BXColor NSColor
+	#import "ThemeEditor.h"
+#endif
+
+#import "DynamicColor.h"
+#import "BeatTheme.h"
+
+@protocol BeatTheme;
 @interface ThemeManager : NSObject
 
+#if !TARGET_OS_IOS
 @property (nonatomic) ThemeEditor *themeEditor;
-@property (nonatomic) Theme* theme;
+#endif
+
+@property (nonatomic) id<BeatTheme> theme;
 
 + (ThemeManager*)sharedManager;
 
 - (void)showEditor;
 
-- (Theme*)defaultTheme;
-- (Theme*)dictionaryToTheme:(NSDictionary*)values;
+- (id<BeatTheme>)defaultTheme;
+- (id<BeatTheme>)dictionaryToTheme:(NSDictionary*)values;
 - (void)revertToSaved; /// Loads default and saved custom themes and applies them
-- (void)readTheme:(Theme*)theme; /// Read a single, preprocessed theme
+- (void)readTheme:(id<BeatTheme>)theme; /// Read a single, preprocessed theme
 - (void)loadThemeForAllDocuments;
 - (void)resetToDefault;
 - (void)saveTheme;
 
 //Access the current theme
-- (Theme*) theme;
+- (id<BeatTheme>) theme;
 
 - (DynamicColor*)currentBackgroundColor;
 - (DynamicColor*)currentSelectionColor;

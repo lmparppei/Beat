@@ -7,8 +7,8 @@
 //
 
 /*
- 
- An idea to separate all formatting from Document.
+
+ This class handles formatting the screenplay in editor view
  
  */
 

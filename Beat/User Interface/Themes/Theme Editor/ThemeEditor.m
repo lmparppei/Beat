@@ -8,6 +8,7 @@
 
 #import "ThemeEditor.h"
 #import "ThemeManager.h"
+#import "Beat-Swift.h"
 
 @interface ThemeEditor ()
 @property (nonatomic, weak) IBOutlet NSColorWell *backgroundLight;
@@ -72,12 +73,12 @@
 }
 
 - (void)loadDefaults {
-	Theme *defaultTheme = ThemeManager.sharedManager.defaultTheme;
+	id<BeatTheme> defaultTheme = ThemeManager.sharedManager.defaultTheme;
 	[self loadTheme:defaultTheme];
 	[ThemeManager.sharedManager resetToDefault];
 	[ThemeManager.sharedManager loadThemeForAllDocuments];
 }
-- (void)loadTheme:(Theme*)theme {
+- (void)loadTheme:(id<BeatTheme>)theme {
 	[_backgroundLight setColor:theme.backgroundColor.aquaColor];
 	[_backgroundDark setColor:theme.backgroundColor.darkAquaColor];
 	[_textLight setColor:theme.textColor.aquaColor];
@@ -110,7 +111,7 @@
 }
 
 -(IBAction)changeColor:(NSColorWell*)sender {
-	Theme *theme = ThemeManager.sharedManager.theme;
+	id<BeatTheme> theme = ThemeManager.sharedManager.theme;
 	if (sender == _backgroundLight) theme.backgroundColor.aquaColor = sender.color;
 	else if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = sender.color;
 	else if (sender == _textLight) theme.textColor.aquaColor = sender.color;

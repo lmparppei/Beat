@@ -467,7 +467,7 @@
 	self.printView = nil;
 	self.analysisWindow = nil;
 	self.currentScene = nil;
-	self.currentLine = nil;
+	//self.currentLine = nil;
 	self.sceneCards = nil;
 	self.paginator = nil;
 	self.outlineView.filters = nil;
@@ -1585,39 +1585,22 @@
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
-{
-	// If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
-	if (range.length + range.location > self.textView.string.length) {
-		NSLog(@"replacement over bounds: %lu / %lu", range.location + range.length, self.textView.string.length);
-		
-		NSInteger length = self.textView.string.length - range.location;
-		range = NSMakeRange(range.location, length);
-		
-		NSLog(@"fixed to: %lu / %lu", range.location + range.length, self.textView.string.length);
-	}
-	
-    if ([self textView:self.textView shouldChangeTextInRange:range replacementString:string]) {
-        [self.textView replaceCharactersInRange:range withString:string];
-        [self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
-    }
-}
-
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode || self.contentLocked) return NO;
-		
+	
+	Line* currentLine = self.currentLine;
+	
+	// This shouldn't be here :-)
 	if (replacementString.length == 1 && affectedCharRange.length == 0 && self.beatTimer.running) {
 		if (![replacementString isEqualToString:@"\n"]) self.beatTimer.charactersTyped++;
 	}
 	
 	// Check for character input trouble
 	if (_characterInput) {
-		_currentLine = [self getCurrentLine];
-		
 		// Stop character input if line has changed.
-		if (_currentLine != _characterInputForLine) {
+		if (currentLine != _characterInputForLine) {
 			// If the character cue was left empty, remove its type
 			if (_characterInputForLine.string.length == 0) {
 				_characterInputForLine.type = action;
@@ -1628,127 +1611,50 @@
 		}
 	}
 	
-	// Also, if it's an enter key and we are handling a CHARACTER, we have some special rules:
+	// Handle new line breaks (when actually typed)
 	bool forceDialogue = NO;
-	if ([replacementString isEqualToString:@"\n"] &&
-		affectedCharRange.length == 0 &&
-		(_currentLine.type == character || _currentLine.type == dualDialogueCharacter)) {
-		
-		// Force dialogue type for the empty line if needed
-		Line *nextLine = [_parser nextLine:_currentLine];
-		if ((nextLine.type == dialogue || nextLine.type == dualDialogue || nextLine.type == empty) && (nextLine.string.length == 0 || nextLine == nil)) {
-			forceDialogue = YES;
-		}
-		
-		// Look back to see if we should add (cont'd)
-		if (self.automaticContd) {
-			NSInteger lineIndex = [self.parser.lines indexOfObject:_currentLine] - 1;
-			if (lineIndex != NSNotFound) {
-				NSString *charName = _currentLine.characterName;
+	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !self.undoManager.isRedoing && !self.undoManager.isUndoing && !self.documentIsLoading) {
 				
-				while (lineIndex > 0) {
-					Line * prevLine = self.parser.lines[lineIndex];
-					
-					// Stop at headings
-					if (prevLine.type == heading) break;
-
-					if (prevLine.type == character) {
-						// Stop if the previous character is not the current one
-						if (![prevLine.characterName isEqualToString:charName]) break;
-						
-						// This is the character. Put in CONT'D and a line break and return NO
-						NSString *contd = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
-						NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
-						
-						if (![_currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
-							[self addString:contdString atIndex:_currentLine.position + _currentLine.length];
-							return NO;
-						}
-					}
-					
-					lineIndex--;
-				}
+		// Line break after character cue
+		if (currentLine.isAnyCharacter) {
+			// Force dialogue type for the empty line if needed
+			Line *nextLine = [_parser nextLine:currentLine];
+			if ((nextLine.isAnyDialogue || nextLine.type == empty) && (nextLine.string.length == 0 || nextLine == nil)) {
+				forceDialogue = YES;
 			}
-		}
-	}
-
-    // If something is being inserted, check whether it is a "(" or a "[[" and auto close it
-    else if (self.matchParentheses && !self.undoManager.isRedoing) {
-        if (affectedCharRange.length == 0) {
-            if ([replacementString isEqualToString:@"("]) {
-				if (_currentLine.type != character) {
-					[self addString:@")" atIndex:affectedCharRange.location];
-					[self.textView setSelectedRange:affectedCharRange];
-				}
-            } else if ([replacementString isEqualToString:@"["]) {
-                if (affectedCharRange.location != 0) {
-                    unichar characterBefore = [[self.textView string] characterAtIndex:affectedCharRange.location-1];
-                    
-                    if (characterBefore == '[') {
-                        [self addString:@"]]" atIndex:affectedCharRange.location];
-                        [self.textView setSelectedRange:affectedCharRange];
-                    }
-                }
-            } else if ([replacementString isEqualToString:@"*"]) {
-                if (affectedCharRange.location != 0) {
-                    unichar characterBefore = [[self.textView string] characterAtIndex:affectedCharRange.location-1];
-                    
-                    if (characterBefore == '/') {
-                        [self addString:@"*/" atIndex:affectedCharRange.location];
-                        [self.textView setSelectedRange:affectedCharRange];
-                    }
-                }
-            } else if ([replacementString isEqualToString:@")"] || [replacementString isEqualToString:@"]"]) {
-				if (affectedCharRange.location < self.text.length) {
-					unichar currentCharacter = [[self.textView string] characterAtIndex:affectedCharRange.location];
-					if (currentCharacter == ')' && [replacementString isEqualToString:@")"]) {
-						[self.textView setSelectedRange:NSMakeRange(affectedCharRange.location + 1, 0)];
-						return NO;
-					}
-					if (currentCharacter == ']' && [replacementString isEqualToString:@"]"]) {
-						[self.textView setSelectedRange:NSMakeRange(affectedCharRange.location + 1, 0)];
-						return NO;
-					}
-				}
-			} else if ([replacementString isEqualToString:@"<"]) {
-				if (affectedCharRange.location != 0) {
-					unichar characterBefore = [[self.textView string] characterAtIndex:affectedCharRange.location-1];
-					
-					if (characterBefore == '<') {
-						[self addString:@">>" atIndex:affectedCharRange.location];
-						[self.textView setSelectedRange:affectedCharRange];
-					}
-				}
-			} else if ([replacementString isEqualToString:@"{"]) {
-				if (affectedCharRange.location != 0) {
-					unichar characterBefore = [[self.textView string] characterAtIndex:affectedCharRange.location-1];
-					
-					if (characterBefore == '{') {
-						[self addString:@"}}" atIndex:affectedCharRange.location];
-						[self.textView setSelectedRange:affectedCharRange];
-					}
-				}
-			}
-        }
-    }
-		
-	// When on a parenthetical, don't split it when pressing enter but move downwards
-	if (_currentLine.type == parenthetical && [replacementString isEqualToString:@"\n"] && self.selectedRange.length == 0) {
-		if (self.textView.string.length >= affectedCharRange.location + 1) {
-			char chr = [self.textView.string characterAtIndex:affectedCharRange.location];
-			if (chr == ')') {
-				[self addString:@"\n" atIndex:affectedCharRange.location + 1];
-				Line *nextLine = [self getNextLine:_currentLine];
-				[_formatting formatLine:nextLine];
-				[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
-				return NO;
-			}
-		}
-	}
 			
-	// Enter key
-	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0  && !self.undoManager.isUndoing && !self.documentIsLoading) {
-		_currentLine = [self getCurrentLine];
+			// Look back to see if we should add (cont'd)
+			if (self.automaticContd) {
+				// If the CONT'D got added, don't run this method any longer
+				if ([self shouldAddContdIn:affectedCharRange string:replacementString]) return NO;
+			}
+		}
+		
+		// When on a parenthetical, don't split it when pressing enter, but move downwards to next dialogue block element
+		// Note: This logic is a bit faulty. We should probably just move on next line regardless of next character
+		else if (currentLine.isAnyParenthetical && self.selectedRange.length == 0) {
+			if (self.textView.string.length >= affectedCharRange.location + 1) {
+				char chr = [self.textView.string characterAtIndex:affectedCharRange.location];
+				if (chr == ')') {
+					[self addString:@"\n" atIndex:affectedCharRange.location + 1];
+					Line *nextLine = [self getNextLine:currentLine];
+					[_formatting formatLine:nextLine];
+					[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
+					return NO;
+				}
+			}
+		}
+		
+		// Handle automatic line breaks
+		else if (self.autoLineBreaks) {
+			if ([self shouldAddLineBreaks:currentLine range:affectedCharRange]) return NO;
+		}
+		
+		// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
+		else if (self.matchParentheses) {
+			[self matchParenthesesIn:affectedCharRange string:replacementString];
+		}
+		
 		
 		// Process line break after a forced character input
 		if (_characterInput && _characterInputForLine) {
@@ -1766,56 +1672,20 @@
 			}
 		}
 		
-		// Process double breaks after some elements
-		// This should be rewritten at some point, I have no idea what's going on
-		// ... This is future me writing from the present, and I have no idea what you've going after, either.
-		//     This REALLY should be rewritten.
-		//           This is future me again, and what the actual fuck???
-		//					This is present me in Apr 2022. I made it a bit more sensible.
-		if (self.autoLineBreaks) {
-			// Test if we should add a new line
-			// (We are not in the process of adding a dual line break and shift is not pressed)
-			if (_currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
-				
-				// Add double breaks for outline element lines
-				if (_currentLine.type == heading ||
-					_currentLine.type == section ||
-					_currentLine.type == synopse) {
-					[self addString:@"\n\n" atIndex:affectedCharRange.location];
-					return NO;
-				}
-				
-				// Action lines need to perform some checks
-				else if (_currentLine.type == action) {
-					NSUInteger currentIndex = [self.parser.lines indexOfObject:_currentLine];
-					
-					// Perform double-check if there is a next line
-					if (currentIndex < self.parser.lines.count - 2 && currentIndex != NSNotFound) {
-						Line* nextLine = [self.parser.lines objectAtIndex:currentIndex + 1];
-						if (nextLine.string.length == 0) {
-							[self addString:@"\n\n" atIndex:affectedCharRange.location];
-							return NO;
-						}
-					} else {
-						[self addString:@"\n\n" atIndex:affectedCharRange.location];
-						return NO;
-					}
-				} else if (_currentLine.type == dialogue) {
-					[self addString:@"\n\n" atIndex:affectedCharRange.location];
-					return NO;
-				}
-			}
+		if ([self shouldJumpOverParentheses:replacementString range:affectedCharRange]) {
+			return NO;;
 		}
 	}
-	
+
+	// Make the replacement string uppercase in parser
 	if (_characterInput) replacementString = replacementString.uppercaseString;
 	
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
 
-	// Store the affected line and get current line. These can be the same.
-	//Line *affectedLine = _currentLine;
+	// Get current line after parsing
 	_currentLine = [self getCurrentLine];
+	
 	
 	if (forceDialogue) {
 		// Force the next line to become dialogue
@@ -1824,23 +1694,157 @@
 	}
 
 	
-	// Fire up autocomplete at the end of string and
-	// create cached lists of scene headings / character names
-	
+	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
 	if (self.autocomplete) [self autocompleteAtCurrentLine];
-
+	
+	/*
+	if (_lastChangedRange.location == NSNotFound || affectedCharRange.location < _lastChangedRange.location) {
+		_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
+	}
+	*/
+	
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
+
 	_previewUpdated = NO;
 	
     return YES;
 }
 
+- (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange {
+	// Don't add a dual line break if shift is pressed
+	if (currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
+		
+		// Add double breaks for outline element lines
+		if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
+			[self addString:@"\n\n" atIndex:affectedCharRange.location];
+			return YES;
+		}
+		
+		// Action lines need to perform some checks
+		else if (currentLine.type == action) {
+			NSUInteger currentIndex = [self.parser.lines indexOfObject:currentLine];
+			
+			// Perform a double-check if there is a next line
+			if (currentIndex < self.parser.lines.count - 2 && currentIndex != NSNotFound) {
+				Line* nextLine = [self.parser.lines objectAtIndex:currentIndex + 1];
+				if (nextLine.string.length == 0) {
+					[self addString:@"\n\n" atIndex:affectedCharRange.location];
+					return YES;
+				}
+			} else {
+				[self addString:@"\n\n" atIndex:affectedCharRange.location];
+				return YES;
+			}
+		}
+	}
+	
+	return NO;
+}
+
+- (bool)shouldJumpOverParentheses:(NSString*)replacementString range:(NSRange)affectedCharRange {
+	// Jump over matched parentheses
+	if ([replacementString isEqualToString:@")"] || [replacementString isEqualToString:@"]"]) {
+		if (affectedCharRange.location < self.text.length) {
+			unichar currentCharacter = [self.textView.string characterAtIndex:affectedCharRange.location];
+			if ((currentCharacter == ')' && [replacementString isEqualToString:@")"]) ||
+				(currentCharacter == ']' && [replacementString isEqualToString:@"]"])) {
+				[self.textView setSelectedRange:NSMakeRange(affectedCharRange.location + 1, 0)];
+				return YES;
+			}
+		}
+	}
+	
+	return NO;
+}
+
+- (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString {
+	/**
+	 This method finds a matching closure for parenthesis, notes and omissions.
+	 It works by checking the entered symbol and if the previous symbol in text
+	 matches its counterpart (like with *, if the previous is /, terminator is appended.
+	 */
+	
+	if (replacementString.length > 1) return;;
+	
+	static NSDictionary *matches;
+	if (matches == nil) matches = @{
+		@"(" : @")",
+		@"[[" : @"]]",
+		@"/*" : @"*/",
+		@"<<" : @">>",
+		@"{{" : @"}}"
+	};
+		
+	// Find match for the parenthesis symbol
+	NSString *match = nil;
+	for (NSString* key in matches.allKeys) {
+		NSString *lastSymbol = [key substringWithRange:NSMakeRange(key.length - 1, 1)];
+		
+		if ([replacementString isEqualToString:lastSymbol]) {
+			match = key;
+			break;
+		}
+	}
+	
+	if (matches[match] == nil) {
+		// No match for this parenthesis
+		return;
+	}
+	else if (match.length > 1) {
+		if (affectedCharRange.location == 0) return;
+		
+		// Check for dual symbol matches, and don't allow them if the previous character doesn't match
+		unichar characterBefore = [self.textView.string characterAtIndex:affectedCharRange.location-1];
+		if (characterBefore != [match characterAtIndex:0]) {
+			return;
+		}
+	}
+	
+	[self addString:matches[match] atIndex:affectedCharRange.location];
+	[self.textView setSelectedRange:affectedCharRange];
+}
+
+- (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString {
+	Line *currentLine = self.currentLine;
+	
+	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] - 1;
+	if (lineIndex != NSNotFound) {
+		NSString *charName = currentLine.characterName;
+		
+		while (lineIndex > 0) {
+			Line * prevLine = self.parser.lines[lineIndex];
+			
+			// Stop at headings
+			if (prevLine.type == heading) break;
+
+			if (prevLine.type == character) {
+				// Stop if the previous character is not the current one
+				if (![prevLine.characterName isEqualToString:charName]) break;
+				
+				// This is the character. Put in CONT'D and a line break and return NO
+				NSString *contd = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
+				NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
+				
+				if (![currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
+					[self addString:contdString atIndex:currentLine.position + currentLine.length];
+					return YES;
+				}
+			}
+			
+			lineIndex--;
+		}
+	}
+	return NO;
+}
+
 - (void)autocompleteAtCurrentLine {
-	if (_textView.selectedRange.location == _currentLine.position + _currentLine.string.length - 1) {
-		if (_currentLine.type == character) {
+	Line *currentLine = self.currentLine;
+	
+	if (_textView.selectedRange.location == currentLine.position + currentLine.string.length - 1) {
+		if (currentLine.type == character) {
 			if (!_characterNames.count) [self collectCharacterNames];
 			[self.textView setAutomaticTextCompletionEnabled:YES];
-		} else if (_currentLine.type == heading) {
+		} else if (currentLine.type == heading) {
 			if (!_sceneHeadings.count) [self collectHeadings];
 			[self.textView setAutomaticTextCompletionEnabled:YES];
 		} else {
@@ -1862,6 +1866,19 @@
 		return self.parser.lines[i + 1];
 	} else {
 		return nil;
+	}
+}
+
+- (Line*)currentLine {
+	NSInteger location = self.selectedRange.location;
+	if (location >= self.text.length) return self.parser.lines.lastObject;
+	
+	// Don't fetch the line if we already know it
+	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
+	else {
+		Line *line = [_parser lineAtPosition:location];
+		_currentLine = line;
+		return _currentLine;
 	}
 }
 
@@ -1890,7 +1907,10 @@
 }
 
 - (void)textDidChange:(NSNotification *)notification
-{	
+{
+	// Begin from top if no last changed range was set
+	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
+	
 	// Save attributed text to cache
 	_attrTextCache = [self getAttributedText];
 	
@@ -1901,9 +1921,7 @@
 	if (_revisionMode) [self registerChangesInRange:_lastChangedRange];
 	
 	// Update formatting
-	//[self.textView.textStorage beginEditing];
 	[self applyFormatChanges];
-	//[self.textView.textStorage endEditing];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
@@ -1946,8 +1964,8 @@
 	// A larger chunk of text was pasted. Ensure layout.
 	if (_lastChangedRange.length > 3) [self ensureLayout];
 	
-	//[self.textView refreshLayoutElementsFrom:self.lastChangedRange.location];
-	//[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
+	// Reset last changed range
+	_lastChangedRange = NSMakeRange(NSNotFound, 0);
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
@@ -1961,12 +1979,6 @@
 		
 	// Close any popups
 	if (_quickSettingsPopover.shown) [self closeQuickSettings];
-
-	// We've cached the previous current line, so let's just see if we're in range. Otherwise, update current line.
-	_previouslySelectedLine = _currentLine;
-	if (!_currentLine || !NSLocationInRange(_textView.selectedRange.location, _currentLine.range)) {
-		self.currentLine = [self getCurrentLine];
-	}
 	
 	// Reset forced character input
 	if (self.characterInputForLine != self.currentLine) self.characterInput = NO;
@@ -2030,6 +2042,31 @@
 }
 
 #pragma mark - Text I/O
+
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
+{
+	/**
+	 Main method for adding text to editor view.  Forces added text to be parsed.
+	 */
+	
+	// If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
+	if (range.length + range.location > self.textView.string.length) {
+		NSLog(@"replacement over bounds: %lu / %lu", range.location + range.length, self.textView.string.length);
+		
+		NSInteger length = self.textView.string.length - range.location;
+		range = NSMakeRange(range.location, length);
+		
+		NSLog(@"fixed to: %lu / %lu", range.location + range.length, self.textView.string.length);
+	}
+
+	// Text view fires up shouldChangeTextInRange only when the text is changed by the user.
+	// When replacing stuff directly in the view, we need to call it manually.
+	if ([self textView:self.textView shouldChangeTextInRange:range replacementString:string]) {
+		[self.textView replaceCharactersInRange:range withString:string];
+		[self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
+	}
+}
+
 
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index
 {
@@ -2311,9 +2348,11 @@
     
 	[_characterBox removeAllItems];
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
-		
+	
+	Line* currentLine = self.currentLine;
+	
 	for (Line *line in self.parser.lines) {
-		if ((line.type == character || line.type == dualDialogueCharacter) && line != _currentLine
+		if ((line.type == character || line.type == dualDialogueCharacter) && line != currentLine
 			//&& ![_characterNames containsObject:line.string]
 			) {
 			// Don't add this line if it's just a character with cont'd.
@@ -2361,9 +2400,11 @@
     }
 }
 - (void)collectHeadings {
+	Line *currentLine = self.currentLine;
+	
 	[_sceneHeadings removeAllObjects];
 	for (Line *line in self.parser.lines) {
-		if (line.type == heading && line != _currentLine && ![_sceneHeadings containsObject:line.string]) {
+		if (line.type == heading && line != currentLine && ![_sceneHeadings containsObject:line.string]) {
 			
 			// If the heading has a color set, strip the color
 			if ([line.string rangeOfString:@"[[COLOR"].location != NSNotFound) {
@@ -2379,12 +2420,11 @@
 	NSMutableArray *matches = [NSMutableArray array];
 	NSMutableArray *search = [NSMutableArray array];
 
-	// We need to get current line here for some reason, indexes are wrong otherwise
-	_currentLine = [self getCurrentLine];
+	Line *currentLine = self.currentLine;
 	
 	// Choose which array to search
-	if (_currentLine.type == character) search = _characterNames;
-	else if (_currentLine.type == heading) search = _sceneHeadings;
+	if (currentLine.type == character) search = _characterNames;
+	else if (currentLine.type == heading) search = _sceneHeadings;
 	
 	// Find matching lines for the partially typed line
 	for (NSString *string in search) {
@@ -2402,10 +2442,10 @@
 	if (_characterInput) return;
 	
 	// Force character if the line is suitable
-	_currentLine = [self getCurrentLine];
+	Line *currentLine = self.currentLine;
 	
-	if (_currentLine.type == empty) {
-		NSInteger index = [self.parser.lines indexOfObject:_currentLine];
+	if (currentLine.type == empty) {
+		NSInteger index = [self.parser.lines indexOfObject:currentLine];
 		
 		if (index > 0) {
 			Line* previousLine = [self.parser.lines objectAtIndex:index - 1];
@@ -2416,18 +2456,18 @@
 		}
 	} else {
 		// Else see if we could force the character cue
-		Line* prevLine = [self.parser previousLine:_currentLine];
-		Line* nextLine = [self.parser nextLine:_currentLine];
+		Line* prevLine = [self.parser previousLine:currentLine];
+		Line* nextLine = [self.parser nextLine:currentLine];
 		
 		// A convoluted conditional, but the rules are:
 		// Previous line is empty, current line is not already part of a dialogue block,
 		// next line is not a heading OR is already formatted as dialogue (can happen rarely)
 		if (prevLine.type == empty &&
-			!_currentLine.isDialogueElement &&
+			!currentLine.isDialogueElement &&
 			((nextLine.type != character &&
 			 nextLine.type != heading) ||
 			nextLine.isDialogue)) {
-			[self replaceString:_currentLine.string withString:_currentLine.string.uppercaseString atIndex:_currentLine.position];
+			[self replaceString:currentLine.string withString:currentLine.string.uppercaseString atIndex:currentLine.position];
 		}
 		else {
 			// Default behaviour: add tab
@@ -2442,16 +2482,16 @@
 	if (_characterInput) return;
 	
 	// If no line is selected, return
-	_currentLine = [self getCurrentLine];
-	if (!_currentLine) return;
+	Line *currentLine = self.currentLine;
+	if (!currentLine) return;
 	
-	_currentLine.type = character;
-	_characterInputForLine = _currentLine;
+	currentLine.type = character;
+	_characterInputForLine = currentLine;
 	
 	_characterInput = YES;
 	
 	// Format the line (if mid-screenplay)
-	[_formatting formatLine:_currentLine];
+	[_formatting formatLine:currentLine];
 
 	// Set typing attributes (just in case, and if at the end)
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
@@ -2886,12 +2926,12 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (IBAction)dualDialogue:(id)sender {
-	_currentLine = [self getCurrentLine];
+	Line *currentLine = self.currentLine;
 	
 	// Current line is character
-	if (_currentLine.type == character) {
+	if (currentLine.type == character) {
 		// We won't allow making a first dialogue block dual, let's see if there is another block of dialogue
-		NSInteger index = [_parser.lines indexOfObject:_currentLine] - 1;
+		NSInteger index = [_parser.lines indexOfObject:currentLine] - 1;
 		bool previousDialogueFound = NO;
 		
 		while (index >= 0) {
@@ -2901,20 +2941,20 @@ static NSString *revisionAttribute = @"Revision";
 			index--;
 		}
 		
-		if (previousDialogueFound) [self addString:forceDualDialogueSymbol atIndex:_currentLine.position + _currentLine.string.length];
+		if (previousDialogueFound) [self addString:forceDualDialogueSymbol atIndex:currentLine.position + currentLine.string.length];
 	
 	// if it's already a dual dialogue cue, remove the symbol
-	} else if (_currentLine.type == dualDialogueCharacter) {
-		NSRange range = [_currentLine.string rangeOfString:forceDualDialogueSymbol];
+	} else if (currentLine.type == dualDialogueCharacter) {
+		NSRange range = [currentLine.string rangeOfString:forceDualDialogueSymbol];
 		// Remove symbol
-		[self removeString:forceDualDialogueSymbol atIndex:_currentLine.position + range.location];
+		[self removeString:forceDualDialogueSymbol atIndex:currentLine.position + range.location];
 		
 	// Dialogue block. Find the character cue and add/remove dual dialogue symbol
-	} else if (_currentLine.type == dialogue ||
-			   _currentLine.type == dualDialogue ||
-			   _currentLine.type == parenthetical ||
-			   _currentLine.type == dualDialogueParenthetical) {
-		NSInteger index = [_parser.lines indexOfObject:_currentLine] - 1;
+	} else if (currentLine.type == dialogue ||
+			   currentLine.type == dualDialogue ||
+			   currentLine.type == parenthetical ||
+			   currentLine.type == dualDialogueParenthetical) {
+		NSInteger index = [_parser.lines indexOfObject:currentLine] - 1;
 		while (index >= 0) {
 			Line* previousLine = [_parser.lines objectAtIndex:index];
 
@@ -3602,7 +3642,8 @@ static NSString *revisionAttribute = @"Revision";
 	
 	else if (menuItem.action == @selector(dualDialogue:)) {
 		// Allow dual dialogue only when inside a dialogue block
-		if (_currentLine.isDialogueElement || _currentLine.isDualDialogueElement) return YES;
+		Line *currentLine = self.currentLine;
+		if (currentLine.isDialogueElement || currentLine.isDualDialogueElement) return YES;
 		else return NO;
     }
 	
@@ -4813,24 +4854,10 @@ triangle walks
 	// Reset page size (just in case)
 	self.paginator.paperSize = self.printInfo.paperSize;
 	
-	/*
-
-	 WIP!!!
-	 It should work like this:
-	 - Check range of changed indices
-	 - Find on which page the changed ranges are (roughly, even if we start from previous page it still saves CPU time)
-	 - Tell the paginator to start pagination over from some page
-	   -> see which elements are newly created (split) on that page and start from that y and Line element
-	 - Other pages and page breaks remain intact
-	 - Recreate page breaks for BeatTextView
-	 
-	 The above is already implemented, but doesn't work. Lol.
-	 
-	 */
 	
 	// Null the timer so we don't have too many of these operations queued
 	[_paginationTimer invalidate];
-	NSInteger wait = 1.0;
+	NSInteger wait = 0.75;
 	if (sync) wait = 0;
 	
 	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {

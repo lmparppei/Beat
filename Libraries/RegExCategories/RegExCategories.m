@@ -45,7 +45,7 @@
 
 + (NSRegularExpression*) rx:(NSString*)pattern
 {
-    return [[self alloc] initWithPattern:pattern];
+    return [[self alloc] initWithPattern:pattern options:0 error:nil];
 }
 
 + (NSRegularExpression*) rx:(NSString*)pattern ignoreCase:(BOOL)ignoreCase
@@ -251,7 +251,7 @@
 
 - (NSRegularExpression*) toRx
 {
-    return [[NSRegularExpression alloc] initWithPattern:self];
+    return [[NSRegularExpression alloc] initWithPattern:self options:0 error:nil];
 }
 
 - (NSRegularExpression*) toRxIgnoreCase:(BOOL)ignoreCase

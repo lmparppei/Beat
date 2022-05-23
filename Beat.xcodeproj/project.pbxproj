@@ -101,7 +101,26 @@
 		B63D9F4B2830139300D027B6 /* NSString+VersionNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C54EDC27524C82004A3DED /* NSString+VersionNumber.m */; };
 		B63D9F4D283013AA00D027B6 /* BeatSceneTree.m in Sources */ = {isa = PBXBuildFile; fileRef = B607B7FC2792EFE50036120B /* BeatSceneTree.m */; };
 		B63D9F4F2830141C00D027B6 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
-		B63D9F5328301E5B00D027B6 /* iOSDynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F5228301E5B00D027B6 /* iOSDynamicColor.m */; };
+		B63D9F552830294300D027B6 /* macOSTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F542830294300D027B6 /* macOSTheme.swift */; };
+		B63D9F562830294300D027B6 /* macOSTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F542830294300D027B6 /* macOSTheme.swift */; };
+		B63D9F5B283032EB00D027B6 /* iOSTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F58283032EB00D027B6 /* iOSTheme.swift */; };
+		B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */; };
+		B63D9F6328303CB300D027B6 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F6228303CB300D027B6 /* BeatTheme.swift */; };
+		B63D9F6428303CB300D027B6 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F6228303CB300D027B6 /* BeatTheme.swift */; };
+		B63D9F6528303CB300D027B6 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F6228303CB300D027B6 /* BeatTheme.swift */; };
+		B63D9F662830409600D027B6 /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
+		B63D9F67283040B100D027B6 /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7142218B3AD005B8447 /* ThemeManager.m */; };
+		B63D9F68283040B800D027B6 /* BeatTagging.m in Sources */ = {isa = PBXBuildFile; fileRef = B650D76C25CF349D0042010C /* BeatTagging.m */; };
+		B63D9F692830429400D027B6 /* BeatRevisionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65B148425FF815E0087834F /* BeatRevisionItem.m */; };
+		B63D9F6A2830429E00D027B6 /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686625ECF96100A3A244 /* BeatTag.m */; };
+		B63D9F6B283042A100D027B6 /* BeatTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F15CE425E7B13000176946 /* BeatTagItem.m */; };
+		B63D9F6C283042B500D027B6 /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686125ECE2F000A3A244 /* TagDefinition.m */; };
+		B63D9F6D283042E200D027B6 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7232218B4A0005B8447 /* Themes.plist */; };
+		B63D9F6E28304ED100D027B6 /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
+		B63D9F6F283053D600D027B6 /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED71C88AC99001C4D27 /* Courier Prime.ttf */; };
+		B63D9F70283053D900D027B6 /* Courier Prime Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED61C88AC99001C4D27 /* Courier Prime Italic.ttf */; };
+		B63D9F71283053DD00D027B6 /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED51C88AC99001C4D27 /* Courier Prime Bold.ttf */; };
+		B63D9F72283053E100D027B6 /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1F04ED41C88AC99001C4D27 /* Courier Prime Bold Italic.ttf */; };
 		B640765D27D784270053D63A /* BeatLaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B640765C27D784270053D63A /* BeatLaunchScreen.swift */; };
 		B640765E27D784270053D63A /* BeatLaunchScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B640765C27D784270053D63A /* BeatLaunchScreen.swift */; };
 		B640767427D7FE7D0053D63A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B640767727D7FE7D0053D63A /* LaunchScreen.xib */; };
@@ -220,6 +239,7 @@
 		B68691A02784477700C8D5A2 /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B686919E2784477700C8D5A2 /* BeatLocalization.m */; };
 		B68691A127845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */; };
 		B68691A227845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */; };
+		B686AE9B2832B85B0002463F /* Substring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B686AE9A2832B85B0002463F /* Substring.swift */; };
 		B688F2C9274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */; };
 		B688F2CA274EAEFC002CAF07 /* Gather Scenes by Color.beatPlugin in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */; };
 		B68AE23726EDF7E300F6DF59 /* BeatPreferencesPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = B68AE23526EDF7E300F6DF59 /* BeatPreferencesPanel.m */; };
@@ -248,7 +268,6 @@
 		B68B603A260B849300463AD8 /* FountainAnalysis.m in Sources */ = {isa = PBXBuildFile; fileRef = B69AC76C233EB1ED00AC537C /* FountainAnalysis.m */; };
 		B68B603B260B849300463AD8 /* DiffMatchPatchCFUtilities.c in Sources */ = {isa = PBXBuildFile; fileRef = B66F462A2565AD9F003748DA /* DiffMatchPatchCFUtilities.c */; };
 		B68B603C260B849300463AD8 /* BeatTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B663680224CE1CCF009A1693 /* BeatTest.m */; };
-		B68B603D260B849300463AD8 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
 		B68B603E260B849300463AD8 /* BeatPrintView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B71D2218B44A005B8447 /* BeatPrintView.m */; };
 		B68B603F260B849300463AD8 /* BeatTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F15CE425E7B13000176946 /* BeatTagItem.m */; };
 		B68B6040260B849300463AD8 /* FadeInImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B69BFC772565336C007A7D2B /* FadeInImport.m */; };
@@ -405,14 +424,12 @@
 		B6C84CA325AA566100BDF974 /* BeatAboutScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C84CA125AA566100BDF974 /* BeatAboutScreen.m */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
 		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
-		B6CB96F7282FEB6500C7AFC7 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F6282FEB6500C7AFC7 /* DocumentViewController.swift */; };
 		B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */; };
 		B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */; };
 		B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */; };
 		B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */; };
 		B6CB9706282FECDB00C7AFC7 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD432549AF6500201BC9 /* Tutorial.fountain */; };
 		B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */; };
-		B6CB970B282FF12000C7AFC7 /* DocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB970A282FF12000C7AFC7 /* DocumentController.swift */; };
 		B6CB970C282FF25200C7AFC7 /* ContinuousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7162218B3BC005B8447 /* ContinuousFountainParser.m */; };
 		B6CB970D282FF25800C7AFC7 /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70A2218B342005B8447 /* Line.m */; };
 		B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
@@ -420,13 +437,18 @@
 		B6CD61E127DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
 		B6CD61E227DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
 		B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
+		B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE24DD2838541500D53CE8 /* Utilities.swift */; };
+		B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */; };
+		B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */; };
+		B6CE2505283963C300D53CE8 /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
+		B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE25062839681500D53CE8 /* BeatSidebar.swift */; };
+		B6CE250828396B7700D53CE8 /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
 		B6CE54BF26010D5B006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
 		B6CE54C326010FC1006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
 		B6D26BE124B9E7350041402B /* BeatTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE024B9E7350041402B /* BeatTimerView.m */; };
 		B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE424B9ED830041402B /* BeatTimer.m */; };
 		B6D2B7072218B308005B8447 /* BeatAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7062218B308005B8447 /* BeatAppDelegate.m */; };
-		B6D2B7092218B320005B8447 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7082218B320005B8447 /* Theme.m */; };
 		B6D2B70B2218B342005B8447 /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70A2218B342005B8447 /* Line.m */; };
 		B6D2B70D2218B359005B8447 /* ColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70C2218B359005B8447 /* ColorView.m */; };
 		B6D2B70F2218B377005B8447 /* FDXInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70E2218B377005B8447 /* FDXInterface.m */; };
@@ -601,7 +623,7 @@
 /* Begin PBXFileReference section */
 		5DC48A23E8FE7D2E75E15529 /* libPods-Beat Appstore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Beat Appstore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B13111821CB2885200D07A0C /* ThemeManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeManager.h; sourceTree = "<group>"; };
-		B13111861CB289ED00D07A0C /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
+		B13111861CB289ED00D07A0C /* BeatTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatTheme.h; sourceTree = "<group>"; };
 		B131118B1CB2A41800D07A0C /* ContinuousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinuousFountainParser.h; sourceTree = "<group>"; };
 		B131118D1CB2A41800D07A0C /* NSString+CharacterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+CharacterControl.h"; path = "Beat/Categories/NSString+CharacterControl.h"; sourceTree = SOURCE_ROOT; };
 		B13111921CB2A42300D07A0C /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
@@ -706,8 +728,11 @@
 		B63704F92768A6A400BEAD53 /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Plugin Page.html"; sourceTree = "<group>"; };
 		B63CF61325B43EDD00EFA3A2 /* ThemeEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeEditor.h; sourceTree = "<group>"; };
 		B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeEditor.m; sourceTree = "<group>"; };
-		B63D9F5128301E5B00D027B6 /* iOSDynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOSDynamicColor.h; sourceTree = "<group>"; };
-		B63D9F5228301E5B00D027B6 /* iOSDynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iOSDynamicColor.m; sourceTree = "<group>"; };
+		B63D9F542830294300D027B6 /* macOSTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSTheme.swift; sourceTree = "<group>"; };
+		B63D9F58283032EB00D027B6 /* iOSTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSTheme.swift; sourceTree = "<group>"; };
+		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
+		B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatiOSFormatting.m; sourceTree = "<group>"; };
+		B63D9F6228303CB300D027B6 /* BeatTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatTheme.swift; sourceTree = "<group>"; };
 		B63DC837260A1EC60092B472 /* Beat File Format Specification.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "Beat File Format Specification.md"; sourceTree = "<group>"; };
 		B640765C27D784270053D63A /* BeatLaunchScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLaunchScreen.swift; sourceTree = "<group>"; };
 		B640766327D791910053D63A /* About Beat.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "About Beat.md"; sourceTree = "<group>"; };
@@ -741,6 +766,7 @@
 		B652FDAA2821776C0028712F /* BeatPaginatorDebugger.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatPaginatorDebugger.xib; sourceTree = "<group>"; };
 		B655B1042714607700BA52ED /* BeatMarkerScroller.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatMarkerScroller.h; sourceTree = "<group>"; };
 		B655B1052714607700BA52ED /* BeatMarkerScroller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMarkerScroller.m; sourceTree = "<group>"; };
+		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
 		B65B148325FF815E0087834F /* BeatRevisionItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionItem.h; sourceTree = "<group>"; };
 		B65B148425FF815E0087834F /* BeatRevisionItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionItem.m; sourceTree = "<group>"; };
 		B65BBF7A280C3FD500FCA23E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatAboutScreen.xib; sourceTree = "<group>"; };
@@ -849,6 +875,7 @@
 		B686919E2784477700C8D5A2 /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
 		B68691A327845A8C00C8D5A2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatStatisticsPanel.xib; sourceTree = "<group>"; };
 		B68691A627845A8F00C8D5A2 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatStatisticsPanel.strings; sourceTree = "<group>"; };
+		B686AE9A2832B85B0002463F /* Substring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Substring.swift; sourceTree = "<group>"; };
 		B68916DA27A3142100402032 /* BeatParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
 		B6898EF62676615A00D728B3 /* CardView copy.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "CardView copy.js"; sourceTree = "<group>"; };
 		B68AE23426EDF7E300F6DF59 /* BeatPreferencesPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPreferencesPanel.h; sourceTree = "<group>"; };
@@ -940,14 +967,12 @@
 		B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
-		B6CB96F6282FEB6500C7AFC7 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
 		B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSDocument.swift; sourceTree = "<group>"; };
 		B6CB96FB282FEB6600C7AFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B6CB9700282FEB6700C7AFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B6CB9702282FEB6700C7AFC7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatUITextView.swift; sourceTree = "<group>"; };
-		B6CB970A282FF12000C7AFC7 /* DocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentController.swift; sourceTree = "<group>"; };
 		B6CB970E282FF48300C7AFC7 /* Beat-iOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-iOS-Bridging-Header.h"; sourceTree = "<group>"; };
 		B6CB9734254ED61900C310CC /* HorizontalPinchView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HorizontalPinchView.h; path = Timeline/HorizontalPinchView.h; sourceTree = "<group>"; };
 		B6CB9735254ED61900C310CC /* HorizontalPinchView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HorizontalPinchView.m; path = Timeline/HorizontalPinchView.m; sourceTree = "<group>"; };
@@ -957,6 +982,10 @@
 		B6CD61E027DAA02400912F09 /* BeatSpeak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSpeak.m; sourceTree = "<group>"; };
 		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = "Beat/User Interface/TouchTimelinePopover.h"; sourceTree = SOURCE_ROOT; };
 		B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TouchTimelinePopover.m; path = "Beat/User Interface/TouchTimelinePopover.m"; sourceTree = SOURCE_ROOT; };
+		B6CE24DD2838541500D53CE8 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
+		B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatiOSOutlineView.swift; sourceTree = "<group>"; };
+		B6CE25062839681500D53CE8 /* BeatSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSidebar.swift; sourceTree = "<group>"; };
 		B6CE54BD26010D5A006F1E0B /* BeatRevisionTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionTracking.h; sourceTree = "<group>"; };
 		B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionTracking.m; sourceTree = "<group>"; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
@@ -968,7 +997,6 @@
 		B6D26BE324B9ED830041402B /* BeatTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimer.h; path = "Beat/User Interface/Productivity Timer/BeatTimer.h"; sourceTree = SOURCE_ROOT; };
 		B6D26BE424B9ED830041402B /* BeatTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimer.m; path = "Beat/User Interface/Productivity Timer/BeatTimer.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B7062218B308005B8447 /* BeatAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatAppDelegate.m; path = Beat/BeatAppDelegate.m; sourceTree = SOURCE_ROOT; };
-		B6D2B7082218B320005B8447 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = "Beat/User Interface/Themes/Theme.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B70A2218B342005B8447 /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Line.m; path = Beat/Parsing/Line.m; sourceTree = SOURCE_ROOT; };
 		B6D2B70C2218B359005B8447 /* ColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ColorView.m; path = "Beat/User Interface/Misc/ColorView.m"; sourceTree = SOURCE_ROOT; };
 		B6D2B70E2218B377005B8447 /* FDXInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FDXInterface.m; path = "Beat/Rendering and export/Final Draft/FDXInterface.m"; sourceTree = SOURCE_ROOT; };
@@ -1097,9 +1125,11 @@
 				B63CF61225B43ECA00EFA3A2 /* Theme Editor */,
 				B13111821CB2885200D07A0C /* ThemeManager.h */,
 				B6D2B7142218B3AD005B8447 /* ThemeManager.m */,
-				B13111861CB289ED00D07A0C /* Theme.h */,
-				B6D2B7082218B320005B8447 /* Theme.m */,
+				B13111861CB289ED00D07A0C /* BeatTheme.h */,
 				B6D2B7232218B4A0005B8447 /* Themes.plist */,
+				B63D9F6228303CB300D027B6 /* BeatTheme.swift */,
+				B63D9F542830294300D027B6 /* macOSTheme.swift */,
+				B63D9F58283032EB00D027B6 /* iOSTheme.swift */,
 			);
 			path = Themes;
 			sourceTree = "<group>";
@@ -1413,10 +1443,18 @@
 		B63D9F5028301E4E00D027B6 /* iOS colors */ = {
 			isa = PBXGroup;
 			children = (
-				B63D9F5128301E5B00D027B6 /* iOSDynamicColor.h */,
-				B63D9F5228301E5B00D027B6 /* iOSDynamicColor.m */,
 			);
 			path = "iOS colors";
+			sourceTree = "<group>";
+		};
+		B63D9F5C2830366B00D027B6 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
+				B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */,
+				B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */,
+			);
+			path = Editor;
 			sourceTree = "<group>";
 		};
 		B63DC83B260A34460092B472 /* Final Draft */ = {
@@ -2015,17 +2053,20 @@
 		B6CB96F1282FEB6500C7AFC7 /* Beat iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */,
+				B63D9F5C2830366B00D027B6 /* Editor */,
 				B6CB9707282FEDAF00C7AFC7 /* User Interface */,
 				B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */,
 				B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */,
-				B6CB96F6282FEB6500C7AFC7 /* DocumentViewController.swift */,
-				B6CB970A282FF12000C7AFC7 /* DocumentController.swift */,
+				B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */,
 				B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */,
 				B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */,
 				B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */,
 				B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */,
 				B6CB9702282FEB6700C7AFC7 /* Info.plist */,
 				B6CB970E282FF48300C7AFC7 /* Beat-iOS-Bridging-Header.h */,
+				B686AE9A2832B85B0002463F /* Substring.swift */,
+				B6CE24DC283853FE00D53CE8 /* Utilities */,
 			);
 			path = "Beat iOS";
 			sourceTree = "<group>";
@@ -2034,9 +2075,18 @@
 			isa = PBXGroup;
 			children = (
 				B63D9F5028301E4E00D027B6 /* iOS colors */,
-				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
+				B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */,
+				B6CE25062839681500D53CE8 /* BeatSidebar.swift */,
 			);
 			path = "User Interface";
+			sourceTree = "<group>";
+		};
+		B6CE24DC283853FE00D53CE8 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B6CE24DD2838541500D53CE8 /* Utilities.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		B6D062E3260CAC9500DEF6FB /* Adhoc */ = {
@@ -2531,9 +2581,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
+				B63D9F71283053DD00D027B6 /* Courier Prime Bold.ttf in Resources */,
 				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
+				B63D9F72283053E100D027B6 /* Courier Prime Bold Italic.ttf in Resources */,
 				B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */,
+				B63D9F70283053D900D027B6 /* Courier Prime Italic.ttf in Resources */,
+				B63D9F6F283053D600D027B6 /* Courier Prime.ttf in Resources */,
 				B6CB9706282FECDB00C7AFC7 /* Tutorial.fountain in Resources */,
+				B63D9F6D283042E200D027B6 /* Themes.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2630,7 +2685,6 @@
 				B66F463B2565ADA0003748DA /* DiffMatchPatchCFUtilities.c in Sources */,
 				B663680524CE1E64009A1693 /* BeatTest.m in Sources */,
 				B655B1062714607700BA52ED /* BeatMarkerScroller.m in Sources */,
-				B6D2B7092218B320005B8447 /* Theme.m in Sources */,
 				B6D2B71E2218B44A005B8447 /* BeatPrintView.m in Sources */,
 				B6F15CE525E7B13000176946 /* BeatTagItem.m in Sources */,
 				B66B5ABF2739B75500BBC9C6 /* zip.c in Sources */,
@@ -2666,6 +2720,7 @@
 				B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */,
 				B6C54EDD27524C82004A3DED /* NSString+VersionNumber.m in Sources */,
 				B69E2384275FD054004A2E26 /* BeatPluginUICheckbox.m in Sources */,
+				B63D9F552830294300D027B6 /* macOSTheme.swift in Sources */,
 				B61BE98A271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
@@ -2718,6 +2773,7 @@
 				B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */,
 				B6E47D8825028A4E00734A8D /* BeatPaginator.m in Sources */,
 				B60FAD7626A1D4960019A77B /* BeatLockButton.m in Sources */,
+				B63D9F6328303CB300D027B6 /* BeatTheme.swift in Sources */,
 				B6DCA85C272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B6779B75256EED1100CFD324 /* BeatPaperSizing.m in Sources */,
 				B6916C0025D135930037EF6A /* BeatFDXExport.m in Sources */,
@@ -2822,7 +2878,6 @@
 				B68B603B260B849300463AD8 /* DiffMatchPatchCFUtilities.c in Sources */,
 				B68B603C260B849300463AD8 /* BeatTest.m in Sources */,
 				B655B1072714607700BA52ED /* BeatMarkerScroller.m in Sources */,
-				B68B603D260B849300463AD8 /* Theme.m in Sources */,
 				B68B603E260B849300463AD8 /* BeatPrintView.m in Sources */,
 				B68B603F260B849300463AD8 /* BeatTagItem.m in Sources */,
 				B66B5AC02739B75500BBC9C6 /* zip.c in Sources */,
@@ -2858,6 +2913,7 @@
 				B68B6054260B849300463AD8 /* BeatTimer.m in Sources */,
 				B6C54EDE27524C82004A3DED /* NSString+VersionNumber.m in Sources */,
 				B69E2385275FD054004A2E26 /* BeatPluginUICheckbox.m in Sources */,
+				B63D9F562830294300D027B6 /* macOSTheme.swift in Sources */,
 				B61BE98B271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B68B6055260B849300463AD8 /* ThemeManager.m in Sources */,
 				B68B6056260B849300463AD8 /* BeatTag.m in Sources */,
@@ -2910,6 +2966,7 @@
 				B68B6071260B849300463AD8 /* BeatAntilateralThoughts.m in Sources */,
 				B68B6072260B849300463AD8 /* BeatPaginator.m in Sources */,
 				B60FAD7726A1D4960019A77B /* BeatLockButton.m in Sources */,
+				B63D9F6428303CB300D027B6 /* BeatTheme.swift in Sources */,
 				B6DCA85D272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B68B6074260B849300463AD8 /* BeatPaperSizing.m in Sources */,
 				B68B6075260B849300463AD8 /* BeatFDXExport.m in Sources */,
@@ -2946,23 +3003,38 @@
 				B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */,
 				B63D9F45283012E900D027B6 /* BeatDocumentSettings.m in Sources */,
 				B63D9F472830138700D027B6 /* NSString+CharacterControl.m in Sources */,
+				B63D9F6528303CB300D027B6 /* BeatTheme.swift in Sources */,
+				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
+				B6CE250828396B7700D53CE8 /* OutlineViewItem.m in Sources */,
+				B63D9F68283040B800D027B6 /* BeatTagging.m in Sources */,
 				B6CB970D282FF25800C7AFC7 /* Line.m in Sources */,
-				B6CB970B282FF12000C7AFC7 /* DocumentController.swift in Sources */,
-				B6CB96F7282FEB6500C7AFC7 /* DocumentViewController.swift in Sources */,
 				B6CB970C282FF25200C7AFC7 /* ContinuousFountainParser.m in Sources */,
 				B63D9F482830138900D027B6 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B63D9F44283012D000D027B6 /* OutlineScene.m in Sources */,
+				B63D9F6E28304ED100D027B6 /* DynamicColor.m in Sources */,
 				B63D9F4A2830138F00D027B6 /* NSString+Regex.m in Sources */,
+				B63D9F6C283042B500D027B6 /* TagDefinition.m in Sources */,
+				B6CE2505283963C300D53CE8 /* RegExCategories.m in Sources */,
 				B63D9F43283012CB00D027B6 /* Storybeat.m in Sources */,
 				B63D9F4B2830139300D027B6 /* NSString+VersionNumber.m in Sources */,
 				B63D9F4F2830141C00D027B6 /* BeatColors.m in Sources */,
+				B63D9F5B283032EB00D027B6 /* iOSTheme.swift in Sources */,
+				B686AE9B2832B85B0002463F /* Substring.swift in Sources */,
 				B63D9F462830138300D027B6 /* NSIndexSet+Subset.m in Sources */,
 				B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */,
-				B63D9F5328301E5B00D027B6 /* iOSDynamicColor.m in Sources */,
+				B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */,
+				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
+				B63D9F662830409600D027B6 /* BeatRevisionTracking.m in Sources */,
+				B63D9F692830429400D027B6 /* BeatRevisionItem.m in Sources */,
 				B63D9F4D283013AA00D027B6 /* BeatSceneTree.m in Sources */,
+				B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
 				B63D9F492830138C00D027B6 /* NSMutableString+Regex.m in Sources */,
+				B63D9F6B283042A100D027B6 /* BeatTagItem.m in Sources */,
+				B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */,
 				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,
+				B63D9F6A2830429E00D027B6 /* BeatTag.m in Sources */,
+				B63D9F67283040B100D027B6 /* ThemeManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3439,14 +3511,16 @@
 		B6CB9704282FEB6700C7AFC7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-iOS";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -3481,14 +3555,16 @@
 		B6CB9705282FEB6700C7AFC7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-iOS";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;

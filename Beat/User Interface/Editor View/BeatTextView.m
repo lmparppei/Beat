@@ -1637,6 +1637,7 @@ Line *cachedRectLine;
 }
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
+	
 	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
 	if (!line) return 0;
 		

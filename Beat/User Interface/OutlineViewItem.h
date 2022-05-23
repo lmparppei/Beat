@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OutlineViewItem : NSObject
 
-+(NSMutableAttributedString*)withScene:(OutlineScene*)scene currentScene:(OutlineScene*)currentScene;
++(NSMutableAttributedString*)withScene:(OutlineScene*)scene currentScene:(OutlineScene*_Nullable)currentScene;
 
 @end
 

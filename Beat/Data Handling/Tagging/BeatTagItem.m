@@ -35,7 +35,7 @@
 - (TagColor*)color {
 	return [BeatTagging colorFor:self.type];
 }
-- (void)addRange:(NSRange)range {
+- (void)addRange:(NSRange)range {	
 	[_indices addIndexesInRange:range];
 }
 

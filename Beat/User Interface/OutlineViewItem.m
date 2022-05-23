@@ -6,7 +6,8 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+//#import <Cocoa/Cocoa.h>
+#import <TargetConditionals.h>
 #import "OutlineViewItem.h"
 #import "OutlineScene.h"
 #import "BeatColors.h"
@@ -15,6 +16,17 @@
 #define SECTION_FONTSIZE 13.0
 #define SYNOPSE_FONTSIZE 12.0
 #define SCENE_FONTSIZE 11.5
+
+#if TARGET_OS_IOS
+	#import <UIKit/UIKit.h>
+	#define BXFont UIFont
+	#define BXColor UIColor
+#else
+	#import <Cocoa/Cocoa.h>
+	#define BXFont NSFont
+	#define BXColor NSColor
+#endif
+
 
 @interface OutlineViewItem ()
 @property (nonatomic) OutlineScene *scene;
@@ -77,7 +89,7 @@
 		}
 		
 		// Put it together with the scene name
-		NSFont *font = [NSFont systemFontOfSize:SCENE_FONTSIZE];
+		BXFont *font = [BXFont boldSystemFontOfSize:SCENE_FONTSIZE];
 		NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 		
 		resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:fontAttributes];
@@ -85,7 +97,7 @@
 		
 		// Scene number will be displayed in a slightly darker shade
 		if (!omited) {
-			[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
+			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
 			[resultString addAttribute:NSForegroundColorAttributeName value:[BeatColors color:@"darkGray"] range:NSMakeRange(sceneHeader.length, resultString.length - sceneHeader.length)];
 		}
 		
@@ -96,12 +108,12 @@
 		
 		// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
 		if (currentScene) {
-			[resultString addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:NSMakeRange(0, resultString.length)];
+			[resultString addAttribute:NSForegroundColorAttributeName value:[BXColor whiteColor] range:NSMakeRange(0, resultString.length)];
 		}
 	    
 		// Lines without RTF formatting have uneven leading, so let's fix that.
-		[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0, resultString.length)];
-		[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0, resultString.length)];
+		//[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0, resultString.length)];
+		//[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0, resultString.length)];
 	}
 	else if (line.type == synopse) {
 		NSString* string = rawString;
@@ -117,19 +129,25 @@
 			string = [NSString stringWithFormat:@"%@%@", padding, string];
 			//string = [@"  " stringByAppendingString:string];
 			
-			NSFont *font = [NSFont systemFontOfSize:SYNOPSE_FONTSIZE];
+			#if !TARGET_OS_IOS
+			BXFont *font = [BXFont systemFontOfSize:SYNOPSE_FONTSIZE];
+			#else
+			BXFont *font = [BXFont italicSystemFontOfSize:SYNOPSE_FONTSIZE];
+			#endif
+
 			NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
-			
 			resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:fontAttributes];
 			
 			// Italic + white color
+			#if !TARGET_OS_IOS
 			[resultString applyFontTraits:NSItalicFontMask range:NSMakeRange(0, resultString.length)];
+			#endif
 			
-			[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.darkGrayColor range:NSMakeRange(0, resultString.length)];
+			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.darkGrayColor range:NSMakeRange(0, resultString.length)];
 			
 			// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
 			if (currentScene) {
-				[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.whiteColor range:NSMakeRange(0, resultString.length)];
+				[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.whiteColor range:NSMakeRange(0, resultString.length)];
 			}
 
 		} else {
@@ -147,19 +165,17 @@
 			
 			string = [NSString stringWithFormat:@"%@%@", padding, string];
 			
-			NSFont *font = [NSFont systemFontOfSize:SECTION_FONTSIZE];
+			BXFont *font = [BXFont boldSystemFontOfSize:SECTION_FONTSIZE];
 			NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 
 			resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:fontAttributes];
 			
 			// Bold + highlight color
-			[resultString addAttribute:NSForegroundColorAttributeName value:NSColor.whiteColor range:NSMakeRange(0, resultString.length)];
-			
-			[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0, resultString.length)];
-			
+			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.whiteColor range:NSMakeRange(0, resultString.length)];
+						
 			// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
 			if (currentScene) {
-				[resultString addAttribute:NSForegroundColorAttributeName value:[NSColor whiteColor] range:NSMakeRange(0, resultString.length)];
+				[resultString addAttribute:NSForegroundColorAttributeName value:[BXColor whiteColor] range:NSMakeRange(0, resultString.length)];
 			}
 		} else {
 			resultString = [[NSMutableAttributedString alloc] initWithString:@""];
@@ -169,7 +185,7 @@
 	// Don't color omited scenes
 	if (line.color && !omited) {
 		NSString *colorString = line.color.lowercaseString;
-		NSColor *colorName = [BeatColors color:colorString];
+		BXColor *colorName = [BeatColors color:colorString];
 		
 		// If we found a suitable color, let's add it
 		if (colorName != nil) {

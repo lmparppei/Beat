@@ -21,5 +21,6 @@
 #import "ThemeManager.h"
 #import "BeatPrintDialog.h"
 #import "BeatPaginator.h"
+#import "BeatTheme.h"
 
 #endif /* Beat_Bridging_Header_h */

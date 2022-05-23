@@ -984,13 +984,20 @@
 	NSMutableString *string = [NSMutableString stringWithString:rawString];
 	
 	if (string.length > 0 && line.numberOfPrecedingFormattingCharacters > 0 && line.type != centered) {
-		if (line.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
-		else if (line.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
-		else if (line.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
-		else if (line.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
-		else if (line.type == section) [string setString:[string replace:RX(@"^#") with:@""]];
-		else if (line.type == synopse) [string setString:[string replace:RX(@"^=") with:@""]];
-		else if (line.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
+				
+		NSString *pattern = nil;
+	
+		if (line.type == character) pattern = @"^@";
+		else if (line.type == heading) pattern = @"^\\.";
+		else if (line.type == action) pattern = @"^!";
+		else if (line.type == lyrics) pattern = @"^~";
+		else if (line.type == section) pattern = @"^#";
+		else if (line.type == synopse) pattern = @"^=";
+		else if (line.type == transitionLine) pattern = @"^>";
+		
+		if (pattern != nil) {
+			[string setString:[string replace:RX(pattern) with:@""]];
+		}
 	}
 
 	if (line.type == centered) {

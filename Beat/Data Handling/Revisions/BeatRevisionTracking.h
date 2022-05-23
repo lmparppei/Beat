@@ -34,9 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupRevisions;
 
 - (void)markerAction:(RevisionType)type;
-- (void)markRangeAsAddition:(NSRange)range;
-- (void)markRangeForRemoval:(NSRange)range;
-- (void)clearReviewMarkers:(NSRange)range;
+//- (void)markRangeAsAddition:(NSRange)range;
+//- (void)markRangeForRemoval:(NSRange)range;
+//- (void)clearReviewMarkers:(NSRange)range;
 
 - (void)nextRevision;
 - (void)previousRevision;

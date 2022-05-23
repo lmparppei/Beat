@@ -26,7 +26,6 @@
  Future considerations:
  - Make it possible to change editor text via text elements. This means making lines aware of their parser, and
    even tighter integration with the editor delegate.
- - Conform to Fountain note syntax
  
  */
 

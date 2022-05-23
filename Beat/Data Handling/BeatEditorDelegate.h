@@ -9,21 +9,26 @@
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
-    #define BeatFont UIFont
-    #define BeatChangeType UIDocumentChangeKind
-    #define BeatDocTextView UITextView
-    #define BeatWindow UIWindow
-    #define BeatPrintInfo UIPrintInfo
+    #define BXFont UIFont
+    #define BXChangeType UIDocumentChangeKind
+    #define BXDocTextView BeatUITextView
+    #define BXWindow UIWindow
+    #define BXPrintInfo UIPrintInfo
 #else
     #import <Cocoa/Cocoa.h>
-    #define BeatFont NSFont
-    #define BeatChangeType NSDocumentChangeType
-    #define BeatDocTextView NSTextView
-    #define BeatWindow NSWindow
-    #define BeatPrintInfo NSPrintInfo
+    #define BXFont NSFont
+    #define BXChangeType NSDocumentChangeType
+    #define BXDocTextView NSTextView
+    #define BXWindow NSWindow
+    #define BXPrintInfo NSPrintInfo
 #endif
 
+#if !TARGET_OS_IOS
 @class BeatPrintView;
+#else
+@class BeatUITextView;
+#endif
+
 @class ContinuousFountainParser;
 @class Line;
 @class OutlineScene;
@@ -37,10 +42,16 @@
 
 @protocol BeatEditorDelegate <NSObject>
 
+#if !TARGET_OS_IOS
+@property (weak) BXWindow* documentWindow;
+@property (nonatomic, readonly) bool typewriterMode;
+@property (nonatomic, readonly) bool disableFormatting;
+#endif
+
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
-@property (nonatomic, readonly) bool typewriterMode;
+
 @property (readonly) ContinuousFountainParser *parser;
 
 @property (nonatomic, readonly) CGFloat magnification;
@@ -51,16 +62,14 @@
 @property (nonatomic) NSString *revisionColor;
 @property (nonatomic) bool revisionMode;
 @property (atomic) BeatDocumentSettings *documentSettings;
-@property (nonatomic, weak, readonly) BeatDocTextView *textView;
+@property (nonatomic, weak, readonly) BXDocTextView *textView;
 
 @property (nonatomic, readonly) NSUndoManager *undoManager;
 
-@property (readonly, nonatomic) BeatFont *courier;
-@property (readonly, nonatomic) BeatFont *boldCourier;
-@property (readonly, nonatomic) BeatFont *boldItalicCourier;
-@property (readonly, nonatomic) BeatFont *italicCourier;
-
-@property (nonatomic, readonly) bool disableFormatting;
+@property (readonly, nonatomic) BXFont *courier;
+@property (readonly, nonatomic) BXFont *boldCourier;
+@property (readonly, nonatomic) BXFont *boldItalicCourier;
+@property (readonly, nonatomic) BXFont *italicCourier;
 
 @property (nonatomic, readonly) bool characterInput;
 @property (nonatomic, readonly) Line* characterInputForLine;
@@ -71,24 +80,26 @@
 @property (nonatomic, readonly) bool showRevisions;
 @property (nonatomic, readonly) bool showTags;
 
-@property (strong, nonatomic, readonly) BeatFont *sectionFont;
+@property (strong, nonatomic, readonly) BXFont *sectionFont;
 @property (strong, nonatomic, readonly) NSMutableDictionary *sectionFonts;
-@property (strong, nonatomic, readonly) BeatFont *synopsisFont;
+@property (strong, nonatomic, readonly) BXFont *synopsisFont;
 
 @property (nonatomic) NSInteger mode;
 
+#if !TARGET_OS_IOS
 @property (strong, nonatomic) BeatPrintView *printView;
-
-@property (weak) BeatWindow* documentWindow;
-
-- (id)document;
+#endif
 
 #if !TARGET_OS_IOS
 - (NSPrintInfo*)printInfo;
+- (id)document;
+- (void)releasePrintDialog;
+#else
+- (UIPrintInfo*)printInfo;
 #endif
+
 - (void)setPaperSize:(NSInteger)size;
 - (void)setPrintSceneNumbers:(bool)value;
-- (void)releasePrintDialog;
 
 - (NSMutableArray*)scenes;
 - (NSMutableArray*)getOutlineItems;
@@ -123,7 +134,7 @@
 - (void)scrollToRange:(NSRange)range;
 
 // Document compatibility
--(void)updateChangeCount:(BeatChangeType)change;
+-(void)updateChangeCount:(BXChangeType)change;
 -(void)updatePreview;
 -(void)forceFormatChangesInRange:(NSRange)range;
 - (void)refreshTextViewLayoutElements;
@@ -131,7 +142,7 @@
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 - (void)renderBackgroundForLines;
 - (void)renderBackgroundForRange:(NSRange)range;
-- (BeatFont*)sectionFontWithSize:(CGFloat)size;
+- (BXFont*)sectionFontWithSize:(CGFloat)size;
 
 - (void)formatAllLines;
 

@@ -35,7 +35,7 @@
 
 // Plugin compatibility
 @protocol ContinuousFountainParserExports <JSExport>
-@property (readonly) NSMutableArray *lines;
+@property (readonly) NSMutableArray<Line*>* lines;
 @property (nonatomic, readonly) NSMutableArray *outline;
 @property (nonatomic, readonly) NSMutableArray *scenes;
 @property (nonatomic, readonly) NSMutableArray *titlePage;

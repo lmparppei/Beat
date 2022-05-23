@@ -31,8 +31,8 @@
 			 @"green": [BeatColors colorWithRed:0 green:223 blue:121],
 			 @"pink": [BeatColors colorWithRed:250 green:111 blue:193],
 			 @"magenta": [BeatColors colorWithRed:236 green:0 blue:140],
-			 @"gray": BeatColor.grayColor,
-			 @"grey": BeatColor.grayColor, // for the illiterate
+			 @"gray": BXColor.grayColor,
+			 @"grey": BXColor.grayColor, // for the illiterate
 			 @"purple": [BeatColors colorWithRed:181 green:32 blue:218],
 			 @"prince": [BeatColors colorWithRed:181 green:32 blue:218], // for the purple one
 			 @"yellow": [BeatColors colorWithRed:251 green:193 blue:35],
@@ -54,11 +54,11 @@
 	BeatColors *colors = [self sharedColors];
 	return colors.colorValues;
 }
-+ (BeatColor *)colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
++ (BXColor *)colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
 	#if TARGET_OS_IOS
 		return [UIColor colorWithRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
 	#else
-		return [BeatColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
+		return [BXColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
 	#endif
 }
 /*

@@ -25,11 +25,17 @@
  */
 
 #import "ThemeManager.h"
-#import "ThemeEditor.h"
-#import "Theme.h"
+
+#if TARGET_OS_IOS
+	#import "Beat_iOS-Swift.h"
+#else
+	#import "BeatAppDelegate.h"
+	#import "Beat-Swift.h"
+	#import "Document.h"
+#endif
+
+#import "BeatTheme.h"
 #import "DynamicColor.h"
-#import "BeatAppDelegate.h"
-#import "Document.h"
 
 @interface ThemeManager ()
 @property (strong, nonatomic) NSMutableDictionary* themes;
@@ -37,7 +43,7 @@
 @property (nonatomic) NSDictionary* plistContents;
 @property (nonatomic) NSDictionary* customPlistContents;
 
-@property (strong, nonatomic) Theme* fallbackTheme;
+@property (nonatomic) id<BeatTheme> fallbackTheme;
 @end
 
 @implementation ThemeManager
@@ -88,7 +94,8 @@
 - (void)loadThemeFile
 {
 	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
-		
+	
+#if !TARGET_OS_IOS
 	// Read user-created theme file
 	NSURL *userUrl = [(BeatAppDelegate*)NSApp.delegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
@@ -99,6 +106,7 @@
 		NSMutableArray *themes = contents[THEMES_KEY];
 		[themes addObject:customPlist];
 	}
+#endif
 	
 	_plistContents = contents;
 }
@@ -108,17 +116,21 @@
     return [[NSBundle mainBundle] pathForResource:@"Themes" ofType:@"plist"];
 }
 
--(Theme*)defaultTheme {
-	Theme *theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
+-(id<BeatTheme>)defaultTheme {
+	id<BeatTheme> theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 	return theme;
 }
 -(void)resetToDefault {
 	_theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 }
 
--(Theme*)dictionaryToTheme:(NSDictionary*)values {
+-(id<BeatTheme>)dictionaryToTheme:(NSDictionary*)values {
 	// Work for the new theme model
-	Theme *theme = [[Theme alloc] init];
+#if TARGET_OS_IOS
+	id<BeatTheme> theme = iOSTheme.new;
+#else
+	id<BeatTheme> theme = macOSTheme.new;
+#endif
 
 	NSDictionary *lightTheme = values[@"Light"];
 	NSDictionary *darkTheme = values[@"Dark"];
@@ -126,6 +138,7 @@
 	// Fall back to light theme if no dark settings are available
 	if (!darkTheme.count) darkTheme = lightTheme;
 	
+#if !TARGET_OS_IOS
 	// If it's the default color scheme, we'll use native accent colors for certain items
 	if (@available(macOS 10.14, *)) {
 		theme.selectionColor = [self dynamicColorFromColor:NSColor.controlAccentColor];
@@ -133,7 +146,7 @@
 		// Fallback on earlier versions
 		theme.selectionColor = [self dynamicColorFromArray:lightTheme[@"Selection"] darkArray:darkTheme[@"Selection"]];
 	}
-
+#endif
 	
 	theme.backgroundColor = [self dynamicColorFromArray:lightTheme[@"Background"] darkArray:darkTheme[@"Background"]];
 	theme.textColor = [self dynamicColorFromArray:lightTheme[@"Text"] darkArray:darkTheme[@"Text"]];
@@ -160,7 +173,7 @@
 	return theme;
 }
 
--(void)readTheme:(Theme*)theme {
+-(void)readTheme:(id<BeatTheme>)theme {
 	/*
 	 
 	 My reasoning for the following approach is that adding new customizable values could otherwise
@@ -173,7 +186,7 @@
 	_theme = [self dictionaryToTheme:_themes[DEFAULT_KEY]];
 	
 	// Load custom theme (this is a bit convoluted)
-	Theme *customTheme = theme;
+	id<BeatTheme> customTheme = theme;
 	
 	if (customTheme) {
 		// We get the property names from theme, and we'll overwrite those values in default theme
@@ -186,13 +199,14 @@
 }
 
 -(void)readTheme {
-	Theme* customTheme = [self dictionaryToTheme:_themes[CUSTOM_KEY]];
+	id<BeatTheme> customTheme = [self dictionaryToTheme:_themes[CUSTOM_KEY]];
 	[self readTheme:customTheme];
 }
 
 -(void)saveTheme {
-	Theme *defaultTheme = [self defaultTheme];
-	Theme *customTheme = [[Theme alloc] init];
+#if !TARGET_OS_IOS
+	id<BeatTheme> defaultTheme = [self defaultTheme];
+	id<BeatTheme> customTheme = macOSTheme.new;
 	
 	for (NSString *property in customTheme.propertyToValue) {
 		DynamicColor *currentColor = [self valueForKey:property];
@@ -209,13 +223,14 @@
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	[themeDict writeToFile:userUrl.path atomically:NO];
+#endif
 }
 
-- (NSColor*)colorFromArray:(NSArray*)array
+- (BXColor*)colorFromArray:(NSArray*)array
 {
-    if (!array || [array count] != 3) {
-        return nil;
-    }
+
+    if (!array || array.count != 3)  return nil;
+    
     NSNumber* redValue = array[0];
     NSNumber* greenValue = array[1];
     NSNumber* blueValue = array[2];
@@ -223,10 +238,18 @@
     double red = redValue.doubleValue / 255.0;
     double green = greenValue.doubleValue / 255.0;
     double blue = blueValue.doubleValue / 255.0;
-    return [NSColor colorWithCalibratedRed:red green:green blue:blue alpha:1.0];
+
+#if TARGET_OS_IOS
+	// iOS
+	UIColor *c = BXColor.clearColor;
+	return [c initWithRed:red green:green blue:blue alpha:1.0];
+#else
+	// macOS
+	return [BXColor colorWithCalibratedRed:red green:green blue:blue alpha:1.0];
+#endif
 }
 
-- (DynamicColor*)dynamicColorFromColor:(NSColor*)color {
+- (DynamicColor*)dynamicColorFromColor:(BXColor*)color {
 	return [[DynamicColor new] initWithAquaColor:color darkAquaColor:color];
 }
 
@@ -249,14 +272,20 @@
 	double greenDark = greenValueDark.doubleValue / 255.0;
 	double blueDark = blueValueDark.doubleValue / 255.0;
 
+#if TARGET_OS_IOS
+	return [[DynamicColor new]
+			initWithAquaColor:[UIColor.clearColor initWithRed:redLight green:greenLight blue:blueLight alpha:1.0]
+			darkAquaColor:[UIColor.clearColor initWithRed:redDark green:greenDark blue:blueDark alpha:1.0]];
+#else
 	return [[DynamicColor new]
 			initWithAquaColor:[NSColor colorWithCalibratedRed:redLight green:greenLight blue:blueLight alpha:1.0]
 			darkAquaColor:[NSColor colorWithCalibratedRed:redDark green:greenDark blue:blueDark alpha:1.0]];
+#endif
 }
 
 #pragma mark Value Access
 
-- (Theme*)theme {
+- (id<BeatTheme>)theme {
 	return _theme;
 }
 
@@ -279,7 +308,7 @@
 - (DynamicColor*)genderOtherColor { return _theme.genderOtherColor; }
 - (DynamicColor*)genderUnspecifiedColor { return _theme.genderUnspecifiedColor; }
 
-- (Theme*)currentTheme { return _theme; }
+- (id<BeatTheme>)currentTheme { return _theme; }
 - (DynamicColor*)currentBackgroundColor { return _theme.backgroundColor; }
 - (DynamicColor*)currentMarginColor { return _theme.marginColor; }
 - (DynamicColor*)currentSelectionColor { return _theme.selectionColor; }
@@ -295,19 +324,23 @@
 #pragma mark - Show Editor
 
 - (void)showEditor {
+#if !TARGET_OS_IOS
 	if (!self.themeEditor) _themeEditor = [[ThemeEditor alloc] init];
 	[_themeEditor showWindow:_themeEditor.window];
+#endif
 }
 
 #pragma mark - Load selected theme for ALL documents
 
 - (void)loadThemeForAllDocuments
 {
+#if !TARGET_OS_IOS
 	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
 	
 	for (Document* doc in openDocuments) {
 		[doc updateTheme];
 	}
+#endif
 }
 
 @end

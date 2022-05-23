@@ -18,11 +18,11 @@
     #define TagColor NSColor
     #define TagFont NSFont
     #define BeatTagView NSTextView
+	#import "BeatTextView.h"
 #endif
 
 #import "DynamicColor.h"
 #import "BeatColors.h"
-#import "BeatTextView.h"
 #import "ContinuousFountainParser.h"
 
 @class BeatTag;

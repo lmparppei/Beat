@@ -25,8 +25,14 @@
 
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>
+	//#import "Beat-Swift.h"
+
+	#define BXChangeDone NSChangeDone
 #else
     #import <UIKit/UIKit.h>
+	#import "Beat_iOS-Swift.h"
+
+	#define BXChangeDone UIDocumentChangeDone
 #endif
 
 @implementation BeatRevisionTracking
@@ -367,10 +373,6 @@
 
 #pragma mark - Actions
 
-#if TARGET_OS_IOS
-
-
-#else
 
 - (void)markerAction:(RevisionType)type {
 	[self markerAction:type range:_delegate.selectedRange];
@@ -393,7 +395,7 @@
 	else [self clearReviewMarkers:range];
 	
 	[_delegate.textView setSelectedRange:(NSRange){range.location + range.length, 0}];
-	[_delegate updateChangeCount:NSChangeDone];
+	[_delegate updateChangeCount:BXChangeDone];
 	[_delegate updatePreview];
 	
 	// Create an undo step
@@ -428,6 +430,8 @@
 	BeatRevisionItem* revision = [BeatRevisionItem type:RevisionNone];
 	if (revision) [_delegate.textView.textStorage addAttribute:REVISION_ATTR value:revision range:range];
 }
+
+#if !TARGET_OS_IOS
 
 - (void)commitRevisions {
 	NSAlert *alert = NSAlert.new;
