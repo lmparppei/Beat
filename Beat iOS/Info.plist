@@ -5,13 +5,25 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Fountain</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.example.plain-text</string>
+				<string>fi.KAPITAN.fountain</string>
 			</array>
 		</dict>
+		<dict/>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Courier Prime.ttf</string>
+		<string>Courier Prime Bold.ttf</string>
+		<string>Courier Prime Bold Italic.ttf</string>
+		<string>Courier Prime Italic.ttf</string>
 	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
@@ -21,14 +33,16 @@
 				<string>public.plain-text</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Example Text</string>
+			<string>Fountain Screenplay</string>
+			<key>UTTypeIconFiles</key>
+			<array/>
 			<key>UTTypeIdentifier</key>
-			<string>com.example.plain-text</string>
+			<string>fi.KAPITAN.fountain</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>exampletext</string>
+					<string>fountain</string>
 				</array>
 			</dict>
 		</dict>

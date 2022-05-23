@@ -18,6 +18,12 @@
 //#import "BeatLocalization.h"
 // #import "ThemeManager.h"
 // #import "BeatPrintDialog.h"
+#import "BeatiOSFormatting.h"
+#import "DynamicColor.h"
 #import "BeatPaginator.h"
+#import "BeatTheme.h"
+#import "NSString+CharacterControl.h"
+#import "RegExCategories.h"
+#import "OutlineViewItem.h"
 
 #endif /* Beat_iOS_Bridging_Header_h */

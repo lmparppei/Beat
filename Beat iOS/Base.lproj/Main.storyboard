@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="ipad12_9rounded" orientation="portrait" layout="fullscreen" appearance="light"/>
+    <device id="ipad12_9rounded" orientation="landscape" layout="fullscreen" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -13,7 +13,7 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="0fo-ii-Aj5"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -23,59 +23,162 @@
             </objects>
             <point key="canvasLocation" x="26" y="654"/>
         </scene>
-        <!--Document View Controller-->
+        <!--Item-->
         <scene sceneID="dkP-xk-x6W">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="DocumentViewController" id="M2k-L8-Olo" customClass="DocumentViewController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
-                        <rect key="frame" x="0.0" y="0.0" width="1024" height="1366"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WAb-IC-g0u">
-                                <rect key="frame" x="913" y="24" width="91" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
-                                <state key="normal" title="Done"/>
-                                <connections>
-                                    <action selector="dismissDocumentViewController" destination="M2k-L8-Olo" eventType="touchUpInside" id="Hqu-HM-7pb"/>
-                                </connections>
-                            </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="1TN-Hr-hmD" customClass="BeatUITextView" customModule="Beat_iOS" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="81" width="1024" height="1285"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="thv-1O-oKd">
+                                <rect key="frame" x="230" y="74" width="1136" height="950"/>
+                                <subviews>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" minimumZoomScale="0.69999999999999996" maximumZoomScale="1.1000000000000001" id="a5I-w2-fVd" customClass="BeatScrollView" customModule="Beat_iOS" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="1136" height="950"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="esq-Xm-Lfw" customClass="BeatPageView" customModule="Beat_iOS" customModuleProvider="target">
+                                                <rect key="frame" x="171" y="-1" width="796" height="953"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" textAlignment="natural" id="3C3-uS-JZp" customClass="BeatUITextView" customModule="Beat_iOS" customModuleProvider="target">
+                                                        <rect key="frame" x="0.0" y="0.0" width="796" height="953"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <color key="textColor" systemColor="labelColor"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                        <connections>
+                                                            <outlet property="delegate" destination="M2k-L8-Olo" id="QLO-Ta-VZU"/>
+                                                            <outlet property="editorDelegate" destination="M2k-L8-Olo" id="VWm-LZ-U2Q"/>
+                                                            <outlet property="enclosingScrollView" destination="a5I-w2-fVd" id="oMs-xI-9LL"/>
+                                                            <outlet property="pageView" destination="esq-Xm-Lfw" id="Jnq-h7-PZa"/>
+                                                        </connections>
+                                                    </textView>
+                                                </subviews>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor"/>
+                                        <viewLayoutGuide key="contentLayoutGuide" id="kLd-rT-Bgu"/>
+                                        <viewLayoutGuide key="frameLayoutGuide" id="e3T-0U-vD1"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="3C3-uS-JZp" id="9o3-kt-kDQ"/>
+                                        </connections>
+                                    </scrollView>
+                                </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                <color key="textColor" systemColor="labelColor"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Document Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s46-Uc-0IM">
-                                <rect key="frame" x="20" y="35" width="108.5" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L6d-7A-aQd">
+                                <rect key="frame" x="0.0" y="74" width="230" height="950"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="30" estimatedRowHeight="30" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="9d5-dC-tki" customClass="BeatiOSOutlineView" customModule="Beat_iOS" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="230" height="950"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <prototypes>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="OutlineCell" textLabel="hf6-e0-5ah" rowHeight="20" style="IBUITableViewCellStyleDefault" id="XUA-IV-pnT">
+                                                <rect key="frame" x="0.0" y="44.5" width="230" height="20"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="XUA-IV-pnT" id="x9e-ag-m6i">
+                                                    <rect key="frame" x="0.0" y="0.0" width="230" height="20"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hf6-e0-5ah">
+                                                            <rect key="frame" x="16" y="0.0" width="198" height="20"/>
+                                                            <autoresizingMask key="autoresizingMask"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                </tableViewCellContentView>
+                                            </tableViewCell>
+                                        </prototypes>
+                                        <connections>
+                                            <outlet property="editorDelegate" destination="M2k-L8-Olo" id="vCe-NS-myO"/>
+                                        </connections>
+                                    </tableView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="230" id="6By-uQ-Ux5"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BoZ-jc-2Y8"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="bottomMargin" secondItem="thv-1O-oKd" secondAttribute="bottom" constant="-20" id="6LU-8u-3rZ"/>
+                            <constraint firstItem="L6d-7A-aQd" firstAttribute="top" secondItem="BoZ-jc-2Y8" secondAttribute="top" id="JwR-f7-Pbc"/>
+                            <constraint firstItem="thv-1O-oKd" firstAttribute="leading" secondItem="L6d-7A-aQd" secondAttribute="trailing" id="SpP-jc-OD7"/>
+                            <constraint firstAttribute="bottom" secondItem="L6d-7A-aQd" secondAttribute="bottom" id="ZNj-hY-4KA"/>
+                            <constraint firstItem="L6d-7A-aQd" firstAttribute="leading" secondItem="BoZ-jc-2Y8" secondAttribute="leading" id="Zph-hV-STJ"/>
+                            <constraint firstItem="thv-1O-oKd" firstAttribute="trailing" secondItem="BoZ-jc-2Y8" secondAttribute="trailing" id="eOI-8l-hwJ"/>
+                            <constraint firstItem="thv-1O-oKd" firstAttribute="top" secondItem="BoZ-jc-2Y8" secondAttribute="top" id="wcE-gt-oJ0"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Item" id="G7J-RW-q00">
+                        <leftBarButtonItems>
+                            <barButtonItem title="Documents" image="folder" catalog="system" id="M6l-mf-X0i">
+                                <connections>
+                                    <action selector="dismissDocumentViewController" destination="M2k-L8-Olo" id="6G7-Td-lsF"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Toggle Sidebar" image="sidebar.left" catalog="system" id="ZWy-f9-0tx">
+                                <connections>
+                                    <action selector="toggleSidebar" destination="M2k-L8-Olo" id="lDO-wp-DMs"/>
+                                </connections>
+                            </barButtonItem>
+                        </leftBarButtonItems>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
-                        <outlet property="documentNameLabel" destination="s46-Uc-0IM" id="S9N-4c-eHT"/>
-                        <outlet property="textView" destination="1TN-Hr-hmD" id="5rc-eF-oTe"/>
+                        <outlet property="outlineView" destination="9d5-dC-tki" id="vVF-aa-NqO"/>
+                        <outlet property="scrollView" destination="a5I-w2-fVd" id="F4J-6d-Zfz"/>
+                        <outlet property="sidebar" destination="L6d-7A-aQd" id="Jui-ta-HXU"/>
+                        <outlet property="sidebarConstraint" destination="6By-uQ-Ux5" id="iAK-k4-XG7"/>
+                        <outlet property="textView" destination="3C3-uS-JZp" id="DFm-Wa-gFj"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1029.4921875" y="653.14787701317709"/>
+            <point key="canvasLocation" x="1723.1332357247436" y="652.734375"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="vJ4-FX-LsW">
+            <objects>
+                <navigationController id="n1j-v5-5jA" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JT7-eO-PGz">
+                        <rect key="frame" x="0.0" y="24" width="1366" height="50"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Yej-qc-tWD">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
+                    <connections>
+                        <segue destination="M2k-L8-Olo" kind="relationship" relationship="rootViewController" id="diZ-JU-CtS"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dpN-fA-ldJ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1029.1361639824304" y="652.734375"/>
         </scene>
     </scenes>
     <resources>
+        <image name="folder" catalog="system" width="128" height="97"/>
+        <image name="sidebar.left" catalog="system" width="128" height="93"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="tertiarySystemGroupedBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

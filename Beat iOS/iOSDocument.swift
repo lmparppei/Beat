@@ -1,5 +1,5 @@
 //
-//  Document.swift
+//  iOSDocument.swift
 //  Beat iOS
 //
 //  Created by Lauri-Matti Parppei on 14.5.2022.

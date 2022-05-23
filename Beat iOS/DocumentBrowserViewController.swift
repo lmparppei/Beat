@@ -36,17 +36,13 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
         
         // Set the URL for the new document here. Optionally, you can present a template chooser before calling the importHandler.
         // Make sure the importHandler is always called, even if the user cancels the creation request.
-        /*
+
 		if newDocumentURL != nil {
             importHandler(newDocumentURL, .move)
         } else {
-            importHandler(nil, .none)
+			let url = Bundle.main.url(forResource: "Tutorial", withExtension: "fountain")
+			importHandler(url, .copy)
         }
-		 */
-		
-		
-		let url = Bundle.main.url(forResource: "Tutorial", withExtension: "fountain")
-		importHandler(url, .copy)
     }
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didPickDocumentsAt documentURLs: [URL]) {
@@ -69,13 +65,22 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: Document Presentation
     
     func presentDocument(at documentURL: URL) {
-        
+        /*
         let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! DocumentViewController
         documentViewController.document = iOSDocument(fileURL: documentURL)
         documentViewController.modalPresentationStyle = .fullScreen
         
         present(documentViewController, animated: true, completion: nil)
+		 */
+		
+		let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+		let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! DocumentViewController
+		documentViewController.document = iOSDocument(fileURL: documentURL)
+		
+		let navigationController = UINavigationController(rootViewController: documentViewController)
+		navigationController.modalPresentationStyle = .fullScreen
+		present(navigationController, animated: true, completion: nil)
     }
 }
 
