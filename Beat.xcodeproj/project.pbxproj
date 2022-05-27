@@ -82,6 +82,8 @@
 		B62CD50F279752130070DE17 /* BeatRecentFileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62CD50D279752130070DE17 /* BeatRecentFileCell.swift */; };
 		B62CD511279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */; };
 		B62CD512279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */; };
+		B62F5548283C0E0B00A986CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
+		B62F5549283C0E0B00A986CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
 		B636AEE627BD35E10018C6CC /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B686919E2784477700C8D5A2 /* BeatLocalization.m */; };
 		B636AEEA27BD56500018C6CC /* revisions_2022.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B636AEE927BD56500018C6CC /* revisions_2022.jpg */; };
@@ -354,7 +356,6 @@
 		B68B60A3260B849300463AD8 /* CardView.js in Resources */ = {isa = PBXBuildFile; fileRef = B66FC99D2276EAD800C0265D /* CardView.js */; };
 		B68B60A5260B849300463AD8 /* BeatStatisticsPanel.html in Resources */ = {isa = PBXBuildFile; fileRef = B6907E3A233FE17C00741071 /* BeatStatisticsPanel.html */; };
 		B68B60A9260B849300463AD8 /* Big-Fish.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B623BD3B2549AEDD00201BC9 /* Big-Fish.fountain */; };
-		B68B60AE260B849300463AD8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B68B60AF260B849300463AD8 /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */; };
 		B68B60B1260B849300463AD8 /* About Plugins.md in Resources */ = {isa = PBXBuildFile; fileRef = B629DBB1259CE3230007EA4E /* About Plugins.md */; };
 		B68B60B2260B849300463AD8 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7232218B4A0005B8447 /* Themes.plist */; };
@@ -462,7 +463,6 @@
 		B6D2B7202218B459005B8447 /* RecentFiles.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B71F2218B459005B8447 /* RecentFiles.m */; };
 		B6D2B7222218B471005B8447 /* NSMutableIndexSet+Lowest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7212218B471005B8447 /* NSMutableIndexSet+Lowest.m */; };
 		B6D2B7242218B4A0005B8447 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7232218B4A0005B8447 /* Themes.plist */; };
-		B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B6D5D9002699A42F00B88D06 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D6E5F5221B303A00A1C9BE /* OutlineScene.m */; };
 		B6D74A6D24817518001E5AF4 /* Patch Notes.html in Resources */ = {isa = PBXBuildFile; fileRef = B6D74A6C24817518001E5AF4 /* Patch Notes.html */; };
@@ -2471,7 +2471,7 @@
 				B6E38951270DDE130067DD0C /* analysis.png in Resources */,
 				B66B5AAF2739B75500BBC9C6 /* LICENSE in Resources */,
 				B6EAEDBC267A686900BBD2A2 /* Index Card Window.beatPlugin in Resources */,
-				B6D2B7342218B5DC005B8447 /* Images.xcassets in Resources */,
+				B62F5549283C0E0B00A986CA /* Images.xcassets in Resources */,
 				B640767427D7FE7D0053D63A /* LaunchScreen.xib in Resources */,
 				B6E099D82766861B005E7827 /* FooterTemplate.html in Resources */,
 				B6EAEDC0267A687900BBD2A2 /* CardWindow.html in Resources */,
@@ -2553,9 +2553,9 @@
 				B66B5AB22739B75500BBC9C6 /* UnzipKitResources-Info.plist in Resources */,
 				B6E3894C270DDE120067DD0C /* analysis.png in Resources */,
 				B68B60A9260B849300463AD8 /* Big-Fish.fountain in Resources */,
+				B62F5548283C0E0B00A986CA /* Images.xcassets in Resources */,
 				B66B5AB02739B75500BBC9C6 /* LICENSE in Resources */,
 				B640767A27D800E20053D63A /* LaunchScreen.xib in Resources */,
-				B68B60AE260B849300463AD8 /* Images.xcassets in Resources */,
 				B6E099D92766861B005E7827 /* FooterTemplate.html in Resources */,
 				B68B60AF260B849300463AD8 /* Courier Prime Sans.ttf in Resources */,
 				B6763E8027822DE500284907 /* BeatTitlePageEditor.xib in Resources */,
@@ -3392,7 +3392,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13259;
+				CURRENT_PROJECT_VERSION = 13261;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3426,7 +3426,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13259;
+				CURRENT_PROJECT_VERSION = 13261;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3456,7 +3456,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13259;
+				CURRENT_PROJECT_VERSION = 13261;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3488,7 +3488,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13259;
+				CURRENT_PROJECT_VERSION = 13261;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3511,7 +3511,6 @@
 		B6CB9704282FEB6700C7AFC7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-iOS";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3555,7 +3554,6 @@
 		B6CB9705282FEB6700C7AFC7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-iOS";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

@@ -6,7 +6,7 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate {
 	var document: UIDocument?
@@ -28,6 +28,8 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	var printSceneNumbers: Bool = true
 	var characterInputForLine: Line?
 	var formatting: BeatiOSFormatting = BeatiOSFormatting()
+	
+	private var test:Bool { parser!.lines.count < 20 }
 	
 	var showSceneNumberLabels: Bool = true
 	var typewriterMode: Bool = false
@@ -178,6 +180,11 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	
 	func applyFormatChanges() {
 		parser?.changedIndices.enumerate({ idx, stop in
+			if idx >= parser!.lines.count {
+				stop.pointee = true
+				return
+			}
+			
 			formatting.formatLine(parser!.lines[idx] as! Line)
 		})
 		
@@ -480,8 +487,7 @@ extension DocumentViewController {
 			}
 		}
 				
-		
-		parser?.parseChange(in: range, with: text)
+		//parser?.parseChange(in: range, with: text)
 		return true
 	}
 	
@@ -599,7 +605,7 @@ extension DocumentViewController {
 	}
 }
 
-
+// MARK: - Keyboard delegate
 extension DocumentViewController:KeyboardManagerDelegate {
 	func keyboardWillShow(with size: CGSize, animationTime: Double) {
 		let insets = UIEdgeInsets(top: 0, left: 0, bottom: size.height, right: 0)
@@ -618,18 +624,22 @@ extension DocumentViewController:KeyboardManagerDelegate {
 	}
 	
 	func keyboardWillHide() {
-		print("Return to original insets")
 		scrollView.contentInset = UIEdgeInsets()
 	}
 	
 }
 
-
+// MARK: - Zooming
+/*
 extension DocumentViewController: UIScrollViewDelegate {
 	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return nil
 	}
 }
+ */
+
+
+// MARK: - Text Storage delegation
 
 extension DocumentViewController: NSTextStorageDelegate {
 
@@ -638,33 +648,49 @@ extension DocumentViewController: NSTextStorageDelegate {
 	}
 	
 	func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorage.EditActions, range editedRange: NSRange, changeInLength delta: Int) {
+		if (documentIsLoading) { return }
+		
 		if editedMask == .editedAttributes {
 			return
 		}
-		
-		print("edited range: ", editedRange, "change in length", delta)
+	
+		var affectedRange = NSRange(location: NSNotFound, length: 0)
+		var string = ""
 		
 		if (editedRange.length == 0 && delta < 0) {
-			// Removal
-			let removedRange = NSRange(location: editedRange.location + delta, length: abs(delta))
-			print("  --> removed", cachedText.string.substring(range: removedRange) )
-			//parser?.parseChange(in: removedRange, with: "")
+			// Single removal. Note that delta is NEGATIVE.
+			let removedRange = NSRange(location: editedRange.location, length: abs(delta))
+			
+			// Set the range
+			affectedRange = removedRange
+			string = ""
 		}
-		else if (editedRange.length > 0 && delta < 0) {
-			// Something was replaced
+		else if (editedRange.length > 0 && delta <= 0) {
+			// Something was replaced. Note that delta is NEGATIVE.
 			let addedRange = editedRange
 			let replacedRange = NSRange(location: editedRange.location, length: editedRange.length + abs(delta))
-			print(" --> replaced", cachedText.string.substring(range: replacedRange))
-			print(" --> with", textView.text.substring(range: addedRange))
 			
+			affectedRange = replacedRange
+			string = textView.text.substring(range: addedRange)
 		}
 		else {
 			// Addition
+			if (delta > 1) {
+				// Longer addition
+				let addedRange = editedRange
+				let replacedRange = NSRange(location: editedRange.location, length: editedRange.length - abs(delta))
+				
+				affectedRange = replacedRange
+				string = textView.text.substring(range: addedRange)
+			}
+			else {
+				// Single addition
+				let addedRange = NSRange(location: editedRange.location, length: delta)
+				affectedRange = NSRange(location: editedRange.location, length: 0)
+				string = textView.text.substring(range: addedRange)
+			}
 		}
-		/*
-		if delta > 0 {
-			print("   added: ",  textView.text.substring(range: editedRange))
-		}
-		 */
+		
+		parser?.parseChange(in: affectedRange, with: string)
 	}
 }

@@ -26,7 +26,6 @@
         <!--Item-->
         <scene sceneID="dkP-xk-x6W">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="DocumentViewController" id="M2k-L8-Olo" customClass="DocumentViewController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
                         <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
@@ -49,7 +48,7 @@
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <color key="textColor" systemColor="labelColor"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardAppearance="alert" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                         <connections>
                                                             <outlet property="delegate" destination="M2k-L8-Olo" id="QLO-Ta-VZU"/>
                                                             <outlet property="editorDelegate" destination="M2k-L8-Olo" id="VWm-LZ-U2Q"/>
@@ -142,6 +141,7 @@
                         <outlet property="textView" destination="3C3-uS-JZp" id="DFm-Wa-gFj"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1723.1332357247436" y="652.734375"/>
         </scene>
