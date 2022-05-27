@@ -102,6 +102,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 - (void)resetSceneNumberLabels;
 
 // Page numbering
+- (void)updatePageBreaks:(NSArray<NSDictionary*>*)pageBreaks;
 - (void)deletePageNumbers;
 - (void)updatePageNumbers;
 - (void)updatePageNumbers:(NSArray*)pageBreaks;

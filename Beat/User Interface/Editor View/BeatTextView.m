@@ -1303,6 +1303,39 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Page numbering
 
+- (void)updatePageBreaks:(NSArray<NSDictionary*>*)pageBreaks {
+	// Update UI in main thread
+	NSMutableArray *breakPositions = NSMutableArray.new;
+	
+	for (NSDictionary *pageBreak in pageBreaks) { @autoreleasepool {
+		CGFloat lineHeight = 13; // Line height from pagination
+		CGFloat UIlineHeight = 20;
+		CGFloat y;
+		
+		Line *line = pageBreak[@"line"];
+
+		CGFloat position = [pageBreak[@"position"] floatValue];
+		
+		NSRange characterRange = NSMakeRange(line.position, line.string.length);
+		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
+		
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+		
+		// We return -1 for elements that should have page break after them
+		if (position >= 0) {
+			if (position != 0) position = round(position / lineHeight) * UIlineHeight;
+			//y = rect.origin.y + position - FONT_SIZE; // y is calculated from BOTTOM of line, so make it match its tow
+			y =  rect.origin.y + position;
+		}
+		else y = rect.origin.y + rect.size.height;
+		
+		[breakPositions addObject:[NSNumber numberWithFloat:y]];
+	} }
+	
+	[self updatePageNumbers:breakPositions];
+	[self setNeedsDisplay:YES];
+}
+
 - (void)resetPageNumberLabels {
 	for (NSInteger i = 0; i < _pageNumberLabels.count; i++) {
 		NSTextField *label = _pageNumberLabels[i];

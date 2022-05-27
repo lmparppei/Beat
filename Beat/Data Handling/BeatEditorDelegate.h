@@ -72,7 +72,7 @@
 @property (readonly, nonatomic) BXFont *italicCourier;
 
 @property (nonatomic, readonly) bool characterInput;
-@property (nonatomic, readonly) Line* characterInputForLine;
+@property (nonatomic) Line* characterInputForLine;
 
 @property (nonatomic, readonly) bool headingStyleBold;
 @property (nonatomic, readonly) bool headingStyleUnderline;

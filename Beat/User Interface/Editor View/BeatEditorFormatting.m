@@ -86,16 +86,17 @@ static NSString *reviewAttribute = @"BeatReview";
 	 
 	*/
 	
-	// Let's do the real formatting now
+	if (line == nil) return;
+	
 	NSTextView *textView = _delegate.textView;
 	
-	NSRange range = line.textRange;
 	NSLayoutManager *layoutMgr = textView.layoutManager;
 	NSTextStorage *textStorage = textView.textStorage;
 	NSMutableDictionary *attributes = NSMutableDictionary.new;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-	
 	ThemeManager *themeManager = ThemeManager.sharedManager;
+	
+	NSRange range = line.textRange;
 	
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff
@@ -114,7 +115,7 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (line.position + line.string.length > textView.string.length) return;
 	
 	// Do nothing for already formatted empty lines (except remove the background)
-	if (line.type == empty && line.formattedAs == empty && line.string.length == 0) {
+	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine) {
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 		return;
 	}
@@ -162,6 +163,7 @@ static NSString *reviewAttribute = @"BeatReview";
 			NSColor* headingColor = [BeatColors color:line.color.lowercaseString];
 			if (headingColor != nil) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:headingColor forCharacterRange:line.textRange];
 		}
+		
 	} else if (line.type == pageBreak) {
 		// Format page break - bold
 		[attributes setObject:_delegate.boldCourier forKey:NSFontAttributeName];
@@ -173,7 +175,7 @@ static NSString *reviewAttribute = @"BeatReview";
 	}
 	
 	// Handle title page block
-	if (line.type == titlePageTitle  ||
+	else if (line.type == titlePageTitle  ||
 		line.type == titlePageAuthor ||
 		line.type == titlePageCredit ||
 		line.type == titlePageSource ||
@@ -194,6 +196,7 @@ static NSString *reviewAttribute = @"BeatReview";
 			[paragraphStyle setFirstLineHeadIndent:TITLE_INDENT * 1.25 * DOCUMENT_WIDTH_MODIFIER];
 			[paragraphStyle setHeadIndent:TITLE_INDENT * 1.1 * DOCUMENT_WIDTH_MODIFIER];
 		}
+		
 	} else if (line.type == transitionLine) {
 		// Transitions
 		[paragraphStyle setAlignment:NSTextAlignmentRight];
@@ -208,6 +211,7 @@ static NSString *reviewAttribute = @"BeatReview";
 		[paragraphStyle setHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
 
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		
 	} else if (line.type == parenthetical) {
 		// Parenthetical after character
 		[paragraphStyle setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
@@ -293,10 +297,10 @@ static NSString *reviewAttribute = @"BeatReview";
 	} else if (line.type == empty) {
 		// Just to make sure that after second empty line we reset indents
 		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
-		
-		if (lineIndex > 1) {
+				
+		if (lineIndex > 0 && lineIndex != NSNotFound) {
 			Line* precedingLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
-			if (precedingLine.string.length < 1) {
+			if (precedingLine.string.length == 0) {
 				[paragraphStyle setFirstLineHeadIndent:0];
 				[paragraphStyle setHeadIndent:0];
 				[paragraphStyle setTailIndent:0];
@@ -447,7 +451,6 @@ static NSString *reviewAttribute = @"BeatReview";
 								  forCharacterRange:[self globalRangeFromLocalRange:&markerRange inLineAtPosition:line.position]];
 	}
 
-	
 	// Render backgrounds according to text attributes
 	// This is AMAZINGLY slow
 	// [self renderTextBackgroundOnLine:line];

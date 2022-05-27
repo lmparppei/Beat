@@ -92,6 +92,9 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (atomic) NSAttributedString *attrTextCache;
 - (NSAttributedString*)getAttributedText; // ONLY IN MAIN THREAD
 
+// Character input
+@property (nonatomic) Line* characterInputForLine;
+
 // Plugins running in this window
 @property (nonatomic) NSMutableDictionary *runningPlugins;
 

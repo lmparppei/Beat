@@ -176,7 +176,6 @@
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
 @property (nonatomic) bool characterInput;
-@property (nonatomic) Line* characterInputForLine;
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) bool typewriterMode;
 @property (nonatomic) bool hideFountainMarkup;
@@ -1598,35 +1597,19 @@
 	}
 	
 	// Check for character input trouble
-	if (_characterInput) {
-		// Stop character input if line has changed.
-		if (currentLine != _characterInputForLine) {
-			// If the character cue was left empty, remove its type
-			if (_characterInputForLine.string.length == 0) {
-				_characterInputForLine.type = action;
-				[_formatting formatLine:_characterInputForLine];
-			}
-
-			[self cancelCharacterInput];
-		}
+	if (_characterInput && replacementString.length == 0 && NSMaxRange(affectedCharRange) == _characterInputForLine.position) {
+		[self cancelCharacterInput];
+		return NO;
 	}
 	
 	// Handle new line breaks (when actually typed)
-	bool forceDialogue = NO;
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !self.undoManager.isRedoing && !self.undoManager.isUndoing && !self.documentIsLoading) {
 				
 		// Line break after character cue
-		if (currentLine.isAnyCharacter) {
-			// Force dialogue type for the empty line if needed
-			Line *nextLine = [_parser nextLine:currentLine];
-			if ((nextLine.isAnyDialogue || nextLine.type == empty) && (nextLine.string.length == 0 || nextLine == nil)) {
-				forceDialogue = YES;
-			}
-			
-			// Look back to see if we should add (cont'd)
-			if (self.automaticContd) {
-				// If the CONT'D got added, don't run this method any longer
-				if ([self shouldAddContdIn:affectedCharRange string:replacementString]) return NO;
+		if (currentLine.isAnyCharacter && self.automaticContd) {
+			// Look back to see if we should add (cont'd), and if the CONT'D got added, don't run this method any longer
+			if ([self shouldAddContdIn:affectedCharRange string:replacementString]) {
+				return NO;
 			}
 		}
 		
@@ -1685,30 +1668,13 @@
 
 	// Get current line after parsing
 	_currentLine = [self getCurrentLine];
-	
-	
-	if (forceDialogue) {
-		// Force the next line to become dialogue
-		//if (affectedLine.type == character) _currentLine.type = dialogue;
-		//else if (affectedLine.type == dualDialogueCharacter) _currentLine.type = dualDialogue;
-	}
-
-	
-	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
-	if (self.autocomplete) [self autocompleteAtCurrentLine];
-	
-	/*
-	if (_lastChangedRange.location == NSNotFound || affectedCharRange.location < _lastChangedRange.location) {
-		_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	}
-	*/
-	
+		
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-
 	_previewUpdated = NO;
 	
     return YES;
 }
+
 
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange {
 	// Don't add a dual line break if shift is pressed
@@ -1840,8 +1806,9 @@
 - (void)autocompleteAtCurrentLine {
 	Line *currentLine = self.currentLine;
 	
-	if (_textView.selectedRange.location == currentLine.position + currentLine.string.length - 1) {
-		if (currentLine.type == character) {
+	if (_textView.selectedRange.location == NSMaxRange(currentLine.textRange)) {
+
+		if (currentLine.isAnyCharacter) {
 			if (!_characterNames.count) [self collectCharacterNames];
 			[self.textView setAutomaticTextCompletionEnabled:YES];
 		} else if (currentLine.type == heading) {
@@ -1852,6 +1819,9 @@
 			[_sceneHeadings removeAllObjects];
 			[self.textView setAutomaticTextCompletionEnabled:NO];
 		}
+		
+	} else {
+		[self.textView setAutomaticTextCompletionEnabled:NO];
 	}
 }
 
@@ -1964,6 +1934,9 @@
 	// A larger chunk of text was pasted. Ensure layout.
 	if (_lastChangedRange.length > 3) [self ensureLayout];
 	
+	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
+	if (self.autocomplete) [self autocompleteAtCurrentLine];
+	
 	// Reset last changed range
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
 }
@@ -1981,7 +1954,13 @@
 	if (_quickSettingsPopover.shown) [self closeQuickSettings];
 	
 	// Reset forced character input
-	if (self.characterInputForLine != self.currentLine) self.characterInput = NO;
+	if (self.characterInputForLine != self.currentLine && self.characterInput) {
+		self.characterInput = NO;
+		if (_characterInputForLine.string.length == 0) {
+			[self setTypeAndFormat:_characterInputForLine type:empty];
+			_characterInputForLine = nil;
+		}
+	}
 	
 	// We REALLY REALLY should make some sort of cache for these
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -2343,8 +2322,8 @@
 	// If there was a character selected in Character Filter Box, save it
 	NSString *selectedCharacter = _characterBox.selectedItem.title;
     
-    NSMutableArray *characterList = [NSMutableArray array];
-	NSMutableDictionary <NSString*, NSNumber*>* charactersAndLines = [NSMutableDictionary dictionary];
+	NSMutableArray *characterList = NSMutableArray.new;
+	NSMutableDictionary <NSString*, NSNumber*>* charactersAndLines = NSMutableDictionary.new;
     
 	[_characterBox removeAllItems];
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
@@ -2352,17 +2331,18 @@
 	Line* currentLine = self.currentLine;
 	
 	for (Line *line in self.parser.lines) {
-		if ((line.type == character || line.type == dualDialogueCharacter) && line != currentLine
-			//&& ![_characterNames containsObject:line.string]
+		if ((line.isAnyCharacter) && line != currentLine
 			) {
 			// Don't add this line if it's just a character with cont'd.
 			// We'll account for other things later, such as V.O., O.S. etc.
+			/*
 			NSString *contdExtension = [NSString stringWithFormat:@"(%@)", [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]];
 			if ([line.string rangeOfString:contdExtension options:NSCaseInsensitiveSearch].location != NSNotFound &&
 				[line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound
 				) continue;
-			
-			// Character name, INCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
+			*/
+			 
+			// Character name, EXCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
 			NSString *character = line.characterName;
 			// For some reason there are random misinterpretations of character cues, so skip empty lines
 			if (character.length == 0) continue;
@@ -2438,9 +2418,6 @@
 }
 
 - (void)handleTabPress {
-	// Don't allow this to happen twice
-	if (_characterInput) return;
-	
 	// Force character if the line is suitable
 	Line *currentLine = self.currentLine;
 	
@@ -2454,7 +2431,13 @@
 				[self forceCharacterInput];
 			}
 		}
+	}
+	else if (currentLine.isAnyCharacter) {
+		[self autocompleteAtCurrentLine];
 	} else {
+		// Don't allow this to happen twice
+		if (_characterInput) return;
+
 		// Else see if we could force the character cue
 		Line* prevLine = [self.parser previousLine:currentLine];
 		Line* nextLine = [self.parser nextLine:currentLine];
@@ -2483,7 +2466,7 @@
 	
 	// If no line is selected, return
 	Line *currentLine = self.currentLine;
-	if (!currentLine) return;
+	if (currentLine == nil) return;
 	
 	currentLine.type = character;
 	_characterInputForLine = currentLine;
@@ -2506,13 +2489,18 @@
 - (void)cancelCharacterInput {
 	_characterInput = NO;
 	
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
+	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 	[attributes setValue:self.courier forKey:NSFontAttributeName];
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[paragraphStyle setFirstLineHeadIndent:0];
+	[paragraphStyle setFirstLineHeadIndent:400];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	[self.textView setTypingAttributes:attributes];
+	self.textView.needsDisplay = YES;
+	self.textView.needsLayout = YES;
+	
+	[self setTypeAndFormat:_characterInputForLine type:empty];
+
 }
 
 - (void)addRecentCharacter:(NSString*)name {
@@ -2642,6 +2630,10 @@
 }
 
 
+- (void)setTypeAndFormat:(Line*)line type:(LineType)type {
+	line.type = type;
+	[self formatLine:line];
+}
 
 #pragma mark - Revisions
 
@@ -4874,37 +4866,9 @@ triangle walks
 			// This SHOULD mean that pagination was canceled
 			if (pageBreaks == nil) return;
 			
+			// Update text view page breaks in main queue
 			dispatch_async(dispatch_get_main_queue(), ^(void){
-				// Update UI in main thread
-				NSMutableArray *breakPositions = [NSMutableArray array];
-				
-				for (NSDictionary *pageBreak in pageBreaks) { @autoreleasepool {
-					CGFloat lineHeight = 13; // Line height from pagination
-					CGFloat UIlineHeight = 20;
-					CGFloat y;
-					
-					Line *line = pageBreak[@"line"];
-
-					CGFloat position = [pageBreak[@"position"] floatValue];
-					
-					NSRange characterRange = NSMakeRange(line.position, line.string.length);
-					NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
-					
-					NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
-					
-					// We return -1 for elements that should have page break after them
-					if (position >= 0) {
-						if (position != 0) position = round(position / lineHeight) * UIlineHeight;
-						//y = rect.origin.y + position - FONT_SIZE; // y is calculated from BOTTOM of line, so make it match its tow
-						y =  rect.origin.y + position;
-					}
-					else y = rect.origin.y + rect.size.height;
-					
-					[breakPositions addObject:[NSNumber numberWithFloat:y]];
-				} }
-				
-				[self.textView updatePageNumbers:breakPositions];
-				[self.textView setNeedsDisplay:YES];
+				[self.textView updatePageBreaks:pageBreaks];
 			});
 		});
 	}];
