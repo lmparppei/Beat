@@ -60,11 +60,20 @@
 
  */
 
+#import <TargetConditionals.h>
 #import "BeatPaginator.h"
 #import "Line.h"
 #import "RegExCategories.h"
 #import "BeatUserDefaults.h"
 #import "BeatMeasure.h"
+
+#if TARGET_OS_IOS
+	#define BXDocument UIDocument
+	#define BXPrintInfo UIPrintInfo
+#else
+	#define BXDocument NSDocument
+	#define BXPrintInfo NSPrintInfo
+#endif
 
 #define CHARACTER_WIDTH 7.2033
 #define LINE_HEIGHT 12.5
@@ -142,13 +151,14 @@
 
 @interface BeatPaginator ()
 
-@property (weak, nonatomic) NSDocument *document;
+@property (weak, nonatomic) BXDocument *document;
 @property (strong, nonatomic) NSArray *script;
 @property (nonatomic) NSTimer *timer;
 @property (nonatomic) NSString *textCache;
 @property bool paginating;
 @property (nonatomic) bool A4;
-@property (nonatomic) NSPrintInfo *printInfo;
+@property (nonatomic) BXPrintInfo *printInfo;
+@property (nonatomic) CGSize printableArea; // for iOS
 @property (nonatomic) bool printNotes;
 @property (nonatomic) BeatFont *font;
 
@@ -165,20 +175,20 @@
 	return [self initWithDocument:nil elements:elements settings:settings printInfo:nil livePagination:NO];
 }
 
-- (id)initForLivePagination:(NSDocument*)document {
+- (id)initForLivePagination:(BXDocument*)document {
 	return [self initForLivePagination:document withElements:nil];
 }
 
-- (id)initForLivePagination:(NSDocument*)document withElements:(NSArray*)elements {
+- (id)initForLivePagination:(BXDocument*)document withElements:(NSArray*)elements {
 	return [self initWithDocument:document elements:elements settings:nil printInfo:nil livePagination:YES];
 }
 
-- (id)initWithScript:(NSArray *)elements printInfo:(NSPrintInfo*)printInfo
+- (id)initWithScript:(NSArray *)elements printInfo:(BXPrintInfo*)printInfo
 {
 	return [self initWithDocument:nil elements:elements settings:nil printInfo:printInfo livePagination:NO];
 }
 
-- (id)initWithDocument:(NSDocument*)document elements:(NSArray*)elements settings:(BeatExportSettings*)settings printInfo:(NSPrintInfo*)printInfo livePagination:(bool)livePagination {
+- (id)initWithDocument:(BXDocument*)document elements:(NSArray*)elements settings:(BeatExportSettings*)settings printInfo:(BXPrintInfo*)printInfo livePagination:(bool)livePagination {
 	self = [super init];
 	if (self) {
 		// We have multiple ways of setting a document.
@@ -282,9 +292,7 @@
 - (NSArray *)pageAtIndex:(NSUInteger)index
 {
 	// Make sure some kind of pagination has been run before you try to return a value.
-	if (self.pages.count == 0) {
-		[self paginate];
-	}
+	if (self.pages.count == 0) [self paginate];
 	
 	// Make sure we don't try and access an index that doesn't exist
 	if (self.pages.count == 0 || (index > self.pages.count - 1)) {
@@ -328,8 +336,13 @@
 */
 
 - (void)setPageSize:(BeatPaperSize)pageSize {
+#if TARGET_OS_IOS
+	_paperSize = [BeatPaperSizing printableAreaFor:pageSize];
+#else
 	_printInfo = [BeatPaperSizing printInfoFor:pageSize];
+#endif
 }
+
 
 - (void)setScript:(NSArray *)script {
 	NSMutableArray *lines = [NSMutableArray array];
@@ -365,17 +378,24 @@
 }
 
 - (void)getPaperSizeFromDocument {
+	/**
+	 
+	 We have separate code for macOS and iOS here. The reason is that NSPrintInfo automatically
+	 conforms to the default printer, and you can set the paper size through NSPrintInfo.
+	 
+	 On iOS, we'll fetch our imaginary printable area, based on expor settings and use that as page size.
+	 
+	 */
+#if !TARGET_OS_IOS
+	// macOS paper sizing
+	
 	if (_document || _printInfo) {
-		NSPrintInfo *printInfo;
+		BXPrintInfo *printInfo;
 		if (_document) printInfo = _document.printInfo.copy;
 		else printInfo = _printInfo.copy;
 	
 		printInfo = [BeatPaperSizing setMargins:printInfo];
-		
-		// Check paper size
-		if (printInfo.paperSize.width > 595) _A4 = NO;
-		_A4 = YES;
-		
+				
 		CGFloat w = roundf(printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin);
 		CGFloat h = roundf(printInfo.paperSize.height - printInfo.topMargin - printInfo.bottomMargin);
 		
@@ -383,6 +403,12 @@
 	} else {
 		_paperSize = CGSizeMake(595, 821);
 	}
+	
+#else
+	// iOS paper sizing
+	_paperSize = [BeatPaperSizing printableAreaFor:_settings.paperSize];
+#endif
+	
 }
 
 - (void)paginateFromIndex:(NSInteger)fromIndex
@@ -411,7 +437,6 @@
 	bool hasStartedANewPage = NO;
 
 	
-			
 	// create a tmp array that will hold elements to be added to the pages
 	NSMutableArray *tmpElements = [NSMutableArray array];
 	
@@ -815,20 +840,20 @@
 		case parenthetical:
 			cpl = PARENTHETICAL; break;
 		case dualDialogue:
-			if (_A4) cpl = DUAL_DIALOGUE_A4;
+			if (_settings.paperSize == BeatA4) cpl = DUAL_DIALOGUE_A4;
 			else cpl = DUAL_DIALOGUE_US;
 			break;
 		case dualDialogueCharacter:
-			if (_A4) cpl = DUAL_DIALOGUE_CHARACTER_A4;
+			if (_settings.paperSize == BeatA4) cpl = DUAL_DIALOGUE_CHARACTER_A4;
 			else cpl = DUAL_DIALOGUE_CHARACTER_US;
 			break;
 		case dualDialogueParenthetical:
-			if (_A4) cpl = DUAL_DIALOGUE_PARENTHETICAL_A4;
+			if (_settings.paperSize == BeatA4) cpl = DUAL_DIALOGUE_PARENTHETICAL_A4;
 			else cpl = DUAL_DIALOGUE_US;
 			break;
 			
 		default:
-			if (_A4) cpl = ACTION_A4;
+			if (_settings.paperSize == BeatA4) cpl = ACTION_A4;
 			else cpl = ACTION_US;
 			break;
 	}
@@ -847,7 +872,7 @@
 	return [self cplToWidth:element];
 }
 
-/*
+/**
  To get the height of a string we need to create a text layout box, and use that to calculate the number
  of lines of text we have, then multiply that by the line height. This is NOT the method Apple describes
  in their docs, but we have to do this because getting the size of the layout box returns strange values.
@@ -855,12 +880,17 @@
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight
 {
 	/*
-	 This method won't work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance
+	 This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance
 	 method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
 	 */
 	
 	if (string.length == 0) return lineHeight;
-		
+	
+#if TARGET_OS_IOS
+	// Set font size to 80% on iOS
+	font = [font fontWithSize:font.pointSize * 0.8];
+#endif
+
 	// set up the layout manager
 	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
 	NSLayoutManager *layoutManager = NSLayoutManager.new;

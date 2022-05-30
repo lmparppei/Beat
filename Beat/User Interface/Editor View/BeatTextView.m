@@ -1531,6 +1531,7 @@ Line *cachedRectLine;
 	*/
 	
 	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
+	
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
 	self.textContainer.size = NSMakeSize(_editorDelegate.documentWidth, self.textContainer.size.height);
 

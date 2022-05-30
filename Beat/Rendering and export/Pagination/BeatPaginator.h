@@ -74,7 +74,9 @@
 - (id)initWithScript:(NSArray *)elements settings:(BeatExportSettings*)settings;
 - (id)initForLivePagination:(BeatDocument*)document;
 - (id)initForLivePagination:(BeatDocument*)document withElements:(NSArray*)elements;
-- (id)initWithScript:(NSArray *)elements printInfo:(BeatPrintInfo*)printInfo;
+#if !TARGET_OS_IOS
+- (id)initWithScript:(NSArray *)elements printInfo:(NSPrintInfo*)printInfo;
+#endif
 
 - (void)livePaginationFor:(NSArray*)script changeAt:(NSUInteger)location;
 - (void)paginate;

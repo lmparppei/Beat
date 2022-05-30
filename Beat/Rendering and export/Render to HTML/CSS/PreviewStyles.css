@@ -47,8 +47,9 @@ body p::after {
 */
 
 body {
-
+	/*
 	zoom: 70%;
+	*/
 
 	--page-height: 29.7cm;
 
@@ -76,10 +77,11 @@ section {
 	background-color: #fafafa;
 
 	min-height: var(--page-height);
-	height: var(--page-height);
+	/* height: var(--page-height); */
 
 	padding-top: 20pt;
 	padding-left: 50pt;
+	padding-bottom: 20pt;
 	
 	margin-top: 0pt;
 	margin-bottom: 1em;
@@ -208,38 +210,7 @@ a:hover {
 	background-color: #ddd;
 }
 
-#close, #zoomIn, #zoomOut {
-	position: fixed;
-	z-index: 999;
-
-	right: .6rem;
-	top: .6rem;
-
-	content: '╳';
-	font-family: helvetica, sans-serif;
-	font-weight: bold;
-
-	display: flex;
-	justify-content: center;
-	align-items: center;
-
-	width: 2rem;
-	height: 2rem;
-	background-color: rgba(0,0,0,.9);
-	color: #eee;
-	
-	font-size: 1rem;
-
-	border-radius: 50%;
-	cursor: default;
-}
-#close:hover {
-	color: white;
-}
-#zoomIn { right: auto; left: .6em; }
-#zoomOut { right: auto; left: .6em; top: 4em; }
-
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 400px) {
 	body.quickLook {
 		font-size: .3em;
 		background: white;

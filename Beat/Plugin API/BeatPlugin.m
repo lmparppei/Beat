@@ -1216,7 +1216,7 @@
 - (void)newDocument:(NSString*)string
 {
 	if (string.length) [(BeatAppDelegate*)NSApp.delegate newDocumentWithContents:string];
-	[NSDocumentController.sharedDocumentController newDocument:nil];
+	else [NSDocumentController.sharedDocumentController newDocument:nil];
 }
 - (id)newDocumentObject:(NSString*)string
 {

@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) NSString * _Nullable currentScene;
 @property (nonatomic) NSArray * revisions;
 @property (nonatomic) NSString * customCSS;
+@property (nonatomic) BeatPaperSize paperSize;
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatDocument* _Nullable)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers;
 

@@ -77,6 +77,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) bool revisionMode;
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
+@property (nonatomic) BeatPaperSize pageSize;
 
 @property (nonatomic) bool contentLocked;
 
@@ -121,7 +122,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (IBAction)togglePrintSceneNumbers:(id)sender;
 - (void)readUserSettings;
 - (void)applyUserSettings;
-- (void)setPaperSize:(BeatPaperSize)size;
 
 // Analysis
 @property (nonatomic) NSMutableDictionary<NSString*, NSString*> *characterGenders;

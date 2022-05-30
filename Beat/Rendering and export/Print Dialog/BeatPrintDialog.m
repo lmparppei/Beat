@@ -52,7 +52,6 @@
 
 @property (nonatomic) NSString *compareWith;
 
-@property (nonatomic) BeatPaperSize paperSize;
 @property (nonatomic) BeatPrintView *printView;
 
 @property (nonatomic) bool automaticPreview;
@@ -137,15 +136,11 @@ static CGFloat panelWidth;
 	
 	// Check the paper size
 	// WIP: Unify these so the document knows its BeatPaperSize too
-	if (_documentDelegate.printInfo.paperSize.width > 596) {
-		[_radioLetter setState:NSOnState];
-		_paperSize = BeatUSLetter;
-	} else {
-		[_radioA4 setState:NSOnState];
-		_paperSize = BeatA4;
-	}
+	if (_documentDelegate.pageSize == BeatA4) [_radioA4 setState:NSOnState];
+	else [_radioLetter setState:NSOnState];
 
-	[BeatPaperSizing setPageSize:_paperSize printInfo:_documentDelegate.printInfo];
+	// To be absolutely sure, set print info to match page size setting
+	[BeatPaperSizing setPageSize:_documentDelegate.pageSize printInfo:_documentDelegate.printInfo];
 	
 	// Reload PDF preview
 	[self loadPreview];
@@ -185,24 +180,20 @@ static CGFloat panelWidth;
 }
 
 - (IBAction)selectPaperSize:(id)sender {
-	BeatPaperSize oldSize = _paperSize;
+	BeatPaperSize oldSize = _documentDelegate.pageSize;
 	
 	if ([(NSButton*)sender tag] == 1) {
 		// A4
-		//_documentDelegate.printInfo = [BeatPaperSizing setSize:BeatA4 printInfo:_documentDelegate.printInfo];
-		_paperSize = BeatA4;
-		[BeatPaperSizing setPageSize:_paperSize printInfo:_documentDelegate.printInfo];
+		_documentDelegate.pageSize = BeatA4;
 	} else {
 		// US Letter
-		//_documentDelegate.printInfo = [BeatPaperSizing setSize:BeatUSLetter printInfo:_documentDelegate.printInfo];
-		_paperSize = BeatUSLetter;
-		[BeatPaperSizing setPageSize:_paperSize printInfo:_documentDelegate.printInfo];
+		_documentDelegate.pageSize = BeatUSLetter;
 	}
 	
-	[_documentDelegate setPaperSize:_paperSize];
+	[BeatPaperSizing setPageSize:_documentDelegate.pageSize printInfo:_documentDelegate.printInfo];
 	
 	// Preview needs refreshing
-	if (oldSize != _paperSize) {
+	if (oldSize != _documentDelegate.pageSize) {
 		[self loadPreview];
 	}
 }
@@ -286,6 +277,8 @@ static CGFloat panelWidth;
 	NSString *css = self.exportStyles.customCSS;
 	
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.documentDelegate.document header:header printSceneNumbers:self.documentDelegate.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
+
+	settings.paperSize = [self.documentDelegate.documentSettings getInt:DocSettingPageSize];
 	settings.customCSS = css;
 	
 	return settings;

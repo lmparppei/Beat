@@ -359,8 +359,8 @@
 #define LINE_HEIGHT 1.1
 
 #define DOCUMENT_WIDTH_MODIFIER 630
-#define DOCUMENT_WIDTH_A4 620
-#define DOCUMENT_WIDTH_US 640
+#define DOCUMENT_WIDTH_A4 610
+#define DOCUMENT_WIDTH_US 630
 #define TEXT_INSET_TOP 80
 
 // Magnifying stuff
@@ -517,7 +517,7 @@
 	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
 		
 	// Initialize document settings if needed
-	if (!self.documentSettings) self.documentSettings = [[BeatDocumentSettings alloc] init];
+	if (!self.documentSettings) self.documentSettings = BeatDocumentSettings.new;
 	
 	// Initialize Theme Manager
 	// (before formatting the content, because we need the colors for formatting!)
@@ -642,16 +642,15 @@
 	// (We'll disable undo registration here, so the doc won't appear as edited on open)
 	[self.undoManager disableUndoRegistration];
 
-	NSInteger pageSize;
 	if ([self.documentSettings has:DocSettingPageSize]) {
-		pageSize = [self.documentSettings getInt:DocSettingPageSize];
+		self.pageSize = [self.documentSettings getInt:DocSettingPageSize];
 	} else {
-		pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
+		self.pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
 	}
 	
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
-	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:printInfo];	
-	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
+	self.printInfo = [BeatPaperSizing setSize:_pageSize printInfo:printInfo];
+	[self.documentSettings setInt:DocSettingPageSize as:_pageSize];
 
 	// Enable undo registration and clear any changes to the document (if needed)
 	[self.undoManager enableUndoRegistration];
@@ -737,18 +736,19 @@
 	[self updateQuickSettings];
 }
 
+- (NSUInteger)documentWidth {
+	if (self.pageSize == BeatA4) return DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
+	else return DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
+}
+
 - (void)setupWindow {
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
 	[_sideViewCostraint setConstant:0];
 	
 	// We'll calculate the document width based on paper size
-	if ([(NSNumber*)[BeatUserDefaults.sharedDefaults get:@"defaultPageSize"] integerValue] == BeatA4) {
-		_documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
-	} else {
-		_documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
-	}
-	
+	self.pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
+		
 	// Reset zoom
 	[self setZoom];
 
@@ -766,15 +766,15 @@
 	CGFloat height = [_documentSettings getFloat:DocSettingWindowHeight];
 	
 	// Default size for new windows or those going over screen bounds
-	if (width < _documentWidth || x > _documentWindow.screen.frame.size.width) {
-		width = _documentWidth * 1.6;
+	if (width < self.documentWidth || x > _documentWindow.screen.frame.size.width) {
+		width = self.documentWidth * 1.6;
 		x = (_documentWindow.screen.frame.size.width - width) / 2;
 	}
 	if (height < MIN_WINDOW_HEIGHT || y + height > _documentWindow.screen.frame.size.height) {
 		height = _documentWindow.screen.frame.size.height * .85;
 		
 		if (height < MIN_WINDOW_HEIGHT) height = MIN_WINDOW_HEIGHT;
-		if (height > _documentWidth * 2.5) height = _documentWidth * 1.75;
+		if (height > self.documentWidth * 2.5) height = self.documentWidth * 1.75;
 		
 		y = (_documentWindow.screen.frame.size.height - height) / 2;
 	}
@@ -854,7 +854,7 @@
 {
 	[self setMinimumWindowSize];
 	
-	CGFloat width = (self.textView.frame.size.width / 2 - _documentWidth * _magnification / 2) / _magnification;
+	CGFloat width = (self.textView.frame.size.width / 2 - self.documentWidth * _magnification / 2) / _magnification;
 	
 	// Set global variable for top inset, if it's unset
 	// For typewriter mode, we set the top & bottom bounds a bit differently
@@ -881,9 +881,9 @@
 - (void)setMinimumWindowSize {
 	// These are arbitratry values. Sorry, anyone reading this.
 	if (!_sidebarVisible) {
-		[self.documentWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150, MIN_WINDOW_HEIGHT)];
+		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * _magnification + 150, MIN_WINDOW_HEIGHT)];
 	} else {
-		[self.documentWindow setMinSize:NSMakeSize(_documentWidth * _magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
+		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * _magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
 	}
 }
 
@@ -1139,7 +1139,7 @@
 	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
 	
 	// Set minimum size for text view when Outline view size is dragged
-	self.splitHandle.topOrRightMinSize = _documentWidth * _magnification;
+	self.splitHandle.topOrRightMinSize = self.documentWidth * _magnification;
 }
 
 - (void)scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
@@ -2225,11 +2225,13 @@
 #pragma mark - Block / paragraph methods
 
 - (IBAction)moveSelectedLinesUp:(id)sender {
-	NSArray *lines = [self.parser blockFor:[self.parser lineAtIndex:self.selectedRange.location]];
+	//NSArray *lines = [self.parser blockFor:[self.parser lineAtIndex:self.selectedRange.location]];
+	NSArray *lines = [self.parser blockForRange:self.selectedRange];
 	[self moveBlockUp:lines];
 }
 - (IBAction)moveSelectedLinesDown:(id)sender {
-	NSArray *lines = [self.parser blockFor:[self.parser lineAtIndex:self.selectedRange.location]];
+	//NSArray *lines = [self.parser blockFor:[self.parser lineAtIndex:self.selectedRange.location]];
+	NSArray *lines = [self.parser blockForRange:self.selectedRange];
 	[self moveBlockDown:lines];
 }
 
@@ -2270,22 +2272,36 @@
 		// Add a line break if we're moving a block at the end
 		[self addString:@"" atIndex:NSMaxRange(endLine.textRange)];
 	}
-		
+	
 	[self moveStringFrom:blockRange to:NSMaxRange(endLine.range)];
-	if (blockRange.length > 0)[self setSelectedRange:NSMakeRange(NSMaxRange(endLine.range), blockRange.length - 1)];
+	
+	if (![_parser.lines containsObject:endLine]) {
+		// The last line was deleted in the process, so let's find the one that's still there.
+		NSInteger i = lines.count;
+		while (i > 0) {
+			i--;
+			if ([_parser.lines containsObject:lines[i]]) {
+				endLine = lines[i];
+				break;
+			}
+		}
+	}
+	
+	// Select the moved line
+	if (blockRange.length > 0) {
+		[self setSelectedRange:NSMakeRange(NSMaxRange(endLine.range), blockRange.length - 1)];
+	}
 }
 
 - (IBAction)copyBlock:(id)sender {
-	Line *currentLine = [_parser lineAtIndex:self.selectedRange.location];
-	NSArray *block = [_parser blockFor:currentLine];
+	NSArray *block = [_parser blockForRange:self.selectedRange];
 	NSRange range = [self rangeForBlock:block];
 	
 	[self setSelectedRange:range];
 	[self.textView copy:self];
 }
 - (IBAction)cutBlock:(id)sender {
-	Line *currentLine = [_parser lineAtIndex:self.selectedRange.location];
-	NSArray *block = [_parser blockFor:currentLine];
+	NSArray *block = [_parser blockForRange:self.selectedRange];
 	NSRange range = [self rangeForBlock:block];
 	
 	[self setSelectedRange:range];
@@ -4887,8 +4903,8 @@ triangle walks
 	// I have no idea what's with these values, but here they are.
 	// documentWidth determines how the insets are set, while linePadding makes some space for revision markers.
 	// Everything is terrible. BeatTextView inset scheme should be reworked.
-	if (size == BeatA4) _documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * (2 - .5);
-	else _documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * (2 - .5);
+	if (size == BeatA4) self.documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * (2 - .5);
+	else self.documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * (2 - .5);
 	
 	[self updateLayout];
 }
@@ -4902,11 +4918,14 @@ triangle walks
 	if ([item.title isEqualToString:@"A4"]) size = BeatA4;
 	else size = BeatUSLetter;
 		
-	[self setPaperSize:size];
+	self.pageSize = size;
 }
-- (void)setPaperSize:(BeatPaperSize)size {
-	self.printInfo = [BeatPaperSizing setSize:size printInfo:self.printInfo];
-	[self.documentSettings setInt:DocSettingPageSize as:size];
+
+- (void)setPageSize:(BeatPaperSize)pageSize {
+	_pageSize = pageSize;
+	
+	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
+	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
 	[self paginate];
 	_previewUpdated = NO;

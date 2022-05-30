@@ -6,7 +6,14 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IOS
+	#import <UIKit/UIKit.h>
+#else
+	#import <Cocoa/Cocoa.h>
+#endif
+
 #import "OutlineScene.h"
 #import "BeatDocumentSettings.h"
 #import "BeatEditorDelegate.h"
@@ -22,8 +29,9 @@ typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (readonly) NSAttributedString *attrTextCache;
+@property (nonatomic, readonly) BeatPaperSize pageSize;
 - (NSString*)text;
-
+- (id)document;
 @end
 
 @interface BeatPreview : NSObject

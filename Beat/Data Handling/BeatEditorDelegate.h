@@ -23,6 +23,8 @@
     #define BXPrintInfo NSPrintInfo
 #endif
 
+#import "BeatPaperSizing.h"
+
 #if !TARGET_OS_IOS
 @class BeatPrintView;
 #else
@@ -51,6 +53,8 @@
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, readonly) bool showSceneNumberLabels;
+
+@property (nonatomic) BeatPaperSize pageSize;
 
 @property (readonly) ContinuousFountainParser *parser;
 
@@ -95,10 +99,10 @@
 - (id)document;
 - (void)releasePrintDialog;
 #else
+- (id)documentForDelegation;
 - (UIPrintInfo*)printInfo;
 #endif
 
-- (void)setPaperSize:(NSInteger)size;
 - (void)setPrintSceneNumbers:(bool)value;
 
 - (NSMutableArray*)scenes;

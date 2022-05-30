@@ -463,7 +463,7 @@ static NSDictionary* patterns;
 }
 
 - (NSIndexSet*)parseRemovalAt:(NSRange)range {
-	NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
+	NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
 	
 	NSString *stringToRemove = [self.rawText substringWithRange:range];
 	NSInteger lineBreaks = [stringToRemove componentsSeparatedByString:@"\n"].count - 1;
@@ -2304,6 +2304,23 @@ and incomprehensible system of recursion.
 
 
 #pragma mark - Element blocks
+
+- (NSArray<Line*>*)blockForRange:(NSRange)range {
+	NSMutableArray *blockLines = NSMutableArray.new;
+	NSArray *lines;
+	
+	if (range.length > 0) lines = [self linesInRange:range];
+	else lines = @[ [self lineAtPosition:range.location] ];
+
+	for (Line *line in lines) {
+		if ([blockLines containsObject:line]) continue;
+		
+		NSArray *block = [self blockFor:line];
+		[blockLines addObjectsFromArray:block];
+	}
+	
+	return blockLines;
+}
 
 - (NSArray<Line*>*)blockFor:(Line*)line {
 	// The "block" includes the empty line at the end

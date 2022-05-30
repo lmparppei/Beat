@@ -39,6 +39,7 @@
 		_printNotes = printNotes;
 		_coloredPages = coloredPages;
 		_pageRevisionColor = revisedPageColor;
+		_paperSize = NSNotFound;
 	}
 	return self;
 }
@@ -46,11 +47,18 @@
 - (BeatPaperSize)paperSize {
 	// Check paper size
 #if TARGET_OS_IOS
-    NSLog(@"### IMPLEMENT IOS PAGE SIZES");
-    return BeatA4;
+	if (_paperSize == NSNotFound) {
+		NSLog(@"No paper size found, returning A4");
+		return BeatA4;
+	}
+	return _paperSize;
 #else
-	if (self.document.printInfo.paperSize.width > 596) return BeatUSLetter;
-	else return BeatA4;
+	if (_paperSize == NSNotFound) {
+		if (self.document.printInfo.paperSize.width > 596) return BeatUSLetter;
+		else return BeatA4;
+	} else {
+		return _paperSize;
+	}
 #endif
 }
 

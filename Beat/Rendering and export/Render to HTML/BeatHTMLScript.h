@@ -1,9 +1,9 @@
 //
-//  FNHTMLScript.h
-//	Modified for Beat
+//  BeatHTMLScript
+//	Based on FNHTMLScript, heavily modified for Beat
 //
 //  Copyright (c) 2012-2013 Nima Yousefi & John August
-//  Parts copyright (c) 2019 Lauri-Matti Parppei / Lauri-Matti Parppei
+//  Parts copyright (c) 2019-2022 Lauri-Matti Parppei / Lauri-Matti Parppei
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy 
 //  of this software and associated documentation files (the "Software"), to 
@@ -24,33 +24,29 @@
 //  IN THE SOFTWARE.
 //
 
-/*
-#if TARGET_OS_IOS
-    #define BeatFont UIFont
-#else
-*/
-    #define BeatFont NSFont
-    #import <Cocoa/Cocoa.h>
-/* #endif */
 
 #import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
 #import "BeatEditorDelegate.h"
 #import "BeatExportSettings.h"
 #import "ContinuousFountainParser.h"
- 
+
+#if TARGET_OS_IOS
+	#import <UIKit/UIKit.h>
+#else
+	#define BeatFont NSFont
+	#import <Cocoa/Cocoa.h>
+#endif
+
 @interface BeatHTMLScript : NSObject
 
-@property (strong, nonatomic) BeatFont *font;
 @property (strong, nonatomic) NSArray *script;
 @property (strong, nonatomic) NSArray *titlePage;
-@property (strong, nonatomic) NSDocument *document;
 @property (strong, nonatomic) NSNumber *customPage;
 @property (strong, nonatomic) NSNumber *forRendering;
 @property (copy, nonatomic) NSString *bodyText;
 
 - (id)initWithScript:(BeatScreenplay*)script settings:(id)settings; // The new way
-// - (id)initForPreview:(NSDictionary *)script document:(NSDocument*)document scene:(NSString*)scene printSceneNumbers:(bool)printSceneNumbers;
-//- (id)initForPrint:(NSDictionary *)script document:(NSDocument*)document printSceneNumbers:(bool)printSceneNumbers;
 - (id)initForQuickLook:(BeatScreenplay*)script;
 
 - (NSInteger)pages;

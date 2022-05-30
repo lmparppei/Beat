@@ -122,19 +122,9 @@
 
 @property (readonly, copy, nonatomic) NSString *cssText;
 @property (nonatomic) NSInteger numberOfPages;
-@property (nonatomic) NSString *currentScene;
-@property (nonatomic) NSString *header;
-@property (nonatomic) bool print;
-@property (nonatomic) BeatHTMLOperation operation;
-@property (nonatomic) bool printSceneNumbers;
-@property (nonatomic) bool coloredPages;
 @property (nonatomic) NSArray* htmlPages;
-@property (nonatomic) NSString* revisionColor;
-@property (nonatomic) BeatPaperSize paperSize;
 
 @property (nonatomic) BeatExportSettings *settings;
-
-@property (nonatomic) bool printNotes;
 
 @end
 
@@ -152,37 +142,19 @@ static bool underlinedHeading;
 		_titlePage = script.titlePage;
 		
 		_settings = settings;
-		
-		// We could ignore everything below here and acces the values using .settings but...
-		// It's the job for future me.
-		
-		_document = settings.document;
-		
-		_header = (settings.header.length) ? settings.header : @"";
-		_currentScene = settings.currentScene;
-		_operation = settings.operation;
-		_printSceneNumbers = settings.printSceneNumbers;
-		_printNotes = settings.printNotes;
-		
-		_revisionColor = settings.pageRevisionColor;
-		_coloredPages = settings.coloredPages;
-		
-		// Page size
-		_paperSize = settings.paperSize;
-		
-		// Simple boolean for later checks
-		if (_operation == ForPrint) _print = YES;
-		
+		if (settings.header.length == 0) settings.header = @""; // Double check that header is ""
+						
 		// Styles
 		boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
 		underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
-
 	}
 	
 	return self;
 }
 - (id)initForQuickLook:(BeatScreenplay*)script {
-	return [self initWithScript:script settings:[BeatExportSettings operation:ForQuickLook document:nil header:@"" printSceneNumbers:YES]];
+	BeatExportSettings *settings = [BeatExportSettings operation:ForQuickLook document:nil header:@"" printSceneNumbers:YES];
+	settings.paperSize = BeatA4;
+	return [self initWithScript:script settings:settings];
 }
 
 
@@ -194,7 +166,7 @@ static bool underlinedHeading;
 
 - (NSString *)html
 {
-	NSMutableString *html = [NSMutableString string];
+	NSMutableString *html = NSMutableString.new;
 	[html appendString:[self htmlHeader]];
 	[html appendString:[self content]];
 	[html appendString:[self htmlFooter]];
@@ -210,9 +182,10 @@ static bool underlinedHeading;
 	NSString *bodyClasses = @"";
 	
 	// Append body classes
-	if (_operation == ForQuickLook) bodyClasses = [bodyClasses stringByAppendingString:@" quickLook"];
+	if (_settings.operation == ForQuickLook) bodyClasses = [bodyClasses stringByAppendingString:@" quickLook"];
+
 	// Paper size body class
-	if (_paperSize == BeatUSLetter) bodyClasses = [bodyClasses stringByAppendingString:@" us-letter"];
+	if (_settings.paperSize == BeatUSLetter) bodyClasses = [bodyClasses stringByAppendingString:@" us-letter"];
 	else bodyClasses = [bodyClasses stringByAppendingString:@" a4"];
 	
 	template = [template stringByReplacingOccurrencesOfString:@"#CSS#" withString:self.css];
@@ -273,13 +246,14 @@ static bool underlinedHeading;
 													 encoding:NSUTF8StringEncoding
 														error:nil];
 	
-	if (!_print) {
-		// Include additional preview styles and add some line breaks just in case
+	// Include additional preview styles and add some line breaks just in case
+	if (_settings.operation != ForPrint) {
 		css = [css stringByAppendingString:@"\n\n"];
 		css = [css stringByAppendingString:previewCss];
 	}
+	
+	// Print settings included custom CSS styles, add them in
 	if (_settings.customCSS.length) {
-		// Print settings included custom CSS styles, add them in
 		css = [css stringByAppendingString:@"\n\n"];
 		css = [css stringByAppendingString:_settings.customCSS];
 	}
@@ -299,7 +273,7 @@ static bool underlinedHeading;
 	NSString *pageClass = @"";
 	
 	// If we are coloring the revised pages, check for any changed lines here
-	if (_coloredPages && _revisionColor.length && self.operation == ForPrint) {
+	if (_settings.coloredPages && _settings.pageRevisionColor.length && _settings.operation == ForPrint) {
 		bool revised = NO;
 		for (Line* line in elementsOnPage) {
 			if (line.changed) {
@@ -307,7 +281,7 @@ static bool underlinedHeading;
 			}
 		}
 		
-		if (revised) pageClass = [NSString stringWithFormat:@"revised %@", _revisionColor];
+		if (revised) pageClass = [NSString stringWithFormat:@"revised %@", _settings.pageRevisionColor];
 	}
 	
 	
@@ -318,17 +292,17 @@ static bool underlinedHeading;
 	
 	if (self.customPage != nil) {
 		if (self.customPage.integerValue == 0) {
-			[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", _header];
+			[body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span></p>\n", _settings.header];
 		} else {
 			// I don't understand this part. For some reason certain elements are cut off the page and have a random page number there when rendering. So, as a rational and solution-oriented person, I just removed the page number altogether if this happens.
 			// - Lauri-Matti
-			if (pageNumber < 3) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", _header, [self.customPage intValue]];
+			if (pageNumber < 3) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %d.</p>\n", _settings.header, [self.customPage intValue]];
 		}
 	} else {
 		// Only print page numbers after first page
 		
-		if (pageNumber > 1) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %lu.</p>\n", _header, pageNumber];
-		else [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", _header];
+		if (pageNumber > 1) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %lu.</p>\n", _settings.header, pageNumber];
+		else [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", _settings.header];
 	}
 	
 	// We need to catch lyrics not to make them fill up a paragraph
@@ -400,7 +374,7 @@ static bool underlinedHeading;
 		if (line.type == heading && underlinedHeading) [text setString:[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
 		
 		// Preview shortcuts
-		if (line.type == heading && _operation == ForPreview) {
+		if (line.type == heading && _settings.operation == ForPreview) {
 			[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
 		}
 
@@ -409,7 +383,7 @@ static bool underlinedHeading;
 		if (line.type == heading && line.sceneNumber) {
 			// Add scene number ID to HTML, but don't print it if it's toggled off
 			NSString *printedSceneNumber;
-			if (self.printSceneNumbers) printedSceneNumber = line.sceneNumber;
+			if (_settings.printSceneNumbers) printedSceneNumber = line.sceneNumber;
 			else printedSceneNumber = @"";
 							
 			NSString* sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
@@ -492,7 +466,7 @@ static bool underlinedHeading;
 	_numberOfPages = maxPages;
 	
 	// Header string (make sure it's not null)
-	NSString *header = (self.header) ? self.header : @"";
+	NSString *header = (_settings.header) ? _settings.header : @"";
 	if (header.length) header = [header stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	
 	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
@@ -669,7 +643,7 @@ static bool underlinedHeading;
 	NSMutableAttributedString *result = NSMutableAttributedString.new;
 	
 	NSIndexSet *indices;
-	if (!_printNotes) indices = line.contentRanges;
+	if (!_settings.printNotes) indices = line.contentRanges;
 	else {
 		indices = line.contentRangesWithNotes;
 	}

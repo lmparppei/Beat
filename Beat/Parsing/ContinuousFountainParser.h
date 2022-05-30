@@ -129,6 +129,7 @@
 - (NSInteger)numberOfScenes;
 - (LineType)lineTypeAt:(NSInteger)index;
 
+- (NSArray<Line*>*)blockForRange:(NSRange)range;
 - (NSArray<Line*>*)blockFor:(Line*)line;
 
 - (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines;

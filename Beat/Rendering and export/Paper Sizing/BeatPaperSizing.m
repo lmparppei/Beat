@@ -30,6 +30,28 @@
 
 @implementation BeatPaperSizing
 
+#if TARGET_OS_IOS
+
+// iOS paper sizing
+
++ (CGSize)printableAreaFor:(BeatPaperSize)size {
+	
+	BeatMargins *margins = BeatMargins.margins;
+	CGSize paperSize;
+	
+	if (size == BeatA4) paperSize = CGSizeMake(PAPER_A4);
+	else paperSize = CGSizeMake(PAPER_USLETTER);
+	
+	paperSize.width -= margins.left + margins.right;
+	paperSize.height -= margins.top + margins.right;
+	
+	return paperSize;
+}
+
+#else
+
+// macOS paper sizing (bake margins etc. into NSPrintInfo)
+
 + (NSPrintInfo*)printInfoFor:(BeatPaperSize)size {
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
 	return [BeatPaperSizing setSize:size printInfo:printInfo];
@@ -57,7 +79,6 @@
 	return printInfo;
 }
 + (NSPrintInfo*)setPaperSize:(NSPrintInfo*)printInfo size:(BeatPaperSize)size {
-	
 	if (size == BeatA4) [printInfo setPaperName:@"A4"];
 	else [printInfo setPaperName:@"Letter"];
 	
@@ -76,14 +97,9 @@
 	else printInfo.paperSize = NSMakeSize(PAPER_USLETTER);
 	
 	printInfo = [self setMargins:printInfo];
-	/*
-	BeatMargins *margins = BeatMargins.margins;
-	printInfo.topMargin = margins.top;
-	printInfo.bottomMargin = margins.bottom;
-	printInfo.leftMargin = margins.left;
-	printInfo.rightMargin = margins.right;
-	*/
 }
+
+#endif
 
 @end
 /*
