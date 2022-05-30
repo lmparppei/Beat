@@ -113,15 +113,31 @@ class BeatUITextView: UITextView {
 		return rect
 	}
 	
+	
+	// MARK: - Touch events
+	
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-		super.touchesBegan(touches, with: event)
-		/*
+		// Convert to enclosing scroll view coordinate
 		for touch in touches {
-			
+			touch.location(in: self.enclosingScrollView)
 		}
-		 */
+		super.touchesBegan(touches, with: event)
 	}
 	
+	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+		// Convert to enclosing scroll view coordinate
+		for touch in touches {
+			touch.location(in: self.enclosingScrollView)
+		}
+		super.touchesMoved(touches, with: event)
+	}
+	
+	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+		for touch in touches {
+			touch.location(in: self.enclosingScrollView)
+		}
+		super.touchesEnded(touches, with: event)
+	}
 }
 
 // MARK: - Layout manager delegate

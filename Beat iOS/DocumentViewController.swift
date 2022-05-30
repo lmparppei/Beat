@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import WebKit
 
 class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate {
 	var document: UIDocument?
@@ -16,14 +17,19 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	@IBOutlet weak var scrollView: UIScrollView!
 	@IBOutlet weak var outlineView: BeatiOSOutlineView!
 	@IBOutlet weak var sidebar: UIView!
+	@IBOutlet weak var titleBar:UINavigationItem?
 	
 	var textStorage:NSTextStorage?
 	
 	var parser: ContinuousFountainParser?
 	var cachedText:NSMutableAttributedString = NSMutableAttributedString()
+	@objc var attrTextCache:NSMutableAttributedString {
+		get { return cachedText }
+	}
 	
 	var documentIsLoading = true
 	
+	var pageSize: BeatPaperSize = .A4
 	var documentSettings: BeatDocumentSettings?
 	var printSceneNumbers: Bool = true
 	var characterInputForLine: Line?
@@ -48,7 +54,7 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	var headingStyleUnderline: Bool = false
 	var showRevisions: Bool = true
 	var showTags: Bool = true
-	var sectionFont: UIFont! = UIFont.systemFont(ofSize: 20)
+	var sectionFont: UIFont! = UIFont.boldSystemFont(ofSize: 22)
 	var sectionFonts: NSMutableDictionary! = NSMutableDictionary()
 	var synopsisFont: UIFont! = UIFont.italicSystemFont(ofSize: 14.92)
 	var mode: Int = 0
@@ -56,6 +62,12 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	var automaticContd = true
 	var autoLineBreaks = true
 	var matchParentheses = true
+	
+	var preview:BeatPreview?
+	var previewView:BeatPreviewView?
+	var previewUpdated = false
+	var previewHTML = ""
+	var previewTimer:Timer?
 	
 	var sidebarVisible = false
 	@IBOutlet weak var sidebarConstraint:NSLayoutConstraint!
@@ -77,6 +89,17 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		parser = ContinuousFountainParser(string: self.contentBuffer, delegate: self)
 		formatting.delegate = self
 		
+		// Init preview
+		preview = BeatPreview(document: self)
+		previewView = self.storyboard?.instantiateViewController(withIdentifier: "Preview") as? BeatPreviewView
+		previewView?.loadViewIfNeeded()
+		
+		// Hide sidebar
+		self.sidebarConstraint.constant = 0
+		
+		// Hide page view until loading is complete
+		self.textView.pageView.layer.opacity = 0.0
+		
 		// Fit to view here
 		scrollView.zoomScale = 1.0
 		
@@ -95,22 +118,30 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		formatAllLines()
 		outlineView.reloadData()
 		
-		// Loading complete
-		documentIsLoading = false
+		// Loading is complete, show page view
+		UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn) {
+			self.textView.pageView.layer.opacity = 1.0
+		} completion: { success in 	}
 	}
 	
+	// MARK: - Return self for delegation
+	
+	@objc func documentForDelegation() -> Any {
+		return self
+	}
 	
 	// MARK: - Preparing the view
 	
 	override func viewWillAppear(_ animated: Bool) {
+		// Don't do anything if we've already loaded the document
+		if !documentIsLoading { return }
+		
 		// Access the document
 		document?.open(completionHandler: { (success) in
 			if success {
 				// Display the content of the document, e.g.:
 				//self.documentNameLabel.text = self.document?.fileURL.lastPathComponent
-
-				self.sidebarConstraint.constant = 0
-				
+				self.titleBar?.title = self.document?.fileURL.lastPathComponent
 				self.setupDocument()
 			} else {
 				// Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
@@ -121,16 +152,27 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		renderDocument()
+		if documentIsLoading {
+			// Only render document on load
+			renderDocument()
+		}
+		
+		// Set text view size
 		textView.resize()
+
+		// Loading complete
+		documentIsLoading = false
 	}
 	
 	@IBAction func dismissDocumentViewController() {
+		self.previewView?.webview = nil
+		self.previewView?.nibBundle?.unload()
+		self.previewView = nil
+		
 		dismiss(animated: true) {
 			self.document?.close(completionHandler: nil)
 		}
 	}
-	
 	
 	// MARK: - Sidebar actions
 	
@@ -147,9 +189,46 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 			self.sidebarConstraint.constant = sidebarWidth
 			self.view.layoutIfNeeded()
 		} completion: { success in
+			
 		}
 	}
 	
+	// MARK: - Preview
+	
+	@IBAction func togglePreview(sender: Any?) {
+		if (!previewUpdated) {
+			updatePreview(sync: true)
+		}
+		
+		self.present(previewView!, animated: true)
+	}
+	
+	func updatePreview() {
+		updatePreview(sync: false)
+	}
+	
+	func updatePreview(sync:Bool) {
+		// Update cache
+		self.cachedText = NSMutableAttributedString(attributedString: self.textView.attributedText)
+		
+		previewTimer?.invalidate()
+		previewUpdated = false
+		
+		// Wait 1 second after writing has ended to build preview
+		let delay = (previewHTML.count == 0 || sync) ? 0 : 1.5
+		
+		previewTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { timer in
+			let rawText = self.text()
+			
+			DispatchQueue.global(qos: .background).async {
+				self.previewHTML = self.preview!.createPreview(for: rawText, type: .printPreview)
+				DispatchQueue.main.async {
+					self.previewView?.webview?.loadHTMLString(self.previewHTML, baseURL: nil)
+					self.previewUpdated = true
+				}
+			}
+		})
+	}
 	
 	// MARK: - Random
 	
@@ -221,10 +300,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	
 	func printInfo() -> UIPrintInfo! {
 		return UIPrintInfo.printInfo()
-	}
-	
-	func setPaperSize(_ size: Int) {
-		print("set paper size")
 	}
 	
 	
@@ -412,10 +487,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		document?.updateChangeCount(change)
 	}
 	
-	func updatePreview() {
-		print("update preview")
-	}
-
 	
 	func refreshTextViewLayoutElements() {
 		print("refresh all layout elements")
@@ -461,6 +532,9 @@ extension DocumentViewController {
 		self.textView.resize()
 		
 		cachedText.setAttributedString(textView.attributedText)
+		
+		// Update preview
+		updatePreview()
 	}
 	
 	
@@ -487,7 +561,6 @@ extension DocumentViewController {
 			}
 		}
 				
-		//parser?.parseChange(in: range, with: text)
 		return true
 	}
 	
@@ -649,10 +722,9 @@ extension DocumentViewController: NSTextStorageDelegate {
 	
 	func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorage.EditActions, range editedRange: NSRange, changeInLength delta: Int) {
 		if (documentIsLoading) { return }
-		
-		if editedMask == .editedAttributes {
-			return
-		}
+				
+		// Don't parse anything when editing attributes
+		if editedMask == .editedAttributes { return }
 	
 		var affectedRange = NSRange(location: NSNotFound, length: 0)
 		var string = ""
@@ -691,6 +763,7 @@ extension DocumentViewController: NSTextStorageDelegate {
 			}
 		}
 		
+		print("Parsing change at ", affectedRange, "string:", string)
 		parser?.parseChange(in: affectedRange, with: string)
 	}
 }

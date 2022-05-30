@@ -13,7 +13,8 @@
 #import "Line.h"
 #import "OutlineScene.h"
 #import "BeatEditorDelegate.h"
-//#import "BeatLocalization.h"
+#import "BeatExportSettings.h"
+#import "BeatHTMLScript.h"
 #import "BeatiOSFormatting.h"
 #import "DynamicColor.h"
 #import "BeatPaginator.h"
@@ -21,5 +22,8 @@
 #import "NSString+CharacterControl.h"
 #import "RegExCategories.h"
 #import "OutlineViewItem.h"
+#import "BeatPreview.h"
+#import "BeatPaperSizing.h"
+
 
 #endif /* Beat_iOS_Bridging_Header_h */

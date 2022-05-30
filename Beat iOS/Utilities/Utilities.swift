@@ -17,7 +17,6 @@ import Foundation
 //
 
 @objc public protocol KeyboardManagerDelegate: AnyObject {
-	
 	@objc optional func keyboardWillShow(with size: CGSize, animationTime: Double)
 	@objc optional func keyboardWillHide()
 	@objc optional func keyboardDidShow()
@@ -38,7 +37,6 @@ public final class KeyboardManager {
 	// MARK: Lifecycle
 	
 	public init() {
-		print("Registered...")
 		registerForKeyboardNotification()
 	}
 	
