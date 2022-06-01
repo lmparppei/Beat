@@ -66,6 +66,9 @@
 		B624C146234BDE7100C438C7 /* BeatOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = B624C145234BDE7100C438C7 /* BeatOutlineView.m */; };
 		B625686225ECE2F000A3A244 /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686125ECE2F000A3A244 /* TagDefinition.m */; };
 		B625686725ECF96100A3A244 /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B625686625ECF96100A3A244 /* BeatTag.m */; };
+		B629FE3A28469D6E00E8B9BD /* PreviewStyles-iOS.css in Resources */ = {isa = PBXBuildFile; fileRef = B629FE3928469D6E00E8B9BD /* PreviewStyles-iOS.css */; };
+		B629FE3B2846B75300E8B9BD /* Page Sizing.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64663F227A5C3DD008D7F90 /* Page Sizing.plist */; };
+		B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
 		B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62A89B424806C8D0065A2BC /* FlatButton.swift */; };
 		B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B62ADC7423CCCE560015563A /* Quartz.framework */; };
 		B62ADC7923CCCE560015563A /* PreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B62ADC7823CCCE560015563A /* PreviewViewController.m */; };
@@ -722,6 +725,9 @@
 		B625686625ECF96100A3A244 /* BeatTag.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTag.m; sourceTree = "<group>"; };
 		B629DBB1259CE3230007EA4E /* About Plugins.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "About Plugins.md"; sourceTree = "<group>"; };
 		B629DBB3259CE8240007EA4E /* Gather Scenes by Color.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Gather Scenes by Color.beatPlugin"; sourceTree = "<group>"; };
+		B629FE3928469D6E00E8B9BD /* PreviewStyles-iOS.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "PreviewStyles-iOS.css"; sourceTree = "<group>"; };
+		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
+		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B62A89B424806C8D0065A2BC /* FlatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FlatButton.swift; path = "Beat/User Interface/Buttons etc/FlatButton.swift"; sourceTree = SOURCE_ROOT; };
 		B62ADC7323CCCE560015563A /* fountainQuickLook.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = fountainQuickLook.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B62ADC7423CCCE560015563A /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
@@ -945,6 +951,7 @@
 		B69FCF6B27234BF50022A9D9 /* BeatSidebarTabView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSidebarTabView.m; sourceTree = "<group>"; };
 		B6A0392C247DC4FE0005DA6C /* BeatColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatColors.h; path = "Beat/User Interface/Colors/BeatColors.h"; sourceTree = SOURCE_ROOT; };
 		B6A0392D247DC4FE0005DA6C /* BeatColors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatColors.m; path = "Beat/User Interface/Colors/BeatColors.m"; sourceTree = SOURCE_ROOT; };
+		B6A11B542847BEFF00EB50F5 /* Scale down.beatStyle */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Scale down.beatStyle"; sourceTree = "<group>"; };
 		B6A245DF251766DC0055A034 /* BeatFileImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFileImport.h; sourceTree = "<group>"; };
 		B6A245E0251766DC0055A034 /* BeatFileImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFileImport.m; sourceTree = "<group>"; };
 		B6A245E52517D5E80055A034 /* BeatAntilateralThoughts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatAntilateralThoughts.h; path = Beat/Extras/BeatAntilateralThoughts.h; sourceTree = SOURCE_ROOT; };
@@ -1401,6 +1408,15 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		B629FE3C2846B8DB00E8B9BD /* Card View */ = {
+			isa = PBXGroup;
+			children = (
+				B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */,
+				B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */,
+			);
+			path = "Card View";
+			sourceTree = "<group>";
+		};
 		B62ADC7623CCCE560015563A /* fountainQuickLook */ = {
 			isa = PBXGroup;
 			children = (
@@ -1694,6 +1710,7 @@
 				B66CDF132816E9D200EF4137 /* Use plain Courier.beatStyle */,
 				B66CDF162816EBD300EF4137 /* Print line numbers.beatStyle */,
 				B66CDF222817449E00EF4137 /* Uppercase actions.beatStyle */,
+				B6A11B542847BEFF00EB50F5 /* Scale down.beatStyle */,
 			);
 			path = "Custom CSS";
 			sourceTree = "<group>";
@@ -2088,6 +2105,7 @@
 		B6CB9707282FEDAF00C7AFC7 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				B629FE3C2846B8DB00E8B9BD /* Card View */,
 				B63D9F5028301E4E00D027B6 /* iOS colors */,
 				B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */,
 				B6CE25062839681500D53CE8 /* BeatSidebar.swift */,
@@ -2140,6 +2158,7 @@
 				B66CDF0F2816DD9F00EF4137 /* Custom CSS */,
 				B6F712A8276BC78D00C4489B /* PreviewStyles.css */,
 				B605473C276A8DDD001E571F /* ScreenplayStyles.css */,
+				B629FE3928469D6E00E8B9BD /* PreviewStyles-iOS.css */,
 			);
 			path = CSS;
 			sourceTree = "<group>";
@@ -2604,10 +2623,12 @@
 				B63D9F72283053E100D027B6 /* Courier Prime Bold Italic.ttf in Resources */,
 				B69E0A3A2842A650009A02D0 /* FooterTemplate.html in Resources */,
 				B69E0A372842A646009A02D0 /* PreviewStyles.css in Resources */,
+				B629FE3A28469D6E00E8B9BD /* PreviewStyles-iOS.css in Resources */,
 				B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */,
 				B63D9F70283053D900D027B6 /* Courier Prime Italic.ttf in Resources */,
 				B69E0A392842A64E009A02D0 /* HeaderTemplate.html in Resources */,
 				B63D9F6F283053D600D027B6 /* Courier Prime.ttf in Resources */,
+				B629FE3B2846B75300E8B9BD /* Page Sizing.plist in Resources */,
 				B6CB9706282FECDB00C7AFC7 /* Tutorial.fountain in Resources */,
 				B69E0A382842A649009A02D0 /* ScreenplayStyles.css in Resources */,
 				B63D9F6D283042E200D027B6 /* Themes.plist in Resources */,
@@ -3036,6 +3057,7 @@
 				B63D9F482830138900D027B6 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B63D9F44283012D000D027B6 /* OutlineScene.m in Sources */,
 				B63D9F6E28304ED100D027B6 /* DynamicColor.m in Sources */,
+				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
 				B63D9F4A2830138F00D027B6 /* NSString+Regex.m in Sources */,
 				B63D9F6C283042B500D027B6 /* TagDefinition.m in Sources */,
 				B6CE2505283963C300D53CE8 /* RegExCategories.m in Sources */,
@@ -3420,7 +3442,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13262;
+				CURRENT_PROJECT_VERSION = 13265;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3429,7 +3451,7 @@
 				INFOPLIST_FILE = fountainQuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.946;
+				MARKETING_VERSION = 1.947;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
@@ -3454,7 +3476,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13262;
+				CURRENT_PROJECT_VERSION = 13265;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3463,7 +3485,7 @@
 				INFOPLIST_FILE = fountainQuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.946;
+				MARKETING_VERSION = 1.947;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3484,7 +3506,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13262;
+				CURRENT_PROJECT_VERSION = 13265;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3492,7 +3514,7 @@
 				INFOPLIST_FILE = "Appstore/Beat APPSTORE Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.946;
+				MARKETING_VERSION = 1.947;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3516,7 +3538,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13262;
+				CURRENT_PROJECT_VERSION = 13265;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3524,7 +3546,7 @@
 				INFOPLIST_FILE = "Appstore/Beat APPSTORE Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.946;
+				MARKETING_VERSION = 1.947;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3539,6 +3561,7 @@
 		B6CB9704282FEB6700C7AFC7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -3582,6 +3605,7 @@
 		B6CB9705282FEB6700C7AFC7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

@@ -9,8 +9,9 @@
 import UIKit
 import WebKit
 
-class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate {
-	var document: UIDocument?
+class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate, iOSDocumentDelegate {
+	
+	var document: iOSDocument?
 	var contentBuffer = ""
 	
 	@IBOutlet weak var textView: BeatUITextView!
@@ -29,14 +30,11 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	
 	var documentIsLoading = true
 	
-	var pageSize: BeatPaperSize = .A4
-	var documentSettings: BeatDocumentSettings?
+	var documentSettings:BeatDocumentSettings! { get { return document?.settings } set {} }
 	var printSceneNumbers: Bool = true
 	var characterInputForLine: Line?
 	var formatting: BeatiOSFormatting = BeatiOSFormatting()
-	
-	private var test:Bool { parser!.lines.count < 20 }
-	
+
 	var showSceneNumberLabels: Bool = true
 	var typewriterMode: Bool = false
 	var magnification: CGFloat = 1.0
@@ -71,22 +69,21 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	
 	var sidebarVisible = false
 	@IBOutlet weak var sidebarConstraint:NSLayoutConstraint!
-	
+		
 	var keyboardManager = KeyboardManager()
 		//var documentWindow: UIWindow!
 	
 	@IBOutlet weak var documentNameLabel: UILabel!
 	
-	// MARK: Setup document and associated classes
+	
+	// MARK: - Setup document and associated classes
+	
 	func setupDocument () {
 		if (self.document == nil) { return; }
 		
-		contentBuffer = ""
-		do {
-			contentBuffer = try String(contentsOf: self.document!.fileURL)
-		} catch {}
+		contentBuffer = document?.rawText ?? ""
 		
-		parser = ContinuousFountainParser(string: self.contentBuffer, delegate: self)
+		parser = ContinuousFountainParser(string: contentBuffer, delegate: self)
 		formatting.delegate = self
 		
 		// Init preview
@@ -165,7 +162,9 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	}
 	
 	@IBAction func dismissDocumentViewController() {
+		self.previewView?.webview?.removeFromSuperview()
 		self.previewView?.webview = nil
+		
 		self.previewView?.nibBundle?.unload()
 		self.previewView = nil
 		
@@ -173,6 +172,7 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 			self.document?.close(completionHandler: nil)
 		}
 	}
+	
 	
 	// MARK: - Sidebar actions
 	
@@ -188,8 +188,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		UIView.animate(withDuration: 0.25, delay: 0, options: .curveLinear) {
 			self.sidebarConstraint.constant = sidebarWidth
 			self.view.layoutIfNeeded()
-		} completion: { success in
-			
 		}
 	}
 	
@@ -229,6 +227,7 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 			}
 		})
 	}
+	
 	
 	// MARK: - Random
 	
@@ -302,6 +301,15 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		return UIPrintInfo.printInfo()
 	}
 	
+	var pageSize: BeatPaperSize {
+		get {
+			return BeatPaperSize(rawValue: documentSettings.getInt(DocSettingPageSize)) ?? .A4;
+		}
+		set {
+			documentSettings.setInt(DocSettingPageSize, as:BeatPaperSize.A4.rawValue)
+		}
+	}
+	
 	
 	// MARK: - Line and outline methods
 		
@@ -371,6 +379,7 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	
 	// MARK: - Text I/o
 	
+	// Return raw text from text view
 	func text() -> String! { return textView.text }
 	
 	func replace(_ range: NSRange, with newString: String!) {

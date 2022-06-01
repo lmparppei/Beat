@@ -20,6 +20,10 @@
 		</dict>
 		<dict/>
 	</array>
+	<key>CFBundleIcons</key>
+	<dict/>
+	<key>CFBundleIcons~ipad</key>
+	<dict/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Courier Prime.ttf</string>
