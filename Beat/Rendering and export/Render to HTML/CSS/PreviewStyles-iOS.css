@@ -1,0 +1,7 @@
+
+body {
+	-webkit-transform: scale(0.8);
+	-webkit-transform-origin: top center;
+	
+	zoom: 100%;
+}

@@ -106,6 +106,7 @@
 
 #define PRINT_CSS @"ScreenplayStyles"
 #define PREVIEW_CSS @"PreviewStyles"
+#define PREVIEW_IOS @"PreviewStyles-iOS"
 
 #define BOLD_OPEN @"<b>"
 #define BOLD_CLOSE @"</b>"
@@ -245,6 +246,12 @@ static bool underlinedHeading;
 	NSString * previewCss = [NSString stringWithContentsOfURL:[NSBundle.mainBundle URLForResource:PREVIEW_CSS withExtension:@"css"]
 													 encoding:NSUTF8StringEncoding
 														error:nil];
+	
+#if TARGET_OS_IOS
+	// Additional styles for iOS WebKit rendering
+	NSString *iosCss = [NSString stringWithContentsOfURL: [NSBundle.mainBundle URLForResource:PREVIEW_IOS withExtension:@"css"] encoding:NSUTF8StringEncoding error:nil];
+	previewCss = [previewCss stringByAppendingString:iosCss];
+#endif
 	
 	// Include additional preview styles and add some line breaks just in case
 	if (_settings.operation != ForPrint) {

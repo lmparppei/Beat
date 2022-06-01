@@ -28,6 +28,7 @@ IN THE SOFTWARE.
 }
 
 /*
+ 
 body p {
 	background: repeating-linear-gradient(
 	  0deg,
@@ -47,9 +48,7 @@ body p::after {
 */
 
 body {
-	/*
 	zoom: 70%;
-	*/
 
 	--page-height: 29.7cm;
 
