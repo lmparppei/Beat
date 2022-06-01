@@ -393,7 +393,7 @@
 		BXPrintInfo *printInfo;
 		if (_document) printInfo = _document.printInfo.copy;
 		else printInfo = _printInfo.copy;
-	
+			
 		printInfo = [BeatPaperSizing setMargins:printInfo];
 				
 		CGFloat w = roundf(printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin);
@@ -1181,6 +1181,11 @@
 		}
 	}
 	
+	// Don't allow only a single element to stay on page
+	if (splitAt == 1 && tmpThisPage.count == 0)   {
+		splitAt = 0;
+	}
+	
 	// If something is left behind on the current page, split it
 	if (splitAt > 0) {
 		[onThisPage addObjectsFromArray:
@@ -1245,7 +1250,7 @@
 	for (NSString *rawSentence in sentences) {
 		NSString *sentence = rawSentence;
 		// Trim whitespace for the last object
-		if (rawSentence == sentences.lastObject) sentence = [sentence stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+		//if (rawSentence == sentences.lastObject) sentence = [sentence stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 
 		text = [text stringByAppendingFormat:@"%@", sentence];
 		
@@ -1264,11 +1269,9 @@
 		
 		if (h < remainingSpace) {
 			breakPosition = h;
-			if (sIndex == 0) [retain appendFormat:@"%@", sentence];
-			else [retain appendFormat:@" %@", sentence];
+			[retain appendFormat:@"%@", sentence];
 		} else {
-			if (sIndex == 0) [split appendFormat:@"%@", sentence];
-			else [split appendFormat:@" %@", sentence];
+			[split appendFormat:@"%@", sentence];
 		}
 		
 		sIndex++;

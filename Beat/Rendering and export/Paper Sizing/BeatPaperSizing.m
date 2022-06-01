@@ -35,7 +35,6 @@
 // iOS paper sizing
 
 + (CGSize)printableAreaFor:(BeatPaperSize)size {
-	
 	BeatMargins *margins = BeatMargins.margins;
 	CGSize paperSize;
 	
@@ -79,8 +78,14 @@
 	return printInfo;
 }
 + (NSPrintInfo*)setPaperSize:(NSPrintInfo*)printInfo size:(BeatPaperSize)size {
-	if (size == BeatA4) [printInfo setPaperName:@"A4"];
-	else [printInfo setPaperName:@"Letter"];
+	if (size == BeatA4) {
+		[printInfo setPaperName:@"A4"];
+		printInfo.paperSize = NSMakeSize(PAPER_A4);
+	}
+	else {
+		[printInfo setPaperName:@"Letter"];
+		printInfo.paperSize = NSMakeSize(PAPER_USLETTER);
+	}
 	
 	return printInfo;
 }

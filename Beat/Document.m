@@ -641,16 +641,9 @@
 	// Setup page size
 	// (We'll disable undo registration here, so the doc won't appear as edited on open)
 	[self.undoManager disableUndoRegistration];
-
-	if ([self.documentSettings has:DocSettingPageSize]) {
-		self.pageSize = [self.documentSettings getInt:DocSettingPageSize];
-	} else {
-		self.pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
-	}
 	
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
-	self.printInfo = [BeatPaperSizing setSize:_pageSize printInfo:printInfo];
-	[self.documentSettings setInt:DocSettingPageSize as:_pageSize];
+	self.printInfo = [BeatPaperSizing setSize:self.pageSize printInfo:printInfo];
 
 	// Enable undo registration and clear any changes to the document (if needed)
 	[self.undoManager enableUndoRegistration];
@@ -746,9 +739,6 @@
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
 	[_sideViewCostraint setConstant:0];
 	
-	// We'll calculate the document width based on paper size
-	self.pageSize = [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
-		
 	// Reset zoom
 	[self setZoom];
 
@@ -4860,8 +4850,7 @@ triangle walks
 	if (!self.showPageNumbers) return;
 	
 	// Reset page size (just in case)
-	self.paginator.paperSize = self.printInfo.paperSize;
-	
+	// self.paginator.paperSize = self.printInfo.paperSize;
 	
 	// Null the timer so we don't have too many of these operations queued
 	[_paginationTimer invalidate];
@@ -4898,7 +4887,7 @@ triangle walks
 	if (printInfo.paperSize.width > 600) size = BeatUSLetter;
 	else size = BeatA4;
 	
-	[self.documentSettings setInt:DocSettingPageSize as:size];
+	//[self.documentSettings setInt:DocSettingPageSize as:size];
 	
 	// I have no idea what's with these values, but here they are.
 	// documentWidth determines how the insets are set, while linePadding makes some space for revision markers.
@@ -4921,10 +4910,17 @@ triangle walks
 	self.pageSize = size;
 }
 
+- (BeatPaperSize)pageSize {
+	if ([self.documentSettings has:DocSettingPageSize]) {
+		return [self.documentSettings getInt:DocSettingPageSize];
+	} else {
+		return [BeatUserDefaults.sharedDefaults getInteger:@"defaultPageSize"];
+	}
+}
+
 - (void)setPageSize:(BeatPaperSize)pageSize {
-	_pageSize = pageSize;
-	
 	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
+	
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
 	[self paginate];
