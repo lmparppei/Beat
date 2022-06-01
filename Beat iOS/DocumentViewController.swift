@@ -76,6 +76,70 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	@IBOutlet weak var documentNameLabel: UILabel!
 	
 	
+	// MARK: - Preparing the view
+		
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		// If we've already loaded the document, do nothing
+		if !documentIsLoading { return }
+		
+		// Hide sidebar
+		self.sidebarConstraint.constant = 0
+		
+		// Hide page view until loading is complete
+		self.textView.pageView.layer.opacity = 0.0
+
+		
+		document?.open(completionHandler: { (success) in
+			if success {
+				// Display the content of the document, e.g.:
+				//self.documentNameLabel.text = self.document?.fileURL.lastPathComponent
+				self.titleBar?.title = self.document?.fileURL.lastPathComponent
+				print("setting up document")
+				
+				self.setupDocument()
+				self.renderDocument()
+			} else {
+				// Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
+			}
+		})
+	}
+	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+	}
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		// Set text view size
+		textView.resize()
+		
+		if documentIsLoading {
+			// Loading is complete, show page view
+			UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn) {
+				self.textView.pageView.layer.opacity = 1.0
+			} completion: { success in 	}
+			
+			// Loading complete
+			documentIsLoading = false
+		}
+	}
+	
+	@IBAction func dismissDocumentViewController() {
+		self.previewView?.webview?.removeFromSuperview()
+		self.previewView?.webview = nil
+		
+		self.previewView?.nibBundle?.unload()
+		self.previewView = nil
+		
+		dismiss(animated: true) {
+			self.document?.close(completionHandler: nil)
+		}
+	}
+	
+	
 	// MARK: - Setup document and associated classes
 	
 	func setupDocument () {
@@ -86,17 +150,13 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		parser = ContinuousFountainParser(string: contentBuffer, delegate: self)
 		formatting.delegate = self
 		
+		print("text", contentBuffer)
+		
 		// Init preview
 		preview = BeatPreview(document: self)
 		previewView = self.storyboard?.instantiateViewController(withIdentifier: "Preview") as? BeatPreviewView
 		previewView?.loadViewIfNeeded()
-		
-		// Hide sidebar
-		self.sidebarConstraint.constant = 0
-		
-		// Hide page view until loading is complete
-		self.textView.pageView.layer.opacity = 0.0
-		
+				
 		// Fit to view here
 		scrollView.zoomScale = 1.0
 		
@@ -114,63 +174,12 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		
 		formatAllLines()
 		outlineView.reloadData()
-		
-		// Loading is complete, show page view
-		UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn) {
-			self.textView.pageView.layer.opacity = 1.0
-		} completion: { success in 	}
 	}
 	
 	// MARK: - Return self for delegation
 	
 	@objc func documentForDelegation() -> Any {
 		return self
-	}
-	
-	// MARK: - Preparing the view
-	
-	override func viewWillAppear(_ animated: Bool) {
-		// Don't do anything if we've already loaded the document
-		if !documentIsLoading { return }
-		
-		// Access the document
-		document?.open(completionHandler: { (success) in
-			if success {
-				// Display the content of the document, e.g.:
-				//self.documentNameLabel.text = self.document?.fileURL.lastPathComponent
-				self.titleBar?.title = self.document?.fileURL.lastPathComponent
-				self.setupDocument()
-			} else {
-				// Make sure to handle the failed import appropriately, e.g., by presenting an error message to the user.
-			}
-		})
-	}
-	
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-		
-		if documentIsLoading {
-			// Only render document on load
-			renderDocument()
-		}
-		
-		// Set text view size
-		textView.resize()
-
-		// Loading complete
-		documentIsLoading = false
-	}
-	
-	@IBAction func dismissDocumentViewController() {
-		self.previewView?.webview?.removeFromSuperview()
-		self.previewView?.webview = nil
-		
-		self.previewView?.nibBundle?.unload()
-		self.previewView = nil
-		
-		dismiss(animated: true) {
-			self.document?.close(completionHandler: nil)
-		}
 	}
 	
 	
