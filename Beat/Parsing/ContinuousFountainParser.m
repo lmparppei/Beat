@@ -1388,6 +1388,7 @@ and incomprehensible system of recursion.
 	// Also, note lines never constitute a character cue
     if (precedingLine.type == empty || precedingLine.string.length == 0) {
 		if (length >= 3 && string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && ![line.noteRanges containsIndex:0]) {
+			
             // A character line ending in ^ is a double dialogue character
             if (lastChar == '^') {
 				// PLEASE NOTE:

@@ -40,7 +40,7 @@
 
 - (bool)containsOnlyUppercase
 {
-	return [[self uppercaseString] isEqualToString:self] && [self containsUppercaseLetters];
+	return [self.uppercaseString isEqualToString:self] && [self containsUppercaseLetters];
 }
 
 - (NSString *)stringByTrimmingTrailingCharactersInSet:(NSCharacterSet *)characterSet {
@@ -54,54 +54,27 @@
 
 - (bool)onlyUppercaseUntilParenthesis
 {
-	NSInteger noteLoc = [self rangeOfString:@"[["].location;
 	NSInteger parenthesisLoc = [self rangeOfString:@"("].location;
-	NSInteger parenthesisEnd = NSNotFound;
+	NSInteger noteLoc = [self rangeOfString:@"[["].location;
 	
-	bool openParenthesis = NO;
+	if (noteLoc == 0 || parenthesisLoc == 0) return NO;
 	
-	for (NSInteger i=self.length - 1; i >= 0; i--) {
-		unichar c = [self characterAtIndex:i];
-		if (c == ' ') continue;
-		else if (c == '(') {
-			openParenthesis = YES;
-			break;
-		}
-		else if (c == ')') {
-			parenthesisEnd = i;
-			break;
-		}
-	}
-	
-	// Don't let note lines become characters
-	if (noteLoc == 0) return NO;
 	
 	if (parenthesisLoc == NSNotFound) {
 		// No parenthesis
-		return [self containsOnlyUppercase];
+		return self.containsOnlyUppercase;
 	}
-	else if (parenthesisEnd == NSNotFound && openParenthesis) {
-		return YES;
-	}
-	else if (parenthesisEnd != NSNotFound &&
-			 parenthesisEnd + 1 < self.length) {
-		// The line continues after parenthesis
-		NSString* tail = [self substringFromIndex:parenthesisEnd + 1];
-		
-		// Tail is empty
-		if ([tail containsOnlyWhitespace]) return YES;
-		// Dual dialogue
-		else if ([self characterAtIndex:self.length - 1] == '^') return YES;
-		else return NO;
-	}
-	else if (parenthesisLoc < 3) {
-		return NO;
-	} else {
+	else {
 		NSString *head = [self substringToIndex:parenthesisLoc];
-		
-		if ([head containsOnlyUppercase]) return YES;
-		else return NO;
+
+		if ([head.uppercaseString isEqualToString:head] && head.containsOnlyUppercase) {
+			// Parenthesis found
+			return YES;
+		}
 	}
+	
+	return NO;
+	
 }
 
 @end
