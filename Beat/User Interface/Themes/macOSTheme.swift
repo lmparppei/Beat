@@ -71,6 +71,9 @@ import AppKit
 		let dark = NSMutableDictionary()
 		
 		for property:String in propertyToValue!.keys {
+			// Skip empty values (highlight can be one)
+			if (self.value(forKey: property) == nil) { continue }
+			
 			let color:DynamicColor = self.value(forKey: property) as! DynamicColor
 			let key = propertyToValue![property]!
 			light[key] = color.valuesAsRGB()[0]
