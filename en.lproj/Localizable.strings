@@ -9,11 +9,13 @@
 
 "general.yes" = "Yes";
 "general.no" = "No";
+"general.ok" = "OK";
 "general.cancel" = "Cancel";
 "general.undo" = "Undo";
 "general.redo" = "Redo";
 "app.manual" = "Manual";
 "app.patchNotes" = "Patch Notes";
+"general.revert" = "Revert";
 
 "launch.newDocument.subtitle" = "Start a new, blank project";
 "launch.tutorial.subtitle" = "Begin here, if you are new to Beat";
@@ -99,3 +101,17 @@
 
 "mode.taggingMode" = "Tagging Mode";
 "mode.reviewMode" = "Review Mode";
+
+"backup.revertToSaved" = "To Saved";
+"backup.backupVault" = "Open Backup Vault...";
+
+"backup.reverting.title" = "Revert File";
+"backup.reverting.message" = "Any unsaved changes will be lost when reverting to an earlier version.";
+
+"editor.setSceneNumber" = "Set Number For Scene";
+"editor.setSceneNumber.info" = "Custom scene number (can include letters, or press space for a scene with no scene number)";
+
+"force.character" = "Character";
+"force.heading" = "Scene Heading";
+"force.action" = "Action";
+"force.lyrics" = "Lyrics";

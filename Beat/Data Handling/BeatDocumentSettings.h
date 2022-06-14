@@ -28,6 +28,8 @@ extern NSString * const DocSettingPageSize;
 extern NSString * const DocSettingActivePlugins;
 extern NSString * const DocSettingChangedIndices;
 extern NSString * const DocSettingReviews;
+extern NSString * const DocSettingSidebarVisible;
+extern NSString * const DocSettingSidebarWidth;
 
 extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;

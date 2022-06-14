@@ -79,9 +79,9 @@
 				</array>
 				<key>OutlineHighlight</key>
 				<array>
-					<integer>50</integer>
-					<integer>50</integer>
-					<integer>50</integer>
+					<integer>35</integer>
+					<integer>35</integer>
+					<integer>38</integer>
 				</array>
 				<key>Highlight</key>
 				<array>
@@ -178,9 +178,9 @@
 				</array>
 				<key>OutlineHighlight</key>
 				<array>
-					<integer>50</integer>
-					<integer>50</integer>
-					<integer>50</integer>
+					<integer>35</integer>
+					<integer>35</integer>
+					<integer>38</integer>
 				</array>
 				<key>PageNumber</key>
 				<array>

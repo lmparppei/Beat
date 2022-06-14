@@ -298,10 +298,6 @@
 		
 	textField.currentEditor.selectedRange = selectedRange;
 	
-	NSString *key = [self keyForControl:textField];
-	
-	NSLog(@"(%@)... %@", key, textField.stringValue);
-	
 	[self toggle:textField];
 }
 - (void)controlTextDidEndEditing:(NSNotification *)obj {

@@ -60,14 +60,14 @@
 	BeatMargins *margins = BeatMargins.margins;
 	
 	CGSize offset = CGSizeMake(0, 0);
-	CGFloat reference = 12.5;
-	CGSize imageableSize = CGSizeMake(printInfo.imageablePageBounds.origin.x, printInfo.imageablePageBounds.origin.y);
+	CGFloat referenceMargin = 12.5;
+	CGSize imageableOrigin = CGSizeMake(printInfo.imageablePageBounds.origin.x, printInfo.imageablePageBounds.origin.y);
 	
 	// The user's system has less visible space on paper than it should (???), so let's fix that in margins.
-	if (imageableSize.width - reference > 0 || imageableSize.height - reference > 0) {
-		offset.width = imageableSize.width - reference;
-		offset.width = imageableSize.height - reference;
-	}
+	if (imageableOrigin.width - referenceMargin > 0)
+		offset.width = imageableOrigin.width - referenceMargin;
+	if (imageableOrigin.height - referenceMargin > 0)
+		offset.height = imageableOrigin.height - referenceMargin;
 	
 	printInfo.topMargin = margins.top - offset.height;
 	printInfo.bottomMargin = margins.bottom;

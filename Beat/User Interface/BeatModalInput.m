@@ -18,6 +18,7 @@
  */
 
 #import "BeatModalInput.h"
+#import "BeatLocalization.h"
 #import <Cocoa/Cocoa.h>
 
 @interface BeatModalInput ()
@@ -36,8 +37,8 @@
 				[_dialog addButtonWithTitle:button];
 			}
 		} else {
-			[_dialog addButtonWithTitle:@"OK"];
-			[_dialog addButtonWithTitle:@"Cancel"];
+			[_dialog addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.ok"]];
+			[_dialog addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
 		}
 	}
 	

@@ -19,6 +19,9 @@
  Update 2022:
  Yes, this is very dated and should absolutely be rethought.
  
+ Update 2022/05:
+ Too late.
+ 
  */
 
 #import "SceneCards.h"
@@ -37,15 +40,32 @@
 
 @implementation SceneCards
 
-- (instancetype) initWithWebView:(WKWebView *)webView {
-	self = [super init];
-	self.cardView = webView;
+- (void)awakeFromNib {
+	[super awakeFromNib];
+	
 	self.webPrinter = [[WebPrinter alloc] initWithName:@"Scene Cards"];
-	[self screenView];
-	return self;
+	[self createHTMLView];
 }
 
-- (void) screenView {
+- (void)setup {
+	// Set up index card view
+	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
+	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
+	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
+	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"printCards"];
+	_cardView.configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
+}
+
+- (void)removeHandlers {
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"cardClick"];
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"setColor"];
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"move"];
+	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"printCards"];
+	self.cardView.navigationDelegate = nil;
+	self.cardView = nil;
+}
+
+- (void)createHTMLView {
 	// Create the HTML
 	NSError *error = nil;
 	
@@ -72,7 +92,7 @@
 	
 	// Replace placeholders
 	content = [BeatLocalization localizeString:content];
-	
+		
 	[_cardView loadHTMLString:content baseURL:nil];
 }
 
@@ -93,23 +113,17 @@
 			</div>";
 }
 
-
-/*
-
- New version
- 
- */
-
 - (void)reload {
 	[self reloadCardsWithVisibility:NO changed:-1];
 }
+
 - (void)reloadCardsWithVisibility:(bool)alreadyVisible changed:(NSInteger)changedIndex {
 	_cards = [self getSceneCards];
 	
 	NSError *error;
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_cards options:NSJSONWritingPrettyPrinted error:&error];
 	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-	
+		
 	NSString *jsCode;
 	
 	if (alreadyVisible && changedIndex > -1) {
@@ -126,7 +140,7 @@
 	[_cardView evaluateJavaScript:jsCode completionHandler:nil];
 }
 
-- (NSArray *) getSceneCards {
+- (NSArray *)getSceneCards {
 	// Returns an array of dictionaries containing the card data
 	// Remember to set up the delegate
 	
@@ -212,13 +226,18 @@
 	return snippet;
 }
 
+- (void)printCards {
+	[self printCardsWithInfo:self.delegate.printInfo.copy];
+}
 - (void)printCardsWithInfo:(NSPrintInfo *)printInfo {
 	// This creates a HTML document for printing out the index cards
+	// JEsus christ or any other human with godlike properties, what is this shit.
+	
 	NSWindow *window = NSApp.mainWindow;
 	if (!window) window = NSApp.windows.firstObject;
 	
 	NSError *error = nil;
-	NSString *cssPath = [[NSBundle mainBundle] pathForResource:@"CardPrintCSS.css" ofType:@""];
+	NSString *cssPath = [NSBundle.mainBundle pathForResource:@"CardPrintCSS.css" ofType:@""];
 	NSString *css = [NSString stringWithContentsOfFile:cssPath encoding:NSUTF8StringEncoding error:&error];
 	
 	NSMutableArray *htmlCards = [NSMutableArray array];
@@ -243,7 +262,7 @@
 		} else {
 			// Do something if you want to add cards for sections etc.
 		}
-		if ([card length]) [htmlCards addObject:card];
+		if (card.length) [htmlCards addObject:card];
 	}
 	
 	if (htmlCards.count < 1) {
@@ -300,6 +319,77 @@
 	return string;
 }
 
+
+#pragma mark - Public refresh methods
+
+
+- (void)refreshCards {
+	// Refresh cards assuming the view isn't visible
+	[self reloadCardsWithVisibility:NO changed:-1];
+}
+
+- (void)refreshCards:(BOOL)alreadyVisible {
+	// Just refresh cards, no change in index
+	[self reloadCardsWithVisibility:alreadyVisible changed:-1];
+}
+
+- (void)refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
+	[self reloadCardsWithVisibility:alreadyVisible changed:changedIndex];
+}
+
+
+
+#pragma mark - JavaScript handler
+
+- (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
+	// I have no fucking idea what any of this does.
+	// Send in the clowns. There ought to be clowns.
+	
+	if ([message.name isEqualToString:@"move"]) {
+		if ([message.body rangeOfString:@","].location != NSNotFound) {
+			NSArray *fromTo = [message.body componentsSeparatedByString:@","];
+			if (fromTo.count < 2) return;
+			
+			NSInteger from = [fromTo[0] integerValue];
+			NSInteger to = [fromTo[1] integerValue];
+			
+			NSInteger changedIndex = -1;
+			if (from < to) changedIndex = to -1; else changedIndex = to;
+			
+			NSMutableArray *outline = self.delegate.getOutlineItems;
+			if (outline.count < 1) return;
+			
+			OutlineScene *scene = [outline objectAtIndex:from];
+			
+			[self.delegate moveScene:scene from:from to:to];
+			
+			// Refresh the view, tell it's already visible
+			[self reloadCardsWithVisibility:YES changed:changedIndex];
+			
+			return;
+		}
+	}
+
+	else if ([message.name isEqualToString:@"setColor"]) {
+		if ([message.body rangeOfString:@":"].location != NSNotFound) {
+			NSArray *indexAndColor = [message.body componentsSeparatedByString:@":"];
+			NSUInteger index = [[indexAndColor objectAtIndex:0] integerValue];
+			NSString *color = [indexAndColor objectAtIndex:1];
+			
+			Line *line = [_delegate.parser.lines objectAtIndex:index];
+			OutlineScene *scene = [self.delegate.parser sceneAtIndex:line.position];
+			
+			[self.delegate setColor:color forScene:scene];
+		}
+	}
+	
+	else if ([message.name isEqualToString:@"printCards"]) {
+		[self printCards];
+	}
+}
+
+@end
+
 /*
  
  i leave home at seven
@@ -315,5 +405,3 @@
  oh, oh
  
  */
-
-@end

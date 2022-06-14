@@ -63,6 +63,8 @@
 #define POPOVER_WIDTH 300.0
 #define POPOVER_PADDING 0.0
 
+#define TEXT_INSET_TOP 80
+
 #define POPOVER_APPEARANCE NSAppearanceNameVibrantDark
 
 #define POPOVER_FONT [NSFont fontWithName:@"Courier Prime" size:12.0]
@@ -175,12 +177,46 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 - (void)awakeFromNib {
+
 	self.matches = NSMutableArray.array;
+	self.pageBreaks = NSArray.new;
+	//self.masks = NSMutableArray.new;
+	self.lastPos = -1;
+
+	[self setupPopovers];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
+	
 	self.layoutManager.delegate = self;
-	self.pageBreaks = [NSArray array];
+}
+
+-(void)setup {
+	self.editable = YES;
+	self.textContainer.widthTracksTextView = NO;
+	self.textContainer.heightTracksTextView = NO;
 	
-	self.layoutManager.allowsNonContiguousLayout = YES;
+	// Style
+	self.font = _editorDelegate.courier;
+	self.automaticDataDetectionEnabled = NO;
+	self.automaticQuoteSubstitutionEnabled = NO;
+	self.automaticDashSubstitutionEnabled = NO;
 	
+	if (self.editorDelegate.hideFountainMarkup) self.layoutManager.allowsNonContiguousLayout = NO;
+	else self.layoutManager.allowsNonContiguousLayout = YES;
+	
+	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
+	[paragraphStyle setLineHeightMultiple:self.editorDelegate.lineHeight];
+	[self setDefaultParagraphStyle:paragraphStyle];
+	
+	_trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
+	[self.window setAcceptsMouseMovedEvents:YES];
+	[self addTrackingArea:_trackingArea];
+	
+	// Turn layers on if you want to use CATextLayer labels.
+	// self.wantsLayer = YES;
+	[self setInsets];
+}
+
+-(void)setupPopovers {
 	// Make a table view with 1 column and enclosing scroll view. It doesn't
 	// matter what the frames are here because they are set when the popover
 	// is displayed
@@ -189,7 +225,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[column1 setWidth:POPOVER_WIDTH - 2 * POPOVER_PADDING];
 	
 	NSTableView *tableView = [[NSTableView alloc] initWithFrame:NSZeroRect];
-	
 	[tableView setSelectionHighlightStyle:NSTableViewSelectionHighlightStyleRegular];
 	[tableView setBackgroundColor:[NSColor clearColor]];
 	[tableView setRowSizeStyle:NSTableViewRowSizeStyleSmall];
@@ -208,7 +243,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	
 	self.autocompleteTableView = tableView;
-	
 	
 	NSScrollView *tableScrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
 	[tableScrollView setDrawsBackground:NO];
@@ -245,23 +279,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[infoViewController setView:infoContentView];
 
 	self.infoPopover.contentViewController = infoViewController;
-
-	self.lastPos = -1;
-		
-	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
-	
-	// Arrays for special elements
-	self.masks = NSMutableArray.new;
-	
-	_trackingArea = [[NSTrackingArea alloc] initWithRect:self.frame options:(NSTrackingMouseMoved | NSTrackingActiveAlways | NSTrackingInVisibleRect) owner:self userInfo:nil];
-	[self.window setAcceptsMouseMovedEvents:YES];
-	[self addTrackingArea:_trackingArea];
-	
-	// Turn layers on if you want to use CATextLayer labels.
-	// self.wantsLayer = YES;
-	
-	[self setInsets];
 }
+
 -(void)removeFromSuperview {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	[super removeFromSuperview];
@@ -656,9 +675,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	
 	// Update view position if needed
-	if (self.editorDelegate.typewriterMode) {
-		[self updateTypewriterView];
-	}
+	if (self.editorDelegate.typewriterMode) [self updateTypewriterView];
 	
 	// If selection moves by more than just one character, hide autocomplete
 	if ((self.selectedRange.location - self.lastPos) > 1) {
@@ -730,7 +747,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 - (void)forceElement:(id)sender {
 	_popupMode = ForceElement;
-	[self showPopupWithItems:@[@"Action", @"Scene Heading", @"Character", @"Lyrics"]];
+	[self showPopupWithItems: [self forceableTypes].allKeys ];
 }
 
 - (void)showPopupWithItems:(NSArray*)items {
@@ -761,11 +778,26 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.autocompletePopover showRelativeToRect:rect ofView:self preferredEdge:NSMaxYEdge];
 }
 
+- (NSDictionary*)forceableTypes {
+	return @{
+		[BeatLocalization localizedStringForKey:@"force.heading"]: @(heading),
+		[BeatLocalization localizedStringForKey:@"force.character"]: @(character),
+		[BeatLocalization localizedStringForKey:@"force.action"]: @(action),
+		[BeatLocalization localizedStringForKey:@"force.lyrics"]: @(lyrics),
+	};
+}
+
 - (void)force:(id)sender {
 	if (self.autocompleteTableView.selectedRow >= 0 && self.autocompleteTableView.selectedRow < self.matches.count) {
-		if ([self.delegate respondsToSelector:@selector(forceElement:)]) {
-			[(id)self.delegate forceElement:[self.matches objectAtIndex:self.autocompleteTableView.selectedRow]];
-		}
+		NSString *localizedType = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
+		NSDictionary *types = [self forceableTypes];
+		NSNumber *val = types[localizedType];
+		
+		// Do nothing if something went wront
+		if (val == nil) return;
+		
+		LineType type = val.integerValue;
+		[self.editorDelegate forceElement:type];
 	}
 	[self.autocompletePopover close];
 	_forceElementMenu = NO;
@@ -998,12 +1030,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	NSGraphicsContext *ctx = NSGraphicsContext.currentContext;
 	if (!ctx) return;
 	
-	[ctx saveGraphicsState];
 	[super drawRect:dirtyRect];
-	[ctx restoreGraphicsState];
 
 	// An array of NSRanges which are used to mask parts of the text.
 	// Used to hide irrelevant parts when filtering scenes.
+	/*
 	if (_masks.count) {
 		for (NSValue * value in _masks) {
 			NSColor* fillColor = self.editorDelegate.themeManager.backgroundColor;
@@ -1018,6 +1049,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
 		}
 	}
+	 */
 }
 
 -(void)redrawUI {
@@ -1508,28 +1540,15 @@ Line *cachedRectLine;
 }
 
 - (CGFloat)setInsets {
-	/*
-	// Some ideas for using a layer to achieve the "page look"
-	// Requires moving away from content insets, which could be nice.
-	 
-	CGFloat factor = 1.0;
-	if (_editorDelegate.magnification > 0) factor = 1 / _editorDelegate.magnification;
+	// Top/bottom insets
+	if (_editorDelegate.typewriterMode) {
+		CGFloat insetY = (self.enclosingScrollView.contentView.frame.size.height / 2 - _editorDelegate.fontSize / 2) * (1 + (1 - _editorDelegate.magnification));
+		self.textInsetY = insetY;
+	} else {
+		self.textInsetY = TEXT_INSET_TOP;
+	}
 	
-	CGFloat x = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
-	
-	NSRect frame = self.layer.frame;
-	frame.size.width =  _editorDelegate.documentWidth * factor;
-	frame.origin.x = x;
-		
-	self.layer.frame = frame;
-	NSSize size = self.textContainer.size;
-		
-	size.width = frame.size.width;
-	self.textContainer.size = size;
-	 
-	return 0;
-	*/
-	
+	// Left/right insets
 	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
 	
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
@@ -1644,13 +1663,18 @@ Line *cachedRectLine;
 
 #pragma mark - Layout Manager delegation
 
+-(void)redrawAllGlyphs {
+	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){0, self.string.length} changeInLength:0 actualCharacterRange:nil];
+	[self.layoutManager invalidateLayoutForCharacterRange:(NSRange){0, self.string.length} actualCharacterRange:nil];
+}
+
 -(void)updateMarkdownView {
 	if (!_editorDelegate.hideFountainMarkup) return;
 	if (!self.string.length) return;
 	
 	Line* line = self.editorDelegate.currentLine;
-	Line* prevLine = self.editorDelegate.previouslySelectedLine;
-	
+	static Line* prevLine;
+		
 	if (line != prevLine) {
 		// If the line changed, let's redraw the range
 		[self.layoutManager invalidateGlyphsForCharacterRange:line.textRange changeInLength:0 actualCharacterRange:nil];
@@ -1658,6 +1682,8 @@ Line *cachedRectLine;
 		[self.layoutManager invalidateLayoutForCharacterRange:prevLine.textRange actualCharacterRange:nil];
 		[self.layoutManager invalidateLayoutForCharacterRange:line.textRange actualCharacterRange:nil];
 	}
+	
+	prevLine = line;
 }
 
 -(void)toggleHideFountainMarkup {
@@ -1665,12 +1691,12 @@ Line *cachedRectLine;
 	[self updateMarkdownView];
 }
 
-
 -(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange {
 	return attrs;
 }
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
+	if (_editorDelegate.documentIsLoading) return 0;
 	
 	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
 	if (!line) return 0;
@@ -1725,7 +1751,7 @@ Line *cachedRectLine;
 		for (NSInteger i = 0; i < glyphRange.length; i++) {
 			NSUInteger index = charIndexes[i];
 			NSGlyphProperty prop = props[i];
-			
+						
 			if (mdIndices.count && !NSLocationInRange(self.selectedRange.location, line.range)) {
 				// Make it a null glyph if it's NOT on the current line
 				if ([mdIndices containsIndex:index]) prop |= NSGlyphPropertyNull;
@@ -1736,6 +1762,7 @@ Line *cachedRectLine;
 		
 		// Create the new glyphs
 		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
+		
 		[self.layoutManager setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
 		free(newGlyphs);
 		free(modifiedProps);

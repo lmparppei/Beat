@@ -92,6 +92,7 @@
 
 #if !TARGET_OS_IOS
 @property (strong, nonatomic) BeatPrintView *printView;
+- (CGFloat)sidebarWidth;
 #endif
 
 #if !TARGET_OS_IOS
@@ -110,13 +111,19 @@
 - (NSMutableArray<Line*>*)lines;
 - (NSString*)text;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
+- (void)addString:(NSString*)string atIndex:(NSUInteger)index;
+- (void)removeString:(NSString*)string atIndex:(NSUInteger)index;
+- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
+- (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
 
+- (Line*)currentLine;
 - (NSInteger)lineTypeAt:(NSInteger)index;
 
 - (void)setSelectedRange:(NSRange)range;
 - (NSRange)selectedRange;
 - (NSArray*)getOutline; // ???
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString;
+
+- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
@@ -131,6 +138,9 @@
 // This determines if the text has changed since last query
 - (bool)hasChanged;
 - (NSArray*)markers;
+
+// Check editor mode
+- (bool)editorTabVisible;
 
 - (void)updateQuickSettings;
 

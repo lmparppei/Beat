@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatMeasure*)shared;
 + (void)start:(NSString*)name;
 + (void)end:(NSString*)name;
++ (NSTimeInterval)getTime:(NSString*)name;
++ (NSString*)endAndReturnString:(NSString*)name;
 @end
 
 NS_ASSUME_NONNULL_END

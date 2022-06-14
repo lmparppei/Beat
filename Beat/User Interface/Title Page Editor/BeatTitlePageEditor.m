@@ -150,8 +150,6 @@
 }
 
 - (IBAction)fieldDidChange:(id)sender {
-	NSLog(@"did change");
-	
 	NSString *title = _titleField.stringValue;
 	if (_creditField.stringValue.length) title = [title stringByAppendingFormat:@"\n\n%@", _creditField.stringValue];
 	if (_authorField.stringValue.length) title = [title stringByAppendingFormat:@"\n\n%@", _authorField.stringValue];

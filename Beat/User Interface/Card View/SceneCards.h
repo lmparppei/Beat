@@ -9,27 +9,25 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 #import "WebPrinter.h"
+#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SceneCardDelegate <NSObject>
-
-- (NSRange)selectedRange;
-- (NSMutableArray*)getOutlineItems;
-- (NSMutableArray*)lines;
-
-@end
-
-@interface SceneCards : NSObject
-@property (weak) id<SceneCardDelegate> delegate;
-@property (nonatomic, weak) WKWebView *cardView;
-- (instancetype) initWithWebView:(WKWebView *)webView;
-- (void) screenView;
-
+@interface SceneCards : NSObject<WKScriptMessageHandler>
+@property (weak) IBOutlet id<BeatEditorDelegate> delegate;
+@property (nonatomic, weak) IBOutlet WKWebView *cardView;
 
 - (void)reload;
 - (void)reloadCardsWithVisibility:(bool)alreadyVisible changed:(NSInteger)changedIndex;
 - (void)printCardsWithInfo:(NSPrintInfo*)printInfo;
+- (void)removeHandlers;
+- (void)setup;
+
+
+// Public reloading methods
+- (void)refreshCards;
+- (void)refreshCards:(BOOL)alreadyVisible;
+- (void)refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex;
 
 @end
 

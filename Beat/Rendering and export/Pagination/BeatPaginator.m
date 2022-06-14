@@ -399,6 +399,11 @@
 		CGFloat w = roundf(printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin);
 		CGFloat h = roundf(printInfo.paperSize.height - printInfo.topMargin - printInfo.bottomMargin);
 		
+		// Printer can't print this high a page, so let's reduce page height
+		if (printInfo.imageablePageBounds.size.height < h) {
+			h = printInfo.imageablePageBounds.size.height;
+		}
+
 		_paperSize = CGSizeMake(w, h);
 	} else {
 		_paperSize = CGSizeMake(595, 821);
@@ -428,6 +433,7 @@
 	
 	NSInteger oneInchBuffer = 72;
 	NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer);
+	
 	CGFloat lineHeight = LINE_HEIGHT;
 	
 	BeatPage *currentPage = BeatPage.new;

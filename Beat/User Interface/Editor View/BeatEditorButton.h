@@ -13,6 +13,7 @@ IB_DESIGNABLE
 @interface BeatEditorButton : NSButton
 @property (nonatomic) IBInspectable NSColor *startColor;
 @property (nonatomic) IBInspectable BOOL onOffButton;
+-(void)updateAppearance;
 @end
 
 NS_ASSUME_NONNULL_END

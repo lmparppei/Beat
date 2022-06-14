@@ -19,8 +19,6 @@
 	speak.volume = 0.9f;
 	speak.pitchMultiplier = 1.0f;
 	
-	NSLog(@"hello");
-	
 	return speak;
 }
 

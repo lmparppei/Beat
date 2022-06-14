@@ -565,11 +565,10 @@
 
 -(void)menuWillOpen:(NSMenu *)menu {
 	//if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
-	/*
+	
 	if (menu == _versionMenu) {
 		[self versionMenuItems];
 	}
-	*/
 }
 
 #pragma mark - Version control
@@ -577,6 +576,69 @@
 // NOTE: This is not in use currently, because of weird autosave errors
 // To put it back, you need a REVERT menu, set its outlet to _versionMenu and
 // set this class as the delegate.
+
+- (void)versionMenuItems {
+	[_versionMenu removeAllItems];
+	
+	NSDocument *doc = NSDocumentController.sharedDocumentController.currentDocument;
+	NSURL *url = doc.fileURL;
+	
+	if (url) {
+		NSArray *versions = [BeatBackup backupsWithName:url.lastPathComponent.stringByDeletingPathExtension];
+		
+		NSDateFormatter* df = NSDateFormatter.new;
+		[df setDateStyle:NSDateFormatterShortStyle];
+		[df setTimeStyle:NSDateFormatterShortStyle];
+		
+		BeatMenuItemWithURL *toSaved = [BeatMenuItemWithURL.alloc initWithTitle:NSLocalizedString(@"backup.revertToSaved", nil) action:@selector(revertTo:) keyEquivalent:@""];
+		toSaved.url = doc.fileURL;
+		
+		[_versionMenu addItem:toSaved];
+		[_versionMenu addItem:NSMenuItem.separatorItem];
+		
+		for (BeatBackupFile *version in versions) {
+			NSString *modificationTime = [df stringFromDate:version.date];
+			BeatMenuItemWithURL *item = [BeatMenuItemWithURL.alloc initWithTitle:modificationTime action:@selector(revertTo:) keyEquivalent:@""];
+			item.url = [NSURL fileURLWithPath:version.path];
+			[_versionMenu addItem:item];
+		}
+		
+		if (versions.count) {
+			[_versionMenu addItem:NSMenuItem.separatorItem];
+		}
+	}
+	
+	NSMenuItem *backupVault = [NSMenuItem.alloc initWithTitle:[BeatLocalization localizedStringForKey:@"backup.backupVault"] action:@selector(openBackupFolder:) keyEquivalent:@""];
+	[_versionMenu addItem:backupVault];
+}
+
+- (IBAction)revertTo:(id)sender {
+	
+	BeatModalInput *input = BeatModalInput.alloc.init;
+	[input confirmBoxWithMessage:[BeatLocalization localizedStringForKey:@"backup.reverting.title"]
+							text:[BeatLocalization localizedStringForKey:@"backup.reverting.message"] forWindow:NSDocumentController.sharedDocumentController.currentDocument.windowForSheet completion:^(bool result) {
+		if (!result) return;
+		else {
+			BeatMenuItemWithURL *item = sender;
+			
+			NSError *error;
+			if (item.url == NSDocumentController.sharedDocumentController.currentDocument.fileURL) {
+				// Revert to saved
+				[NSDocumentController.sharedDocumentController.currentDocument revertDocumentToSaved:nil];
+				return;
+			}
+			
+			if (item.url == nil) NSLog(@"ERROR, no URL found");
+			
+			[NSDocumentController.sharedDocumentController.currentDocument revertToContentsOfURL:item.url ofType:NSPlainTextDocumentType error:&error];
+			if (error) NSLog(@"Error: %@", error);
+		}
+	}];
+}
+
+- (IBAction)openBackupFolder:(id)sender {
+	[BeatBackup openBackupFolder];
+}
 
 /*
 - (void)versionMenuItems {
@@ -680,7 +742,7 @@
 	if (!_console) {
 		NSArray *objects = [NSArray array];
 		[NSBundle.mainBundle loadNibNamed:@"BeatConsole" owner:_console topLevelObjects:&objects];
-		_console = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 450, 100) styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskHUDWindow | NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskUtilityWindow backing:NSBackingStoreNonretained defer:NO];
+		_console = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 450, 100) styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskHUDWindow | NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskUtilityWindow backing:NSBackingStoreBuffered defer:NO];
 		
 		NSPanel *panel;
 		for (id item in objects) { if ([item isKindOfClass:NSPanel.class]) panel = item; }

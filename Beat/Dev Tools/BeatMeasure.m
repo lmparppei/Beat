@@ -39,11 +39,21 @@
 }
 + (void)end:(NSString*)name
 {
-	NSDate *methodFinish = [NSDate date];
-	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:(NSDate*)BeatMeasure.shared.measurements[name]];
-	NSLog(@"%@ execution time = %f", name, executionTime);
+	NSLog(@"%@ execution time = %f", name, [BeatMeasure getTime:name]);
 	
 	[BeatMeasure.shared.measurements removeObjectForKey:name];
+}
+
++ (NSTimeInterval)getTime:(NSString*)name {
+	NSDate *methodFinish = [NSDate date];
+	NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:(NSDate*)BeatMeasure.shared.measurements[name]];
+	return executionTime;
+}
+
++ (NSString*)endAndReturnString:(NSString*)name {
+	NSString *string = [NSString stringWithFormat:@"%f", [BeatMeasure getTime:name]];
+	[BeatMeasure.shared.measurements removeObjectForKey:name];
+	return string;
 }
 
 @end

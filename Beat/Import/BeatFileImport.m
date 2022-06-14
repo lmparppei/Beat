@@ -48,7 +48,7 @@
 	NSOpenPanel *openDialog = [NSOpenPanel openPanel];
 	[openDialog setAllowedFileTypes:extensions];
 	[openDialog beginWithCompletionHandler:^(NSModalResponse result) {
-		if (result == NSFileHandlingPanelOKButton) {
+		if (result == NSModalResponseOK) {
 			if (openDialog.URL) {
 				self.url = openDialog.URL;
 				callback();

@@ -5,6 +5,7 @@
 //  Created by Lauri-Matti Parppei on 20.3.2021.
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
+//  Buttons at the top of the editor
 
 #import "BeatEditorButton.h"
 #import "BeatAppDelegate.h"
@@ -23,7 +24,6 @@ IB_DESIGNABLE
 	if (@available(macOS 10.14, *)) {
 		if (_onOffButton) {
 			self.contentTintColor = NSColor.controlAccentColor;
-			//self.contentTintColor = [BeatColors color:@"blue"];
 		}
 	}
 	
@@ -36,14 +36,16 @@ IB_DESIGNABLE
 }
 
 - (void)layout {
-	BeatAppDelegate *appDelegate = (BeatAppDelegate*)NSApp.delegate;
-	
+	[self updateAppearance];
+	[super layout];
+}
+
+-(void)updateAppearance {
 	if (@available(macOS 10.14, *)) {
+		BeatAppDelegate *appDelegate = (BeatAppDelegate*)NSApp.delegate;
 		if (appDelegate.isDark) [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]];
 		else [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameAqua]];
 	}
-	
-	[super layout];
 }
 
 - (void)setState:(NSControlStateValue)state {

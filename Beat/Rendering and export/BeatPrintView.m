@@ -143,6 +143,12 @@ static NSURL *pdfURL;
 	// Set script data
 	BeatScreenplay *script = [BeatScreenplay from:parser settings:settings];
 
+	// This is a silly fix for when no printer is installed on macOS
+	if ([_printInfo.printer.name isEqualToString:@" "]) {
+		_printInfo.topMargin = 12.5;
+		settings.customCSS = [settings.customCSS stringByAppendingString:@"body { zoom: 95%; } section { padding-top: 1cm !important; }"];
+	}
+	
 	if (!settings) {
 		NSLog(@"NO SETTINGS FOUND WHEN PRINTING.");
 		return nil;
@@ -226,11 +232,11 @@ static NSURL *pdfURL;
 	// Display sheet for documents, normal modal for other cases
 	if (self.document.windowControllers.count) {
 		[saveDialog beginSheetModalForWindow:self.document.windowControllers[0].window completionHandler:^(NSInteger result) {
-			if (result == NSFileHandlingPanelOKButton) [self exportPDFtoURL:saveDialog.URL];
+			if (result == NSModalResponseOK) [self exportPDFtoURL:saveDialog.URL];
 		}];
 	} else {
 		NSInteger result = [saveDialog runModal];
-		if (result == NSFileHandlingPanelOKButton) [self exportPDFtoURL:saveDialog.URL];
+		if (result == NSModalResponseOK) [self exportPDFtoURL:saveDialog.URL];
 	}
 }
 
@@ -269,8 +275,7 @@ static NSURL *pdfURL;
 	
 	NSPrintInfo *printInfo = self.document.printInfo.copy;
 	printInfo.verticalPagination = NSFitPagination;
-	printInfo.horizontalPagination = NSFitPagination;
-				
+	printInfo.horizontalPagination = NSClipPagination;
 	[printInfo.dictionary addEntriesFromDictionary:@{
 													 NSPrintJobDisposition: NSPrintSaveJob,
 													 NSPrintJobSavingURL: url
@@ -285,7 +290,6 @@ static NSURL *pdfURL;
 		printOperation = [((WebView*)_webView).mainFrame.frameView printOperationWithPrintInfo:printInfo];
 	}
 
-	
 	printOperation.showsPrintPanel = NO;
 	printOperation.showsProgressPanel = YES;
 	
@@ -303,6 +307,7 @@ static NSURL *pdfURL;
 	if (_preview) [self.delegate didFinishPreviewAt:pdfURL];
 	if (_completion) _completion();
 	
+	// Remove WKWebView from memory
 	if ([_webView isKindOfClass:WKWebView.class]) [self deinitWebView];
 	
 	_webView = nil;
@@ -312,7 +317,6 @@ static NSURL *pdfURL;
 	WKWebView *webView = _webView;
 	webView.navigationDelegate = nil;
 	[webView.configuration.userContentController removeAllUserScripts];
-	
 }
 
 

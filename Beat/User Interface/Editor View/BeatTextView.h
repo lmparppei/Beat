@@ -84,6 +84,9 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
 
+- (void)forceElement:(LineType)lineType;
+- (CGFloat)lineHeight;
+
 @end
 
 @protocol BeatTaggingDelegate;
@@ -107,14 +110,15 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 - (void)updatePageNumbers;
 - (void)updatePageNumbers:(NSArray*)pageBreaks;
 
+-(void)redrawAllGlyphs;
 -(void)redrawUI;
 -(void)updateMarkdownView;
 -(void)toggleHideFountainMarkup;
 - (NSRect)rectForRange:(NSRange)range;
 
 @property CGFloat textInsetY;
-@property (weak) id<BeatTextViewDelegate> editorDelegate;
-@property (weak) id<BeatTaggingDelegate> taggingDelegate;
+@property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
+@property (weak) IBOutlet id<BeatTaggingDelegate> taggingDelegate;
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;
 @property (nonatomic, weak) DynamicColor* marginColor;
@@ -127,5 +131,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 
 - (void)refreshLayoutElementsFrom:(NSInteger)location;
 - (void)refreshLayoutElements;
+
+- (void)setup;
 
 @end

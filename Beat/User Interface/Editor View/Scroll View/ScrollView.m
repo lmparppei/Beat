@@ -61,6 +61,14 @@
 	[super setFrame:frame];
 }
 
+- (void)viewDidChangeEffectiveAppearance {
+	// Update button style
+	for (NSView *view in _buttonView.subviews) {
+		[view layout];
+	}
+}
+
+
 - (void)shouldHideButtons:(NSTimer *) timer {
 	NSPoint mouseLoc = [NSEvent mouseLocation];
 	NSPoint location = [self convertPoint:mouseLoc toView:nil];

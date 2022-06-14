@@ -471,7 +471,13 @@
 
 - (void)log:(NSString*)string
 {
-	[(BeatAppDelegate*)NSApp.delegate logToConsole:string pluginName:_pluginName];
+	if (NSThread.isMainThread) [(BeatAppDelegate*)NSApp.delegate logToConsole:string pluginName:_pluginName];
+	else {
+		// Allow logging in background thread
+		dispatch_async(dispatch_get_main_queue(), ^(void){
+			[(BeatAppDelegate*)NSApp.delegate logToConsole:string pluginName:self.pluginName];
+		});
+	}
 }
 
 - (void)scrollTo:(NSInteger)location
@@ -1285,7 +1291,6 @@
 							@(_delegate.printInfo.imageablePageBounds.size.height)]
 	};
 }
-
 
 #pragma mark - Formatting
 

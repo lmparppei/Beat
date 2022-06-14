@@ -1,0 +1,30 @@
+//
+//  BeatEditorFormattingActions.h
+//  Beat
+//
+//  Created by Lauri-Matti Parppei on 9.6.2022.
+//  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "BeatEditorDelegate.h"
+#import "ContinuousFountainParser.h"
+#import "BeatModalInput.h"
+#import "BeatLocalization.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSUInteger, BeatFormatting) {
+	Block = 0,
+	Bold,
+	Italic,
+	Underline,
+	Note
+};
+
+@interface BeatEditorFormattingActions : NSResponder
+@property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> delegate;
+- (void)forceElement:(LineType)lineType;
+@end
+
+NS_ASSUME_NONNULL_END

@@ -19,6 +19,7 @@
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
 #import "BeatSceneTree.h"
+#import "BeatMeasure.h"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
@@ -108,11 +109,15 @@
 	
 	if (row != NSNotFound) {
 		NSRect rect = [self rectOfRow:row];
+		rect.origin.x += 2;
+		rect.size.width -= 4;
+		
+		NSBezierPath *bg = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3];
 		
 		NSColor* fillColor = ThemeManager.sharedManager.outlineHighlight;
 		[fillColor setFill];
 		
-		NSRectFill(rect);
+		[bg fill];		
 	}
 }
 
@@ -124,6 +129,8 @@
 #pragma mark - Reload data
 
 -(void)reloadOutline {
+	[BeatMeasure start:@"Reload outline"];
+	
 	// Save outline scroll position
 	NSPoint scrollPosition = self.enclosingScrollView.contentView.bounds.origin;
 	
@@ -139,6 +146,8 @@
 	
 	// Scroll back to original position after reload
 	[self.enclosingScrollView.contentView scrollPoint:scrollPosition];
+	
+	[BeatMeasure end:@"Reload outline"];
 }
 
 -(void)outlineViewItemDidCollapse:(NSNotification *)notification {
@@ -155,7 +164,6 @@
 
 #pragma mark - Delegation
 
-
 -(void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(nonnull id)cell forTableColumn:(nullable NSTableColumn *)tableColumn item:(nonnull id)item {
 	/*
 	// For those who come after
@@ -166,14 +174,19 @@
 	*/
 }
 
-/*
-- (CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item {
-	NSMutableAttributedString *viewItem = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene];
-	CGRect size = [viewItem boundingRectWithSize:CGSizeMake(self.frame.size.width, CGFLOAT_MAX) options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading) context:nil];
+
+// FOR VIEW-BASED OUTLINE. Very slow.
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+	NSTableCellView *view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
+	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene];
 	
-	return size.size.height + 4;
+	return view;
 }
- */
+
+- (void)outlineViewColumnDidResize:(NSNotification *)notification {
+	// Update row heights when needed
+	[self noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:(NSRange){ 0, self.numberOfRows }]];
+}
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;
 {
@@ -225,7 +238,7 @@
 	else return NO;
 }
 
-// Outline items
+// FOR CELL-BASED VIEW.
 - (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
 	if ([item isKindOfClass:[OutlineScene class]]) {
@@ -383,6 +396,9 @@
 	BeatSceneTreeItem *treeItem = [_sceneTree itemWithScene:scene];
 	if (treeItem.parent) [self expandItem:treeItem.parent];
 
+	// Redraw selection
+	[self setNeedsDisplay];
+	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
 			context.allowsImplicitAnimation = YES;
@@ -442,7 +458,7 @@
 	
 	// Reload outline and set visual masks to apply the filter
 	[self reloadOutline];
-	[self.editorDelegate maskScenes];
+	//[self.editorDelegate maskScenes];
 }
 
 - (IBAction)resetColorFilters:(id)sender {
@@ -460,7 +476,7 @@
 	
 	// Reload outline & reset masks
 	[self reloadOutline];
-	[self.editorDelegate maskScenes];
+	//[self.editorDelegate maskScenes];
 	
 	// Hide the button
 	[_resetColorFilterButton setHidden:YES];
@@ -477,7 +493,7 @@
 	
 	// Reload outline and set visual masks to apply the filter
 	[self reloadOutline];
-	[self.editorDelegate maskScenes];
+	// [self.editorDelegate maskScenes];
 	
 	// Show the button to reset character filter
 	[_resetCharacterFilterButton setHidden:NO];
@@ -488,7 +504,7 @@
 	_filters.character = @"";
 	
 	[self reloadOutline];
-	[self.editorDelegate maskScenes];
+	// [self.editorDelegate maskScenes];
 	
 	// Hide the button to reset filter
 	[_resetCharacterFilterButton setHidden:YES];

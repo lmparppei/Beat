@@ -47,6 +47,7 @@
 
 + (NSURL*)appDataPath:(NSString*)subPath;
 - (NSURL*)appDataPath:(NSString*)subPath;
+- (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix;
 - (id)newDocumentWithContents:(NSString*)string;
 
 - (void)openURLInWebBrowser:(NSString*)urlString;

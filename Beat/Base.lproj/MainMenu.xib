@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
     </dependencies>
     <objects>
@@ -112,6 +111,14 @@
                                 <connections>
                                     <action selector="toggleAutosave:" target="-1" id="UJw-ny-khR"/>
                                 </connections>
+                            </menuItem>
+                            <menuItem title="Backups" id="NBi-pE-q3K">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" id="7oT-pt-wId">
+                                    <connections>
+                                        <outlet property="delegate" destination="vEX-2F-hcj" id="ols-cj-zES"/>
+                                    </connections>
+                                </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
                             <menuItem title="Lock Document" id="dTg-uk-VoW">
@@ -495,7 +502,7 @@
                         <items>
                             <menuItem title="Bold" keyEquivalent="b" id="SoY-Ie-ajo">
                                 <connections>
-                                    <action selector="makeBold:" target="-1" id="SsS-X3-26H"/>
+                                    <action selector="makeBold:" target="-1" id="2S5-sU-PhV"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Italic" keyEquivalent="i" id="x90-pI-9f6">
@@ -1009,6 +1016,7 @@ DQ
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginManager" destination="MpY-Uw-HUk" id="LTu-gv-i9k"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
+                <outlet property="versionMenu" destination="7oT-pt-wId" id="5Nx-Wf-wFz"/>
             </connections>
         </customObject>
     </objects>

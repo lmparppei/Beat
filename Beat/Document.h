@@ -48,6 +48,7 @@ THE SOFTWARE.
 #import "BeatRevisionTracking.h"
 #import "BeatRevisionItem.h"
 
+/*
 typedef NS_ENUM(NSUInteger, BeatFormatting) {
 	Block = 0,
 	Bold,
@@ -55,6 +56,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 	Underline,
 	Note
 };
+ */
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
@@ -65,7 +67,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (NSMutableArray<Line*>*)lines;
 @end
 
-@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, SceneCardDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
+@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
 
 @property (strong, nonatomic) BeatPrintView *printView; //To keep the asynchronously working print data generator in memory
 
@@ -108,15 +110,13 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Tagging
 @property (nonatomic) IBOutlet BeatTagging *tagging;
 
+// Tab
+@property (nonatomic) NSTabViewItem *currentTab;
+
+// Content
 - (NSString*)text;
 - (NSString*)fileNameString;
 - (void)invalidatePreview;
-
-// Make some of the actions available for text view
-// (wtf btw, why aren't we using these through delegation?)
-- (IBAction)forceAction:(id)sender;
-- (IBAction)forceHeading:(id)sender;
-- (IBAction)forceCharacter:(id)sender;
 
 - (void)setPrintSceneNumbers:(bool)value;
 - (IBAction)togglePrintSceneNumbers:(id)sender;

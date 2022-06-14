@@ -68,10 +68,13 @@
 		if ([line.string isEqualToString:current.string] && line.sceneNumber == current.sceneNumber) currentScene = true;
 	}
 	
+	
+	NSString *string = rawString;
+	string = [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	
 	// Style the item
 	if (line.type == heading) {
 		//Replace "INT/EXT" with "I/E" to make the lines match nicely
-		NSString* string = [rawString uppercaseString];
 		string = [string stringByReplacingOccurrencesOfString:@"INT/EXT" withString:@"I/E"];
 		string = [string stringByReplacingOccurrencesOfString:@"INT./EXT" withString:@"I/E"];
 		string = [string stringByReplacingOccurrencesOfString:@"EXT/INT" withString:@"I/E"];
@@ -89,7 +92,8 @@
 		}
 		
 		// Put it together with the scene name
-		BXFont *font = [BXFont boldSystemFontOfSize:SCENE_FONTSIZE];
+		BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize weight:NSFontWeightRegular];
+		
 		NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 		
 		resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:fontAttributes];
@@ -97,7 +101,7 @@
 		
 		// Scene number will be displayed in a slightly darker shade
 		if (!omited) {
-			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.grayColor range:NSMakeRange(0,[sceneHeader length])];
+			[resultString addAttribute:NSForegroundColorAttributeName value:[BeatColors color:@"gray"] range:NSMakeRange(0,[sceneHeader length])];
 			[resultString addAttribute:NSForegroundColorAttributeName value:[BeatColors color:@"darkGray"] range:NSMakeRange(sceneHeader.length, resultString.length - sceneHeader.length)];
 		}
 		
@@ -108,7 +112,7 @@
 		
 		// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
 		if (currentScene) {
-			[resultString addAttribute:NSForegroundColorAttributeName value:[BXColor whiteColor] range:NSMakeRange(0, resultString.length)];
+			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.whiteColor range:NSMakeRange(0, resultString.length)];
 		}
 	    
 		// Lines without RTF formatting have uneven leading, so let's fix that.
@@ -116,67 +120,54 @@
 		//[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0, resultString.length)];
 	}
 	else if (line.type == synopse) {
-		NSString* string = rawString;
 		if (string.length > 0) {
-			//Remove "="
-			if ([string characterAtIndex:0] == '=') {
-				string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-			}
-			//Remove leading whitespace
-			while (string.length && [string characterAtIndex:0] == ' ') {
-				string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-			}
 			string = [NSString stringWithFormat:@"%@%@", padding, string];
-			//string = [@"  " stringByAppendingString:string];
 			
 			#if !TARGET_OS_IOS
-			BXFont *font = [BXFont systemFontOfSize:SYNOPSE_FONTSIZE];
+			BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize];
 			#else
 			BXFont *font = [BXFont italicSystemFontOfSize:SYNOPSE_FONTSIZE];
 			#endif
 
-			NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
-			resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:fontAttributes];
+			NSDictionary * fontAttributes = [NSDictionary.alloc initWithObjectsAndKeys:font, NSFontAttributeName, nil];
+			resultString = [NSMutableAttributedString.alloc initWithString:(string) ? string : @"" attributes:fontAttributes];
 			
-			// Italic + white color
+			// Italic + gray color
 			#if !TARGET_OS_IOS
 			[resultString applyFontTraits:NSItalicFontMask range:NSMakeRange(0, resultString.length)];
 			#endif
 			
-			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.darkGrayColor range:NSMakeRange(0, resultString.length)];
+			BXColor *color = [BeatColors color:@"lightGray"];
+			if (currentScene) color = BXColor.whiteColor;
 			
-			// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
-			if (currentScene) {
-				[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.whiteColor range:NSMakeRange(0, resultString.length)];
-			}
-
+			[resultString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, resultString.length)];
+			
 		} else {
 			resultString = [[NSMutableAttributedString alloc] initWithString:@""];
 		}
 	}
 	if (line.type == section) {
 		NSString* string = rawString;
-		if ([string length] > 0) {
-			
-			// Remove leading whitespace
-			while (string.length && [string characterAtIndex:0] == ' ') {
-				string = [string stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
-			}
-			
+		if (string.length > 0) {
+			// Add padding
 			string = [NSString stringWithFormat:@"%@%@", padding, string];
 			
-			BXFont *font = [BXFont boldSystemFontOfSize:SECTION_FONTSIZE];
+			BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize * 1.2 weight:NSFontWeightBold];
 			NSDictionary * fontAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:font, NSFontAttributeName, nil];
 
 			resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:fontAttributes];
 			
-			// Bold + highlight color
-			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.whiteColor range:NSMakeRange(0, resultString.length)];
-						
-			// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
-			if (currentScene) {
-				[resultString addAttribute:NSForegroundColorAttributeName value:[BXColor whiteColor] range:NSMakeRange(0, resultString.length)];
+			BXColor *color = BXColor.whiteColor;
+			if (line.color) {
+				if (!(color = [BeatColors color:line.color])) {
+					color = BXColor.whiteColor;
+				}
 			}
+			if (currentScene) color = BXColor.whiteColor;
+			
+			// Bold + highlight color
+			[resultString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, resultString.length)];
+						
 		} else {
 			resultString = [[NSMutableAttributedString alloc] initWithString:@""];
 		}

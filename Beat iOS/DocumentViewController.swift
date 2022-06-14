@@ -145,6 +145,7 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	func setupDocument () {
 		if (self.document == nil) { return; }
 		
+		document?.delegate = self
 		contentBuffer = document?.rawText ?? ""
 		
 		parser = ContinuousFountainParser(string: contentBuffer, delegate: self)

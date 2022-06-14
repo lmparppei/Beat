@@ -63,7 +63,6 @@
 static CGFloat panelWidth;
 
 + (BeatPrintDialog*)showForPDF:(id)delegate {
-	NSLog(@"pdf...");
 	BeatPrintDialog *dialog = [BeatPrintDialog.alloc initWithWindowNibName:self.className];
 	dialog.documentDelegate = delegate;
 	[dialog openForPDF:nil];

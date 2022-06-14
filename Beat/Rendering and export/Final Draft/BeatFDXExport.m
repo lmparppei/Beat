@@ -173,7 +173,6 @@ static NSDictionary *fdxIds;
 			if (item.type == RevisionNone) return;
 			
 			NSArray *lines = [self.parser linesInRange:range];
-			NSLog(@"%@: %@!", item.key, lines);
 			
 			for (Line *line in lines) {
 				if (!line.revisedRanges) line.revisedRanges = NSMutableDictionary.new;

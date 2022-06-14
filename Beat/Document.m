@@ -118,8 +118,10 @@
 #import "BeatUserDefaults.h"
 #import "BeatCharacterList.h"
 #import "BeatEditorFormatting.h"
+#import "BeatEditorFormattingActions.h"
 #import "BeatPrintDialog.h"
 #import "Beat-Swift.h"
+#import "BeatEditorButton.h"
 
 @interface Document ()
 
@@ -134,6 +136,7 @@
 @property (nonatomic) NSString *contentCache;
 @property (nonatomic) NSData *dataCache;
 @property (nonatomic) NSAttributedString *attributedContentCache;
+//@property (nonatomic) NSURL *mostRecentlySavedFileURL;
 
 // Plugin support
 @property (weak) BeatPluginManager *pluginManager;
@@ -179,7 +182,6 @@
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) bool typewriterMode;
 @property (nonatomic) bool hideFountainMarkup;
-@property (nonatomic) CGFloat textInsetY;
 @property (nonatomic) NSMutableArray *recentCharacters;
 @property (nonatomic) NSRange lastChangedRange;
 @property (nonatomic) bool disableFormatting;
@@ -221,6 +223,10 @@
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
 @property (weak) IBOutlet MasterView *masterView; // View which contains every other view
 
+@property (weak) IBOutlet NSTabViewItem *editorTab;
+@property (weak) IBOutlet NSTabViewItem *previewTab;
+@property (weak) IBOutlet NSTabViewItem *cardsTab;
+
 @property (nonatomic) BeatPrintDialog *printDialog;
 
 // Print preview
@@ -235,8 +241,7 @@
 @property (nonatomic) BeatStatisticsPanel *analysisWindow;
 
 // Card view
-@property (nonatomic) SceneCards *sceneCards;
-@property (weak) IBOutlet WKWebView *cardView;
+@property (nonatomic, weak) IBOutlet SceneCards *cardView;
 @property (nonatomic) bool cardsVisible;
 
 // Mode display
@@ -331,6 +336,7 @@
 @property (nonatomic) NSProgressIndicator *progressIndicator;
 
 @property (nonatomic) BeatEditorFormatting *formatting;
+@property (nonatomic, weak) IBOutlet BeatEditorFormattingActions *formattingActions;
 
 
 // Sidebar tabs
@@ -416,18 +422,21 @@
 }
 - (void)close {
 	if (!self.hasUnautosavedChanges) {
+		/*
 		if (self.sidebarVisible) {
 			// Don't save sidebar width
 			NSRect frame = self.documentWindow.frame;
 			frame.size.width -= self.splitHandle.bottomOrLeftView.frame.size.width;
 			[self.documentWindow setFrame:frame display:NO];
 		}
+		*/
 		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
 	
 	// Avoid retain cycles with WKWebView
 	[self deallocPreview];
-	[self deallocCards];
+	[self.cardView removeHandlers];
+	
 		
 	// Terminate running plugins
 	for (NSString *pluginName in _runningPlugins.allKeys) {
@@ -467,10 +476,9 @@
 	self.analysisWindow = nil;
 	self.currentScene = nil;
 	//self.currentLine = nil;
-	self.sceneCards = nil;
+	self.cardView = nil;
 	self.paginator = nil;
 	self.outlineView.filters = nil;
-	self.sceneCards = nil;
 	self.outline = nil;
 	self.outlineView.filteredOutline = nil;
 	self.tagging = nil;
@@ -503,9 +511,11 @@
 	}
 }
 
+static BeatAppDelegate *appDelegate;
+
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
 	[super windowControllerDidLoadNib:aController];
-	
+		
 	_documentWindow = aController.window;
 	_documentWindow.delegate = self;
 	
@@ -537,11 +547,11 @@
 	// Setup views
 	[self setupTextView];
 	[self setupOutlineView];
-	[self setupCards];
 	[self setupPreview];
 	[self setupTouchTimeline];
 	[self setupAnalysis];
 	[self setupColorPicker];
+	[self.cardView setup];
 	
 	// Setup layout here first, but don't paginate
 	[self setupLayoutWithPagination:NO];
@@ -568,6 +578,10 @@
 
 	self.textView.alphaValue = 0;
 	
+	[self parseAndRenderDocument];
+}
+
+-(void)parseAndRenderDocument {
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
 		// Initialize parser
 		self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
@@ -592,7 +606,6 @@
 			
 			// Apply document formatting
 			[self applyInitialFormatting];
-
 		});
 	});
 }
@@ -601,9 +614,7 @@
 	[_parser.changedIndices removeAllIndexes];
 	[self.formatting initialTextBackgroundRender];
 		
-	// No animations
 	[CATransaction begin];
-	//[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
 	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
 	[CATransaction commit];
 
@@ -638,6 +649,18 @@
 	bool saved = YES;
 	if (self.hasUnautosavedChanges) saved = NO;
 	
+	// Sidebar
+	if ([self.documentSettings getBool:DocSettingSidebarVisible]) {
+		self.sidebarVisible = YES;
+		[_splitHandle restoreBottomOrLeftView];
+		NSInteger sidebarWidth = [self.documentSettings getInt:DocSettingSidebarWidth];
+		_splitHandle.mainConstraint.constant = sidebarWidth;
+		
+		[_documentWindow layoutIfNeeded];
+		[self updateLayout];
+		
+	}
+	
 	// Setup page size
 	// (We'll disable undo registration here, so the doc won't appear as edited on open)
 	[self.undoManager disableUndoRegistration];
@@ -649,8 +672,14 @@
 	[self.undoManager enableUndoRegistration];
 	if (saved) [self updateChangeCount:NSChangeCleared];
 	
+	// Reveal text view
 	[self.textView.animator setAlphaValue:1.0];
+	
+	// Update quick settings 
 	[self updateQuickSettings];
+
+	// Hide Fountain markup if needed
+	if (self.hideFountainMarkup) [self.textView redrawAllGlyphs];
 }
 
 -(void)awakeFromNib {
@@ -669,14 +698,14 @@
 }
 
 - (void)readUserSettings {
-	BeatUserDefaults *defaults = BeatUserDefaults.sharedDefaults;
-	[defaults readUserDefaultsFor:self];
-	
+	[BeatUserDefaults.sharedDefaults readUserDefaultsFor:self];
+		
 	// Do some additional setup if needed
 	self.printSceneNumbers = self.showSceneNumberLabels;
 	
 	return;
 }
+
 - (void)applyUserSettings {
 	// Apply settings from user preferences panel, some things have to be applied in every document
 	
@@ -813,14 +842,17 @@
 	return [self.tabView indexOfTabViewItem:self.tabView.selectedTabViewItem];
 }
 
-- (void)setTab:(NSUInteger)index
-{
-	if (index == 0) {
-		//_documentWindow.titlebarAppearsTransparent = YES;
-	} else {
-		//_documentWindow.titlebarAppearsTransparent = NO;
-	}
-	[self.tabView selectTabViewItem:[self.tabView tabViewItemAtIndex:index]];
+- (bool)editorTabVisible {
+	if (self.currentTab == _editorTab) return YES;
+	else return NO;
+}
+
+- (void)showTab:(NSTabViewItem*)tab {
+	[self.tabView selectTabViewItem:tab];
+}
+
+- (NSTabViewItem*)currentTab {
+	return self.tabView.selectedTabViewItem;
 }
 
 - (bool)isFullscreen
@@ -831,10 +863,6 @@
 - (void)windowDidResize:(NSNotification *)notification
 {
 	CGFloat width = _documentWindow.frame.size.width;
-	if (self.sidebarVisible) {
-		// Don't calculate sidebar width to saved document width
-		width -= self.splitHandle.bottomOrLeftView.frame.size.width;
-	}
 	
 	[_documentSettings setFloat:DocSettingWindowWidth as:width];
 	[_documentSettings setFloat:DocSettingWindowHeight as:_documentWindow.frame.size.height];
@@ -849,13 +877,6 @@
 	// Set global variable for top inset, if it's unset
 	// For typewriter mode, we set the top & bottom bounds a bit differently
 	// (this math must be wrong, now that I'm lookign at it, but won't fix it yet)
-	if (self.typewriterMode) {
-		_textInsetY = (self.textClipView.frame.size.height / 2 - self.fontSize / 2) * (1 + (1 - _magnification));
-		self.textView.textInsetY = _textInsetY;
-	} else {
-		_textInsetY = TEXT_INSET_TOP;
-		self.textView.textInsetY = TEXT_INSET_TOP;
-	}
 	
 	if (width < 100000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
 		_inset = [_textView setInsets];
@@ -1023,19 +1044,19 @@
 #pragma mark - Zooming & layout
 
 - (IBAction)zoomIn:(id)sender {
-	if ([self selectedTab] == 0) [self zoom:YES];
+	if (self.currentTab == _editorTab) [self zoom:YES];
 	
 	// Web preview zoom
 	if (@available(macOS 11.0, *)) {
-		if ([self selectedTab] == 1) self.printWebView.pageZoom += .1;
+		if (self.currentTab == _previewTab) self.printWebView.pageZoom += .1;
 	}
 }
 - (IBAction)zoomOut:(id)sender {
-	if ([self selectedTab] == 0) [self zoom:NO];
+	if (self.currentTab == _editorTab) [self zoom:NO];
 	
 	// Web preview zoom
 	if (@available(macOS 11.0, *)) {
-		if ([self selectedTab] == 1) self.printWebView.pageZoom -= .1;
+		if (self.currentTab == _previewTab) self.printWebView.pageZoom -= .1;
 	}
 }
 - (IBAction)resetZoom:(id)sender {
@@ -1198,6 +1219,9 @@
 		// If there is data in the cache, return it
 		if (_dataCache != nil) return _dataCache;
 		else dataRepresentation = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
+		
+		// Everything is terrible, crash and don't overwrite anything.
+		if (dataRepresentation == nil) @throw NSInternalInconsistencyException;
 	} @finally {
 		// If saving was successful, let's store the data into cache
 		if (success) _dataCache = dataRepresentation.copy;
@@ -1232,6 +1256,8 @@
 	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
 	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisionTracking changedLinesForSaving:self.lines]];
 	
+	// [_documentSettings set:@"Running Plugins" as:self.runningPlugins.allKeys];
+	
 	// Save reviewed ranges
 	NSArray *reviews = [_review rangesForSavingWithString:_attrTextCache];
 	[_documentSettings set:DocSettingReviews as:reviews];
@@ -1245,7 +1271,9 @@
 	[self unblockUserInteraction];
 	
 	NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
-	return [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
+	NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
+	
+	return result;
 }
 
 
@@ -1264,7 +1292,7 @@
 	NSString *text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"];
 	NSRange settingsRange = [_documentSettings readSettingsAndReturnRange:text];
 	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
-    
+    	
 	if (!reverting)	[self setText:text];
 	else _contentBuffer = text; // When reverting, we only set the content buffer
 	
@@ -1288,39 +1316,20 @@
 # pragma mark - Text I/O
 
 - (void)setupTextView {
-	self.textView.editable = YES;
+	// Set up the responder chain
+	id originalResponder = self.textView.nextResponder;
+	self.textView.nextResponder = _formattingActions;
+	self.formattingActions.nextResponder = originalResponder;
 	
-	self.textView.textContainer.widthTracksTextView = NO;
-	self.textView.textContainer.heightTracksTextView = NO;
-	
-	// Set textView style
-	self.textView.font = self.courier;
-	self.textView.automaticDataDetectionEnabled = NO;
-	self.textView.automaticQuoteSubstitutionEnabled = NO;
-	self.textView.automaticDashSubstitutionEnabled = NO;
-	
-	// Set layout style
-	if (self.hideFountainMarkup) self.textView.layoutManager.allowsNonContiguousLayout = NO;
-	else self.textView.layoutManager.allowsNonContiguousLayout = YES;
-
-	// Create a default paragraph style for line height
-	NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[self.textView setDefaultParagraphStyle:paragraphStyle];
-	
-	self.textInsetY = TEXT_INSET_TOP;
-	self.textView.textInsetY = TEXT_INSET_TOP;
+	// Set insets on load
+	[self.textView setup];
 	[self.textView setInsets];
-	
-	self.textView.editorDelegate = self;
-	self.textView.taggingDelegate = self;
 	
 	// Make the text view first responder
 	[_documentWindow makeFirstResponder:self.textView];
 }
 
-- (NSString *)text
-{
+- (NSString *)text {
     return self.textView.string;
 }
 - (NSAttributedString *)getAttributedText
@@ -1347,6 +1356,7 @@
 		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
 	}
 }
+
 
 #pragma mark - Reverting to versions
 
@@ -1376,12 +1386,17 @@
 	
 	NSData *data = [NSData dataWithContentsOfURL:url];
 	_revertedTo = url;
-	[self readFromData:data ofType:typeName error:nil reverting:YES];
-	[self.textView setString:_contentBuffer];
-	[self.parser parseText:_contentBuffer];
-	[self formatAllLines];
-	[self updateLayout];
+	_documentIsLoading = YES;
 	
+	[self readFromData:data ofType:typeName error:nil reverting:YES];
+	
+	[self.textView deleteSceneNumberLabels];
+	[self.textView deletePageNumbers];
+	
+	self.textView.alphaValue = 0.0;
+	[self setText:_contentBuffer];
+	[self parseAndRenderDocument];
+	 
 	[self updateChangeCount:NSChangeCleared];
 	[self updateChangeCount:NSChangeDone];
 	[self.undoManager removeAllActions];
@@ -1425,7 +1440,7 @@
     [saveDialog setNameFieldStringValue:[self fileNameString]];
 
 	[saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
-        if (result == NSFileHandlingPanelOKButton) {
+		if (result == NSModalResponseOK) {
 			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.text attributedString:self.textView.attributedString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
             [fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
@@ -1438,7 +1453,7 @@
     [saveDialog setAllowedFileTypes:@[@"fountain"]];
     [saveDialog setNameFieldStringValue:[[self fileNameString] stringByAppendingString:@" Outline"]];
     [saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
-        if (result == NSFileHandlingPanelOKButton) {
+		if (result == NSModalResponseOK) {
             NSString* outlineString = [OutlineExtractor outlineFromParse:self.parser];
             [outlineString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
         }
@@ -1544,14 +1559,14 @@
 - (IBAction)undoEdit:(id)sender {
 	
 	[self.undoManager undo];
-	if (_cardsVisible) [self refreshCards:YES];
+	if (_cardsVisible) [self.cardView refreshCards:YES];
 	
 	// To avoid some graphical glitches
 	[self ensureLayout];
 }
 - (IBAction)redoEdit:(id)sender {
 	[self.undoManager redo];
-	if (_cardsVisible) [self refreshCards:YES];
+	if (_cardsVisible) [self.cardView refreshCards:YES];
 	
 	// To avoid some graphical glitches
 	[self ensureLayout];
@@ -1655,7 +1670,7 @@
 	
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-
+	
 	// Get current line after parsing
 	_currentLine = [self getCurrentLine];
 		
@@ -1868,6 +1883,8 @@
 
 - (void)textDidChange:(NSNotification *)notification
 {
+	[BeatMeasure start:@"Text update phase"];
+	
 	// Begin from top if no last changed range was set
 	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
 	
@@ -1881,6 +1898,7 @@
 	if (_revisionMode) [self registerChangesInRange:_lastChangedRange];
 	
 	// Update formatting
+	[BeatMeasure start:@"Formatting phase"];
 	[self applyFormatChanges];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
@@ -1987,7 +2005,7 @@
 		
 		if (self.sidebarVisible) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
-				[self reloadOutline];
+				// [self reloadOutline];
 				if (currentScene) [self.outlineView scrollToScene:currentScene];
 			});
 		}
@@ -2903,395 +2921,11 @@ static NSString *strikeoutSymbolClose = @"}}";
 static NSString *tagAttribute = @"BeatTag";
 static NSString *revisionAttribute = @"Revision";
 
-- (NSString*)titlePage
-{
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd.MM.yyyy"];
-    return [NSString stringWithFormat:@"Title: \nCredit: \nAuthor: \nDraft date: %@\nContact: \n\n", [dateFormatter stringFromDate:[NSDate date]]];
+- (void)forceElement:(LineType)lineType {
+	[self.formattingActions forceElement:lineType];
 }
 
-
-- (IBAction)addTitlePage:(id)sender
-{
-    if ([self selectedTab] == 0) {
-        if (self.text.length < 6) {
-            [self addString:[self titlePage] atIndex:0];
-            self.textView.selectedRange = NSMakeRange(7, 0);
-        } else if (![[self.text substringWithRange:NSMakeRange(0, 6)] isEqualToString:@"Title:"]) {
-            [self addString:[self titlePage] atIndex:0];
-        }
-    }
-}
-
-- (IBAction)dualDialogue:(id)sender {
-	Line *currentLine = self.currentLine;
-	
-	// Current line is character
-	if (currentLine.type == character) {
-		// We won't allow making a first dialogue block dual, let's see if there is another block of dialogue
-		NSInteger index = [_parser.lines indexOfObject:currentLine] - 1;
-		bool previousDialogueFound = NO;
-		
-		while (index >= 0) {
-			Line* previousLine = [_parser.lines objectAtIndex:index];
-			if (previousLine.type == character) { previousDialogueFound = YES; break; }
-			if ((previousLine.type == action && previousLine.string.length > 0) || previousLine.type == heading) break;
-			index--;
-		}
-		
-		if (previousDialogueFound) [self addString:forceDualDialogueSymbol atIndex:currentLine.position + currentLine.string.length];
-	
-	// if it's already a dual dialogue cue, remove the symbol
-	} else if (currentLine.type == dualDialogueCharacter) {
-		NSRange range = [currentLine.string rangeOfString:forceDualDialogueSymbol];
-		// Remove symbol
-		[self removeString:forceDualDialogueSymbol atIndex:currentLine.position + range.location];
-		
-	// Dialogue block. Find the character cue and add/remove dual dialogue symbol
-	} else if (currentLine.type == dialogue ||
-			   currentLine.type == dualDialogue ||
-			   currentLine.type == parenthetical ||
-			   currentLine.type == dualDialogueParenthetical) {
-		NSInteger index = [_parser.lines indexOfObject:currentLine] - 1;
-		while (index >= 0) {
-			Line* previousLine = [_parser.lines objectAtIndex:index];
-
-			if (previousLine.type == character) {
-				// Add
-				[self addString:forceDualDialogueSymbol atIndex:previousLine.position + previousLine.string.length];
-				break;
-			}
-			if (previousLine.type == dualDialogueCharacter) {
-				// Remove
-				NSRange range = [previousLine.string rangeOfString:forceDualDialogueSymbol];
-				[self removeString:forceDualDialogueSymbol atIndex:previousLine.position + range.location];
-				break;
-			}
-			index--;
-		}
-	}
-}
-
-- (IBAction)addPageBreak:(id)sender
-{
-    if ([self selectedTab] == 0) {
-		NSRange cursorLocation = self.selectedRange;
-        if (cursorLocation.location != NSNotFound) {
-            //Step forward to end of line
-            NSUInteger location = cursorLocation.location + cursorLocation.length;
-            NSUInteger length = self.text.length;
-            while (true) {
-                if (location == length) {
-                    break;
-                }
-                NSString *nextChar = [self.text substringWithRange:NSMakeRange(location, 1)];
-                if ([nextChar isEqualToString:@"\n"]) {
-                    break;
-                }
-                
-                location++;
-            }
-            self.textView.selectedRange = NSMakeRange(location, 0);
-            [self addString:lineBreak atIndex:location];
-        }
-    }
-}
-
-- (IBAction)makeBold:(id)sender
-{
-	// Only allow this for editor view
-    if ([self selectedTab] == 0) {
-		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-        [self format:range beginningSymbol:boldSymbol endSymbol:boldSymbol style:Bold];
-    }
-}
-
-- (IBAction)makeItalic:(id)sender
-{
-    //Check if the currently selected tab is the one for editing
-    if ([self selectedTab] == 0) {
-        //Retreiving the cursor location
-		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-		[self format:range beginningSymbol:italicSymbol endSymbol:italicSymbol style:Italic];
-    }
-}
-
-- (IBAction)makeUnderlined:(id)sender
-{
-    //Check if the currently selected tab is the one for editing
-    if ([self selectedTab] == 0) {
-        //Retreiving the cursor location
-		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-		[self format:range beginningSymbol:underlinedSymbol endSymbol:underlinedSymbol style:Underline];
-    }
-}
-
-
-- (IBAction)makeNote:(id)sender
-{
-    //Check if the currently selected tab is the one for editing
-    if ([self selectedTab] == 0) {
-        //Retreiving the cursor location
-		NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-		[self format:range beginningSymbol:noteOpen endSymbol:noteClose style:Note];
-    }
-}
-
-- (IBAction)makeOmitted:(id)sender
-{
-    //Check if the currently selected tab is the one for editing
-    if ([self selectedTab] == 0) {
-        //Retreiving the cursor location
-		NSRange cursorLocation = self.selectedRange;
-		[self format:cursorLocation beginningSymbol:omitOpen endSymbol:omitClose style:Block];
-    }
-}
-- (IBAction)omitScene:(id)sender {
-	OutlineScene *scene = [self.parser sceneAtPosition:self.selectedRange.location];
-	if (scene.omitted) return;
-	
-	[self addString:@"/*\n" atIndex:scene.position];
-	[self addString:@"*/\n\n" atIndex:scene.position + scene.range.length];
-}
-
-- (IBAction)forceSceneNumberForScene:(id)sender {
-	BeatModalInput *input = [[BeatModalInput alloc] init];
-	[input inputBoxWithMessage:@"Set Number For Scene"  text:@"Custom scene number (can include letters, or press space for a scene with no scene number)" placeholder:@"123A" forWindow:_documentWindow completion:^(NSString * _Nonnull result) {
-		if (result.length > 0) {
-			OutlineScene *scene = self.currentScene;
-			
-			if (scene) {
-				if (scene.line.sceneNumberRange.length) {
-					// Remove existing scene number
-					[self replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:result];
-				} else {
-					// Add empty scene number
-					[self addString:[NSString stringWithFormat:@" #%@#", result] atIndex:scene.line.position + scene.line.string.length];
-				}
-			}
-		}
-	}];
-}
-
-- (IBAction)makeSceneNonNumbered:(id)sender {
-	OutlineScene *scene = self.currentScene;
-	if (!scene) return;
-	
-	if (scene.line.sceneNumberRange.length) {
-		// Remove existing scene number
-		[self replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:@" "];
-	} else {
-		// Add empty scene number
-		[self addString:@" # #" atIndex:scene.line.position + scene.line.string.length];
-	}
-}
-
-- (bool)rangeHasFormatting:(NSRange)range open:(NSString*)open end:(NSString*)end {
-	if (range.location < 0 || range.location == NSNotFound) return NO;
-	
-	// Check that the range actually intersects with text
-	if (NSIntersectionRange(range, (NSRange){ 0, self.text.length }).length == range.length) {
-		// Grab formatting symbols in given range
-		NSString *leftSide = [self.text substringWithRange:(NSRange){ range.location, open.length }];
-		NSString *rightSide = [self.text substringWithRange:(NSRange){ range.location + range.length - end.length, end.length }];
-		
-		if ([leftSide isEqualToString:open] && [rightSide isEqualToString:end]) return YES;
-		else return NO;
-	
-	} else {
-		return NO;
-	}
-}
-
-- (void)format:(NSRange)cursorLocation beginningSymbol:(NSString*)beginningSymbol endSymbol:(NSString*)endSymbol style:(BeatFormatting)style
-{
-    // Don't go out of range
-	if (cursorLocation.location  + cursorLocation.length > self.text.length) return;
-	
-	// Check if the selected text is already formated in the specified way
-	NSString *selectedString = [self.textView.string substringWithRange:cursorLocation];
-	NSInteger selectedLength = selectedString.length;
-	NSInteger symbolLength = beginningSymbol.length + endSymbol.length;
-	
-	NSInteger addedCharactersBeforeRange;
-	NSInteger addedCharactersInRange;
-	
-	// See if the selected range already has formatting INSIDE the selected area
-	bool alreadyFormatted = NO;
-	if (selectedLength >= symbolLength) {
-		alreadyFormatted = [self rangeHasFormatting:cursorLocation open:beginningSymbol end:endSymbol];
-		
-		if (style == Italic) {
-			// Bold and Italic have similar stylization, so weed to do an additional check
-			if ([self rangeHasFormatting:cursorLocation open:boldSymbol end:boldSymbol]) alreadyFormatted = NO;
-		}
-	}
-	
-	if (alreadyFormatted) {
-		NSString *replacementString = [selectedString substringWithRange:NSMakeRange(beginningSymbol.length, selectedLength - beginningSymbol.length - endSymbol.length)];
-		
-		//The Text is formatted, remove the formatting
-		[self replaceRange:cursorLocation withString:replacementString];
-
-		addedCharactersBeforeRange = 0;
-		addedCharactersInRange = -(beginningSymbol.length + endSymbol.length);
-		
-	} else {
-		//The Text isn't formatted, but let's alter the cursor range and check again because there might be formatting right outside the selected area
-		alreadyFormatted = NO;
-		
-		NSRange safeRange = (NSRange) { cursorLocation.location - beginningSymbol.length, cursorLocation.length + beginningSymbol.length + endSymbol.length };
-		
-		if (NSIntersectionRange(safeRange, (NSRange){ 0, self.text.length }).length == safeRange.length) {
-			alreadyFormatted = [self rangeHasFormatting:safeRange open:beginningSymbol end:endSymbol];
-			
-			if (style == Italic) {
-				// Additional check for italic
-				if ([self rangeHasFormatting:safeRange open:boldSymbol end:boldSymbol]) alreadyFormatted = NO;
-				// One more additional check for BOLD-ITALIC lol
-				if ([self rangeHasFormatting:(NSRange){ safeRange.location - 1, safeRange.length + 2 } open:italicSymbol end:italicSymbol]) alreadyFormatted = YES;
-			}
-		}
-		
-		if (alreadyFormatted) {
-			//NSString *replacementString = [selectedString substringWithRange:NSMakeRange(beginningSymbol.length, selectedLength - beginningSymbol.length - endSymbol.length)];
-			
-			[self replaceRange:safeRange withString:selectedString];
-			addedCharactersBeforeRange = - beginningSymbol.length;
-			addedCharactersInRange = 0;
-		} else {
-			//The text really isn't formatted. Just add the formatting using the original data.
-			[self addString:endSymbol atIndex:cursorLocation.location + cursorLocation.length];
-			[self addString:beginningSymbol atIndex:cursorLocation.location];
-			
-			addedCharactersBeforeRange = beginningSymbol.length;
-			addedCharactersInRange = 0;
-		}
-	}
-	
-	// Return range to how it was
-	self.textView.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
-}
-
-- (void) forceElement:(NSString*)element {
-	if ([element isEqualToString:@"Action"]) [self forceAction:self];
-	else if ([element isEqualToString:@"Scene Heading"]) [self forceHeading:self];
-	else if ([element isEqualToString:@"Character"]) [self forceCharacter:self];
-	else if ([element isEqualToString:@"Lyrics"]) [self forceLyrics:self];
-	else if ([element isEqualToString:@"Transition"]) [self forceTransition:self];
-}
-
-- (IBAction)forceHeading:(id)sender
-{
-	NSRange cursorLocation = self.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceHeadingSymbol];
-}
-
-- (IBAction)forceAction:(id)sender
-{
-	NSRange cursorLocation = self.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceActionSymbol];
-}
-
-- (IBAction)forceCharacter:(id)sender
-{
-	NSRange cursorLocation = self.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceCharacterSymbol];
-}
-
-- (IBAction)forceTransition:(id)sender
-{
-	NSRange cursorLocation = self.selectedRange;
-	[self forceLineType:cursorLocation symbol:forcetransitionLineSymbol];
-}
-
-- (IBAction)forceLyrics:(id)sender
-{
-	NSRange cursorLocation = self.selectedRange;
-	[self forceLineType:cursorLocation symbol:forceLyricsSymbol];
-}
-
-- (void)forceLineType:(NSRange)cursorLocation symbol:(NSString*)symbol
-{
-	// Only allow this for editor view
-	if ([self selectedTab] != 0) return;
-	
-    //Find the index of the first symbol of the line
-    NSUInteger indexOfLineBeginning = cursorLocation.location;
-    while (true) {
-        if (indexOfLineBeginning == 0) {
-            break;
-        }
-        NSString *characterBefore = [self.text substringWithRange:NSMakeRange(indexOfLineBeginning - 1, 1)];
-        if ([characterBefore isEqualToString:@"\n"]) {
-            break;
-        }
-        
-        indexOfLineBeginning--;
-    }
-	
-    NSRange firstCharacterRange;
-	
-    // If the cursor resides in an empty line
-    // (because the beginning of the line is the end of the document or is indicated by the next character being a newline)
-    // The range for the first charater in line needs to be an empty string
-	
-    if (indexOfLineBeginning == self.text.length) {
-        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
-    } else if ([[self.text substringWithRange:NSMakeRange(indexOfLineBeginning, 1)] isEqualToString:@"\n"]){
-        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 0);
-    } else {
-        firstCharacterRange = NSMakeRange(indexOfLineBeginning, 1);
-    }
-    NSString *firstCharacter = [self.text substringWithRange:firstCharacterRange];
-    
-    // If the line is already forced to the desired type, remove the force
-    if ([firstCharacter isEqualToString:symbol]) {
-		[self replaceString:firstCharacter withString:@"" atIndex:firstCharacterRange.location];
-    } else {
-        // If the line is not forced to the desired type, check if it is forced to be something else
-        BOOL otherForce = NO;
-        
-        NSArray *allForceSymbols = @[forceActionSymbol, forceCharacterSymbol, forceHeadingSymbol, forceLyricsSymbol, forcetransitionLineSymbol];
-        
-        for (NSString *otherSymbol in allForceSymbols) {
-            if (otherSymbol != symbol && [firstCharacter isEqualToString:otherSymbol]) {
-                otherForce = YES;
-                break;
-            }
-        }
-        
-        //If the line is forced to be something else, replace that force with the new force
-        //If not, insert the new character before the first one
-        if (otherForce) {
-            [self replaceString:firstCharacter withString:symbol atIndex:firstCharacterRange.location];
-        } else {
-			[self addString:symbol atIndex:firstCharacterRange.location];
-        }
-    }
-}
-
-- (IBAction)addHighlight:(id)sender {
-	// Only allow this for editor view
-	if ([self selectedTab] != 0) return;
-	NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-	[self format:range beginningSymbol:highlightSymbolOpen endSymbol:highlightSymbolClose style:Block];
-}
-- (IBAction)addStrikeout:(id)sender {
-	// Only allow this for editor view
-	if ([self selectedTab] != 0) return;
-	NSRange range = [self rangeUntilLineBreak:self.selectedRange];
-	[self format:range beginningSymbol:strikeoutSymbolOpen endSymbol:strikeoutSymbolClose style:Block];
-}
-- (NSRange)rangeUntilLineBreak:(NSRange)range {
-	NSString *text = [self.text substringWithRange:range];
-	if ([text rangeOfString:@"\n"].location != NSNotFound) {
-		NSInteger lineBreakIndex = [text rangeOfString:@"\n"].location;
-		return (NSRange){ range.location, lineBreakIndex };
-	} else {
-		return range;
-	}
-}
+- (CGFloat)lineHeight { return LINE_HEIGHT; }
 
 #pragma mark - Revision Tracking
 
@@ -3485,7 +3119,7 @@ static NSString *revisionAttribute = @"Revision";
 		[ValidationItem withAction:@selector(togglePageNumbers:) setting:@"showPageNumbers" target:self],
 		[ValidationItem withAction:@selector(toggleTypewriterMode:) setting:@"typewriterMode" target:self],
 		[ValidationItem withAction:@selector(togglePrintSceneNumbers:) setting:@"printSceneNumbers" target:self],
-		[ValidationItem withAction:@selector(toggleSidebar:) setting:@"sidebarVisible" target:self],
+		[ValidationItem withAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
 		[ValidationItem withAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
 		[ValidationItem withAction:@selector(toggleAutosave:) setting:@"autosave" target:self],
 		[ValidationItem withAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
@@ -3498,9 +3132,9 @@ static NSString *revisionAttribute = @"Revision";
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	// Special conditions for other than normal edit view
-	if ([self selectedTab] != 0) {
+	if (self.currentTab != _editorTab) {
 		// If PRINT PREVIEW is enabled
-		if ([self selectedTab] == 1) {
+		if (self.currentTab == _previewTab) {
 			
 			if (menuItem.action == @selector(preview:)) {
 				[menuItem setState:NSOnState];
@@ -3511,7 +3145,7 @@ static NSString *revisionAttribute = @"Revision";
 		}
 
 		// If CARD VIEW is enabled
-		if ([self selectedTab] == 2) {
+		if (_currentTab == _cardsTab) {
 			//
 			if (menuItem.action == @selector(toggleCards:)) {
 				menuItem.state = NSOnState;
@@ -3547,6 +3181,9 @@ static NSString *revisionAttribute = @"Revision";
 	bool uneditable = NO;
 	if (_mode == TaggingMode || _mode == ReviewMode) uneditable = YES;
 	
+	if ([_formattingActions respondsToSelector:menuItem.action]) {
+		NSLog(@"OK %@", menuItem.title);
+	}
 	
 	// Validate ALL on/of items
 	// This is a specific class which matches given methods against a property in this class, ie. toggleSomething -> .something
@@ -3560,9 +3197,12 @@ static NSString *revisionAttribute = @"Revision";
 	
 	// Settings for EDIT MODE
 	if (_mode != EditMode) {
+		/*
+		 // Move these to revision class
 		if (menuItem.action == @selector(markRangeForRemoval:) ||
 			menuItem.action == @selector(markRangeAsAddition:) ||
 			menuItem.action == @selector(clearMarkings:)) return NO;
+		 */
 	}
 	
 	if (menuItem.action == @selector(toggleTagging:)) {
@@ -3578,14 +3218,7 @@ static NSString *revisionAttribute = @"Revision";
 		if (self.selectedRange.length == 0) return NO;
 		else return YES;
 	}
-	
-	else if (menuItem.action == @selector(omitScene:)) {
-		if (self.currentScene) {
-			if (self.currentScene.omitted) return NO;
-			else return YES;
-		}
-	}
-	
+		
 	else if (menuItem.action == @selector(toggleAutosave:)) {
 		if (_autosave) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
@@ -3637,13 +3270,6 @@ static NSString *revisionAttribute = @"Revision";
         NSString* visibleCharacters = [words componentsJoinedByString:@""];
         if (visibleCharacters.length == 0) return NO;
 	}
-	
-	else if (menuItem.action == @selector(dualDialogue:)) {
-		// Allow dual dialogue only when inside a dialogue block
-		Line *currentLine = self.currentLine;
-		if (currentLine.isDialogueElement || currentLine.isDualDialogueElement) return YES;
-		else return NO;
-    }
 	
 	else if (menuItem.action == @selector(toggleCards:)) {
 		menuItem.state = NSOffState;
@@ -3718,8 +3344,8 @@ static NSString *revisionAttribute = @"Revision";
 
 - (void)didChangeAppearance {
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-			[self updateUIColors];
-			[self.textView refreshLayoutElements];
+		[self updateUIColors];
+		[self.textView refreshLayoutElements];
 	});
 }
 - (bool)isDark {
@@ -3728,12 +3354,11 @@ static NSString *revisionAttribute = @"Revision";
 
 - (void)updateUIColors {
 	if (_documentWindow.frame.size.height == 0 || _documentWindow.frame.size.width == 0) return;
-		
 	if (@available(macOS 10.14, *)) {
 		// Force the whole window into dark mode if possible.
 		// This redraws everything by default.
 		if ([self isDark]) self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-		else self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+		else self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];		
 	} else {
 		// Else, we need to force everything to redraw, in a very clunky way
 		[self.documentWindow setViewsNeedDisplay:true];
@@ -3742,6 +3367,8 @@ static NSString *revisionAttribute = @"Revision";
 		[self.backgroundView setNeedsDisplay:true];
 		[self.textScrollView setNeedsDisplay:true];
 		[self.marginView setNeedsDisplay:true];
+		
+		[self.textScrollView layoutButtons];
 		
 		[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 		
@@ -3833,6 +3460,14 @@ static NSString *revisionAttribute = @"Revision";
 	[self updateLayout];
 }
 
+#pragma mark - Return to editor from any subview
+
+- (void)returnToEditor {
+	[self showTab:_editorTab];
+	[self updateLayout];
+	[self ensureCaret];
+}
+
 #pragma mark - Preview
 
 - (void)setupPreview {
@@ -3853,7 +3488,7 @@ static NSString *revisionAttribute = @"Revision";
 	_previewUpdated = NO;
 	
 	// If preview is visible, recreate it
-	if (self.selectedTab == 1) {
+	if (self.currentTab == _previewTab) {
 		[self updatePreviewAndUI:YES];
 	}
 }
@@ -3869,7 +3504,8 @@ static NSString *revisionAttribute = @"Revision";
 	 This is a *VERY* hacky and convoluted system right now.
 	 
 	 */
-    if (self.selectedTab != 1) {
+	
+    if (self.currentTab != _previewTab) {
 		// Do a synchronous refresh of the preview if the preview is not available
 		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
 		else {
@@ -3888,13 +3524,11 @@ static NSString *revisionAttribute = @"Revision";
 			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", self.currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
 		}
 	
-        [self setTab:1];
+		[self showTab:_previewTab];
 		_printPreview = YES;
     } else {
-		[self setTab:0];
-		[self updateLayout];
-		[self ensureCaret];
 		_printPreview = NO;
+		[self returnToEditor];
     }
 }
 
@@ -3947,6 +3581,7 @@ static NSString *revisionAttribute = @"Revision";
 }
 
 - (void)deallocPreview {
+	// WIP: Move this into preview class
 	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
 	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
 	self.printWebView.navigationDelegate = nil;
@@ -3975,10 +3610,17 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma  mark - Sidebar methods
 
+- (CGFloat)sidebarWidth {
+	return self.splitHandle.bottomOrLeftView.frame.size.width;
+}
+
 - (IBAction)toggleSidebarView:(id)sender
 {
 	self.sidebarVisible = !self.sidebarVisible;
 	
+	// Save sidebar state to settings
+	[self.documentSettings setBool:DocSettingSidebarVisible as:self.sidebarVisible];
+		
 	if (_sidebarVisible) {
 		[_outlineButton setState:NSOnState];
 		
@@ -4004,9 +3646,7 @@ static NSString *revisionAttribute = @"Revision";
 				newX = newX - (newX + newWidth - screenWidth);
 			}
 			
-			if (newX < 0) {
-				newX = 0;
-			}
+			if (newX < 0) newX = 0;
 			
 			NSRect newFrame = NSMakeRect(newX,
 										 _documentWindow.frame.origin.y,
@@ -4431,89 +4071,34 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Card view
 
-// I'm sorry, but this whole thing should be rewritten.
-// I agree, a year later.
-
-- (IBAction) toggleCards: (id)sender {
-	if ([self selectedTab] != 2) {
+- (IBAction)toggleCards: (id)sender {
+	if (self.currentTab != _cardsTab) {
 		_cardsVisible = YES;
 		
-		[self refreshCards];
-		[self setTab:2];
+		[self.cardView refreshCards];
+		[self showTab:_cardsTab];
 	} else {
 		_cardsVisible = NO;
 		
-		// Reload outline + timeline in case there were any changes in outline
-		if (_sidebarVisible) [self reloadOutline];
-		if (_timeline.visible) [self.timeline reload];
-		if (self.timelineBar.visible) [self reloadTouchTimeline];
-		
-		[self setTab:0];
-		[self updateLayout];
-		[self ensureCaret];
+		// Reload outline + timeline (in case there were any changes in outline while in card view)
+		[self refreshAllOutlineViews];
+		[self returnToEditor];
 	}
 }
 
-- (void) setupCards {
-	// Set up index card view
-	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"cardClick"];
-	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"setColor"];
-	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"move"];
-	[_cardView.configuration.userContentController addScriptMessageHandler:self name:@"printCards"];
-	
-	_cardView.configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
-	
-	_sceneCards = [[SceneCards alloc] initWithWebView:_cardView];
-	_sceneCards.delegate = self;
-}
-- (void)deallocCards {
-	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"cardClick"];
-	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"setColor"];
-	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"move"];
-	[_cardView.configuration.userContentController removeScriptMessageHandlerForName:@"printCards"];
-	self.cardView.navigationDelegate = nil;
-	self.cardView = nil;
-}
+#pragma mark - Refresh any outline views
 
-- (OutlineScene *)findSceneByLine: (Line *) line {
-	// This might be pretty shitty solution for my problem but whatever
-	for (OutlineScene * scene in self.parser.outline) {
-		if (line == scene.line) return scene;
-	}
-	return nil;
-}
-
-- (void)refreshCards {
-	// Refresh cards assuming the view isn't visible
-	[self refreshCards:NO changed:-1];
-}
-
-- (void)refreshCards:(BOOL)alreadyVisible {
-	// Just refresh cards, no change in index
-	[self refreshCards:alreadyVisible changed:-1];
-}
-
-- (void)printCards {
-	[_sceneCards printCardsWithInfo:self.printInfo.copy];
-}
-- (void) refreshCards:(BOOL)alreadyVisible changed:(NSInteger)changedIndex {
-	[_sceneCards reloadCardsWithVisibility:alreadyVisible changed:changedIndex];
+- (void)refreshAllOutlineViews {
+	if (_sidebarVisible) [self reloadOutline];
+	if (_timeline.visible) [self.timeline reload];
+	if (self.timelineBar.visible) [self reloadTouchTimeline];
+	if (_cardsVisible) [self.cardView refreshCards];
 }
 
 
 #pragma mark - JavaScript message listeners
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
-	if ([message.body isEqual: @"exit"]) {
-		[self toggleCards:nil];
-		return;
-	}
-	
-	if ([message.name isEqualToString:@"closePrintPreview"]) {
-		[self preview:nil];
-		return;
-	}
-	
 	if ([message.name isEqualToString:@"selectSceneFromScript"]) {
 		NSInteger sceneIndex = [message.body integerValue];
 				
@@ -4536,50 +4121,6 @@ static NSString *revisionAttribute = @"Revision";
 		[self scrollToScene:scene];
 		
 		return;
-	}
-	
-	if ([message.name isEqualToString:@"printCards"]) {
-		[self printCards];
-	}
-	
-	// Move scene via card view
-	// Why is this here, oh my.
-	if ([message.name isEqualToString:@"move"]) {
-		if ([message.body rangeOfString:@","].location != NSNotFound) {
-			NSArray *fromTo = [message.body componentsSeparatedByString:@","];
-			if ([fromTo count] < 2) return;
-			
-			NSInteger from = [[fromTo objectAtIndex:0] integerValue];
-			NSInteger to = [[fromTo objectAtIndex:1] integerValue];
-			
-			NSInteger changedIndex = -1;
-			if (from < to) changedIndex = to -1; else changedIndex = to;
-			
-			NSMutableArray *outline = [self getOutlineItems];
-			if ([outline count] < 1) return;
-			
-			OutlineScene *scene = [outline objectAtIndex:from];
-			
-			[self moveScene:scene from:from to:to];
-			
-			// Refresh the view, tell it's already visible
-			[self refreshCards:YES changed:changedIndex];
-			
-			return;
-		}
-	}
-
-	if ([message.name isEqualToString:@"setColor"]) {
-		if ([message.body rangeOfString:@":"].location != NSNotFound) {
-			NSArray *indexAndColor = [message.body componentsSeparatedByString:@":"];
-			NSUInteger index = [[indexAndColor objectAtIndex:0] integerValue];
-			NSString *color = [indexAndColor objectAtIndex:1];
-			
-			Line *line = [self.parser.lines objectAtIndex:index];
-			OutlineScene *scene = [self findSceneByLine:line];
-			
-			[self setColor:color forScene:scene];
-		}
 	}
 }
 
@@ -4723,6 +4264,8 @@ static NSString *revisionAttribute = @"Revision";
 
 #pragma mark - Timeline Delegation
 
+- (bool)timelineVisible { return self.timeline.visible; }
+
 - (void)reloadTouchTimeline {
 	[_touchbarTimeline setData:[self getOutlineItems]];
 }
@@ -4849,34 +4392,37 @@ triangle walks
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
 	if (!self.showPageNumbers) return;
 	
-	// Reset page size (just in case)
-	// self.paginator.paperSize = self.printInfo.paperSize;
-	
-	// Null the timer so we don't have too many of these operations queued
-	[_paginationTimer invalidate];
-	NSInteger wait = 0.75;
-	if (sync) wait = 0;
-	
-	_paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
-		// Make a copy of the array for thread-safety
-		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		// Null the timer so we don't have too many of these operations queued
+		if (self.paginationTimer) {
+			[self.paginationTimer invalidate];
+			self.paginationTimer = nil;
+		}
 		
-		// Dispatch to a background thread
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
-			[self.paginator livePaginationFor:lines changeAt:range.location];
+		NSInteger wait = 1.0;
+		if (sync) wait = 0;
+
+		self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
+			// Make a copy of the array for thread-safety
+			NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
 			
-			NSArray *pageBreaks = self.paginator.pageBreaks;
-			
-			// Don't do nothing if the page break array is nil
-			// This SHOULD mean that pagination was canceled
-			if (pageBreaks == nil) return;
-			
-			// Update text view page breaks in main queue
-			dispatch_async(dispatch_get_main_queue(), ^(void){
-				[self.textView updatePageBreaks:pageBreaks];
+			// Dispatch to a background thread
+			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
+				[self.paginator livePaginationFor:lines changeAt:range.location];
+				
+				NSArray *pageBreaks = self.paginator.pageBreaks;
+				
+				// Don't do nothing if the page break array is nil
+				// This SHOULD mean that pagination was canceled
+				if (pageBreaks == nil) return;
+				
+				// Update text view page breaks in main queue
+				dispatch_async(dispatch_get_main_queue(), ^(void){
+					[self.textView updatePageBreaks:pageBreaks];
+				});
 			});
-		});
-	}];
+		}];
+	});
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {
@@ -5104,6 +4650,26 @@ triangle walks
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
+- (BOOL)writeSafelyToURL:(NSURL *)url ofType:(NSString *)typeName forSaveOperation:(NSSaveOperationType)saveOperation error:(NSError *__autoreleasing  _Nullable *)outError {
+	bool result = [super writeSafelyToURL:url ofType:typeName forSaveOperation:saveOperation error:outError];
+	
+	if (result && (saveOperation == NSSaveOperation || saveOperation == NSSaveAsOperation)) {
+		bool backup = [BeatBackup backupWithDocumentURL:url name:[self fileNameString]];
+		if (!backup) NSLog(@"Backup failed");
+	}
+	
+	return result;
+}
+
+- (NSURL *)mostRecentlySavedFileURL;
+{
+	// Before the user chooses where to place a new document, it has an autosaved URL only
+	// On 10.6-, autosaves save newer versions of the document *separate* from the original doc
+	NSURL *result = [self autosavedContentsFileURL];
+	if (!result) result = [self fileURL];
+	return result;
+}
+
 // Custom autosave in place
 - (void)autosaveInPlace {
 	// Don't autosave if it's an untitled document
@@ -5115,8 +4681,6 @@ triangle walks
 }
 
 - (NSURL *)autosavedContentsFileURL {
-	//NSURL *autosavePath = [(BeatAppDelegate*)NSApp.delegate autosavePath];
-	
 	NSString *filename = [self fileNameString];
 	if (!filename) filename = @"Untitled";
 	
@@ -5128,6 +4692,10 @@ triangle walks
 }
 - (NSURL*)autosavePath {
 	return [BeatAppDelegate appDataPath:@"Autosave"];
+}
+
+- (NSURL*)backupPath {
+	return [BeatAppDelegate appDataPath:@"Backup"];
 }
 
 - (void)autosaveDocumentWithDelegate:(id)delegate didAutosaveSelector:(SEL)didAutosaveSelector contextInfo:(void *)contextInfo {
@@ -5181,6 +4749,7 @@ triangle walks
 #pragma mark - split view listener
 
 - (void)splitViewDidResize {
+	[self.documentSettings setInt:DocSettingSidebarWidth as:(NSInteger)self.splitHandle.bottomOrLeftView.frame.size.width];
 	[self updateLayout];
 }
 - (void)leftViewDidShow {

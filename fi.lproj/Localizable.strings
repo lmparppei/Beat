@@ -19,6 +19,7 @@
 "general.cancel" = "Peruuta";
 "general.undo" = "Peru";
 "general.redo" = "Tee sittenkin";
+"general.revert" = "Palauta";
 
 "language.alert" = "Käynnistä Beat uudelleen";
 "language.informative" = "Kielen vaihtaminen vaatii ohjelman uudelleenkäynnistyksen.";
@@ -94,3 +95,16 @@
 "mode.taggingMode" = "Merkintätila";
 "mode.reviewMode" = "Kommenttitila";
 
+"backup.revertToSaved" = "Viimeksi tallennettu";
+"backup.backupVault" = "Avaa varmuuskopiokansio...";
+
+"backup.reverting.title" = "Palauta tiedosto";
+"backup.reverting.message" = "Kaikki tallentamattomat muutokset hävitetään, kun palaat varmuuskopioituun versioon. Haluatko varmasti jatkaa?";
+
+"editor.setSceneNumber" = "Aseta kohtausnumero";
+"editor.setSceneNumber.info" = "Muokatto kohtausnumero (voi sisältää myös kirjaimia tai pelkän välilyönnin)";
+
+"force.character" = "Hahmo";
+"force.heading" = "Kohtausotsikko";
+"force.action" = "Toiminta";
+"force.lyrics" = "Lyriikat";

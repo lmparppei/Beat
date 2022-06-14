@@ -35,7 +35,6 @@
 			function zoomOut() { if (zoomLevel > 50) { zoomLevel -= 10;  document.body.style.zoom = zoomLevel + '%'; } }
 		</script>
 		<script>function selectScene(e) { window.webkit.messageHandlers.selectSceneFromScript.postMessage(e.getAttribute('sceneIndex')); }</script>
-		<script>function closePreview () { window.webkit.messageHandlers.closePrintPreview.postMessage('close'); } </script>
 		<script>
 			/*
 			const zoomLevels = [".zoom-60", ".zoom-70", ".zoom-80", ".zoom-90", ".zoom-100"]
