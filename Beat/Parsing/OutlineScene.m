@@ -94,20 +94,16 @@
 #pragma mark - Forwarded properties
 
 // Forward these properties from line
--(LineType)type {
-	return self.line.type;
-}
--(NSUInteger)position {
-	return self.line.position;
-}
+-(LineType)type { return self.line.type; }
+-(NSUInteger)position {	return self.line.position; }
 
 -(bool)omitted {return self.line.omitted; }
-// Legacy compatibility
--(bool)omited {	return self.omitted; }
+-(bool)omited {	return self.omitted; } // Legacy compatibility
 
--(NSString*)color {
-	return self.line.color;
-}
+-(NSString*)color {	return self.line.color; }
+
+-(NSString*)sceneNumber { return self.line.sceneNumber; }
+-(void)setSceneNumber:(NSString *)sceneNumber {	self.line.sceneNumber = sceneNumber; }
 
 // Backwards compatibility
 -(NSUInteger)sceneStart { return self.position; }

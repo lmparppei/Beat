@@ -62,6 +62,7 @@
 
 @interface ContinuousFountainParser ()
 @property (nonatomic) BOOL changeInOutline;
+@property (nonatomic) NSMutableSet *changedOutlineElements;
 @property (nonatomic) Line *editedLine;
 @property (nonatomic) Line *lastEditedLine;
 @property (nonatomic) NSUInteger lastLineIndex;
@@ -307,7 +308,7 @@ static NSDictionary* patterns;
 	// Get the line where into which we are adding characters
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
 	Line* line = self.lines[lineIndex];
-	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = YES;
+	if (line.isOutlineElement) [self addChangeInOutline:line];
 	
 	NSUInteger indexInLine = position - line.position;
 	
@@ -412,7 +413,7 @@ static NSDictionary* patterns;
 
     NSUInteger indexInLine = position - line.position;
 	
-	if (line.type == heading || line.type == synopse || line.type == section) _changeInOutline = true;
+	if (line.isOutlineElement) [self addChangeInOutline:line];
 	
     if ([character isEqualToString:@"\n"]) {
         NSString* cutOffString;
@@ -474,7 +475,7 @@ static NSDictionary* patterns;
 		Line *firstLine = self.lines[lineIndex];
 				
 		// Change in outline
-		if (firstLine.type == heading || firstLine.type == section || firstLine.type == synopse) _changeInOutline = YES;
+		if (firstLine.isOutlineElement) [self addChangeInOutline:firstLine];
 		
 		NSUInteger indexInLine = range.location - firstLine.position;
 		
@@ -487,9 +488,7 @@ static NSDictionary* patterns;
 		for (NSInteger i = 1; i <= lineBreaks; i++) {
 			Line* nextLine = self.lines[nextIndex];
 						
-			if (nextLine.type == heading || nextLine.type == section || nextLine.type == synopse) {
-				_changeInOutline = YES;
-			}
+			if (nextLine.isOutlineElement) [self addChangeInOutline:nextLine];
 			
 			if (i < lineBreaks) {
 				[self.lines removeObjectAtIndex:nextIndex];
@@ -573,7 +572,7 @@ static NSDictionary* patterns;
         [self.lines removeObjectAtIndex:lineIndex+1];
         [self decrementLinePositionsFromIndex:lineIndex+1 amount:1];
         		
-		if (nextLine.isOutlineElement) _changeInOutline = YES;
+		if (nextLine.isOutlineElement) [self addChangeInOutline:nextLine];
 		
 		if (nextLine.type == empty &&  lineIndex + 1 < self.lines.count) {
 			// An empty line was removed, which might affect parsing of follow elements, so
@@ -1973,10 +1972,7 @@ and incomprehensible system of recursion.
 			scene.line = line;
 		}
 				
-		if (line.sceneNumberRange.length > 0) {
-			scene.sceneNumber = line.sceneNumber;
-		} else if (!line.omitted) {
-			scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+		if (!line.omitted) {
 			line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
 			sceneNumber++;
 		} else {
@@ -1993,6 +1989,17 @@ and incomprehensible system of recursion.
 
 #pragma mark - Outline Data
 
+/*
+ 
+ Idea for the future:
+ We should have a PERSISTENT outline. When a scene is deleted, we'll remove that heading
+ from the array and only rebuild the outline at those points.
+ 
+ Current system is sort of a hack, and it just stops execution when the line
+ being edited is a heading.
+ 
+ */
+
 
 - (NSUInteger)numberOfOutlineItems
 {
@@ -2000,14 +2007,6 @@ and incomprehensible system of recursion.
 	return _outline.count;
 }
 
-- (OutlineScene*)getOutlineForLine: (Line *) line {
-	for (OutlineScene * item in _outline) {
-		if (item.line == line) {
-			return item;
-		}
-	}
-	return nil;
-}
 - (NSArray*)outlineItems {
 	[self createOutline];
 	return self.outline;
@@ -2017,9 +2016,41 @@ and incomprehensible system of recursion.
 	if (NSThread.isMainThread) [self createOutlineUsingLines:self.lines];
 	else [self createOutlineUsingLines:self.lines.copy];
 }
+
+- (void)updateOutlineWithChangeInRange:(NSRange)range {
+	if (range.length > 1) {
+		[self createOutline];
+		return;
+	}
+	
+	// User edited the heading line
+	Line *line = [self lineAtPosition:range.location];
+	if (line.type == section) {
+		[self createOutline];
+		return;
+	}
+	
+	NSInteger sceneNumber = 0;
+	if (line.isOutlineElement) {
+		for (OutlineScene *scene in self.outline) {
+			if (scene.type == heading && line.sceneNumberRange.length == 0 && !scene.omitted) sceneNumber++;
+						
+			if (scene.line == line) {
+				if (scene.line.omitted) line.sceneNumber = @"";
+
+				// Update scene number
+				scene.line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+				scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+				return;
+			}
+		}
+	}
+	
+	[self createOutline];
+}
+
 - (void)createOutlineUsingLines:(NSArray<Line*>*)lines
 {
-	//[_outline removeAllObjects];
 	[_storylines removeAllObjects];
 	[_storybeats removeAllObjects];
 	
@@ -2152,34 +2183,6 @@ and incomprehensible system of recursion.
 				if (![previousScene.beats containsObject:beat]) [previousScene.beats addObject:beat];
 			}
 		}
-		
-		/*
-		if (line.storylines.count) {
-			for (NSString *storyline in line.storylines) {
-				Storybeat *beat = [Storybeat line:line scene:previousScene beat:@""];
-				if (![previousScene.storylines doesContain:storyline]) [previousScene.storylines addObject:storyline];
-			}
-		}
-		
-		if (line.hasBeat) {
-			NSDictionary *beatData = line.beats;
-			for (NSString *storyline in beatData.allKeys) {
-				Storybeat *beat = [Storybeat line:line scene:previousScene beat:beatData[storyline]];
-				if (!_storybeats[storyline]) _storybeats[storyline] = NSMutableArray.array;
-				[_storybeats[storyline] addObject:beat];
-				
-				if (![previousScene.storylines containsObject:storyline]) [previousScene.storylines addObject:storyline];
-				[previousScene.storybeats addObject:beat];
-			}
-		}
-		*/
-		
-		if (!line.note && !line.omitted && line.type != empty) {
-			NSInteger length = line.range.length;
-			if (length < 1) length = 1;
-			
-			if (previousScene) previousScene.printedLength += length;
-		}
 	}
 	
 	// Remove excess scene items
@@ -2195,8 +2198,66 @@ and incomprehensible system of recursion.
 	lastScene.length = lastLine.position + lastLine.string.length - lastScene.position;
 }
 
+/*
+- (void)createPersistentOutline {
+	NSMutableArray *scenes = NSMutableArray.new;
+	
+	static NSArray *persistentOutline;
+	
+	for (NSInteger i = 0; i<self.lines.count; i++) {
+		Line *line = self.lines[i];
+		
+		if (line.isOutlineElement) {
+			OutlineScene *scene = [OutlineScene withLine:line delegate:self];
+			[self updateScene:scene lineIndex:i];
+			
+			[scenes addObject:scene];
+		}
+	}
+}
+
+- (void)updateScene:(OutlineScene*)scene lineIndex:(NSInteger)idx {
+	if (idx == NSNotFound) idx = [self.lines indexOfObject:scene.line];
+	
+	scene.beats = NSMutableArray.new;
+	
+	while (idx < self.lines.count) {
+		idx++;
+		
+		Line *line = self.lines[idx];
+		if (line.type == section || line.type == heading) {
+			break;
+		}
+		
+		if (line.marker.length) {
+			[scene.markerColors addObject:line.marker];
+		}
+		
+		if (line.beats.count) {
+			for (Storybeat *beat in line.beats) {
+				if (![scene.beats containsObject:beat]) [scene.beats addObject:beat];
+			}
+		}
+	}
+}
+ */
+
+- (void)addChangeInOutline:(Line*)line {
+	if (_changedOutlineElements == nil) _changedOutlineElements = NSMutableSet.new;
+	
+	[_changedOutlineElements addObject:line];
+}
+
+- (NSArray*)changesInOutline {
+	NSArray *changes = _changedOutlineElements.copy;
+	[_changedOutlineElements removeAllObjects];
+	return changes;
+}
+
 - (BOOL)getAndResetChangeInOutline
 {
+	if (_changedOutlineElements.count) return YES;
+
     if (_changeInOutline) {
         _changeInOutline = NO;
         return YES;
@@ -2449,6 +2510,19 @@ and incomprehensible system of recursion.
 		
 	} while (stop != YES);
 		
+	return nil;
+}
+
+- (Line*)closestPrintableLineFor:(Line*)line {
+	NSInteger i = [self.lines indexOfObject:line];
+	if (i == NSNotFound) return nil;
+	
+	while (i >= 0) {
+		Line *l = self.lines[i];
+		if (!l.isInvisible) return l;
+		i--;
+	}
+	
 	return nil;
 }
 

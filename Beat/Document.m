@@ -1904,9 +1904,13 @@ static BeatAppDelegate *appDelegate;
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
 	
-	if (changeInOutline) {
-		[self.parser createOutline];
-		if (self.sidebarVisible) [self reloadOutline];
+	// NOTE: calling this method removes the outline changes from parser
+	NSArray *changesInOutline = self.parser.changesInOutline;
+	
+	if (changeInOutline == YES) {
+		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
+		
+		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline];
 		if (self.timeline.visible) [self.timeline reload];
 		if (self.timelineBar.visible) [self reloadTouchTimeline];
 		if (self.runningPlugins.count) [self updatePluginsWithOutline:self.parser.outline];
@@ -2005,7 +2009,6 @@ static BeatAppDelegate *appDelegate;
 		
 		if (self.sidebarVisible) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
-				// [self reloadOutline];
 				if (currentScene) [self.outlineView scrollToScene:currentScene];
 			});
 		}
@@ -3510,7 +3513,9 @@ static NSString *revisionAttribute = @"Revision";
 		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
 		else {
 			// Create JS scroll function call and append it straight into the HTML
-			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", self.currentLine.uuid.UUIDString.lowercaseString];
+			Line *currentLine = [self.parser closestPrintableLineFor:self.currentLine];
+			
+			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", currentLine.uuid.UUIDString.lowercaseString];
 			
 			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
 			[self.printWebView loadHTMLString:_htmlString baseURL:nil]; // Load HTML
@@ -3521,7 +3526,7 @@ static NSString *revisionAttribute = @"Revision";
 			
 			// Evaluate JS in window to be sure it shows the correct scene
 			//[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToScene(%@);", currentScene.sceneNumber] completionHandler:nil];
-			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", self.currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
+			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
 		}
 	
 		[self showTab:_previewTab];
@@ -3625,7 +3630,7 @@ static NSString *revisionAttribute = @"Revision";
 		[_outlineButton setState:NSOnState];
 		
 		// Show outline
-		[self reloadOutline];
+		[self.outlineView reloadOutline];
 		[self collectCharacterNames]; // For filtering
 		
 		self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
@@ -3730,17 +3735,10 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
     [self.outlineView.filters byText:_outlineSearchField.stringValue];
-    [self reloadOutline];
+    [self.outlineView reloadOutline];
 	
 	// Mask scenes that were left out
 	[self maskScenes];
-}
-
-- (void)reloadOutline {
-	// Create outline
-	_outline = [self getOutlineItems];
-	[self.outlineView reloadOutline];
-	return;
 }
 
 -(IBAction)addSection:(id)sender {
@@ -4089,7 +4087,7 @@ static NSString *revisionAttribute = @"Revision";
 #pragma mark - Refresh any outline views
 
 - (void)refreshAllOutlineViews {
-	if (_sidebarVisible) [self reloadOutline];
+	if (_sidebarVisible) [self.outlineView reloadOutline];
 	if (_timeline.visible) [self.timeline reload];
 	if (self.timelineBar.visible) [self reloadTouchTimeline];
 	if (_cardsVisible) [self.cardView refreshCards];
@@ -4161,7 +4159,7 @@ static NSString *revisionAttribute = @"Revision";
 		
 	// Rebuild outline everywhere
 	[self.parser createOutline];
-	[self reloadOutline];
+	[self.outlineView reloadOutline];
 	[self.timeline reload];
 	
 	[self.textView refreshLayoutElements];
@@ -4755,7 +4753,7 @@ triangle walks
 - (void)leftViewDidShow {
 	self.sidebarVisible = YES;
 	[_outlineButton setState:NSOnState];
-	[self reloadOutline];
+	[self.outlineView reloadOutline];
 }
 - (void)leftViewDidHide {
 	// unused for now

@@ -35,6 +35,7 @@
 @property (nonatomic) SceneFiltering *filters;
 
 -(void)reloadOutline;
+-(void)reloadOutline:(NSArray*)changesInOutline;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (NSArray*)outline;
 @end

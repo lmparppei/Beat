@@ -87,6 +87,7 @@
 //- (void)setSceneNumbers:(NSString*)text;
 - (void)resetParsing;
 - (void)createOutline;
+- (void)updateOutlineWithChangeInRange:(NSRange)range;
 - (NSArray*)scenes;
 - (void)ensurePositions;
 - (NSArray*)linesForScene:(OutlineScene*)scene;
@@ -137,8 +138,9 @@
 
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;
+- (NSArray*)changesInOutline;
 - (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view
-- (OutlineScene*) getOutlineForLine:(Line*)line;
+- (Line*)closestPrintableLineFor:(Line*)line;
 
 - (NSString*)description;
 @end

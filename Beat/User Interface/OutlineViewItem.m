@@ -38,7 +38,7 @@
 	Line *line = scene.line;
 	
 	NSUInteger sceneNumberLength = 0;
-	bool currentScene = false;
+	//bool currentScene = false;
 	
 	// Check that this scene is not omited from the screenplay
 	bool omited = line.omitted;
@@ -63,10 +63,12 @@
 	if (resultString.length == 0) return resultString;
 	
 	// Check if this scene item is the currently edited scene
+	/*
 	if (current.string) {
 		if (current == scene) currentScene = true;
 		if ([line.string isEqualToString:current.string] && line.sceneNumber == current.sceneNumber) currentScene = true;
 	}
+	*/
 	
 	
 	NSString *string = rawString;
@@ -75,6 +77,7 @@
 	// Style the item
 	if (line.type == heading) {
 		//Replace "INT/EXT" with "I/E" to make the lines match nicely
+		string = string.uppercaseString;
 		string = [string stringByReplacingOccurrencesOfString:@"INT/EXT" withString:@"I/E"];
 		string = [string stringByReplacingOccurrencesOfString:@"INT./EXT" withString:@"I/E"];
 		string = [string stringByReplacingOccurrencesOfString:@"EXT/INT" withString:@"I/E"];
@@ -111,9 +114,8 @@
 		}
 		
 		// If this is the currently edited scene, make the whole string white. For color-coded scenes, the color will be set later.
-		if (currentScene) {
-			[resultString addAttribute:NSForegroundColorAttributeName value:BXColor.whiteColor range:NSMakeRange(0, resultString.length)];
-		}
+		// if (currentScene) [resultString addAttribute:NSForegroundColorAttributeName value:BXColor.whiteColor range:NSMakeRange(0, resultString.length)];
+		
 	    
 		// Lines without RTF formatting have uneven leading, so let's fix that.
 		//[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0, resultString.length)];
@@ -138,7 +140,7 @@
 			#endif
 			
 			BXColor *color = [BeatColors color:@"lightGray"];
-			if (currentScene) color = BXColor.whiteColor;
+			// if (currentScene) color = BXColor.whiteColor;
 			
 			[resultString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, resultString.length)];
 			
@@ -163,7 +165,7 @@
 					color = BXColor.whiteColor;
 				}
 			}
-			if (currentScene) color = BXColor.whiteColor;
+			//if (currentScene) color = BXColor.whiteColor;
 			
 			// Bold + highlight color
 			[resultString addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, resultString.length)];

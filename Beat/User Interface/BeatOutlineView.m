@@ -74,6 +74,8 @@
 @property (nonatomic) BeatSceneTree *sceneTree;
 @property (nonatomic) NSMutableArray *collapsed;
 
+@property (nonatomic) NSArray *cachedOutline;
+
 @end
 
 @implementation BeatOutlineView
@@ -128,9 +130,27 @@
 
 #pragma mark - Reload data
 
--(void)reloadOutline {
-	[BeatMeasure start:@"Reload outline"];
+-(void)reloadOutline:(NSArray*)changesInOutline {
+	if (changesInOutline.count == 0) {
+		[self reloadOutline];
+		return;
+	}
 	
+	NSMutableSet *handled = NSMutableSet.new;
+	for (OutlineScene *scene in self.outline)
+	{
+		if ([changesInOutline containsObject:scene]) {
+			[self reloadItem:scene];
+			[handled addObject:scene];
+		}
+	}
+	
+	if (handled.count != changesInOutline.count) {
+		[self reloadData];
+	}
+}
+
+-(void)reloadOutline {
 	// Save outline scroll position
 	NSPoint scrollPosition = self.enclosingScrollView.contentView.bounds.origin;
 	
@@ -146,8 +166,6 @@
 	
 	// Scroll back to original position after reload
 	[self.enclosingScrollView.contentView scrollPoint:scrollPosition];
-	
-	[BeatMeasure end:@"Reload outline"];
 }
 
 -(void)outlineViewItemDidCollapse:(NSNotification *)notification {
@@ -386,6 +404,7 @@
 
 - (void)scrollToScene:(OutlineScene*)scene {
 	if (!scene) scene = self.editorDelegate.currentScene;
+	if (scene == nil) return;
 	
 	// Check if we have filtering turned on, and do nothing if scene is not in the filter results
 	if (self.filteredOutline.count) {
@@ -398,6 +417,7 @@
 
 	// Redraw selection
 	[self setNeedsDisplay];
+	[self reloadItem:scene];
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){

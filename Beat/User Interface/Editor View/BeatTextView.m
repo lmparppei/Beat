@@ -1677,10 +1677,13 @@ Line *cachedRectLine;
 		
 	if (line != prevLine) {
 		// If the line changed, let's redraw the range
-		[self.layoutManager invalidateGlyphsForCharacterRange:line.textRange changeInLength:0 actualCharacterRange:nil];
-		[self.layoutManager invalidateGlyphsForCharacterRange:prevLine.textRange changeInLength:0 actualCharacterRange:nil];
-		[self.layoutManager invalidateLayoutForCharacterRange:prevLine.textRange actualCharacterRange:nil];
-		[self.layoutManager invalidateLayoutForCharacterRange:line.textRange actualCharacterRange:nil];
+		bool lineInRange = (NSMaxRange(line.textRange) <= self.string.length);
+		bool prevLineInRange = (NSMaxRange(prevLine.textRange) <= self.string.length);
+		
+		if (lineInRange) [self.layoutManager invalidateGlyphsForCharacterRange:line.textRange changeInLength:0 actualCharacterRange:nil];
+		if (prevLineInRange) [self.layoutManager invalidateGlyphsForCharacterRange:prevLine.textRange changeInLength:0 actualCharacterRange:nil];
+		if (prevLineInRange) [self.layoutManager invalidateLayoutForCharacterRange:prevLine.textRange actualCharacterRange:nil];
+		if (lineInRange) [self.layoutManager invalidateLayoutForCharacterRange:line.textRange actualCharacterRange:nil];
 	}
 	
 	prevLine = line;
