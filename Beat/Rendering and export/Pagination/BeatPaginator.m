@@ -66,6 +66,7 @@
 #import "RegExCategories.h"
 #import "BeatUserDefaults.h"
 #import "BeatMeasure.h"
+#import "BeatAppDelegate.h"
 
 #if TARGET_OS_IOS
 	#define BXDocument UIDocument
@@ -1130,6 +1131,13 @@
 #pragma mark New dialogue split implementation
 - (NSDictionary*)splitDialogue:(NSArray<Line*>*)block spiller:(Line*)spiller page:(BeatPage*)page {
 	NSMutableArray *dialogueBlock = block.mutableCopy;
+	/*
+	static BeatAppDelegate *delegate;
+	if (delegate == nil) {
+		delegate = (BeatAppDelegate*)NSApp.delegate;
+		[delegate openConsole];
+	}
+	 */
 	
 	Line *pageBreakItem;
 	NSUInteger suggestedPageBreak = 0;
@@ -1159,16 +1167,25 @@
 	
 	// Live pagination page break item
 	pageBreakItem = block[splitAt];
-		
+
+	/*
+	if (!_livePagination) {
+		[delegate logToConsole:[NSString stringWithFormat:@"=========================\nSPLIT BLOCK: %@", block] pluginName:@"Pagination"];
+		[delegate logToConsole:[NSString stringWithFormat:@"Split at: %lu", splitAt] pluginName:@"Pagination"];
+		[delegate logToConsole:[NSString stringWithFormat:@"Can be split at indices: %@", splittableIndices] pluginName:@"Pagination"];
+	}
+	 */
+			
 	// For dialogue, we'll see if we can split the current line of dialogue
 	if (spiller.isAnyDialogue) {
 		if (remainingSpace > BeatPaginator.lineHeight) {
+			// Split dialogue according to remaining space
 			NSArray <NSString*>* splitLine = [self splitDialogueLine:spiller remainingSpace:remainingSpace pageBreakPosition:&suggestedPageBreak];
-			
 			NSString *retainStr = splitLine[0];
 			
 			if (retainStr.length > 0) {
 				NSArray <Line*>*splitElements = [spiller splitAndFormatToFountainAt:retainStr.length];
+
 				[tmpThisPage addObject:splitElements[0]];
 				[tmpNextPage addObject:splitElements[1]];
 				pageBreakItem = spiller;
@@ -1186,26 +1203,38 @@
 			pageBreakItem = block[splitAt];
 		}
 	}
-	
+		
 	// Don't allow only a single element to stay on page
-	if (splitAt == 1 && tmpThisPage.count == 0)   {
-		splitAt = 0;
-	}
+	if (splitAt == 1 && tmpThisPage.count == 0) splitAt = 0;
 	
 	// If something is left behind on the current page, split it
 	if (splitAt > 0) {
+		// Don't allow the last element in block to be parenthetical
+		Line *prevElement = block[splitAt - 1];
+		if (prevElement.isAnyParenthetical) splitAt -= 1;
+		
+		// Split the block
 		[onThisPage addObjectsFromArray:
 			 [block subarrayWithRange:NSMakeRange(0, splitAt)]
 		];
 		[onThisPage addObjectsFromArray:tmpThisPage];
 		[onThisPage addObject:[BeatPaginator moreLineFor:spiller]];
 	}
-		
+			
 	// Add stuff on next page if needed
 	if (onThisPage.count) [onNextPage addObject:[BeatPaginator contdLineFor:dialogueBlock.firstObject]];
 	[onNextPage addObjectsFromArray:tmpNextPage];
 	NSRange splitRange = NSMakeRange(splitAt, dialogueBlock.count - splitAt);
 	if (splitRange.length > 0) [onNextPage addObjectsFromArray:[dialogueBlock subarrayWithRange:splitRange]];
+	
+	/*
+	if (!_livePagination) {
+		[delegate logToConsole:[NSString stringWithFormat:@"Result: %lu", splitAt] pluginName:@"Pagination"];
+		[delegate logToConsole:[NSString stringWithFormat:@"Temp objects created: %@", tmpThisPage] pluginName:@"Pagination"];
+		[delegate logToConsole:[NSString stringWithFormat:@"Remaining: %@", onThisPage] pluginName:@"Pagination"];
+		[delegate logToConsole:[NSString stringWithFormat:@"Paginated: %@", onNextPage] pluginName:@"Pagination"];
+	}
+	 */
 	
 	NSDictionary *result =  @{
 		@"page break item": pageBreakItem,
@@ -1307,7 +1336,11 @@
 #pragma mark - More / Cont'd items
 
 + (Line*)contdLineFor:(Line*)line {
-	NSString *contdString = [NSString stringWithFormat:@"%@%@", line.stripFormatting, [BeatPaginator contdString]];
+	NSString *extension = [BeatPaginator contdString];
+	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
+	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	
+	NSString *contdString = [NSString stringWithFormat:@"%@%@", cue, extension];
 	Line *contd = [Line.alloc initWithString:contdString type:character];
 	contd.nextElementIsDualDialogue = line.nextElementIsDualDialogue;
 	if (line.type == dualDialogueCharacter) contd.type = dualDialogueCharacter;

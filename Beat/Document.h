@@ -99,7 +99,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) Line* characterInputForLine;
 
 // Plugins running in this window
-@property (nonatomic) NSMutableDictionary *runningPlugins;
+@property (nonatomic) NSMutableDictionary <NSString*, BeatPlugin*>* runningPlugins;
 
 // Document settings
 @property (atomic) BeatDocumentSettings *documentSettings;

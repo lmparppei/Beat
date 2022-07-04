@@ -6,6 +6,7 @@
 //
 
 #import <TargetConditionals.h>
+#import "BeatEditorMode.h"
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
@@ -49,6 +50,8 @@
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 #endif
+
+@property (nonatomic, readonly) bool documentIsLoading;
 
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (nonatomic) bool printSceneNumbers;
@@ -163,6 +166,8 @@
 - (void)registerEditorView:(id)view;
 
 - (void)textDidChange:(NSNotification *)notification;
+
+- (void)toggleMode:(BeatEditorMode)mode;
 
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;

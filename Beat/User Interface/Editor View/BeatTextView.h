@@ -22,20 +22,15 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	SelectTag
 };
 
-
+/*
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
 - (NSImage *)textView:(NSTextView *)textView imageForCompletion:(NSString *)word;
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index;
 @end
-
+*/
+ 
 @protocol BeatTextViewDelegate <NSTextViewDelegate>
-
-typedef NS_ENUM(NSInteger, BeatEditorMode) {
-	EditMode,
-	TaggingMode,
-	ReviewMode
-};
 
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic, readonly) NSUInteger documentWidth;
@@ -89,7 +84,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 
 @end
 
-@protocol BeatTaggingDelegate;
+@class BeatTagging;
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
 + (CGFloat)linePadding;
@@ -118,7 +113,7 @@ typedef NS_ENUM(NSInteger, BeatEditorMode) {
 
 @property CGFloat textInsetY;
 @property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
-@property (weak) IBOutlet id<BeatTaggingDelegate> taggingDelegate;
+@property (weak) IBOutlet BeatTagging *tagging;
 @property NSMutableArray* masks;
 @property NSArray* sceneNumbers;
 @property (nonatomic, weak) DynamicColor* marginColor;

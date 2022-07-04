@@ -122,8 +122,14 @@
 #import "BeatPrintDialog.h"
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
+#import "BeatAutocomplete.h"
 
-@interface Document ()
+@interface Document () {
+	NSString *bufferedText;
+	NSData *dataCache;
+	NSMutableArray *autocompleteCharacterNames;
+	NSMutableArray *autocompleteSceneHeadings;
+}
 
 // Window
 @property (weak) NSWindow *documentWindow;
@@ -134,7 +140,6 @@
 @property (nonatomic) bool autosave;
 @property (weak) NSTimer *autosaveTimer;
 @property (nonatomic) NSString *contentCache;
-@property (nonatomic) NSData *dataCache;
 @property (nonatomic) NSAttributedString *attributedContentCache;
 //@property (nonatomic) NSURL *mostRecentlySavedFileURL;
 
@@ -173,8 +178,6 @@
 @property (nonatomic) NSTimer *paginationTimer;
 @property (nonatomic) bool autocomplete;
 @property (nonatomic) bool moving;
-@property (nonatomic) bool sceneHeadingEdited;
-@property (nonatomic) bool sceneHeadingUndoString;
 @property (nonatomic) bool showPageNumbers;
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
@@ -185,12 +188,10 @@
 @property (nonatomic) NSMutableArray *recentCharacters;
 @property (nonatomic) NSRange lastChangedRange;
 @property (nonatomic) bool disableFormatting;
+@property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
 
 @property (nonatomic) bool headingStyleBold;
 @property (nonatomic) bool headingStyleUnderline;
-
-// Change query
-@property (nonatomic) NSString *bufferedText;
 
 // Views
 @property (nonatomic) NSMutableSet *registeredViews;
@@ -301,10 +302,7 @@
 @property (nonatomic) Line *previouslySelectedLine;
 
 // Autocompletion
-@property (nonatomic) NSString *cachedText;
 @property (nonatomic) bool isAutoCompleting;
-@property (nonatomic) NSMutableArray *characterNames;
-@property (nonatomic) NSMutableArray *sceneHeadings;
 @property (readwrite, nonatomic) bool darkPopup;
 
 // Touch bar
@@ -325,8 +323,6 @@
 
 // Tagging
 @property (weak) IBOutlet NSTextView *tagTextView;
-@property (weak) IBOutlet ColorView *sideView;
-@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
 
 @property (nonatomic) NSDate *executionTime;
 @property (nonatomic) NSTimeInterval executionTimeCache;
@@ -558,11 +554,7 @@ static BeatAppDelegate *appDelegate;
 		
 	// Setup plugin management
 	[self setupPlugins];
-	
-	// Initialize arrays
-	self.characterNames = [[NSMutableArray alloc] init];
-	self.sceneHeadings = [[NSMutableArray alloc] init];
-		
+			
 	// Pagination etc.
 	self.paginator = [[BeatPaginator alloc] initForLivePagination:self];
 	self.printDialog.document = nil;
@@ -627,7 +619,7 @@ static BeatAppDelegate *appDelegate;
 	[self.revisionTracking setupRevisions];
 			
 	// Load tagging & review systems
-	[self setupTagging];
+	[self.tagging setup];
 	[self setupReview];
 		
 	// Document loading has ended
@@ -766,7 +758,6 @@ static BeatAppDelegate *appDelegate;
 - (void)setupWindow {
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
-	[_sideViewCostraint setConstant:0];
 	
 	// Reset zoom
 	[self setZoom];
@@ -902,12 +893,8 @@ static BeatAppDelegate *appDelegate;
 
 - (void)updateEditorMode {
 	/// This updates the window by editor mode. When adding new modes, remember to call this method and add new conditionals.
-	if (_mode == TaggingMode) {
-		[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-		[_sideViewCostraint setConstant:180];
-	} else {
-		[self closeTagging:nil];
-	}
+	if (_mode == TaggingMode) [self.tagging open];
+	else [self.tagging close];
 	
 	// Show mode indicator
 	if (_mode != EditMode) {
@@ -930,9 +917,30 @@ static BeatAppDelegate *appDelegate;
 
 #pragma mark - Window delegate
 
+static NSWindow *currentKeyWindow;
+
 - (void)windowDidBecomeMain:(NSNotification *)notification {
 	// Show all plugin windows associated with the current document
 	[self showPluginWindowsForCurrentDocument];
+	
+	if (currentKeyWindow != nil && currentKeyWindow.visible) [currentKeyWindow makeKeyAndOrderFront:nil];
+}
+-(void)windowDidBecomeKey:(NSNotification *)notification {
+	currentKeyWindow = nil;
+}
+-(void)windowDidResignKey:(NSNotification *)notification {
+	currentKeyWindow = NSApp.keyWindow;
+}
+
+- (void)windowDidResignMain:(NSNotification *)notification {
+	NSWindow *mainWindow = NSApp.mainWindow;
+	
+	// If main window is nil, we probably are in another app, so let's change the style of every plugin window
+	if (mainWindow != nil) return;
+	
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		[_runningPlugins[pluginName] hideAllWindows];
+	}
 }
 
 - (void)showPluginWindowsForCurrentDocument {
@@ -941,15 +949,19 @@ static BeatAppDelegate *appDelegate;
 	for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
 		if (doc == self) continue;
 		for (NSString *pluginName in doc.runningPlugins.allKeys) {
-			[(BeatPlugin*)doc.runningPlugins[pluginName] hideAllWindows];
+			[doc.runningPlugins[pluginName] hideAllWindows];
 		}
 	}
 	
 	// Reveal all plugin windows for the current document
 	for (NSString *pluginName in _runningPlugins.allKeys) {
-		[(BeatPlugin*)_runningPlugins[pluginName] showAllWindows];
+		[_runningPlugins[pluginName] showAllWindows];
 	}
+
 	[self.documentWindow orderFront:nil];
+	
+	// Notify running plugins that the window became main after the document *actually* is main window
+	[self notifyPluginsThatWindowBecameMain];
 }
 
 - (void)hideAllPluginWindows {
@@ -1119,7 +1131,7 @@ static BeatAppDelegate *appDelegate;
 	
 	// When ensuring layout, we'll update all scene number labels
 	if (self.showPageNumbers) [self.textView updatePageNumbers];
-	if (self.showSceneNumberLabels) [self.textView updateSceneLabelsFrom:0];
+	if (self.showSceneNumberLabels) [self.textView resetSceneNumberLabels];
 	[self.textView setNeedsDisplay:YES];
 	[self.marginView updateBackground];
 }
@@ -1217,14 +1229,14 @@ static BeatAppDelegate *appDelegate;
 		os_log(OS_LOG_DEFAULT, "Error (auto)saving file: %@", exception);
 
 		// If there is data in the cache, return it
-		if (_dataCache != nil) return _dataCache;
+		if (dataCache != nil) return dataCache;
 		else dataRepresentation = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
 		
 		// Everything is terrible, crash and don't overwrite anything.
 		if (dataRepresentation == nil) @throw NSInternalInconsistencyException;
 	} @finally {
 		// If saving was successful, let's store the data into cache
-		if (success) _dataCache = dataRepresentation.copy;
+		if (success) dataCache = dataRepresentation.copy;
 	}
     
     return dataRepresentation;
@@ -1313,6 +1325,7 @@ static BeatAppDelegate *appDelegate;
  
  */
 
+
 # pragma mark - Text I/O
 
 - (void)setupTextView {
@@ -1332,6 +1345,7 @@ static BeatAppDelegate *appDelegate;
 - (NSString *)text {
     return self.textView.string;
 }
+
 - (NSAttributedString *)getAttributedText
 {
 	return [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
@@ -1403,6 +1417,7 @@ static BeatAppDelegate *appDelegate;
 	
 	return YES;
 }
+
 
 #pragma mark - Print & Export
 
@@ -1808,27 +1823,6 @@ static BeatAppDelegate *appDelegate;
 	return NO;
 }
 
-- (void)autocompleteAtCurrentLine {
-	Line *currentLine = self.currentLine;
-	
-	if (_textView.selectedRange.location == NSMaxRange(currentLine.textRange)) {
-
-		if (currentLine.isAnyCharacter) {
-			if (!_characterNames.count) [self collectCharacterNames];
-			[self.textView setAutomaticTextCompletionEnabled:YES];
-		} else if (currentLine.type == heading) {
-			if (!_sceneHeadings.count) [self collectHeadings];
-			[self.textView setAutomaticTextCompletionEnabled:YES];
-		} else {
-			[_characterNames removeAllObjects];
-			[_sceneHeadings removeAllObjects];
-			[self.textView setAutomaticTextCompletionEnabled:NO];
-		}
-		
-	} else {
-		[self.textView setAutomaticTextCompletionEnabled:NO];
-	}
-}
 
 - (Line*)getPreviousLine:(Line*)line {
 	NSInteger i = [self.parser.lines indexOfObject:line];
@@ -1883,11 +1877,9 @@ static BeatAppDelegate *appDelegate;
 
 - (void)textDidChange:(NSNotification *)notification
 {
-	[BeatMeasure start:@"Text update phase"];
-	
 	// Begin from top if no last changed range was set
 	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
-	
+		
 	// Save attributed text to cache
 	_attrTextCache = [self getAttributedText];
 	
@@ -1898,7 +1890,6 @@ static BeatAppDelegate *appDelegate;
 	if (_revisionMode) [self registerChangesInRange:_lastChangedRange];
 	
 	// Update formatting
-	[BeatMeasure start:@"Formatting phase"];
 	[self applyFormatChanges];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
@@ -1944,10 +1935,17 @@ static BeatAppDelegate *appDelegate;
 	_contentCache = [NSString stringWithString:self.textView.string];
 	
 	// A larger chunk of text was pasted. Ensure layout.
-	if (_lastChangedRange.length > 3) [self ensureLayout];
+	if (_lastChangedRange.length > 3) {
+		[self ensureLayout];
+	}
 	
 	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
-	if (self.autocomplete) [self autocompleteAtCurrentLine];
+	if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
+	
+	// If this was an undo operation, scroll to where the alteration was made
+	if (self.undoManager.isUndoing) {
+		[self.textView scrollToRange:NSMakeRange(_lastChangedRange.location, 0)];
+	}
 	
 	// Reset last changed range
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
@@ -1961,7 +1959,7 @@ static BeatAppDelegate *appDelegate;
 - (void)textViewDidChangeSelection:(NSNotification *)notification {
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-		
+			
 	// Close any popups
 	if (_quickSettingsPopover.shown) [self closeQuickSettings];
 	
@@ -1985,7 +1983,7 @@ static BeatAppDelegate *appDelegate;
 		[self updateUIwithCurrentScene];
 		
 		// Update tag view
-		if (self.mode == TaggingMode) [self updateTaggingData];
+		if (self.mode == TaggingMode) [self.tagging updateTaggingData];
 		
 		// Update running plugins
 		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
@@ -2325,123 +2323,10 @@ static BeatAppDelegate *appDelegate;
 }
 
 
-# pragma mark - Autocomplete
-
-// Collect all character names from script
-- (void)collectCharacterNames {
-    /*
-     
-     So let me elaborate a bit. This is currently two systems upon each
-	 other and two separate lists of character names are stored.
-	 
-     Other use is to collect character cues for autocompletion.
-	 There, it doesn't really matter if we have strange stuff after names,
-	 because different languages can use their own abbreviations.
-     
-     Characters are also collected for the filtering feature, so we will
-	 just strip away everything after the name (such as V.O. or O.S.), and
-	 hope for the best.
-	      
-     */
-	
-	[_characterNames removeAllObjects];
-	
-	// If there was a character selected in Character Filter Box, save it
-	NSString *selectedCharacter = _characterBox.selectedItem.title;
-    
-	NSMutableArray *characterList = NSMutableArray.new;
-	NSMutableDictionary <NSString*, NSNumber*>* charactersAndLines = NSMutableDictionary.new;
-    
-	[_characterBox removeAllItems];
-	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
-	
-	Line* currentLine = self.currentLine;
-	
-	for (Line *line in self.parser.lines) {
-		if ((line.isAnyCharacter) && line != currentLine
-			) {
-			// Don't add this line if it's just a character with cont'd.
-			// We'll account for other things later, such as V.O., O.S. etc.
-			/*
-			NSString *contdExtension = [NSString stringWithFormat:@"(%@)", [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]];
-			if ([line.string rangeOfString:contdExtension options:NSCaseInsensitiveSearch].location != NSNotFound &&
-				[line.string rangeOfString:@"(CONT'D)" options:NSCaseInsensitiveSearch].location != NSNotFound
-				) continue;
-			*/
-			 
-			// Character name, EXCLUDING any suffixes, such as (CONT'D), (V.O.') etc.
-			NSString *character = line.characterName;
-			// For some reason there are random misinterpretations of character cues, so skip empty lines
-			if (character.length == 0) continue;
-			
-			// Add the character + suffix into dict and calculate number of appearances
-			if (charactersAndLines[character]) {
-				NSInteger lines = charactersAndLines[character].integerValue + 1;
-				charactersAndLines[character] = [NSNumber numberWithInteger:lines];
-			} else {
-				charactersAndLines[character] = [NSNumber numberWithInteger:1];
-			}
-			
-			// Add character to list
-			if (character && ![characterList containsObject:character]) {
-				[_characterBox addItemWithTitle:character]; // Add into the dropown
-                [characterList addObject:character];
-            }
-		}
-	}
-	
-	// Create an ordered list with all the character names. One with the most lines will be the first suggestion.
-	NSArray *characters = [charactersAndLines keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2){
-		return [obj2 compare:obj1];
-	}];
-	for (NSString *character in characters) {
-		[_characterNames addObject:character];
-		[_characterNames addObject:[NSString stringWithFormat:@"%@ (%@)", character, [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]]];
-	}
-	
-    // There was a character selected in the filtering menu, so select it again (if applicable)
-    if (selectedCharacter.length) {
-        for (NSMenuItem *item in _characterBox.itemArray) {
-            if ([item.title isEqualToString:selectedCharacter]) [_characterBox selectItem:item];
-        }
-    }
-}
-- (void)collectHeadings {
-	Line *currentLine = self.currentLine;
-	
-	[_sceneHeadings removeAllObjects];
-	for (Line *line in self.parser.lines) {
-		if (line.type == heading && line != currentLine && ![_sceneHeadings containsObject:line.string]) {
-			
-			// If the heading has a color set, strip the color
-			if ([line.string rangeOfString:@"[[COLOR"].location != NSNotFound) {
-				[_sceneHeadings addObject:[line.string.uppercaseString substringToIndex:[line.string rangeOfString:@"[[COLOR"].location]];
-			} else {
-				[_sceneHeadings addObject:line.string.uppercaseString];
-			}
-		}
-	}
-}
+# pragma mark - Autocomplete and character input
 
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-	NSMutableArray *matches = [NSMutableArray array];
-	NSMutableArray *search = [NSMutableArray array];
-
-	Line *currentLine = self.currentLine;
-	
-	// Choose which array to search
-	if (currentLine.type == character) search = _characterNames;
-	else if (currentLine.type == heading) search = _sceneHeadings;
-	
-	// Find matching lines for the partially typed line
-	for (NSString *string in search) {
-		if ([string rangeOfString:[textView.string substringWithRange:charRange].uppercaseString options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
-			[matches addObject:string];
-		}
-	}
-	
-	[matches sortUsingSelector:@selector(compare:)];
-	return matches;
+	return [_autocompletion textView:textView completions:words forPartialWordRange:charRange indexOfSelectedItem:index];
 }
 
 - (void)handleTabPress {
@@ -2460,7 +2345,7 @@ static BeatAppDelegate *appDelegate;
 		}
 	}
 	else if (currentLine.isAnyCharacter) {
-		[self autocompleteAtCurrentLine];
+		[_autocompletion autocompleteOnCurrentLine];
 	} else {
 		// Don't allow this to happen twice
 		if (_characterInput) return;
@@ -2901,25 +2786,25 @@ static BeatAppDelegate *appDelegate;
 
 #pragma mark - Formatting Buttons
 
-static NSString *lineBreak = @"\n\n===\n\n";
-static NSString *boldSymbol = @"**";
-static NSString *italicSymbol = @"*";
-static NSString *underlinedSymbol = @"_";
-static NSString *noteOpen = @"[[";
-static NSString *noteClose= @"]]";
-static NSString *omitOpen = @"/*";
-static NSString *omitClose= @"*/";
-static NSString *forceHeadingSymbol = @".";
-static NSString *forceActionSymbol = @"!";
-static NSString *forceCharacterSymbol = @"@";
-static NSString *forcetransitionLineSymbol = @">";
-static NSString *forceLyricsSymbol = @"~";
-static NSString *forceDualDialogueSymbol = @"^";
-
-static NSString *highlightSymbolOpen = @"<<";
-static NSString *highlightSymbolClose = @">>";
-static NSString *strikeoutSymbolOpen = @"{{";
-static NSString *strikeoutSymbolClose = @"}}";
+//static NSString *lineBreak = @"\n\n===\n\n";
+//static NSString *boldSymbol = @"**";
+//static NSString *italicSymbol = @"*";
+//static NSString *underlinedSymbol = @"_";
+//static NSString *noteOpen = @"[[";
+//static NSString *noteClose= @"]]";
+//static NSString *omitOpen = @"/*";
+//static NSString *omitClose= @"*/";
+//static NSString *forceHeadingSymbol = @".";
+//static NSString *forceActionSymbol = @"!";
+//static NSString *forceCharacterSymbol = @"@";
+//static NSString *forcetransitionLineSymbol = @">";
+//static NSString *forceLyricsSymbol = @"~";
+//static NSString *forceDualDialogueSymbol = @"^";
+//
+//static NSString *highlightSymbolOpen = @"<<";
+//static NSString *highlightSymbolClose = @">>";
+//static NSString *strikeoutSymbolOpen = @"{{";
+//static NSString *strikeoutSymbolClose = @"}}";
 
 static NSString *tagAttribute = @"BeatTag";
 static NSString *revisionAttribute = @"Revision";
@@ -3614,6 +3499,7 @@ static NSString *revisionAttribute = @"Revision";
  */
 
 #pragma  mark - Sidebar methods
+// Move all of this into a separate sidebar handler class
 
 - (CGFloat)sidebarWidth {
 	return self.splitHandle.bottomOrLeftView.frame.size.width;
@@ -3631,7 +3517,7 @@ static NSString *revisionAttribute = @"Revision";
 		
 		// Show outline
 		[self.outlineView reloadOutline];
-		[self collectCharacterNames]; // For filtering
+		[self.autocompletion collectCharacterNames]; // Get characters for filtering through autocomplete (this is silly, I know)
 		
 		self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
 		
@@ -4851,6 +4737,15 @@ triangle walks
 	}
 }
 
+- (void)notifyPluginsThatWindowBecameMain {
+	if (!_runningPlugins) return;
+	
+	for (NSString *pluginName in _runningPlugins.allKeys) {
+		BeatPlugin *plugin = _runningPlugins[pluginName];
+		[plugin documentDidBecomeMain];
+	}
+}
+
 - (void)addWidget:(id)widget {
 	[_widgetView addWidget:widget];
 	[self showWidgets:nil];
@@ -4883,6 +4778,11 @@ triangle walks
 	[self updateQuickSettings];
 }
 
+-(void)toggleMode:(BeatEditorMode)mode {
+	if (_mode != mode) _mode = EditMode;
+	else _mode = mode;
+	[self updateEditorMode];
+}
 -(void)setMode:(BeatEditorMode)mode {
 	_mode = mode;
 	[self updateEditorMode];
@@ -4897,109 +4797,11 @@ triangle walks
 
 // NOTE: Move all of this into BeatTagging class
 
-- (void)setupTagging {
-	[_sideView setFillColor:[BeatColors color:@"backgroundGray"]];
-	
-	// Move these into a class living in IB
-	[_tagging loadTags:[_documentSettings get:DocSettingTags] definitions:[_documentSettings get:DocSettingTagDefinitions]];
-}
-
 - (IBAction)toggleTagging:(id)sender {
 	if (_mode == TaggingMode) _mode = EditMode;
 	else _mode = TaggingMode;
 	
 	[self updateEditorMode];
-}
-- (IBAction)closeTagging:(id)sender {
-	if (_mode == TaggingMode) self.mode = EditMode;
-	
-	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
-	[_sideViewCostraint setConstant:0];
-}
-
-- (void)addTagToRange:(NSRange)range tag:(BeatTagItem*)tag {
-	// NOTE: Is this obsolete?
-	
-	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
-	
-	if (tag == NoTag) {
-		// Clear tags
-		[self.textView.textStorage removeAttribute:tagAttribute range:range];
-		[self.textView.textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
-		[self saveTags];
-	} else {
-		[self.textView.textStorage addAttribute:tagAttribute value:tag range:range];
-		
-		NSColor *tagColor = [tag.color colorWithAlphaComponent:.6];
-		[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
-		
-		[self saveTags];
-	}
-	
-	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-		[self.textView.textStorage setAttributes:oldAttributes range:range];
-	}];
-}
-
-- (void)tagRange:(NSRange)range withType:(BeatTagType)type {
-	NSString *string = [self.textView.string substringWithRange:range];
-	BeatTag* tag = [_tagging addTag:string type:type];
-	
-	if (tag) {
-		[self tagRange:range withTag:tag];
-		[self forceFormatChangesInRange:range];
-	}
-}
-- (TagDefinition*)definitionWithName:(NSString*)name type:(BeatTagType)type {
-	return [self.tagging definitionWithName:name type:type];
-}
-- (void)tagRange:(NSRange)range withDefinition:(id)definition {
-	TagDefinition *def = (TagDefinition*)definition;
-	BeatTag *tag = [BeatTag withDefinition:def];
-
-	[self tagRange:range withTag:tag];
-	[self forceFormatChangesInRange:range];
-}
-
-- (void)tagRange:(NSRange)range withTag:(BeatTag*)tag {
-	// Tag a range with the specified tag.
-	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
-	// So the tagging system basically only relies on the attributes in the NSTextView's rich-text string.
-	
-	// TODO: Somehow check if the range has revision attributes?
-	
-	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
-	
-	if (tag == nil) {
-		// Clear tags
-		[self.textView.textStorage removeAttribute:tagAttribute range:range];
-		[self saveTags];
-	} else {
-		[self.textView.textStorage addAttribute:tagAttribute value:tag range:range];
-		[self saveTags];
-	}
-	
-	if (!_documentIsLoading) {
-		[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-			[self.textView.textStorage setAttributes:oldAttributes range:range];
-		}];
-	}
-}
-
-- (bool)tagExists:(NSString*)string type:(BeatTagType)type { return [self.tagging tagExists:string type:type]; }
-- (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type { return [self.tagging searchTagsByTerm:string type:type]; }
-
-- (void)saveTags {
-	NSArray *tags = [_tagging getTags];	
-	NSArray *definitions = [_tagging getDefinitions];
-	
-	[_documentSettings set:DocSettingTags as:tags];
-	[_documentSettings set:DocSettingTagDefinitions as:definitions];
-}
-
-- (void)updateTaggingData {
-	// Move this into tagging class
-	[_tagTextView.textStorage setAttributedString:[_tagging displayTagsForScene:self.currentScene]];
 }
 
 #pragma mark - Locking The Document
@@ -5044,25 +4846,20 @@ triangle walks
 	[self.lockButton displayLabel];
 }
 
-- (void)didPerformEdit:(NSRange)range {
-	//
-}
-
-
 -(bool)contentLocked {
 	return [self.documentSettings getBool:@"Locked"];
 }
 
-#pragma mark - For throttling
+
+#pragma mark - For avoiding throttling
 
 - (bool)hasChanged {
-	if ([self.textView.string isEqualToString:self.bufferedText]) return NO;
+	if ([self.textView.string isEqualToString:bufferedText]) return NO;
 	else {
-		self.bufferedText = [NSString stringWithString:self.textView.string];
+		bufferedText = [NSString stringWithString:self.textView.string];
 		return YES;
 	}
 }
-
 
 @end
 

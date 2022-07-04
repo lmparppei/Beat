@@ -37,6 +37,7 @@
 @property (nonatomic, nullable) JSValue* updateSelectionMethod;
 @property (nonatomic, nullable) JSValue* updateOutlineMethod;
 @property (nonatomic, nullable) JSValue* updateSceneMethod;
+@property (nonatomic, nullable) JSValue* documentDidBecomeMainMethod;
 @property (nonatomic) bool resident;
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
@@ -168,7 +169,7 @@
 	return [BeatPluginManager.sharedManager isCompatible:version];
 }
 
-#pragma mark - Resident plugin
+#pragma mark - Resident plugin listeners
 
 // Text change update
 - (void)onTextChange:(JSValue*)updateMethod {
@@ -230,13 +231,25 @@
 - (void)setSceneIndexUpdate:(JSValue*)updateMethod {
 	// Save callback for selection change update
 	_updateSceneMethod = updateMethod;
-	_resident = YES;
-	
-	// Tell the delegate to keep this plugin in memory and update it on refresh
-	[_delegate registerPlugin:self];
+	[self makeResident];
 }
 - (void)updateSceneIndex:(NSInteger)sceneIndex {
 	if (!self.onSceneIndexUpdateDisabled) [_updateSceneMethod callWithArguments:@[@(sceneIndex)]];
+}
+
+// Window did become main
+- (void)onDocumentBecameMain:(JSValue*)updateMethod {
+	_documentDidBecomeMainMethod = updateMethod;
+	[self makeResident];
+}
+- (void)documentDidBecomeMain {
+	[_documentDidBecomeMainMethod callWithArguments:nil];
+}
+
+- (void)makeResident {
+	// Make the plugin stay in memory and register it with the document
+	_resident = YES;
+	[_delegate registerPlugin:self];
 }
 
 #pragma mark - Multithreading
@@ -850,16 +863,15 @@
 	
 	for (NSWindow *window in self.pluginWindows) {
 		window.level = NSFloatingWindowLevel;
-
-		//[window setIsVisible:YES];
 	}
 }
+
 - (void)hideAllWindows {
 	if (_terminating) return;
 	
 	for (NSWindow *window in self.pluginWindows) {
 		window.level = NSNormalWindowLevel;
-		//[window setIsVisible:NO];
+		window.orderedIndex += 1; // Hide behind new stuff, just in case
 	}
 }
 

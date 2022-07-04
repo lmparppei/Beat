@@ -60,6 +60,7 @@
 - (void)onSelectionChange:(JSValue*)updateMethod;
 - (void)onOutlineChange:(JSValue*)updateMethod;
 - (void)onSceneIndexUpdate:(JSValue*)updateMethod;
+- (void)onDocumentBecameMain:(JSValue*)updateMethod;
 
 - (void)log:(NSString*)string;
 - (void)openConsole;
@@ -221,6 +222,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
+- (void)documentDidBecomeMain;
 
 - (void)showAllWindows;
 - (void)hideAllWindows;

@@ -819,11 +819,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSString *tagString = [self.textStorage.string substringWithRange:self.selectedRange].lowercaseString;
 		BeatTagType type = [BeatTagging tagFor:tagStr];
 		
-		if (![self.taggingDelegate tagExists:tagString type:type]) {
+		if (![self.tagging tagExists:tagString type:type]) {
 			// If a tag with corresponding text & type doesn't exist, let's find possible similar tags
-			NSArray *possibleMatches = [self.taggingDelegate searchTagsByTerm:tagString type:type];
+			NSArray *possibleMatches = [self.tagging searchTagsByTerm:tagString type:type];
 			
-			if (possibleMatches.count == 0)	[self.taggingDelegate tagRange:self.selectedRange withType:type];
+			if (possibleMatches.count == 0)	[self.tagging tagRange:self.selectedRange withType:type];
 			else {
 				NSArray *items = @[[NSString stringWithFormat:@"New: %@", tagString]];
 				self.matches = [items arrayByAddingObjectsFromArray:possibleMatches];
@@ -835,7 +835,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			}
 			
 		} else {
-			[self.taggingDelegate tagRange:self.selectedRange withType:type];
+			[self.tagging tagRange:self.selectedRange withType:type];
 		}
 		
 		// Deselect
@@ -855,14 +855,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		tagName = [self.matches objectAtIndex:self.autocompleteTableView.selectedRow];
 	}
 	
-	id def = [self.taggingDelegate definitionWithName:(NSString*)tagName type:_currentTagType];
+	id def = [self.tagging definitionWithName:(NSString*)tagName type:_currentTagType];
 	
 	if (def) {
 		// Definition was selected
-		[self.taggingDelegate tagRange:self.selectedRange withDefinition:def];
+		[self.tagging tagRange:self.selectedRange withDefinition:def];
 	} else {
 		// No existing definition selected
-		[self.taggingDelegate tagRange:self.selectedRange withType:_currentTagType];
+		[self.tagging tagRange:self.selectedRange withType:_currentTagType];
 	}
 	
 	self.selectedRange = (NSRange){ self.selectedRange.location + self.selectedRange.length, 0 };
@@ -1669,7 +1669,7 @@ Line *cachedRectLine;
 }
 
 -(void)updateMarkdownView {
-	if (!_editorDelegate.hideFountainMarkup) return;
+	if (!_editorDelegate.hideFountainMarkup || _editorDelegate.documentIsLoading) return;
 	if (!self.string.length) return;
 	
 	Line* line = self.editorDelegate.currentLine;
@@ -1677,8 +1677,10 @@ Line *cachedRectLine;
 		
 	if (line != prevLine) {
 		// If the line changed, let's redraw the range
-		bool lineInRange = (NSMaxRange(line.textRange) <= self.string.length);
-		bool prevLineInRange = (NSMaxRange(prevLine.textRange) <= self.string.length);
+		bool lineInRange = NO;
+		if (NSMaxRange(line.textRange) <= self.string.length) lineInRange = YES;
+		bool prevLineInRange = NO;
+		if (NSMaxRange(prevLine.textRange) <= self.string.length) prevLineInRange = YES;
 		
 		if (lineInRange) [self.layoutManager invalidateGlyphsForCharacterRange:line.textRange changeInLength:0 actualCharacterRange:nil];
 		if (prevLineInRange) [self.layoutManager invalidateGlyphsForCharacterRange:prevLine.textRange changeInLength:0 actualCharacterRange:nil];

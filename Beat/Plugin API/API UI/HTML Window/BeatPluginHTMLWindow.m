@@ -19,6 +19,7 @@
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
 	self.level = NSFloatingWindowLevel;
+	self.hidesOnDeactivate = NO;
 	
 	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
 	self.delegate = host;

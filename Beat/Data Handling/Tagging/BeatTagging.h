@@ -43,21 +43,9 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 };
 
 @class BeatTagging;
-@protocol BeatTaggingDelegate <NSObject>
-@property (readonly, weak) ContinuousFountainParser *parser;
-#if !TARGET_OS_IOS
-@property (readonly, weak) BeatTagView *textView;
-#else
-@property (readonly, weak) UITextView *textView;
-#endif
 
-- (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
-- (void)tagRange:(NSRange)range withType:(BeatTagType)type;
-- (bool)tagExists:(NSString*)string type:(BeatTagType)type;
-- (void)tagRange:(NSRange)range withDefinition:(id)definition;
-- (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type;
-- (id)definitionWithName:(NSString*)name type:(BeatTagType)type;
-
+@protocol BeatTaggingDelegate <BeatEditorDelegate>
+// Do we need some special stuff here?
 @end
 
 
@@ -70,7 +58,7 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 @interface BeatTagging : NSObject
 @property (weak) IBOutlet id<BeatTaggingDelegate> delegate;
 #if !TARGET_OS_IOS
-@property (weak) IBOutlet BeatTagView* textView;
+@property (weak) IBOutlet BeatTagView* taggingTextView;
 #endif
 
 + (NSArray*)tags;
@@ -85,6 +73,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 + (NSString*)newId;
 + (NSString*)hexForKey:(NSString*)key;
 
+- (void)setup;
+
 - (instancetype)initWithDelegate:(id<BeatTaggingDelegate>)delegate;
 - (NSDictionary*)tagsForScene:(OutlineScene*)scene;
 - (void)bakeTags;
@@ -97,5 +87,13 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 - (bool)tagExists:(NSString*)string type:(BeatTagType)type;
 - (NSArray*)searchTagsByTerm:(NSString*)string type:(BeatTagType)type;
 - (id)definitionWithName:(NSString*)name type:(BeatTagType)type;
+
+- (void)tagRange:(NSRange)range withTag:(BeatTag*)tag;
+- (void)tagRange:(NSRange)range withType:(BeatTagType)type;
+- (void)tagRange:(NSRange)range withDefinition:(id)definition;
+- (void)updateTaggingData;
+
+- (void)open;
+- (void)close;
 
 @end
