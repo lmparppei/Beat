@@ -164,10 +164,6 @@
 	[super findBarViewDidChangeHeight];
 }
 
-
-#pragma mark - Tagging View
-
-
 @end
 /*
 

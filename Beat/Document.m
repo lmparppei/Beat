@@ -2387,7 +2387,7 @@ static NSWindow *currentKeyWindow;
 	
 	// Format the line (if mid-screenplay)
 	[_formatting formatLine:currentLine];
-
+	
 	// Set typing attributes (just in case, and if at the end)
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
@@ -2397,6 +2397,8 @@ static NSWindow *currentKeyWindow;
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	
 	[self.textView setTypingAttributes:attributes];
+	
+	NSLog(@"Forced successfully");
 }
 - (void)cancelCharacterInput {
 	_characterInput = NO;

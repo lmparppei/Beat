@@ -1,5 +1,12 @@
 # Changelog
 
+## Beat 1.95.0
+
+- Some plugin window logic fixed
+- Further pagination bugs fixed... maybe
+- View now scrolls to where changes were made when undoing
+
+
 ## Beat 1.94.6
 
 - New dialogue pagination system

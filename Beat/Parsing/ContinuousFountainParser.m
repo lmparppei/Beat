@@ -2504,7 +2504,9 @@ and incomprehensible system of recursion.
 			return item;
 		}
 		
-		if (i == origin && looped) {
+		// We have looped around the array (unsuccessfuly)
+		if ((i == origin && looped) ||
+			(origin == -1 && looped)) {
 			break;
 		}
 		
@@ -2538,7 +2540,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 	if (prevLineAtLocationIndex >= lines.count) prevLineAtLocationIndex = 0;
 	
 	
-	// Quick lookups for first object
+	// Quick lookup for first object
 	if (position == 0) return lines.firstObject;
 	
 	// We'll use a circular lookup here.

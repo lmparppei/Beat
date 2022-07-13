@@ -103,6 +103,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Autocompleting
 @interface BeatTextView ()
+
 @property (nonatomic, weak) IBOutlet NSTouchBar *touchBar;
 
 @property (nonatomic, strong) NSPopover *taggingPopover;
@@ -180,13 +181,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 	self.matches = NSMutableArray.array;
 	self.pageBreaks = NSArray.new;
-	//self.masks = NSMutableArray.new;
+	
 	self.lastPos = -1;
 
 	[self setupPopovers];
 	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeSelection:) name:@"NSTextViewDidChangeSelectionNotification" object:self];
 	
 	self.layoutManager.delegate = self;
+	
 }
 
 -(void)setup {
@@ -1915,7 +1917,6 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 - (ContinuousFountainParser*)parser {
 	return self.editorDelegate.parser;
 }
-
 
 @end
 /*

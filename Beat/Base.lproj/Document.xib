@@ -78,28 +78,28 @@
         <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="xOd-HO-29H" userLabel="Window">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
-            <rect key="contentRect" x="384" y="326" width="1173" height="661"/>
+            <rect key="contentRect" x="384" y="326" width="1155" height="661"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="gIp-Ho-8D9" customClass="MasterView">
-                <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
+                <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <customView id="3qa-Wg-PsD" customClass="ColorView">
-                        <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </customView>
                     <tabView drawsBackground="NO" allowsTruncatedLabels="NO" type="noTabsNoBorder" id="gz5-tZ-Ofd" userLabel="Tab View">
-                        <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Text" identifier="1" id="stc-hX-uX6" userLabel="Text Tab">
                                 <view key="view" id="Qth-9B-jWR">
-                                    <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="ncb-yG-bCM" userLabel="Top view">
-                                            <rect key="frame" x="0.0" y="120" width="1173" height="541"/>
+                                            <rect key="frame" x="0.0" y="120" width="1155" height="541"/>
                                             <subviews>
                                                 <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Sidebar view">
                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="541"/>
@@ -908,7 +908,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" ambiguous="YES" drawsBackground="NO" id="uOK-xT-qdV">
                                                                                     <rect key="frame" x="1" y="1" width="298" height="498"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" multipleSelection="NO" autosaveColumns="NO" rowHeight="47" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="InP-FO-2p3" id="2dB-kI-P7V" customClass="BeatReviewList" customModule="Beat" customModuleProvider="target">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="298" height="498"/>
@@ -1081,20 +1081,20 @@
                                                     </constraints>
                                                 </customView>
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="Sy0-kF-Tby" customClass="MarginView">
-                                                    <rect key="frame" x="300" y="0.0" width="693" height="541"/>
+                                                    <rect key="frame" x="300" y="0.0" width="675" height="541"/>
                                                     <subviews>
                                                         <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" horizontalScrollElasticity="none" findBarPosition="aboveHorizontalRuler" translatesAutoresizingMaskIntoConstraints="NO" id="Mky-48-wwA" customClass="ScrollView">
-                                                            <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
                                                             <clipView key="contentView" autoresizesSubviews="NO" drawsBackground="NO" id="sxN-R8-PHt" customClass="BeatClipView">
-                                                                <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="675" height="541"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
+                                                                    <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="panel" incrementalSearchingEnabled="YES" continuousSpellChecking="YES" allowsUndo="YES" usesRuler="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="6pm-Ac-n3m" customClass="BeatTextView">
                                                                         <rect key="frame" x="0.0" y="0.0" width="693" height="541"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                        <size key="minSize" width="693" height="541"/>
+                                                                        <size key="minSize" width="675" height="541"/>
                                                                         <size key="maxSize" width="2035" height="10000000"/>
                                                                         <attributedString key="textStorage">
                                                                             <fragment content="TEXT">
@@ -1137,7 +1137,7 @@
                                                             </connections>
                                                         </scrollView>
                                                         <customView hidden="YES" id="hjj-OY-sw5" customClass="BeatTimerView">
-                                                            <rect key="frame" x="638" y="15" width="30" height="30"/>
+                                                            <rect key="frame" x="620" y="15" width="30" height="30"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                             <connections>
                                                                 <outlet property="delegate" destination="rsQ-wl-KkE" id="Tuc-ez-Ph4"/>
@@ -1145,11 +1145,11 @@
                                                             </connections>
                                                         </customView>
                                                         <customView wantsLayer="YES" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MJt-fS-Zk9" userLabel="Button View">
-                                                            <rect key="frame" x="15" y="502" width="653" height="24"/>
+                                                            <rect key="frame" x="15" y="502" width="635" height="24"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <subviews>
                                                                 <button toolTip="Quick Settings" allowsExpansionToolTips="YES" id="piN-SW-wNh" userLabel="Quick Settings Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="626" y="1" width="27" height="22"/>
+                                                                    <rect key="frame" x="608" y="1" width="27" height="22"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="SettingIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="yVk-AR-Glo">
                                                                         <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
@@ -1164,7 +1164,7 @@
                                                                     </connections>
                                                                 </button>
                                                                 <button toolTip="Show Index Cards" allowsExpansionToolTips="YES" id="ZL1-eS-Zb2" userLabel="Cards Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="593" y="1" width="27" height="22"/>
+                                                                    <rect key="frame" x="575" y="1" width="27" height="22"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="CardsIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="R3Y-lj-Bga">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1195,7 +1195,7 @@
                                                                     </connections>
                                                                 </button>
                                                                 <button toolTip="Show Print Preview" allowsExpansionToolTips="YES" id="DOv-x4-OK1" userLabel="Preview Button" customClass="BeatEditorButton">
-                                                                    <rect key="frame" x="556" y="1" width="27" height="22"/>
+                                                                    <rect key="frame" x="538" y="1" width="27" height="22"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="PreviewIcon" imagePosition="overlaps" refusesFirstResponder="YES" imageScaling="proportionallyUpOrDown" inset="2" id="XoS-9M-yaH">
                                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1222,7 +1222,7 @@
                                                                     </connections>
                                                                 </button>
                                                                 <customView hidden="YES" appearanceType="darkAqua" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pf2-1r-P3e" customClass="BeatModeDisplay" customModule="Beat" customModuleProvider="target">
-                                                                    <rect key="frame" x="221" y="0.0" width="210" height="24"/>
+                                                                    <rect key="frame" x="212" y="0.0" width="210" height="24"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                                     <subviews>
                                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zip-rI-oJi">
@@ -1307,7 +1307,7 @@
                                                     </connections>
                                                 </imageView>
                                                 <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="Thg-Wg-JDd" userLabel="Right Side View" customClass="ColorView">
-                                                    <rect key="frame" x="993" y="0.0" width="180" height="541"/>
+                                                    <rect key="frame" x="975" y="0.0" width="180" height="541"/>
                                                     <subviews>
                                                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" verticalScrollElasticity="none" id="aV3-wb-1do">
                                                             <rect key="frame" x="0.0" y="0.0" width="180" height="507"/>
@@ -1385,16 +1385,16 @@
                                             </constraints>
                                         </customView>
                                         <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="ddk-kT-A2G" userLabel="Bottom View">
-                                            <rect key="frame" x="0.0" y="0.0" width="1173" height="120"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1155" height="120"/>
                                             <subviews>
                                                 <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="0.0" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="QR8-n6-ttq" customClass="HorizontalPinchView">
-                                                    <rect key="frame" x="0.0" y="25" width="1173" height="95"/>
+                                                    <rect key="frame" x="0.0" y="25" width="1155" height="95"/>
                                                     <clipView key="contentView" id="t0d-gw-Lny">
-                                                        <rect key="frame" x="0.0" y="0.0" width="1173" height="95"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="1155" height="95"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <view translatesAutoresizingMaskIntoConstraints="NO" id="pm8-b1-sOe" customClass="BeatTimeline">
-                                                                <rect key="frame" x="0.0" y="0.0" width="1158" height="96"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="1140" height="96"/>
                                                                 <connections>
                                                                     <outlet property="delegate" destination="-2" id="PLf-hv-Xg4"/>
                                                                     <outlet property="heightConstraint" destination="naH-It-ilq" id="jIc-sf-Bru"/>
@@ -1415,7 +1415,7 @@
                                                         <constraint firstAttribute="height" constant="95" id="Sog-Rc-GyL"/>
                                                     </constraints>
                                                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="PaI-Yw-G48">
-                                                        <rect key="frame" x="0.0" y="79" width="1173" height="16"/>
+                                                        <rect key="frame" x="0.0" y="79" width="1155" height="16"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                     </scroller>
                                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="K8S-86-kEW">
@@ -1428,7 +1428,7 @@
                                                     </connections>
                                                 </scrollView>
                                                 <slider verticalHuggingPriority="750" id="jFW-sa-L7d">
-                                                    <rect key="frame" x="1066" y="5" width="96" height="17"/>
+                                                    <rect key="frame" x="1048" y="5" width="96" height="17"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                     <sliderCell key="cell" controlSize="mini" continuous="YES" state="on" alignment="left" minValue="100" maxValue="1000" doubleValue="100" tickMarkPosition="below" sliderType="linear" id="Ytk-MT-9Rb">
                                                         <connections>
@@ -1437,7 +1437,7 @@
                                                     </sliderCell>
                                                 </slider>
                                                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" id="OAI-EN-xnk">
-                                                    <rect key="frame" x="1043" y="7" width="14" height="12"/>
+                                                    <rect key="frame" x="1025" y="7" width="14" height="12"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Resize" id="tZe-KY-CK2"/>
                                                 </imageView>
@@ -1541,7 +1541,7 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-x8E"/>
             </connections>
-            <point key="canvasLocation" x="270.5" y="153.5"/>
+            <point key="canvasLocation" x="261.5" y="153.5"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="ho8-td-WxP"/>
         <customObject id="rsQ-wl-KkE" customClass="BeatTimer">
@@ -1594,7 +1594,8 @@
                 <touchBarItem id="Yl5-KN-N3x">
                     <viewController key="viewController" id="1lb-pf-av9">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kVd-IJ-8g1">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="OutlineIcon_white" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OS4-Pc-U6L">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1608,7 +1609,8 @@
                 <touchBarItem id="rWL-n1-Ejl">
                     <viewController key="viewController" id="2hM-bM-hIJ">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q8P-yB-ZHg">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="CardsIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="b8j-5x-Bvp">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1622,7 +1624,8 @@
                 <touchBarItem id="BZs-Eh-v5e">
                     <viewController key="viewController" id="s2w-pc-SMc">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LJ9-op-UOF">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="TimelineIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ysm-8B-b7r">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1637,7 +1640,8 @@
                 <touchBarItem id="0AV-2P-83z">
                     <viewController key="viewController" id="4Ye-z8-Rbe">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EX8-3T-2S9">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoUpTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w9h-KQ-O8T">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1651,7 +1655,8 @@
                 <touchBarItem id="vDN-00-so2">
                     <viewController key="viewController" id="f5E-6W-jOD">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zLo-23-u8a">
-                            <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                            <rect key="frame" x="7" y="-5" width="72" height="30"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoDownTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TaB-Om-lXF">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1688,8 +1693,8 @@
                             </touchBarItem>
                             <touchBarItem id="SBD-rY-fAc">
                                 <viewController key="viewController" id="cAF-5m-zuN">
-                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" id="hPv-kP-W8a">
-                                        <rect key="frame" x="0.0" y="0.0" width="244" height="18"/>
+                                    <textField key="view" horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="hPv-kP-W8a">
+                                        <rect key="frame" x="0.0" y="0.0" width="246" height="18"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <textFieldCell key="cell" lineBreakMode="clipping" title="Refresh for an anti-lateral thought" id="ebZ-HO-Ch9">
                                             <font key="font" usesAppearanceFont="YES"/>

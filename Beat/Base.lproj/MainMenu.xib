@@ -349,28 +349,28 @@
                                     <items>
                                         <menuItem title="Find…" tag="1" keyEquivalent="f" id="ltr-sy-WI6">
                                             <connections>
-                                                <action selector="performFindPanelAction:" target="-1" id="ezG-Ek-vlt"/>
+                                                <action selector="performTextFinderAction:" target="-1" id="lXE-Kl-sZT"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Find and Replace…" tag="12" keyEquivalent="f" id="2DA-pz-zR5">
                                             <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                             <connections>
-                                                <action selector="performFindPanelAction:" target="-1" id="IyV-lx-nS0"/>
+                                                <action selector="performTextFinderAction:" target="-1" id="JXO-8p-C0v"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Find Next" tag="2" keyEquivalent="g" id="DDL-Xk-f31">
                                             <connections>
-                                                <action selector="performFindPanelAction:" target="-1" id="HSb-Ow-a1b"/>
+                                                <action selector="performTextFinderAction:" target="-1" id="i94-rQ-r82"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Find Previous" tag="3" keyEquivalent="G" id="S6f-Ft-GW9">
                                             <connections>
-                                                <action selector="performFindPanelAction:" target="-1" id="3bb-1g-Sfy"/>
+                                                <action selector="performTextFinderAction:" target="-1" id="WAM-SC-YnF"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Use Selection for Find" tag="7" keyEquivalent="e" id="kjc-fS-FOY">
                                             <connections>
-                                                <action selector="performFindPanelAction:" target="-1" id="4qO-zF-4hk"/>
+                                                <action selector="performTextFinderAction:" target="-1" id="Bou-mi-9nK"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Jump to Selection" keyEquivalent="j" id="mQ6-YH-j6X">
