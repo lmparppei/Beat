@@ -86,12 +86,13 @@
 	return [[Line alloc] initWithString:string type:type position:position parser:nil];
 }
 
-// For non-continuous parsing
+/// Init a line for non-continuous parsing
 - (Line*)initWithString:(NSString *)string type:(LineType)type {
 	return [[Line alloc] initWithString:string type:type position:-1 parser:nil];
 }
+
+/// Use this ONLY for creating temporary lines while paginating.
 - (Line*)initWithString:(NSString *)string type:(LineType)type pageSplit:(bool)pageSplit {
-	// This is used solely for pagination purposes
 	self = [super init];
 	if (self) {
 		_string = string;
@@ -107,23 +108,25 @@
 
 #pragma mark - Shorthands
 
-// Shorthands (used mostly by the paginator)
 + (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser {
 	return [[Line alloc] initWithString:string type:type position:0 parser:parser];
 }
 + (Line*)withString:(NSString*)string type:(LineType)type {
 	return [[Line alloc] initWithString:string type:type];
 }
+/// Use this ONLY for creating temporary lines while paginating
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit {
 	return [[Line alloc] initWithString:string type:type pageSplit:YES];
 }
+
 + (NSArray*)markupCharacters {
 	return @[@".", @"@", @"~", @"!"];
 }
 
 #pragma mark - Type
 
-+ (NSDictionary*)typeDictionary /// Used by plugin API to create constants
+/// Used by plugin API to create constants for matching line types to enumerated integer values
++ (NSDictionary*)typeDictionary
 {
 	NSMutableDictionary *types = NSMutableDictionary.dictionary;
 	
@@ -192,6 +195,7 @@
 	return types;
 }
 
+/// Retusn line type as string
 + (NSString*)typeAsString:(LineType)type {
 	switch (type) {
 		case empty:
@@ -247,69 +251,12 @@
 	}
 }
 
+/// Retusn line type as string
 - (NSString*)typeAsString
 {
 	return [Line typeAsString:self.type];
 }
 
-- (NSString*)typeAsFountainString
-{
-	// This returns the type as an FNElement compliant string,
-	// for convoluted backwards compatibility reasons :----)
-
-	switch (self.type) {
-		case empty:
-			return @"Empty";
-		case section:
-			return @"Section";
-		case synopse:
-			return @"Synopse";
-		case titlePageTitle:
-			return @"Title Page Title";
-		case titlePageAuthor:
-			return @"Title Page Author";
-		case titlePageCredit:
-			return @"Title Page Credit";
-		case titlePageSource:
-			return @"Title Page Source";
-		case titlePageContact:
-			return @"Title Page Contact";
-		case titlePageDraftDate:
-			return @"Title Page Draft Date";
-		case titlePageUnknown:
-			return @"Title Page Unknown";
-		case heading:
-			return @"Scene Heading";
-		case action:
-			return @"Action";
-		case character:
-			return @"Character";
-		case parenthetical:
-			return @"Parenthetical";
-		case dialogue:
-			return @"Dialogue";
-		case dualDialogueCharacter:
-			return @"Character";
-		case dualDialogueParenthetical:
-			return @"Parenthetical";
-		case dualDialogue:
-			return @"Dialogue";
-		case transitionLine:
-			return @"Transition";
-		case lyrics:
-			return @"Lyrics";
-		case pageBreak:
-			return @"Page Break";
-		case centered:
-			return @"Centered";
-		case more:
-			return @"More";
-		case dualDialogueMore:
-			return @"More";
-		case typeCount:
-			return @"";
-	}
-}
 
 #pragma mark - Cloning
 
@@ -357,6 +304,8 @@
 
 #pragma mark - Delegate methods
 
+/// Returns the index of this line in the parser.
+/// @warning VERY slow, this should be fixed to conform with the new, circular search methods.
 - (NSUInteger)index {
 	if (!self.parser) return NSNotFound;
 	return [self.parser.lines indexOfObject:self];
@@ -365,71 +314,24 @@
 
 #pragma mark - String methods
 
-- (NSString*)cleanedString {
-	// Return empty string for invisible blocks
-	if (self.type == section || self.type == synopse || self.omitted) return @"";
-		
-	NSMutableString *string = [NSMutableString stringWithString:[Line removeMarkUpFrom:[self stripInvisible] line:self]];
-	
-	return string;
-}
-
 - (NSString*)stringForDisplay {
-	// String for UI use
-	NSString *string;
-	if (!self.omitted) string = [Line removeMarkUpFrom:[self stripInvisible] line:self];
-	else string = [Line removeMarkUpFrom:self.string line:self];
-	
-	return [string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
-- (NSString*)stringCopy:(id)sender {
-	return [NSString stringWithString:_string];
-}
-
+/// @warning Legacy method. Use `line.stripFormatting`
 - (NSString*)textContent {
-	// Pure text content
-	NSMutableString *string = [NSMutableString stringWithString:self.string];
-
-	// Remove force characters
-	if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
-		if (self.type == character) [string setString:[string replace:RX(@"^@") with:@""]];
-		else if (self.type == heading) [string setString:[string replace:RX(@"^\\.") with:@""]];
-		else if (self.type == action) [string setString:[string replace:RX(@"^!") with:@""]];
-		else if (self.type == lyrics) [string setString:[string replace:RX(@"^~") with:@""]];
-		else if (self.type == transitionLine) [string setString:[string replace:RX(@"^>") with:@""]];
-		else {
-			if (self.numberOfPrecedingFormattingCharacters > 0 && self.string.length >= self.numberOfPrecedingFormattingCharacters) {
-				[string setString:[string substringFromIndex:self.numberOfPrecedingFormattingCharacters]];
-			}
-		}
-	}
-	
-	// Replace formatting characters
-	for (NSString* formattingCharacters in FORMATTING_CHARACTERS) {
-		[string setString:[string stringByReplacingOccurrencesOfString:formattingCharacters withString:@""]];
-	}
-
-	return string;
+	return self.stripFormatting;
 }
 
+/// Returns the last character as `unichar`
 -(unichar)lastCharacter {
 	return [_string characterAtIndex:self.length - 1];
 }
 
 #pragma mark - Strip formatting
 
-/*
- 
- So, uhhhhh. I'm not sure which of these methods are used where.
- Line.stripFormatting is the most reliable way of getting a clean string and
- should be used everywhere. The old methods linger around, because their quirks
- might be essential to some use cases, and I hope to fix this in the future.
- 
- */
-
+/// Strip any Fountain formatting from the line
 - (NSString*)stripFormatting {
-	// A better version of stripFormattingCharacters
 	NSIndexSet *contentRanges;
 	
 	// This is an experimental thing
@@ -440,7 +342,7 @@
 		contentRanges = self.contentRanges;
 	}
 	
-	__block NSMutableString *content = [NSMutableString string];
+	__block NSMutableString *content = NSMutableString.string;
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[content appendString:[self.string substringWithRange:range]];
 	}];
@@ -448,47 +350,7 @@
 	return content;
 }
 
-- (NSString*)stripFormattingCharacters {
-	// Strip any formatting
-	return [self stripInvisible];
-}
-- (NSString*)stripInvisible {
-	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
-	__block NSUInteger offset = 0;
-	
-	// To remove any omitted ranges, we need to combine the index sets
-	NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
-	[indexes addIndexes:self.omittedRanges];
-	[indexes addIndexes:self.noteRanges];
-	[indexes addIndexes:self.escapeRanges];
-	
-	// Strip section markup characters
-	if (self.type == section) {
-		int s = 0;
-		while (s < self.string.length && [self.string characterAtIndex:s] == '#') {
-			[indexes addIndex:s];
-			s++;
-		}
-	}
-	
-	[indexes enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		if (range.location - offset + range.length > string.length) {
-			range = NSMakeRange(range.location, string.length - range.location - offset);
-		}
-		
-		@try {
-			[string replaceCharactersInRange:NSMakeRange(range.location - offset, range.length) withString:@""];
-		}
-		@catch (NSException* exception) {
-			NSLog(@"cleaning out of range: %@ / (%lu, %lu) / offset %lu", self.string, range.location, range.length, offset);
-		}
-		@finally {
-			offset += range.length;
-		}
-	}];
-	
-	return string;
-}
+/// Returns a string with notes removed
 - (NSString*)stripNotes {
 	__block NSMutableString *string = [NSMutableString stringWithString:self.string];
 	__block NSUInteger offset = 0;
@@ -512,22 +374,24 @@
 	return string;
 }
 
+/// Returns a string with the scene number stripped
 - (NSString*)stripSceneNumber {
 	NSString *result = [self.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", self.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, self.string.length)];
 	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
+/// Range for the full line (incl. line break)
 -(NSRange)range {
-	// Range for the full line (incl. line break)
 	return NSMakeRange(self.position, self.string.length + 1);
 }
--(NSInteger)length {
-	return self.string.length;
-}
+
+/// Range for text content only (excl. line break)
 -(NSRange)textRange {
 	// Range for the text only
 	return NSMakeRange(self.position, self.string.length);
 }
+
+/// Converts a global (document-wide) range into local range inside the line
 -(NSRange)globalRangeToLocal:(NSRange)range {
 	// Insert a range and get a LOCAL range in the line
 	NSRange lineRange = (NSRange){ self.position, self.string.length };
@@ -536,9 +400,15 @@
 	return (NSRange){ intersection.location - self.position, intersection.length };
 }
 
+/// Length of the string
+-(NSInteger)length {
+	return self.string.length;
+}
+
 
 #pragma mark - Element booleans
 
+/// Returns TRUE for scene, section and synopsis elements
 - (bool)isOutlineElement {
 	if (self.type == heading ||
 		self.type == section ||
@@ -546,6 +416,7 @@
 	else return NO;
 }
 
+/// Returns TRUE for any title page element
 - (bool)isTitlePage {
 	if (self.type == titlePageTitle ||
 		self.type == titlePageCredit ||
@@ -557,6 +428,7 @@
 	else return NO;
 }
 
+/// Checks if the line is completely non-printing
 - (bool)isInvisible {
 	if (self.omitted ||
 		self.type == section ||
@@ -565,6 +437,7 @@
 	else return NO;
 }
 
+/// Returns TRUE if the line type is forced
 - (bool)forced {
 	if (self.numberOfPrecedingFormattingCharacters > 0) return YES;
 	else return NO;
@@ -572,32 +445,39 @@
 
 #pragma mark Dialogue
 
+/// Returns TRUE for any dialogue element, including character cue
 - (bool)isDialogue {
 	if (self.type == character || self.type == parenthetical || self.type == dialogue || self.type == more) return YES;
 	else return NO;
 }
+/// Returns TRUE for dialogue block elements, excluding character cues
 - (bool)isDialogueElement {
 	// Is SUB-DIALOGUE element
 	if (self.type == parenthetical || self.type == dialogue) return YES;
 	else return NO;
 }
+/// Returns TRUE for any dual dialogue element, including character cue
 - (bool)isDualDialogue {
 	if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogueMore) return YES;
 	else return NO;
 }
+/// Returns TRUE for dual dialogue block elements, excluding character cues
 - (bool)isDualDialogueElement {
 	if (self.type == dualDialogueParenthetical || self.type == dualDialogue || self.type == dualDialogueMore) return YES;
 	else return NO;
 }
 
+/// Returns TRUE for ANY character cue (single or dual)
 - (bool)isAnyCharacter {
 	if (self.type == character || self.type == dualDialogueCharacter) return YES;
 	else return NO;
 }
+/// Returns TRUE for ANY parenthetical line (single or dual)
 - (bool)isAnyParenthetical {
 	if (self.type == parenthetical || self.type == dualDialogueParenthetical) return YES;
 	return NO;
 }
+/// Returns TRUE for ANY dialogue line (single or dual)
 - (bool)isAnyDialogue {
 	if (self.type == dialogue || self.type == dualDialogue) return YES;
 	else return NO;
@@ -605,13 +485,9 @@
 
 #pragma mark Omissions & notes
 
+/// Returns TRUE if the block is omitted
+/// @warning This also includes lines that have 0 length, meaning the method will return YES for empty lines too.
 - (bool)omitted {
-	// See if whole block is omited
-	// WARNING: This also includes lines that have 0 length, meaning
-	// the method will return YES for empty lines too.
-	
-	// Btw, this is me writing from the future. I love you, past me!!!
-	
 	__block NSInteger invisibleLength = 0;
 	
 	[self.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -622,16 +498,17 @@
 		invisibleLength += range.length;
 	}];
 		
-	// This returns YES also for empty lines, which SHOULD NOT be a problem for anything, but yeah, we could check it:
-	//if (omitLength == [self.string length] && self.type != empty) {
 	if (invisibleLength >= self.string.length)  return true;
 	else return false;
 }
 
+/**
+ Returns true for a line which is a note. Should be used only in conjuction with .omited to check that, yeah, it's omited but it's a note:
+ `if (line.omited && !line.note) { ... }`
+ 
+ Checked using trimmed length, to make lines like `  [[note]]` be notes.
+ */
 - (bool)note {
-	// This should be used only in conjuction with .omited to check that, yeah, it's omited but it's a note:
-	// if (line.omited && !line.note) ...
-	// Compared also using trimmed length, to make lines like "[[note]] " be notes.		  
 	if (self.noteRanges.count >= self.trimmed.length && self.noteRanges.count && self.string.length >= 2) {
 		return YES;
 	} else {
@@ -639,12 +516,10 @@
 	}
 }
 
--(void)setNoteRanges:(NSMutableIndexSet *)noteRanges {
-	_noteRanges = noteRanges;
-}
 
 #pragma mark Centered
 
+/// Returns TRUE if the line is *actually* centered.
 - (bool)centered {
 	if (self.string.length < 2) return NO;
 
@@ -656,6 +531,7 @@
 
 #pragma mark Formatting range booleans
 
+/// Returns TRUE if the line is bolded at the given local index
 -(bool)isBoldedAt:(NSInteger)index {
 	__block bool inRange = NO;
 	[self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -664,6 +540,8 @@
 	
 	return inRange;
 }
+
+/// Returns TRUE if the line is italic at the given local index
 -(bool)isItalicAt:(NSInteger)index {
 	__block bool inRange = NO;
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -673,6 +551,7 @@
 	return inRange;
 }
 
+/// Returns TRUE if the line is underlined at the given local index
 -(bool)isUnderlinedAt:(NSInteger)index {
 	__block bool inRange = NO;
 	[self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -725,11 +604,11 @@
 	return beatRange;
 }
 
+
 #pragma mark - Formatting & attribution
 
+/// Parse and apply Fountain stylization inside the string contained by this line
 - (void)resetFormatting {
-	// Read Fountain stylization inside this single string
-	
 	NSUInteger length = self.string.length;
 	unichar charArray[length];
 	[self.string getCharacters:charArray];
@@ -802,9 +681,8 @@
 	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
+/// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
 - (NSAttributedString*)attributedStringForFDX {
-	// N.B. This is NOT a Cocoa-compatible attributed string.
-	// The attributes are used to create a string for FDX/HTML conversion.
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
 		
 	// Make (forced) character names uppercase
@@ -900,26 +778,25 @@
 	}];
 }
 
+/**
+ 
+ Splits a line at a given PRINTING index, meaning that the index was calculated from
+ the actually printing string, with all formatting removed. That's why we'll first create an attributed string,
+ and then format it back to Fountain.
+ 
+ The whole practice is silly, because we could actually just put attributed strings into the paginated
+ result — with revisions et al. I don't know why I'm just thinking about this now. Well, Beat is not
+ the result of clever thinking and design, but trial and error. Fuck you, past me, for leaving all
+ this to me.
+ 
+ We could actually send attributed strings to the PAGINATOR and make it easier to calculate the ----
+ it's 22.47 in the evening, I have to work tomorrow and I'm sitting alone in my kitchen. It's not
+ a problem for present me.
+ 
+ See you in the future.
+ 
+ */
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
-	/**
-	 
-	 This method  splits a line at a given PRINTING index, meaning that the index was calculated from
-	 the actually printing string, with all formatting removed. That's why we'll first create an attributed string,
-	 and then format it back to Fountain.
-	 
-	 The whole practice is silly, because we could actually just put attributed strings into the paginated
-	 result — with revisions et al. I don't know why I'm just thinking about this now. Well, Beat is not
-	 the result of clever thinking and design, but trial and error. Fuck you, past me, for leaving all
-	 this to me.
-	 
-	 We could actually send attributed strings to the PAGINATOR and make it easier to calculate the ----
-	 it's 22.47 in the evening, I have to work tomorrow and I'm sitting alone in my kitchen. It's not
-	 a problem for present me.
-	 
-	 See you in the future.
-	 
-	 */
-	
 	NSAttributedString *string = [self attributedStringForFDX];
 	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
 	
@@ -980,46 +857,10 @@
 	return @[ retain, split ];
 }
 
-+ (NSString*)removeMarkUpFrom:(NSString*)rawString line:(Line*)line {
-	NSMutableString *string = [NSMutableString stringWithString:rawString];
-	
-	if (string.length > 0 && line.numberOfPrecedingFormattingCharacters > 0 && line.type != centered) {
-				
-		NSString *pattern = nil;
-	
-		if (line.type == character) pattern = @"^@";
-		else if (line.type == heading) pattern = @"^\\.";
-		else if (line.type == action) pattern = @"^!";
-		else if (line.type == lyrics) pattern = @"^~";
-		else if (line.type == section) pattern = @"^#";
-		else if (line.type == synopse) pattern = @"^=";
-		else if (line.type == transitionLine) pattern = @"^>";
-		
-		if (pattern != nil) {
-			[string setString:[string replace:RX(pattern) with:@""]];
-		}
-	}
 
-	if (line.type == centered) {
-		// Let's not clean any formatting characters in case they are cleaned already.
-		if (line.string.length > 0 && [string characterAtIndex:0] == '>') {
-			string = [NSMutableString stringWithString:[string substringFromIndex:1]];
-			string = [NSMutableString stringWithString:[string substringToIndex:string.length - 1]];
-		}
-	}
-	
-	// Clean up scene headings
-	// Note that the scene number can still be read from the element itself (.sceneNumber) when needed.
-	if (line.type == heading && line.sceneNumber) {
-		[string replaceOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@"" options:NSCaseInsensitiveSearch range:NSMakeRange(0, string.length)];
-	}
-	
-	return string;
-}
+#pragma mark - Formatting range lookup
 
-
-#pragma mark - formatting range lookup
-
+/// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too.
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
 {
 	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
@@ -1074,6 +915,7 @@
 
 #pragma mark - Ranges
 
+/// Returns the line position in document
 -(NSUInteger)position {
 	if (_representedLine == nil) return _position;
 	else return _representedLine.position;
@@ -1084,11 +926,10 @@
 	else return NO;
 }
 
-
+/// Returns ranges with content ONLY (useful for reconstructing the string with no Fountain stylization)
 - (NSIndexSet*)contentRanges
 {
-	// Returns ranges with content ONLY (useful for reconstruction the string with no Fountain stylization)
-	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
+	NSMutableIndexSet *contentRanges = NSMutableIndexSet.indexSet;
 	[contentRanges addIndexesInRange:NSMakeRange(0, self.string.length)];
 	
 	NSIndexSet *formattingRanges = self.formattingRanges;
@@ -1096,6 +937,7 @@
 	
 	return contentRanges;
 }
+/// Returns content ranges, including notes
 - (NSIndexSet*)contentRangesWithNotes {
 	// Returns content ranges WITH notes included
 	NSMutableIndexSet *contentRanges = [NSMutableIndexSet indexSet];
@@ -1107,23 +949,30 @@
 	return contentRanges;
 }
 
+/// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc. to convert it to another style of formatting
 - (NSIndexSet*)formattingRanges {
 	return [self formattingRangesWithGlobalRange:NO includeNotes:YES];
 }
 
+/// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
+/// You can use global range flag to return ranges relative to the *whole* document.
+/// Notes are included in formatting ranges by default.
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes
 {
-	// This maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
-	// It could be used anywhere, but for now, it's used to create XML formatting for FDX export.
-	
-	NSMutableIndexSet *indices = [NSMutableIndexSet indexSet];
+	NSMutableIndexSet *indices = NSMutableIndexSet.new;
 	NSString* string = self.string;
 	NSInteger offset = 0;
 	
 	if (globalRange) offset = self.position;
 	
-	// Add force element ranges
-	if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
+	// Add any ranges that are used to force elements
+	if (self.type == synopse) {
+		[indices addIndex:0+offset];
+	}
+	else if (self.type == section) {
+		[indices addIndexesInRange:NSMakeRange(0, self.sectionDepth)];
+	}
+	else if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
 		unichar c = [string characterAtIndex:0];
 		
 		if ((self.type == character && c == '@') ||
@@ -1211,11 +1060,14 @@
 	return [self.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
 }
 
+/// Joins a line into this line. Copies all stylization and offsets the formatting ranges.
 - (void)joinWithLine:(Line *)line
 {
 	if (!line) return;
 	
 	NSString *string = line.string;
+	
+	// Remove symbols for forcing elements
 	if (line.numberOfPrecedingFormattingCharacters > 0 && string.length > 0) {
 		string = [string substringFromIndex:line.numberOfPrecedingFormattingCharacters];
 	}
@@ -1223,8 +1075,10 @@
 	NSInteger offset = self.string.length + 1 - line.numberOfPrecedingFormattingCharacters;
 	if (line.changed) self.changed = YES;
 	
+	// Join strings
 	self.string = [self.string stringByAppendingString:[NSString stringWithFormat:@"\n%@", string]];
 	
+	// Offset and copy formatting ranges
 	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.boldRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
@@ -1238,16 +1092,14 @@
 	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.strikeoutRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
-	/*
-	[line.additionRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self.additionRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
+	[line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self.escapeRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
-	 */
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self.noteRanges addIndexesInRange:(NSRange){ offset + range.location, range.length }];
 	}];
 	
-	// Copy and offset revised ranges
+	// Offset and copy revised ranges
 	for (NSString* key in line.revisedRanges.allKeys) {
 		if (!self.revisedRanges) self.revisedRanges = NSMutableDictionary.dictionary;
 		if (!self.revisedRanges[key]) self.revisedRanges[key] = NSMutableIndexSet.indexSet;
@@ -1260,13 +1112,13 @@
 
 - (NSString*)characterName
 {
-	// This removes any extra suffixes from character name, ie. (V.O.), (CONT'D) etc.
+	// This removes any extensions from character name, ie. (V.O.), (CONT'D) etc.
 	// We'll allow the method to run for lines under 4 characters, even if not parsed as character cues
 	// (update in 2022: why do we do this, past me?)
 	if ((self.type != character && self.type != dualDialogueCharacter) && self.string.length > 3) return nil;
 	
 	// Strip formatting (such as symbols for forcing element types)
-	NSString *name = [self stripFormatting];
+	NSString *name = self.stripFormatting;
 	if (name.length == 0) return @"";
 		
 	// Find and remove suffix
@@ -1336,7 +1188,7 @@
 }
 
 
-#pragma mark - for debugging
+#pragma mark - Debugging
 
 -(NSString *)description
 {

@@ -38,11 +38,11 @@
 #import "OutlineScene.h"
 #import "BeatMeasure.h"
 
+#pragma mark - Screenplay meta-object
+
 @implementation BeatScreenplay
 /**
- 
  Usage: [BeatScreenplay from:parser settings:settings];
- 
  */
 
 +(instancetype)from:(ContinuousFountainParser*)parser {
@@ -60,7 +60,13 @@
 
 @end
 
-@interface ContinuousFountainParser ()
+#pragma mark - Parser
+
+@interface ContinuousFountainParser () {
+	// Line cache. I don't know why this is an iVar.
+	__weak Line * _prevLineAtLocation;
+}
+
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) NSMutableSet *changedOutlineElements;
 @property (nonatomic) Line *editedLine;
@@ -79,10 +85,8 @@
 // For testing
 @property (nonatomic) NSDate *executionTime;
 
+// Static parser flag
 @property (nonatomic) bool nonContinuous;
-
-// Line cache
-@property (nonatomic, weak) Line *prevLineAtLocation;
 
 @end
 
@@ -90,9 +94,7 @@
 
 static NSDictionary* patterns;
 
-#pragma mark - Parsing
-
-#pragma mark Bulk Parsing
+#pragma mark - Initializers
 
 - (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
 	return [self initWithString:string delegate:nil settings:settings nonContinuous:YES];
@@ -133,6 +135,8 @@ static NSDictionary* patterns;
 	return [self initWithString:string delegate:nil];
 }
 
+#pragma mark - Saved file processing
+
 - (NSString*)screenplayForSaving {
 	NSArray *lines = [NSArray arrayWithArray:self.lines];
 	NSMutableString *content = [NSMutableString string];
@@ -161,6 +165,21 @@ static NSDictionary* patterns;
 
 	return content;
 }
+
+// Return the whole document as single string
+- (NSString*)rawText {
+	NSMutableString *string = [NSMutableString string];
+	for (Line* line in self.lines) {
+		if (line != self.lines.lastObject) [string appendFormat:@"%@\n", line.string];
+		else [string appendFormat:@"%@", line.string];
+	}
+	return string;
+}
+
+
+#pragma mark - Parsing
+
+#pragma mark Bulk parsing
 
 - (void)parseText:(NSString*)text
 {
@@ -230,6 +249,7 @@ static NSDictionary* patterns;
 	}
 }
 
+
 #pragma mark - Continuous Parsing
 
 /*
@@ -247,10 +267,8 @@ static NSDictionary* patterns;
 
  Flow:
  parseChangeInRange ->
-	parseAddition/parseRemoval
-	-> changedIndices
-	-> correctParsesInLines
-		
+	parseAddition/parseRemoval methods write changedIndices
+	-> correctParsesInLines processes changedIndices
  
  */
 
@@ -300,6 +318,9 @@ static NSDictionary* patterns;
 		previousPosition = line.position;
 	}
 }
+
+
+#pragma mark Parsing additions
 
 - (NSIndexSet*)parseAddition:(NSString*)string  atPosition:(NSUInteger)position
 {
@@ -392,21 +413,6 @@ static NSDictionary* patterns;
 	return changedIndices;
 }
 
-- (void)report {
-	NSInteger lastPos = 0;
-	NSInteger lastLen = 0;
-	for (Line* line in self.lines) {
-		NSString *error = @"";
-		if (lastPos + lastLen != line.position) error = @" 🔴 ERROR";
-		
-		if (error.length > 0) {
-			NSLog(@"   (%lu -> %lu): %@ (%lu) %@ (%lu/%lu)", line.position, line.position + line.string.length + 1, line.string, line.string.length, error, lastPos, lastLen);
-		}
-		lastLen = line.string.length + 1;
-		lastPos = line.position;
-	}
-}
-
 - (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position line:(Line*)line
 {
 	NSUInteger lineIndex = _editedIndex;
@@ -453,15 +459,8 @@ static NSDictionary* patterns;
     }
 }
 
-// Return the whole document as single string
-- (NSString*)rawText {
-	NSMutableString *string = [NSMutableString string];
-	for (Line* line in self.lines) {
-		if (line != self.lines.lastObject) [string appendFormat:@"%@\n", line.string];
-		else [string appendFormat:@"%@", line.string];
-	}
-	return string;
-}
+
+#pragma mark Parsing removal
 
 - (NSIndexSet*)parseRemovalAt:(NSRange)range {
 	NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
@@ -593,62 +592,8 @@ static NSDictionary* patterns;
     }
 }
 
-- (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index {
-	NSUInteger outlineIndex = -1;
-	
-	NSArray *lines = self.safeLines;
-	
-	for (NSInteger i=0; i<lines.count; i++) {
-		Line *l = lines[i];
-		if (l.isOutlineElement) outlineIndex++;
-		if (i == index) return outlineIndex;
-	}
-	
-	return 0;
-}
 
-- (NSUInteger)lineIndexAtPosition:(NSUInteger)position
-{
-	// Hey, past me. I rewrote this in 1.929, because the previous iteration didn't seem to actually work.
-	
-	// First check if we are still on the cached line
-	if (_lastEditedLine) {
-		if (NSLocationInRange(position, _lastEditedLine.range)) {
-			return _lastLineIndex;
-		}
-	}
-	
-	// Else just iterate through lines and cache the result
-    for (int i = 0; i < self.lines.count; i++) {
-        Line* line = self.lines[i];
-        
-        if (NSLocationInRange(position, line.range)) {
-			_lastEditedLine = line;
-			_lastLineIndex = i;
-            return i;
-        }
-    }
-	
-	// Return last line
-    return self.lines.count - 1;
-}
-
-- (void)incrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
-{
-    for (; index < [self.lines count]; index++) {
-        Line* line = self.lines[index];
-        
-        line.position += amount;
-    }
-}
-
-- (void)decrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
-{
-    for (; index < [self.lines count]; index++) {
-        Line* line = self.lines[index];
-        line.position -= amount;
-    }
-}
+#pragma mark - Correcting parsed content for existing lines
 
 - (void)correctParsesForLines:(NSArray *)lines
 {
@@ -664,135 +609,8 @@ static NSDictionary* patterns;
 }
 - (void)correctParsesInLines:(NSMutableIndexSet*)lineIndices
 {
-    while (lineIndices.count > 0) {
-        [self correctParseInLine:lineIndices.lowestIndex indicesToDo:lineIndices];
-    }
-}
-
-- (NSInteger)indexOfNoteOpen:(Line*)line {
-	unichar string[line.string.length];
-	[line.string getCharacters:string];
-	
-	NSInteger lastIndex = 1;
-	NSInteger rangeBegin = -1;
-	for (int i = (int)line.length;;i--) {
-		if (i > lastIndex) break;
-		
-		if ((string[i] == '[' && string[i-1] == '[')) {
-			rangeBegin = i;
-			break;
-		}
-	}
-	
-	if (rangeBegin >= 0) return rangeBegin;
-	else return NSNotFound;
-}
-
-- (NSIndexSet*)terminateNoteBlockAt:(Line*)line  {
-	NSInteger i = [self.lines indexOfObject:line];
-	return [self terminateNoteBlockAt:line index:i];
-}
-- (NSIndexSet*)terminateNoteBlockAt:(Line*)line index:(NSInteger)idx {
-	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSetWithIndex:idx];
-	if (idx == NSNotFound) return changedIndices;
-	
-	if (idx == 0) {
-		// This is the first line, can't terminate a note block
-		return changedIndices;
-	} else {
-		Line *prevLine = self.lines[idx - 1];
-		// This line doesn't have a preceeding note block, ignore
-		if (!prevLine.noteOut || prevLine.length == 0) return changedIndices;
-	}
-	
-	[line.noteRanges addIndexes:line.noteInIndices];
-		
-	for (NSInteger i = idx-1; i >= 0; i--) {
-		Line *l = self.lines[i];
-		
-		if ([l.string containsString:@"[["]) {
-			[l.noteRanges addIndexes:l.noteOutIndices];
-			[changedIndices addIndex:i];
-			break;
-		} else {
-			[l.noteRanges addIndexesInRange:(NSRange){ 0, l.string.length }];
-			[changedIndices addIndex:i];
-		}
-	}
-	
-	[_changedIndices addIndexes:changedIndices];
-	
-	return changedIndices;
-}
-
-- (NSIndexSet*)cancelNoteBlockAt:(Line*)line {
-	return [self cancelNoteBlockAt:line index:[self.lines indexOfObject:line]];
-}
-
-- (NSIndexSet*)cancelNoteBlockAt:(Line*)line index:(NSInteger)idx {
-	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
-	if (idx == NSNotFound) return changedIndices;
-	
-	//if (!self.staticParser) NSLog(@"   ---> cancel at %@", line);
-	
-	Line *prevLine = [self previousLine:line];
-	
-	line.noteOut = NO;
-	bool actuallyCancelsBlock = NO; // If the block was previously ACTUALLY formatted as a block
-	if (prevLine.noteOut) {
-		//NSLog(@"!!! Note out from %@", prevLine);
-		actuallyCancelsBlock = YES;
-	}
-	
-	// Look behind for note ranges
-	for (NSInteger i = idx-1; i >= 0; i--) {
-		Line *l = self.lines[i];
-		
-		if ([l.string containsString:@"[["]) {
-			//if (!self.staticParser) NSLog(@"  ... %@", l);
-			[l.noteRanges removeIndexes:l.noteOutIndices];
-			[changedIndices addIndex:i];
-			break;
-		} else {
-			[l.noteRanges removeIndexesInRange:(NSRange){ 0, l.string.length }];
-			[changedIndices addIndex:i];
-		}
-	}
-		
-	// Don't look forward if the current line had no note ranges to begin with.
-	if (!line.noteRanges.count && !actuallyCancelsBlock) {
-		//if (!self.staticParser) NSLog(@"   ..not looking forward");
-		return changedIndices;
-	}
-
-	// Look forward for note ranges
-	for (NSInteger i = idx; i < self.lines.count; i++) {
-		Line *l = self.lines[i];
-		//if (!self.staticParser) NSLog(@"looking at %@", l);
-		
-		if ([l.string containsString:@"]]"] ||
-			[l.string containsString:@"[["] // Another note begins, don't look further
-			) {
-			[l.noteRanges removeIndexes:l.noteInIndices];
-			[changedIndices addIndex:i];
-			break;
-		} else {
-			[l.noteRanges removeIndexesInRange:(NSRange){ 0, l.string.length }];
-			[changedIndices addIndex:i];
-		}
-	}
-
-	
-	[_changedIndices addIndexes:changedIndices];
-	
-	return changedIndices;
-}
-
-- (void)listLines {
-	for (Line* line in _lines) {
-		printf("%s\n", line.string.UTF8String);
-		printf("	noteIn: %s\n", (line.noteIn) ? "YES" : "NO" );
-		printf("	noteOut: %s\n", (line.noteOut) ? "YES" : "NO" );
+	while (lineIndices.count > 0) {
+		[self correctParseInLine:lineIndices.lowestIndex indicesToDo:lineIndices];
 	}
 }
 
@@ -800,7 +618,7 @@ static NSDictionary* patterns;
 {
 	// Do nothing if we went out of range.
 	// Note: for code convenience and clarity, some methods can ask to reformat lineIndex-2 etc.,
-	// so this check is needed. 
+	// so this check is needed.
 	if (index < 0 || index == NSNotFound || index >= self.lines.count) {
 		[indices removeIndex:index];
 		return;
@@ -811,30 +629,30 @@ static NSDictionary* patterns;
 	  
 	Line* currentLine = self.lines[index];
 	
-    //Remove index as done from array if in array
-    if (indices.count) {
-        NSUInteger lowestToDo = indices.lowestIndex;
-        if (lowestToDo == index) {
-            [indices removeIndex:index];
-        }
-    }
+	//Remove index as done from array if in array
+	if (indices.count) {
+		NSUInteger lowestToDo = indices.lowestIndex;
+		if (lowestToDo == index) {
+			[indices removeIndex:index];
+		}
+	}
 		
 	//Correct type on this line
-    LineType oldType = currentLine.type;
-    bool oldOmitOut = currentLine.omitOut;
+	LineType oldType = currentLine.type;
+	bool oldOmitOut = currentLine.omitOut;
 	bool oldNoteOut = currentLine.noteOut;
 	bool oldEndsNoteBlock = currentLine.endsNoteBlock;
 	bool oldNoteTermination = currentLine.cancelsNoteBlock;
 	bool notesNeedParsing = NO;
 	
-    [self parseTypeAndFormattingForLine:currentLine atIndex:index];
-    
-    if (!self.changeInOutline &&
+	[self parseTypeAndFormattingForLine:currentLine atIndex:index];
+	
+	if (!self.changeInOutline &&
 		(oldType == heading || oldType == section || oldType == synopse || currentLine.type == heading || currentLine.type == section || currentLine.type == synopse || currentLine.beats.count)) {
-        self.changeInOutline = YES;
-    }
-    
-    [self.changedIndices addIndex:index];
+		self.changeInOutline = YES;
+	}
+	
+	[self.changedIndices addIndex:index];
 	
 	if (currentLine.type == dialogue && currentLine.string.length == 0 && indices.count > 1 && index > 0) {
 		// Check for all-caps action lines mistaken for character cues in a pasted text
@@ -897,37 +715,37 @@ static NSDictionary* patterns;
 	
 	//If there is a next element, check if it might need a reparse because of a change in type or omit out
 	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse) {
-        if (index < self.lines.count - 1) {
-            Line* nextLine = self.lines[index+1];
+		if (index < self.lines.count - 1) {
+			Line* nextLine = self.lines[index+1];
 			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
-                currentLine.type == section ||
-                currentLine.type == synopse ||
+				currentLine.type == section ||
+				currentLine.type == synopse ||
 				currentLine.type == character ||        					    //if the line became anything to
-                currentLine.type == parenthetical ||        					//do with dialogue, it might cause
-                (currentLine.type == dialogue && nextLine.type != empty) ||     //the next lines to be dialogue
-                currentLine.type == dualDialogueCharacter ||
-                currentLine.type == dualDialogueParenthetical ||
-                currentLine.type == dualDialogue ||
-                currentLine.type == empty ||                //If the line became empty, it might
-                                                            //enable the next on to be a heading
-                                                            //or character
-                
-                nextLine.type == titlePageTitle ||          //if the next line is a title page,
-                nextLine.type == titlePageCredit ||         //it might not be anymore
-                nextLine.type == titlePageAuthor ||
-                nextLine.type == titlePageDraftDate ||
-                nextLine.type == titlePageContact ||
-                nextLine.type == titlePageSource ||
-                nextLine.type == titlePageUnknown ||
-                nextLine.type == section ||
-                nextLine.type == synopse ||
-                nextLine.type == heading ||                 //If the next line is a heading or
-                nextLine.type == character ||               //character or anything dialogue
-                nextLine.type == dualDialogueCharacter || //related, it might not be anymore
-                nextLine.type == parenthetical ||
-                nextLine.type == dialogue ||
-                nextLine.type == dualDialogueParenthetical ||
-                nextLine.type == dualDialogue ||
+				currentLine.type == parenthetical ||        					//do with dialogue, it might cause
+				(currentLine.type == dialogue && nextLine.type != empty) ||     //the next lines to be dialogue
+				currentLine.type == dualDialogueCharacter ||
+				currentLine.type == dualDialogueParenthetical ||
+				currentLine.type == dualDialogue ||
+				currentLine.type == empty ||                //If the line became empty, it might
+															//enable the next on to be a heading
+															//or character
+				
+				nextLine.type == titlePageTitle ||          //if the next line is a title page,
+				nextLine.type == titlePageCredit ||         //it might not be anymore
+				nextLine.type == titlePageAuthor ||
+				nextLine.type == titlePageDraftDate ||
+				nextLine.type == titlePageContact ||
+				nextLine.type == titlePageSource ||
+				nextLine.type == titlePageUnknown ||
+				nextLine.type == section ||
+				nextLine.type == synopse ||
+				nextLine.type == heading ||                 //If the next line is a heading or
+				nextLine.type == character ||               //character or anything dialogue
+				nextLine.type == dualDialogueCharacter || //related, it might not be anymore
+				nextLine.type == parenthetical ||
+				nextLine.type == dialogue ||
+				nextLine.type == dualDialogueParenthetical ||
+				nextLine.type == dualDialogue ||
 				
 				// Look for unterminated omits & notes
 				nextLine.omitIn != currentLine.omitOut ||
@@ -938,14 +756,35 @@ static NSDictionary* patterns;
 				currentLine.endsNoteBlock != oldEndsNoteBlock
 				) {
 
-                [self correctParseInLine:index+1 indicesToDo:indices];
-            }
-        }
-    }
+				[self correctParseInLine:index+1 indicesToDo:indices];
+			}
+		}
+	}
 }
 
 
-#pragma mark Parsing Core
+#pragma mark - Incrementing / decrementing line positions
+
+- (void)incrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
+{
+	for (; index < [self.lines count]; index++) {
+		Line* line = self.lines[index];
+		
+		line.position += amount;
+	}
+}
+
+- (void)decrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
+{
+	for (; index < [self.lines count]; index++) {
+		Line* line = self.lines[index];
+		line.position -= amount;
+	}
+}
+
+
+
+#pragma mark - Parsing Core
 
 #define BOLD_PATTERN "**"
 #define ITALIC_PATTERN "*"
@@ -1178,8 +1017,11 @@ and incomprehensible system of recursion.
 				if (precedingLine.type == character) return dialogue;
 				// If its a parenthetical line, return dialogue
 				else if (precedingLine.type == parenthetical) return dialogue;
+				
 				// AND if its just dialogue, return action.
-				else return action;
+				// else return action;
+				// ... why did we do that?
+				return empty;
 			} else {
 //				precedingLine.type = empty;
 //				[self.changedIndices addIndex:index - 1];
@@ -1484,78 +1326,14 @@ and incomprehensible system of recursion.
 {
 	// Let's use the asym method here, just put in our symmetric delimiters.
 	return [self asymRangesInChars:string ofLength:length between:startString and:startString startLength:delimLength endLength:delimLength excludingIndices:excludes line:line];
-	
-	/*
-    NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
-    
-    NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
-    NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
-    
-    for (int i = 0;; i++) {
-		if (i > lastIndex) break;
-		
-        // If this index is contained in the omit character indexes, skip
-		if ([excludes containsIndex:i]) continue;
-		
-		// No range is currently inspected
-        if (rangeBegin == -1) {
-            bool match = YES;
-            for (int j = 0; j < delimLength; j++) {
-				// IF the characters in range are correct, check for an escape character (\)
-				if (string[j+i] == startString[j] && i > 0 &&
-					string[j + i - 1] == '\\') {
-					match = NO;
-					[line.escapeRanges addIndex:j+i - 1];
-					break;
-				}
-				
-                if (string[j+i] != startString[j]) {
-                    match = NO;
-                    break;
-                }
-            }
-            if (match) {
-                rangeBegin = i;
-                i += delimLength - 1;
-            }
-		// We have found a range
-        } else {
-            bool match = YES;
-            for (int j = 0; j < delimLength; j++) {
-                if (string[j+i] != endString[j]) {
-                    match = NO;
-                    break;
-				} else {
-					// Check for escape characters again
-					if (i > 0 && string[j+i - 1] == '\\') {
-						[line.escapeRanges addIndex:j+i - 1];
-						match = NO;
-					}
-				}
-            }
-            if (match) {
-				// Add the current formatting ranges to future excludes
-				[excludes addIndexesInRange:(NSRange){ rangeBegin, delimLength }];
-				[excludes addIndexesInRange:(NSRange){ i, delimLength }];
-				
-                [indexSet addIndexesInRange:NSMakeRange(rangeBegin, i - rangeBegin + delimLength)];
-                rangeBegin = -1;
-                i += delimLength - 1;
-            }
-        }
-    }
-	
-    return indexSet;
-	 */
 }
 
 - (NSMutableIndexSet*)asymRangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString startLength:(NSUInteger)startLength endLength:(NSUInteger)delimLength excludingIndices:(NSMutableIndexSet*)excludes line:(Line*)line
 {
 	/*
-	 
-	 NOTE:
-	 
-	 This is a confusing method name, but only because it is based on the old rangesInChars method. However, it's basically the same code, but I've put in the ability to seek ranges between two delimiters that are **not** the same, and can have asymmetrical length.
+	 NOTE: This is a confusing method name, but only because it is based on the old rangesInChars method.
+	 However, it's basically the same code, but I've put in the ability to seek ranges between two
+	 delimiters that are **not** the same, and can have asymmetrical length.
 	 
 	 The original method now just calls this using the symmetrical delimiters.
 	 
@@ -1896,7 +1674,171 @@ and incomprehensible system of recursion.
 	return beats;
 }
 
-#pragma mark - Data access
+
+#pragma mark - Parsing notes
+
+- (NSInteger)indexOfNoteOpen:(Line*)line {
+	unichar string[line.string.length];
+	[line.string getCharacters:string];
+	
+	NSInteger lastIndex = 1;
+	NSInteger rangeBegin = -1;
+	for (int i = (int)line.length;;i--) {
+		if (i > lastIndex) break;
+		
+		if ((string[i] == '[' && string[i-1] == '[')) {
+			rangeBegin = i;
+			break;
+		}
+	}
+	
+	if (rangeBegin >= 0) return rangeBegin;
+	else return NSNotFound;
+}
+
+- (NSIndexSet*)terminateNoteBlockAt:(Line*)line  {
+	NSInteger i = [self.lines indexOfObject:line];
+	return [self terminateNoteBlockAt:line index:i];
+}
+- (NSIndexSet*)terminateNoteBlockAt:(Line*)line index:(NSInteger)idx {
+	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSetWithIndex:idx];
+	if (idx == NSNotFound) return changedIndices;
+	
+	if (idx == 0) {
+		// This is the first line, can't terminate a note block
+		return changedIndices;
+	} else {
+		Line *prevLine = self.lines[idx - 1];
+		// This line doesn't have a preceeding note block, ignore
+		if (!prevLine.noteOut || prevLine.length == 0) return changedIndices;
+	}
+	
+	[line.noteRanges addIndexes:line.noteInIndices];
+		
+	for (NSInteger i = idx-1; i >= 0; i--) {
+		Line *l = self.lines[i];
+		
+		if ([l.string containsString:@"[["]) {
+			[l.noteRanges addIndexes:l.noteOutIndices];
+			[changedIndices addIndex:i];
+			break;
+		} else {
+			[l.noteRanges addIndexesInRange:(NSRange){ 0, l.string.length }];
+			[changedIndices addIndex:i];
+		}
+	}
+	
+	[_changedIndices addIndexes:changedIndices];
+	
+	return changedIndices;
+}
+
+- (NSIndexSet*)cancelNoteBlockAt:(Line*)line {
+	return [self cancelNoteBlockAt:line index:[self.lines indexOfObject:line]];
+}
+
+- (NSIndexSet*)cancelNoteBlockAt:(Line*)line index:(NSInteger)idx {
+	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
+	if (idx == NSNotFound) return changedIndices;
+	
+	//if (!self.staticParser) NSLog(@"   ---> cancel at %@", line);
+	
+	Line *prevLine = [self previousLine:line];
+	
+	line.noteOut = NO;
+	bool actuallyCancelsBlock = NO; // If the block was previously ACTUALLY formatted as a block
+	if (prevLine.noteOut) {
+		//NSLog(@"!!! Note out from %@", prevLine);
+		actuallyCancelsBlock = YES;
+	}
+	
+	// Look behind for note ranges
+	for (NSInteger i = idx-1; i >= 0; i--) {
+		Line *l = self.lines[i];
+		
+		if ([l.string containsString:@"[["]) {
+			//if (!self.staticParser) NSLog(@"  ... %@", l);
+			[l.noteRanges removeIndexes:l.noteOutIndices];
+			[changedIndices addIndex:i];
+			break;
+		} else {
+			[l.noteRanges removeIndexesInRange:(NSRange){ 0, l.string.length }];
+			[changedIndices addIndex:i];
+		}
+	}
+		
+	// Don't look forward if the current line had no note ranges to begin with.
+	if (!line.noteRanges.count && !actuallyCancelsBlock) {
+		//if (!self.staticParser) NSLog(@"   ..not looking forward");
+		return changedIndices;
+	}
+
+	// Look forward for note ranges
+	for (NSInteger i = idx; i < self.lines.count; i++) {
+		Line *l = self.lines[i];
+		//if (!self.staticParser) NSLog(@"looking at %@", l);
+		
+		if ([l.string containsString:@"]]"] ||
+			[l.string containsString:@"[["] // Another note begins, don't look further
+			) {
+			[l.noteRanges removeIndexes:l.noteInIndices];
+			[changedIndices addIndex:i];
+			break;
+		} else {
+			[l.noteRanges removeIndexesInRange:(NSRange){ 0, l.string.length }];
+			[changedIndices addIndex:i];
+		}
+	}
+
+	
+	[_changedIndices addIndexes:changedIndices];
+	
+	return changedIndices;
+}
+
+
+
+#pragma mark - Accessing lines based on some other value
+
+- (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index {
+	NSUInteger outlineIndex = -1;
+	
+	NSArray *lines = self.safeLines;
+	
+	for (NSInteger i=0; i<lines.count; i++) {
+		Line *l = lines[i];
+		if (l.isOutlineElement) outlineIndex++;
+		if (i == index) return outlineIndex;
+	}
+	
+	return 0;
+}
+
+- (NSUInteger)lineIndexAtPosition:(NSUInteger)position
+{
+	// Hey, past me. I rewrote this in 1.929, because the previous iteration didn't seem to actually work.
+	
+	// First check if we are still on the cached line
+	if (_lastEditedLine) {
+		if (NSLocationInRange(position, _lastEditedLine.range)) {
+			return _lastLineIndex;
+		}
+	}
+	
+	// Else just iterate through lines and cache the result
+	for (int i = 0; i < self.lines.count; i++) {
+		Line* line = self.lines[i];
+		
+		if (NSLocationInRange(position, line.range)) {
+			_lastEditedLine = line;
+			_lastLineIndex = i;
+			return i;
+		}
+	}
+	
+	// Return last line
+	return self.lines.count - 1;
+}
 
 - (NSString*)stringAtLine:(NSUInteger)line
 {
@@ -1946,7 +1888,9 @@ and incomprehensible system of recursion.
 	else return line.type;
 }
 
-#pragma mark - New Outline Data
+
+/*
+#pragma mark - Outline Data - persistent outline idea
 
 - (void)updateOutline {
 	[self updateOutlineWithLines:self.lines];
@@ -1986,6 +1930,7 @@ and incomprehensible system of recursion.
 - (void)updateOutlineItem:(OutlineScene*)scene {
 	
 }
+*/
 
 #pragma mark - Outline Data
 
@@ -2087,7 +2032,7 @@ and incomprehensible system of recursion.
 			scene.children = NSMutableArray.new;
 			
 			// Create scene heading (for display)
-			if (!scene.omitted) scene.string = line.stripInvisible;
+			if (!scene.omitted) scene.string = line.stripFormatting;
 			else scene.string = line.stripNotes;
 			
 			// Add storylines to the storyline bank
@@ -2391,7 +2336,7 @@ and incomprehensible system of recursion.
 	NSMutableArray *block = NSMutableArray.new;
 	NSInteger blockBegin = [lines indexOfObject:line];
 	
-	// At an empty line, iterate uprwards and find out where the block begins
+	// At an empty line, iterate upwards and find out where the block begins
 	if (line.type == empty) {
 		NSInteger h = blockBegin - 1;
 		while (h >= 0) {
@@ -2459,25 +2404,32 @@ and incomprehensible system of recursion.
 		// Skip invisible elements
 		if (line.type == section || line.type == synopse || line.omitted || line.isTitlePage) continue;
 		
-		result = [result stringByAppendingFormat:@"%@\n", line.cleanedString];
+		result = [result stringByAppendingFormat:@"%@\n", line.stripFormatting];
 	}
 	
 	return result;
 }
+
+
+#pragma mark - Line position lookup
 
 - (Line*)lineAtIndex:(NSInteger)position {
 	return [self lineAtPosition:position];
 }
 
 - (id)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item))compare  {
-	
 	// Don't go out of range
 	if (NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
+		/** Uh, wtf, how does this work?
+			We are checking if the search origin is in range from -1 to the full array count,
+			so I don't understand how and why this could actually work, and why are we getting
+			the correct behavior.
+		 */
 		return nil;
 	}
 		
 	NSInteger i = searchOrigin;
-	NSInteger origin = i - 1;
+	NSInteger origin = (descending) ? i - 1 : i + 1;
 		
 	bool stop = NO;
 	bool looped = NO;
@@ -2539,7 +2491,6 @@ NSUInteger prevLineAtLocationIndex = 0;
 	NSArray *lines = self.safeLines; // Use thread safe lines for this lookup
 	if (prevLineAtLocationIndex >= lines.count) prevLineAtLocationIndex = 0;
 	
-	
 	// Quick lookup for first object
 	if (position == 0) return lines.firstObject;
 	
@@ -2547,7 +2498,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 	// It's HIGHLY possible that we are not just randomly looking for lines,
 	// but that we're looking for close neighbours in a for loop.
 	// That's why we'll either loop the array forward or backward to avoid
-	// unnecessary looping from beginning, which soon becomes VERY inefficient.
+	// unnecessary looping from beginning, which soon becomes very inefficient.
 	
 	NSUInteger cachedIndex;
 	
@@ -2632,6 +2583,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 	
 	return scenes;
 }
+
+
+#pragma mark - Preprocessing for printing
 
 - (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes {
 	[self createOutline];
@@ -2763,6 +2717,9 @@ NSUInteger prevLineAtLocationIndex = 0;
 	
 	return elements;
 }
+
+#pragma mark - Line identifiers (UUIDs)
+
 - (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines {
 	if (lines == nil) lines = self.lines;
 	
@@ -2812,27 +2769,21 @@ NSUInteger prevLineAtLocationIndex = 0;
 	};
 }
 
-#pragma mark - String result for saving the screenplay
-
-- (NSString*)scriptForSaving {
-	NSMutableString *string = [NSMutableString string];
-	
-	Line *previousLine;
+- (void)report {
+	NSInteger lastPos = 0;
+	NSInteger lastLen = 0;
 	for (Line* line in self.lines) {
-		// Ensure we have correct amount of line breaks before elements
-		if ((line.type == character || line.type == heading) &&
-			previousLine.string.length > 0) {
-			[string appendString:@"\n"];
+		NSString *error = @"";
+		if (lastPos + lastLen != line.position) error = @" 🔴 ERROR";
+		
+		if (error.length > 0) {
+			NSLog(@"   (%lu -> %lu): %@ (%lu) %@ (%lu/%lu)", line.position, line.position + line.string.length + 1, line.string, line.string.length, error, lastPos, lastLen);
 		}
-		
-		[string appendString:line.string];
-		[string appendString:@"\n"];
-		
-		previousLine = line;
+		lastLen = line.string.length + 1;
+		lastPos = line.position;
 	}
-	
-	return string;
 }
+
 
 @end
 /*

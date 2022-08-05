@@ -42,14 +42,13 @@
 @property (nonatomic, readonly) NSMutableSet *storylines;
 @property (nonatomic, readonly) NSMutableDictionary *storybeats;
 @property (nonatomic, readonly) bool hasTitlePage;
+- (NSString*)screenplayForSaving;
 - (void)parseText:(NSString*)text;
 - (Line*)lineAtIndex:(NSInteger)index;
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSArray*)linesInRange:(NSRange)range;
-- (NSString*)cleanedString;
 - (NSDictionary*)scriptForPrinting;
 - (BeatScreenplay*)forPrinting;
-- (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (OutlineScene*)sceneAtPosition:(NSInteger)index;
@@ -123,10 +122,8 @@
 - (NSArray*)scenesInRange:(NSRange)range;
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSArray*)scenesInSection:(OutlineScene*)topSection;
-- (NSString*)cleanedString;
 
 - (BeatScreenplay*)forPrinting;
-- (NSString*)scriptForSaving;
 - (NSInteger)numberOfScenes;
 - (LineType)lineTypeAt:(NSInteger)index;
 

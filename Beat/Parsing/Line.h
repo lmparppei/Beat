@@ -66,8 +66,6 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 @property (nonatomic) NSArray<Storybeat*>* beats;
 
-- (NSString*)cleanedString;
-- (NSString*)stripFormattingCharacters;
 - (NSString*)stripFormatting;
 - (bool)isTitlePage;
 - (bool)isInvisible;
@@ -77,7 +75,6 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (bool)isOutlineElement;
 - (NSString*)typeAsString;
 - (NSString*)characterName;
-- (NSString*)stripInvisible;
 - (NSString*)textContent;
 - (NSDictionary*)forSerialization;
 - (NSString*)trimmed;
@@ -172,9 +169,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (Line*)initWithString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
 - (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position;
 - (NSString*)typeAsString;
-- (NSString*)typeAsFountainString; /// Type as the original Fountain repo type
-- (NSString*)cleanedString;
-- (NSString*)stripInvisible;
 - (bool)omitted; /// The line is omitted completely from print — either inside an omission block or a note
 - (bool)note; /// The line is completely a note
 - (bool)centered;
@@ -214,7 +208,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)isAnyDialogue; /// returns true for single and dual dialogue
 
 - (NSString*)stripSceneNumber;
-- (NSString*)stripFormattingCharacters;
+- (NSString*)stripFormatting;
 - (NSString*)stripNotes;
 - (NSString*)stringForDisplay;
 
