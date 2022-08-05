@@ -13,7 +13,7 @@
 #import "BeatDocumentSettings.h"
 #import "BeatPaperSizing.h"
 #import "BeatPrintView.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "BeatRevisionItem.h"
 #import "BeatExportSettings.h"
 #import <Cocoa/Cocoa.h>
@@ -235,7 +235,7 @@
 		revisedPageColor = _revisedPageColorMenu.selectedItem.title.lowercaseString;
 	}
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.doc header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisionTracking.revisionColors scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.doc header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.revisionColors scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
 	return settings;
 	
 }
@@ -308,7 +308,7 @@
 	
 	// Bake revision data into the document
 	NSDictionary *revisions = [settings get:DocSettingRevisions];
-	if (revisions.count) [BeatRevisionTracking bakeRevisionsIntoLines:parser.lines revisions:revisions string:text parser:parser];
+	if (revisions.count) [BeatRevisions bakeRevisionsIntoLines:parser.lines revisions:revisions string:text parser:parser];
 		
 	BeatScreenplay *script = parser.forPrinting;
 	BeatHTMLScript *htmlScript = [BeatHTMLScript.alloc initWithScript:script settings:exportSettings];

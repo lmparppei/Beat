@@ -32,8 +32,8 @@
 "plugins.updateAvailable" = "Päivitys saatavilla";
 "plugins.currentVersion" = "Nykyinen versio";
 "plugins.compatibilityWarning" = "<b>Varoitus</b>: Tämä liitännäinen ei välttämättä ole yhteensopiva nykyisen version kanssa. Päivitä Beat ennen jatkamista.";
-"plugins.libraryWelcome" = "<p>Tämä on valikoima Beatin virallisia laajennuksia. Aktivoidut laajennukset näkyvät <b>Työkalut</b>-valikossa. Harmaita laajennuksia ei ole vielä asennettu. Näet lisätietoja laajennuksista valitsemalla niiden nimen.</p>\
-   <p class='small gray'>Voit hallinnoida laajennuksia käsin klikkaamalla kansioikonia. Voit tehdä myös omia laajennuksiasi JavaScriptin avulla &mdash; lue lisää Beatin kotisivuilta.</p>";
+"plugins.libraryWelcome" = "<p>Tämä on valikoima Beatin virallisia laajennuksia. Aktivoidut laajennukset ovat käytettävissä <b>Työkalut</b>-valikon kautta. Voit asentaa uusia laajennuksia ja saada lisätietoja vasemmasta sivupalkista.</p>\
+   <p class='small gray'>Klikkaamalla kansioikonia pääset hallinnoimaan asennettuja laajennuksia. Voit myös rakentaa omia JavaScriptiä käyttämällä &mdash; lisätietoja ja dokumentaatiota on saatavilla Beatin kotisivuilta.</p>";
 
 "gender.unspecified" = "Tuntematon";
 "gender.other" = "Muu";

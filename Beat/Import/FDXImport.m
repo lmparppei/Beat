@@ -25,7 +25,7 @@
 #import "BeatRevisionItem.h"
 #import "FDXElement.h"
 #import "BeatDocumentSettings.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 
 @interface FDXImport () <NSXMLParserDelegate>
 @property(nonatomic, strong) NSXMLParser *xmlParser;
@@ -266,7 +266,7 @@
 	
 	// Let's create a faux Beat document out of the FDX data
 	BeatDocumentSettings *settings = [[BeatDocumentSettings alloc] init];
-	NSDictionary *revisionRanges = [BeatRevisionTracking rangesForSaving:attributedScript];
+	NSDictionary *revisionRanges = [BeatRevisions rangesForSaving:attributedScript];
 	[settings set:DocSettingRevisions as:revisionRanges];
 	
 	return [NSString stringWithFormat:@"%@\n%@", attributedScript.string, [settings getSettingsString]];

@@ -87,7 +87,7 @@
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "NSString+CharacterControl.h"
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
@@ -709,7 +709,7 @@ static NSDictionary *fdxIds;
 
 					NSString *highlightColor = [BeatColors colorWith16bitHex:revColor];
 					
-					NSInteger revisionNumber = [BeatRevisionTracking.revisionColors indexOfObject:revColor] + 1;
+					NSInteger revisionNumber = [BeatRevisions.revisionColors indexOfObject:revColor] + 1;
 					additionalStyles = [additionalStyles stringByAppendingFormat:@" Color=\"#%@\" RevisionID=\"%lu\"", highlightColor.uppercaseString, revisionNumber];
 				}
 			}

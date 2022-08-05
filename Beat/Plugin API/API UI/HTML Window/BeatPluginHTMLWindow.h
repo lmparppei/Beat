@@ -44,9 +44,12 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 @property (nonatomic) BOOL resizable;
 
 @property (nonatomic) WKWebView  * _Nullable webview;
+
 - (instancetype)initWithHTML:(NSString*)html width:(CGFloat)width height:(CGFloat)height host:(id)host;
 - (void)closeWindow;
 - (void)setTitle:(NSString*)title;
+- (void)hide;
+- (void)appear;
 @end
 
 NS_ASSUME_NONNULL_END

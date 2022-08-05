@@ -20,7 +20,7 @@
 #import "Line.h"
 #import "ContinuousFountainParser.h"
 #import "BeatHTMLScript.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "BeatExportSettings.h"
 
 @implementation BeatPreview
@@ -53,7 +53,7 @@
 		
 		// Bake revision attributes
 		NSAttributedString *attrStr = self.delegate.attrTextCache;
-		[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
+		[BeatRevisions bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
 	} else {
 		// This is probably a QuickLook preview
 		parser = [ContinuousFountainParser.alloc initWithString:rawScript];
@@ -72,7 +72,7 @@
 		id doc = _delegate.document;
 #endif
 		
-		BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisionTracking.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
+		BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisions.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
 		settings.paperSize = _delegate.pageSize;
 		BeatHTMLScript *html = [BeatHTMLScript.alloc initWithScript:script settings:settings];
 		

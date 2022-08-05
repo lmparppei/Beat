@@ -285,7 +285,7 @@ static CGFloat panelWidth;
 
 - (NSArray*)printedRevisions {
 	NSMutableArray *printedRevisions = NSMutableArray.new;
-	NSArray *colors = BeatRevisionTracking.revisionColors;
+	NSArray *colors = BeatRevisions.revisionColors;
 	if (self.revisionFirst.state == NSOnState) [printedRevisions addObject:colors[0]];
 	if (self.revisionSecond.state == NSOnState) [printedRevisions addObject:colors[1]];
 	if (self.revisionThird.state == NSOnState) [printedRevisions addObject:colors[2]];

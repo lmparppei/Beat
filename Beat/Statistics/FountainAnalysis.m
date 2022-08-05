@@ -92,8 +92,8 @@
 		lineIndex += 1;
 		
 		if (!line.isInvisible && line.string.length) {
-			_glyphs += [line.cleanedString length];
-			_words += [[line.cleanedString componentsSeparatedByString:@" "] count];
+			_glyphs += line.stripFormatting.length;
+			_words += [[line.stripFormatting componentsSeparatedByString:@" "] count];
 		}
 		
 		if (line.type == character) {
@@ -306,7 +306,7 @@
 					
 			// The character is talking in the scene
 			if (line.type == character) {
-				if ([line.stripFormattingCharacters isEqualToString:characterName]) found = YES;
+				if ([line.characterName isEqualToString:characterName]) found = YES;
 			}
 			
 			// The character is at least MENTIONED within the action

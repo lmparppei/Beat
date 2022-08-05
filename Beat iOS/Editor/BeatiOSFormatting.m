@@ -11,7 +11,7 @@
 #import "ContinuousFountainParser.h"
 #import "BeatColors.h"
 #import "NSString+CharacterControl.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "Beat_iOS-Swift.h"
@@ -466,8 +466,8 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (_delegate.showRevisions || _delegate.showTags) {
 		// Enumerate attributes
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			if (attrs[BeatRevisionTracking.revisionAttribute] && _delegate.showRevisions) {
-				BeatRevisionItem *revision = attrs[BeatRevisionTracking.revisionAttribute];
+			if (attrs[BeatRevisions.revisionAttribute] && _delegate.showRevisions) {
+				BeatRevisionItem *revision = attrs[BeatRevisions.revisionAttribute];
 				if (revision.type == RevisionAddition) {
 					[textStorage addAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor range:range];
 				}

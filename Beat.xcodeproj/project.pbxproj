@@ -113,7 +113,7 @@
 		B63D9F6328303CB300D027B6 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F6228303CB300D027B6 /* BeatTheme.swift */; };
 		B63D9F6428303CB300D027B6 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F6228303CB300D027B6 /* BeatTheme.swift */; };
 		B63D9F6528303CB300D027B6 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F6228303CB300D027B6 /* BeatTheme.swift */; };
-		B63D9F662830409600D027B6 /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
+		B63D9F662830409600D027B6 /* BeatRevisions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisions.m */; };
 		B63D9F67283040B100D027B6 /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B7142218B3AD005B8447 /* ThemeManager.m */; };
 		B63D9F68283040B800D027B6 /* BeatTagging.m in Sources */ = {isa = PBXBuildFile; fileRef = B650D76C25CF349D0042010C /* BeatTagging.m */; };
 		B63D9F692830429400D027B6 /* BeatRevisionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B65B148425FF815E0087834F /* BeatRevisionItem.m */; };
@@ -134,6 +134,8 @@
 		B64170ED270B6C0D0002FFA1 /* BeatTextStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */; };
 		B641F5FB275F758500C66E2B /* BeatWidgetView.m in Sources */ = {isa = PBXBuildFile; fileRef = B641F5FA275F758500C66E2B /* BeatWidgetView.m */; };
 		B641F5FC275F758500C66E2B /* BeatWidgetView.m in Sources */ = {isa = PBXBuildFile; fileRef = B641F5FA275F758500C66E2B /* BeatWidgetView.m */; };
+		B6423083288EBEF100F64B87 /* BeatConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = B6423082288EBEF100F64B87 /* BeatConsole.m */; };
+		B6423085288EBEF100F64B87 /* BeatConsole.m in Sources */ = {isa = PBXBuildFile; fileRef = B6423082288EBEF100F64B87 /* BeatConsole.m */; };
 		B6447CB124616C8400AA4EBC /* MasterView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6447CB024616C8400AA4EBC /* MasterView.m */; };
 		B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBDD260511E10091AEAB /* ITSwitch.m */; };
 		B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B644DBE3260605D30091AEAB /* BeatEditorButton.m */; };
@@ -142,6 +144,14 @@
 		B64663F327A5C3DD008D7F90 /* Page Sizing.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64663F227A5C3DD008D7F90 /* Page Sizing.plist */; };
 		B64663F427A5C3DD008D7F90 /* Page Sizing.plist in Resources */ = {isa = PBXBuildFile; fileRef = B64663F227A5C3DD008D7F90 /* Page Sizing.plist */; };
 		B64663F727A5DA3D008D7F90 /* BeatHTMLScript.m in Sources */ = {isa = PBXBuildFile; fileRef = B69C8C6424A12765007B55A7 /* BeatHTMLScript.m */; };
+		B6467AB12899504800231B25 /* ScreenplayRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6467AB02899504800231B25 /* ScreenplayRenderer.swift */; };
+		B6467AB22899504800231B25 /* ScreenplayRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6467AB02899504800231B25 /* ScreenplayRenderer.swift */; };
+		B6467AB6289954A900231B25 /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B6467AB5289954A900231B25 /* BeatFonts.m */; };
+		B6467AB7289954A900231B25 /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B6467AB5289954A900231B25 /* BeatFonts.m */; };
+		B6467ABD289990D000231B25 /* Styles.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6467ABC289990D000231B25 /* Styles.beatCSS */; };
+		B6467ABE289990D000231B25 /* Styles.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B6467ABC289990D000231B25 /* Styles.beatCSS */; };
+		B6467AC02899B69100231B25 /* BeatCSSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6467ABF2899B69100231B25 /* BeatCSSParser.swift */; };
+		B6467AC12899B69100231B25 /* BeatCSSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6467ABF2899B69100231B25 /* BeatCSSParser.swift */; };
 		B647D68B27BB0316005EF20B /* Storybeat.m in Sources */ = {isa = PBXBuildFile; fileRef = B647D68A27BB0316005EF20B /* Storybeat.m */; };
 		B647D68C27BB0316005EF20B /* Storybeat.m in Sources */ = {isa = PBXBuildFile; fileRef = B647D68A27BB0316005EF20B /* Storybeat.m */; };
 		B647D68D27BB03D4005EF20B /* Storybeat.m in Sources */ = {isa = PBXBuildFile; fileRef = B647D68A27BB0316005EF20B /* Storybeat.m */; };
@@ -265,7 +275,7 @@
 		B68B6028260B849300463AD8 /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B68B6029260B849300463AD8 /* SceneCards.m in Sources */ = {isa = PBXBuildFile; fileRef = B69EF55024659FC000C5B78C /* SceneCards.m */; };
 		B68B602A260B849300463AD8 /* NSString+UriCompatibility.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F46242565AD9F003748DA /* NSString+UriCompatibility.m */; };
-		B68B602B260B849300463AD8 /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
+		B68B602B260B849300463AD8 /* BeatRevisions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisions.m */; };
 		B68B602C260B849300463AD8 /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B61875A42471BEDA00FB7646 /* BeatPreview.m */; };
 		B68B602D260B849300463AD8 /* DiffMatchPatch.m in Sources */ = {isa = PBXBuildFile; fileRef = B66F462B2565AD9F003748DA /* DiffMatchPatch.m */; };
 		B68B602E260B849300463AD8 /* FDXInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D2B70E2218B377005B8447 /* FDXInterface.m */; };
@@ -468,8 +478,8 @@
 		B6CE2505283963C300D53CE8 /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6055CEB23CDBA3800F7D54C /* RegExCategories.m */; };
 		B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE25062839681500D53CE8 /* BeatSidebar.swift */; };
 		B6CE250828396B7700D53CE8 /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
-		B6CE54BF26010D5B006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
-		B6CE54C326010FC1006F1E0B /* BeatRevisionTracking.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */; };
+		B6CE54BF26010D5B006F1E0B /* BeatRevisions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisions.m */; };
+		B6CE54C326010FC1006F1E0B /* BeatRevisions.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE54BE26010D5A006F1E0B /* BeatRevisions.m */; };
 		B6CF7D0E2328D7800045702C /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CF7D0D2328D77F0045702C /* DynamicColor.m */; };
 		B6D26BE124B9E7350041402B /* BeatTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE024B9E7350041402B /* BeatTimerView.m */; };
 		B6D26BE524B9ED830041402B /* BeatTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D26BE424B9ED830041402B /* BeatTimer.m */; };
@@ -528,6 +538,10 @@
 		B6EAEDC0267A687900BBD2A2 /* CardWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBF267A687900BBD2A2 /* CardWindow.html */; };
 		B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */ = {isa = PBXBuildFile; fileRef = B6EAEDBF267A687900BBD2A2 /* CardWindow.html */; };
 		B6EB5170246E9621009014AB /* MarginView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EB516F246E9621009014AB /* MarginView.m */; };
+		B6EE9C1F288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE9C1E288DA07B00719AE4 /* BeatPaginationSizing.m */; };
+		B6EE9C20288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE9C1E288DA07B00719AE4 /* BeatPaginationSizing.m */; };
+		B6EE9C21288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE9C1E288DA07B00719AE4 /* BeatPaginationSizing.m */; };
+		B6EE9C22288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EE9C1E288DA07B00719AE4 /* BeatPaginationSizing.m */; };
 		B6F0F3892714A2BA006A359D /* BeatDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F0F3882714A2BA006A359D /* BeatDocumentController.m */; };
 		B6F0F38A2714A2BA006A359D /* BeatDocumentController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F0F3882714A2BA006A359D /* BeatDocumentController.m */; };
 		B6F15CE525E7B13000176946 /* BeatTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6F15CE425E7B13000176946 /* BeatTagItem.m */; };
@@ -774,6 +788,8 @@
 		B64170EB270B6C0D0002FFA1 /* BeatTextStorage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextStorage.m; sourceTree = "<group>"; };
 		B641F5F9275F758500C66E2B /* BeatWidgetView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatWidgetView.h; sourceTree = "<group>"; };
 		B641F5FA275F758500C66E2B /* BeatWidgetView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatWidgetView.m; sourceTree = "<group>"; };
+		B6423081288EBEF100F64B87 /* BeatConsole.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatConsole.h; sourceTree = "<group>"; };
+		B6423082288EBEF100F64B87 /* BeatConsole.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatConsole.m; sourceTree = "<group>"; };
 		B6447CAF24616C8400AA4EBC /* MasterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MasterView.h; path = "Beat/User Interface/Misc/MasterView.h"; sourceTree = SOURCE_ROOT; };
 		B6447CB024616C8400AA4EBC /* MasterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MasterView.m; path = "Beat/User Interface/Misc/MasterView.m"; sourceTree = SOURCE_ROOT; };
 		B644DBDD260511E10091AEAB /* ITSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSwitch.m; sourceTree = "<group>"; };
@@ -783,6 +799,13 @@
 		B645A97D23CD03CC00F13710 /* NSString+Regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+Regex.h"; path = "Beat/Categories/NSString+Regex.h"; sourceTree = SOURCE_ROOT; };
 		B645A97E23CD03CC00F13710 /* NSString+Regex.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "NSString+Regex.m"; path = "Beat/Categories/NSString+Regex.m"; sourceTree = SOURCE_ROOT; };
 		B64663F227A5C3DD008D7F90 /* Page Sizing.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Page Sizing.plist"; sourceTree = "<group>"; };
+		B6467AB02899504800231B25 /* ScreenplayRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenplayRenderer.swift; sourceTree = "<group>"; };
+		B6467AB4289954A900231B25 /* BeatFonts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFonts.h; sourceTree = "<group>"; };
+		B6467AB5289954A900231B25 /* BeatFonts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFonts.m; sourceTree = "<group>"; };
+		B6467AB828995CA100231B25 /* RenderStyles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RenderStyles.m; sourceTree = "<group>"; };
+		B6467AB928995CA100231B25 /* RenderStyles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderStyles.h; sourceTree = "<group>"; };
+		B6467ABC289990D000231B25 /* Styles.beatCSS */ = {isa = PBXFileReference; explicitFileType = text.css; fileEncoding = 4; path = Styles.beatCSS; sourceTree = "<group>"; };
+		B6467ABF2899B69100231B25 /* BeatCSSParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCSSParser.swift; sourceTree = "<group>"; };
 		B647D68927BB0316005EF20B /* Storybeat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Storybeat.h; sourceTree = "<group>"; };
 		B647D68A27BB0316005EF20B /* Storybeat.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Storybeat.m; sourceTree = "<group>"; };
 		B647D68E27BB9D41005EF20B /* BeatEditorFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorFormatting.h; sourceTree = "<group>"; };
@@ -1025,8 +1048,8 @@
 		B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
 		B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatiOSOutlineView.swift; sourceTree = "<group>"; };
 		B6CE25062839681500D53CE8 /* BeatSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSidebar.swift; sourceTree = "<group>"; };
-		B6CE54BD26010D5A006F1E0B /* BeatRevisionTracking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionTracking.h; sourceTree = "<group>"; };
-		B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionTracking.m; sourceTree = "<group>"; };
+		B6CE54BD26010D5A006F1E0B /* BeatRevisions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisions.h; sourceTree = "<group>"; };
+		B6CE54BE26010D5A006F1E0B /* BeatRevisions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisions.m; sourceTree = "<group>"; };
 		B6CF7D0C2328D77F0045702C /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
 		B6CF7D0D2328D77F0045702C /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
 		B6D12FEA2537A04C0018A88F /* BeatComparison.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatComparison.h; path = "Beat/Rendering and export/Comparison/BeatComparison.h"; sourceTree = SOURCE_ROOT; };
@@ -1076,6 +1099,8 @@
 		B6EAEDBF267A687900BBD2A2 /* CardWindow.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = CardWindow.html; sourceTree = "<group>"; };
 		B6EB516E246E9621009014AB /* MarginView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MarginView.h; path = "Beat/User Interface/Editor View/Scroll View/MarginView.h"; sourceTree = SOURCE_ROOT; };
 		B6EB516F246E9621009014AB /* MarginView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MarginView.m; path = "Beat/User Interface/Editor View/Scroll View/MarginView.m"; sourceTree = SOURCE_ROOT; };
+		B6EE9C1D288DA07B00719AE4 /* BeatPaginationSizing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationSizing.h; sourceTree = "<group>"; };
+		B6EE9C1E288DA07B00719AE4 /* BeatPaginationSizing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationSizing.m; sourceTree = "<group>"; };
 		B6F0F3872714A2B9006A359D /* BeatDocumentController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentController.h; sourceTree = "<group>"; };
 		B6F0F3882714A2BA006A359D /* BeatDocumentController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentController.m; sourceTree = "<group>"; };
 		B6F15CE325E7B13000176946 /* BeatTagItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagItem.h; sourceTree = "<group>"; };
@@ -1241,7 +1266,7 @@
 				B6D2B7062218B308005B8447 /* BeatAppDelegate.m */,
 				B6D2B72D2218B589005B8447 /* Document.xib */,
 				B6D2B72F2218B589005B8447 /* MainMenu.xib */,
-				B600DD5C254C22CC006A09D0 /* Data Handling */,
+				B600DD5C254C22CC006A09D0 /* Screenplay data */,
 				B667796223C5D10B0029D508 /* User Interface */,
 				B6907E39233FE16200741071 /* Statistics */,
 				B13111911CB2A41B00D07A0C /* Parsing */,
@@ -1298,6 +1323,7 @@
 		B1509A3D1CB5C0B400884918 /* Rendering and export */ = {
 			isa = PBXGroup;
 			children = (
+				B6467AAF2899502E00231B25 /* Native Rendering */,
 				B652FDA7282172A30028712F /* Pagination */,
 				B66CDF1928170EBF00EF4137 /* Print Dialog */,
 				B64663F527A5D534008D7F90 /* Paper Sizing */,
@@ -1319,7 +1345,7 @@
 			path = "Rendering and export";
 			sourceTree = "<group>";
 		};
-		B600DD5C254C22CC006A09D0 /* Data Handling */ = {
+		B600DD5C254C22CC006A09D0 /* Screenplay data */ = {
 			isa = PBXGroup;
 			children = (
 				B62A616B284C008E0068F139 /* Backup */,
@@ -1338,7 +1364,7 @@
 				B649CB61286F8090001271E2 /* BeatAutocomplete.h */,
 				B649CB62286F8090001271E2 /* BeatAutocomplete.m */,
 			);
-			path = "Data Handling";
+			path = "Screenplay data";
 			sourceTree = "<group>";
 		};
 		B6055CEA23CDBA3800F7D54C /* RegExCategories */ = {
@@ -1561,6 +1587,20 @@
 			path = Other;
 			sourceTree = "<group>";
 		};
+		B6467AAF2899502E00231B25 /* Native Rendering */ = {
+			isa = PBXGroup;
+			children = (
+				B6467AB02899504800231B25 /* ScreenplayRenderer.swift */,
+				B6467AB4289954A900231B25 /* BeatFonts.h */,
+				B6467AB5289954A900231B25 /* BeatFonts.m */,
+				B6467AB928995CA100231B25 /* RenderStyles.h */,
+				B6467AB828995CA100231B25 /* RenderStyles.m */,
+				B6467ABF2899B69100231B25 /* BeatCSSParser.swift */,
+				B6467ABC289990D000231B25 /* Styles.beatCSS */,
+			);
+			path = "Native Rendering";
+			sourceTree = "<group>";
+		};
 		B650D76F25CF34BD0042010C /* Tagging */ = {
 			isa = PBXGroup;
 			children = (
@@ -1584,6 +1624,8 @@
 				B652FDA82821776C0028712F /* BeatPaginatorDebugger.h */,
 				B652FDA92821776C0028712F /* BeatPaginatorDebugger.m */,
 				B652FDAA2821776C0028712F /* BeatPaginatorDebugger.xib */,
+				B6EE9C1D288DA07B00719AE4 /* BeatPaginationSizing.h */,
+				B6EE9C1E288DA07B00719AE4 /* BeatPaginationSizing.m */,
 			);
 			path = Pagination;
 			sourceTree = "<group>";
@@ -1593,8 +1635,8 @@
 			children = (
 				B65B148325FF815E0087834F /* BeatRevisionItem.h */,
 				B65B148425FF815E0087834F /* BeatRevisionItem.m */,
-				B6CE54BD26010D5A006F1E0B /* BeatRevisionTracking.h */,
-				B6CE54BE26010D5A006F1E0B /* BeatRevisionTracking.m */,
+				B6CE54BD26010D5A006F1E0B /* BeatRevisions.h */,
+				B6CE54BE26010D5A006F1E0B /* BeatRevisions.m */,
 			);
 			path = Revisions;
 			sourceTree = "<group>";
@@ -1928,6 +1970,8 @@
 		B68B4CA1263F02F800AC4939 /* Console */ = {
 			isa = PBXGroup;
 			children = (
+				B6423081288EBEF100F64B87 /* BeatConsole.h */,
+				B6423082288EBEF100F64B87 /* BeatConsole.m */,
 				B68B4C9B263F02F100AC4939 /* BeatConsole.xib */,
 			);
 			path = Console;
@@ -2509,6 +2553,7 @@
 				B66B5AB32739B75500BBC9C6 /* UnzipKit.strings in Resources */,
 				B6763E572782295900284907 /* Document.xib in Resources */,
 				B68691A127845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */,
+				B6467ABD289990D000231B25 /* Styles.beatCSS in Resources */,
 				B6763E912782482400284907 /* BeatPreferencesPanel.xib in Resources */,
 				B6E099D5276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B1F04EDA1C88ACAD001C4D27 /* Courier Prime Italic.ttf in Resources */,
@@ -2645,6 +2690,7 @@
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
 				B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
+				B6467ABE289990D000231B25 /* Styles.beatCSS in Resources */,
 				B68B60B9260B849300463AD8 /* Find Longest Scene.beatPlugin in Resources */,
 				B6F712AA276BC78D00C4489B /* PreviewStyles.css in Resources */,
 				B6E3894A270DDE120067DD0C /* timeline.png in Resources */,
@@ -2730,15 +2776,18 @@
 			files = (
 				B6F31174274BF70400D0840D /* BeatPluginLibrary.m in Sources */,
 				B6D6E5F6221B303A00A1C9BE /* OutlineScene.m in Sources */,
+				B6467AB12899504800231B25 /* ScreenplayRenderer.swift in Sources */,
 				B606721125F5413C00CBDC7A /* ValidationItem.m in Sources */,
 				B66B5AB72739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m in Sources */,
+				B6423083288EBEF100F64B87 /* BeatConsole.m in Sources */,
 				B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */,
 				B69EF55124659FC000C5B78C /* SceneCards.m in Sources */,
 				B686919F2784477700C8D5A2 /* BeatLocalization.m in Sources */,
 				B68AE23726EDF7E300F6DF59 /* BeatPreferencesPanel.m in Sources */,
 				B66F46332565ADA0003748DA /* NSString+UriCompatibility.m in Sources */,
-				B6CE54BF26010D5B006F1E0B /* BeatRevisionTracking.m in Sources */,
+				B6CE54BF26010D5B006F1E0B /* BeatRevisions.m in Sources */,
 				B6AF9DEA27B92C0D00CAF96A /* BeatTextContainer.swift in Sources */,
+				B6EE9C1F288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */,
 				B61875A52471BEDA00FB7646 /* BeatPreview.m in Sources */,
 				B66F463D2565ADA0003748DA /* DiffMatchPatch.m in Sources */,
 				B661936A26BE7BB700152CA1 /* NSDictionary+Values.m in Sources */,
@@ -2808,6 +2857,7 @@
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
 				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
 				B6119C522682154F0049456D /* BeatExportSettings.m in Sources */,
+				B6467AC02899B69100231B25 /* BeatCSSParser.swift in Sources */,
 				B6FD5D8F2563B5320037ACBA /* HTMLParser.m in Sources */,
 				B6D2B7172218B3BC005B8447 /* ContinuousFountainParser.m in Sources */,
 				B6FF56D625AA507B004E4752 /* BeatBrowserView.m in Sources */,
@@ -2830,6 +2880,7 @@
 				B6F0F3892714A2BA006A359D /* BeatDocumentController.m in Sources */,
 				B6DCA86427219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
+				B6467AB6289954A900231B25 /* BeatFonts.m in Sources */,
 				B62A616D284C16790068F139 /* BeatBackup.swift in Sources */,
 				B60FF86826582D1500886E06 /* BeatTitlePageEditor.m in Sources */,
 				B6D7920D28514C0C0050C4CB /* BeatEditorFormattingActions.m in Sources */,
@@ -2901,6 +2952,7 @@
 				B63943912593FE59009BE3CA /* BeatPaperSizing.m in Sources */,
 				B6E47D8A25028D2A00734A8D /* Line.m in Sources */,
 				B6E47D8C25028D5400734A8D /* BeatPreview.m in Sources */,
+				B6EE9C20288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */,
 				B62ADC9F23CCF77F0015563A /* NSMutableString+Regex.m in Sources */,
 				B61BE98C271D5D7F008FFA0F /* BeatMeasure.m in Sources */,
 				B6FACDEE25F7C20400570D77 /* DiffMatchPatchCFUtilities.c in Sources */,
@@ -2915,7 +2967,7 @@
 				B62ADC9B23CCF0310015563A /* FountainRegexes.m in Sources */,
 				B62ADC9E23CCF7790015563A /* NSString+CharacterControl.m in Sources */,
 				B6E47D852502899400734A8D /* BeatPaginator.m in Sources */,
-				B6CE54C326010FC1006F1E0B /* BeatRevisionTracking.m in Sources */,
+				B6CE54C326010FC1006F1E0B /* BeatRevisions.m in Sources */,
 				B66B970E26C03E3200FB0B47 /* BeatDocumentSettings.m in Sources */,
 				B6E47D8D25028D6800734A8D /* OutlineScene.m in Sources */,
 				B64663F727A5DA3D008D7F90 /* BeatHTMLScript.m in Sources */,
@@ -2928,15 +2980,18 @@
 			files = (
 				B6F31175274BF70400D0840D /* BeatPluginLibrary.m in Sources */,
 				B68B6026260B849300463AD8 /* OutlineScene.m in Sources */,
+				B6467AB22899504800231B25 /* ScreenplayRenderer.swift in Sources */,
 				B68B6027260B849300463AD8 /* ValidationItem.m in Sources */,
 				B66B5AB82739B75500BBC9C6 /* NSURL+UnzipKitExtensions.m in Sources */,
+				B6423085288EBEF100F64B87 /* BeatConsole.m in Sources */,
 				B68B6028260B849300463AD8 /* ColorCheckbox.m in Sources */,
 				B68B6029260B849300463AD8 /* SceneCards.m in Sources */,
 				B68691A02784477700C8D5A2 /* BeatLocalization.m in Sources */,
 				B68AE23826EDF7E300F6DF59 /* BeatPreferencesPanel.m in Sources */,
 				B68B602A260B849300463AD8 /* NSString+UriCompatibility.m in Sources */,
-				B68B602B260B849300463AD8 /* BeatRevisionTracking.m in Sources */,
+				B68B602B260B849300463AD8 /* BeatRevisions.m in Sources */,
 				B6AF9DEB27B92C0D00CAF96A /* BeatTextContainer.swift in Sources */,
+				B6EE9C21288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */,
 				B68B602C260B849300463AD8 /* BeatPreview.m in Sources */,
 				B68B602D260B849300463AD8 /* DiffMatchPatch.m in Sources */,
 				B661936B26BE7BB700152CA1 /* NSDictionary+Values.m in Sources */,
@@ -3006,6 +3061,7 @@
 				B68B6055260B849300463AD8 /* ThemeManager.m in Sources */,
 				B68B6056260B849300463AD8 /* BeatTag.m in Sources */,
 				B6119C542682154F0049456D /* BeatExportSettings.m in Sources */,
+				B6467AC12899B69100231B25 /* BeatCSSParser.swift in Sources */,
 				B68B6057260B849300463AD8 /* HTMLParser.m in Sources */,
 				B68B6058260B849300463AD8 /* ContinuousFountainParser.m in Sources */,
 				B68B6059260B849300463AD8 /* BeatBrowserView.m in Sources */,
@@ -3028,6 +3084,7 @@
 				B6F0F38A2714A2BA006A359D /* BeatDocumentController.m in Sources */,
 				B6DCA86527219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B68B6064260B849300463AD8 /* ColorView.m in Sources */,
+				B6467AB7289954A900231B25 /* BeatFonts.m in Sources */,
 				B62A616E284C16790068F139 /* BeatBackup.swift in Sources */,
 				B60FF86926582D1500886E06 /* BeatTitlePageEditor.m in Sources */,
 				B6D7920E28514C0C0050C4CB /* BeatEditorFormattingActions.m in Sources */,
@@ -3108,6 +3165,7 @@
 				B63D9F482830138900D027B6 /* NSMutableIndexSet+Lowest.m in Sources */,
 				B63D9F44283012D000D027B6 /* OutlineScene.m in Sources */,
 				B63D9F6E28304ED100D027B6 /* DynamicColor.m in Sources */,
+				B6EE9C22288DA07B00719AE4 /* BeatPaginationSizing.m in Sources */,
 				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
 				B63D9F4A2830138F00D027B6 /* NSString+Regex.m in Sources */,
 				B63D9F6C283042B500D027B6 /* TagDefinition.m in Sources */,
@@ -3124,7 +3182,7 @@
 				B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */,
 				B69E0A3628429978009A02D0 /* BeatPaperSizing.m in Sources */,
 				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
-				B63D9F662830409600D027B6 /* BeatRevisionTracking.m in Sources */,
+				B63D9F662830409600D027B6 /* BeatRevisions.m in Sources */,
 				B63D9F692830429400D027B6 /* BeatRevisionItem.m in Sources */,
 				B63D9F4D283013AA00D027B6 /* BeatSceneTree.m in Sources */,
 				B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */,
@@ -3415,7 +3473,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13169;
+				CURRENT_PROJECT_VERSION = 13170;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3453,7 +3511,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13169;
+				CURRENT_PROJECT_VERSION = 13170;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3493,7 +3551,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13274;
+				CURRENT_PROJECT_VERSION = 13279;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3502,7 +3560,7 @@
 				INFOPLIST_FILE = fountainQuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.950;
+				MARKETING_VERSION = 1.953;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
@@ -3527,7 +3585,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 13274;
+				CURRENT_PROJECT_VERSION = 13279;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3536,7 +3594,7 @@
 				INFOPLIST_FILE = fountainQuickLook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MARKETING_VERSION = 1.950;
+				MARKETING_VERSION = 1.953;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat.fountainQuickLook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3557,7 +3615,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13274;
+				CURRENT_PROJECT_VERSION = 13279;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3565,7 +3623,7 @@
 				INFOPLIST_FILE = "Appstore/Beat APPSTORE Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.950;
+				MARKETING_VERSION = 1.953;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;
@@ -3589,7 +3647,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 13274;
+				CURRENT_PROJECT_VERSION = 13279;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3597,7 +3655,7 @@
 				INFOPLIST_FILE = "Appstore/Beat APPSTORE Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/../Frameworks @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 1.950;
+				MARKETING_VERSION = 1.953;
 				OTHER_LDFLAGS = "-licucore";
 				"OTHER_LDFLAGS[arch=*]" = "-licucore";
 				PRODUCT_BUNDLE_IDENTIFIER = fi.KAPITAN.Beat;

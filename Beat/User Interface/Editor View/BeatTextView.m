@@ -39,7 +39,7 @@
 #import "BeatMeasure.h"
 #import "NSString+CharacterControl.h"
 #import "BeatRevisionItem.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "BeatLayoutManager.h"
 #import "Beat-Swift.h"
 
@@ -719,7 +719,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Review items
 	if (self.string.length > 0) {
-		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.reviewAttribute atIndex:pos effectiveRange:nil];
+		BeatReviewItem *reviewItem = [self.textStorage attribute:BeatReview.attributeKey atIndex:pos effectiveRange:nil];
 		if (reviewItem && !reviewItem.emptyReview) {
 			[_editorDelegate.review showReviewItemWithRange:NSMakeRange(pos, 0) forEditing:NO];
 			[self.window makeFirstResponder:self];
@@ -1645,10 +1645,9 @@ Line *cachedRectLine;
 			// Enumerate custom attributes from copied text and render backgrounds as needed
 			NSMutableSet *linesToRender = NSMutableSet.new;
 			[str enumerateAttributesInRange:(NSRange){0, str.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-				if (attrs[@"Revision"]) [self.textStorage addAttribute:@"Revision" value:attrs[@"Revision"] range:(NSRange){ pos + range.location, range.length }];
-				if (attrs[@"BeatTag"]) [self.textStorage addAttribute:@"BeatTag" value:attrs[@"BeatTag"] range:(NSRange){ pos + range.location, range.length }];
-				
-				if (attrs[@"BeatTag"] || attrs[@"Revision"]) {
+				// Copy *any* stored attributes
+				if (attrs.count) {
+					[self.textStorage addAttributes:attrs range:NSMakeRange(pos + range.location, range.length)];
 					Line *l = [self.parser lineAtPosition:pos + range.location];
 					[linesToRender addObject:l];
 				}

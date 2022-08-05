@@ -8,6 +8,7 @@
 
 #import "BeatModalAccessoryView.h"
 #import "BeatAppDelegate.h"
+#import "BeatConsole.h"
 
 #define WIDTH 350
 
@@ -105,7 +106,7 @@
 		
 		height = 18;
 	} else {
-		[(BeatAppDelegate*)NSApp.delegate logToConsole:[NSString stringWithFormat:@"'%@' is not a valid modal type. Ignoring.", type] pluginName:@"NOTE:"];
+		[BeatConsole.shared logToConsole:[NSString stringWithFormat:@"'%@' is not a valid modal type. Ignoring.", type] pluginName:@"NOTE:"];
 		return;
 	}
 	

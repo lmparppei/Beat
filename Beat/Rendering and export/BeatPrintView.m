@@ -29,7 +29,7 @@
 #import "BeatPrintView.h"
 #import "BeatHTMLScript.h"
 #import "Document.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "BeatExportSettings.h"
 #import <PDFKit/PDFKit.h>
 #import <Webkit/Webkit.h>
@@ -138,7 +138,7 @@ static NSURL *pdfURL;
 	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:rawText delegate:document];
 
 	// Track revisions
-	[BeatRevisionTracking bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser includeRevisions:settings.revisions];
+	[BeatRevisions bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser includeRevisions:settings.revisions];
 	
 	// Set script data
 	BeatScreenplay *script = [BeatScreenplay from:parser settings:settings];

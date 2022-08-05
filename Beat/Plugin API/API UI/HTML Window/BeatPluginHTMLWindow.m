@@ -18,7 +18,6 @@
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
-	self.level = NSFloatingWindowLevel;
 	self.hidesOnDeactivate = NO;
 	
 	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
@@ -47,6 +46,8 @@
 	[self setHTML:html];
 	[self.contentView addSubview:_webview];
 	
+	[self appear];
+	
 	return self;
 }
 
@@ -69,6 +70,15 @@
 
 - (void)focus {
 	[self makeFirstResponder:self.contentView];
+}
+
+/// This doesn't actually hide the window, but makes it drop behind current key window
+- (void)hide {
+	self.level = NSNormalWindowLevel;
+	self.orderedIndex += 1; // Hide behind new stuff, just in case
+}
+- (void)appear {
+	self.level = NSFloatingWindowLevel;
 }
 
 - (void)setTitle:(NSString *)title {

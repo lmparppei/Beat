@@ -17,7 +17,7 @@
 #import "ContinuousFountainParser.h"
 #import "BeatColors.h"
 #import "NSString+CharacterControl.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "Beat-Swift.h"
@@ -141,13 +141,20 @@ static NSString *reviewAttribute = @"BeatReview";
 		// Only do this if we are REALLY typing at this location
 		// Foolproof fix for a strange, rare bug which changes multiple
 		// lines into character cues and the user is unable to undo the changes
-		if (range.location + range.length <= selectedRange.location) {
+		if (NSMaxRange(range) <= selectedRange.location) {
 			[textView replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
 			line.string = line.string.uppercaseString;
 			[textView setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
 			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.currentTextColor forCharacterRange:line.range];
+		}
+		
+		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.
+		// No idea why.
+		if (_delegate.hideFountainMarkup) {
+			range = line.range;
+			if (line == _delegate.parser.lines.lastObject) range = line.textRange; // Don't go out of range
 		}
 	}
 	
@@ -483,8 +490,8 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (_delegate.showRevisions || _delegate.showTags) {
 		// Enumerate attributes
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			if (attrs[BeatRevisionTracking.revisionAttribute] && _delegate.showRevisions) {
-				BeatRevisionItem *revision = attrs[BeatRevisionTracking.revisionAttribute];
+			if (attrs[BeatRevisions.attributeKey] && _delegate.showRevisions) {
+				BeatRevisionItem *revision = attrs[BeatRevisions.attributeKey];
 				if (revision.type == RevisionAddition) {
 					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
 				}

@@ -74,7 +74,6 @@
 	printInfo.leftMargin = margins.left - offset.width;
 	printInfo.rightMargin = margins.right;
 	
-	
 	return printInfo;
 }
 + (NSPrintInfo*)setPaperSize:(NSPrintInfo*)printInfo size:(BeatPaperSize)size {
@@ -102,6 +101,17 @@
 	else printInfo.paperSize = NSMakeSize(PAPER_USLETTER);
 	
 	printInfo = [self setMargins:printInfo];
+}
+
++ (CGSize)a4 {
+	return CGSizeMake(PAPER_A4);
+}
++ (CGSize)usLetter {
+	return CGSizeMake(PAPER_USLETTER);
+}
++ (CGSize)sizeFor:(BeatPaperSize)size {
+	if (size == BeatA4) return BeatPaperSizing.a4;
+	else return BeatPaperSizing.usLetter;
 }
 
 #endif

@@ -92,6 +92,7 @@
 @property (strong, nonatomic, readonly) BXFont *synopsisFont;
 
 @property (nonatomic) NSInteger mode;
+@property (nonatomic, readonly) bool hideFountainMarkup;
 
 #if !TARGET_OS_IOS
 @property (strong, nonatomic) BeatPrintView *printView;
@@ -172,6 +173,8 @@
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;
 #endif
+
+@optional - (NSDictionary*)runningPlugins;
 
 @end
 /*

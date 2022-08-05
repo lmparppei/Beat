@@ -9,12 +9,18 @@
 #import "BeatAutocomplete.h"
 #import "ContinuousFountainParser.h"
 #import "BeatUserDefaults.h"
+#import "BeatPlugin.h"
 
 @interface BeatAutocomplete ()
 @property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
 @end
 
 @implementation BeatAutocomplete 
+
+-(void)awakeFromNib {
+	characterNames = NSMutableArray.new;
+	sceneHeadings = NSMutableArray.new;
+}
 
 - (void)collectCharacterNames {
 	/*
@@ -69,6 +75,12 @@
 		}
 	}
 	
+	// Collect character name suggestions from running plugins
+	for (NSString* pluginName in _delegate.runningPlugins.allKeys) {
+		BeatPlugin *plugin = _delegate.runningPlugins[pluginName];
+		[characterNames addObjectsFromArray:plugin.completionsForCharacters];
+	}
+	
 	// Create an ordered list with all the character names. One with the most lines will be the first suggestion.
 	// Btw, I don't think this works :-)
 	NSArray *characters = [charactersAndLines keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2){
@@ -91,6 +103,7 @@
 	Line *currentLine = self.delegate.currentLine;
 	
 	[sceneHeadings removeAllObjects];
+	
 	for (Line *line in self.delegate.parser.lines) {
 		NSString *sceneHeading = line.stripFormatting;
 		
@@ -100,18 +113,22 @@
 			[sceneHeadings addObject:sceneHeading];
 		}
 	}
+	
+	for (NSString* pluginName in _delegate.runningPlugins.allKeys) {
+		BeatPlugin *plugin = _delegate.runningPlugins[pluginName];
+		[sceneHeadings addObjectsFromArray:plugin.completionsForSceneHeadings];
+	}
 }
 
 - (void)autocompleteOnCurrentLine {
 	Line *currentLine = self.delegate.currentLine;
 	
 	if (_delegate.textView.selectedRange.location == NSMaxRange(currentLine.textRange)) {
-
 		if (currentLine.isAnyCharacter) {
-			if (characterNames.count) [self collectCharacterNames];
+			if (characterNames.count == 0) [self collectCharacterNames];
 			[_delegate.textView setAutomaticTextCompletionEnabled:YES];
 		} else if (currentLine.type == heading) {
-			if (!sceneHeadings.count) [self collectHeadings];
+			if (sceneHeadings.count == 0) [self collectHeadings];
 			[_delegate.textView setAutomaticTextCompletionEnabled:YES];
 		} else {
 			[characterNames removeAllObjects];
@@ -127,6 +144,7 @@
 #pragma mark - Autocomplete delegate method (forwarded from document)
 
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+
 	NSMutableArray *matches = [NSMutableArray array];
 	NSMutableArray *search = [NSMutableArray array];
 	

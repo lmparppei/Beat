@@ -39,7 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
 	+ (NSPrintInfo*)setMargins:(NSPrintInfo*)printInfo;
 	+ (NSPrintInfo*)setSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
 	+ (void)setPageSize:(BeatPaperSize)size printInfo:(NSPrintInfo*)printInfo;
+
 #endif
+
++ (CGSize)a4;
++ (CGSize)usLetter;
++ (CGSize)sizeFor:(BeatPaperSize)size;
 
 @end
 

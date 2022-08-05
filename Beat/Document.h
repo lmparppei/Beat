@@ -45,7 +45,7 @@ THE SOFTWARE.
 #import "BeatOutlineView.h"
 #import "BeatStatisticsPanel.h"
 #import "BeatEditorDelegate.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 #import "BeatRevisionItem.h"
 
 /*
@@ -60,6 +60,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;
+@class BeatReview;
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser *parser;
@@ -127,7 +128,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) NSMutableDictionary<NSString*, NSString*> *characterGenders;
 
 // Revision Tracking
-@property (nonatomic) IBOutlet BeatRevisionTracking *revisionTracking;
+@property (nonatomic) IBOutlet BeatRevisions *revisionTracking;
 @property (nonatomic) NSString *revisionColor;
 
 // Set document colors
@@ -139,7 +140,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) BeatEditorMode mode;
 
 // Review
-@property (nonatomic) id review;
+@property (nonatomic) IBOutlet BeatReview *review;
 
 @property (nonatomic, readwrite) bool outlineEdit;
 - (NSMutableArray*)filteredOutline;

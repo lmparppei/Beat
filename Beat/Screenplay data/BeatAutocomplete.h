@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 	NSMutableArray *sceneHeadings;
 }
 
-@property (nonatomic, weak) id<BeatEditorDelegate> delegate;
+@property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> delegate;
 - (void)autocompleteOnCurrentLine;
 - (void)collectHeadings;
 - (void)collectCharacterNames;

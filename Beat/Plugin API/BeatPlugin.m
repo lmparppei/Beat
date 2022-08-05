@@ -20,7 +20,8 @@
  */
 
 #import "BeatPlugin.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
+#import "BeatConsole.h"
 #import <objc/runtime.h>
 
 @interface BeatPlugin ()
@@ -29,6 +30,8 @@
 @property (nonatomic) NSWindow *sheet;
 @property (nonatomic) JSValue *sheetCallback;
 @property (nonatomic) JSValue *windowCallback;
+@property (nonatomic) JSValue *sceneCompletionCallback;
+@property (nonatomic) JSValue *characterCompletionCallback;
 @property (nonatomic) WKWebView *sheetWebView;
 @property (nonatomic) BeatPluginData *plugin;
 @property (nonatomic) NSMutableArray *timers;
@@ -67,7 +70,7 @@
 			[alert runModal];
 		} else {
 			NSString *errMsg = [NSString stringWithFormat:@"Error: %@", exception];
-			[(BeatAppDelegate*)NSApp.delegate logToConsole:errMsg pluginName:@"Plugin parser"];
+			[BeatConsole.shared logToConsole:errMsg pluginName:@"Plugin parser"];
 		}
 	}];
 		
@@ -159,15 +162,25 @@
 }
 
 - (void)openConsole {
-	[(BeatAppDelegate*)NSApp.delegate openConsole];
+	[BeatConsole.shared openConsole];
 }
 - (IBAction)clearConsole:(id)sender {
-	[(BeatAppDelegate*)NSApp.delegate clearConsole];
+	[BeatConsole.shared clearConsole];
 }
 
 - (bool)compatibleWith:(NSString *)version {
 	return [BeatPluginManager.sharedManager isCompatible:version];
 }
+
+
+#pragma mark - Resident plugin
+
+- (void)makeResident {
+	// Make the plugin stay in memory and register it with the document
+	_resident = YES;
+	[_delegate registerPlugin:self];
+}
+
 
 #pragma mark - Resident plugin listeners
 
@@ -178,10 +191,7 @@
 - (void)setUpdate:(JSValue *)updateMethod {
 	// Save callback
 	_updateMethod = updateMethod;
-	_resident = YES;
-	
-	// Tell the delegate to keep this plugin in memory and update it on refresh
-	[_delegate registerPlugin:self];
+	[self makeResident];
 }
 - (void)update:(NSRange)range {
 	if (!_updateMethod || [_updateMethod isNull]) return;
@@ -195,10 +205,8 @@
 - (void)setSelectionUpdate:(JSValue *)updateMethod {
 	// Save callback for selection change update
 	_updateSelectionMethod = updateMethod;
-	_resident = YES;
 	
-	// Tell the delegate to keep this plugin in memory and update it on refresh
-	[_delegate registerPlugin:self];
+	[self makeResident];
 }
 - (void)updateSelection:(NSRange)selection {
 	if (!_updateSelectionMethod || [_updateSelectionMethod isNull]) return;
@@ -212,10 +220,8 @@
 - (void)setOutlineUpdate:(JSValue *)updateMethod {
 	// Save callback for selection change update
 	_updateOutlineMethod = updateMethod;
-	_resident = YES;
 	
-	// Tell the delegate to keep this plugin in memory and update it on refresh
-	[_delegate registerPlugin:self];
+	[self makeResident];
 }
 - (void)updateOutline:(NSArray*)outline {
 	if (!_updateOutlineMethod || [_updateOutlineMethod isNull]) {
@@ -246,11 +252,32 @@
 	[_documentDidBecomeMainMethod callWithArguments:nil];
 }
 
-- (void)makeResident {
-	// Make the plugin stay in memory and register it with the document
-	_resident = YES;
-	[_delegate registerPlugin:self];
+
+#pragma mark - Resident plugin data providers
+
+- (void)onSceneHeadingAutocompletion:(JSValue*)callback {
+	_sceneCompletionCallback = callback;
+	[self makeResident];
 }
+- (NSArray*)completionsForSceneHeadings {
+	if (_sceneCompletionCallback == nil) return @[];
+	
+	JSValue *value = [_sceneCompletionCallback callWithArguments:nil];
+	if (!value.isArray) return @[];
+	else return value.toArray;
+}
+- (void)onCharacterAutocompletion:(JSValue*)callback {
+	_characterCompletionCallback = callback;
+	[self makeResident];
+}
+- (NSArray*)completionsForCharacters {
+	if (_characterCompletionCallback == nil) return @[];
+	
+	JSValue *value = [_characterCompletionCallback callWithArguments:nil];
+	if (!value.isArray) return @[];
+	else return value.toArray;
+}
+
 
 #pragma mark - Multithreading
 
@@ -484,11 +511,12 @@
 
 - (void)log:(NSString*)string
 {
-	if (NSThread.isMainThread) [(BeatAppDelegate*)NSApp.delegate logToConsole:string pluginName:_pluginName];
+	BeatConsole *console = BeatConsole.shared;
+	if (NSThread.isMainThread) [console logToConsole:string pluginName:_pluginName];
 	else {
 		// Allow logging in background thread
 		dispatch_async(dispatch_get_main_queue(), ^(void){
-			[(BeatAppDelegate*)NSApp.delegate logToConsole:string pluginName:self.pluginName];
+			[console logToConsole:string pluginName:self.pluginName];
 		});
 	}
 }
@@ -861,17 +889,16 @@
 - (void)showAllWindows {
 	if (_terminating) return;
 	
-	for (NSWindow *window in self.pluginWindows) {
-		window.level = NSFloatingWindowLevel;
+	for (BeatPluginHTMLWindow *window in self.pluginWindows) {
+		[window appear];
 	}
 }
 
 - (void)hideAllWindows {
 	if (_terminating) return;
 	
-	for (NSWindow *window in self.pluginWindows) {
-		window.level = NSNormalWindowLevel;
-		window.orderedIndex += 1; // Hide behind new stuff, just in case
+	for (BeatPluginHTMLWindow *window in self.pluginWindows) {
+		[window hide];
 	}
 }
 
@@ -1124,7 +1151,7 @@
 									header:(exportSettings[@"header"]) ? exportSettings[@"header"] : @""
 									printSceneNumbers:(exportSettings[@"printSceneNumbers"]) ? ((NSNumber*)exportSettings[@"printSceneNumbers"]).boolValue : true
 									printNotes:(exportSettings[@"printNotes"]) ? ((NSNumber*)(exportSettings[@"printNotes"])).boolValue : false
-									revisions:(exportSettings[@"revisions"]) ? (NSArray*)exportSettings[@"revisions"] : BeatRevisionTracking.revisionColors
+									revisions:(exportSettings[@"revisions"]) ? (NSArray*)exportSettings[@"revisions"] : BeatRevisions.revisionColors
 									scene:nil
 									coloredPages:(exportSettings[@"coloredPages"]) ? ((NSNumber*)(exportSettings[@"coloredPages"])).boolValue : false
 									revisedPageColor:(exportSettings[@"revisedPageColor"]) ? (exportSettings[@"revisedPageColor"]) : @""];

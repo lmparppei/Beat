@@ -61,6 +61,8 @@
 - (void)onOutlineChange:(JSValue*)updateMethod;
 - (void)onSceneIndexUpdate:(JSValue*)updateMethod;
 - (void)onDocumentBecameMain:(JSValue*)updateMethod;
+- (void)onSceneHeadingAutocompletion:(JSValue*)callback;
+- (void)onCharacterAutocompletion:(JSValue*)callback;
 
 - (void)log:(NSString*)string;
 - (void)openConsole;
@@ -202,6 +204,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
 - (NSString*)previewHTML; /// Returns HTML string of the current preview. Only for debugging.
+
 @end
 
 @interface BeatPlugin : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
@@ -223,6 +226,10 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
 - (void)documentDidBecomeMain;
+
+// Autocompletion callbacks
+- (NSArray*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion
+- (NSArray*)completionsForCharacters; /// Called if the resident plugin has a callback for character cue autocompletion
 
 - (void)showAllWindows;
 - (void)hideAllWindows;

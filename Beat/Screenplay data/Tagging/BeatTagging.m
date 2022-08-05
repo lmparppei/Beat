@@ -57,20 +57,17 @@
 @interface BeatTagging ()
 @property (nonatomic) NSMutableArray *tagDefinitions;
 @property (nonatomic) OutlineScene *lastScene;
-
 @property (weak) IBOutlet ColorView *sideView;
-@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
 
 @end
 
 @implementation BeatTagging
 
-static NSString *tagAttribute = @"BeatTag";
-
 - (instancetype)initWithDelegate:(id<BeatTaggingDelegate>)delegate {
 	self = [super init];
 	if (self) {
 		self.delegate = delegate;
+		self.sideViewCostraint.constant = 0.5; // Why?
 	}
 	
 	return self;
@@ -81,13 +78,16 @@ static NSString *tagAttribute = @"BeatTag";
 #if !TARGET_OS_IOS
 	self.taggingTextView.textContainerInset = (NSSize){ 8, 8 };
 	[self.sideView setFillColor:[BeatColors color:@"backgroundGray"]];
-	[_sideViewCostraint setConstant:0];
 #endif
 }
 
 - (void)setup {
 	// Load tags from document settings
 	[self loadTags:[_delegate.documentSettings get:DocSettingTags] definitions:[_delegate.documentSettings get:DocSettingTagDefinitions]];
+}
+
++ (NSString*)attributeKey {
+	return @"BeatTag";
 }
 
 + (NSArray*)tags {
@@ -259,7 +259,7 @@ static NSString *tagAttribute = @"BeatTag";
 		NSAttributedString *string = [textViewString attributedSubstringFromRange:line.textRange];
 		
 		// Enumerate through tags in the attributed string		
-		[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, line.string.length} options:0 usingBlock:^(id _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		[string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, line.string.length} options:0 usingBlock:^(id _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 			BeatTag *tag = (BeatTag*)value;
 			
 			if (!tag || range.length == 0) return;
@@ -281,7 +281,7 @@ static NSString *tagAttribute = @"BeatTag";
 	NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.taggingTextView.attributedString];
 #endif
 	
-	[string enumerateAttribute:@"BeatTag" inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+	[string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
 		if (tag.type == NoTag) return; // Just in case
 		
@@ -302,7 +302,7 @@ static NSString *tagAttribute = @"BeatTag";
     NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.taggingTextView.attributedString];
 #endif
 	
-	[string enumerateAttribute:@"BeatTag" inRange:searchRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+	[string enumerateAttribute:BeatTagging.attributeKey inRange:searchRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
 		
 		if (tag.type == NoTag) return;
@@ -631,32 +631,7 @@ static NSString *tagAttribute = @"BeatTag";
  */
 
 #pragma mark - Editor methods
-/*
-- (void)addTagToRange:(NSRange)range tag:(BeatTagItem*)tag {
-	// NOTE: Is this obsolete?
-	
-	NSDictionary *oldAttributes = [self.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
-	
-	if (tag == NoTag) {
-		// Clear tags
-		[self.textView.textStorage removeAttribute:tagAttribute range:range];
-		[self.textView.textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
-		[self saveTags];
-	} else {
-		[self.textView.textStorage addAttribute:tagAttribute value:tag range:range];
-		
-		NSColor *tagColor = [tag.color colorWithAlphaComponent:.6];
-		[self.textView.textStorage addAttribute:NSBackgroundColorAttributeName value:tagColor range:range];
-		
-		[self saveTags];
-	}
-	
-	[self.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-		[self.textView.textStorage setAttributes:oldAttributes range:range];
-	}];
-}
-*/
- 
+
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type {
 	NSString *string = [self.delegate.textView.string substringWithRange:range];
 	BeatTag* tag = [self addTag:string type:type];
@@ -686,10 +661,10 @@ static NSString *tagAttribute = @"BeatTag";
 	
 	if (tag == nil) {
 		// Clear tags
-		[_delegate.textView.textStorage removeAttribute:tagAttribute range:range];
+		[_delegate.textView.textStorage removeAttribute:BeatTagging.attributeKey range:range];
 		[self saveTags];
 	} else {
-		[_delegate.textView.textStorage addAttribute:tagAttribute value:tag range:range];
+		[_delegate.textView.textStorage addAttribute:BeatTagging.attributeKey value:tag range:range];
 		[self saveTags];
 	}
 	
@@ -718,10 +693,12 @@ static NSString *tagAttribute = @"BeatTag";
 }
 
 - (void)close {
-	[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
-	[_sideViewCostraint setConstant:0];
-	
-	[_delegate toggleMode:TaggingMode];
+	if (_sideViewCostraint.constant != 0) {
+		[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
+		[_sideViewCostraint setConstant:0];
+		
+		[_delegate toggleMode:TaggingMode];
+	}
 }
 
 #pragma mark - Editor actions

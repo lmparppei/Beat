@@ -41,9 +41,6 @@
 - (bool)OSisDark;
 
 - (void)showTemplate:(NSString*)name;
-- (void)openConsole;
-- (void)clearConsole;
--(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName;
 
 + (NSURL*)appDataPath:(NSString*)subPath;
 - (NSURL*)appDataPath:(NSString*)subPath;

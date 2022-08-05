@@ -59,8 +59,10 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 @property (weak) IBOutlet id<BeatTaggingDelegate> delegate;
 #if !TARGET_OS_IOS
 @property (weak) IBOutlet BeatTagView* taggingTextView;
+@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
 #endif
 
++ (NSString*)attributeKey;
 + (NSArray*)tags;
 + (BeatTagType)tagFor:(NSString*)tag;
 //+ (NSDictionary*)taggedRangesIn:(NSAttributedString*)string;

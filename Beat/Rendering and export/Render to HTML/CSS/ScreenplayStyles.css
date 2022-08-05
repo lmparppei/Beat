@@ -217,12 +217,12 @@ body > p:first-child {
 	top: 1px;
 }
 
-.scene-heading, .transition, .new-act, .end-of-act {
+.heading, .transition, .new-act, .end-of-act {
 	position: relative;
 	text-transform: uppercase;
 }
 
-.scene-heading{
+.heading{
 	padding-right: 4ch; /*was nil, but added not to collide with scene numbers*/
 }
 
@@ -284,7 +284,7 @@ body > p:first-child {
 	padding-right: calc(var(--action-width) - (var(--parenthetical-indent) + var(--parenthetical-width)));
 }
 
-.scene-heading {
+.heading {
 	/* margin-top: calc(2 * var(--line-height)); */
 	margin-top: calc(#sceneHeadingSpacing# * var(--line-height));
 	
@@ -293,15 +293,15 @@ body > p:first-child {
 	margin-left: 0;
 }
 
-.scene-heading.bold {
+.heading.bold {
 	font-weight: bold;
 }
 
-.scene-heading.underline {
+.heading.underline {
 	text-decoration: underline;
 }
 
-.scene-heading.first {
+.heading.first {
 	margin-top: var(--line-height);
 }
 
@@ -578,7 +578,7 @@ p.page-break {
 }
 p.page-break-render {
 	text-align: right;
-	padding-top: 0px;
+	padding-top: 15px;
 	margin-top: 0px;
 	margin-bottom: 30px;
 	padding-right: 0px;

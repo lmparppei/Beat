@@ -1,5 +1,5 @@
 //
-//  BeatRevisionTracking.h
+//  BeatRevisions.h
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 16.3.2021.
@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatRevisionTracking : NSObject
+@interface BeatRevisions : NSObject
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser includeRevisions:(NSArray*)includedRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string parser:(ContinuousFountainParser*)parser;
@@ -24,14 +24,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray*)revisionColors;
 + (NSDictionary*)revisionMarkers;
 + (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
-+ (NSString*)revisionAttribute;
-
++ (NSString*)attributeKey;
 
 @property (weak) IBOutlet id<BeatEditorDelegate> delegate;
 
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;
-- (void)setupRevisions;
+- (void)setup;
 
 - (void)markerAction:(RevisionType)type;
 //- (void)markRangeAsAddition:(NSRange)range;

@@ -1,0 +1,116 @@
+/*
+
+Rendering Stylesheet for Beat.
+This is not actual CSS, just uses similar markup.
+© Lauri-Matti Parppei 2021-2022
+
+*/
+
+Page {
+    marginLeft: 20;
+	paddingLeft: 60;
+    marginTop: 10;
+}
+
+Heading {
+    width-a4: 59ch - 2ch;
+    width-us: 61ch - 2ch;
+    
+    margin-top: 2l;
+    bold: true;
+}
+
+Action {
+    width-a4: 59ch;
+    width-us: 61ch;
+
+    margin-top: 1l;
+}
+Centered {
+	width-a4: 59ch;
+	width-us: 61ch;
+
+	margin-top: 1l;
+	textAlign: center;
+}
+
+Character {
+    width-a4: 38ch;
+	width-us: 38ch;
+    
+    margin-left: 130px;
+    margin-top: 1l;
+}
+
+Parenthetical {
+    width-a4: 28ch;
+	width-us: 28ch;
+	
+    margin-left: 100px;
+    margin-top: 0;
+}
+
+Dialogue {
+    width-a4: 35ch;
+	width-us: 35ch;
+    
+    margin-top: 0;
+    margin-left: 60;
+}
+
+More {
+    width-a4: 38ch;
+	width-us: 38ch;
+    
+    margin-left: 130px;
+    margin-top: 0;
+}
+
+DD Block {
+    margin-top: 1l;
+}
+
+DD Character {
+	width-a4: 20ch;
+	width-us: 21ch;
+
+    margin-top: 0;
+    margin-left: 5ch;
+}
+DD More {
+	width-a4: 20ch;
+	width-us: 21ch;
+
+    margin-top: 0;
+    margin-left: 5ch;
+}
+DD Parenthetical {
+    width-a4: 25ch;
+    width-us: 26ch;
+    
+    margin-top: 0;
+    margin-left: 3ch;
+}
+DD Dialogue {
+	width-a4: 27ch;
+	width-us: 28ch;
+
+    margin-left: 1ch;
+}
+
+Transition {
+    width-a4: 59ch;
+	width-us: 61ch;
+	
+    margin-top: 1l;
+    textAlign: right;
+}
+
+Lyrics {
+	width-a4: 59ch;
+	width-us: 61ch;
+	
+    margin-top: 1l;
+    textAlign: center;
+	italic: true;
+}

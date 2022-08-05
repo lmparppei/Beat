@@ -8,6 +8,7 @@
 
 #import "BeatRevisionItem.h"
 #import "BeatColors.h"
+#import "BeatRevisions.h""
 
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>
@@ -16,7 +17,6 @@
 #endif
 
 @interface BeatRevisionItem ()
-//@property (weak) ThemeManager *themeManager;
 @property (nonatomic, weak) BeatColor *color;
 @property (nonatomic, weak) BeatColor *backgroundColor;
 @end
@@ -26,18 +26,14 @@
 -(instancetype)initWithType:(RevisionType)type color:(NSString*)color {
 	self = [super init];
 	if (self) {
-		//_themeManager = [ThemeManager sharedManager];
 		_type = type;
 		
 		if (color.length) _colorName = color;
-		else _colorName = BeatRevisionItem.availableColors.firstObject;
+		else _colorName = BeatRevisions.defaultRevisionColor;
 	}
 	return self;
 }
 
-+ (NSArray<NSString*>*)availableColors {
-	return @[@"blue", @"green", @"purple", @"orange"];
-}
 + (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color
 {
 	return [[BeatRevisionItem alloc] initWithType:type color:color];
@@ -48,20 +44,17 @@
 	return [[BeatRevisionItem alloc] initWithType:type color:@""];
 }
 
+/// Returns the key for saving
 - (NSString*)key {
 	if (self.type == RevisionRemovalSuggestion) return @"RemovalSuggestion";
 	else if (self.type == RevisionAddition) return @"Addition";
 	return @"";
 }
 
-- (NSString*)description {
-	return [NSString stringWithFormat:@"%@", self.key];
-}
-
 - (BeatColor*)color {
 	if (_color) return _color;
 	if (self.colorName.length) _color = [BeatColors color:self.colorName];
-	if (!_color) _color = [BeatColors color:[BeatRevisionItem availableColors].firstObject];
+	if (!_color) _color = [BeatColors color:BeatRevisions.defaultRevisionColor];
 	return _color;
 }
 
@@ -90,13 +83,13 @@
 
 }
 
-
 -(id)copyWithZone:(NSZone *)zone {
 	BeatRevisionItem *newItem = [[[self class] alloc] initWithType:(RevisionType)self.type color:(NSString*)[self.colorName copyWithZone:zone]];
 	return newItem;
 }
 
-
+#pragma mark - Debug
+- (NSString*)description { return [NSString stringWithFormat:@"%@", self.key]; }
 
 @end
 /*

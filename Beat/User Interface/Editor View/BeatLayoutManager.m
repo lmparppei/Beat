@@ -8,7 +8,7 @@
 
 #import "BeatLayoutManager.h"
 #import "BeatTextView.h"
-#import "BeatRevisionTracking.h"
+#import "BeatRevisions.h"
 
 @implementation BeatLayoutManager
 
@@ -43,7 +43,7 @@
 	 
 	 */
 	NSMutableDictionary<NSString*, NSMutableSet<NSValue*>*> *revisions = NSMutableDictionary.new;
-	for (NSString *string in BeatRevisionTracking.revisionColors) revisions[string] = NSMutableSet.new;
+	for (NSString *string in BeatRevisions.revisionColors) revisions[string] = NSMutableSet.new;
 	
 	while (glyphRange.length > 0) {
 		NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL], attributeCharRange, attributeGlyphRange;
@@ -72,11 +72,11 @@
 		glyphRange.location = NSMaxRange(attributeGlyphRange);
 	}
 	
-	for (NSString *color in BeatRevisionTracking.revisionColors) {
+	for (NSString *color in BeatRevisions.revisionColors) {
 		[NSGraphicsContext saveGraphicsState];
 		
 		NSMutableSet *rects = revisions[color];
-		NSString *marker = BeatRevisionTracking.revisionMarkers[color];
+		NSString *marker = BeatRevisions.revisionMarkers[color];
 		NSColor *bgColor = ThemeManager.sharedManager.backgroundColor.effectiveColor;
 		
 		[rects enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {

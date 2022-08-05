@@ -875,7 +875,6 @@
 
 - (NSInteger)widthForElement:(Line *)element
 {
-	// The above code is preserved for reference, but this is how we do it nowadays.
 	return [self cplToWidth:element];
 }
 
@@ -1168,14 +1167,7 @@
 	// Live pagination page break item
 	pageBreakItem = block[splitAt];
 
-	/*
-	if (!_livePagination) {
-		[delegate logToConsole:[NSString stringWithFormat:@"=========================\nSPLIT BLOCK: %@", block] pluginName:@"Pagination"];
-		[delegate logToConsole:[NSString stringWithFormat:@"Split at: %lu", splitAt] pluginName:@"Pagination"];
-		[delegate logToConsole:[NSString stringWithFormat:@"Can be split at indices: %@", splittableIndices] pluginName:@"Pagination"];
-	}
-	 */
-			
+
 	// For dialogue, we'll see if we can split the current line of dialogue
 	if (spiller.isAnyDialogue) {
 		if (remainingSpace > BeatPaginator.lineHeight) {

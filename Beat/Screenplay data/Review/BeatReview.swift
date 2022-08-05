@@ -21,8 +21,11 @@ protocol BeatReviewDelegate: AnyObject {
 	//func forwardKeypress(event:NSEvent)
 }
 
-class BeatReviewItem:NSObject {
+// MARK: Review item
+
+class BeatReviewItem:NSObject, NSCopying, NSCoding {
 	var string:NSString! = ""
+	
 	@objc var emptyReview:Bool {
 		get {
 			if (string.length == 0) {
@@ -37,30 +40,45 @@ class BeatReviewItem:NSObject {
 		string = reviewString ?? ""
 		super.init()
 	}
+	
+	required init?(coder: NSCoder) {
+		super.init()
+		string = coder.decodeObject(forKey: "string") as? NSString ?? ""
+	}
+	
+	func encode(with coder: NSCoder) {
+		coder.encode(string, forKey: "string")
+	}
+	
+	func copy(with zone: NSZone? = nil) -> Any {
+		let item = BeatReviewItem(reviewString: self.string)
+		return item
+	}
 }
+
+
+// MARK: Review manager class
 
 class BeatReview: NSObject {
 	@objc var popover:NSPopover
 	@objc var editorView:BeatReviewEditor
-	let delegate:BeatEditorDelegate
+	@IBOutlet var delegate:BeatEditorDelegate?
 	var currentRange:NSRange = NSMakeRange(0, 0)
 	var item:BeatReviewItem?
 	
 	let editorContentSize = NSMakeSize(200, 160)
-
 	
 	@objc class func reviewColor() -> NSColor {
 		return NSColor.init(red: 255.0 / 255.0, green: 229.0 / 255.0, blue: 117.0 / 255, alpha: 1.0)
 	}
-	@objc class func reviewAttribute () -> NSAttributedString.Key {
+	@objc class func attributeKey () -> NSAttributedString.Key {
 		return NSAttributedString.Key(rawValue: "BeatReview")
 	}
 	
-	@objc init(editorDelegate:BeatEditorDelegate) {
+	override init() {
 		popover = NSPopover()
 		editorView = BeatReviewEditor()
 		popover.contentViewController = editorView
-		delegate = editorDelegate
 
 		if #available(macOS 10.14, *) {
 			popover.appearance = NSAppearance(named: .aqua)
@@ -69,12 +87,17 @@ class BeatReview: NSObject {
 		super.init()
 	}
 	
+	@objc func setup() {
+		if (delegate == nil) { return }		
+		setupReviews(ranges: delegate!.documentSettings.get(DocSettingReviews) as? NSArray ?? [])
+	}
+	
 	@objc func rangesForSaving(string:NSAttributedString) -> NSArray {
 		let ranges:NSMutableArray = NSMutableArray()
 		var prevRange:NSRange = NSMakeRange(0, 0)
 		var prevString:NSString = ""
 		
-		string.enumerateAttribute(BeatReview.reviewAttribute(), in: NSMakeRange(0, string.length)) { value, range, stop in
+		string.enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, string.length)) { value, range, stop in
 			let item:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
 
 			if (item.emptyReview) {
@@ -112,8 +135,8 @@ class BeatReview: NSObject {
 			let rangeArray:Array<Int> = review["range"] as! Array
 			let range = NSMakeRange(rangeArray[0], rangeArray[1])
 			
-			if (NSMaxRange(range) <= delegate.textView.string.count) {
-				delegate.textView.textStorage?.addAttribute(BeatReview.reviewAttribute(), value: reviewItem, range: range)
+			if (NSMaxRange(range) <= delegate!.textView.string.count) {
+				delegate?.textView.textStorage?.addAttribute(BeatReview.attributeKey(), value: reviewItem, range: range)
 			}
 		}
 	}
@@ -125,13 +148,13 @@ class BeatReview: NSObject {
 		
 		// If the cursor landed on a review, display the review at that location
 		if (range.length == 0) {
-			let attrs = delegate.textView.textStorage?.attributes(at: range.location, effectiveRange: effectiveRange)
+			let attrs = delegate?.textView.textStorage?.attributes(at: range.location, effectiveRange: effectiveRange)
 			
-			if (attrs?[BeatReview.reviewAttribute()] == nil) {
+			if (attrs?[BeatReview.attributeKey()] == nil) {
 				closePopover()
 				return
 			} else {
-				reviewItem = attrs?[BeatReview.reviewAttribute()] as! BeatReviewItem
+				reviewItem = attrs?[BeatReview.attributeKey()] as! BeatReviewItem
 			}
 		}
 		
@@ -148,7 +171,7 @@ class BeatReview: NSObject {
 		var reviewRange = range
 		
 		if (reviewItem.emptyReview) {
-			delegate.textView.textStorage?.enumerateAttribute(BeatReview.reviewAttribute(), in: range, using: { value, rng, stop in
+			delegate?.textView.textStorage?.enumerateAttribute(BeatReview.attributeKey(), in: range, using: { value, rng, stop in
 				let item:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem.init(reviewString: "")
 				
 				if (!item.emptyReview) {
@@ -163,15 +186,15 @@ class BeatReview: NSObject {
 		// Ensure we're not going out of range.
 		if (reviewRange.length == 0) {
 			var displayRange = NSMakeRange(reviewRange.location, 1)
-			if (NSMaxRange(displayRange) > delegate.textView.string.count) {
+			if (NSMaxRange(displayRange) > delegate?.textView.string.count ?? 0) {
 				displayRange.location -= 1
 			}
 			reviewRange = displayRange
 		}
 		
-		var rect = delegate.textView.firstRect(forCharacterRange: reviewRange, actualRange: nil)
-		rect = (self.delegate.textView.window?.convertFromScreen(rect))!
-		rect = self.delegate.textView.convert(rect, from: nil)
+		var rect = delegate?.textView.firstRect(forCharacterRange: reviewRange, actualRange: nil)
+		rect = (self.delegate?.textView.window?.convertFromScreen(rect ?? NSZeroRect))!
+		rect = self.delegate?.textView.convert(rect ?? NSZeroRect, from: nil)
 		
 		editorView.controller = self
 		editorView.item = reviewItem
@@ -195,20 +218,22 @@ class BeatReview: NSObject {
 		
 		editorView.shown = true
 				
-		popover.show(relativeTo: rect, of:delegate.textView, preferredEdge: NSRectEdge.maxY)
-		editorView.editor?.window?.makeFirstResponder(editorView.editor)
+		if (delegate != nil) {
+			popover.show(relativeTo: rect!, of:delegate!.textView, preferredEdge: NSRectEdge.maxY)
+			editorView.editor?.window?.makeFirstResponder(editorView.editor)
+		}
 	}
 	
 	@objc func saveReview(item: BeatReviewItem) {
 		let trimmedString = item.string.trimmingCharacters(in: .whitespacesAndNewlines)
 		if (trimmedString.count > 0 && trimmedString != "") {
 			// Save review if it's not empty
-			self.delegate.textView.textStorage?.addAttribute(BeatReview.reviewAttribute(), value: item, range: currentRange)
+			self.delegate?.textView.textStorage?.addAttribute(BeatReview.attributeKey(), value: item, range: currentRange)
 		}
 		
-		self.delegate.renderBackground(for: currentRange)
-		delegate.textDidChange(Notification(name: Notification.Name(rawValue: "Review edit")))
-		delegate.updateChangeCount(.changeDone)
+		self.delegate?.renderBackground(for: currentRange)
+		delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review edit")))
+		delegate?.updateChangeCount(.changeDone)
 	}
 	
 	@objc func applyReview() {
@@ -216,16 +241,20 @@ class BeatReview: NSObject {
 		
 		// Move the cursor at the end of review
 		var effectiveRange: NSRange = NSMakeRange(0, 0)
-		let attr:BeatReviewItem = delegate.textView.textStorage?.attribute(BeatReview.reviewAttribute(), at:delegate.textView.selectedRange().location, longestEffectiveRange: &effectiveRange, in: NSMakeRange(0, delegate.textView.string.count)) as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
+		let attr:BeatReviewItem = delegate?.textView.textStorage?.attribute(BeatReview.attributeKey(),
+																			at:delegate?.textView.selectedRange().location ?? 0,
+																			longestEffectiveRange: &effectiveRange,
+																			in: NSMakeRange(0, delegate?.textView.string.count ?? 0))
+								  as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
 		
 		if (effectiveRange.location != NSNotFound && currentRange.length > 0 && !attr.emptyReview) {
-			delegate.textView.setSelectedRange(NSMakeRange(effectiveRange.location + effectiveRange.length, 0))
+			delegate?.textView.setSelectedRange(NSMakeRange(effectiveRange.location + effectiveRange.length, 0))
 		}
 	}
 	
 	func deleteReview(item:BeatReviewItem) {
 		var deleteRange = NSMakeRange(NSNotFound, 0)
-		delegate.textView.textStorage?.enumerateAttribute(BeatReview.reviewAttribute(), in: NSMakeRange(0, delegate.text().count), using: { value, range, stop in
+		delegate?.textView.textStorage?.enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, delegate?.text().count ?? 0), using: { value, range, stop in
 			let review = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
 			
 			if (review == item) {
@@ -236,12 +265,12 @@ class BeatReview: NSObject {
 		
 		if (deleteRange.location != NSNotFound) {
 			editorView.item = nil
-			delegate.textView.textStorage?.removeAttribute(BeatReview.reviewAttribute(), range: deleteRange)
-			delegate.textDidChange(Notification(name: Notification.Name(rawValue: "Review deletion")))
+			delegate?.textView.textStorage?.removeAttribute(BeatReview.attributeKey(), range: deleteRange)
+			delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review deletion")))
 			popover.close()
 			
-			self.delegate.renderBackground(for: deleteRange)
-			delegate.updateChangeCount(.changeDone)
+			self.delegate?.renderBackground(for: deleteRange)
+			delegate?.updateChangeCount(.changeDone)
 		}
 	}
 	
@@ -305,8 +334,8 @@ class BeatReviewEditor: NSViewController, NSTextViewDelegate, BeatReviewDelegate
 /*
 	func forwardKeypress(event:NSEvent) {
 		// This is a VERY WEIRD HACK and I apologize
-		editor?.window?.makeFirstResponder(controller?.delegate.textView)
-		editor?.window?.makeFirstResponder(controller?.delegate.textView)
+		editor?.window?.makeFirstResponder(controller?.delegate?.textView)
+		editor?.window?.makeFirstResponder(controller?.delegate?.textView)
 		editor?.window?.sendEvent(event)
 		editor?.window?.sendEvent(event)
 	}

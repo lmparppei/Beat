@@ -615,13 +615,10 @@ static BeatAppDelegate *appDelegate;
 	[self updateLayout];
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 
-	// Initialize edit tracking
-	[self.revisionTracking setupRevisions];
-			
-	// Load tagging & review systems
-	[self.tagging setup];
-	[self setupReview];
-		
+	[self.revisionTracking setup]; // Initialize edit tracking
+	[self.review setup]; // Setup review system WIP: Harmonize this with the above classes
+	[self.tagging setup]; // Setup tagging
+
 	// Document loading has ended
 	self.documentIsLoading = NO;
 	
@@ -647,10 +644,6 @@ static BeatAppDelegate *appDelegate;
 		[_splitHandle restoreBottomOrLeftView];
 		NSInteger sidebarWidth = [self.documentSettings getInt:DocSettingSidebarWidth];
 		_splitHandle.mainConstraint.constant = sidebarWidth;
-		
-		[_documentWindow layoutIfNeeded];
-		[self updateLayout];
-		
 	}
 	
 	// Setup page size
@@ -663,7 +656,7 @@ static BeatAppDelegate *appDelegate;
 	// Enable undo registration and clear any changes to the document (if needed)
 	[self.undoManager enableUndoRegistration];
 	if (saved) [self updateChangeCount:NSChangeCleared];
-	
+		
 	// Reveal text view
 	[self.textView.animator setAlphaValue:1.0];
 	
@@ -672,6 +665,13 @@ static BeatAppDelegate *appDelegate;
 
 	// Hide Fountain markup if needed
 	if (self.hideFountainMarkup) [self.textView redrawAllGlyphs];
+	
+	[_documentWindow layoutIfNeeded];
+	[self updateLayout];
+	
+	// New export test
+	// BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
+	// ScreenplayRenderer *renderer = [ScreenplayRenderer.alloc initWithSettings:settings screenplay:self.parser.forPrinting];
 }
 
 -(void)awakeFromNib {
@@ -758,6 +758,7 @@ static BeatAppDelegate *appDelegate;
 - (void)setupWindow {
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
+	self.tagging.sideViewCostraint.constant = 0;
 	
 	// Reset zoom
 	[self setZoom];
@@ -917,7 +918,7 @@ static BeatAppDelegate *appDelegate;
 
 #pragma mark - Window delegate
 
-static NSWindow *currentKeyWindow;
+static NSWindow __weak *currentKeyWindow;
 
 - (void)windowDidBecomeMain:(NSNotification *)notification {
 	// Show all plugin windows associated with the current document
@@ -933,13 +934,15 @@ static NSWindow *currentKeyWindow;
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
+	// When window resigns it main status, we'll have to hide possible floating windows
 	NSWindow *mainWindow = NSApp.mainWindow;
-	
-	// If main window is nil, we probably are in another app, so let's change the style of every plugin window
-	if (mainWindow != nil) return;
 	
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		[_runningPlugins[pluginName] hideAllWindows];
+	}
+	
+	if (!mainWindow.isMainWindow && _runningPlugins.count > 0) {
+		[mainWindow makeKeyAndOrderFront:nil];
 	}
 }
 
@@ -1259,14 +1262,14 @@ static NSWindow *currentKeyWindow;
 	
 	// Save added/removed ranges
 	// This saves the revised ranges into Document Settings
-	NSDictionary *revisions = [BeatRevisionTracking rangesForSaving:_attrTextCache];
+	NSDictionary *revisions = [BeatRevisions rangesForSaving:_attrTextCache];
 	[_documentSettings set:DocSettingRevisions as:revisions];
 
 	// Save current revision color
 	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
 	
 	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
-	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisionTracking changedLinesForSaving:self.lines]];
+	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
 	
 	// [_documentSettings set:@"Running Plugins" as:self.runningPlugins.allKeys];
 	
@@ -2251,6 +2254,7 @@ static NSWindow *currentKeyWindow;
 	Line* prevLine = self.lines[prevIndex];
 	
 	NSArray *prevBlock = [self.parser blockFor:prevLine];
+	
 	Line *firstLine = prevBlock.firstObject;
 	NSInteger position = firstLine.position; // Save the position so we don't move the block at the wrong position
 	
@@ -2396,9 +2400,7 @@ static NSWindow *currentKeyWindow;
 	[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	
-	[self.textView setTypingAttributes:attributes];
-	
-	NSLog(@"Forced successfully");
+	[self.textView setTypingAttributes:attributes];	
 }
 - (void)cancelCharacterInput {
 	_characterInput = NO;
@@ -2871,13 +2873,6 @@ static NSString *revisionAttribute = @"Revision";
 - (IBAction)commitRevisions:(id)sender {
 	[self.revisionTracking commitRevisions];
 }
-
-/*
- 
- WIP: Make the following code more functional
- 
- */
-
 
 - (IBAction)selectRevisionColor:(id)sender {
 	NSPopUpButton *button = sender;
@@ -4768,11 +4763,6 @@ triangle walks
 }
 
 #pragma mark - Review Mode
-
-- (void)setupReview {
-	_review = [BeatReview.alloc initWithEditorDelegate:self];
-	[_review setupReviewsWithRanges:[_documentSettings get:DocSettingReviews]];
-}
 
 - (IBAction)toggleReview:(id)sender {
 	if (_mode == ReviewMode) self.mode = EditMode;

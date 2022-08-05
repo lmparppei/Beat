@@ -275,7 +275,7 @@ static bool underlinedHeading;
 - (NSString*)singlePage:(NSArray*)elementsOnPage pageNumber:(NSInteger)pageNumber {
 	NSMutableString *body = NSMutableString.string;
 	NSInteger dualDialogueCharacterCount = 0;
-	NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopsis", @"Section Heading", nil];
+	NSSet *ignoringTypes = [NSSet setWithObjects:@"Boneyard", @"Comment", @"Synopse", @"Section", nil];
 	
 	NSString *pageClass = @"";
 	
@@ -318,7 +318,7 @@ static bool underlinedHeading;
 	for (Line *line in elementsOnPage) { @autoreleasepool {
 		bool beginBlock = false;
 		
-		if ([ignoringTypes containsObject:line.typeAsFountainString]) {
+		if ([ignoringTypes containsObject:line.typeAsString]) {
 			// Close possible blocks
 			if (isLyrics) {
 				// Close lyrics block
@@ -420,11 +420,11 @@ static bool underlinedHeading;
 			
 			// If this line isn't part of a larger block, output it as paragraph
 			if (!beginBlock && !isLyrics) {
-				[body appendFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsFountainString], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, text];
+				[body appendFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsString], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, text];
 			} else {
 				if (beginBlock) {
 					// Begin new block
-					[body appendFormat:@"<p class='%@%@' uuid='%@'>%@<br>", [self htmlClassForType:line.typeAsFountainString], additionalClasses, line.uuid.UUIDString, text];
+					[body appendFormat:@"<p class='%@%@' uuid='%@'>%@<br>", [self htmlClassForType:line.typeAsString], additionalClasses, line.uuid.UUIDString, text];
 				} else {
 					// Continue the block
 					// note: we can't use \n after the lines to make it more easy read, because we want to preserve the white space
@@ -622,7 +622,7 @@ static bool underlinedHeading;
 
 - (NSString *)htmlClassForType:(NSString *)elementType
 {
-	return [[elementType lowercaseString] stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+	return [elementType.lowercaseString stringByReplacingOccurrencesOfString:@" " withString:@"-"];
 }
 
 - (NSString*)format:(NSString*) string {

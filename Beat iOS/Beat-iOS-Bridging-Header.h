@@ -24,6 +24,7 @@
 #import "OutlineViewItem.h"
 #import "BeatPreview.h"
 #import "BeatPaperSizing.h"
+#import "RegExCategories.h"
 
 
 #endif /* Beat_iOS_Bridging_Header_h */

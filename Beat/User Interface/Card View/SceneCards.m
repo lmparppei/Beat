@@ -155,8 +155,8 @@
 			continue;
 		}
 		
-		NSString *title = scene.line.cleanedString;
-		if (scene.type == section) title = scene.line.stripInvisible;
+		NSString *title = scene.line.stripFormatting;
+		if (scene.type == section) title = scene.line.stripFormatting;
 		
 		NSDictionary *sceneCard = @{
 			@"sceneNumber": (scene.sceneNumber) ? scene.sceneNumber : @"",
@@ -200,7 +200,7 @@
 	while (lineIndex < _delegate.lines.count) {
 		Line* snippetLine = [_delegate.lines objectAtIndex:lineIndex];
 		if (snippetLine.type != heading && snippetLine.type != section && !(snippetLine.omitted && !snippetLine.note)) {
-			snippet = snippetLine.textContent;
+			snippet = snippetLine.stripFormatting;
 			break;
 		}
 		lineIndex++;
