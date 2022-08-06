@@ -684,13 +684,13 @@ DQ
                             <menuItem title="Go to Previous Revision" keyEquivalent="" id="ucQ-IG-VAd">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
-                                    <action selector="previousRevision:" target="-1" id="y71-Ko-RIq"/>
+                                    <action selector="previousRevision:" target="-1" id="ZUA-mS-ypq"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Go to Next Revision" keyEquivalent="" id="8bv-zg-FyC">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
-                                    <action selector="nextRevision:" target="-1" id="kg3-2b-OGl"/>
+                                    <action selector="nextRevision:" target="-1" id="lR2-A6-7dS"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="ooU-ON-iUL"/>

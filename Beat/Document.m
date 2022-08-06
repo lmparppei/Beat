@@ -370,24 +370,12 @@
 #define DEFAULT_MAGNIFY 0.98
 #define MAGNIFY YES
 
-// User preferences key names
-#define OFFSET_SCENE_NUMBERS_KEY @"Offset Scene Numbers From First Custom Number"
-#define MATCH_PARENTHESES_KEY @"Match Parentheses"
-#define SHOW_PAGENUMBERS_KEY @"Show Page Numbers"
-#define SHOW_SCENE_LABELS_KEY @"Show Scene Number Labels"
-#define FONTSIZE_KEY @"Fontsize"
-#define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
-#define DARKMODE_KEY @"Dark Mode"
-#define AUTOMATIC_LINEBREAKS_KEY @"Automatic Line Breaks"
-#define TYPERWITER_KEY @"Typewriter Mode"
-#define FONT_STYLE_KEY @"Sans Serif"
-#define HIDE_FOUNTAIN_MARKUP_KEY @"Hide Fountain Markup"
 
 // DOCUMENT LAYOUT SETTINGS
-// The 0.?? values represent percentages of view width
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
 
+// The 0.?? values represent percentages of view width
 #define DD_CHARACTER_INDENT_P 0.56
 #define DD_PARENTHETICAL_INDENT_P 0.50
 #define DUAL_DIALOGUE_INDENT_P 0.40
@@ -541,6 +529,7 @@ static BeatAppDelegate *appDelegate;
 	else [self loadSerifFonts];
 	
 	// Setup views
+	[self setupResponderChain];
 	[self setupTextView];
 	[self setupOutlineView];
 	[self setupPreview];
@@ -681,6 +670,14 @@ static BeatAppDelegate *appDelegate;
 	
 	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
 }
+
+#pragma mark - Misc document stuff
+
+- (NSString *)displayName {
+	if (!self.fileURL) return @"Untitled";
+	return [super displayName];
+}
+
 -(void)setValue:(id)value forUndefinedKey:(NSString *)key {
 	NSLog(@"Document: Undefined key (%@) set. This might be intentional.", key);
 }
@@ -688,6 +685,9 @@ static BeatAppDelegate *appDelegate;
 	NSLog(@"Document: Undefined key (%@) requested. This might be intentional.", key);
 	return nil;
 }
+
+
+#pragma mark - Handling user settings
 
 - (void)readUserSettings {
 	[BeatUserDefaults.sharedDefaults readUserDefaultsFor:self];
@@ -699,7 +699,8 @@ static BeatAppDelegate *appDelegate;
 }
 
 - (void)applyUserSettings {
-	// Apply settings from user preferences panel, some things have to be applied in every document
+	// Apply settings from user preferences panel, some things have to be applied in every document.
+	// This should be implemented as a singleton/protocol.
 	
 	bool oldHeadingStyleBold = self.headingStyleBold;
 	bool oldHeadingStyleUnderline = self.headingStyleUnderline;
@@ -750,6 +751,26 @@ static BeatAppDelegate *appDelegate;
 	[self updateQuickSettings];
 }
 
+
+#pragma mark - Window setup
+
+/// Sets up the custom responder chain
+- (void)setupResponderChain {
+	// Our desired responder chain, add more custom responders when needed
+	NSArray *chain = @[_formattingActions, _revisionTracking];
+	
+	// Store the original responder after text view
+	NSResponder *prev = self.textView;
+	NSResponder *originalResponder = prev.nextResponder;
+	
+	for (NSResponder *responder in chain) {
+		prev.nextResponder = responder;
+		prev = responder;
+	}
+	
+	prev.nextResponder = originalResponder;
+}
+
 - (NSUInteger)documentWidth {
 	if (self.pageSize == BeatA4) return DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
 	else return DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
@@ -760,9 +781,6 @@ static BeatAppDelegate *appDelegate;
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
 	self.tagging.sideViewCostraint.constant = 0;
 	
-	// Reset zoom
-	[self setZoom];
-
 	// Split view
 	_splitHandle.bottomOrLeftMinSize = MIN_OUTLINE_WIDTH;
 	_splitHandle.delegate = self;
@@ -809,17 +827,6 @@ static BeatAppDelegate *appDelegate;
 	[self ensureCaret];
 	[self updatePreview];
 	if (paginate) [self paginateAt:(NSRange){0,0} sync:YES];
-}
-
-
-- (void)setFileURL:(NSURL *)fileURL {
-	//NSString *oldName = [NSString stringWithString:[self fileNameString]];
-	[super setFileURL:fileURL];
-	//NSString *newName = [NSString stringWithString:[self fileNameString]];
-}
-- (NSString *)displayName {
-	if (!self.fileURL) return @"Untitled";
-	return [super displayName];
 }
 
 // Can I come over, I need to rest
@@ -1059,7 +1066,7 @@ static NSWindow __weak *currentKeyWindow;
 #pragma mark - Zooming & layout
 
 - (IBAction)zoomIn:(id)sender {
-	if (self.currentTab == _editorTab) [self zoom:YES];
+	if (self.currentTab == _editorTab) [self.textView zoom:YES];
 	
 	// Web preview zoom
 	if (@available(macOS 11.0, *)) {
@@ -1067,66 +1074,25 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 - (IBAction)zoomOut:(id)sender {
-	if (self.currentTab == _editorTab) [self zoom:NO];
+	if (self.currentTab == _editorTab) [self.textView zoom:NO];
 	
 	// Web preview zoom
 	if (@available(macOS 11.0, *)) {
 		if (self.currentTab == _previewTab) self.printWebView.pageZoom -= .1;
 	}
 }
+
 - (IBAction)resetZoom:(id)sender {
-	_magnification = DEFAULT_MAGNIFY;
-	[self setScaleFactor:_magnification adjustPopup:false];
-	[self updateLayout];
+	if (self.currentTab != _editorTab) return;
+	[self.textView resetZoom];
 }
 
-- (void)zoom:(bool)zoomIn {
-	if (!_scaleFactor) _scaleFactor = _magnification;
-	CGFloat oldMagnification = _magnification;
-	
-	// Save scroll position
-	NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
-	
-	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
-	if (zoomIn) {
-		if (_magnification < 1.5) _magnification += 0.04;
-	} else {
-		if (_magnification > 0.8) _magnification -= 0.04;
-	}
-
-	// If magnification did change, scale the view
-	if (oldMagnification != _magnification) {
-		[self setScaleFactor:_magnification adjustPopup:false];
-		[self updateLayout];
-		
-		// Scale and apply the scroll position
-		scrollPosition.y = scrollPosition.y * _magnification;
-		[self.textScrollView.contentView scrollToPoint:scrollPosition];
-		[self ensureLayout];
-		
-		[self.textView setNeedsDisplay:YES];
-		[self.textScrollView setNeedsDisplay:YES];
-		
-		// For some reason, clip view might get the wrong height after magnifying. No idea what's going on.
-		NSRect clipFrame = _textClipView.frame;
-		clipFrame.size.height = _textClipView.superview.frame.size.height * _magnification;
-		_textClipView.frame = clipFrame;
-		
-		[self ensureLayout];
-		
-		[[NSUserDefaults standardUserDefaults] setFloat:_magnification forKey:MAGNIFYLEVEL_KEY];
-	}
-	
-	[self.textView setInsets];
-	[self updateLayout];
-	[self ensureLayout];
-	[self ensureCaret];
+- (CGFloat)magnification {
+	return _textView.zoomLevel;
 }
 
-- (CGFloat)magnification { return _magnification; }
-
-- (void)ensureCaret {
-	[self.textView updateInsertionPointStateAndRestartTimer:YES];
+- (void)setSplitHandleMinSize:(CGFloat)value {
+	self.splitHandle.topOrRightMinSize = value;
 }
 
 - (void)ensureLayout {
@@ -1139,63 +1105,10 @@ static NSWindow __weak *currentKeyWindow;
 	[self.marginView updateBackground];
 }
 
-- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
-{
-	self.textView.zoomLevel = newScaleFactor;
-	
-	CGFloat oldScaleFactor = _scaleFactor;
-	if (_scaleFactor != newScaleFactor)
-	{
-		NSSize curDocFrameSize, newDocBoundsSize;
-		NSView *clipView = self.textView.superview;
-		
-		_scaleFactor = newScaleFactor;
-		
-		// Get the frame.  The frame must stay the same.
-		curDocFrameSize = clipView.frame.size;
-		
-		// The new bounds will be frame divided by scale factor
-		newDocBoundsSize.width = curDocFrameSize.width;
-		newDocBoundsSize.height = curDocFrameSize.height / _scaleFactor;
-		
-		NSRect newFrame = NSMakeRect(0, 0, newDocBoundsSize.width, newDocBoundsSize.height);
-		clipView.frame = newFrame;
-	}
-	_scaleFactor = newScaleFactor;
-	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
-	
-	// Set minimum size for text view when Outline view size is dragged
-	self.splitHandle.topOrRightMinSize = self.documentWidth * _magnification;
+- (void)ensureCaret {
+	[self.textView updateInsertionPointStateAndRestartTimer:YES];
 }
 
-- (void)scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
-{
-	// Thank you, Mark Munz @ stackoverflow
-	CGFloat scaler = newScale / oldScale;
-	[self.textView scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
-	
-	NSLayoutManager* lm = self.textView.layoutManager;
-	NSTextContainer* tc = self.textView.textContainer;
-	[lm ensureLayoutForTextContainer:tc];
-}
-
-- (void)setZoom {
-	// This resets the zoom to the saved setting
-	if (![[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY]) {
-		_magnification = DEFAULT_MAGNIFY;
-	} else {
-		_magnification = [[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY];
-			  
-		// Some limits for magnification, if something changes between app versions
-		if (_magnification < .7 || _magnification > 1.19) _magnification = DEFAULT_MAGNIFY;
-	}
-	
-	_scaleFactor = 1.0;
-	[self setScaleFactor:_magnification adjustPopup:false];
-	//[self setScaleFactor:_magnification adjustPopup:false];
-
-	[self updateLayout];
-}
 
 /*
  
@@ -1332,10 +1245,8 @@ static NSWindow __weak *currentKeyWindow;
 # pragma mark - Text I/O
 
 - (void)setupTextView {
-	// Set up the responder chain
-	id originalResponder = self.textView.nextResponder;
-	self.textView.nextResponder = _formattingActions;
-	self.formattingActions.nextResponder = originalResponder;
+	// Reset zoom
+	[self.textView setZoom];
 	
 	// Set insets on load
 	[self.textView setup];
@@ -1524,7 +1435,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (outline.count == 0) return nil;
 	
 	Line * currentLine = [self getCurrentLine];
-	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] ;
+	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
 	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
 	
 	for (NSInteger i = lineIndex - 1; i >= 0; i--) {
@@ -1544,7 +1455,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (outline.count == 0) return nil;
 	
 	Line * currentLine = [self getCurrentLine];
-	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] ;
+	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
 	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
 	
 	for (NSInteger i = lineIndex + 1; i < self.parser.lines.count; i++) {
@@ -1698,7 +1609,6 @@ static NSWindow __weak *currentKeyWindow;
     return YES;
 }
 
-
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange {
 	// Don't add a dual line break if shift is pressed
 	if (currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
@@ -1711,11 +1621,11 @@ static NSWindow __weak *currentKeyWindow;
 		
 		// Action lines need to perform some checks
 		else if (currentLine.type == action) {
-			NSUInteger currentIndex = [self.parser.lines indexOfObject:currentLine];
+			NSUInteger currentIndex = [self.parser indexOfLine:currentLine];
 			
 			// Perform a double-check if there is a next line
 			if (currentIndex < self.parser.lines.count - 2 && currentIndex != NSNotFound) {
-				Line* nextLine = [self.parser.lines objectAtIndex:currentIndex + 1];
+				Line* nextLine = self.parser.lines[currentIndex + 1];
 				if (nextLine.string.length == 0) {
 					[self addString:@"\n\n" atIndex:affectedCharRange.location];
 					return YES;
@@ -1796,7 +1706,7 @@ static NSWindow __weak *currentKeyWindow;
 - (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString {
 	Line *currentLine = self.currentLine;
 	
-	NSInteger lineIndex = [self.parser.lines indexOfObject:currentLine] - 1;
+	NSInteger lineIndex = [self.parser indexOfLine:currentLine] - 1;
 	if (lineIndex != NSNotFound) {
 		NSString *charName = currentLine.characterName;
 		
@@ -1828,12 +1738,12 @@ static NSWindow __weak *currentKeyWindow;
 
 
 - (Line*)getPreviousLine:(Line*)line {
-	NSInteger i = [self.parser.lines indexOfObject:line];
+	NSInteger i = [self.parser indexOfLine:line];
 	if (i > 0) return self.parser.lines[i - 1];
 	else return nil;
 }
 - (Line*)getNextLine:(Line*)line {
-	NSInteger i = [self.parser.lines indexOfObject:line];
+	NSInteger i = [self.parser indexOfLine:line];
 	if (i < self.parser.lines.count - 1 && i != NSNotFound) {
 		return self.parser.lines[i + 1];
 	} else {
@@ -1890,7 +1800,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_documentIsLoading) return;
 		
 	// Register changes
-	if (_revisionMode) [self registerChangesInRange:_lastChangedRange];
+	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
 	
 	// Update formatting
 	[self applyFormatChanges];
@@ -1975,7 +1885,7 @@ static NSWindow __weak *currentKeyWindow;
 		}
 	}
 	
-	// We REALLY REALLY should make some sort of cache for these
+	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update all views which are affected by the caret position
 		if (self.sidebarVisible || self.timeline.visible || self.runningPlugins) {
@@ -2027,6 +1937,8 @@ static NSWindow __weak *currentKeyWindow;
 
 
 #pragma mark - TextView actions
+
+// Why is this here?
 
 - (IBAction)showInfo:(id)sender {
 	[self.textView showInfo:self];
@@ -2250,7 +2162,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)moveBlockUp:(NSArray<Line*>*)lines {
 	if (lines.firstObject == self.lines.firstObject) return;
 	
-	NSUInteger prevIndex = [self.lines indexOfObject:lines.firstObject] - 1;
+	NSUInteger prevIndex = [self.parser indexOfLine:lines.firstObject] - 1;
 	Line* prevLine = self.lines[prevIndex];
 	
 	NSArray *prevBlock = [self.parser blockFor:prevLine];
@@ -2271,7 +2183,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (lines.lastObject == self.lines.lastObject ||
 		lines.count == 0) return;
 		
-	NSUInteger nextIndex = [self.lines indexOfObject:lines.lastObject] + 1;
+	NSUInteger nextIndex = [self.parser indexOfLine:lines.lastObject] + 1;
 	Line* nextLine = self.lines[nextIndex];
 	
 	// Get the next block (paragraph/dialogue block)
@@ -2327,18 +2239,21 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 
-# pragma mark - Autocomplete and character input
+# pragma mark - Autocomplete stub
 
+/// Forwarding method for autocompletion
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
 	return [_autocompletion textView:textView completions:words forPartialWordRange:charRange indexOfSelectedItem:index];
 }
+
+#pragma mark - Character input
 
 - (void)handleTabPress {
 	// Force character if the line is suitable
 	Line *currentLine = self.currentLine;
 	
 	if (currentLine.type == empty) {
-		NSInteger index = [self.parser.lines indexOfObject:currentLine];
+		NSInteger index = [self.parser indexOfLine:currentLine];
 		
 		if (index > 0) {
 			Line* previousLine = [self.parser.lines objectAtIndex:index - 1];
@@ -2369,8 +2284,7 @@ static NSWindow __weak *currentKeyWindow;
 			[self replaceString:currentLine.string withString:currentLine.string.uppercaseString atIndex:currentLine.position];
 		}
 		else {
-			// Default behaviour: add tab
-			// nope
+			// Default behaviour: add tab. We won't do this, but it's here if anyone wants to restore it.
 			// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
 		}
 	}
@@ -2402,6 +2316,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[self.textView setTypingAttributes:attributes];	
 }
+
 - (void)cancelCharacterInput {
 	_characterInput = NO;
 	
@@ -2438,6 +2353,10 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Formatting
 
+/**
+ Actual formatting is handled in BeatFormatting, and these methods either forward there or handle specific tasks, such as formatting all lines etc.
+ */
+
 - (void)formatLine:(Line*)line {
 	// Forwarding for delegation
 	[_formatting formatLine:line];
@@ -2466,6 +2385,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[self ensureLayout];
 }
+
+/// When something was changed, this method takes care of reformatting every line
 - (void)applyFormatChanges
 {
 	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
@@ -2474,6 +2395,8 @@ static NSWindow __weak *currentKeyWindow;
 	
     [self.parser.changedIndices removeAllIndexes];
 }
+
+/// Forces reformatting of a range
 - (void)forceFormatChangesInRange:(NSRange)range
 {
 	[self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:range];
@@ -2484,6 +2407,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
+/// Applies the initial formatting while document is loading
 -(void)applyInitialFormatting {
 	if (self.parser.lines.count == 0) {
 		[self loadingComplete];
@@ -2495,6 +2419,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[self formatAllWithDelay:0];
 }
+
+/// Formats all lines while loading the document
 - (void)formatAllWithDelay:(NSInteger)idx {
 	// We split the document into chunks of 400 lines and render them asynchronously
 	// to throttle the initial loading of document a bit
@@ -2545,95 +2471,71 @@ static NSWindow __weak *currentKeyWindow;
 	[_formatting renderBackgroundForLine:line clearFirst:clear];
 }
 
-
+/// Forces a type on a line and formats it accordingly. Can be abused for creating strange stuff.
 - (void)setTypeAndFormat:(Line*)line type:(LineType)type {
 	line.type = type;
 	[self formatLine:line];
-}
-
-#pragma mark - Revisions
-
-- (void)registerChangesInRange:(NSRange)range {
-	NSString * change = [self.text substringWithRange:range];
-
-	if (range.length < 2) {
-		Line * line = [self.parser lineAtPosition:range.location];
-		
-		if ([change isEqualToString:@"\n"]) {
-			// This was a line break. If it was at the end of a line, reduce that line from the range.
-			if (NSMaxRange(range) == NSMaxRange(line.range)) return;
-		}
-	}
-	
-	[_textView.textStorage addAttribute:revisionAttribute value:[BeatRevisionItem type:RevisionAddition color:_revisionColor] range:range];
-}
-
-- (IBAction)nextRevision:(id)sender {
-	[self.revisionTracking nextRevision];
-}
-- (IBAction)previousRevision:(id)sender {
-	[self.revisionTracking previousRevision];
 }
 
 
 #pragma mark - Scrolling
 
 - (IBAction)goToScene:(id)sender {
+	NSString *message = [BeatLocalization localizedStringForKey:@"editor.goToSceneNumber.message"];
+	NSString *placeholder = [BeatLocalization localizedStringForKey:@"editor.goToSceneNumber.placeholder"];
 	BeatModalInput *input = [[BeatModalInput alloc] init];
-	[input inputBoxWithMessage:@"Go to scene number..." text:@"" placeholder:@"e.g. 123" forWindow:_documentWindow completion:^(NSString * _Nonnull result) {
+	[input inputBoxWithMessage:message text:@"" placeholder:placeholder forWindow:_documentWindow completion:^(NSString * _Nonnull result) {
 		[self scrollToSceneNumber:result];
 	}];
 }
 
 - (void)scrollToSceneNumber:(NSString*)sceneNumber {
 	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)
-	
-	for (OutlineScene *scene in self.parser.outline) {
-		if ([scene.sceneNumber isEqualTo:sceneNumber]) {
-			[self scrollToScene:scene];
-			return;
-		}
-	}
+	OutlineScene *scene = [_parser sceneWithNumber:sceneNumber];
+	if (scene != nil) [self scrollToScene:scene];
 }
 - (void)scrollToScene:(OutlineScene*)scene {
-	NSRange lineRange = NSMakeRange(scene.line.position, scene.line.string.length);
-	[self.textView setSelectedRange:lineRange];
-	[self.textView scrollToRange:lineRange];
+	[self selectAndScrollTo:scene.line.textRange];
 	[_documentWindow makeFirstResponder:_textView];
 }
+/// Legacy method. Use selectAndScrollToRange
 - (void)scrollToRange:(NSRange)range {
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
+	[self selectAndScrollTo:range];
 }
 
-/* Helper functions for the imagined scripting module */
+- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {
+	[self.textView scrollToRange:range callback:callbackBlock];
+}
+
+/// Scrolls the given position into view
 - (void)scrollTo:(NSInteger)location {
 	NSRange range = NSMakeRange(location, 0);
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
+	[self selectAndScrollTo:range];
 }
+/// Selects the given line and scrolls it into view
 - (void)scrollToLine:(Line*)line {
-	NSRange range = NSMakeRange(line.position, line.string.length);
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
+	if (line != nil) [self selectAndScrollTo:line.textRange];
 }
+/// Selects the line at given index and scrolls it into view
 - (void)scrollToLineIndex:(NSInteger)index {
 	Line *line = [self.parser.lines objectAtIndex:index];
-	if (!line) return;
-	
-	NSRange range = NSMakeRange(line.position, line.string.length);
-	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
+	if (line != nil) [self selectAndScrollTo:line.textRange];
 }
+/// Selects the scene at given index and scrolls it into view
 - (void)scrollToSceneIndex:(NSInteger)index {
 	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
 	if (!scene) return;
 	
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
+	[self selectAndScrollTo:range];
+}
+/// Selects the given range and scrolls it into view
+- (void)selectAndScrollTo:(NSRange)range {
 	[self.textView setSelectedRange:range];
 	[self.textView scrollRangeToVisible:range];
 }
 
+/// Focuses the editor window
 - (void)focusEditor {
 	[_documentWindow makeKeyWindow];
 }
@@ -2647,6 +2549,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)setSelectedRange:(NSRange)range {
 	[self setSelectedRange:range withoutTriggeringChangedEvent:NO];
 }
+/// Set selected range but DO NOT trigger the didChangeSelection: event
 - (void)setSelectedRange:(NSRange)range withoutTriggeringChangedEvent:(bool)triggerChangedEvent {
 	_skipSelectionChangeEvent = triggerChangedEvent;
 
@@ -2786,38 +2689,14 @@ static NSWindow __weak *currentKeyWindow;
 	_fontSize = FONT_SIZE;
 	return _fontSize;
 }
+- (CGFloat)lineHeight { return LINE_HEIGHT; }
 
 
 #pragma mark - Formatting Buttons
 
-//static NSString *lineBreak = @"\n\n===\n\n";
-//static NSString *boldSymbol = @"**";
-//static NSString *italicSymbol = @"*";
-//static NSString *underlinedSymbol = @"_";
-//static NSString *noteOpen = @"[[";
-//static NSString *noteClose= @"]]";
-//static NSString *omitOpen = @"/*";
-//static NSString *omitClose= @"*/";
-//static NSString *forceHeadingSymbol = @".";
-//static NSString *forceActionSymbol = @"!";
-//static NSString *forceCharacterSymbol = @"@";
-//static NSString *forcetransitionLineSymbol = @">";
-//static NSString *forceLyricsSymbol = @"~";
-//static NSString *forceDualDialogueSymbol = @"^";
-//
-//static NSString *highlightSymbolOpen = @"<<";
-//static NSString *highlightSymbolClose = @">>";
-//static NSString *strikeoutSymbolOpen = @"{{";
-//static NSString *strikeoutSymbolClose = @"}}";
-
-static NSString *tagAttribute = @"BeatTag";
-static NSString *revisionAttribute = @"Revision";
-
 - (void)forceElement:(LineType)lineType {
 	[self.formattingActions forceElement:lineType];
 }
-
-- (CGFloat)lineHeight { return LINE_HEIGHT; }
 
 #pragma mark - Revision Tracking
 

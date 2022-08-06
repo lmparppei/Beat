@@ -43,7 +43,8 @@
 #import "BeatLayoutManager.h"
 #import "Beat-Swift.h"
 
-#define DEFAULT_MAGNIFY 1.02
+//#define DEFAULT_MAGNIFY 1.02
+#define DEFAULT_MAGNIFY 0.98
 #define MAGNIFYLEVEL_KEY @"Magnifylevel"
 
 // This helps to create some sense of easeness
@@ -1586,9 +1587,145 @@ Line *cachedRectLine;
 	[self.enclosingScrollView.contentView.animator setBoundsOrigin:NSMakePoint(0, y)];
 }
 
+- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {
+	NSRect rect = [self rectForRange:range];
+	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
+	
+	[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
+		// Start some animations.
+		[self.enclosingScrollView.contentView.animator setBoundsOrigin:NSMakePoint(0, y)];
+	} completionHandler:^{
+		callbackBlock();
+	}];
+}
+
+
+
 #pragma mark - Layout Delegation
 
 #pragma mark - Zooming
+
+/// Adjust zoom by a delta value
+- (void)adjustZoomLevelBy:(CGFloat)value {
+	CGFloat newMagnification = _zoomLevel + value;
+	[self setZoomLevel:newMagnification];
+}
+
+double clamp(double d, double min, double max) {
+	const double t = d < min ? min : d;
+	return t > max ? max : t;
+}
+
+/// Set zoom level for the editor view, automatically clamped
+- (void)setZoomLevel:(CGFloat)level {
+	level = clamp(level, 0.8, 1.5);
+	
+	if (_scaleFactor == 0) _scaleFactor = _zoomLevel;
+	CGFloat oldMagnification = _zoomLevel;
+	
+	if (oldMagnification != level) {
+		_zoomLevel = level;
+		
+		// Save scroll position
+		NSPoint scrollPosition = self.enclosingScrollView.contentView.documentVisibleRect.origin;
+		
+		[self setScaleFactor:_zoomLevel adjustPopup:false];
+		[self.editorDelegate updateLayout];
+		
+		// Scale and apply the scroll position
+		scrollPosition.y = scrollPosition.y * _zoomLevel;
+		[self.enclosingScrollView.contentView scrollToPoint:scrollPosition];
+		[self.editorDelegate ensureLayout];
+		
+		[self setNeedsDisplay:YES];
+		[self.enclosingScrollView setNeedsDisplay:YES];
+		
+		// For some reason, clip view might get the wrong height after magnifying. No idea what's going on.
+		NSRect clipFrame = self.enclosingScrollView.contentView.frame;
+		clipFrame.size.height = self.enclosingScrollView.contentView.superview.frame.size.height * _zoomLevel;
+		self.enclosingScrollView.contentView.frame = clipFrame;
+		
+		[self.editorDelegate ensureLayout];
+	}
+	
+	[[NSUserDefaults standardUserDefaults] setFloat:_zoomLevel forKey:MAGNIFYLEVEL_KEY];
+	
+	[self setInsets];
+	[_editorDelegate updateLayout];
+	[_editorDelegate ensureLayout];
+	[_editorDelegate ensureCaret];
+}
+
+/// zoom:true zooms in, zoom:false zooms out
+- (void)zoom:(bool)zoomIn {
+	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
+	CGFloat newMagnification = _zoomLevel;
+	if (zoomIn) newMagnification += 0.04;
+	else newMagnification -= 0.04;
+
+	[self setZoomLevel:newMagnification];
+}
+
+- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
+{
+	CGFloat oldScaleFactor = _scaleFactor;
+	
+	if (_scaleFactor != newScaleFactor)
+	{
+		NSSize curDocFrameSize, newDocBoundsSize;
+		NSView *clipView = self.superview;
+		
+		_scaleFactor = newScaleFactor;
+		
+		// Get the frame.  The frame must stay the same.
+		curDocFrameSize = clipView.frame.size;
+		
+		// The new bounds will be frame divided by scale factor
+		newDocBoundsSize.width = curDocFrameSize.width;
+		newDocBoundsSize.height = curDocFrameSize.height / newScaleFactor;
+		
+		NSRect newFrame = NSMakeRect(0, 0, newDocBoundsSize.width, newDocBoundsSize.height);
+		clipView.frame = newFrame;
+	}
+	
+	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
+	
+	// Set minimum size for text view when Outline view size is dragged
+	[_editorDelegate setSplitHandleMinSize:_editorDelegate.documentWidth * _zoomLevel];
+}
+
+- (void)scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
+{
+	// Thank you, Mark Munz @ stackoverflow
+	CGFloat scaler = newScale / oldScale;
+	
+	[self scaleUnitSquareToSize:NSMakeSize(scaler, scaler)];
+	[self.layoutManager ensureLayoutForTextContainer:self.textContainer];
+	
+	_scaleFactor = newScale;
+}
+
+- (void)setZoom {
+	// This resets the zoom to the saved setting
+	if (![[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY]) {
+		_zoomLevel = DEFAULT_MAGNIFY;
+	} else {
+		_zoomLevel = [[NSUserDefaults standardUserDefaults] floatForKey:MAGNIFYLEVEL_KEY];
+			  
+		// Some limits for magnification, if something changes between app versions
+		if (_zoomLevel < .7 || _zoomLevel > 1.19) _zoomLevel = DEFAULT_MAGNIFY;
+	}
+	
+	_scaleFactor = 1.0;
+	[self setScaleFactor:_zoomLevel adjustPopup:false];
+
+	[self.editorDelegate updateLayout];
+}
+- (void)resetZoom {
+	[self setZoomLevel:DEFAULT_MAGNIFY];
+}
+
+
 
 #pragma mark - Copy-paste
 

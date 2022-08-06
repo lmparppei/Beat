@@ -2413,8 +2413,17 @@ and incomprehensible system of recursion.
 
 #pragma mark - Line position lookup
 
+// Cached line for lookup
+NSUInteger prevLineAtLocationIndex = 0;
+
+/// Returns line at given POSITION, not index.
 - (Line*)lineAtIndex:(NSInteger)position {
 	return [self lineAtPosition:position];
+}
+
+/// Returns the index in lines array for given line.
+- (NSUInteger)indexOfLine:(Line*)line {
+	return [self.lines indexOfObject:line];
 }
 
 - (id)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item))compare  {
@@ -2459,6 +2468,7 @@ and incomprehensible system of recursion.
 		// We have looped around the array (unsuccessfuly)
 		if ((i == origin && looped) ||
 			(origin == -1 && looped)) {
+			NSLog(@"ALREADY LOOPED, FUCK IT!");
 			break;
 		}
 		
@@ -2480,8 +2490,7 @@ and incomprehensible system of recursion.
 	return nil;
 }
 
-// Cached line
-NSUInteger prevLineAtLocationIndex = 0;
+/// Rerturns the line object at given position
 - (Line*)lineAtPosition:(NSInteger)position {
 	// Let's check the cached line first
 	if (NSLocationInRange(position, _prevLineAtLocation.range) && _prevLineAtLocation != nil) {
@@ -2584,6 +2593,14 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return scenes;
 }
 
+- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber {
+	for (OutlineScene *scene in self.outline) {
+		if ([scene.sceneNumber.lowercaseString isEqualTo:sceneNumber.lowercaseString]) {
+			return scene;
+		}
+	}
+	return nil;
+}
 
 #pragma mark - Preprocessing for printing
 

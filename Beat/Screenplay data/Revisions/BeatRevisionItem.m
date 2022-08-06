@@ -8,7 +8,7 @@
 
 #import "BeatRevisionItem.h"
 #import "BeatColors.h"
-#import "BeatRevisions.h""
+#import "BeatRevisions.h"
 
 #if !TARGET_OS_IOS
     #import <Cocoa/Cocoa.h>

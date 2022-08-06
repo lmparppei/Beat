@@ -108,3 +108,6 @@
 "force.heading" = "Kohtausotsikko";
 "force.action" = "Toiminta";
 "force.lyrics" = "Lyriikat";
+
+"editor.goToSceneNumber.message" = "Siirry kohtaukseen numero...";
+"editor.goToSceneNumber.placeholder" = "esim. 123";

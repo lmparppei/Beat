@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatRevisions : NSObject
+@interface BeatRevisions : NSResponder
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser includeRevisions:(NSArray*)includedRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string parser:(ContinuousFountainParser*)parser;
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;
 - (void)setup;
-
+- (void)registerChangesInRange:(NSRange)range;
 - (void)markerAction:(RevisionType)type;
 //- (void)markRangeAsAddition:(NSRange)range;
 //- (void)markRangeForRemoval:(NSRange)range;

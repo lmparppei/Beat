@@ -231,6 +231,8 @@
 
 #pragma mark - Editor methods
 
+#pragma mark Setup the class & load revisions
+
 /// Setup the class: Loads revisions from the current document (via delegate) and adds them into the editor string.
 /// @warning Might break iOS compatibility if not handled with care.
 - (void)setup {
@@ -314,6 +316,27 @@
 	}
 }
 
+#pragma mark Register changes
+
+/// When in revision mode, this method automatically adds revision markers to given range. Should only invoked when editing has happened.
+- (void)registerChangesInRange:(NSRange)range {
+	NSString * change = [self.delegate.text substringWithRange:range];
+
+	// Check if this was just a line break
+	if (range.length < 2) {
+		Line * line = [_delegate.parser lineAtPosition:range.location];
+		
+		if ([change isEqualToString:@"\n"]) {
+			// This was a line break. If it was at the end of a line, reduce that line from the range.
+			if (NSMaxRange(range) == NSMaxRange(line.range)) return;
+		}
+	}
+	
+	[_delegate.textView.textStorage addAttribute:BeatRevisions.attributeKey value:[BeatRevisionItem type:RevisionAddition color:_delegate.revisionColor] range:range];
+}
+
+
+#pragma mark Convenience methods
 
 /// Move to next revision marker
 - (void)nextRevision {
@@ -383,6 +406,19 @@
 }
 
 #pragma mark - Actions
+
+#pragma mark - Revisions
+
+/// Jumps to next revision
+- (IBAction)nextRevision:(id)sender {
+	[self nextRevision];
+}
+/// Jumps to previous revision
+- (IBAction)previousRevision:(id)sender {
+	[self previousRevision];
+}
+
+
 
 /// Generic method for adding a revisino marker, no matter the type
 - (void)markerAction:(RevisionType)type {

@@ -29,14 +29,12 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index;
 @end
  
-@protocol BeatTextViewDelegate <NSTextViewDelegate>
+@protocol BeatTextViewDelegate <NSTextViewDelegate, BeatEditorDelegate>
 
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic, readonly) NSUInteger documentWidth;
 @property (nonatomic, readonly) ContinuousFountainParser *parser;
 @property (readonly) ThemeManager* themeManager;
-@property (readonly) BeatEditorMode mode;	
-@property (readonly) bool revisionMode;
 @property (readonly) bool showRevisions;
 @property (readonly) bool sceneNumberLabelUpdateOff;
 @property (readonly) bool showSceneNumberLabels;
@@ -67,6 +65,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (bool)isDark;
 - (void)updateLayout;
 - (void)ensureLayout;
+- (void)ensureCaret;
 - (void)showLockStatus;
 - (LineType)lineTypeAt:(NSInteger)index;
 - (Line*)lineAt:(NSInteger)index;
@@ -77,9 +76,10 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
-
 - (void)forceElement:(LineType)lineType;
 - (CGFloat)lineHeight;
+
+- (void)setSplitHandleMinSize:(CGFloat)value;
 
 @end
 
@@ -92,6 +92,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (IBAction)showInfo:(id)sender;
 - (CGFloat)setInsets;
 - (void)scrollToRange:(NSRange)range;
+- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
 
 // Scene Numbering
 - (void)updateSceneLabelsFrom:(NSInteger)changedIndex;
@@ -117,7 +118,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property NSArray* sceneNumbers;
 @property (nonatomic, weak) DynamicColor* marginColor;
 @property NSArray* pageBreaks;
-@property CGFloat zoomLevel;
+@property (nonatomic) CGFloat zoomLevel;
 @property NSInteger autocompleteIndex;
 
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
@@ -127,5 +128,10 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (void)refreshLayoutElements;
 
 - (void)setup;
+
+// Zooming
+- (void)zoom:(bool)zoomIn;
+- (void)setZoom;
+- (void)resetZoom;
 
 @end

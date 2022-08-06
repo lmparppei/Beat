@@ -115,3 +115,6 @@
 "force.heading" = "Scene Heading";
 "force.action" = "Action";
 "force.lyrics" = "Lyrics";
+
+"editor.goToSceneNumber.message" = "Go to scene number...";
+"editor.goToSceneNumber.placeholder" = "eg. 123";

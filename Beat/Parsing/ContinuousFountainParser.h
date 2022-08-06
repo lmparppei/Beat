@@ -45,6 +45,7 @@
 - (NSString*)screenplayForSaving;
 - (void)parseText:(NSString*)text;
 - (Line*)lineAtIndex:(NSInteger)index;
+- (NSUInteger)indexOfLine:(Line*)line;
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSDictionary*)scriptForPrinting;
@@ -53,6 +54,7 @@
 - (OutlineScene*)sceneAtIndex:(NSInteger)index;
 - (OutlineScene*)sceneAtPosition:(NSInteger)index;
 - (NSArray*)scenesInRange:(NSRange)range;
+- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
 
 - (Line*)previousLine:(Line*)line;
 - (Line*)nextLine:(Line*)line;
@@ -115,6 +117,7 @@
 - (NSString*)sceneNumberAtLine:(NSUInteger)line;
 
 //Convenience Methods for Other Stuff
+- (NSUInteger)indexOfLine:(Line*)line;
 - (Line*)lineAtPosition:(NSInteger)position;
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position;
 - (NSUInteger)outlineIndexAtLineIndex:(NSUInteger)index;
@@ -122,6 +125,7 @@
 - (NSArray*)scenesInRange:(NSRange)range;
 - (NSArray*)linesInRange:(NSRange)range;
 - (NSArray*)scenesInSection:(OutlineScene*)topSection;
+- (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
 
 - (BeatScreenplay*)forPrinting;
 - (NSInteger)numberOfScenes;

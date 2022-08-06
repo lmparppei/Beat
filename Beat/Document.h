@@ -148,4 +148,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Skip selection change events when needed
 @property (nonatomic) bool skipSelectionChangeEvent;
 
+- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag;
+
 @end

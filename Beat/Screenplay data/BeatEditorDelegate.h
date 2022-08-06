@@ -46,7 +46,7 @@
 @protocol BeatEditorDelegate <NSObject>
 
 #if !TARGET_OS_IOS
-@property (weak) BXWindow* documentWindow;
+@property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 #endif
@@ -150,6 +150,7 @@
 
 - (void)scrollToLine:(Line*)line;
 - (void)scrollToRange:(NSRange)range;
+- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
 
 // Document compatibility
 -(void)updateChangeCount:(BXChangeType)change;

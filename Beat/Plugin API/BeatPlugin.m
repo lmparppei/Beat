@@ -16,7 +16,6 @@
  Plugin manager provides a BeatPluginData object which contains
  plugin name and URL. A plugin is then initialized using that data.
  
- 
  */
 
 #import "BeatPlugin.h"

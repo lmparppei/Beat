@@ -11,13 +11,19 @@
  This is a subclass for moving some UI elements out of the way of the find bar,
  and also hiding the UI button bar when the mouse is not moved.
  
+ Also handles pinch-zooming.
+ 
  */
 
 #import "ScrollView.h"
 #import "DynamicColor.h"
 #import "BeatTextView.h"
 #import "Beat-Swift.h"
+#import "BeatTextView.h"
 
+@interface ScrollView()
+@property (nonatomic) NSGestureRecognizer *recognizer;
+@end
 @implementation ScrollView
 
 #define HIDE_INTERVAL 6.0
@@ -33,6 +39,9 @@
 	[self addTrackingArea:trackingArea];
 	
 	self.wantsLayer = NO;
+	
+	_recognizer = [[NSMagnificationGestureRecognizer alloc] initWithTarget:self action:@selector(pinch:)];
+	[self addGestureRecognizer:_recognizer];
 }
 
 - (void)removeFromSuperview {
@@ -69,6 +78,8 @@
 }
 
 
+#pragma mark - Hiding and showing editor buttons
+
 - (void)shouldHideButtons:(NSTimer *) timer {
 	NSPoint mouseLoc = [NSEvent mouseLocation];
 	NSPoint location = [self convertPoint:mouseLoc toView:nil];
@@ -87,7 +98,6 @@
 		[self hideTimer];
 	}
 }
-
 - (void)hideButtons {
 	[_buttonView.animator setAlphaValue:0.0];
 }
@@ -132,6 +142,8 @@
 }
 
 
+#pragma mark - Find bar listener
+
 // Listen to find bar open/close and move the outline / card view buttons accordingly
 - (void)setFindBarVisible:(BOOL)findBarVisible {
 	[super setFindBarVisible:findBarVisible];
@@ -162,6 +174,16 @@
 	}
 	
 	[super findBarViewDidChangeHeight];
+}
+
+- (void)pinch:(NSEvent*)event {
+	static CGFloat _originalZoomLevel;
+	BeatTextView *textView = self.documentView;
+	
+	if (self.recognizer.state == NSGestureRecognizerStateBegan) _originalZoomLevel = textView.zoomLevel;
+	
+	CGFloat newZoomLevel = _originalZoomLevel + event.magnification * .5;
+	[textView setZoomLevel:newZoomLevel];
 }
 
 @end
