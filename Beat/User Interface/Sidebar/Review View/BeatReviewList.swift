@@ -145,17 +145,11 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	
 	func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
 		let review = item as! ReviewListItem
-		editorDelegate?.scroll(to: review.range)
-		editorDelegate?.setSelectedRange(NSMakeRange(review.range.location, 0))
-		editorDelegate?.textView.window?.makeFirstResponder(editorDelegate?.textView)
 		
-		/*
-		let idx = reviewList.indexOfObjectIdentical(to: item)
-		if (idx != NSNotFound) {
-			print("idx ", idx)
-			self.selectRowIndexes(IndexSet.init(integer: idx), byExtendingSelection: false)
-		}
-		*/
+		editorDelegate?.scroll(to: review.range, callback: {
+			self.editorDelegate?.setSelectedRange(NSMakeRange(review.range.location, 0))
+			self.editorDelegate?.textView.window?.makeFirstResponder(self.editorDelegate?.textView)
+		});
 		
 		return true
 	}
