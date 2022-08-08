@@ -153,12 +153,15 @@ static CGFloat panelWidth;
 #pragma mark - Printing
 
 - (IBAction)print:(id)sender {
-	self.documentDelegate.printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
+	BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
+	[self addPrintViewToQueue:printView];
 	
 	[self.documentDelegate.documentWindow endSheet:self.window];
 }
 - (IBAction)pdf:(id)sender {
-	self.documentDelegate.printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
+	
+	BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
+	[self addPrintViewToQueue:printView];
 	
 	[self.documentDelegate.documentWindow endSheet:self.window];
 }
@@ -168,9 +171,20 @@ static CGFloat panelWidth;
 	BeatExportSettings *settings = [self exportSettings];
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
-		self.documentDelegate.printView = [[BeatPrintView alloc] initWithDocument:self.documentDelegate.document script:nil operation:BeatToPreview settings:settings delegate:self];
+		@synchronized (self) {
+			BeatPrintView * printView = [[BeatPrintView alloc] initWithDocument:self.documentDelegate.document script:nil operation:BeatToPreview settings:settings delegate:self];
+			[self addPrintViewToQueue:printView];
+		}
+		
 	});
 }
+
+/// Adds the print view to document's queue. It will be automatically removed by the print view itself.
+- (void)addPrintViewToQueue:(BeatPrintView*)printView {
+	if (self.documentDelegate.printViews == nil) self.documentDelegate.printViews = NSMutableArray.new;
+	[self.documentDelegate.printViews addObject:printView];
+}
+
 
 #pragma mark - Export settings
 

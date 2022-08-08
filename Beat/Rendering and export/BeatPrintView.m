@@ -179,6 +179,8 @@ static NSURL *pdfURL;
 }
 
 - (void)webView:(id)sender didFinishLoadForFrame:(WebFrame *)frame {
+	NSLog(@" 			web view did finish");
+	
 	// Delegate method for legacy WebView
 	self.finishedWebViews = self.finishedWebViews + 1;
 	
@@ -295,22 +297,27 @@ static NSURL *pdfURL;
 	
 	// Support for both WebView (legacy) and WKWebView (modern systems)
 	if (@available(macOS 11.0, *)) {
+		// Modern webkit runs asynchronously
 		[printOperation runOperationModalForWindow:self.window delegate:self didRunSelector:@selector(printOperationDidRun:success:contextInfo:) contextInfo:nil];
 	} else {
+		// Legacy WebKit runs in sync
 		[printOperation runOperation];
 		if (preview) [self.delegate didFinishPreviewAt:url];
 		if (_completion) _completion();
+		[self.document.printViews removeObject:self];
 	}
 }
 
 - (void)printOperationDidRun:(id)operation success:(bool)success contextInfo:(nullable void *)contextInfo {
-	if (_preview) [self.delegate didFinishPreviewAt:pdfURL];
-	if (_completion) _completion();
-	
 	// Remove WKWebView from memory
 	if ([_webView isKindOfClass:WKWebView.class]) [self deinitWebView];
-	
-	_webView = nil;
+
+	// Remove this print view from queue
+	if (_preview) [self.delegate didFinishPreviewAt:pdfURL];
+	if (_completion) _completion();
+
+	// We need to manually remove the print view from queue here
+	[self.document.printViews removeObject:self];
 }
 
 - (void)deinitWebView {

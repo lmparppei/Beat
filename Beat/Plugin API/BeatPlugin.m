@@ -1124,9 +1124,11 @@
 	}
 	
 	return nil;
-	
+}
 
-	
+/// This crashes the whole app when needed. Use with extreme care.
+- (void)crash {
+	@throw([NSException exceptionWithName:NSInternalInconsistencyException reason:@"Crash thrown by plugin" userInfo:nil]);
 }
 
 #pragma mark - Document utilities

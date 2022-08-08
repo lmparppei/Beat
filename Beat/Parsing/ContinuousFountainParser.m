@@ -2468,7 +2468,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 		// We have looped around the array (unsuccessfuly)
 		if ((i == origin && looped) ||
 			(origin == -1 && looped)) {
-			NSLog(@"ALREADY LOOPED, FUCK IT!");
+			NSLog(@"Failed to find match for %@", self.lines[searchOrigin]);
 			break;
 		}
 		

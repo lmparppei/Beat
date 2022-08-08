@@ -20,9 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)saveBool:(bool)value forKey:(NSString*)key;
 - (id)get:(NSString*)docKey;
 - (BOOL)getBool:(NSString*)docKey;
+- (CGFloat)getFloat:(NSString*)docKey;
 - (void)saveSettingsFrom:(id)target;
 - (NSInteger)getInteger:(NSString*)docKey;
 - (void)saveInteger:(NSInteger)value forKey:(NSString*)key;
+- (void)saveFloat:(CGFloat)value forKey:(NSString*)key;
 - (id)defaultValueFor:(NSString*)key;
 @end
 

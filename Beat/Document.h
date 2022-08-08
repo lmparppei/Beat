@@ -70,7 +70,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 @interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatScriptingDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
 
-@property (strong, nonatomic) BeatPrintView *printView; //To keep the asynchronously working print data generator in memory
+@property (strong, nonatomic) NSMutableArray<BeatPrintView*>* printViews; //To keep the asynchronously working print data generator in memory
 
 @property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
 @property (nonatomic, readonly) NSString* preprocessedText;
@@ -148,6 +148,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Skip selection change events when needed
 @property (nonatomic) bool skipSelectionChangeEvent;
 
-- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag;
+//- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag;
 
 @end

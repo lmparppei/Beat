@@ -182,8 +182,13 @@
 	
 	if (self.recognizer.state == NSGestureRecognizerStateBegan) _originalZoomLevel = textView.zoomLevel;
 	
-	CGFloat newZoomLevel = _originalZoomLevel + event.magnification * .5;
-	[textView setZoomLevel:newZoomLevel];
+	[textView adjustZoomLevel:_originalZoomLevel + event.magnification * .25];
+}
+
+
+double clampf(double d, double min, double max) {
+	const double t = d < min ? min : d;
+	return t > max ? max : t;
 }
 
 @end

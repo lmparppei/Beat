@@ -25,5 +25,7 @@
 #import "BeatExportSettings.h"
 #import "BeatFonts.h"
 #import "RenderStyles.h"
+#import "BeatTextView.h"
+#import "BeatUserDefaults.h"
 
 #endif /* Beat_Bridging_Header_h */

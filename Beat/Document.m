@@ -456,7 +456,6 @@
 	self.outlineView = nil;
 	self.documentWindow = nil;
 	self.contentBuffer = nil;
-	self.printView = nil;
 	self.analysisWindow = nil;
 	self.currentScene = nil;
 	//self.currentLine = nil;
@@ -871,7 +870,7 @@ static BeatAppDelegate *appDelegate;
 {
 	[self setMinimumWindowSize];
 	
-	CGFloat width = (self.textView.frame.size.width / 2 - self.documentWidth * _magnification / 2) / _magnification;
+	CGFloat width = (self.textView.frame.size.width / 2 - self.documentWidth * self.magnification / 2) / self.magnification;
 	
 	// Set global variable for top inset, if it's unset
 	// For typewriter mode, we set the top & bottom bounds a bit differently
@@ -891,9 +890,9 @@ static BeatAppDelegate *appDelegate;
 - (void)setMinimumWindowSize {
 	// These are arbitratry values. Sorry, anyone reading this.
 	if (!_sidebarVisible) {
-		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * _magnification + 150, MIN_WINDOW_HEIGHT)];
+		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * self.magnification + 150, MIN_WINDOW_HEIGHT)];
 	} else {
-		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * _magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
+		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * self.magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
 	}
 }
 
@@ -1067,7 +1066,7 @@ static NSWindow __weak *currentKeyWindow;
 
 - (IBAction)zoomIn:(id)sender {
 	if (self.currentTab == _editorTab) [self.textView zoom:YES];
-	
+
 	// Web preview zoom
 	if (@available(macOS 11.0, *)) {
 		if (self.currentTab == _previewTab) self.printWebView.pageZoom += .1;
@@ -1154,6 +1153,11 @@ static NSWindow __weak *currentKeyWindow;
 		// If saving was successful, let's store the data into cache
 		if (success) dataCache = dataRepresentation.copy;
 	}
+	
+	if (dataRepresentation == nil) {
+		NSLog(@"ERROR: Something went horribly wrong. Trying to crash the app to avoid data loss.");
+		@throw NSInternalInconsistencyException;
+	}
     
     return dataRepresentation;
 }
@@ -1169,7 +1173,11 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// For async saving & thread safety, make a copy of the lines array
 	NSString *content = self.parser.screenplayForSaving;
-		
+	if (content == nil) {
+		NSLog(@"ERROR: Something went horribly wrong, trying to crash the app to avoid data loss.");
+		@throw NSInternalInconsistencyException;
+	}
+	
 	// Resort to content buffer if needed
 	if (content == nil) content = self.contentCache;
 	
@@ -1246,7 +1254,7 @@ static NSWindow __weak *currentKeyWindow;
 
 - (void)setupTextView {
 	// Reset zoom
-	[self.textView setZoom];
+	[self.textView setupZoom];
 	
 	// Set insets on load
 	[self.textView setup];
@@ -1567,12 +1575,7 @@ static NSWindow __weak *currentKeyWindow;
 			if ([self shouldAddLineBreaks:currentLine range:affectedCharRange]) return NO;
 		}
 		
-		// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
-		else if (self.matchParentheses) {
-			[self matchParenthesesIn:affectedCharRange string:replacementString];
-		}
-		
-		
+				
 		// Process line break after a forced character input
 		if (_characterInput && _characterInputForLine) {
 			// Don't go out of range
@@ -1590,10 +1593,15 @@ static NSWindow __weak *currentKeyWindow;
 		}
 		
 		if ([self shouldJumpOverParentheses:replacementString range:affectedCharRange]) {
-			return NO;;
+			return NO;
 		}
 	}
 
+	// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
+	else if (self.matchParentheses && replacementString.length == 1 && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
+		[self matchParenthesesIn:affectedCharRange string:replacementString];
+	}
+	
 	// Make the replacement string uppercase in parser
 	if (_characterInput) replacementString = replacementString.uppercaseString;
 	
@@ -4001,7 +4009,7 @@ static NSWindow __weak *currentKeyWindow;
 
 	} else {
 		[_timeline hide];
-		scrollPosition.y = scrollPosition.y * _magnification;
+		scrollPosition.y = scrollPosition.y * self.magnification;
 		[self.textScrollView.contentView scrollToPoint:scrollPosition];
 		[_timelineButton setState:NSOffState];
 	}

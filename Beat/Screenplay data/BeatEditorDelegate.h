@@ -95,7 +95,7 @@
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
 #if !TARGET_OS_IOS
-@property (strong, nonatomic) BeatPrintView *printView;
+@property (strong, nonatomic) NSMutableArray<BeatPrintView*>* printViews;
 - (CGFloat)sidebarWidth;
 #endif
 

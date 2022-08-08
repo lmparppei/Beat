@@ -31,7 +31,6 @@ typedef NS_ENUM(NSInteger, RevisionType) {
 @property (nonatomic) NSString *colorName;
 + (BeatRevisionItem*)type:(RevisionType)type color:(NSString*)color;
 + (BeatRevisionItem*)type:(RevisionType)type;
-+ (NSArray<NSString*>*)availableColors;
 - (BeatColor*)backgroundColor;
 - (NSString*)key;
 - (NSString*)description;

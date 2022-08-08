@@ -122,8 +122,9 @@
 - (void)nextTab;
 - (void)previousTab;
 
-// Speak synth
-- (BeatSpeak*)speakSynth;
+- (BeatSpeak*)speakSynth; /// Speech synthesis
+
+- (void)crash; /// Crash the app
 
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value); /// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
@@ -176,7 +177,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (nonatomic, readonly, weak) NSTextView *textView;
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) OutlineScene *currentScene;
-@property (nonatomic) BeatPrintView *printView;
+@property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
 
 - (id)document; /// Returns self (document)
 - (NSString*)createDocumentFile;

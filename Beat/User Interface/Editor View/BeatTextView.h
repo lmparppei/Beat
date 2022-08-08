@@ -121,6 +121,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (nonatomic) CGFloat zoomLevel;
 @property NSInteger autocompleteIndex;
 
+@property (nonatomic) CGFloat scaleFactor;
+
 @property (nonatomic) IBOutlet NSMenu *contextMenu;
 //@property (nonatomic, readonly, weak) ContinuousFountainParser *parser;
 
@@ -131,7 +133,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 // Zooming
 - (void)zoom:(bool)zoomIn;
-- (void)setZoom;
+- (void)setupZoom;
 - (void)resetZoom;
+- (void)adjustZoomLevel:(CGFloat)level;
 
 @end

@@ -75,6 +75,7 @@
 		@"showRevisions": @[@"showRevisions", @YES],
 		@"showTags": @[@"showTags", @YES],
 		@"automaticContd": @[@"automaticContd", @YES],
+		@"zoomLevel": @[@"zoomLevel", @0.97]
 	};
 }
 
@@ -87,7 +88,7 @@
 
 - (void)readUserDefaultsFor:(id)target
 {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	for (NSString *docKey in userDefaults.allKeys) {
 		NSArray *values = userDefaults[docKey];
 		
@@ -121,7 +122,7 @@
 }
 
 - (id)defaultValueFor:(NSString*)key {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	if (!userDefaults[key]) {
 		NSLog(@"WARNING: User default key does not exist: %@", key);
 		return nil;
@@ -133,7 +134,7 @@
 
 - (NSInteger)getInteger:(NSString*)docKey
 {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[docKey];
 	
 	NSString *settingKey = values[0];
@@ -143,9 +144,21 @@
 		return [NSUserDefaults.standardUserDefaults integerForKey:settingKey];
 	}
 }
+- (CGFloat)getFloat:(NSString*)docKey
+{
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
+	NSArray *values = userDefaults[docKey];
+	
+	NSString *settingKey = values[0];
+	if (![NSUserDefaults.standardUserDefaults objectForKey:settingKey]) {
+		return [(NSNumber*)values[1] floatValue];
+	} else {
+		return [NSUserDefaults.standardUserDefaults floatForKey:settingKey];
+	}
+}
 - (BOOL)getBool:(NSString*)docKey
 {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[docKey];
 	
 	NSString *settingKey = values[0];
@@ -156,7 +169,7 @@
 	}
 }
 - (id)get:(NSString*)docKey {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[docKey];
 	
 	NSString *settingKey = values[0];
@@ -196,7 +209,7 @@
 
 - (void)saveBool:(bool)value forKey:(NSString*)key
 {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[key];
 	
 	if (values) {
@@ -206,7 +219,7 @@
 }
 - (void)saveInteger:(NSInteger)value forKey:(NSString*)key
 {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[key];
 	
 	if (values) {
@@ -214,8 +227,18 @@
 		[NSUserDefaults.standardUserDefaults setInteger:value forKey:settingKey];
 	}
 }
+- (void)saveFloat:(CGFloat)value forKey:(NSString*)key
+{
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
+	NSArray *values = userDefaults[key];
+	
+	if (values) {
+		NSString *settingKey = values[0];
+		[NSUserDefaults.standardUserDefaults setFloat:value forKey:settingKey];
+	}
+}
 - (void)save:(id)value forKey:(NSString *)key {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[key];
 	
 	if (values) {
@@ -226,7 +249,7 @@
 
 - (void)saveSettingsFrom:(id)target
 {
-	NSDictionary* userDefaults = [BeatUserDefaults userDefaults];
+	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	
 	for (NSString *docKey in userDefaults.allKeys) {
 		id value = [target valueForKey:docKey];

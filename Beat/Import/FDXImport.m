@@ -174,7 +174,7 @@
 				[_element addStyle:_textStyle to:range];
 			}
 			if (_revisionID) {
-				NSArray *colors = [BeatRevisionItem availableColors];
+				NSArray *colors = BeatRevisions.revisionColors;
 				NSInteger index = [_revisionID integerValue];
 				
 				// 0 index in revision ID means original in Final Draft

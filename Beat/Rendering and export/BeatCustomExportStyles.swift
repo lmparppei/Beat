@@ -101,7 +101,6 @@ class BeatCustomExportStyles: NSOutlineView, NSOutlineViewDataSource, NSOutlineV
 	}
 	
 	@objc func customCSS() -> String {
-		
 		var maxNumber = self.styleURLS!.count - 1
 		if maxNumber < 0 {
 			maxNumber = 0
@@ -135,7 +134,7 @@ class BeatCustomExportStyles: NSOutlineView, NSOutlineViewDataSource, NSOutlineV
 				NSLog("ERROR: Could not load css: " + styleURL.lastPathComponent)
 			}
 		}
-
+		
 		return css
 	}
 	
@@ -157,7 +156,6 @@ class BeatExportStyleCell:NSTableCellView {
 	@IBAction func loadPreview (sender: Any?) {
 		self.delegate?.loadPreview()
 	}
-	
 }
 /*
  
