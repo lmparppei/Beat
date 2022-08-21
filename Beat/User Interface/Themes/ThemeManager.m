@@ -97,7 +97,7 @@
 	
 #if !TARGET_OS_IOS
 	// Read user-created theme file
-	NSURL *userUrl = [(BeatAppDelegate*)NSApp.delegate appDataPath:@""];
+	NSURL *userUrl = [BeatAppDelegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
@@ -219,7 +219,7 @@
 	// Convert theme values into a dictionary
 	NSDictionary *themeDict = [customTheme themeAsDictionaryWithName:CUSTOM_KEY];
 	
-	NSURL *userUrl = [(BeatAppDelegate*)NSApp.delegate appDataPath:@""];
+	NSURL *userUrl = [BeatAppDelegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	[themeDict writeToFile:userUrl.path atomically:NO];

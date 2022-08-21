@@ -49,7 +49,7 @@
 
 #pragma mark - Initialization
 
-- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position parser:(id<LineDelegate>)parser {
+- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSInteger)position parser:(id<LineDelegate>)parser {
 	self = [super init];
 	if (self) {
 		if (string == nil) string = @"";
@@ -74,15 +74,15 @@
 	return self;
 }
 
-- (Line*)initWithString:(NSString*)string position:(NSUInteger)position
+- (Line*)initWithString:(NSString*)string position:(NSInteger)position
 {
 	return [[Line alloc] initWithString:string type:0 position:position parser:nil];
 }
-- (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser
+- (Line*)initWithString:(NSString*)string position:(NSInteger)position parser:(id<LineDelegate>)parser
 {
 	return [[Line alloc] initWithString:string type:0 position:position parser:parser];
 }
-- (Line*)initWithString:(NSString *)string type:(LineType)type position:(NSUInteger)position {
+- (Line*)initWithString:(NSString *)string type:(LineType)type position:(NSInteger)position {
 	return [[Line alloc] initWithString:string type:type position:position parser:nil];
 }
 
@@ -114,6 +114,7 @@
 + (Line*)withString:(NSString*)string type:(LineType)type {
 	return [[Line alloc] initWithString:string type:type];
 }
+
 /// Use this ONLY for creating temporary lines while paginating
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit {
 	return [[Line alloc] initWithString:string type:type pageSplit:YES];
@@ -195,7 +196,7 @@
 	return types;
 }
 
-/// Retusn line type as string
+/// Returns line type as string
 + (NSString*)typeAsString:(LineType)type {
 	switch (type) {
 		case empty:
@@ -251,7 +252,7 @@
 	}
 }
 
-/// Retusn line type as string
+/// Retuns line type as string
 - (NSString*)typeAsString
 {
 	return [Line typeAsString:self.type];
@@ -681,6 +682,21 @@
 	return [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
 
+- (NSAttributedString*)attrString {
+	if (_attrString == nil) {
+		NSAttributedString *string = [self attributedStringForFDX];
+		NSMutableAttributedString *result = NSMutableAttributedString.new;
+		
+		[self.contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+			[result appendAttributedString:[string attributedSubstringFromRange:range]];
+		}];
+		
+		_attrString = result;
+	}
+	
+	return _attrString;
+}
+
 /// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
 - (NSAttributedString*)attributedStringForFDX {
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:(self.string) ? self.string : @""];
@@ -916,7 +932,7 @@
 #pragma mark - Ranges
 
 /// Returns the line position in document
--(NSUInteger)position {
+-(NSInteger)position {
 	if (_representedLine == nil) return _position;
 	else return _representedLine.position;
 }
@@ -937,6 +953,7 @@
 	
 	return contentRanges;
 }
+
 /// Returns content ranges, including notes
 - (NSIndexSet*)contentRangesWithNotes {
 	// Returns content ranges WITH notes included
@@ -1051,6 +1068,14 @@
 	} else {
 		return (NSRange){ 0, parenthesisLoc };
 	}
+}
+- (BOOL)hasExtension {
+	/// Returns  `TRUE` if the character cue has an extension
+	if (!self.isAnyCharacter) return false;
+	
+	NSInteger parenthesisLoc = [self.string rangeOfString:@"("].location;
+	if (parenthesisLoc == NSNotFound) return false;
+	else return true;
 }
 
 

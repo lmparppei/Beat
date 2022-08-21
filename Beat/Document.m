@@ -231,12 +231,8 @@
 @property (nonatomic) BeatPrintDialog *printDialog;
 
 // Print preview
-@property (weak) IBOutlet WKWebView *printWebView; // Print preview
 @property (nonatomic) NSString *htmlString;
-@property (nonatomic) bool previewUpdated;
-@property (nonatomic) bool previewCanceled;
-@property (nonatomic) NSTimer *previewTimer;
-@property (nonatomic) BeatPreview *preview;
+@property (nonatomic) IBOutlet BeatPreview *preview;
 
 // Analysis
 @property (nonatomic) BeatStatisticsPanel *analysisWindow;
@@ -406,19 +402,11 @@
 }
 - (void)close {
 	if (!self.hasUnautosavedChanges) {
-		/*
-		if (self.sidebarVisible) {
-			// Don't save sidebar width
-			NSRect frame = self.documentWindow.frame;
-			frame.size.width -= self.splitHandle.bottomOrLeftView.frame.size.width;
-			[self.documentWindow setFrame:frame display:NO];
-		}
-		*/
 		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
 	
 	// Avoid retain cycles with WKWebView
-	[self deallocPreview];
+	[self.preview deallocPreview];
 	[self.cardView removeHandlers];
 	
 		
@@ -431,7 +419,7 @@
 	
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
-	[self.previewTimer invalidate];
+	[self.preview.previewTimer invalidate];
 	[self.paginationTimer invalidate];
 	self.paginationTimer = nil;
 	[self.beatTimer.timer invalidate];
@@ -527,11 +515,13 @@ static BeatAppDelegate *appDelegate;
 	if (self.useSansSerif) [self loadSansSerifFonts];
 	else [self loadSerifFonts];
 	
+	// Setup preview
+	[self.preview setup];
+	
 	// Setup views
 	[self setupResponderChain];
 	[self setupTextView];
 	[self setupOutlineView];
-	[self setupPreview];
 	[self setupTouchTimeline];
 	[self setupAnalysis];
 	[self setupColorPicker];
@@ -658,8 +648,13 @@ static BeatAppDelegate *appDelegate;
 	[self updateLayout];
 	
 	// New export test
-	// BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
-	// ScreenplayRenderer *renderer = [ScreenplayRenderer.alloc initWithSettings:settings screenplay:self.parser.forPrinting];
+	/*
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
+	BeatRenderer *renderer = [BeatRenderer.alloc initWithDocument:self screenplay:self.parser.forPrinting settings:settings livePagination:false];
+	[renderer paginateFromIndex:0];
+	[renderer pdf];
+	 */
+	
 }
 
 -(void)awakeFromNib {
@@ -713,7 +708,7 @@ static BeatAppDelegate *appDelegate;
 
 	if (oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) {
 		[self formatAllLinesOfType:heading];
-		self.previewUpdated = NO;
+		self.preview.previewUpdated = NO;
 	}
 	
 	if (oldSansSerif != self.useSansSerif) {
@@ -744,7 +739,7 @@ static BeatAppDelegate *appDelegate;
 		else [self.textView deleteSceneNumberLabels];
 		
 		// Update the print preview accordingly
-		self.previewUpdated = NO;
+		self.preview.previewUpdated = NO;
 	}
 	
 	[self updateQuickSettings];
@@ -824,7 +819,7 @@ static BeatAppDelegate *appDelegate;
 	
 	[self loadCaret];
 	[self ensureCaret];
-	[self updatePreview];
+	[self.preview updatePreviewInSync:NO];
 	if (paginate) [self paginateAt:(NSRange){0,0} sync:YES];
 }
 
@@ -1069,7 +1064,7 @@ static NSWindow __weak *currentKeyWindow;
 
 	// Web preview zoom
 	if (@available(macOS 11.0, *)) {
-		if (self.currentTab == _previewTab) self.printWebView.pageZoom += .1;
+		if (self.currentTab == _previewTab) self.preview.previewView.pageZoom += .1;
 	}
 }
 - (IBAction)zoomOut:(id)sender {
@@ -1077,7 +1072,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Web preview zoom
 	if (@available(macOS 11.0, *)) {
-		if (self.currentTab == _previewTab) self.printWebView.pageZoom -= .1;
+		if (self.currentTab == _previewTab) self.preview.previewView.pageZoom -= .1;
 	}
 }
 
@@ -1270,7 +1265,8 @@ static NSWindow __weak *currentKeyWindow;
 
 - (NSAttributedString *)getAttributedText
 {
-	return [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
+	_attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
+	return _attrTextCache;
 }
 
 - (void)setText:(NSString *)text
@@ -1544,6 +1540,12 @@ static NSWindow __weak *currentKeyWindow;
 		return NO;
 	}
 	
+	// Don't repeat ) or ]
+	if ([self shouldJumpOverParentheses:replacementString range:affectedCharRange] &&
+		!self.undoManager.redoing && !self.undoManager.undoing) {
+		return NO;
+	}
+	
 	// Handle new line breaks (when actually typed)
 	if ([replacementString isEqualToString:@"\n"] && affectedCharRange.length == 0 && !self.undoManager.isRedoing && !self.undoManager.isUndoing && !self.documentIsLoading) {
 				
@@ -1591,10 +1593,6 @@ static NSWindow __weak *currentKeyWindow;
 				}
 			}
 		}
-		
-		if ([self shouldJumpOverParentheses:replacementString range:affectedCharRange]) {
-			return NO;
-		}
 	}
 
 	// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
@@ -1612,7 +1610,7 @@ static NSWindow __weak *currentKeyWindow;
 	_currentLine = [self getCurrentLine];
 		
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	_previewUpdated = NO;
+	self.preview.previewUpdated = NO;
 	
     return YES;
 }
@@ -1844,7 +1842,7 @@ static NSWindow __weak *currentKeyWindow;
 	//[self.textView updateChangeMarkersFrom:self.lastChangedRange.location];
 	
 	// Update preview screen
-	[self updatePreview];
+	[self.preview updatePreviewInSync:NO];
 	
 	// Draw masks again if text did change
 	if (_outlineView.filteredOutline.count) [self maskScenes];
@@ -2260,41 +2258,25 @@ static NSWindow __weak *currentKeyWindow;
 	// Force character if the line is suitable
 	Line *currentLine = self.currentLine;
 	
-	if (currentLine.type == empty) {
-		NSInteger index = [self.parser indexOfLine:currentLine];
-		
-		if (index > 0) {
-			Line* previousLine = [self.parser.lines objectAtIndex:index - 1];
-			if (previousLine.type == empty ||
-				(previousLine.type == action && previousLine.string.length == 0)) {
-				[self forceCharacterInput];
-			}
-		}
-	}
-	else if (currentLine.isAnyCharacter) {
-		[_autocompletion autocompleteOnCurrentLine];
+	if (currentLine.isAnyCharacter) {
+		[self addCharacterExtension];
 	} else {
-		// Don't allow this to happen twice
-		if (_characterInput) return;
+		[self forceCharacterInput];
+	}
+}
 
-		// Else see if we could force the character cue
-		Line* prevLine = [self.parser previousLine:currentLine];
-		Line* nextLine = [self.parser nextLine:currentLine];
-		
-		// A convoluted conditional, but the rules are:
-		// Previous line is empty, current line is not already part of a dialogue block,
-		// next line is not a heading OR is already formatted as dialogue (can happen rarely)
-		if (prevLine.type == empty &&
-			!currentLine.isDialogueElement &&
-			((nextLine.type != character &&
-			 nextLine.type != heading) ||
-			nextLine.isDialogue)) {
-			[self replaceString:currentLine.string withString:currentLine.string.uppercaseString atIndex:currentLine.position];
-		}
-		else {
-			// Default behaviour: add tab. We won't do this, but it's here if anyone wants to restore it.
-			// [self replaceCharactersInRange:self.textView.selectedRange withString:@"\t"];
-		}
+- (void)addCharacterExtension {
+	Line * currentLine = self.currentLine;
+	
+	if (currentLine.hasExtension) {
+		// Move the caret to extension
+		NSInteger loc = [currentLine.string rangeOfString:@"("].location;
+		self.textView.selectedRange = NSMakeRange(loc + currentLine.position + 1, 0);
+	} else {
+		// Add a new extension placeholder
+		NSInteger loc = currentLine.string.length;
+		[self addString:@" ()" atIndex:NSMaxRange(currentLine.textRange)];
+		self.textView.selectedRange = NSMakeRange(currentLine.position + loc + 2, 0);
 	}
 }
 
@@ -2302,6 +2284,34 @@ static NSWindow __weak *currentKeyWindow;
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
+	// Move at the beginning of the line to avod issues with .currentLine
+	self.selectedRange = NSMakeRange(self.currentLine.position, 0);
+	
+	if (self.currentLine.type != empty) {
+		NSArray *block = [self.parser blockFor:self.currentLine];
+		Line *lastLine = block.lastObject;		
+		self.selectedRange = NSMakeRange(lastLine.position, 0);
+	}
+
+	if (self.currentLine.type != empty) {
+		// Break at line break
+		[self addString:@"\n" atIndex: NSMaxRange(self.currentLine.textRange)];
+		
+		self.selectedRange = NSMakeRange(NSMaxRange(self.currentLine.textRange) + 2, 0);
+	}
+
+	Line *prevLine = [self.parser previousLine:self.currentLine];
+	if (prevLine != nil && prevLine.type != empty && prevLine.string.length != 0) {
+		[self addString:@"\n" atIndex:NSMaxRange(prevLine.textRange)];
+	}
+	
+	Line *nextLine = [self.parser nextLine:self.currentLine];
+	if (nextLine != nil && nextLine.type != empty && nextLine.string.length != 0) {
+		NSInteger loc = self.currentLine.position;
+		[self addString:@"\n" atIndex:NSMaxRange(self.currentLine.textRange)];
+		self.selectedRange = NSMakeRange(loc, 0);
+	}
+		
 	// If no line is selected, return
 	Line *currentLine = self.currentLine;
 	if (currentLine == nil) return;
@@ -3242,62 +3252,32 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Preview
 
-- (void)setupPreview {
-	[self.printWebView.configuration.userContentController addScriptMessageHandler:self name:@"selectSceneFromScript"];
-	[self.printWebView.configuration.userContentController addScriptMessageHandler:self name:@"closePrintPreview"];
-	
-	[_printWebView loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
-	
-	if (@available(macOS 11.0, *)) {
-		self.printWebView.pageZoom = 1.2;
-	}
-	
-	_preview = [[BeatPreview alloc] initWithDocument:self];
-}
-
 - (void)invalidatePreview {
 	// Mark the current preview as invalid
-	_previewUpdated = NO;
+	self.preview.previewUpdated = NO;
 	
 	// If preview is visible, recreate it
 	if (self.currentTab == _previewTab) {
-		[self updatePreviewAndUI:YES];
+		[self.preview updatePreviewInSync:YES];
 	}
+}
+
+- (void)previewDidFinish {
+	// Tell plugins the preview has been finished
+	for (NSString *name in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[name];
+		[plugin previewDidFinish];
+	}
+}
+
+- (void)updatePreview {
+	[self.preview updatePreviewInSync:NO];
 }
 
 - (IBAction)preview:(id)sender
 {
-	/*
-	 
-	 We should put all of this into a separate class: Create a preview object that
-	 handles previews and builds the preview on per-page basis, similar to live pagination.
-	 Perhaps even connect preview + live pagination?
-	 
-	 This is a *VERY* hacky and convoluted system right now.
-	 
-	 */
-	
     if (self.currentTab != _previewTab) {
-		// Do a synchronous refresh of the preview if the preview is not available
-		if (_htmlString.length < 1 || !_previewUpdated) [self updatePreviewAndUI:YES];
-		else {
-			// Create JS scroll function call and append it straight into the HTML
-			Line *currentLine = [self.parser closestPrintableLineFor:self.currentLine];
-			
-			NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", currentLine.uuid.UUIDString.lowercaseString];
-			
-			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
-			[self.printWebView loadHTMLString:_htmlString baseURL:nil]; // Load HTML
-			
-			// Revert changes to the code (so we can replace the placeholder again,
-			// if needed, without recreating the whole HTML)
-			_htmlString = [_htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
-			
-			// Evaluate JS in window to be sure it shows the correct scene
-			//[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToScene(%@);", currentScene.sceneNumber] completionHandler:nil];
-			[_printWebView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
-		}
-	
+		[self.preview displayPreview];
 		[self showTab:_previewTab];
 		_printPreview = YES;
     } else {
@@ -3307,60 +3287,9 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (NSString*)previewHTML {
-	return _htmlString;
+	return self.preview.htmlString;
 }
 
-- (void)updatePreview  {
-	[self updatePreviewAndUI:NO];
-}
-- (void)updatePreviewAndUI:(bool)updateUI {
-	// WORK IN PROGRESS // WIP WIP WIP
-	// Update preview in background
-	
-	_attrTextCache = [self getAttributedText];
-	
-	[_previewTimer invalidate];
-	self.previewUpdated = NO;
-	self.previewCanceled = YES;
-	
-	// Wait 1 second after writing has ended to build preview
-	// If there is no preview present, do it immediately
-	CGFloat previewWait = 1.5;
-	if (_htmlString.length < 1 || updateUI) previewWait = 0;
-	
-	_previewTimer = [NSTimer scheduledTimerWithTimeInterval:previewWait repeats:NO block:^(NSTimer * _Nonnull timer) {
-		self.previewCanceled = NO;
-		
-		self.outline = [self getOutlineItems];
-		OutlineScene *currentScene = self.currentScene;
-		
-		NSString *rawText = self.text;
-		
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-			__block NSString *html = [self.preview createPreviewFor:rawText type:BeatPrintPreview];
-			self.htmlString = html;
-			
-			self.previewUpdated = YES;
-			
-			if (updateUI || self.printPreview) {
-				dispatch_async(dispatch_get_main_queue(), ^(void){
-					//[[self.webView mainFrame] loadHTMLString:html baseURL:nil];
-					NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToScene(%@);</script>", currentScene.sceneNumber];
-					html = [html stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
-					[self.printWebView loadHTMLString:html baseURL:nil];
-				});
-			}
-		});
-	}];
-}
-
-- (void)deallocPreview {
-	// WIP: Move this into preview class
-	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
-	[self.printWebView.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
-	self.printWebView.navigationDelegate = nil;
-	self.printWebView = nil;
-}
 - (void)cancelOperation:(id) sender
 {
 	// ESCAPE KEY pressed
@@ -3892,6 +3821,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
+
 #pragma mark - Scene numbering
 
 - (void)setPrintSceneNumbers:(bool)value {
@@ -3955,7 +3885,7 @@ static NSWindow __weak *currentKeyWindow;
 	else [self.textView deleteSceneNumberLabels];
 	
 	// Update the print preview accordingly
-	self.previewUpdated = NO;
+	self.preview.previewUpdated = NO;
 	
 	[self updateQuickSettings];
 }
@@ -4238,7 +4168,7 @@ triangle walks
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
 	[self paginate];
-	_previewUpdated = NO;
+	self.preview.previewUpdated = NO;
 }
 
 - (NSInteger)numberOfPages {
@@ -4489,7 +4419,7 @@ triangle walks
 	
 	[super saveDocumentAs:sender];
 
-	NSURL *url = [(BeatAppDelegate*)NSApp.delegate appDataPath:@"Autosave"];
+	NSURL *url = [BeatAppDelegate appDataPath:@"Autosave"];
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
 		 
@@ -4739,6 +4669,7 @@ triangle walks
 		return YES;
 	}
 }
+
 
 @end
 

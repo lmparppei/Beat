@@ -33,7 +33,7 @@
 - (void)setHTML:(NSString*)string {
 	[self.webview loadHTMLString:string baseURL:nil];
 }
-- (void)showBrowser:(NSURL*)url withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height {
+- (void)showBrowser:(NSURL*)url withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height onTop:(bool)onTop {
 	self.window.title = title;
 	
 	[self.window setFrame:NSMakeRect(
@@ -46,10 +46,10 @@
 	self.window.minSize = (NSSize){ width, self.window.minSize.height };
 	
 	[self loadURL:url];
-	[self showBrowser];
+	[self showBrowser:onTop];
 }
 
-- (void)showBrowserWithString:(NSString*)string withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height {
+- (void)showBrowserWithString:(NSString*)string withTitle:(NSString*)title width:(CGFloat)width height:(CGFloat)height onTop:(bool)onTop {
 	self.window.title = title;
 	
 	[self.window setFrame:NSMakeRect(
@@ -60,9 +60,18 @@
 						 display:YES];
 	
 	[self.webview loadHTMLString:string baseURL:NSBundle.mainBundle.resourceURL];
-	[self showBrowser];
+	[self showBrowser:onTop];
 }
-- (void)showBrowser {
+- (void)showBrowser:(bool)onTop {
+	if (onTop) {
+		self.window.level = NSFloatingWindowLevel;
+		self.window.hidesOnDeactivate = true;
+	}
+	else {
+		self.window.level = NSNormalWindowLevel;
+		self.window.hidesOnDeactivate = false;
+	}
+
 	[self.window setIsVisible:true];
 	
 	[self.webview.configuration.userContentController removeScriptMessageHandlerForName:@"openTemplate"];

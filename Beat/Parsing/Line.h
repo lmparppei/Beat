@@ -42,7 +42,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic) NSUUID *uuid; // You can actually write into the UUID
 
 @property (readonly) LineType type;
-@property (readonly) NSUInteger position;
+@property (readonly) NSInteger position;
 @property (readonly) NSString* sceneNumber;
 @property (readonly) NSString* color;
 @property (readonly) NSRange range;
@@ -83,6 +83,8 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (NSIndexSet*)contentRanges;
 - (NSIndexSet*)contentRangesWithNotes;
 
+- (BOOL)hasExtension;
+
 - (bool)hasBeat;
 - (bool)hasBeatForStoryline:(NSString*)storyline;
 - (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
@@ -109,7 +111,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @property (nonatomic) NSUUID *uuid;
 
-@property (nonatomic) NSUInteger position;
+@property (nonatomic) NSInteger position;
 @property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
 @property (nonatomic) NSUInteger sectionDepth;
 @property (nonatomic) NSString* sceneNumber;
@@ -132,6 +134,10 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSMutableIndexSet* escapeRanges;
 
 @property (nonatomic) NSMutableIndexSet* removalSuggestionRanges;
+
+/// Returns and caches the line with attributes.
+/// @warning This string will be created ONCE. You can't update the line properties and expect this method to reflect those changes.
+@property (nonatomic) NSAttributedString *attrString;
 
 @property (nonatomic) NSRange titleRange;
 @property (nonatomic) NSRange markerRange;
@@ -162,12 +168,12 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSInteger heightInPaginator;
 
 
-- (Line*)initWithString:(NSString*)string position:(NSUInteger)position;
-- (Line*)initWithString:(NSString*)string position:(NSUInteger)position parser:(id<LineDelegate>)parser;
-- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position parser:(id<LineDelegate>)parser;
+- (Line*)initWithString:(NSString*)string position:(NSInteger)position;
+- (Line*)initWithString:(NSString*)string position:(NSInteger)position parser:(id<LineDelegate>)parser;
+- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSInteger)position parser:(id<LineDelegate>)parser;
 - (Line*)initWithString:(NSString*)string type:(LineType)type;
 - (Line*)initWithString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
-- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSUInteger)position;
+- (Line*)initWithString:(NSString*)string type:(LineType)type position:(NSInteger)position;
 - (NSString*)typeAsString;
 - (bool)omitted; /// The line is omitted completely from print — either inside an omission block or a note
 - (bool)note; /// The line is completely a note
@@ -195,17 +201,27 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)isItalicAt:(NSInteger)index;
 - (bool)isUnderlinedAt:(NSInteger)index;
 
-// Note: Following stuff is intended ONLY for non-continuous parsing
+/// returns TRUE for any title page element
 - (bool)isTitlePage;
+/// returns TRUE when the line is non-printed
 - (bool)isInvisible;
-- (bool)isDialogue; /// returns TRUE for character cues too
-- (bool)isDialogueElement; /// returns TRUE for elements other than a character cue
-- (bool)isDualDialogue; /// returns TRUE for dual dialogue characters too
-- (bool)isDualDialogueElement;  /// returns TRUE for elements other than a character cue
-- (bool)isOutlineElement; /// returns true for scene heading, section and synopsis
-- (bool)isAnyCharacter; /// returns true for single and dual dialogue character cue
-- (bool)isAnyParenthetical; /// returns true for single and dual dialogue parenthetical
-- (bool)isAnyDialogue; /// returns true for single and dual dialogue
+/// returns TRUE for character cues too
+- (bool)isDialogue;
+/// returns TRUE for elements other than a character cue
+- (bool)isDialogueElement;
+/// returns TRUE for dual dialogue characters too
+- (bool)isDualDialogue;
+/// returns TRUE for elements other than a character cue
+- (bool)isDualDialogueElement;
+/// returns true for scene heading, section and synopsis
+- (bool)isOutlineElement;
+/// returns true for single and dual dialogue character cue
+- (bool)isAnyCharacter;
+/// returns true for single and dual dialogue parenthetical
+- (bool)isAnyParenthetical;
+/// returns true for single and dual dialogue
+- (bool)isAnyDialogue;
+- (BOOL)hasExtension;
 
 - (NSString*)stripSceneNumber;
 - (NSString*)stripFormatting;
@@ -218,27 +234,37 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 // Properties for pagination
 @property (nonatomic) bool unsafeForPageBreak; /// EXPERIMENTAL
 
-// Markers
+/// Marker color
 @property (nonatomic) NSString *marker;
+/// Marker text
 @property (nonatomic) NSString *markerDescription;
 
-// Beats
+/// An array of story beats contained by this line
 @property (nonatomic) NSArray<Storybeat*>* beats;
 
-// For FDX export
+/// An attributed string with Final Draft compatible attribute names for styling
 - (NSAttributedString*)attributedStringForFDX;
+
+/// Indices of formatting characters
 - (NSIndexSet*)formattingRanges;
+/// Returns the formatting ranges as *global* (document-wide) ranges
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes;
+/// Indices of printed content (excluding formatting symbols etc.)
 - (NSIndexSet*)contentRanges;
+/// Indices of printed content (excluding formatting symbols etc.), but with notes
 - (NSIndexSet*)contentRangesWithNotes;
+/// Character name, excluding any extensions
 - (NSString*)characterName;
+/// Range of the character name in the cue
 - (NSRange)characterNameRange;
-
+/// Reformats Fountain string inside the line and stores the ranges
 - (void)resetFormatting;
+/// Join this line with another `Line` object, and combine the attributes of th two
 - (void)joinWithLine:(Line*)line;
+/// Does what it says
 - (NSArray*)splitAndFormatToFountainAt:(NSInteger)index;
-
-- (NSDictionary*)forSerialization; /// A JSON object for plugin use
+/// A JSON object for plugin use
+- (NSDictionary*)forSerialization;
 
 // For revision data
 @property (nonatomic) bool changed;
@@ -246,7 +272,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSString *revisionColor;
 
 // Story beats
+/// The line contains a story beat
 - (bool)hasBeat;
+/// Returns TRUE if the line contains a story beat for the given storyline
 - (bool)hasBeatForStoryline:(NSString*)storyline;
 - (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
 - (NSRange)firstBeatRange;

@@ -1,10 +1,18 @@
 # Changelog
 
-## Beat 1.95.0
+## Beat 1.96.0
+
+- Fixed issues with conditional flow when text changes (shouldChange...)
+- Changed tab press behavior
+
+
+## Beat 1.95.x
 
 - Some plugin window logic fixed
 - Further pagination bugs fixed... maybe
 - View now scrolls to where changes were made when undoing
+- Parsing and line lookup issues fixed
+- Multiple other issues fixed and streamlined
 
 
 ## Beat 1.94.6

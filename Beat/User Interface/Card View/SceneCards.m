@@ -65,6 +65,7 @@
 	self.cardView = nil;
 }
 
+
 - (void)createHTMLView {
 	// Create the HTML
 	NSError *error = nil;
@@ -345,7 +346,16 @@
 	// I have no fucking idea what any of this does.
 	// Send in the clowns. There ought to be clowns.
 	
-	if ([message.name isEqualToString:@"move"]) {
+	if ([message.name isEqualToString:@"cardClick"]) {
+		OutlineScene *scene = self.delegate.getOutline[[message.body intValue]];
+		if (scene != nil) [_delegate scrollToLine:scene.line];
+		
+		[_delegate toggleCards:nil];
+		
+		return;
+	}
+	
+	else if ([message.name isEqualToString:@"move"]) {
 		if ([message.body rangeOfString:@","].location != NSNotFound) {
 			NSArray *fromTo = [message.body componentsSeparatedByString:@","];
 			if (fromTo.count < 2) return;

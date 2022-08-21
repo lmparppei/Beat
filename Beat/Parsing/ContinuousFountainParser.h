@@ -18,7 +18,7 @@
 +(instancetype)from:(ContinuousFountainParser*)parser;
 +(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings;
 @property (nonatomic) NSArray <Line*>* lines;
-@property (nonatomic) NSArray *titlePage;
+@property (nonatomic) NSArray <Line*>* titlePage;
 @end
 
 @protocol ContinuousFountainParserDelegate <NSObject>
@@ -75,6 +75,8 @@
 // For STATIC parsing without a document
 @property (nonatomic) BeatDocumentSettings *staticDocumentSettings;
 @property (nonatomic) bool staticParser;
+
++ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings;
 
 // Initialization for both CONTINUOUS and STATIC parsing
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;

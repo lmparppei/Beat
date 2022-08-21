@@ -39,6 +39,7 @@
 #import "BeatHTMLScript.h"
 
 @class BeatPluginWindow;
+@class BeatPreview;
 
 @protocol BeatScriptingExports <JSExport>
 @property (readonly) Line* currentLine;
@@ -49,6 +50,8 @@
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
 @property (nonatomic,readonly) NSDictionary *type;
+
+@property (nonatomic, readonly) BeatPreview *preview;
 
 //@property (readonly) NSArray* scenes;
 //@property (readonly) NSArray* outline;
@@ -63,6 +66,7 @@
 - (void)onDocumentBecameMain:(JSValue*)updateMethod;
 - (void)onSceneHeadingAutocompletion:(JSValue*)callback;
 - (void)onCharacterAutocompletion:(JSValue*)callback;
+- (void)onPreviewFinished:(JSValue*)updateMethod;
 
 - (void)log:(NSString*)string;
 - (void)openConsole;
@@ -178,6 +182,8 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) OutlineScene *currentScene;
 @property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
+@property (nonatomic, readonly) BeatPaginator *paginator;
+@property (nonatomic, readonly) BeatPreview *preview;
 
 - (id)document; /// Returns self (document)
 - (NSString*)createDocumentFile;
@@ -206,6 +212,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (IBAction)showWidgets:(id)sender;
 - (NSString*)previewHTML; /// Returns HTML string of the current preview. Only for debugging.
 
+
 @end
 
 @interface BeatPlugin : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
@@ -217,6 +224,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (nonatomic) bool onSelectionChangeDisabled;
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
+@property (nonatomic, readonly) BeatPreview *preview;
 
 - (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;
@@ -224,6 +232,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)updateSelection:(NSRange)selection;
 - (void)updateOutline:(NSArray*)outline;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
+- (void)previewDidFinish;
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
 - (void)documentDidBecomeMain;

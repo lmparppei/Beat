@@ -411,7 +411,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				// Call delegate to handle normal tab press
 				NSUInteger flags = theEvent.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
 
-				if (flags == 0) {
+				if (flags == 0 || flags == NSEventModifierFlagCapsLock) {
 					[self.editorDelegate handleTabPress];
 					return; // skip default
 				} else {
@@ -1601,80 +1601,6 @@ Line *cachedRectLine;
 #pragma mark - Layout Delegation
 
 #pragma mark - Zooming
-
-/*
- 
- - (IBAction)zoomIn:(id)sender {
-	 if (self.currentTab == _editorTab) [self zoom:YES];
-	 
-	 // Web preview zoom
-	 if (@available(macOS 11.0, *)) {
-		 if (self.currentTab == _previewTab) self.printWebView.pageZoom += .1;
-	 }
- }
- - (IBAction)zoomOut:(id)sender {
-	 if (self.currentTab == _editorTab) [self zoom:NO];
-	 
-	 // Web preview zoom
-	 if (@available(macOS 11.0, *)) {
-		 if (self.currentTab == _previewTab) self.printWebView.pageZoom -= .1;
-	 }
- }
- - (IBAction)resetZoom:(id)sender {
-	 _magnification = DEFAULT_MAGNIFY;
-	 [self setScaleFactor:_magnification adjustPopup:false];
-	 [self updateLayout];
- }
-
- - (void)zoom:(bool)zoomIn {
-	 if (!_scaleFactor) _scaleFactor = _magnification;
-	 CGFloat oldMagnification = _magnification;
-	 
-	 // Save scroll position
-	 NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
-	 
-	 // For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
-	 if (zoomIn) {
-		 if (_magnification < 1.5) _magnification += 0.04;
-	 } else {
-		 if (_magnification > 0.8) _magnification -= 0.04;
-	 }
-
-	 // If magnification did change, scale the view
-	 if (oldMagnification != _magnification) {
-		 [self setScaleFactor:_magnification adjustPopup:false];
-		 [self updateLayout];
-		 
-		 // Scale and apply the scroll position
-		 scrollPosition.y = scrollPosition.y * _magnification;
-		 [self.textScrollView.contentView scrollToPoint:scrollPosition];
-		 [self ensureLayout];
-		 
-		 [self.textView setNeedsDisplay:YES];
-		 [self.textScrollView setNeedsDisplay:YES];
-		 
-		 // For some reason, clip view might get the wrong height after magnifying. No idea what's going on.
-		 NSRect clipFrame = _textClipView.frame;
-		 clipFrame.size.height = _textClipView.superview.frame.size.height * _magnification;
-		 _textClipView.frame = clipFrame;
-		 
-		 [self ensureLayout];
-		 
-		 [[NSUserDefaults standardUserDefaults] setFloat:_magnification forKey:MAGNIFYLEVEL_KEY];
-	 }
-	 
-	 [self.textView setInsets];
-	 [self updateLayout];
-	 [self ensureLayout];
-	 [self ensureCaret];
- }
-
- - (CGFloat)magnification { return _magnification; }
-
- - (void)ensureCaret {
-	 [self.textView updateInsertionPointStateAndRestartTimer:YES];
- }
- */
 
 /// Adjust zoom by a delta value
 - (void)adjustZoomLevelBy:(CGFloat)value {

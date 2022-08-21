@@ -423,6 +423,7 @@
 /// Generic method for adding a revisino marker, no matter the type
 - (void)markerAction:(RevisionType)type {
 	[self markerAction:type range:_delegate.selectedRange];
+	[_delegate getAttributedText]; // Save attributed text to cache
 }
 - (void)markerAction:(RevisionType)type range:(NSRange)range {
 	// Content can't be marked as revised when locked, and only allow this for editor view

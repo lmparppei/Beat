@@ -37,6 +37,8 @@
 + (NSMutableAttributedString*) withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current {
 	Line *line = scene.line;
 	
+	if (line == nil) { return [NSMutableAttributedString.alloc initWithString:@""]; }
+	
 	NSUInteger sceneNumberLength = 0;
 	//bool currentScene = false;
 	

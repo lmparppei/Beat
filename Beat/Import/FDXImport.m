@@ -83,9 +83,12 @@
 	return self;
 }
 
+static bool insideParagraph = false;
+
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict{
 	_lastFoundElement = elementName;
 	
+
 	// Find different sections of the XML
 	
 	if ([elementName isEqualToString:@"Content"]) {
@@ -98,9 +101,12 @@
 		_titlePage = YES;
 	}
 	else if ([elementName isEqualToString:@"Paragraph"]) {
-		_activeElement = attributeDict[@"Type"];
-		_alignment = attributeDict[@"Alignment"];
-				
+		// When exiting sub-node, the parser might think we are beginning this node again, with null attributes
+		if (!insideParagraph) {
+			if (attributeDict[@"Type"] != nil) _activeElement = attributeDict[@"Type"];
+			_alignment = attributeDict[@"Alignment"];
+		}
+		
 		// Create new element
 		_element = [FDXElement withText:@""];
 	}
@@ -193,10 +199,12 @@
 	// Reset dual dialogue
 	else if ([elementName isEqualToString:@"DualDialogue"]) _dualDialogue = -1;
 	// Go on
-	else if ([elementName isEqualToString:@"Paragraph"]) {
+	else if ([elementName isEqualToString:@"Paragraph"] && _element.string.length > 0) {
+		insideParagraph = false;
+		
 		// Add empty rows before required elements.
-		if ([_script count] > 0) {
-			FDXElement *previousLine = [_script lastObject];
+		if (_script.count > 0) {
+			FDXElement *previousLine = _script.lastObject;
 			
 			if (previousLine.length > 0 && _element.length > 0) {
 				if ([_activeElement isEqualToString:@"Character"] ||
@@ -206,16 +214,22 @@
 				}
 			}
 		}
-		
+				
 		// Format contents
 		//result = [self fountainString:_attrText];
-		
+		NSLog(@"Ending %@   ----  %@", _activeElement, _element.string);
+
 		if ([_activeElement isEqualToString:@"Scene Heading"]) {
 			// Set to uppercase
-			[_element setString:_element.string.uppercaseString];
+			NSLog(@"Scene: %@", _element.string);
+			
+			[_element makeUppercase];
+			
+			NSLog(@"Scene: %@", _element.string);
 			
 			// Force scene prefix if needed
-			if ([_element.string rangeOfString:@"INT."].location == NSNotFound &&
+			if (
+				[_element.string rangeOfString:@"INT."].location == NSNotFound &&
 				[_element.string rangeOfString:@"EXT."].location == NSNotFound &&
 				[_element.string rangeOfString:@"I./E."].location == NSNotFound
 			) {
@@ -226,12 +240,13 @@
 			[_element insertAtBeginning:@"~"];
 		}
 		else if ([_activeElement isEqualToString:@"Character"]) {
+			[_element makeUppercase];
+
 			if (_dualDialogue > 0) _dualDialogue++;
 			if (_dualDialogue == 3) {
 				[_element insertAtEnd:@" ^"];
 				_dualDialogue = -1;
 			}
-			else [_element makeUppercase];
 		}
 		else if ([_activeElement isEqualToString:@"Transition"]) {
 			[_element makeUppercase];

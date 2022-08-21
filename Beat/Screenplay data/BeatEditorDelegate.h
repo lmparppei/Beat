@@ -94,6 +94,8 @@
 @property (nonatomic) NSInteger mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
 
+@property (atomic) NSAttributedString *attrTextCache;
+
 #if !TARGET_OS_IOS
 @property (strong, nonatomic) NSMutableArray<BeatPrintView*>* printViews;
 - (CGFloat)sidebarWidth;
@@ -103,6 +105,7 @@
 - (NSPrintInfo*)printInfo;
 - (id)document;
 - (void)releasePrintDialog;
+- (NSAttributedString*)getAttributedText;
 #else
 - (id)documentForDelegation;
 - (UIPrintInfo*)printInfo;
@@ -170,6 +173,7 @@
 - (void)textDidChange:(NSNotification *)notification;
 
 - (void)toggleMode:(BeatEditorMode)mode;
+@optional - (IBAction)toggleCards:(id)sender;
 
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;

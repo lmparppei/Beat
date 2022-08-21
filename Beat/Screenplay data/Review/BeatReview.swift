@@ -250,6 +250,9 @@ class BeatReview: NSObject {
 		if (effectiveRange.location != NSNotFound && currentRange.length > 0 && !attr.emptyReview) {
 			delegate?.textView.setSelectedRange(NSMakeRange(effectiveRange.location + effectiveRange.length, 0))
 		}
+		
+		// Commit to attributed text cache
+		delegate?.getAttributedText()
 	}
 	
 	func deleteReview(item:BeatReviewItem) {
@@ -272,6 +275,9 @@ class BeatReview: NSObject {
 			self.delegate?.renderBackground(for: deleteRange)
 			delegate?.updateChangeCount(.changeDone)
 		}
+		
+		// Commit to attributed text cache
+		delegate?.getAttributedText()
 	}
 	
 	@objc func closePopover() {

@@ -63,7 +63,7 @@ class BeatBackup:NSObject {
 				let tempURL = URL(fileURLWithPath: delegate.pathForTemporaryFile(withPrefix: "Backup"))
 				try fm.copyItem(at: documentURL, to: tempURL)
 				try fm.replaceItem(at: backupURL, withItemAt: tempURL, backupItemName: name, resultingItemURL: nil)
-				print("yeah", backupURL)
+
 				result = true
 			} else {
 				try fm.copyItem(at: documentURL, to: backupURL)

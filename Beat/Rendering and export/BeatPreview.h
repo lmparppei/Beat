@@ -7,6 +7,8 @@
 //
 
 #import <TargetConditionals.h>
+#import <WebKit/WebKit.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>
@@ -24,6 +26,14 @@ typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 	BeatComparisonPreview
 };
 
+@class BeatPaginator;
+
+@protocol BeatPreviewExports <JSExport>
+@property (nonatomic) NSString* htmlString;
+@property (nonatomic) bool previewUpdated;
+@property (nonatomic) BeatPaginator* paginator;
+@end
+
 @protocol BeatPreviewDelegate
 @property (atomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic) bool printSceneNumbers;
@@ -32,11 +42,21 @@ typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 @property (nonatomic, readonly) BeatPaperSize pageSize;
 - (NSString*)text;
 - (id)document;
+- (void)previewDidFinish;
 @end
 
-@interface BeatPreview : NSObject
-@property (nonatomic, weak) id<BeatPreviewDelegate, BeatEditorDelegate> delegate;
+@interface BeatPreview : NSObject <BeatPreviewExports>
+@property (nonatomic, weak) IBOutlet id<BeatPreviewDelegate, BeatEditorDelegate> delegate;
+@property (nonatomic) NSString* htmlString;
+@property (nonatomic) NSTimer* previewTimer;
+@property (nonatomic) bool previewUpdated;
+@property (nonatomic, weak) IBOutlet WKWebView *previewView;
+@property (nonatomic) BeatPaginator* paginator;
 - (id) initWithDocument:(id)document;
 - (NSString*) createPreview;
 - (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType;
+- (void)displayPreview;
+- (void)updatePreviewInSync:(bool)sync;
+- (void)setup;
+- (void)deallocPreview;
 @end

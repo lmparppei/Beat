@@ -30,6 +30,7 @@
 #import "BeatEditorDelegate.h"
 #import "BeatExportSettings.h"
 #import "ContinuousFountainParser.h"
+#import "BeatPaginator.h"
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>
@@ -45,6 +46,7 @@
 @property (strong, nonatomic) NSNumber *customPage;
 @property (strong, nonatomic) NSNumber *forRendering;
 @property (copy, nonatomic) NSString *bodyText;
+@property (nonatomic) BeatPaginator *paginator;
 
 - (id)initWithScript:(BeatScreenplay*)script settings:(id)settings; // The new way
 - (id)initForQuickLook:(BeatScreenplay*)script;

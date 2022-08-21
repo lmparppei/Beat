@@ -117,7 +117,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Content
 - (NSString*)text;
 - (NSString*)fileNameString;
-- (void)invalidatePreview;
 
 - (void)setPrintSceneNumbers:(bool)value;
 - (IBAction)togglePrintSceneNumbers:(id)sender;
@@ -149,5 +148,5 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) bool skipSelectionChangeEvent;
 
 //- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag;
-
+- (void)invalidatePreview;
 @end

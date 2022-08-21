@@ -427,7 +427,7 @@
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"Patch Notes" withExtension:@"html"];
-	[_browser showBrowser:url withTitle:NSLocalizedString(@"app.patchNotes", nil) width:550 height:640];
+	[self.browser showBrowser:url withTitle:NSLocalizedString(@"app.patchNotes", nil) width:550 height:640 onTop:true];	
 }
 
 - (IBAction)showManual:(id)sender {
@@ -437,7 +437,7 @@
 	}
 	
 	NSURL *url = [NSBundle.mainBundle URLForResource:@"beat_manual" withExtension:@"html"];
-	[_browser showBrowser:url withTitle:NSLocalizedString(@"app.manual", nil) width:850 height:600];
+	[_browser showBrowser:url withTitle:NSLocalizedString(@"app.manual", nil) width:850 height:600 onTop:false];
 }
 
 - (IBAction)showFountainSyntax:(id)sender

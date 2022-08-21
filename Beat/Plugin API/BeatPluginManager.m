@@ -225,11 +225,11 @@ static BeatPluginManager *sharedManager;
 	[self openPluginFolder];
 }
 - (void)openPluginFolder {
-	NSURL *url = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	NSURL *url = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
 	[NSWorkspace.sharedWorkspace openURL:url];
 }
 - (NSURL*)pluginFolderURL {
-	return [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	return [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
 }
 
 
@@ -704,7 +704,7 @@ static BeatPluginManager *sharedManager;
 	if (error || !container) return;
 		
 	// Get & create plugin path
-	NSURL *pluginURL = [(BeatAppDelegate*)NSApp.delegate appDataPath:PLUGIN_FOLDER];
+	NSURL *pluginURL = [BeatAppDelegate appDataPath:PLUGIN_FOLDER];
 	[container extractFilesTo:pluginURL.path overwrite:YES error:&error];
 	
 	// Reload installed plugins

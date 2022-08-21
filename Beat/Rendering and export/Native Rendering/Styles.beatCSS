@@ -1,15 +1,25 @@
 /*
 
-Rendering Stylesheet for Beat.
-This is not actual CSS, just uses similar markup.
-© Lauri-Matti Parppei 2021-2022
+ Rendering Stylesheet for Beat.
+ This is not actual CSS, just uses similar markup.
+
+ Changing values without knowing what you are doing can very
+ well cause a crash. Dread lightly.
+ 
+ © Lauri-Matti Parppei 2021-2022
 
 */
 
 Page {
-    marginLeft: 20;
-	paddingLeft: 60;
-    marginTop: 10;
+    margin-left: 30;
+	padding-left: 60;
+    margin-top: 50;
+	margin-bottom: 30;
+	
+	default-width-a4: 59ch;
+	default-width-us: 61ch;
+	
+	line-height: 12;
 }
 
 Heading {
@@ -17,7 +27,8 @@ Heading {
     width-us: 61ch - 2ch;
     
     margin-top: 2l;
-    bold: true;
+    bold: userSetting(headingStyleBold);
+	underline: userSetting(headingStyleUnderline);
 }
 
 Action {
@@ -31,7 +42,7 @@ Centered {
 	width-us: 61ch;
 
 	margin-top: 1l;
-	textAlign: center;
+	text-align: center;
 }
 
 Character {

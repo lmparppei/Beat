@@ -21,6 +21,7 @@
 #import "BeatPlugin.h"
 #import "BeatRevisions.h"
 #import "BeatConsole.h"
+#import "BeatPreview.h"
 #import <objc/runtime.h>
 
 @interface BeatPlugin ()
@@ -40,6 +41,7 @@
 @property (nonatomic, nullable) JSValue* updateOutlineMethod;
 @property (nonatomic, nullable) JSValue* updateSceneMethod;
 @property (nonatomic, nullable) JSValue* documentDidBecomeMainMethod;
+@property (nonatomic, nullable) JSValue* updatePreviewMethod;
 @property (nonatomic) bool resident;
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
@@ -249,6 +251,15 @@
 }
 - (void)documentDidBecomeMain {
 	[_documentDidBecomeMainMethod callWithArguments:nil];
+}
+
+// Preview did update
+- (void)onPreviewFinished:(JSValue*)updateMethod {
+	_updatePreviewMethod = updateMethod;
+	[self makeResident];
+}
+- (void)previewDidFinish {
+	[_updatePreviewMethod callWithArguments:nil];
 }
 
 
@@ -1084,8 +1095,7 @@
 }
 
 - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments {
-	
-	Class class = self.delegate.class;
+	Class class = [self.delegate.document class];
 	
 	SEL selector = NSSelectorFromString(methodName);
 	Method method = class_getClassMethod(class, selector);
@@ -1140,8 +1150,12 @@
 	return [_delegate createDocumentFileWithAdditionalSettings:additionalSettings];
 }
 
+- (BeatPreview*)preview {
+	return _delegate.preview;
+}
+
 - (NSString*)previewHTML {
-	return _delegate.previewHTML;
+	return _delegate.preview.htmlString;
 }
 
 - (NSString*)screenplayHTML:(NSDictionary*)exportSettings {
@@ -1162,7 +1176,6 @@
 	
 	if (html) return html;
 	return @"";
-	
 }
 
 #pragma mark - Parser data delegation

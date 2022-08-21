@@ -23,6 +23,10 @@
 #import "BeatRevisions.h"
 #import "BeatExportSettings.h"
 
+@interface BeatPreview ()
+@property (nonatomic) BeatHTMLScript *htmlGenerator;
+@end
+
 @implementation BeatPreview
 
 - (id)initWithDocument:(id)document {
@@ -32,6 +36,25 @@
 	}
 	return self;
 }
+
+- (void)setup {
+	[_previewView.configuration.userContentController addScriptMessageHandler:_delegate.document name:@"selectSceneFromScript"];
+	[_previewView.configuration.userContentController addScriptMessageHandler:_delegate.document name:@"closePrintPreview"];
+	
+	[_previewView loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
+	
+	if (@available(macOS 11.0, *)) {
+		_previewView.pageZoom = 1.2;
+	}
+}
+
+- (void)deallocPreview {
+	[self.previewView.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
+	[self.previewView.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
+	self.previewView.navigationDelegate = nil;
+	self.previewView = nil;
+}
+
 - (NSString*)createPreview {
 	if (self.delegate) {
 		NSString *rawText = self.delegate.text;
@@ -63,8 +86,8 @@
 	BeatScreenplay *script = parser.forPrinting;
 	
 	if (previewType == BeatQuickLookPreview) {
-		BeatHTMLScript *html = [BeatHTMLScript.alloc initForQuickLook:script];
-		return html.html;
+		_htmlGenerator = [BeatHTMLScript.alloc initForQuickLook:script];
+		return _htmlGenerator.html;
 	} else {
 #if TARGET_OS_IOS
 		id doc = _delegate.documentForDelegation;
@@ -74,10 +97,65 @@
 		
 		BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisions.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
 		settings.paperSize = _delegate.pageSize;
-		BeatHTMLScript *html = [BeatHTMLScript.alloc initWithScript:script settings:settings];
+		_htmlGenerator = [BeatHTMLScript.alloc initWithScript:script settings:settings];
 		
-		return html.html;
+		return _htmlGenerator.html;
 	}
+}
+
+- (void)displayPreview {
+	if (_htmlString.length == 0 || !_previewUpdated) {
+		// Update the preview in sync if it hasn't been built yet
+		[self updatePreviewInSync:YES];
+	}
+	
+	// Create JS scroll function call and append it straight into the HTML
+	Line *currentLine = [self.delegate.parser closestPrintableLineFor:self.delegate.currentLine];
+	
+	NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", currentLine.uuid.UUIDString.lowercaseString];
+	
+	_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
+	[_previewView loadHTMLString:_htmlString baseURL:nil]; // Load HTML
+	
+	// Revert changes to the code (so we can replace the placeholder again,
+	// if needed, without recreating the whole HTML)
+	_htmlString = [_htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
+	
+	// Evaluate JS in window to be sure it shows the correct scene
+	[_previewView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
+	
+}
+
+/// Update preview either in background or in sync
+- (void)updatePreviewInSync:(bool)sync {
+	[_previewTimer invalidate];
+	self.previewUpdated = NO;
+	
+	// Wait 1.5 seconds after writing has ended to build preview
+	// If there is no preview present, do it immediately
+	CGFloat previewWait = 1.5;
+	if (_htmlString.length < 1 || sync) {
+		[self updateHTMLWithContents:self.delegate.text];
+	} else {
+		_previewTimer = [NSTimer scheduledTimerWithTimeInterval:previewWait repeats:NO block:^(NSTimer * _Nonnull timer) {
+			NSString *rawText = self.delegate.text;
+			
+			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+				[self updateHTMLWithContents:rawText];
+			});
+		}];
+	}
+}
+
+- (void)updateHTMLWithContents:(NSString*)string {
+	__block NSString *html = [self createPreviewFor:string type:BeatPrintPreview];
+	self.htmlString = html;
+	self.previewUpdated = YES;
+	[self.delegate previewDidFinish];
+}
+
+- (BeatPaginator*)paginator {
+	return _htmlGenerator.paginator;
 }
 
 /*

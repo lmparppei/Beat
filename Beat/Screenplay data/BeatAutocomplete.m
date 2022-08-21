@@ -88,7 +88,7 @@
 	}];
 	for (NSString *character in characters) {
 		[characterNames addObject:character];
-		[characterNames addObject:[NSString stringWithFormat:@"%@ (%@)", character, [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]]];
+		//[characterNames addObject:[NSString stringWithFormat:@"%@ (%@)", character, [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]]];
 	}
 	
 	// There was a character selected in the filtering menu, so select it again (if applicable)

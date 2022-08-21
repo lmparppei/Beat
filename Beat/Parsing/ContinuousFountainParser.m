@@ -2439,22 +2439,20 @@ NSUInteger prevLineAtLocationIndex = 0;
 		
 	NSInteger i = searchOrigin;
 	NSInteger origin = (descending) ? i - 1 : i + 1;
-		
+	if (origin == -1) origin = array.count - 1;
+	
 	bool stop = NO;
-	bool looped = NO;
 	
 	do {
 		if (!descending) {
 			i++;
 			if (i >= array.count) {
 				i = 0;
-				looped = YES;
 			}
 		} else {
 			i--;
 			if (i < 0) {
 				i = array.count - 1;
-				looped = YES;
 			}
 		}
 				
@@ -2466,9 +2464,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 		}
 		
 		// We have looped around the array (unsuccessfuly)
-		if ((i == origin && looped) ||
-			(origin == -1 && looped)) {
-			NSLog(@"Failed to find match for %@", self.lines[searchOrigin]);
+		if (i == searchOrigin || origin == -1) {
+			NSLog(@"Failed to find match for %@ - origin: %lu / searchorigin: %lu  -- %@", self.lines[searchOrigin], origin, searchOrigin, compare);
 			break;
 		}
 		
@@ -2626,12 +2623,17 @@ NSUInteger prevLineAtLocationIndex = 0;
 	
 	return preprocessBlock(lines);
 }
+
 - (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes {
 	if (!lines) {
 		NSLog(@"WARNING: No lines issued for preprocessing, using all parsed lines");
 		lines = self.safeLines;
 	}
 	
+	return [ContinuousFountainParser preprocessForPrintingWithLines:lines printNotes:printNotes settings:self.documentSettings];
+}
+
++ (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings {
 	NSMutableArray *linesForPrinting = [NSMutableArray array];
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
@@ -2639,8 +2641,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 	
 	// Get scene number offset from the delegate/document settings
 	NSInteger sceneNumber = 1;
-	if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 1) {
-		sceneNumber = [self.documentSettings getInt:DocSettingSceneNumberStart];
+	if ([documentSettings getInt:DocSettingSceneNumberStart] > 1) {
+		sceneNumber = [documentSettings getInt:DocSettingSceneNumberStart];
 		if (sceneNumber < 1) sceneNumber = 1;
 	}
 	

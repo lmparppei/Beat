@@ -14,8 +14,9 @@ final class CssParser {
 	var styles:[String:RenderStyle] = [:]
 	
 	// Map property names to types
-	let stringTypes:Set = ["textAlign"]
+	let stringTypes:Set = ["textAlign", "text-align"]
 	let boolTypes:Set = ["bold", "italic", "underline"]
+	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
 	
 	/// Parses the CSS file string into an array of CSS styles.
 	///
@@ -117,6 +118,19 @@ final class CssParser {
 	func readValue<T: Decodable>(string:String, type: T.Type) -> Any {
 		var value = string
 
+		if value.contains("userSetting(") {
+			for userSetting in userSettings {
+				let s = BeatUserDefaults.shared().get(userSetting)
+				var userSettingValue = ""
+				
+				if s is Bool { userSettingValue = (s as! Bool) ? "true" : "false" }
+				else if s is Int { userSettingValue = String(s as? Int ?? 0) }
+				else if s is String { userSettingValue = String(s as? String ?? "") }
+								
+				value = value.replacingOccurrences(of: "userSetting(" + userSetting + ")", with: userSettingValue)
+			}
+		}
+		
 		// Return plain string value
 		if type == String.self {
 			return value
@@ -124,7 +138,7 @@ final class CssParser {
 		
 		// Return bool
 		if type == Bool.self {
-			if (value == "true") { return true }
+			if (value == "true" || value == "1") { return true }
 			else { return false }
 		}
 		

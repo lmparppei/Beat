@@ -99,7 +99,6 @@
 
 #import "BeatHTMLScript.h"
 #import "FountainRegexes.h"
-#import "BeatPaginator.h"
 #import "RegExCategories.h"
 #import "BeatUserDefaults.h"
 #import "BeatPaperSizing.h"
@@ -126,6 +125,7 @@
 @property (nonatomic) NSArray* htmlPages;
 
 @property (nonatomic) BeatExportSettings *settings;
+
 
 @end
 
@@ -242,6 +242,7 @@ static bool underlinedHeading;
 	NSString * css = [NSString stringWithContentsOfURL:[NSBundle.mainBundle URLForResource:PRINT_CSS withExtension:@"css"]
 											  encoding:NSUTF8StringEncoding
 												 error:nil];
+	if (css == nil) css = @"";
 	
 	NSString * previewCss = [NSString stringWithContentsOfURL:[NSBundle.mainBundle URLForResource:PREVIEW_CSS withExtension:@"css"]
 													 encoding:NSUTF8StringEncoding
@@ -468,8 +469,8 @@ static bool underlinedHeading;
 	[pages addObject:titlePageString];
     
 	// Pagination
-	BeatPaginator *paginator = [BeatPaginator.alloc initWithScript:_script settings:_settings];
-    NSUInteger maxPages = paginator.numberOfPages;
+	_paginator = [BeatPaginator.alloc initWithScript:_script settings:_settings];
+    NSUInteger maxPages = _paginator.numberOfPages;
 	_numberOfPages = maxPages;
 	
 	// Header string (make sure it's not null)
@@ -477,7 +478,7 @@ static bool underlinedHeading;
 	if (header.length) header = [header stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	
 	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
-        NSArray *elementsOnPage = [paginator pageAtIndex:pageIndex];
+        NSArray *elementsOnPage = [_paginator pageAtIndex:pageIndex];
 		NSString *pageAsString = [self singlePage:elementsOnPage pageNumber:pageIndex + 1];
 		[pages addObject:pageAsString];
     }

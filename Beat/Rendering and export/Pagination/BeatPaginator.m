@@ -67,6 +67,7 @@
 #import "BeatUserDefaults.h"
 #import "BeatMeasure.h"
 #import "BeatAppDelegate.h"
+#import "BeatFonts.h"
 
 #if TARGET_OS_IOS
 	#define BXDocument UIDocument
@@ -891,6 +892,7 @@
 	 */
 	
 	if (string.length == 0) return lineHeight;
+	if (font == nil) font = BeatFonts.sharedFonts.courier;
 	
 #if TARGET_OS_IOS
 	// Set font size to 80% on iOS
@@ -912,7 +914,7 @@
 	// We'll get the number of lines rather than calculating exact size in NSTextField
 	NSInteger numberOfLines;
 	NSInteger index;
-	NSInteger numberOfGlyphs = [layoutManager numberOfGlyphs];
+	NSInteger numberOfGlyphs = layoutManager.numberOfGlyphs;
 	
 	// Iterate through line fragments
 	NSRange lineRange;
@@ -1203,7 +1205,7 @@
 	if (splitAt > 0) {
 		// Don't allow the last element in block to be parenthetical
 		Line *prevElement = block[splitAt - 1];
-		if (prevElement.isAnyParenthetical) splitAt -= 1;
+		if (prevElement.isAnyParenthetical && tmpThisPage.count == 0) splitAt -= 1;
 		
 		// Split the block
 		[onThisPage addObjectsFromArray:

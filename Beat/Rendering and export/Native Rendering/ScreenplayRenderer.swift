@@ -74,52 +74,6 @@ class ScreenplayRenderer:NSObject, PageViewDelegate {
 	}
 }
 
-class RenderStyle:NSObject {
-	@objc var bold:Bool = false
-	@objc var italic:Bool = false
-	@objc var underline:Bool = false
-	
-	@objc var textAlign:String = "left"
-	
-	@objc var marginTop:CGFloat = 0
-	@objc var marginLeft:CGFloat = 0
-	@objc var paddingLeft:CGFloat = 0
-
-	@objc var widthA4:CGFloat = 0
-	@objc var widthLetter:CGFloat = 0
-	
-	init(rules:[String:Any]) {
-		super.init()
-		
-		for key in rules.keys {
-			let value = rules[key]!
-			let property = styleNameToProperty(name: key)
-			
-			self.setValue(value, forKey: property)
-		}
-	}
-	
-	func styleNameToProperty (name:String) -> String {
-
-		switch name.lowercased() {
-		case "width-a4":
-			return "widthA4"
-		case "width-us":
-			return "widthLetter"
-		case "margin-top":
-			return "marginTop"
-		case "margin-left":
-			return "marginLeft"
-		default:
-			return name
-		}
-	}
-	
-	override class func setValue(_ value: Any?, forUndefinedKey key: String) {
-		print("RenderStyle: Unknown key: ", key)
-	}
-}
-
 class PageContainer:NSView {
 	override var isFlipped: Bool { get { return true } }
 	override init(frame frameRect: NSRect) {
@@ -306,16 +260,6 @@ class Element:NSTextView {
 				}
 			}
 		}
-		
-		// Calculate size
-		/*
-		var chrWidth = 0.0
-		if (result.length > 0) {
-			let testStr = attrStr.attributedSubstring(from: NSMakeRange(0, 1))
-			chrWidth = testStr.size().width
-			print("Chr width", chrWidth)
-		}
-		 */
 						
 		return displayStr
 	}

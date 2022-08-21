@@ -39,7 +39,8 @@
 
 - (NSString*)string
 {
-	return self.text.string;
+	if (self.text.string == nil) return @"";
+	else return self.text.string;
 }
 - (void)setString:(NSString*)string
 {
@@ -61,9 +62,11 @@
 }
 - (void)makeUppercase
 {
-	NSDictionary *attributes = [self.text attributesAtIndex:0 longestEffectiveRange:nil inRange:(NSRange){0, self.text.length}];
-	[_text replaceCharactersInRange:(NSRange){0, _text.length} withString:self.string.uppercaseString];
-	[_text addAttributes:attributes range:(NSRange){0, _text.length}];
+	if (_text.length > 0) {
+		NSDictionary *attributes = [self.text attributesAtIndex:0 longestEffectiveRange:nil inRange:(NSRange){0, self.text.length}];
+		[_text replaceCharactersInRange:(NSRange){0, _text.length} withString:self.string.uppercaseString];
+		[_text addAttributes:attributes range:(NSRange){0, _text.length}];
+	}
 }
 
 - (void)addAttribute:(nonnull NSAttributedStringKey)name value:(nonnull id)value range:(NSRange)range

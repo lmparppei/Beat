@@ -130,7 +130,7 @@ class BeatParser: NSObject <LineDelegate> {
 			
 			position += rawLine.count + 1 // +1 for newline character
 			previousLine = line
-			self.indicesToLoad--
+			self.indicesToLoad -= 1
 		}
 		
 		// Initial parse complete
