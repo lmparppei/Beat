@@ -220,15 +220,19 @@
 	// Find current line based on the index
 	NSMutableArray *currentPage;
 	
+	bool pageFound = false;
 	for (NSMutableArray *page in _pages) {
 		for (Line* line in page) {
 			if (location >= line.position) {
 				currentPage = page;
+				pageFound = true;
 				break;
 			}
 		}
+		
+		if (pageFound) break;
 	}
-	
+		
 	// No page found
 	if (!currentPage) return NSNotFound;
 	
@@ -241,7 +245,7 @@
 
 		Line *firstLine = page.firstObject;
 		
-		// This object is safe to start pagination from
+		// Check if this line is a safe place to start the pagination
 		if (!firstLine.unsafeForPageBreak) {
 			if (p > 0) {
 				NSMutableArray *prevPage = _pages[p - 1];
