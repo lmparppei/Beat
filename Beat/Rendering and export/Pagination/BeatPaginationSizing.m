@@ -7,7 +7,8 @@
 //
 /*
  
- This class provides default pagination sizes, and also reads a specific pagination block from custom CSS.
+ This experimental class provides default pagination sizes,
+ and also reads a specific pagination block from custom CSS.
  
  pagination {
 	action-a4: 12;

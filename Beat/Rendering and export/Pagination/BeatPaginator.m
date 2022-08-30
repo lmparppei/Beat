@@ -532,7 +532,6 @@
 		
 		#pragma mark Break elements onto pages
 		
-		
 		// BREAKING ELEMENTS ONTO PAGES
 		// Figure out which element went overboard
 		if (currentPage.y + fullHeight > maxPageHeight) {
@@ -540,10 +539,8 @@
 			
 			// If it fits, just squeeze it on this page
 			if (fabs(overflow) <= lineHeight * 1.05) {
-				//if (_livePagination) NSLog(@"Squeezing on page %lu: %@  ", self.pages.count + 1, element.string);
 				[self resetPage:currentPage onCurrentPage:tmpElements onNextPage:@[]];
 				[self pageBreak:(Line*)tmpElements.lastObject position:-1 type:@"Generally squeezed"];
-				//if (_livePagination) NSLog(@"squeeze: %@", tmpElements.firstObject);
 				continue;
 			}
 			
@@ -982,7 +979,7 @@
 	
 	NSInteger i = [self.script indexOfObject:element];
 	NSInteger startIndex = i;
-	NSMutableArray *block = [NSMutableArray array];
+	NSMutableArray <Line*>* block = NSMutableArray.new;
 	
 	bool isDualDialogue = NO;
 	
@@ -1012,7 +1009,7 @@
 	 I'm unsure how that would affect the surrounding logic.
 	*/
 	
-	if (line.type == character || line.type == dualDialogueCharacter) return [self dialogueBlockFor:line];
+	if (line.isAnyCharacter) return [self dialogueBlockFor:line];
 	else if (line == self.script.lastObject) return @[line];
 	else if (line.type != heading) return @[line];
 	
@@ -1047,7 +1044,9 @@
 }
 
 - (NSInteger)heightForBlock:(NSArray<Line*>*)block page:(BeatPage*)currentPage {
-	if (block.firstObject.isDialogueElement || block.firstObject.isDualDialogueElement) return [self heightForDialogueBlock:block page:currentPage];
+	if (block.firstObject.isDialogue || block.firstObject.isDualDialogue) {
+		return [self heightForDialogueBlock:block page:currentPage];
+	}
 	
 	NSInteger fullHeight = 0;
 		
@@ -1089,7 +1088,7 @@
 		
 		dialogueBlockHeight += height;
 	}
-	
+		
 	// Set the height to be the longer one
 	if (previousDialogueBlockHeight > dialogueBlockHeight) dialogueBlockHeight = previousDialogueBlockHeight;
 	
