@@ -314,9 +314,14 @@
 
 
 #pragma mark - String methods
-
+	
 - (NSString*)stringForDisplay {
-	return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	if (!self.omitted)	return [self.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	else {
+		Line *line = self.clone;
+		[line.omittedRanges removeAllIndexes];
+		return [line.stripFormatting stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+	}
 }
 
 /// @warning Legacy method. Use `line.stripFormatting`
