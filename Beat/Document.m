@@ -1603,8 +1603,10 @@ static NSWindow __weak *currentKeyWindow;
 	// Make the replacement string uppercase in parser
 	if (_characterInput) replacementString = replacementString.uppercaseString;
 	
+	//[BeatMeasure start:@"Parsing phase"];
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
+	//[BeatMeasure end:@"Parsing phase"];
 	
 	// Get current line after parsing
 	_currentLine = [self getCurrentLine];
@@ -1809,7 +1811,9 @@ static NSWindow __weak *currentKeyWindow;
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
 	
 	// Update formatting
+	//[BeatMeasure start:@"Formatting"];
 	[self applyFormatChanges];
+	//[BeatMeasure end:@"Formatting"];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
@@ -2550,7 +2554,7 @@ static NSWindow __weak *currentKeyWindow;
 /// Selects the given range and scrolls it into view
 - (void)selectAndScrollTo:(NSRange)range {
 	[self.textView setSelectedRange:range];
-	[self.textView scrollRangeToVisible:range];
+	[self.textView scrollToRange:range callback:nil];
 }
 
 /// Focuses the editor window
