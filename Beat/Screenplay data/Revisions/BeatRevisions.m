@@ -191,9 +191,9 @@
 	NSMutableAttributedString *str = string.mutableCopy;
 	
 	NSDictionary *ranges = @{
-		@"Addition": [NSMutableArray array],
-		@"Removed": [NSMutableArray array],
-		@"RemovalSuggestion": [NSMutableArray array]
+		@"Addition": NSMutableArray.new,
+		@"Removed": NSMutableArray.new,
+		@"RemovalSuggestion": NSMutableArray.new
 	};
 	
 	// Find all line breaks and remove the revision attributes
@@ -214,7 +214,7 @@
 	}
 	
 	// Enumerate through revisions and save them.
-	[str enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+	[str enumerateAttribute:BeatRevisions.attributeKey inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem *item = value;
 		
 		if (item.type != RevisionNone) {
@@ -349,32 +349,37 @@
 
 /// Move to next revision marker
 - (void)nextRevision {
-    NSString *string;
-#if TARGET_OS_IOS
-    string = _delegate.textView.text;
-#else
-    string = _delegate.textView.string;
-#endif
-    
+	NSRange effectiveRange;
 	NSRange selectedRange = _delegate.selectedRange;
+	if (selectedRange.location == _delegate.text.length && selectedRange.location > 0) selectedRange.location -= 1;
 	
 	// Find out if we are inside or at the beginning of a revision right now
 	NSUInteger searchLocation = selectedRange.location;
 	
-	NSRange effectiveRange;
-	BeatRevisionItem *revision = [_delegate.textView.textStorage attribute:@"Revision" atIndex:selectedRange.location effectiveRange:&effectiveRange];
-	if (revision) searchLocation = NSMaxRange(effectiveRange);
+	BeatRevisionItem *revision = [_delegate.textView.textStorage attribute:BeatRevisions.attributeKey atIndex:selectedRange.location effectiveRange:&effectiveRange];
+	NSString *revisionColor = revision.colorName;
+	if (revision) {
+		searchLocation = NSMaxRange(effectiveRange);
+		revisionColor = revision.colorName;
+	}
+	
 	
 	__block NSRange revisionRange = NSMakeRange(NSNotFound, 0);
-	[_delegate.textView.textStorage enumerateAttribute:@"Revision"
-											   inRange:NSMakeRange(searchLocation, string.length - searchLocation)
+	__block NSRange previousRange = NSMakeRange(searchLocation, 0);
+	
+	[_delegate.textView.textStorage enumerateAttribute:BeatRevisions.attributeKey
+											   inRange:NSMakeRange(searchLocation, _delegate.text.length - searchLocation)
 											   options:0
 											usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem *revision = value;
-		if (revision.type != RevisionNone) {
+		if (revision.type == RevisionNone) return;
+		
+		if (range.location != NSMaxRange(previousRange) || ![revisionColor isEqualToString:revision.colorName]) {
 			*stop = YES;
 			revisionRange = range;
 		}
+		
+		previousRange = range;
 	}];
 	
 	if (revisionRange.location != NSNotFound) {
@@ -384,29 +389,38 @@
 
 /// Move to previous revision marker
 - (void)previousRevision {
+	NSRange effectiveRange;
 	NSRange selectedRange = _delegate.selectedRange;
+	if (selectedRange.location == _delegate.text.length && selectedRange.location > 0) selectedRange.location -= 1;
 	
 	// Find out if we are inside or at the beginning of a revision right now
 	NSUInteger searchLocation = selectedRange.location;
 	
-	NSRange effectiveRange;
-	BeatRevisionItem *revision = [_delegate.textView.textStorage attribute:@"Revision" atIndex:selectedRange.location effectiveRange:&effectiveRange];
+	[_delegate.textView.textStorage fixAttributesInRange:NSMakeRange(0, _delegate.textView.textStorage.string.length)];
+	BeatRevisionItem *revision = [_delegate.textView.textStorage attribute:BeatRevisions.attributeKey atIndex:selectedRange.location effectiveRange:&effectiveRange];
+	NSString *revisionColor = nil;
+	
 	if (revision) {
-		//NSLog(@"Revision: %@  // %@", revision.colorName, [_delegate.textView.string substringWithRange:effectiveRange]);
+		revisionColor = revision.colorName;
 		searchLocation = effectiveRange.location;
 	}
-	
+		
 	__block NSRange revisionRange = NSMakeRange(NSNotFound, 0);
+	__block NSRange previousRange = NSMakeRange(searchLocation, 0);
 	
-	[_delegate.textView.textStorage enumerateAttribute:@"Revision"
-											   inRange:NSMakeRange(0, searchLocation - 1)
+	[_delegate.textView.textStorage enumerateAttribute:BeatRevisions.attributeKey
+											   inRange:NSMakeRange(0, searchLocation)
 											   options:NSAttributedStringEnumerationReverse
 											usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem *revision = value;
-		if (revision.type != RevisionNone) {
+		if (revision.type == RevisionNone) return;
+			
+		if (NSMaxRange(range) != previousRange.location || ![revisionColor isEqualToString:revision.colorName]) {
 			*stop = YES;
 			revisionRange = range;
 		}
+		
+		previousRange = range;
 	}];
 	
 	if (revisionRange.location != NSNotFound) {

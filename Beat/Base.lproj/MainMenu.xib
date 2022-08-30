@@ -785,7 +785,7 @@ DQ
                                     <action selector="togglePageNumbers:" target="-1" id="gdh-dA-GH1"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Revisions" id="nSA-Ck-Viv">
+                            <menuItem title="Highlight Revisions" id="nSA-Ck-Viv">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleShowRevisions:" target="-1" id="Hdw-sb-cKK"/>

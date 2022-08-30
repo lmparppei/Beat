@@ -1167,6 +1167,7 @@ static NSWindow __weak *currentKeyWindow;
 	// [self saveTags];
 	
 	// For async saving & thread safety, make a copy of the lines array
+	NSAttributedString *attrStr = self.getAttributedText;
 	NSString *content = self.parser.screenplayForSaving;
 	if (content == nil) {
 		NSLog(@"ERROR: Something went horribly wrong, trying to crash the app to avoid data loss.");
@@ -1178,7 +1179,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Save added/removed ranges
 	// This saves the revised ranges into Document Settings
-	NSDictionary *revisions = [BeatRevisions rangesForSaving:_attrTextCache];
+	NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
 	[_documentSettings set:DocSettingRevisions as:revisions];
 
 	// Save current revision color
@@ -1190,7 +1191,7 @@ static NSWindow __weak *currentKeyWindow;
 	// [_documentSettings set:@"Running Plugins" as:self.runningPlugins.allKeys];
 	
 	// Save reviewed ranges
-	NSArray *reviews = [_review rangesForSavingWithString:_attrTextCache];
+	NSArray *reviews = [_review rangesForSavingWithString:attrStr];
 	[_documentSettings set:DocSettingReviews as:reviews];
 	
 	// Save caret position
@@ -2745,11 +2746,14 @@ static NSWindow __weak *currentKeyWindow;
 -(IBAction)toggleRevisionMode:(id)sender {
 	_revisionMode = !_revisionMode;
 	
+	/*
+	// Revisions were hidden, bring them back
+	// ... nah, we don't need this because we have the markers in margin, too
 	if (!_showRevisions) {
-		// Revisions were hidden, bring them back
 		_showRevisions = YES;
 		for (Line* line in self.parser.lines) [self renderBackgroundForLine:line clearFirst:YES];
 	}
+	*/
 	
 	[self updateQuickSettings];
 	
