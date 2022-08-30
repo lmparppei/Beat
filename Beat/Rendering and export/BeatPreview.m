@@ -57,7 +57,7 @@
 
 - (NSString*)createPreview {
 	if (self.delegate) {
-		NSString *rawText = self.delegate.text;
+		NSString *rawText = self.delegate.text.copy;
 		return [self createPreviewFor:rawText type:BeatPrintPreview];
 	}
 	return @"";
@@ -75,7 +75,7 @@
 		if (uuids.count) [parser setIdentifiers:uuids];
 		
 		// Bake revision attributes
-		NSAttributedString *attrStr = self.delegate.attrTextCache;
+		NSAttributedString *attrStr = self.delegate.attrTextCache.copy;
 		[BeatRevisions bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
 	} else {
 		// This is probably a QuickLook preview
@@ -135,10 +135,10 @@
 	// If there is no preview present, do it immediately
 	CGFloat previewWait = 1.5;
 	if (_htmlString.length < 1 || sync) {
-		[self updateHTMLWithContents:self.delegate.text];
+		[self updateHTMLWithContents:self.delegate.text.copy];
 	} else {
 		_previewTimer = [NSTimer scheduledTimerWithTimeInterval:previewWait repeats:NO block:^(NSTimer * _Nonnull timer) {
-			NSString *rawText = self.delegate.text;
+			NSString *rawText = self.delegate.text.copy;
 			
 			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 				[self updateHTMLWithContents:rawText];
