@@ -279,17 +279,16 @@ static NSDictionary* patterns;
 	_lastEditedLine = nil;
 	_editedIndex = -1;
 
-    NSMutableIndexSet *changedIndices = [[NSMutableIndexSet alloc] init];
-    if (range.length == 0) { //Addition
+	NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
+    if (range.length == 0) { // Addition
 		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
-    } else if (string.length == 0) { //Removal
+		
+    } else if (string.length == 0) { // Removal
 		[changedIndices addIndexes:[self parseRemovalAt:range]];
 		
     } else { //Replacement
-		//First remove
-		[changedIndices addIndexes:[self parseRemovalAt:range]];
-        // Then add
-		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]];
+		[changedIndices addIndexes:[self parseRemovalAt:range]]; // First remove
+		[changedIndices addIndexes:[self parseAddition:string atPosition:range.location]]; // Then add
     }
 	    	
     [self correctParsesInLines:changedIndices];
@@ -469,41 +468,44 @@ static NSDictionary* patterns;
 	NSInteger lineBreaks = [stringToRemove componentsSeparatedByString:@"\n"].count - 1;
 	
 	if (lineBreaks > 1) {
-		// If there are 2+ line breaks, optimize the operation
+		// If there are 2+ line breaks, optimize the operation by removing whole lines
 		NSInteger lineIndex = [self lineIndexAtPosition:range.location];
 		Line *firstLine = self.lines[lineIndex];
 				
-		// Change in outline
+		// Check if there is a change in outline
 		if (firstLine.isOutlineElement) [self addChangeInOutline:firstLine];
 		
+		// Store the index from where we'll begin the chunk removal
 		NSUInteger indexInLine = range.location - firstLine.position;
 		
+		// Create a string for the "head" of the line which remains intact
 		NSString *retain = (firstLine.string.length) ? [firstLine.string substringToIndex:indexInLine] : @"";
 		NSInteger nextIndex = lineIndex + 1;
 				
 		// +1 for line break
 		NSInteger offset = firstLine.string.length - retain.length + 1;
 		
+		// Iterate through the rest of the lines
+		Line *lastLine;
 		for (NSInteger i = 1; i <= lineBreaks; i++) {
 			Line* nextLine = self.lines[nextIndex];
-						
+			
+			// Check if there is a change in outline
 			if (nextLine.isOutlineElement) [self addChangeInOutline:nextLine];
 			
-			if (i < lineBreaks) {
+			if (i < lineBreaks) { // This is a line in middle of the chunk
 				[self.lines removeObjectAtIndex:nextIndex];
 				offset += nextLine.string.length + 1;
-			} else {
-				// This is the last line in the array
+				
+			} else { // This is the last line in the array
+				lastLine = nextLine;
+				
 				NSInteger indexInNextLine = range.location + range.length - nextLine.position;
-				
 				NSInteger nextLineLength = nextLine.string.length - indexInNextLine;
-				
-				NSString *nextLineString;
+				NSString *nextLineString = @"";
 				
 				if (indexInNextLine + nextLineLength > 0) {
 					nextLineString = [nextLine.string substringWithRange:NSMakeRange(indexInNextLine, nextLineLength)];
-				} else {
-					nextLineString = @"";
 				}
 				
 				firstLine.string = [retain stringByAppendingString:nextLineString];
@@ -513,6 +515,12 @@ static NSDictionary* patterns;
 				offset += indexInNextLine;
 			}
 		}
+		
+		// If the last line in chunk bleeded out an omission or note, let's reparse the next line, too
+		if ((lastLine.omitOut || firstLine.omitOut) && nextIndex < self.lines.count) {
+			[changedIndices addIndex:nextIndex];
+		}
+		
 		[self decrementLinePositionsFromIndex:nextIndex amount:offset];
 										
 		[changedIndices addIndex:lineIndex];
@@ -538,9 +546,13 @@ static NSDictionary* patterns;
 			NSInteger lineIndex = [self lineIndexAtPosition:range.location];
 			[changedIndices addIndex:lineIndex - 1];
 		}
+		else if (stringToRemove.length > 1 && [stringToRemove containsString:@"/*"]) {
+			NSInteger lineIndex = [self lineIndexAtPosition:range.location];
+			if (lineIndex < self.lines.count) [changedIndices addIndex:lineIndex + 1];
+		}
 	}
 	
-	[self report];
+	//[self report];
 	
 	return changedIndices;
 }
