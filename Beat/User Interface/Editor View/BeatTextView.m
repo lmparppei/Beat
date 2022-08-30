@@ -42,6 +42,7 @@
 #import "BeatRevisions.h"
 #import "BeatLayoutManager.h"
 #import "Beat-Swift.h"
+#import "BeatAttributes.h"
 
 //#define DEFAULT_MAGNIFY 1.02
 #define DEFAULT_MAGNIFY 0.98
@@ -1577,6 +1578,7 @@ Line *cachedRectLine;
 
 #pragma mark - Scrolling interface
 
+/// Non-animated scrolling
 - (void)scrollToRange:(NSRange)range {
 	NSRect rect = [self rectForRange:range];
 	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
@@ -1584,6 +1586,7 @@ Line *cachedRectLine;
 	[self.enclosingScrollView.contentView.animator setBoundsOrigin:NSMakePoint(0, y)];
 }
 
+/// Animated scrolling with a callback
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {
 	NSRect rect = [self rectForRange:range];
 	CGFloat y = _zoomLevel * (rect.origin.y + rect.size.height) + self.textContainerInset.height * (_zoomLevel) - self.enclosingScrollView.contentView.bounds.size.height / 2;
@@ -1592,13 +1595,10 @@ Line *cachedRectLine;
 		// Start some animations.
 		[self.enclosingScrollView.contentView.animator setBoundsOrigin:NSMakePoint(0, y)];
 	} completionHandler:^{
-		callbackBlock();
+		if (callbackBlock != nil) callbackBlock();
 	}];
 }
 
-
-
-#pragma mark - Layout Delegation
 
 #pragma mark - Zooming
 
@@ -1783,11 +1783,16 @@ double clamp(double d, double min, double max) {
 			NSMutableSet *linesToRender = NSMutableSet.new;
 			[str enumerateAttributesInRange:(NSRange){0, str.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 				// Copy *any* stored attributes
-				if (attrs.count) {
+				if ([BeatAttributes containsCustomAttributes:attrs]) {
 					[self.textStorage addAttributes:attrs range:NSMakeRange(pos + range.location, range.length)];
 					Line *l = [self.parser lineAtPosition:pos + range.location];
 					[linesToRender addObject:l];
 				}
+				/*
+				if (attrs[BeatReview.attributeKey] != nil || attrs[BeatRevisions.attributeKey] != nil || attrs[BeatTagging.attributeKey] != nil) {
+					
+				}
+				*/
 			}];
 			
 			// Render background for pasted text where needed

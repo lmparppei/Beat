@@ -72,6 +72,7 @@ static NSString *strikeoutSymbolClose = @"}}";
 static NSString *tagAttribute = @"BeatTag";
 static NSString *reviewAttribute = @"BeatReview";
 
+
 - (void)formatLine:(Line*)line { [self formatLine:line firstTime:NO]; }
 
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
@@ -487,6 +488,8 @@ static NSString *reviewAttribute = @"BeatReview";
 	
 	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:line.range];
 	
+	
+	
 	if (_delegate.showRevisions || _delegate.showTags) {
 		// Enumerate attributes
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
@@ -502,8 +505,8 @@ static NSString *reviewAttribute = @"BeatReview";
 				}
 			}
 			
-			if (attrs[reviewAttribute]) {
-				BeatReviewItem *review = attrs[reviewAttribute];
+			if (attrs[BeatReview.attributeKey]) {
+				BeatReviewItem *review = attrs[BeatReview.attributeKey];
 				if (!review.emptyReview) {
 					NSColor *reviewColor = BeatReview.reviewColor;
 					reviewColor = [reviewColor colorWithAlphaComponent:.5];
@@ -511,8 +514,8 @@ static NSString *reviewAttribute = @"BeatReview";
 				}
 			}
 			
-			if (attrs[tagAttribute] && _delegate.showTags) {
-				BeatTag *tag = attrs[tagAttribute];
+			if (attrs[BeatTagging.attributeKey] && _delegate.showTags) {
+				BeatTag *tag = attrs[BeatTagging.attributeKey];
 				NSColor *tagColor = [BeatTagging colorFor:tag.type];
 				tagColor = [tagColor colorWithAlphaComponent:.5];
 			   

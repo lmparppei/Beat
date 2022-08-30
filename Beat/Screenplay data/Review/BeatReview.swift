@@ -74,12 +74,15 @@ class BeatReview: NSObject {
 	@objc class func attributeKey () -> NSAttributedString.Key {
 		return NSAttributedString.Key(rawValue: "BeatReview")
 	}
-	
+		
 	override init() {
+		// Register custom attribute 
+		BeatAttributes.registerAttribute(BeatReview.attributeKey().rawValue)
+		
 		popover = NSPopover()
 		editorView = BeatReviewEditor()
 		popover.contentViewController = editorView
-
+	
 		if #available(macOS 10.14, *) {
 			popover.appearance = NSAppearance(named: .aqua)
 		}

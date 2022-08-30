@@ -42,6 +42,8 @@
 #import "BeatTag.h"
 #import "ColorView.h"
 #import "NSString+Levenshtein.h"
+#import "BeatAttributes.h"
+
 
 #define UIFontSize 11.0
 
@@ -62,6 +64,11 @@
 @end
 
 @implementation BeatTagging
+
++ (void)initialize {
+	[super initialize];
+	[BeatAttributes registerAttribute:BeatTagging.attributeKey];
+}
 
 - (instancetype)initWithDelegate:(id<BeatTaggingDelegate>)delegate {
 	self = [super init];

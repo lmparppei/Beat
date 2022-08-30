@@ -18,6 +18,8 @@
 #import "Line.h"
 #import "BeatLocalization.h"
 #import "BeatUserDefaults.h"
+#import "BeatAppDelegate.h"
+#import "BeatAttributes.h"
 
 #define REVISION_ATTR @"Revision"
 #define DEFAULT_COLOR @"blue"
@@ -38,6 +40,11 @@
 #endif
 
 @implementation BeatRevisions
+
++ (void)initialize {
+	[super initialize];
+	[BeatAttributes registerAttribute:BeatRevisions.attributeKey];
+}
 
 /// Returns the default color, which is FIRST generation
 + (NSString*)defaultRevisionColor {
@@ -104,6 +111,8 @@
 				
 				// Create local range
 				NSRange localRange = [line globalRangeToLocal:range];
+				
+				// Save the revised indices based on the local range
 				if (item.type == RevisionRemovalSuggestion) [line.removalSuggestionRanges addIndexesInRange:localRange];
 				else if (item.type == RevisionAddition) {
 					// Add revision sets if needed
