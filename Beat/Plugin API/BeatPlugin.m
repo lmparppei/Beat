@@ -32,6 +32,7 @@
 @property (nonatomic) JSValue *windowCallback;
 @property (nonatomic) JSValue *sceneCompletionCallback;
 @property (nonatomic) JSValue *characterCompletionCallback;
+@property (nonatomic) JSValue *documentSavedCallback;
 @property (nonatomic) WKWebView *sheetWebView;
 @property (nonatomic) BeatPluginData *plugin;
 @property (nonatomic) NSMutableArray *timers;
@@ -262,6 +263,14 @@
 	[_updatePreviewMethod callWithArguments:nil];
 }
 
+// Document was saved
+- (void)onDocumentSaved:(JSValue*)updateMethod {
+	_documentSavedCallback = updateMethod;
+	[self makeResident];
+}
+- (void)documentWasSaved {
+	[_documentSavedCallback callWithArguments:nil];
+}
 
 #pragma mark - Resident plugin data providers
 
@@ -1396,6 +1405,20 @@
 		}
 	}
 
+}
+
+#pragma mark - Return revised ranges
+
+- (void)bakeRevisions {
+	[self.delegate bakeRevisions];
+}
+- (void)bakeRevisionsInRange:(NSInteger)loc len:(NSInteger)len {
+	NSRange range = NSMakeRange(loc, len);
+	NSArray *lines = [self.delegate.parser linesInRange:range];
+	[BeatRevisions bakeRevisionsIntoLines:lines text:self.delegate.getAttributedText];
+}
+- (NSDictionary*)revisedRanges {
+	return self.delegate.revisedRanges;
 }
 
 @end

@@ -63,8 +63,11 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic, readonly) NSString *markerDescription;
 
 @property (nonatomic, readonly) NSDictionary* ranges;
+@property (nonatomic, readonly) NSMutableDictionary <NSString*, NSMutableIndexSet*>* revisedRanges;
 
 @property (nonatomic) NSArray<Storybeat*>* beats;
+
+@property (nonatomic, readonly) NSInteger heightInPaginator;
 
 - (NSString*)stripFormatting;
 - (bool)isTitlePage;
@@ -228,8 +231,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSString*)stripNotes;
 - (NSString*)stringForDisplay;
 
-@property (nonatomic) bool isSplitParagraph; /// This element contains line breaks
-@property (nonatomic) bool nextElementIsDualDialogue; /// Note: this is ONLY used for non-continuous parsing
+@property (nonatomic) bool isSplitParagraph; // This element contains line breaks
+@property (nonatomic) bool nextElementIsDualDialogue; // Note: used for non-continuous parsing ONLY
+@property (nonatomic) bool beginsNewVisualBlock; // Note: Used for non-continuous parsing ONLY
 
 // Properties for pagination
 @property (nonatomic) bool unsafeForPageBreak; /// EXPERIMENTAL

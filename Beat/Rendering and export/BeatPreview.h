@@ -29,9 +29,10 @@ typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 @class BeatPaginator;
 
 @protocol BeatPreviewExports <JSExport>
-@property (nonatomic) NSString* htmlString;
-@property (nonatomic) bool previewUpdated;
-@property (nonatomic) BeatPaginator* paginator;
+@property (nonatomic, readonly) NSString* htmlString;
+@property (nonatomic, readonly) bool previewUpdated;
+@property (nonatomic, readonly) BeatPaginator* paginator;
+@property (nonatomic, readonly) ContinuousFountainParser* parser;
 @end
 
 @protocol BeatPreviewDelegate

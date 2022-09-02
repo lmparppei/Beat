@@ -2666,9 +2666,21 @@ NSUInteger prevLineAtLocationIndex = 0;
 	// Check for split paragraphs
 	NSInteger i = 0;
 	for (Line* line in linesForPrinting) {
-		if (i > 0 && line.type == action) {
+		if (i > 0) {
 			Line *precedingLine = lines[i - 1];
-			if (precedingLine.type == action && precedingLine.string.length > 0) line.isSplitParagraph = YES;
+			if (line.type == action) {
+				if (precedingLine.type == action && precedingLine.string.length > 0) line.isSplitParagraph = YES;
+			}
+			
+			else if (line.type == lyrics && precedingLine.type == empty) {
+				// If this line is preceded by an empty line, it begins a new block
+				line.beginsNewVisualBlock = true;
+			}
+			
+			else if (line.type == centered && precedingLine.type == empty) {
+				// If this line is preceded by an empty line, it begins a new block
+				line.beginsNewVisualBlock = true;
+			}
 		}
 		i++;
 	}

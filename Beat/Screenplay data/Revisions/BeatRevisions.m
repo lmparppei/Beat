@@ -20,6 +20,7 @@
 #import "BeatUserDefaults.h"
 #import "BeatAppDelegate.h"
 #import "BeatAttributes.h"
+#import "BeatMeasure.h"
 
 #define REVISION_ATTR @"Revision"
 #define DEFAULT_COLOR @"blue"
@@ -73,14 +74,80 @@
 	else if (oldIdx == NSNotFound) return YES;
 	else return NO;
 }
++ (void)bakeRevisionsIntoLines:(NSArray *)lines text:(NSAttributedString *)string range:(NSRange)range {
+	//
+}
 /// Bakes the revised ranges from editor into corresponding lines in the parser.
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string
 {
-	[self bakeRevisionsIntoLines:lines text:string parser:parser includeRevisions:[self revisionColors]];
+	[self bakeRevisionsIntoLines:lines text:string includeRevisions:[self revisionColors]];
 }
 /// Bakes the revised ranges from editor into corresponding lines in the parser. When needed, you can specify which revisions to include.
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser includeRevisions:(nonnull NSArray *)includedRevisions
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(nonnull NSArray *)includedRevisions
 {
+	// This is a new implementation of the old code, which enumerates line ranges instead of the whole attributed string and then iterating over lines.
+	// Slower with short documents, 90 times faster on longer ones.
+	for (Line* line in lines) {
+		line.revisedRanges = NSMutableDictionary.new;
+		if (line.textRange.length == 0) continue;
+		
+		// Don't go out of range
+		NSRange textRange = line.textRange;
+		
+		if (NSMaxRange(textRange) > string.length) {
+			textRange.length = string.length - NSMaxRange(textRange);
+			if (textRange.length <= 0) continue;
+		}
+		
+		@try {
+			[string enumerateAttribute:BeatRevisions.attributeKey inRange:textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+				// Don't go out of range
+				if (range.length == 0 || range.location == NSNotFound || NSMaxRange(range) > string.length) return;
+				
+				BeatRevisionItem *revision = value;
+				if (![includedRevisions containsObject:revision.colorName] || revision.type == RevisionNone) return; // Skip if the color is not included
+				
+				line.changed = YES;
+				NSString *revisionColor = revision.colorName;
+				if (revisionColor.length == 0) revisionColor = BeatRevisions.defaultRevisionColor;
+				
+				if (line.revisionColor.length) {
+					// The line already has a revision color, apply the higher one
+					NSInteger currentRevision = [REVISION_ORDER indexOfObject:line.revisionColor];
+					NSInteger thisRevision = [REVISION_ORDER indexOfObject:revisionColor];
+					
+					if (thisRevision != NSNotFound && thisRevision > currentRevision) line.revisionColor = revisionColor;
+				}
+				else {
+					line.revisionColor = revisionColor;
+				}
+				
+				// Create addition & removal ranges if needed
+				if (!line.removalSuggestionRanges) line.removalSuggestionRanges = NSMutableIndexSet.new;
+				
+				// Create local range
+				NSRange localRange = [line globalRangeToLocal:range];
+				
+				// Save the revised indices based on the local range
+				if (revision.type == RevisionRemovalSuggestion) [line.removalSuggestionRanges addIndexesInRange:localRange];
+				else if (revision.type == RevisionAddition) {
+					// Add revision sets if needed
+					if (!line.revisedRanges) line.revisedRanges = NSMutableDictionary.new;
+					if (!line.revisedRanges[revisionColor]) line.revisedRanges[revisionColor] = NSMutableIndexSet.new;
+					
+					[line.revisedRanges[revisionColor] addIndexesInRange:localRange];
+				}
+			}];
+		}
+		@catch (NSException *e) {
+			NSLog(@"Bake attributes: Line out of range  (%lu/%lu) -  %@", textRange.location, textRange.length, line);
+		}
+	}
+
+	/*
+	// Reset all ranges first
+	//for (Line* line in lines) line.revisedRanges = NSMutableDictionary.new;
+	 
 	[string enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		if (range.length < 1 || range.location == NSNotFound || range.location + range.length > string.length) return;
 		
@@ -124,13 +191,14 @@
 			}
 		}
 	}];
+	*/
 }
 
 /// Bakes the revised ranges from editor into corresponding lines in the parser.
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string parser:(ContinuousFountainParser*)parser
++ (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string
 {
 	NSAttributedString *attrStr = [self attrStringWithRevisions:revisions string:string];
-	[self bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
+	[self bakeRevisionsIntoLines:lines text:attrStr];
 }
 
 /// Writes the given revisions into a plain text string, and returns an attributed string

@@ -785,7 +785,7 @@
 			} else {
 				// Whatever, let's just push this element on the next page
 				// Reset page
-				[self resetPage:currentPage onCurrentPage:@[] onNextPage:@[element]];
+				[self resetPage:currentPage onCurrentPage:@[] onNextPage:block];
 								
 				// I'm pretty sure there will never be spiller element, but anyway
 				if (!spillerElement) spillerElement = element;
@@ -1011,7 +1011,7 @@
 	
 	if (line.isAnyCharacter) return [self dialogueBlockFor:line];
 	else if (line == self.script.lastObject) return @[line];
-	else if (line.type != heading) return @[line];
+	else if (line.type != heading && line.type != lyrics && line.type != centered) return @[line];
 	
 	NSMutableArray *block = NSMutableArray.new;
 	
@@ -1021,6 +1021,12 @@
 	NSInteger l = i + 1;
 	[block addObject:line];
 	
+	LineType expectedType;
+	if (line.type == heading) expectedType = action;
+	else if (line.type == lyrics) expectedType = lyrics;
+	else if (line.type == centered) expectedType = centered;
+	else expectedType = action;
+	
 	while (l < self.script.count) {
 		Line *el = self.script[l];
 
@@ -1029,13 +1035,18 @@
 			continue;
 		}
 		
-		if (el.type == action) {
+		if (el.type == expectedType) {
+			if (el.beginsNewVisualBlock) break;
+			
 			[block addObject:el];
-			break;
+			
+			if (line.type == heading) break;
+			
+			l++;
 		}
 		else break;
 	}
-	
+		
 	return block;
 }
 
@@ -1049,18 +1060,28 @@
 	}
 	
 	NSInteger fullHeight = 0;
-		
+ 
 	for (Line *line in block) {
 		CGFloat spaceBefore = 0;
-		if (currentPage.count || line != block.firstObject) spaceBefore = [BeatPaginator spaceBeforeForLine:line];
+		
+		// TODO: I just don't bother to think about this conditional mess right now. A problem for my future self.
+		if (block.firstObject.type == centered || block.firstObject.type == lyrics) {
+			if (currentPage.count > 0 && line == block.firstObject) {
+				spaceBefore = [BeatPaginator spaceBeforeForLine:line];
+			}
+		}
+		else {
+			if (currentPage.count || line != block.firstObject) {
+				spaceBefore = [BeatPaginator spaceBeforeForLine:line];
+			}
+		}
 		
 		CGFloat elementWidth = [self widthForElement:line];
 		NSInteger height = [BeatPaginator heightForString:line.stripFormatting font:_font maxWidth:elementWidth lineHeight:LINE_HEIGHT];
 		fullHeight += spaceBefore + height;
 		
 		line.heightInPaginator = height;
-	}
-	
+	}	
 
 	return fullHeight;
 }
@@ -1326,6 +1347,8 @@
 	[currentPage clear];
 	
 	// Let's run the next page block through height calculator, so its line objects get the correct height.
+	NSLog(@"Next page items: %@", nextPageItems);
+	
 	NSInteger nextPageHeight = [self heightForBlock:nextPageItems];
 	if (nextPageItems.count) [currentPage addBlock:nextPageItems height:nextPageHeight];
 }

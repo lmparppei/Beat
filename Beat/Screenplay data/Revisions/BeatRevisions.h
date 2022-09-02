@@ -14,9 +14,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatRevisions : NSResponder
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser;
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string parser:(ContinuousFountainParser*)parser includeRevisions:(NSArray*)includedRevisions;
-+ (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string parser:(ContinuousFountainParser*)parser;
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string;
++ (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(NSArray*)includedRevisions;
++ (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string;
 + (NSDictionary*)rangesForSaving:(NSAttributedString*)string;
 + (NSMutableDictionary*)changedLinesForSaving:(NSArray*)lines;
 

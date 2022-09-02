@@ -314,28 +314,44 @@ static bool underlinedHeading;
 	}
 	
 	// We need to catch lyrics not to make them fill up a paragraph
-	bool isLyrics = false;
+	LineType block = empty;
 	
 	for (Line *line in elementsOnPage) { @autoreleasepool {
 		bool beginBlock = false;
 		
 		if ([ignoringTypes containsObject:line.typeAsString]) {
 			// Close possible blocks
+			if (block != empty) {
+				// Close possible blocks
+				[body appendFormat:@"</p>\n"];
+				block = empty;
+			}
+
+			/*
 			if (isLyrics) {
 				// Close lyrics block
 				[body appendFormat:@"</p>\n"];
 				isLyrics = false;
 			}
+			 */
 			continue;
 		}
 		
 		if (line.type == pageBreak) {
 			// Close possible blocks
+			/*
 			if (isLyrics) {
 				// Close lyrics block
 				[body appendFormat:@"</p>\n"];
 				isLyrics = false;
 			}
+			 */
+			if (block != empty) {
+				// Close the block
+				[body appendFormat:@"</p>\n"];
+				block = empty;
+			}
+			 
 			continue;
 		}
 		
@@ -361,19 +377,43 @@ static bool underlinedHeading;
 		NSMutableString *text = [NSMutableString string];
 	
 
-		// Begin lyrics block
-		if (line.type == lyrics) {
-			if (!isLyrics) {
+		// Begin lyrics or centered block
+		if (block != empty) {
+			if (line.type != block) {
+				// Close block
+				[body appendFormat:@"</p>\n"];
+				block = empty;
+			}
+			else if (line.type == block && line.beginsNewVisualBlock) {
+				[body appendFormat:@"</p>\n"];
 				beginBlock = true;
-				isLyrics = true;
+			}
+		}
+		else {
+			if (line.type == lyrics || line.type == centered) {
+				block = line.type;
+				beginBlock = true;
+			}
+		}
+		
+		/*
+		if (line.type == lyrics) {
+			if (block != lyrics) {
+				beginBlock = true;
+				block = line.type;
+			}
+			else if (block == lyrics && line.beginsLyricsBlock) {
+				[body appendFormat:@"</p>\n"];
+				beginBlock = true;
 			}
 		} else {
 			// Close lyrics block
-			if (isLyrics) {
+			if (block == lyrics) {
 				[body appendFormat:@"</p>\n"];
-				isLyrics = false;
+				block = empty;
 			}
 		}
+		 */
 		
 		// Format string for HTML (if it's not a heading)
 		[text setString:[self htmlStringFor:line]];
@@ -420,7 +460,7 @@ static bool underlinedHeading;
 			}
 			
 			// If this line isn't part of a larger block, output it as paragraph
-			if (!beginBlock && !isLyrics) {
+			if (!beginBlock && block == empty) {
 				[body appendFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsString], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, text];
 			} else {
 				if (beginBlock) {
@@ -434,10 +474,10 @@ static bool underlinedHeading;
 			}
 		} else {
 			// Just in case
-			if (isLyrics) {
+			if (block != empty) {
 				// Close lyrics block
 				[body appendFormat:@"</p>\n"];
-				isLyrics = false;
+				block = empty;
 			}
 		}
 		

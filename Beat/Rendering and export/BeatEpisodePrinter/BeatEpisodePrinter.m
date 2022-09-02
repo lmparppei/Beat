@@ -308,7 +308,7 @@
 	
 	// Bake revision data into the document
 	NSDictionary *revisions = [settings get:DocSettingRevisions];
-	if (revisions.count) [BeatRevisions bakeRevisionsIntoLines:parser.lines revisions:revisions string:text parser:parser];
+	if (revisions.count) [BeatRevisions bakeRevisionsIntoLines:parser.lines revisions:revisions string:text];
 		
 	BeatScreenplay *script = parser.forPrinting;
 	BeatHTMLScript *htmlScript = [BeatHTMLScript.alloc initWithScript:script settings:exportSettings];

@@ -67,6 +67,7 @@
 - (void)onSceneHeadingAutocompletion:(JSValue*)callback;
 - (void)onCharacterAutocompletion:(JSValue*)callback;
 - (void)onPreviewFinished:(JSValue*)updateMethod;
+- (void)onDocumentSaved:(JSValue*)updateMethod;
 
 - (void)log:(NSString*)string;
 - (void)openConsole;
@@ -128,9 +129,20 @@
 
 - (BeatSpeak*)speakSynth; /// Speech synthesis
 
-- (void)crash; /// Crash the app
+/// Crash the app
+- (void)crash;
 
-JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value); /// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
+// Revisions
+/// Returns all the revised ranges in attributed text
+- (NSDictionary*)revisedRanges;
+/// Bakes current revisions into lines
+- (void)bakeRevisions;
+/// Bakes revisions in given range
+JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len:(NSInteger)len);
+
+/// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
+JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value);
+
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
 JSExportAs(addString, - (void)addString:(NSString*)string toIndex:(NSUInteger)index);
 JSExportAs(replaceRange, - (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string);
@@ -185,7 +197,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (nonatomic, readonly) BeatPaginator *paginator;
 @property (nonatomic, readonly) BeatPreview *preview;
 
-- (id)document; /// Returns self (document)
+- (id)document;
 - (NSString*)createDocumentFile;
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
 - (void)registerPlugin:(id)parser;
@@ -211,7 +223,9 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
 - (NSString*)previewHTML; /// Returns HTML string of the current preview. Only for debugging.
-
+- (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
+- (void)bakeRevisions; /// Bakes current revisions into lines
+- (NSAttributedString*)getAttributedText;
 
 @end
 
@@ -236,6 +250,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
 - (void)documentDidBecomeMain;
+- (void)documentWasSaved;
 
 // Autocompletion callbacks
 - (NSArray*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion

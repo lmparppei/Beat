@@ -1181,14 +1181,20 @@
 	};
 }
 
+/// Returns a dictionary of ranges for plugins
 -(NSDictionary*)ranges {
-	// This returns a dictionary of ranges for plugins
 	return @{
 		@"notes": [self indexSetAsArray:self.noteRanges],
 		@"omitted": [self indexSetAsArray:self.omittedRanges],
 		@"bold": [self indexSetAsArray:self.boldRanges],
 		@"italic": [self indexSetAsArray:self.italicRanges],
 		@"underlined": [self indexSetAsArray:self.underlinedRanges],
+		@"revisions": @{
+			@"blue": (self.revisedRanges[@"blue"]) ? [self indexSetAsArray:self.revisedRanges[@"blue"]] : @[],
+			@"orange": (self.revisedRanges[@"orange"]) ? [self indexSetAsArray:self.revisedRanges[@"orange"]] : @[],
+			@"purple": (self.revisedRanges[@"purple"]) ? [self indexSetAsArray:self.revisedRanges[@"purple"]] : @[],
+			@"green": (self.revisedRanges[@"green"]) ? [self indexSetAsArray:self.revisedRanges[@"green"]] : @[]
+		}
 	};
 }
 
@@ -1196,7 +1202,7 @@
 	NSMutableArray *array = NSMutableArray.array;
 	[set enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > 0) {
-			[array addObject:[NSNumber valueWithRange:range]];
+			[array addObject:@[ @(range.location), @(range.length) ]];
 		}
 	}];
 	

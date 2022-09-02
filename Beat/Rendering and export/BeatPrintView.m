@@ -138,7 +138,7 @@ static NSURL *pdfURL;
 	ContinuousFountainParser *parser = [[ContinuousFountainParser alloc] initWithString:rawText delegate:document];
 
 	// Track revisions
-	[BeatRevisions bakeRevisionsIntoLines:parser.lines text:document.attrTextCache parser:parser includeRevisions:settings.revisions];
+	[BeatRevisions bakeRevisionsIntoLines:parser.lines text:document.attrTextCache includeRevisions:settings.revisions];
 	
 	// Set script data
 	BeatScreenplay *script = [BeatScreenplay from:parser settings:settings];

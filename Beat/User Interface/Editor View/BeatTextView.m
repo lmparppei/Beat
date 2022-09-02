@@ -177,7 +177,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 - (void)awakeFromNib {
-
 	self.matches = NSMutableArray.array;
 	self.pageBreaks = NSArray.new;
 	
@@ -1767,6 +1766,42 @@ double clamp(double d, double min, double max) {
 		id obj = objectsToPaste[0];
 		
 		if ([obj isKindOfClass:NSString.class]) {
+			NSString * stringToPaste = [obj stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+			
+			// Let's force some line breaks if it's a long string with no line breaks
+			// TODO: I really should create a separate class for sanitizing pasting. This is just a quick fix for Word users.
+			if ([stringToPaste rangeOfString:@"\n\n"].location == NSNotFound && stringToPaste.length > 500) {
+				NSArray *lines = [obj componentsSeparatedByString:@"\n"];
+				NSInteger lengths = 0;
+				NSMutableString *result = NSMutableString.new;
+				bool dialogue = false;
+				
+				for (NSString *line in lines) {
+					lengths += line.length;
+					
+					if (line != lines.firstObject) {
+						[result appendString:@"\n"];
+					}
+					
+					if ([line.uppercaseString isEqualToString:line] && line.length < 25) {
+						[result appendFormat:@"%@", line];
+						dialogue = true;
+					}
+					else if ([line rangeOfString:@"INT."].location != NSNotFound || [line rangeOfString:@"EXT."].location != NSNotFound) {
+						[result appendFormat:@"\n%@\n", line.uppercaseString];
+					}
+					else {
+						[result appendFormat:@"%@\n", line];
+						if (dialogue) dialogue = false;
+					}
+				}
+				[result appendString:@"\n"];
+				[self.editorDelegate replaceRange:self.selectedRange withString:result];
+				
+				return;
+			}
+
+			
 			[super paste:sender];
 			return;
 		}

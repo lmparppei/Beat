@@ -108,12 +108,11 @@ Here's some lyrics:
 ~bring me a lamp and a window I can look through
 ~at the crowd in the happy alley.”
 
-That's about it. Edit this file and try out stuff.
+That's about it. Edit this file and try out stuff. If you ever mess something up, you can usually reformat it by just removing something and adding it back.
 
-If you ever mess up something, you can use automatic reformatting by selecting the text and pressing (⌘R), or by reformatting everything through the Format menu.
+There's a lot more to dive into, such as reviews (try selecting a range and pressing ⌘R), revisions (select a range and press ⌘K, and ⌥⌘K to remove it) and plugins, which extend the functionality of Beat. See *Plugin Library* under *Tools* menu.
 
 You can find more information about the Fountain markup language at http://www.fountain.io/
 
 > FADE OUT
 
-/* If you're seeing this, you can remove the following stuff - BEAT: {"Review Ranges":[],"Page Size":0} END_BEAT */

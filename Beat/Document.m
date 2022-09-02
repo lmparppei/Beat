@@ -581,6 +581,8 @@ static BeatAppDelegate *appDelegate;
 }
 
 -(void)loadingComplete {
+	_attrTextCache = self.textView.attributedString;
+	
 	[_parser.changedIndices removeAllIndexes];
 	[self.formatting initialTextBackgroundRender];
 		
@@ -1205,9 +1207,15 @@ static NSWindow __weak *currentKeyWindow;
 	NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
 	NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
 	
+	if (_runningPlugins.count) {
+		for (NSString *pluginName in _runningPlugins.allKeys) {
+			BeatPlugin *plugin = _runningPlugins[pluginName];
+			[plugin documentWasSaved];
+		}
+	}
+	
 	return result;
 }
-
 
 - (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)typeName error:(NSError *__autoreleasing  _Nullable *)outError {
 	if (![url checkResourceIsReachableAndReturnError:outError]) return NO;
@@ -1234,6 +1242,14 @@ static NSWindow __weak *currentKeyWindow;
 - (void)registerEditorView:(id<BeatEditorView>)view {
 	if (_registeredViews == nil) _registeredViews = NSMutableSet.set;;
 	if (![_registeredViews containsObject:view]) [_registeredViews addObject:view];
+}
+
+- (NSDictionary*)revisedRanges {
+	NSDictionary *revisions = [BeatRevisions rangesForSaving:self.getAttributedText];
+	return revisions;
+}
+- (void)bakeRevisions {
+	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 }
 
 /*
@@ -1264,10 +1280,17 @@ static NSWindow __weak *currentKeyWindow;
     return self.textView.string;
 }
 
+/*
+ TODO: Harmonize _attrTextCache, preferrably as a getter
+ */
 - (NSAttributedString *)getAttributedText
 {
-	_attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.attributedString];
-	return _attrTextCache;
+	if (NSThread.isMainThread) {
+		_attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.textStorage];
+		return _attrTextCache;
+	} else {
+		return _attrTextCache;
+	}
 }
 
 - (void)setText:(NSString *)text
@@ -2758,7 +2781,7 @@ static NSWindow __weak *currentKeyWindow;
 	[self updateQuickSettings];
 	
 	// Save user default + document setting
-	[BeatUserDefaults.sharedDefaults saveBool:YES forKey:@"showRevisions"];
+	// [BeatUserDefaults.sharedDefaults saveBool:YES forKey:@"showRevisions"];
 	[_documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
 }
 - (IBAction)markAddition:(id)sender

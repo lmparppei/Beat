@@ -25,6 +25,7 @@
 
 @interface BeatPreview ()
 @property (nonatomic) BeatHTMLScript *htmlGenerator;
+@property (nonatomic) ContinuousFountainParser *parser;
 @end
 
 @implementation BeatPreview
@@ -63,32 +64,31 @@
 	return @"";
 }
 - (NSString*)createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType {
-	ContinuousFountainParser *parser;
-
 	if (_delegate) {
 		// This is probably a normal parser, because a delegate is present
 		// Parse script
-		parser = [[ContinuousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate nonContinuous:YES];
+		self.parser = [[ContinuousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate nonContinuous:YES];
 		
 		// Get identifiers
 		NSArray *uuids = [self.delegate.parser lineIdentifiers:nil];
-		if (uuids.count) [parser setIdentifiers:uuids];
+		if (uuids.count) [self.parser setIdentifiers:uuids];
 		
 		// Bake revision attributes
-		NSAttributedString *attrStr = self.delegate.attrTextCache.copy;
-		[BeatRevisions bakeRevisionsIntoLines:parser.lines text:attrStr parser:parser];
+		NSAttributedString *attrStr = self.delegate.getAttributedText.copy;
+		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:attrStr];
 	} else {
 		// This is probably a QuickLook preview
-		parser = [ContinuousFountainParser.alloc initWithString:rawScript];
+		self.parser = [ContinuousFountainParser.alloc initWithString:rawScript];
 	}
 	
 	// Create a script dict required by the HTML module
-	BeatScreenplay *script = parser.forPrinting;
+	BeatScreenplay *script = self.parser.forPrinting;
 	
-	if (previewType == BeatQuickLookPreview) {
+	if (previewType == BeatQuickLookPreview) { // Quick look preview
 		_htmlGenerator = [BeatHTMLScript.alloc initForQuickLook:script];
 		return _htmlGenerator.html;
-	} else {
+	} else { // Normal preview
+		
 #if TARGET_OS_IOS
 		id doc = _delegate.documentForDelegation;
 #else
@@ -97,9 +97,13 @@
 		
 		BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisions.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
 		settings.paperSize = _delegate.pageSize;
-		_htmlGenerator = [BeatHTMLScript.alloc initWithScript:script settings:settings];
 		
-		return _htmlGenerator.html;
+		// This following weird code salad is here to circumvent strange corpse exceptions
+		BeatHTMLScript *generator = [BeatHTMLScript.alloc initWithScript:script settings:settings];
+		NSString * html = generator.html;
+		_htmlGenerator = generator;
+		
+		return html;
 	}
 }
 
