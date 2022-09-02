@@ -1347,8 +1347,6 @@
 	[currentPage clear];
 	
 	// Let's run the next page block through height calculator, so its line objects get the correct height.
-	NSLog(@"Next page items: %@", nextPageItems);
-	
 	NSInteger nextPageHeight = [self heightForBlock:nextPageItems];
 	if (nextPageItems.count) [currentPage addBlock:nextPageItems height:nextPageHeight];
 }
