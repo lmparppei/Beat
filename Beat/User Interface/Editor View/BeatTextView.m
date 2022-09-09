@@ -1879,10 +1879,18 @@ double clamp(double d, double min, double max) {
 }
 
 -(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
-	if (_editorDelegate.documentIsLoading) return 0;
+	/*
+	if (_editorDelegate.documentIsLoading) {
+		Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
+		NSLog(@"Still loading: %@", line);
+		return 0;
+	}
+	*/
 	
 	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
-	if (!line) return 0;
+	if (line == nil) {
+		return 0;
+	}
 		
 	// If we are updating scene number labels AND we didn't just enter a scene heading, skip this
 	//if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine && !NSLocationInRange(self.editorDelegate.currentLine.position - 4, line.range)) return 0;

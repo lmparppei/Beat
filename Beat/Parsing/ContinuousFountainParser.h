@@ -36,7 +36,7 @@
 // Plugin compatibility
 @protocol ContinuousFountainParserExports <JSExport>
 @property (readonly) NSMutableArray<Line*>* lines;
-@property (nonatomic, readonly) NSMutableArray *outline;
+@property (nonatomic, readonly) NSMutableArray <OutlineScene*>* outline;
 @property (nonatomic, readonly) NSMutableArray *scenes;
 @property (nonatomic, readonly) NSMutableArray *titlePage;
 @property (nonatomic, readonly) NSMutableSet *storylines;
@@ -66,7 +66,7 @@
 
 @property (atomic) NSMutableArray *lines; //Stores every line as an element. Multiple lines of stuff
 @property (nonatomic) NSMutableIndexSet *changedIndices; //Stores every line that needs to be formatted according to the type
-@property (nonatomic) NSMutableArray *outline;
+@property (nonatomic) NSMutableArray <OutlineScene*>* outline;
 @property (nonatomic) NSMutableArray *titlePage;
 @property (nonatomic) NSMutableSet *storylines;
 @property (nonatomic) NSMutableDictionary <NSString*, NSMutableArray<Storybeat*>*>*storybeats;

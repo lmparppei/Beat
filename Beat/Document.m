@@ -485,6 +485,9 @@
 static BeatAppDelegate *appDelegate;
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)aController {
+	// Hide the welcome screen
+	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
+
 	[super windowControllerDidLoadNib:aController];
 		
 	_documentWindow = aController.window;
@@ -493,10 +496,7 @@ static BeatAppDelegate *appDelegate;
 	// Setup formatting
 	_formatting = BeatEditorFormatting.new;
 	_formatting.delegate = self;
-	
-	// Hide the welcome screen
-	[NSNotificationCenter.defaultCenter postNotificationName:@"Document open" object:nil];
-		
+			
 	// Initialize document settings if needed
 	if (!self.documentSettings) self.documentSettings = BeatDocumentSettings.new;
 	
@@ -547,7 +547,7 @@ static BeatAppDelegate *appDelegate;
 	}
 
 	self.textView.alphaValue = 0;
-	
+		
 	[self parseAndRenderDocument];
 }
 
@@ -585,7 +585,7 @@ static BeatAppDelegate *appDelegate;
 	
 	[_parser.changedIndices removeAllIndexes];
 	[self.formatting initialTextBackgroundRender];
-		
+	
 	[CATransaction begin];
 	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
 	[CATransaction commit];
@@ -594,7 +594,7 @@ static BeatAppDelegate *appDelegate;
 	
 	[self updateLayout];
 	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-
+	
 	[self.revisionTracking setup]; // Initialize edit tracking
 	[self.review setup]; // Setup review system WIP: Harmonize this with the above classes
 	[self.tagging setup]; // Setup tagging
@@ -627,14 +627,11 @@ static BeatAppDelegate *appDelegate;
 	}
 	
 	// Setup page size
-	// (We'll disable undo registration here, so the doc won't appear as edited on open)
-	[self.undoManager disableUndoRegistration];
-	
+	[self.undoManager disableUndoRegistration]; // (We'll disable undo registration here, so the doc won't appear as edited on open)
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
 	self.printInfo = [BeatPaperSizing setSize:self.pageSize printInfo:printInfo];
-
-	// Enable undo registration and clear any changes to the document (if needed)
-	[self.undoManager enableUndoRegistration];
+	[self.undoManager enableUndoRegistration]; // Enable undo registration and clear any changes to the document (if needed)
+	
 	if (saved) [self updateChangeCount:NSChangeCleared];
 		
 	// Reveal text view
@@ -648,6 +645,7 @@ static BeatAppDelegate *appDelegate;
 	
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
+	
 	
 	// New export test
 	/*
@@ -1865,9 +1863,13 @@ static NSWindow __weak *currentKeyWindow;
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
 		
-	// If the outline has changed, update all labels
-	[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
-	//[self.textView updateChangeMarkersFrom:self.lastChangedRange.location];
+	// Update scene number labels
+	// A larger chunk of text was pasted or there was a change in outline. Ensure layout.
+	if (_lastChangedRange.length > 5) {
+		[self ensureLayout];
+	} else {
+		[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
+	}
 	
 	// Update preview screen
 	[self.preview updatePreviewInSync:NO];
@@ -1880,11 +1882,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Save to buffer
 	_contentCache = [NSString stringWithString:self.textView.string];
-	
-	// A larger chunk of text was pasted. Ensure layout.
-	if (_lastChangedRange.length > 3) {
-		[self ensureLayout];
-	}
 	
 	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
 	if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
@@ -2527,11 +2524,10 @@ static NSWindow __weak *currentKeyWindow;
 #pragma mark - Scrolling
 
 - (IBAction)goToScene:(id)sender {
-	NSString *message = [BeatLocalization localizedStringForKey:@"editor.goToSceneNumber.message"];
-	NSString *placeholder = [BeatLocalization localizedStringForKey:@"editor.goToSceneNumber.placeholder"];
-	BeatModalInput *input = [[BeatModalInput alloc] init];
-	[input inputBoxWithMessage:message text:@"" placeholder:placeholder forWindow:_documentWindow completion:^(NSString * _Nonnull result) {
-		[self scrollToSceneNumber:result];
+	BeatSceneHeadingSearch *search = [BeatSceneHeadingSearch.alloc init];
+	search.delegate = self;
+	
+	[self.documentWindow beginSheet:search.window completionHandler:^(NSModalResponse returnCode) {
 	}];
 }
 

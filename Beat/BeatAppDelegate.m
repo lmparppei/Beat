@@ -187,7 +187,7 @@
 
 -(void)setupDocumentOpenListener {
 	// Let's close the welcome screen if any sort of document has been opened
-	[[NSNotificationCenter defaultCenter] addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
+	[NSNotificationCenter.defaultCenter addObserverForName:@"Document open" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		[self closeLaunchScreen];
 	}];
 	

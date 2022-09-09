@@ -373,9 +373,12 @@
 }
 
 - (void)useCachedPaginationFrom:(NSInteger)pageIndex {
-	[self.pages removeLastObject];
-	[self.pageBreaks removeLastObject];
-	
+	// Ignore the last page if it's empty
+	if (self.pages.lastObject.count == 0) {
+		[self.pages removeLastObject];
+		[self.pageBreaks removeLastObject];
+	}
+		
 	NSArray *cachedPages = [self.pageCache subarrayWithRange:NSMakeRange(pageIndex, self.pageCache.count - pageIndex - 1)];
 	[self.pages addObjectsFromArray:cachedPages];
 	
@@ -487,6 +490,7 @@
 			
 			if (firstLineOnCachedPage.uuid == element.uuid) {
 				[self useCachedPaginationFrom:self.pages.count - 1];
+
 				// Stop pagination
 				break;
 			}
@@ -494,7 +498,6 @@
 
 		// Reset Y if the page is empty.
 		if (currentPage.count == 0) {
-			//currentY = 0;
 			hasStartedANewPage = YES;
 		}
 		

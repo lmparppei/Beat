@@ -906,7 +906,7 @@ static NSDictionary* patterns;
 		line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];
         
 		if (line.sceneNumberRange.length == 0) {
-            line.sceneNumber = nil;
+            line.sceneNumber = @"";
         } else {
             line.sceneNumber = [line.string substringWithRange:line.sceneNumberRange];
         }
@@ -1980,7 +1980,7 @@ and incomprehensible system of recursion.
 		return;
 	}
 	
-	// User edited the heading line
+	// Get the line at edited position
 	Line *line = [self lineAtPosition:range.location];
 	if (line.type == section) {
 		[self createOutline];
@@ -1991,13 +1991,17 @@ and incomprehensible system of recursion.
 	if (line.isOutlineElement) {
 		for (OutlineScene *scene in self.outline) {
 			if (scene.type == heading && line.sceneNumberRange.length == 0 && !scene.omitted) sceneNumber++;
-						
+			NSLog(@"Scene number: %lu", sceneNumber);
+			
 			if (scene.line == line) {
 				if (scene.line.omitted) line.sceneNumber = @"";
 
 				// Update scene number
-				scene.line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-				scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+				if (scene.line.sceneNumberRange.length > 0) {
+					scene.sceneNumber = [scene.line.string substringWithRange:scene.line.sceneNumberRange];
+				} else {
+					scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+				}
 				return;
 			}
 		}
@@ -2213,10 +2217,14 @@ and incomprehensible system of recursion.
 
 - (BOOL)getAndResetChangeInOutline
 {
-	if (_changedOutlineElements.count) return YES;
+	if (_changedOutlineElements.count) {
+		[self createOutline];
+		return YES;
+	}
 
     if (_changeInOutline) {
         _changeInOutline = NO;
+		[self createOutline];
         return YES;
     }
     return NO;

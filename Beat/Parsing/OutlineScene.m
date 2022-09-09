@@ -103,7 +103,7 @@
 -(NSString*)color {	return self.line.color; }
 
 -(NSString*)sceneNumber { return self.line.sceneNumber; }
--(void)setSceneNumber:(NSString *)sceneNumber {	self.line.sceneNumber = sceneNumber; }
+-(void)setSceneNumber:(NSString *)sceneNumber { self.line.sceneNumber = sceneNumber; }
 
 // Backwards compatibility
 -(NSUInteger)sceneStart { return self.position; }
