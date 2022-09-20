@@ -1357,7 +1357,7 @@
 #pragma mark - More / Cont'd items
 
 + (Line*)contdLineFor:(Line*)line {
-	NSString *extension = [BeatPaginator contdString];
+	NSString *extension = BeatPaginator.contdString;
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
 	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	

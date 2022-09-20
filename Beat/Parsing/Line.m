@@ -934,6 +934,14 @@
 	return indexSet;
 }
 
+#pragma mark - Formatting checking convenience
+
+/// Returns TRUE when the line has no Fountain formatting (like **bold**)
+-(bool)noFormatting {
+	if (_boldRanges.count || _italicRanges.count || _strikeoutRanges.count || _underlinedRanges.count) return NO;
+	else return YES;
+}
+
 #pragma mark - Ranges
 
 /// Returns the line position in document

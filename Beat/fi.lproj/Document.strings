@@ -146,6 +146,8 @@
 /* Class = "NSButton"; ibShadowedToolTip = "Toggle Timeline"; ObjectID = "SU7-uh-HJD"; */
 "SU7-uh-HJD.ibShadowedToolTip" = "Näytä aikajana";
 
+"L0v-T6-wwt.ibShadowedToolTip" = "Siirry kohtaukseen...";
+
 /* Class = "NSTextFieldCell"; title = "Revision Color"; ObjectID = "Teo-oJ-Dwq"; */
 "Teo-oJ-Dwq.title" = "Korjausversio";
 

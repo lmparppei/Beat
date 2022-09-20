@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -19,7 +19,7 @@
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" tabbingMode="disallowed" titlebarAppearsTransparent="YES" id="6np-jR-XCa" userLabel="Launch screen">
             <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="179" y="217" width="704" height="404"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
             <view key="contentView" appearanceType="darkAqua" id="hUD-1d-FmA" customClass="NSVisualEffectView">
                 <rect key="frame" x="0.0" y="0.0" width="704" height="404"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -172,7 +172,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" id="smF-Bq-fzW">
-                                    <rect key="frame" x="74" y="143.5" width="220" height="44"/>
+                                    <rect key="frame" x="74" y="143" width="220" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="New Screenplay" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="Tq7-Xj-tBS" customClass="BeatLaunchButton">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -216,7 +216,7 @@
     <resources>
         <image name="B_256" width="256" height="256"/>
         <image name="BeatDocumentIcon" width="512" height="512"/>
-        <image name="doc" catalog="system" width="18" height="21"/>
-        <image name="map" catalog="system" width="21" height="19"/>
+        <image name="doc" catalog="system" width="18" height="20"/>
+        <image name="map" catalog="system" width="21" height="18"/>
     </resources>
 </document>

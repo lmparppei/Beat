@@ -116,7 +116,7 @@ static NSURL *pdfURL;
 	if (@available(macOS 11.0, *)) {
 		webView = WKWebView.new;
 		((WKWebView*)webView).navigationDelegate = self;
-		[(WKWebView*)webView loadHTMLString:htmlString baseURL:nil];
+		[(WKWebView*)webView loadHTMLString:htmlString baseURL:NSBundle.mainBundle.resourceURL];
 		
 		((WKWebView*)webView).configuration.websiteDataStore = WKWebsiteDataStore.nonPersistentDataStore;
 	}
@@ -124,7 +124,7 @@ static NSURL *pdfURL;
 		webView = WebView.new;
 		((WebView*)webView).frameLoadDelegate = self;
 		((WebView*)webView).mainFrame.frameView.allowsScrolling = NO;
-		[((WebView*)webView).mainFrame loadHTMLString:htmlString baseURL:nil];
+		[((WebView*)webView).mainFrame loadHTMLString:htmlString baseURL:NSBundle.mainBundle.resourceURL];
 	}
 	
 	[self addSubview:webView];

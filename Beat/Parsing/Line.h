@@ -270,6 +270,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// A JSON object for plugin use
 - (NSDictionary*)forSerialization;
 
+-(bool)noFormatting;
+
 // For revision data
 @property (nonatomic) bool changed;
 @property (nonatomic) NSMutableDictionary <NSString*, NSMutableIndexSet*>* revisedRanges;

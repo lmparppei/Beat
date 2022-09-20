@@ -1155,7 +1155,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// Some hardcoded values, which seem to work (lol)
 		rect.size.width = 20 * scene.sceneNumber.length;
 		rect.origin.x = self.textContainerInset.width - rect.size.width;
-		rect.origin.y += self.textInsetY + 2;
+		rect.origin.y += self.textInsetY + 3;
 		label.frame = rect;
 		
 		// If we are past the edited heading, check if we didn't move the following label at all.
@@ -1762,16 +1762,17 @@ double clamp(double d, double min, double max) {
 		// readable objects.
 		
 		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
-		
+
 		id obj = objectsToPaste[0];
 		
 		if ([obj isKindOfClass:NSString.class]) {
-			NSString * stringToPaste = [obj stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+			NSString *rawString = [obj stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+			NSString * stringToPaste = [rawString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
 			
 			// Let's force some line breaks if it's a long string with no line breaks
 			// TODO: I really should create a separate class for sanitizing pasting. This is just a quick fix for Word users.
 			if ([stringToPaste rangeOfString:@"\n\n"].location == NSNotFound && stringToPaste.length > 500) {
-				NSArray *lines = [obj componentsSeparatedByString:@"\n"];
+				NSArray *lines = [rawString componentsSeparatedByString:@"\n"];
 				NSInteger lengths = 0;
 				NSMutableString *result = NSMutableString.new;
 				bool dialogue = false;
@@ -1796,6 +1797,7 @@ double clamp(double d, double min, double max) {
 					}
 				}
 				[result appendString:@"\n"];
+				
 				[self.editorDelegate replaceRange:self.selectedRange withString:result];
 				
 				return;
@@ -1888,19 +1890,19 @@ double clamp(double d, double min, double max) {
 	*/
 	
 	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
-	if (line == nil) {
-		return 0;
-	}
+	if (line == nil) return 0;
 		
 	// If we are updating scene number labels AND we didn't just enter a scene heading, skip this
 	//if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine && !NSLocationInRange(self.editorDelegate.currentLine.position - 4, line.range)) return 0;
 	
 	LineType type = line.type;
 		
-	// Do nothing for section markers
-	if (line.type == section) return 0;
+	// Ignore story markers
+	if (line.type == section || line.type == synopse) {
+		return 0;
+	}
 	
-	// Formatting characters etc.
+	// Clear formatting characters etc.
 	NSMutableIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
 	[mdIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
 	if (line.colorRange.length) [mdIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];

@@ -184,8 +184,11 @@ static NSDictionary* patterns;
 - (void)parseText:(NSString*)text
 {
 	_firstTime = YES;
+	_lines = NSMutableArray.new;
 	
-	_lines = [NSMutableArray array];
+	// Replace MS Word line breaks with macOS ones
+	text = [text stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+	
     NSArray *lines = [text componentsSeparatedByString:@"\n"];
 	_indicesToLoad = lines.count;
     
@@ -195,7 +198,7 @@ static NSDictionary* patterns;
 	Line *previousLine;
 	
     for (NSString *rawLine in lines) {
-        NSInteger index = [self.lines count];
+        NSInteger index = _lines.count;
         Line* line = [[Line alloc] initWithString:rawLine position:position parser:self];
         [self parseTypeAndFormattingForLine:line atIndex:index];
 		
@@ -1990,8 +1993,9 @@ and incomprehensible system of recursion.
 	NSInteger sceneNumber = 0;
 	if (line.isOutlineElement) {
 		for (OutlineScene *scene in self.outline) {
-			if (scene.type == heading && line.sceneNumberRange.length == 0 && !scene.omitted) sceneNumber++;
-			NSLog(@"Scene number: %lu", sceneNumber);
+			if (scene.type == heading && scene.line.sceneNumberRange.length == 0 && !scene.omitted) {
+				sceneNumber++;
+			}
 			
 			if (scene.line == line) {
 				if (scene.line.omitted) line.sceneNumber = @"";
@@ -2500,7 +2504,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 	
 	while (i >= 0) {
 		Line *l = self.lines[i];
-		if (!l.isInvisible) return l;
+		if (!l.isInvisible && !l.isSplitParagraph) return l;
 		i--;
 	}
 	
@@ -2675,17 +2679,17 @@ NSUInteger prevLineAtLocationIndex = 0;
 	NSInteger i = 0;
 	for (Line* line in linesForPrinting) {
 		if (i > 0) {
-			Line *precedingLine = lines[i - 1];
+			Line *preceedingLine = lines[i - 1];
 			if (line.type == action) {
-				if (precedingLine.type == action && precedingLine.string.length > 0) line.isSplitParagraph = YES;
+				if (preceedingLine.type == action && preceedingLine.string.length > 0) line.isSplitParagraph = YES;
 			}
 			
-			else if (line.type == lyrics && precedingLine.type == empty) {
+			else if (line.type == lyrics && (preceedingLine.type == empty || preceedingLine.type != lyrics)) {
 				// If this line is preceded by an empty line, it begins a new block
 				line.beginsNewVisualBlock = true;
 			}
 			
-			else if (line.type == centered && precedingLine.type == empty) {
+			else if (line.type == centered && preceedingLine.type == empty) {
 				// If this line is preceded by an empty line, it begins a new block
 				line.beginsNewVisualBlock = true;
 			}

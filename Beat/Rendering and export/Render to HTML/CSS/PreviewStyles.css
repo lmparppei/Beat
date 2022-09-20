@@ -57,6 +57,7 @@ body {
 
 	margin-right: auto;
 	margin-left: auto;
+	margin-top: 2em;
 
 	width: 21cm; /* this differs from the printCSS, which removes 2 x 50pt to avoid shrinkage */
 }

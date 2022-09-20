@@ -96,7 +96,7 @@
                         </scroller>
                     </scrollView>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pvV-KY-bOx">
-                        <rect key="frame" x="7" y="217.5" width="22.5" height="32"/>
+                        <rect key="frame" x="7" y="217.5" width="23.5" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="magnifyingglass" catalog="system" id="AiZ-5w-dRy"/>
                     </imageView>

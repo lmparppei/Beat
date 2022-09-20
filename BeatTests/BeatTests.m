@@ -2,12 +2,11 @@
 //  BeatTests.m
 //  BeatTests
 //
-//  Created by Lauri-Matti Parppei on 15.7.2020.
-//  Copyright © 2020 KAPITAN!. All rights reserved.
+//  Created by Lauri-Matti Parppei on 5.9.2022.
+//  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
-#import "../Beat/Scripting/BeatScriptParser.h"
 
 @interface BeatTests : XCTestCase
 

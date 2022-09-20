@@ -395,8 +395,9 @@ class BeatReviewTextView:NSTextView {
 		}
 		*/
 		
-		// Close on esc
-		if (event.keyCode == 53) {
+		// Close on esc or shift-enter
+		if (event.keyCode == 53 ||
+			event.keyCode == 36 && event.modifierFlags.contains(.shift)) {
 			reviewDelegate?.confirm(sender: self)
 			return
 		}

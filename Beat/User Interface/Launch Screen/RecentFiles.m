@@ -37,9 +37,8 @@
 - (void)reload {
 	// We'll cache the date results to avoid sandboxing file access problems.
 	
-	_items = [NSMutableArray array];
-	
 	NSArray *files = _recentFiles;
+	_items = NSMutableArray.new;
 
 	for (NSURL *fileUrl in files) {
 		NSDate *fileDate;

@@ -38,8 +38,11 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		textField?.delegate = self
 		delegate?.parser.createOutline()
 		results = delegate?.parser.outline as! [OutlineScene]
+		addCloseOnOutsideClick()
 	}
-	
+	deinit {
+		removeCloseOnOutsideClick()
+	}
 	
 	
 	override func cancelOperation(_ sender: Any?) {
@@ -113,7 +116,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	// MARK: - Filtering and jumping to scene
 	
 	func selectScene() {
-		if (self.tableView!.numberOfRows > 0) {
+		if (self.tableView!.numberOfRows > 0 && self.tableView!.selectedRow != NSNotFound && self.tableView!.selectedRow >= 0 ) {
 			// Get selected scene from the table (usually the first one)
 			let scene = self.tableView!.dataSource!.tableView!(self.tableView!, objectValueFor: nil, row: tableView!.selectedRow) as? OutlineScene ?? nil
 			
@@ -156,7 +159,9 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 			tableView?.selectRowIndexes([0], byExtendingSelection: false)
 		}
 	}
-			
+	
+	// MARK: - Table view data source and delegate
+	
 	func numberOfRows(in tableView: NSTableView) -> Int {
 		return results.count
 	}
@@ -181,6 +186,41 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 		
 		return view
 	}
+	
+	func tableView(_ tableView: NSTableView, shouldSelectRow row: Int) -> Bool {
+		self.tableView?.selectRowIndexes([row], byExtendingSelection: false)
+		selectScene()
+		return true
+	}
+	
+	// MARK: - Observe clicks outside the modal
+	private var monitor: Any?
+	func addCloseOnOutsideClick(ignoring ignoringViews: [NSView]? = nil) {
+		monitor = NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.leftMouseDown) { (event) -> NSEvent? in
+		
+		if !self.window!.contentView!.frame.contains(event.locationInWindow) {
+				// If the click is in any of the specified views to ignore, don't hide
+				for ignoreView in ignoringViews ?? [NSView]() {
+					let frameInWindow: NSRect = ignoreView.convert(ignoreView.bounds, to: nil)
+					if frameInWindow.contains(event.locationInWindow) {
+						// Abort if clicking in an ignored view
+						return event
+					}
+				}
+				
+				// Getting here means the click should hide the view
+				// Perform your hiding code here
+				self.closeModal()
+			}
+			return event
+		}
+	}
+	func removeCloseOnOutsideClick() {
+	   if monitor != nil {
+		   NSEvent.removeMonitor(monitor!)
+		   monitor = nil
+	   }
+   }
 }
 
 class BeatSceneHeadingView:NSTableCellView {

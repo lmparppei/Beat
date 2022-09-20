@@ -53,8 +53,6 @@
  
 */
 
-/*
-For the future iOS port:
 @font-face
 {
 	font-family: 'Courier Prime';
@@ -81,7 +79,6 @@ For the future iOS port:
 	font-style: italic;
 	src: url("Courier Prime Bold Italic.ttf");
 }
- */
 
 html {
 	margin: 0px;

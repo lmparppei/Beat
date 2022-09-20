@@ -465,11 +465,11 @@ static bool underlinedHeading;
 			} else {
 				if (beginBlock) {
 					// Begin new block
-					[body appendFormat:@"<p class='%@%@' uuid='%@'>%@<br>", [self htmlClassForType:line.typeAsString], additionalClasses, line.uuid.UUIDString, text];
+					[body appendFormat:@"<p class='%@%@' uuid='%@'>%@<br>\n", [self htmlClassForType:line.typeAsString], additionalClasses, line.uuid.UUIDString.lowercaseString, text];
 				} else {
 					// Continue the block
 					// note: we can't use \n after the lines to make it more easy read, because we want to preserve the white space
-					[body appendFormat:@"%@<br>", text];
+					[body appendFormat:@"<span class='%@'>%@</span><br>\n", line.uuid.UUIDString.lowercaseString, text];
 				}
 			}
 		} else {

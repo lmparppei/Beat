@@ -539,6 +539,7 @@ static BeatAppDelegate *appDelegate;
 	
 	//Put any previously loaded data into the text view
 	self.documentIsLoading = YES;
+		
 	if (self.contentBuffer) {
 		[self setText:self.contentBuffer];
 	} else {
@@ -1227,7 +1228,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (!_documentSettings) _documentSettings = BeatDocumentSettings.new;
 	
 	// Load text & remove settings block
-	NSString *text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r" withString:@"\n"];
+	NSString *text = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
 	NSRange settingsRange = [_documentSettings readSettingsAndReturnRange:text];
 	text = [text stringByReplacingCharactersInRange:settingsRange withString:@""];
     	
@@ -2015,6 +2016,9 @@ static NSWindow __weak *currentKeyWindow;
 }
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString
 {
+	// Remove unnecessary line breaks
+	newString = [newString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+	
 	// Replace with undo registration
 	NSString *oldString = [self.textView.string substringWithRange:range];
 	[self replaceCharactersInRange:range withString:newString];
@@ -2989,11 +2993,7 @@ static NSWindow __weak *currentKeyWindow;
 	// Normal editor view items
 	bool uneditable = NO;
 	if (_mode == TaggingMode || _mode == ReviewMode) uneditable = YES;
-	
-	if ([_formattingActions respondsToSelector:menuItem.action]) {
-		NSLog(@"OK %@", menuItem.title);
-	}
-	
+		
 	// Validate ALL on/of items
 	// This is a specific class which matches given methods against a property in this class, ie. toggleSomething -> .something
 	for (ValidationItem *item in _itemsToValidate) {
@@ -3266,6 +3266,7 @@ static NSWindow __weak *currentKeyWindow;
 	self.textView.layoutManager.allowsNonContiguousLayout = YES;
 	
 	[self.textView toggleHideFountainMarkup];
+	[self resetSceneNumberLabels];
 	[self updateLayout];
 }
 

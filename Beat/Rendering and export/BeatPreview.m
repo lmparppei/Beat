@@ -119,7 +119,7 @@
 	NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", currentLine.uuid.UUIDString.lowercaseString];
 	
 	_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
-	[_previewView loadHTMLString:_htmlString baseURL:nil]; // Load HTML
+	[_previewView loadHTMLString:_htmlString baseURL:NSBundle.mainBundle.resourceURL]; // Load HTML
 	
 	// Revert changes to the code (so we can replace the placeholder again,
 	// if needed, without recreating the whole HTML)
