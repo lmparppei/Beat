@@ -5,6 +5,11 @@
 //  Created by Lauri-Matti Parppei on 13.1.2020.
 //  Copyright © 2020 KAPITAN!. All rights reserved.
 //
+/*
+ 
+ This whole class should be rewritten to use WKWebView
+ 
+ */
 
 #import <WebKit/WebKit.h>
 #import <Quartz/Quartz.h>

@@ -11,7 +11,7 @@ import Cocoa
 class BeatModeDisplay:NSView {
 	
 	@IBOutlet var title:NSTextField?
-	@IBOutlet var editorDelegate:BeatEditorDelegate?
+	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
 	
 	override func awakeFromNib() {
 		self.wantsLayer = true

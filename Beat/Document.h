@@ -93,6 +93,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // For delegation
 @property (nonatomic, weak) OutlineScene *currentScene; // Don't retain the Outline Scene
 @property (nonatomic) NSMutableIndexSet *changes;
+@property (atomic) NSString *textCache;
 @property (atomic) NSAttributedString *attrTextCache;
 - (NSAttributedString*)getAttributedText; // ONLY IN MAIN THREAD
 

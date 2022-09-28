@@ -835,9 +835,20 @@
 	first = [attrStr attributedSubstringFromRange:(NSRange){ 0, index }];
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
+	// Remove whitespace from the beginning if needed
+	if ([second.string characterAtIndex:0] == ' ') {
+		while (second.string.length > 0) {
+			if ([second.string characterAtIndex:0] == ' ') {
+				second = [second attributedSubstringFromRange:NSMakeRange(1, second.length - 1)];
+			} else {
+				break;
+			}
+		}
+	}
+	
 	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
 	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
-		
+	
 	if (self.changed) {
 		retain.changed = YES;
 		split.changed = YES;

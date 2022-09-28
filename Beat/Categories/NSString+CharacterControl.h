@@ -14,5 +14,6 @@
 - (bool)containsOnlyUppercase;
 - (bool)onlyUppercaseUntilParenthesis;
 - (NSString *)stringByTrimmingTrailingCharactersInSet:(NSCharacterSet *)characterSet;
+- (NSInteger)numberOfOccurencesOfCharacter:(unichar)symbol;
 
 @end

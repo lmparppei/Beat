@@ -94,8 +94,8 @@ section {
 .orange > .revisionMarker::after,
 .purple > .revisionMarker::after,
 .green > .revisionMarker::after {
-	background: #f0f0f0 !important;
-	background-color: #f0f0f0 !important;
+	background: #fafafa !important;
+	background-color: #fafafa !important;
 }
 
 /* .dual-dialogue-left */

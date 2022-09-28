@@ -54,10 +54,13 @@ typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 @property (nonatomic, weak) IBOutlet WKWebView *previewView;
 @property (nonatomic) BeatPaginator* paginator;
 - (id) initWithDocument:(id)document;
-- (NSString*) createPreview;
-- (NSString*) createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType;
+- (NSString*)createPreview;
+- (NSString*)createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType;
+- (NSString*)createPreviewFromPaginator:(BeatPaginator*)paginator;
 - (void)displayPreview;
 - (void)updatePreviewInSync:(bool)sync;
+- (void)updatePreviewWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage;
+- (void)updatePreviewSynchronized;
 - (void)setup;
 - (void)deallocPreview;
 @end

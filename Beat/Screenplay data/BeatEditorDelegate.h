@@ -28,6 +28,7 @@
 
 #if !TARGET_OS_IOS
 @class BeatPrintView;
+@class BeatPaginator;
 #else
 @class BeatUITextView;
 #endif
@@ -49,6 +50,7 @@
 @property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
+@property (nonatomic, readonly) BeatPaginator *paginator;
 #endif
 
 @property (nonatomic, readonly) bool documentIsLoading;

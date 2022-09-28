@@ -56,6 +56,38 @@
 	self.previewView = nil;
 }
 
+/// Create a preview with pre-paginated content from the paginator in document (this should be the way from now on, until we get the new renderer)
+- (NSString*)createPreviewFromPaginator:(BeatPaginator*)paginator {
+	NSArray *pages = (paginator != nil) ? paginator.pages.copy : @[];
+
+	NSArray *titlePage = @[];
+	if (_delegate != nil) {
+		NSString *strForTitlePage = _delegate.text;
+		titlePage = [ContinuousFountainParser titlePageForString:strForTitlePage];
+	}
+	
+	return [self createPreviewWithPages:pages titlePage:titlePage];
+}
+
+/// Create preview with given pages and title page
+- (NSString*)createPreviewWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage {
+#if TARGET_OS_IOS
+	id doc = _delegate.documentForDelegation;
+#else
+	id doc = _delegate.document;
+#endif
+	
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisions.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
+	settings.paperSize = _delegate.pageSize;
+
+	// This following weird code salad is here to circumvent strange corpse exceptions
+	BeatHTMLScript *generator = [BeatHTMLScript.alloc initWithPages:pages titlePage:titlePage settings:settings];
+	NSString * html = generator.html;
+	_htmlGenerator = generator;
+	
+	return html;
+}
+
 - (NSString*)createPreview {
 	if (self.delegate) {
 		NSString *rawText = self.delegate.text.copy;
@@ -63,6 +95,7 @@
 	}
 	return @"";
 }
+
 - (NSString*)createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType {
 	if (_delegate) {
 		// This is probably a normal parser, because a delegate is present
@@ -100,6 +133,7 @@
 		
 		// This following weird code salad is here to circumvent strange corpse exceptions
 		BeatHTMLScript *generator = [BeatHTMLScript.alloc initWithScript:script settings:settings];
+		
 		NSString * html = generator.html;
 		_htmlGenerator = generator;
 		
@@ -110,7 +144,7 @@
 - (void)displayPreview {
 	if (_htmlString.length == 0 || !_previewUpdated) {
 		// Update the preview in sync if it hasn't been built yet
-		[self updatePreviewInSync:YES];
+		[self updatePreviewSynchronized];
 	}
 	
 	// Create JS scroll function call and append it straight into the HTML
@@ -132,6 +166,7 @@
 
 /// Update preview either in background or in sync
 - (void)updatePreviewInSync:(bool)sync {
+	NSLog(@"PREVIEW: updatePreviewInSync: should be deprecated.");
 	[_previewTimer invalidate];
 	self.previewUpdated = NO;
 	
@@ -151,6 +186,22 @@
 	}
 }
 
+- (void)updatePreviewSynchronized {
+	[_delegate.paginator paginate];
+	NSArray * titlePage = [ContinuousFountainParser titlePageForString:_delegate.text];
+	
+	self.htmlString = [self createPreviewWithPages:_delegate.paginator.pages.copy titlePage:titlePage];
+	[self.delegate previewDidFinish];
+	
+	self.previewUpdated = true;
+}
+
+- (void)updatePreviewWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage {
+	self.htmlString = [self createPreviewWithPages:pages titlePage:titlePage];
+	[self.delegate previewDidFinish];
+	self.previewUpdated = true;
+}
+
 - (void)updateHTMLWithContents:(NSString*)string {
 	__block NSString *html = [self createPreviewFor:string type:BeatPrintPreview];
 	self.htmlString = html;
@@ -159,7 +210,8 @@
 }
 
 - (BeatPaginator*)paginator {
-	return _htmlGenerator.paginator;
+	return _delegate.paginator;
+	//return _htmlGenerator.paginator;
 }
 
 /*

@@ -68,6 +68,7 @@
 #import "BeatMeasure.h"
 #import "BeatAppDelegate.h"
 #import "BeatFonts.h"
+#import "NSString+CharacterControl.h"
 
 #if TARGET_OS_IOS
 	#define BXDocument UIDocument
@@ -168,7 +169,6 @@
 
 @property (nonatomic) NSMutableArray <NSArray<Line*>*>*pageCache;
 @property (nonatomic) NSMutableArray <NSArray<Line*>*>*pageBreakCache;
-
 @end
 
 @implementation BeatPaginator
@@ -223,7 +223,7 @@
 	bool pageFound = false;
 	for (NSMutableArray *page in _pages) {
 		for (Line* line in page) {
-			if (location >= line.position) {
+			if (line.position >= location) {
 				currentPage = page;
 				pageFound = true;
 				break;
@@ -232,9 +232,9 @@
 		
 		if (pageFound) break;
 	}
-		
+	
 	// No page found
-	if (!currentPage) return NSNotFound;
+	if (currentPage == nil) return NSNotFound;
 	
 	// Find the index of the page on which our current line is on
 	NSInteger pageIndex = [_pages indexOfObject:currentPage];
@@ -425,8 +425,13 @@
 	
 }
 
+#pragma mark - Pagination loop
+
 - (void)paginateFromIndex:(NSInteger)fromIndex
 {
+	// Reset updated pages
+	_updatedPages = NSMutableIndexSet.new;
+	
 	if (!self.script.count) return;
 	
 	if (!_livePagination) {
@@ -449,13 +454,13 @@
 	currentPage.maxHeight = maxPageHeight;
 	currentPage.delegate = self;
 	
-	bool hasStartedANewPage = NO;
+	bool hasStartedANewPage = false;
+	bool didUseCache = false;
 
 	
 	// create a tmp array that will hold elements to be added to the pages
 	NSMutableArray *tmpElements = [NSMutableArray array];
-	
-	
+		
 	// Walk through the elements array and place them on pages.
 	for (NSInteger i = 0; i < self.script.count; i++) { @autoreleasepool {
 		if (!_paginating && _livePagination) {
@@ -485,12 +490,12 @@
 		// If we've started a new page since we began paginating, see if the rest of the page is intact.
 		// If so, we can just use our cached results.
 		if (hasStartedANewPage && currentPage.count == 0 &&
-			!element.unsafeForPageBreak && _pageCache.count >= self.pages.count) {
-			Line *firstLineOnCachedPage = _pageCache[self.pages.count-1].firstObject;
+			!element.unsafeForPageBreak && _pageCache.count > self.pages.count) {
+			Line *firstLineOnCachedPage = _pageCache[self.pages.count].firstObject;
 			
 			if (firstLineOnCachedPage.uuid == element.uuid) {
-				[self useCachedPaginationFrom:self.pages.count - 1];
-
+				[self useCachedPaginationFrom:self.pages.count];
+				didUseCache = true;
 				// Stop pagination
 				break;
 			}
@@ -576,69 +581,21 @@
 					spillerElement = element;
 				}
 									
-				// Split first paragraph scene into two if it's higher than one line
-				NSInteger limit = lineHeight;
+				// Split first paragraph in a scene if it's higher than one line
 				NSInteger space = maxPageHeight - currentPage.y;
 				
-				if (fabs(overflow) > limit && space > limit * 2 && !handled) {
-					NSMutableArray *words = [spillerElement.stripFormatting componentsSeparatedByString:@" "].mutableCopy;
-					
+				if (fabs(overflow) > lineHeight && space > lineHeight * 2 && !handled) {
 					NSInteger space = maxPageHeight - currentPage.y;
 					
-					// We substract heading line height from the remaining space
-					if (headingBlock) space -= [self heightForBlock:@[element] page:currentPage];
-					
-					NSMutableString *text = [NSMutableString stringWithString:@""];
-					NSMutableString *retain = [NSMutableString stringWithString:@""];
-					NSMutableString *split = [NSMutableString stringWithString:@""];
-					
-					CGFloat breakPosition = 0;
-					
-					// Loop through words and count the height
-					for (NSInteger wordIndex = 0; wordIndex < words.count; wordIndex++) {
-						NSString *word = words[wordIndex];
-						
-						if ([word containsString:@"\n"] && word.length > 1) {
-							// Move line break at end of the word and add a new word into array
-							NSArray *linebreak = [word componentsSeparatedByString:@"\n"];
-							word = [NSString stringWithFormat:@"%@\n", linebreak[0]];
-							[words insertObject:linebreak[1] atIndex:wordIndex+1];
-						}
-						
-						if (wordIndex == 0) [text appendFormat:@"%@", word];
-						else {
-							// This is a very quick and dirty fix for weird edge cases
-							if (word.length) {
-								if ([word characterAtIndex:word.length-1] == '\n') [text appendFormat:@"%@", word];
-								else [text appendFormat:@" %@", word];
-							}
-							else [text appendFormat:@" %@", word];
-						}
-						
-						Line *tempElement = [[Line alloc] initWithString:text type:action];
-						
-						NSInteger h = [self elementHeight:tempElement lineHeight:lineHeight];
-						if (h < space) {
-							breakPosition = h;
-							if (wordIndex == 0) [retain appendFormat:@"%@", word];
-							else if (word.length) {
-								if ([word characterAtIndex:word.length-1] == '\n') [retain appendFormat:@"%@", word];
-								else [retain appendFormat:@" %@", word];
-							}
-							else [retain appendFormat:@" %@", word];
-						} else {
-							[split appendFormat:@" %@", word];
-						}
-					}
-					
-					NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
+					NSArray *splitElements = [self splitParagraph:spillerElement space:space];
 					Line *prePageBreak = splitElements[0];
 					Line *postPageBreak = splitElements[1];
+					CGFloat breakPosition = ((NSNumber*)splitElements[2]).floatValue;
 
 					// If it's a heading we need special rules
 					if (headingBlock) {
 						// We had something remain on the original page
-						if (retain.length) {
+						if (prePageBreak.string.length) {
 							[self resetPage:currentPage onCurrentPage:@[element, prePageBreak] onNextPage:@[postPageBreak]];
 							[self pageBreak:spillerElement position:breakPosition type:@"Heading block"];
 						}
@@ -651,7 +608,7 @@
 						[self resetPage:currentPage onCurrentPage:@[prePageBreak] onNextPage:@[postPageBreak]];
 						[self pageBreak:spillerElement position:breakPosition type:@"Action or heading"];
 					}
-											
+
 					continue;
 					
 				} else {
@@ -811,10 +768,77 @@
 	// Remove last page if it's empty
 	NSArray *lastPage = _pages.lastObject;
 	if (lastPage.count == 0) [_pages removeLastObject];
-		
+	
+	// Update last page if needed
+	if (!didUseCache) [_updatedPages addIndex:_pages.count - 1];
+	
+	// Only for static pagination
 	_lastPageHeight = (float)currentPage.y / (float)maxPageHeight;
 }
 
+- (NSArray*)splitParagraph:(Line*)spillerElement space:(NSInteger)space {
+	
+	NSString *str = spillerElement.stripFormatting;
+	str = [str stringByReplacingOccurrencesOfString:@"\n  \n" withString:@"\n••\n"]; // To not get our indicies confused by forced whitespace
+	NSMutableArray *words = [str componentsSeparatedByString:@" "].mutableCopy;
+	
+	NSMutableString *text = [NSMutableString stringWithString:@""];
+	NSMutableString *retain = [NSMutableString stringWithString:@""];
+	//NSMutableString *split = [NSMutableString stringWithString:@""];
+	
+	CGFloat breakPosition = 0;
+						
+	// Loop through words and count the height
+	for (NSInteger wordIndex = 0; wordIndex < words.count; wordIndex++) {
+		NSString *word = words[wordIndex];
+		
+		if ([word numberOfOccurencesOfCharacter:'\n'] > 1 && word.length > 1) {
+			// Create a new array from line breaks
+			NSArray *linebreaks = [word componentsSeparatedByString:@"\n"];
+			
+			if (linebreaks.count > 0) {
+				// First word WILL ALWAYS contain a line break
+				word = [NSString stringWithFormat:@"%@\n", linebreaks[0]];
+				
+				// Fetch the following linebreaks and add them into the queue of upcoming words
+				NSInteger b = 1;
+				while (b < linebreaks.count) {
+					NSString *brokenWord = linebreaks[b];
+					
+					if (brokenWord != linebreaks.lastObject)  [words insertObject:[NSString stringWithFormat:@"%@\n",brokenWord] atIndex:wordIndex+b];
+					else [words insertObject:brokenWord atIndex:wordIndex+b];
+					b++;
+				}
+			}
+		}
+		
+		if (wordIndex == 0) [text appendFormat:@"%@", word];
+		else {
+			[text appendFormat:@" %@", word];
+		}
+		
+		Line *tempElement = [Line withString:text type:action];
+		
+		NSInteger h = [self elementHeight:tempElement lineHeight:BeatPaginator.lineHeight];
+		if (h < space) {
+			breakPosition = h;
+			if (wordIndex == 0) [retain appendFormat:@"%@", word];
+			else if (word.length) {
+				if ([word characterAtIndex:word.length-1] == '\n') [retain appendFormat:@"%@", word];
+				else [retain appendFormat:@" %@", word];
+			}
+			else [retain appendFormat:@" %@", word];
+		} else {
+			break;
+		}
+	}
+	
+	NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
+	Line *prePageBreak = splitElements[0];
+	Line *postPageBreak = splitElements[1];
+	
+	return @[prePageBreak, postPageBreak, @(breakPosition)];
+}
 
 - (NSString *)snippet:(NSString*)string {
 	if ([string length] > 25) {
@@ -1346,7 +1370,8 @@
 
 	if (prevPageItems.count) [currentPage addBlock:prevPageItems height:0]; // No need to calculate height for these elements
 	[_pages addObject:currentPage.contents];
-	
+	[_updatedPages addIndex:_pages.count - 1];
+
 	[currentPage clear];
 	
 	// Let's run the next page block through height calculator, so its line objects get the correct height.

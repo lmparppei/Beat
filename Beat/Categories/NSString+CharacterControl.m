@@ -37,6 +37,15 @@
     return NO;
 }
 
+- (NSInteger)numberOfOccurencesOfCharacter:(unichar)symbol {
+	NSInteger occurences = 0;
+	
+	for (NSInteger i=0; i<self.length; i++) {
+		if ([self characterAtIndex:i] == symbol) occurences += 1;
+	}
+	
+	return occurences;
+}
 
 - (bool)containsOnlyUppercase
 {

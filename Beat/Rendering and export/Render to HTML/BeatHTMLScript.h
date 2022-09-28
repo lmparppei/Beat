@@ -48,7 +48,8 @@
 @property (copy, nonatomic) NSString *bodyText;
 @property (nonatomic) BeatPaginator *paginator;
 
-- (id)initWithScript:(BeatScreenplay*)script settings:(id)settings; // The new way
+- (id)initWithScript:(BeatScreenplay*)script settings:(id)settings; // Static preview creation
+- (id)initWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage settings:(BeatExportSettings*)settings; // Create pagination with existing data
 - (id)initForQuickLook:(BeatScreenplay*)script;
 
 - (NSInteger)pages;

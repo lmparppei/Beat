@@ -96,6 +96,26 @@ static NSDictionary* patterns;
 
 #pragma mark - Initializers
 
+/// Extracts the title page from given string
++ (NSArray*)titlePageForString:(NSString*)string {
+	NSArray <NSString*>*rawLines = [string componentsSeparatedByString:@"\n"];
+	
+	if (rawLines.count == 0) return @[];
+	else if (![rawLines.firstObject containsString:@":"]) return @[];
+	
+	NSMutableString *text = NSMutableString.new;
+	
+	for (NSString *l in rawLines) {
+		// Break at empty line
+		[text appendFormat:@"%@\n", l];
+		if ([l isEqualToString:@""]) break;
+	}
+	[text appendString:@"\n"];
+	
+	ContinuousFountainParser *parser = [ContinuousFountainParser.alloc initWithString:text];
+	return parser.titlePage;
+}
+
 - (ContinuousFountainParser*)initStaticParsingWithString:(NSString*)string settings:(BeatDocumentSettings*)settings {
 	return [self initWithString:string delegate:nil settings:settings nonContinuous:YES];
 }

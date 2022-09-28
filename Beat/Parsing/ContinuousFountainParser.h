@@ -77,6 +77,7 @@
 @property (nonatomic) bool staticParser;
 
 + (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings;
++ (NSArray*)titlePageForString:(NSString*)string;
 
 // Initialization for both CONTINUOUS and STATIC parsing
 - (ContinuousFountainParser*)initWithString:(NSString*)string delegate:(id<ContinuousFountainParserDelegate>)delegate;

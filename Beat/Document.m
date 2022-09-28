@@ -820,8 +820,9 @@ static BeatAppDelegate *appDelegate;
 	
 	[self loadCaret];
 	[self ensureCaret];
-	[self.preview updatePreviewInSync:NO];
-	if (paginate) [self paginateAt:(NSRange){0,0} sync:YES];
+	//[self.preview updatePreviewInSync:NO];
+	
+	[self paginateAt:(NSRange){0,0} sync:YES];
 }
 
 // Can I come over, I need to rest
@@ -1276,7 +1277,7 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (NSString *)text {
-    return self.textView.string;
+	return self.textView.string;
 }
 
 /*
@@ -1873,16 +1874,16 @@ static NSWindow __weak *currentKeyWindow;
 	}
 	
 	// Update preview screen
-	[self.preview updatePreviewInSync:NO];
+	// [self.preview updatePreviewInSync:NO];
 	
 	// Draw masks again if text did change
-	if (_outlineView.filteredOutline.count) [self maskScenes];
+	// if (_outlineView.filteredOutline.count) [self maskScenes];
 	
 	// Update any currently running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
 	
 	// Save to buffer
-	_contentCache = [NSString stringWithString:self.textView.string];
+	_contentCache = self.textView.string.copy;
 	
 	// Fire up autocomplete at the end of string and create cached lists of scene headings / character names
 	if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
@@ -3286,7 +3287,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// If preview is visible, recreate it
 	if (self.currentTab == _previewTab) {
-		[self.preview updatePreviewInSync:YES];
+		//[self.preview updatePreviewInSync:YES];
+		[self.preview updatePreviewSynchronized];
 	}
 }
 
@@ -4118,6 +4120,8 @@ triangle walks
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
 	if (!self.showPageNumbers) return;
 	
+	_textCache = self.text;
+	
 	dispatch_async(dispatch_get_main_queue(), ^{
 		// Null the timer so we don't have too many of these operations queued
 		if (self.paginationTimer) {
@@ -4135,20 +4139,24 @@ triangle walks
 			// Dispatch to a background thread
 			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
 				[self.paginator livePaginationFor:lines changeAt:range.location];
-				
-				NSArray *pageBreaks = self.paginator.pageBreaks;
-				
-				// Don't do nothing if the page break array is nil
-				// This SHOULD mean that pagination was canceled
-				if (pageBreaks == nil) return;
-				
-				// Update text view page breaks in main queue
-				dispatch_async(dispatch_get_main_queue(), ^(void){
-					[self.textView updatePageBreaks:pageBreaks];
-				});
+				[self paginationDidFinishWithPages:self.paginator.pages.copy pageBreaks:self.paginator.pageBreaks.copy];
 			});
 		}];
 	});
+}
+
+- (void)paginationDidFinishWithPages:(NSArray*)pages pageBreaks:(NSArray*)pageBreaks {
+	// Update text view page breaks in main queue
+	if (self.showPageNumbers) {
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			// Don't do nothing if the page break array is nil -- this SHOULD mean that pagination was canceled
+			if (pageBreaks != nil) [self.textView updatePageBreaks:pageBreaks];
+		});
+	}
+	
+	// Update preview in background
+	NSArray *titlePage = [ContinuousFountainParser titlePageForString:_textCache];
+	[self.preview updatePreviewWithPages:pages titlePage:titlePage];
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {

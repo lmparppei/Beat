@@ -123,9 +123,8 @@
 @property (readonly, copy, nonatomic) NSString *cssText;
 @property (nonatomic) NSInteger numberOfPages;
 @property (nonatomic) NSArray* htmlPages;
-
+@property (atomic) NSArray* paginatedContent;
 @property (nonatomic) BeatExportSettings *settings;
-
 
 @end
 
@@ -134,7 +133,6 @@
 static bool boldedHeading;
 static bool underlinedHeading;
 
-// The new, modernized way
 - (id)initWithScript:(BeatScreenplay*)script settings:(BeatExportSettings*)settings {
 	self = [super init];
 	
@@ -152,6 +150,26 @@ static bool underlinedHeading;
 	
 	return self;
 }
+
+// Init with pre-paginated content
+- (id)initWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage settings:(BeatExportSettings*)settings {
+	self = [super init];
+	
+	if (settings) {
+		_titlePage = titlePage;
+		_paginatedContent = pages;
+		_settings = settings;
+		
+		if (settings.header.length == 0) settings.header = @""; // Double check that header is ""
+						
+		// Styles
+		boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
+		underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
+	}
+	
+	return self;
+}
+
 - (id)initForQuickLook:(BeatScreenplay*)script {
 	BeatExportSettings *settings = [BeatExportSettings operation:ForQuickLook document:nil header:@"" printSceneNumbers:YES];
 	settings.paperSize = BeatA4;
@@ -219,7 +237,7 @@ static bool underlinedHeading;
 }
 
 - (NSArray*)singlePages {
-	if (self.htmlPages == nil) self.htmlPages = [self createAllPages];
+	if (self.htmlPages == nil) self.htmlPages = [self paginateAndCreateHTML];
 	
 	NSMutableArray *everyPageAsDocument = NSMutableArray.new;
 	
@@ -327,25 +345,10 @@ static bool underlinedHeading;
 				block = empty;
 			}
 
-			/*
-			if (isLyrics) {
-				// Close lyrics block
-				[body appendFormat:@"</p>\n"];
-				isLyrics = false;
-			}
-			 */
 			continue;
 		}
 		
 		if (line.type == pageBreak) {
-			// Close possible blocks
-			/*
-			if (isLyrics) {
-				// Close lyrics block
-				[body appendFormat:@"</p>\n"];
-				isLyrics = false;
-			}
-			 */
 			if (block != empty) {
 				// Close the block
 				[body appendFormat:@"</p>\n"];
@@ -395,25 +398,6 @@ static bool underlinedHeading;
 				beginBlock = true;
 			}
 		}
-		
-		/*
-		if (line.type == lyrics) {
-			if (block != lyrics) {
-				beginBlock = true;
-				block = line.type;
-			}
-			else if (block == lyrics && line.beginsLyricsBlock) {
-				[body appendFormat:@"</p>\n"];
-				beginBlock = true;
-			}
-		} else {
-			// Close lyrics block
-			if (block == lyrics) {
-				[body appendFormat:@"</p>\n"];
-				block = empty;
-			}
-		}
-		 */
 		
 		// Format string for HTML (if it's not a heading)
 		[text setString:[self htmlStringFor:line]];
@@ -465,11 +449,11 @@ static bool underlinedHeading;
 			} else {
 				if (beginBlock) {
 					// Begin new block
-					[body appendFormat:@"<p class='%@%@' uuid='%@'>%@<br>\n", [self htmlClassForType:line.typeAsString], additionalClasses, line.uuid.UUIDString.lowercaseString, text];
+					[body appendFormat:@"<p class='%@%@' uuid='%@'>%@<br>", [self htmlClassForType:line.typeAsString], additionalClasses, line.uuid.UUIDString.lowercaseString, text];
 				} else {
 					// Continue the block
 					// note: we can't use \n after the lines to make it more easy read, because we want to preserve the white space
-					[body appendFormat:@"<span class='%@'>%@</span><br>\n", line.uuid.UUIDString.lowercaseString, text];
+					[body appendFormat:@"<span class='%@'>%@</span><br>", line.uuid.UUIDString.lowercaseString, text];
 				}
 			}
 		} else {
@@ -490,35 +474,45 @@ static bool underlinedHeading;
 }
 
 - (NSString*)htmlBody {
-	_htmlPages = [self createAllPages];
+	if (_paginatedContent != nil) {
+		_htmlPages = [self createHTMLWithPages:_paginatedContent];
+	}
+	else {
+		_htmlPages = [self paginateAndCreateHTML];
+	}
 	return [_htmlPages componentsJoinedByString:@"\n"];
 }
 
-- (NSArray*)createAllPages
+- (NSArray*)paginateAndCreateHTML
 {
-	NSMutableArray *pages = NSMutableArray.new;
+	// Pagination
+	_paginator = [BeatPaginator.alloc initWithScript:_script settings:_settings];
+	[_paginator paginate];
+	return [self createHTMLWithPages:_paginator.pages];
+}
+
+- (NSArray*)createHTMLWithPages:(NSArray*)paginatedContent
+{
+	_numberOfPages = paginatedContent.count;
 	
+	NSMutableArray *pages = NSMutableArray.new;
 	NSMutableDictionary *titlePage = NSMutableDictionary.dictionary;
 	
 	// Put title page elements into a dictionary
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
+	
 	// Create title page
 	NSString * titlePageString = [self createTitlePage:titlePage];
 	[pages addObject:titlePageString];
-    
-	// Pagination
-	_paginator = [BeatPaginator.alloc initWithScript:_script settings:_settings];
-    NSUInteger maxPages = _paginator.numberOfPages;
-	_numberOfPages = maxPages;
-	
+    	
 	// Header string (make sure it's not null)
 	NSString *header = (_settings.header) ? _settings.header : @"";
 	if (header.length) header = [header stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	
-	for (NSInteger pageIndex = 0; pageIndex < maxPages; pageIndex++) {
-        NSArray *elementsOnPage = [_paginator pageAtIndex:pageIndex];
+	for (NSInteger pageIndex = 0; pageIndex < paginatedContent.count; pageIndex++) {
+        NSArray *elementsOnPage = paginatedContent[pageIndex];
 		NSString *pageAsString = [self singlePage:elementsOnPage pageNumber:pageIndex + 1];
 		[pages addObject:pageAsString];
     }

@@ -66,6 +66,7 @@
 @property (readonly) CGFloat lastPageHeight;
 @property (strong, nonatomic) NSMutableArray<NSMutableArray<Line*>*> *pages;
 @property (nonatomic) bool livePagination;
+@property (nonatomic) NSMutableIndexSet *updatedPages;
 
 // For live pagination
 @property (strong, nonatomic) NSMutableArray *pageBreaks;

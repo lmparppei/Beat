@@ -29,7 +29,7 @@ class BeatReviewCellView:NSTableCellView {
 class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelegate, BeatEditorView {
 	// @property (nonatomic, weak) IBOutlet NSTabView *masterTabView;
 	@IBOutlet var enclosingTabView:NSTabViewItem?
-	@IBOutlet var editorDelegate:BeatEditorDelegate?
+	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
 	var string:NSAttributedString?
 	var reviewList:NSMutableArray = NSMutableArray()
 	var timer:Timer = Timer()

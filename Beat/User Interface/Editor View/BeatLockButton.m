@@ -18,7 +18,7 @@
 @property (nonatomic) CALayer *backgroundLayer;
 @property (nonatomic) bool mouseOver;
 @property (nonatomic) NSTimer *fadeTimer;
-@property (nonatomic) IBOutlet id target;
+@property (nonatomic, weak) IBOutlet id target;
 @end
 
 @implementation BeatLockButton
