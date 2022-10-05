@@ -27,21 +27,28 @@
 }
 
 -(void)openConsole {
+	if (!NSThread.isMainThread) {
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			[self createAndOpenConsoleWindow];
+		});
+	} else {
+		[self createAndOpenConsoleWindow];
+	}
+}
+-(void)createAndOpenConsoleWindow {
 	// This is written very quickly on a train and is VERY hacky and shady. Works for now, though.
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		if (!self.console) {
-			NSArray *objects = [NSArray array];
-			[NSBundle.mainBundle loadNibNamed:@"BeatConsole" owner:self.console topLevelObjects:&objects];
-			self.console = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 450, 100) styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskHUDWindow | NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskUtilityWindow backing:NSBackingStoreBuffered defer:NO];
-			
-			NSPanel *panel;
-			for (id item in objects) { if ([item isKindOfClass:NSPanel.class]) panel = item; }
-			self.console.contentView = panel.contentView;
-			self.consoleTextView = [(NSScrollView*)self.console.contentView.subviews[0] documentView];
-		}
+	if (!self.console) {
+		NSArray *objects = [NSArray array];
+		[NSBundle.mainBundle loadNibNamed:@"BeatConsole" owner:self.console topLevelObjects:&objects];
+		self.console = [[NSPanel alloc] initWithContentRect:NSMakeRect(0, 0, 450, 100) styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskHUDWindow | NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskUtilityWindow backing:NSBackingStoreBuffered defer:NO];
+		
+		NSPanel *panel;
+		for (id item in objects) { if ([item isKindOfClass:NSPanel.class]) panel = item; }
+		self.console.contentView = panel.contentView;
+		self.consoleTextView = [(NSScrollView*)self.console.contentView.subviews[0] documentView];
+	}
 
-		[self.console makeKeyAndOrderFront:nil];
-	});
+	[self.console makeKeyAndOrderFront:nil];
 }
 -(void)logToConsole:(NSString*)string pluginName:(NSString*)pluginName {
 	if (!_console) return;

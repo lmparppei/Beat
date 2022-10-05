@@ -5,11 +5,6 @@
 //  Created by Lauri-Matti Parppei on 13.1.2020.
 //  Copyright © 2020 KAPITAN!. All rights reserved.
 //
-/*
- 
- This whole class should be rewritten to use WKWebView
- 
- */
 
 #import <WebKit/WebKit.h>
 #import <Quartz/Quartz.h>
@@ -21,7 +16,6 @@
 
 @interface PreviewViewController () <QLPreviewingController>
 @property (nonatomic) IBOutlet WKWebView *webView;
-@property (nonatomic) IBOutlet WebView *webView2;
 @end
 
 @implementation PreviewViewController
@@ -55,9 +49,9 @@
 	if (!error) {
 		BeatPreview *preview = [[BeatPreview alloc] initWithDocument:nil];
 		NSString *html = [preview createPreviewFor:file type:BeatQuickLookPreview];
-		[[self.webView2 mainFrame] loadHTMLString:html baseURL:nil];
+		[self.webView loadHTMLString:html baseURL:nil];
 	} else {
-		[[self.webView2 mainFrame] loadHTMLString:[NSString stringWithFormat:@"<html>%@</html>", error] baseURL:nil];
+		[self.webView loadHTMLString:[NSString stringWithFormat:@"<html>%@</html>", error] baseURL:nil];
 	}
  
 	

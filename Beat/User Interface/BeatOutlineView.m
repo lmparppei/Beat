@@ -478,7 +478,6 @@
 	
 	// Reload outline and set visual masks to apply the filter
 	[self reloadOutline];
-	//[self.editorDelegate maskScenes];
 }
 
 - (IBAction)resetColorFilters:(id)sender {
@@ -496,7 +495,6 @@
 	
 	// Reload outline & reset masks
 	[self reloadOutline];
-	//[self.editorDelegate maskScenes];
 	
 	// Hide the button
 	[_resetColorFilterButton setHidden:YES];
@@ -513,7 +511,6 @@
 	
 	// Reload outline and set visual masks to apply the filter
 	[self reloadOutline];
-	// [self.editorDelegate maskScenes];
 	
 	// Show the button to reset character filter
 	[_resetCharacterFilterButton setHidden:NO];
@@ -524,7 +521,6 @@
 	_filters.character = @"";
 	
 	[self reloadOutline];
-	// [self.editorDelegate maskScenes];
 	
 	// Hide the button to reset filter
 	[_resetCharacterFilterButton setHidden:YES];

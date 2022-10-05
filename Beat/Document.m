@@ -535,6 +535,7 @@ static BeatAppDelegate *appDelegate;
 			
 	// Pagination etc.
 	self.paginator = [[BeatPaginator alloc] initForLivePagination:self];
+	self.paginator.delegate = self;
 	self.printDialog.document = nil;
 	
 	//Put any previously loaded data into the text view
@@ -662,7 +663,7 @@ static BeatAppDelegate *appDelegate;
 	// Set up recovery file saving
 	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
-	
+		
 	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
 }
 
@@ -1875,9 +1876,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Update preview screen
 	// [self.preview updatePreviewInSync:NO];
-	
-	// Draw masks again if text did change
-	// if (_outlineView.filteredOutline.count) [self maskScenes];
 	
 	// Update any currently running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
@@ -3465,9 +3463,6 @@ static NSWindow __weak *currentKeyWindow;
 	
     [self.outlineView.filters byText:_outlineSearchField.stringValue];
     [self.outlineView reloadOutline];
-	
-	// Mask scenes that were left out
-	[self maskScenes];
 }
 
 -(IBAction)addSection:(id)sender {
@@ -4042,44 +4037,6 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
-#pragma mark - Advanced Filtering
-
-/*
- 
- Fuck all of this. The filtering should be rewritten and rethought.
- 
- */
-
-- (void)maskScenes {
-	// If there is no filtered outline, just reset everything
-	[self.parser createOutline];
-	if (!_outlineView.filteredOutline.count) {
-		[self.textView.masks removeAllObjects];
-		[self ensureLayout];
-		return;
-	}
-	
-	// Mask scenes that didn't match our filter
-	NSMutableArray* masks = [NSMutableArray array];
-	[self.textView.masks removeAllObjects];
-
-	for (OutlineScene* scene in _outline) {
-		// Ignore this scene if it's contained in filtered scenes
-		if ([self.filteredOutline containsObject:scene] || scene.type == section || scene.type == synopse) {
-			continue;
-		}
-		NSRange sceneRange = NSMakeRange([scene position], scene.length);
-
-		// Add scene ranges to TextView's masks
-		NSValue* rangeValue = [NSValue valueWithRange:sceneRange];
-		[masks addObject:rangeValue];
-	}
-		
-	self.textView.masks = masks;
-	[self ensureLayout];
-
-}
-
 /*
 
 5am
@@ -4117,46 +4074,44 @@ triangle walks
 - (void)paginate {
 	[self paginateAt:(NSRange){0,0} sync:NO];
 }
-- (void)paginateAt:(NSRange)range sync:(bool)sync {
-	if (!self.showPageNumbers) return;
-	
-	_textCache = self.text;
-	
-	dispatch_async(dispatch_get_main_queue(), ^{
-		// Null the timer so we don't have too many of these operations queued
-		if (self.paginationTimer) {
-			[self.paginationTimer invalidate];
-			self.paginationTimer = nil;
-		}
-		
-		NSInteger wait = 1.0;
-		if (sync) wait = 0;
 
-		self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
-			// Make a copy of the array for thread-safety
-			NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
-			
-			// Dispatch to a background thread
-			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
-				[self.paginator livePaginationFor:lines changeAt:range.location];
-				[self paginationDidFinishWithPages:self.paginator.pages.copy pageBreaks:self.paginator.pageBreaks.copy];
-			});
-		}];
-	});
+static NSArray<Line*>* cachedTitlePage;
+- (void)paginateAt:(NSRange)range sync:(bool)sync {
+	self.preview.previewUpdated = false;
+		
+	// Null the timer so we don't have too many of these operations queued
+	if (self.paginationTimer) {
+		[self.paginationTimer invalidate];
+		self.paginationTimer = nil;
+	}
+	
+	cachedTitlePage = [ContinuousFountainParser titlePageForString:self.text];
+	
+	NSInteger wait = 1.0;
+	if (sync) wait = 0;
+
+	self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
+		// Make a copy of the array for thread-safety
+		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
+		
+		// Dispatch to a background thread
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
+			[self.paginator livePaginationFor:lines changeAt:range.location];
+		});
+	}];
+
 }
 
-- (void)paginationDidFinishWithPages:(NSArray*)pages pageBreaks:(NSArray*)pageBreaks {
+- (void)paginationDidFinish:(NSArray<Line*>*)pages pageBreaks:(NSArray*)pageBreaks {
 	// Update text view page breaks in main queue
 	if (self.showPageNumbers) {
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			// Don't do nothing if the page break array is nil -- this SHOULD mean that pagination was canceled
 			if (pageBreaks != nil) [self.textView updatePageBreaks:pageBreaks];
 		});
 	}
 	
 	// Update preview in background
-	NSArray *titlePage = [ContinuousFountainParser titlePageForString:_textCache];
-	[self.preview updatePreviewWithPages:pages titlePage:titlePage];
+	[self.preview updatePreviewWithPages:pages titlePage:cachedTitlePage];
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {
@@ -4222,7 +4177,6 @@ triangle walks
 	// If we don't have pagination turned on, create temporary paginator
 	if (!self.showPageNumbers) {
 		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:self.parser.preprocessForPrinting];
-		[paginator paginate];
 		return [paginator pageNumberFor:location];
 	} else {
 		return [self.paginator pageNumberFor:location];
@@ -4514,25 +4468,29 @@ triangle walks
 	_pluginManager = BeatPluginManager.sharedManager;
 }
 - (IBAction)runPlugin:(id)sender {
-	NSMenuItem *menuItem = (NSMenuItem*)sender;
-	NSString *pluginName = menuItem.title;
+	// Get plugin filename from menu item
+	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
+	NSString *pluginName = menuItem.pluginName;
 	
 	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
 	
+	// See if the plugin is running and disable it if needed
 	if (_runningPlugins[pluginName]) {
-		// Disable a running plugin and return
 		[(BeatPlugin*)_runningPlugins[pluginName] forceEnd];
 		[_runningPlugins removeObjectForKey:pluginName];
 		return;
 	}
 	
-	BeatPlugin *parser = [[BeatPlugin alloc] init];
-	parser.delegate = self;
+	// Run a new plugin
+	BeatPlugin *pluginParser = [[BeatPlugin alloc] init];
+	pluginParser.delegate = self;
 	
-	BeatPluginData *plugin = [_pluginManager pluginWithName:pluginName];
-	[parser loadPlugin:plugin];
+	BeatPluginData *pluginData = [_pluginManager pluginWithName:pluginName];
+	[pluginParser loadPlugin:pluginData];
 		
-	parser = nil;
+	// Null the local variable just in case.
+	// If the plugin asks to stay in memory, it will call registerPlugin:
+	pluginParser = nil;
 }
 
 - (void)registerPlugin:(id)plugin {
@@ -4659,7 +4617,10 @@ triangle walks
 	bool locked = [self.documentSettings getBool:@"Locked"];
 	
 	if (locked) [self unlock];
-	else [self lock];
+	else {
+		[self updateChangeCount:NSChangeDone];
+		[self lock];
+	}
 }
 - (bool)screenplayLocked {
 	if ([self.documentSettings getBool:@"Locked"]) return YES;
@@ -4683,7 +4644,8 @@ triangle walks
 	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
 		self.textView.editable = YES;
 		[self.documentSettings setBool:@"Locked" as:NO];
-		
+		[self updateChangeCount:NSChangeDone];
+
 		[self.lockButton hide];
 	}
 }

@@ -297,6 +297,17 @@
 	else return value.toArray;
 }
 
+#pragma mark - Import/Export callbacks
+
+- (void)importHandler:(NSArray*)extensions callback:(JSValue*)callback {
+	self.importedExtensions = extensions;
+	self.importCallback = callback;
+}
+- (void)exportHandler:(NSArray*)extensions callback:(JSValue*)callback {
+	self.exportedExtensions = extensions;
+	self.exportCallback = callback;
+}
+
 
 #pragma mark - Multithreading
 

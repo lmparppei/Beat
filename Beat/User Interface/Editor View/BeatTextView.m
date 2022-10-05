@@ -1338,14 +1338,24 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 - (void)updatePageBreaks:(NSArray<NSDictionary*>*)pageBreaks {
 	// Update UI in main thread
 	NSMutableArray *breakPositions = NSMutableArray.new;
+	NSArray<NSDictionary*>* sortedPageBreaks = [pageBreaks sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+		NSDictionary *pageBreak1 = obj1;
+		NSDictionary *pageBreak2 = obj2;
+		
+		NSNumber *pos1 = @(((Line*)pageBreak1[@"line"]).position);
+		NSNumber *pos2 = @(((Line*)pageBreak2[@"line"]).position);
+		
+		return [pos1 compare:pos2];
+	}];
 	
-	for (NSDictionary *pageBreak in pageBreaks) { @autoreleasepool {
+	Line *prevLine;
+	
+	for (NSDictionary *pageBreak in sortedPageBreaks) { @autoreleasepool {
 		CGFloat lineHeight = 13; // Line height from pagination
 		CGFloat UIlineHeight = 20;
 		CGFloat y;
 		
 		Line *line = pageBreak[@"line"];
-
 		CGFloat position = [pageBreak[@"position"] floatValue];
 		
 		NSRange characterRange = NSMakeRange(line.position, line.string.length);
@@ -1360,8 +1370,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			y =  rect.origin.y + position;
 		}
 		else y = rect.origin.y + rect.size.height;
-		
-		[breakPositions addObject:[NSNumber numberWithFloat:y]];
+	
+		[breakPositions addObject:@(y)];
+		prevLine = line;
 	} }
 	
 	[self updatePageNumbers:breakPositions];

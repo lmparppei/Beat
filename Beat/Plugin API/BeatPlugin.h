@@ -178,6 +178,10 @@ JSExportAs(dropdown, - (BeatPluginUIDropdown*)dropdown:(NSArray<NSString *> *)it
 JSExportAs(checkbox, - (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame);
 JSExportAs(label, - (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName);
 
+// Import/Export
+JSExportAs(importHandler, - (void)importHandler:(NSArray*)extensions callback:(JSValue*)callback);
+JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(JSValue*)callback);
+
 // Call objective C methods directly
 JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments);
 
@@ -239,6 +243,11 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
 @property (nonatomic, readonly) BeatPreview *preview;
+
+@property (nonatomic) NSArray* exportedExtensions;
+@property (nonatomic) NSArray* importedExtensions;
+@property (nonatomic) JSValue* importCallback;
+@property (nonatomic) JSValue* exportCallback;
 
 - (void)loadPlugin:(BeatPluginData*)plugin;
 - (void)log:(NSString*)string;

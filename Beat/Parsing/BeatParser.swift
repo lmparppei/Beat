@@ -16,11 +16,11 @@ import Foundation
 
 class BeatParser: NSObject <LineDelegate> {
 	
-	var lines = []
-	var changedIndices = []
-	var outline = []
+	var lines = [Line]
+	var changedIndices = [Int]
+	var outline = [OutlineScene]
 	var titlePage = []
-	var storylines = []
+	var storylines = [String]
 	
 	var changeInOutline:Bool = false
 	var editedLine:Line?
@@ -309,7 +309,7 @@ class BeatParser: NSObject <LineDelegate> {
 	
 	func decrementLinePositions(from index:Int, amount amount:Int) {
 		for i in index...<self.lines.count {
-			Line* line = self.lines[i];
+			let line:Line = self.lines[i];
 			line.position -= amount;
 		}
 	}
@@ -321,7 +321,7 @@ class BeatParser: NSObject <LineDelegate> {
 	}
 
 	
-	func lineIndexAtPosition(position:UInt) -> UInt {
+	func lineIndexAtPosition(_ position:UInt) -> UInt {
 		var match:UInt = -1
 		
 		// Check for cached line

@@ -487,7 +487,6 @@ static bool underlinedHeading;
 {
 	// Pagination
 	_paginator = [BeatPaginator.alloc initWithScript:_script settings:_settings];
-	[_paginator paginate];
 	return [self createHTMLWithPages:_paginator.pages];
 }
 

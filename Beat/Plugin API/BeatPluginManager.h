@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, BeatPluginType) {
 	ToolPlugin = 0,
 	ImportPlugin,
-	ExportPlugin
+	ExportPlugin,
+	StandalonePlugin
 };
 
 @interface BeatPluginInfo : NSObject

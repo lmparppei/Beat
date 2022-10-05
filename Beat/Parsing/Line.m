@@ -836,12 +836,14 @@
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
 	// Remove whitespace from the beginning if needed
-	if ([second.string characterAtIndex:0] == ' ') {
-		while (second.string.length > 0) {
-			if ([second.string characterAtIndex:0] == ' ') {
-				second = [second attributedSubstringFromRange:NSMakeRange(1, second.length - 1)];
-			} else {
-				break;
+	if (second.length > 0) {
+		if ([second.string characterAtIndex:0] == ' ') {
+			while (second.string.length > 0) {
+				if ([second.string characterAtIndex:0] == ' ') {
+					second = [second attributedSubstringFromRange:NSMakeRange(1, second.length - 1)];
+				} else {
+					break;
+				}
 			}
 		}
 	}
@@ -856,6 +858,8 @@
 	
 	retain.uuid = self.uuid;
 	retain.position = self.position;
+	
+	split.uuid = self.uuid;
 	split.position = self.position + retain.string.length;
 	
 	// Now we'll have to go through some extra trouble to keep the revised ranges intact.
@@ -895,12 +899,11 @@
 /// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too.
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
 {
-	NSMutableIndexSet* indexSet = [[NSMutableIndexSet alloc] init];
+	NSMutableIndexSet* indexSet = NSMutableIndexSet.new;
 	
 	NSInteger lastIndex = length - delimLength; //Last index to look at if we are looking for start
 	NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
 	
-
 	for (NSInteger i = 0;;i++) {
 		if (i > lastIndex) {
 			break;
@@ -951,6 +954,13 @@
 -(bool)noFormatting {
 	if (_boldRanges.count || _italicRanges.count || _strikeoutRanges.count || _underlinedRanges.count) return NO;
 	else return YES;
+}
+
+#pragma mark - Identity
+
+- (BOOL)matchesUUID:(NSUUID*)uuid {
+	if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid.UUIDString.lowercaseString]) return true;
+	else return false;
 }
 
 #pragma mark - Ranges

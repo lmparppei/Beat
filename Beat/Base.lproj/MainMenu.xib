@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -185,12 +185,6 @@
                                                 <action selector="importFadeIn:" target="vEX-2F-hcj" id="6C8-ah-Gva"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="IMPORT PLUGIN PLACEHOLDER" tag="1" id="r2v-xc-qum">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="runStandalonePlugin:" target="MpY-Uw-HUk" id="xdj-LI-MMr"/>
-                                            </connections>
-                                        </menuItem>
                                     </items>
                                     <connections>
                                         <outlet property="delegate" destination="MpY-Uw-HUk" id="a2G-SM-8im"/>
@@ -217,12 +211,6 @@
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="exportOutline:" target="-1" id="HXB-My-Vhk"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="EXPORT PLUGIN PLACEHOLDER" tag="1" id="YDF-BB-4gm">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
-                                            <connections>
-                                                <action selector="runPlugin:" target="-1" id="QyP-Ea-Dsi"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -396,6 +384,27 @@
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="Xle-e9-wzl"/>
+                                        <menuItem title="Language" id="r1G-J4-Ri5">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" id="K9p-bw-V7y">
+                                                <items>
+                                                    <menuItem title="Automatic" id="kZW-1X-LFR" customClass="BeatLanguageMenuItem" customModule="Beat" customModuleProvider="target">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="string" keyPath="locale" value="auto"/>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="selectLanguage:" target="Ibp-oA-JIB" id="pdq-jH-s5g"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="ObG-W9-tvj"/>
+                                                </items>
+                                                <connections>
+                                                    <outlet property="delegate" destination="Ibp-oA-JIB" id="3U6-cd-uKC"/>
+                                                </connections>
+                                            </menu>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="a8s-Sb-vJL"/>
                                         <menuItem title="Check Spelling While Typing" id="daM-sR-Ab6">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
@@ -870,12 +879,6 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="rAa-we-oVz"/>
-                            <menuItem title="TOOL PLUGIN PLACEHOLDER" tag="1" id="S1k-gz-zdn">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="runPlugin:" target="-1" id="tg9-p3-qPc"/>
-                                </connections>
-                            </menuItem>
                         </items>
                         <connections>
                             <outlet property="delegate" destination="MpY-Uw-HUk" id="NdN-Ya-UPR"/>
@@ -1017,6 +1020,11 @@ DQ
                 <outlet property="pluginManager" destination="MpY-Uw-HUk" id="LTu-gv-i9k"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
                 <outlet property="versionMenu" destination="7oT-pt-wId" id="5Nx-Wf-wFz"/>
+            </connections>
+        </customObject>
+        <customObject id="Ibp-oA-JIB" customClass="BeatSpellCheckingUtils" customModule="Beat" customModuleProvider="target">
+            <connections>
+                <outlet property="langMenu" destination="K9p-bw-V7y" id="u6c-8s-Rd1"/>
             </connections>
         </customObject>
     </objects>

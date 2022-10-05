@@ -2519,12 +2519,24 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 - (Line*)closestPrintableLineFor:(Line*)line {
-	NSInteger i = [self.lines indexOfObject:line];
+	NSArray <Line*>* lines = self.lines;
+	
+	NSInteger i = [lines indexOfObject:line];
 	if (i == NSNotFound) return nil;
 	
 	while (i >= 0) {
-		Line *l = self.lines[i];
-		if (!l.isInvisible && !l.isSplitParagraph) return l;
+		Line *l = lines[i];
+		
+		if (l.type == action && i > 0) {
+			// This might be part of a joined action paragraph block
+			Line *prev = lines[i-1];
+			if (prev.type == empty && !l.isInvisible) {
+				return l;
+			}
+		}
+		else {
+			if (!l.isInvisible && !l.isSplitParagraph) return l;
+		}
 		i--;
 	}
 	

@@ -561,8 +561,6 @@
 #pragma mark - Menu delegation
 
 -(void)menuWillOpen:(NSMenu *)menu {
-	//if (menu == _pluginMenu || menu == _exportMenu || menu == _importMenu) [self setupPlugins:menu];
-	
 	if (menu == _versionMenu) {
 		[self versionMenuItems];
 	}

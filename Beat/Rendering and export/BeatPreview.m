@@ -187,13 +187,11 @@
 }
 
 - (void)updatePreviewSynchronized {
-	[_delegate.paginator paginate];
-	NSArray * titlePage = [ContinuousFountainParser titlePageForString:_delegate.text];
+	self.previewUpdated = false;
 	
-	self.htmlString = [self createPreviewWithPages:_delegate.paginator.pages.copy titlePage:titlePage];
-	[self.delegate previewDidFinish];
-	
+	self.htmlString = [self createPreviewFor:self.delegate.text type:BeatPrintPreview];
 	self.previewUpdated = true;
+	[self.delegate previewDidFinish];
 }
 
 - (void)updatePreviewWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage {

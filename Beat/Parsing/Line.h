@@ -52,7 +52,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (readonly) bool omitted;
 @property (readonly) bool note;
 @property (readonly) bool centered;
-@property (readonly) NSString* string;
+@property (readonly, atomic) NSString* string;
 @property (nonatomic, readonly) NSInteger length;
 @property (nonatomic, readonly) NSUInteger index;
 
@@ -110,7 +110,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic, weak) Line *representedLine; /// The line in editor/parser from which this one was copied from, can be nil
 
 @property LineType type;
-@property (strong) NSString* string;
+@property (strong, atomic) NSString* string;
 
 @property (nonatomic) NSUUID *uuid;
 
@@ -284,6 +284,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)hasBeatForStoryline:(NSString*)storyline;
 - (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
 - (NSRange)firstBeatRange;
+
+- (BOOL)matchesUUID:(NSUUID*)uuid;
 
 -(NSString *)description;
 @end

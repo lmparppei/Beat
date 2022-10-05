@@ -11,64 +11,57 @@
 #import "Line.h"
 #import "BeatPaperSizing.h"
 #import "BeatExportSettings.h"
+#import "BeatPaginationOperationDelegate.h"
+
+@class BeatPaginationOperation;
 
 #if TARGET_OS_IOS
     #define BeatFont UIFont
 	#define BeatDocument UIDocument
-	#define BetPrintInfo UIPrintInfo
+	#define BeatPrintInfo UIPrintInfo
 	#import <UIKit/UIKit.h>
 #else
     #define BeatFont NSFont
 	#define BeatDocument NSDocument
-	#define BetPrintInfo NSPrintInfo
+	#define BeatPrintInfo NSPrintInfo
     #import <Cocoa/Cocoa.h>
 #endif
 
-@protocol BeatPageDelegate
-@property (nonatomic, readonly) bool A4;
-@property (nonatomic, readonly) BeatFont *font;
-@property (nonatomic) bool livePagination;
-- (NSInteger)heightForBlock:(NSArray*)block;
-@end
-
-@interface BeatPage:NSObject
-@property (nonatomic, weak) id<BeatPageDelegate> delegate;
-@property (nonatomic) NSMutableArray *items;
-@property (nonatomic) NSInteger y;
-@property (nonatomic) NSInteger maxHeight;
-- (NSUInteger)count;
-- (NSMutableArray*)contents;
-- (NSInteger)remainingSpace;
-- (NSInteger)remainingSpaceWithBlock:(NSArray<Line*>*)block;
-@end
-
 @protocol BeatPaginatorExports <JSExport>
 @property (nonatomic, readonly) NSUInteger numberOfPages;
-@property (strong, nonatomic) NSMutableArray<NSMutableArray<Line*>*> *pages;
+@property (strong, atomic) NSMutableArray<NSMutableArray<Line*>*> *pages;
 @property (readonly) CGFloat lastPageHeight;
 - (void)paginateLines:(NSArray*)lines;
-- (void)paginate;
 - (NSArray*)lengthInEights;
 - (void)setPageSize:(BeatPaperSize)pageSize;
 @end
 
 @protocol BeatPaginatorDelegate <NSObject>
+- (void)paginationDidFinish:(NSArray*)pages pageBreaks:(NSArray*)pageBreaks;
 - (NSMutableArray<Line*>*)lines;
 - (NSString*)text;
 @end
 
-@interface BeatPaginator : NSObject <BeatPaginatorExports, BeatPageDelegate>
+@interface BeatPaginator : NSObject <BeatPaginatorExports, BeatPaginationOperationDelegate>
 
 @property (weak) id<BeatPaginatorDelegate> delegate;
 @property (nonatomic, readonly) NSUInteger numberOfPages;
 @property (nonatomic, readonly) NSArray* lengthInEights;
 @property (nonatomic) CGSize paperSize;
-@property (readonly) CGFloat lastPageHeight;
-@property (strong, nonatomic) NSMutableArray<NSMutableArray<Line*>*> *pages;
-@property (nonatomic) bool livePagination;
+@property (nonatomic) CGFloat lastPageHeight;
+@property (strong, atomic) NSMutableArray<NSMutableArray<Line*>*> *pages;
 @property (nonatomic) NSMutableIndexSet *updatedPages;
 
+@property (atomic) BeatExportSettings *settings;
+
+@property (nonatomic) BeatFont *font;
+
+@property (weak, nonatomic) BeatDocument *document;
+@property (atomic) BeatPrintInfo *printInfo;
+@property (atomic) bool printNotes;
+
 // For live pagination
+@property (atomic) bool livePagination;
 @property (strong, nonatomic) NSMutableArray *pageBreaks;
 @property (strong, nonatomic) NSMutableArray *pageInfo;
 
@@ -80,7 +73,6 @@
 #endif
 
 - (void)livePaginationFor:(NSArray*)script changeAt:(NSUInteger)location;
-- (void)paginate;
 - (NSArray *)pageAtIndex:(NSUInteger)index;
 - (void)setPageSize:(BeatPaperSize)pageSize;
 
@@ -90,7 +82,13 @@
 // Helper methods
 + (CGFloat)lineHeight;
 + (CGFloat)spaceBeforeForLine:(Line *)line;
-- (NSInteger)widthForElement:(Line *)element;
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
++ (Line*)moreLineFor:(Line*)line;
++ (NSString*)moreString;
++ (NSString*)contdString;
++ (Line*)contdLineFor:(Line*)line;
+
+// Pagination operation finished
+- (void)paginationFinished:(BeatPaginationOperation*)operation;
 
 @end

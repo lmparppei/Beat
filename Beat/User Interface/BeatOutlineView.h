@@ -22,7 +22,6 @@
 - (NSMutableArray*)getOutlineItems;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 - (void)scrollToScene:(OutlineScene*)scene;
-- (void)maskScenes;
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string;
 @end
 
