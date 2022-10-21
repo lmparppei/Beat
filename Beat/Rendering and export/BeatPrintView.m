@@ -64,7 +64,7 @@ static NSURL *pdfURL;
 		// See if we are creating a PDF, and if it's a temporary preview
 		self.pdf = (mode == BeatToPDF || mode == BeatToPreview) ? YES : NO;
 		self.preview = (mode == BeatToPreview) ? YES : NO;
-		
+				
 		_finishedWebViews = 0;
 		_document = document;
 		_printInfo = document.printInfo.copy;
@@ -146,7 +146,7 @@ static NSURL *pdfURL;
 	// This is a silly fix for when no printer is installed on macOS
 	if ([_printInfo.printer.name isEqualToString:@" "]) {
 		_printInfo.topMargin = 12.5;
-		settings.customCSS = [settings.customCSS stringByAppendingString:@"body { zoom: 95%; } section { padding-top: 1cm !important; }"];
+		//settings.customCSS = [settings.customCSS stringByAppendingString:@"body { zoom: 95%; } section { padding-top: 1cm !important; }"];
 	}
 	
 	if (!settings) {

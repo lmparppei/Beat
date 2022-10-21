@@ -58,27 +58,10 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 
 	//var backspaces:Int = 0
 	override func keyUp(with event: NSEvent) {
-		/*
-		if textField!.stringValue.count > 0 {
-			backspaces = 0
-		}
-		 */
-		
 		// Close on esc
 		if event.keyCode == 53 {
 			self.closeModal()
 			return
-		}
-		// Close on backspace and empty text field {
-		else if event.keyCode == 51 {
-			/*
-			if textField!.stringValue.count == 0 {
-				backspaces += 1
-				if backspaces > 1 {
-					self.closeModal()
-				}
-			}
-			 */
 		}
 		// Select on enter
 		else if event.keyCode == 36 {

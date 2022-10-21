@@ -707,7 +707,7 @@ static bool underlinedHeading;
 
 		// Append corresponding HTML tags to opening & closing strings, ie. open = "<b>", close = "</b>"
 		if (styleString.length) {
-			NSMutableArray *styleArray = [NSMutableArray arrayWithArray:[styleString componentsSeparatedByString:@","]];
+			NSMutableArray *styleArray = [styleString componentsSeparatedByString:@","].mutableCopy;
 			[styleArray removeObject:@""];
 						
 			if ([styleArray containsObject:@"Bold"]) {

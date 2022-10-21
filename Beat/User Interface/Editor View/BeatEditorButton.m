@@ -14,8 +14,6 @@
 
 IB_DESIGNABLE
 @interface BeatEditorButton ()
-//@property (nonatomic) NSColor *offColor;
-//@property (nonatomic) NSColor *onColor;
 @end
 
 @implementation BeatEditorButton

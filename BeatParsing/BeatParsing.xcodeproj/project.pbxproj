@@ -1,0 +1,548 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */; };
+		B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0728F01A8700657F5F /* BeatSceneTree.m */; };
+		B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0828F01A8700657F5F /* OutlineScene.m */; };
+		B6B37F1628F01A8700657F5F /* Storybeat.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0928F01A8700657F5F /* Storybeat.h */; };
+		B6B37F1828F01A8700657F5F /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0B28F01A8700657F5F /* Line.m */; };
+		B6B37F1928F01A8700657F5F /* FountainRegexes.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0C28F01A8700657F5F /* FountainRegexes.m */; };
+		B6B37F1A28F01A8700657F5F /* BeatSceneTree.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0D28F01A8700657F5F /* BeatSceneTree.h */; };
+		B6B37F1B28F01A8700657F5F /* ContinuousFountainParser.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */; };
+		B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F0F28F01A8700657F5F /* OutlineScene.h */; };
+		B6B37F1D28F01A8700657F5F /* Line.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F1028F01A8700657F5F /* Line.h */; };
+		B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F1128F01A8700657F5F /* Storybeat.m */; };
+		B6B37F1F28F01A8700657F5F /* FountainRegexes.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F1228F01A8700657F5F /* FountainRegexes.h */; };
+		B6B37F2728F01B5A00657F5F /* BeatDocumentSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F2528F01B5A00657F5F /* BeatDocumentSettings.m */; };
+		B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F2628F01B5A00657F5F /* BeatDocumentSettings.h */; };
+		B6B37F3328F0212700657F5F /* BeatPaperSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F3028F0212700657F5F /* BeatPaperSizing.m */; };
+		B6B37F3428F0212700657F5F /* Page Sizing.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6B37F3128F0212700657F5F /* Page Sizing.plist */; };
+		B6B37F3528F0212700657F5F /* BeatPaperSizing.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F3228F0212700657F5F /* BeatPaperSizing.h */; };
+		B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F3728F0275800657F5F /* RegExCategories.m */; };
+		B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F3828F0275800657F5F /* RegExCategories.h */; };
+		B6B37F4D28F0279700657F5F /* NSIndexSet+Subset.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F3C28F0279700657F5F /* NSIndexSet+Subset.m */; };
+		B6B37F4E28F0279700657F5F /* NSString+VersionNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F3D28F0279700657F5F /* NSString+VersionNumber.h */; };
+		B6B37F4F28F0279700657F5F /* NSString+Levenshtein.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F3E28F0279700657F5F /* NSString+Levenshtein.m */; };
+		B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F3F28F0279700657F5F /* NSMutableString+Regex.h */; };
+		B6B37F5128F0279700657F5F /* NSString+CharacterControl.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4028F0279700657F5F /* NSString+CharacterControl.h */; };
+		B6B37F5228F0279700657F5F /* NSMutableIndexSet+Lowest.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4128F0279700657F5F /* NSMutableIndexSet+Lowest.m */; };
+		B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4228F0279700657F5F /* NSString+Regex.h */; };
+		B6B37F5428F0279700657F5F /* NSDictionary+Values.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4328F0279700657F5F /* NSDictionary+Values.h */; };
+		B6B37F5528F0279700657F5F /* Substring.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4428F0279700657F5F /* Substring.swift */; };
+		B6B37F5628F0279700657F5F /* NSIndexSet+Subset.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4528F0279700657F5F /* NSIndexSet+Subset.h */; };
+		B6B37F5728F0279700657F5F /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4628F0279700657F5F /* NSString+Levenshtein.h */; };
+		B6B37F5828F0279700657F5F /* NSString+VersionNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4728F0279700657F5F /* NSString+VersionNumber.m */; };
+		B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4828F0279700657F5F /* NSString+Regex.m */; };
+		B6B37F5A28F0279700657F5F /* NSMutableIndexSet+Lowest.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F4928F0279700657F5F /* NSMutableIndexSet+Lowest.h */; };
+		B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4A28F0279700657F5F /* NSString+CharacterControl.m */; };
+		B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4B28F0279700657F5F /* NSMutableString+Regex.m */; };
+		B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */; };
+		B6B37F6028F027EA00657F5F /* BeatScreenplay.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F5E28F027EA00657F5F /* BeatScreenplay.h */; };
+		B6B37F6128F027EA00657F5F /* BeatScreenplay.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */; };
+		B6B37F6428F0285D00657F5F /* BeatExportSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F6228F0285D00657F5F /* BeatExportSettings.m */; };
+		B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B37F6328F0285D00657F5F /* BeatExportSettings.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B6B37E8328F018A100657F5F /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContinuousFountainParser.m; sourceTree = "<group>"; };
+		B6B37F0728F01A8700657F5F /* BeatSceneTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatSceneTree.m; sourceTree = "<group>"; };
+		B6B37F0828F01A8700657F5F /* OutlineScene.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutlineScene.m; sourceTree = "<group>"; };
+		B6B37F0928F01A8700657F5F /* Storybeat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Storybeat.h; sourceTree = "<group>"; };
+		B6B37F0A28F01A8700657F5F /* BeatParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatParser.swift; sourceTree = "<group>"; };
+		B6B37F0B28F01A8700657F5F /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Line.m; sourceTree = "<group>"; };
+		B6B37F0C28F01A8700657F5F /* FountainRegexes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FountainRegexes.m; sourceTree = "<group>"; };
+		B6B37F0D28F01A8700657F5F /* BeatSceneTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatSceneTree.h; sourceTree = "<group>"; };
+		B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContinuousFountainParser.h; sourceTree = "<group>"; };
+		B6B37F0F28F01A8700657F5F /* OutlineScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineScene.h; sourceTree = "<group>"; };
+		B6B37F1028F01A8700657F5F /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
+		B6B37F1128F01A8700657F5F /* Storybeat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Storybeat.m; sourceTree = "<group>"; };
+		B6B37F1228F01A8700657F5F /* FountainRegexes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FountainRegexes.h; sourceTree = "<group>"; };
+		B6B37F2228F01ADF00657F5F /* BeatParsing-Bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BeatParsing-Bridging.h"; sourceTree = "<group>"; };
+		B6B37F2528F01B5A00657F5F /* BeatDocumentSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentSettings.m; sourceTree = "<group>"; };
+		B6B37F2628F01B5A00657F5F /* BeatDocumentSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatDocumentSettings.h; sourceTree = "<group>"; };
+		B6B37F3028F0212700657F5F /* BeatPaperSizing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaperSizing.m; sourceTree = "<group>"; };
+		B6B37F3128F0212700657F5F /* Page Sizing.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Page Sizing.plist"; sourceTree = "<group>"; };
+		B6B37F3228F0212700657F5F /* BeatPaperSizing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaperSizing.h; sourceTree = "<group>"; };
+		B6B37F3728F0275800657F5F /* RegExCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegExCategories.m; sourceTree = "<group>"; };
+		B6B37F3828F0275800657F5F /* RegExCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegExCategories.h; sourceTree = "<group>"; };
+		B6B37F3C28F0279700657F5F /* NSIndexSet+Subset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSIndexSet+Subset.m"; sourceTree = "<group>"; };
+		B6B37F3D28F0279700657F5F /* NSString+VersionNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+VersionNumber.h"; sourceTree = "<group>"; };
+		B6B37F3E28F0279700657F5F /* NSString+Levenshtein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein.m"; sourceTree = "<group>"; };
+		B6B37F3F28F0279700657F5F /* NSMutableString+Regex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableString+Regex.h"; sourceTree = "<group>"; };
+		B6B37F4028F0279700657F5F /* NSString+CharacterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+CharacterControl.h"; sourceTree = "<group>"; };
+		B6B37F4128F0279700657F5F /* NSMutableIndexSet+Lowest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableIndexSet+Lowest.m"; sourceTree = "<group>"; };
+		B6B37F4228F0279700657F5F /* NSString+Regex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Regex.h"; sourceTree = "<group>"; };
+		B6B37F4328F0279700657F5F /* NSDictionary+Values.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Values.h"; sourceTree = "<group>"; };
+		B6B37F4428F0279700657F5F /* Substring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Substring.swift; sourceTree = "<group>"; };
+		B6B37F4528F0279700657F5F /* NSIndexSet+Subset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSIndexSet+Subset.h"; sourceTree = "<group>"; };
+		B6B37F4628F0279700657F5F /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
+		B6B37F4728F0279700657F5F /* NSString+VersionNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+VersionNumber.m"; sourceTree = "<group>"; };
+		B6B37F4828F0279700657F5F /* NSString+Regex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Regex.m"; sourceTree = "<group>"; };
+		B6B37F4928F0279700657F5F /* NSMutableIndexSet+Lowest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableIndexSet+Lowest.h"; sourceTree = "<group>"; };
+		B6B37F4A28F0279700657F5F /* NSString+CharacterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+CharacterControl.m"; sourceTree = "<group>"; };
+		B6B37F4B28F0279700657F5F /* NSMutableString+Regex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableString+Regex.m"; sourceTree = "<group>"; };
+		B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Values.m"; sourceTree = "<group>"; };
+		B6B37F5E28F027EA00657F5F /* BeatScreenplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatScreenplay.h; sourceTree = "<group>"; };
+		B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatScreenplay.m; sourceTree = "<group>"; };
+		B6B37F6228F0285D00657F5F /* BeatExportSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatExportSettings.m; sourceTree = "<group>"; };
+		B6B37F6328F0285D00657F5F /* BeatExportSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B6B37E8028F018A100657F5F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B6B37E7928F018A100657F5F = {
+			isa = PBXGroup;
+			children = (
+				B6B37F2228F01ADF00657F5F /* BeatParsing-Bridging.h */,
+				B6B37F0528F01A8700657F5F /* BeatParsing */,
+				B6B37F3628F0275800657F5F /* RegExCategories */,
+				B6B37E8428F018A100657F5F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B6B37E8428F018A100657F5F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37E8328F018A100657F5F /* BeatParsing.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B6B37F0528F01A8700657F5F /* BeatParsing */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37F3B28F0279700657F5F /* Categories */,
+				B6B37F2C28F020EA00657F5F /* Editor Data */,
+				B6B37F2428F01B4200657F5F /* Screenplay Data */,
+				B6B37F2328F01B1500657F5F /* Parsing */,
+			);
+			path = BeatParsing;
+			sourceTree = "<group>";
+		};
+		B6B37F2328F01B1500657F5F /* Parsing */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37F0E28F01A8700657F5F /* ContinuousFountainParser.h */,
+				B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */,
+				B6B37F0A28F01A8700657F5F /* BeatParser.swift */,
+				B6B37F1028F01A8700657F5F /* Line.h */,
+				B6B37F0B28F01A8700657F5F /* Line.m */,
+				B6B37F0F28F01A8700657F5F /* OutlineScene.h */,
+				B6B37F0828F01A8700657F5F /* OutlineScene.m */,
+				B6B37F0D28F01A8700657F5F /* BeatSceneTree.h */,
+				B6B37F0728F01A8700657F5F /* BeatSceneTree.m */,
+				B6B37F0928F01A8700657F5F /* Storybeat.h */,
+				B6B37F1128F01A8700657F5F /* Storybeat.m */,
+				B6B37F1228F01A8700657F5F /* FountainRegexes.h */,
+				B6B37F0C28F01A8700657F5F /* FountainRegexes.m */,
+			);
+			path = Parsing;
+			sourceTree = "<group>";
+		};
+		B6B37F2428F01B4200657F5F /* Screenplay Data */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37F2F28F0212700657F5F /* Paper Sizing */,
+				B6B37F5E28F027EA00657F5F /* BeatScreenplay.h */,
+				B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */,
+				B6B37F2628F01B5A00657F5F /* BeatDocumentSettings.h */,
+				B6B37F2528F01B5A00657F5F /* BeatDocumentSettings.m */,
+				B6B37F6328F0285D00657F5F /* BeatExportSettings.h */,
+				B6B37F6228F0285D00657F5F /* BeatExportSettings.m */,
+			);
+			path = "Screenplay Data";
+			sourceTree = "<group>";
+		};
+		B6B37F2C28F020EA00657F5F /* Editor Data */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Editor Data";
+			sourceTree = "<group>";
+		};
+		B6B37F2F28F0212700657F5F /* Paper Sizing */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37F3128F0212700657F5F /* Page Sizing.plist */,
+				B6B37F3028F0212700657F5F /* BeatPaperSizing.m */,
+				B6B37F3228F0212700657F5F /* BeatPaperSizing.h */,
+			);
+			path = "Paper Sizing";
+			sourceTree = "<group>";
+		};
+		B6B37F3628F0275800657F5F /* RegExCategories */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37F3728F0275800657F5F /* RegExCategories.m */,
+				B6B37F3828F0275800657F5F /* RegExCategories.h */,
+			);
+			name = RegExCategories;
+			path = ../Libraries/RegExCategories;
+			sourceTree = "<group>";
+		};
+		B6B37F3B28F0279700657F5F /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				B6B37F3C28F0279700657F5F /* NSIndexSet+Subset.m */,
+				B6B37F3D28F0279700657F5F /* NSString+VersionNumber.h */,
+				B6B37F3E28F0279700657F5F /* NSString+Levenshtein.m */,
+				B6B37F3F28F0279700657F5F /* NSMutableString+Regex.h */,
+				B6B37F4028F0279700657F5F /* NSString+CharacterControl.h */,
+				B6B37F4128F0279700657F5F /* NSMutableIndexSet+Lowest.m */,
+				B6B37F4228F0279700657F5F /* NSString+Regex.h */,
+				B6B37F4328F0279700657F5F /* NSDictionary+Values.h */,
+				B6B37F4428F0279700657F5F /* Substring.swift */,
+				B6B37F4528F0279700657F5F /* NSIndexSet+Subset.h */,
+				B6B37F4628F0279700657F5F /* NSString+Levenshtein.h */,
+				B6B37F4728F0279700657F5F /* NSString+VersionNumber.m */,
+				B6B37F4828F0279700657F5F /* NSString+Regex.m */,
+				B6B37F4928F0279700657F5F /* NSMutableIndexSet+Lowest.h */,
+				B6B37F4A28F0279700657F5F /* NSString+CharacterControl.m */,
+				B6B37F4B28F0279700657F5F /* NSMutableString+Regex.m */,
+				B6B37F4C28F0279700657F5F /* NSDictionary+Values.m */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B6B37E7E28F018A100657F5F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6B37F1D28F01A8700657F5F /* Line.h in Headers */,
+				B6B37F1B28F01A8700657F5F /* ContinuousFountainParser.h in Headers */,
+				B6B37F5128F0279700657F5F /* NSString+CharacterControl.h in Headers */,
+				B6B37F1F28F01A8700657F5F /* FountainRegexes.h in Headers */,
+				B6B37F5728F0279700657F5F /* NSString+Levenshtein.h in Headers */,
+				B6B37F1628F01A8700657F5F /* Storybeat.h in Headers */,
+				B6B37F6028F027EA00657F5F /* BeatScreenplay.h in Headers */,
+				B6B37F5428F0279700657F5F /* NSDictionary+Values.h in Headers */,
+				B6B37F5028F0279700657F5F /* NSMutableString+Regex.h in Headers */,
+				B6B37F2828F01B5A00657F5F /* BeatDocumentSettings.h in Headers */,
+				B6B37F1C28F01A8700657F5F /* OutlineScene.h in Headers */,
+				B6B37F1A28F01A8700657F5F /* BeatSceneTree.h in Headers */,
+				B6B37F6528F0285D00657F5F /* BeatExportSettings.h in Headers */,
+				B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */,
+				B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */,
+				B6B37F5A28F0279700657F5F /* NSMutableIndexSet+Lowest.h in Headers */,
+				B6B37F4E28F0279700657F5F /* NSString+VersionNumber.h in Headers */,
+				B6B37F3528F0212700657F5F /* BeatPaperSizing.h in Headers */,
+				B6B37F5628F0279700657F5F /* NSIndexSet+Subset.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B6B37E8228F018A100657F5F /* BeatParsing */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B6B37E8C28F018A100657F5F /* Build configuration list for PBXNativeTarget "BeatParsing" */;
+			buildPhases = (
+				B6B37E7E28F018A100657F5F /* Headers */,
+				B6B37E7F28F018A100657F5F /* Sources */,
+				B6B37E8028F018A100657F5F /* Frameworks */,
+				B6B37E8128F018A100657F5F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeatParsing;
+			productName = BeatParsing;
+			productReference = B6B37E8328F018A100657F5F /* BeatParsing.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B6B37E7A28F018A100657F5F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					B6B37E8228F018A100657F5F = {
+						CreatedOnToolsVersion = 14.0.1;
+						LastSwiftMigration = 1400;
+					};
+				};
+			};
+			buildConfigurationList = B6B37E7D28F018A100657F5F /* Build configuration list for PBXProject "BeatParsing" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B6B37E7928F018A100657F5F;
+			productRefGroup = B6B37E8428F018A100657F5F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B6B37E8228F018A100657F5F /* BeatParsing */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B6B37E8128F018A100657F5F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6B37F3428F0212700657F5F /* Page Sizing.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B6B37E7F28F018A100657F5F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6B37F1828F01A8700657F5F /* Line.m in Sources */,
+				B6B37F5228F0279700657F5F /* NSMutableIndexSet+Lowest.m in Sources */,
+				B6B37F4D28F0279700657F5F /* NSIndexSet+Subset.m in Sources */,
+				B6B37F5828F0279700657F5F /* NSString+VersionNumber.m in Sources */,
+				B6B37F5528F0279700657F5F /* Substring.swift in Sources */,
+				B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */,
+				B6B37F6428F0285D00657F5F /* BeatExportSettings.m in Sources */,
+				B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */,
+				B6B37F3328F0212700657F5F /* BeatPaperSizing.m in Sources */,
+				B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */,
+				B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */,
+				B6B37F5C28F0279700657F5F /* NSMutableString+Regex.m in Sources */,
+				B6B37F3928F0275800657F5F /* RegExCategories.m in Sources */,
+				B6B37F1E28F01A8700657F5F /* Storybeat.m in Sources */,
+				B6B37F5B28F0279700657F5F /* NSString+CharacterControl.m in Sources */,
+				B6B37F2728F01B5A00657F5F /* BeatDocumentSettings.m in Sources */,
+				B6B37F4F28F0279700657F5F /* NSString+Levenshtein.m in Sources */,
+				B6B37F6128F027EA00657F5F /* BeatScreenplay.m in Sources */,
+				B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */,
+				B6B37F1928F01A8700657F5F /* FountainRegexes.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B6B37E8A28F018A100657F5F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B6B37E8B28F018A100657F5F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		B6B37E8D28F018A100657F5F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatParsing;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "BeatParsing-Bridging.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B6B37E8E28F018A100657F5F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatParsing;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "BeatParsing-Bridging.h";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B6B37E7D28F018A100657F5F /* Build configuration list for PBXProject "BeatParsing" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6B37E8A28F018A100657F5F /* Debug */,
+				B6B37E8B28F018A100657F5F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B6B37E8C28F018A100657F5F /* Build configuration list for PBXNativeTarget "BeatParsing" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6B37E8D28F018A100657F5F /* Debug */,
+				B6B37E8E28F018A100657F5F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B6B37E7A28F018A100657F5F /* Project object */;
+}

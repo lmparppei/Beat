@@ -1,0 +1,536 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
+		B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */; };
+		B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */; };
+		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
+		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
+		B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */; };
+		B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */; };
+		B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */; };
+		B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */; };
+		B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */; };
+		B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE24DD2838541500D53CE8 /* Utilities.swift */; };
+		B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */; };
+		B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */; };
+		B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE25062839681500D53CE8 /* BeatSidebar.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B6B6DA0028EF519E0081327E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6B6D9F928EF519E0081327E /* Beat.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B138B57319E1C973000489C4;
+			remoteInfo = Beat;
+		};
+		B6B6DA0228EF519E0081327E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6B6D9F928EF519E0081327E /* Beat.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B62ADC7323CCCE560015563A;
+			remoteInfo = fountainQuickLook;
+		};
+		B6B6DA0428EF519E0081327E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B6B6D9F928EF519E0081327E /* Beat.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B68B60C5260B849300463AD8;
+			remoteInfo = "Beat Appstore";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
+		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
+		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
+		B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatiOSFormatting.m; sourceTree = "<group>"; };
+		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
+		B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
+		B6B6D9F928EF519E0081327E /* Beat.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Beat.xcodeproj; sourceTree = "<group>"; };
+		B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentBrowserViewController.swift; sourceTree = "<group>"; };
+		B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSDocument.swift; sourceTree = "<group>"; };
+		B6CB96FB282FEB6600C7AFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B6CB9700282FEB6700C7AFC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B6CB9702282FEB6700C7AFC7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatUITextView.swift; sourceTree = "<group>"; };
+		B6CB970E282FF48300C7AFC7 /* Beat-iOS-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-iOS-Bridging-Header.h"; sourceTree = "<group>"; };
+		B6CE24DD2838541500D53CE8 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
+		B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatiOSOutlineView.swift; sourceTree = "<group>"; };
+		B6CE25062839681500D53CE8 /* BeatSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSidebar.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B6CB96ED282FEB6500C7AFC7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B138B56A19E1C973000489C4 = {
+			isa = PBXGroup;
+			children = (
+				B6B6D9F928EF519E0081327E /* Beat.xcodeproj */,
+				B6CB96F1282FEB6500C7AFC7 /* Beat iOS */,
+				B138B57419E1C973000489C4 /* Products */,
+			);
+			sourceTree = "<group>";
+			usesTabs = 1;
+		};
+		B138B57419E1C973000489C4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B629FE3C2846B8DB00E8B9BD /* Card View */ = {
+			isa = PBXGroup;
+			children = (
+				B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */,
+				B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */,
+			);
+			path = "Card View";
+			sourceTree = "<group>";
+		};
+		B63D9F5028301E4E00D027B6 /* iOS colors */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "iOS colors";
+			sourceTree = "<group>";
+		};
+		B63D9F5C2830366B00D027B6 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */,
+				B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */,
+				B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		B6B6D9FA28EF519E0081327E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B6B6DA0128EF519E0081327E /* Beat Ad Hoc.app */,
+				B6B6DA0328EF519E0081327E /* fountainQuickLook.appex */,
+				B6B6DA0528EF519E0081327E /* Beat.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B6CB96F1282FEB6500C7AFC7 /* Beat iOS */ = {
+			isa = PBXGroup;
+			children = (
+				B63D9F5C2830366B00D027B6 /* Editor */,
+				B6CB9707282FEDAF00C7AFC7 /* User Interface */,
+				B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */,
+				B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */,
+				B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */,
+				B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */,
+				B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */,
+				B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */,
+				B6CB96FD282FEB6700C7AFC7 /* Assets.xcassets */,
+				B6CB9702282FEB6700C7AFC7 /* Info.plist */,
+				B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */,
+				B6CB970E282FF48300C7AFC7 /* Beat-iOS-Bridging-Header.h */,
+				B6CE24DC283853FE00D53CE8 /* Utilities */,
+			);
+			path = "Beat iOS";
+			sourceTree = "<group>";
+		};
+		B6CB9707282FEDAF00C7AFC7 /* User Interface */ = {
+			isa = PBXGroup;
+			children = (
+				B629FE3C2846B8DB00E8B9BD /* Card View */,
+				B63D9F5028301E4E00D027B6 /* iOS colors */,
+				B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */,
+				B6CE25062839681500D53CE8 /* BeatSidebar.swift */,
+				B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */,
+			);
+			path = "User Interface";
+			sourceTree = "<group>";
+		};
+		B6CE24DC283853FE00D53CE8 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B6CE24DD2838541500D53CE8 /* Utilities.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B6CB96EF282FEB6500C7AFC7 /* Beat iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B6CB9703282FEB6700C7AFC7 /* Build configuration list for PBXNativeTarget "Beat iOS" */;
+			buildPhases = (
+				B6CB96EC282FEB6500C7AFC7 /* Sources */,
+				B6CB96ED282FEB6500C7AFC7 /* Frameworks */,
+				B6CB96EE282FEB6500C7AFC7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Beat iOS";
+			productName = "Beat iOS";
+			productReference = B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B138B56B19E1C973000489C4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = Beat;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1240;
+				ORGANIZATIONNAME = "Lauri-Matti Parppei";
+				TargetAttributes = {
+					B6CB96EF282FEB6500C7AFC7 = {
+						CreatedOnToolsVersion = 13.3.1;
+						DevelopmentTeam = C3R7KAVB6V;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = B138B56E19E1C973000489C4 /* Build configuration list for PBXProject "Beat iOS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				fi,
+			);
+			mainGroup = B138B56A19E1C973000489C4;
+			productRefGroup = B138B57419E1C973000489C4 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B6B6D9FA28EF519E0081327E /* Products */;
+					ProjectRef = B6B6D9F928EF519E0081327E /* Beat.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				B6CB96EF282FEB6500C7AFC7 /* Beat iOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B6B6DA0128EF519E0081327E /* Beat Ad Hoc.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Beat Ad Hoc.app";
+			remoteRef = B6B6DA0028EF519E0081327E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B6B6DA0328EF519E0081327E /* fountainQuickLook.appex */ = {
+			isa = PBXReferenceProxy;
+			fileType = "wrapper.app-extension";
+			path = fountainQuickLook.appex;
+			remoteRef = B6B6DA0228EF519E0081327E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B6B6DA0528EF519E0081327E /* Beat.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Beat.app;
+			remoteRef = B6B6DA0428EF519E0081327E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B6CB96EE282FEB6500C7AFC7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
+				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
+				B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B6CB96EC282FEB6500C7AFC7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */,
+				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
+				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
+				B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */,
+				B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */,
+				B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */,
+				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
+				B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */,
+				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
+				B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */,
+				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B6CB96FB282FEB6600C7AFC7 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B6CB9700282FEB6700C7AFC7 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B138B59119E1C974000489C4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B138B59219E1C974000489C4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "";
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+			};
+			name = Release;
+		};
+		B6CB9704282FEB6700C7AFC7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Beat iOS/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kapitanFI.Beat-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Beat iOS/Beat-iOS-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B6CB9705282FEB6700C7AFC7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "Beat iOS/Beat iOS.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Beat iOS/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.kapitanFI.Beat-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Beat iOS/Beat-iOS-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B138B56E19E1C973000489C4 /* Build configuration list for PBXProject "Beat iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B138B59119E1C974000489C4 /* Debug */,
+				B138B59219E1C974000489C4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B6CB9703282FEB6700C7AFC7 /* Build configuration list for PBXNativeTarget "Beat iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B6CB9704282FEB6700C7AFC7 /* Debug */,
+				B6CB9705282FEB6700C7AFC7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B138B56B19E1C973000489C4 /* Project object */;
+}

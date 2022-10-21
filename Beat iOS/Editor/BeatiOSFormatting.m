@@ -16,7 +16,6 @@
 #import "BeatTag.h"
 #import "Beat_iOS-Swift.h"
 
-
 @implementation BeatiOSFormatting
 
 // DOCUMENT LAYOUT SETTINGS
