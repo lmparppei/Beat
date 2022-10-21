@@ -330,11 +330,8 @@
 	
 	[self getPaperSizeFromDocument];
 	
-	NSInteger oneInchBuffer = 72;
-	NSInteger maxPageHeight = _paperSize.height - round(oneInchBuffer);
-	
 	BeatPage *currentPage = BeatPage.new;
-	currentPage.maxHeight = maxPageHeight;
+	currentPage.maxHeight = _paperSize.height - 72; // We'll remove one inch to make space for (MORE) etc.
 	currentPage.delegate = self;
 	
 	bool hasStartedANewPage = false;
@@ -416,7 +413,7 @@
 	// if (!didUseCache) [_updatedPages addIndex:self.pages.count - 1];
 	
 	// Only for static pagination
-	_lastPageHeight = (float)currentPage.y / (float)maxPageHeight;
+	_lastPageHeight = (float)currentPage.y / (float)currentPage.maxHeight;
 	
 	return true;
 }
@@ -759,19 +756,22 @@
 #pragma mark New dialogue split implementation
 - (NSDictionary*)splitDialogue:(NSArray<Line*>*)block spiller:(Line*)spiller page:(BeatPage*)page {
 	NSMutableArray *dialogueBlock = block.mutableCopy;
-	/*
-	static BeatAppDelegate *delegate;
-	if (delegate == nil) {
-		delegate = (BeatAppDelegate*)NSApp.delegate;
-		[delegate openConsole];
-	}
-	 */
-	
+
 	Line *pageBreakItem;
 	NSUInteger suggestedPageBreak = 0;
 		
 	NSUInteger index = [dialogueBlock indexOfObject:spiller];
-	NSInteger remainingSpace = page.remainingSpace;
+	NSInteger remainingSpace = page.remainingSpace - BeatPaginator.lineHeight; // Make space for (MORE) etc.
+	
+	// If it doesn't fit, move the whole block on next apge
+	if (remainingSpace < BeatPaginator.lineHeight) {
+		return @{
+			@"page break item": block.firstObject,
+			@"position": @(0),
+			@"retained": @[],
+			@"next page": block
+		};;
+	}
 	
 	if (spiller) {
 		// Spiller can be null, if we're in a dual-dialogue block
@@ -795,7 +795,6 @@
 	
 	// Live pagination page break item
 	pageBreakItem = block[splitAt];
-
 
 	// For dialogue, we'll see if we can split the current line of dialogue
 	if (spiller.isAnyDialogue) {
@@ -873,13 +872,12 @@
 	return possibleSplit;
 }
 
+/// Returns an array with [retainedText, splitText]
 - (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(NSUInteger)remainingSpace pageBreakPosition:(NSUInteger*)suggestedPageBreak
 {
-	/// Returns an array with [retainedText, splitText]
-
 	NSString *stripped = line.stripFormatting;
 	NSMutableArray *sentences = [NSMutableArray arrayWithArray:[stripped matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
-	
+		
 	// Make sure we are not missing anything
 	NSString *joined = [sentences componentsJoinedByString:@""];
 	NSString *tail = [stripped stringByReplacingOccurrencesOfString:joined withString:@""];
@@ -937,7 +935,7 @@
  the original loop, so that we are able to queue any amount of stuff (including temporary items etc.)
  to be added on pages.
  */
-- (void)addBlockOnCurrentPage:(NSArray*)block currentPage:(BeatPage*)currentPage {
+- (void)addBlockOnCurrentPage:(NSArray<Line*>*)block currentPage:(BeatPage*)currentPage {
 	// Do nothing if the thread is killed
 	if (self.cancelled) return;
 	
@@ -966,7 +964,7 @@
 	// Block doesn't fit
 	else {
 		CGFloat overflow = currentPage.maxHeight - (currentPage.y + fullHeight);
-				
+
 		// If it fits, just squeeze it on this page
 		if (fabs(overflow) <= BeatPaginator.lineHeight * 1.05) {
 			[self resetPage:currentPage onCurrentPage:block onNextPage:@[]];

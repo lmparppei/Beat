@@ -147,14 +147,15 @@
 }
 
 - (void)livePaginationFor:(NSArray *)script changeAt:(NSUInteger)location {
-	[self cancelAllOperations];
-	
 	BeatPaginationOperation *operation = [BeatPaginationOperation.alloc initWithElements:script livePagination:true paginator:self cachedPages:self.pages.copy cachedPageBreaks:self.pageBreaks.copy changeAt:location];
 	
 	[self runOperation:operation];
 }
 
 - (void)runOperation:(BeatPaginationOperation*)operation {
+	// Cancel all previous operations
+	[self cancelAllOperations];
+	
 	if (_queue == nil) _queue = NSMutableArray.new;
 	[_queue addObject:operation];
 	
@@ -194,8 +195,6 @@
 	// Once finished, cancel everything else but the very last queued operation
 	BeatPaginationOperation *lastOperation = _queue.lastObject;
 	if (lastOperation) {
-		NSLog(@"# RUNNING NEXT OPERATION");
-		[_queue removeAllObjects];
 		[self runOperation:lastOperation];
 	}
 }
