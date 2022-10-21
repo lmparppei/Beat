@@ -78,7 +78,10 @@ static NSString *reviewAttribute = @"BeatReview";
 	style.lineHeightMultiple = LINE_HEIGHT;
 }
 
-
+- (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
+	Line *tempLine = [Line withString:@"" type:type];
+	return [self paragraphStyleFor:tempLine];
+}
 - (NSMutableParagraphStyle*)paragraphStyleFor:(Line*)line {
 	if (line == nil) line = [Line withString:@"" type:action];
 	LineType type = line.type;
@@ -151,7 +154,9 @@ static NSString *reviewAttribute = @"BeatReview";
 	return style;
 }
 
-- (void)formatLine:(Line*)line { [self formatLine:line firstTime:NO]; }
+- (void)formatLine:(Line*)line {
+	[self formatLine:line firstTime:NO];
+}
 
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
 {
@@ -176,7 +181,9 @@ static NSString *reviewAttribute = @"BeatReview";
 	NSTextStorage *textStorage = textView.textStorage;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	
-	NSMutableDictionary *attributes = NSMutableDictionary.new;
+	NSMutableDictionary *attributes;
+	if (firstTime || line.position == textView.string.length) attributes = NSMutableDictionary.new;
+	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
 		
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff when formatting is disabled
@@ -192,25 +199,8 @@ static NSString *reviewAttribute = @"BeatReview";
 	}
 	
 	// Apply paragraph styles
-	/*
-	NSMutableParagraphStyle *paragraphStyle;
-	if (line.formattedAs == line.type && !_delegate.characterInput && _delegate.characterInputForLine != line && line.type != empty && !firstTime) {
-		// Use existing paragraph styles
-		if (line.position < textStorage.length) {
-			NSDictionary *attrs = [textStorage attributesAtIndex:line.position effectiveRange:nil];
-			paragraphStyle = [attrs[NSParagraphStyleAttributeName] mutableCopy];
-		} else {
-			paragraphStyle = [self paragraphStyleFor:line];
-		}
-	} else {
-		// Create a new paragraph style
-		paragraphStyle = [self paragraphStyleFor:line];
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-	}
-	 */
 	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:line];
 	[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-	
 		
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine) {
@@ -220,12 +210,9 @@ static NSString *reviewAttribute = @"BeatReview";
 
 	// Store the type we are formatting for
 	line.formattedAs = line.type;
-		
-	// Foreground color is TEMPORARY ATTRIBUTE
-	[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.currentTextColor forCharacterRange:line.range];
-	[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 	
-	// Redo everything we just did for forced character input
+	
+	// Extra rules for character cue input
 	if (_delegate.characterInput && _delegate.characterInputForLine == line) {
 		// Do some extra checks for dual dialogue
 		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
@@ -253,90 +240,38 @@ static NSString *reviewAttribute = @"BeatReview";
 		}
 	}
 	
-	if (line.type == heading) {
-		// Format heading
+	// Apply font face
+	if (line.type == section) {
+		// Stylize sections & synopses
+		CGFloat size = SECTION_FONT_SIZE - (line.sectionDepth - 1);
 		
-		// Stylize according to settings
-		if (_delegate.headingStyleBold) [attributes setObject:_delegate.boldCourier forKey:NSFontAttributeName];
-		if (_delegate.headingStyleUnderline) [attributes setObject:@1 forKey:NSUnderlineStyleAttributeName];
+		// Also, make lower sections a bit smaller
+		size = size - line.sectionDepth;
+		if (size < 15) size = 15.0;
 		
-		// If the scene has a color, let's color it
-		if (line.color.length) {
-			NSColor* headingColor = [BeatColors color:line.color.lowercaseString];
-			if (headingColor != nil) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:headingColor forCharacterRange:line.textRange];
-		}
+		[attributes setObject:[_delegate sectionFontWithSize:size] forKey:NSFontAttributeName];
 		
-	} else if (line.type == pageBreak) {
+	} else if (line.type == synopse) {
+		[attributes setObject:_delegate.synopsisFont forKey:NSFontAttributeName];
+	}
+	
+	else if (line.type == pageBreak) {
 		// Format page break - bold
 		[attributes setObject:_delegate.boldCourier forKey:NSFontAttributeName];
 		
 	} else if (line.type == lyrics) {
 		// Format lyrics - italic
 		[attributes setObject:_delegate.italicCourier forKey:NSFontAttributeName];
-
-	} else if (line.type == section || line.type == synopse) {
-		// Stylize sections & synopses
-
-		if (line.type == section) {
-			CGFloat size = SECTION_FONT_SIZE;
-			
-			NSColor *sectionColor;
-			
-			if (line.sectionDepth == 1) {
-				// Black or custom for high-level sections
-				if (line.color) {
-					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = themeManager.sectionTextColor;
-				} else sectionColor = themeManager.sectionTextColor;
-				
-				[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:sectionColor forCharacterRange:line.textRange];
-				[attributes setObject:[_delegate sectionFontWithSize:size] forKey:NSFontAttributeName];
-			} else {
-				// And custom or gray for others
-				if (line.color) {
-					if (!(sectionColor = [BeatColors color:line.color])) sectionColor = themeManager.sectionTextColor;
-				} else sectionColor = themeManager.commentColor;
-				
-				//[attributes setObject:sectionColor forKey:NSForegroundColorAttributeName];
-				[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:sectionColor forCharacterRange:line.textRange];
-				
-				// Also, make lower sections a bit smaller
-				size = size - line.sectionDepth;
-				if (size < 15) size = 15.0;
-				
-				[attributes setObject:[_delegate sectionFontWithSize:size] forKey:NSFontAttributeName];
-			}
-		}
 		
-		if (line.type == synopse) {
-			NSColor* synopsisColor;
-			if (line.color) {
-				if (!(synopsisColor = [BeatColors color:line.color])) synopsisColor = themeManager.sectionTextColor;
-			} else synopsisColor = themeManager.synopsisTextColor;
-			
-			//if (synopsisColor) [attributes setObject:synopsisColor forKey:NSForegroundColorAttributeName];
-			if (synopsisColor) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:synopsisColor forCharacterRange:line.textRange];
-			
-			[attributes setObject:_delegate.synopsisFont forKey:NSFontAttributeName];
-		}
-		
-	} else if (line.type == empty) {
-		/*
-		// Just to make sure that after second empty line we reset indents
-		// Do we really have to do this? This seems to be buggy and weird.
-		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
-				
-		if (lineIndex > 0 && lineIndex != NSNotFound) {
-			Line* preceedingLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
-			if (preceedingLine.string.length == 0) {
-				[paragraphStyle setFirstLineHeadIndent:0];
-				[paragraphStyle setHeadIndent:0];
-				[paragraphStyle setTailIndent:0];
-			}
-		}
-		*/
+	} else if (attributes[NSFontAttributeName] != _delegate.courier) {
+		// Fall back to default (if not set yet)
+		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
 	}
 		
 	// Overwrite fonts if they are not set yet
+	if (![attributes valueForKey:NSForegroundColorAttributeName]) {
+		[attributes setObject:themeManager.textColor forKey:NSForegroundColorAttributeName];
+	}
 	if (![attributes valueForKey:NSFontAttributeName]) {
 		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
 	}
@@ -361,133 +296,95 @@ static NSString *reviewAttribute = @"BeatReview";
 			[textStorage addAttributes:attributes range:range];
 		}
 	}
-		
-	//[self endMeasure:@"Add attributes"];
 	
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
+	// (do this earlier, you idiot)
 	if (line.string.length == 0 && !firstTime) {
 		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
 		Line* previousLine;
 		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
 		if (lineIndex > 0) previousLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
-		
-		//NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
 
-		// Keep dialogue input for character blocks
-
-		if ((previousLine.type == dialogue || previousLine.type == character || previousLine.type == parenthetical)
-			&& previousLine.string.length) {
-			[paragraphStyle setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-			[paragraphStyle setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-			[paragraphStyle setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
+		// Keep dialogue input after any dialogue elements
+		if (previousLine.isAnyDialogue && previousLine.string.length) {
+			if (!previousLine.isDualDialogue) paragraphStyle = [self paragraphStyleForType:dialogue];
+			else paragraphStyle = [self paragraphStyleForType:dualDialogue];
 		} else {
 			[paragraphStyle setFirstLineHeadIndent:0];
 			[paragraphStyle setHeadIndent:0];
 			[paragraphStyle setTailIndent:0];
 		}
-		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		
+		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 		[textView setTypingAttributes:attributes];
 	}
 	
-	// Format scene number as invisible
-	if (line.sceneNumberRange.length > 0) {
-		NSRange sceneNumberRange = NSMakeRange(line.sceneNumberRange.location - 1, line.sceneNumberRange.length + 2);
-		// Don't go out of range, please, please
-		if (sceneNumberRange.location + sceneNumberRange.length <= line.string.length && sceneNumberRange.location >= 0) {
-			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.currentInvisibleTextColor
-								forCharacterRange:[self globalRangeFromLocalRange:&sceneNumberRange inLineAtPosition:line.position]];
-		}
-	}
 	
-	//Add in bold, underline, italics and other stylization
-	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSFontAttributeName value:_delegate.italicCourier line:line range:range formattingSymbol:italicSymbol];
-	}];
-	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSFontAttributeName value:_delegate.boldCourier line:line range:range formattingSymbol:boldSymbol];
-	}];
-	[line.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSFontAttributeName value:_delegate.boldItalicCourier line:line range:range formattingSymbol:@""];
-	}];
-	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
-	}];
-	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:strikeoutSymbolOpen];
-	}];
-
-	// Foreground color attributes
-	if (line.isTitlePage && line.titleRange.length > 0) {
-		NSRange titleRange = line.titleRange;
-			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.commentColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&titleRange inLineAtPosition:line.position]];
-	}
+	[self applyInlineFormatting:line withAttributes:attributes];
+	[self setTextColorFor:line];
 	
-	[line.escapeRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
-	}];
-	
-	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.commentColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&range inLineAtPosition:line.position]];
-	}];
-	
-	[line.omittedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&range
-												 inLineAtPosition:line.position]];
-	}];
-
-
-	// Format force element symbols
-	if (line.numberOfPrecedingFormattingCharacters > 0 && line.string.length >= line.numberOfPrecedingFormattingCharacters) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position, line.numberOfPrecedingFormattingCharacters)];
-	} else if (line.type == centered && line.string.length > 1) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position, 1)];
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position + line.string.length - 1, 1)];
-	}
-	if (line.type == dualDialogueCharacter) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-								   value:themeManager.invisibleTextColor
-					   forCharacterRange:NSMakeRange(line.position + line.length - 1, 1)];
-	}
-	
-	if (line.string.containsOnlyWhitespace && line.length >= 2) {
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor forCharacterRange:line.textRange];
-		[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor range:line.textRange];
-	}
-		
-	// Color markers
-	if (line.marker.length && line.markerRange.length) {
-		NSColor *color = [BeatColors color:line.marker];
-		NSRange markerRange = line.markerRange;
-		if (color) [layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName
-											  value:color
-								  forCharacterRange:[self globalRangeFromLocalRange:&markerRange inLineAtPosition:line.position]];
-	}
-
 	// Render backgrounds according to text attributes
 	// This is AMAZINGLY slow
-	// [self renderTextBackgroundOnLine:line];
-
 	if (!firstTime && line.string.length) {
 		[self renderBackgroundForLine:line clearFirst:NO];
 	}
 	
 }
 
+- (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
+	NSTextStorage *textStorage = _delegate.textView.textStorage;
+	
+	// (btw: would it be sensible to
+	
+	// Remove underline/strikeout
+	if (attributes[NSUnderlineStyleAttributeName] || attributes[NSStrikethroughStyleAttributeName]) {
+		// Overwrite strikethrough / underline
+		[textStorage addAttribute:NSUnderlineStyleAttributeName value:@0 range:line.textRange];
+		[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@0 range:line.textRange];
+	}
+	
+	// Stylize headings according to settings
+	if (line.type == heading) {
+		if (_delegate.headingStyleBold) [textStorage applyFontTraits:NSBoldFontMask range:line.textRange];
+		if (_delegate.headingStyleUnderline) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
+	}
+		
+	//Add in bold, underline, italics and other stylization
+	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
+		[textStorage applyFontTraits:NSItalicFontMask range:globalRange];
+		//[self stylize:NSFontAttributeName value:_delegate.italicCourier line:line range:range formattingSymbol:italicSymbol];
+	}];
+	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
+		[textStorage applyFontTraits:NSBoldFontMask range:globalRange];
+		//[self stylize:NSFontAttributeName value:_delegate.boldCourier line:line range:range formattingSymbol:boldSymbol];
+	}];
+	[line.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
+		[textStorage applyFontTraits:NSBoldFontMask | NSItalicFontMask range:globalRange];
+		//[self stylize:NSFontAttributeName value:_delegate.boldItalicCourier line:line range:range formattingSymbol:@""];
+	}];
+	
+	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self stylize:NSUnderlineStyleAttributeName value:@1 line:line range:range formattingSymbol:underlinedSymbol];
+	}];
+	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:strikeoutSymbolOpen];
+	}];
+}
+
+#pragma mark - Set foreground color
+
+- (void)setForegroundColor:(NSColor*)color line:(Line*)line range:(NSRange)localRange {
+	NSRange globalRange = [self globalRangeFromLocalRange:&localRange inLineAtPosition:line.position];
+	
+	// Don't go out of range and add attributes
+	if (NSMaxRange(localRange) <= line.string.length && localRange.location >= 0 && color != nil) {
+		[_delegate.textView.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:globalRange];
+	}
+	
+}
 
 #pragma mark - Text backgrounds (for revisions + tagging)
 
@@ -501,11 +398,13 @@ static NSString *reviewAttribute = @"BeatReview";
 	NSLayoutManager *layoutMgr = _delegate.textView.layoutManager;
 	NSTextStorage *textStorage = _delegate.textView.textStorage;
 	
+	//[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
+
 	if (clear) {
 		// First clear the background attribute if needed
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 	}
-	
+	 
 	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:line.range];
 	
 	if (_delegate.showRevisions || _delegate.showTags) {
@@ -551,19 +450,60 @@ static NSString *reviewAttribute = @"BeatReview";
 	});
 }
 
+- (void)setTextColorFor:(Line*)line {
+	// Foreground color attributes (NOTE: These are TEMPORARY attributes)
+	ThemeManager *themeManager = ThemeManager.sharedManager;
+	
+	// Set the base font color
+	[self setForegroundColor:themeManager.textColor line:line range:NSMakeRange(0, line.length)];
+	
+	// Heading elements can be colorized using [[COLOR COLORNAME]],
+	// so let's respect that first
+	if (line.isOutlineElement && line.color.length > 0) {
+		NSColor *color = [BeatColors color:line.color];
+		if (color == nil) {
+			if (line.type == section) color = themeManager.sectionTextColor;
+			else if (line.type == synopse) color = themeManager.synopsisTextColor;
+		}
+		
+		[self setForegroundColor:color line:line range:NSMakeRange(0, line.length)];
+	}
+	
+	// Enumerate FORMATTING RANGES and make all of them invisible
+	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self setForegroundColor:themeManager.invisibleTextColor line:line range:range];
+	}];
+	
+	// Enumerate note ranges and set it as COMMENT color
+	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[self setForegroundColor:themeManager.commentColor line:line range:range];
+	}];
+	
+	// Enumerate title page ranges
+	if (line.isTitlePage && line.titleRange.length > 0) {
+		[self setForegroundColor:themeManager.commentColor line:line range:line.titleRange];
+	}
+	
+	// Bullets for forced empty lines are invisible, too
+	else if (line.string.containsOnlyWhitespace && line.length >= 2) {
+		[self setForegroundColor:themeManager.invisibleTextColor line:line range:line.textRange];
+	}
+	
+	// Color markers
+	else if (line.marker.length && line.markerRange.length) {
+		NSColor *color = [BeatColors color:line.marker];
+		NSRange markerRange = line.markerRange;
+		if (color) [self setForegroundColor:color line:line range:markerRange];
+	}
+}
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
 	// Don't add a nil value
 	if (!value) return;
 	
-	ThemeManager *themeManager = ThemeManager.sharedManager;
 	NSTextView *textView = _delegate.textView;
-	NSLayoutManager *layoutMgr = textView.layoutManager;
 	
 	NSUInteger symLen = sym.length;
-	NSRange openRange = (NSRange){ range.location, symLen };
-	NSRange closeRange = (NSRange){ range.location + range.length - symLen, symLen };
-	
 	NSRange effectiveRange;
 	
 	if (symLen == 0) {
@@ -581,22 +521,38 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (key.length) [textView.textStorage addAttribute:key value:value
 						range:[self globalRangeFromLocalRange:&effectiveRange
 											 inLineAtPosition:line.position]];
+}
+
+
+
+- (void)setFontStyle:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
+	// Don't add a nil value
+	if (!value) return;
 	
-	if (openRange.length) {
-		// Fuck. We need to format these ranges twice, because there is a weird bug in glyph setter.
-		[textView.textStorage addAttribute:NSForegroundColorAttributeName
-									 value:themeManager.invisibleTextColor
-									 range:[self globalRangeFromLocalRange:&openRange
-														  inLineAtPosition:line.position]];
-		[textView.textStorage addAttribute:NSForegroundColorAttributeName
-									 value:themeManager.invisibleTextColor
-									 range:[self globalRangeFromLocalRange:&closeRange
-														  inLineAtPosition:line.position]];
-		
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&openRange inLineAtPosition:line.position]];
-		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor
-					   forCharacterRange:[self globalRangeFromLocalRange:&closeRange inLineAtPosition:line.position]];
+	NSTextView *textView = _delegate.textView;
+	NSTextStorage *textStorage = textView.textStorage;
+	
+	NSRange effectiveRange;
+	
+	if (sym.length == 0) {
+		// Format the full range
+		effectiveRange = NSMakeRange(range.location, range.length);
+	}
+	else if (range.length >= 2 * sym.length) {
+		// Format between characters (ie. *italic*)
+		effectiveRange = NSMakeRange(range.location + sym.length, range.length - 2 * sym.length);
+	} else {
+		// Format nothing
+		effectiveRange = NSMakeRange(range.location + sym.length, 0);
+	}
+	
+	if (key.length) {
+		NSRange globalRange = [self globalRangeFromLocalRange:&effectiveRange inLineAtPosition:line.position];
+				
+		// Add the attribute if needed
+		[textStorage enumerateAttribute:key inRange:globalRange options:0 usingBlock:^(id  _Nullable attr, NSRange range, BOOL * _Nonnull stop) {
+			if (attr != value) [textStorage addAttribute:key value:value range:range];
+		}];
 	}
 }
 
