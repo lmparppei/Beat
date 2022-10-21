@@ -1301,6 +1301,7 @@ and incomprehensible system of recursion.
             }
         }
     }
+	// THE FOLLOWING IS VERY BAD CODE, but appears to work for now.
 	else if (precedingLine.type == action &&
 			 precedingLine.length > 0 &&
 			 precedingLine.string.onlyUppercaseUntilParenthesis &&
@@ -1312,7 +1313,9 @@ and incomprehensible system of recursion.
 		else precedingLine.type = character;
 		
 		[_changedIndices addIndex:index-1];
-		return dialogue;
+		
+		if (line.length > 0 && [line.string characterAtIndex:0] == '(') return parenthetical;
+		else return dialogue;
 	}
     
     //Check for centered text
@@ -1326,7 +1329,7 @@ and incomprehensible system of recursion.
 			precedingLine.type == dialogue ||
 			precedingLine.type == parenthetical) {
             //Text in parentheses after character or dialogue is a parenthetical, else its dialogue
-			if (firstChar == '(' && [precedingLine.string length] > 0) {
+			if (firstChar == '(' && precedingLine.string.length > 0) {
                 return parenthetical;
             } else {
 				if ([precedingLine.string length] > 0) {
