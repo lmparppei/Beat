@@ -15,10 +15,7 @@
 	
 	NSImage *image = [self imageForSegment:segment];
 	[[NSGraphicsContext currentContext] setImageInterpolation: NSImageInterpolationHigh];
-	
-	[NSColor.redColor setFill];
-	NSRectFill(frame);
-	
+		
 	[self drawCenteredImage:image inFrame:frame];
 }
 

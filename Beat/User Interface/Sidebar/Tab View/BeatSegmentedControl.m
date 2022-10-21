@@ -86,7 +86,7 @@
 		if (i == self.segmentCount - 1 && ![self widgetsVisible]) continue;
 		
 		NSImage *img = [self imageForSegment:i].copy;
-		NSColor *tint = NSColor.tertiaryLabelColor;
+		NSColor *tint = NSColor.secondaryLabelColor;
 		if (i == self.selectedSegment) tint = NSColor.whiteColor;
 
 		[img lockFocus];
