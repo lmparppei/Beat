@@ -2501,6 +2501,7 @@ static NSWindow __weak *currentKeyWindow;
 
 - (void)renderBackgroundForLines {
 	for (Line* line in self.lines) {
+		NSLog(@"Remove bg at %@", line);
 		[_formatting renderBackgroundForLine:line clearFirst:YES];
 	}
 }
@@ -3116,15 +3117,9 @@ static NSWindow __weak *currentKeyWindow;
 - (IBAction)toggleMatchParentheses:(id)sender
 {
 	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-    
-    for (Document* doc in openDocuments) {
-        doc.matchParentheses = !doc.matchParentheses;
-    }
-	
+    for (Document* doc in openDocuments) doc.matchParentheses = !doc.matchParentheses;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
-
-
 
 -(NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex {
 	return self.textView.contextMenu;
@@ -3259,11 +3254,7 @@ static NSWindow __weak *currentKeyWindow;
 - (IBAction)toggleHideFountainMarkup:(id)sender {
 	self.hideFountainMarkup = !self.hideFountainMarkup;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
-	
-	//if (self.hideFountainMarkup) self.textView.layoutManager.allowsNonContiguousLayout = NO;
-	//else self.textView.layoutManager.allowsNonContiguousLayout = YES;
-	self.textView.layoutManager.allowsNonContiguousLayout = YES;
-	
+		
 	[self.textView toggleHideFountainMarkup];
 	[self resetSceneNumberLabels];
 	[self updateLayout];
@@ -4092,6 +4083,7 @@ static NSArray<Line*>* cachedTitlePage;
 
 	self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
 		// Make a copy of the array for thread-safety
+		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
 		
 		// Dispatch to a background thread
@@ -4462,6 +4454,8 @@ static NSArray<Line*>* cachedTitlePage;
  Some changes made to the document are sent to all of the running plugins,
  if they have any change listeners.
  
+ This should be separated to its own class, something like PluginAgent or something.
+ 
  */
 
 - (void)setupPlugins {
@@ -4472,6 +4466,9 @@ static NSArray<Line*>* cachedTitlePage;
 	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
 	NSString *pluginName = menuItem.pluginName;
 	
+	[self runPluginWithName:pluginName];
+}
+- (void)runPluginWithName:(NSString*)pluginName {
 	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
 	
 	// See if the plugin is running and disable it if needed
@@ -4480,7 +4477,7 @@ static NSArray<Line*>* cachedTitlePage;
 		[_runningPlugins removeObjectForKey:pluginName];
 		return;
 	}
-	
+
 	// Run a new plugin
 	BeatPlugin *pluginParser = [[BeatPlugin alloc] init];
 	pluginParser.delegate = self;
