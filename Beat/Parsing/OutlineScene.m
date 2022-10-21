@@ -35,7 +35,7 @@
 - (id)initWithLine:(Line*)line delegate:(id)delegate
 {
 	if ((self = [super init]) == nil) { return nil; }
-
+	
 	self.line = line;
 	self.delegate = delegate;
 	self.beats = NSMutableArray.array;
@@ -63,6 +63,9 @@
 #pragma mark - JSON serialization
 
 // Plugin compatibility
+- (NSDictionary*)json {
+	return [self forSerialization];
+}
 - (NSDictionary*)forSerialization {
 	return @{
 		// String values have to be guarded so we don't try to put nil into NSDictionary

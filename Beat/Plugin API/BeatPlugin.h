@@ -124,10 +124,15 @@
 
 - (NSString*)previewHTML; /// Returns HTML string for current preview
 
+/// Move to next tab in document window
 - (void)nextTab;
+/// Move to previoustab in document window
 - (void)previousTab;
 
 - (BeatSpeak*)speakSynth; /// Speech synthesis
+
+/// Restart current plugin
+- (void)restart;
 
 /// Crash the app
 - (void)crash;
@@ -140,7 +145,7 @@
 /// Bakes revisions in given range
 JSExportAs(bakeRevisionsInRange, - (void)bakeRevisionsInRange:(NSInteger)loc len:(NSInteger)len);
 
-/// For those who REALLY, REALLY, __REALLY___ KNOW WHAT THEY ARE DOING
+/// Sets a property value in host document. Only for those who REALLY, REALLY, __REALLY__ KNOW WHAT THEY ARE DOING
 JSExportAs(setPropertyValue, - (void)setPropertyValue:(NSString*)key value:(id)value);
 
 JSExportAs(setSelectedRange, - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length);
@@ -230,7 +235,7 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 - (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
 - (void)bakeRevisions; /// Bakes current revisions into lines
 - (NSAttributedString*)getAttributedText;
-
+- (void)runPluginWithName:(NSString*)pluginName;
 @end
 
 @interface BeatPlugin : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
@@ -267,4 +272,6 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 
 - (void)showAllWindows;
 - (void)hideAllWindows;
+
+- (void)restart;
 @end

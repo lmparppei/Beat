@@ -63,6 +63,17 @@
 	_vm = [[JSVirtualMachine alloc] init];
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
 
+	[self setupErrorHandler];
+	[self setupRequire];
+	
+	[_context setObject:self forKeyedSubscript:@"Beat"];
+	
+	return self;
+}
+
+#pragma mark - Helpers
+
+- (void)setupErrorHandler {
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
 		if (NSThread.isMainThread) {
 			NSAlert *alert = [[NSAlert alloc] init];
@@ -75,33 +86,84 @@
 			[BeatConsole.shared logToConsole:errMsg pluginName:@"Plugin parser"];
 		}
 	}];
-		
-	[_context setObject:self forKeyedSubscript:@"Beat"];
-	
-	return self;
 }
+
+- (void)setupRequire {
+	// Thank you, ocodo on stackoverflow.
+	// Based on https://github.com/kasper/phoenix
+	BeatPlugin * __weak weakSelf = self;
+
+	self.context[@"require"] = ^(NSString *path) {
+		NSString *modulePath = [[BeatPluginManager.sharedManager pathForPlugin:weakSelf.pluginName] stringByAppendingPathComponent:path];
+		modulePath = [weakSelf resolvePath:modulePath];
+		
+		if(![NSFileManager.defaultManager fileExistsAtPath:modulePath]) {
+			// File doesn't exist inside the plugin container. Let's see if it can be found inside the app container.
+			//NSString *message = [NSString stringWithFormat:@"Require: File “%@” does not exist.", path];
+			//weakSelf.context.exception = [JSValue valueWithNewErrorFromMessage:message inContext:weakSelf.context];
+			//return;
+			
+			NSURL *url = [NSBundle.mainBundle URLForResource:path.lastPathComponent withExtension:@"js"];
+			if (url == nil) {
+				NSString *message = [NSString stringWithFormat:@"Require: File “%@” does not exist.", path];
+				weakSelf.context.exception = [JSValue valueWithNewErrorFromMessage:message inContext:weakSelf.context];
+				return;
+			} else {
+				modulePath = url.path;
+			}
+		}
+
+		[weakSelf importScript:modulePath];
+	};
+}
+
+- (void)importScript:(NSString *)path {
+	NSError *error;
+	
+	NSString *pluginPath = [BeatPluginManager.sharedManager pathForPlugin:self.pluginName];
+	NSLog(@"Plugin path... %@", pluginPath);
+	
+	NSString *script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+
+	if (error) {
+		script = @"";
+		NSString *errorMsg = [NSString stringWithFormat:@"Error: Could not import JavaScript module '%@'", path.lastPathComponent];
+		[self log:errorMsg];
+		return;
+	}
+
+	[self.context evaluateScript:script];
+}
+
 
 #pragma mark - Running Scripts
 
 - (void)loadPlugin:(BeatPluginData*)plugin
 {
 	self.plugin = plugin;
-	_pluginName = plugin.name;
+	self.pluginName = plugin.name;
 	
 	[BeatPluginManager.sharedManager pathForPlugin:plugin.name];
 	
 	[self runScript:plugin.script];
 }
 
-- (void)runScript:(NSString*)string
+- (void)runScript:(NSString*)pluginString
 {
-	[self.context evaluateScript:string];
+	//pluginString = [self preprocess:pluginString];
+	[self.context evaluateScript:pluginString];
 
 	// Kill it if the plugin is not resident
 	if (!self.sheet && !self.resident && self.pluginWindows.count < 1 && !self.widgetView) {
 		[self end];
 	}
 }
+
+- (NSString *)resolvePath:(NSString *)path {
+	path = path.stringByResolvingSymlinksInPath;
+	return path.stringByStandardizingPath;
+}
+
 
 - (void)forceEnd {
 	// This is user for force-quitting a resident plugin from the tools menu
@@ -122,6 +184,11 @@
 	
 	[self stopBackgroundInstances];
 	[_delegate deregisterPlugin:self];
+}
+
+- (void)restart {
+	[self end];
+	[_delegate runPluginWithName:self.pluginName];
 }
 
 - (void)end {

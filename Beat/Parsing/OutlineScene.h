@@ -44,6 +44,7 @@
 - (NSString*)typeAsString;
 - (NSInteger)timeLength;
 - (NSDictionary*)forSerialization;
+- (NSDictionary*)json;
 @end
 
 @interface OutlineScene : NSObject <OutlineSceneExports>

@@ -894,7 +894,15 @@
 }
 
 
-#pragma mark - Formatting range lookup
+#pragma mark - Formatting helpers
+
+/*
+// Idea
+- (void)enumerateFormattingRanges:(void (^)(bool result))block {
+}
+*/
+
+#pragma mark Formatting range lookup
 
 /// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too.
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
@@ -948,7 +956,7 @@
 	return indexSet;
 }
 
-#pragma mark - Formatting checking convenience
+#pragma mark Formatting checking convenience
 
 /// Returns TRUE when the line has no Fountain formatting (like **bold**)
 -(bool)noFormatting {
@@ -1206,7 +1214,8 @@
 		@"typeAsString": self.typeAsString,
 		@"omitted": @(self.omitted),
 		@"marker": (self.marker.length) ? self.marker : @"",
-		@"markerDescription": (self.markerDescription.length) ? self.markerDescription : @""
+		@"markerDescription": (self.markerDescription.length) ? self.markerDescription : @"",
+		@"uuid": (self.uuid) ? self.uuid.UUIDString : @""
 	};
 }
 
