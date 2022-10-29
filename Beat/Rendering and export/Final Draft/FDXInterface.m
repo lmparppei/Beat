@@ -379,6 +379,8 @@
 			return @"More";
 		case dualDialogueMore:
 			return @"More";
+		case shot:
+			return @"Action";
 		case typeCount:
 			return @"";
     }
