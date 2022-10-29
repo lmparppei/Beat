@@ -85,9 +85,11 @@ The export pipeline works as follows:
 	Before creating a HTML representation of the screenplay, the content has to be paginated. All lines, excluding title page, are sent to...
 	
 `BeatPaginator`
-	The paginator is a mess. It's a very complicated process, and some of the code might not be for the faint of heart. Pagination lays out the screenplay, and splits elements across multiple pages while handling things like `(MORE)` and `(CONT'D)`. It works in an imaginary space and does not have any sort of graphical view, which makes the process a bit esoteric.   
+	The paginator is a mess. It's a very complicated process, and some of the code might not be for the faint of heart. Pagination lays out the screenplay, and splits elements across multiple pages while handling things like `(MORE)` and `(CONT'D)`. It works in an imaginary space and does not have any sort of graphical view, which makes the process a bit esoteric.
+	
+	In its latest iteration, Paginator operates as a queue of pagination operations, and the main class handles the queue and forwards results of the latest operation to the host document/plugin/whatever. Actual pagination happens in `BeatPaginationOperation`.
 	 
-	An array of pages (which are just arrays of lines) is then returned back to...
+	The resulting array of pages (which are just arrays of lines) is then returned back to...
 	
 `BeatHTMLScript`
 	... which starts iterating through the pages and creates HTML code out of attributed versions of `Line` objects.
@@ -104,13 +106,13 @@ The export pipeline works as follows:
 
 # Plugins
 
-Plugins work through `JavaScriptCore`. It's a convoluted system, but the actual plugins relatively simple. They are run using a single class, `BeatPlugin`, and most relevant classes have `JSExports` protocols to make them compatible with the plugin API.
+Plugins work through `JavaScriptCore`. It's a convoluted system, but the actual plugins are relatively simple. They run using a single class, `BeatPlugin`, and most relevant classes have `JSExports` protocols to make them compatible with the plugin API.
 
-Plugin Library downloads stuff from a hard-coded GitHub repository (https://github.com/lmparppei/BeatPlugins/ - see exact URL in the class). There is a chance that the plugins could do nefarious things, so all of those plugins are reviewed and approved by me, but Beat can run whatever you feed it.
+Plugin Library downloads stuff from a hard-coded GitHub repository (see exact URL in the class). There is a chance that the plugins could do nefarious things, so all of those plugins are reviewed and approved by me, but Beat can run whatever you feed it. **Supply-chain attack is possible**, but the plugin repo is separate from main app repo, and I can kill plugin support via the release if something bad happens. 
 
-To be able to provide plugins to end users in the future, you need access to that repository. There is a script called `create_json.sh` in the repository, which packages all plugins and creates the external JSON file used by Plugin Library to serve the data.   
+To be able to provide plugins to end users in the future, you need access to that repository. There is a script called `create_json.sh` in plugin repo, which can be used to package all plugins and create the external JSON file, whic is used by Plugin Library to serve the data.   
 
-Most plugin API methods are documented in the wiki.
+Most plugin API methods are documented in the GitHub repository Wiki.
 
 
 # Beat File Format
@@ -143,7 +145,7 @@ There are standard keywords for certain settings, which you can see in the class
 
 ## Future Considerations
 
-As you might notice, TextBundle is included in the project. We *could* have a Beat-specific file format, which could include any sort of attachments and data along with the screenplay, and even multiple versions of the document. However, using plain-text UTF-8 files makes things much easier for the user, and could give the illusion that your files are actually safe and readable on any computer.
+As you might notice, TextBundle is included in the project. We *could* have a Beat-specific file format, which could include any sort of attachments and data along with the screenplay, and even multiple versions of the document. However, using plain-text UTF-8 files makes things much easier for the user, and adds to the trust that your files are actually readable on any computer.
 
 It would of course be possible to support both plain Fountain files and `.beat` (TextBundle) wrappers, and that might be the way to go. Just alert the user that they will need to save the project in a wrapper file format when they include data that isn't convenient to save at the end of a plain-text screenplay.  
 
