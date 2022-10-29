@@ -33,9 +33,10 @@ typedef NS_ENUM(NSUInteger, LineType) {
     lyrics,
     pageBreak,
     centered,
-	more,
-	dualDialogueMore,
-	typeCount
+	shot,
+	more, // fake element for exporting
+	dualDialogueMore, // fake element for exporting
+	typeCount // This is the the max number of line types, for data storing purposes
 };
 
 @protocol LineExports <JSExport>
