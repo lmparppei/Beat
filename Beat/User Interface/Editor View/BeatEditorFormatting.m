@@ -184,7 +184,10 @@ static NSString *reviewAttribute = @"BeatReview";
 	NSMutableDictionary *attributes;
 	if (firstTime || line.position == textView.string.length) attributes = NSMutableDictionary.new;
 	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
-		
+	
+	// Don't overwrite revision attribute
+	[attributes removeObjectForKey:BeatRevisions.attributeKey];
+	
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff when formatting is disabled
 		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor forCharacterRange:line.range];
@@ -250,24 +253,30 @@ static NSString *reviewAttribute = @"BeatReview";
 		if (size < 15) size = 15.0;
 		
 		[attributes setObject:[_delegate sectionFontWithSize:size] forKey:NSFontAttributeName];
-		
-	} else if (line.type == synopse) {
+
+	}
+	else if (line.type == synopse) {
 		[attributes setObject:_delegate.synopsisFont forKey:NSFontAttributeName];
 	}
-	
 	else if (line.type == pageBreak) {
 		// Format page break - bold
 		[attributes setObject:_delegate.boldCourier forKey:NSFontAttributeName];
 		
-	} else if (line.type == lyrics) {
+	}
+	else if (line.type == lyrics) {
 		// Format lyrics - italic
 		[attributes setObject:_delegate.italicCourier forKey:NSFontAttributeName];
-		
-	} else if (attributes[NSFontAttributeName] != _delegate.courier) {
+	}
+	else if (line.type == shot) {
+		// Bolded shots
+		[attributes setObject:_delegate.boldCourier forKey:NSFontAttributeName];
+	}
+	else if (attributes[NSFontAttributeName] != _delegate.courier) {
 		// Fall back to default (if not set yet)
 		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
 	}
-		
+	
+	
 	// Overwrite fonts if they are not set yet
 	if (![attributes valueForKey:NSForegroundColorAttributeName]) {
 		[attributes setObject:themeManager.textColor forKey:NSForegroundColorAttributeName];
@@ -333,8 +342,6 @@ static NSString *reviewAttribute = @"BeatReview";
 
 - (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
 	NSTextStorage *textStorage = _delegate.textView.textStorage;
-	
-	// (btw: would it be sensible to
 	
 	// Remove underline/strikeout
 	if (attributes[NSUnderlineStyleAttributeName] || attributes[NSStrikethroughStyleAttributeName]) {
@@ -412,6 +419,7 @@ static NSString *reviewAttribute = @"BeatReview";
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 			if (attrs[BeatRevisions.attributeKey] && _delegate.showRevisions) {
 				BeatRevisionItem *revision = attrs[BeatRevisions.attributeKey];
+				
 				if (revision.type == RevisionAddition) {
 					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
 				}
@@ -519,8 +527,8 @@ static NSString *reviewAttribute = @"BeatReview";
 	}
 	
 	if (key.length) [textView.textStorage addAttribute:key value:value
-						range:[self globalRangeFromLocalRange:&effectiveRange
-											 inLineAtPosition:line.position]];
+												 range:[self globalRangeFromLocalRange:&effectiveRange
+																	  inLineAtPosition:line.position]];
 }
 
 

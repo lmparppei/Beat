@@ -186,6 +186,8 @@
 				typeName = @"more"; break;
 			case dualDialogueMore:
 				typeName = @"dualDialogueMore"; break;
+			case shot:
+				typeName = @"shot";
 			case typeCount:
 				typeName = @""; break;
 		}
@@ -243,6 +245,8 @@
 			return @"Page Break";
 		case centered:
 			return @"Centered";
+		case shot:
+			return @"Shot";
 		case more:
 			return @"More";
 		case dualDialogueMore:
@@ -1024,14 +1028,18 @@
 	
 	if (globalRange) offset = self.position;
 	
-	// Add any ranges that are used to force elements
+	// Add any ranges that are used to force elements. First handle the elements which don't work without markup characters.
 	if (self.type == synopse) {
 		[indices addIndex:0+offset];
 	}
 	else if (self.type == section) {
 		[indices addIndexesInRange:NSMakeRange(0, self.sectionDepth)];
 	}
+	else if (self.type == shot) {
+		[indices addIndexesInRange:NSMakeRange(0, 2)];
+	}
 	else if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
+		// These elements might *not* be forced
 		unichar c = [string characterAtIndex:0];
 		
 		if ((self.type == character && c == '@') ||

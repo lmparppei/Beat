@@ -513,6 +513,8 @@ static NSDictionary *fdxIds;
 			return @"";
 		case centered:
 			return @"Action";
+		case shot:
+			return @"Action";
 		case more:
 			return @"More";
 		case dualDialogueMore:
