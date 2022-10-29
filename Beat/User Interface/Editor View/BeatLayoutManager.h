@@ -8,10 +8,16 @@
 
 #import <Cocoa/Cocoa.h>
 #import "BeatTextView.h"
+#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol BeatLayoutManagerDelegate<NSLayoutManagerDelegate>
+@property (nonatomic, weak) id<BeatEditorDelegate> editorDelegate;
+@end
+
 @interface BeatLayoutManager : NSLayoutManager
+@property(atomic, weak) id<BeatLayoutManagerDelegate> delegate;
 @property (nonatomic, weak) BeatTextView * textView;
 @end
 

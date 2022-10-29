@@ -12,6 +12,8 @@
 
 @implementation BeatLayoutManager
 
+@dynamic delegate;
+
 - (void)drawGlyphsForGlyphRange:(NSRange)glyphsToShow atPoint:(NSPoint)origin {
 	if (!self.textView) {
 		NSLog(@"WARNING: No text view set for BeatLayoutManager.");
@@ -104,7 +106,56 @@
 
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(NSPoint)origin {
 	[super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
-		
+	
+	//NSTextStorage *textStorage = self.textStorage;
+
+	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:NULL];
+	
+	NSArray *lines = [self.delegate.editorDelegate.parser linesInRange:charRange];
+	
+	for (Line *l in lines) {
+		if (l.markerRange.length > 0) {
+			NSRange markerRange = NSMakeRange(l.position + l.markerRange.location, l.markerRange.length);
+			NSRange glyphRange = [self glyphRangeForCharacterRange:markerRange actualCharacterRange:nil];
+			NSArray * rects = [self rectsForGlyphRange:glyphRange];
+			
+			for (NSValue* v in rects) {
+				NSRect r = v.rectValue;
+				r.origin.x += self.textView.textContainerInset.width;
+				r.origin.y += self.textView.textContainerInset.height;
+
+				NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
+				
+				NSColor * color = [BeatColors color:l.marker];
+				//if (NSLocationInRange(self.textView.selectedRange.location, l.range)) color = [color colorWithAlphaComponent:.1];
+				color = [color colorWithAlphaComponent:.1];
+				
+				if (color != nil) {
+					[color setFill];
+					[path fill];
+				}
+				
+				/*
+				if (!NSLocationInRange(self.textView.selectedRange.location, l.range)) {
+					NSString * text = l.markerDescription;
+					[NSColor.whiteColor setFill];
+					NSMutableParagraphStyle *paragraph = NSMutableParagraphStyle.new;
+					[paragraph setAlignment:NSTextAlignmentCenter];
+					NSRect textRect = r;
+					textRect.origin.y += 4;
+					textRect.size.height -= 4;
+					[text drawInRect:textRect withAttributes:@{
+						NSFontAttributeName: [NSFont systemFontOfSize:10.0],
+						NSForegroundColorAttributeName: NSColor.whiteColor,
+						NSParagraphStyleAttributeName: paragraph
+					}];
+				}
+				*/
+			}
+		}
+	}
+	
+	
 	/*
 	 
 	 // Tuleville sukupolville.
@@ -181,7 +232,6 @@
 	*/
 
 }
-
 
 
 -(NSArray*)rectsForGlyphRange:(NSRange)glyphsToShow {
