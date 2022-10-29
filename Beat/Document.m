@@ -1601,13 +1601,11 @@ static NSWindow __weak *currentKeyWindow;
 		else if (self.autoLineBreaks) {
 			if ([self shouldAddLineBreaks:currentLine range:affectedCharRange]) return NO;
 		}
-		
 				
 		// Process line break after a forced character input
 		if (_characterInput && _characterInputForLine) {
 			// Don't go out of range
-			if (_characterInputForLine.position + _characterInputForLine.string.length <= self.textView.string.length) {
-				
+			if (NSMaxRange(_characterInputForLine.textRange) <= self.textView.string.length) {
 				// If the cue is empty, reset it
 				if (_characterInputForLine.string.length == 0) {
 					_characterInputForLine.type = empty;
@@ -1620,18 +1618,32 @@ static NSWindow __weak *currentKeyWindow;
 		}
 	}
 
-	// If something is being inserted, check whether it is a "(" or a "[[" and auto close it
-	else if (self.matchParentheses && replacementString.length == 1 && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
-		[self matchParenthesesIn:affectedCharRange string:replacementString];
+	// Some checks for single characters
+	else if (replacementString.length == 1 && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
+		// Auto-close () and [[]]
+		if (self.matchParentheses) [self matchParenthesesIn:affectedCharRange string:replacementString];
+		
+		// When adding to a dialogue block, add an extra line break
+		if (self.currentLine.length == 0 && ![replacementString isEqualToString:@" "]) {
+			NSInteger lineIndex = [self.parser indexOfLine:self.currentLine];
+			if (lineIndex != NSNotFound && lineIndex > 0 && self.currentLine != self.parser.lines.lastObject) {
+				Line *prevLine = self.parser.lines[lineIndex-1];
+				Line *nextLine = self.parser.lines[lineIndex+1];
+				if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
+					NSString *stringAndLineBreak = [NSString stringWithFormat:@"%@\n", replacementString];
+					[self addString:stringAndLineBreak atIndex:affectedCharRange.location];
+					self.selectedRange = NSMakeRange(affectedCharRange.location+1, 0);
+					return NO;
+				}
+			}
+		}
 	}
 	
 	// Make the replacement string uppercase in parser
 	if (_characterInput) replacementString = replacementString.uppercaseString;
 	
-	//[BeatMeasure start:@"Parsing phase"];
 	// Parse changes so far
 	[self.parser parseChangeInRange:affectedCharRange withString:replacementString];
-	//[BeatMeasure end:@"Parsing phase"];
 	
 	// Get current line after parsing
 	_currentLine = [self getCurrentLine];
@@ -1642,20 +1654,26 @@ static NSWindow __weak *currentKeyWindow;
     return YES;
 }
 
+/// Checks if we should add additional line breaks. Returns `true` if line breaks were added.
+/// **Warning:** Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange {
+	if (_skipAutomaticLineBreaks) {
+		_skipAutomaticLineBreaks = false;
+		return NO;
+	}
+	
 	// Don't add a dual line break if shift is pressed
+	NSUInteger currentIndex = [self.parser indexOfLine:currentLine];
+	
 	if (currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
-		
 		// Add double breaks for outline element lines
 		if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
 			[self addString:@"\n\n" atIndex:affectedCharRange.location];
 			return YES;
 		}
-		
+				
 		// Action lines need to perform some checks
 		else if (currentLine.type == action) {
-			NSUInteger currentIndex = [self.parser indexOfLine:currentLine];
-			
 			// Perform a double-check if there is a next line
 			if (currentIndex < self.parser.lines.count - 2 && currentIndex != NSNotFound) {
 				Line* nextLine = self.parser.lines[currentIndex + 1];
@@ -1667,6 +1685,17 @@ static NSWindow __weak *currentKeyWindow;
 				[self addString:@"\n\n" atIndex:affectedCharRange.location];
 				return YES;
 			}
+		}
+	}
+	else if (currentLine.string.length == 0) {
+		Line *prevLine = [self.parser previousLine:currentLine];
+		Line *nextLine = [self.parser nextLine:currentLine];
+		
+		// Add a line break above and below when writing something in between two dialogue blocks
+		if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
+			[self addString:@"\n\n" atIndex:affectedCharRange.location];
+			self.textView.selectedRange = NSMakeRange(affectedCharRange.location + 1, 0);
+			return YES;
 		}
 	}
 	
@@ -1785,6 +1814,8 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (Line*)currentLine {
+	_previouslySelectedLine = _currentLine;
+	
 	NSInteger location = self.selectedRange.location;
 	if (location >= self.text.length) return self.parser.lines.lastObject;
 	
@@ -1916,6 +1947,16 @@ static NSWindow __weak *currentKeyWindow;
 		}
 	}
 	
+	// Correct parsing for character cues (we need to move this to parser somehow)
+	Line *previouslySelectedLine = self.previouslySelectedLine;
+	__weak static Line *previousCue;
+	if (previouslySelectedLine.isAnyCharacter) previousCue = previouslySelectedLine;
+	
+	if (previouslySelectedLine != self.currentLine && previousCue.isAnyCharacter) {
+		[_parser ensureDialogueParsingFor:previousCue];
+	}
+	
+	
 	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update all views which are affected by the caret position
@@ -2001,10 +2042,16 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
-
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index
+static bool _skipAutomaticLineBreaks = false;
+- (void)addString:(NSString*)string atIndex:(NSUInteger)index {
+	[self addString:string atIndex:index skipAutomaticLineBreaks:false];
+}
+- (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks
 {
+	_skipAutomaticLineBreaks = skipLineBreaks;
 	[self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
+	_skipAutomaticLineBreaks = false;
+	
 	[[self.undoManager prepareWithInvocationTarget:self] removeString:string atIndex:index];
 }
 
@@ -2286,7 +2333,7 @@ static NSWindow __weak *currentKeyWindow;
 	// Force character if the line is suitable
 	Line *currentLine = self.currentLine;
 	
-	if (currentLine.isAnyCharacter) {
+	if (currentLine.isAnyCharacter && currentLine.string.length > 0) {
 		[self addCharacterExtension];
 	} else {
 		[self forceCharacterInput];
@@ -2312,7 +2359,7 @@ static NSWindow __weak *currentKeyWindow;
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
-	// Move at the beginning of the line to avod issues with .currentLine
+	// Move at the beginning of the line to avoid issues with .currentLine
 	self.selectedRange = NSMakeRange(self.currentLine.position, 0);
 	
 	if (self.currentLine.type != empty) {
@@ -2321,22 +2368,23 @@ static NSWindow __weak *currentKeyWindow;
 		self.selectedRange = NSMakeRange(lastLine.position, 0);
 	}
 
+	
+	// ... then check again
 	if (self.currentLine.type != empty) {
 		// Break at line break
-		[self addString:@"\n" atIndex: NSMaxRange(self.currentLine.textRange)];
-		
+		[self addString:@"\n" atIndex: NSMaxRange(self.currentLine.textRange) skipAutomaticLineBreaks:true];
 		self.selectedRange = NSMakeRange(NSMaxRange(self.currentLine.textRange) + 2, 0);
 	}
 
 	Line *prevLine = [self.parser previousLine:self.currentLine];
 	if (prevLine != nil && prevLine.type != empty && prevLine.string.length != 0) {
-		[self addString:@"\n" atIndex:NSMaxRange(prevLine.textRange)];
+		[self addString:@"\n" atIndex:NSMaxRange(prevLine.textRange) skipAutomaticLineBreaks:true];
 	}
 	
 	Line *nextLine = [self.parser nextLine:self.currentLine];
 	if (nextLine != nil && nextLine.type != empty && nextLine.string.length != 0) {
 		NSInteger loc = self.currentLine.position;
-		[self addString:@"\n" atIndex:NSMaxRange(self.currentLine.textRange)];
+		[self addString:@"\n" atIndex:NSMaxRange(self.currentLine.textRange) skipAutomaticLineBreaks:true];
 		self.selectedRange = NSMakeRange(loc, 0);
 	}
 		

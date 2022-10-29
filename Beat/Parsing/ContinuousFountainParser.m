@@ -317,10 +317,33 @@ static NSDictionary* patterns;
     [self correctParsesInLines:changedIndices];
 }
 
-- (void)ensurePositions {
-	// This is a method to fix anything that might get broken :-)
-	// Use only when debugging.
+/// Ensures that the given line is parsed correctly. Continuous parsing only. A bit confusing to use.
+- (void)ensureDialogueParsingFor:(Line*)line {
+	if (!line.isAnyCharacter) return;
+	
+	NSInteger i = [self indexOfLine:line];
+	
+	NSArray *lines = self.lines;
+	Line *precedingLine;
+	Line *nextLine;
+	
+	// Get the neighboring lines
+	if (i > 0) precedingLine = lines[i - 1];
+	if (i < self.lines.count - 1) nextLine = lines[i + 1];
+	
+	// Let's not do anything, if we are currently editing these lines.
+	if (nextLine != nil && nextLine.string.length == 0 &&
+		!NSLocationInRange(_delegate.selectedRange.location, nextLine.range) &&
+		!NSLocationInRange(_delegate.selectedRange.location, line.range)) {
 
+		line.type = action;
+		[self.changedIndices addIndex:i];
+		[_delegate applyFormatChanges];
+	}
+}
+
+/// This is a method to fix anything that might get broken. Use only when debugging.
+- (void)ensurePositions {
 	NSInteger previousPosition = 0;
 	NSInteger previousLength = 0;
 	NSInteger offset = 0;
@@ -435,6 +458,13 @@ static NSDictionary* patterns;
 	return changedIndices;
 }
 
+- (void)addLineWithString:(NSString*)string atPosition:(NSInteger)position lineIndex:(NSInteger)index {
+	// Add a new line into place and increment positions
+	Line *newLine = [Line.alloc initWithString:string position:position parser:self];
+	[self.lines insertObject:newLine atIndex:index];
+	[self incrementLinePositionsFromIndex:index+1 amount:1];
+}
+
 - (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position line:(Line*)line
 {
 	NSUInteger lineIndex = _editedIndex;
@@ -455,17 +485,8 @@ static NSDictionary* patterns;
             line.string = [line.string substringToIndex:indexInLine];
         }
         
-		// Create the new line
-		// NOTE TO SELF: It would be preferrable to create one reliable method of adding
-		// a string into the parser. This is now a mess with pretty obfuscated code here and there.
-        Line* newLine = [[Line alloc] initWithString:cutOffString
-                                            position:position+1
-											  parser:self];
-        
-		// Add line into place and increment positions
-		[self.lines insertObject:newLine atIndex:lineIndex+1];
-        [self incrementLinePositionsFromIndex:lineIndex+2 amount:1];
-        
+		// Add a new line
+		[self addLineWithString:cutOffString atPosition:position+1 lineIndex:lineIndex+1];
         return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(lineIndex, 2)];
     } else {
 		// Add characters into the string
@@ -476,8 +497,7 @@ static NSDictionary* patterns;
         line.string = [pieces componentsJoinedByString:@""];
         [self incrementLinePositionsFromIndex:lineIndex+1 amount:1];
         
-        return [[NSIndexSet alloc] initWithIndex:lineIndex];
-        
+        return [NSIndexSet indexSetWithIndex:lineIndex];
     }
 }
 
@@ -664,7 +684,7 @@ static NSDictionary* patterns;
 	  
 	Line* currentLine = self.lines[index];
 	
-	//Remove index as done from array if in array
+	// Remove index as done from array if in array
 	if (indices.count) {
 		NSUInteger lowestToDo = indices.lowestIndex;
 		if (lowestToDo == index) {
@@ -672,7 +692,7 @@ static NSDictionary* patterns;
 		}
 	}
 		
-	//Correct type on this line
+	// Correct type on this line
 	LineType oldType = currentLine.type;
 	bool oldOmitOut = currentLine.omitOut;
 	bool oldNoteOut = currentLine.noteOut;
@@ -681,21 +701,13 @@ static NSDictionary* patterns;
 	bool notesNeedParsing = NO;
 	
 	[self parseTypeAndFormattingForLine:currentLine atIndex:index];
-	
+		
 	if (!self.changeInOutline &&
 		(oldType == heading || oldType == section || oldType == synopse || currentLine.type == heading || currentLine.type == section || currentLine.type == synopse || currentLine.beats.count)) {
 		self.changeInOutline = YES;
 	}
 	
 	[self.changedIndices addIndex:index];
-	
-	if (currentLine.type == dialogue && currentLine.string.length == 0 && indices.count > 1 && index > 0) {
-		// Check for all-caps action lines mistaken for character cues in a pasted text
-		Line *previousLine = self.lines[index - 1];
-		previousLine.type = action;
-		currentLine.type = empty;
-		[_changedIndices addIndex:index - 1];
-	}
 	
 	// Parse multi-line note ranges
 	// This is a mess, and written using trial & error. Dread lightly.
@@ -748,8 +760,18 @@ static NSDictionary* patterns;
 		[self.changedIndices addIndexes:noteIndices];
 	}
 	
+	// Parse faulty and orphaned dialogue (this can happen, because... well, there are reasons)
+	if (index > 0 && currentLine.type != empty) {
+		Line *prevLine = self.lines[index - 1];
+		if (prevLine.type != empty && prevLine.length == 0) {
+			prevLine.type = empty;
+			[self.changedIndices addIndex:index-1];
+		}
+	}
+	
 	//If there is a next element, check if it might need a reparse because of a change in type or omit out
-	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse) {
+	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
+		currentLine.isDialogueElement || currentLine.isDualDialogueElement) {
 		if (index < self.lines.count - 1) {
 			Line* nextLine = self.lines[index+1];
 			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
@@ -776,7 +798,7 @@ static NSDictionary* patterns;
 				nextLine.type == synopse ||
 				nextLine.type == heading ||                 //If the next line is a heading or
 				nextLine.type == character ||               //character or anything dialogue
-				nextLine.type == dualDialogueCharacter || //related, it might not be anymore
+				nextLine.type == dualDialogueCharacter ||   //related, it might not be anymore
 				nextLine.type == parenthetical ||
 				nextLine.type == dialogue ||
 				nextLine.type == dualDialogueParenthetical ||
@@ -788,9 +810,9 @@ static NSDictionary* patterns;
 				currentLine.noteOut != oldNoteOut ||
 				currentLine.cancelsNoteBlock != oldNoteTermination ||
 				notesNeedParsing ||
-				currentLine.endsNoteBlock != oldEndsNoteBlock
+				currentLine.endsNoteBlock != oldEndsNoteBlock ||
+				((currentLine.isDialogueElement || currentLine.isDualDialogueElement) && nextLine.string.length > 0)
 				) {
-
 				[self correctParseInLine:index+1 indicesToDo:indices];
 			}
 		}
@@ -1010,24 +1032,27 @@ and incomprehensible system of recursion.
     NSUInteger length = [string length];
 	NSString* trimmedString = [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
-	Line* precedingLine = (index == 0) ? nil : (Line*) self.lines[index-1];
+	Line* precedingLine = (index == 0) ? nil : (Line*)self.lines[index-1];
+	Line* nextLine = (index >= self.lines.count - 1 || self.lines.count == 0) ? nil : (Line*)self.lines[index+1];
 	
 	// So we need to pull all sorts of tricks out of our sleeve here.
 	// Usually Fountain files are parsed from bottom to up, but here we are parsing in a linear manner.
 	// I have no idea how I got this to work but it does.
 
-	// Check if this line was forced to become a character cue
+	// Check if this line was forced to become a character cue in editor (by pressing tab)
 	if (line.forcedCharacterCue) {
+		NSLog(@"FOUND FORCED CHARACTER CUE");
 		line.forcedCharacterCue = NO;
 		if (line.lastCharacter == '^') return dualDialogueCharacter;
 		else return character;
 	}
 	
-	// Check for all-caps actions mistaken for character cues
+	// Check for all-caps actions mistaken for character cues (continuous parsing only)
+	/*
 	if (self.delegate && NSThread.isMainThread) {
 		if (precedingLine.string.length == 0 &&
 			NSLocationInRange(self.delegate.selectedRange.location + 1, line.range)) {
-			// If the preceeding line is empty, we'll check the line before that, too, to be sure.
+			// If the preceding line is empty, we'll check the line before that, too, to be sure.
 			// This way we can check for false character cues
 			if (index > 1) {
 				Line* lineBeforeThat = (Line*)self.lines[index - 2];
@@ -1040,31 +1065,30 @@ and incomprehensible system of recursion.
 			}
 		}
 	}
+	 */
 	
-    // Check if empty.
+    // Handle empty lines first.
+	// There are additional rules for this, because empty lines can affect others around it.
     if (length == 0) {
 		// If previous line is part of dialogue block, this line becomes dialogue right away
 		// Else it's just empty.
-		if (precedingLine.type == character || precedingLine.type == parenthetical || precedingLine.type == dialogue) {
-			// If preceeding line is formatted as dialogue BUT it's empty, we'll just return empty.
-			if (precedingLine.string.length > 0) {
-				// If preceeded by character cue, return dialogue
-				if (precedingLine.type == character) return dialogue;
-				// If its a parenthetical line, return dialogue
-				else if (precedingLine.type == parenthetical) return dialogue;
-				
-				// AND if its just dialogue, return action.
-				// else return action;
-				// ... why did we do that?
-				return empty;
-			} else {
-//				precedingLine.type = empty;
-//				[self.changedIndices addIndex:index - 1];
-				return empty;
+		if (precedingLine.isDialogue || precedingLine.isDualDialogue) {
+			// If preceding line is formatted as dialogue BUT it's empty, we'll just return empty.
+			if (precedingLine.string.length == 0) return empty;
+			
+			// If preceeded by a character cue, always return dialogue
+			else if (precedingLine.type == character) {
+				return dialogue;
 			}
-		} else {
-			return empty;
+			else if (precedingLine.type == dualDialogueCharacter) return dualDialogue;
+			
+			// If it's any other dialogue line, return dialogue
+			else if (precedingLine.isAnyDialogue && precedingLine.length > 0 && nextLine.length == 0 && nextLine != nil) {
+				return (precedingLine.isDialogue) ? dialogue : dualDialogue;
+			}
 		}
+		
+		return empty;
     }
 	
     char firstChar = [string characterAtIndex:0];
@@ -1084,8 +1108,17 @@ and incomprehensible system of recursion.
 	// Reset to zero to avoid strange formatting issues
 	line.numberOfPrecedingFormattingCharacters = 0;
 	
+	
     //Check for forces (the first character can force a line type)
     if (firstChar == '!') {
+		if (line.length > 1) {
+			// This is a shot
+			if ([line.string characterAtIndex:1] == '!') {
+				line.numberOfPrecedingFormattingCharacters = 2;
+				return shot;
+			}
+		}
+		// This is an action
         line.numberOfPrecedingFormattingCharacters = 1;
         return action;
     }
@@ -1102,12 +1135,12 @@ and incomprehensible system of recursion.
         return transitionLine;
     }
 	if (firstChar == '>' && lastChar == '<') {
-        //line.numberOfPreceedingFormattingCharacters = 1;
+        //line.numberOfprecedingFormattingCharacters = 1;
         return centered;
     }
     if (firstChar == '#') {
 		// Thanks, Jacob Relkin
-		NSUInteger len = [string length];
+		NSUInteger len = string.length;
 		NSInteger depth = 0;
 
 		char character;
@@ -1146,7 +1179,7 @@ and incomprehensible system of recursion.
 		[precedingLine.trimmed isEqualToString:@"/*"] ||
 		(precedingLine.type == synopse || precedingLine.type == section)) {
         if (length >= 3) {
-            NSString* firstChars = [[string substringToIndex:3] lowercaseString];
+            NSString* firstChars = [string substringToIndex:3].lowercaseString;
 			
             if ([firstChars isEqualToString:@"int"] ||
                 [firstChars isEqualToString:@"ext"] ||
@@ -1166,8 +1199,8 @@ and incomprehensible system of recursion.
         }
     }
 	
-	//Check for title page elements. A title page element starts with "Title:", "Credit:", "Author:", "Draft date:" or "Contact:"
-	//it has to be either the first line or only be preceeded by title page elements.
+	// Check for title page elements. A title page element starts with "Title:", "Credit:", "Author:", "Draft date:" or "Contact:"
+	// It has to be either the first line or only be preceeded by title page elements.
 	if (!precedingLine ||
 		precedingLine.type == titlePageTitle ||
 		precedingLine.type == titlePageAuthor ||
@@ -1219,57 +1252,33 @@ and incomprehensible system of recursion.
 				return titlePageUnknown;
 			}
 		} else {
-			// This is an additional line
-			/*
-			 if (length >= 2 && [[string substringToIndex:2] isEqualToString:@"  "]) {
-			 line.numberOfPreceedingFormattingCharacters = 2;
-			 return precedingLine.type;
-			 } else if (length >= 1 && [[string substringToIndex:1] isEqualToString:@"\t"]) {
-			 line.numberOfPreceedingFormattingCharacters = 1;
-			 return precedingLine.type;
-			 } */
 			if (_openTitlePageKey) {
-				NSMutableDictionary* dict = [_titlePage lastObject];
+				NSMutableDictionary* dict = _titlePage.lastObject;
 				[(NSMutableArray*)dict[_openTitlePageKey] addObject:line.string];
 			}
 			
 			return precedingLine.type;
 		}
-		
 	}
 	    
-    //Check for transitionLines and page breaks
+    // Check for transitions and page breaks
     if (trimmedString.length >= 3) {
-        //transitionLine happens if the last three chars are "TO:"
-        NSRange lastThreeRange = NSMakeRange(trimmedString.length - 3, 3);
-        NSString *lastThreeChars = [trimmedString substringWithRange:lastThreeRange];
-
-        if ([lastThreeChars isEqualToString:@"TO:"]) {
-            return transitionLine;
-        }
+		NSRange transitionRange = [trimmedString rangeOfString:@"TO:"];
+		if (transitionRange.location == trimmedString.length - 3) return transitionLine;
         
-        //Page breaks start with "==="
-        NSString *firstChars;
-        if (trimmedString.length == 3) {
-            firstChars = lastThreeChars;
-        } else {
-            firstChars = [trimmedString substringToIndex:3];
-        }
-        if ([firstChars isEqualToString:@"==="]) {
-            return pageBreak;
-        }
+		NSRange pageBreakRange = [trimmedString rangeOfString:@"==="];
+		if (pageBreakRange.location == 0) return pageBreak;
     }
     
-    // Check if all uppercase (and at least 3 characters to not indent every capital leter before anything else follows) = character name.
-	// Also, note lines never constitute a character cue
-    if (precedingLine.type == empty || precedingLine.string.length == 0) {
-		if (length >= 3 && string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && ![line.noteRanges containsIndex:0]) {
-			
-            // A character line ending in ^ is a double dialogue character
+    // Check for character cues (it has to be at least 3 characters to not indent every capital letter)
+	// Also, note lines never constitute a character cue.
+    if ((precedingLine.type == empty || precedingLine.string.length == 0) && length >= 3) {
+		if (string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && line.noteRanges.firstIndex != 0) {
+            // A character line ending in ^ is a dual dialogue character
             if (lastChar == '^') {
 				// PLEASE NOTE:
 				// nextElementIsDualDialogue is ONLY used while staticly parsing for printing,
-				// and SHOULD NOT be used anywhere else, as it won't be updated.
+				// and SHOULD NOT be used anywhere else, as it won't be updated automatically.
 				NSInteger i = index - 1;
 				while (i >= 0) {
 					Line *prevLine = [self.lines objectAtIndex:i];
@@ -1284,15 +1293,11 @@ and incomprehensible system of recursion.
 				
                 return dualDialogueCharacter;
             } else {
-				// It is possible that this IS NOT A CHARACTER anyway, so let's see.
-				if ([line.noteRanges containsIndex:0]) {
-					return action;
-				}
-				else if (index + 2 < self.lines.count && currentLine) {
-					Line* nextLine = (Line*)self.lines[index+1];
+				// It is possible that this IS NOT A CHARACTER but an all-caps action line, so let's see.
+				if (index + 2 < self.lines.count) {
 					Line* twoLinesOver = (Line*)self.lines[index+2];
 					
-					if (recursive && nextLine.string.length == 0 && twoLinesOver.string.length > 0) {
+					if (nextLine.string.length == 0 && twoLinesOver.string.length > 0) {
 						return action;
 					}
 				}
@@ -1634,29 +1639,46 @@ and incomprehensible system of recursion.
 }
 - (NSString *)colorForHeading:(Line *)line
 {
-	__block NSString *color = @"";
+	__block NSString *headingColor = @"";
 	
 	line.colorRange = NSMakeRange(0, 0);
 	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		// This is just an empty note
+		if (range.length == NOTE_PATTERN_LENGTH * 2) return;
+		
 		NSString * note = [line.string substringWithRange:range];
-
-		NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, [note length] - NOTE_PATTERN_LENGTH * 2);
-		note =  [note substringWithRange:noteRange];
-        
-		if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN] == true) {
-			if (note.length > @COLOR_PATTERN.length + 1) {
-				NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];
-				if (colorRange.length) {
-					color = [note substringWithRange:NSMakeRange(colorRange.length, [note length] - colorRange.length)];
-					color = [color stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-					
-					line.colorRange = range;
+		NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, note.length - NOTE_PATTERN_LENGTH * 2);
+		NSString *color = @"";
+		note = [note substringWithRange:noteRange];
+		note = [note stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+		
+		// Check for different ways of setting a color
+		
+		if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN]) {
+			NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];
+			color = [note substringWithRange:NSMakeRange(colorRange.length, note.length - colorRange.length)];
+			color = [color stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+		}
+		else if ([note characterAtIndex:0] == '#' && note.length == 7) {
+			color = note;
+		}
+		else {
+			NSArray *colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
+			for (NSString *c in colors) {
+				if ([note.lowercaseString isEqualToString:c]) {
+					color = c;
+					break;
 				}
 			}
 		}
+		
+		if (color.length > 0) {
+			line.colorRange = range;
+			headingColor = color;
+		}
 	}];
 
-	return color;
+	return headingColor;
 }
 - (NSArray *)beatsFor:(Line *)line {
 	NSUInteger length = line.string.length;
@@ -1747,7 +1769,7 @@ and incomprehensible system of recursion.
 		return changedIndices;
 	} else {
 		Line *prevLine = self.lines[idx - 1];
-		// This line doesn't have a preceeding note block, ignore
+		// This line doesn't have a preceding note block, ignore
 		if (!prevLine.noteOut || prevLine.length == 0) return changedIndices;
 	}
 	
@@ -2147,7 +2169,7 @@ and incomprehensible system of recursion.
 			}
 			
 			if (line.type == synopse) {
-				// For synopsis lines, we set the parent to be either the preceeding scene or latest section
+				// For synopsis lines, we set the parent to be either the preceding scene or latest section
 				if (lastFoundScene) scene.parent = lastFoundScene;
 				else scene.parent = lastFoundSection;
 			}
@@ -2401,7 +2423,7 @@ and incomprehensible system of recursion.
 			NSInteger i = blockBegin - 1;
 			while (i >= 0) {
 				Line *precedingLine = lines[i];
-				if (!(precedingLine.isDualDialogueElement || precedingLine.isDialogueElement)) {
+				if (!(precedingLine.isDualDialogueElement || precedingLine.isDialogueElement) || precedingLine.length == 0) {
 					blockBegin = i;
 					break;
 				}
@@ -2468,9 +2490,20 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return [self lineAtPosition:position];
 }
 
-/// Returns the index in lines array for given line.
+/// Returns the index in lines array for given line. This method might be probed multiple times, so we'll cache the result. This is a *very* small optimization, we're talking about `0.000001` vs `0.000007`. It's many times faster, but doesn't actually have too big of an effect.
 - (NSUInteger)indexOfLine:(Line*)line {
-	return [self.lines indexOfObject:line];
+	NSArray *lines = self.safeLines;
+	
+	static NSInteger previousIndex = NSNotFound;
+	if (previousIndex < lines.count && previousIndex >= 0) {
+		if (line == (Line*)lines[previousIndex]) {
+			return previousIndex;
+		}
+	}
+	
+	NSInteger index = [lines indexOfObject:line];
+	previousIndex = index;
+	return index;
 }
 
 - (id)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item))compare  {
@@ -2479,7 +2512,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 		/** Uh, wtf, how does this work?
 			We are checking if the search origin is in range from -1 to the full array count,
 			so I don't understand how and why this could actually work, and why are we getting
-			the correct behavior.
+			the correct behavior. The magician surprised themself, too.
 		 */
 		return nil;
 	}
@@ -2693,7 +2726,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 + (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings {
-	NSMutableArray *linesForPrinting = [NSMutableArray array];
+	NSMutableArray *linesForPrinting = NSMutableArray.array;
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
 	}
@@ -2714,17 +2747,17 @@ NSUInteger prevLineAtLocationIndex = 0;
 	NSInteger i = 0;
 	for (Line* line in linesForPrinting) {
 		if (i > 0) {
-			Line *preceedingLine = lines[i - 1];
+			Line *precedingLine = lines[i - 1];
 			if (line.type == action) {
-				if (preceedingLine.type == action && preceedingLine.string.length > 0) line.isSplitParagraph = YES;
+				if (precedingLine.type == action && precedingLine.string.length > 0) line.isSplitParagraph = YES;
 			}
 			
-			else if (line.type == lyrics && (preceedingLine.type == empty || preceedingLine.type != lyrics)) {
+			else if (line.type == lyrics && (precedingLine.type == empty || precedingLine.type != lyrics)) {
 				// If this line is preceded by an empty line, it begins a new block
 				line.beginsNewVisualBlock = true;
 			}
 			
-			else if (line.type == centered && preceedingLine.type == empty) {
+			else if (line.type == centered && precedingLine.type == empty) {
 				// If this line is preceded by an empty line, it begins a new block
 				line.beginsNewVisualBlock = true;
 			}

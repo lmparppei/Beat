@@ -113,6 +113,8 @@
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index currentlyEditing:(bool)currentLine;
 - (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive currentlyEditing:(bool)currentLine;
 
+- (void)ensureDialogueParsingFor:(Line*)line;
+
 //Convenience Methods for Testing
 - (NSString*)stringAtLine:(NSUInteger)line;
 - (LineType)typeAtLine:(NSUInteger)line;
