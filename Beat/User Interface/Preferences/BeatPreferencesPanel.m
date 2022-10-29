@@ -160,6 +160,7 @@
 	} else {
 		[attrStr addAttribute:NSUnderlineStyleAttributeName value:@0 range:(NSRange){0,attrStr.length}];
 	}
+	[attrStr addAttribute:NSForegroundColorAttributeName value:NSColor.blackColor range:(NSRange){0,attrStr.length}];
 
 	[self.sampleHeading setAttributedStringValue:attrStr];
 	
