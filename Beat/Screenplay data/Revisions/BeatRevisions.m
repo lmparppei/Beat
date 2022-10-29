@@ -409,8 +409,10 @@
 		}
 	}
 	
+	[_delegate.textView.textStorage removeAttribute:BeatRevisions.attributeKey range:range];
 	[_delegate.textView.textStorage addAttribute:BeatRevisions.attributeKey value:[BeatRevisionItem type:RevisionAddition color:_delegate.revisionColor] range:range];
 }
+
 
 
 #pragma mark Convenience methods

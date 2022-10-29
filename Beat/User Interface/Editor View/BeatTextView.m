@@ -1906,19 +1906,22 @@ double clamp(double d, double min, double max) {
 	//if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine && !NSLocationInRange(self.editorDelegate.currentLine.position - 4, line.range)) return 0;
 	
 	LineType type = line.type;
-		
+	
 	// Ignore story markers
 	if (line.type == section || line.type == synopse) {
 		return 0;
 	}
 	
 	// Clear formatting characters etc.
-	NSMutableIndexSet *mdIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
-	[mdIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
-	if (line.colorRange.length) [mdIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
+	NSMutableIndexSet *muIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
+	[muIndices addIndexesInRange:(NSRange){ line.position + line.sceneNumberRange.location, line.sceneNumberRange.length }];
+	if (line.colorRange.length) [muIndices addIndexesInRange:(NSRange){ line.position + line.colorRange.location, line.colorRange.length }];
+	
+	// Marker indices
+	NSIndexSet *markerIndices = [NSIndexSet indexSetWithIndexesInRange:(NSRange){ line.position + line.markerRange.location, line.markerRange.length }];
 	
 	// Nothing to do
-	if (!mdIndices.count &&
+	if (muIndices.count == 0 && markerIndices.count == 0 &&
 		!(type == heading || type == transitionLine || type == character) &&
 		!(line.string.containsOnlyWhitespace && line.string.length > 1)
 		) return 0;
@@ -1933,7 +1936,7 @@ double clamp(double d, double min, double max) {
 	CFStringAppend(modifiedStr, str);
 	
 	// If it's a heading or transition, render it uppercase
-	if (type == heading || type == transitionLine) {
+	if (type == heading || type == transitionLine || type == shot) {
 		CFStringUppercase(modifiedStr, NULL);
 	}
 	
@@ -1955,9 +1958,9 @@ double clamp(double d, double min, double max) {
 			NSUInteger index = charIndexes[i];
 			NSGlyphProperty prop = props[i];
 						
-			if (mdIndices.count && !NSLocationInRange(self.selectedRange.location, line.range)) {
+			if (muIndices.count && !NSLocationInRange(self.selectedRange.location, line.range)) {
 				// Make it a null glyph if it's NOT on the current line
-				if ([mdIndices containsIndex:index]) prop |= NSGlyphPropertyNull;
+				if ([muIndices containsIndex:index]) prop |= NSGlyphPropertyNull;
 			}
 			
 			modifiedProps[i] = prop;
@@ -2060,6 +2063,7 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	}
 	return lineFragments;
 }
+
 
 /*
 - (nullable NSAttributedString *)attributedSubstringForProposedRange:(NSRange)range actualRange:(nullable NSRangePointer)actualRange {
