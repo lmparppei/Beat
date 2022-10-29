@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Margin Top</key>
+	<integer>30</integer>
+	<key>Margin Left</key>
+	<integer>50</integer>
+	<key>Margin Right</key>
+	<integer>38</integer>
+	<key>Margin Bottom</key>
+	<integer>20</integer>
+</dict>
+</plist>

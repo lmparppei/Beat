@@ -1,5 +1,13 @@
 # Changelog
 
+## Beat 1.97.x
+
+- Pagination is implemented as a queue of operations, and the old word-by-word height checking is replaced by a more sensible line fragment calculation
+- Formatting now checks if the current line already has parts of the formatting applied
+- Better Mojave support via new fallback images 
+- Plugin API expansions, including modules
+
+
 ## Beat 1.96.0
 
 - Fixed issues with conditional flow when text changes (shouldChange...)

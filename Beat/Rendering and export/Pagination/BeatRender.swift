@@ -116,17 +116,13 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 				}
 			}
 			 */
-			
-			// Reset Y if the page is empty.
-			// if (currentPage?.lines.count ?? 0 == 0) { hasBegunANewPage = true }
-			
+						
 			// catch forced page breaks first
 			if (line.type == .pageBreak) {
 				addPage(currentPage!, onCurrentPage: [line], onNextPage: [])
 				addPageBreak(element: line, position: -1, type: "Forced page break")
 				continue
 			}
-			
 			
 			// Get the paragraph for current line and add it to temp element queue
 			tmpElements = getBlockFor(itemAtIndex: i)

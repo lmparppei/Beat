@@ -4,4 +4,7 @@
    <FileRef
       location = "group:Beat.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:BeatParsing/BeatParsing.xcodeproj">
+   </FileRef>
 </Workspace>
