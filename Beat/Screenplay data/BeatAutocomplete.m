@@ -81,15 +81,16 @@
 		[characterNames addObjectsFromArray:plugin.completionsForCharacters];
 	}
 	
-	// Create an ordered list with all the character names. One with the most lines will be the first suggestion.
+	// Create an ordered list with all the character names.
+	// The one with the most lines will be the first suggestion.
 	// Btw, I don't think this works :-)
 	NSArray *characters = [charactersAndLines keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2){
-		return [obj2 compare:obj1];
+		// These keys are always integers
+		NSInteger val1 = ((NSString*)obj1).integerValue;
+		NSInteger val2 = ((NSString*)obj2).integerValue;
+		return val2 > val1;
 	}];
-	for (NSString *character in characters) {
-		[characterNames addObject:character];
-		//[characterNames addObject:[NSString stringWithFormat:@"%@ (%@)", character, [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"]]];
-	}
+	[characterNames addObjectsFromArray:characters];
 	
 	// There was a character selected in the filtering menu, so select it again (if applicable)
 	if (selectedCharacter.length) {
@@ -118,6 +119,8 @@
 		BeatPlugin *plugin = _delegate.runningPlugins[pluginName];
 		[sceneHeadings addObjectsFromArray:plugin.completionsForSceneHeadings];
 	}
+	
+	[sceneHeadings sortUsingSelector:@selector(compare:)];
 }
 
 - (void)autocompleteOnCurrentLine {
@@ -161,7 +164,7 @@
 		}
 	}
 	
-	[matches sortUsingSelector:@selector(compare:)];
+	//[matches sortUsingSelector:@selector(compare:)];
 	return matches;
 }
 
