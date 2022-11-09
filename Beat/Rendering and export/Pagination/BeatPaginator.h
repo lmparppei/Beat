@@ -8,9 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-#import "Line.h"
-#import "BeatPaperSizing.h"
-#import "BeatExportSettings.h"
+#import <BeatParsing/BeatParsing.h>
 #import "BeatPaginationOperationDelegate.h"
 
 @class BeatPaginationOperation;

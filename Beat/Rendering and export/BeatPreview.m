@@ -16,12 +16,10 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatPreview.h"
-#import "Line.h"
-#import "ContinuousFountainParser.h"
 #import "BeatHTMLScript.h"
 #import "BeatRevisions.h"
-#import "BeatExportSettings.h"
 
 @interface BeatPreview ()
 @property (nonatomic) BeatHTMLScript *htmlGenerator;

@@ -6,11 +6,12 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
+#import <QuartzCore/QuartzCore.h>
+
 #import "BeatNotepad.h"
 #import "BeatColors.h"
-#import "BeatDocumentSettings.h"
 #import "ThemeManager.h"
-#import <QuartzCore/QuartzCore.h>
 #import "ColorCheckbox.h"
 
 @interface BeatNotepad ()

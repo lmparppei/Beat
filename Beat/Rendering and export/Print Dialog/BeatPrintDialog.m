@@ -19,9 +19,9 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatPrintDialog.h"
 #import "BeatPrintView.h"
-#import "BeatPaperSizing.h"
 #import "Beat-Swift.h"
 
 #define ADVANCED_PRINT_OPTIONS_KEY @"Show Advanced Print Options"

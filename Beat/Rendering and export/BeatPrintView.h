@@ -29,9 +29,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
+#import <BeatParsing/BeatParsing.h>
 #import "Document.h"
 #import "BeatComparison.h"
-#import "BeatExportSettings.h"
 
 typedef NS_ENUM(NSUInteger, BeatPrintOperation) {
 	BeatToPDF = 0,

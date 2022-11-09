@@ -8,10 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ContinuousFountainParser.h"
-
+@class ContinuousFountainParser;
 @interface OutlineExtractor : NSObject
-
 + (NSString*)outlineFromParse:(ContinuousFountainParser*)parser;
-
 @end

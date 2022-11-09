@@ -11,18 +11,15 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <PDFKit/PDFKit.h>
+#import <BeatParsing/BeatParsing.h>
 
-#import "Line.h"
-#import "OutlineScene.h"
 #import "BeatAppDelegate.h"
 #import "BeatPluginManager.h"
 #import "BeatTagging.h"
 #import "BeatAppDelegate.h"
 #import "BeatModalAccessoryView.h"
 #import "WebPrinter.h"
-#import "BeatPaperSizing.h"
 
-#import "ContinuousFountainParser.h"
 #import "TagDefinition.h"
 #import "BeatPaginator.h"
 #import "BeatPluginTimer.h"
@@ -133,6 +130,9 @@
 
 /// Restart current plugin
 - (void)restart;
+
+/// Ignore this, this is for our office party
+- (NSString*)htmlForLines:(NSArray*)lines;
 
 /// Crash the app
 - (void)crash;

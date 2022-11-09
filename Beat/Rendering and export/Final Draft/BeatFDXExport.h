@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BeatPaperSizing.h"
+#import <BeatParsing/BeatParsing.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

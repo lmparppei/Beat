@@ -21,10 +21,10 @@
  */
 
 
+#import <BeatParsing/BeatParsing.h>
 #import "FDXImport.h"
 #import "BeatRevisionItem.h"
 #import "FDXElement.h"
-#import "BeatDocumentSettings.h"
 #import "BeatRevisions.h"
 
 @interface FDXImport () <NSXMLParserDelegate>

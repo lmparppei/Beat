@@ -26,13 +26,14 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
+#import <PDFKit/PDFKit.h>
+#import <Webkit/Webkit.h>
+
 #import "BeatPrintView.h"
 #import "BeatHTMLScript.h"
 #import "Document.h"
 #import "BeatRevisions.h"
-#import "BeatExportSettings.h"
-#import <PDFKit/PDFKit.h>
-#import <Webkit/Webkit.h>
 
 #define WEBKIT true
 

@@ -8,8 +8,8 @@
 
 //#import <Cocoa/Cocoa.h>
 #import <TargetConditionals.h>
+#import <BeatParsing/BeatParsing.h>
 #import "OutlineViewItem.h"
-#import "OutlineScene.h"
 #import "BeatColors.h"
 #import "ThemeManager.h"
 

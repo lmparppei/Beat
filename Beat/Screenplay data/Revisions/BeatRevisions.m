@@ -14,8 +14,8 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatRevisions.h"
-#import "Line.h"
 #import "BeatLocalization.h"
 #import "BeatUserDefaults.h"
 #import "BeatAppDelegate.h"
@@ -53,11 +53,11 @@
 }
 
 /// Returns all the colors, in generation order
-+ (NSArray*)revisionColors {
++ (NSArray<NSString*>*)revisionColors {
 	return REVISION_ORDER;
 }
 /// Returns the generation symbols for screenplay rendering
-+ (NSDictionary*)revisionMarkers {
++ (NSDictionary<NSString*, NSString*>*)revisionMarkers {
 	return REVISION_MARKERS;
 }
 /// Rertusn the attribute key used in `NSAttributedString` created by `Line` class

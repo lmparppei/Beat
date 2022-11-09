@@ -24,7 +24,7 @@
     #define BXPrintInfo NSPrintInfo
 #endif
 
-#import "BeatPaperSizing.h"
+#import <BeatParsing/BeatParsing.h>
 
 #if !TARGET_OS_IOS
 @class BeatPrintView;

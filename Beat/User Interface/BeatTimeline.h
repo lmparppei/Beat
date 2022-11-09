@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "OutlineScene.h"
+#import <BeatParsing/BeatParsing.h>
 #import "BeatTimelineItem.h"
 
 NS_ASSUME_NONNULL_BEGIN

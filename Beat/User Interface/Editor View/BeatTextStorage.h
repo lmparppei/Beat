@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "ContinuousFountainParser.h"
+#import <BeatParsing/BeatParsing.h>
 
 @protocol BeatTextStorageDelegate <NSTextStorageDelegate>
 @property (nonatomic, readonly, weak) ContinuousFountainParser *parser;

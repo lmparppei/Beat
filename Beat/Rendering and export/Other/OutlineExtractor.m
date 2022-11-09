@@ -6,6 +6,7 @@
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "OutlineExtractor.h"
 
 @implementation OutlineExtractor

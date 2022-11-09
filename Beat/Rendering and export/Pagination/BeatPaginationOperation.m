@@ -25,11 +25,11 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatFonts.h"
 #import "BeatUserDefaults.h"
 #import "RegExCategories.h"
 #import "BeatPaginationOperation.h"
-#import "BeatPaperSizing.h"
 #import "BeatPage.h"
 #import "BeatPaginator.h"
 
@@ -86,7 +86,7 @@
 		self.pageBreakCache = cachedBreaks.copy;
 		
 		self.location = changeAt;
-		
+				
 		if (!NSThread.isMainThread) _thread = NSThread.currentThread;
 	}
 	
@@ -237,7 +237,8 @@
 	NSMutableArray *lines = NSMutableArray.array;
 	
 	for (Line *line in script) {
-		if (line.type == empty || line.omitted) continue;
+		if (line == nil || [line isKindOfClass:NSNull.class]) continue; // Plugins can cause havoc sometimes
+		else if (line.type == empty || line.omitted) continue;
 		
 		[lines addObject:line];
 	}

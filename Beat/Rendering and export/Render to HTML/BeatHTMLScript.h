@@ -27,9 +27,9 @@
 
 #import <Foundation/Foundation.h>
 #import <TargetConditionals.h>
+#import <BeatParsing/BeatParsing.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "BeatEditorDelegate.h"
-#import "BeatExportSettings.h"
-#import "ContinuousFountainParser.h"
 #import "BeatPaginator.h"
 
 #if TARGET_OS_IOS
@@ -51,6 +51,7 @@
 - (id)initWithScript:(BeatScreenplay*)script settings:(id)settings; // Static preview creation
 - (id)initWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage settings:(BeatExportSettings*)settings; // Create pagination with existing data
 - (id)initForQuickLook:(BeatScreenplay*)script;
+- (id)initWithLines:(NSArray*)lines;
 
 - (NSInteger)pages;
 - (NSString *)html;

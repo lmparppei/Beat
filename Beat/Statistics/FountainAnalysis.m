@@ -28,8 +28,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <BeatParsing/BeatParsing.h>
 #import "FountainAnalysis.h"
-#import "NSString+CharacterControl.h"
 #import "RegExCategories.h"
 #import "BeatPaginator.h"
 
@@ -104,7 +104,7 @@
 				Line* nextLine = [_lines objectAtIndex:lineIndex+1];
 				
 				// This is not a character cue if the next line is empty
-				if (nextLine.string.length < 1 || [nextLine.string containsOnlyWhitespace]) continue;
+				if (nextLine.string.length < 1 || line.string.containsOnlyWhitespace) continue;
 				
 				// Get character name (strips V.O. etc.)
 				NSString *character = line.characterName;

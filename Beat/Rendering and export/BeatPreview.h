@@ -9,6 +9,7 @@
 #import <TargetConditionals.h>
 #import <WebKit/WebKit.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <BeatParsing/BeatParsing.h>
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>
@@ -16,8 +17,6 @@
 	#import <Cocoa/Cocoa.h>
 #endif
 
-#import "OutlineScene.h"
-#import "BeatDocumentSettings.h"
 #import "BeatEditorDelegate.h"
 
 typedef NS_ENUM(NSUInteger, BeatPreviewType) {

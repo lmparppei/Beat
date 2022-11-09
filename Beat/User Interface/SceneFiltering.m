@@ -36,8 +36,8 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "SceneFiltering.h"
-#import "OutlineScene.h"
 #import "FountainAnalysis.h"
 
 @implementation SceneFiltering

@@ -7,6 +7,8 @@
 //
 
 #import <TargetConditionals.h>
+#import <BeatParsing/BeatParsing.h>
+
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
     #define TagColor UIColor
@@ -21,9 +23,9 @@
 	#import "BeatTextView.h"
 #endif
 
+#import "BeatEditorDelegate.h"
 #import "DynamicColor.h"
 #import "BeatColors.h"
-#import "ContinuousFountainParser.h"
 
 @class BeatTag;
 

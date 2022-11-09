@@ -6,16 +6,13 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatEpisodePrinter.h"
 #import "NSMutableArray+MoveItem.h"
-#import "ContinuousFountainParser.h"
 #import "BeatHTMLScript.h"
-#import "BeatDocumentSettings.h"
-#import "BeatPaperSizing.h"
 #import "BeatPrintView.h"
 #import "BeatRevisions.h"
 #import "BeatRevisionItem.h"
-#import "BeatExportSettings.h"
 #import <Cocoa/Cocoa.h>
 
 @interface BeatEpisodePrinter ()

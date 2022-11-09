@@ -37,11 +37,10 @@
  */
 
 //#import <DiffMatchPatch/DiffMatchPatch.h>
+#import <BeatParsing/BeatParsing.h>
 #import "BeatComparison.h"
 #import "DiffMatchPatch.h"
 #import "BeatRevisions.h"
-
-#import "ContinuousFountainParser.h"
 
 @implementation BeatComparison
 

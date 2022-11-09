@@ -6,10 +6,10 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatStatisticsPanel.h"
 #import "FountainAnalysis.h"
 #import "BeatLocalization.h"
-#import "ContinuousFountainParser.h"
 
 @interface BeatStatisticsPanel ()
 @property (nonatomic) FountainAnalysis *analysis;

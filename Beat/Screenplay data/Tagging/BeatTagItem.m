@@ -6,9 +6,9 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatTagItem.h"
 #import "BeatTagging.h"
-#import "Line.h"
 
 @implementation BeatTagItem
 

@@ -6,7 +6,7 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import "BeatExportSettings.h"
+#import <BeatParsing/BeatParsing.h>
 
 #if TARGET_OS_IOS
 	#define BeatFont UIFont

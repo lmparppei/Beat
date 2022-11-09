@@ -20,13 +20,12 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
+#import <Quartz/Quartz.h>
 #import "BeatTimeline.h"
-#import "Line.h"
-#import "OutlineScene.h"
 #import "BeatColors.h"
 #import "BeatTimelineItem.h"
 #import "HorizontalPinchView.h"
-#import <Quartz/Quartz.h>
 
 #define STORYLINE_TITLE @"Track Storyline"
 

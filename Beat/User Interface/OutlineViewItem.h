@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "OutlineScene.h"
+@class OutlineScene;
 
 NS_ASSUME_NONNULL_BEGIN
 

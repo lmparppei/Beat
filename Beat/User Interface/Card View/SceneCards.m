@@ -24,9 +24,9 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "SceneCards.h"
 #import "WebPrinter.h"
-#import "OutlineScene.h"
 #import "RegExCategories.h"
 #import "BeatLocalization.h"
 #import <WebKit/WebKit.h>

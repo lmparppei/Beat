@@ -7,10 +7,6 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "BeatPrintView.h"
-#import "Line.h"
-
-@class Document;
 
 @interface BeatComparison : NSObject
 - (NSDictionary*)changeListFrom:(NSString*)oldScript to:(NSString*)newScript;

@@ -48,14 +48,14 @@
  */
 
 #import <TargetConditionals.h>
+#import <BeatParsing/BeatParsing.h>
+
 #import "BeatPaginator.h"
-#import "Line.h"
 #import "RegExCategories.h"
 #import "BeatUserDefaults.h"
 #import "BeatMeasure.h"
 #import "BeatAppDelegate.h"
 #import "BeatFonts.h"
-#import "NSString+CharacterControl.h"
 #import "BeatPaginationOperation.h"
 
 #if TARGET_OS_IOS

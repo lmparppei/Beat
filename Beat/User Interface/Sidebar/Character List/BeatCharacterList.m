@@ -6,10 +6,9 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatCharacterList.h"
-#import "Line.h"
 #import "BeatColors.h"
-#import "ContinuousFountainParser.h"
 #import "BeatPieGraph.h"
 #import "ThemeManager.h"
 

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Line.h"
+#import <BeatParsing/BeatParsing.h>
 #import "BeatPageDelegate.h"
 #import "BeatPaginationOperationDelegate.h"
 

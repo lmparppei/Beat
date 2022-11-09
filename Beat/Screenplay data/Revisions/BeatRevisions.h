@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ContinuousFountainParser.h"
+#import <BeatParsing/BeatParsing.h>
 #import "BeatEditorDelegate.h"
 #import "BeatRevisionItem.h"
 
@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSMutableDictionary*)changedLinesForSaving:(NSArray*)lines;
 
 + (NSString*)defaultRevisionColor;
-+ (NSArray*)revisionColors;
-+ (NSDictionary*)revisionMarkers;
++ (NSArray<NSString*>*)revisionColors;
++ (NSDictionary<NSString*, NSString*>*)revisionMarkers;
 + (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
 + (NSString*)attributeKey;
 

@@ -18,9 +18,8 @@
  */
 
 
+#import <BeatParsing/BeatParsing.h>
 #import "FDXInterface.h"
-#import "ContinuousFountainParser.h"
-#import "Line.h"
 
 @implementation FDXInterface
 

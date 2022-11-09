@@ -12,11 +12,10 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatEditorFormatting.h"
 #import "ThemeManager.h"
-#import "ContinuousFountainParser.h"
 #import "BeatColors.h"
-#import "NSString+CharacterControl.h"
 #import "BeatRevisions.h"
 #import "BeatTagging.h"
 #import "BeatTag.h"
@@ -214,13 +213,12 @@ static NSString *reviewAttribute = @"BeatReview";
 	// Store the type we are formatting for
 	line.formattedAs = line.type;
 	
-	
 	// Extra rules for character cue input
 	if (_delegate.characterInput && _delegate.characterInputForLine == line) {
 		// Do some extra checks for dual dialogue
 		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
 		else line.type = character;
-				
+			
 		NSRange selectedRange = textView.selectedRange;
 		
 		// Only do this if we are REALLY typing at this location

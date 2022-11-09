@@ -13,12 +13,12 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatOutlineView.h"
 #import "ThemeManager.h"
 #import "SceneFiltering.h"
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
-#import "BeatSceneTree.h"
 #import "BeatMeasure.h"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"

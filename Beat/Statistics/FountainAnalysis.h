@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ContinuousFountainParser.h"
-#import "Line.h"
+#import "BeatEditorDelegate.h"
 
 @class BeatEditorDelegate;
 

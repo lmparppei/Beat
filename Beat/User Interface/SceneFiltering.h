@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <BeatParsing/BeatParsing.h>
 #import "FountainAnalysis.h"
-#import "OutlineScene.h"
 #import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN

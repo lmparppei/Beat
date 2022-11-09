@@ -6,8 +6,8 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatAutocomplete.h"
-#import "ContinuousFountainParser.h"
 #import "BeatUserDefaults.h"
 #import "BeatPlugin.h"
 

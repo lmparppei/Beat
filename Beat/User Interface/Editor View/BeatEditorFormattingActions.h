@@ -7,8 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <BeatParsing/BeatParsing.h>
+
 #import "BeatEditorDelegate.h"
-#import "ContinuousFountainParser.h"
 #import "BeatModalInput.h"
 #import "BeatLocalization.h"
 

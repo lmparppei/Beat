@@ -1098,6 +1098,11 @@
 	return paginator;
 }
 
+- (NSString*)htmlForLines:(NSArray*)lines {
+	BeatHTMLScript *html = [BeatHTMLScript.alloc initWithLines:lines];
+	return html.html;
+}
+
 #pragma mark - Widget interface and Plugin UI API
 
 - (BeatPluginUIView*)widget:(CGFloat)height {

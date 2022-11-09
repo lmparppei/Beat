@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Line.h"
 #import "BeatPageDelegate.h"
 
+@class Line;
 @interface BeatPage:NSObject
 @property (nonatomic, weak) id<BeatPageDelegate> delegate;
 @property (atomic) NSMutableArray *items;

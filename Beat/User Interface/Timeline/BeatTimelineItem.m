@@ -6,11 +6,11 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
+#import <Quartz/Quartz.h>
 #import "BeatTimelineItem.h"
 #import "BeatColors.h"
-#import "OutlineScene.h"
 #import "BeatColorMenuItem.h"
-#import <Quartz/Quartz.h>
 
 #define TEXT_PADDING 4.0
 #define MAXHEIGHT 30
