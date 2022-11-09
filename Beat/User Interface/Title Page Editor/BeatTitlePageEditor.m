@@ -6,8 +6,8 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatTitlePageEditor.h"
-#import "NSString+CharacterControl.h"
 
 @interface BeatTitlePageEditor ()
 @property (weak) IBOutlet NSTextField *titleField;

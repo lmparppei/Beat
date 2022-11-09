@@ -12,8 +12,8 @@
  
 */
 
+#import <BeatParsing/BeatParsing.h>
 #import "TouchTimelineView.h"
-#import "OutlineScene.h"
 #import "BeatColors.h"
 #import "DynamicColor.h"
 

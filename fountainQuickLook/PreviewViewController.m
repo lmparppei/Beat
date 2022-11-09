@@ -8,10 +8,9 @@
 
 #import <WebKit/WebKit.h>
 #import <Quartz/Quartz.h>
+#import <BeatParsing/BeatParsing.h>
 
 #import "PreviewViewController.h"
-
-#import "ContinuousFountainParser.h"
 #import "BeatPreview.h"
 
 @interface PreviewViewController () <QLPreviewingController>
