@@ -31,17 +31,15 @@ THE SOFTWARE.
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 #import <JavaScriptCore/JavaScriptCore.h>
-
+#import <BeatParsing/BeatParsing.h>
 
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
 #import "TouchTimelinePopover.h"
-//#import "ContinuousFountainParser.h"
 #import "SceneCards.h"
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
 #import "BeatTimer.h"
-#import "BeatDocumentSettings.h"
 #import "BeatPreview.h"
 #import "BeatPlugin.h"
 #import "BeatOutlineView.h"

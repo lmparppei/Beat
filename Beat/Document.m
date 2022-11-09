@@ -80,10 +80,8 @@
 #import "BeatPrintView.h"
 #import "ColorView.h"
 #import "ThemeManager.h"
-#import "OutlineScene.h"
 #import "DynamicColor.h"
 #import "BeatAppDelegate.h"
-#import "NSString+CharacterControl.h"
 #import "FountainAnalysis.h"
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
@@ -96,7 +94,6 @@
 #import "MarginView.h"
 #import "BeatColors.h"
 #import "OutlineViewItem.h"
-#import "BeatPaperSizing.h"
 #import "BeatModalInput.h"
 #import "ThemeEditor.h"
 #import "BeatTagging.h"
@@ -104,7 +101,7 @@
 #import "BeatTag.h"
 #import "TagDefinition.h"
 #import "BeatFDXExport.h"
-#import "ValidationItem.h"
+//#import "ValidationItem.h"
 #import "ITSwitch.h"
 #import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
@@ -135,6 +132,8 @@
 @property (weak) NSWindow *documentWindow;
 @property (weak) IBOutlet TKSplitHandle *splitHandle;
 @property (nonatomic) NSArray *itemsToValidate; // Menu items
+
+@property (nonatomic) BeatRendererTester *tester;
 
 // Autosave
 @property (nonatomic) bool autosave;
@@ -648,15 +647,18 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 	
-	
-	// New export test
-	/*
+	//[self renderTest];
+}
+
+-(void)renderTest {
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
-	BeatRenderer *renderer = [BeatRenderer.alloc initWithDocument:self screenplay:self.parser.forPrinting settings:settings livePagination:false];
-	[renderer paginateFromIndex:0];
-	[renderer pdf];
-	 */
+	[self bakeRevisions];
+	[self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		if (value != nil) NSLog(@"--> %@", value);
+	}];
 	
+	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithDoc:self screenplay:self.parser.forPrinting settings:settings];
+	[_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
 }
 
 -(void)awakeFromNib {
@@ -1658,6 +1660,7 @@ static NSWindow __weak *currentKeyWindow;
 /// **Warning:** Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange {
 	if (_skipAutomaticLineBreaks) {
+		// Some methods can opt out of this behavior. Reset the flag once it's been used.
 		_skipAutomaticLineBreaks = false;
 		return NO;
 	}
@@ -1665,6 +1668,7 @@ static NSWindow __weak *currentKeyWindow;
 	// Don't add a dual line break if shift is pressed
 	NSUInteger currentIndex = [self.parser indexOfLine:currentLine];
 	
+	// Handle lines with content
 	if (currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
 		// Add double breaks for outline element lines
 		if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
@@ -1678,6 +1682,9 @@ static NSWindow __weak *currentKeyWindow;
 			if (currentIndex < self.parser.lines.count - 2 && currentIndex != NSNotFound) {
 				Line* nextLine = self.parser.lines[currentIndex + 1];
 				if (nextLine.string.length == 0) {
+					// If it *might* be a character cue, skip this behavior.
+					if (currentLine.string.onlyUppercaseUntilParenthesis) return NO;
+					// Otherwise add dual line break
 					[self addString:@"\n\n" atIndex:affectedCharRange.location];
 					return YES;
 				}
@@ -1862,6 +1869,9 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
+	
+	// Render test
+	//[self renderTest];
 		
 	// Register changes
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
@@ -2974,20 +2984,21 @@ static bool _skipAutomaticLineBreaks = false;
 	_itemsToValidate = @[
 		// Swift class alternative:
 		// [BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
-		[ValidationItem withAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
-		[ValidationItem withAction:@selector(toggleAutoLineBreaks:) setting:@"autoLineBreaks" target:self],
-		[ValidationItem withAction:@selector(toggleSceneLabels:) setting:@"showSceneNumberLabels" target:self],
-		[ValidationItem withAction:@selector(togglePageNumbers:) setting:@"showPageNumbers" target:self],
-		[ValidationItem withAction:@selector(toggleTypewriterMode:) setting:@"typewriterMode" target:self],
-		[ValidationItem withAction:@selector(togglePrintSceneNumbers:) setting:@"printSceneNumbers" target:self],
-		[ValidationItem withAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
-		[ValidationItem withAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
-		[ValidationItem withAction:@selector(toggleAutosave:) setting:@"autosave" target:self],
-		[ValidationItem withAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
-		[ValidationItem withAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
-		[ValidationItem withAction:@selector(toggleHideFountainMarkup:) setting:@"hideFountainMarkup" target:self],
-		[ValidationItem withAction:@selector(toggleDisableFormatting:) setting:@"disableFormatting" target:self],
-		[ValidationItem withAction:@selector(toggleShowRevisions:) setting:@"showRevisions" target:self],
+		
+		[BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleAutoLineBreaks:) setting:@"autoLineBreaks" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleSceneLabels:) setting:@"showSceneNumberLabels" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(togglePageNumbers:) setting:@"showPageNumbers" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:@"typewriterMode" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(togglePrintSceneNumbers:) setting:@"printSceneNumbers" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleAutosave:) setting:@"autosave" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleHideFountainMarkup:) setting:@"hideFountainMarkup" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleDisableFormatting:) setting:@"disableFormatting" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisions:) setting:@"showRevisions" target:self],
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -3044,7 +3055,7 @@ static bool _skipAutomaticLineBreaks = false;
 		
 	// Validate ALL on/of items
 	// This is a specific class which matches given methods against a property in this class, ie. toggleSomething -> .something
-	for (ValidationItem *item in _itemsToValidate) {
+	for (BeatValidationItem *item in _itemsToValidate) {
 		if (menuItem.action == item.selector) {
 			bool on = [item validate];
 			if (on) [menuItem setState:NSOnState];
@@ -4195,6 +4206,9 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (void)setPageSize:(BeatPaperSize)pageSize {
 	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
+	
+	NSLog(@"Setting page size");
+	NSLog(@"Margins: %f / %f / %f /%f", self.printInfo.topMargin, self.printInfo.rightMargin, self.printInfo.bottomMargin, self.printInfo.leftMargin);
 	
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
