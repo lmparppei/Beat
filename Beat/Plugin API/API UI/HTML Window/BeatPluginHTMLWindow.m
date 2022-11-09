@@ -51,6 +51,12 @@
 	return self;
 }
 
+/// Sets the HTML content with no preloaded styles. Also kills support for in-window methods.
+- (void)setRawHTML:(NSString*)html {
+	[_webview loadHTMLString:html baseURL:nil];
+}
+
+/// Sets the HTML content with preloaded styles.
 - (void)setHTML:(NSString*)html {
 	// Load template
 	NSURL *templateURL = [NSBundle.mainBundle URLForResource:@"Plugin HTML template" withExtension:@"html"];
