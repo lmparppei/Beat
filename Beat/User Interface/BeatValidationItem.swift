@@ -5,20 +5,15 @@
 //  Created by Lauri-Matti Parppei on 22.1.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
-/*
- 
- ValidationItem converted to Swift for learning reasons. Nothing to see here.
- 
- */
 
 import Foundation
 
 class BeatValidationItem: NSObject {
 
-	var title:String?
-	var setting:String
-	var selector:Selector?
-	var target:AnyObject!
+	@objc var title:String?
+	@objc var setting:String
+	@objc var target:AnyObject!
+	@objc var selector:Selector?
 
 	@objc init(title:String, setting:String, target:AnyObject ) {
 		self.title = title
@@ -37,7 +32,7 @@ class BeatValidationItem: NSObject {
 	}
 	
 	
-	func validate() -> Bool {
+	@objc func validate() -> Bool {
 		var value:Bool = false
 		
 		if (self.target.className == "BeatDocumentSettings") {
