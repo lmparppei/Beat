@@ -15,7 +15,7 @@ final class CssParser {
 	
 	// Map property names to types
 	let stringTypes:Set = ["textAlign", "text-align"]
-	let boolTypes:Set = ["bold", "italic", "underline"]
+	let boolTypes:Set = ["bold", "italic", "underline", "uppercase"]
 	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
 	
 	/// Parses the CSS file string into an array of CSS styles.
@@ -62,12 +62,13 @@ final class CssParser {
 			pendingLine.append(character)
 			
 			if character == "{" {
-				pendingStyleName = pendingLine.replacingOccurrences(strings: [" ", "\n", "{"])
+				pendingStyleName = pendingLine.replacingOccurrences(strings: ["\n", "{"])
 				pendingLine = ""
 			} else if character == ";" {
 				let propertyLine = pendingLine.replacingOccurrences(strings: [";", "\n"])
 				let key = propertyLine.removeTrailing(startWith: ":").replacingOccurrences(strings: [" "]).trimmingCharacters(in: .whitespaces)
 				let value = propertyLine.removeLeading(startWith: ":").removeLeading(startWith: " ")
+				
 				pendingStyleProperties[key] = value
 				pendingLine = ""
 			} else if character == "}" {
@@ -143,8 +144,8 @@ final class CssParser {
 		}
 		
 		// Calculate different units based on *fixed values*
-		value = value.replacingOccurrences(of: "ch", with: "* 7.5")
-		value = value.replacingOccurrences(of: "l", with: "* 13")
+		value = value.replacingOccurrences(of: "ch", with: "* 7.25")
+		value = value.replacingOccurrences(of: "l", with: "* \(BeatRenderer2.lineHeight())")
 		value = value.replacingOccurrences(of: "px", with: "")
 		value = value.replacingOccurrences(of: " ", with: "")
 		

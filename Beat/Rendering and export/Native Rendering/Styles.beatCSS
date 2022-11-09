@@ -11,15 +11,17 @@
 */
 
 Page {
-    margin-left: 30;
+    margin-left: 40;
 	padding-left: 60;
-    margin-top: 50;
-	margin-bottom: 30;
+    margin-top: 30;
+	margin-bottom: 40;
 	
 	default-width-a4: 59ch;
 	default-width-us: 61ch;
 	
 	line-height: 12;
+	
+	content-padding: 7ch;
 }
 
 Heading {
@@ -78,35 +80,38 @@ More {
 }
 
 DD Block {
-    margin-top: 1l;
+    /* margin-top: 1l; */
+	width-a4: 59ch;
+	width-us: 61ch;
 }
 
 DD Character {
 	width-a4: 20ch;
 	width-us: 21ch;
 
-    margin-top: 0;
-    margin-left: 5ch;
+    margin-top: 1l;
+    margin-left: 7ch;
 }
 DD More {
 	width-a4: 20ch;
 	width-us: 21ch;
 
     margin-top: 0;
-    margin-left: 5ch;
+    margin-left: 6ch;
 }
 DD Parenthetical {
     width-a4: 25ch;
     width-us: 26ch;
     
     margin-top: 0;
-    margin-left: 3ch;
+    margin-left: 4ch;
 }
 DD Dialogue {
 	width-a4: 27ch;
 	width-us: 28ch;
 
-    margin-left: 1ch;
+    margin-left: 0ch;
+	margin-right: 1ch;
 }
 
 Transition {
@@ -124,4 +129,14 @@ Lyrics {
     margin-top: 1l;
     textAlign: center;
 	italic: true;
+}
+
+Shot {
+	width-a4: 59ch;
+	width-us: 61ch;
+	
+	bold: true;
+	uppercase: true;
+	
+	margin-top: 1l;
 }
