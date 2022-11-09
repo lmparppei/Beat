@@ -13,11 +13,12 @@
 
 @implementation BeatMargins
 
+/// Reads margins from `Page Sizing.plist`
 + (BeatMargins*)margins {
 	static BeatMargins* margins;
 	if (!margins) margins = BeatMargins.new;
 	
-	NSDictionary *contents = [NSDictionary dictionaryWithContentsOfURL:[NSBundle.mainBundle URLForResource:@"Page Sizing" withExtension:@"plist"]];
+	NSDictionary *contents = [NSDictionary dictionaryWithContentsOfURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"Page Sizing" withExtension:@"plist"]];
 	margins.top = [(NSNumber*)contents[@"Margin Top"] floatValue];
 	margins.bottom = [(NSNumber*)contents[@"Margin Bottom"] floatValue];
 	margins.left = [(NSNumber*)contents[@"Margin Left"] floatValue];
@@ -32,8 +33,7 @@
 
 #if TARGET_OS_IOS
 
-// iOS paper sizing
-
+/// Paper sizing for iOS, returns predefined rects
 + (CGSize)printableAreaFor:(BeatPaperSize)size {
 	BeatMargins *margins = BeatMargins.margins;
 	CGSize paperSize;

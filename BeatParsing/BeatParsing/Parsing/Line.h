@@ -267,7 +267,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// Join this line with another `Line` object, and combine the attributes of th two
 - (void)joinWithLine:(Line*)line;
 /// Does what it says
-- (NSArray*)splitAndFormatToFountainAt:(NSInteger)index;
+- (NSArray<Line*>*)splitAndFormatToFountainAt:(NSInteger)index;
 /// A JSON object for plugin use
 - (NSDictionary*)forSerialization;
 

@@ -7,9 +7,18 @@
 
 #ifndef BeatParsing_h
 #define BeatParsing_h
+#pragma clang system_header
 
 #import "ContinuousFountainParser.h"
 #import "Line.h"
 #import "OutlineScene.h"
+#import "FountainRegexes.h"
+#import "BeatDocumentSettings.h"
+
+#import "NSString+CharacterControl.h"
+#import "NSString+Regex.h"
+#import "NSMutableString+Regex.h"
+
+#import "BeatSceneTree.h"
 
 #endif /* BeatParsing_h */

@@ -300,7 +300,8 @@ static NSDictionary* patterns;
 	if (!line.isAnyCharacter) return;
 	
 	NSInteger i = [self indexOfLine:line];
-	
+    if (i == NSNotFound) return;
+    
 	NSArray *lines = self.lines;
 	Line *precedingLine;
 	Line *nextLine;
@@ -684,7 +685,7 @@ static NSDictionary* patterns;
 		(oldType == heading || oldType == section || oldType == synopse || currentLine.type == heading || currentLine.type == section || currentLine.type == synopse || currentLine.beats.count)) {
 		self.changeInOutline = YES;
 	}
-	
+	    
 	[self.changedIndices addIndex:index];
 	
 	// Parse multi-line note ranges
@@ -738,18 +739,32 @@ static NSDictionary* patterns;
 		[self.changedIndices addIndexes:noteIndices];
 	}
 	
-	// Parse faulty and orphaned dialogue (this can happen, because... well, there are reasons)
-	if (index > 0 && currentLine.type != empty) {
+	// Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
+	if (index > 0) {
 		Line *prevLine = self.lines[index - 1];
 		if (prevLine.type != empty && prevLine.length == 0) {
 			prevLine.type = empty;
 			[self.changedIndices addIndex:index-1];
+            
+            // Fix the faulty character cue, too
+            if (index > 1) {
+                [self correctParseInLine:index-2 indicesToDo:indices];
+            }
 		}
 	}
 	
+    if (currentLine.type == empty && index > 1) {
+        Line *precedingLine = self.lines[index-1];
+        Line *lineBeforeThat = self.lines[index-2];
+        if (precedingLine.length == 0 && lineBeforeThat.isAnyCharacter) {
+            [self correctParseInLine:index-2 indicesToDo:indices];
+        }
+    }
+    
 	//If there is a next element, check if it might need a reparse because of a change in type or omit out
 	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
-		currentLine.isDialogueElement || currentLine.isDualDialogueElement) {
+		currentLine.isDialogueElement || currentLine.isDualDialogueElement || currentLine.type == empty) {
+        
 		if (index < self.lines.count - 1) {
 			Line* nextLine = self.lines[index+1];
 			if (currentLine.isTitlePage ||					// if line is a title page, parse next line too
@@ -1019,7 +1034,6 @@ and incomprehensible system of recursion.
 
 	// Check if this line was forced to become a character cue in editor (by pressing tab)
 	if (line.forcedCharacterCue) {
-		NSLog(@"FOUND FORCED CHARACTER CUE");
 		line.forcedCharacterCue = NO;
 		if (line.lastCharacter == '^') return dualDialogueCharacter;
 		else return character;
@@ -1271,11 +1285,14 @@ and incomprehensible system of recursion.
 				
                 return dualDialogueCharacter;
             } else {
-				// It is possible that this IS NOT A CHARACTER but an all-caps action line, so let's see.
+				// It is possible that this IS NOT A CHARACTER but an all-caps action line
 				if (index + 2 < self.lines.count) {
 					Line* twoLinesOver = (Line*)self.lines[index+2];
 					
-					if (nextLine.string.length == 0 && twoLinesOver.string.length > 0) {
+                    // Next line is empty, line after that isn't - and we're not on that particular line
+					if ((nextLine.string.length == 0 && twoLinesOver.string.length > 0) ||
+                        (nextLine.string.length == 0 && NSLocationInRange(self.delegate.selectedRange.location, nextLine.range))
+                        ) {
 						return action;
 					}
 				}
@@ -2704,7 +2721,11 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 + (NSArray*)preprocessForPrintingWithLines:(NSArray*)lines printNotes:(bool)printNotes settings:(BeatDocumentSettings*)documentSettings {
-	NSMutableArray *linesForPrinting = NSMutableArray.array;
+    // The array for printable elements
+    NSMutableArray *elements = NSMutableArray.new;
+    
+    // Create a copy of parsed lines
+    NSMutableArray *linesForPrinting = NSMutableArray.array;
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
 	}
@@ -2716,18 +2737,13 @@ NSUInteger prevLineAtLocationIndex = 0;
 		if (sceneNumber < 1) sceneNumber = 1;
 	}
 	
-	// Printable elements
-	NSMutableArray *elements = [NSMutableArray array];
-	
-	Line *previousLine;
-	
-	// Check for split paragraphs
+    // Check for split paragraphs
 	NSInteger i = 0;
 	for (Line* line in linesForPrinting) {
 		if (i > 0) {
 			Line *precedingLine = lines[i - 1];
 			if (line.type == action) {
-				if (precedingLine.type == action && precedingLine.string.length > 0) line.isSplitParagraph = YES;
+				if (precedingLine.type == action && precedingLine.string.length > 0 && !precedingLine.omitted) line.isSplitParagraph = YES;
 			}
 			
 			else if (line.type == lyrics && (precedingLine.type == empty || precedingLine.type != lyrics)) {
@@ -2743,6 +2759,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 		i++;
 	}
 	
+    //
+    Line *previousLine;
 	for (Line *line in linesForPrinting) {
 		// Fix a weird bug for first line
 		if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
@@ -2779,30 +2797,39 @@ NSUInteger prevLineAtLocationIndex = 0;
 		 because extraneous newlines should be ignored anyway. The caveat is that it requires
 		 an extra sttep of joining action lines with no empty line between them into one element.
 		*/
+        /*
+        static bool shown = false;
+        if (!shown) {
+            NSLog(@"‼️ ####### WARNING: Fix preprocessing for release");
+            shown = true;
+        }
+        */
 		
+        // Join the line with preceding one to avoid unnecessary paragraph breaks
 		if (line.isSplitParagraph && [lines indexOfObject:line] > 0 && elements.count > 0) {
 			Line *precedingLine = [elements objectAtIndex:elements.count - 1];
 
 			[precedingLine joinWithLine:line];
 			continue;
 		}
-		
+         
 		// Remove misinterpreted dialogue
-		if (line.type == dialogue && line.string.length < 1) {
+		if (line.isAnyDialogue && line.string.length == 0) {
 			line.type = empty;
 			previousLine = line;
 			continue;
 		}
-				
+            
 		[elements addObject:line];
 		
-		// If this is dual dialogue character cue,
-		// we need to search for the previous one too, just in cae
+		// If this is dual dialogue character cue, we'll need to search for the previous one too,
+        // and make it aware of being a part of a dual dialogue block.
 		if (line.isDualDialogueElement) {
-			NSInteger i = elements.count - 2; // Go for previous element
+			NSInteger i = elements.count - 2; // Previous element index
 			while (i > 0) {
 				Line *precedingLine = [elements objectAtIndex:i];
 				
+                // Break the loop if this is not a dialogue element OR it's another dual dialogue element.
 				if (!(precedingLine.isDialogueElement || precedingLine.isDualDialogueElement)) break;
 				
 				if (precedingLine.type == character ) {

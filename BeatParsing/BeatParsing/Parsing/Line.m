@@ -771,7 +771,10 @@
 		for (NSString *key in _revisedRanges.allKeys) {
 			[_revisedRanges[key] enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 				NSString *attrName = [NSString stringWithFormat:@"Revision:%@", key];
-				if ([self rangeInStringRange:range]) [self addAttr:attrName toString:string range:range];
+                if ([self rangeInStringRange:range]) {
+                    [self addAttr:attrName toString:string range:range];
+                    [string addAttribute:@"Revision" value:key range:range];
+                }
 			}];
 		}
 	}
@@ -821,7 +824,7 @@
  See you in the future.
  
  */
-- (NSArray*)splitAndFormatToFountainAt:(NSInteger)index {
+- (NSArray<Line*>*)splitAndFormatToFountainAt:(NSInteger)index {
 	NSAttributedString *string = [self attributedStringForFDX];
 	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
 	
