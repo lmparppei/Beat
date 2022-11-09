@@ -9,9 +9,8 @@
 #ifndef Beat_iOS_Bridging_Header_h
 #define Beat_iOS_Bridging_Header_h
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatDocumentSettings.h"
-#import "Line.h"
-#import "OutlineScene.h"
 #import "BeatEditorDelegate.h"
 #import "BeatExportSettings.h"
 #import "BeatHTMLScript.h"

@@ -9,9 +9,7 @@
 #ifndef Beat_Bridging_Header_h
 #define Beat_Bridging_Header_h
 
-#import "BeatDocumentSettings.h"
-#import "Line.h"
-#import "OutlineScene.h"
+#import <BeatParsing/BeatParsing.h>
 #import "RecentFiles.h"
 #import "BeatAppDelegate.h"
 #import "BeatEditorDelegate.h"
@@ -22,9 +20,7 @@
 #import "BeatPrintDialog.h"
 #import "BeatPaginator.h"
 #import "BeatTheme.h"
-#import "BeatExportSettings.h"
 #import "BeatFonts.h"
-#import "RenderStyles.h"
 #import "BeatTextView.h"
 #import "BeatUserDefaults.h"
 #import "BeatAttributes.h"
