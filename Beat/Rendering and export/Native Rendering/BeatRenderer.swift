@@ -21,10 +21,10 @@ protocol BeatPageViewDelegate:NSObject {
 	var styles:Styles { get }
 	var settings:BeatExportSettings { get }
 	var fonts:BeatFonts { get }
-	var pages:[BeatPageView2] { get }
+	var pages:[BeatPageView] { get }
 }
 
-class BeatRenderer2:NSObject, BeatPageViewDelegate {
+class BeatRenderer:NSObject, BeatPageViewDelegate {
 	var lines = [Line]()
 	var titlePageLines = [Line]()
 	var livePagination = false
@@ -32,9 +32,13 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 	var settings:BeatExportSettings
 	var styles:Styles = Styles.shared
 	
-	var titlePage:BeatPageView2?
-	var pages = [BeatPageView2]()
-	var currentPage:BeatPageView2? = nil
+	var titlePage:BeatPageView?
+	var pages = [BeatPageView]()
+	var currentPage:BeatPageView? = nil
+	
+	var pageBreaks:[BeatPageBreak] = []
+	
+	var queue:[Line] = []
 	
 	@objc init(document:Document, screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool) {
 		self.livePagination = livePagination
@@ -89,16 +93,19 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 		// Reset current page
 		currentPage = nil
 		
+		// Reset page breaks
+		pageBreaks = []
+		
 		// This is the element queue. We are iterating the document line-by-line,
 		// but work with blocks. When an element becomes part of a block, it's added
 		// to the queue, so the pagination will know to skip it when iterating.
 		// The queue is flushed after a new line is reached.
-		var tmpElements:[Line] = []
+		queue = []
 		
 		// Continuous pagination can paginate from any given line index
 		if fromIndex == 0 {
 			pages = []
-			currentPage = BeatPageView2(delegate: self)
+			currentPage = BeatPageView(delegate: self)
 		}
 		
 		for i in fromIndex...lines.count - 1 {
@@ -112,8 +119,8 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 			if (line.string.count == 0) { continue }
 			
 			// If the line has been already handled, ignore this line. Otherwise let's clear the temp queue.
-			if (tmpElements.contains(line)) { continue }
-			else { tmpElements.removeAll() }
+			if (queue.contains(line)) { continue }
+			else { queue.removeAll() }
 			
 			// Skip invisible elements (unless we are printing notes)
 			if (line.type == .empty) { continue }
@@ -142,7 +149,9 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 			// catch forced page breaks first
 			if (line.type == .pageBreak) {
 				addPage(currentPage!, onCurrentPage: [line], onNextPage: [])
-				addPageBreak(element: line, position: -1, type: "Forced page break")
+				
+				let pageBreak = BeatPageBreak(y: -1, element: line, reason: "Forced page break")
+				pageBreaks.append(pageBreak)
 				continue
 			}
 			
@@ -153,74 +162,97 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 			 • dialogue block, or a dual dialogue block
 			 • a heading or a shot, followed by another block
 			*/
-			tmpElements = []
-			
 			let blocks = blocksFor(lineAtIndex: i)
-			var pageBlocks:[BeatPageBlock] = []
-			
-			for block in blocks {
-				let pageBlock = BeatPageBlock(block: block, delegate: self)
-				pageBlocks.append(pageBlock)
-				tmpElements.append(contentsOf: block)
-			}
-			//tmpElements = blockFor(lineAtIndex: i)
-			
-			// Create visual representation for the block
-			let blockGroup = BeatBlockGroup(blocks: pageBlocks)
-			//let block = BeatPageBlock(block: tmpElements, delegate: self)
-			
-			// See if it fits on current page
-			if currentPage!.remainingSpace >= blockGroup.height {
-				// Add every part of the block group
-				for pageBlock in pageBlocks {
-					currentPage!.addBlock(pageBlock)
-				}
-				continue
-			}
-			else {
-				// The block does not fit.
-				let remainingSpace = currentPage!.remainingSpace
-				
-				if (remainingSpace < BeatRenderer2.lineHeight()) {
-					// Less than 1 row, just roll over to the next page
-					addPage(currentPage!, onCurrentPage: [], onNextPage: tmpElements)
-					continue
-				}
-				
-				if blockGroup.blocks.count > 1 {
-					let pageBreak = blockGroup.splitGroup(remainingSpace: remainingSpace)
-
-				} else {
-					let block = blockGroup.blocks.first!
-					let pageBreak = block.splitBlock(remainingSpace: remainingSpace)
-					addPage(currentPage!, onCurrentPage: pageBreak.0, onNextPage: pageBreak.1)
-				}
-			
-				//... also add a page break here
-			}
+			addBlocks(blocks: blocks, currentPage: currentPage!)
 		}
 		
 		// The loop has ended.
 		pages.append(currentPage!)
 	}
-
-	func addPageBreak(element:Line, position:Int, type:String) {
-		print("Implement live pagination page breaks")
-	}
 	
-	func addPage(_ page:BeatPageView2, onCurrentPage:[Line], onNextPage:[Line]) {
+	
+	// MARK: Add elements on page
+	
+	/**
+	 This is a generic method for adding items on the current page. This can be done independent of
+	 the original loop, so that we are able to queue any amount of stuff (including temporary items etc.)
+	 to be added on pages.
+	 */
+	
+	func addBlocks(blocks:[[Line]], currentPage:BeatPageView) {
+		var pageBlocks:[BeatPageBlock] = []
+		
+		for block in blocks {
+			let pageBlock = BeatPageBlock(block: block, delegate: self)
+			pageBlocks.append(pageBlock)
+			queue.append(contentsOf: block)
+		}
+		
+		// Create visual representation for the block
+		let blockGroup = BeatBlockGroup(blocks: pageBlocks)
+		//let block = BeatPageBlock(block: tmpElements, delegate: self)
+		
+		// See if it fits on current page
+		if currentPage.remainingSpace >= blockGroup.height {
+			// Add every part of the block group
+			for pageBlock in pageBlocks {
+				currentPage.addBlock(pageBlock)
+			}
+			return
+		}
+		else {
+			// The block does not fit.
+			let remainingSpace = currentPage.remainingSpace
+			
+			if (remainingSpace < BeatRenderer.lineHeight()) {
+				// Less than 1 row, just roll over to the next page
+				addPage(currentPage, onCurrentPage: [], onNextPage: queue)
+				return
+			}
+			
+			if blockGroup.blocks.count > 1 {
+				let pageBreak = blockGroup.splitGroup(remainingSpace: remainingSpace)
+
+			} else {
+				let block = blockGroup.blocks.first!
+				let pageBreak = block.splitBlock(remainingSpace: remainingSpace)
+				addPage(currentPage, onCurrentPage: pageBreak.0, onNextPage: pageBreak.1)
+			}
+		
+			//... also add a page break here
+		}
+		
+	}
+		
+	
+	// MARK: Add page
+	/**
+	 Adds the current page into pages array and begins a new page. You can supply `Line` elements for both
+	 current and next page. Used when something didn't fit on the original page.
+	 
+	 - note: This method is recursive. If the newly-added blocks don'w fit on next page, `addPage` will be called inside the following `addBlocks` method
+	 */
+	func addPage(_ page:BeatPageView, onCurrentPage:[Line], onNextPage:[Line]) {
 		// Add elements on the current page
 		let prevPageBlock = BeatPageBlock(block: onCurrentPage, delegate: self)
 		page.addBlock(prevPageBlock)
 		pages.append(page)
 		
 		// Create a new page and add the rest on that one
-		currentPage = BeatPageView2(delegate: self)
-		let nextPageBlock = BeatPageBlock(block: onNextPage, delegate: self)
-		currentPage!.addBlock(nextPageBlock)
+		currentPage = BeatPageView(delegate: self)
+		
+		addBlocks(blocks: [onNextPage], currentPage: currentPage!)
 	}
 	
-	/// Returns the screenplay block for the given line
+	// MARK: Get blocks
+	/**
+	 Returns "blocks" for the given line.
+	 - note: A block is usually any paragraph or a full dialogue block, but for the pagination to make sense, some blocks are grouped together.
+	 That's why we are returning `[ [Line], [Line], ... ]`, and converting those blocks into actual screenplay layout blocks later.
+	 
+	 The layout blocks (`BeatPageBlock`)
+	 won't contain anything else than the rendered block, which can also mean a full dual-dialogue block.
+	 */
 	func blocksFor(lineAtIndex:Int) -> [[Line]] {
 		let line = lines[lineAtIndex]
 		var block = [line]
@@ -286,6 +318,9 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 		return block
 	}
 	
+	
+	// MARK: Convenience methods
+	
 	/// Shorthand for a basic text block
 	class func createTextBlock(width:CGFloat) -> NSTextBlock {
 		let block = NSTextBlock()
@@ -300,7 +335,7 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 	
 	/// Returns a `Line` element for character cue, extended by user-defined equivalent for `(CONT'D)`
 	class func contdLine(for line:Line) -> Line {
-		let charExtension = BeatRenderer2.contdString()
+		let charExtension = BeatRenderer.contdString()
 		var cue = line.stripFormatting().replacingOccurrences(strings: [charExtension])
 		cue = cue.trimmingCharacters(in: .whitespaces) + charExtension
 		
@@ -310,7 +345,7 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
 	
 	/// Returns a `Line` element for `(MORE)`, with user-defined word
 	class func moreLine(for line:Line) -> Line {
-		let moreString = BeatRenderer2.moreString()
+		let moreString = BeatRenderer.moreString()
 		let moreLine = Line(string: moreString, type: (line.isDualDialogue()) ? .dualDialogueMore : .more, pageSplit: true)!
 		
 		return moreLine
@@ -334,15 +369,14 @@ class BeatRenderer2:NSObject, BeatPageViewDelegate {
  A page object holds references to the blocks that have been added on it, and the attributed string is
  rendered based on content of those blocks.
  */
-class BeatPageView2:NSView {
+class BeatPageView:NSView {
 	var fonts = BeatFonts.shared()
 	var textView:NSTextView
-	var headerView:NSTextView
+	var headerView:NSTextView?
 	var pageStyle:RenderStyle
 	var paperSize:BeatPaperSize
 	var maxHeight = 0.0
 	var blocks:[BeatPageBlock] = []
-	
 	
 	var linePadding = 10.0
 	
@@ -351,7 +385,11 @@ class BeatPageView2:NSView {
 	var styles:Styles { get { return delegate!.styles } }
 	override var isFlipped: Bool { get { return true } }
 	
-	init(delegate:BeatPageViewDelegate) {
+	convenience init(delegate:BeatPageViewDelegate) {
+		self.init(delegate: delegate, titlePage: false)
+	}
+	
+	init(delegate:BeatPageViewDelegate, titlePage:Bool) {
 		self.delegate = delegate
 		self.pageStyle = delegate.styles.page()
 		
@@ -365,13 +403,13 @@ class BeatPageView2:NSView {
 	
 		// Text view height
 		// Max height for content. Subtract two lines to make space for page number and header.
-		self.maxHeight = size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom - BeatRenderer2.lineHeight() * 2
+		self.maxHeight = size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom - BeatRenderer.lineHeight() * 2
 		
 		
 		// Create a content text view inside the page
 		self.textView = NSTextView(
 			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
-						  y: self.pageStyle.marginTop + BeatRenderer2.lineHeight() * 2,
+						  y: self.pageStyle.marginTop + BeatRenderer.lineHeight() * 2,
 						  width: size.width - self.pageStyle.marginLeft,
 						  height: self.maxHeight)
 		)
@@ -385,31 +423,39 @@ class BeatPageView2:NSView {
 		self.textView.textContainer?.replaceLayoutManager(layoutManager)
 		self.textView.textContainer?.lineFragmentPadding = linePadding
 		
-		// Header view
-		self.headerView = NSTextView(
-			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
-						  y: self.pageStyle.marginTop,
-						  width: size.width - self.pageStyle.marginLeft,
-						  height: BeatRenderer2.lineHeight())
-		)
-		self.headerView.textContainerInset = NSSize(width: 0, height: 0)
-		self.headerView.drawsBackground = true
-		self.headerView.backgroundColor = NSColor.white
-		
 		super.init(frame: NSMakeRect(0, 0, size.width, size.height))
 		self.addSubview(textView)
-		self.addSubview(headerView)
 		
 		// Force white background
 		self.wantsLayer = true
 		self.layer?.backgroundColor = NSColor.white.cgColor
 		
-		// Add page number
-		headerView.textStorage?.append(self.pageNumberBlock())
+		// Header view
+		if !titlePage {
+			self.headerView = createHeaderView(width: size.width - self.pageStyle.marginLeft)
+			self.addSubview(headerView!)
+			
+			// Add page number
+			headerView!.textStorage?.append(self.pageNumberBlock())
+		}
 	}
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
+	}
+	
+	func createHeaderView(width:CGFloat) -> NSTextView {
+		var headerView = NSTextView(
+			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
+						  y: self.pageStyle.marginTop,
+						  width: width - self.pageStyle.marginLeft,
+						  height: BeatRenderer.lineHeight())
+		)
+		headerView.textContainerInset = NSSize(width: 0, height: 0)
+		headerView.drawsBackground = true
+		headerView.backgroundColor = NSColor.white
+		
+		return headerView
 	}
 
 	func clear() {
@@ -696,7 +742,7 @@ class BeatPageElement:NSObject {
 		if (!dualDialogue) { blockWidth += styles!.page().contentPadding }
 		
 		// Create the block
-		let textBlock = BeatRenderer2.createTextBlock(width: blockWidth)
+		let textBlock = BeatRenderer.createTextBlock(width: blockWidth)
 		
 		if style.italic && style.bold { font = fonts.boldCourier }
 		else if style.italic { font = fonts.italicCourier }
@@ -722,7 +768,7 @@ class BeatPageElement:NSObject {
 		
 		let pStyle = NSMutableParagraphStyle()
 		
-		pStyle.maximumLineHeight = BeatRenderer2.lineHeight()
+		pStyle.maximumLineHeight = BeatRenderer.lineHeight()
 		pStyle.paragraphSpacingBefore = style.marginTop
 		pStyle.paragraphSpacing = style.marginBottom
 		pStyle.tailIndent = -1 * style.marginRight // Negative value
@@ -1106,11 +1152,11 @@ class BeatPageBlock:NSObject {
 		
 		return layoutManager
 	}
-}
 
-// MARK: - Extension for breaking dialogue across pages
-extension BeatPageBlock {
-	func splitDualDialogueBlock(remainingSpace:CGFloat) -> ([Line], [Line]) {
+	
+	// MARK: Breaking blocks across pages
+	
+	func splitDualDialogueBlock(remainingSpace:CGFloat) -> ([Line], [Line], BeatPageBreak) {
 		print("### BEGIN DUAL DIALOGUE PAGE BREAK ###")
 		
 		// Get the lines for each column
@@ -1124,6 +1170,8 @@ extension BeatPageBlock {
 		// Split the blocks
 		let splitLeft = leftBlock.splitBlock(remainingSpace: remainingSpace)
 		let splitRight = rightBlock.splitBlock(remainingSpace: remainingSpace)
+		
+		var pageBreak:BeatPageBreak
 		
 		var onThisPage:[Line] = []
 		var onNextPage:[Line] = []
@@ -1139,19 +1187,23 @@ extension BeatPageBlock {
 			if splitRight.1.count > 0 {
 				onNextPage.append(contentsOf: splitRight.1)
 			}
+			
+			pageBreak = BeatPageBreak(y: splitRight.2.y, element: splitRight.2.element)
 		}
 		
 		// Otherwise, just push the whole block on next page
 		else {
 			onNextPage.append(contentsOf: left)
 			onNextPage.append(contentsOf: right)
+			
+			pageBreak = BeatPageBreak(y: 0, element: left.first!)
 		}
 				
-		return (onThisPage, onNextPage)
+		return (onThisPage, onNextPage, pageBreak)
 	}
 	
 	/// Splits the block based on remaining space. Returns `[thisPage], [nextPage], pageBreak`
-	func splitBlock(remainingSpace:CGFloat) -> ([Line], [Line]) {
+	func splitBlock(remainingSpace:CGFloat) -> ([Line], [Line], BeatPageBreak) {
 		// This doesn't work unless we've rendered the line
 		if (self.renderedString == nil) { _ = self.render() }
 		
@@ -1170,13 +1222,15 @@ extension BeatPageBlock {
 				
 		let removedIndices = NSMutableIndexSet()
 		
+		let pageBreak:BeatPageBreak
+		
 		// Find out the indices in which we can break the block apart.
 		// When breaking a dual dialogue element, it's possible that the other side fits,
 		// which means we don't get a valid index. In that case, let's suggest that we
 		// leave this dialogue block on the original page.
 		let splittableIndex = self.splittableIndex(remainingSpace: remainingSpace)
 		if splittableIndex == NSNotFound {
-			return (self.lines, [])
+			return ([], self.lines, BeatPageBreak(y: 0, element: self.lines.first!))
 		}
 		
 		// Get the element that overlows
@@ -1199,6 +1253,9 @@ extension BeatPageBlock {
 			if (split.1!.length > 0) {
 				tmpNextPage = [split.1!]
 			}
+			
+			// Set page break
+			pageBreak = BeatPageBreak(y: split.2, element: el.line)
 		}
 		else if el.line.isDialogueElement() || el.line.isDualDialogueElement() {
 			// Break dialogue blocks in two.
@@ -1211,6 +1268,34 @@ extension BeatPageBlock {
 				// print("..... Remaining space", remainingSpace, " / height until spiller", self.heightUntil(line: el.line), " full height ", self.height)
 				let split = self.splitDialogueElement(element: el, remainingSpace: remainingSpace - self.heightUntil(line: el.line))
 				
+				/*
+				// Something was left on the current page
+				if (split.0!.length > 0) {
+					// Make a note that the spiller was replaced with something else
+					removedIndices.add(splittableIndex)
+					// First part of the line
+					tmpThisPage.append(split.0!)
+					
+					if split.1!.length > 0  || splittableIndex < self.elements.count-1 {
+						tmpThisPage.append(BeatRenderer.moreLine(for: el.line))		// (MORE)
+					}
+				}
+				
+				// Add a character cue on next page if the dialogue line spans over there, OR if there are subsequent elements
+				if (split.1!.length > 0) {
+					let originalCue = self.characterCue()							// Create a new character cue
+										
+					tmpNextPage.append(BeatRenderer.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
+					if split.1!.length > 0 { tmpNextPage.append(split.1!) }			// Second part of the line, if applicable
+				}
+				
+				if (split.0!.length > 0 || split.1!.length > 0) && splittableIndex < self.elements.count-1 {
+					
+				} else {
+					
+				}
+				 */
+				
 				// Something was left on the current page
 				if (split.0!.length > 0) {
 					// Make a note that the spiller was replaced with something else
@@ -1222,11 +1307,13 @@ extension BeatPageBlock {
 					if (split.1!.length > 0 || splittableIndex < self.elements.count-1 ) {
 						let originalCue = self.characterCue()							// Create a new character cue
 						
-						tmpThisPage.append(BeatRenderer2.moreLine(for: el.line))		// (MORE)
-						tmpNextPage.append(BeatRenderer2.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
+						tmpThisPage.append(BeatRenderer.moreLine(for: el.line))		// (MORE)
+						tmpNextPage.append(BeatRenderer.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
 						if split.1!.length > 0 { tmpNextPage.append(split.1!) }			// Second part of the line, if applicable
 					}
 					
+					// Set page break
+					pageBreak = BeatPageBreak(y: split.2, element: el.line)
 				} else {
 					// Nothing was left, break the element on next page.
 					// Check that the previous element is OK for us to split here. Otherwise we'll need to find a better spot.
@@ -1236,21 +1323,31 @@ extension BeatPageBlock {
 						
 						let originalCue = self.characterCue()
 						
-						tmpThisPage.append(BeatRenderer2.moreLine(for: el.line))		// (MORE)
-						tmpNextPage.append(BeatRenderer2.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
+						tmpThisPage.append(BeatRenderer.moreLine(for: el.line))		// (MORE)
+						tmpNextPage.append(BeatRenderer.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
 						tmpNextPage.append(contentsOf: Array(self.lines[range]))		// Remainder of the block
+						
+						// Set page break
+						pageBreak = BeatPageBreak(y: 0.0, element: self.lines[splittableIndex])
 					} else {
 						let betterIndex = self.possiblePageBreakIndices().indexLessThanOrEqual(to: splittableIndex-1)
-						if betterIndex == 0 { onNextPage = Array(self.lines) }
+						if betterIndex == 0 {
+							onNextPage = Array(self.lines)
+							// Set page break to the beginning of block
+							pageBreak = BeatPageBreak(y: 0, element: self.lines[0])
+						}
 						else {
 							let range = betterIndex..<self.lines.count
 							removedIndices.add(in: NSMakeRange(betterIndex, self.lines.count - betterIndex))
 							
 							let originalCue = self.characterCue()
 							
-							tmpThisPage.append(BeatRenderer2.moreLine(for: el.line))		// (MORE)
-							tmpNextPage.append(BeatRenderer2.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
+							tmpThisPage.append(BeatRenderer.moreLine(for: el.line))			// (MORE)
+							tmpNextPage.append(BeatRenderer.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
 							tmpNextPage.append(contentsOf: Array(self.lines[range]))		// Remainder of the block
+							
+							// Set page break
+							pageBreak = BeatPageBreak(y: 0.0, element: self.lines[betterIndex])
 						}
 					}
 				}
@@ -1259,8 +1356,9 @@ extension BeatPageBlock {
 				// Any other dialogue element (meaning parenthetical or character cue)
 				if splittableIndex == 0 {
 					// Move the whole block on next page
-					removedIndices.add(in: NSMakeRange(0, self.lines.count - 1))
-					tmpNextPage = Array(self.lines)
+					onNextPage = Array(self.lines)
+					// Page break at the beginning of the block
+					pageBreak = BeatPageBreak(y: 0.0, element: self.lines[0])
 				} else {
 					// Cut off at some other element, which means that there should be stuff left on the next page
 					removedIndices.add(in: NSMakeRange(splittableIndex, self.lines.count - splittableIndex))
@@ -1268,10 +1366,12 @@ extension BeatPageBlock {
 					let range = splittableIndex..<self.lines.count
 					if range.count > 0 {
 						let originalCue = self.characterCue()
-						tmpThisPage.append(BeatRenderer2.moreLine(for: el.line)) 		// (MORE)
-						tmpNextPage.append(BeatRenderer2.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
+						tmpThisPage.append(BeatRenderer.moreLine(for: el.line)) 		// (MORE)
+						tmpNextPage.append(BeatRenderer.contdLine(for: originalCue)) 	// CHARACTER (CONT'D)
 						tmpNextPage.append(contentsOf: Array(self.lines[range]))		// Remaining lines
 					}
+					
+					pageBreak = BeatPageBreak(y: 0, element: self.lines[splittableIndex])
 				}
 			}
 		}
@@ -1279,11 +1379,15 @@ extension BeatPageBlock {
 			// Any other element will be thrown on the next page
 			if splittableIndex == 0 {
 				onNextPage = self.lines
+				
+				pageBreak = BeatPageBreak(y: 0, element: self.lines[0])
 			} else {
 				onThisPage.append(contentsOf: self.lines[0..<splittableIndex-1])
 				if self.lines.count-1 > splittableIndex {
 					onNextPage.append(contentsOf: self.lines[splittableIndex+1..<self.lines.count])
 				}
+				
+				pageBreak = BeatPageBreak(y: 0, element: self.lines[splittableIndex])
 			}
 		}
 		
@@ -1308,7 +1412,7 @@ extension BeatPageBlock {
 			}
 		}
 		
-		return (onThisPage, onNextPage)
+		return (onThisPage, onNextPage, pageBreak)
 	}
 	
 	func splittableIndex(remainingSpace:CGFloat) -> Int {
@@ -1359,6 +1463,9 @@ extension BeatPageBlock {
 		// Why do we do this? Well, mostly because of legacy reasons...... but also because....... I don't know.
 		// I'll make some sense to the system after I get it working.
 		let split:[Line] = element.line.splitAndFormatToFountain(at: length)
+		if (split[0].length == 0) { pageBreakPos = 0.0 }
+		else if (split[1].length == 0) { pageBreakPos = -1.0 }
+		
 		return (split[0], split[1], pageBreakPos)
 	}
 	
@@ -1512,7 +1619,7 @@ class BeatBlockGroup {
 }
 
 struct BeatPageBreak {
-	var y:Float
+	var y:CGFloat
 	var element:Line
 	var reason:String = "None"
 }

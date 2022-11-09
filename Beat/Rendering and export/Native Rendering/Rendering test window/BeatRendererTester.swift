@@ -59,7 +59,7 @@ class BeatRendererTester:NSWindowController {
 	}
 	
 	func showRender() {
-		var renderer = BeatRenderer2(document: doc!, screenplay: screenplay!, settings: settings!, livePagination: false)
+		var renderer = BeatRenderer(document: doc!, screenplay: screenplay!, settings: settings!, livePagination: false)
 		renderer.paginate()
 		
 		if(self.scrollView == nil) {

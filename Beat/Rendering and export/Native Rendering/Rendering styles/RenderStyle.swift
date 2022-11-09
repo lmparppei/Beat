@@ -8,6 +8,36 @@
 
 import Foundation
 
+// MARK: Stylesheet
+
+class Styles {
+	static let shared = Styles()
+	var styles:[String:RenderStyle] = [:]
+	
+	private init() {
+		reloadStyles()
+	}
+	
+	func reloadStyles() {
+		let url = Bundle.main.url(forResource: "Styles", withExtension: "beatCSS")
+		do {
+			let stylesheet = try String(contentsOf: url!)
+			let parser = CssParser()
+			styles = parser.parse(fileContent: stylesheet)
+		} catch {
+			print("Loading stylesheet failed")
+		}
+	}
+	
+	func page() -> RenderStyle {
+		return styles["Page"]!
+	}
+	
+	func forElement(_ name:String) -> RenderStyle {
+		return styles[name] ?? RenderStyle(rules: ["width-a4": "59ch", "width-us": "61ch"])
+	}
+}
+
 // MARK: - Render style
 
 class RenderStyle:NSObject {

@@ -145,7 +145,7 @@ final class CssParser {
 		
 		// Calculate different units based on *fixed values*
 		value = value.replacingOccurrences(of: "ch", with: "* 7.25")
-		value = value.replacingOccurrences(of: "l", with: "* \(BeatRenderer2.lineHeight())")
+		value = value.replacingOccurrences(of: "l", with: "* \(BeatRenderer.lineHeight())")
 		value = value.replacingOccurrences(of: "px", with: "")
 		value = value.replacingOccurrences(of: " ", with: "")
 		
