@@ -1,5 +1,10 @@
 # Changelog
 
+## Beat 1.97.3
+
+- Parsing moved into a separate framework (**requires testing**)
+
+
 ## Beat 1.97.x
 
 - Pagination is implemented as a queue of operations, and the old word-by-word height checking is replaced by a more sensible line fragment calculation
