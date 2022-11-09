@@ -480,16 +480,17 @@ body > p:first-child {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	width: 50%;
+	width: 45%;
 }
 #script-title .versionInfo {
 	position: absolute;
 	bottom: 0;
 	right: 0;
-	width: 40%;
+	width: 45%;
 	text-align: right;
+	margin: 0 0 .5em 0;
 }
-.versionInfo p {
+.versionInfo p, .info p {
 	position: relative;
 }
 #script-title .credit {
@@ -502,15 +503,27 @@ body > p:first-child {
 	text-align: center;
 	padding-top: 1em;
 }
+#script-title .info p {
+	max-width: 100%;
+	margin: 0 0 .5em 0;
+}
+/*
+#script-title p.notes {
+	white-space: pre-line !important;
+}
+ */
+
+/*
+#script-title p.notes {
+	white-space: pre-line !important;
+}
+ */
 
 /*
 #script-title .notes {
 	padding-top: 2.6em;
 }
 
-#script-title .notes {
-	white-space: pre-line !important;
-}
 */
 
 /* ================== */
