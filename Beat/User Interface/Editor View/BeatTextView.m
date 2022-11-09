@@ -27,17 +27,15 @@
  */
 
 #import <QuartzCore/QuartzCore.h>
+#import <BeatParsing/BeatParsing.h>
 #import "BeatTextView.h"
 #import "DynamicColor.h"
-#import "Line.h"
 #import "ScrollView.h"
-#import "ContinuousFountainParser.h"
 #import "BeatPaginator.h"
 #import "BeatColors.h"
 #import "ThemeManager.h"
 #import "BeatPasteboardItem.h"
 #import "BeatMeasure.h"
-#import "NSString+CharacterControl.h"
 #import "BeatRevisionItem.h"
 #import "BeatRevisions.h"
 #import "BeatLayoutManager.h"
@@ -1094,7 +1092,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	bool noRepositionNeeded = NO;
 	
 	NSInteger index = -1;
-	for (OutlineScene *scene in parser.outline) { @autoreleasepool {
+	for (OutlineScene *scene in parser.outline) {
 		if (scene.type == synopse || scene.type == section) continue;
 		
 		index++; // Add to total scene heading count
@@ -1108,7 +1106,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// to correctly calculate the y position of the first scene. No idea why, but let's do
 		// this only once to save CPU time.
 		if (!layoutEnsured) {
-			[self.layoutManager ensureLayoutForCharacterRange:NSMakeRange(changedIndex, scene.position - changedIndex)];
+			NSRange cRange;
+			// Make sure we're not trying to do some zero-on-zero sort of stuff
+			if (changedIndex != 0 && scene.position != 0) {
+				cRange = NSMakeRange(changedIndex, scene.position - changedIndex);
+			} else {
+				cRange = NSMakeRange(0, ((Line*)self.editorDelegate.parser.lines.firstObject).length);
+			}
+			[self.layoutManager ensureLayoutForCharacterRange:cRange];
 			layoutEnsured = YES;
 		}
 				
@@ -1163,7 +1168,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			!NSLocationInRange(changedIndex, scene.line.range)) {
 			noRepositionNeeded = YES;
 		}
-	} }
+	}
 
 	// Remove excess labels
 	index++;

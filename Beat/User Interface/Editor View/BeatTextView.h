@@ -9,7 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "DynamicColor.h"
-#import "ContinuousFountainParser.h"
+#import <BeatParsing/BeatParsing.h>
 #import "ThemeManager.h"
 #import "BeatTagging.h"
 #import "BeatTextStorage.h"
