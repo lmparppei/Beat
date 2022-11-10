@@ -47,6 +47,7 @@ THE SOFTWARE.
 #import "BeatEditorDelegate.h"
 #import "BeatRevisions.h"
 #import "BeatRevisionItem.h"
+//#import "Beat-Swift.h"
 
 /*
 typedef NS_ENUM(NSUInteger, BeatFormatting) {
@@ -56,7 +57,9 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 	Underline,
 	Note
 };
- */
+
+*/
+
 
 // Forward declaration to make parser available for text view
 @class BeatTextView;

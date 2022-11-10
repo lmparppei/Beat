@@ -90,6 +90,8 @@
 		B62CD512279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */; };
 		B62F5548283C0E0B00A986CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
 		B62F5549283C0E0B00A986CA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6D2B7332218B5DC005B8447 /* Images.xcassets */; };
+		B6305489291D0054006B8039 /* BeatRenderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6305488291D0054006B8039 /* BeatRenderManager.swift */; };
+		B630548A291D0054006B8039 /* BeatRenderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6305488291D0054006B8039 /* BeatRenderManager.swift */; };
 		B632A9B528AA51FB00F34347 /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B6467AB5289954A900231B25 /* BeatFonts.m */; };
 		B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6342D6625682D7B0034D54F /* OutlineViewItem.m */; };
 		B636AEE627BD35E10018C6CC /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B686919E2784477700C8D5A2 /* BeatLocalization.m */; };
@@ -744,6 +746,7 @@
 		B62CD50C279750FD0070DE17 /* Beat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Beat-Bridging-Header.h"; sourceTree = "<group>"; };
 		B62CD50D279752130070DE17 /* BeatRecentFileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRecentFileCell.swift; sourceTree = "<group>"; };
 		B62CD510279754300070DE17 /* BeatLaunchScreenButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatLaunchScreenButton.swift; sourceTree = "<group>"; };
+		B6305488291D0054006B8039 /* BeatRenderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRenderManager.swift; sourceTree = "<group>"; };
 		B6342D6525682D7B0034D54F /* OutlineViewItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OutlineViewItem.h; sourceTree = "<group>"; };
 		B6342D6625682D7B0034D54F /* OutlineViewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
 		B636AEE927BD56500018C6CC /* revisions_2022.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = revisions_2022.jpg; sourceTree = "<group>"; };
@@ -1544,6 +1547,7 @@
 				B6305487291C0DE1006B8039 /* Rendering styles */,
 				B6A4F49D29192C3F006B3A89 /* Rendering test window */,
 				B65B81C0290B210B00962E3F /* BeatRenderer.swift */,
+				B6305488291D0054006B8039 /* BeatRenderManager.swift */,
 				B6467AB4289954A900231B25 /* BeatFonts.h */,
 				B6467AB5289954A900231B25 /* BeatFonts.m */,
 			);
@@ -2775,6 +2779,7 @@
 				B69BFC782565336C007A7D2B /* FadeInImport.m in Sources */,
 				B66B5ABD2739B75500BBC9C6 /* unzip.c in Sources */,
 				B61061EA2590DB66001947D6 /* BeatModalInput.m in Sources */,
+				B6305489291D0054006B8039 /* BeatRenderManager.swift in Sources */,
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */,
 				B6B9CEEB28EB1DA300EB9F6B /* BeatPluginMenuItem.swift in Sources */,
@@ -2963,6 +2968,7 @@
 				B68B6040260B849300463AD8 /* FadeInImport.m in Sources */,
 				B66B5ABE2739B75500BBC9C6 /* unzip.c in Sources */,
 				B68B6041260B849300463AD8 /* BeatModalInput.m in Sources */,
+				B630548A291D0054006B8039 /* BeatRenderManager.swift in Sources */,
 				B68B6042260B849300463AD8 /* TKSplitHandle.m in Sources */,
 				B68B6043260B849300463AD8 /* RegExCategories.m in Sources */,
 				B6B9CEEC28EB1DA300EB9F6B /* BeatPluginMenuItem.swift in Sources */,

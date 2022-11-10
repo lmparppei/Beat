@@ -15,6 +15,7 @@ class BeatRendererTester:NSWindowController {
 	var doc:Document?
 	var screenplay:BeatScreenplay?
 	var settings:BeatExportSettings?
+	var renderer:BeatRenderManager?
 	
 	var timer:Timer?
 	
@@ -27,15 +28,13 @@ class BeatRendererTester:NSWindowController {
 	
 	}
 	
-	@objc init(doc:Document, screenplay:BeatScreenplay, settings:BeatExportSettings) {
-		super.init(window: nil) // Call this to get NSWindowController to init with the windowNibName property
-		
-		self.document = doc
+	@objc init(screenplay:BeatScreenplay, settings:BeatExportSettings, delegate:BeatRenderDelegate) {
 		self.screenplay = screenplay
 		self.settings = settings
 		
-		print("The window...", self.window)
-		print("sCROLL VIEW...", self.scrollView)
+		self.renderer = BeatRenderManager(settings: self.settings!, delegate: delegate)
+		
+		super.init(window: nil) // Call this to get NSWindowController to init with the windowNibName property
 	}
 
 	override init(window: NSWindow?) {
@@ -59,14 +58,13 @@ class BeatRendererTester:NSWindowController {
 	}
 	
 	func showRender() {
-		var renderer = BeatRenderer(document: doc!, screenplay: screenplay!, settings: settings!, livePagination: false)
-		renderer.paginate()
+		renderer!.newRender(screenplay: screenplay!, settings: settings!, forEditor: false, titlePage: false)
 		
 		if(self.scrollView == nil) {
 			return
 		}
 		
-		let pages = renderer.pages
+		let pages = renderer!.pages
 		let content = self.scrollView!.documentView
 		
 		for view in content!.subviews {

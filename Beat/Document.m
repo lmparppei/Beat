@@ -121,7 +121,7 @@
 #import "BeatEditorButton.h"
 #import "BeatAutocomplete.h"
 
-@interface Document () {
+@interface Document () <BeatRenderDelegate> {
 	NSString *bufferedText;
 	NSData *dataCache;
 	NSMutableArray *autocompleteCharacterNames;
@@ -647,10 +647,11 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 	
-	//[self renderTest];
+	[self renderTest];
 }
 
 -(void)renderTest {
+	/*
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
 	[self bakeRevisions];
 	[self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
@@ -658,6 +659,12 @@ static BeatAppDelegate *appDelegate;
 	}];
 	
 	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithDoc:self screenplay:self.parser.forPrinting settings:settings];
+	[_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
+	 */
+	
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"lol" printSceneNumbers:YES];
+	[self bakeRevisions];
+	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
 	[_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
 }
 
@@ -1871,7 +1878,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_documentIsLoading) return;
 	
 	// Render test
-	//[self renderTest];
+	[self renderTest];
 		
 	// Register changes
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
@@ -4163,6 +4170,10 @@ static NSArray<Line*>* cachedTitlePage;
 	
 	// Update preview in background
 	[self.preview updatePreviewWithPages:pages titlePage:cachedTitlePage];
+}
+
+- (void)renderingDidFinishWithPages:(NSArray<BeatPageView *> * _Nonnull)pages pageBreaks:(NSArray<BeatPageBreak *> * _Nonnull)pageBreaks {
+	NSLog(@"Rendering did finish");
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {

@@ -18,10 +18,17 @@
 import Cocoa
 
 protocol BeatPageViewDelegate:NSObject {
+	var canceled:Bool { get }
 	var styles:Styles { get }
 	var settings:BeatExportSettings { get }
 	var fonts:BeatFonts { get }
 	var pages:[BeatPageView] { get }
+}
+
+@objc protocol BeatRenderOperationDelegate {
+	var lines:[Line] { get }
+	var text:String { get }
+	func renderDidFinish(renderer:BeatRenderer)
 }
 
 class BeatRenderer:NSObject, BeatPageViewDelegate {
@@ -33,18 +40,35 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	var styles:Styles = Styles.shared
 	
 	var titlePage:BeatPageView?
-	var pages = [BeatPageView]()
-	var currentPage:BeatPageView? = nil
-	
+	@objc var pages = [BeatPageView]()
 	var pageBreaks:[BeatPageBreak] = []
 	
-	var queue:[Line] = []
+	var cachedPageBreaks:[BeatPageBreak]
+	var cachedPages:[BeatPageView]
 	
-	@objc init(document:Document, screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool) {
+	var currentPage:BeatPageView? = nil
+	var queue:[Line] = []
+	var startTime:Date
+	
+	weak var delegate:BeatRenderOperationDelegate?
+
+	@objc var canceled = false
+	@objc var running = false
+	@objc var success = false
+		
+	convenience init(screenplay:BeatScreenplay, settings:BeatExportSettings, cachedPageBreaks:[BeatPageBreak], cachedPages:[BeatPageView]) {
+		self.init(screenplay: screenplay, settings: settings, livePagination: true, cachedPages: cachedPages, cachedPageBreaks: cachedPageBreaks)
+	}
+	init(screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool, cachedPages:[BeatPageView]?, cachedPageBreaks:[BeatPageBreak]?) {
 		self.livePagination = livePagination
 		self.lines = screenplay.lines
 		self.titlePageLines = screenplay.titlePage
 		self.settings = settings
+		
+		self.cachedPageBreaks = cachedPageBreaks ?? []
+		self.cachedPages = cachedPages ?? []
+		
+		startTime = Date()
 		
 		super.init()
 	}
@@ -59,8 +83,44 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 
 	/// Paginate the given document from scratch
 	@objc func paginate() {
-		self.pages.removeAll()
-		paginate(fromIndex: 0)
+		self.pages = []
+		currentPage = nil
+		
+		self.success = paginate(fromIndex: 0)
+	}
+	
+	func paginateForEditor() {
+		self.running = true
+		
+		var actualIndex:Int = NSNotFound
+		var safePageIndex = 0 // self.findSafePage(position: self.location, actualIndex:actualIndex)
+		var startIndex = 0
+
+		/*
+		if safePageIndex != NSNotFound && safePageIndex > 0 && actualIndex != NSNotFound {
+			self.pages = [self.pageCache subarrayWithRange:(NSRange){0, safePageIndex}].mutableCopy;
+			self.pageBreaks = [self.pageBreakCache subarrayWithRange:(NSRange){0, safePageIndex + 1}].mutableCopy; // +1 so we include the first, intial page break
+
+			startIndex = actualIndex;
+		}
+		else {
+			self.pages = []
+			self.pageBreaks = []
+		}
+		*/
+		
+		self.pages = []
+		self.pageBreaks = []
+		currentPage = nil
+		
+		self.success = self.paginate(fromIndex: startIndex)
+		self.paginationFinished()
+	}
+	
+	func paginationFinished() {
+		if (self.delegate != nil) {
+			self.delegate!.renderDidFinish(renderer: self)
+		}
 	}
 	
 	/// Create a PDF using the current pagination data
@@ -89,12 +149,9 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		return url
 	}
 	
-	@objc func paginate(fromIndex:Int) {
-		// Reset current page
-		currentPage = nil
-		
-		// Reset page breaks
-		pageBreaks = []
+	@objc func paginate(fromIndex:Int) -> Bool {
+		startTime = Date()			// Reset time
+		pageBreaks = []				// Reset page breaks
 		
 		// This is the element queue. We are iterating the document line-by-line,
 		// but work with blocks. When an element becomes part of a block, it's added
@@ -109,6 +166,11 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		}
 		
 		for i in fromIndex...lines.count - 1 {
+			if self.canceled {
+				// Do nothing
+				return false
+			}
+			
 			let line = lines[i]
 			
 			// Ignore lines before the given index
@@ -168,6 +230,8 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		
 		// The loop has ended.
 		pages.append(currentPage!)
+		
+		return true
 	}
 	
 	
@@ -1618,10 +1682,21 @@ class BeatBlockGroup {
 	}
 }
 
-struct BeatPageBreak {
+class BeatPageBreak:NSObject {
 	var y:CGFloat
 	var element:Line
 	var reason:String = "None"
+	
+	convenience init(y:CGFloat, element:Line) {
+		self.init(y: y, element: element, reason: "None")
+	}
+	
+	init(y:CGFloat, element:Line, reason:String) {
+		self.y = y
+		self.element = element
+		self.reason = reason
+		super.init()
+	}
 }
 
 
