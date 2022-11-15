@@ -56,14 +56,15 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	@objc var running = false
 	@objc var success = false
 		
-	convenience init(screenplay:BeatScreenplay, settings:BeatExportSettings, cachedPageBreaks:[BeatPageBreak], cachedPages:[BeatPageView]) {
-		self.init(screenplay: screenplay, settings: settings, livePagination: true, cachedPages: cachedPages, cachedPageBreaks: cachedPageBreaks)
+	convenience init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, cachedPageBreaks:[BeatPageBreak], cachedPages:[BeatPageView]) {
+		self.init(delegate:delegate, screenplay: screenplay, settings: settings, livePagination: true, cachedPages: cachedPages, cachedPageBreaks: cachedPageBreaks)
 	}
-	init(screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool, cachedPages:[BeatPageView]?, cachedPageBreaks:[BeatPageBreak]?) {
+	init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool, cachedPages:[BeatPageView]?, cachedPageBreaks:[BeatPageBreak]?) {
 		self.livePagination = livePagination
 		self.lines = screenplay.lines
 		self.titlePageLines = screenplay.titlePage
 		self.settings = settings
+		self.delegate = delegate
 		
 		self.cachedPageBreaks = cachedPageBreaks ?? []
 		self.cachedPages = cachedPages ?? []
@@ -87,9 +88,10 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		currentPage = nil
 		
 		self.success = paginate(fromIndex: 0)
+		self.renderFinished()
 	}
 	
-	func paginateForEditor() {
+	func liveRender() {
 		self.running = true
 		
 		var actualIndex:Int = NSNotFound
@@ -114,12 +116,14 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		currentPage = nil
 		
 		self.success = self.paginate(fromIndex: startIndex)
-		self.paginationFinished()
+		self.renderFinished()
 	}
 	
-	func paginationFinished() {
+	func renderFinished() {
 		if (self.delegate != nil) {
 			self.delegate!.renderDidFinish(renderer: self)
+		} else {
+			print("BeatRenderer: Rendering finished, but no delegate available.")
 		}
 	}
 	
@@ -254,7 +258,6 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		
 		// Create visual representation for the block
 		let blockGroup = BeatBlockGroup(blocks: pageBlocks)
-		//let block = BeatPageBlock(block: tmpElements, delegate: self)
 		
 		// See if it fits on current page
 		if currentPage.remainingSpace >= blockGroup.height {
@@ -275,12 +278,13 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			}
 			
 			if blockGroup.blocks.count > 1 {
-				let pageBreak = blockGroup.splitGroup(remainingSpace: remainingSpace)
-
+				let split = blockGroup.splitGroup(remainingSpace: remainingSpace)
+				addPage(currentPage, onCurrentPage: split.0, onNextPage: split.1)
+				
 			} else {
 				let block = blockGroup.blocks.first!
-				let pageBreak = block.splitBlock(remainingSpace: remainingSpace)
-				addPage(currentPage, onCurrentPage: pageBreak.0, onNextPage: pageBreak.1)
+				let split = block.splitBlock(remainingSpace: remainingSpace)
+				addPage(currentPage, onCurrentPage: split.0, onNextPage: split.1)
 			}
 		
 			//... also add a page break here
@@ -385,6 +389,27 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	
 	// MARK: Convenience methods
 	
+	class func layoutManagerForCalculation(string:NSAttributedString) -> NSLayoutManager {
+		// We can use 612 as width in this method, because the strings we render here will be constrained by NSTextBlock styles
+		return BeatRenderer.layoutManagerForCalculation(string: string, width: 612)
+	}
+	class func layoutManagerForCalculation(string:NSAttributedString, width:CGFloat) -> NSLayoutManager {
+		let textStorage = NSTextStorage(attributedString: string)
+		let layoutManager = NSLayoutManager()
+		let textContainer = NSTextContainer()
+		
+		textContainer.size = NSSize(width: width, height: .greatestFiniteMagnitude)
+		textContainer.lineFragmentPadding = 0
+		
+		layoutManager.addTextContainer(textContainer)
+		textStorage.addLayoutManager(layoutManager)
+		
+		// Calculate size
+		layoutManager.glyphRange(for: textContainer)
+		
+		return layoutManager
+	}
+	
 	/// Shorthand for a basic text block
 	class func createTextBlock(width:CGFloat) -> NSTextBlock {
 		let block = NSTextBlock()
@@ -394,7 +419,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	
 	/// Return the line height
 	class func lineHeight() -> CGFloat {
-		return 13.0
+		return 12.0
 	}
 	
 	/// Returns a `Line` element for character cue, extended by user-defined equivalent for `(CONT'D)`
@@ -473,7 +498,7 @@ class BeatPageView:NSView {
 		// Create a content text view inside the page
 		self.textView = NSTextView(
 			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
-						  y: self.pageStyle.marginTop + BeatRenderer.lineHeight() * 2,
+						  y: self.pageStyle.marginTop + BeatRenderer.lineHeight() * 3,
 						  width: size.width - self.pageStyle.marginLeft,
 						  height: self.maxHeight)
 		)
@@ -508,12 +533,19 @@ class BeatPageView:NSView {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	func render() {
+		self.textView.string = ""
+		for block in blocks {
+			self.textView.textStorage!.append(block.attributedString)
+		}
+	}
+	
 	func createHeaderView(width:CGFloat) -> NSTextView {
-		var headerView = NSTextView(
+		let headerView = NSTextView(
 			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
 						  y: self.pageStyle.marginTop,
 						  width: width - self.pageStyle.marginLeft,
-						  height: BeatRenderer.lineHeight())
+						  height: BeatRenderer.lineHeight() * 2)
 		)
 		headerView.textContainerInset = NSSize(width: 0, height: 0)
 		headerView.drawsBackground = true
@@ -527,6 +559,7 @@ class BeatPageView:NSView {
 	}
 		
 	var height:CGFloat { get {
+		// Nope
 		return self.textView.textStorage?.height(containerWidth: self.textView.textContainer?.size.width ?? 0) ?? 0
 	} }
 	
@@ -553,40 +586,36 @@ class BeatPageView:NSView {
 	
 	
 	// MARK: Calculate remaining space
+	var numberOfGlyphs:Int = 0
 	var remainingSpace:CGFloat { get {
+		/*
 		let _ = self.textView.layoutManager!.glyphRange(for: textView.textContainer!)
 		let bounds = self.textView.layoutManager!.usedRect(for: textView.textContainer!)
 		let space = maxHeight - bounds.height
+		*/
 		
-		return space
+		var h = 0.0
+		for block in blocks {
+			let blockHeight = block.height
+			h += blockHeight
+		}
+		
+		return maxHeight - h
 	} }
 		
 	var count:Int {
 		get { return self.blocks.count }
 	}
-	
-	// Does this block fit on current page?
-	/*
-	func fitsOnPage(_ block:BeatPageBlock) -> Bool {
-		let height = block.height
-		
-		if height <= self.remainingSpace {
-			return true
-		} else {
-			return false
-		}
-	}
-	*/
 	 
 	// Add a whole block
 	func addBlock(_ block:BeatPageBlock) {
 		if self.blocks.count == 0 {
 			// No top margin for this block
-			block.setTopMargin(0)
+			block.firstElementOnPage = true
 		}
 		
 		self.blocks.append(block)
-		self.textView.textStorage!.append(block.attributedString)
+		//self.textView.textStorage!.append(block.attributedString)
 	}
 	
 	func pageNumberBlock() -> NSAttributedString {
@@ -706,6 +735,10 @@ class BeatPageElement:NSObject {
 	var renderedString:NSMutableAttributedString?
 	var dualDialogue = false
 	
+	var calculatedHeight = -1.0
+	
+	var noTopMargin = false
+	
 	weak var styles:Styles?
 	weak var delegate:BeatPageViewDelegate?
 	
@@ -723,22 +756,6 @@ class BeatPageElement:NSObject {
 		self.init(line: line, delegate: delegate, dualDialogue: false)
 	}
 	
-	/// Forces the top margin
-	func setTopMargin(_ margin:CGFloat) {
-		let attrStr = self.attributedString
-		let result = NSMutableAttributedString(attributedString: attrStr)
-		
-		attrStr.enumerateAttribute(NSAttributedString.Key.paragraphStyle, in: attrStr.range) { value, range, stop in
-			if (value == nil) { return }
-			let pStyle = value as! NSMutableParagraphStyle
-			
-			pStyle.paragraphSpacingBefore = margin
-			result.addAttribute(NSAttributedString.Key.paragraphStyle, value: pStyle, range: range)
-		}
-		
-		self.renderedString = result
-	}
-	
 	var attributedString:NSAttributedString { get {
 		if (self.renderedString != nil) {
 			return self.renderedString!
@@ -748,25 +765,76 @@ class BeatPageElement:NSObject {
 	} }
 	
 	var topMargin:CGFloat { get {
-		var topMargin = 0.0
-		let pStyle = self.attributedString.attribute(NSAttributedString.Key.paragraphStyle, at: 0, effectiveRange: nil) as! NSParagraphStyle
-		topMargin = pStyle.paragraphSpacingBefore
+		if noTopMargin { return 0.0 }
 		
-		return topMargin
+		let style = self.delegate!.styles.forElement(self.line.typeAsString()!)
+		return style.marginTop
 	} }
 	
+	/**
+	 Returns the element height.
+	 - note:This method __does not__ render the actual line, but uses default font and size. If you are trying to do something fancy or weird with the styles, it will probably get calculated wrong.
+	 */
 	var height:CGFloat { get {
-		// NOTE: The container width here is quite arbitrary.
-		// Elements should have a width set, and if not, they inherit the default width for their paper size.
-		// We are using the wider US Letter here just in case.
-		
-		var attrStr = self.attributedString
-		if attrStr.string.last! == Character("\n") {
-			attrStr = attrStr.attributedSubstring(from: NSMakeRange(0, attrStr.length - 1))
+		if (self.calculatedHeight < 0) {
+			let attrStr = NSMutableAttributedString(attributedString: self.line.attrString!)
+			attrStr.addAttribute(NSAttributedString.Key.font, value: self.delegate!.fonts.courier, range: attrStr.range)
+			
+			let type = self.line.typeAsString()!
+			let size = self.delegate!.settings.paperSize
+			
+			let style = self.delegate!.styles.forElement(type)
+			let width = (size == .A4) ? style.widthA4 : style.widthLetter
+			
+			self.calculatedHeight = attrStr.height(containerWidth: width) + style.marginTop
 		}
-		return attrStr.height(containerWidth: 612) + self.topMargin
+		
+		return self.calculatedHeight
 	} }
 	
+	func heightByLines() -> CGFloat {
+		/*
+		 This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance
+		 method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
+		 */
+		
+		let attrStr = NSMutableAttributedString(attributedString: self.line.attrString!)
+		attrStr.addAttribute(NSAttributedString.Key.font, value: self.delegate!.fonts.courier, range: attrStr.range)
+		
+		let type = self.line.typeAsString()!
+		let size = self.delegate!.settings.paperSize
+		
+		let style = self.delegate!.styles.forElement(type)
+		let width = (size == .A4) ? style.widthA4 : style.widthLetter
+		
+		let lineHeight = self.styles!.page().lineHeight
+		if attrStr.length == 0 { return lineHeight }
+		
+		/*
+		 #if TARGET_OS_IOS
+			 // Set font size to 80% on iOS
+			 font = [font fontWithSize:font.pointSize * 0.8];
+		 #endif
+		 */
+		
+		let lm = BeatRenderer.layoutManagerForCalculation(string: attrStr, width: width)
+		
+		var numberOfLines = 0
+		var index = 0
+		let numberOfGlyphs = lm.numberOfGlyphs
+		
+//		let lineRange:NSRange = NSMakeRange(0, 0)
+		let lineRange:NSRangePointer? = nil
+		
+		while index < numberOfGlyphs {
+			lm.lineFragmentUsedRect(forGlyphAt: index, effectiveRange: lineRange)
+			index = NSMaxRange(lineRange!.pointee)
+			numberOfLines += 1
+		}
+		
+		return CGFloat(numberOfLines) * lineHeight
+	}
+		
 	func render() -> NSAttributedString {
 		var attrStr = NSMutableAttributedString(attributedString: line.attributedStringForFDX())
 		
@@ -814,19 +882,23 @@ class BeatPageElement:NSObject {
 				
 		attrStr.addAttribute(NSAttributedString.Key.font, value: font, range: attrStr.range)
 		
-		attrStr.enumerateAttributes(in: attrStr.range) { attrs, range, stop in
-			let styleStr:String = attrs[NSMutableAttributedString.Key("Style")] as? String ?? ""
-			let styleNames = styleStr.components(separatedBy: ",")
-			
-			if styleNames.contains("Bold") {
-				attrStr.applyFontTraits(.boldFontMask, range: range)
-			}
-			if styleNames.contains("Italic") {
-				attrStr.applyFontTraits(.italicFontMask, range: range)
-			}
-			if styleNames.contains("Underline") {
-				attrStr.addAttribute(NSAttributedString.Key.underlineStyle, value: NSNumber(value: 1), range: range)
-				attrStr.addAttribute(NSAttributedString.Key.underlineColor, value: NSColor.black, range: range)
+		if (!line.noFormatting()) {
+			attrStr.enumerateAttribute(NSAttributedString.Key("Style"), in: attrStr.range) { attr, range, stop in
+				let styleStr:String = attr as? String ?? ""
+				if styleStr.count == 0 { return }
+				
+				let styleNames = styleStr.components(separatedBy: ",")
+				
+				if styleNames.contains("Bold") {
+					attrStr.applyFontTraits(.boldFontMask, range: range)
+				}
+				if styleNames.contains("Italic") {
+					attrStr.applyFontTraits(.italicFontMask, range: range)
+				}
+				if styleNames.contains("Underline") {
+					attrStr.addAttribute(NSAttributedString.Key.underlineStyle, value: NSNumber(value: 1), range: range)
+					attrStr.addAttribute(NSAttributedString.Key.underlineColor, value: NSColor.black, range: range)
+				}
 			}
 		}
 		
@@ -881,6 +953,7 @@ class BeatPageElement:NSObject {
 		}
 		
 		self.renderedString = lineStr
+		BeatMeasure.end("Render")
 		return lineStr
 	}
 	
@@ -949,6 +1022,7 @@ class BeatPageBlock:NSObject {
 	var lines = [Line]()
 	var renderedString:NSAttributedString?
 	var styles:Styles
+	var calculatedHeight = -1.0
 	
 	// Dual dialogue blocks
 	var leftColumn:NSMutableAttributedString?
@@ -956,6 +1030,15 @@ class BeatPageBlock:NSObject {
 	
 	weak var delegate:BeatPageViewDelegate?
 	
+	// Top margin
+	private var forcedTopMargin = false
+	var firstElementOnPage:Bool {
+		get { return forcedTopMargin }
+		set {
+			forcedTopMargin = newValue
+			if !self.dualDialogueBlock { self.elements.first!.noTopMargin = newValue }
+		}
+	}
 	
 	convenience init(block:[Line], delegate:BeatPageViewDelegate?) {
 		self.init(block: block, isDualDialogueElement: false, delegate:delegate)
@@ -977,21 +1060,23 @@ class BeatPageBlock:NSObject {
 			}
 		}
 		
-		//_ = self.render()
+		// Create elements (but don't render yet)
+		for line in block {
+			let element = BeatPageElement(line: line, delegate: self.delegate, dualDialogue: self.dualDialogueElement)
+			self.elements.append(element)
+		}
 	}
 	
 	var height:CGFloat { get {
-		// NOTE: The container width here is quite arbitrary.
-		// Elements should have a width set, and if not, they inherit the default width for their paper size.
-		// We are using the wider US Letter here just in case.
-		
-		// Remove last newline to get the accurate height
-		var str = self.attributedString
-		if str.string.last == Character("\n") {
-			str = self.attributedString.attributedSubstring(from: NSMakeRange(0, str.length - 1))
+		if calculatedHeight < 0 {
+			var height = 0.0
+			for element in elements {
+				height += element.height
+			}
+			
+			self.calculatedHeight = height
 		}
-		
-		return str.height(containerWidth: 612)
+		return calculatedHeight
 	} }
 	
 	var attributedString:NSAttributedString { get {
@@ -1001,22 +1086,10 @@ class BeatPageBlock:NSObject {
 			return renderedString!
 		}
 	} }
-	
-	/// Force top margin for this element and invalidate the rendered string
-	func setTopMargin(_ margin:CGFloat) {
-		if self.elements.count == 0 { return }
 		
-		if !self.dualDialogueBlock {
-			self.elements.first!.setTopMargin(0)
-			refresh()
-		}
-	}
-	
 	/// Create and render the individual line elements
 	func render() -> NSAttributedString {
-		if self.delegate == nil {
-			print("DELEGATE MISSING")
-		}
+		if self.delegate == nil { print("BLOCK ELEMENT DELEGATE MISSING") }
 		
 		// Nil dual dialogue stuff
 		self.leftColumn = nil
@@ -1029,10 +1102,8 @@ class BeatPageBlock:NSObject {
 			self.renderedString = renderDualDialogue()
 			return self.renderedString!
 		}
-		
-		for line in self.lines {
-			let element = BeatPageElement(line: line, delegate: self.delegate, dualDialogue: self.dualDialogueElement)
-			self.elements.append(element)
+				
+		for element in self.elements {
 			attributedString.append(element.attributedString)
 		}
 		
@@ -1200,23 +1271,6 @@ class BeatPageBlock:NSObject {
 		return nil
 	}
 	
-	func layoutManagerForCalculation(string:NSAttributedString) -> NSLayoutManager {
-		let textStorage = NSTextStorage(attributedString: string)
-		let layoutManager = NSLayoutManager()
-		let textContainer = NSTextContainer()
-		
-		textContainer.size = NSSize(width: 612.0, height: .greatestFiniteMagnitude)
-		textContainer.lineFragmentPadding = 0
-		
-		layoutManager.addTextContainer(textContainer)
-		textStorage.addLayoutManager(layoutManager)
-		
-		// Calculate size
-		layoutManager.glyphRange(for: textContainer)
-		
-		return layoutManager
-	}
-
 	
 	// MARK: Breaking blocks across pages
 	
@@ -1273,7 +1327,8 @@ class BeatPageBlock:NSObject {
 		
 		// Dual dialogue requires a different logic
 		if self.dualDialogueBlock {
-			return splitDualDialogueBlock(remainingSpace: remainingSpace)
+			let result = splitDualDialogueBlock(remainingSpace: remainingSpace)
+			return result
 		}
 		
 		// Actual elements that point to screenplay objects
@@ -1506,7 +1561,7 @@ class BeatPageBlock:NSObject {
 		
 		let attrStr = element.attributedString
 		let remainingSpace = remainingSpace
-		let lm = layoutManagerForCalculation(string: attrStr)
+		let lm = BeatRenderer.layoutManagerForCalculation(string: attrStr)
 		
 		var pageBreakPos:CGFloat = 0.0
 		var length:Int = 0

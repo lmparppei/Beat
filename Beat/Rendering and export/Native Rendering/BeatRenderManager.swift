@@ -57,7 +57,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	
 	var finishedOperation:BeatRenderer?
 	
-	init(settings:BeatExportSettings, delegate:BeatRenderDelegate) {
+	@objc init(settings:BeatExportSettings, delegate:BeatRenderDelegate) {
 		self.settings = settings
 		self.delegate = delegate
 	}
@@ -75,7 +75,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		self.pageCache = self.finishedOperation?.pages ?? []
 		self.pageBreakCache = self.finishedOperation?.pageBreaks ?? []
 		
-		let operation = BeatRenderer(screenplay: screenplay, settings: settings, livePagination: forEditor, cachedPages: self.pageCache, cachedPageBreaks: self.pageBreakCache)
+		let operation = BeatRenderer(delegate:self, screenplay: screenplay, settings: settings, livePagination: forEditor, cachedPages: self.pageCache, cachedPageBreaks: self.pageBreakCache)
 		runOperation(renderer: operation)
 	}
 	
@@ -112,6 +112,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	
 	
 	func renderDidFinish(renderer: BeatRenderer) {
+		print("# Render did finish")
 		let i = self.queue.firstIndex(of: renderer) ?? NSNotFound
 		if i != NSNotFound {
 			self.queue.remove(at: i)
@@ -123,6 +124,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		
 		self.finishedOperation = renderer
 		self.pageBreaks = renderer.pageBreaks
+		self.pages = renderer.pages
 		
 		// Once finished, run the next operation, if it exists
 		let lastOperation = queue.last
@@ -139,7 +141,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		
 		// If the queue is empty, run it right away. Otherwise the operation will be run once other renderers have finished.
 		if queue.count == 1 {
-			if renderer.livePagination { renderer.paginateForEditor() }
+			if renderer.livePagination { renderer.liveRender() }
 			else { renderer.paginate() }
 		}
 	}
