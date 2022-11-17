@@ -2742,9 +2742,6 @@ static bool _skipAutomaticLineBreaks = false;
 	_boldCourier = [_courier withTraits:NSFontDescriptorTraitBold];
 	_italicCourier = [_courier withTraits:NSFontDescriptorTraitItalic];
 	_boldItalicCourier = [_courier withTraits:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
-	//_boldCourier = [NSFont fontWithName:@"Courier Prime Bold" size:[self fontSize]];
-	//_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Bold Italic" size:[self fontSize]];
-	//_italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:[self fontSize]];
 }
 - (void)loadSansSerifFonts {
 	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
