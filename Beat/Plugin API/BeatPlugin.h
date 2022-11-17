@@ -190,6 +190,9 @@ JSExportAs(exportHandler, - (void)exportHandler:(NSArray*)extensions callback:(J
 // Call objective C methods directly
 JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments);
 
+// Create a new line element
+JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
+
 @end
 
 // Interfacing with the document

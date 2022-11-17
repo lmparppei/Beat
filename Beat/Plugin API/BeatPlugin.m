@@ -1272,6 +1272,10 @@
 
 #pragma mark - Parser data delegation
 
+- (Line*)lineWithString:(NSString*)string type:(LineType)type {
+	return [Line withString:string type:type];
+}
+
 - (NSArray*)lines
 {
 	return self.delegate.parser.lines;
