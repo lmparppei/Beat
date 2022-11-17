@@ -715,6 +715,29 @@
 		NSString *name = [self.string substringWithRange:self.characterNameRange].uppercaseString;
 		if (name) [string replaceCharactersInRange:self.characterNameRange withString:name];
 	}
+    
+    /*
+    for (NSInteger i=0; i<string.length; i++) {
+        NSFontTraitMask mask = 0;
+        NSRange r = NSMakeRange(i, 1);
+        
+        if ([self.italicRanges containsIndex:i]) {
+            //mask |= NSItalicFontMask;
+            [string addAttribute:@"BeatItalic" value:@(1) range:r];
+        }
+        if ([self.boldRanges containsIndex:i]) {
+            //mask |= NSBoldFontMask;
+            [string addAttribute:@"BeatBold" value:@(1) range:r];
+        }
+        if ([self.boldItalicRanges containsIndex:i]) {
+            [string addAttribute:@"BeatBoldItalic" value:@(1) range:r];
+        }
+        
+        if ([self.underlinedRanges containsIndex:i]) {
+            [string addAttribute:@"BeatUnderline" value:@(1) range:r];
+        }
+    }
+    */
 		
 	// Add font stylization
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -791,6 +814,7 @@
 	return string;
 }
 
+/// N.B. Does NOT return a Cocoa-compatible attributed string. The attributes are used to create a string for FDX/HTML conversion.
 - (void)addAttr:(NSString*)name toString:(NSMutableAttributedString*)string range:(NSRange)range {
 	// We are going out of range. Abort.
 	if (range.location + range.length > string.length || range.length < 1 || range.location == NSNotFound) return;

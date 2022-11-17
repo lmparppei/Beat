@@ -333,6 +333,10 @@ static NSString *revisionAttribute = @"Revision";
 	[self forceLineType:cursorLocation symbol:forceLyricsSymbol];
 }
 
+- (IBAction)force:(id)sender {
+	
+}
+
 - (void)forceLineType:(NSRange)cursorLocation symbol:(NSString*)symbol
 {
 	//Find the index of the first symbol of the line

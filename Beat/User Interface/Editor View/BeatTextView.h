@@ -137,4 +137,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (void)resetZoom;
 - (void)adjustZoomLevel:(CGFloat)level;
 
+// Force element
+- (void)forceElement:(id)sender;
+
 @end

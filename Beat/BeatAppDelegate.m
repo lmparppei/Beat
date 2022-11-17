@@ -83,6 +83,8 @@
 	//[NSUserDefaults.standardUserDefaults removePersistentDomainForName:NSBundle.mainBundle.bundleIdentifier];
 	//[NSUserDefaults.standardUserDefaults removeObjectForKey:@"AppleLanguages"];
 	
+	[self checkDarkMode];
+	
 	return self;
 }
 
@@ -138,7 +140,6 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[self setupDocumentOpenListener];
-	[self checkDarkMode];
 
 	// Show launch screen
 	[self showLaunchScreen];

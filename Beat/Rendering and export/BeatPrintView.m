@@ -180,8 +180,6 @@ static NSURL *pdfURL;
 }
 
 - (void)webView:(id)sender didFinishLoadForFrame:(WebFrame *)frame {
-	NSLog(@" 			web view did finish");
-	
 	// Delegate method for legacy WebView
 	self.finishedWebViews = self.finishedWebViews + 1;
 	
@@ -315,7 +313,7 @@ static NSURL *pdfURL;
 
 	// Remove this print view from queue
 	if (_preview) [self.delegate didFinishPreviewAt:pdfURL];
-	if (_completion) _completion();
+	if (_completion != nil) _completion();
 
 	// We need to manually remove the print view from queue here
 	[self.document.printViews removeObject:self];

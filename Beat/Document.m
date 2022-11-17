@@ -647,10 +647,11 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 	
-	[self renderTest];
+	//[self renderTest];
 }
 
 -(void)renderTest {
+	return;
 	/*
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
 	[self bakeRevisions];
@@ -666,6 +667,18 @@ static BeatAppDelegate *appDelegate;
 	[self bakeRevisions];
 	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
 	[_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
+	
+	[BeatMeasure start:@"Old paginator"];
+	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
+	NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
+	[self.paginator livePaginationFor:lines changeAt:0];
+	[BeatMeasure end:@"Old paginator"];
+	
+	[BeatMeasure start:@"New renderer"];
+	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
+	BeatRenderManager *manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
+	[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings forEditor:false titlePage:false];
+	[BeatMeasure end:@"New renderer"];
 }
 
 -(void)awakeFromNib {
@@ -1323,7 +1336,6 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
-
 #pragma mark - Reverting to versions
 
 -(void)revertDocumentToSaved:(id)sender {
@@ -1878,7 +1890,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_documentIsLoading) return;
 	
 	// Render test
-	[self renderTest];
+	// [self renderTest];
 		
 	// Register changes
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
@@ -2007,7 +2019,7 @@ static NSWindow __weak *currentKeyWindow;
 	// I don't know what this is, to be honest
 	if (_sidebarVisible && !_outlineEdit) {
 		
-		if (self.sidebarVisible) {
+		if (self.sidebarVisible && !self.outlineView.dragging) {
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
 				if (currentScene) [self.outlineView scrollToScene:currentScene];
 			});
@@ -2727,9 +2739,12 @@ static bool _skipAutomaticLineBreaks = false;
 
 - (void)loadSerifFonts {
 	_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
-	_boldCourier = [NSFont fontWithName:@"Courier Prime Bold" size:[self fontSize]];
-	_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Bold Italic" size:[self fontSize]];
-	_italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:[self fontSize]];
+	_boldCourier = [_courier withTraits:NSFontDescriptorTraitBold];
+	_italicCourier = [_courier withTraits:NSFontDescriptorTraitItalic];
+	_boldItalicCourier = [_courier withTraits:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
+	//_boldCourier = [NSFont fontWithName:@"Courier Prime Bold" size:[self fontSize]];
+	//_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Bold Italic" size:[self fontSize]];
+	//_italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:[self fontSize]];
 }
 - (void)loadSansSerifFonts {
 	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
@@ -2804,6 +2819,10 @@ static bool _skipAutomaticLineBreaks = false;
 
 
 #pragma mark - Formatting Buttons
+
+- (IBAction)showForceMenu:(id)sender {
+	[self.textView forceElement:self];
+}
 
 - (void)forceElement:(LineType)lineType {
 	[self.formattingActions forceElement:lineType];
@@ -3568,16 +3587,19 @@ static bool _skipAutomaticLineBreaks = false;
 // Note from 2022: Why is this here and not in the associated class?
 
 // We are using this same menu for both outline & timeline view
-- (void) menuDidClose:(NSMenu *)menu {
+- (void)menuDidClose:(NSMenu *)menu {
 	// Reset timeline selection, to be on the safe side
 	_timeline.clickedItem = nil;
 }
 - (void)menuNeedsUpdate:(NSMenu *)menu {
+	if (!NSThread.isMainThread) return;
+	
 	id item = nil;
 	
 	if (self.outlineView.clickedRow >= 0) {
-		item = [self.outlineView itemAtRow:[self.outlineView clickedRow]];
-	} else if (_timeline.clickedItem != nil) {
+		item = [self.outlineView itemAtRow:self.outlineView.clickedRow];
+	}
+	else if (_timeline.clickedItem != nil) {
 		item = _timeline.clickedItem;
 	}
 	

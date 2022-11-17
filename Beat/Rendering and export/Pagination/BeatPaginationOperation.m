@@ -680,9 +680,6 @@
 		
 		line.heightInPaginator = height;
 	}
-
-	NSString *snip = block.firstObject.string;
-	if (snip.length > 80) snip = [snip substringToIndex:80];
 	
 	return fullHeight;
 }

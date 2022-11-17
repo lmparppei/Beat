@@ -21,6 +21,7 @@
 #import "BeatTag.h"
 #import "Beat-Swift.h"
 #import "BeatMeasure.h"
+#import "NSFont+CFTraits.h"
 
 @implementation BeatEditorFormatting
 
@@ -335,7 +336,6 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (!firstTime && line.string.length) {
 		[self renderBackgroundForLine:line clearFirst:NO];
 	}
-	
 }
 
 - (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
