@@ -540,12 +540,14 @@ static bool underlinedHeading;
 		if (titlePage[@"title"] == nil) titlePage[@"title"] = @[@"Untitled"];
 		[body appendString:[self titlePageElementForKey:@"title" titlePage:titlePage]];
 	
-		NSArray * credits = @[@"credit", @"source", @"authors"];
-		if (titlePage[@"author"]) {
+		// Replace "author" with "authors"
+		if (titlePage[@"author"] != nil) {
 			titlePage[@"authors"] = titlePage[@"author"];
 			[titlePage removeObjectForKey:@"author"];
 		}
 		
+		// Add Credit, Authors, Source (in this order)
+		NSArray * credits = @[@"credit", @"authors", @"source"];
 		for (NSString *credit in credits) {
 			[body appendString:[self titlePageElementForKey:credit titlePage:titlePage]];
 		}
@@ -553,9 +555,9 @@ static bool underlinedHeading;
 		[body appendFormat:@"</div>"];
 				
 		// Draft date
-		[body appendFormat:@"<div class='versionInfo'>"];
+		[body appendFormat:@"<div class='versionInfo'><p>"];
 		[body appendString:[self titlePageElementForKey:@"draft date" titlePage:titlePage]];
-		[body appendFormat:@"</div>"];
+		[body appendFormat:@"</p></div>"];
 		
 		// Left side block
 		[body appendFormat:@"<div class='info'>"];
@@ -563,7 +565,8 @@ static bool underlinedHeading;
 		[body appendString:[self titlePageElementForKey:@"notes" titlePage:titlePage]];
 		
 		// Append rest of the stuff
-		for (NSString* key in titlePage) {
+		while (titlePage.count > 0) {
+			NSString * key = titlePage.allKeys.firstObject;
 			[body appendString:[self titlePageElementForKey:key titlePage:titlePage customKey:true]];
 		}
 		
@@ -581,9 +584,10 @@ static bool underlinedHeading;
 - (NSString*)titlePageElementForKey:(NSString*)key titlePage:(NSMutableDictionary*)titlePage customKey:(bool)customKey {
 	NSArray *values = titlePage[key];
 	NSMutableString *element = NSMutableString.new;
-		
+	NSString *className = [key stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+	
 	if (values == nil) {
-		[element appendFormat:@"<p class='%@'>%@</p>", key, @""];
+		[element appendFormat:@"<p class='%@'>%@</p>", className, @""];
 		return element;
 	}
 	
@@ -593,7 +597,7 @@ static bool underlinedHeading;
 	}
 	
 	// We won't set a class value based on the custom key, because it might conflict with existing css styles
-	[element appendFormat:@"<p class='%@'>%@</p>", (customKey) ? @"" : key, [self format:result]];
+	[element appendFormat:@"<p class='%@'>%@</p>", (customKey) ? @"" : className, [self format:result]];
 	[titlePage removeObjectForKey:key];
 	
 	return element;
