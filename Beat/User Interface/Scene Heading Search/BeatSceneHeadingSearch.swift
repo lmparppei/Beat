@@ -93,7 +93,9 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	}
 	
 	func closeModal() {
-		self.delegate?.documentWindow.endSheet(self.window!)
+		if (self.window != nil) {
+			self.delegate?.documentWindow.endSheet(self.window!)
+		}
 	}
 	
 	// MARK: - Filtering and jumping to scene
