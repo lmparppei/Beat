@@ -490,8 +490,10 @@ body > p:first-child {
 	text-align: right;
 	margin: 0 0 .5em 0;
 }
-.versionInfo p, .info p {
+#script-title .versionInfo p, #script-title .info p {
 	position: relative;
+	max-width: 100%;
+	margin: 0 0 .5em 0;
 }
 #script-title .credit {
 	text-align: center;
@@ -503,10 +505,7 @@ body > p:first-child {
 	text-align: center;
 	padding-top: 1em;
 }
-#script-title .info p {
-	max-width: 100%;
-	margin: 0 0 .5em 0;
-}
+
 /*
 #script-title p.notes {
 	white-space: pre-line !important;
