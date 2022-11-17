@@ -23,6 +23,7 @@ protocol BeatPageViewDelegate:NSObject {
 	var settings:BeatExportSettings { get }
 	var fonts:BeatFonts { get }
 	var pages:[BeatPageView] { get }
+	var titlePageData:[[String:String]] { get set }
 }
 
 @objc protocol BeatRenderOperationDelegate {
@@ -33,7 +34,7 @@ protocol BeatPageViewDelegate:NSObject {
 
 class BeatRenderer:NSObject, BeatPageViewDelegate {
 	var lines = [Line]()
-	var titlePageLines = [Line]()
+	var titlePageData = [[String:String]]()
 	var livePagination = false
 	var fonts = BeatFonts.shared()
 	var settings:BeatExportSettings
@@ -62,7 +63,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool, cachedPages:[BeatPageView]?, cachedPageBreaks:[BeatPageBreak]?) {
 		self.livePagination = livePagination
 		self.lines = screenplay.lines
-		self.titlePageLines = screenplay.titlePage
+		self.titlePageData = screenplay.titlePage
 		self.settings = settings
 		self.delegate = delegate
 		
@@ -302,14 +303,18 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	 */
 	func addPage(_ page:BeatPageView, onCurrentPage:[Line], onNextPage:[Line]) {
 		// Add elements on the current page
-		let prevPageBlock = BeatPageBlock(block: onCurrentPage, delegate: self)
-		page.addBlock(prevPageBlock)
+		if (onCurrentPage.count > 0) {
+			let prevPageBlock = BeatPageBlock(block: onCurrentPage, delegate: self)
+			page.addBlock(prevPageBlock)
+		}
 		pages.append(page)
 		
 		// Create a new page and add the rest on that one
 		currentPage = BeatPageView(delegate: self)
 		
-		addBlocks(blocks: [onNextPage], currentPage: currentPage!)
+		if (onNextPage.count > 0) {
+			addBlocks(blocks: [onNextPage], currentPage: currentPage!)
+		}
 	}
 	
 	// MARK: Get blocks
@@ -460,7 +465,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
  */
 class BeatPageView:NSView {
 	var fonts = BeatFonts.shared()
-	var textView:NSTextView
+	var textView:NSTextView?
 	var headerView:NSTextView?
 	var pageStyle:RenderStyle
 	var paperSize:BeatPaperSize
@@ -468,6 +473,9 @@ class BeatPageView:NSView {
 	var blocks:[BeatPageBlock] = []
 	
 	var linePadding = 10.0
+	var size:CGSize
+	
+	var titlePage = false
 	
 	weak var delegate:BeatPageViewDelegate?
 	
@@ -481,20 +489,26 @@ class BeatPageView:NSView {
 	init(delegate:BeatPageViewDelegate, titlePage:Bool) {
 		self.delegate = delegate
 		self.pageStyle = delegate.styles.page()
+		self.titlePage = titlePage
 		
 		// Paper size flag
 		self.paperSize = delegate.settings.paperSize
 				
 		// Actual paper size in points
-		let size:CGSize
-		if delegate.settings.paperSize == .A4 { size = BeatPaperSizing.a4() }
-		else { size = BeatPaperSizing.usLetter() }
-	
-		// Text view height
+		if delegate.settings.paperSize == .A4 { self.size = BeatPaperSizing.a4() }
+		else { self.size = BeatPaperSizing.usLetter() }
+
 		// Max height for content. Subtract two lines to make space for page number and header.
 		self.maxHeight = size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom - BeatRenderer.lineHeight() * 2
-		
-		
+			
+		super.init(frame: NSMakeRect(0, 0, size.width, size.height))
+	}
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+	
+	func render() {
 		// Create a content text view inside the page
 		self.textView = NSTextView(
 			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
@@ -502,18 +516,20 @@ class BeatPageView:NSView {
 						  width: size.width - self.pageStyle.marginLeft,
 						  height: self.maxHeight)
 		)
-		self.textView.drawsBackground = true
-		self.textView.backgroundColor = NSColor.white
+		self.textView!.drawsBackground = true
+		self.textView!.backgroundColor = NSColor.white
 				
-		self.textView.textContainer!.lineFragmentPadding = linePadding
-		self.textView.textContainerInset = NSSize(width: 0, height: 0)
+		self.textView!.textContainer!.lineFragmentPadding = linePadding
+		self.textView!.textContainerInset = NSSize(width: 0, height: 0)
 
 		let layoutManager = BeatRenderLayoutManager()
-		self.textView.textContainer?.replaceLayoutManager(layoutManager)
-		self.textView.textContainer?.lineFragmentPadding = linePadding
+		self.textView!.textContainer?.replaceLayoutManager(layoutManager)
+		self.textView!.textContainer?.lineFragmentPadding = linePadding
+		self.addSubview(textView!)
 		
-		super.init(frame: NSMakeRect(0, 0, size.width, size.height))
-		self.addSubview(textView)
+		for block in blocks {
+			self.textView!.textStorage!.append(block.attributedString)
+		}
 		
 		// Force white background
 		self.wantsLayer = true
@@ -526,17 +542,6 @@ class BeatPageView:NSView {
 			
 			// Add page number
 			headerView!.textStorage?.append(self.pageNumberBlock())
-		}
-	}
-	
-	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	func render() {
-		self.textView.string = ""
-		for block in blocks {
-			self.textView.textStorage!.append(block.attributedString)
 		}
 	}
 	
@@ -555,12 +560,12 @@ class BeatPageView:NSView {
 	}
 
 	func clear() {
-		self.textView.string = ""
+		self.textView!.string = ""
 	}
 		
 	var height:CGFloat { get {
 		// Nope
-		return self.textView.textStorage?.height(containerWidth: self.textView.textContainer?.size.width ?? 0) ?? 0
+		return self.textView!.textStorage?.height(containerWidth: self.textView!.textContainer?.size.width ?? 0) ?? 0
 	} }
 	
 	// MARK: Get items represented by this page
@@ -723,6 +728,124 @@ class BeatRenderLayoutManager:NSLayoutManager {
 	}
 }
 
+// MARK: - Title page
+
+class BeatTitlePageView:NSView {
+	var size:CGSize
+	var textView:NSTextView
+	var leftColumn:NSTextView
+	var rightColumn:NSTextView
+	var delegate:BeatPageViewDelegate
+	var titlePageDict:[[String:String]]
+	
+	init(delegate:BeatPageViewDelegate) {
+		self.delegate = delegate
+		self.titlePageDict = Array(delegate.titlePageData)
+		
+		// Actual paper size in points
+		if delegate.settings.paperSize == .A4 { self.size = BeatPaperSizing.a4() }
+		else { self.size = BeatPaperSizing.usLetter() }
+		
+		let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
+		let textViewFrame = NSRect(x: delegate.styles.page().marginLeft,
+								   y: delegate.styles.page().marginTop,
+								   width: frame.size.width - delegate.styles.page().marginLeft * 2,
+								   height: 600)
+		
+		textView = NSTextView(frame: textViewFrame)
+		
+		let columnFrame = NSRect(x: delegate.styles.page().marginLeft,
+								 y: textViewFrame.origin.y + textViewFrame.height,
+								 width: textViewFrame.width / 2 - 10,
+								 height: frame.height - textViewFrame.size.height - delegate.styles.page().marginBottom)
+		
+		leftColumn = NSTextView(frame: columnFrame)
+		
+		let rightColumnFrame = NSRect(x: frame.width - delegate.styles.page().marginRight - columnFrame.width,
+									  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
+		
+		rightColumn = NSTextView(frame: rightColumnFrame)
+		
+		super.init(frame: frame)
+	}
+	
+	/// Creates title page content and places the text snippets into correct spots
+	func createTitlePage() {
+		var top:[Line] = []
+		
+		if let title = titlePageElement("title") { top.append(title) }
+		if let credit = titlePageElement("credit") { top.append(credit) }
+		if let authors = titlePageElement("authors") { top.append(authors) }
+		if let source = titlePageElement("source") { top.append(source) }
+		
+		var topContent = NSMutableAttributedString(string: "")
+		
+		for el in top {
+			let attrStr = BeatPageBlock(block: [el], delegate: self.delegate).attributedString
+			topContent.append(attrStr)
+		}
+		
+		textView.textStorage?.setAttributedString(topContent)
+		
+		/*
+		if let title = titlePageElement("title") {
+			titleText.append(title + "\n\n\n")
+		} else {
+			titleText.append("Untitled\n\n\n")
+		}
+		
+		if let credit = titlePageElement("credit") { titleText.append(credit + "\n\n") }
+		if let authors = titlePageElement("authors") { titleText.append(authors + "\n\n") }
+		if let source = titlePageElement("source") { titleText.append(source + "\n\n") }
+		 */
+	}
+	
+	/// Gets **and removes** a title page element from title page array
+	func titlePageElement(_ key:String) -> Line? {
+		var result:String? = nil
+		var resultItem:[String:String]?
+		var type:LineType = .empty
+		
+		for item in self.titlePageDict {
+			if item.keys.first == key {
+				result = item[key] ?? ""
+				resultItem = item
+				break
+			}
+		}
+		
+		if resultItem != nil {
+			let i = self.titlePageDict.firstIndex(of: resultItem!)
+			if i != NSNotFound { self.titlePageDict.remove(at: i!) }
+		}
+		
+		switch key {
+		case "title":
+			type = .titlePageTitle
+		case "authors":
+			type = .titlePageAuthor
+		case "credit":
+			type = .titlePageCredit
+		case "source":
+			type = . titlePageSource
+		case "draft date":
+			type = .titlePageDraftDate
+		case "contact":
+			type = .titlePageContact
+		default:
+			type = .titlePageUnknown
+		}
+		
+		let line = Line(string: result, type: type)
+		return line
+	}
+	
+	override var isFlipped: Bool { return true }
+	
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+}
 
 // MARK: - Rendered elements
 
@@ -823,7 +946,6 @@ class BeatPageElement:NSObject {
 		var index = 0
 		let numberOfGlyphs = lm.numberOfGlyphs
 		
-//		let lineRange:NSRange = NSMakeRange(0, 0)
 		let lineRange:NSRangePointer? = nil
 		
 		while index < numberOfGlyphs {
@@ -953,7 +1075,7 @@ class BeatPageElement:NSObject {
 		}
 		
 		self.renderedString = lineStr
-		BeatMeasure.end("Render")
+		
 		return lineStr
 	}
 	
@@ -1322,9 +1444,6 @@ class BeatPageBlock:NSObject {
 	
 	/// Splits the block based on remaining space. Returns `[thisPage], [nextPage], pageBreak`
 	func splitBlock(remainingSpace:CGFloat) -> ([Line], [Line], BeatPageBreak) {
-		// This doesn't work unless we've rendered the line
-		if (self.renderedString == nil) { _ = self.render() }
-		
 		// Dual dialogue requires a different logic
 		if self.dualDialogueBlock {
 			let result = splitDualDialogueBlock(remainingSpace: remainingSpace)
@@ -1347,6 +1466,7 @@ class BeatPageBlock:NSObject {
 		// When breaking a dual dialogue element, it's possible that the other side fits,
 		// which means we don't get a valid index. In that case, let's suggest that we
 		// leave this dialogue block on the original page.
+
 		let splittableIndex = self.splittableIndex(remainingSpace: remainingSpace)
 		if splittableIndex == NSNotFound {
 			return ([], self.lines, BeatPageBreak(y: 0, element: self.lines.first!))
@@ -1559,9 +1679,14 @@ class BeatPageBlock:NSObject {
 	func splitParagraph(element:BeatPageElement, remainingSpace:CGFloat) -> (Line?, Line?, CGFloat) {
 		// TODO: Return page break
 		
-		let attrStr = element.attributedString
+		let attrStr = NSMutableAttributedString(attributedString: element.line.attrString)
+		attrStr.addAttribute(NSAttributedString.Key.font, value: delegate!.fonts.courier, range: attrStr.range)
+		
+		let style = delegate!.styles.forElement(element.line.typeAsString())
+		let width = (delegate!.settings.paperSize == .A4) ? style.widthA4 : style.widthLetter
+		
 		let remainingSpace = remainingSpace
-		let lm = BeatRenderer.layoutManagerForCalculation(string: attrStr)
+		let lm = BeatRenderer.layoutManagerForCalculation(string: attrStr, width: width)
 		
 		var pageBreakPos:CGFloat = 0.0
 		var length:Int = 0
@@ -1590,8 +1715,6 @@ class BeatPageBlock:NSObject {
 	
 	// MARK: Break a line of dialogue
 	func splitDialogueElement(element:BeatPageElement, remainingSpace:CGFloat) -> (Line?, Line?, CGFloat) {
-		print("Remaining space", remainingSpace)
-		
 		let regex = try! NSRegularExpression(pattern: "(.+?[\\.\\?\\!]+\\s*)")
 		let attrStr = element.line.attrString!
 		let matches:[NSTextCheckingResult] = regex.matches(in: attrStr.string, range: attrStr.range)
@@ -1636,7 +1759,6 @@ class BeatPageBlock:NSObject {
 	func possiblePageBreakIndices() -> NSIndexSet {
 		// We can *always* break at the first index
 		var indices = NSMutableIndexSet(index: 0)
-		
 		let firstLine = self.elements.first!
 		let unallowedIndices = NSMutableIndexSet()
 		
