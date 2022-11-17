@@ -53,12 +53,15 @@
 }
 
 - (NSString *)stringByTrimmingTrailingCharactersInSet:(NSCharacterSet *)characterSet {
-	NSRange rangeOfLastWantedCharacter = [self rangeOfCharacterFromSet:[characterSet invertedSet]
-															   options:NSBackwardsSearch];
+	NSRange rangeOfLastWantedCharacter = [self rangeOfCharacterFromSet:characterSet.invertedSet options:NSBackwardsSearch];
 	if (rangeOfLastWantedCharacter.location == NSNotFound) {
 		return @"";
 	}
-	return [self substringToIndex:rangeOfLastWantedCharacter.location+1]; // non-inclusive
+    if (rangeOfLastWantedCharacter.location + 1 <= self.length) {
+        return [self substringToIndex:rangeOfLastWantedCharacter.location+1]; // non-inclusive
+    } else {
+        return self;
+    }
 }
 
 - (bool)onlyUppercaseUntilParenthesis
