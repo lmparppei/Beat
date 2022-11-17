@@ -201,7 +201,11 @@
 	while (lineIndex < _delegate.lines.count) {
 		Line* snippetLine = [_delegate.lines objectAtIndex:lineIndex];
 		if (snippetLine.type != heading && snippetLine.type != section && !(snippetLine.omitted && !snippetLine.note)) {
-			snippet = snippetLine.stripFormatting;
+			if (!snippetLine.note) snippet = snippetLine.stripFormatting;
+			else {
+				snippet = [snippetLine.string stringByReplacingOccurrencesOfString:@"[[" withString:@""];
+				snippet = [snippet stringByReplacingOccurrencesOfString:@"]]" withString:@""];
+			}
 			break;
 		}
 		lineIndex++;
@@ -347,11 +351,11 @@
 	// Send in the clowns. There ought to be clowns.
 	
 	if ([message.name isEqualToString:@"cardClick"]) {
-		OutlineScene *scene = self.delegate.getOutline[[message.body intValue]];
-		if (scene != nil) [_delegate scrollToLine:scene.line];
-		
 		[_delegate toggleCards:nil];
 		
+		OutlineScene *scene = self.delegate.getOutline[[message.body intValue]];
+		if (scene != nil) [_delegate scrollToLine:scene.line];
+
 		return;
 	}
 	
