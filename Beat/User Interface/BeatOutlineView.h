@@ -27,6 +27,7 @@
 @property (nonatomic, weak) IBOutlet id<BeatOutlineViewEditorDelegate, BeatEditorDelegate> editorDelegate;
 @property (weak) IBOutlet NSTouchBar *touchBar;
 @property (nonatomic) bool editing;
+@property (nonatomic) bool dragging;
 
 @property (nonatomic) NSMutableArray *filteredOutline;
 @property (nonatomic) SceneFiltering *filters;

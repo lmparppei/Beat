@@ -148,35 +148,45 @@
 	if (handled.count != changesInOutline.count) {
 		[self reloadData];
 	}
+	
+	// Expand scenes
+	for (OutlineScene *scene in self.outline) {
+		// Sections are expanded by default
+		if (![_collapsed containsObject:scene] && scene.type == section) [self expandItem:scene expandChildren:YES];
+	}
 }
 
 -(void)reloadOutline {
 	// Save outline scroll position
-	NSPoint scrollPosition = self.enclosingScrollView.contentView.bounds.origin;
+	NSRect bounds = self.enclosingScrollView.contentView.bounds;
 	
 	[self filterOutline];
 	[self reloadData];
 	
-	if (!_collapsed) _collapsed = NSMutableArray.new;
+	if (_collapsed == nil) _collapsed = NSMutableArray.new;
 	
 	for (OutlineScene *scene in self.outline) {
 		// Sections are expanded by default
-		if (![_collapsed containsObject:scene.line]) [self expandItem:scene expandChildren:YES];
+		if (![_collapsed containsObject:scene] && scene.type == section) [self expandItem:scene expandChildren:YES];
 	}
-	
-	// Scroll back to original position after reload
-	[self.enclosingScrollView.contentView scrollPoint:scrollPosition];
+
+	[self.enclosingScrollView.contentView setBounds:bounds];
+}
+
+-(void)reloadData {
+	self.dragging = false;
+	[super reloadData];
 }
 
 -(void)outlineViewItemDidCollapse:(NSNotification *)notification {
 	// We use lines rather than outline objects to keep track of collapsed an expanded sections
 	OutlineScene *collapsedSection = [notification.userInfo valueForKey:@"NSObject"];
-	[_collapsed addObject:collapsedSection.line];
+	[_collapsed addObject:collapsedSection];
 }
 
 - (void)outlineViewItemDidExpand:(NSNotification *)notification {
 	OutlineScene *expandedSection = [notification.userInfo valueForKey:@"NSObject"];
-	[_collapsed removeObject:expandedSection.line];
+	[_collapsed removeObject:expandedSection];
 }
 
 
@@ -331,20 +341,26 @@
 	if (_filteredOutline.count > 0 || _outlineSearchField.stringValue.length > 0) return NSDragOperationNone;
 	OutlineScene *scene;
 	NSArray *outline = self.outline;
-		
+	
 	if (index < [self numberOfChildrenOfItem:targetItem]) scene = [self outlineView:self child:index ofItem:targetItem];
 	
 	NSInteger to = index;
 	NSInteger from = [outline indexOfObject:_draggedScene];
-	NSInteger position; // Used for sections
+	NSInteger position = 0; // Used for sections
 	
-	if (index == NSNotFound) {
+	if (index == NSNotFound || index < 0) {
 		// Dropped directly into a section
 		BeatSceneTreeItem *sceneTreeItem = [_sceneTree itemWithScene:targetItem];
 		OutlineScene *lastInSection = sceneTreeItem.lastScene;
-		position = lastInSection.position + lastInSection.length;
 		
-		to = [self.outline indexOfObject:lastInSection];
+		if (lastInSection != nil) {
+			// There were items in the section
+			position = lastInSection.position + lastInSection.length;
+			to = [self.outline indexOfObject:lastInSection];
+		} else {
+			// No items in the section
+			to = [self.outline indexOfObject:targetItem] + 1;
+		}
 	} else {
 		// Dropped normally
 		if (scene) {
@@ -366,6 +382,7 @@
 	}
 	
 	if (from == to || from  == to - 1) return NO;
+	self.dragging = true;
 	
 	// If it's a section, let's move everything it contains
 	if (_draggedScene.type == section) {
