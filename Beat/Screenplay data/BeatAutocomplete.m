@@ -159,8 +159,8 @@
 	
 	// Find matching lines for the partially typed line
 	for (NSString *string in search) {
-		if ([string rangeOfString:[textView.string substringWithRange:charRange].uppercaseString options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
-			[matches addObject:string];
+		if ([string.uppercaseString rangeOfString:[textView.string substringWithRange:charRange].uppercaseString options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
+			[matches addObject:string.uppercaseString];
 		}
 	}
 	
