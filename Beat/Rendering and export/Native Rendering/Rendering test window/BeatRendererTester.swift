@@ -88,6 +88,7 @@ class BeatRendererTester:NSWindowController {
 		var i = 1
 		for page in pages {
 			content!.addSubview(page)
+			page.render()
 			var f = page.frame
 			f.origin.y = rect.height - (CGFloat(i) * page.frame.height) - (CGFloat(i) * 10)
 			page.frame = f
