@@ -744,19 +744,25 @@ static NSDictionary* patterns;
 		Line *prevLine = self.lines[index - 1];
 		if (prevLine.type != empty && prevLine.length == 0) {
 			prevLine.type = empty;
-			[self.changedIndices addIndex:index-1];
+            [self.changedIndices addIndex:index-1];
             
+            /*
             // Fix the faulty character cue, too
             if (index > 1) {
-                [self correctParseInLine:index-2 indicesToDo:indices];
+                Line *lineBeforeThat = self.lines[index-2];
+                if (lineBeforeThat.numberOfPrecedingFormattingCharacters == 0 && lineBeforeThat.type == character) {
+                    lineBeforeThat.type = action;
+                    [self.changedIndices addIndex:index-2];
+                }
             }
+            */
 		}
 	}
 	
     if (currentLine.type == empty && index > 1) {
         Line *precedingLine = self.lines[index-1];
         Line *lineBeforeThat = self.lines[index-2];
-        if (precedingLine.length == 0 && lineBeforeThat.isAnyCharacter) {
+        if (precedingLine.length == 0 && lineBeforeThat.isAnyCharacter && lineBeforeThat.numberOfPrecedingFormattingCharacters == 0) {
             [self correctParseInLine:index-2 indicesToDo:indices];
         }
     }
@@ -1023,7 +1029,7 @@ and incomprehensible system of recursion.
 {
     NSString* string = line.string;
     NSUInteger length = [string length];
-	NSString* trimmedString = [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    NSString* trimmedString = (line.string.length > 0) ? [line.string stringByTrimmingTrailingCharactersInSet:NSCharacterSet.whitespaceCharacterSet] : @"";
 	
 	Line* precedingLine = (index == 0) ? nil : (Line*)self.lines[index-1];
 	Line* nextLine = (index >= self.lines.count - 1 || self.lines.count == 0) ? nil : (Line*)self.lines[index+1];
@@ -1214,8 +1220,7 @@ and incomprehensible system of recursion.
 			
 			NSString* value = @"";
 			// Trim the value
-			if (string.length > firstColonIndex + 1) value = [string substringFromIndex:firstColonIndex + 1];
-			value = [value stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+            if (string.length > firstColonIndex + 1) value = [[string substringFromIndex:firstColonIndex + 1] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 			
 			// Store title page data
 			NSDictionary *titlePageData = @{ key: [NSMutableArray arrayWithObject:value] };
@@ -1676,6 +1681,8 @@ and incomprehensible system of recursion.
 	return headingColor;
 }
 - (NSArray *)beatsFor:(Line *)line {
+    if (line.length == 0) return @[];
+    
 	NSUInteger length = line.string.length;
 	unichar string[length];
 	[line.string.lowercaseString getCharacters:string]; // Make it lowercase for range enumeration
@@ -2031,6 +2038,8 @@ and incomprehensible system of recursion.
 	}
 	
 	NSInteger sceneNumber = 0;
+    NSMutableArray *lockedSceneNumbers = NSMutableArray.new;
+    
 	if (line.isOutlineElement) {
 		for (OutlineScene *scene in self.outline) {
 			if (scene.type == heading && scene.line.sceneNumberRange.length == 0 && !scene.omitted) {
