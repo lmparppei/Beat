@@ -22,23 +22,29 @@ class BeatBackupFile:NSObject {
 }
 
 class BeatBackup:NSObject {
+	@objc class var backupURLKey:String { return "Backup URL" }
 	
 	class var separator:String {
-		get { return " Backup " }
+		return " Backup "
 	}
+	
 	class var backupURL:URL {
-		get {
-			let delegate = NSApp.delegate as! BeatAppDelegate
-			return delegate.appDataPath("Backup")
+		// Check if there is an external URL set
+		let backupPath:String = BeatUserDefaults.shared().get(BeatBackup.backupURLKey) as? String ?? ""
+		if (backupPath.count > 0) {
+			if FileManager.default.fileExists(atPath: backupPath) {
+				return URL(fileURLWithPath: backupPath)
+			}
 		}
+		
+		let delegate = NSApp.delegate as! BeatAppDelegate
+		return delegate.appDataPath("Backup")
 	}
 	
 	class var formatter:DateFormatter {
-		get {
-			let dateFormatter = DateFormatter()
-			dateFormatter.dateFormat = "yyyy-MM-dd HH.mm"
-			return dateFormatter
-		}
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateFormat = "yyyy-MM-dd HH.mm"
+		return dateFormatter
 	}
 	
 	@objc class func backup (documentURL:URL, name:String) -> Bool {
@@ -170,6 +176,19 @@ class BeatBackup:NSObject {
 					} catch let error as NSError { print("Error removing backup", oldVersion?.path ?? "(none)", error) }
 				}
 			}
+		}
+	}
+	
+	class func selectBackupFolder() {
+		let openPanel = NSOpenPanel()
+		openPanel.canChooseDirectories = true
+		openPanel.canCreateDirectories = true
+		openPanel.canChooseFiles = false
+		
+		let response = openPanel.runModal()
+		
+		if response == .OK && openPanel.url != nil {
+			BeatUserDefaults.shared().save(openPanel.url!.absoluteString, forKey: BeatBackup.backupURLKey)
 		}
 	}
 }
