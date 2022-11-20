@@ -349,14 +349,13 @@
 		}
 		
 		Line *element = self.script[i];
+
 		
 		// Skip element if it's not in the specified range for pagination
 		if (fromIndex > 0 && NSMaxRange(element.textRange) < fromIndex) continue;
-	
-		// If the element is already in the queue, continue. Otherwise flush the queue.
-		//if ([tmpElements containsObject:element]) continue;
-		// else [tmpElements removeAllObjects];
-		
+		// ... also if it's empty or non-printed
+		else if (element.type == empty || element.isTitlePage) continue;
+			
 		if ([_elementQueue containsObject:element]) continue;
 		else [_elementQueue removeAllObjects];
 		

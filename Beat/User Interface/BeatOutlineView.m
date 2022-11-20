@@ -339,10 +339,19 @@
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index{
 	// Don't allow reordering a filtered list
 	if (_filteredOutline.count > 0 || _outlineSearchField.stringValue.length > 0) return NSDragOperationNone;
+	
+	/*
+	 I have no idea what this code actually does. I've written it in lockdown (probably) and it's now November 2022.
+	 Now, I'll do my best to document and comment the code.
+	 */
+
+	// Target is always a SECTION, childIndex speaks for itself.
+	
 	OutlineScene *scene;
 	NSArray *outline = self.outline;
-	
-	if (index < [self numberOfChildrenOfItem:targetItem]) scene = [self outlineView:self child:index ofItem:targetItem];
+	NSInteger numberOfChildren = [self numberOfChildrenOfItem:targetItem];
+
+	if (index < numberOfChildren) scene = [self outlineView:self child:index ofItem:targetItem];
 	
 	NSInteger to = index;
 	NSInteger from = [outline indexOfObject:_draggedScene];
@@ -368,12 +377,11 @@
 			position = scene.position;
 		}
 		else {
-			if (targetItem) {
+			if (targetItem != nil) {
 				// Dropped at the end of a section
 				BeatSceneTreeItem *sceneTreeItem = [_sceneTree itemWithScene:targetItem];
-				to = [self.outline indexOfObject:sceneTreeItem.lastScene] + 1;
+				to = [self.outline indexOfObject:(sceneTreeItem.children.count > 0) ? sceneTreeItem.lastScene : targetItem] + 1;
 				position = sceneTreeItem.lastScene.position + sceneTreeItem.lastScene.length;
-				
 			} else {
 				to = self.outline.count;
 				position = self.editorDelegate.text.length;

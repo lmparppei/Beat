@@ -620,13 +620,8 @@ static BeatAppDelegate *appDelegate;
 	if (self.hasUnautosavedChanges) saved = NO;
 	
 	// Sidebar
-	if ([self.documentSettings getBool:DocSettingSidebarVisible]) {
-		self.sidebarVisible = YES;
-		[_splitHandle restoreBottomOrLeftView];
-		NSInteger sidebarWidth = [self.documentSettings getInt:DocSettingSidebarWidth];
-		_splitHandle.mainConstraint.constant = sidebarWidth;
-	}
-	
+	[self restoreSidebar];
+
 	// Setup page size
 	[self.undoManager disableUndoRegistration]; // (We'll disable undo registration here, so the doc won't appear as edited on open)
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo;
@@ -647,7 +642,7 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 	
-	//[self renderTest];
+	[self renderTest];
 }
 
 -(void)renderTest {
@@ -656,12 +651,11 @@ static BeatAppDelegate *appDelegate;
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
 	[self bakeRevisions];
 	[self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		if (value != nil) NSLog(@"--> %@", value);
 	}];
 	
-	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithDoc:self screenplay:self.parser.forPrinting settings:settings];
+	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
 	[_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
-	 */
+*/
 	
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"lol" printSceneNumbers:YES];
 	[self bakeRevisions];
@@ -679,6 +673,7 @@ static BeatAppDelegate *appDelegate;
 	BeatRenderManager *manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
 	[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings forEditor:false titlePage:false];
 	[BeatMeasure end:@"New renderer"];
+
 }
 
 -(void)awakeFromNib {
@@ -875,7 +870,7 @@ static BeatAppDelegate *appDelegate;
 
 - (bool)isFullscreen
 {
-	return (([_documentWindow styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
+	return ((_documentWindow.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 }
 
 - (void)windowDidResize:(NSNotification *)notification
@@ -913,6 +908,18 @@ static BeatAppDelegate *appDelegate;
 		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * self.magnification + 150, MIN_WINDOW_HEIGHT)];
 	} else {
 		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * self.magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
+	}
+}
+
+/// Restores sidebar on launch
+- (void)restoreSidebar {
+	if ([self.documentSettings getBool:DocSettingSidebarVisible]) {
+		self.sidebarVisible = YES;
+		[_splitHandle restoreBottomOrLeftView];
+		
+		NSInteger sidebarWidth = [self.documentSettings getInt:DocSettingSidebarWidth];
+		if (sidebarWidth == 0) sidebarWidth = MIN_OUTLINE_WIDTH;
+		_splitHandle.mainConstraint.constant = sidebarWidth;
 	}
 }
 
@@ -1890,7 +1897,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_documentIsLoading) return;
 	
 	// Render test
-	// [self renderTest];
+	[self renderTest];
 		
 	// Register changes
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
@@ -2237,6 +2244,10 @@ static bool _skipAutomaticLineBreaks = false;
 	if (!moveToEnd) {
 		[self moveStringFrom:range to:sceneAfter.position actualString:string];
 	} else {
+		if (self.lines.lastObject.length != 0) {
+			// Add extra line breaks at end if needed
+			[self addString:@"\n\n" atIndex:self.text.length skipAutomaticLineBreaks:true];
+		}
 		[self moveStringFrom:range to:self.text.length actualString:string];
 	}
 }
