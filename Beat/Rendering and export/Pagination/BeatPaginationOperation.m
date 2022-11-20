@@ -634,7 +634,7 @@
 		}
 		
 		if (el.type == expectedType) {
-			if (el.beginsNewVisualBlock) break;
+			if (el.beginsNewParagraph) break;
 			
 			[block addObject:el];
 			

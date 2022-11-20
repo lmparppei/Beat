@@ -236,7 +236,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @property (nonatomic) bool isSplitParagraph; // This element contains line breaks
 @property (nonatomic) bool nextElementIsDualDialogue; // Note: used for non-continuous parsing ONLY
-@property (nonatomic) bool beginsNewVisualBlock; // Note: Used for non-continuous parsing ONLY
+@property (nonatomic) bool beginsNewParagraph; // Note: Used for non-continuous parsing ONLY
 
 // Properties for pagination
 @property (nonatomic) bool unsafeForPageBreak; /// EXPERIMENTAL

@@ -396,7 +396,7 @@ static bool underlinedHeading;
 				[body appendFormat:@"</p>\n"];
 				block = empty;
 			}
-			else if (line.type == block && line.beginsNewVisualBlock) {
+			else if (line.type == block && line.beginsNewParagraph) {
 				[body appendFormat:@"</p>\n"];
 				beginBlock = true;
 			}

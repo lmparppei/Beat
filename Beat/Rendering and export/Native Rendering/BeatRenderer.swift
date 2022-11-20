@@ -372,7 +372,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			// Skip empty lines, and break when the next line type is not the one we expected
 			if l.type == .empty || l.string.count == 0 { continue }
 			if l.type == expectedType {
-				if l.beginsNewVisualBlock { break } // centered and lyric elements might begin a new block
+				if l.beginsNewParagraph { break } // centered and lyric elements might begin a new block
 				block.append(l)
 			} else {
 				break
@@ -1079,19 +1079,21 @@ class BeatPageElement:NSObject {
 				
 		attrStr.addAttribute(NSAttributedString.Key.font, value: font, range: attrStr.range)
 		
+		// Apply ineline formatting (if needed)
 		if (!line.noFormatting()) {
 			attrStr.enumerateAttribute(NSAttributedString.Key("Style"), in: attrStr.range) { attr, range, stop in
 				let styleStr:String = attr as? String ?? ""
 				if styleStr.count == 0 { return }
 				
 				let styleNames = styleStr.components(separatedBy: ",")
+				var traits:NSFontTraitMask = NSFontTraitMask()
 				
-				if styleNames.contains("Bold") {
-					attrStr.applyFontTraits(.boldFontMask, range: range)
-				}
-				if styleNames.contains("Italic") {
-					attrStr.applyFontTraits(.italicFontMask, range: range)
-				}
+				// Bold and italic
+				if styleNames.contains("Bold") { traits.insert(.boldFontMask) }
+				if styleNames.contains("Italic") { traits.insert(.italicFontMask) }
+				attrStr.applyFontTraits(traits, range: range)
+				
+				// Apply underline if needed
 				if styleNames.contains("Underline") {
 					attrStr.addAttribute(NSAttributedString.Key.underlineStyle, value: NSNumber(value: 1), range: range)
 					attrStr.addAttribute(NSAttributedString.Key.underlineColor, value: NSColor.black, range: range)
@@ -1121,15 +1123,11 @@ class BeatPageElement:NSObject {
 		}
 		
 		// Text alignment
-		if style.textAlign == "center" {
-			pStyle.alignment = .center
-		}
-		else if style.textAlign == "right" {
-			pStyle.alignment = .right
-		}
+		if style.textAlign == "center" { pStyle.alignment = .center }
+		else if style.textAlign == "right" { pStyle.alignment = .right }
 		
 		// Special rules for some blocks
-		if (line.type == .lyrics || line.type == .centered) && !line.beginsNewVisualBlock {
+		if (line.type == .lyrics || line.type == .centered) && !line.beginsNewParagraph {
 			pStyle.paragraphSpacingBefore = 0
 		}
 		

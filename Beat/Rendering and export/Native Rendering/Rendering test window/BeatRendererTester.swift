@@ -35,7 +35,7 @@ class BeatRendererTester:NSWindowController {
 		self.renderer = BeatRenderManager(settings: self.settings!, delegate: delegate)
 				
 		super.init(window: nil) // Call this to get NSWindowController to init with the windowNibName property
-		print("The window...", self.window)
+		print("tester window:", self.window ?? "(null)")
 	}
 
 	override init(window: NSWindow?) {

@@ -2804,8 +2804,25 @@ NSUInteger prevLineAtLocationIndex = 0;
     
     // Create a copy of parsed lines
     NSMutableArray *linesForPrinting = NSMutableArray.array;
+    Line *precedingLine;
+    
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
+    
+        // Preprocess split paragraphs
+        Line *l = linesForPrinting.lastObject;
+        if (l.type == action || l.type == lyrics || l.type == centered) {
+            l.beginsNewParagraph = true;
+            
+            // BUT in some cases, they don't.
+            if (precedingLine.type != empty && precedingLine.type == l.type) {
+                l.beginsNewParagraph = false;
+                // This is here for backwards compatibility
+                if (precedingLine.type == action) l.isSplitParagraph = true;
+            }
+        }
+        
+        precedingLine = l;
 	}
 	
 	// Get scene number offset from the delegate/document settings
@@ -2813,28 +2830,6 @@ NSUInteger prevLineAtLocationIndex = 0;
 	if ([documentSettings getInt:DocSettingSceneNumberStart] > 1) {
 		sceneNumber = [documentSettings getInt:DocSettingSceneNumberStart];
 		if (sceneNumber < 1) sceneNumber = 1;
-	}
-	
-    // Check for split paragraphs
-	NSInteger i = 0;
-	for (Line* line in linesForPrinting) {
-		if (i > 0) {
-			Line *precedingLine = lines[i - 1];
-			if (line.type == action) {
-				if (precedingLine.type == action && precedingLine.string.length > 0 && !precedingLine.omitted) line.isSplitParagraph = YES;
-			}
-			
-			else if (line.type == lyrics && (precedingLine.type == empty || precedingLine.type != lyrics)) {
-				// If this line is preceded by an empty line, it begins a new block
-				line.beginsNewVisualBlock = true;
-			}
-			
-			else if (line.type == centered && precedingLine.type == empty) {
-				// If this line is preceded by an empty line, it begins a new block
-				line.beginsNewVisualBlock = true;
-			}
-		}
-		i++;
 	}
 	
     //
