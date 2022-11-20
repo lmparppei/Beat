@@ -134,68 +134,72 @@
 	NSInteger max = typeCount;
 	for (NSInteger i = 0; i < max; i++) {
 		LineType type = i;
-		
-		NSString *typeName = @"";
-		
-		switch (type) {
-			case empty:
-				typeName = @"empty"; break;
-			case section:
-				typeName = @"section"; break;
-			case synopse:
-				typeName = @"synopsis"; break;
-			case titlePageTitle:
-				typeName = @"titlePageTitle"; break;
-			case titlePageAuthor:
-				typeName = @"titlePageAuthor"; break;
-			case titlePageCredit:
-				typeName = @"titlePageCredit"; break;
-			case titlePageSource:
-				typeName = @"titlePageSource"; break;
-			case titlePageContact:
-				typeName = @"titlePageContact"; break;
-			case titlePageDraftDate:
-				typeName = @"titlePageDraftDate"; break;
-			case titlePageUnknown:
-				typeName = @"titlePageUnknown"; break;
-			case heading:
-				typeName = @"heading"; break;
-			case action:
-				typeName = @"action"; break;
-			case character:
-				typeName = @"character"; break;
-			case parenthetical:
-				typeName = @"parenthetical"; break;
-			case dialogue:
-				typeName = @"dialogue"; break;
-			case dualDialogueCharacter:
-				typeName = @"dualDialogueCharacter"; break;
-			case dualDialogueParenthetical:
-				typeName = @"dualDialogueParenthetical"; break;
-			case dualDialogue:
-				typeName = @"dualDialogue"; break;
-			case transitionLine:
-				typeName = @"transition"; break;
-			case lyrics:
-				typeName = @"lyrics"; break;
-			case pageBreak:
-				typeName = @"pageBreak"; break;
-			case centered:
-				typeName = @"centered"; break;
-			case more:
-				typeName = @"more"; break;
-			case dualDialogueMore:
-				typeName = @"dualDialogueMore"; break;
-			case shot:
-				typeName = @"shot";
-			case typeCount:
-				typeName = @""; break;
-		}
-		
+        NSString *typeName = [Line typeName:type];
+        
 		[types setValue:@(i) forKey:typeName];
 	}
 	
 	return types;
+}
+
++ (NSString*)typeName:(LineType)type {
+    switch (type) {
+        case empty:
+            return @"empty";
+        case section:
+            return @"section";
+        case synopse:
+            return @"synopsis";
+        case titlePageTitle:
+            return @"titlePageTitle";
+        case titlePageAuthor:
+            return @"titlePageAuthor";
+        case titlePageCredit:
+            return @"titlePageCredit";
+        case titlePageSource:
+            return @"titlePageSource";
+        case titlePageContact:
+            return @"titlePageContact";
+        case titlePageDraftDate:
+            return @"titlePageDraftDate";
+        case titlePageUnknown:
+            return @"titlePageUnknown";
+        case heading:
+            return @"heading";
+        case action:
+            return @"action";
+        case character:
+            return @"character";
+        case parenthetical:
+            return @"parenthetical";
+        case dialogue:
+            return @"dialogue";
+        case dualDialogueCharacter:
+            return @"dualDialogueCharacter";
+        case dualDialogueParenthetical:
+            return @"dualDialogueParenthetical";
+        case dualDialogue:
+            return @"dualDialogue";
+        case transitionLine:
+            return @"transition";
+        case lyrics:
+            return @"lyrics";
+        case pageBreak:
+            return @"pageBreak";
+        case centered:
+            return @"centered";
+        case more:
+            return @"more";
+        case dualDialogueMore:
+            return @"dualDialogueMore";
+        case shot:
+            return @"shot";
+        case typeCount:
+            return @"";
+    }
+}
+- (NSString*)typeName {
+    return [Line typeName:self.type];
 }
 
 /// Returns line type as string
@@ -1234,7 +1238,23 @@
 	
 	return [name stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 }
- 
+
+- (NSString*)titlePageKey {
+    if (!self.isTitlePage) return @"";
+    
+    NSInteger i = [self.string rangeOfString:@":"].location;
+    if (i == NSNotFound) return @"";
+    
+    return [self.string substringToIndex:i].lowercaseString;
+}
+- (NSString*)titlePageValue {
+    if (!self.isTitlePage) return @"";
+    
+    NSInteger i = [self.string rangeOfString:@":"].location;
+    if (i == NSNotFound) return self.string;
+    
+    return [[self.string substringFromIndex:i+1] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+}
 
 #pragma mark - JSON serialization
 

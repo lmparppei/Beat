@@ -196,6 +196,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 + (Line*)withString:(NSString*)string type:(LineType)type pageSplit:(bool)pageSplit;
 + (Line*)withString:(NSString*)string type:(LineType)type parser:(id<LineDelegate>)parser;
 + (NSDictionary*)typeDictionary;
++ (NSString*)typeName:(LineType)type;
+- (NSString*)typeName;
 
 // Copy element
 - (Line*)clone;
@@ -277,6 +279,12 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) bool changed;
 @property (nonatomic) NSMutableDictionary <NSString*, NSMutableIndexSet*>* revisedRanges;
 @property (nonatomic) NSString *revisionColor;
+
+// Title page
+/// Returns a lowercase title page key (ie. `Draft Date: ...` -> `draft date`
+- (NSString*)titlePageKey;
+/// Returns a title page value (ie. `Title: Something -> `something`
+- (NSString*)titlePageValue;
 
 // Story beats
 /// The line contains a story beat
