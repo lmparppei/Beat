@@ -10,7 +10,7 @@
 
 */
 
-Page {
+page {
     margin-left: 40;
 	padding-left: 60;
     margin-top: 20;
@@ -24,7 +24,7 @@ Page {
 	content-padding: 7ch;
 }
 
-Heading {
+heading {
     width-a4: 59ch - 2ch;
     width-us: 61ch - 2ch;
     
@@ -33,13 +33,14 @@ Heading {
 	underline: userSetting(headingStyleUnderline);
 }
 
-Action {
+action {
     width-a4: 59ch;
     width-us: 61ch;
 
     margin-top: 1l;
 }
-Centered {
+
+centered {
 	width-a4: 59ch;
 	width-us: 61ch;
 
@@ -47,7 +48,7 @@ Centered {
 	text-align: center;
 }
 
-Character {
+character {
     width-a4: 38ch;
 	width-us: 38ch;
     
@@ -55,7 +56,7 @@ Character {
     margin-top: 1l;
 }
 
-Parenthetical {
+parenthetical {
     width-a4: 28ch;
 	width-us: 28ch;
 	
@@ -63,7 +64,7 @@ Parenthetical {
     margin-top: 0;
 }
 
-Dialogue {
+dialogue {
     width-a4: 35ch;
 	width-us: 35ch;
     
@@ -71,7 +72,7 @@ Dialogue {
     margin-left: 60;
 }
 
-More {
+more {
     width-a4: 38ch;
 	width-us: 38ch;
     
@@ -85,28 +86,28 @@ DD Block {
 	width-us: 61ch;
 }
 
-DD Character {
+dualDialogueCharacter {
 	width-a4: 20ch;
 	width-us: 21ch;
 
     margin-top: 1l;
     margin-left: 7ch;
 }
-DD More {
+dualDialogueMore {
 	width-a4: 20ch;
 	width-us: 21ch;
 
     margin-top: 0;
     margin-left: 6ch;
 }
-DD Parenthetical {
+dualDialogueParenthetical {
     width-a4: 25ch;
     width-us: 26ch;
     
     margin-top: 0;
     margin-left: 4ch;
 }
-DD Dialogue {
+dualDialogue {
 	width-a4: 27ch;
 	width-us: 28ch;
 
@@ -114,7 +115,7 @@ DD Dialogue {
 	margin-right: 1ch;
 }
 
-Transition {
+transition {
     width-a4: 59ch;
 	width-us: 61ch;
 	
@@ -122,7 +123,7 @@ Transition {
     textAlign: right;
 }
 
-Lyrics {
+lyrics {
 	width-a4: 59ch;
 	width-us: 61ch;
 	
@@ -131,12 +132,38 @@ Lyrics {
 	italic: true;
 }
 
-Shot {
+shot {
 	width-a4: 59ch;
 	width-us: 61ch;
 	
 	bold: true;
 	uppercase: true;
 	
+	margin-top: 1l;
+}
+
+titlePageTitle {
+	margin-top: 18l;
+	textAlign: center;
+}
+titlePageAuthor {
+	margin-top: 1l;
+	textAlign: center;
+}
+titlePageCredit {
+	margin-top: 1l;
+	textAlign: center;
+}
+titlePageSource {
+	margin-top: 1l;
+	textAlign: center;
+}
+titlePageContact {
+	textAlign: left;
+}
+titlePageDraftDate {
+	textAlign: right;
+}
+titlePageUnknown {
 	margin-top: 1l;
 }

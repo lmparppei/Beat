@@ -30,11 +30,11 @@ class Styles {
 	}
 	
 	func page() -> RenderStyle {
-		return styles["Page"]!
+		return styles["page"]!
 	}
 	
 	func forElement(_ name:String) -> RenderStyle {
-		return styles[name] ?? RenderStyle(rules: ["width-a4": "59ch", "width-us": "61ch"])
+		return styles[name] ?? RenderStyle(rules: ["width-a4": self.page().defaultWidthA4, "width-us": self.page().defaultWidthLetter])
 	}
 }
 

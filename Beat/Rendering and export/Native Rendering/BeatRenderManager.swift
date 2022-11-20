@@ -14,29 +14,6 @@ import Foundation
 	func text() -> String
 }
 
-/*
- @property (weak) id<BeatPaginatorDelegate> delegate;
- @property (nonatomic, readonly) NSUInteger numberOfPages;
- @property (nonatomic, readonly) NSArray* lengthInEights;
- @property (nonatomic) CGSize paperSize;
- @property (nonatomic) CGFloat lastPageHeight;
- @property (strong, atomic) NSMutableArray<NSMutableArray<Line*>*> *pages;
- @property (nonatomic) NSMutableIndexSet *updatedPages;
-
- @property (atomic) BeatExportSettings *settings;
-
- @property (nonatomic) BeatFont *font;
-
- @property (weak, nonatomic) BeatDocument *document;
- @property (atomic) BeatPrintInfo *printInfo;
- @property (atomic) bool printNotes;
-
- // For live pagination
- @property (atomic) bool livePagination;
- @property (strong, nonatomic) NSMutableArray *pageBreaks;
- @property (strong, nonatomic) NSMutableArray *pageInfo;
- */
-
 class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	weak var delegate:BeatRenderDelegate?
 	
@@ -48,7 +25,6 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	var pageBreakCache:[BeatPageBreak] = []
 	
 	var pages:[BeatPageView] = []
-	var titlePage:BeatPageView?
 	var pageBreaks:[BeatPageBreak] = []
 	
 	var livePagination = false
@@ -80,27 +56,29 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	}
 	
 	/// Returns both screenplay pages and the title page
-	var allPages:[BeatPageView] { get {
-		var pages = Array(self.pages)
-		
-		if self.titlePage != nil {
-			pages.append(self.titlePage!)
-		}
-		
-		return pages
-	} }
+	var allRenderedPages:[BeatPageView] {
+		return self.finishedOperation?.getPages(titlePage: true) ?? []
+	}
+	var titlePage:BeatPageView? {
+		return self.finishedOperation?.titlePage() ?? nil
+	}
+	
+	/// Returns page views and
+	func getRenderedPages(titlePage:Bool) -> [BeatPageView] {
+		return self.finishedOperation?.getPages(titlePage: titlePage) ?? []
+	}
 	
 	/// Legacy plugin compatibility
-	var numberOfPages:Int { get {
+	var numberOfPages:Int {
 		return self.pages.count
-	} }
+	}
 	
 	/// Returns `[numberOfFullPages, eightsOfLastpage]`, ie. `[5, 2]` for 5 2/8
-	var lengthInEights:[Int] { get {
+	var lengthInEights:[Int] {
 		if self.pages.count == 0 { return [0,0] }
 		
 		var pageCount = self.pages.count - 1
-		var eights = Int(round((self.pages.last!.height / self.pages.last!.maxHeight) / (1.0/8.0)))
+		var eights = Int(round((self.pages.last!.maxHeight - self.pages.last!.remainingSpace / self.pages.last!.maxHeight) / (1.0/8.0)))
 		
 		if eights == 8 {
 			pageCount += 1
@@ -108,11 +86,11 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		}
 		
 		return [pageCount, eights]
-	} }
+	}
 	
 	
 	func renderDidFinish(renderer: BeatRenderer) {
-		print("# Render did finish")
+		//print("# Render did finish")
 		let i = self.queue.firstIndex(of: renderer) ?? NSNotFound
 		if i != NSNotFound {
 			self.queue.remove(at: i)

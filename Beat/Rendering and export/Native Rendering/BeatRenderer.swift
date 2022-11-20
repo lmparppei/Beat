@@ -23,7 +23,8 @@ protocol BeatPageViewDelegate:NSObject {
 	var settings:BeatExportSettings { get }
 	var fonts:BeatFonts { get }
 	var pages:[BeatPageView] { get }
-	var titlePageData:[[String:String]] { get set }
+	var titlePageData:[[String:[String]]]? { get set }
+	var lines:[Line] { get }
 }
 
 @objc protocol BeatRenderOperationDelegate {
@@ -34,13 +35,12 @@ protocol BeatPageViewDelegate:NSObject {
 
 class BeatRenderer:NSObject, BeatPageViewDelegate {
 	var lines = [Line]()
-	var titlePageData = [[String:String]]()
+	var titlePageData:[[String:[String]]]?
 	var livePagination = false
 	var fonts = BeatFonts.shared()
 	var settings:BeatExportSettings
 	var styles:Styles = Styles.shared
 	
-	var titlePage:BeatPageView?
 	@objc var pages = [BeatPageView]()
 	var pageBreaks:[BeatPageBreak] = []
 	
@@ -63,7 +63,6 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool, cachedPages:[BeatPageView]?, cachedPageBreaks:[BeatPageBreak]?) {
 		self.livePagination = livePagination
 		self.lines = screenplay.lines
-		self.titlePageData = screenplay.titlePage
 		self.settings = settings
 		self.delegate = delegate
 		
@@ -239,6 +238,20 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		return true
 	}
 	
+	// MARK: Get pages
+	
+	func titlePage() -> BeatTitlePageView {
+		return BeatTitlePageView(delegate: self)
+	}
+	
+	func getPages(titlePage:Bool) -> [BeatPageView] {
+		var pages:[BeatPageView] = []
+		
+		if titlePage { pages.append(self.titlePage()) }
+		pages.append(contentsOf: self.pages)
+		
+		return pages
+	}
 	
 	// MARK: Add elements on page
 	
@@ -479,8 +492,8 @@ class BeatPageView:NSView {
 	
 	weak var delegate:BeatPageViewDelegate?
 	
-	var styles:Styles { get { return delegate!.styles } }
-	override var isFlipped: Bool { get { return true } }
+	var styles:Styles { return delegate!.styles }
+	override var isFlipped: Bool { return true }
 	
 	convenience init(delegate:BeatPageViewDelegate) {
 		self.init(delegate: delegate, titlePage: false)
@@ -490,7 +503,7 @@ class BeatPageView:NSView {
 		self.delegate = delegate
 		self.pageStyle = delegate.styles.page()
 		self.titlePage = titlePage
-		
+				
 		// Paper size flag
 		self.paperSize = delegate.settings.paperSize
 				
@@ -500,10 +513,10 @@ class BeatPageView:NSView {
 
 		// Max height for content. Subtract two lines to make space for page number and header.
 		self.maxHeight = size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom - BeatRenderer.lineHeight() * 2
-			
+		
 		super.init(frame: NSMakeRect(0, 0, size.width, size.height))
 	}
-	
+		
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
@@ -527,8 +540,15 @@ class BeatPageView:NSView {
 		self.textView!.textContainer?.lineFragmentPadding = linePadding
 		self.addSubview(textView!)
 		
+		textView?.backgroundColor = .white
+		textView?.drawsBackground = true
+		
 		for block in blocks {
-			self.textView!.textStorage!.append(block.attributedString)
+			if block != blocks.first! {
+				self.textView!.textStorage!.append(block.render())
+			} else {
+				self.textView!.textStorage!.append(block.render(firstElementOnPage: true))
+			}
 		}
 		
 		// Force white background
@@ -563,42 +583,42 @@ class BeatPageView:NSView {
 		self.textView!.string = ""
 	}
 		
-	var height:CGFloat { get {
-		// Nope
-		return self.textView!.textStorage?.height(containerWidth: self.textView!.textContainer?.size.width ?? 0) ?? 0
-	} }
+	var renderedContentHeight:CGFloat {
+		self.render()
+		let _ = self.textView!.layoutManager!.glyphRange(for: textView!.textContainer!)
+		let bounds = self.textView!.layoutManager!.usedRect(for: textView!.textContainer!)
+		return bounds.height
+	
+		//return self.textView!.textStorage?.height(containerWidth: self.textView!.textContainer?.size.width ?? 0) ?? 0
+	}
 	
 	// MARK: Get items represented by this page
-	var lines:[Line] { get {
+	var lines:[Line] {
 		var lines:[Line] = []
 		for block in self.blocks {
 			lines.append(contentsOf: block.lines)
 		}
 		
 		return lines
-	} }
+	}
 	
-	var representedRange:NSRange { get {
+	var representedRange:NSRange {
 		let representedLines = self.lines
 		
 		let loc = representedLines.first?.position ?? NSNotFound
 		let len = NSMaxRange(representedLines.last?.range() ?? NSMakeRange(0, 0)) - Int(representedLines.first?.position ?? 0)
 		
-		print("Represented range for page: ", NSRange(location: loc, length: len))
-		
 		return NSRange(location: loc, length: len)
-	} }
+	}
 	
 	
 	// MARK: Calculate remaining space
 	var numberOfGlyphs:Int = 0
-	var remainingSpace:CGFloat { get {
-		/*
-		let _ = self.textView.layoutManager!.glyphRange(for: textView.textContainer!)
-		let bounds = self.textView.layoutManager!.usedRect(for: textView.textContainer!)
-		let space = maxHeight - bounds.height
-		*/
-		
+	var remainingSpace:CGFloat {
+		// You can use renderedContentHeight below for calculating the **ACTUAL** content height.
+		// Use only for double-checking values when debugging.
+		// let actualSpace = maxHeight - self.renderedContentHeight
+
 		var h = 0.0
 		for block in blocks {
 			let blockHeight = block.height
@@ -606,7 +626,7 @@ class BeatPageView:NSView {
 		}
 		
 		return maxHeight - h
-	} }
+	}
 		
 	var count:Int {
 		get { return self.blocks.count }
@@ -614,11 +634,6 @@ class BeatPageView:NSView {
 	 
 	// Add a whole block
 	func addBlock(_ block:BeatPageBlock) {
-		if self.blocks.count == 0 {
-			// No top margin for this block
-			block.firstElementOnPage = true
-		}
-		
 		self.blocks.append(block)
 		//self.textView.textStorage!.append(block.attributedString)
 	}
@@ -730,120 +745,177 @@ class BeatRenderLayoutManager:NSLayoutManager {
 
 // MARK: - Title page
 
-class BeatTitlePageView:NSView {
-	var size:CGSize
-	var textView:NSTextView
-	var leftColumn:NSTextView
-	var rightColumn:NSTextView
-	var delegate:BeatPageViewDelegate
-	var titlePageDict:[[String:String]]
+class BeatTitlePageView:BeatPageView {
+	var leftColumn:NSTextView?
+	var rightColumn:NSTextView?
+	var titlePageDict:[String:String]
 	
 	init(delegate:BeatPageViewDelegate) {
-		self.delegate = delegate
-		self.titlePageDict = Array(delegate.titlePageData)
+		self.titlePageDict = [:]
+		super.init(delegate: delegate, titlePage: true)
+		
+		// Gather title page data
+		var currentKey = ""
+		for line in delegate.lines {
+			let value = line.titlePageValue()!
+			let key = line.titlePageKey()!
+		
+			if !line.isTitlePage() { break }
+			
+			if (key.count > 0) {
+				// Create
+				if titlePageDict[key] == nil { titlePageDict[key] = "" }
+				currentKey = key
+			}
+			
+			if (value.count > 0) {
+				titlePageDict[currentKey]!.append("\n" + value)
+			} else {
+				titlePageDict[currentKey] = value
+			}
+		}
+		
+		// Replace 'author' with 'authors'
+		if self.titlePageDict["author"] != nil {
+			self.titlePageDict["authors"] = self.titlePageDict["author"]
+			self.titlePageDict.removeValue(forKey: "author")
+		}
 		
 		// Actual paper size in points
 		if delegate.settings.paperSize == .A4 { self.size = BeatPaperSizing.a4() }
 		else { self.size = BeatPaperSizing.usLetter() }
-		
-		let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
-		let textViewFrame = NSRect(x: delegate.styles.page().marginLeft,
-								   y: delegate.styles.page().marginTop,
-								   width: frame.size.width - delegate.styles.page().marginLeft * 2,
-								   height: 600)
-		
-		textView = NSTextView(frame: textViewFrame)
-		
-		let columnFrame = NSRect(x: delegate.styles.page().marginLeft,
-								 y: textViewFrame.origin.y + textViewFrame.height,
-								 width: textViewFrame.width / 2 - 10,
-								 height: frame.height - textViewFrame.size.height - delegate.styles.page().marginBottom)
-		
-		leftColumn = NSTextView(frame: columnFrame)
-		
-		let rightColumnFrame = NSRect(x: frame.width - delegate.styles.page().marginRight - columnFrame.width,
-									  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
-		
-		rightColumn = NSTextView(frame: rightColumnFrame)
-		
-		super.init(frame: frame)
-	}
-	
-	/// Creates title page content and places the text snippets into correct spots
-	func createTitlePage() {
-		var top:[Line] = []
-		
-		if let title = titlePageElement("title") { top.append(title) }
-		if let credit = titlePageElement("credit") { top.append(credit) }
-		if let authors = titlePageElement("authors") { top.append(authors) }
-		if let source = titlePageElement("source") { top.append(source) }
-		
-		var topContent = NSMutableAttributedString(string: "")
-		
-		for el in top {
-			let attrStr = BeatPageBlock(block: [el], delegate: self.delegate).attributedString
-			topContent.append(attrStr)
-		}
-		
-		textView.textStorage?.setAttributedString(topContent)
-		
-		/*
-		if let title = titlePageElement("title") {
-			titleText.append(title + "\n\n\n")
-		} else {
-			titleText.append("Untitled\n\n\n")
-		}
-		
-		if let credit = titlePageElement("credit") { titleText.append(credit + "\n\n") }
-		if let authors = titlePageElement("authors") { titleText.append(authors + "\n\n") }
-		if let source = titlePageElement("source") { titleText.append(source + "\n\n") }
-		 */
-	}
-	
-	/// Gets **and removes** a title page element from title page array
-	func titlePageElement(_ key:String) -> Line? {
-		var result:String? = nil
-		var resultItem:[String:String]?
-		var type:LineType = .empty
-		
-		for item in self.titlePageDict {
-			if item.keys.first == key {
-				result = item[key] ?? ""
-				resultItem = item
-				break
-			}
-		}
-		
-		if resultItem != nil {
-			let i = self.titlePageDict.firstIndex(of: resultItem!)
-			if i != NSNotFound { self.titlePageDict.remove(at: i!) }
-		}
-		
-		switch key {
-		case "title":
-			type = .titlePageTitle
-		case "authors":
-			type = .titlePageAuthor
-		case "credit":
-			type = .titlePageCredit
-		case "source":
-			type = . titlePageSource
-		case "draft date":
-			type = .titlePageDraftDate
-		case "contact":
-			type = .titlePageContact
-		default:
-			type = .titlePageUnknown
-		}
-		
-		let line = Line(string: result, type: type)
-		return line
 	}
 	
 	override var isFlipped: Bool { return true }
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
+	}
+
+	/// Creates title page content and places the text snippets into correct spots
+	func createTitlePage() {
+		textView?.string = "\n" // Add one extra line break to make title top margin have effect
+		leftColumn?.string = ""
+		rightColumn?.string = ""
+		
+		var top:[Line] = []
+				
+		if let title = titlePageElement("title") { top.append(title) }
+		if let credit = titlePageElement("credit") { top.append(credit) }
+		if let authors = titlePageElement("authors") { top.append(authors) }
+		if let source = titlePageElement("source") { top.append(source) }
+		
+		// Content on top
+		let topContent = NSMutableAttributedString(string: "")
+		for el in top {
+			let attrStr = BeatPageBlock(block: [el], delegate: self.delegate).attributedString
+			topContent.append(attrStr)
+		}
+		textView!.textStorage?.append(topContent)
+		
+		// Draft date on right side
+		if let draftDate = titlePageElement("draft date") {
+			let attrStr = BeatPageBlock(block: [draftDate], delegate: self.delegate).attributedString
+			rightColumn?.textStorage?.append(attrStr)
+		}
+		
+		if let contact = titlePageElement("contact") {
+			let attrStr = BeatPageBlock(block: [contact], delegate: self.delegate).attributedString
+			leftColumn?.textStorage?.append(attrStr)
+		}
+		
+		// Add the rest on left side
+		for d in self.titlePageDict {
+			if let element = titlePageElement(d.key) {
+				let attrStr = BeatPageBlock(block: [element], delegate: self.delegate).attributedString
+				leftColumn?.textStorage?.append(attrStr)
+			}
+		}
+
+		// Once we've set the content, let's adjust top inset to align text to bottom
+		_ = leftColumn!.layoutManager!.glyphRange(for: leftColumn!.textContainer!)
+		_ = rightColumn!.layoutManager!.glyphRange(for: rightColumn!.textContainer!)
+		let leftRect = leftColumn!.layoutManager!.usedRect(for: leftColumn!.textContainer!)
+		let rightRect = rightColumn!.layoutManager!.usedRect(for: rightColumn!.textContainer!)
+		
+		let insetLeft = leftColumn!.frame.height - leftRect.height
+		let insetRight = rightColumn!.frame.height - rightRect.height
+		
+		leftColumn?.textContainerInset = NSSize(width: 0, height: insetLeft)
+		rightColumn?.textContainerInset = NSSize(width: 0, height: insetRight)
+	}
+	
+	/// Gets **and removes** a title page element from title page array
+	func titlePageElement(_ key:String) -> Line? {
+		var result:String? = self.titlePageDict[key]
+		if (result == nil) { return nil; }
+	
+		result = result?.trimmingCharacters(in: .newlines)
+		
+		self.titlePageDict.removeValue(forKey: key)
+		
+		var type:LineType = .empty
+		
+		switch key {
+			case "title":
+				type = .titlePageTitle
+			case "authors":
+				type = .titlePageAuthor
+			case "credit":
+				type = .titlePageCredit
+			case "source":
+				type = . titlePageSource
+			case "draft date":
+				type = .titlePageDraftDate
+			case "contact":
+				type = .titlePageContact
+			default:
+				type = .titlePageUnknown
+		}
+		
+		let line = Line(string: result, type: type)
+		return line
+	}
+	
+	/// Override page render method for title pages
+	override func render() {
+		if self.delegate == nil { return }
+		
+		// Force white background
+		self.wantsLayer = true
+		self.layer?.backgroundColor = NSColor.white.cgColor
+		
+		let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
+		let textViewFrame = NSRect(x: delegate!.styles.page().marginLeft,
+								   y: delegate!.styles.page().marginTop,
+								   width: frame.size.width - delegate!.styles.page().marginLeft * 2,
+								   height: 400)
+		
+		textView = NSTextView(frame: textViewFrame)
+		textView?.isEditable = false
+		textView?.backgroundColor = .white
+		
+		let columnFrame = NSRect(x: delegate!.styles.page().marginLeft,
+								 y: textViewFrame.origin.y + textViewFrame.height,
+								 width: textViewFrame.width / 2 - 10,
+								 height: frame.height - textViewFrame.size.height - delegate!.styles.page().marginBottom)
+		
+		leftColumn = NSTextView(frame: columnFrame)
+		leftColumn?.isEditable = false
+		leftColumn?.backgroundColor = .white
+		
+		let rightColumnFrame = NSRect(x: frame.width - delegate!.styles.page().marginLeft - columnFrame.width,
+									  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
+		
+		rightColumn = NSTextView(frame: rightColumnFrame)
+		rightColumn?.isEditable = false
+		rightColumn?.backgroundColor = .white
+		
+		self.addSubview(textView!)
+		self.addSubview(leftColumn!)
+		self.addSubview(rightColumn!)
+		
+		createTitlePage()
 	}
 }
 
@@ -879,31 +951,36 @@ class BeatPageElement:NSObject {
 		self.init(line: line, delegate: delegate, dualDialogue: false)
 	}
 	
-	var attributedString:NSAttributedString { get {
+	/// Use this only after you've rendered the line
+	var attributedString:NSAttributedString {
 		if (self.renderedString != nil) {
 			return self.renderedString!
 		} else {
 			return self.render()
 		}
-	} }
+	}
 	
-	var topMargin:CGFloat { get {
+	var topMargin:CGFloat {
 		if noTopMargin { return 0.0 }
 		
-		let style = self.delegate!.styles.forElement(self.line.typeAsString()!)
+		let style = self.delegate!.styles.forElement(self.line.typeName()!)
 		return style.marginTop
-	} }
+	}
 	
 	/**
-	 Returns the element height.
+	 Returns single element height.
 	 - note:This method __does not__ render the actual line, but uses default font and size. If you are trying to do something fancy or weird with the styles, it will probably get calculated wrong.
 	 */
-	var height:CGFloat { get {
+	var height:CGFloat {
 		if (self.calculatedHeight < 0) {
 			let attrStr = NSMutableAttributedString(attributedString: self.line.attrString!)
-			attrStr.addAttribute(NSAttributedString.Key.font, value: self.delegate!.fonts.courier, range: attrStr.range)
+			let pStyle = NSMutableParagraphStyle()
+			pStyle.maximumLineHeight = BeatRenderer.lineHeight()
 			
-			let type = self.line.typeAsString()!
+			attrStr.addAttribute(NSAttributedString.Key.font, value: self.delegate!.fonts.courier, range: attrStr.range)
+			attrStr.addAttribute(NSAttributedString.Key.paragraphStyle, value: pStyle, range: attrStr.range)
+			
+			let type = self.line.typeName()!
 			let size = self.delegate!.settings.paperSize
 			
 			let style = self.delegate!.styles.forElement(type)
@@ -913,7 +990,7 @@ class BeatPageElement:NSObject {
 		}
 		
 		return self.calculatedHeight
-	} }
+	}
 	
 	func heightByLines() -> CGFloat {
 		/*
@@ -924,7 +1001,7 @@ class BeatPageElement:NSObject {
 		let attrStr = NSMutableAttributedString(attributedString: self.line.attrString!)
 		attrStr.addAttribute(NSAttributedString.Key.font, value: self.delegate!.fonts.courier, range: attrStr.range)
 		
-		let type = self.line.typeAsString()!
+		let type = self.line.typeName()!
 		let size = self.delegate!.settings.paperSize
 		
 		let style = self.delegate!.styles.forElement(type)
@@ -956,11 +1033,15 @@ class BeatPageElement:NSObject {
 		
 		return CGFloat(numberOfLines) * lineHeight
 	}
-		
+	
 	func render() -> NSAttributedString {
+		return render(firstElementOnPage: false)
+	}
+	
+	func render(firstElementOnPage:Bool) -> NSAttributedString {
 		var attrStr = NSMutableAttributedString(attributedString: line.attributedStringForFDX())
 		
-		let styleName = line.typeAsString() ?? "action"
+		let styleName = line.typeName() ?? "action"
 		var style = styles!.forElement(styleName)
 		
 		// Make the string uppercase if needed
@@ -969,21 +1050,17 @@ class BeatPageElement:NSObject {
 		// If this is part of a dual dialogue block, we'll use dual dialogue styles for both sides.
 		// In parser, the first block dialogue is always "normal" dialogue.
 		if (self.dualDialogue) {
-			if (line.isAnyCharacter()) { style = styles!.forElement("DD Character") }
-			else if (line.isAnyParenthetical()) { style = styles!.forElement("DD Parenthetical") }
-			else if (line.isAnyDialogue()) { style = styles!.forElement("DD Dialogue") }
-			else if (line.type == .more || line.type == .dualDialogueMore) { style = styles!.forElement("DD More") }
+			if (line.isAnyCharacter()) { style = styles!.forElement("dualDialogueCharacter") }
+			else if (line.isAnyParenthetical()) { style = styles!.forElement("dualDialogueParenthetical") }
+			else if (line.isAnyDialogue()) { style = styles!.forElement("dualDialogue") }
+			else if (line.type == .more || line.type == .dualDialogueMore) { style = styles!.forElement("dualDialogueMore") }
 		}
 		
-		// Set element width
-		var width = (paperSize == .A4) ? style.widthA4 : style.widthLetter
-		if width == 0 {
-			width = (paperSize == .A4) ? styles!.page().defaultWidthA4 : styles!.page().defaultWidthLetter
-		}
-
 		// Tag the line with corresponding element
 		attrStr.addAttribute(NSAttributedString.Key("RepresentedLine"), value: line, range: attrStr.range)
 		
+		// Is this a multiline block?
+		let multiline = attrStr.string.contains("\n")
 		// Add a line break at the end when rendering
 		attrStr.append(NSAttributedString(string: "\n"))
 		
@@ -992,12 +1069,10 @@ class BeatPageElement:NSObject {
 		var font = fonts.courier
 		
 		// Block width. Dual dialogue blocks DO NOT get the page indent
+		let width = (paperSize == .A4) ? style.widthA4 : style.widthLetter
 		var blockWidth = width + style.marginLeft
 		if (!dualDialogue) { blockWidth += styles!.page().contentPadding }
-		
-		// Create the block
-		let textBlock = BeatRenderer.createTextBlock(width: blockWidth)
-		
+			
 		if style.italic && style.bold { font = fonts.boldCourier }
 		else if style.italic { font = fonts.italicCourier }
 		else if style.bold { font = fonts.boldCourier }
@@ -1027,20 +1102,23 @@ class BeatPageElement:NSObject {
 		let pStyle = NSMutableParagraphStyle()
 		
 		pStyle.maximumLineHeight = BeatRenderer.lineHeight()
-		pStyle.paragraphSpacingBefore = style.marginTop
+		pStyle.paragraphSpacingBefore = (firstElementOnPage) ? 0.0 : style.marginTop
 		pStyle.paragraphSpacing = style.marginBottom
 		pStyle.tailIndent = -1 * style.marginRight // Negative value
 		
-		if !dualDialogue {
+		if !dualDialogue && !line.isTitlePage() {
 			pStyle.firstLineHeadIndent = style.marginLeft + styles!.page().contentPadding
 			pStyle.headIndent = style.marginLeft + styles!.page().contentPadding
-		} else {
+		} else if !line.isTitlePage() {
 			pStyle.firstLineHeadIndent = style.marginLeft
 			pStyle.headIndent = style.marginLeft
 		}
 		
-		
-		pStyle.textBlocks = [textBlock]
+		// Create text block for non-title page elements to restrict horizontal size
+		if !line.isTitlePage() {
+			let textBlock = BeatRenderer.createTextBlock(width: blockWidth)
+			pStyle.textBlocks = [textBlock]
+		}
 		
 		// Text alignment
 		if style.textAlign == "center" {
@@ -1055,7 +1133,20 @@ class BeatPageElement:NSObject {
 			pStyle.paragraphSpacingBefore = 0
 		}
 		
-		attrStr.addAttribute(NSAttributedString.Key.paragraphStyle, value: pStyle, range: attrStr.range)
+		// Multi-line content has to be rendered with the top margin attribute removed
+		// for other lines than the first one
+		if multiline {
+			let pStyle2 = pStyle.mutableCopy() as! NSMutableParagraphStyle
+			pStyle2.paragraphSpacingBefore = 0.0
+			
+			let idx = attrStr.string.range(of: "\n")
+			let pos = attrStr.string.distance(from: attrStr.string.startIndex, to: idx!.lowerBound)
+			
+			attrStr.addAttribute(NSAttributedString.Key.paragraphStyle, value:pStyle2, range: attrStr.range)
+			attrStr.addAttribute(NSAttributedString.Key.paragraphStyle, value:pStyle, range: NSMakeRange(0, pos + 1))
+		} else {
+			attrStr.addAttribute(NSAttributedString.Key.paragraphStyle, value: pStyle, range: attrStr.range)
+		}
 		
 		// Remove any invisible ranges
 		let contentRanges:NSMutableIndexSet = NSMutableIndexSet(indexSet: line.contentRanges())
@@ -1071,7 +1162,7 @@ class BeatPageElement:NSObject {
 		
 		// Render heading block
 		if line.type == .heading {
-			lineStr = renderHeading(line: line, content: lineStr, styles: styles!)
+			lineStr = renderHeading(firstElementOnPage: firstElementOnPage, line: line, content: lineStr, styles: styles!)
 		}
 		
 		self.renderedString = lineStr
@@ -1079,7 +1170,7 @@ class BeatPageElement:NSObject {
 		return lineStr
 	}
 	
-	func renderHeading(line:Line, content:NSMutableAttributedString, styles:Styles) -> NSMutableAttributedString {
+	func renderHeading(firstElementOnPage:Bool, line:Line, content:NSMutableAttributedString, styles:Styles) -> NSMutableAttributedString {
 		let printSceneNumbers = self.delegate!.settings.printSceneNumbers
 		
 		let attrStr = NSMutableAttributedString(string: "")
@@ -1090,11 +1181,11 @@ class BeatPageElement:NSObject {
 		let contentCell = NSTextTableBlock(table: table, startingRow: 0, rowSpan: 1, startingColumn: 1, columnSpan: 1)
 		let rightCell = NSTextTableBlock(table: table, startingRow: 0, rowSpan: 1, startingColumn: 2, columnSpan: 1)
 		
-		let width = (paperSize == .A4) ? styles.forElement(line.typeAsString()).widthA4 : styles.forElement(line.typeAsString()).widthLetter
+		let width = (paperSize == .A4) ? styles.forElement(line.typeName()).widthA4 : styles.forElement(line.typeName()).widthLetter
 		
 		leftCell.setContentWidth(styles.page().contentPadding, type: .absoluteValueType)
 		contentCell.setContentWidth(width, type: .absoluteValueType)
-		rightCell.setContentWidth(styles.page().contentPadding - 12, type: .absoluteValueType)
+		rightCell.setContentWidth(styles.page().contentPadding - 10, type: .absoluteValueType)
 		
 //		leftCell.backgroundColor = NSColor.red
 //		contentCell.backgroundColor = NSColor.green
@@ -1116,11 +1207,11 @@ class BeatPageElement:NSObject {
 		let sceneNumberRightStyle = contentPStyle.mutableCopy() as! NSMutableParagraphStyle
 		
 		sceneNumberLeftStyle.textBlocks = [leftCell]
-		sceneNumberLeftStyle.paragraphSpacingBefore = contentPStyle.paragraphSpacingBefore
-		sceneNumberLeftStyle.firstLineHeadIndent = 12.0
+		sceneNumberLeftStyle.paragraphSpacingBefore = (firstElementOnPage) ? 0.0 : contentPStyle.paragraphSpacingBefore
+		sceneNumberLeftStyle.firstLineHeadIndent = 10.0
 		
 		sceneNumberRightStyle.textBlocks = [rightCell]
-		sceneNumberRightStyle.paragraphSpacingBefore = contentPStyle.paragraphSpacingBefore
+		sceneNumberRightStyle.paragraphSpacingBefore = (firstElementOnPage) ? 0.0 : contentPStyle.paragraphSpacingBefore
 		sceneNumberRightStyle.alignment = .right
 				
 		sceneNumberLeft.addAttribute(NSAttributedString.Key.paragraphStyle, value: sceneNumberLeftStyle, range: sceneNumberLeft.range)
@@ -1138,7 +1229,7 @@ class BeatPageElement:NSObject {
 
 /// Represents a **block** of elements, such as dialogue, dual dialogue (the whole two-column block, divided into sub-blocks) or single action paragraphs
 class BeatPageBlock:NSObject {
-	var elements = [BeatPageElement]()
+	var elements:[BeatPageElement]
 	var dualDialogueElement = false
 	var dualDialogueBlock = false
 	var lines = [Line]()
@@ -1150,18 +1241,11 @@ class BeatPageBlock:NSObject {
 	var leftColumn:NSMutableAttributedString?
 	var rightColumn:NSMutableAttributedString?
 	
+	var leftColumnBlock:BeatPageBlock?
+	var rightColumnBlock:BeatPageBlock?
+	
 	weak var delegate:BeatPageViewDelegate?
-	
-	// Top margin
-	private var forcedTopMargin = false
-	var firstElementOnPage:Bool {
-		get { return forcedTopMargin }
-		set {
-			forcedTopMargin = newValue
-			if !self.dualDialogueBlock { self.elements.first!.noTopMargin = newValue }
-		}
-	}
-	
+		
 	convenience init(block:[Line], delegate:BeatPageViewDelegate?) {
 		self.init(block: block, isDualDialogueElement: false, delegate:delegate)
 	}
@@ -1171,6 +1255,15 @@ class BeatPageBlock:NSObject {
 		self.dualDialogueElement = isDualDialogueElement
 		self.styles = Styles.shared
 		self.delegate = delegate
+		self.elements = []
+		
+		super.init()
+		
+		// Create elements (but don't render yet)
+		for line in self.lines {
+			let element = BeatPageElement(line: line, delegate: self.delegate, dualDialogue: self.dualDialogueElement)
+			self.elements.append(element)
+		}
 		
 		// Is this a dual dialogue block?
 		if (!isDualDialogueElement) {
@@ -1181,52 +1274,69 @@ class BeatPageBlock:NSObject {
 				}
 			}
 		}
-		
-		// Create elements (but don't render yet)
-		for line in block {
-			let element = BeatPageElement(line: line, delegate: self.delegate, dualDialogue: self.dualDialogueElement)
-			self.elements.append(element)
-		}
 	}
 	
-	var height:CGFloat { get {
+	/// Returns block height
+	var height:CGFloat {
 		if calculatedHeight < 0 {
 			var height = 0.0
-			for element in elements {
-				height += element.height
+			
+			if self.dualDialogueBlock {
+				if self.leftColumnBlock == nil || self.rightColumnBlock == nil {
+					// Let's render this block to get some actual results
+					_ = self.renderDualDialogue()
+				}
+				
+				// Return the higher column
+				let leftHeight = self.leftColumnBlock?.height ?? 0.0
+				let rightHeight = self.rightColumnBlock?.height ?? 0.0
+				
+				if leftHeight > rightHeight { height = leftHeight }
+				else { height = rightHeight }
+			} else {
+				// Calculate element heights
+				for element in elements {
+					height += element.height
+				}
 			}
 			
 			self.calculatedHeight = height
 		}
 		return calculatedHeight
-	} }
+	}
 	
-	var attributedString:NSAttributedString { get {
+	var attributedString:NSAttributedString {
 		if (renderedString == nil) {
 			return render()
 		} else {
 			return renderedString!
 		}
-	} }
+	}
 		
 	/// Create and render the individual line elements
 	func render() -> NSAttributedString {
+		return render(firstElementOnPage: false)
+	}
+	func render(firstElementOnPage:Bool) -> NSAttributedString {
 		if self.delegate == nil { print("BLOCK ELEMENT DELEGATE MISSING") }
-		
+
 		// Nil dual dialogue stuff
 		self.leftColumn = nil
 		self.rightColumn = nil
 				
 		let attributedString = NSMutableAttributedString(string: "")
-		self.elements = []
 
 		if dualDialogueBlock {
 			self.renderedString = renderDualDialogue()
 			return self.renderedString!
 		}
-				
+		
 		for element in self.elements {
-			attributedString.append(element.attributedString)
+			if element == self.elements.first! && firstElementOnPage {
+				attributedString.append(element.render(firstElementOnPage: firstElementOnPage))
+			} else {
+				attributedString.append(element.render())
+			}
 		}
 		
 		// Store the rendered string
@@ -1251,12 +1361,12 @@ class BeatPageBlock:NSObject {
 		let left = self.leftColumnLines
 		let right = self.rightColumnLines
 				
-		let leftBlock = BeatPageBlock(block: left, isDualDialogueElement: true, delegate: self.delegate)
-		let rightBlock = BeatPageBlock(block: right, isDualDialogueElement: true, delegate: self.delegate)
+		self.leftColumnBlock = BeatPageBlock(block: left, isDualDialogueElement: true, delegate: self.delegate)
+		self.rightColumnBlock = BeatPageBlock(block: right, isDualDialogueElement: true, delegate: self.delegate)
 		
 		self.elements = []
-		self.elements.append(contentsOf: leftBlock.elements)
-		self.elements.append(contentsOf: rightBlock.elements)
+		self.elements.append(contentsOf: self.leftColumnBlock!.elements)
+		self.elements.append(contentsOf: self.rightColumnBlock!.elements)
 		
 		// Initialize table
 		let table = NSTextTable()
@@ -1272,8 +1382,8 @@ class BeatPageBlock:NSObject {
 		rightCell.setContentWidth(45.0, type: .percentageValueType)
 		
 		// Render content for left/right cells
-		var leftContent = NSMutableAttributedString(attributedString: leftBlock.attributedString)
-		let rightContent = NSMutableAttributedString(attributedString: rightBlock.attributedString)
+		var leftContent = NSMutableAttributedString(attributedString: self.leftColumnBlock!.attributedString)
+		let rightContent = NSMutableAttributedString(attributedString: self.rightColumnBlock!.attributedString)
 		
 		// If there is nothing in the left column, we need to create a placeholder
 		if leftContent.length == 0 {
@@ -1318,7 +1428,7 @@ class BeatPageBlock:NSObject {
 	}
 	
 	// TODO: Join these into one
-	var leftColumnLines:[Line] { get {
+	var leftColumnLines:[Line] {
 		var leftColumn = [Line]()
 		for line in lines {
 			if line.isDialogue() {
@@ -1330,9 +1440,9 @@ class BeatPageBlock:NSObject {
 		}
 		
 		return leftColumn
-	} }
+	}
 	
-	var rightColumnLines:[Line] { get {
+	var rightColumnLines:[Line] {
 		var rightColumn = [Line]()
 		for line in lines {
 			if !line.isDualDialogue() {
@@ -1342,7 +1452,7 @@ class BeatPageBlock:NSObject {
 			}
 		}
 		return rightColumn
-	} }
+	}
 	
 	
 	// MARK: Convenience methods
@@ -1397,8 +1507,6 @@ class BeatPageBlock:NSObject {
 	// MARK: Breaking blocks across pages
 	
 	func splitDualDialogueBlock(remainingSpace:CGFloat) -> ([Line], [Line], BeatPageBreak) {
-		print("### BEGIN DUAL DIALOGUE PAGE BREAK ###")
-		
 		// Get the lines for each column
 		let left = self.leftColumnLines
 		let right = self.rightColumnLines
@@ -1682,7 +1790,7 @@ class BeatPageBlock:NSObject {
 		let attrStr = NSMutableAttributedString(attributedString: element.line.attrString)
 		attrStr.addAttribute(NSAttributedString.Key.font, value: delegate!.fonts.courier, range: attrStr.range)
 		
-		let style = delegate!.styles.forElement(element.line.typeAsString())
+		let style = delegate!.styles.forElement(element.line.typeName())
 		let width = (delegate!.settings.paperSize == .A4) ? style.widthA4 : style.widthLetter
 		
 		let remainingSpace = remainingSpace
@@ -1804,14 +1912,14 @@ class BeatBlockGroup {
 		self.blocks = blocks
 	}
 	
-	var height:CGFloat { get {
+	var height:CGFloat {
 		var h = 0.0
 		for block in blocks {
 			h += block.height
 		}
 		
 		return h
-	}}
+	}
 	
 	func splitGroup(remainingSpace:CGFloat) -> ([Line], [Line]) {
 		var space = remainingSpace
