@@ -14,5 +14,6 @@
 +(instancetype)from:(ContinuousFountainParser*)parser;
 +(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings;
 @property (nonatomic) NSArray <Line*>* lines;
-@property (nonatomic) NSArray <NSDictionary<NSString*, NSString*>*>* titlePage;
+@property (nonatomic) NSArray <Line*>* titlePageLines;
+@property (nonatomic) NSArray <NSDictionary<NSString*, NSArray<NSString*>*>*> *titlePage;
 @end
