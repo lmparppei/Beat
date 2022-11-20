@@ -1950,6 +1950,67 @@ and incomprehensible system of recursion.
 	else return line.type;
 }
 
+#pragma mark - Title page
+
+- (NSString*)titlePageAsString {
+    NSMutableString *string = NSMutableString.new;
+    for (Line* line in self.safeLines) {
+        if (!line.isTitlePage) break;
+        [string appendFormat:@"%@\n", line.string];
+    }
+    return string;
+}
+
+- (NSArray<Line*>*)titlePageLines {
+    NSMutableArray *lines = NSMutableArray.new;
+    
+    for (Line* line in self.safeLines) {
+        if (!line.isTitlePage) break;
+        [lines addObject:line];
+    }
+    
+    return lines;
+}
+
+- (void)parseTitlePage {
+    NSString *key = @"";
+    NSMutableArray *titlePage = NSMutableArray.new;
+    [self.titlePage removeAllObjects];
+    
+    for (Line* line in self.safeLines) {
+        if (!line.isTitlePage) break;
+        
+        if (line.titlePageKey.length > 0) {
+            key = line.titlePageKey;
+            NSMutableDictionary* titlePageValue = [NSMutableDictionary dictionaryWithDictionary:@{ key: NSMutableArray.new }];
+            [self.titlePage addObject:titlePageValue];
+        }
+        
+        NSMutableArray *items = [self titlePageArrayForKey:key];
+        if (items == nil) continue;
+        
+        [items addObject:line];
+    }
+}
+
+- (NSArray*)getTitlePage {
+    [self parseTitlePage];
+    return self.titlePage;
+}
+
+- (NSMutableArray*)titlePageArrayForKey:(NSString*)key {
+    for (NSMutableDictionary* d in self.titlePage) {
+        if ([d.allKeys.firstObject isEqualToString:key]) return d[d.allKeys.firstObject];
+    }
+    return nil;
+}
+
+/*
+- (NSDictionary<NSString*,NSArray<Line*>*>*)titlePageDictionary {
+    
+}
+*/
+
 
 /*
 #pragma mark - Outline Data - persistent outline idea
@@ -2065,12 +2126,13 @@ and incomprehensible system of recursion.
 
 - (void)createOutlineUsingLines:(NSArray<Line*>*)lines
 {
-	[_storylines removeAllObjects];
+    if (_storybeats == nil) _storybeats = NSMutableDictionary.new;
+    if (_storylines == nil) _storylines = NSMutableSet.new;
+    
 	[_storybeats removeAllObjects];
+    [_storylines removeAllObjects];
 	
-	if (!_storybeats) _storybeats = NSMutableDictionary.new;
-	
-	// Get first scene number
+	// Set first scene number
 	NSUInteger sceneNumber = 1;
 	
 	if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 0) {
@@ -2083,12 +2145,14 @@ and incomprehensible system of recursion.
 	
 	OutlineScene *lastFoundSection;
 	OutlineScene *lastFoundScene;
-	NSMutableArray *sectionTree = NSMutableArray.new;
+	NSMutableArray *sectionTree = NSMutableArray.new; // NOTE: This is not a real tree structure, just a path to get where we're now
 	
 	for (Line* line in lines) {
-		if (line.type == section || line.type == synopse || line.type == heading) {
+        // We've encountered a new outline element
+		if (line.isOutlineElement) {
 			OutlineScene *scene;
 			
+            // Create new outline elements when needed
 			if (sceneIndex >= _outline.count) {
 				scene = [OutlineScene withLine:line delegate:self];
 			} else {
@@ -2192,6 +2256,11 @@ and incomprehensible system of recursion.
 			[previousScene.markerColors addObject:line.marker];
 		}
 		
+        if (line.type == synopse) {
+            if (lastFoundScene != nil) [lastFoundScene.synopsis addObject:line];
+            else if (lastFoundSection != nil) [lastFoundSection.synopsis addObject:line];
+        }
+        
 		if (line.beats.count) {
 			for (Storybeat *beat in line.beats) {
 				if (![previousScene.beats containsObject:beat]) [previousScene.beats addObject:beat];
@@ -2713,7 +2782,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 	NSArray *lines = self.safeLines;
 	NSMutableArray *preprocessed = NSMutableArray.new;
 	for (Line* line in lines) {
-		if (line.type == empty || line.isTitlePage) continue;
+		if (line.type == empty) continue;
 		[preprocessed addObject:line.clone];
 	}
 	
@@ -2775,7 +2844,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 		if (line.type == empty && line.string.length && !line.string.containsOnlyWhitespace) line.type = action;
 		
 		// Skip over certain elements. Leave notes if needed.
-		if (line.type == synopse || line.type == section || (line.omitted && !line.note)  || line.isTitlePage) continue;
+		if (line.type == synopse || line.type == section || (line.omitted && !line.note)) continue;
 		if (!printNotes && line.note) continue;
 		
 		// Add scene numbers
