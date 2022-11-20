@@ -415,7 +415,7 @@
                                             <rect key="frame" x="24" y="274" width="513" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
-                                        <button identifier="1" verticalHuggingPriority="750" id="5Lw-3n-rPc">
+                                        <button identifier="8" verticalHuggingPriority="750" id="5Lw-3n-rPc">
                                             <rect key="frame" x="281" y="321" width="209" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="Use default" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="kU3-zB-g60">
@@ -426,8 +426,8 @@
                                                 <action selector="toggleHeadingSpacing:" target="-2" id="ED2-2m-lLQ"/>
                                             </connections>
                                         </button>
-                                        <button identifier="2" verticalHuggingPriority="750" id="sRv-r1-TUu">
-                                            <rect key="frame" x="281" y="299" width="197" height="18"/>
+                                        <button identifier="9" verticalHuggingPriority="750" id="sRv-r1-TUu">
+                                            <rect key="frame" x="280" y="299" width="196" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="Custom" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="moV-CN-wy9">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
