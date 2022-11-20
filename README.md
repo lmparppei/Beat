@@ -17,7 +17,7 @@ This started as a personal project as I needed a simple, multi-window, lightweig
 Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Writer/) by Hendrik Noeller and some code still originates from his work, especially within the magnificent continuous Fountain parser. 
 
 
-## Latest release: Beat 1.96.x
+## Latest release: Beat 1.97.x
 
 **Features**
 * Minimalistic UI with as little distractions as possible
@@ -48,7 +48,9 @@ Beat was originally a fork of [**Writer**](https://github.com/HendrikNoeller/Wri
 
 **Note:** This repository follows my development, so it DOES NOT match the latest release version. Dread lightly, dear friend!
 
-When building for development, use the *Beat Appstore* target. The ad hoc distribution is currently not maintained. No external libraries or frameworks should be needed, and everything is included in the project.
+Use the `Beat` workspace.  When building for development, use the *Beat App Store* target. The ad hoc distribution is currently not maintained, and might not be buildable. 
+
+You will need `BeatParsing` framework built, but no external libraries or frameworks should be needed.
 
 
 ## FAQ
