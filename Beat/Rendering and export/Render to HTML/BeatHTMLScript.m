@@ -507,6 +507,7 @@ static bool underlinedHeading;
 	NSMutableDictionary *titlePage = NSMutableDictionary.dictionary;
 	
 	// Put title page elements into a dictionary
+	// (For some reason they maintain their order when done like this)
 	for (NSDictionary *dict in self.titlePage) {
         [titlePage addEntriesFromDictionary:dict];
     }
