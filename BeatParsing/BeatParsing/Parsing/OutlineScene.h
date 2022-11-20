@@ -27,6 +27,8 @@
 @property (nonatomic, readonly) NSArray * storylines;
 @property (nonatomic, readonly) NSUInteger sceneStart;
 
+@property (nonatomic, readonly) NSMutableArray<Line*>* synopsis;
+
 @property (nonatomic, readonly) NSUInteger position;
 @property (nonatomic, readonly) NSUInteger length;
 @property (nonatomic, readonly) NSUInteger sceneLength; // backwards compatibility
@@ -53,9 +55,12 @@
 
 @property (nonatomic, weak) id<LineDelegate> delegate;
 
-@property (nonatomic, weak) Line * line; /// The heading line of this scene
-@property (nonatomic, weak) OutlineScene * parent; /// Either a SECTION (for scenes) or a HEADING for synopsis lines
+@property (nonatomic, weak) Line* line; /// The heading line of this scene
+@property (nonatomic, weak) OutlineScene* parent; /// Either a SECTION (for scenes) or a HEADING for synopsis lines
 @property (nonatomic) NSMutableArray <OutlineScene*>* children; /// Children of this scene (if a section, or if it contains synopsis lines)
+
+@property (nonatomic) NSMutableArray<Line*>* synopsis;
+@property (nonatomic) NSMutableArray<Line*>* lines;
 
 @property (strong, nonatomic) NSString * string; /// Clean string representation of the line
 @property (nonatomic) LineType type;

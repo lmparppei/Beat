@@ -38,15 +38,14 @@
 	
 	self.line = line;
 	self.delegate = delegate;
-	self.beats = NSMutableArray.array;
-	
+	self.beats = NSMutableArray.new;
+    self.synopsis = NSMutableArray.new;
+    self.lines = NSMutableArray.new;
+    
 	return self;
 }
 - (NSRange)range {
 	return NSMakeRange(self.position, self.length);
-}
-- (NSString*)stringForDisplay {
-	return self.line.stringForDisplay;
 }
 -(NSInteger)timeLength {
 	// Welllll... this is a silly implementation, but let's do it.
@@ -55,9 +54,6 @@
 	if (length < 0) length = 40;
 	
 	return length;
-}
-- (NSString*)typeAsString {
-	return self.line.typeAsString;
 }
 
 #pragma mark - JSON serialization
@@ -96,21 +92,24 @@
 
 #pragma mark - Forwarded properties
 
-// Forward these properties from line
--(LineType)type { return self.line.type; }
--(NSUInteger)position {	return self.line.position; }
+ -(LineType)type { return self.line.type; }
+- (NSString*)stringForDisplay { return self.line.stringForDisplay;
+}
+- (NSString*)typeAsString { return self.line.typeAsString; }
 
--(bool)omitted {return self.line.omitted; }
--(bool)omited {	return self.omitted; } // Legacy compatibility
+- (NSUInteger)position {	return self.line.position; }
 
--(NSString*)color {	return self.line.color; }
+- (bool)omitted {return self.line.omitted; }
+- (bool)omited {	return self.omitted; } // Legacy compatibility
 
--(NSString*)sceneNumber { return self.line.sceneNumber; }
--(void)setSceneNumber:(NSString *)sceneNumber { self.line.sceneNumber = sceneNumber; }
+- (NSString*)color {	return self.line.color; }
 
-// Backwards compatibility
--(NSUInteger)sceneStart { return self.position; }
--(NSUInteger)sceneLength { return self.length; }
+- (NSString*)sceneNumber { return self.line.sceneNumber; }
+- (void)setSceneNumber:(NSString *)sceneNumber { self.line.sceneNumber = sceneNumber; }
+
+// Plugin backwards compatibility
+- (NSUInteger)sceneStart { return self.position; }
+- (NSUInteger)sceneLength { return self.length; }
 
 #pragma mark - Generated properties
 
