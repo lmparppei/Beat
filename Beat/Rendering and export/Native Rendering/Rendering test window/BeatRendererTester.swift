@@ -59,7 +59,7 @@ class BeatRendererTester:NSWindowController {
 	}
 	
 	func showRender() {
-		renderer!.newRender(screenplay: screenplay!, settings: settings!, forEditor: false, titlePage: false)
+		renderer!.newRender(screenplay: screenplay!, settings: settings!, titlePage: false, forEditor: false, changeAt: 0)
 		
 		if(self.scrollView == nil) {
 			return

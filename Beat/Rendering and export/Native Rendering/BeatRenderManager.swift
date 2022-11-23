@@ -12,6 +12,7 @@ import Foundation
 	func renderingDidFinish(pages:[BeatPageView], pageBreaks:[BeatPageBreak])
 	func lines() -> [Line]
 	func text() -> String
+	var parser:ContinuousFountainParser? { get }
 }
 
 class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
@@ -22,10 +23,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	
 	var textCache = ""
 	var pageCache:[BeatPageView] = []
-	var pageBreakCache:[BeatPageBreak] = []
-	
 	var pages:[BeatPageView] = []
-	var pageBreaks:[BeatPageBreak] = []
 	
 	var livePagination = false
 	
@@ -47,11 +45,13 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	 let pages = renderer.pages
 	 let titlePage = renderer.titlePage
 	 */
-	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, titlePage:Bool) {
+	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings, titlePage:Bool) {
+		newRender(screenplay: screenplay, settings: settings, titlePage: titlePage, forEditor: false, changeAt: 0)
+	}
+	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings, titlePage:Bool, forEditor:Bool, changeAt:Int) {
 		self.pageCache = self.finishedOperation?.pages ?? []
-		self.pageBreakCache = self.finishedOperation?.pageBreaks ?? []
 		
-		let operation = BeatRenderer(delegate:self, screenplay: screenplay, settings: settings, livePagination: forEditor, cachedPages: self.pageCache, cachedPageBreaks: self.pageBreakCache)
+		let operation = BeatRenderer(delegate:self, screenplay: screenplay, settings: settings, livePagination: forEditor, changeAt:changeAt, cachedPages: self.pageCache)
 		runOperation(renderer: operation)
 	}
 	
@@ -88,7 +88,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		return [pageCount, eights]
 	}
 	
-	
+	/// Pagination or render was finished
 	func renderDidFinish(renderer: BeatRenderer) {
 		//print("# Render did finish")
 		let i = self.queue.firstIndex(of: renderer) ?? NSNotFound
@@ -101,8 +101,9 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		// if (operation.success && (timeDiff > 0 || self.finishedOperation == nil)) {
 		
 		self.finishedOperation = renderer
-		self.pageBreaks = renderer.pageBreaks
 		self.pages = renderer.pages
+		
+		self.delegate?.renderingDidFinish(pages: self.pages, pageBreaks: [])
 		
 		// Once finished, run the next operation, if it exists
 		let lastOperation = queue.last
@@ -111,6 +112,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		}
 	}
 	
+	/// Run a render operation
 	func runOperation(renderer: BeatRenderer) {
 		// Cancel any running operations
 		cancelAllOperations()
@@ -119,24 +121,30 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		
 		// If the queue is empty, run it right away. Otherwise the operation will be run once other renderers have finished.
 		if queue.count == 1 {
-			if renderer.livePagination { renderer.liveRender() }
+			if renderer.livePagination { renderer.paginateForEditor() }
 			else { renderer.paginate() }
 		}
 	}
 	
+	/// Cancels all background operations
 	func cancelAllOperations() {
 		for operation in queue {
 			operation.canceled = true
 		}
 	}
-		
-	var lines: [Line] { get {
+	
+	
+	// MARK: - Delegation methods
+	
+	var lines: [Line] {
 		return self.delegate?.lines() ?? []
-	} }
+	}
 	
-	var text: String { get {
+	var text: String {
 		return self.delegate?.text() ?? ""
-	} }
+	}
 	
-	
+	var parser:ContinuousFountainParser? {
+		return self.delegate?.parser
+	}
 }

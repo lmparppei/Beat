@@ -11,7 +11,12 @@
  The latter holds a reference to the line it represents, and can be rendered into a formatted `NSAttributedString`,
  and each parent element renders itself using that string.
  
- NOTE: A line break is appended to the actual line string, but all element heights have to be calculated without it.
+ At first, renderer paginates the document *but* doesn't actually render the lines for performance reasons.
+  
+ Note to self:
+ `addPage()` doesn't really make sense. I should opt for a queueing system — there's already a queue for
+ upcoming elements, and it would make much more sense to add the incoming elements there rather than
+ use the  recursive method.
  
 */
 
@@ -31,6 +36,7 @@ protocol BeatPageViewDelegate:NSObject {
 	var lines:[Line] { get }
 	var text:String { get }
 	func renderDidFinish(renderer:BeatRenderer)
+	var parser:ContinuousFountainParser? { get }
 }
 
 class BeatRenderer:NSObject, BeatPageViewDelegate {
@@ -40,11 +46,10 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	var fonts = BeatFonts.shared()
 	var settings:BeatExportSettings
 	var styles:Styles = Styles.shared
+	var location:Int = 0
 	
 	@objc var pages = [BeatPageView]()
-	var pageBreaks:[BeatPageBreak] = []
 	
-	var cachedPageBreaks:[BeatPageBreak]
 	var cachedPages:[BeatPageView]
 	
 	var currentPage:BeatPageView? = nil
@@ -54,19 +59,18 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	weak var delegate:BeatRenderOperationDelegate?
 
 	@objc var canceled = false
-	@objc var running = false
 	@objc var success = false
 		
-	convenience init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, cachedPageBreaks:[BeatPageBreak], cachedPages:[BeatPageView]) {
-		self.init(delegate:delegate, screenplay: screenplay, settings: settings, livePagination: true, cachedPages: cachedPages, cachedPageBreaks: cachedPageBreaks)
+	convenience init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, cachedPages:[BeatPageView]) {
+		self.init(delegate:delegate, screenplay: screenplay, settings: settings, livePagination: true, changeAt:0, cachedPages: cachedPages)
 	}
-	init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool, cachedPages:[BeatPageView]?, cachedPageBreaks:[BeatPageBreak]?) {
+	init(delegate:BeatRenderOperationDelegate, screenplay:BeatScreenplay, settings:BeatExportSettings, livePagination:Bool, changeAt:Int, cachedPages:[BeatPageView]?) {
 		self.livePagination = livePagination
 		self.lines = screenplay.lines
 		self.settings = settings
 		self.delegate = delegate
+		self.location = changeAt
 		
-		self.cachedPageBreaks = cachedPageBreaks ?? []
 		self.cachedPages = cachedPages ?? []
 		
 		startTime = Date()
@@ -91,12 +95,17 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		self.renderFinished()
 	}
 	
-	func liveRender() {
-		self.running = true
+	func paginateForEditor() {
+		if delegate == nil {
+			print("Renderer error: no delegate set")
+			return
+		}
 		
-		var actualIndex:Int = NSNotFound
-		var safePageIndex = 0 // self.findSafePage(position: self.location, actualIndex:actualIndex)
+		//var actualIndex:Int = NSNotFound
+		//var safePageIndex = 0 // self.findSafePage(position: self.location, actualIndex:actualIndex)
 		var startIndex = 0
+		
+		//self.delegate!.lines
 
 		/*
 		if safePageIndex != NSNotFound && safePageIndex > 0 && actualIndex != NSNotFound {
@@ -112,13 +121,96 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		*/
 		
 		self.pages = []
-		self.pageBreaks = []
 		currentPage = nil
 		
 		self.success = self.paginate(fromIndex: startIndex)
 		self.renderFinished()
 	}
 	
+	/// Returns page index based on line position
+	func findPageIndex(position:Int) -> Int {
+		for p in 0..<pages.count {
+			let page = pages[p]
+			
+			let lines = page.lines
+			for i in 0..<lines.count {
+				let line = lines[i]
+				
+				if NSMaxRange(line.range()) >= line.position {
+					return p
+				}
+			}
+		}
+		
+		return NSNotFound
+	}
+
+	/// Returns page index based on line
+	func findPageIndex(forLine line:Line) -> Int {
+		for i in 0..<pages.count {
+			let page = pages[i]
+			if page.lines.contains(line) {
+				return i
+			}
+		}
+
+		return NSNotFound
+	}
+	
+	/*
+	func findSafeLineIndex(from line:Line) -> Int {
+		let i = self.lines.firstIndex(of: line) ?? 0
+		if i == 0 { return 0 }
+		
+		let expectedType:LineType
+		if line.isAnyDialogue() { expectedType = .character }
+		
+		for idx in stride(from: i-1, to: 0, by: -1) {
+			//
+		}
+	}
+	*/
+	 
+	/*
+	func findSafeIndex(index:Int) -> Int {
+		let lines = self.lines
+		if index == 0 { return 0 }
+		
+		// Find the current line.
+		// Because all lines in editor are not present in the rendered document, we'll need to
+		// iterate one line *over*, check its range and return the previous one once we're over the given index.
+		var currentLine:Line? = nil
+		var prevLine:Line?
+		for line in self.lines {
+			if line.position >= NSMaxRange(line.range()) {
+				currentLine = prevLine
+				break
+			}
+			prevLine = line
+		}
+		
+		// No line found, paginate from beginning
+		if currentLine == nil { return 0 }
+		
+		let currentType = currentLine!.type
+
+		// Some items are safe to start pagination from
+		if currentType == .heading || currentType == .shot || currentType == .transitionLine
+		{
+			return index
+		}
+		
+		
+		var i = index - 1
+		while (i >= 0) {
+			
+			i -= 1
+		}
+		
+		return i
+	}
+	 */
+	 
 	func renderFinished() {
 		if (self.delegate != nil) {
 			self.delegate!.renderDidFinish(renderer: self)
@@ -155,7 +247,6 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	
 	@objc func paginate(fromIndex:Int) -> Bool {
 		startTime = Date()			// Reset time
-		pageBreaks = []				// Reset page breaks
 		
 		// This is the element queue. We are iterating the document line-by-line,
 		// but work with blocks. When an element becomes part of a block, it's added
@@ -214,10 +305,8 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 						
 			// catch forced page breaks first
 			if (line.type == .pageBreak) {
-				addPage(currentPage!, onCurrentPage: [line], onNextPage: [])
-				
 				let pageBreak = BeatPageBreak(y: -1, element: line, reason: "Forced page break")
-				pageBreaks.append(pageBreak)
+				addPage(currentPage!, onCurrentPage: [line], onNextPage: [], pageBreak: pageBreak)
 				continue
 			}
 			
@@ -286,7 +375,8 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			let remainingSpace = currentPage.remainingSpace
 			
 			if (remainingSpace < BeatRenderer.lineHeight()) {
-				// Less than 1 row, just roll over to the next page
+				// Less than 1 row, just roll over to the next page.
+				// No need to create a page break here, as the page will take care of it.
 				addPage(currentPage, onCurrentPage: [], onNextPage: queue)
 				return
 			}
@@ -315,12 +405,19 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	 - note: This method is recursive. If the newly-added blocks don'w fit on next page, `addPage` will be called inside the following `addBlocks` method
 	 */
 	func addPage(_ page:BeatPageView, onCurrentPage:[Line], onNextPage:[Line]) {
+		addPage(page, onCurrentPage: onCurrentPage, onNextPage: onNextPage, pageBreak: nil)
+	}
+	
+	func addPage(_ page:BeatPageView, onCurrentPage:[Line], onNextPage:[Line], pageBreak:BeatPageBreak?) {
 		// Add elements on the current page
 		if (onCurrentPage.count > 0) {
 			let prevPageBlock = BeatPageBlock(block: onCurrentPage, delegate: self)
 			page.addBlock(prevPageBlock)
 		}
 		pages.append(page)
+		
+		// Add page break
+		if pageBreak != nil { page.pageBreak = pageBreak }
 		
 		// Create a new page and add the rest on that one
 		currentPage = BeatPageView(delegate: self)
@@ -485,6 +582,8 @@ class BeatPageView:NSView {
 	var maxHeight = 0.0
 	var blocks:[BeatPageBlock] = []
 	
+	var pageBreak:BeatPageBreak?
+	
 	var linePadding = 10.0
 	var size:CGSize
 	
@@ -582,16 +681,20 @@ class BeatPageView:NSView {
 	func clear() {
 		self.textView!.string = ""
 	}
+	
+	// MARK: Add block on page
+	
+	// Add a whole block
+	func addBlock(_ block:BeatPageBlock) {
+		if self.pageBreak == nil && block.lines.first != nil {
+			// No page break set, let's make it the first object
+			let line = block.lines.first!
+			if !line.unsafeForPageBreak { self.pageBreak = BeatPageBreak(y: 0, element: line) }
+		}
 		
-	var renderedContentHeight:CGFloat {
-		self.render()
-		let _ = self.textView!.layoutManager!.glyphRange(for: textView!.textContainer!)
-		let bounds = self.textView!.layoutManager!.usedRect(for: textView!.textContainer!)
-		return bounds.height
-	
-		//return self.textView!.textStorage?.height(containerWidth: self.textView!.textContainer?.size.width ?? 0) ?? 0
+		self.blocks.append(block)
 	}
-	
+		
 	// MARK: Get items represented by this page
 	var lines:[Line] {
 		var lines:[Line] = []
@@ -600,6 +703,17 @@ class BeatPageView:NSView {
 		}
 		
 		return lines
+	}
+		
+	// MARK: Convenience methods
+	
+	var renderedContentHeight:CGFloat {
+		self.render()
+		let _ = self.textView!.layoutManager!.glyphRange(for: textView!.textContainer!)
+		let bounds = self.textView!.layoutManager!.usedRect(for: textView!.textContainer!)
+		return bounds.height
+
+		//return self.textView!.textStorage?.height(containerWidth: self.textView!.textContainer?.size.width ?? 0) ?? 0
 	}
 	
 	var representedRange:NSRange {
@@ -632,12 +746,6 @@ class BeatPageView:NSView {
 		get { return self.blocks.count }
 	}
 	 
-	// Add a whole block
-	func addBlock(_ block:BeatPageBlock) {
-		self.blocks.append(block)
-		//self.textView.textStorage!.append(block.attributedString)
-	}
-	
 	func pageNumberBlock() -> NSAttributedString {
 		if self.delegate == nil { print("Page number: No delegate set"); return NSAttributedString(string: "n/a"); }
 		
@@ -1274,6 +1382,14 @@ class BeatPageBlock:NSObject {
 		}
 	}
 	
+	/// Returns the type of first element
+	var type:LineType {
+		let line = self.lines.first
+		if line == nil { return .empty }
+		
+		return line!.type
+	}
+	
 	/// Returns block height
 	var height:CGFloat {
 		if calculatedHeight < 0 {
@@ -1864,7 +1980,7 @@ class BeatPageBlock:NSObject {
 	
 	func possiblePageBreakIndices() -> NSIndexSet {
 		// We can *always* break at the first index
-		var indices = NSMutableIndexSet(index: 0)
+		let indices = NSMutableIndexSet(index: 0)
 		let firstLine = self.elements.first!
 		let unallowedIndices = NSMutableIndexSet()
 		
@@ -1919,12 +2035,14 @@ class BeatBlockGroup {
 		return h
 	}
 	
-	func splitGroup(remainingSpace:CGFloat) -> ([Line], [Line]) {
+	func splitGroup(remainingSpace:CGFloat) -> ([Line], [Line], BeatPageBreak?) {
 		var space = remainingSpace
 		var passedBlocks:[BeatPageBlock] = []
 		
 		var onThisPage:[Line] = []
 		var onNextPage:[Line] = []
+		
+		var pageBreakItem:BeatPageBreak?
 		
 		var idx = 0
 		for block in self.blocks {
@@ -1938,18 +2056,21 @@ class BeatBlockGroup {
 				continue
 				
 			} else {
-				// Following block doesn't fit
+				// The following block doesn't fit on page
 				let pageBreak = block.splitBlock(remainingSpace: remainingSpace)
 				
+				// Is there something left on current page?
 				if pageBreak.0.count > 0 {
 					for passedBlock in passedBlocks { onThisPage.append(contentsOf: passedBlock.lines) }
 					onThisPage.append(contentsOf: pageBreak.0)
 				}
 				
+				// Did something spill on next page?
 				if pageBreak.1.count > 0 {
 					onNextPage.append(contentsOf: pageBreak.1)
 				}
 				
+				// If there were more blocks that didn't get handled, add them on next page
 				if (block != blocks.last!) {
 					for i in idx+1..<blocks.count {
 						let b = blocks[i]
@@ -1957,11 +2078,13 @@ class BeatBlockGroup {
 					}
 				}
 				
+				pageBreakItem = pageBreak.2
+				
 				break
 			}
 		}
 		
-		return (onThisPage, onNextPage)
+		return (onThisPage, onNextPage, pageBreakItem)
 	}
 }
 
