@@ -1,6 +1,15 @@
 # Changelog
 
-## Beat 1.97.3
+## Beat 1.97.5-7
+
+- Fixed some parsing issues
+- Added support for some Turkic language uppercase symbols
+- Native `NSAttributedString` rendering is *almost* there
+- Outline view drag & drop fixes
+- `synopsis` is no longer an outline object
+
+
+## Beat 1.97.x
 
 - Parsing moved into a separate framework (**requires testing**)
 
