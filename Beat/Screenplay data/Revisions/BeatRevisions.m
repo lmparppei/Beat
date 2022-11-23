@@ -337,7 +337,7 @@
 				// Check revision type
 				RevisionType type;
 				NSRange range = (NSRange){loc, len};
-				
+
 				if ([key isEqualToString:@"Addition"]) type = RevisionAddition;
 				else if ([key isEqualToString:@"Removal"] || [key isEqualToString:@"RemovalSuggestion"]) type = RevisionRemovalSuggestion;
 				else type = RevisionNone;
@@ -345,23 +345,6 @@
 				// Create the revision item
 				BeatRevisionItem *revisionItem = [BeatRevisionItem type:type color:color];
 				if (revisionItem) [_delegate.textView.textStorage addAttribute:REVISION_ATTR value:revisionItem range:range];
-				
-				// Also, find out the line and set their revision color.
-				// This is mostly done for compatibility with lines saved using earlier than 1.931.
-				NSArray *linesInRange = [self.delegate.parser linesInRange:range];
-				for (Line* l in linesInRange) {
-					if (l.type == empty) continue;
-					
-					l.changed = YES;
-					
-					if (l.revisionColor.length) {
-						if ([BeatRevisions isNewer:revisionItem.colorName than:l.revisionColor]) {
-							l.revisionColor = color;
-						}
-					} else {
-						l.revisionColor = color;
-					}
-				}
 			}
 		}
 	}
@@ -386,11 +369,9 @@
 		}
 	}
 		
+	// Set the mode in editor
 	bool revisionMode = [_delegate.documentSettings getBool:DocSettingRevisionMode];
-	if (revisionMode) {
-		self.delegate.revisionMode = YES;
-		[self.delegate updateQuickSettings];
-	}
+	if (revisionMode) { self.delegate.revisionMode = YES; }
 }
 
 #pragma mark Register changes
