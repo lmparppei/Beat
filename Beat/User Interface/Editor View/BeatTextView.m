@@ -1093,7 +1093,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSInteger index = -1;
 	for (OutlineScene *scene in parser.outline) {
-		if (scene.type == synopse || scene.type == section) continue;
+		if (scene.type == section) continue;
 		
 		index++; // Add to total scene heading count
 		
@@ -1232,7 +1232,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSInteger index = -1;
 	for (OutlineScene *scene in parser.outline) {
-		if (scene.type == synopse || scene.type == section) continue;
+		if (scene.type == section) continue;
 		
 		index++; // Add to total scene heading count
 		
@@ -1406,9 +1406,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (pageBreaks) _pageBreaks = pageBreaks;
 	
 	CGFloat factor = 1 / _zoomLevel;
-	if (!_pageNumberLabels) _pageNumberLabels = [NSMutableArray array];
+	if (!_pageNumberLabels) _pageNumberLabels = NSMutableArray.new;
 	
-	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	NSInteger pageNumber = 1;
 
 	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 20;
@@ -1416,16 +1415,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
 		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;
 	}
-
+	
+	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
-		NSString *page = [@(pageNumber) stringValue];
-		// Do we want the dot after page number?
-		// page = [page stringByAppendingString:@"."];
-		/*
-		NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:page attributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: pageNumberColor }];
-		[attrStr drawAtPoint:CGPointMake(rightEdge, [pageBreakPosition floatValue] + self.textContainerInset.height)];
-		attrStr = nil;
-		 */
+		NSString *page = [NSString stringWithFormat:@"%@.", @(pageNumber).stringValue];
+		NSMutableAttributedString *stylizedPageNumber = [NSMutableAttributedString.alloc initWithString:page attributes:@{ NSForegroundColorAttributeName: pageNumberColor }];
 		
 		NSTextField *label;
 		
@@ -1433,13 +1427,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		if (pageNumber - 1 >= self.pageNumberLabels.count) label = [self createPageLabel:page];
 		else label = self.pageNumberLabels[pageNumber - 1];
 		
-		[label setStringValue:page];
+		label.attributedStringValue = stylizedPageNumber;
 		
 		NSRect rect = NSMakeRect(rightEdge, pageBreakPosition.floatValue + self.textContainerInset.height, 50, 20);
 		label.frame = rect;
 		
-		[label setTextColor:pageNumberColor];
-
 		pageNumber++;
 	}
 	
