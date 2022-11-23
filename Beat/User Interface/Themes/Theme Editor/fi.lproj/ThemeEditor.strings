@@ -63,7 +63,7 @@
 "neE-Mb-Rip.title" = "Palauta";
 
 /* Class = "NSTextFieldCell"; title = "Comment"; ObjectID = "omc-Qp-Wls"; */
-"omc-Qp-Wls.title" = "Kommentti";
+"omc-Qp-Wls.title" = "Muistiinpano";
 
 /* Class = "NSTextFieldCell"; title = "Invisible Text"; ObjectID = "pol-nH-YUx"; */
 "pol-nH-YUx.title" = "Näkymätön teksti";
