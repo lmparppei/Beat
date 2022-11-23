@@ -296,10 +296,11 @@ static NSString *reviewAttribute = @"BeatReview";
 	
 	// Add selected attributes
 	if (range.length > 0) {
+		// Line does have content
 		[textStorage addAttributes:attributes range:range];
 	} else {
-		// Add attributes ahead
-		if (range.location + 1 < textStorage.string.length) {
+		// Line is currently empty. Add attributes ahead.
+		if (range.location < textStorage.string.length) {
 			range = NSMakeRange(range.location, range.length + 1);
 			[textStorage addAttributes:attributes range:range];
 		}
@@ -465,8 +466,11 @@ static NSString *reviewAttribute = @"BeatReview";
 	
 	// Heading elements can be colorized using [[COLOR COLORNAME]],
 	// so let's respect that first
-	if (line.isOutlineElement && line.color.length > 0) {
-		NSColor *color = [BeatColors color:line.color];
+	if (line.isOutlineElement || line.type == synopse) {
+		NSColor *color;
+		if (line.color.length > 0) {
+			color = [BeatColors color:line.color];
+		}
 		if (color == nil) {
 			if (line.type == section) color = themeManager.sectionTextColor;
 			else if (line.type == synopse) color = themeManager.synopsisTextColor;
