@@ -582,24 +582,18 @@ static BeatAppDelegate *appDelegate;
 }
 
 -(void)loadingComplete {
-	_attrTextCache = self.textView.attributedString;
+	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
+	self.progressPanel = nil;
 	
 	[_parser.changedIndices removeAllIndexes];
 	[self.formatting initialTextBackgroundRender];
-	
-	[CATransaction begin];
-	if (self.progressPanel != nil) [self.documentWindow endSheet:self.progressPanel];
-	[CATransaction commit];
-
-	self.progressPanel = nil;
-	
-	[self updateLayout];
-	[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-	
+	_attrTextCache = self.textView.attributedString;
+			
 	[self.revisionTracking setup]; // Initialize edit tracking
-	[self.review setup]; // Setup review system WIP: Harmonize this with the above classes
+	[self.review setup]; // Setup review system
 	[self.tagging setup]; // Setup tagging
-
+	
+	
 	// Document loading has ended
 	self.documentIsLoading = NO;
 	
@@ -642,7 +636,7 @@ static BeatAppDelegate *appDelegate;
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
 	
-	[self renderTest];
+	//[self renderTest];
 }
 
 -(void)renderTest {
@@ -1693,7 +1687,7 @@ static NSWindow __weak *currentKeyWindow;
 		// Action lines need to perform some checks
 		else if (currentLine.type == action) {
 			// Perform a double-check if there is a next line
-			if (currentIndex < self.parser.lines.count - 2 && currentIndex != NSNotFound) {
+			if (currentIndex + 1 < self.parser.lines.count && currentIndex != NSNotFound) {
 				Line* nextLine = self.parser.lines[currentIndex + 1];
 				if (nextLine.string.length == 0) {
 					// If it *might* be a character cue, skip this behavior.
@@ -2731,16 +2725,19 @@ static bool _skipAutomaticLineBreaks = false;
 
 - (void)loadSerifFonts {
 	_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
-	_boldCourier = [_courier withTraits:NSFontDescriptorTraitBold];
-	_italicCourier = [_courier withTraits:NSFontDescriptorTraitItalic];
-	_boldItalicCourier = [_courier withTraits:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
+	[self loadFont];
 }
 - (void)loadSansSerifFonts {
 	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
-	_boldCourier = [NSFont fontWithName:@"Courier Prime Sans Bold" size:[self fontSize]];
-	_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Sans Bold Italic" size:[self fontSize]];
-	_italicCourier = [NSFont fontWithName:@"Courier Prime Sans Italic" size:[self fontSize]];
+	[self loadFont];
 }
+- (void)loadFont {
+	_boldCourier = [_courier withTraits:NSFontDescriptorTraitBold];
+	_italicCourier = [_courier withTraits:NSFontDescriptorTraitItalic];
+	_boldItalicCourier = [_courier withTraits:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
+	self.textView.font = _courier;
+}
+
 - (IBAction)selectSerif:(id)sender {
 	NSMenuItem* item = sender;
 	if (item.state != NSOnState) self.useSansSerif = NO;
