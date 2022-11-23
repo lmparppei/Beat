@@ -46,7 +46,6 @@ static CGFloat size = 12;
 
 -(void)mouseUp:(NSEvent *)event {
 	[super mouseUp:event];
-	NSLog(@"mouseup");
 }
 
 - (void)drawRect:(NSRect)dirtyRect {

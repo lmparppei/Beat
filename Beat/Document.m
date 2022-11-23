@@ -656,24 +656,12 @@ static BeatAppDelegate *appDelegate;
 	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
 	[_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
 */
-	
+	/*
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"lol" printSceneNumbers:YES];
 	[self bakeRevisions];
 	if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
 	[_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
-	
-	[BeatMeasure start:@"Old paginator"];
-	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-	NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
-	[self.paginator livePaginationFor:lines changeAt:0];
-	[BeatMeasure end:@"Old paginator"];
-	
-	[BeatMeasure start:@"New renderer"];
-	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-	BeatRenderManager *manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
-	[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings forEditor:false titlePage:false];
-	[BeatMeasure end:@"New renderer"];
-
+	 */
 }
 
 -(void)awakeFromNib {
@@ -2186,7 +2174,7 @@ static bool _skipAutomaticLineBreaks = false;
 			// Look for start of omission, but break when encountering an outline item
 			for (NSInteger i = idx - 1; i >= 0; i++) {
 				Line *prevLine = self.lines[i];
-				if (prevLine.type == heading || prevLine.type == synopse || prevLine.type == section) break;
+				if (prevLine.isOutlineElement) break;
 				else if (prevLine.omitOut && [prevLine.string rangeOfString:@"/*"].location != NSNotFound) {
 					omissionStartsAt = prevLine.position + [prevLine.string rangeOfString:@"/*"].location;
 					break;
@@ -2230,13 +2218,7 @@ static bool _skipAutomaticLineBreaks = false;
 		to = outline.count - 1;
 		moveToEnd = true;
 	}
-		
-	if (sceneToMove.type == synopse) {
-		// We need to add a line break for synopsis lines, because they only span for a single line.
-		// Moving them around could possibly break parsing.
-		string = [string stringByAppendingString:@"\n"];
-	}
-	
+			
 	// Scene before which this scene will be moved, if not moved to the end
 	OutlineScene *sceneAfter;
 	if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
@@ -2558,7 +2540,6 @@ static bool _skipAutomaticLineBreaks = false;
 - (void)formatAllWithDelay:(NSInteger)idx {
 	// We split the document into chunks of 400 lines and render them asynchronously
 	// to throttle the initial loading of document a bit
-	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		Line *line;
 		NSInteger lastIndex = idx;
@@ -4172,12 +4153,12 @@ static NSArray<Line*>* cachedTitlePage;
 		self.paginationTimer = nil;
 	}
 	
-	cachedTitlePage = [ContinuousFountainParser titlePageForString:self.text];
-	
 	NSInteger wait = 1.0;
 	if (sync) wait = 0;
 
 	self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
+		cachedTitlePage = [ContinuousFountainParser titlePageForString:self.text];
+
 		// Make a copy of the array for thread-safety
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];

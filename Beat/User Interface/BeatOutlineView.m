@@ -20,6 +20,7 @@
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
 #import "BeatMeasure.h"
+#import "BeatUserDefaults.h"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
@@ -76,6 +77,9 @@
 
 @property (nonatomic) NSArray *cachedOutline;
 
+@property (weak, nonatomic) IBOutlet NSButton *synopsisCheckbox;
+@property (nonatomic) bool showSynopsis;
+
 @end
 
 @implementation BeatOutlineView
@@ -92,6 +96,10 @@
 	self.filters = SceneFiltering.new;
 	_filters.editorDelegate = self.editorDelegate;
 	self.filteredOutline = [NSMutableArray array];
+	
+	self.showSynopsis = [BeatUserDefaults.sharedDefaults getBool:@"showSynopsisInOutline"];
+	if (self.showSynopsis) self.synopsisCheckbox.state = NSOnState;
+	else self.synopsisCheckbox.state = NSOffState;
 	
 	[self registerForDraggedTypes:@[LOCAL_REORDER_PASTEBOARD_TYPE, OUTLINE_DATATYPE]];
 	[self setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
@@ -189,6 +197,17 @@
 	[_collapsed removeObject:expandedSection];
 }
 
+#pragma mark - Toggle synopsis / section visibility
+
+- (IBAction)toggleSynopsis:(id)sender {
+	NSButton *checkbox = sender;
+	bool value = (checkbox.state == NSOnState) ? true : false;
+	
+	self.showSynopsis = value;
+	[BeatUserDefaults.sharedDefaults saveBool:value forKey:@"showSynopsisInOutline"];
+	
+	[self reloadOutline];
+}
 
 #pragma mark - Delegation
 
@@ -206,7 +225,7 @@
 // FOR VIEW-BASED OUTLINE. Very slow.
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
 	NSTableCellView *view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
-	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene];
+	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis];
 	
 	return view;
 }
@@ -271,7 +290,7 @@
 {
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		// Note: OutlineViewItem returns an NSMutableAttributedString
-		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene];
+		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis];
 	}
 	return @"";
 	
@@ -288,6 +307,7 @@
 }
 
 /*
+ // View based setup
 -(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
 	_editing = NO;
 	if (![item isKindOfClass:[OutlineScene class]]) return;
@@ -479,7 +499,7 @@
 	NSButton *button = (NSButton*)sender;
 	
 	if (button.state == NSControlStateValueOn) {
-		[self.filterViewHeight setConstant:75.0];
+		[self.filterViewHeight setConstant:110.0];
 	} else {
 		[_filterViewHeight setConstant:0.0];
 	}

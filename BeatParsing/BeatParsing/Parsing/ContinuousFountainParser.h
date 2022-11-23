@@ -106,11 +106,6 @@
 - (NSArray*)preprocessForPrinting;
 - (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes;
 
-// Parselinetype is available for some testing
-- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive;
-- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index currentlyEditing:(bool)currentLine;
-- (LineType)parseLineType:(Line*)line atIndex:(NSUInteger)index recursive:(bool)recursive currentlyEditing:(bool)currentLine;
-
 - (void)ensureDialogueParsingFor:(Line*)line;
 
 //Convenience Methods for Testing

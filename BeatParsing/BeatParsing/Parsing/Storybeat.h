@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+
 @class Line;
 @class OutlineScene;
 @protocol StorybeatExports <JSExport>

@@ -424,9 +424,10 @@
 
 /// Returns TRUE for scene, section and synopsis elements
 - (bool)isOutlineElement {
-	if (self.type == heading ||
-		self.type == section ||
-		self.type == synopse) return YES;
+	if (self.type == heading
+		|| self.type == section
+		// || self.type == synopse
+        ) return YES;
 	else return NO;
 }
 
@@ -573,6 +574,23 @@
 	}];
 	
 	return inRange;
+}
+
+#pragma mark - Section depth
+
+- (NSUInteger)sectionDepth {
+    NSInteger len = self.string.length;
+    NSInteger depth = 0;
+
+    char character;
+    for (int c = 0; c < len; c++) {
+        if ([self.string characterAtIndex:c] == '#') depth++;
+        else break;
+    }
+    
+    _sectionDepth = depth;
+    self.numberOfPrecedingFormattingCharacters = depth;
+    return _sectionDepth;
 }
 
 #pragma mark - Story beats
@@ -1048,40 +1066,49 @@
 	return [self formattingRangesWithGlobalRange:NO includeNotes:YES];
 }
 
+- (NSUInteger)numberOfPrecedingFormattingCharacters {
+    if (self.string.length == 0) return 0;
+    
+    LineType type = self.type;
+    unichar c = [self.string characterAtIndex:0];
+    
+    // Check if this is a shot
+    if (self.string.length > 1) {
+        unichar c2 = [self.string characterAtIndex:1];
+        if (type == shot && c == '!' && c2 == '!') return 2;
+    }
+    
+    // Other types
+    if ((self.type == character && c == '@') ||
+        (self.type == heading && c == '.') ||
+        (self.type == action && c == '!') ||
+        (self.type == lyrics && c == '~') ||
+        (self.type == synopse && c == '=') ||
+        (self.type == centered && c == '>') ||
+        (self.type == transitionLine && c == '>')) {
+        return 1;
+    }
+    // Section
+    if (self.type == section) {
+        return self.sectionDepth;
+    }
+    
+    return 0;
+}
+
 /// Maps formatting characters into an index set, INCLUDING notes, scene numbers etc.
 /// You can use global range flag to return ranges relative to the *whole* document.
 /// Notes are included in formatting ranges by default.
 - (NSIndexSet*)formattingRangesWithGlobalRange:(bool)globalRange includeNotes:(bool)includeNotes
 {
 	NSMutableIndexSet *indices = NSMutableIndexSet.new;
-	NSString* string = self.string;
 	NSInteger offset = 0;
 	
 	if (globalRange) offset = self.position;
 	
 	// Add any ranges that are used to force elements. First handle the elements which don't work without markup characters.
-	if (self.type == synopse) {
-		[indices addIndex:0+offset];
-	}
-	else if (self.type == section) {
-		[indices addIndexesInRange:NSMakeRange(0, self.sectionDepth)];
-	}
-	else if (self.type == shot) {
-		[indices addIndexesInRange:NSMakeRange(0, 2)];
-	}
-	else if (string.length > 0 && self.numberOfPrecedingFormattingCharacters > 0 && self.type != centered) {
-		// These elements might *not* be forced
-		unichar c = [string characterAtIndex:0];
-		
-		if ((self.type == character && c == '@') ||
-			(self.type == heading && c == '.') ||
-			(self.type == action && c == '!') ||
-			(self.type == lyrics && c == '~') ||
-			(self.type == section && c == '#') ||
-			(self.type == synopse && c == '#') ||
-			(self.type == transitionLine && c == '>')) {
-			[indices addIndex:0+offset];
-		}
+    if (self.numberOfPrecedingFormattingCharacters > 0) {
+        [indices addIndex:0+offset];
 	}
 	
 	// Catch dual dialogue force symbol
@@ -1122,17 +1149,10 @@
 		[indices addIndexesInRange:NSMakeRange(range.location + range.length - UNDERLINE_PATTERN.length +offset, UNDERLINE_PATTERN.length)];
 	}];
 	[self.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length +offset)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length +offset, HIGHLIGHT_PATTERN.length)];
+		[indices addIndexesInRange:NSMakeRange(range.location, STRIKEOUT_PATTERN.length +offset)];
+		[indices addIndexesInRange:NSMakeRange(range.location + range.length - STRIKEOUT_PATTERN.length +offset, STRIKEOUT_PATTERN.length)];
 	}];
-	
-	/*
-	[self.highlightRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[indices addIndexesInRange:NSMakeRange(range.location, HIGHLIGHT_PATTERN.length)];
-		[indices addIndexesInRange:NSMakeRange(range.location + range.length - HIGHLIGHT_PATTERN.length, HIGHLIGHT_PATTERN.length)];
-	}];
-	*/
-		
+			
 	// Add note ranges
 	if (includeNotes) [indices addIndexes:self.noteRanges];
 	[indices addIndexes:self.omittedRanges];
@@ -1240,20 +1260,28 @@
 }
 
 - (NSString*)titlePageKey {
-    if (!self.isTitlePage) return @"";
-    
     NSInteger i = [self.string rangeOfString:@":"].location;
-    if (i == NSNotFound) return @"";
+    if (i == NSNotFound || i == 0) return @"";
     
     return [self.string substringToIndex:i].lowercaseString;
 }
 - (NSString*)titlePageValue {
-    if (!self.isTitlePage) return @"";
-    
     NSInteger i = [self.string rangeOfString:@":"].location;
     if (i == NSNotFound) return self.string;
     
     return [[self.string substringFromIndex:i+1] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+}
+
+/// Returns `true` for lines which should effectively be considered as empty when parsing.
+- (bool)effectivelyEmpty {
+    if (self.type == empty || self.length == 0 || self.opensOrClosesOmission || self.type == section || self.type == synopse) return true;
+    else return false;
+}
+
+- (bool)opensOrClosesOmission {
+    NSString *trimmed = [self.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    if ([trimmed isEqualToString:@"*/"] || [trimmed isEqualToString:@"/*"]) return true;
+    return false;
 }
 
 #pragma mark - JSON serialization

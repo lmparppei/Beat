@@ -75,7 +75,8 @@
 		@"showRevisions": @[@"showRevisions", @YES],
 		@"showTags": @[@"showTags", @YES],
 		@"automaticContd": @[@"automaticContd", @YES],
-		@"zoomLevel": @[@"zoomLevel", @0.97]
+		@"zoomLevel": @[@"zoomLevel", @0.97],
+		@"showSynopsisInOutline": @[@"showSynopsisInOutline", @YES]
 	};
 }
 

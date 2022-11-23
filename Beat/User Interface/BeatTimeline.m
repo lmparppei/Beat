@@ -169,7 +169,6 @@
 		for (OutlineScene *scene in _outline) {
 			// Skip some elements
 			if (scene.omitted) continue;
-			else if (scene.type == synopse) { scenes++; continue; }
 			
 			if (scene.type == heading) _totalLength += scene.timeLength;
 			if (scene.type == section) {
@@ -259,7 +258,7 @@
 	
 	OutlineScene *previousScene;
 	BeatTimelineItem *previousItem;
-	BeatTimelineItem *previousSynopsis;
+	//BeatTimelineItem *previousSynopsis;
 	BeatTimelineItem *previousSection;
 	
 	NSRect selectionRect = NSZeroRect;
@@ -330,6 +329,7 @@
 			
 			previousSection = item;
 		}
+		/*
 		else if (scene.type == synopse) {
 			// There is a chance that the synopsis line describes the CONTENT OF A SCENE and not a story point.
 			// The parser already takes this into account, so we'll just check if it is within the ranges.
@@ -357,6 +357,7 @@
 			}
 			previousSynopsis = item;
 		}
+		*/
 		
 		// Only add the width to the total width if it's a scene
 		// Sections add 3 px to account for the separator, while synopses add 0

@@ -184,6 +184,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)centered;
 - (NSString*)trimmed;
 - (bool)forced;
+- (bool)opensOrClosesOmission;
+- (bool)effectivelyEmpty;
 
 - (unichar)lastCharacter; /// Return last character (NOTE: Be careful not to go out of range!)
 

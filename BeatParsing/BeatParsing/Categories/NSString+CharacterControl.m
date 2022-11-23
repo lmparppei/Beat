@@ -24,15 +24,21 @@
     return YES;
 }
 
+- (NSCharacterSet*)uppercaseLetters {
+    // Add some symbols which are potentially not recognized out of the box.
+    NSMutableCharacterSet* characters = NSCharacterSet.uppercaseLetterCharacterSet.mutableCopy;
+    [characters addCharactersInString:@"ŞĞIİÜÅÄÖÇÑŠŽ"];
+    
+    return characters;
+}
+
 - (bool)containsUppercaseLetters
 {
-    NSUInteger length = [self length];
-    NSCharacterSet* characters = [NSCharacterSet uppercaseLetterCharacterSet];
-    for (int i = 0; i < length; i++) {
+    NSCharacterSet* characters = [self uppercaseLetters];
+    
+    for (int i = 0; i < self.length; i++) {
         char c = [self characterAtIndex:i];
-        if ([characters characterIsMember:c]) {
-            return YES;
-        }
+        if ([characters characterIsMember:c]) return YES;
     }
     return NO;
 }

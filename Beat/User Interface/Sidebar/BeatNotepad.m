@@ -5,6 +5,12 @@
 //  Created by Lauri-Matti Parppei on 21.10.2021.
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
+/*
+ 
+ Notepad content format:
+ <beatColorName>text</beatColorName>
+ 
+ */
 
 #import <BeatParsing/BeatParsing.h>
 #import <QuartzCore/QuartzCore.h>
@@ -106,63 +112,51 @@
 
 - (NSAttributedString*)coloredRanges:(NSString*)fullString
 {
-	NSUInteger length = fullString.length;
-	unichar string[length];
-	[fullString getCharacters:string];
-
-	NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
+	// Iterate through <colorName>...</colorName>, add colors to tagged ranges,
+	// and afterwards remove the tags enumerating the index set which contains ranges for tags.
 	
-	NSArray *colors = BeatColors.colors.allKeys;
+	NSMutableAttributedString *attrStr = [NSMutableAttributedString.alloc initWithString:fullString];
+	[attrStr addAttribute:NSForegroundColorAttributeName value:NSColor.lightGrayColor range:(NSRange){ 0, attrStr.length }];
 	
-	NSInteger rangeBegin = -1; //Set to -1 when no range is currently inspected, or the the index of a detected beginning
-	NSString *currentMatch = @"";
-	for (NSInteger i = 0; i < length; i++) {
-		if (rangeBegin == -1 && string[i] == '<') {
-			// Opening tag
-			for (NSString *color in colors) {
-				if (i + color.length + 1 < length) {
-					NSRange tagRange = (NSRange){ i, color.length + 2 };
-					NSString *test = [fullString substringWithRange:tagRange];
-					NSString *colorTag = [NSString stringWithFormat:@"<%@>", color];
-					if ([test isEqualToString:colorTag]) {
-						currentMatch = color;
-						rangeBegin = i + color.length + 2;
-						i += color.length + 1;
-						
-						break;
-					}
-				}
-			}
-			if (currentMatch.length) continue;
-		}
-		else if (rangeBegin >= 0) {
-			if (i + 3 + currentMatch.length <= length ) {
-				if (string[i] == '<' && string [i+1] == '/' && string[i+2+currentMatch.length] == '>') {
-					NSRange tagRange = (NSRange){ i + 2, currentMatch.length };
-					NSString *test = [fullString substringWithRange:tagRange];
-					if ([test isEqualToString:currentMatch]) {
-						i += currentMatch.length + 2;
-						currentMatch = @"";
-						rangeBegin = -1;
-						continue;
-					}
-				}
-			}
-		}
+	NSMutableIndexSet *keyRanges = NSMutableIndexSet.new;
+	
+	for (NSString *color in BeatColors.colors.allKeys) {
+		NSString *open = [NSString stringWithFormat:@"<%@>", color];
+		NSString *close = [NSString stringWithFormat:@"</%@>", color];
 		
-		// append character
-		[attrStr appendAttributedString:
-		 [NSAttributedString.alloc initWithString: [NSString stringWithFormat:@"%c", string[i] ]]
-		];
-		if (currentMatch.length) {
-			[attrStr addAttribute:NSForegroundColorAttributeName value:[BeatColors color:currentMatch] range:(NSRange){ attrStr.length - 1, 1 }];
-		} else {
-			[attrStr addAttribute:NSForegroundColorAttributeName value:ThemeManager.sharedManager.textColor.darkAquaColor range:(NSRange){ attrStr.length - 1, 1 }];
-		}
-	
+		NSInteger prevLoc = 0;
+		NSRange openRange = NSMakeRange(0, 0);
+		NSRange closeRange = NSMakeRange(0, 0);
+		
+		do {
+			openRange = [attrStr.string rangeOfString:open options:0 range:NSMakeRange(prevLoc, attrStr.length - prevLoc)];
+			if (openRange.location == NSNotFound) continue;
+			
+			closeRange = [attrStr.string rangeOfString:close options:0 range:NSMakeRange(prevLoc, attrStr.length - prevLoc)];
+			if (closeRange.location == NSNotFound) continue;
+			
+			[attrStr addAttribute:NSForegroundColorAttributeName value:[BeatColors color:color] range:(NSRange){ openRange.location, NSMaxRange(closeRange) - openRange.location }];
+			
+			[keyRanges addIndexesInRange:openRange];
+			[keyRanges addIndexesInRange:closeRange];
+			
+			prevLoc = NSMaxRange(closeRange);
+		} while (openRange.location != NSNotFound && closeRange.location != NSNotFound);
+		
 	}
 	
-	return attrStr;
+	// Create an index set with full string
+	NSMutableIndexSet *visibleIndices = [NSMutableIndexSet.alloc initWithIndexesInRange:NSMakeRange(0, attrStr.length)];
+	[keyRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[visibleIndices removeIndexesInRange:range];
+	}];
+	
+	NSMutableAttributedString *result = NSMutableAttributedString.new;
+	[visibleIndices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		[result appendAttributedString:[attrStr attributedSubstringFromRange:range]];
+	}];
+	
+	return result;
 }
 
 - (void)saveToDocument {
@@ -189,7 +183,7 @@
 			[result appendString:[self.string substringWithRange:range]];
 		}
 	}];
-		
+	
 	return result;
 }
 
