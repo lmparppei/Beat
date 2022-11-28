@@ -832,24 +832,29 @@ static BeatAppDelegate *appDelegate;
 
 # pragma mark - Window interactions
 
+/// Returns the index of current view
 - (NSUInteger)selectedTab
 {
 	return [self.tabView indexOfTabViewItem:self.tabView.selectedTabViewItem];
 }
 
+/// Returns `true` when the editor view is visible
 - (bool)editorTabVisible {
 	if (self.currentTab == _editorTab) return YES;
 	else return NO;
 }
 
+/// Move to another editor view
 - (void)showTab:(NSTabViewItem*)tab {
 	[self.tabView selectTabViewItem:tab];
 }
 
+/// Returns the currently visible "tab" in main window (meaning editor, preview, index cards, etc.)
 - (NSTabViewItem*)currentTab {
 	return self.tabView.selectedTabViewItem;
 }
 
+/// Returns `true` if the document window is full screen
 - (bool)isFullscreen
 {
 	return ((_documentWindow.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
@@ -3421,7 +3426,7 @@ static bool _skipAutomaticLineBreaks = false;
 		
 		self.outlineView.enclosingScrollView.hasVerticalScroller = YES;
 		
-		if (![self isFullscreen]) {
+		if (![self isFullscreen] && !self.documentWindow.isZoomed) {
 			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
 			CGFloat newWidth = _documentWindow.frame.size.width + sidebarWidth;
 			CGFloat newX = _documentWindow.frame.origin.x - sidebarWidth / 2;
@@ -3454,7 +3459,7 @@ static bool _skipAutomaticLineBreaks = false;
 		// Hide outline
 		self.outlineView.enclosingScrollView.hasVerticalScroller = NO;
 		
-		if (![self isFullscreen]) {
+		if (![self isFullscreen] && !self.documentWindow.isZoomed) {
 			CGFloat sidebarWidth = self.outlineView.enclosingScrollView.frame.size.width;
 			CGFloat newX = _documentWindow.frame.origin.x + sidebarWidth / 2;
 			NSRect newFrame = NSMakeRect(newX,
