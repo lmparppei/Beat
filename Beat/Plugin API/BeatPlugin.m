@@ -60,6 +60,7 @@
 {
 	if ((self = [super init]) == nil) { return nil; }
 		
+	// Create virtual machine and JS context
 	_vm = [[JSVirtualMachine alloc] init];
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
 
@@ -88,6 +89,10 @@
 	}];
 }
 
+/** Creates `require` function in plugin scope for importing JavaScript.
+ - note: This can be used to import JavaScript either from inside the plugin container or from the app bundle. JS modules inside the app bundle should be required **without** `.js` extension.
+ 
+ */
 - (void)setupRequire {
 	// Thank you, ocodo on stackoverflow.
 	// Based on https://github.com/kasper/phoenix
@@ -99,10 +104,6 @@
 		
 		if(![NSFileManager.defaultManager fileExistsAtPath:modulePath]) {
 			// File doesn't exist inside the plugin container. Let's see if it can be found inside the app container.
-			//NSString *message = [NSString stringWithFormat:@"Require: File “%@” does not exist.", path];
-			//weakSelf.context.exception = [JSValue valueWithNewErrorFromMessage:message inContext:weakSelf.context];
-			//return;
-			
 			NSURL *url = [NSBundle.mainBundle URLForResource:path.lastPathComponent withExtension:@"js"];
 			if (url == nil) {
 				NSString *message = [NSString stringWithFormat:@"Require: File “%@” does not exist.", path];
@@ -117,12 +118,9 @@
 	};
 }
 
+/// Load JavaScript into plugin scope from any path. This is called by the block defined in `setupRequire`.
 - (void)importScript:(NSString *)path {
 	NSError *error;
-	
-	NSString *pluginPath = [BeatPluginManager.sharedManager pathForPlugin:self.pluginName];
-	NSLog(@"Plugin path... %@", pluginPath);
-	
 	NSString *script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
 
 	if (error) {
@@ -138,6 +136,7 @@
 
 #pragma mark - Running Scripts
 
+/// Load plugin data with the given data.
 - (void)loadPlugin:(BeatPluginData*)plugin
 {
 	self.plugin = plugin;
@@ -148,6 +147,7 @@
 	[self runScript:plugin.script];
 }
 
+/// Runs the JavaScript string
 - (void)runScript:(NSString*)pluginString
 {
 	//pluginString = [self preprocess:pluginString];
@@ -165,9 +165,8 @@
 }
 
 
+/// Force-quit a resident plugin. Used mostly by Beat to kill a background plugin by unchecking it under the Tools menu.
 - (void)forceEnd {
-	// This is user for force-quitting a resident plugin from the tools menu
-	
 	_terminating = YES;
 	if (_pluginWindows.count) {
 		for (BeatPluginHTMLWindow *window in _pluginWindows) {
@@ -186,11 +185,13 @@
 	[_delegate deregisterPlugin:self];
 }
 
+/// Restarts the plugin, clearing it from memory first.
 - (void)restart {
 	[self end];
 	[_delegate runPluginWithName:self.pluginName];
 }
 
+/// Quits the current plugin. **Required** when using plugins with callbacks.
 - (void)end {
 	// If end was called in callback, we'll wait until it's done before killing the plugin altogether
 	if (_inCallback) {
@@ -225,18 +226,21 @@
 	}
 }
 
+/// Give focus back to the editor
 - (void)focusEditor {
-	// Give focus back to the editor
 	[_delegate focusEditor];
 }
 
+/// Opens plugin developer log
 - (void)openConsole {
 	[BeatConsole.shared openConsole];
 }
+/// Clears plugin log
 - (IBAction)clearConsole:(id)sender {
 	[BeatConsole.shared clearConsole];
 }
 
+/// Check compatibility with Beat version number
 - (bool)compatibleWith:(NSString *)version {
 	return [BeatPluginManager.sharedManager isCompatible:version];
 }
@@ -244,8 +248,8 @@
 
 #pragma mark - Resident plugin
 
+/// Make the plugin stay running in the background.
 - (void)makeResident {
-	// Make the plugin stay in memory and register it with the document
 	_resident = YES;
 	[_delegate registerPlugin:self];
 }
@@ -253,7 +257,9 @@
 
 #pragma mark - Resident plugin listeners
 
-// Text change update
+/** Creates a listener for changes in editor text.
+ - note:When text is changed, selection will change, too. Avoid creating infinite loops by listening to both changes.
+ */
 - (void)onTextChange:(JSValue*)updateMethod {
 	[self setUpdate:updateMethod];
 }
@@ -267,7 +273,7 @@
 	if (!self.onTextChangeDisabled) [_updateMethod callWithArguments:@[@(range.location), @(range.length)]];
 }
 
-// Selection change update
+/// Creates a listener for changing selection in editor.
 - (void)onSelectionChange:(JSValue*)updateMethod {
 	[self setSelectionUpdate:updateMethod];
 }
@@ -282,7 +288,7 @@
 	if (!self.onSelectionChangeDisabled) [_updateSelectionMethod callWithArguments:@[@(selection.location), @(selection.length)]];
 }
 
-// Outline change update
+/// Creates a listener for changes in outline.
 - (void)onOutlineChange:(JSValue*)updateMethod {
 	[self setOutlineUpdate:updateMethod];
 }
@@ -300,6 +306,7 @@
 	if (!self.onOutlineChangeDisabled) [_updateOutlineMethod callWithArguments:self.delegate.parser.outline];
 }
 
+/// Creates a listener for selecting a new scene.
 - (void)onSceneIndexUpdate:(JSValue*)updateMethod {
 	[self setSceneIndexUpdate:updateMethod];
 }
@@ -312,7 +319,7 @@
 	if (!self.onSceneIndexUpdateDisabled) [_updateSceneMethod callWithArguments:@[@(sceneIndex)]];
 }
 
-// Window did become main
+/// Creates a listener for the window becoming main.
 - (void)onDocumentBecameMain:(JSValue*)updateMethod {
 	_documentDidBecomeMainMethod = updateMethod;
 	[self makeResident];
@@ -321,7 +328,7 @@
 	[_documentDidBecomeMainMethod callWithArguments:nil];
 }
 
-// Preview did update
+/// Creates a listener for when preview was updated.
 - (void)onPreviewFinished:(JSValue*)updateMethod {
 	_updatePreviewMethod = updateMethod;
 	[self makeResident];
@@ -330,7 +337,7 @@
 	[_updatePreviewMethod callWithArguments:nil];
 }
 
-// Document was saved
+/// Creates a listener for when document was saved.
 - (void)onDocumentSaved:(JSValue*)updateMethod {
 	_documentSavedCallback = updateMethod;
 	[self makeResident];
@@ -341,10 +348,12 @@
 
 #pragma mark - Resident plugin data providers
 
+/// Callback for when scene headings are being autocompleted. Can be used to inject data into autocompletion.
 - (void)onSceneHeadingAutocompletion:(JSValue*)callback {
 	_sceneCompletionCallback = callback;
 	[self makeResident];
 }
+/// Allows the plugin to inject data to scene heading autocompletion list. If the plugin does not have a completion callback, it's ignored.
 - (NSArray*)completionsForSceneHeadings {
 	if (_sceneCompletionCallback == nil) return @[];
 	
@@ -352,10 +361,12 @@
 	if (!value.isArray) return @[];
 	else return value.toArray;
 }
+/// Callback for when character cues are being autocompleted. Can be used to inject data into autocompletion.
 - (void)onCharacterAutocompletion:(JSValue*)callback {
 	_characterCompletionCallback = callback;
 	[self makeResident];
 }
+/// Allows the plugin to inject data to character autocompletion list. If the plugin does not have a completion callback, it's ignored.
 - (NSArray*)completionsForCharacters {
 	if (_characterCompletionCallback == nil) return @[];
 	
@@ -366,10 +377,15 @@
 
 #pragma mark - Import/Export callbacks
 
+/** Creates an import handler.
+ @param etensions Array of allowed file extensions
+ @param callback Callback for handling the actual import. The callback block receives the file contents as string.
+*/
 - (void)importHandler:(NSArray*)extensions callback:(JSValue*)callback {
 	self.importedExtensions = extensions;
 	self.importCallback = callback;
 }
+/// Creates an export handler.
 - (void)exportHandler:(NSArray*)extensions callback:(JSValue*)callback {
 	self.exportedExtensions = extensions;
 	self.exportCallback = callback;
@@ -378,17 +394,22 @@
 
 #pragma mark - Multithreading
 
+/// Shorthand for `dispatch()`
 - (void)async:(JSValue*)callback {
 	[self dispatch:callback];
 }
+/// Shorthand for `dispatch_sync()`
 - (void)sync:(JSValue*)callback {
 	[self dispatch_sync:callback];
 }
+
+/// Runs the given block in a **background thread**
 - (void)dispatch:(JSValue*)callback {
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 		[callback callWithArguments:nil];
 	});
 }
+/// Runs the given block in **main thread**
 - (void)dispatch_sync:(JSValue*)callback {
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[callback callWithArguments:nil];
@@ -412,6 +433,7 @@
 
 #pragma mark - Timer
 
+/// Creates a `BeatPluginTimer` object, which fires after the given interval (seconds)
 - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats {
 	BeatPluginTimer *timer = [BeatPluginTimer scheduledTimerWithTimeInterval:seconds repeats:repeats block:^(NSTimer * _Nonnull timer) {
 		[self runCallback:callback withArguments:nil];
@@ -426,8 +448,10 @@
 		
 	return timer;
 }
+
+/// Removes unused timers from memory.
 - (void)cleanInvalidTimers {
-	NSMutableArray *timers = [NSMutableArray array];
+	NSMutableArray *timers = NSMutableArray.new;
 	
 	for (int i=0; i < _timers.count; i++) {
 		BeatPluginTimer *timer = _timers[i];
@@ -436,6 +460,8 @@
 	
 	_timers = timers;
 }
+
+/// Kills all background instances that might have been created by the plugin.
 - (void)stopBackgroundInstances {
 	for (BeatPluginTimer *timer in _timers) {
 		[timer invalidate];
@@ -453,6 +479,10 @@
 
 #pragma mark - File i/o
 
+/** Presents a save dialog.
+ @param format Allowed file extension
+ @param callback If the user didn't click on cancel, callback receives an array of paths (containing only a single path). When clicking cancel, the return parameter is nil.
+ */
 - (void)saveFile:(NSString*)format callback:(JSValue*)callback
 {
 	NSSavePanel *savePanel = [NSSavePanel savePanel];
@@ -469,6 +499,8 @@
 		}
 	}];
 }
+
+/// Writes string content to the given path.
 - (bool)writeToFile:(NSString*)path content:(NSString*)content
 {
 	NSError *error;
@@ -482,6 +514,10 @@
 	}
 }
 
+/** Presents an open dialog box.
+ @param format Array of file extensions allowed to be opened
+ @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths, though it contains only a single path.
+*/
 - (void)openFile:(NSArray*)formats callBack:(JSValue*)callback
 {
 	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
@@ -510,6 +546,10 @@
 	*/
 }
 
+/** Presents an open dialog box which allows selecting multiple files.
+ @param format Array of file extensions allowed to be opened
+ @param callback Callback is run after the open dialog is closed. If the user selected a file, the callback receives an array of paths.
+*/
 - (void)openFiles:(NSArray*)formats callBack:(JSValue*)callback
 {
 	// Open MULTIPLE files
@@ -528,28 +568,9 @@
 	} else {
 		[self runCallback:callback withArguments:nil];
 	}
-	
-	/*
-	// Alternatively we can use a sheet
-	[openPanel beginSheetModalForWindow:self.delegate.thisWindow completionHandler:^(NSModalResponse result) {
-		if (result == NSModalResponseOK) {
-			[openPanel close];
-			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 100), dispatch_get_main_queue(), ^(void){
-				// some other method calls here
-				NSMutableArray *paths = [NSMutableArray array];
-				for (NSURL* url in openPanel.URLs) {
-					[paths addObject:url.path];
-				}
-				
-				[callback callWithArguments:@[paths]];
-			});
-		} else {
-			[callback callWithArguments:nil];
-		}
-	}];
-	*/
 }
 
+/// Returns the given path as a string (from anywhere in the system)
 - (NSString*)fileToString:(NSString*)path
 {
 	NSError *error;
@@ -563,6 +584,8 @@
 	}
 }
 
+
+/// Returns string rendition of a PDF
 - (NSString*)pdfToString:(NSString*)path
 {
 	NSMutableString *result = [NSMutableString string];
@@ -580,6 +603,7 @@
 	return result;
 }
 
+/// Returns the given file in plugin container as string
 - (NSString*)assetAsString:(NSString *)filename
 {
 	if ([_plugin.files containsObject:filename]) {
@@ -591,6 +615,7 @@
 	}
 }
 
+/// Returns the file in app bundle as a string
 - (NSString*)appAssetAsString:(NSString *)filename
 {
 	NSString *path = [NSBundle.mainBundle pathForResource:filename.stringByDeletingPathExtension ofType:filename.pathExtension];
@@ -598,14 +623,21 @@
 	if (path) {
 		return [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
 	} else {
-		[self log:@"Can't find bundled file '%@' from app bundle"];
+		[self log:@"Can't find '%@' in app bundle"];
 		return @"";
 	}
 }
 
+/// Attempts to open  the given path in workspace (system)
+- (void)openInWorkspace:(NSString*)path {
+	[NSWorkspace.sharedWorkspace openFile:path];
+}
+
+
 
 #pragma mark - Scripting methods accessible via JS
 
+/// Logs the given message to plugin developer log
 - (void)log:(NSString*)string
 {
 	BeatConsole *console = BeatConsole.shared;
@@ -618,11 +650,13 @@
 	}
 }
 
+/// Scroll to given location in editor window
 - (void)scrollTo:(NSInteger)location
 {
 	[self.delegate scrollTo:location];
 }
 
+/// Scroll to the given line in editor window
 - (void)scrollToLine:(Line*)line
 {
 	@try {
@@ -632,16 +666,20 @@
 		[self reportError:@"Plugin tried to access an unknown line" withText:line.string];
 	}
 }
+
+/// Scrolls to the given line index in editor window
 - (void)scrollToLineIndex:(NSInteger)index
 {
 	[self.delegate scrollToLineIndex:index];
 }
 
+/// Scrolls to the given scene index in editor window
 - (void)scrollToSceneIndex:(NSInteger)index
 {
 	[self.delegate scrollToSceneIndex:index];
 }
 
+/// Scrolls to the given scene in editor window
 - (void)scrollToScene:(OutlineScene*)scene
 {
 	@try {
@@ -652,11 +690,13 @@
 	}
 }
 
+/// Adds a string into the editor at given index (location)
 - (void)addString:(NSString*)string toIndex:(NSUInteger)index
 {
 	[self.delegate addString:string atIndex:index];
 }
 
+/// Replaces the given range with a string
 - (void)replaceRange:(NSInteger)from length:(NSInteger)length withString:(NSString*)string
 {
 	NSRange range = NSMakeRange(from, length);
@@ -668,11 +708,13 @@
 	}
 }
 
+/// Returns the selected range in editor
 - (NSRange)selectedRange
 {
 	return self.delegate.selectedRange;
 }
 
+/// Sets  the selected range in editor
 - (void)setSelectedRange:(NSInteger)start to:(NSInteger)length
 {
 	@try {
@@ -684,11 +726,13 @@
 	}
 }
 
+/// Returns the plain-text string in editor
 - (NSString*)getText
 {
 	return _delegate.text;
 }
 
+/// Report a plugin error
 - (void)reportError:(NSString*)title withText:(NSString*)string {
 	// In the main thread, display errors as a modal window
 	if (NSThread.isMainThread) [self alert:title withText:string];
@@ -696,6 +740,7 @@
 	else [self log:[NSString stringWithFormat:@"%@ ERROR: %@ (%@)", self.pluginName, title, string]];
 }
 
+/// Presents an alert box
 - (void)alert:(NSString*)title withText:(NSString*)info
 {
 	if ([info isEqualToString:@"undefined"]) info = @"";
@@ -705,6 +750,7 @@
 	[alert runModal];
 }
 
+/// Presents a confirmation box, returning `true` if the user clicked `OK`.
 - (bool)confirm:(NSString*)title withInfo:(NSString*)info
 {
 	NSAlert *alert = [[NSAlert alloc] init];
@@ -722,6 +768,51 @@
 	}
 }
 
+/**
+ Displays a more elaborate modal window. You can add multiple types of inputs, define their values and names.
+ This is how you create the settings dictionary in JavaScript:
+ ```
+ Beat.modal({
+	 title: "This is a test modal",
+	 info: "You can input stuff into multiple types of fields",
+	 items: [
+		 {
+			 type: "text",
+			 name: "characterName",
+			 label: "Character Name",
+			 placeholder: "First Name"
+		 },
+		 {
+			 type: "dropdown",
+			 name: "characterRole",
+			 label: "Role",
+			 items: ["Protagonist", "Supporting Character", "Other"]
+		 },
+		 {
+			 type: "space"
+		 },
+		 {
+			 type: "checkbox",
+			 name: "important",
+			 label: "This is an important character"
+		 },
+		 {
+			 type: "checkbox",
+			 name: "recurring",
+			 label: "Recurring character"
+		 }
+	 ]
+ }, function(response) {
+	 if (response) {
+		 // The user clicked OK
+		 Beat.log(JSON.stringify(response))
+	 } else {
+		 // The user clicked CANCEL
+	 }
+ })
+ ```
+ @param settings Dictionary of modal window settings. Return value dictionary contains corresponding control names.
+ */
 - (NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback {
 	// We support both return & callback in modal windows
 	
@@ -759,6 +850,12 @@
 	}
 }
 
+/** Simple text input prompt.
+ @param prompt Title of the dialog
+ @param info Further info  displayed under the title
+ @param placeholder Placeholder string for text input
+ @param defaultText Default value for text input
+ */
 - (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText
 {
 	if ([placeholder isEqualToString:@"undefined"]) placeholder = @"";
@@ -784,6 +881,11 @@
 	}
 }
 
+/** Presents a dropdown box. Returns either the selected option or `null` when the user clicked on *Cancel*.
+ @param prompt Title of the dropdown dialog
+ @param withInfo Further information presented to the user below the title
+ @param items Items in the dropdown box as array of strings
+*/
 - (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items
 {
 	NSAlert *alert = [self dialog:prompt withInfo:info];
@@ -811,6 +913,7 @@
 	}
 }
 
+/// Displays a simple alert box.
 - (NSAlert*)dialog:(NSString*)title withInfo:(NSString*)info
 {
 	if ([info isEqualToString:@"undefined"]) info = @"";
@@ -822,6 +925,9 @@
 	return alert;
 }
 
+#pragma mark - User settings
+
+/// Defines user setting value for the given key.
 - (void)setUserDefault:(NSString*)settingName setting:(id)value
 {
 	if (!_pluginName) {
@@ -832,7 +938,7 @@
 	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
 	[[NSUserDefaults standardUserDefaults] setValue:value forKey:keyName];
 }
-
+/// Gets  user setting value for the given key.
 - (id)getUserDefault:(NSString*)settingName
 {
 	NSString *keyName = [NSString stringWithFormat:@"%@: %@", _pluginName, settingName];
@@ -976,13 +1082,15 @@
 
 #pragma mark - Window management
 
+/// Makes the given window move along its parent document window. **Never use with standalone plugins.**
 - (void)gangWithDocumentWindow:(NSWindow*)window {
 	[self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
 }
+/// Window no longer moves aside its document window.
 - (void)detachFromDocumentWindow:(NSWindow*)window {
 	[self.delegate.documentWindow removeChildWindow:window];
 }
-
+/// Show all plugin windows.
 - (void)showAllWindows {
 	if (_terminating) return;
 	
@@ -990,7 +1098,7 @@
 		[window appear];
 	}
 }
-
+/// All plugin windows become normal level windows, so they no longer float above the document window.
 - (void)hideAllWindows {
 	if (_terminating) return;
 	
@@ -1186,6 +1294,8 @@
 	return [self.delegate getPropertyValue:key];
 }
 
+/// Calls Objective C methods.
+/// @note Do **NOT** use this if you don't know what you are doing.
 - (id)objc_call:(NSString*)methodName args:(NSArray*)arguments {
 	Class class = [self.delegate.document class];
 	
@@ -1352,8 +1462,12 @@
 	return json;
 }
 
-- (void)setColor:(NSString *)color forScene:(OutlineScene *)scene {
-	[_delegate setColor:color forScene:scene];
+- (void)setColor:(NSString *)color forScene:(id)scene {
+	if ([scene isKindOfClass:OutlineScene.class]) {
+		[_delegate setColor:color forScene:scene];
+	} else if ([scene isKindOfClass:Line.class]) {
+		[_delegate setColor:color forLine:scene];
+	}
 }
 
 - (OutlineScene*)getCurrentScene {
@@ -1491,7 +1605,10 @@
 			[self log:[NSString stringWithFormat:@"Evaluate: %@", message.body]];
 		}
 	}
+}
 
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message replyHandler:(void (^)(id _Nullable, NSString * _Nullable))replyHandler {
+	
 }
 
 #pragma mark - Return revised ranges

@@ -166,7 +166,7 @@ JSExportAs(writeToFile, - (bool)writeToFile:(NSString*)path content:(NSString*)c
 JSExportAs(htmlPanel, - (void)htmlPanel:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback cancelButton:(bool)cancelButton);
 JSExportAs(htmlWindow, - (NSPanel*)htmlWindow:(NSString*)html width:(CGFloat)width height:(CGFloat)height callback:(JSValue*)callback);
 JSExportAs(timer, - (BeatPluginTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback repeats:(bool)repeats);
-JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(OutlineScene *)scene);
+JSExportAs(setColorForScene, -(void)setColor:(NSString *)color forScene:(id)scene);
 JSExportAs(modal, -(NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback);
 JSExportAs(printHTML, - (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback);
 
@@ -225,6 +225,7 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 - (void)removeRange:(NSRange)range;
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
+- (void)setColor:(NSString *)color forLine:(Line *)line;
 - (void)focusEditor;
 - (NSString*)text;
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
@@ -241,7 +242,7 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 - (void)runPluginWithName:(NSString*)pluginName;
 @end
 
-@interface BeatPlugin : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost>
+@interface BeatPlugin : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost, WKScriptMessageHandlerWithReply>
 @property (weak) id<BeatScriptingDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
