@@ -3083,16 +3083,6 @@ static bool _skipAutomaticLineBreaks = false;
 		}
 	}
 	
-	// Settings for EDIT MODE
-	if (_mode != EditMode) {
-		/*
-		 // Move these to revision class
-		 if (menuItem.action == @selector(markRangeForRemoval:) ||
-		 menuItem.action == @selector(markRangeAsAddition:) ||
-		 menuItem.action == @selector(clearMarkings:)) return NO;
-		 */
-	}
-	
 	if (menuItem.action == @selector(toggleTagging:)) {
 		if (_mode == TaggingMode) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
@@ -3129,7 +3119,6 @@ static bool _skipAutomaticLineBreaks = false;
 		
 	}
 	else if (menuItem.submenu.itemArray.firstObject.action == @selector(shareFromService:)) {
-		//else if ([menuItem.title isEqualToString:@"Share"]) {
 		[menuItem.submenu removeAllItems];
 		NSArray *services = @[];
 		
