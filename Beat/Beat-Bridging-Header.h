@@ -27,5 +27,6 @@
 #import "BeatPlugin.h"
 #import "BeatPluginManager.h"
 #import "BeatMeasure.h"
+#import "BeatBrowserView.h"
 
 #endif /* Beat_Bridging_Header_h */

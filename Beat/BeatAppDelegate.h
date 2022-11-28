@@ -47,13 +47,9 @@
 - (NSString *)pathForTemporaryFileWithPrefix:(NSString *)prefix;
 - (id)newDocumentWithContents:(NSString*)string;
 
-- (void)openURLInWebBrowser:(NSString*)urlString;
-
 - (IBAction)openPluginLibrary:(id)sender;
 - (void)showNotification:(NSString*)title body:(NSString*)body identifier:(NSString*)identifier oneTime:(BOOL)showOnce interval:(CGFloat)interval;
 
 - (IBAction)showReference:(id)sender;
-- (IBAction)openDiscord:(id)sender;
-- (IBAction)showSupport:(id)sender;
 
 @end

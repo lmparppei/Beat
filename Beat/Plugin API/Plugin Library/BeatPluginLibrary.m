@@ -174,7 +174,7 @@
 		}];
 	}
 	else if ([message.name isEqualToString:@"openLink"]) {
-		[(BeatAppDelegate*)NSApp.delegate openURLInWebBrowser:message.body];
+		[NSWorkspace.sharedWorkspace openFile:message.body];
 	}
 }
 

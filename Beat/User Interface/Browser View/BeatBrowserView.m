@@ -105,7 +105,8 @@
 		[(BeatAppDelegate*)NSApp.delegate showTemplate:message.body];
 	}
 	else if ([message.name isEqualToString:@"openLink"]) {
-		[(BeatAppDelegate*)NSApp.delegate openURLInWebBrowser:message.body];
+		NSURL* url = [NSURL URLWithString:message.body];
+		[NSWorkspace.sharedWorkspace openURL:url];
 	}
 }
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {

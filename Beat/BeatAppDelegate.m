@@ -56,6 +56,8 @@
 
 @property (nonatomic) BeatTest *tests;
 
+@property (nonatomic, weak) IBOutlet BeatWebResources *resources;
+
 #ifdef ADHOC
 // I'm supporting ad hoc distribution for now
 @property (nonatomic) IBOutlet SPUUpdater *updater;
@@ -404,11 +406,7 @@
 	
 	NSWindow* window = notification.object;
 	
-	if (window == _browser.window) {
-		[_browser resetWebView]; // Avoid retain cycle
-		_browser = nil;
-	}
-	else if (window == _episodePrinter.window) {
+	if (window == _episodePrinter.window) {
 		[NSApp stopModal];
 		_episodePrinter = nil;
 	}
@@ -419,59 +417,6 @@
 		[_pluginLibrary clearWebView];
 		_pluginLibrary = nil;
 	}
-}
-
-- (IBAction)showPatchNotes:(id)sender {
-	if (!_browser) {
-		_browser = BeatBrowserView.new;
-		_browser.window.delegate = self;
-	}
-	
-	NSURL *url = [NSBundle.mainBundle URLForResource:@"Patch Notes" withExtension:@"html"];
-	[self.browser showBrowser:url withTitle:NSLocalizedString(@"app.patchNotes", nil) width:550 height:640 onTop:true];	
-}
-
-- (IBAction)showManual:(id)sender {
-	if (!_browser) {
-		_browser = BeatBrowserView.new;
-		_browser.window.delegate = self;
-	}
-	
-	NSURL *url = [NSBundle.mainBundle URLForResource:@"beat_manual" withExtension:@"html"];
-	[_browser showBrowser:url withTitle:NSLocalizedString(@"app.manual", nil) width:850 height:600 onTop:false];
-}
-
-- (IBAction)showFountainSyntax:(id)sender
-{
-    [self openURLInWebBrowser:@"http://www.fountain.io/syntax#section-overview"];
-}
-- (IBAction)showSupport:(id)sender
-{
-    [self openURLInWebBrowser:@"http://www.kapitan.fi/beat/support.html"];
-}
-
-
-- (IBAction)showFountainWebsite:(id)sender
-{
-    [self openURLInWebBrowser:@"http://www.fountain.io"];
-}
-
-- (IBAction)showBeatWebsite:(id)sender
-{
-    [self openURLInWebBrowser:@"https://kapitan.fi/beat/"];
-}
-- (IBAction)showBeatSource:(id)sender
-{
-    [self openURLInWebBrowser:@"https://github.com/lmparppei/beat/"];
-}
-- (IBAction)openDiscord:(id)sender
-{
-	[self openURLInWebBrowser:@"http://discord.gg/FPHjfH7ms3"];
-}
-
-- (void)openURLInWebBrowser:(NSString*)urlString
-{
-    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:urlString]];
 }
 
 #pragma mark - Misc UI

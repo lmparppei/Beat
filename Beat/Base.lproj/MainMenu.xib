@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
     </dependencies>
     <objects>
@@ -220,7 +221,16 @@
                             <menuItem isSeparatorItem="YES" id="wN5-Sx-8eI"/>
                             <menuItem title="Share" id="tZ7-Ir-m78">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Share" id="u2H-KZ-IwH"/>
+                                <menu key="submenu" title="Share" id="u2H-KZ-IwH">
+                                    <items>
+                                        <menuItem title="Item" id="l2Z-ad-YVx">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="shareFromService:" target="-1" id="1nf-72-ebW"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                                 <connections>
                                     <action selector="share:" target="-1" id="x1b-hY-qBr"/>
                                 </connections>
@@ -940,7 +950,7 @@ DQ
                             <menuItem title="Beat Manual" id="Yiy-8c-i5h">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="showManual:" target="-1" id="QTL-lA-eLK"/>
+                                    <action selector="showManualWithSender:" target="N5l-jq-jtZ" id="Slf-uK-AtX"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Beat Tutorial" id="ZsI-w6-Fec">
@@ -953,46 +963,51 @@ DQ
                             <menuItem title="Patch Notes" id="jMf-Y4-igF">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="showPatchNotes:" target="vEX-2F-hcj" id="m7r-sq-wm8"/>
+                                    <action selector="showPatchNotesWithSender:" target="N5l-jq-jtZ" id="7is-hV-1dJ"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eyc-hG-S9v"/>
-                            <menuItem title="Support Beat" id="oNz-fC-tr3">
+                            <menuItem title="Support Beat" id="oNz-fC-tr3" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://www.kapitan.fi/beat/support.html"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="showSupport:" target="vEX-2F-hcj" id="UCi-i7-OQb"/>
+                                    <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="c0F-30-f9S"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Discord Community" id="u5m-eu-948">
+                            <menuItem title="Discord Community" id="u5m-eu-948" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://discord.gg/FPHjfH7ms3"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="openDiscord:" target="vEX-2F-hcj" id="RD2-y2-c71"/>
+                                    <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="Ayq-hy-XVQ"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="gy8-Q9-fNE"/>
-                            <menuItem title="How to write Fountain (Online)" hidden="YES" id="FKE-Sm-Kum">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="showFountainSyntax:" target="vEX-2F-hcj" id="6sK-eZ-AKi"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" hidden="YES" id="gZd-FK-fD7"/>
                             <menuItem title="Beat Website (Online)" id="guF-zs-YEi">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="showBeatWebsite:" target="vEX-2F-hcj" id="93l-EH-h5f"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Beat Source Code (Online)" id="CUo-uf-t1s">
+                            <menuItem title="Beat Source Code (Online)" id="CUo-uf-t1s" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://github.com/lmparppei/Beat/"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="showBeatSource:" target="vEX-2F-hcj" id="COh-bM-V1f"/>
+                                    <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="em0-lU-KjN"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Fountain website (Online)" id="oSB-uU-Wcb">
+                            <menuItem title="Fountain Website (Online)" id="oSB-uU-Wcb" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://www.fountain.io/"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="showFountainWebsite:" target="vEX-2F-hcj" id="TIG-tL-lWJ"/>
+                                    <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="dgC-z2-ebf"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -1025,5 +1040,6 @@ DQ
                 <outlet property="langMenu" destination="K9p-bw-V7y" id="u6c-8s-Rd1"/>
             </connections>
         </customObject>
+        <customObject id="N5l-jq-jtZ" customClass="BeatWebResources" customModule="Beat" customModuleProvider="target"/>
     </objects>
 </document>
