@@ -63,6 +63,9 @@
 	return [self forSerialization];
 }
 - (NSDictionary*)forSerialization {
+    NSMutableArray <NSDictionary*>*synopsis = NSMutableArray.new;
+    for (Line * s in _synopsis) [synopsis addObject:s.forSerialization];
+    
 	return @{
 		// String values have to be guarded so we don't try to put nil into NSDictionary
 		@"string": (self.string.length) ? self.string.copy : @"",
@@ -77,6 +80,7 @@
 		@"sceneStart": @(self.position),
 		@"sceneLength": @(self.length),
 		@"omitted": @(self.omitted),
+        @"synopsis": synopsis,
 		@"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
 		@"line": self.line.forSerialization
 	};

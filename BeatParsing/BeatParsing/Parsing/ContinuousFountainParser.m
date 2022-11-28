@@ -1068,7 +1068,7 @@ static NSDictionary* patterns;
     else if (firstChar == '>') return transitionLine;
     else if (firstChar == '~') return lyrics;
     else if (firstChar == '=') return synopse;
-    else if (firstChar == '#' && previousIsEmpty) return section;
+    else if (firstChar == '#') return section;
     else if (firstChar == '@' && lastChar == 94 && previousIsEmpty) return dualDialogueCharacter;
     else if (firstChar == '.' && previousIsEmpty) return heading;
     else if ([trimmedString isEqualToString:@"==="]) return pageBreak;
@@ -2091,13 +2091,6 @@ static NSDictionary* patterns;
 				
 				lastFoundScene = scene;
 			}
-			/*
-			if (line.type == synopse) {
-				// For synopsis lines, we set the parent to be either the preceding scene or latest section
-				if (lastFoundScene) scene.parent = lastFoundScene;
-				else scene.parent = lastFoundSection;
-			}
-             */
 			
 			// This was a new scene
 			if (sceneIndex >= _outline.count) [_outline addObject:scene];
@@ -2115,7 +2108,7 @@ static NSDictionary* patterns;
 		}
 		
         // Add synopsis items to last scene
-        if (line.type == synopse) {
+        if (line.type == synopse && !line.omitted) {
             if (lastFoundScene != nil) [lastFoundScene.synopsis addObject:line];
             else if (lastFoundSection != nil) [lastFoundSection.synopsis addObject:line];
         }

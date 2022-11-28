@@ -579,17 +579,14 @@
 #pragma mark - Section depth
 
 - (NSUInteger)sectionDepth {
-    NSInteger len = self.string.length;
     NSInteger depth = 0;
 
-    char character;
-    for (int c = 0; c < len; c++) {
+    for (int c = 0; c < self.string.length; c++) {
         if ([self.string characterAtIndex:c] == '#') depth++;
         else break;
     }
     
     _sectionDepth = depth;
-    self.numberOfPrecedingFormattingCharacters = depth;
     return _sectionDepth;
 }
 
@@ -1089,7 +1086,7 @@
         return 1;
     }
     // Section
-    if (self.type == section) {
+    else if (self.type == section) {
         return self.sectionDepth;
     }
     
@@ -1107,8 +1104,9 @@
 	if (globalRange) offset = self.position;
 	
 	// Add any ranges that are used to force elements. First handle the elements which don't work without markup characters.
-    if (self.numberOfPrecedingFormattingCharacters > 0) {
-        [indices addIndex:0+offset];
+    NSInteger precedingCharacters = self.numberOfPrecedingFormattingCharacters;
+    if (precedingCharacters > 0) {
+        [indices addIndexesInRange:NSMakeRange(0 + offset, precedingCharacters)];
 	}
 	
 	// Catch dual dialogue force symbol
@@ -1287,7 +1285,7 @@
 #pragma mark - JSON serialization
 
 -(NSDictionary*)forSerialization {
-	return @{
+    NSMutableDictionary *json = [NSMutableDictionary dictionaryWithDictionary:@{
 		@"string": (self.string.length) ? self.string.copy : @"",
 		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
 		@"position": @(self.position),
@@ -1299,7 +1297,14 @@
 		@"marker": (self.marker.length) ? self.marker : @"",
 		@"markerDescription": (self.markerDescription.length) ? self.markerDescription : @"",
 		@"uuid": (self.uuid) ? self.uuid.UUIDString : @""
-	};
+	}];
+    
+    if (self.type == synopse) {
+        json[@"color"] = (self.color != nil) ? self.color : @"";
+        json[@"stringForDisplay"] = self.stringForDisplay;
+    }
+    
+    return json;
 }
 
 /// Returns a dictionary of ranges for plugins
