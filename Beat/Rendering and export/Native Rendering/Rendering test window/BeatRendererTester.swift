@@ -77,7 +77,7 @@ class BeatRendererTester:NSWindowController {
 			return
 		}
 		
-		let pageSize = pages.last!.frame.size
+		let pageSize = pages.last!.size
 		let contentHeight = CGFloat(pages.count) * (pageSize.height + 10.0)
 		
 		var rect = content!.frame
@@ -88,11 +88,12 @@ class BeatRendererTester:NSWindowController {
 		
 		var i = 1
 		for page in pages {
-			content!.addSubview(page)
-			page.render()
-			var f = page.frame
-			f.origin.y = rect.height - (CGFloat(i) * page.frame.height) - (CGFloat(i) * 10)
-			page.frame = f
+			var pageView = page.forDisplay()
+			content!.addSubview(pageView)
+			
+			var f = pageView.frame
+			f.origin.y = rect.height - (CGFloat(i) * pageView.frame.height) - (CGFloat(i) * 10)
+			pageView.frame = f
 			
 			i += 1
 		}

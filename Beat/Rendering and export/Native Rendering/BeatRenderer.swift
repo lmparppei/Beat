@@ -70,7 +70,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		self.settings = settings
 		self.delegate = delegate
 		self.location = changeAt
-		
+				
 		self.cachedPages = cachedPages ?? []
 		
 		startTime = Date()
@@ -103,32 +103,47 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		
 		//var actualIndex:Int = NSNotFound
 		//var safePageIndex = 0 // self.findSafePage(position: self.location, actualIndex:actualIndex)
+		
 		var startIndex = 0
-		
-		//self.delegate!.lines
 
-		/*
-		if safePageIndex != NSNotFound && safePageIndex > 0 && actualIndex != NSNotFound {
-			self.pages = [self.pageCache subarrayWithRange:(NSRange){0, safePageIndex}].mutableCopy;
-			self.pageBreaks = [self.pageBreakCache subarrayWithRange:(NSRange){0, safePageIndex + 1}].mutableCopy; // +1 so we include the first, intial page break
-
-			startIndex = actualIndex;
-		}
-		else {
-			self.pages = []
-			self.pageBreaks = []
-		}
-		*/
+		// This returns the index for both page and the line inside that page
+		let indexPath = findSafeLine(position: self.location, pages: cachedPages)
 		
-		self.pages = []
-		currentPage = nil
+		if indexPath.0 != NSNotFound && indexPath.1 != NSNotFound && indexPath.0 < cachedPages.count && cachedPages.count > 0 {
+			self.pages = Array(self.cachedPages[0..<indexPath.0])
+			currentPage = self.cachedPages[indexPath.0]
+			
+			let safeLine = currentPage!.lines[indexPath.1]
+			currentPage!.clearUntil(line: safeLine)
+			
+			startIndex = self.lines.firstIndex(of: safeLine) ?? NSNotFound
+		}
+
+		if startIndex == 0 || startIndex == NSNotFound {
+			currentPage = nil
+			startIndex = 0
+		}
 		
 		self.success = self.paginate(fromIndex: startIndex)
 		self.renderFinished()
 	}
 	
 	/// Returns page index based on line position
-	func findPageIndex(position:Int) -> Int {
+	func findPageIndex(position:Int, pages:[BeatPageView]) -> Int {
+		var i = 0
+		while i < pages.count {
+			let p = pages[i]
+			if p.representedRange.location > position {
+				if i > 0 {
+					// Return PREVIOUS page
+					return i - 1
+				} else {
+					return 0
+				}
+			}
+			i += 1
+		}
+		
 		for p in 0..<pages.count {
 			let page = pages[p]
 			
@@ -157,60 +172,41 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		return NSNotFound
 	}
 	
-	/*
-	func findSafeLineIndex(from line:Line) -> Int {
-		let i = self.lines.firstIndex(of: line) ?? 0
-		if i == 0 { return 0 }
+	func findSafeLine(position:Int, pages:[BeatPageView]) -> (Int, Int) {
+		let pageIndex = findPageIndex(position: position, pages: pages)
+		if pageIndex == NSNotFound { return (0,0) }
 		
-		let expectedType:LineType
-		if line.isAnyDialogue() { expectedType = .character }
+		// Iterate pages backwards and try to find a safe index inside them
+		var pageIdx = pageIndex
 		
-		for idx in stride(from: i-1, to: 0, by: -1) {
-			//
-		}
-	}
-	*/
-	 
-	/*
-	func findSafeIndex(index:Int) -> Int {
-		let lines = self.lines
-		if index == 0 { return 0 }
-		
-		// Find the current line.
-		// Because all lines in editor are not present in the rendered document, we'll need to
-		// iterate one line *over*, check its range and return the previous one once we're over the given index.
-		var currentLine:Line? = nil
-		var prevLine:Line?
-		for line in self.lines {
-			if line.position >= NSMaxRange(line.range()) {
-				currentLine = prevLine
-				break
-			}
-			prevLine = line
-		}
-		
-		// No line found, paginate from beginning
-		if currentLine == nil { return 0 }
-		
-		let currentType = currentLine!.type
-
-		// Some items are safe to start pagination from
-		if currentType == .heading || currentType == .shot || currentType == .transitionLine
-		{
-			return index
-		}
-		
-		
-		var i = index - 1
-		while (i >= 0) {
+		//print("##### START - looking for: ", position)
+		while pageIdx >= 0 {
+			//print("- Page", pageIdx)
+			let page = pages[pageIdx]
 			
-			i -= 1
+			var i = page.indexForLine(at: position)
+			var lineIdx = page.findSafeLineFromIndex(i)
+						
+			if lineIdx == NSNotFound {
+				pageIdx -= 1
+				continue
+			}
+			
+			if lineIdx == 0 {
+				let line = page.lines[lineIdx]
+				if line.type == .shot || line.type == .heading {
+					pageIdx -= 1
+					continue
+				}
+			}
+			
+			print("Returning ", pageIndex , "/", lineIdx,  "  --  ", page.lines[lineIdx])
+			return (pageIdx, lineIdx)
 		}
 		
-		return i
+		return (0,0)
 	}
-	 */
-	 
+
 	func renderFinished() {
 		if (self.delegate != nil) {
 			self.delegate!.renderDidFinish(renderer: self)
@@ -225,8 +221,12 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		
 		for page in pages {
 			// Create a PDF image using the current page
-			page.display()
-			let data = page.dataWithPDF(inside: NSMakeRect(0, 0, page.frame.width, page.frame.height))
+			guard let pageView = page.pageView else {
+				continue
+			}
+			
+			pageView.display()
+			let data = pageView.dataWithPDF(inside: NSMakeRect(0, 0, pageView.frame.width, pageView.frame.height))
 			let pdfPage = PDFPage(image: NSImage(data: data)!)!
 			pdf.insert(pdfPage, at: pdf.pageCount)
 		}
@@ -567,13 +567,16 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 }
 
 
-// MARK: - Page view
+// MARK: - Page object
 /**
- Page view is a `NSView` / `UIView` with a `NSTextView`/`UITextView` inside it.
+ (Page view is a `NSView` / `UIView` with a `NSTextView`/`UITextView` inside it.)
  A page object holds references to the blocks that have been added on it, and the attributed string is
  rendered based on content of those blocks.
  */
-class BeatPageView:NSView {
+class BeatPagePrintView:NSView {
+	override var isFlipped: Bool { return true }
+}
+class BeatPageView:NSObject {
 	var fonts = BeatFonts.shared()
 	var textView:NSTextView?
 	var headerView:NSTextView?
@@ -589,10 +592,12 @@ class BeatPageView:NSView {
 	
 	var titlePage = false
 	
+	var rendered = false
+	var pageView:BeatPagePrintView?
+	
 	weak var delegate:BeatPageViewDelegate?
 	
 	var styles:Styles { return delegate!.styles }
-	override var isFlipped: Bool { return true }
 	
 	convenience init(delegate:BeatPageViewDelegate) {
 		self.init(delegate: delegate, titlePage: false)
@@ -609,39 +614,87 @@ class BeatPageView:NSView {
 		// Actual paper size in points
 		if delegate.settings.paperSize == .A4 { self.size = BeatPaperSizing.a4() }
 		else { self.size = BeatPaperSizing.usLetter() }
-
+		
 		// Max height for content. Subtract two lines to make space for page number and header.
 		self.maxHeight = size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom - BeatRenderer.lineHeight() * 2
 		
-		super.init(frame: NSMakeRect(0, 0, size.width, size.height))
+		super.init()
+		//super.init(frame: NSMakeRect(0, 0, size.width, size.height))
 	}
 		
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	func clearUntil(line:Line) {
+		let i = self.lines.firstIndex(of: line) ?? NSNotFound
+		if i == NSNotFound { print("Renderer error: Line not found on page"); return; }
+		
+		var blocks:[BeatPageBlock] = []
+		
+		for block in self.blocks {
+			if block.lines.contains(line) {
+				break
+			}
+			blocks.append(block)
+		}
+		
+		self.blocks = blocks
+		self.invalidate()
+	}
+	
+	func invalidate() {
+		self.rendered = false
+	}
+	
+	func forDisplay() -> NSView {
+		self.render()
+		return self.pageView!
+	}
+	
 	func render() {
-		// Create a content text view inside the page
-		self.textView = NSTextView(
-			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
-						  y: self.pageStyle.marginTop + BeatRenderer.lineHeight() * 3,
-						  width: size.width - self.pageStyle.marginLeft,
-						  height: self.maxHeight)
-		)
-		self.textView!.drawsBackground = true
-		self.textView!.backgroundColor = NSColor.white
-				
-		self.textView!.textContainer!.lineFragmentPadding = linePadding
-		self.textView!.textContainerInset = NSSize(width: 0, height: 0)
-
-		let layoutManager = BeatRenderLayoutManager()
-		self.textView!.textContainer?.replaceLayoutManager(layoutManager)
-		self.textView!.textContainer?.lineFragmentPadding = linePadding
-		self.addSubview(textView!)
+		// Do nothing, if this page is already rendered
+		if rendered { return }
 		
-		textView?.backgroundColor = .white
-		textView?.drawsBackground = true
+		// Create view if needed
+		if self.pageView == nil {
+			self.pageView = BeatPagePrintView(frame: NSRect(x: 0, y: 0, width: self.size.width, height: self.size.height))
+			self.pageView = BeatPagePrintView(frame: NSRect(x: 0, y: 0, width: self.size.width, height: self.size.height))
+			self.pageView?.canDrawConcurrently = true
+			
+			// Force white background
+			self.pageView?.wantsLayer = true
+			self.pageView?.layer?.backgroundColor = NSColor.white.cgColor
+		}
 		
+		// Create a text view inside the page if needed
+		if self.textView == nil {
+			self.textView = NSTextView(
+				frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
+							  y: self.pageStyle.marginTop + BeatRenderer.lineHeight() * 3,
+							  width: size.width - self.pageStyle.marginLeft,
+							  height: self.maxHeight)
+			)
+			self.textView!.drawsBackground = true
+			self.textView!.backgroundColor = NSColor.white
+			
+			self.textView!.textContainer!.lineFragmentPadding = linePadding
+			self.textView!.textContainerInset = NSSize(width: 0, height: 0)
+			
+			let layoutManager = BeatRenderLayoutManager()
+			self.textView!.textContainer?.replaceLayoutManager(layoutManager)
+			self.textView!.textContainer?.lineFragmentPadding = linePadding
+			
+			textView?.backgroundColor = .white
+			textView?.drawsBackground = true
+			
+			self.pageView?.addSubview(textView!)
+		}
+	
+		// Clear text view
+		textView?.string = ""
+		
+		// Render blocks on page
 		for block in blocks {
 			if block != blocks.first! {
 				self.textView!.textStorage!.append(block.render())
@@ -649,18 +702,16 @@ class BeatPageView:NSView {
 				self.textView!.textStorage!.append(block.render(firstElementOnPage: true))
 			}
 		}
-		
-		// Force white background
-		self.wantsLayer = true
-		self.layer?.backgroundColor = NSColor.white.cgColor
-		
+				
 		// Header view
 		if !titlePage {
-			self.headerView = createHeaderView(width: size.width - self.pageStyle.marginLeft)
-			self.addSubview(headerView!)
+			if self.headerView == nil {
+				self.headerView = createHeaderView(width: size.width - self.pageStyle.marginLeft)
+				self.pageView?.addSubview(headerView!)
+			}
 			
 			// Add page number
-			headerView!.textStorage?.append(self.pageNumberBlock())
+			headerView?.textStorage?.setAttributedString(self.pageNumberBlock())
 		}
 	}
 	
@@ -807,10 +858,61 @@ class BeatPageView:NSView {
 		
 		return leftContent
 	}
+	
+	// MARK: Finding elements on page
+	
+	func indexForLine(at position:Int) -> Int {
+		// Iterate elements backwards
+		var lineIdx = self.lines.count - 1
+		while lineIdx >= 0 {
+			let l = self.lines[lineIdx]
+			
+			if NSLocationInRange(position, l.range()) || position > NSMaxRange(l.range()) {
+				return lineIdx
+			}
+			else if lineIdx == 0 {
+				return 0
+			}
+			
+			lineIdx -= 1
+		}
+		
+		return NSNotFound
+	}
+	
+	func findSafeLineFromIndex(_ index:Int) -> Int {
+		var lineIdx = index
+		let line = self.lines[lineIdx]
+		
+		// This is unsafe, return no index found
+		if line.unsafeForPageBreak {
+			return NSNotFound
+		}
+		
+		// Find out where the block starts
+		if line.isDialogueElement() || line.isDualDialogueElement() {
+			while (lineIdx >= 0) {
+				let l = self.lines[lineIdx]
+				
+				if !l.isDialogue() && !l.isDualDialogue() { break }
+				if l.type == .character { break }
+				lineIdx -= 1
+			}
+		}
+		
+		if lineIdx > 0 {
+			// We need to look one more line behind to see if we're at a heading
+			let precedingLine = self.lines[lineIdx - 1]
+			if precedingLine.type == .heading || precedingLine.type == .shot {
+				lineIdx -= 1
+			}
+		}
+		
+		return lineIdx
+	}
 }
 
-
-// Layout manager for displaying revisions
+// MARK: - Layout manager for displaying revisions
 
 class BeatRenderLayoutManager:NSLayoutManager {
 	override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
@@ -893,9 +995,7 @@ class BeatTitlePageView:BeatPageView {
 		if delegate.settings.paperSize == .A4 { self.size = BeatPaperSizing.a4() }
 		else { self.size = BeatPaperSizing.usLetter() }
 	}
-	
-	override var isFlipped: Bool { return true }
-	
+		
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
@@ -990,38 +1090,47 @@ class BeatTitlePageView:BeatPageView {
 		if self.delegate == nil { return }
 		
 		// Force white background
-		self.wantsLayer = true
-		self.layer?.backgroundColor = NSColor.white.cgColor
+		if self.pageView == nil {
+			self.pageView = BeatPagePrintView(frame: NSMakeRect(0, 0, size.width, size.height))
+			self.pageView?.wantsLayer = true
+			self.pageView?.layer?.backgroundColor = NSColor.white.cgColor
+		}
 		
-		let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
-		let textViewFrame = NSRect(x: delegate!.styles.page().marginLeft,
-								   y: delegate!.styles.page().marginTop,
-								   width: frame.size.width - delegate!.styles.page().marginLeft * 2,
-								   height: 400)
+		if self.textView == nil {
+			let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
+			let textViewFrame = NSRect(x: delegate!.styles.page().marginLeft,
+									   y: delegate!.styles.page().marginTop,
+									   width: frame.size.width - delegate!.styles.page().marginLeft * 2,
+									   height: 400)
+			
+			textView = NSTextView(frame: textViewFrame)
+			textView?.isEditable = false
+			textView?.backgroundColor = .white
+						
+			let columnFrame = NSRect(x: delegate!.styles.page().marginLeft,
+									 y: textViewFrame.origin.y + textViewFrame.height,
+									 width: textViewFrame.width / 2 - 10,
+									 height: frame.height - textViewFrame.size.height - delegate!.styles.page().marginBottom)
+			
+			leftColumn = NSTextView(frame: columnFrame)
+			leftColumn?.isEditable = false
+			leftColumn?.backgroundColor = .white
+			
+			let rightColumnFrame = NSRect(x: frame.width - delegate!.styles.page().marginLeft - columnFrame.width,
+										  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
+			
+			rightColumn = NSTextView(frame: rightColumnFrame)
+			rightColumn?.isEditable = false
+			rightColumn?.backgroundColor = .white
+			
+			pageView!.addSubview(textView!)
+			pageView!.addSubview(leftColumn!)
+			pageView!.addSubview(rightColumn!)
+		}
 		
-		textView = NSTextView(frame: textViewFrame)
-		textView?.isEditable = false
-		textView?.backgroundColor = .white
-		
-		let columnFrame = NSRect(x: delegate!.styles.page().marginLeft,
-								 y: textViewFrame.origin.y + textViewFrame.height,
-								 width: textViewFrame.width / 2 - 10,
-								 height: frame.height - textViewFrame.size.height - delegate!.styles.page().marginBottom)
-		
-		leftColumn = NSTextView(frame: columnFrame)
-		leftColumn?.isEditable = false
-		leftColumn?.backgroundColor = .white
-		
-		let rightColumnFrame = NSRect(x: frame.width - delegate!.styles.page().marginLeft - columnFrame.width,
-									  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
-		
-		rightColumn = NSTextView(frame: rightColumnFrame)
-		rightColumn?.isEditable = false
-		rightColumn?.backgroundColor = .white
-		
-		self.addSubview(textView!)
-		self.addSubview(leftColumn!)
-		self.addSubview(rightColumn!)
+		textView?.string = ""
+		leftColumn?.string = ""
+		rightColumn?.string = ""
 		
 		createTitlePage()
 	}
@@ -2106,3 +2215,10 @@ class BeatPageBreak:NSObject {
 }
 
 
+/*
+ 
+ juhlien jatkoilla
+ ihan keskellä kaikkea vieläkin vaikea salata
+ kun aamuyöllä pitkällä
+ 
+ */
