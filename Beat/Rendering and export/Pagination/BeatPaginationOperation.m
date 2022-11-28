@@ -1156,15 +1156,14 @@
 	// Global page reset
 	if (prevPageItems.count) [currentPage addBlock:prevPageItems height:0]; // No need to calculate height for these elements
 	[self.pages addObject:currentPage.contents];
-	//[self.updatedPages addIndex:self.pages.count - 1];
 
 	[currentPage clear];
 	
 	// Let's run the next page block through height calculator, so its line objects get the correct height.
-	//NSInteger nextPageHeight = [self heightForBlock:nextPageItems];
-	//if (nextPageItems.count) [currentPage addBlock:nextPageItems height:nextPageHeight];
+	// NSInteger nextPageHeight = [self heightForBlock:nextPageItems];
+	// if (nextPageItems.count) [currentPage addBlock:nextPageItems height:nextPageHeight];
 	
-	if (nextPageItems.count) {
+	if (nextPageItems.count > 0) {
 		[self addBlockOnCurrentPage:nextPageItems currentPage:currentPage];
 	}
 }

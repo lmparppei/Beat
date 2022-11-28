@@ -366,17 +366,14 @@ static NSString *reviewAttribute = @"BeatReview";
 	[line.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
 		[textStorage applyFontTraits:NSItalicFontMask range:globalRange];
-		//[self stylize:NSFontAttributeName value:_delegate.italicCourier line:line range:range formattingSymbol:italicSymbol];
 	}];
 	[line.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
 		[textStorage applyFontTraits:NSBoldFontMask range:globalRange];
-		//[self stylize:NSFontAttributeName value:_delegate.boldCourier line:line range:range formattingSymbol:boldSymbol];
 	}];
 	[line.boldItalicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
 		[textStorage applyFontTraits:NSBoldFontMask | NSItalicFontMask range:globalRange];
-		//[self stylize:NSFontAttributeName value:_delegate.boldItalicCourier line:line range:range formattingSymbol:@""];
 	}];
 	
 	[line.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {

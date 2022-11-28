@@ -104,7 +104,7 @@
 	// Append synopsis lines
 	if (includeSynopsis) {
 		for (Line* synopsis in scene.synopsis) {
-			NSString *synopsisStr = [NSString stringWithFormat:@"\n• %@", synopsis.stringForDisplay];
+			NSString *synopsisStr = [NSString stringWithFormat:@"\n• %@", synopsis.stripFormatting];
 			BXColor *synopsisColor;
 			
 			if (synopsis.color.length > 0) synopsisColor = [BeatColors color:synopsis.color];

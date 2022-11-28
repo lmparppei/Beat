@@ -192,7 +192,7 @@
 		[self closeLaunchScreen];
 	}];
 	
-	// And show modal if all documents were closed
+	// Show modal if all documents were closed
 	[NSNotificationCenter.defaultCenter addObserverForName:@"Document close" object:nil queue:nil usingBlock:^(NSNotification *note) {
 		NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
 		
