@@ -64,6 +64,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Forward declaration to make parser available for text view
 @class BeatTextView;
 @class BeatReview;
+@class BeatWidgetView;
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser *parser;
@@ -103,8 +104,9 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 // Character input
 @property (nonatomic) Line* characterInputForLine;
 
-// Plugins running in this window
+// Plugin support
 @property (nonatomic) NSMutableDictionary <NSString*, BeatPlugin*>* runningPlugins;
+@property (weak) IBOutlet BeatWidgetView *widgetView;
 
 // Document settings
 @property (atomic) BeatDocumentSettings *documentSettings;

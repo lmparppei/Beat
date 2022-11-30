@@ -101,7 +101,6 @@
 #import "BeatTag.h"
 #import "TagDefinition.h"
 #import "BeatFDXExport.h"
-//#import "ValidationItem.h"
 #import "ITSwitch.h"
 #import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
@@ -120,6 +119,8 @@
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
 #import "BeatAutocomplete.h"
+#import "Document+Scrolling.h"
+#import "Document+Plugins.h"
 
 @interface Document () <BeatRenderDelegate> {
 	NSString *bufferedText;
@@ -144,7 +145,6 @@
 
 // Plugin support
 @property (weak) BeatPluginManager *pluginManager;
-@property (weak) IBOutlet BeatWidgetView *widgetView;
 
 // Quick Settings
 @property (nonatomic) NSPopover *quickSettingsPopover;
@@ -1279,7 +1279,7 @@ static NSWindow __weak *currentKeyWindow;
  */
 
 
-# pragma mark - Text I/O
+# pragma mark - TextView interface
 
 - (void)setupTextView {
 	// Reset zoom
@@ -1297,30 +1297,6 @@ static NSWindow __weak *currentKeyWindow;
 	return self.textView.string;
 }
 
-/*
- TODO: Harmonize _attrTextCache, preferrably as a getter
- */
-- (NSAttributedString *)getAttributedText
-{
-	if (NSThread.isMainThread) {
-		_attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.textStorage];
-		return _attrTextCache;
-	} else {
-		return _attrTextCache;
-	}
-}
-
-- (void)setText:(NSString *)text
-{
-	if (!self.textView) {
-		// View is not ready yet, set text to buffer
-		self.contentBuffer = text;
-	} else {
-		// Set text on screen
-		[self.textView setString:text];
-	}
-}
-
 - (void)loadCaret {
 	NSInteger position = [self.documentSettings getInt:DocSettingCaretPosition];
 	
@@ -1329,6 +1305,7 @@ static NSWindow __weak *currentKeyWindow;
 		[self.textView scrollRangeToVisible:NSMakeRange(position, 0)];
 	}
 }
+
 
 #pragma mark - Reverting to versions
 
@@ -1434,99 +1411,6 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 
-# pragma mark - Scene Data
-
-- (OutlineScene*)currentScene {
-	// If we are not on the main thread, return the latest known scene
-	if (!NSThread.isMainThread) return _currentScene;
-	
-	OutlineScene *scene = [self getCurrentSceneWithPosition:self.textView.selectedRange.location];
-	
-	_currentScene = scene;
-	return scene;
-}
-
-- (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
-	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
-		return _currentScene;
-	}
-	
-	if (position >= self.text.length) {
-		return self.parser.outline.lastObject;
-	}
-	
-	NSInteger lastPosition = -1;
-	OutlineScene *lastScene;
-	
-	// Remember to create outline first
-	for (OutlineScene *scene in self.outline) {
-		if (NSLocationInRange(position, scene.range)) {
-			return scene;
-		}
-		else if (position >= lastPosition && position < scene.position && lastScene) {
-			return lastScene;
-		}
-		
-		lastPosition = scene.position + scene.length;
-		lastScene = scene;
-	}
-	
-	return nil;
-}
-
-- (OutlineScene*)getPreviousScene {
-	NSArray *outline = [self getOutlineItems];
-	if (outline.count == 0) return nil;
-	
-	Line * currentLine = [self getCurrentLine];
-	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
-	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
-	
-	for (NSInteger i = lineIndex - 1; i >= 0; i--) {
-		Line* line = self.parser.lines[i];
-		
-		if (line.type == heading || line.type == section) {
-			for (OutlineScene *scene in outline) {
-				if (scene.line == line) return scene;
-			}
-		}
-	}
-	
-	return nil;
-}
-- (OutlineScene*)getNextScene {
-	NSArray *outline = [self getOutlineItems];
-	if (outline.count == 0) return nil;
-	
-	Line * currentLine = [self getCurrentLine];
-	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
-	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
-	
-	for (NSInteger i = lineIndex + 1; i < self.parser.lines.count; i++) {
-		Line* line = self.parser.lines[i];
-		
-		if (line.type == heading || line.type == section) {
-			for (OutlineScene *scene in outline) {
-				if (scene.line == line) return scene;
-			}
-		}
-	}
-	
-	return nil;
-}
-
-/*
- 
- FREE ABORTIONS.
- 
- CLEAN WATER.
- 
- DESTROY NUCLEAR.
- 
- DESTROY BORING.
- 
- */
-
 # pragma mark - Undo
 
 - (IBAction)undoEdit:(id)sender {
@@ -1555,13 +1439,24 @@ static NSWindow __weak *currentKeyWindow;
  
  */
 
-# pragma mark - Text events
+#pragma mark - Text input settings
 
 - (IBAction)toggleAutoLineBreaks:(id)sender {
 	self.autoLineBreaks = !self.autoLineBreaks;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
+- (IBAction)toggleMatchParentheses:(id)sender
+{
+	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	for (Document* doc in openDocuments) doc.matchParentheses = !doc.matchParentheses;
+	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
+}
+
+
+# pragma mark - Text events
+
+#pragma mark Text should change
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString
 {
 	// Don't allow editing the script while tagging
@@ -1614,7 +1509,12 @@ static NSWindow __weak *currentKeyWindow;
 		
 		// Handle automatic line breaks
 		else if (self.autoLineBreaks) {
-			if ([self shouldAddLineBreaks:currentLine range:affectedCharRange]) return NO;
+			[BeatMeasure start:@"Should add?"];
+			if ([self shouldAddLineBreaks:currentLine range:affectedCharRange]) {
+				[BeatMeasure end:@"Should add?"];
+				return NO;
+			}
+			[BeatMeasure end:@"Should add?"];
 		}
 		
 		// Process line break after a forced character input
@@ -1818,60 +1718,7 @@ static NSWindow __weak *currentKeyWindow;
 	return NO;
 }
 
-
-- (Line*)getPreviousLine:(Line*)line {
-	NSInteger i = [self.parser indexOfLine:line];
-	if (i > 0) return self.parser.lines[i - 1];
-	else return nil;
-}
-- (Line*)getNextLine:(Line*)line {
-	NSInteger i = [self.parser indexOfLine:line];
-	if (i < self.parser.lines.count - 1 && i != NSNotFound) {
-		return self.parser.lines[i + 1];
-	} else {
-		return nil;
-	}
-}
-
-- (Line*)currentLine {
-	_previouslySelectedLine = _currentLine;
-	
-	NSInteger location = self.selectedRange.location;
-	if (location >= self.text.length) return self.parser.lines.lastObject;
-	
-	// Don't fetch the line if we already know it
-	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
-	else {
-		Line *line = [_parser lineAtPosition:location];
-		_currentLine = line;
-		return _currentLine;
-	}
-}
-
-- (Line*)getCurrentLine {
-	NSInteger location = self.selectedRange.location;
-	if (location >= self.text.length) return self.parser.lines.lastObject;
-	
-	// Don't fetch the line if we already know it
-	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
-	else return [_parser lineAtPosition:location];
-}
-
-- (IBAction)reformatRange:(id)sender {
-	if (self.textView.selectedRange.length > 0) {
-		NSArray *lines = [self.parser linesInRange:self.textView.selectedRange];
-		if (lines) [self.parser correctParsesForLines:lines];
-		[self.parser createOutline];
-		[self ensureLayout];
-	}
-}
-
-- (bool)inRange:(NSRange)range {
-	NSRange intersection = NSIntersectionRange(range, (NSRange){0, _textView.string.length  });
-	if (intersection.length == range.length) return YES;
-	else return NO;
-}
-
+#pragma mark Text did change
 - (void)textDidChange:(NSNotification *)notification
 {
 	// Begin from top if no last changed range was set
@@ -2000,6 +1847,53 @@ static NSWindow __weak *currentKeyWindow;
 	[_textView updateMarkdownView];
 }
 
+
+#pragma mark - Line lookup
+
+- (Line*)getPreviousLine:(Line*)line {
+	NSInteger i = [self.parser indexOfLine:line];
+	if (i > 0) return self.parser.lines[i - 1];
+	else return nil;
+}
+- (Line*)getNextLine:(Line*)line {
+	NSInteger i = [self.parser indexOfLine:line];
+	if (i < self.parser.lines.count - 1 && i != NSNotFound) {
+		return self.parser.lines[i + 1];
+	} else {
+		return nil;
+	}
+}
+
+- (Line*)currentLine {
+	_previouslySelectedLine = _currentLine;
+	
+	NSInteger location = self.selectedRange.location;
+	if (location >= self.text.length) return self.parser.lines.lastObject;
+	
+	// Don't fetch the line if we already know it
+	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
+	else {
+		Line *line = [_parser lineAtPosition:location];
+		_currentLine = line;
+		return _currentLine;
+	}
+}
+
+- (Line*)getCurrentLine {
+	NSInteger location = self.selectedRange.location;
+	if (location >= self.text.length) return self.parser.lines.lastObject;
+	
+	// Don't fetch the line if we already know it
+	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
+	else return [_parser lineAtPosition:location];
+}
+
+- (bool)inRange:(NSRange)range {
+	NSRange intersection = NSIntersectionRange(range, (NSRange){0, _textView.string.length  });
+	if (intersection.length == range.length) return YES;
+	else return NO;
+}
+
 - (void)updateUIwithCurrentScene {
 	__block NSInteger sceneIndex = [self.outline indexOfObject:self.currentScene];
 	
@@ -2030,16 +1924,125 @@ static NSWindow __weak *currentKeyWindow;
 	if (_runningPlugins) [self updatePluginsWithSceneIndex:sceneIndex];
 }
 
+# pragma mark - Scene lookup
 
-#pragma mark - TextView actions
-
-// Why is this here?
-
-- (IBAction)showInfo:(id)sender {
-	[self.textView showInfo:self];
+- (OutlineScene*)currentScene {
+	// If we are not on the main thread, return the latest known scene
+	if (!NSThread.isMainThread) return _currentScene;
+	
+	OutlineScene *scene = [self getCurrentSceneWithPosition:self.textView.selectedRange.location];
+	
+	_currentScene = scene;
+	return scene;
 }
 
+- (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
+	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
+		return _currentScene;
+	}
+	
+	if (position >= self.text.length) {
+		return self.parser.outline.lastObject;
+	}
+	
+	NSInteger lastPosition = -1;
+	OutlineScene *lastScene;
+	
+	// Remember to create outline first
+	for (OutlineScene *scene in self.outline) {
+		if (NSLocationInRange(position, scene.range)) {
+			return scene;
+		}
+		else if (position >= lastPosition && position < scene.position && lastScene) {
+			return lastScene;
+		}
+		
+		lastPosition = scene.position + scene.length;
+		lastScene = scene;
+	}
+	
+	return nil;
+}
+
+- (OutlineScene*)getPreviousScene {
+	NSArray *outline = [self getOutlineItems];
+	if (outline.count == 0) return nil;
+	
+	Line * currentLine = [self getCurrentLine];
+	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
+	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
+	
+	for (NSInteger i = lineIndex - 1; i >= 0; i--) {
+		Line* line = self.parser.lines[i];
+		
+		if (line.type == heading || line.type == section) {
+			for (OutlineScene *scene in outline) {
+				if (scene.line == line) return scene;
+			}
+		}
+	}
+	
+	return nil;
+}
+- (OutlineScene*)getNextScene {
+	NSArray *outline = [self getOutlineItems];
+	if (outline.count == 0) return nil;
+	
+	Line * currentLine = [self getCurrentLine];
+	NSInteger lineIndex = [self.parser indexOfLine:currentLine] ;
+	if (lineIndex == NSNotFound || lineIndex >= self.parser.lines.count - 1) return nil;
+	
+	for (NSInteger i = lineIndex + 1; i < self.parser.lines.count; i++) {
+		Line* line = self.parser.lines[i];
+		
+		if (line.type == heading || line.type == section) {
+			for (OutlineScene *scene in outline) {
+				if (scene.line == line) return scene;
+			}
+		}
+	}
+	
+	return nil;
+}
+
+/*
+ 
+ FREE ABORTIONS.
+ 
+ CLEAN WATER.
+ 
+ DESTROY NUCLEAR.
+ 
+ DESTROY BORING.
+ 
+ */
+
+
 #pragma mark - Text I/O
+
+/*
+ TODO: Harmonize _attrTextCache, preferrably as a getter
+ */
+- (NSAttributedString *)getAttributedText
+{
+	if (NSThread.isMainThread) {
+		_attrTextCache = [[NSAttributedString alloc] initWithAttributedString:self.textView.textStorage];
+		return _attrTextCache;
+	} else {
+		return _attrTextCache;
+	}
+}
+
+- (void)setText:(NSString *)text
+{
+	if (!self.textView) {
+		// View is not ready yet, set text to buffer
+		self.contentBuffer = text;
+	} else {
+		// Set text on screen
+		[self.textView setString:text];
+	}
+}
 
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
@@ -2570,6 +2573,15 @@ static bool _skipAutomaticLineBreaks = false;
 	});
 }
 
+- (IBAction)reformatRange:(id)sender {
+	if (self.textView.selectedRange.length > 0) {
+		NSArray *lines = [self.parser linesInRange:self.textView.selectedRange];
+		if (lines) [self.parser correctParsesForLines:lines];
+		[self.parser createOutline];
+		[self ensureLayout];
+	}
+}
+
 - (IBAction)toggleDisableFormatting:(id)sender {
 	_disableFormatting = !_disableFormatting;
 	[self formatAllLines];
@@ -2610,58 +2622,6 @@ static bool _skipAutomaticLineBreaks = false;
 	[self.documentWindow beginSheet:search.window completionHandler:^(NSModalResponse returnCode) {
 	}];
 }
-
-- (void)scrollToSceneNumber:(NSString*)sceneNumber {
-	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)
-	OutlineScene *scene = [_parser sceneWithNumber:sceneNumber];
-	if (scene != nil) [self scrollToScene:scene];
-}
-- (void)scrollToScene:(OutlineScene*)scene {
-	[self selectAndScrollTo:scene.line.textRange];
-	[_documentWindow makeFirstResponder:_textView];
-}
-/// Legacy method. Use selectAndScrollToRange
-- (void)scrollToRange:(NSRange)range {
-	[self selectAndScrollTo:range];
-}
-
-- (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {
-	[self.textView scrollToRange:range callback:callbackBlock];
-}
-
-/// Scrolls the given position into view
-- (void)scrollTo:(NSInteger)location {
-	NSRange range = NSMakeRange(location, 0);
-	[self selectAndScrollTo:range];
-}
-/// Selects the given line and scrolls it into view
-- (void)scrollToLine:(Line*)line {
-	if (line != nil) [self selectAndScrollTo:line.textRange];
-}
-/// Selects the line at given index and scrolls it into view
-- (void)scrollToLineIndex:(NSInteger)index {
-	Line *line = [self.parser.lines objectAtIndex:index];
-	if (line != nil) [self selectAndScrollTo:line.textRange];
-}
-/// Selects the scene at given index and scrolls it into view
-- (void)scrollToSceneIndex:(NSInteger)index {
-	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
-	if (!scene) return;
-	
-	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
-	[self selectAndScrollTo:range];
-}
-/// Selects the given range and scrolls it into view
-- (void)selectAndScrollTo:(NSRange)range {
-	[self.textView setSelectedRange:range];
-	[self.textView scrollToRange:range callback:nil];
-}
-
-/// Focuses the editor window
-- (void)focusEditor {
-	[_documentWindow makeKeyWindow];
-}
-
 
 #pragma mark - Parser delegation
 
@@ -2896,50 +2856,6 @@ static bool _skipAutomaticLineBreaks = false;
 
 
 #pragma mark - Lock & Force Scene Numbering
-
-// Preprocessing was apparently a bottleneck. Redone in 1.1.0f
-- (NSString*) preprocessSceneNumbers
-{
-	// This is horrible shit and should be fixed ASAP
-	NSString *sceneNumberPattern = @".*(\\#([0-9A-Za-z\\.\\)-]+)\\#)";
-	NSPredicate *testSceneNumber = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", sceneNumberPattern];
-	NSMutableString *fullText = [NSMutableString stringWithString:@""];
-	
-	NSUInteger sceneCount = 1; // Track scene amount
-	
-	// Make a copy of the array if this is called in a background thread
-	NSArray *lines = [NSArray arrayWithArray:[self.parser lines]];
-	for (Line *line in lines) { @autoreleasepool {
-		//NSString *cleanedLine = [line.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-		NSString *cleanedLine = [NSString stringWithString:line.string];
-		
-		// If the heading already has a forced number, skip it
-		if (line.type == heading && ![testSceneNumber evaluateWithObject: cleanedLine]) {
-			// Check if the scene heading is omited
-			if (!line.omitted) {
-				[fullText appendFormat:@"%@ #%lu#\n", cleanedLine, sceneCount];
-				sceneCount++;
-			} else {
-				// We will still append the heading into the raw text … this is a dirty fix
-				// to keep indexing of scenes intact
-				[fullText appendFormat:@"%@\n", cleanedLine];
-			}
-		} else {
-			[fullText appendFormat:@"%@\n", cleanedLine];
-		}
-		
-		// Add a line break after the scene heading if it doesn't have one
-		// If the user relies on this feature, it breaks the file's compatibility with other Fountain editors, but they have no one else to blame than themselves I guess. And my friendliness and hospitality allowing them to break the syntax.
-		if (line.type == heading && line != [lines lastObject]) {
-			NSInteger lineIndex = [lines indexOfObject:line];
-			if ([(Line*)[lines objectAtIndex:lineIndex + 1] type] != empty) {
-				[fullText appendFormat:@"\n"];
-			}
-		}
-	} }
-	
-	return fullText;
-}
 
 - (IBAction)unlockSceneNumbers:(id)sender
 {
@@ -3185,13 +3101,6 @@ static bool _skipAutomaticLineBreaks = false;
 - (IBAction)shareFromService:(id)sender
 {
 	[[sender representedObject] performWithItems:@[self.fileURL]];
-}
-
-- (IBAction)toggleMatchParentheses:(id)sender
-{
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
-	for (Document* doc in openDocuments) doc.matchParentheses = !doc.matchParentheses;
-	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 }
 
 -(NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex {
@@ -4504,128 +4413,6 @@ static NSArray<Line*>* cachedTitlePage;
 	// unused for now
 }
 
-#pragma mark - Plugin support for documents
-
-/*
- 
- Some explanation:
- 
- Plugins are run inside document scope, unless they are standalone tools.
- If the plugins are "resident" (can be left running in the background),
- they are registered and deregistered when launching and shutting down.
- 
- Some changes made to the document are sent to all of the running plugins,
- if they have any change listeners.
- 
- This should be separated to its own class, something like PluginAgent or something.
- 
- */
-
-- (void)setupPlugins {
-	_pluginManager = BeatPluginManager.sharedManager;
-}
-- (IBAction)runPlugin:(id)sender {
-	// Get plugin filename from menu item
-	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
-	NSString *pluginName = menuItem.pluginName;
-	
-	[self runPluginWithName:pluginName];
-}
-- (void)runPluginWithName:(NSString*)pluginName {
-	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
-	
-	// See if the plugin is running and disable it if needed
-	if (_runningPlugins[pluginName]) {
-		[(BeatPlugin*)_runningPlugins[pluginName] forceEnd];
-		[_runningPlugins removeObjectForKey:pluginName];
-		return;
-	}
-
-	// Run a new plugin
-	BeatPlugin *pluginParser = [[BeatPlugin alloc] init];
-	pluginParser.delegate = self;
-	
-	BeatPluginData *pluginData = [_pluginManager pluginWithName:pluginName];
-	[pluginParser loadPlugin:pluginData];
-		
-	// Null the local variable just in case.
-	// If the plugin asks to stay in memory, it will call registerPlugin:
-	pluginParser = nil;
-}
-
-- (void)registerPlugin:(id)plugin {
-	BeatPlugin *parser = (BeatPlugin*)plugin;
-	if (!_runningPlugins) _runningPlugins = [NSMutableDictionary dictionary];
-	
-	_runningPlugins[parser.pluginName] = parser;
-}
-- (void)deregisterPlugin:(id)plugin {
-	BeatPlugin *parser = (BeatPlugin*)plugin;
-	[_runningPlugins removeObjectForKey:parser.pluginName];
-	parser = nil;
-}
-
-- (void)updatePlugins:(NSRange)range {
-	// Run resident plugins
-	if (!_runningPlugins) return;
-	
-	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPlugin *plugin = _runningPlugins[pluginName];
-		[plugin update:range];
-	}
-}
-
-- (void)updatePluginsWithSelection:(NSRange)range {
-	// Run resident plugins which are listening for selection changes
-	if (!_runningPlugins) return;
-	
-	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPlugin *plugin = _runningPlugins[pluginName];
-		[plugin updateSelection:range];
-	}
-}
-
-- (void)updatePluginsWithSceneIndex:(NSInteger)index {
-	// Run resident plugins which are listening for selection changes
-	if (!_runningPlugins) return;
-	
-	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPlugin *plugin = _runningPlugins[pluginName];
-		[plugin updateSceneIndex:index];
-	}
-}
-
-- (void)updatePluginsWithOutline:(NSArray*)outline {
-	// Run resident plugins which are listening for selection changes
-	if (!_runningPlugins) return;
-	
-	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPlugin *plugin = _runningPlugins[pluginName];
-		[plugin updateOutline:outline];
-	}
-}
-
-- (void)notifyPluginsThatWindowBecameMain {
-	if (!_runningPlugins) return;
-	
-	for (NSString *pluginName in _runningPlugins.allKeys) {
-		BeatPlugin *plugin = _runningPlugins[pluginName];
-		[plugin documentDidBecomeMain];
-	}
-}
-
-- (void)addWidget:(id)widget {
-	[_widgetView addWidget:widget];
-	[self showWidgets:nil];
-}
-
-// For those who REALLY, REALLY know what the fuck they are doing
-- (void)setPropertyValue:(NSString*)key value:(id)value {
-	[self setValue:value forKey:key];
-}
-- (id)getPropertyValue:(NSString*)key {
-	return [self valueForKey:key];
-}
 
 #pragma mark - Color Customization
 

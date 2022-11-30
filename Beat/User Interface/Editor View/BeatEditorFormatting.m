@@ -482,6 +482,9 @@ static NSString *reviewAttribute = @"BeatReview";
 		
 		[self setForegroundColor:color line:line range:NSMakeRange(0, line.length)];
 	}
+	else if (line.type == pageBreak) {
+		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, line.length)];
+	}
 	
 	// Enumerate FORMATTING RANGES and make all of them invisible
 	[line.formattingRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -499,8 +502,8 @@ static NSString *reviewAttribute = @"BeatReview";
 	}
 	
 	// Bullets for forced empty lines are invisible, too
-	else if (line.string.containsOnlyWhitespace && line.length >= 2) {
-		[self setForegroundColor:themeManager.invisibleTextColor line:line range:line.textRange];
+	else if ((line.string.containsOnlyWhitespace && line.length >= 2)) {
+		[self setForegroundColor:themeManager.invisibleTextColor line:line range:NSMakeRange(0, 2)];
 	}
 	
 	// Color markers

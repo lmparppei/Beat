@@ -181,10 +181,10 @@
 	NSInteger latestVersion = [[[NSUserDefaults standardUserDefaults] objectForKey:LATEST_VERSION_KEY] integerValue];
 	NSInteger currentVersion = [[NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleVersion"] integerValue];
 	
-	// Show patch notes if it's the first time running Beat
+	// Show patch notes if it's the first time running Beat or if the app has been updated
 	if (latestVersion == 0 || currentVersion > latestVersion) {
 		[[NSUserDefaults standardUserDefaults] setValue:[NSString stringWithFormat:@"%lu", currentVersion] forKey:LATEST_VERSION_KEY];
-		if (!DEVELOPMENT) [self showPatchNotes:nil];
+		[self.resources showPatchNotesWithSender:nil];
 	}
 }
 

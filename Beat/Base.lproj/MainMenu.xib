@@ -1032,6 +1032,7 @@ DQ
                 <outlet property="menuManual" destination="Yiy-8c-i5h" id="IjT-We-ydH"/>
                 <outlet property="pluginManager" destination="MpY-Uw-HUk" id="LTu-gv-i9k"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
+                <outlet property="resources" destination="N5l-jq-jtZ" id="zAq-SA-CUN"/>
                 <outlet property="versionMenu" destination="7oT-pt-wId" id="5Nx-Wf-wFz"/>
             </connections>
         </customObject>

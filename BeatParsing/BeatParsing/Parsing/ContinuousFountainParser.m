@@ -1048,8 +1048,9 @@ static NSDictionary* patterns;
     bool twoSpaces = (firstChar == ' ' && lastChar == ' '); // Contains at least two spaces
     if (containsOnlyWhitespace && !twoSpaces) return empty;
         
-    // Action or shot
-    if (firstChar == '!') {
+    if ([trimmedString isEqualToString:@"==="]) return pageBreak;
+    else if (firstChar == '!') {
+        // Action or shot
         if (line.length > 1) {
             unichar secondChar = [line.string characterAtIndex:1];
             if (secondChar == '!') return shot;
@@ -1063,6 +1064,7 @@ static NSDictionary* patterns;
             if (secondChar != '.') return heading;
         } return heading;
     }
+    // ... and then the rest.
     else if (firstChar == '@') return character;
     else if (firstChar == '>' && lastChar == '<') return centered;
     else if (firstChar == '>') return transitionLine;
@@ -1941,6 +1943,26 @@ static NSDictionary* patterns;
 	else [self createOutlineUsingLines:self.lines.copy];
 }
 
+- (OutlineScene*)outlineElementInRange:(NSRange)range {
+    for (OutlineScene *scene in self.safeOutline) {
+        if (NSIntersectionRange(range, scene.range).length > 0) {
+            return scene;
+        }
+    }
+    return nil;
+}
+
+- (void)readSynopsisForScene:(OutlineScene*)scene {
+    scene.synopsis = NSMutableArray.new;
+    NSArray *lines = self.safeLines;
+    
+    for (NSInteger i = [lines indexOfObject:scene.line] + 1; i<lines.count; i++) {
+        Line *l = lines[i];
+        if (l.isOutlineElement) break;
+        else if (l.type == synopse) [scene.synopsis addObject:l];
+    }
+}
+
 - (void)updateOutlineWithChangeInRange:(NSRange)range {
 	if (range.length > 1) {
 		[self createOutline];
@@ -1949,14 +1971,28 @@ static NSDictionary* patterns;
 	
 	// Get the line at edited position
 	Line *line = [self lineAtPosition:range.location];
+    
 	if (line.type == section) {
+        // If the section already exists, do nothing.
+        for (OutlineScene* scene in self.safeOutline) {
+            if (scene.line == line) return;
+        }
+        
 		[self createOutline];
 		return;
 	}
 	
 	NSInteger sceneNumber = 0;
     
-	if (line.isOutlineElement) {
+    if (line.type == synopse) {
+        OutlineScene *scene = [self outlineElementInRange:range];
+        if (scene != nil) {
+            [self readSynopsisForScene:scene];
+            return;
+        }
+    }
+    
+	else if (line.type == heading) {
 		for (OutlineScene *scene in self.outline) {
 			if (scene.type == heading && scene.line.sceneNumberRange.length == 0 && !scene.omitted) {
 				sceneNumber++;

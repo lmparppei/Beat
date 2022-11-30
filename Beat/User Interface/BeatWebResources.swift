@@ -41,7 +41,7 @@ class BeatWebResources:NSResponder, NSWindowDelegate {
 		return url
 	}
 	
-	@IBAction func showPatchNotes(sender: Any?) {
+	@objc @IBAction func showPatchNotes(sender: Any?) {
 		guard let url = Bundle.main.url(forResource: "Patch Notes", withExtension: "html") else { return }
 		self.browser.showBrowser(url, withTitle: NSLocalizedString("app.patchNotes", comment: ""), width: 550, height: 640, onTop: true)
 	}
