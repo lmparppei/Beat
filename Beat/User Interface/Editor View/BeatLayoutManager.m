@@ -106,9 +106,8 @@
 
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(NSPoint)origin {
 	[super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
-	
-	//NSTextStorage *textStorage = self.textStorage;
-
+		
+	/*
 	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:NULL];
 	
 	NSArray *lines = [self.delegate.editorDelegate.parser linesInRange:charRange];
@@ -134,103 +133,10 @@
 					[color setFill];
 					[path fill];
 				}
-				
-				/*
-				if (!NSLocationInRange(self.textView.selectedRange.location, l.range)) {
-					NSString * text = l.markerDescription;
-					[NSColor.whiteColor setFill];
-					NSMutableParagraphStyle *paragraph = NSMutableParagraphStyle.new;
-					[paragraph setAlignment:NSTextAlignmentCenter];
-					NSRect textRect = r;
-					textRect.origin.y += 4;
-					textRect.size.height -= 4;
-					[text drawInRect:textRect withAttributes:@{
-						NSFontAttributeName: [NSFont systemFontOfSize:10.0],
-						NSForegroundColorAttributeName: NSColor.whiteColor,
-						NSParagraphStyleAttributeName: paragraph
-					}];
-				}
-				*/
 			}
 		}
 	}
-	
-	
-	/*
-	 
-	 // Tuleville sukupolville.
-	 // An die Nachgeborenen.
-	 // For generations to come.
-	 
-	NSTextStorage *textStorage = self.textStorage;
-	NSRange glyphRange = glyphsToShow;
-	
-	while (glyphRange.length > 0) {
-		[NSGraphicsContext saveGraphicsState];
-		
-		NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL], attributeCharRange, attributeGlyphRange;
-				
-		BeatRevisionItem *revision = [textStorage attribute:@"Revision"
-									  atIndex:charRange.location longestEffectiveRange:&attributeCharRange
-									  inRange:charRange];
-		
-		attributeGlyphRange = [self glyphRangeForCharacterRange:attributeCharRange actualCharacterRange:NULL];
-		attributeGlyphRange = NSIntersectionRange(attributeGlyphRange, glyphRange);
-		
-		if (revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) {
-			// We have to create an array of ranges to accurately handle backgrounds spanning over multiple lines,
-			// because I'd love to avoid the background to fill up the whitespace at line breaks.
-			NSMutableArray *ranges = [NSMutableArray arrayWithObject:[NSNumber valueWithRange:attributeGlyphRange]];
-			
-			NSString *substr = [self.textStorage.string substringWithRange:attributeCharRange];
-			NSInteger previousCutOff = -1;
-			
-			if ([substr containsString:@"\n"]) {
-				[ranges removeAllObjects];
-				
-				for (NSInteger i=0; i<substr.length; i++) {
-					if ([substr characterAtIndex:i] == '\n') {
-						
-						NSRange globalRange = NSMakeRange(charRange.location + previousCutOff + 1, i - previousCutOff - 1);
-						if (globalRange.length > 0) {
-							NSRange fragmentGlyphRange = [self glyphRangeForCharacterRange:globalRange actualCharacterRange:NULL];
-							fragmentGlyphRange = NSIntersectionRange(fragmentGlyphRange, glyphRange);
-							
-							[ranges addObject:[NSNumber valueWithRange:fragmentGlyphRange]];
-						}
-						previousCutOff = i;
-					}
-				}
-			}
-			
-			NSArray *rects;
-			if (ranges.count == 1) rects = [self rectsForGlyphRange:attributeGlyphRange];
-			else {
-				NSMutableArray *fragmentRects = NSMutableArray.array;
-				for (NSNumber *range in ranges) {
-					NSRange fragmentRange = range.rangeValue;
-					NSRange glyphRange = [self glyphRangeForCharacterRange:fragmentRange actualCharacterRange:nil];
-					[fragmentRects addObjectsFromArray:[self rectsForGlyphRange:glyphRange]];
-				}
-				rects = fragmentRects;
-			}
-			
-			[revision.backgroundColor setFill];
-			for (NSNumber *val in rects) {
-				NSRect rect = val.rectValue;
-				rect.origin.x += self.textView.textContainerInset.width;
-				rect.origin.y += self.textView.textContainerInset.height;
-				NSRectFill(rect);
-			}
-		}
-		
-		glyphRange.length = NSMaxRange(glyphRange) - NSMaxRange(attributeGlyphRange);
-		glyphRange.location = NSMaxRange(attributeGlyphRange);
-
-		[NSGraphicsContext restoreGraphicsState];
-	}
-	*/
-
+	 */
 }
 
 

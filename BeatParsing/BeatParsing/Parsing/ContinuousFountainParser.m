@@ -36,7 +36,7 @@
 #import "NSMutableIndexSet+Lowest.h"
 #import "NSIndexSet+Subset.h"
 #import "OutlineScene.h"
-//#import "BeatMeasure.h"
+#import "BeatMeasure.h"
 
 #pragma mark - Parser
 
@@ -355,7 +355,17 @@ static NSDictionary* patterns;
 	// Get the line where into which we are adding characters
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
 	Line* line = self.lines[lineIndex];
+    
 	if (line.isOutlineElement) [self addChangeInOutline:line];
+    else if (line.type == synopse) {
+        for (NSInteger i = lineIndex; i>=0; i--) {
+            Line * l = self.lines[i];
+            if (l.type == heading) {
+                [self addChangeInOutline:l];
+                break;
+            }
+        }
+    }
 	
 	NSUInteger indexInLine = position - line.position;
 	
@@ -744,27 +754,28 @@ static NSDictionary* patterns;
 	}
 	
 	if (index > 0) {
+        
         // Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
 		Line *prevLine = self.lines[index - 1];
         NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0;
-        
 		if (prevLine.type != empty && prevLine.length == 0 && selection != prevLine.position - 1) {
             NSInteger i = index;
             
             while (i >= 0) {
                 Line *l = self.lines[i];
-                
                 if (l.length > 0) {
                     // Not a forced character cue, not the preceding line to selection
-                    if (l.type == character && selection != NSMaxRange(l.range) && l.numberOfPrecedingFormattingCharacters == 0) {
+                    if (l.type == character && selection != NSMaxRange(l.textRange) && l.numberOfPrecedingFormattingCharacters == 0  &&
+                        l != self.delegate.characterInputForLine) {
                         l.type = action;
                         [self.changedIndices addIndex:i];
                     }
                     break;
                 }
-                
-                l.type = empty;
-                [self.changedIndices addIndex:i];
+                else if (l.type != empty) {
+                    l.type = empty;
+                    [self.changedIndices addIndex:i];
+                }
                 
                 i -= 1;
             }
@@ -1062,7 +1073,9 @@ static NSDictionary* patterns;
         if (line.length > 1) {
             unichar secondChar = [line.string characterAtIndex:1];
             if (secondChar != '.') return heading;
-        } return heading;
+        } else {
+            return heading;
+        }
     }
     // ... and then the rest.
     else if (firstChar == '@') return character;
@@ -1658,14 +1671,11 @@ static NSDictionary* patterns;
 	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
 	if (idx == NSNotFound) return changedIndices;
 	
-	//if (!self.staticParser) NSLog(@"   ---> cancel at %@", line);
-	
 	Line *prevLine = [self previousLine:line];
 	
 	line.noteOut = NO;
 	bool actuallyCancelsBlock = NO; // If the block was previously ACTUALLY formatted as a block
 	if (prevLine.noteOut) {
-		//NSLog(@"!!! Note out from %@", prevLine);
 		actuallyCancelsBlock = YES;
 	}
 	
@@ -1674,7 +1684,6 @@ static NSDictionary* patterns;
 		Line *l = self.lines[i];
 		
 		if ([l.string containsString:@"[["]) {
-			//if (!self.staticParser) NSLog(@"  ... %@", l);
 			[l.noteRanges removeIndexes:l.noteOutIndices];
 			[changedIndices addIndex:i];
 			break;
@@ -1686,14 +1695,12 @@ static NSDictionary* patterns;
 		
 	// Don't look forward if the current line had no note ranges to begin with.
 	if (!line.noteRanges.count && !actuallyCancelsBlock) {
-		//if (!self.staticParser) NSLog(@"   ..not looking forward");
 		return changedIndices;
 	}
 
 	// Look forward for note ranges
 	for (NSInteger i = idx; i < self.lines.count; i++) {
 		Line *l = self.lines[i];
-		//if (!self.staticParser) NSLog(@"looking at %@", l);
 		
 		if ([l.string containsString:@"]]"] ||
 			[l.string containsString:@"[["] // Another note begins, don't look further
@@ -2583,6 +2590,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 
 
 - (NSArray*)linesInRange:(NSRange)range {
+    static NSInteger searchIndex = 0;
+    
 	NSArray *lines = self.safeLines;
 	NSMutableArray *linesInRange = NSMutableArray.array;
 	

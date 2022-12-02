@@ -187,13 +187,14 @@ static NSString *reviewAttribute = @"BeatReview";
 	
 	// Don't overwrite revision attribute
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
-	
+	/*
 	// Replace font with default
 	if ([attributes valueForKey:NSFontAttributeName] != _delegate.courier) {
 		[attributes removeObjectForKey:NSFontAttributeName];
 		[textStorage addAttribute:NSFontAttributeName value:_delegate.courier range:range];
 	}
-	
+	*/
+	 
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff when formatting is disabled
 		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor forCharacterRange:line.range];
@@ -201,8 +202,8 @@ static NSString *reviewAttribute = @"BeatReview";
 		
 		NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:nil];
 		[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		
-		[textView setTypingAttributes:attributes];
+		[attributes setValue:_delegate.courier forKey:NSFontAttributeName];
+		//[textView setTypingAttributes:attributes];
 		
 		if (range.length > 0) [textStorage addAttributes:attributes range:range];
 		return;
@@ -214,8 +215,6 @@ static NSString *reviewAttribute = @"BeatReview";
 		
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine) {
-		//[textStorage addAttribute:NSFontAttributeName value:_delegate.courier range:range];
-		[textStorage addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:range];
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 		return;
 	}
@@ -281,13 +280,16 @@ static NSString *reviewAttribute = @"BeatReview";
 	}
 	else if (attributes[NSFontAttributeName] != _delegate.courier) {
 		// Fall back to default (if not set yet)
-		//[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
+		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
 	}
 	
 	
 	// Overwrite some values by default
 	if (![attributes valueForKey:NSForegroundColorAttributeName]) {
 		[attributes setObject:themeManager.textColor forKey:NSForegroundColorAttributeName];
+	}
+	if (![attributes valueForKey:NSFontAttributeName]) {
+		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
 	}
 	if (![attributes valueForKey:NSUnderlineStyleAttributeName]) {
 		[attributes setObject:@0 forKey:NSUnderlineStyleAttributeName];

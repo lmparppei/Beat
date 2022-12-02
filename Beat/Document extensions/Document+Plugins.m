@@ -13,7 +13,7 @@
 #import <os/log.h>
 
 @implementation Document (Plugins)
-
+@dynamic pluginManager;
 /*
  
  Some explanation:

@@ -1028,25 +1028,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (!ctx) return;
 	
 	[super drawRect:dirtyRect];
-
-	// An array of NSRanges which are used to mask parts of the text.
-	// Used to hide irrelevant parts when filtering scenes.
-	/*
-	if (_masks.count) {
-		for (NSValue * value in _masks) {
-			NSColor* fillColor = self.editorDelegate.themeManager.backgroundColor;
-			fillColor = [fillColor colorWithAlphaComponent:0.85];
-			[fillColor setFill];
-			
-			NSRect rect = [self.layoutManager boundingRectForGlyphRange:value.rangeValue inTextContainer:self.textContainer];
-			rect.origin.x = self.textContainerInset.width;
-			rect.origin.y += self.textContainerInset.height - 12; // You say: never hardcode a value, but YOU DON'T KNOW ME, DO YOU!!!
-			rect.size.width = self.textContainer.size.width;
-			
-			NSRectFillUsingOperation(rect, NSCompositingOperationSourceOver);
-		}
-	}
-	 */
 }
 
 -(void)redrawUI {
@@ -1093,7 +1074,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSInteger index = -1;
 	for (OutlineScene *scene in parser.outline) {
-		if (scene.type == section) continue;
+		if (scene.type == synopse || scene.type == section) continue;
 		
 		index++; // Add to total scene heading count
 		
@@ -1232,7 +1213,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSInteger index = -1;
 	for (OutlineScene *scene in parser.outline) {
-		if (scene.type == section) continue;
+		if (scene.type == synopse || scene.type == section) continue;
 		
 		index++; // Add to total scene heading count
 		
@@ -1406,8 +1387,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (pageBreaks) _pageBreaks = pageBreaks;
 	
 	CGFloat factor = 1 / _zoomLevel;
-	if (!_pageNumberLabels) _pageNumberLabels = NSMutableArray.new;
+	if (!_pageNumberLabels) _pageNumberLabels = [NSMutableArray array];
 	
+	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	NSInteger pageNumber = 1;
 
 	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 20;
@@ -1415,23 +1397,22 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
 		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;
 	}
-	
-	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
+
 	for (NSNumber *pageBreakPosition in self.pageBreaks) {
-		NSString *page = [NSString stringWithFormat:@"%@.", @(pageNumber).stringValue];
-		NSMutableAttributedString *stylizedPageNumber = [NSMutableAttributedString.alloc initWithString:page attributes:@{ NSForegroundColorAttributeName: pageNumberColor }];
-		
 		NSTextField *label;
+		NSString *page = @(pageNumber).stringValue;
 		
 		// Add new label if needed
 		if (pageNumber - 1 >= self.pageNumberLabels.count) label = [self createPageLabel:page];
 		else label = self.pageNumberLabels[pageNumber - 1];
 		
-		label.attributedStringValue = stylizedPageNumber;
+		[label setStringValue:page];
 		
 		NSRect rect = NSMakeRect(rightEdge, pageBreakPosition.floatValue + self.textContainerInset.height, 50, 20);
 		label.frame = rect;
 		
+		[label setTextColor:pageNumberColor];
+
 		pageNumber++;
 	}
 	

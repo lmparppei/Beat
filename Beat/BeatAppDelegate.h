@@ -32,8 +32,6 @@
 // You could think that one can just change this byte to true in the open source version, but actually the "pro" stuff is just additional content and not really restricting any other functionality in the app, so it's no use.
 @property (nonatomic) bool proMode;
 
-- (IBAction)showPatchNotes:(id)sender;
-
 - (bool)isDark;
 - (void)toggleDarkMode;
 - (bool)isForcedLightMode;

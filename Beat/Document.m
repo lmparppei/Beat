@@ -640,8 +640,7 @@ static BeatAppDelegate *appDelegate;
 }
 
 -(void)renderTest {
-	return;
-	/*
+	
 	 BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
 	 [self bakeRevisions];
 	 [self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
@@ -649,7 +648,7 @@ static BeatAppDelegate *appDelegate;
 	 
 	 if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
 	 [_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
-	 */
+	 
 	/*
 	 BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"lol" printSceneNumbers:YES];
 	 [self bakeRevisions];
@@ -4049,10 +4048,12 @@ static NSArray<Line*>* cachedTitlePage;
 		
 		// Dispatch to a background thread
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
-//			BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:YES];
-//			static BeatRenderManager *manager;
-//			if (manager == nil) manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
-//			[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings titlePage:false forEditor:true changeAt:range.location];
+			
+			BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:YES];
+			static BeatRenderManager *manager;
+			if (manager == nil) manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
+			[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings forEditor:true changeAt:range.location];
+			
 			[self.paginator livePaginationFor:lines changeAt:range.location];
 		});
 	}];
@@ -4071,8 +4072,8 @@ static NSArray<Line*>* cachedTitlePage;
 	[self.preview updatePreviewWithPages:pages titlePage:cachedTitlePage];
 }
 
-- (void)renderingDidFinishWithPages:(NSArray<BeatPageView *> * _Nonnull)pages pageBreaks:(NSArray<BeatPageBreak *> * _Nonnull)pageBreaks {
-	NSLog(@"Rendering did finish");
+- (void)renderingDidFinishWithPages:(NSArray<BeatPageView *> * _Nonnull)pages {
+	NSLog(@"Rendering did finish with %lu pages", pages.count);
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {

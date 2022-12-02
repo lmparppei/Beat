@@ -1525,11 +1525,11 @@
                             </tabViewItem>
                             <tabViewItem label="Cards" identifier="3" id="798-ya-EGc" userLabel="Cards Tab">
                                 <view key="view" appearanceType="darkAqua" id="fPc-ie-Xae">
-                                    <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <wkWebView wantsLayer="YES" allowsLinkPreview="NO" id="2ja-Hc-I6Z">
-                                            <rect key="frame" x="0.0" y="0.0" width="1173" height="661"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <wkWebViewConfiguration key="configuration" applicationNameForUserAgent="Beat">
                                                 <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -1537,7 +1537,7 @@
                                             </wkWebViewConfiguration>
                                         </wkWebView>
                                         <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mUG-iU-q9L">
-                                            <rect key="frame" x="1130" y="620" width="23" height="30"/>
+                                            <rect key="frame" x="1112" y="620" width="23" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="xmark.circle.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="tR8-CK-23v">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1547,6 +1547,42 @@
                                                 <action selector="toggleCards:" target="-2" id="itP-Gm-Q7I"/>
                                             </connections>
                                         </button>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Item 3" identifier="" id="dBZ-SJ-a39" userLabel="New preview tab">
+                                <view key="view" id="iEQ-kj-lEX">
+                                    <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" maxMagnification="1.5" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="8ur-7e-GqM">
+                                            <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <clipView key="contentView" id="NN6-yd-htG" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
+                                                <rect key="frame" x="1" y="1" width="1153" height="659"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <view id="lJK-xu-IFM">
+                                                        <rect key="frame" x="0.0" y="0.0" width="1138" height="644"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <subviews>
+                                                            <customView id="GGu-Vm-Ica" customClass="BeatPreviewView" customModule="Beat" customModuleProvider="target">
+                                                                <rect key="frame" x="0.0" y="-26" width="328" height="670"/>
+                                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            </customView>
+                                                        </subviews>
+                                                    </view>
+                                                </subviews>
+                                            </clipView>
+                                            <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="BEC-2y-vVE">
+                                                <rect key="frame" x="1" y="644" width="1153" height="16"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Grf-gu-XrY">
+                                                <rect key="frame" x="1138" y="1" width="16" height="659"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                            </scroller>
+                                        </scrollView>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -1615,6 +1651,13 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="Dg2-1d-hmB"/>
                 <outlet property="previewView" destination="ddy-rn-xRJ" id="oPG-JP-jo3"/>
+            </connections>
+        </customObject>
+        <customObject id="wZv-WF-8R7" customClass="BeatPreviewController" customModule="Beat" customModuleProvider="target">
+            <connections>
+                <outlet property="delegate" destination="-2" id="LYe-d0-cEE"/>
+                <outlet property="previewView" destination="GGu-Vm-Ica" id="Ga3-gj-S9b"/>
+                <outlet property="textView" destination="6pm-Ac-n3m" id="uwE-z2-Czw"/>
             </connections>
         </customObject>
         <touchBar id="FXM-lH-N3d" userLabel="Outline Touch Bar">
