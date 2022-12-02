@@ -16,3 +16,9 @@ extension RangeReplaceableCollection where Iterator.Element : Equatable {
 		}
 	}
 }
+
+extension NSArray {
+	func swiftArray<T>() -> [T] {
+		return self.compactMap({ $0 as? T })
+	}
+}

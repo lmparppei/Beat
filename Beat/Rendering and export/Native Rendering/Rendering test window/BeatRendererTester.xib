@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="BeatRendererTester" customModule="Beat" customModuleProvider="target">
             <connections>
+                <outlet property="container" destination="IPN-vR-UYi" id="0VK-9I-eAt"/>
                 <outlet property="scrollView" destination="Z0J-Ot-gSM" id="lkZ-Dn-6bD"/>
                 <outlet property="window" destination="XOb-1g-7dn" id="CpH-9n-fOA"/>
             </connections>
@@ -16,37 +18,43 @@
         <window title="Render tester" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" frameAutosaveName="" animationBehavior="default" id="XOb-1g-7dn">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="179" y="217" width="688" height="685"/>
+            <rect key="contentRect" x="179" y="217" width="688" height="589"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="c8Q-LE-60f">
-                <rect key="frame" x="0.0" y="0.0" width="688" height="685"/>
+                <rect key="frame" x="0.0" y="0.0" width="688" height="589"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" maxMagnification="1" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z0J-Ot-gSM">
-                        <rect key="frame" x="-1" y="-1" width="690" height="687"/>
+                    <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" maxMagnification="1.5" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="Z0J-Ot-gSM">
+                        <rect key="frame" x="-1" y="-1" width="690" height="591"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <clipView key="contentView" id="yEU-Wn-dts">
-                            <rect key="frame" x="1" y="1" width="688" height="685"/>
+                        <clipView key="contentView" id="yEU-Wn-dts" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
+                            <rect key="frame" x="1" y="1" width="688" height="589"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <view id="yf5-IX-E4R">
-                                    <rect key="frame" x="0.0" y="0.0" width="673" height="670"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="673" height="574"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <customView id="IPN-vR-UYi">
+                                            <rect key="frame" x="0.0" y="-96" width="328" height="670"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </customView>
+                                    </subviews>
                                 </view>
                             </subviews>
                         </clipView>
                         <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="tSL-8U-Iqi">
-                            <rect key="frame" x="1" y="670" width="688" height="16"/>
+                            <rect key="frame" x="1" y="574" width="688" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="UuK-ki-5UZ">
-                            <rect key="frame" x="673" y="1" width="16" height="685"/>
+                            <rect key="frame" x="673" y="1" width="16" height="589"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="94" y="215.5"/>
+            <point key="canvasLocation" x="94" y="263.5"/>
         </window>
     </objects>
 </document>

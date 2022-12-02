@@ -16,7 +16,7 @@ class BeatRendererTester:NSWindowController {
 	var screenplay:BeatScreenplay?
 	var settings:BeatExportSettings?
 	var renderer:BeatRenderManager?
-	
+	@IBOutlet var container:NSView?
 	var timer:Timer?
 	
 	override var windowNibName: String! { get {
@@ -59,14 +59,14 @@ class BeatRendererTester:NSWindowController {
 	}
 	
 	func showRender() {
-		renderer!.newRender(screenplay: screenplay!, settings: settings!, titlePage: false, forEditor: false, changeAt: 0)
+		renderer!.newRender(screenplay: screenplay!, settings: settings!, forEditor: false, changeAt: 0)
 		
 		if(self.scrollView == nil) {
 			return
 		}
 		
 		let pages = renderer!.getRenderedPages(titlePage: true)
-		let content = self.scrollView!.documentView
+		let content = container
 		
 		for view in content!.subviews {
 			view.removeFromSuperview()
@@ -80,11 +80,8 @@ class BeatRendererTester:NSWindowController {
 		let pageSize = pages.last!.size
 		let contentHeight = CGFloat(pages.count) * (pageSize.height + 10.0)
 		
-		var rect = content!.frame
-		
-		rect.size.width = pageSize.width + 10
-		rect.size.height = contentHeight
-		content!.frame = rect
+		var rect = NSMakeRect(0, 0, pageSize.width, contentHeight)
+		content?.frame = rect
 		
 		var i = 1
 		for page in pages {
@@ -98,6 +95,7 @@ class BeatRendererTester:NSWindowController {
 			i += 1
 		}
 		
+		self.scrollView?.documentView?.frame = NSMakeRect(0, 0, pageSize.width, contentHeight + 30)
 		self.window?.viewsNeedDisplay = true
 	}
 }

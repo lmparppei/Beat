@@ -33,8 +33,6 @@ protocol BeatPageViewDelegate:NSObject {
 }
 
 @objc protocol BeatRenderOperationDelegate {
-	var lines:[Line] { get }
-	var text:String { get }
 	func renderDidFinish(renderer:BeatRenderer)
 	var parser:ContinuousFountainParser? { get }
 }
@@ -184,8 +182,8 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			//print("- Page", pageIdx)
 			let page = pages[pageIdx]
 			
-			var i = page.indexForLine(at: position)
-			var lineIdx = page.findSafeLineFromIndex(i)
+			let i = page.indexForLine(at: position)
+			let lineIdx = page.findSafeLineFromIndex(i)
 						
 			if lineIdx == NSNotFound {
 				pageIdx -= 1
@@ -200,7 +198,6 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 				}
 			}
 			
-			print("Returning ", pageIndex , "/", lineIdx,  "  --  ", page.lines[lineIdx])
 			return (pageIdx, lineIdx)
 		}
 		
@@ -284,6 +281,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			else if (line.isInvisible()) {
 				if (!(settings.printNotes && line.note())) { continue }
 			}
+			
 						
 			// If this is the FIRST page, add a break to mark for the end of title page and beginning of document
 			// if (_pageBreaks.count == 0 && _livePagination) [self pageBreak:element position:0 type:@"First page"];
@@ -308,6 +306,12 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 				let pageBreak = BeatPageBreak(y: -1, element: line, reason: "Forced page break")
 				addPage(currentPage!, onCurrentPage: [line], onNextPage: [], pageBreak: pageBreak)
 				continue
+			}
+			
+			// Add initial page break when needed
+			if self.pages.count == 0 && currentPage!.blocks.count == 0 {
+				print("Adding initial page break: ", line)
+				currentPage?.pageBreak = BeatPageBreak(y: 0, element: line)
 			}
 			
 			/**
@@ -377,18 +381,19 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			if (remainingSpace < BeatRenderer.lineHeight()) {
 				// Less than 1 row, just roll over to the next page.
 				// No need to create a page break here, as the page will take care of it.
-				addPage(currentPage, onCurrentPage: [], onNextPage: queue)
+				let pageBreak = BeatPageBreak(y: 0, element: queue.first!)
+				addPage(currentPage, onCurrentPage: [], onNextPage: queue, pageBreak: pageBreak)
 				return
 			}
 			
 			if blockGroup.blocks.count > 1 {
 				let split = blockGroup.splitGroup(remainingSpace: remainingSpace)
-				addPage(currentPage, onCurrentPage: split.0, onNextPage: split.1)
+				addPage(currentPage, onCurrentPage: split.0, onNextPage: split.1, pageBreak: split.2)
 				
 			} else {
 				let block = blockGroup.blocks.first!
 				let split = block.splitBlock(remainingSpace: remainingSpace)
-				addPage(currentPage, onCurrentPage: split.0, onNextPage: split.1)
+				addPage(currentPage, onCurrentPage: split.0, onNextPage: split.1, pageBreak: split.2)
 			}
 		
 			//... also add a page break here
@@ -404,9 +409,6 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	 
 	 - note: This method is recursive. If the newly-added blocks don'w fit on next page, `addPage` will be called inside the following `addBlocks` method
 	 */
-	func addPage(_ page:BeatPageView, onCurrentPage:[Line], onNextPage:[Line]) {
-		addPage(page, onCurrentPage: onCurrentPage, onNextPage: onNextPage, pageBreak: nil)
-	}
 	
 	func addPage(_ page:BeatPageView, onCurrentPage:[Line], onNextPage:[Line], pageBreak:BeatPageBreak?) {
 		// Add elements on the current page
@@ -416,11 +418,11 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 		}
 		pages.append(page)
 		
-		// Add page break
-		if pageBreak != nil { page.pageBreak = pageBreak }
-		
 		// Create a new page and add the rest on that one
 		currentPage = BeatPageView(delegate: self)
+		
+		// Add page break info
+		if pageBreak != nil { currentPage!.pageBreak = pageBreak }
 		
 		if (onNextPage.count > 0) {
 			addBlocks(blocks: [onNextPage], currentPage: currentPage!)
@@ -575,6 +577,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
  */
 class BeatPagePrintView:NSView {
 	override var isFlipped: Bool { return true }
+
 }
 class BeatPageView:NSObject {
 	var fonts = BeatFonts.shared()
@@ -585,7 +588,7 @@ class BeatPageView:NSObject {
 	var maxHeight = 0.0
 	var blocks:[BeatPageBlock] = []
 	
-	var pageBreak:BeatPageBreak?
+	@objc var pageBreak:BeatPageBreak?
 	
 	var linePadding = 10.0
 	var size:CGSize
@@ -619,7 +622,6 @@ class BeatPageView:NSObject {
 		self.maxHeight = size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom - BeatRenderer.lineHeight() * 2
 		
 		super.init()
-		//super.init(frame: NSMakeRect(0, 0, size.width, size.height))
 	}
 		
 	required init?(coder: NSCoder) {
@@ -647,7 +649,7 @@ class BeatPageView:NSObject {
 		self.rendered = false
 	}
 	
-	func forDisplay() -> NSView {
+	func forDisplay() -> BeatPagePrintView {
 		self.render()
 		return self.pageView!
 	}
@@ -669,7 +671,7 @@ class BeatPageView:NSObject {
 		
 		// Create a text view inside the page if needed
 		if self.textView == nil {
-			self.textView = NSTextView(
+			self.textView = BeatPageTextView(
 				frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
 							  y: self.pageStyle.marginTop + BeatRenderer.lineHeight() * 3,
 							  width: size.width - self.pageStyle.marginLeft,
@@ -2144,16 +2146,16 @@ class BeatBlockGroup {
 		return h
 	}
 	
-	func splitGroup(remainingSpace:CGFloat) -> ([Line], [Line], BeatPageBreak?) {
+	func splitGroup(remainingSpace:CGFloat) -> ([Line], [Line], BeatPageBreak) {
 		var space = remainingSpace
 		var passedBlocks:[BeatPageBlock] = []
 		
 		var onThisPage:[Line] = []
 		var onNextPage:[Line] = []
 		
-		var pageBreakItem:BeatPageBreak?
-		
 		var idx = 0
+		var offendingBlock:BeatPageBlock?
+		
 		for block in self.blocks {
 			let h = block.height
 			
@@ -2165,42 +2167,57 @@ class BeatBlockGroup {
 				continue
 				
 			} else {
-				// The following block doesn't fit on page
-				let pageBreak = block.splitBlock(remainingSpace: remainingSpace)
-				
-				// Is there something left on current page?
-				if pageBreak.0.count > 0 {
-					for passedBlock in passedBlocks { onThisPage.append(contentsOf: passedBlock.lines) }
-					onThisPage.append(contentsOf: pageBreak.0)
-				}
-				
-				// Did something spill on next page?
-				if pageBreak.1.count > 0 {
-					onNextPage.append(contentsOf: pageBreak.1)
-				}
-				
-				// If there were more blocks that didn't get handled, add them on next page
-				if (block != blocks.last!) {
-					for i in idx+1..<blocks.count {
-						let b = blocks[i]
-						onNextPage.append(contentsOf: b.lines)
-					}
-				}
-				
-				pageBreakItem = pageBreak.2
-				
+				offendingBlock = block
 				break
 			}
 		}
 		
-		return (onThisPage, onNextPage, pageBreakItem)
+		// The following block doesn't fit on page
+		if (offendingBlock != nil) {
+			var pageBreakItem:BeatPageBreak
+			let pageBreak = offendingBlock!.splitBlock(remainingSpace: space)
+			
+			// Is there something left on current page?
+			if pageBreak.0.count > 0 {
+				for passedBlock in passedBlocks { onThisPage.append(contentsOf: passedBlock.lines) }
+				onThisPage.append(contentsOf: pageBreak.0)
+			}
+			
+			// Did something spill on next page?
+			if pageBreak.1.count > 0 {
+				onNextPage.append(contentsOf: pageBreak.1)
+			}
+			
+			// If there were more blocks that didn't get handled, add them on next page
+			if (offendingBlock != blocks.last!) {
+				for i in idx+1..<blocks.count {
+					let b = blocks[i]
+					onNextPage.append(contentsOf: b.lines)
+				}
+			}
+			
+			pageBreakItem = pageBreak.2
+			
+			return (onThisPage, onNextPage, pageBreakItem)
+		}
+		
+		let lines = self.lines
+		return ([], lines, BeatPageBreak(y: 0, element: lines.first!, reason: "Something went wrong when splitting a block"))
+	}
+	
+	var lines:[Line] {
+		var lines:[Line] = []
+		for block in blocks {
+			lines.append(contentsOf: block.lines)
+		}
+		return lines
 	}
 }
 
 class BeatPageBreak:NSObject {
-	var y:CGFloat
-	var element:Line
-	var reason:String = "None"
+	@objc var y:CGFloat
+	@objc var element:Line
+	@objc var reason:String = "None"
 	
 	convenience init(y:CGFloat, element:Line) {
 		self.init(y: y, element: element, reason: "None")
@@ -2214,6 +2231,40 @@ class BeatPageBreak:NSObject {
 	}
 }
 
+
+// MARK: - Custom text view
+
+class BeatPageTextView:NSTextView {
+	/*
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		let trackingArea = NSTrackingArea(rect: bounds, options: [.activeAlways, .inVisibleRect, .mouseEnteredAndExited], owner: self, userInfo: nil)
+		addTrackingArea(trackingArea)
+	}
+	
+	override func mouseMoved(with event: NSEvent) {
+		super.mouseMoved(with: event)
+		
+		guard
+			let lm = self.layoutManager,
+			let tc = self.textContainer
+		else { return }
+
+		let localMousePosition = convert(event.locationInWindow, from: nil)
+		var partial = CGFloat(1.0)
+		let glyphIndex = lm.glyphIndex(for: localMousePosition, in: tc, fractionOfDistanceThroughGlyph: &partial)
+
+		let rect = lm.lineFragmentUsedRect(forGlyphAt: glyphIndex, effectiveRange: nil)
+		let range = lm.glyphRange(forBoundingRect: rect, in: self.textContainer!)
+		let charRange = lm.characterRange(forGlyphRange: range, actualGlyphRange: nil)
+		
+		let color = NSColor.gray.withAlphaComponent(0.2)
+		
+		lm.removeTemporaryAttribute(NSAttributedString.Key.backgroundColor, forCharacterRange: self.textStorage!.range)
+		lm.addTemporaryAttribute(NSAttributedString.Key.backgroundColor, value: color, forCharacterRange: charRange)
+	}
+	*/
+}
 
 /*
  

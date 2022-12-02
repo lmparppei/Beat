@@ -9,9 +9,7 @@
 import Foundation
 
 @objc protocol BeatRenderDelegate {
-	func renderingDidFinish(pages:[BeatPageView], pageBreaks:[BeatPageBreak])
-	func lines() -> [Line]
-	func text() -> String
+	func renderingDidFinish(pages:[BeatPageView])
 	var parser:ContinuousFountainParser? { get }
 }
 
@@ -45,10 +43,10 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	 let pages = renderer.pages
 	 let titlePage = renderer.titlePage
 	 */
-	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings, titlePage:Bool) {
-		newRender(screenplay: screenplay, settings: settings, titlePage: titlePage, forEditor: false, changeAt: 0)
+	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings) {
+		newRender(screenplay: screenplay, settings: settings, forEditor: false, changeAt: 0)
 	}
-	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings, titlePage:Bool, forEditor:Bool, changeAt:Int) {
+	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
 		self.pageCache = self.finishedOperation?.pages ?? []
 		
 		let operation = BeatRenderer(delegate:self, screenplay: screenplay, settings: settings, livePagination: forEditor, changeAt:changeAt, cachedPages: self.pageCache)
@@ -103,7 +101,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		self.finishedOperation = renderer
 		self.pages = renderer.pages
 		
-		self.delegate?.renderingDidFinish(pages: self.pages, pageBreaks: [])
+		self.delegate?.renderingDidFinish(pages: self.pages)
 		
 		// Once finished, run the next operation, if it exists
 		let lastOperation = queue.last
@@ -134,15 +132,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	}
 	
 	
-	// MARK: - Delegation methods
-	
-	var lines: [Line] {
-		return self.delegate?.lines() ?? []
-	}
-	
-	var text: String {
-		return self.delegate?.text() ?? ""
-	}
+	// MARK: - Forwarded delegate properties
 	
 	var parser:ContinuousFountainParser? {
 		return self.delegate?.parser
