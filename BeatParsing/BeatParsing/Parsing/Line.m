@@ -1020,6 +1020,13 @@
 	if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid.UUIDString.lowercaseString]) return true;
 	else return false;
 }
+- (BOOL)matchesUUIDString:(NSString*)uuid {
+    if ([self.uuid.UUIDString.lowercaseString isEqualToString:uuid]) return true;
+    else return false;
+}
+- (NSString*)uuidString {
+    return self.uuid.UUIDString;
+}
 
 #pragma mark - Ranges
 

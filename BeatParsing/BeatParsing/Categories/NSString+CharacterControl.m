@@ -76,19 +76,48 @@
 	NSInteger noteLoc = [self rangeOfString:@"[["].location;
 	
 	if (noteLoc == 0 || parenthesisLoc == 0) return NO;
-	
-	
+
 	if (parenthesisLoc == NSNotFound) {
 		// No parenthesis
 		return self.containsOnlyUppercase;
 	}
 	else {
-		NSString *head = [self substringToIndex:parenthesisLoc];
-
-		if ([head.uppercaseString isEqualToString:head] && head.containsOnlyUppercase) {
-			// Parenthesis found
-			return YES;
-		}
+        // We need to check past parentheses, too, in case the user started the line with something like:
+        // MIA (30) does something...
+        bool parenthesisOpen = false;
+        bool uppercase = false;
+        NSInteger startIndex = 0;
+        
+        NSCharacterSet *chrSet = [self uppercaseLetters];
+        NSMutableIndexSet *indexSet = NSMutableIndexSet.new;
+        
+        for (NSInteger i=0; i<self.length; i++) {
+            char c = [self characterAtIndex:i];
+            if (c == ')') {
+                parenthesisOpen = false;
+                continue;
+            }
+            else if (c == '(') {
+                parenthesisOpen = true;
+                continue;
+            }
+            else if (!parenthesisOpen) {
+                [indexSet addIndex:i];
+            }
+        }
+        
+        __block bool containsLowerCase = false;
+        [indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+            NSString *substr = [self substringWithRange:range];
+            if ([substr containsOnlyWhitespace]) return;
+            else if (![substr containsOnlyUppercase]) {
+                containsLowerCase = true;
+                *stop = true;
+            }
+        }];
+        
+        if (containsLowerCase) return false;
+        else return true;
 	}
 	
 	return NO;

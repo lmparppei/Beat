@@ -61,7 +61,7 @@
 												  inTextContainer:textContainer];
 			
 			// Calculate rect for the marker position
-			NSRect rect = NSMakeRect(offset.width + _textView.editorDelegate.documentWidth - 22,
+			NSRect rect = NSMakeRect(offset.width + _textView.documentWidth - 22,
 									offset.height + boundingRect.origin.y + 1.0,
 									 22,
 									 boundingRect.size.height);

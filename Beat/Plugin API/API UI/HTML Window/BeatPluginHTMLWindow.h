@@ -35,6 +35,7 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 - (void)gangWithDocumentWindow:(NSWindow*)window;
 - (void)detachFromDocumentWindow:(NSWindow*)window;
 - (void)closePluginWindow:(id)sender;
+- (void)log:(NSString*)string;
 @end
 
 @interface BeatPluginHTMLWindow : NSPanel <BeatHTMLPanelExports>

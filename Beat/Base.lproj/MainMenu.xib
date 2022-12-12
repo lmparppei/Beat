@@ -271,7 +271,7 @@
                                     <action selector="nextScene:" target="-1" id="24F-yl-Y0s"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Go To Scene Number..." keyEquivalent="g" id="2Rt-P2-vV4">
+                            <menuItem title="Jump to Scene..." keyEquivalent="g" id="2Rt-P2-vV4">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="goToScene:" target="-1" id="iLS-0S-OjL"/>
@@ -787,6 +787,12 @@ DQ
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="preview:" target="-1" id="Wir-n0-gpi"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="New preview (alpha)" hidden="YES" keyEquivalent="p" id="I9u-z3-G39">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="toggleNewPreview:" target="-1" id="iXl-yo-caw"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Trs-SM-X3K"/>

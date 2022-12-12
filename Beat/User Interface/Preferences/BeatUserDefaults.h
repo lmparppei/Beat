@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSuppressed:(NSString*)key;
 - (void)setSuppressed:(NSString*)key value:(bool)value;
 - (void)saveBool:(bool)value forKey:(NSString*)key;
-- (id)get:(NSString*)docKey;
+- (__nullable id)get:(NSString*)docKey;
 - (BOOL)getBool:(NSString*)docKey;
 - (CGFloat)getFloat:(NSString*)docKey;
 - (void)saveSettingsFrom:(id)target;

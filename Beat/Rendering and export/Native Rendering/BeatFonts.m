@@ -14,13 +14,39 @@
 	self = [super init];
 	
 	if (self) {
-		_courier = [NSFont fontWithName:@"Courier Prime" size:12.0];
-		_boldCourier = [NSFont fontWithName:@"Courier Prime Bold" size:12.0];
-		_boldItalicCourier = [NSFont fontWithName:@"Courier Prime Bold Italic" size:12.0];
-		_italicCourier = [NSFont fontWithName:@"Courier Prime Italic" size:12.0];
+		[self loadSerifFont];
 	}
 	return self;
 }
+
+- (void)loadFontStyles {
+	_boldCourier = [self fontWithTrait:NSFontDescriptorTraitBold];
+	_italicCourier = [self fontWithTrait:NSFontDescriptorTraitItalic];
+	_boldItalicCourier = [self fontWithTrait:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
+}
+
+- (void)loadSerifFont {
+	_courier = [NSFont fontWithName:@"Courier Prime" size:12.0];
+	[self loadFontStyles];
+}
+
+- (void)loadSansSerifFont {
+	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:12.0];
+	[self loadFontStyles];
+}
+
+- (NSFont*)fontWithTrait:(NSFontDescriptorSymbolicTraits)traits {
+	NSFontDescriptor *fd = [NSFontDescriptor.alloc fontDescriptorWithSymbolicTraits:traits];
+	NSFont *font = [NSFont fontWithDescriptor:fd size:_courier.pointSize];
+	
+	if (font == nil) return _courier;
+	else return font;
+}
+
++ (CGFloat)characterWidth {
+	return 7.25;
+}
+
 + (BeatFonts*)sharedFonts {
 	static dispatch_once_t once;
 	static id sharedInstance;

@@ -65,7 +65,7 @@
 
 @property (nonatomic, readonly) CGFloat magnification;
 @property (nonatomic) CGFloat inset;
-@property (nonatomic, readonly) NSUInteger documentWidth;
+@property (nonatomic, readonly) CGFloat documentWidth;
 
 @property (nonatomic) NSMutableDictionary *characterGenders;
 @property (nonatomic) NSString *revisionColor;
@@ -173,7 +173,7 @@
 - (void)registerEditorView:(id)view;
 
 - (void)textDidChange:(NSNotification *)notification;
-
+- (void)returnToEditor;
 - (void)toggleMode:(BeatEditorMode)mode;
 @optional - (IBAction)toggleCards:(id)sender;
 

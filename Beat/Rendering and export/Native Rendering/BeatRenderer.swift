@@ -321,8 +321,10 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			 • dialogue block, or a dual dialogue block
 			 • a heading or a shot, followed by another block
 			*/
-			let blocks = blocksFor(lineAtIndex: i)
-			addBlocks(blocks: blocks, currentPage: currentPage!)
+			autoreleasepool {
+				let blocks = blocksFor(lineAtIndex: i)
+				addBlocks(blocks: blocks, currentPage: currentPage!)
+			}
 		}
 		
 		// The loop has ended.
@@ -577,12 +579,15 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
  */
 class BeatPagePrintView:NSView {
 	override var isFlipped: Bool { return true }
+	weak var previewController:BeatPreviewController?
 
 }
 class BeatPageView:NSObject {
+	weak var delegate:BeatPageViewDelegate?
+	
 	var fonts = BeatFonts.shared()
-	var textView:NSTextView?
-	var headerView:NSTextView?
+	var textView:BeatPageTextView?
+
 	var pageStyle:RenderStyle
 	var paperSize:BeatPaperSize
 	var maxHeight = 0.0
@@ -594,11 +599,9 @@ class BeatPageView:NSObject {
 	var size:CGSize
 	
 	var titlePage = false
-	
 	var rendered = false
-	var pageView:BeatPagePrintView?
 	
-	weak var delegate:BeatPageViewDelegate?
+	var pageView:BeatPagePrintView?
 	
 	var styles:Styles { return delegate!.styles }
 	
@@ -649,9 +652,18 @@ class BeatPageView:NSObject {
 		self.rendered = false
 	}
 	
+	func forDisplay(previewController:BeatPreviewController?) -> BeatPagePrintView {
+		autoreleasepool {
+			self.render()
+			
+			let pageView = self.pageView!
+			if (previewController != nil) { self.textView!.previewController = previewController }
+			return pageView
+		}
+	}
+	
 	func forDisplay() -> BeatPagePrintView {
-		self.render()
-		return self.pageView!
+		return forDisplay(previewController: nil)
 	}
 	
 	func render() {
@@ -660,7 +672,6 @@ class BeatPageView:NSObject {
 		
 		// Create view if needed
 		if self.pageView == nil {
-			self.pageView = BeatPagePrintView(frame: NSRect(x: 0, y: 0, width: self.size.width, height: self.size.height))
 			self.pageView = BeatPagePrintView(frame: NSRect(x: 0, y: 0, width: self.size.width, height: self.size.height))
 			self.pageView?.canDrawConcurrently = true
 			
@@ -673,12 +684,21 @@ class BeatPageView:NSObject {
 		if self.textView == nil {
 			self.textView = BeatPageTextView(
 				frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
-							  y: self.pageStyle.marginTop + BeatRenderer.lineHeight() * 3,
+							  y: self.pageStyle.marginTop,
 							  width: size.width - self.pageStyle.marginLeft,
 							  height: self.maxHeight)
 			)
 			self.textView!.drawsBackground = true
 			self.textView!.backgroundColor = NSColor.white
+			self.textView?.linkTextAttributes = [
+				NSAttributedString.Key.font: self.delegate!.fonts.courier,
+				NSAttributedString.Key.foregroundColor: NSColor.black,
+				NSAttributedString.Key.cursor: NSCursor.pointingHand
+			]
+			self.textView?.displaysLinkToolTips = false
+			self.textView?.isAutomaticLinkDetectionEnabled = false
+			
+			self.textView?.font = delegate!.fonts.courier
 			
 			self.textView!.textContainer!.lineFragmentPadding = linePadding
 			self.textView!.textContainerInset = NSSize(width: 0, height: 0)
@@ -696,41 +716,28 @@ class BeatPageView:NSObject {
 		// Clear text view
 		textView?.string = ""
 		
-		// Render blocks on page
-		for block in blocks {
-			if block != blocks.first! {
-				self.textView!.textStorage!.append(block.render())
-			} else {
-				self.textView!.textStorage!.append(block.render(firstElementOnPage: true))
-			}
-		}
-				
+		let textStorage = self.textView!.textStorage
+		
 		// Header view
 		if !titlePage {
-			if self.headerView == nil {
-				self.headerView = createHeaderView(width: size.width - self.pageStyle.marginLeft)
-				self.pageView?.addSubview(headerView!)
-			}
-			
 			// Add page number
-			headerView?.textStorage?.setAttributedString(self.pageNumberBlock())
+			textStorage?.append(self.pageNumberBlock())
 		}
+		
+		// Render blocks on page
+		for block in blocks {
+			autoreleasepool {
+				if block != blocks.first! {
+					self.textView!.textStorage!.append(block.render())
+				} else {
+					self.textView!.textStorage!.append(block.render(firstElementOnPage: true))
+				}
+			}
+		}
+						
+		self.rendered = true
 	}
 	
-	func createHeaderView(width:CGFloat) -> NSTextView {
-		let headerView = NSTextView(
-			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
-						  y: self.pageStyle.marginTop,
-						  width: width - self.pageStyle.marginLeft,
-						  height: BeatRenderer.lineHeight() * 2)
-		)
-		headerView.textContainerInset = NSSize(width: 0, height: 0)
-		headerView.drawsBackground = true
-		headerView.backgroundColor = NSColor.white
-		
-		return headerView
-	}
-
 	func clear() {
 		self.textView!.string = ""
 	}
@@ -819,9 +826,9 @@ class BeatPageView:NSObject {
 		let headerCell = NSTextTableBlock(table: table, startingRow: 0, rowSpan: 1, startingColumn: 1, columnSpan: 1)
 		let rightCell = NSTextTableBlock(table: table, startingRow: 0, rowSpan: 1, startingColumn: 2, columnSpan: 1)
 		
-//		leftCell.backgroundColor = NSColor.red
-//		headerCell.backgroundColor = NSColor.green
-//		rightCell.backgroundColor = NSColor.blue
+		leftCell.backgroundColor = NSColor.red
+		headerCell.backgroundColor = NSColor.green
+		rightCell.backgroundColor = NSColor.blue
 		
 		leftCell.setContentWidth(15, type: .percentageValueType)
 		headerCell.setContentWidth(70, type: .percentageValueType)
@@ -837,6 +844,7 @@ class BeatPageView:NSObject {
 		let rightStyle = NSMutableParagraphStyle()
 		rightStyle.alignment = .right
 		rightStyle.textBlocks = [rightCell]
+		rightStyle.paragraphSpacing = BeatRenderer.lineHeight()
 		
 		let leftContent = NSMutableAttributedString(string: " \n", attributes: [
 			NSAttributedString.Key.paragraphStyle: leftStyle
@@ -952,6 +960,22 @@ class BeatRenderLayoutManager:NSLayoutManager {
 		}
 		
 		NSGraphicsContext.restoreGraphicsState()
+	}
+	
+	override func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
+		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
+		/*
+		let chrRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
+		let key = NSAttributedString.Key(rawValue: "ActiveLine")
+		
+		let attr = self.temporaryAttribute(key, atCharacterIndex: chrRange.location, effectiveRange: nil) as? Bool ?? false
+		if (attr) {
+			print("Active line at ", chrRange.location)
+			let rect = self.lineFragmentUsedRect(forGlyphAt: glyphsToShow.location, effectiveRange: nil, withoutAdditionalLayout: true)
+			NSColor.red.setFill()
+			rect.fill()
+		}
+		*/
 	}
 }
 
@@ -1105,7 +1129,7 @@ class BeatTitlePageView:BeatPageView {
 									   width: frame.size.width - delegate!.styles.page().marginLeft * 2,
 									   height: 400)
 			
-			textView = NSTextView(frame: textViewFrame)
+			textView = BeatPageTextView(frame: textViewFrame)
 			textView?.isEditable = false
 			textView?.backgroundColor = .white
 						
@@ -1192,7 +1216,7 @@ class BeatPageElement:NSObject {
 	 */
 	var height:CGFloat {
 		if (self.calculatedHeight < 0) {
-			let attrStr = NSMutableAttributedString(attributedString: self.line.attrString!)
+			let attrStr = NSMutableAttributedString(string: self.line.stripFormatting()!)
 			let pStyle = NSMutableParagraphStyle()
 			pStyle.maximumLineHeight = BeatRenderer.lineHeight()
 			
@@ -1258,6 +1282,12 @@ class BeatPageElement:NSObject {
 	}
 	
 	func render(firstElementOnPage:Bool) -> NSAttributedString {
+		// If this element is already rendered AND it hasn't become the first element on page, render it again.
+		// Otherwise return the cached result.
+		if self.renderedString != nil && firstElementOnPage {
+			return self.renderedString!
+		}
+		
 		var attrStr = NSMutableAttributedString(attributedString: line.attributedStringForFDX())
 		
 		let styleName = line.typeName() ?? "action"
@@ -1277,21 +1307,22 @@ class BeatPageElement:NSObject {
 		
 		// Tag the line with corresponding element
 		attrStr.addAttribute(NSAttributedString.Key("RepresentedLine"), value: line, range: attrStr.range)
+		if !line.isTitlePage() { attrStr.addAttribute(NSAttributedString.Key.link, value: line, range: attrStr.range) }
 		
 		// Is this a multiline block?
 		let multiline = attrStr.string.contains("\n")
 		// Add a line break at the end when rendering
 		attrStr.append(NSAttributedString(string: "\n"))
 		
-		// Stylize
-		let fonts = BeatFonts.shared()
-		var font = fonts.courier
-		
 		// Block width. Dual dialogue blocks DO NOT get the page indent
 		let width = (paperSize == .A4) ? style.widthA4 : style.widthLetter
 		var blockWidth = width + style.marginLeft
 		if (!dualDialogue) { blockWidth += styles!.page().contentPadding }
-			
+		
+		// Stylize
+		let fonts = BeatFonts.shared()
+		var font = fonts.courier
+				
 		if style.italic && style.bold { font = fonts.boldCourier }
 		else if style.italic { font = fonts.italicCourier }
 		else if style.bold { font = fonts.boldCourier }
@@ -1557,10 +1588,12 @@ class BeatPageBlock:NSObject {
 		}
 		
 		for element in self.elements {
-			if element == self.elements.first! && firstElementOnPage {
-				attributedString.append(element.render(firstElementOnPage: firstElementOnPage))
-			} else {
-				attributedString.append(element.render())
+			autoreleasepool {
+				if element == self.elements.first! && firstElementOnPage {
+					attributedString.append(element.render(firstElementOnPage: firstElementOnPage))
+				} else {
+					attributedString.append(element.render())
+				}
 			}
 		}
 		
@@ -2235,7 +2268,8 @@ class BeatPageBreak:NSObject {
 // MARK: - Custom text view
 
 class BeatPageTextView:NSTextView {
-	/*
+	var previewController:BeatPreviewController?
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		let trackingArea = NSTrackingArea(rect: bounds, options: [.activeAlways, .inVisibleRect, .mouseEnteredAndExited], owner: self, userInfo: nil)
@@ -2244,7 +2278,7 @@ class BeatPageTextView:NSTextView {
 	
 	override func mouseMoved(with event: NSEvent) {
 		super.mouseMoved(with: event)
-		
+		/*
 		guard
 			let lm = self.layoutManager,
 			let tc = self.textContainer
@@ -2257,13 +2291,25 @@ class BeatPageTextView:NSTextView {
 		let rect = lm.lineFragmentUsedRect(forGlyphAt: glyphIndex, effectiveRange: nil)
 		let range = lm.glyphRange(forBoundingRect: rect, in: self.textContainer!)
 		let charRange = lm.characterRange(forGlyphRange: range, actualGlyphRange: nil)
+			
+		let key = NSAttributedString.Key(rawValue: "ActiveLine")
 		
-		let color = NSColor.gray.withAlphaComponent(0.2)
-		
-		lm.removeTemporaryAttribute(NSAttributedString.Key.backgroundColor, forCharacterRange: self.textStorage!.range)
-		lm.addTemporaryAttribute(NSAttributedString.Key.backgroundColor, value: color, forCharacterRange: charRange)
+		lm.removeTemporaryAttribute(key, forCharacterRange: self.textStorage!.range)
+		lm.addTemporaryAttribute(key, value: true, forCharacterRange: charRange)
+		*/
 	}
-	*/
+	
+	override func clicked(onLink link: Any, at charIndex: Int) {
+		guard
+			let line = link as? Line,
+			let previewController = self.previewController
+		else { return }
+		
+		let range = NSMakeRange(line.position, 0)
+		previewController.delegate?.returnToEditor()
+		previewController.delegate?.setSelectedRange(range)
+		previewController.delegate?.scroll(to: range, callback: {})
+	}
 }
 
 /*

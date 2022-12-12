@@ -86,6 +86,7 @@
 - (NSString*)scenesAsJSON;
 - (NSString*)outlineAsJSON;
 - (NSString*)linesAsJSON;
+- (Line*)lineAtPosition:(NSInteger)index;
 
 - (NSRange)selectedRange;
 - (NSArray*)linesForScene:(id)scene;

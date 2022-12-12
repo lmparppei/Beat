@@ -32,7 +32,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @protocol BeatTextViewDelegate <NSTextViewDelegate, BeatEditorDelegate>
 
 @property (nonatomic) CGFloat magnification;
-@property (nonatomic, readonly) NSUInteger documentWidth;
 @property (nonatomic, readonly) ContinuousFountainParser *parser;
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) bool showRevisions;
@@ -86,7 +85,22 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @class BeatTagging;
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
+@property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
+@property (weak) IBOutlet BeatTagging *tagging;
+@property (nonatomic) IBOutlet NSMenu *contextMenu;
+
+@property CGFloat textInsetY;
+@property NSMutableArray* masks;
+@property NSArray* sceneNumbers;
+@property (nonatomic, weak) DynamicColor* marginColor;
+@property NSArray* pageBreaks;
+@property (nonatomic) CGFloat zoomLevel;
+@property NSInteger autocompleteIndex;
+
+@property (nonatomic) CGFloat scaleFactor;
+
 + (CGFloat)linePadding;
+- (CGFloat)documentWidth;
 
 - (IBAction)toggleDarkPopup:(id)sender;
 - (IBAction)showInfo:(id)sender;
@@ -110,21 +124,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 -(void)updateMarkdownView;
 -(void)toggleHideFountainMarkup;
 - (NSRect)rectForRange:(NSRange)range;
-
-@property CGFloat textInsetY;
-@property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
-@property (weak) IBOutlet BeatTagging *tagging;
-@property NSMutableArray* masks;
-@property NSArray* sceneNumbers;
-@property (nonatomic, weak) DynamicColor* marginColor;
-@property NSArray* pageBreaks;
-@property (nonatomic) CGFloat zoomLevel;
-@property NSInteger autocompleteIndex;
-
-@property (nonatomic) CGFloat scaleFactor;
-
-@property (nonatomic) IBOutlet NSMenu *contextMenu;
-//@property (nonatomic, readonly, weak) ContinuousFountainParser *parser;
 
 - (void)refreshLayoutElementsFrom:(NSInteger)location;
 - (void)refreshLayoutElements;

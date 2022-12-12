@@ -22,7 +22,7 @@ class BeatBackupFile:NSObject {
 }
 
 class BeatBackup:NSObject {
-	@objc class var backupURLKey:String { return "Backup URL" }
+	@objc class var backupURLKey:String { return "backupURL" }
 	
 	class var separator:String {
 		return " Backup "

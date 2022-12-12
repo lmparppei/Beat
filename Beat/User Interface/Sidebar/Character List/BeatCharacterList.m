@@ -159,7 +159,7 @@
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
 		Line *scene;
 		
-		for (Line* line in lines) {
+		for (Line* line in lines) { @autoreleasepool {
 			// WIP: We need to get the actual OutlineScene here
 			if (line.type == heading) scene = line;
 			
@@ -190,7 +190,7 @@
 				if (scene) [character.scenes addObject:scene];
 				if (character.lines > self.mostLines) self.mostLines = character.lines;
 			}
-		}
+		} }
 		
 		self.characterNames = charactersAndLines;
 		

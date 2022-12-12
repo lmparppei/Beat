@@ -19,7 +19,6 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	var queue:[BeatRenderer] = []
 	var settings:BeatExportSettings
 	
-	var textCache = ""
 	var pageCache:[BeatPageView] = []
 	var pages:[BeatPageView] = []
 	

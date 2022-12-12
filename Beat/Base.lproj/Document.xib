@@ -27,6 +27,7 @@
                 <outlet property="marginView" destination="Sy0-kF-Tby" id="3Mt-n8-mIL"/>
                 <outlet property="masterView" destination="gIp-Ho-8D9" id="s3n-ER-Rgi"/>
                 <outlet property="modeIndicator" destination="pf2-1r-P3e" id="lRp-yN-5Qs"/>
+                <outlet property="nativePreviewTab" destination="L4N-og-10d" id="Jx7-6U-Thu"/>
                 <outlet property="notepad" destination="717-An-Uvy" id="3hR-GY-4DL"/>
                 <outlet property="outlineBackgroundView" destination="ddX-aG-EER" id="uNK-hW-mWG"/>
                 <outlet property="outlineButton" destination="ULq-c1-qrj" id="TPP-Em-8Xy"/>
@@ -37,8 +38,8 @@
                 <outlet property="pageSizePopup" destination="UOV-VP-tY1" id="4Sc-YE-3pD"/>
                 <outlet property="preview" destination="jRU-W0-t3P" id="tXW-3q-Vtz"/>
                 <outlet property="previewButton" destination="DOv-x4-OK1" id="gJe-tL-TEf"/>
+                <outlet property="previewController" destination="wZv-WF-8R7" id="EJs-2O-HbJ"/>
                 <outlet property="previewTab" destination="Ycm-en-OeX" id="xI5-5m-XBi"/>
-                <outlet property="printWebView" destination="ddy-rn-xRJ" id="nMo-II-Kfi"/>
                 <outlet property="quickSettingsButton" destination="piN-SW-wNh" id="uhU-gQ-L56"/>
                 <outlet property="quickSettingsView" destination="zD2-lE-mgt" id="tyu-JN-Hpu"/>
                 <outlet property="review" destination="Qdx-LL-csu" id="A6B-QM-KtI"/>
@@ -81,7 +82,7 @@
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1155" height="661"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
-            <view key="contentView" id="gIp-Ho-8D9" customClass="MasterView">
+            <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
@@ -1550,35 +1551,29 @@
                                     </subviews>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Item 3" identifier="" id="dBZ-SJ-a39" userLabel="New preview tab">
-                                <view key="view" id="iEQ-kj-lEX">
+                            <tabViewItem label="Item 3" identifier="" id="L4N-og-10d" userLabel="Native preview tab">
+                                <view key="view" id="vkg-Sm-plN">
                                     <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" maxMagnification="1.5" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="8ur-7e-GqM">
+                                        <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="gHp-kE-iK5">
                                             <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <clipView key="contentView" id="NN6-yd-htG" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
+                                            <clipView key="contentView" id="OZQ-4j-Tie">
                                                 <rect key="frame" x="1" y="1" width="1153" height="659"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <view id="lJK-xu-IFM">
+                                                    <view id="vJ9-CT-bdC">
                                                         <rect key="frame" x="0.0" y="0.0" width="1138" height="644"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <subviews>
-                                                            <customView id="GGu-Vm-Ica" customClass="BeatPreviewView" customModule="Beat" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="-26" width="328" height="670"/>
-                                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            </customView>
-                                                        </subviews>
                                                     </view>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="BEC-2y-vVE">
+                                            <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="fAh-jO-lBN">
                                                 <rect key="frame" x="1" y="644" width="1153" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Grf-gu-XrY">
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="2Il-WL-PyV">
                                                 <rect key="frame" x="1138" y="1" width="16" height="659"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -1656,8 +1651,6 @@
         <customObject id="wZv-WF-8R7" customClass="BeatPreviewController" customModule="Beat" customModuleProvider="target">
             <connections>
                 <outlet property="delegate" destination="-2" id="LYe-d0-cEE"/>
-                <outlet property="previewView" destination="GGu-Vm-Ica" id="Ga3-gj-S9b"/>
-                <outlet property="textView" destination="6pm-Ac-n3m" id="uwE-z2-Czw"/>
             </connections>
         </customObject>
         <touchBar id="FXM-lH-N3d" userLabel="Outline Touch Bar">

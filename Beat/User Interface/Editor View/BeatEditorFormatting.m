@@ -26,57 +26,41 @@
 @implementation BeatEditorFormatting
 
 // DOCUMENT LAYOUT SETTINGS
-// The 0.?? values represent percentages of view width
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
 
-#define DOCUMENT_WIDTH_MODIFIER 630
-
-#define DD_CHARACTER_INDENT_P 0.56
-#define DD_PARENTHETICAL_INDENT_P 0.50
-#define DUAL_DIALOGUE_INDENT_P 0.40
-#define DD_RIGHT 650
-#define DD_RIGHT_P .95
-
-// Title page element indent
-#define TITLE_INDENT .15
-
-#define CHARACTER_INDENT_P 0.34
-#define PARENTHETICAL_INDENT_P 0.27
-#define DIALOGUE_INDENT_P 0.164
-#define DIALOGUE_RIGHT_P 0.735
-
-#define SECTION_FONT_SIZE 20.0 // base value for section sizes
-#define FONT_SIZE 17.92
+// Base font settings
+#define SECTION_FONT_SIZE 16.0 // base value for section sizes
 #define LINE_HEIGHT 1.1
 
-static NSString *lineBreak = @"\n\n===\n\n";
-static NSString *boldSymbol = @"**";
-static NSString *italicSymbol = @"*";
-static NSString *underlinedSymbol = @"_";
-static NSString *noteOpen = @"[[";
-static NSString *noteClose= @"]]";
-static NSString *omitOpen = @"/*";
-static NSString *omitClose= @"*/";
-static NSString *forceHeadingSymbol = @".";
-static NSString *forceActionSymbol = @"!";
-static NSString *forceCharacterSymbol = @"@";
-static NSString *forcetransitionLineSymbol = @">";
-static NSString *forceLyricsSymbol = @"~";
-static NSString *forceDualDialogueSymbol = @"^";
+// Set character width
+#define CHR_WIDTH 7.25
+#define DOCUMENT_WIDTH_MODIFIER 61 * CHR_WIDTH
+#define DOCUMENT_WIDTH_A4 59 * CHR_WIDTH
+#define DOCUMENT_WIDTH_US 61 * CHR_WIDTH
+#define TEXT_INSET_TOP 80
 
-static NSString *highlightSymbolOpen = @"<<";
-static NSString *highlightSymbolClose = @">>";
+// DOCUMENT LAYOUT SETTINGS
+#define INITIAL_WIDTH 900
+#define INITIAL_HEIGHT 700
+
+// Title page element indent
+#define TITLE_INDENT 10 * CHR_WIDTH
+
+#define CHARACTER_INDENT 20 * CHR_WIDTH
+#define PARENTHETICAL_INDENT 17 * CHR_WIDTH
+#define DIALOGUE_INDENT 11 * CHR_WIDTH
+#define DIALOGUE_RIGHT 47 * CHR_WIDTH
+
+#define DD_CHARACTER_INDENT 30 * CHR_WIDTH
+#define DD_PARENTHETICAL_INDENT 26 * CHR_WIDTH
+#define DUAL_DIALOGUE_INDENT 22 * CHR_WIDTH
+#define DD_RIGHT 59 * CHR_WIDTH
+
+static NSString *underlinedSymbol = @"_";
 static NSString *strikeoutSymbolOpen = @"{{";
 static NSString *strikeoutSymbolClose = @"}}";
 
-static NSString *tagAttribute = @"BeatTag";
-static NSString *reviewAttribute = @"BeatReview";
-
-- (void)awakeFromNib {
-//	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
-//	style.lineHeightMultiple = LINE_HEIGHT;
-}
 
 - (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
 	Line *tempLine = [Line withString:@"" type:type];
@@ -93,50 +77,50 @@ static NSString *reviewAttribute = @"BeatReview";
 		[style setAlignment:NSTextAlignmentCenter];
 	}
 	else if (line.isTitlePage) {
-		[style setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
-		[style setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
+		[style setFirstLineHeadIndent:TITLE_INDENT];
+		[style setHeadIndent:TITLE_INDENT];
 		
 		// Indent lines following a first-level title page element a bit more
 		if ([line.string rangeOfString:@":"].location != NSNotFound) {
-			[style setFirstLineHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
-			[style setHeadIndent:TITLE_INDENT * DOCUMENT_WIDTH_MODIFIER];
+			[style setFirstLineHeadIndent:TITLE_INDENT];
+			[style setHeadIndent:TITLE_INDENT];
 		} else {
-			[style setFirstLineHeadIndent:TITLE_INDENT * 1.25 * DOCUMENT_WIDTH_MODIFIER];
-			[style setHeadIndent:TITLE_INDENT * 1.1 * DOCUMENT_WIDTH_MODIFIER];
+			[style setFirstLineHeadIndent:TITLE_INDENT * 1.25];
+			[style setHeadIndent:TITLE_INDENT * 1.25];
 		}
 	}
 	else if (type == transitionLine) {
 		[style setAlignment:NSTextAlignmentRight];
 	}
 	else if (type == character || (_delegate.characterInputForLine == line && _delegate.characterInput)) {
-		[style setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		[style setFirstLineHeadIndent:CHARACTER_INDENT];
+		[style setHeadIndent:CHARACTER_INDENT];
 	} else if (line.type == parenthetical) {
 		// Parenthetical after character
-		[style setFirstLineHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setHeadIndent:PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
+		[style setFirstLineHeadIndent:PARENTHETICAL_INDENT];
+		[style setHeadIndent:PARENTHETICAL_INDENT];
+		[style setTailIndent:DIALOGUE_RIGHT];
 		
 	} else if (line.type == dialogue) {
 		// Dialogue block
-		[style setFirstLineHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setHeadIndent:DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setTailIndent:DIALOGUE_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
+		[style setFirstLineHeadIndent:DIALOGUE_INDENT];
+		[style setHeadIndent:DIALOGUE_INDENT];
+		[style setTailIndent:DIALOGUE_RIGHT];
 		
 	} else if (line.type == dualDialogueCharacter) {
-		[style setFirstLineHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setHeadIndent:DD_CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
+		[style setFirstLineHeadIndent:DD_CHARACTER_INDENT];
+		[style setHeadIndent:DD_CHARACTER_INDENT];
+		[style setTailIndent:DD_RIGHT];
 		
 	} else if (line.type == dualDialogueParenthetical) {
-		[style setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setHeadIndent:DD_PARENTHETICAL_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
+		[style setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT];
+		[style setHeadIndent:DD_PARENTHETICAL_INDENT];
+		[style setTailIndent:DD_RIGHT];
 		
 	} else if (line.type == dualDialogue) {
-		[style setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setHeadIndent:DUAL_DIALOGUE_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-		[style setTailIndent:DD_RIGHT_P * DOCUMENT_WIDTH_MODIFIER];
+		[style setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT];
+		[style setHeadIndent:DUAL_DIALOGUE_INDENT];
+		[style setTailIndent:DD_RIGHT];
 	}
 	
 	else if (type == section) {
@@ -159,7 +143,7 @@ static NSString *reviewAttribute = @"BeatReview";
 }
 
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime
-{
+{ @autoreleasepool {
 	/*
 	 
 	 This method uses a mixture of permanent text attributes and temporary attributes
@@ -168,12 +152,12 @@ static NSString *reviewAttribute = @"BeatReview";
 	 Colors are set using NSLayoutManager's temporary attributes, while everything else
 	 is stored into the attributed string in NSTextStorage.
 	 
-	*/
+	 */
 	
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
 	if (line.position + line.string.length > _delegate.textView.string.length) return; // Don't go out of range
-
+	
 	NSRange range = line.textRange;
 	
 	NSTextView *textView = _delegate.textView;
@@ -188,13 +172,13 @@ static NSString *reviewAttribute = @"BeatReview";
 	// Don't overwrite revision attribute
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
 	/*
-	// Replace font with default
-	if ([attributes valueForKey:NSFontAttributeName] != _delegate.courier) {
-		[attributes removeObjectForKey:NSFontAttributeName];
-		[textStorage addAttribute:NSFontAttributeName value:_delegate.courier range:range];
-	}
-	*/
-	 
+	 // Replace font with default
+	 if ([attributes valueForKey:NSFontAttributeName] != _delegate.courier) {
+	 [attributes removeObjectForKey:NSFontAttributeName];
+	 [textStorage addAttribute:NSFontAttributeName value:_delegate.courier range:range];
+	 }
+	 */
+	
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff when formatting is disabled
 		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor forCharacterRange:line.range];
@@ -212,13 +196,13 @@ static NSString *reviewAttribute = @"BeatReview";
 	// Apply paragraph styles
 	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:line];
 	[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		
+	
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine) {
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 		return;
 	}
-
+	
 	// Store the type we are formatting for
 	line.formattedAs = line.type;
 	
@@ -227,7 +211,7 @@ static NSString *reviewAttribute = @"BeatReview";
 		// Do some extra checks for dual dialogue
 		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
 		else line.type = character;
-			
+		
 		NSRange selectedRange = textView.selectedRange;
 		
 		// Only do this if we are REALLY typing at this location
@@ -260,7 +244,7 @@ static NSString *reviewAttribute = @"BeatReview";
 		if (size < 15) size = 15.0;
 		
 		[attributes setObject:[_delegate sectionFontWithSize:size] forKey:NSFontAttributeName];
-
+		
 	}
 	else if (line.type == synopse) {
 		[attributes setObject:_delegate.synopsisFont forKey:NSFontAttributeName];
@@ -321,7 +305,7 @@ static NSString *reviewAttribute = @"BeatReview";
 		Line* previousLine;
 		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
 		if (lineIndex > 0) previousLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
-
+		
 		// Keep dialogue input after any dialogue elements
 		if (previousLine.isAnyDialogue && previousLine.string.length) {
 			if (!previousLine.isDualDialogue) paragraphStyle = [self paragraphStyleForType:dialogue];
@@ -346,7 +330,7 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (!firstTime && line.string.length) {
 		[self renderBackgroundForLine:line clearFirst:NO];
 	}
-}
+} }
 
 - (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
 	NSTextStorage *textStorage = _delegate.textView.textStorage;

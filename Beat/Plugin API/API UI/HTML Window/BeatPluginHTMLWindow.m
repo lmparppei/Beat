@@ -137,8 +137,13 @@
 }
 
 - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
-	NSRect frame = (NSRect){ x, y, width, height };
-	[self setFrame:frame display:YES];
+	@try {
+		NSRect frame = (NSRect){ x, y, width, height };
+		[self setFrame:frame display:YES];
+	}
+	@catch (NSException* error) {
+		[self.host log:@"Error setting frame. Use .setFrame(x, y, width, height), not .setFrame(frame)"];
+	}
 }
 
 - (void)gangWithDocumentWindow {

@@ -14,7 +14,6 @@ protocol BeatPreviewDelegate:BeatEditorDelegate {
 
 final class BeatPreviewController:NSObject, BeatRenderDelegate {
 	@IBOutlet weak var previewView:BeatPreviewView?
-	@IBOutlet weak var textView:BeatTextView?
 	@IBOutlet weak var delegate:BeatEditorDelegate?
 	
 	var renderer:BeatRenderManager?
@@ -43,9 +42,9 @@ final class BeatPreviewController:NSObject, BeatRenderDelegate {
 	@objc var parser: ContinuousFountainParser? { return delegate?.parser }
 	
 	// MARK: Create preview data in background
-	
-	func createPreview() {
-		renderer?.newRender(screenplay: delegate!.parser.forPrinting(), settings: self.settings)
+	@objc func createPreview(changeAt index:Int) {
+		guard let parser = delegate?.parser else { return }
+		renderer?.newRender(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
 	}
 	
 	/// Called when a render is done.
@@ -54,19 +53,26 @@ final class BeatPreviewController:NSObject, BeatRenderDelegate {
 		
 	}
 		
-	func renderOnScreen() {
+	@objc func renderOnScreen() {
 		let pages = renderer!.getRenderedPages(titlePage: true)
 		
 		self.previewView?.clear()
-		
-		for page in pages {
-			self.previewView?.addPage(page: page.forDisplay())
-		}
+		self.previewView?.addPages(pages: pages)
 	}
+	
+	func closeAndJumpToRange(_ range:NSRange) {
+		delegate?.returnToEditor()
+		self.delegate?.scroll(to: range, callback: {})
+	}
+}
+
+final class FlippedView:NSView {
+	override var isFlipped: Bool { return true }
 }
 
 final class BeatPreviewView:NSView {
 	override var isFlipped: Bool { return true }
+	@IBOutlet weak var previewController:BeatPreviewController?
 	
 	func clear() {
 		for pageView in self.subviews {
@@ -74,20 +80,19 @@ final class BeatPreviewView:NSView {
 		}
 	}
 	
-	func updateHeight() {
-		var rect = self.frame
+	func updateSize() {
+		let pageSize = self.subviews.first?.frame.size ?? NSSize(width: 0, height: 0)
 		let height = (self.subviews.last?.frame.height ?? 0.0) + (self.subviews.last?.frame.origin.y ?? 0.0)
-		rect.size.height = height
-		self.frame = rect
 		
-		self.enclosingScrollView?.documentView?.frame = NSMakeRect(0, 0, self.frame.width, self.frame.height + 10.0)
+		self.enclosingScrollView?.documentView?.frame = NSMakeRect(0, 0, pageSize.width, height)
+		self.frame = NSMakeRect(0, 0, pageSize.width, height)
 	}
 	
-	@objc func addPages(pages:[BeatPagePrintView]) {
+	@objc func addPages(pages:[BeatPageView]) {
 		for page in pages {
-			addPage(page: page)
+			addPage(page: page.forDisplay(previewController: self.previewController))
 		}
-		updateHeight()
+		updateSize()
 	}
 	
 	func addPage(page:BeatPagePrintView) {
@@ -111,9 +116,9 @@ final class CenteringClipView: NSClipView {
 		guard let documentView = documentView else {
 			return constrainedClipViewBounds
 		}
-
+		
 		let documentViewFrame = documentView.frame
-
+		
 		// If proposed clip view bounds width is greater than document view frame width, center it horizontally.
 		if documentViewFrame.width < proposedBounds.width {
 			constrainedClipViewBounds.origin.x = floor((proposedBounds.width - documentViewFrame.width) / -2.0)
@@ -126,5 +131,25 @@ final class CenteringClipView: NSClipView {
 
 		return constrainedClipViewBounds
 	}
+	
+	override func scrollWheel(with event: NSEvent) {
+		/*
+		let newEvent = event.cgEvent!.copy()!
+		newEvent.setIntegerValueField(CGEventField.scrollWheelEventDeltaAxis1, value: 0)
+		
+		guard let customEvent = NSEvent(cgEvent: newEvent) else { return }
+		super.scrollWheel(with: customEvent)
+		 */
+		
+		if event.deltaX != 0 {
+			super.scrollWheel(with: event)
+		}
+	}
+	override func touchesBegan(with event: NSEvent) {
+		if event.deltaX != 0 {
+			super.touchesBegan(with: event)
+		}
+	}
+	
 }
 

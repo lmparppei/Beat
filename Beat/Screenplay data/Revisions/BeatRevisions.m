@@ -87,7 +87,7 @@
 {
 	// This is a new implementation of the old code, which enumerates line ranges instead of the whole attributed string and then iterating over lines.
 	// Slower with short documents, 90 times faster on longer ones.
-	for (Line* line in lines) {
+	for (Line* line in lines) { 
 		line.revisedRanges = NSMutableDictionary.new;
 		if (line.textRange.length == 0) continue;
 		
@@ -99,7 +99,7 @@
 			if (textRange.length <= 0) continue;
 		}
 		
-		@try {
+		@try { @autoreleasepool {
 			[string enumerateAttribute:BeatRevisions.attributeKey inRange:textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 				// Don't go out of range
 				if (range.length == 0 || range.location == NSNotFound || NSMaxRange(range) > string.length) return;
@@ -138,60 +138,11 @@
 					[line.revisedRanges[revisionColor] addIndexesInRange:localRange];
 				}
 			}];
-		}
+		} }
 		@catch (NSException *e) {
 			NSLog(@"Bake attributes: Line out of range  (%lu/%lu) -  %@", textRange.location, textRange.length, line);
 		}
 	}
-
-	/*
-	// Reset all ranges first
-	//for (Line* line in lines) line.revisedRanges = NSMutableDictionary.new;
-	 
-	[string enumerateAttribute:@"Revision" inRange:(NSRange){0,string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		if (range.length < 1 || range.location == NSNotFound || range.location + range.length > string.length) return;
-		
-		BeatRevisionItem *item = value;
-		if (![includedRevisions containsObject:item.colorName]) return; // Skip if the color is not included
-		
-		if (item.type != RevisionNone) {
-			NSArray *linesInRange = [parser linesInRange:range];
-			for (Line* line in linesInRange) {
-				line.changed = YES;
-				
-				// Set revision color
-				NSString *revisionColor = item.colorName;
-				if (!revisionColor.length) revisionColor = DEFAULT_COLOR;
-				
-				if (line.revisionColor.length) {
-					// The line already has a revision color, apply the higher one
-					NSInteger currentRevision = [REVISION_ORDER indexOfObject:line.revisionColor];
-					NSInteger thisRevision = [REVISION_ORDER indexOfObject:revisionColor];
-					
-					if (thisRevision != NSNotFound && thisRevision > currentRevision) line.revisionColor = revisionColor;
-				}
-				else line.revisionColor = revisionColor;
-				
-				// Create addition & removal ranges if needed
-				//if (!line.additionRanges) line.additionRanges = NSMutableIndexSet.indexSet;
-				if (!line.removalSuggestionRanges) line.removalSuggestionRanges = NSMutableIndexSet.indexSet;
-				
-				// Create local range
-				NSRange localRange = [line globalRangeToLocal:range];
-				
-				// Save the revised indices based on the local range
-				if (item.type == RevisionRemovalSuggestion) [line.removalSuggestionRanges addIndexesInRange:localRange];
-				else if (item.type == RevisionAddition) {
-					// Add revision sets if needed
-					if (!line.revisedRanges) line.revisedRanges = NSMutableDictionary.new;
-					if (!line.revisedRanges[revisionColor]) line.revisedRanges[revisionColor] = NSMutableIndexSet.new;
-					
-					[line.revisedRanges[revisionColor] addIndexesInRange:localRange];
-				}
-			}
-		}
-	}];
-	*/
 }
 
 /// Bakes the revised ranges from editor into corresponding lines in the parser.

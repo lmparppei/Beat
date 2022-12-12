@@ -18,8 +18,8 @@
 @implementation BeatUserDefaults
 
 // Magnifying stuff
-#define MAGNIFYLEVEL_KEY @"Magnifylevel"
-#define DEFAULT_MAGNIFY 0.98
+#define MAGNIFYLEVEL_KEY @"magnification"
+#define DEFAULT_MAGNIFY 1.46
 #define MAGNIFY YES
 
 // User preferences key names
@@ -76,7 +76,8 @@
 		@"showTags": @[@"showTags", @YES],
 		@"automaticContd": @[@"automaticContd", @YES],
 		@"zoomLevel": @[@"zoomLevel", @0.97],
-		@"showSynopsisInOutline": @[@"showSynopsisInOutline", @YES]
+		@"showSynopsisInOutline": @[@"showSynopsisInOutline", @YES],
+		@"backupURL": @[@"backupURL", @""]
 	};
 }
 
@@ -169,7 +170,9 @@
 		return [NSUserDefaults.standardUserDefaults boolForKey:settingKey];
 	}
 }
-- (id)get:(NSString*)docKey {
+- (__nullable id)get:(NSString*)docKey {
+	if (docKey == nil || docKey.length == 0) return nil;
+	
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
 	NSArray *values = userDefaults[docKey];
 	
@@ -178,6 +181,7 @@
 		return values[1];
 	} else {
 		id setting = [NSUserDefaults.standardUserDefaults objectForKey:settingKey];
+		if (setting == nil) return nil;
 		
 		// Return default value for empty strings
 		if ([setting isKindOfClass:NSString.class]) {

@@ -1407,7 +1407,7 @@
 	return self.delegate.parser.outline;
 }
 
-- (Line*)lineAtIndex:(NSInteger)index {
+- (Line*)lineAtPosition:(NSInteger)index {
 	return [_delegate.parser lineAtPosition:index];
 }
 - (OutlineScene*)sceneAtIndex:(NSInteger)index {
@@ -1452,7 +1452,7 @@
 - (NSString*)linesAsJSON {
 	NSMutableArray *linesToSerialize = [NSMutableArray array];
 	
-	for (Line* line in self.delegate.parser.lines) {
+	for (Line* line in self.delegate.parser.lines) { 
 		[linesToSerialize addObject:line.forSerialization];
 	}
 	

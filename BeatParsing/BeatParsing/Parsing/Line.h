@@ -93,6 +93,10 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (bool)hasBeatForStoryline:(NSString*)storyline;
 - (Storybeat*)storyBeatWithStoryline:(NSString*)storyline;
 
+// Identity
+- (BOOL)matchesUUIDString:(NSString*)uuid;
+- (NSString*)uuidString;
+
 JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(id)value);
 - (id)getCustomData:(NSString*)key;
 
@@ -229,6 +233,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (bool)isAnyParenthetical;
 /// returns true for single and dual dialogue
 - (bool)isAnyDialogue;
+/// returns true when the character cue has an extension (CONT'D), (V.O.) etc.
 - (BOOL)hasExtension;
 
 - (NSString*)stripSceneNumber;
@@ -297,6 +302,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSRange)firstBeatRange;
 
 - (BOOL)matchesUUID:(NSUUID*)uuid;
+- (BOOL)matchesUUIDString:(NSString*)uuid;
+- (NSString*)uuidString;
 
 -(NSString *)description;
 @end

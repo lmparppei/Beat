@@ -12,7 +12,7 @@
 #import "ThemeManager.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define WHITESPACE 120
+#define WHITESPACE 50
 #define SHADOW_WIDTH 20
 #define SHADOW_OPACITY 0.0125
 

@@ -9,7 +9,7 @@
 import Foundation
 
 class BeatSpellCheckingUtils:NSObject, NSMenuDelegate {
-	@IBOutlet var langMenu:NSMenu?
+	@IBOutlet weak var langMenu:NSMenu?
 	@IBOutlet weak var target:AnyObject?
 	var spellChecking = NSSpellChecker.shared
 	

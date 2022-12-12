@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSFont *boldItalicCourier;
 
 + (BeatFonts*)sharedFonts;
++ (CGFloat)characterWidth;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -41,10 +41,10 @@
 #import "BeatLayoutManager.h"
 #import "Beat-Swift.h"
 #import "BeatAttributes.h"
+#import "BeatFonts.h"
 
-//#define DEFAULT_MAGNIFY 1.02
-#define DEFAULT_MAGNIFY 0.98
-#define MAGNIFYLEVEL_KEY @"Magnifylevel"
+#define DEFAULT_MAGNIFICATION 1.47
+#define MAGNIFICATION_KEY @"magnification"
 
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
@@ -63,7 +63,7 @@
 #define POPOVER_WIDTH 300.0
 #define POPOVER_PADDING 0.0
 
-#define TEXT_INSET_TOP 80
+#define TEXT_INSET_TOP 50
 
 #define POPOVER_APPEARANCE NSAppearanceNameVibrantDark
 
@@ -166,9 +166,10 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.textContainer replaceLayoutManager:layoutMgr];
 	self.textContainer.lineFragmentPadding = [BeatTextView linePadding];
 	
-	// Initialize custom text storage
-	//[self.layoutManager replaceTextStorage:BeatTextStorage.new];
 	self.textStorage.delegate = self;
+	
+	// Setup magnification
+	[self setupZoom];
 	
 	return self;
 }
@@ -1140,7 +1141,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		// Some hardcoded values, which seem to work (lol)
 		rect.size.width = 20 * scene.sceneNumber.length;
 		rect.origin.x = self.textContainerInset.width - rect.size.width;
-		rect.origin.y += self.textInsetY + 3;
+		rect.origin.y += self.textInsetY + 1;
 		label.frame = rect;
 		
 		// If we are past the edited heading, check if we didn't move the following label at all.
@@ -1321,7 +1322,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 #pragma mark - Page numbering
 
 - (void)updatePageBreaks:(NSArray<NSDictionary*>*)pageBreaks {
-	// Update UI in main thread
+	// Sort page breaks based on their position
 	NSMutableArray *breakPositions = NSMutableArray.new;
 	NSArray<NSDictionary*>* sortedPageBreaks = [pageBreaks sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
 		NSDictionary *pageBreak1 = obj1;
@@ -1337,7 +1338,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	for (NSDictionary *pageBreak in sortedPageBreaks) { @autoreleasepool {
 		CGFloat lineHeight = 13; // Line height from pagination
-		CGFloat UIlineHeight = 20;
+		CGFloat UIlineHeight = 13.2;
 		CGFloat y;
 		
 		Line *line = pageBreak[@"line"];
@@ -1392,7 +1393,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	DynamicColor *pageNumberColor = ThemeManager.sharedManager.pageNumberColor;
 	NSInteger pageNumber = 1;
 
-	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width + 20;
+	CGFloat rightEdge = self.enclosingScrollView.frame.size.width * factor - self.textContainerInset.width - 30;
 	// Compact page numbers if needed
 	if (rightEdge + 70 > self.enclosingScrollView.frame.size.width * factor) {
 		rightEdge = self.enclosingScrollView.frame.size.width * factor - 70;
@@ -1527,6 +1528,19 @@ Line *cachedRectLine;
 	[super scaleUnitSquareToSize:newUnitSize];
 }
 
+- (CGFloat)documentWidth {
+	CGFloat width = 0.0;
+	CGFloat padding = self.textContainer.lineFragmentPadding;
+	
+	if (_editorDelegate.pageSize == BeatA4) {
+		width = BeatFonts.characterWidth * 59;
+	} else {
+		width = BeatFonts.characterWidth * 61;
+	}
+	
+	return width + padding * 2;
+}
+
 - (CGFloat)setInsets {
 	// Top/bottom insets
 	if (_editorDelegate.typewriterMode) {
@@ -1537,10 +1551,10 @@ Line *cachedRectLine;
 	}
 	
 	// Left/right insets
-	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - _editorDelegate.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
+	CGFloat width = (self.enclosingScrollView.frame.size.width / 2 - self.documentWidth * _editorDelegate.magnification / 2) / _editorDelegate.magnification;
 	
 	self.textContainerInset = NSMakeSize(width, _textInsetY);
-	self.textContainer.size = NSMakeSize(_editorDelegate.documentWidth, self.textContainer.size.height);
+	self.textContainer.size = NSMakeSize(self.documentWidth, self.textContainer.size.height);
 
 	[self resetCursorRects];
 	[self addCursorRect:(NSRect){0,0, 200, 2500} cursor:NSCursor.crosshairCursor];
@@ -1601,7 +1615,7 @@ double clamp(double d, double min, double max) {
 }
 
 - (void)setZoomLevel:(CGFloat)zoomLevel {
-	_zoomLevel = clamp(zoomLevel, 0.8, 1.5);
+	_zoomLevel = clamp(zoomLevel, 0.9, 2.1);
 }
 
 /// Set zoom level for the editor view, automatically clamped
@@ -1634,7 +1648,7 @@ double clamp(double d, double min, double max) {
 		[self.editorDelegate ensureLayout];
 	}
 	
-	[NSUserDefaults.standardUserDefaults setFloat:_zoomLevel forKey:MAGNIFYLEVEL_KEY];
+	[NSUserDefaults.standardUserDefaults setFloat:_zoomLevel forKey:MAGNIFICATION_KEY];
 	
 	[self setInsets];
 	[_editorDelegate updateLayout];
@@ -1677,7 +1691,7 @@ double clamp(double d, double min, double max) {
 	[self scaleChanged:oldScaleFactor newScale:newScaleFactor];
 	
 	// Set minimum size for text view when Outline view size is dragged
-	[_editorDelegate setSplitHandleMinSize:_editorDelegate.documentWidth * _zoomLevel];
+	[_editorDelegate setSplitHandleMinSize:self.documentWidth * _zoomLevel];
 }
 
 - (void)scaleChanged:(CGFloat)oldScale newScale:(CGFloat)newScale
@@ -1693,13 +1707,13 @@ double clamp(double d, double min, double max) {
 
 - (void)setupZoom {
 	// This resets the zoom to the saved setting
-	if (![NSUserDefaults.standardUserDefaults floatForKey:MAGNIFYLEVEL_KEY]) {
-		_zoomLevel = DEFAULT_MAGNIFY;
+	if (![NSUserDefaults.standardUserDefaults floatForKey:MAGNIFICATION_KEY]) {
+		_zoomLevel = DEFAULT_MAGNIFICATION;
 	} else {
-		_zoomLevel = [NSUserDefaults.standardUserDefaults floatForKey:MAGNIFYLEVEL_KEY];
+		_zoomLevel = [NSUserDefaults.standardUserDefaults floatForKey:MAGNIFICATION_KEY];
 			  
 		// Some limits for magnification, if something changes between app versions
-		if (_zoomLevel < .7 || _zoomLevel > 1.19) _zoomLevel = DEFAULT_MAGNIFY;
+		if (_zoomLevel < .7 || _zoomLevel > 1.19) _zoomLevel = DEFAULT_MAGNIFICATION;
 	}
 	
 	_scaleFactor = 1.0;
@@ -1709,7 +1723,8 @@ double clamp(double d, double min, double max) {
 }
 
 - (void)resetZoom {
-	[self adjustZoomLevel:DEFAULT_MAGNIFY];
+	[NSUserDefaults.standardUserDefaults removeObjectForKey:MAGNIFICATION_KEY];
+	[self adjustZoomLevel:DEFAULT_MAGNIFICATION];
 }
 
 

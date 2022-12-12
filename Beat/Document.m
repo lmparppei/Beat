@@ -87,7 +87,6 @@
 #import "SceneFiltering.h"
 #import "FDXImport.h"
 #import "BeatPaginator.h"
-#import "MasterView.h"
 #import "OutlineExtractor.h"
 #import "SceneCards.h"
 #import "RegExCategories.h"
@@ -221,17 +220,18 @@
 @property (weak) IBOutlet NSTabView *tabView; // Master tab view (holds edit/print/card views)
 @property (weak) IBOutlet ColorView *backgroundView; // Master background
 @property (weak) IBOutlet ColorView *outlineBackgroundView; // Background for outline
-@property (weak) IBOutlet MasterView *masterView; // View which contains every other view
 
 @property (weak) IBOutlet NSTabViewItem *editorTab;
 @property (weak) IBOutlet NSTabViewItem *previewTab;
 @property (weak) IBOutlet NSTabViewItem *cardsTab;
+@property (weak) IBOutlet NSTabViewItem *nativePreviewTab;
 
 @property (nonatomic) BeatPrintDialog *printDialog;
 
 // Print preview
 @property (nonatomic) NSString *htmlString;
 @property (nonatomic) IBOutlet BeatPreview *preview;
+@property (nonatomic) IBOutlet BeatPreviewController *previewController;
 
 // Analysis
 @property (nonatomic) BeatStatisticsPanel *analysisWindow;
@@ -270,10 +270,6 @@
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
 @property (strong, nonatomic) NSFont *synopsisFont;
 
-// Magnification
-@property (nonatomic) CGFloat scaleFactor;
-@property (nonatomic) CGFloat scale;
-
 // Printing
 @property (nonatomic) bool printPreview;
 @property (nonatomic, readwrite) NSString *preprocessedText;
@@ -282,7 +278,7 @@
 @property (nonatomic) bool matchParentheses;
 
 // View sizing
-@property (nonatomic) NSUInteger documentWidth;
+@property (nonatomic) CGFloat documentWidth;
 @property (nonatomic) NSUInteger characterIndent;
 @property (nonatomic) NSUInteger parentheticalIndent;
 @property (nonatomic) NSUInteger dialogueIndent;
@@ -352,19 +348,14 @@
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
 #define SECTION_FONT_SIZE 20.0 // base value for section sizes
-#define FONT_SIZE 17.92
+#define FONT_SIZE 12.0
 #define LINE_HEIGHT 1.1
 
-#define DOCUMENT_WIDTH_MODIFIER 630
-#define DOCUMENT_WIDTH_A4 610
-#define DOCUMENT_WIDTH_US 630
+#define CHR_WIDTH 7.25
+#define DOCUMENT_WIDTH_MODIFIER 61 * CHR_WIDTH
+#define DOCUMENT_WIDTH_A4 59 * CHR_WIDTH
+#define DOCUMENT_WIDTH_US 61 * CHR_WIDTH
 #define TEXT_INSET_TOP 80
-
-// Magnifying stuff
-#define MAGNIFYLEVEL_KEY @"Magnifylevel"
-#define DEFAULT_MAGNIFY 0.98
-#define MAGNIFY YES
-
 
 // DOCUMENT LAYOUT SETTINGS
 #define INITIAL_WIDTH 900
@@ -380,10 +371,10 @@
 // Title page element indent
 #define TITLE_INDENT .15
 
-#define CHARACTER_INDENT_P 0.34
-#define PARENTHETICAL_INDENT_P 0.27
-#define DIALOGUE_INDENT_P 0.164
-#define DIALOGUE_RIGHT_P 0.735
+#define CHARACTER_INDENT_P 18 * CHR_WIDTH
+#define PARENTHETICAL_INDENT_P 14 * CHR_WIDTH
+#define DIALOGUE_INDENT_P 8 * CHR_WIDTH
+#define DIALOGUE_RIGHT_P 44 * CHR_WIDTH
 
 @implementation Document
 
@@ -640,7 +631,7 @@ static BeatAppDelegate *appDelegate;
 }
 
 -(void)renderTest {
-	
+	return;
 	 BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"" printSceneNumbers:YES];
 	 [self bakeRevisions];
 	 [self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
@@ -648,13 +639,6 @@ static BeatAppDelegate *appDelegate;
 	 
 	 if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
 	 [_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
-	 
-	/*
-	 BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self header:@"lol" printSceneNumbers:YES];
-	 [self bakeRevisions];
-	 if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:settings delegate:self];
-	 [_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:settings];
-	 */
 }
 
 -(void)awakeFromNib {
@@ -765,11 +749,6 @@ static BeatAppDelegate *appDelegate;
 	prev.nextResponder = originalResponder;
 }
 
-- (NSUInteger)documentWidth {
-	if (self.pageSize == BeatA4) return DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * 2;
-	else return DOCUMENT_WIDTH_US + BeatTextView.linePadding * 2;
-}
-
 - (void)setupWindow {
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
@@ -780,34 +759,39 @@ static BeatAppDelegate *appDelegate;
 	_splitHandle.delegate = self;
 	[_splitHandle collapseBottomOrLeftView];
 	
+	// Set minimum window size
+	[self setMinimumWindowSize];
+	
 	// Recall window position for saved documents
 	if (![self.fileNameString isEqualToString:@"Untitled"]) _documentWindow.frameAutosaveName = self.fileNameString;
 	
-	CGFloat x = _documentWindow.frame.origin.x;
-	CGFloat y = _documentWindow.frame.origin.y;
-	CGFloat width = [_documentSettings getFloat:DocSettingWindowWidth];
-	CGFloat height = [_documentSettings getFloat:DocSettingWindowHeight];
+	NSRect screen = _documentWindow.screen.frame;
+	NSPoint origin =_documentWindow.frame.origin;
+	NSSize size = NSMakeSize([_documentSettings getFloat:DocSettingWindowWidth], [_documentSettings getFloat:DocSettingWindowHeight]);
 	
-	// Default size for new windows or those going over screen bounds
-	if (width < self.documentWidth || x > _documentWindow.screen.frame.size.width) {
-		width = self.documentWidth * 1.6;
-		x = (_documentWindow.screen.frame.size.width - width) / 2;
+	CGFloat preferredWidth = self.documentWindow.minSize.width + 190;
+	
+
+	if (size.width < 1) {
+		// Default size for new windows
+		size.width = preferredWidth;
+		origin.x = (screen.size.width - size.width) / 2;
 	}
-	if (height < MIN_WINDOW_HEIGHT || y + height > _documentWindow.screen.frame.size.height) {
-		height = _documentWindow.screen.frame.size.height * .85;
-		
-		if (height < MIN_WINDOW_HEIGHT) height = MIN_WINDOW_HEIGHT;
-		if (height > self.documentWidth * 2.5) height = self.documentWidth * 1.75;
-		
-		y = (_documentWindow.screen.frame.size.height - height) / 2;
+	else if (size.width < preferredWidth || origin.x > screen.size.width) {
+		// This window had a size saved. Let's make sure it stays inside screen bounds or is larger than minimum size.
+		size.width = self.documentWindow.minSize.width;
+		origin.x = (screen.size.width - size.width) / 2;
 	}
 	
-	// Set the width programmatically since we've got the outline visible in IB to work on it, but don't want it visible on launch
-	[_documentWindow setMinSize:CGSizeMake(_documentWindow.minSize.width, MIN_WINDOW_HEIGHT)];
-	NSRect newFrame = NSMakeRect(x,
-								 y,
-								 width,
-								 height);
+	if (size.height < MIN_WINDOW_HEIGHT || origin.y + size.height > screen.size.height) {
+		size.height = screen.size.height - 100;
+		
+		if (size.height < MIN_WINDOW_HEIGHT) size.height = MIN_WINDOW_HEIGHT;
+		
+		origin.y = (screen.size.height - size.height) / 2;
+	}
+	
+	NSRect newFrame = NSMakeRect(origin.x, origin.y, size.width, size.height);
 	[_documentWindow setFrame:newFrame display:YES];
 }
 
@@ -869,33 +853,29 @@ static BeatAppDelegate *appDelegate;
 }
 - (void)updateLayout
 {
+	/*
+	 I have no idea what this method does. I'm sorry.
+	 */
 	[self setMinimumWindowSize];
-	
-	CGFloat width = (self.textView.frame.size.width / 2 - self.documentWidth * self.magnification / 2) / self.magnification;
-	
-	// Set global variable for top inset, if it's unset
-	// For typewriter mode, we set the top & bottom bounds a bit differently
-	// (this math must be wrong, now that I'm lookign at it, but won't fix it yet)
-	
-	if (width < 100000) { // Some arbitrary number to see that there is some sort of width set & view has loaded
-		_inset = [_textView setInsets];
-		[self.textScrollView setNeedsDisplay:YES];
-		[self.marginView setNeedsDisplay:YES];
-	}
+
+	[_textView setInsets];
+	[self.textScrollView setNeedsDisplay:YES];
+	[self.marginView setNeedsDisplay:YES];
 	
 	[self ensureLayout];
 	[self ensureCaret];
 }
 
-
 - (void)setMinimumWindowSize {
-	// These are arbitratry values. Sorry, anyone reading this.
-	if (!_sidebarVisible) {
-		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * self.magnification + 150, MIN_WINDOW_HEIGHT)];
-	} else {
-		[self.documentWindow setMinSize:NSMakeSize(self.documentWidth * self.magnification + 150 + _outlineView.frame.size.width, MIN_WINDOW_HEIGHT)];
-	}
+	CGFloat width = self.textView.documentWidth * self.magnification + 50;
+	if (_sidebarVisible) width += _outlineView.frame.size.width;
+
+	// Clamp the value. I can't use max methods.
+	if (width > self.documentWindow.screen.frame.size.width) width = self.documentWindow.screen.frame.size.width;
+	
+	[self.documentWindow setMinSize:NSMakeSize(width, MIN_WINDOW_HEIGHT)];
 }
+- (CGFloat)documentWidth { return self.textView.documentWidth; }
 
 /// Restores sidebar on launch
 - (void)restoreSidebar {
@@ -1281,9 +1261,6 @@ static NSWindow __weak *currentKeyWindow;
 # pragma mark - TextView interface
 
 - (void)setupTextView {
-	// Reset zoom
-	[self.textView setupZoom];
-	
 	// Set insets on load
 	[self.textView setup];
 	[self.textView setInsets];
@@ -1508,12 +1485,9 @@ static NSWindow __weak *currentKeyWindow;
 		
 		// Handle automatic line breaks
 		else if (self.autoLineBreaks) {
-			[BeatMeasure start:@"Should add?"];
 			if ([self shouldAddLineBreaks:currentLine range:affectedCharRange]) {
-				[BeatMeasure end:@"Should add?"];
 				return NO;
 			}
-			[BeatMeasure end:@"Should add?"];
 		}
 		
 		// Process line break after a forced character input
@@ -2505,7 +2479,7 @@ static bool _skipAutomaticLineBreaks = false;
 - (void)formatAllLines
 {
 	for (Line* line in self.parser.lines) {
-		[_formatting formatLine:line];
+		@autoreleasepool { [_formatting formatLine:line]; }
 	}
 	
 	[self ensureLayout];
@@ -2539,9 +2513,7 @@ static bool _skipAutomaticLineBreaks = false;
 		return;
 	}
 	
-	// This is optimization for first-time format with no lookbacks (with a look-forward, though)
 	self.progressIndicator.maxValue =  1.0;
-	
 	[self formatAllWithDelay:0];
 }
 
@@ -2760,7 +2732,7 @@ static bool _skipAutomaticLineBreaks = false;
 - (NSFont*)synopsisFont
 {
 	if (!_synopsisFont) {
-		_synopsisFont = [NSFont systemFontOfSize:15.5];
+		_synopsisFont = [NSFont systemFontOfSize:11.0];
 		NSFontManager *fontManager = [[NSFontManager alloc] init];
 		_synopsisFont = [fontManager convertFont:_synopsisFont toHaveTrait:NSFontItalicTrait];
 	}
@@ -2810,15 +2782,6 @@ static bool _skipAutomaticLineBreaks = false;
 
 -(IBAction)toggleRevisionMode:(id)sender {
 	_revisionMode = !_revisionMode;
-	
-	/*
-	 // Revisions were hidden, bring them back
-	 // ... nah, we don't need this because we have the markers in margin, too
-	 if (!_showRevisions) {
-	 _showRevisions = YES;
-	 for (Line* line in self.parser.lines) [self renderBackgroundForLine:line clearFirst:YES];
-	 }
-	 */
 	
 	[self updateQuickSettings];
 	
@@ -3147,7 +3110,7 @@ static bool _skipAutomaticLineBreaks = false;
 		// Else, we need to force everything to redraw, in a very clunky way
 		[self.documentWindow setViewsNeedDisplay:true];
 		
-		[self.masterView setNeedsDisplayInRect:_masterView.frame];
+		[self.documentWindow.contentView setNeedsDisplay:true];
 		[self.backgroundView setNeedsDisplay:true];
 		[self.textScrollView setNeedsDisplay:true];
 		[self.marginView setNeedsDisplay:true];
@@ -3164,7 +3127,6 @@ static bool _skipAutomaticLineBreaks = false;
 		if (_sidebarVisible) [self.outlineView setNeedsDisplay:YES];
 	}
 	
-	//[self.textView setNeedsDisplay:true];
 	[self.textScrollView layoutButtons];
 	[self.documentWindow setViewsNeedDisplay:true];
 	[self.textView redrawUI];
@@ -3272,6 +3234,15 @@ static bool _skipAutomaticLineBreaks = false;
 
 - (void)updatePreview {
 	[self.preview updatePreviewInSync:NO];
+}
+
+- (IBAction)toggleNewPreview:(id)sender {
+	if (self.currentTab != _nativePreviewTab) {
+		[self.previewController renderOnScreen];
+		[self showTab:_nativePreviewTab];
+	} else {
+		[self returnToEditor];
+	}
 }
 
 - (IBAction)preview:(id)sender
@@ -3882,16 +3853,16 @@ static bool _skipAutomaticLineBreaks = false;
 	// Also, rename the method, because this doesn't return actually markers, but marker+scene positions and colors
 	NSMutableArray * markers = NSMutableArray.new;
 	
-	for (Line* line in self.parser.lines) {
+	for (Line* line in self.parser.lines) { @autoreleasepool {
 		if (line.marker.length == 0 && line.color.length == 0) continue;
-
+		
 		NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
 		CGFloat yPosition = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer].origin.y;
 		CGFloat relativeY = yPosition / [self.textView.layoutManager usedRectForTextContainer:_textView.textContainer].size.height;
 		
 		if (line.isOutlineElement) [markers addObject:@{ @"color": line.color, @"y": @(relativeY), @"scene": @(true) }];
 		else [markers addObject:@{ @"color": line.marker, @"y": @(relativeY) }];
-	}
+	} }
 	
 	return markers;
 }
@@ -4048,11 +4019,12 @@ static NSArray<Line*>* cachedTitlePage;
 		
 		// Dispatch to a background thread
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
+			// [self.previewController createPreviewWithChangeAt:range.location];
+			//BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:YES];
 			
-			BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:YES];
-			static BeatRenderManager *manager;
-			if (manager == nil) manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
-			[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings forEditor:true changeAt:range.location];
+			//static BeatRenderManager *manager;
+			//if (manager == nil) manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
+			//[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings forEditor:true changeAt:range.location];
 			
 			[self.paginator livePaginationFor:lines changeAt:range.location];
 		});
@@ -4085,13 +4057,7 @@ static NSArray<Line*>* cachedTitlePage;
 	else size = BeatA4;
 	
 	//[self.documentSettings setInt:DocSettingPageSize as:size];
-	
-	// I have no idea what's with these values, but here they are.
-	// documentWidth determines how the insets are set, while linePadding makes some space for revision markers.
-	// Everything is terrible. BeatTextView inset scheme should be reworked.
-	if (size == BeatA4) self.documentWidth = DOCUMENT_WIDTH_A4 + BeatTextView.linePadding * (2 - .5);
-	else self.documentWidth = DOCUMENT_WIDTH_US + BeatTextView.linePadding * (2 - .5);
-	
+		
 	[self updateLayout];
 }
 - (IBAction)selectPaperSize:(id)sender {
