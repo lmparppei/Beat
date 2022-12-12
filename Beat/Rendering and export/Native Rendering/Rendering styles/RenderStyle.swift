@@ -10,11 +10,12 @@ import Foundation
 
 // MARK: Stylesheet
 
-class Styles {
+class Styles:NSObject {
 	static let shared = Styles()
 	var styles:[String:RenderStyle] = [:]
 	
-	private init() {
+	override init() {
+		super.init()
 		reloadStyles()
 	}
 	

@@ -316,7 +316,7 @@
 #pragma mark - Pagination loop
 
 - (bool)paginateFromIndex:(NSInteger)fromIndex
-{
+{ 
 	// Reset updated pages
 	// _updatedPages = NSMutableIndexSet.new;
 	
@@ -342,20 +342,20 @@
 	_elementQueue = NSMutableArray.new;
 	
 	// Walk through the elements array and place them on pages.
-	for (NSInteger i = 0; i < self.script.count; i++) {
+	for (NSInteger i = 0; i < self.script.count; i++) { @autoreleasepool {
 		if (self.cancelled) {
 			// An experiment in canceling background-thread pagination
 			return false;
 		}
 		
 		Line *element = self.script[i];
-
+		
 		
 		// Skip element if it's not in the specified range for pagination
 		if (fromIndex > 0 && NSMaxRange(element.textRange) < fromIndex) continue;
 		// ... also if it's empty or non-printed
 		else if (element.type == empty || element.isTitlePage) continue;
-			
+		
 		if ([_elementQueue containsObject:element]) continue;
 		else [_elementQueue removeAllObjects];
 		
@@ -382,7 +382,7 @@
 				break;
 			}
 		}
-
+		
 		// Reset Y if the page is empty.
 		if (currentPage.count == 0) hasStartedANewPage = YES;
 		
@@ -400,7 +400,7 @@
 		// Get whole block
 		NSArray <Line*>*block = [self blockFor:element];
 		[self addBlockOnCurrentPage:block currentPage:currentPage];
-	}
+	} }
 	
 	// Add the last page
 	[self.pages addObject:currentPage.contents];

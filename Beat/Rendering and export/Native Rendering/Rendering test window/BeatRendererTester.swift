@@ -80,12 +80,12 @@ class BeatRendererTester:NSWindowController {
 		let pageSize = pages.last!.size
 		let contentHeight = CGFloat(pages.count) * (pageSize.height + 10.0)
 		
-		var rect = NSMakeRect(0, 0, pageSize.width, contentHeight)
+		let rect = NSMakeRect(0, 0, pageSize.width, contentHeight)
 		content?.frame = rect
 		
 		var i = 1
 		for page in pages {
-			var pageView = page.forDisplay()
+			let pageView = page.forDisplay()
 			content!.addSubview(pageView)
 			
 			var f = pageView.frame
