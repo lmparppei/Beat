@@ -2230,7 +2230,7 @@ class BeatBlockGroup {
 			}
 			
 			pageBreakItem = pageBreak.2
-			
+						
 			return (onThisPage, onNextPage, pageBreakItem)
 		}
 		
@@ -2247,16 +2247,16 @@ class BeatBlockGroup {
 	}
 }
 
-class BeatPageBreak:NSObject {
+@objc class BeatPageBreak:NSObject {
 	@objc var y:CGFloat
 	@objc var element:Line
 	@objc var reason:String = "None"
 	
-	convenience init(y:CGFloat, element:Line) {
+	@objc convenience init(y:CGFloat, element:Line) {
 		self.init(y: y, element: element, reason: "None")
 	}
 	
-	init(y:CGFloat, element:Line, reason:String) {
+	@objc init(y:CGFloat, element:Line, reason:String) {
 		self.y = y
 		self.element = element
 		self.reason = reason

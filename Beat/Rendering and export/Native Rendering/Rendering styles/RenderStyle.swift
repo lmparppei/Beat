@@ -34,7 +34,7 @@ class Styles:NSObject {
 		return styles["page"]!
 	}
 	
-	func forElement(_ name:String) -> RenderStyle {
+	@objc func forElement(_ name:String) -> RenderStyle {
 		return styles[name] ?? RenderStyle(rules: ["width-a4": self.page().defaultWidthA4, "width-us": self.page().defaultWidthLetter])
 	}
 }

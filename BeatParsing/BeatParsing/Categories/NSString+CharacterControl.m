@@ -85,10 +85,6 @@
         // We need to check past parentheses, too, in case the user started the line with something like:
         // MIA (30) does something...
         bool parenthesisOpen = false;
-        bool uppercase = false;
-        NSInteger startIndex = 0;
-        
-        NSCharacterSet *chrSet = [self uppercaseLetters];
         NSMutableIndexSet *indexSet = NSMutableIndexSet.new;
         
         for (NSInteger i=0; i<self.length; i++) {

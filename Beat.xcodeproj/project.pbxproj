@@ -463,6 +463,12 @@
 		B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */; };
 		B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
 		B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */; };
+		B6CCF7762947CAD3009A0016 /* BeatPaginationPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */; };
+		B6CCF7772947CAD3009A0016 /* BeatPaginationPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */; };
+		B6CCF77A2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */; };
+		B6CCF77B2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */; };
+		B6CCF77F2947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */; };
+		B6CCF7802947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */; };
 		B6CD61E127DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
 		B6CD61E227DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
 		B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
@@ -1041,6 +1047,13 @@
 		B6CB9735254ED61900C310CC /* HorizontalPinchView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HorizontalPinchView.m; path = Timeline/HorizontalPinchView.m; sourceTree = "<group>"; };
 		B6CB9739254EEB4000C310CC /* BeatTimelineItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatTimelineItem.h; path = Timeline/BeatTimelineItem.h; sourceTree = "<group>"; };
 		B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatTimelineItem.m; path = Timeline/BeatTimelineItem.m; sourceTree = "<group>"; };
+		B6CCF7742947CAD3009A0016 /* BeatPaginationPage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationPage.h; sourceTree = "<group>"; };
+		B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationPage.m; sourceTree = "<group>"; };
+		B6CCF7782947CAE1009A0016 /* BeatPaginationBlock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationBlock.h; sourceTree = "<group>"; };
+		B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlock.m; sourceTree = "<group>"; };
+		B6CCF77C2947CDB2009A0016 /* Why is there an ObjC port?.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Why is there an ObjC port?.md"; sourceTree = "<group>"; };
+		B6CCF77D2947E3B6009A0016 /* BeatPaginationBlockGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationBlockGroup.h; sourceTree = "<group>"; };
+		B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlockGroup.m; sourceTree = "<group>"; };
 		B6CD61DF27DAA02400912F09 /* BeatSpeak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSpeak.h; sourceTree = "<group>"; };
 		B6CD61E027DAA02400912F09 /* BeatSpeak.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatSpeak.m; sourceTree = "<group>"; };
 		B6CE0BCD247FF227003C5925 /* TouchTimelinePopover.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TouchTimelinePopover.h; path = "Beat/User Interface/TouchTimelinePopover.h"; sourceTree = SOURCE_ROOT; };
@@ -1596,10 +1609,17 @@
 		B650B1BF29465A340093B793 /* Objective C port */ = {
 			isa = PBXGroup;
 			children = (
+				B6CCF77C2947CDB2009A0016 /* Why is there an ObjC port?.md */,
 				B650B1BB29465A300093B793 /* BeatPagination.h */,
 				B650B1BC29465A300093B793 /* BeatPagination.m */,
 				B650B1C029465BEA0093B793 /* BeatPaginationElements.h */,
 				B650B1C129465BEA0093B793 /* BeatPaginationElements.m */,
+				B6CCF7742947CAD3009A0016 /* BeatPaginationPage.h */,
+				B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */,
+				B6CCF7782947CAE1009A0016 /* BeatPaginationBlock.h */,
+				B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */,
+				B6CCF77D2947E3B6009A0016 /* BeatPaginationBlockGroup.h */,
+				B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */,
 			);
 			path = "Objective C port";
 			sourceTree = "<group>";
@@ -2882,6 +2902,7 @@
 				B63D9F552830294300D027B6 /* macOSTheme.swift in Sources */,
 				B61BE98A271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
+				B6CCF7762947CAD3009A0016 /* BeatPaginationPage.m in Sources */,
 				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
 				B6B9CEF428EB662500EB9F6B /* BeatPage.m in Sources */,
 				B6467AC02899B69100231B25 /* BeatCSSParser.swift in Sources */,
@@ -2920,6 +2941,7 @@
 				B667D57C2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */,
 				B66CDF1D28170EE300EF4137 /* BeatPrintDialog.m in Sources */,
+				B6CCF77F2947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */,
 				B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B669E03B2923885300891DD1 /* NSFont+CFTraits.m in Sources */,
 				B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */,
@@ -2941,6 +2963,7 @@
 				B63D9F6328303CB300D027B6 /* BeatTheme.swift in Sources */,
 				B6DCA85C272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B6916C0025D135930037EF6A /* BeatFDXExport.m in Sources */,
+				B6CCF77A2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */,
 				B6A245E1251766DC0055A034 /* BeatFileImport.m in Sources */,
 				B662FB12284CAFBC00C805CA /* BeatMenuItemWithURL.swift in Sources */,
 				B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */,
@@ -3079,6 +3102,7 @@
 				B63D9F562830294300D027B6 /* macOSTheme.swift in Sources */,
 				B61BE98B271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B68B6055260B849300463AD8 /* ThemeManager.m in Sources */,
+				B6CCF7772947CAD3009A0016 /* BeatPaginationPage.m in Sources */,
 				B68B6056260B849300463AD8 /* BeatTag.m in Sources */,
 				B6B9CEF528EB662500EB9F6B /* BeatPage.m in Sources */,
 				B6467AC12899B69100231B25 /* BeatCSSParser.swift in Sources */,
@@ -3117,6 +3141,7 @@
 				B667D57D2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B68B6068260B849300463AD8 /* BeatEditorButton.m in Sources */,
 				B66CDF1E28170EE300EF4137 /* BeatPrintDialog.m in Sources */,
+				B6CCF7802947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */,
 				B68B6069260B849300463AD8 /* TouchTimelinePopover.m in Sources */,
 				B669E03C2923885300891DD1 /* NSFont+CFTraits.m in Sources */,
 				B68B606A260B849300463AD8 /* OutlineViewItem.m in Sources */,
@@ -3138,6 +3163,7 @@
 				B63D9F6428303CB300D027B6 /* BeatTheme.swift in Sources */,
 				B6DCA85D272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B68B6075260B849300463AD8 /* BeatFDXExport.m in Sources */,
+				B6CCF77B2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */,
 				B68B6076260B849300463AD8 /* BeatFileImport.m in Sources */,
 				B662FB13284CAFE400C805CA /* BeatMenuItemWithURL.swift in Sources */,
 				B68B6077260B849300463AD8 /* BeatTimelineItem.m in Sources */,

@@ -9,7 +9,7 @@
 import Foundation
 
 extension NSAttributedString {
-	func height(containerWidth: CGFloat) -> CGFloat {
+	@objc func height(containerWidth: CGFloat) -> CGFloat {
 		let rect = self.boundingRect(with: CGSize.init(width: containerWidth, height: CGFloat.greatestFiniteMagnitude),
 									 options: [.usesLineFragmentOrigin, .usesFontLeading],
 									 context: nil)
