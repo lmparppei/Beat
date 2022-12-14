@@ -1286,6 +1286,10 @@
 	NSRect frame = self.delegate.documentWindow.frame;
 	return @[ @(frame.origin.x), @(frame.origin.y), @(frame.size.width), @(frame.size.height) ];
 }
+- (void)setWindowFrameX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
+	NSRect frame = NSMakeRect(x, y, width, height);
+	[self.delegate.documentWindow setFrame:frame display:true];
+}
 
 - (void)setPropertyValue:(NSString*)key value:(id)value {
 	[self.delegate setPropertyValue:key value:value];

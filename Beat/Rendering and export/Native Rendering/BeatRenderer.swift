@@ -2316,6 +2316,9 @@ class BeatPageTextView:NSTextView {
  
  juhlien jatkoilla
  ihan keskellä kaikkea vieläkin vaikea salata
- kun aamuyöllä pitkällä
+ kun aamuyöllä pitkällä kadulla hymyilet ja sanot että ei pahalla
+ mutta eistä ei koskaan tule mitään sellaista juttua...
+ ja paineaaltona muistini halki
+ se osuu samaan kohtaan
  
  */

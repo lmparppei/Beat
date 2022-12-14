@@ -9,10 +9,6 @@
 #import "BeatPaginationElements.h"
 #import "BeatFonts.h"
 
-@protocol BeatPageDelegate <NSObject>
-@property (nonatomic, readonly) BeatFonts *fonts;
-@end
-
 @interface BeatPaginationView ()
 @property (nonatomic) id<BeatPageDelegate> delegate;
 @property (nonatomic) CGFloat maxHeight;
