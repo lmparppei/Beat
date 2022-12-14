@@ -919,6 +919,15 @@ static BeatAppDelegate *appDelegate;
 
 static NSWindow __weak *currentKeyWindow;
 
+-(void)windowWillBeginSheet:(NSNotification *)notification {
+	[self.documentWindow makeKeyAndOrderFront:self];
+	[self hideAllPluginWindows];
+}
+
+-(void)windowDidEndSheet:(NSNotification *)notification {
+	[self showPluginWindowsForCurrentDocument];
+}
+
 - (void)windowDidBecomeMain:(NSNotification *)notification {
 	// Show all plugin windows associated with the current document
 	[self showPluginWindowsForCurrentDocument];
@@ -927,15 +936,31 @@ static NSWindow __weak *currentKeyWindow;
 }
 -(void)windowDidBecomeKey:(NSNotification *)notification {
 	currentKeyWindow = nil;
+	
+	// Show all plugin windows associated with the current document
+	if (notification.object == self.documentWindow && self.documentWindow.sheets.count == 0) {
+		[self showPluginWindowsForCurrentDocument];
+	}
 }
 -(void)windowDidResignKey:(NSNotification *)notification {
 	currentKeyWindow = NSApp.keyWindow;
+	
+	if ([currentKeyWindow isKindOfClass:NSOpenPanel.class]) {
+		[self hideAllPluginWindows];
+	} else if ([currentKeyWindow isKindOfClass:NSSavePanel.class] || self.documentWindow.sheets.count > 0) {
+		[self hideAllPluginWindows];
+		[self.documentWindow makeKeyAndOrderFront:nil];
+	}
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
 	// When window resigns it main status, we'll have to hide possible floating windows
 	NSWindow *mainWindow = NSApp.mainWindow;
 	
+	[self hidePluginWindowsWithMain:mainWindow];
+}
+
+- (void)hidePluginWindowsWithMain:(NSWindow*)mainWindow {
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		[_runningPlugins[pluginName] hideAllWindows];
 	}
@@ -944,6 +969,7 @@ static NSWindow __weak *currentKeyWindow;
 		[mainWindow makeKeyAndOrderFront:nil];
 	}
 }
+
 
 - (void)showPluginWindowsForCurrentDocument {
 	// When document becomes main window, iterate through all documents.
@@ -4353,15 +4379,6 @@ static NSArray<Line*>* cachedTitlePage;
 
 -(void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation delegate:(id)delegate didSaveSelector:(SEL)didSaveSelector contextInfo:(void *)contextInfo {
 	[super runModalSavePanelForSaveOperation:saveOperation delegate:delegate didSaveSelector:didSaveSelector contextInfo:contextInfo];
-}
-
--(void)windowWillBeginSheet:(NSNotification *)notification {
-	[self hideAllPluginWindows];
-	[self.documentWindow makeKeyAndOrderFront:self];
-}
-
--(void)windowDidEndSheet:(NSNotification *)notification {
-	[self showPluginWindowsForCurrentDocument];
 }
 
 
