@@ -248,6 +248,16 @@
 	}
 }
 
+- (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace {
+	NSLog(@"#### IMPLEMENT PARAGRAPH SPLITTING");
+	return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"Paragraph"]];
+}
+
+- (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace {
+	NSLog(@"#### IMPLEMENT DUAL DIALOGUE CONTAINER SPLITTING");
+	return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"Dual dialogue container"]];
+}
+
 - (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
 	remainingSpace -= BeatPagination.lineHeight; // Make space for (MORE) etc.
 	

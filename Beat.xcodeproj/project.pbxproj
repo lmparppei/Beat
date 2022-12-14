@@ -150,10 +150,6 @@
 		B64BD8E32848E1800055F2F1 /* PrintTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64BD8E22848E1800055F2F1 /* PrintTest.swift */; };
 		B64BD8E42848E1800055F2F1 /* PrintTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64BD8E22848E1800055F2F1 /* PrintTest.swift */; };
 		B64BD8E62848FF4B0055F2F1 /* Scale down.beatStyle in Resources */ = {isa = PBXBuildFile; fileRef = B6A11B542847BEFF00EB50F5 /* Scale down.beatStyle */; };
-		B650B1BD29465A300093B793 /* BeatPagination.m in Sources */ = {isa = PBXBuildFile; fileRef = B650B1BC29465A300093B793 /* BeatPagination.m */; };
-		B650B1BE29465A300093B793 /* BeatPagination.m in Sources */ = {isa = PBXBuildFile; fileRef = B650B1BC29465A300093B793 /* BeatPagination.m */; };
-		B650B1C229465BEA0093B793 /* BeatPaginationElements.m in Sources */ = {isa = PBXBuildFile; fileRef = B650B1C129465BEA0093B793 /* BeatPaginationElements.m */; };
-		B650B1C329465BEA0093B793 /* BeatPaginationElements.m in Sources */ = {isa = PBXBuildFile; fileRef = B650B1C129465BEA0093B793 /* BeatPaginationElements.m */; };
 		B650D76D25CF349D0042010C /* BeatTagging.m in Sources */ = {isa = PBXBuildFile; fileRef = B650D76C25CF349D0042010C /* BeatTagging.m */; };
 		B655B1062714607700BA52ED /* BeatMarkerScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B655B1052714607700BA52ED /* BeatMarkerScroller.m */; };
 		B655B1072714607700BA52ED /* BeatMarkerScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = B655B1052714607700BA52ED /* BeatMarkerScroller.m */; };
@@ -463,12 +459,6 @@
 		B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9708282FEDCA00C7AFC7 /* BeatUITextView.swift */; };
 		B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB9735254ED61900C310CC /* HorizontalPinchView.m */; };
 		B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CB973A254EEB4000C310CC /* BeatTimelineItem.m */; };
-		B6CCF7762947CAD3009A0016 /* BeatPaginationPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */; };
-		B6CCF7772947CAD3009A0016 /* BeatPaginationPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */; };
-		B6CCF77A2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */; };
-		B6CCF77B2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */; };
-		B6CCF77F2947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */; };
-		B6CCF7802947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */; };
 		B6CD61E127DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
 		B6CD61E227DAA02400912F09 /* BeatSpeak.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CD61E027DAA02400912F09 /* BeatSpeak.m */; };
 		B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CE0BCE247FF227003C5925 /* TouchTimelinePopover.m */; };
@@ -2902,7 +2892,6 @@
 				B63D9F552830294300D027B6 /* macOSTheme.swift in Sources */,
 				B61BE98A271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B6D2B7152218B3AD005B8447 /* ThemeManager.m in Sources */,
-				B6CCF7762947CAD3009A0016 /* BeatPaginationPage.m in Sources */,
 				B625686725ECF96100A3A244 /* BeatTag.m in Sources */,
 				B6B9CEF428EB662500EB9F6B /* BeatPage.m in Sources */,
 				B6467AC02899B69100231B25 /* BeatCSSParser.swift in Sources */,
@@ -2925,7 +2914,6 @@
 				B613BDF2275F6252007807E1 /* BeatPluginUIView.m in Sources */,
 				B644DBDF260511E10091AEAB /* ITSwitch.m in Sources */,
 				B62A89B524806C8D0065A2BC /* FlatButton.swift in Sources */,
-				B650B1BD29465A300093B793 /* BeatPagination.m in Sources */,
 				B6F0F3892714A2BA006A359D /* BeatDocumentController.m in Sources */,
 				B6DCA86427219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B6D2B70D2218B359005B8447 /* ColorView.m in Sources */,
@@ -2941,7 +2929,6 @@
 				B667D57C2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B644DBE4260605D30091AEAB /* BeatEditorButton.m in Sources */,
 				B66CDF1D28170EE300EF4137 /* BeatPrintDialog.m in Sources */,
-				B6CCF77F2947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */,
 				B6CE0BCF247FF227003C5925 /* TouchTimelinePopover.m in Sources */,
 				B669E03B2923885300891DD1 /* NSFont+CFTraits.m in Sources */,
 				B6342D6725682D7B0034D54F /* OutlineViewItem.m in Sources */,
@@ -2959,11 +2946,9 @@
 				B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */,
 				B6E47D8825028A4E00734A8D /* BeatPaginator.m in Sources */,
 				B60FAD7626A1D4960019A77B /* BeatLockButton.m in Sources */,
-				B650B1C229465BEA0093B793 /* BeatPaginationElements.m in Sources */,
 				B63D9F6328303CB300D027B6 /* BeatTheme.swift in Sources */,
 				B6DCA85C272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B6916C0025D135930037EF6A /* BeatFDXExport.m in Sources */,
-				B6CCF77A2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */,
 				B6A245E1251766DC0055A034 /* BeatFileImport.m in Sources */,
 				B662FB12284CAFBC00C805CA /* BeatMenuItemWithURL.swift in Sources */,
 				B6CB973B254EEB4000C310CC /* BeatTimelineItem.m in Sources */,
@@ -3102,7 +3087,6 @@
 				B63D9F562830294300D027B6 /* macOSTheme.swift in Sources */,
 				B61BE98B271D5053008FFA0F /* BeatMeasure.m in Sources */,
 				B68B6055260B849300463AD8 /* ThemeManager.m in Sources */,
-				B6CCF7772947CAD3009A0016 /* BeatPaginationPage.m in Sources */,
 				B68B6056260B849300463AD8 /* BeatTag.m in Sources */,
 				B6B9CEF528EB662500EB9F6B /* BeatPage.m in Sources */,
 				B6467AC12899B69100231B25 /* BeatCSSParser.swift in Sources */,
@@ -3125,7 +3109,6 @@
 				B613BDF3275F6252007807E1 /* BeatPluginUIView.m in Sources */,
 				B68B6062260B849300463AD8 /* ITSwitch.m in Sources */,
 				B68B6063260B849300463AD8 /* FlatButton.swift in Sources */,
-				B650B1BE29465A300093B793 /* BeatPagination.m in Sources */,
 				B6F0F38A2714A2BA006A359D /* BeatDocumentController.m in Sources */,
 				B6DCA86527219C3700CBE9BC /* BeatNotepad.m in Sources */,
 				B68B6064260B849300463AD8 /* ColorView.m in Sources */,
@@ -3141,7 +3124,6 @@
 				B667D57D2711EDF1006B1285 /* BeatClipView.m in Sources */,
 				B68B6068260B849300463AD8 /* BeatEditorButton.m in Sources */,
 				B66CDF1E28170EE300EF4137 /* BeatPrintDialog.m in Sources */,
-				B6CCF7802947E3B6009A0016 /* BeatPaginationBlockGroup.m in Sources */,
 				B68B6069260B849300463AD8 /* TouchTimelinePopover.m in Sources */,
 				B669E03C2923885300891DD1 /* NSFont+CFTraits.m in Sources */,
 				B68B606A260B849300463AD8 /* OutlineViewItem.m in Sources */,
@@ -3159,11 +3141,9 @@
 				B68B6071260B849300463AD8 /* BeatAntilateralThoughts.m in Sources */,
 				B68B6072260B849300463AD8 /* BeatPaginator.m in Sources */,
 				B60FAD7726A1D4960019A77B /* BeatLockButton.m in Sources */,
-				B650B1C329465BEA0093B793 /* BeatPaginationElements.m in Sources */,
 				B63D9F6428303CB300D027B6 /* BeatTheme.swift in Sources */,
 				B6DCA85D272187E600CBE9BC /* BeatSegmentedControl.m in Sources */,
 				B68B6075260B849300463AD8 /* BeatFDXExport.m in Sources */,
-				B6CCF77B2947CAE1009A0016 /* BeatPaginationBlock.m in Sources */,
 				B68B6076260B849300463AD8 /* BeatFileImport.m in Sources */,
 				B662FB13284CAFE400C805CA /* BeatMenuItemWithURL.swift in Sources */,
 				B68B6077260B849300463AD8 /* BeatTimelineItem.m in Sources */,
