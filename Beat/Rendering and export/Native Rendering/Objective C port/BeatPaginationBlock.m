@@ -96,9 +96,16 @@
 		NSParagraphStyleAttributeName: pStyle
 	}];
 	
-	RenderStyle *style = [self.delegate.styles forElement:line.typeName];
-	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+	// If this is a *dual dialogue* column, we'll need to convert the style.
+	LineType type = line.type;
+	if (self.dualDialogueElement && (type == dialogue || type == character || type == parenthetical)) {
+		if (type == dialogue) type = dualDialogue;
+		else if (type == character) type = dualDialogueCharacter;
+		else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
+	}
 	
+	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
+	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 	height = [string heightWithContainerWidth:width] + style.marginTop;
 	
 	self.lineHeights[line.uuid] = [NSNumber numberWithFloat:height];
@@ -178,6 +185,25 @@
 }
 
 
+#pragma mark - Return left/right columns for dual dialogue
+
+- (NSArray*)leftSideDialogue {
+	NSMutableArray *lines = NSMutableArray.new;
+	for (Line* line in self.lines) {
+		if (line.type == dualDialogueCharacter) break;
+		[lines addObject:line];
+	}
+	return lines;
+}
+- (NSArray*)rightSideDialogue {
+	NSMutableArray *lines = NSMutableArray.new;
+	for (Line* line in self.lines) {
+		if (line.isDialogue) continue;
+		[lines addObject:line];
+	}
+	return lines;
+}
+
 #pragma mark - Breaking block across pages
 
 - (NSIndexSet*)possiblePageBreakIndices {
@@ -249,13 +275,77 @@
 }
 
 - (NSArray*)splitParagraphWithRemainingSpace:(CGFloat)remainingSpace {
-	NSLog(@"#### IMPLEMENT PARAGRAPH SPLITTING");
-	return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"Paragraph"]];
+	Line *line = self.lines.firstObject;
+	NSString *str = line.stripFormatting;
+	NSString *retain = @"";
+
+	RenderStyle *style = [self.delegate.styles forElement:line.typeAsString];
+	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+	
+	// Create the layout manager for remaining space calculation
+	NSLayoutManager *lm = [self heightCalculatorForString:str width:width];
+	
+	// We'll get the number of lines rather than calculating exact size in NSTextField
+	__block NSInteger numberOfLines = 0;
+	
+	// Iterate through line fragments
+	__block CGFloat pageBreakPos = 0;
+	__block NSInteger length = 0;
+	
+	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, lm.numberOfGlyphs) usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+		numberOfLines++;
+		if (numberOfLines < remainingSpace / BeatPagination.lineHeight) {
+			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+			length += charRange.length;
+			pageBreakPos += usedRect.size.height;
+		} else {
+			*stop = true;
+		}
+	}];
+		
+	retain = [str substringToIndex:length];
+	
+	NSArray *splitElements = [line splitAndFormatToFountainAt:retain.length];
+	Line *prePageBreak = splitElements[0];
+	Line *postPageBreak = splitElements[1];
+	
+	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:pageBreakPos element:line reason:@"Paragraph split"];
+	
+	return @[prePageBreak, postPageBreak, @(pageBreakPos)];
 }
 
 - (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace {
-	NSLog(@"#### IMPLEMENT DUAL DIALOGUE CONTAINER SPLITTING");
-	return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"Dual dialogue container"]];
+	NSArray *left = [self leftSideDialogue];
+	NSArray *right = [self rightSideDialogue];
+	
+	BeatPaginationBlock *leftBlock = [BeatPaginationBlock.alloc initWithLines:left delegate:_delegate isDualDialogueElement:true];
+	BeatPaginationBlock *rightBlock = [BeatPaginationBlock.alloc initWithLines:right delegate:_delegate isDualDialogueElement:true];
+	
+	NSMutableArray *onThisPage = NSMutableArray.new;
+	NSMutableArray *onNextPage = NSMutableArray.new;
+	
+	NSArray* leftResult;
+	NSArray* rightResult;
+	
+	if (leftBlock.height > remainingSpace) {
+		// We need to split left side
+		leftResult = [leftBlock splitBlockWithRemainingSpace:remainingSpace];
+		[onThisPage addObjectsFromArray:leftResult[0]];
+		[onNextPage addObjectsFromArray:leftResult[1]];
+	}
+	if (rightBlock.height > remainingSpace) {
+		// We need to split left side
+		rightResult = [rightBlock splitBlockWithRemainingSpace:remainingSpace];
+		[onThisPage addObjectsFromArray:rightResult[0]];
+		[onNextPage addObjectsFromArray:rightResult[1]];
+	}
+	
+	if (((NSArray*)leftResult[0]).count > 0 && ((NSArray*)rightResult[0]).count > 0) {
+		return @[onThisPage, onNextPage, rightResult[2]];
+	}
+	
+	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"Nothing was left on page with dual dialogue container"];
+	return @[@[], self.lines, pageBreak];
 }
 
 - (NSArray*)splitDialogueAt:(Line*)spiller remainingSpace:(CGFloat)remainingSpace {
@@ -263,8 +353,8 @@
 	
 	NSMutableArray *dialogueBlock = self.lines.mutableCopy;
 
+	BeatPageBreak *pageBreak;
 	Line *pageBreakItem;
-	CGFloat suggestedPageBreak = 0;
 	NSUInteger index = [dialogueBlock indexOfObject:spiller];
 	
 	if (spiller) {
@@ -278,8 +368,6 @@
 		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"No page break index found"]];
 	}
 	
-	BeatPageBreak *pageBreak;
-	
 	// Arrays for elements
 	NSMutableArray *onThisPage = NSMutableArray.new;
 	NSMutableArray *onNextPage = NSMutableArray.new;
@@ -289,7 +377,7 @@
 	
 	// Indices in which we could split the block.
 	// When we can't split the block at current item, we'll fall back to the previous possible index.
-	NSIndexSet *splittableIndices = [self possiblePageBreakIndices];
+	NSIndexSet* splittableIndices = [self possiblePageBreakIndices];
 	
 	// Split the block at this location
 	NSUInteger splitAt = (index > 0) ? [splittableIndices indexLessThanOrEqualToIndex:index] : 0;
@@ -301,9 +389,9 @@
 	if (spiller.isAnyDialogue) {
 		if (remainingSpace > BeatPaginator.lineHeight) {
 			// Split dialogue according to remaining space
-			NSArray * splitLine = [self splitDialogueLine:spiller remainingSpace:remainingSpace];
+			NSArray* splitLine = [self splitDialogueLine:spiller remainingSpace:remainingSpace];
 			
-			Line * retain = splitLine[0];
+			Line* retain = splitLine[0];
 			
 			if (retain.length > 0) {
 				[tmpThisPage addObject:splitLine[0]];
@@ -313,7 +401,6 @@
 				[dialogueBlock removeObject:spiller];
 			} else {
 				// Nothing fit
-				lkjök
 				splitAt = [splittableIndices indexLessThanIndex:splitAt];
 				pageBreakItem = dialogueBlock[splitAt];
 			}
@@ -348,8 +435,8 @@
 	NSRange splitRange = NSMakeRange(splitAt, dialogueBlock.count - splitAt);
 	if (splitRange.length > 0) [onNextPage addObjectsFromArray:[dialogueBlock subarrayWithRange:splitRange]];
 	
-	
-	BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:suggestedPageBreak element:pageBreakItem reason:@"Dialogue break"];
+	// Sorry, this is a mess. pageBreak could be defined earlier on, because it's provided by splitDialogueLine.
+	if (pageBreak == nil) pageBreak = [BeatPageBreak.alloc initWithY:0 element:pageBreakItem reason:@"Dialogue break"];
 	return @[ onThisPage, onNextPage, pageBreak ];
 }
 
@@ -371,7 +458,7 @@
 	
 	// Make sure we're not missing anything
 	if (length < string.length) {
-		NSString *str = [str substringWithRange:NSMakeRange(length, string.length - length)];
+		NSString *str = [string substringWithRange:NSMakeRange(length, string.length - length)];
 		[sentences addObject:str];
 	}
 	
@@ -396,23 +483,20 @@
 	return @[p[0], p[1], pageBreak];
 }
 
-/*
- // MARK: Break a line of dialogue
-
-	 
-	 let p = element.line.splitAndFormatToFountain(at: breakLength)!
-	 return (p[0], p[1], breakPosition)
- }
- */
-
 - (NSInteger)heightForString:(NSString *)string lineType:(LineType)type
 {
-	/*
-	 This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance
-	 method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
-	 */
+	// This method MIGHT NOT work on iOS. For iOS you'll need to adjust the font size to 80% and use the NSString instance method - (CGSize)sizeWithFont:constrainedToSize:lineBreakMode:
+	// BTW, why won't I conver this method to use NSLayoutManager?
+	
 	CGFloat lineHeight = BeatPagination.lineHeight;
 	if (string.length == 0) return lineHeight;
+	
+	// If this is a *dual dialogue* column, we'll need to convert the style.
+	if (self.dualDialogueElement && (type == dialogue || type == character || type == parenthetical)) {
+		if (type == dialogue) type = dualDialogue;
+		else if (type == character) type = dualDialogueCharacter;
+		else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
+	}
 	
 	BeatFont* font = self.delegate.fonts.courier;
 	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
@@ -448,6 +532,30 @@
 	}
 	
 	return numberOfLines * lineHeight;
+}
+
+- (NSLayoutManager*)heightCalculatorForString:(NSString*)string width:(CGFloat)width {
+	BeatFont *font = _delegate.fonts.courier;
+	if (string == nil) string = @"";
+	
+#if TARGET_OS_IOS
+	// Set font size to 80% on iOS
+	font = [font fontWithSize:font.pointSize * 0.8];
+#endif
+	
+	// set up the layout manager
+	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
+	NSLayoutManager *layoutManager = NSLayoutManager.new;
+
+	NSTextContainer *textContainer = NSTextContainer.new;
+	[textContainer setSize:CGSizeMake(width, MAXFLOAT)];
+
+	[layoutManager addTextContainer:textContainer];
+	[textStorage addLayoutManager:layoutManager];
+	[textContainer setLineFragmentPadding:0];
+	[layoutManager glyphRangeForTextContainer:textContainer];
+	
+	return layoutManager;
 }
 
 @end

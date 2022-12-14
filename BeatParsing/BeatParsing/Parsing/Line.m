@@ -460,39 +460,44 @@
 
 #pragma mark Dialogue
 
-/// Returns TRUE for any dialogue element, including character cue
+/// Returns `true` for any dialogue element, including character cue
 - (bool)isDialogue {
 	if (self.type == character || self.type == parenthetical || self.type == dialogue || self.type == more) return YES;
 	else return NO;
 }
-/// Returns TRUE for dialogue block elements, excluding character cues
+
+/// Returns `true` for dialogue block elements, excluding character cues
 - (bool)isDialogueElement {
 	// Is SUB-DIALOGUE element
 	if (self.type == parenthetical || self.type == dialogue) return YES;
 	else return NO;
 }
-/// Returns TRUE for any dual dialogue element, including character cue
+
+/// Returns `true` for any dual dialogue element, including character cue
 - (bool)isDualDialogue {
 	if (self.type == dualDialogue || self.type == dualDialogueCharacter || self.type == dualDialogueParenthetical || self.type == dualDialogueMore) return YES;
 	else return NO;
 }
-/// Returns TRUE for dual dialogue block elements, excluding character cues
+
+/// Returns `true` for dual dialogue block elements, excluding character cues
 - (bool)isDualDialogueElement {
 	if (self.type == dualDialogueParenthetical || self.type == dualDialogue || self.type == dualDialogueMore) return YES;
 	else return NO;
 }
 
-/// Returns TRUE for ANY character cue (single or dual)
+/// Returns `true` for ANY character cue (single or dual)
 - (bool)isAnyCharacter {
 	if (self.type == character || self.type == dualDialogueCharacter) return YES;
 	else return NO;
 }
-/// Returns TRUE for ANY parenthetical line (single or dual)
+
+/// Returns `true` for ANY parenthetical line (single or dual)
 - (bool)isAnyParenthetical {
 	if (self.type == parenthetical || self.type == dualDialogueParenthetical) return YES;
 	return NO;
 }
-/// Returns TRUE for ANY dialogue line (single or dual)
+
+/// Returns `true` for ANY dialogue line (single or dual)
 - (bool)isAnyDialogue {
 	if (self.type == dialogue || self.type == dualDialogue) return YES;
 	else return NO;
