@@ -19,36 +19,50 @@
 	NSRect frame = NSMakeRect((NSScreen.mainScreen.frame.size.width - width) / 2, (NSScreen.mainScreen.frame.size.height - height) / 2, width, height);
 	
 	self = [super initWithContentRect:frame styleMask:NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
-	self.hidesOnDeactivate = NO;
 	
-	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
+	// Make the window aware of the plugin host
+	self.host = host;
 	self.delegate = host;
 	
-	// Disable tabs for these types of windows
+	// Window settings
 	self.tabbingMode = NSWindowTabbingModeDisallowed;
-	
+	self.hidesOnDeactivate = NO;
+	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
 	// We can't release the panel on close, because JSContext might hang onto it and cause a crash
 	self.releasedWhenClosed = NO;
 	
-	_host = host;
 	self.title = host.pluginName;
 
+	// Create configuration for WKWebView
 	WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
 	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
 	
+	// Message handlers
 	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"log"];
 
+	// Initialize (custom) webkit view
 	_webview = [[BeatPluginWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
 	_webview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
+	// Load HTML and add the view into window
 	[self setHTML:html];
 	[self.contentView addSubview:_webview];
 	
+	// Window will appear on screen
 	[self appear];
 	
 	return self;
+}
+
+
+#pragma mark - Set content
+
+/// Sets the window title
+- (void)setTitle:(NSString *)title {
+	if (!title) title = @"";
+	[super setTitle:title];
 }
 
 /// Sets the HTML content with no preloaded styles. Also kills support for in-window methods.
@@ -66,6 +80,24 @@
 	[_webview loadHTMLString:template baseURL:nil];
 }
 
+#pragma mark - Running JS in window instance
+
+- (void)runJS:(nonnull NSString *)js callback:(nullable JSValue *)callback {
+	if (callback && !callback.isUndefined) {
+		[_webview evaluateJavaScript:js completionHandler:^(id _Nullable data, NSError * _Nullable error) {
+			// Make sure we are on the main thread
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[callback callWithArguments:data];
+			});
+		}];
+	} else {
+		[self.webview evaluateJavaScript:js completionHandler:nil];
+	}
+}
+
+
+#pragma mark - Window interactions
+
 - (void)close {
 	[self.host closePluginWindow:self];
 }
@@ -76,24 +108,6 @@
 
 - (void)focus {
 	[self makeFirstResponder:self.contentView];
-}
-
-/// This doesn't actually hide the window, but makes it drop behind current key window
-- (void)hide {
-	self.level = NSNormalWindowLevel;
-	self.orderedIndex += 1; // Hide behind new stuff, just in case
-}
-- (void)appear {
-	self.level = NSFloatingWindowLevel;
-}
-
-- (void)setTitle:(NSString *)title {
-	if (!title) title = @"";
-	[super setTitle:title];
-}
-
-- (CGRect)getFrame {
-	return self.frame;
 }
 
 - (void)setDark:(bool)dark {
@@ -119,21 +133,22 @@
 	}
 }
 
-- (void)runJS:(nonnull NSString *)js callback:(nullable JSValue *)callback {
-	if (callback && !callback.isUndefined) {
-		[_webview evaluateJavaScript:js completionHandler:^(id _Nullable data, NSError * _Nullable error) {
-			// Make sure we are on the main thread
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[callback callWithArguments:data];
-			});
-		}];
-	} else {
-		[self.webview evaluateJavaScript:js completionHandler:nil];
-	}
+#pragma mark - Organizing windows
+
+/// This doesn't actually hide the window, but makes it drop behind current key window
+- (void)hide {
+	self.level = NSNormalWindowLevel;
+	self.orderedIndex += 1; // Hide behind new stuff, just in case
+}
+- (void)appear {
+	self.level = NSFloatingWindowLevel;
 }
 
-- (NSSize)screenSize {
-	return self.screen.frame.size;
+
+#pragma mark - Window and sceren frame sizes
+
+- (CGRect)getFrame {
+	return self.frame;
 }
 
 - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
@@ -145,6 +160,14 @@
 		[self.host log:@"Error setting frame. Use .setFrame(x, y, width, height), not .setFrame(frame)"];
 	}
 }
+
+- (NSSize)screenSize {
+	return self.screen.frame.size;
+}
+
+
+
+#pragma mark - Gang / detach from document window
 
 - (void)gangWithDocumentWindow {
 	[self.host gangWithDocumentWindow:self];
