@@ -8,13 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
-
 NS_ASSUME_NONNULL_BEGIN
 @class Line;
-@interface BeatPaginationBlock : NSObject
+@protocol BeatPageDelegate;
 
+@interface BeatPaginationBlock : NSObject
 @property (nonatomic) NSArray<Line*>* lines;
 
++ (BeatPaginationBlock*)withLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate;
++ (BeatPaginationBlock*)withLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate isDualDialogueElement:(bool)dualDialogueElement;
+
+- (instancetype)initWithLines:(NSArray<Line*>*)lines;
 - (CGFloat)height;
 
 @end

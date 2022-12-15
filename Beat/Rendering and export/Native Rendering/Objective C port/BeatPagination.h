@@ -12,27 +12,17 @@
 #import "BeatPaginationPage.h"
 
 NS_ASSUME_NONNULL_BEGIN
-/*
- protocol BeatPageViewDelegate:NSObject {
-	 var canceled:Bool { get }
-	 var styles:Styles { get }
-	 var settings:BeatExportSettings { get }
-	 var fonts:BeatFonts { get }
-	 var pages:[BeatPageView] { get }
-	 var titlePageData:[[String:[String]]]? { get set }
-	 var lines:[Line] { get }
- }
- 
- */
 
 @class BeatFonts;
 @class Styles;
+@class BeatPagination;
 
 @protocol BeatPaginationDelegate
 @property (nonatomic) bool canceled;
 @property (nonatomic) Styles* styles;
 @property (nonatomic) BeatExportSettings *settings;
 @property (nonatomic) BeatFonts *fonts;
+- (void)paginationFinished:(BeatPagination*)pagination;
 @end
 
 @protocol BeatPageDelegate
@@ -41,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BeatExportSettings *settings;
 @property (nonatomic, readonly) BeatFonts *fonts;
 @property (nonatomic, readonly) NSMutableArray<BeatPaginationPage*>* pages;
-@property (nonatomic) NSDictionary<NSString*, NSArray<NSString*>*>* titlePageData;
-@property (nonatomic, readonly) NSArray<Line*>* lines;
+@property (nonatomic) NSDictionary<NSString*, NSArray<NSString*>*>* __nullable titlePageData;
+@property (nonatomic, readonly) NSArray<Line*>* __nullable lines;
 @end
 
 @interface BeatPagination : NSObject

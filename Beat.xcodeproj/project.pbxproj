@@ -109,6 +109,8 @@
 		B63C81E0294A33450012DC8A /* BeatPaginationPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */; };
 		B63C81E1294A33450012DC8A /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */; };
 		B63C81E2294A33450012DC8A /* BeatPaginationBlockGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */; };
+		B63C81E7294B74590012DC8A /* BeatPluginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63C81E6294B74590012DC8A /* BeatPluginWebView.swift */; };
+		B63C81E8294B74590012DC8A /* BeatPluginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63C81E6294B74590012DC8A /* BeatPluginWebView.swift */; };
 		B63CF61625B43EDD00EFA3A2 /* ThemeEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */; };
 		B63D9F4F2830141C00D027B6 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B63D9F552830294300D027B6 /* macOSTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F542830294300D027B6 /* macOSTheme.swift */; };
@@ -773,6 +775,7 @@
 		B6342D6625682D7B0034D54F /* OutlineViewItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OutlineViewItem.m; sourceTree = "<group>"; };
 		B636AEE927BD56500018C6CC /* revisions_2022.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = revisions_2022.jpg; sourceTree = "<group>"; };
 		B63704F92768A6A400BEAD53 /* Plugin Page.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Plugin Page.html"; sourceTree = "<group>"; };
+		B63C81E6294B74590012DC8A /* BeatPluginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPluginWebView.swift; sourceTree = "<group>"; };
 		B63CF61325B43EDD00EFA3A2 /* ThemeEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThemeEditor.h; sourceTree = "<group>"; };
 		B63CF61425B43EDD00EFA3A2 /* ThemeEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeEditor.m; sourceTree = "<group>"; };
 		B63D9F542830294300D027B6 /* macOSTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOSTheme.swift; sourceTree = "<group>"; };
@@ -2282,6 +2285,7 @@
 			children = (
 				B667CD3D26ED316100274660 /* BeatPluginHTMLWindow.h */,
 				B667CD3E26ED316100274660 /* BeatPluginHTMLWindow.m */,
+				B63C81E6294B74590012DC8A /* BeatPluginWebView.swift */,
 			);
 			path = "HTML Window";
 			sourceTree = "<group>";
@@ -2971,6 +2975,7 @@
 				B623D15A29391F3400B5F0CA /* BeatPreviewView.swift in Sources */,
 				B62B152D29106EC00084435D /* RenderStyle.swift in Sources */,
 				B6A79C9827B6565C008D3AFC /* BeatLayoutManager.m in Sources */,
+				B63C81E7294B74590012DC8A /* BeatPluginWebView.swift in Sources */,
 				B6B462EC2708ADFB0056EEF1 /* BeatUserDefaults.m in Sources */,
 				B62CD511279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */,
 				B6F58B69279B81DC009522C1 /* BeatValidationItem.swift in Sources */,
@@ -3170,6 +3175,7 @@
 				B623D15B29391F3400B5F0CA /* BeatPreviewView.swift in Sources */,
 				B62B152E29106EC00084435D /* RenderStyle.swift in Sources */,
 				B6A79C9927B6565C008D3AFC /* BeatLayoutManager.m in Sources */,
+				B63C81E8294B74590012DC8A /* BeatPluginWebView.swift in Sources */,
 				B6B462ED2708ADFB0056EEF1 /* BeatUserDefaults.m in Sources */,
 				B62CD512279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */,
 				B6F58B6A279B81DC009522C1 /* BeatValidationItem.swift in Sources */,
