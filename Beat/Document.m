@@ -2946,7 +2946,7 @@ static bool _skipAutomaticLineBreaks = false;
 		}
 		
 		// If CARD VIEW is enabled
-		if (_currentTab == _cardsTab) {
+		if (self.currentTab == _cardsTab) {
 			//
 			if (menuItem.action == @selector(toggleCards:)) {
 				menuItem.state = NSOnState;
