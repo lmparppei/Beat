@@ -1188,6 +1188,11 @@
 	//[self end];
 }
 
+- (void)windowDidBecomeKey:(NSNotification *)notification {
+	if (NSApp.mainWindow != self.delegate.documentWindow) {
+		[self.delegate.documentWindow makeMainWindow];
+	}
+}
 
 #pragma mark - Tagging interface
 

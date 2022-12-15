@@ -8,6 +8,7 @@
 
 #import "BeatPluginHTMLWindow.h"
 #import "BeatPlugin.h"
+#import "Beat-Swift.h"
 
 @interface BeatPluginHTMLWindow ()
 @end
@@ -32,7 +33,6 @@
 	_host = host;
 	self.title = host.pluginName;
 
-	
 	WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
 	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
 	
@@ -40,7 +40,7 @@
 	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"log"];
 
-	_webview = [[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
+	_webview = [[BeatPluginWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
 	_webview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
 	[self setHTML:html];
