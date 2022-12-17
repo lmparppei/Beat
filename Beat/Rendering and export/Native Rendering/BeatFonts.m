@@ -16,30 +16,31 @@
 	if (self) {
 		[self loadSerifFont];
 	}
+	
 	return self;
 }
 
 - (void)loadFontStyles {
-	_boldCourier = [self fontWithTrait:NSFontDescriptorTraitBold];
-	_italicCourier = [self fontWithTrait:NSFontDescriptorTraitItalic];
-	_boldItalicCourier = [self fontWithTrait:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
+	self.boldCourier = [self fontWithTrait:NSFontDescriptorTraitBold];
+	self.italicCourier = [self fontWithTrait:NSFontDescriptorTraitItalic];
+	self.boldItalicCourier = [self fontWithTrait:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
 }
 
 - (void)loadSerifFont {
-	_courier = [NSFont fontWithName:@"Courier Prime" size:12.0];
+	self.courier = [NSFont fontWithName:@"Courier Prime" size:12.0];
 	[self loadFontStyles];
 }
 
 - (void)loadSansSerifFont {
-	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:12.0];
+	self.courier = [NSFont fontWithName:@"Courier Prime Sans" size:12.0];
 	[self loadFontStyles];
 }
 
 - (NSFont*)fontWithTrait:(NSFontDescriptorSymbolicTraits)traits {
-	NSFontDescriptor *fd = [NSFontDescriptor.alloc fontDescriptorWithSymbolicTraits:traits];
-	NSFont *font = [NSFont fontWithDescriptor:fd size:_courier.pointSize];
+	NSFontDescriptor *fd = [self.courier.fontDescriptor fontDescriptorWithSymbolicTraits:traits];
+	NSFont *font = [NSFont fontWithDescriptor:fd size:self.courier.pointSize];
 	
-	if (font == nil) return _courier;
+	if (font == nil) return self.courier;
 	else return font;
 }
 
