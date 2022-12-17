@@ -16,10 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface BeatPaginationPage : NSObject
 @property (nonatomic) BeatPageBreak *pageBreak;
 @property (nonatomic) NSMutableArray<BeatPaginationBlock*>* blocks;
+@property (nonatomic) CGFloat maxHeight;
+@property (nonatomic) CGFloat remainingSpace;
 
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate;
 -(void)addBlock:(BeatPaginationBlock*)block;
 -(NSRange)representedRange;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

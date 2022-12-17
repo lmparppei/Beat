@@ -9,9 +9,14 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
+@class BeatPaginationBlock;
 
 @interface BeatPaginationBlockGroup : NSObject
-
+@property (nonatomic) NSArray<BeatPaginationBlock*>* blocks;
+@property (nonatomic) CGFloat height;
++ (BeatPaginationBlockGroup*)withBlocks:(NSArray<BeatPaginationBlock*>*)blocks;
+- (NSArray*)breakGroupWithRemainingSpace:(CGFloat)remainingSpace;
+- (NSArray<Line*>*)lines;
 @end
 
 NS_ASSUME_NONNULL_END

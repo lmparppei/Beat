@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatPaginationBlock*)withLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate;
 + (BeatPaginationBlock*)withLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate isDualDialogueElement:(bool)dualDialogueElement;
 
-- (instancetype)initWithLines:(NSArray<Line*>*)lines;
+-(NSArray*)breakBlockWithRemainingSpace:(CGFloat)remainingSpace;
 - (CGFloat)height;
 
 @end

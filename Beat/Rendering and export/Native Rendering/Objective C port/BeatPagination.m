@@ -17,11 +17,12 @@
 #import "BeatFonts.h"
 #import "Beat-Swift.h"
 #import "BeatPaginationBlock.h"
+#import "BeatPaginationBlockGroup.h"
 
 
 @interface BeatPagination() <BeatPageDelegate>
 @property (nonatomic) NSArray<Line*>* lines;
-@property (nonatomic) NSArray<Line*>* lineQueue;
+@property (nonatomic) NSMutableArray<Line*>* lineQueue;
 @property (nonatomic) BeatFonts* fonts;
 @property (nonatomic) BeatExportSettings* settings;
 @property (nonatomic) Styles* styles;
@@ -33,7 +34,6 @@
 
 @property (weak, nonatomic) id<BeatPaginationDelegate> delegate;
 
-@property (nonatomic) NSMutableArray<Line*>* queue;
 @property (nonatomic) NSArray<BeatPaginationPage*>* cachedPages;
 @property (nonatomic) BeatPaginationPage* currentPage;
 
@@ -103,32 +103,31 @@
 	_startTime = NSDate.new;
 	
 	// Reset queue
-	_queue = NSMutableArray.new;
-	_lineQueue = [NSMutableArray arrayWithArray:self.lines];
+	_lineQueue = [NSMutableArray arrayWithArray:[self.lines subarrayWithRange:NSMakeRange(index, self.lines.count - index)]];
 	
 	if (index == 0) {
 		_pages = NSMutableArray.new;
 		_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
 	}
 	
-	for (NSInteger i=index; i<_lineQueue.count; i++) {
+	while (_lineQueue.count > 0) {
+	//for (NSInteger i=index; i<_lineQueue.count; i++) {
 		// Do nothing if this operation is canceled
 		if (_canceled) { return false; }
 		
-		Line* line = _lineQueue[i];
+		// Get the first object in the queue array until no lines are left
+		Line* line = _lineQueue[0];
 		
 		// Catch wrong parsing (just in case)
 		if (line.string.length == 0) continue;
-		
-		if ([_queue containsObject:line]) { continue; }
 		else if (line.isInvisible && !(_settings.printNotes && line.note)) continue;
-		
+				
 		// catch forced page breaks first
 		if (line.type == pageBreak) {
-			BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:-1 element:line reason:@"Forced page break"];
+			[_lineQueue removeObjectAtIndex:0];
 			
-			[self addPage:@[line] pageBreak:pageBreak];
-			//addPage(currentPage!, onCurrentPage: [line], onNextPage: [], pageBreak: pageBreak)
+			BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:-1 element:line reason:@"Forced page break"];
+			[self addPage:@[line] toQueue:@[] pageBreak:pageBreak];
 			continue;
 		}
 		
@@ -146,20 +145,62 @@
 		 • a heading or a shot, followed by another block
 		*/
 		@autoreleasepool {
-			
+			NSArray *blocks = [self blocksForLineAt:0];
+			[self addBlocks:blocks];
 		}
 	}
 	
 	return true;
 }
 
+- (void)addBlocks:(NSArray<NSArray<Line*>*>*)blocks {
+	NSMutableArray<BeatPaginationBlock*>* pageBlocks = NSMutableArray.new;
+		
+	for (NSArray<Line*>* block in blocks) {
+		BeatPaginationBlock *pageBlock = [BeatPaginationBlock withLines:block delegate:self];
+		[pageBlocks addObject:pageBlock];
+		//[_queue addObjectsFromArray:block];
+		[_lineQueue removeObjectsInRange:NSMakeRange(0, pageBlock.lines.count)];
+	}
+	
+	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks];
+	
+	if (_currentPage.remainingSpace >= group.height) {
+		// Add blocks on current page
+		for (BeatPaginationBlock *pageBlock in pageBlocks) {
+			[_currentPage addBlock:pageBlock];
+		}
+
+		return;
+	}
+	
+	// Nothing fit, let's break it apart
+	CGFloat remainingSpace = _currentPage.remainingSpace;
+	
+	// If remaining space is less than 1 line, just roll on to next page
+	if (remainingSpace < BeatPagination.lineHeight) {
+		BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0 element:group.blocks.firstObject.lines.firstObject reason:@"Nothing fit"];
+		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
+	}
+	
+	if (group.blocks.count > 0) {
+		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace];
+		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
+	}
+	else {
+		BeatPaginationBlock *pageBlock = group.blocks.firstObject;
+		NSArray* split = [pageBlock breakBlockWithRemainingSpace:remainingSpace];
+		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
+	}
+}
+
+
 /**
 Returns "blocks" for the given line.
 - note: A block is usually any paragraph or a full dialogue block, but for the pagination to make sense, some blocks are grouped together.
 That's why we are returning `[ [Line], [Line], ... ]`, and converting those blocks into actual screenplay layout blocks later.
 
-The layout blocks (`BeatPageBlock`)
-won't contain anything else than the rendered block, which can also mean a full dual-dialogue block.
+The layout blocks (`BeatPageBlock`) won't contain anything else than the rendered block, which can also mean a full dual-dialogue block.
 */
 - (NSArray<NSArray<Line*>*>*)blocksForLineAt:(NSInteger)idx {
 	Line* line = self.lineQueue[idx];
@@ -219,7 +260,6 @@ won't contain anything else than the rendered block, which can also mean a full 
 	NSMutableArray<Line*>* block = NSMutableArray.new;
 	[block addObject:line];
 	
-	bool waitForDualDialogue = line.nextElementIsDualDialogue;
 	bool hasBegunDualDialogue = false;
 	
 	for (NSInteger i=idx+1; i<_lineQueue.count; i++) {
@@ -236,43 +276,19 @@ won't contain anything else than the rendered block, which can also mean a full 
 	return block;
 }
 
-- (void)addPage:(NSArray<Line*>*)elements pageBreak:(BeatPageBreak*)pageBreak {
+- (void)addPage:(NSArray<Line*>*)elements toQueue:(NSArray<Line*>*)toQueue pageBreak:(BeatPageBreak*)pageBreak {
 	BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
 	[_currentPage addBlock:block];
 	[_pages addObject:_currentPage];
 	
+	// Add objects to queue
+	NSRange range = NSMakeRange(0, toQueue.count - 1);
+	NSIndexSet* indices = [NSIndexSet indexSetWithIndexesInRange:range];
+	[_lineQueue insertObjects:toQueue atIndexes:indices];
+	
 	_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
 	_currentPage.pageBreak = pageBreak;
 }
-
-/*
-	
-	
-	 // catch forced page breaks first
-	 if (line.type == .pageBreak) {
-		 let pageBreak = BeatPageBreak(y: -1, element: line, reason: "Forced page break")
-		 addPage(currentPage!, onCurrentPage: [line], onNextPage: [], pageBreak: pageBreak)
-		 continue
-	 }
-	 
-	 // Add initial page break when needed
-	 if self.pages.count == 0 && currentPage!.blocks.count == 0 {
-		 print("Adding initial page break: ", line)
-		 currentPage?.pageBreak = BeatPageBreak(y: 0, element: line)
-	 }
-	 
-	 autoreleasepool {
-		 let blocks = blocksFor(lineAtIndex: i)
-		 addBlocks(blocks: blocks, currentPage: currentPage!)
-	 }
- }
- 
- // The loop has ended.
- pages.append(currentPage!)
- 
- return true
-}
- */
 
 
 #pragma mark - Line lookup
@@ -282,47 +298,23 @@ won't contain anything else than the rendered block, which can also mean a full 
 	NSLog(@"findPageIndexAt: not implemented");
 	for (NSInteger i=0; i<self.pages.count; i++) {
 		BeatPaginationPage *page = _pages[i];
+		NSRange range = page.representedRange;
 		// get page.representedRange etc
+		
+		if (range.location > position) {
+			// Return PREVIOUS page (as we've actually passed the position we've been looking for)
+			if (i > 0) return i - 1;
+			else return 0 ;
+		}
 	}
 	
 	return NSNotFound;
 }
-/*
- /// Returns page index based on line position
- func findPageIndex(position:Int, pages:[BeatPageView]) -> Int {
-	 var i = 0
-	 while i < pages.count {
-		 let p = pages[i]
-		 if p.representedRange.location > position {
-			 if i > 0 {
-				 // Return PREVIOUS page
-				 return i - 1
-			 } else {
-				 return 0
-			 }
-		 }
-		 i += 1
-	 }
-	 
-	 for p in 0..<pages.count {
-		 let page = pages[p]
-		 
-		 let lines = page.lines
-		 for i in 0..<lines.count {
-			 let line = lines[i]
-			 
-			 if NSMaxRange(line.range()) >= line.position {
-				 return p
-			 }
-		 }
-	 }
-	 
-	 return NSNotFound
- }
- */
+
 
 #pragma mark - CONT'D and (MORE)
 
+/// Returns a `Line` object with character cue followed by `(CONT'D)` extension for continuing dialogue block after a page break.
 + (Line*)contdLineFor:(Line*)line {
 	NSString *extension = BeatPagination.contdString;
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
@@ -337,6 +329,7 @@ won't contain anything else than the rendered block, which can also mean a full 
 	return contd;
 }
 
+/// Returns a `Line` object for the `(MORE)` at the bottom of a page when a dialogue block is broken across pages.
 + (Line*)moreLineFor:(Line*)line {
 	LineType type = (line.isDualDialogue) ? dualDialogueMore : more;
 	Line *more = [Line.alloc initWithString:[BeatPagination moreString] type:type];
@@ -349,6 +342,7 @@ won't contain anything else than the rendered block, which can also mean a full 
 	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemMore"];
 	return [NSString stringWithFormat:@"(%@)", moreStr];
 }
+
 + (NSString*)contdString {
 	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
 	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue

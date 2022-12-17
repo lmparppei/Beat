@@ -38,6 +38,15 @@
 	return lines;
 }
 
+-(CGFloat)remainingSpace {
+	CGFloat height = 0.0;
+	for (BeatPaginationBlock *block in self.blocks) {
+		height += block.height;
+	}
+	
+	return _maxHeight - height;
+}
+
 -(NSRange)representedRange {
 	NSInteger begin = NSNotFound;
 	NSInteger end = NSNotFound;

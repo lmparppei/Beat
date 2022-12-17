@@ -241,20 +241,12 @@
 /**
  - returns an array with `onCurrentPage[Line], onNextPage[Line], BeatPageBreak`
  */
--(NSArray*)splitBlockWithRemainingSpace:(CGFloat)remainingSpace {
+-(NSArray*)breakBlockWithRemainingSpace:(CGFloat)remainingSpace {
 	// Dual dialogue requires different logic
 	if (self.dualDialogueContainer) {
 		return [self splitDualDialogueWithRemainingSpace:remainingSpace];
 	}
-	
-	NSMutableArray<Line*>* onThisPage = NSMutableArray.new;
-	NSMutableArray<Line*>* onNextPage = NSMutableArray.new;
-	
-	NSMutableArray<Line*>* tmpThisPage = NSMutableArray.new;
-	NSMutableArray<Line*>* tmpNextPage = NSMutableArray.new;
-	
-	BeatPageBreak *pageBreak;
-	
+		
 	NSInteger pageBreakIndex = [self pageBreakIndexWithRemainingSpace:remainingSpace];
 	if (pageBreakIndex == NSNotFound) {
 		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"No page break index found"]];
@@ -329,13 +321,13 @@
 	
 	if (leftBlock.height > remainingSpace) {
 		// We need to split left side
-		leftResult = [leftBlock splitBlockWithRemainingSpace:remainingSpace];
+		leftResult = [leftBlock breakBlockWithRemainingSpace:remainingSpace];
 		[onThisPage addObjectsFromArray:leftResult[0]];
 		[onNextPage addObjectsFromArray:leftResult[1]];
 	}
 	if (rightBlock.height > remainingSpace) {
 		// We need to split left side
-		rightResult = [rightBlock splitBlockWithRemainingSpace:remainingSpace];
+		rightResult = [rightBlock breakBlockWithRemainingSpace:remainingSpace];
 		[onThisPage addObjectsFromArray:rightResult[0]];
 		[onNextPage addObjectsFromArray:rightResult[1]];
 	}
@@ -359,7 +351,6 @@
 	
 	if (spiller) {
 		// If there is a spiller, calculate the height of the remaining block
-		NSArray *blockUntilSpiller = [dialogueBlock subarrayWithRange:NSMakeRange(0, index)];
 		remainingSpace -= [self heightUntil:spiller];
 	}
 	
