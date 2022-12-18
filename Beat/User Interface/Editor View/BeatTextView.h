@@ -22,7 +22,6 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	SelectTag
 };
 
-
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
 - (NSImage *)textView:(NSTextView *)textView imageForCompletion:(NSString *)word;

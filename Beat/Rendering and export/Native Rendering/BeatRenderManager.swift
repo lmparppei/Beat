@@ -10,27 +10,54 @@ import Foundation
 
 @objc protocol BeatRenderDelegate {
 	func renderingDidFinish(pages:[BeatPageView])
+	func paginationDidFinish(pages: [BeatPaginationPage])
 	var parser:ContinuousFountainParser? { get }
 }
 
-class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
+class BeatRenderManager:NSObject, BeatPaginationDelegate {
 	weak var delegate:BeatRenderDelegate?
-	
-	var queue:[BeatRenderer] = []
-	var settings:BeatExportSettings
-	
-	var pageCache:[BeatPageView] = []
-	var pages:[BeatPageView] = []
-	
-	var livePagination = false
-	
 	var document:Document?
 	
-	var finishedOperation:BeatRenderer?
+	@objc var settings:BeatExportSettings
+	var livePagination = false
+	
+	var operationQueue:[BeatPagination] = [];
+	var pageCache:[BeatPaginationPage] = []
+	var pages:[BeatPaginationPage] {
+		return (finishedPagination?.pages ?? []) as! [BeatPaginationPage]
+	}
+		
+	var finishedPagination:BeatPagination?
 	
 	@objc init(settings:BeatExportSettings, delegate:BeatRenderDelegate) {
 		self.settings = settings
 		self.delegate = delegate
+	}
+	
+	//MARK: - Run operations
+		
+	/// Run an Objc pagination operation
+	func runPagination(pagination: BeatPagination) {
+		// Cancel any running operations
+		cancelAllObjcOperations()
+		
+		operationQueue.append(pagination)
+		
+		// If the queue is empty, run it right away. Otherwise the operation will be run once other renderers have finished.
+		if operationQueue.last != nil {
+			//if pagination.livePagination { renderer.paginateForEditor() }
+			//else { renderer.paginate() }
+			operationQueue.last!.paginate()
+		}
+	}
+	
+	//MARK: - Cancel operations
+	
+	/// Cancels all background operations
+	func cancelAllObjcOperations() {
+		for operation in operationQueue {
+			operation.canceled = true
+		}
 	}
 	
 	/**
@@ -42,16 +69,52 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 	 let pages = renderer.pages
 	 let titlePage = renderer.titlePage
 	 */
-	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings) {
-		newRender(screenplay: screenplay, settings: settings, forEditor: false, changeAt: 0)
-	}
-	@objc func newRender(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
-		self.pageCache = self.finishedOperation?.pages ?? []
+	@objc func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
+		self.pageCache = []
 		
-		let operation = BeatRenderer(delegate:self, screenplay: screenplay, settings: settings, livePagination: forEditor, changeAt:changeAt, cachedPages: self.pageCache)
-		runOperation(renderer: operation)
+		let operation = BeatPagination.newPagination(with: screenplay, delegate: self)
+		runPagination(pagination: operation)
 	}
 	
+	// MARK: - Finished operations
+	
+	func paginationFinished(_ pagination: BeatPagination) {
+		if (self.finishedPagination != nil) {
+			if (pagination.startTime < self.finishedPagination!.startTime) { return }
+		}
+		
+		let i = self.operationQueue.firstIndex(of: pagination) ?? NSNotFound
+		if i != NSNotFound {
+			var n = 0
+			while (n < i+1) {
+				operationQueue.remove(at: 0)
+				n += 1
+			}
+		}
+		
+		if pagination.success {
+			self.finishedPagination = pagination
+			self.delegate?.paginationDidFinish(pages: self.pages)
+		}
+		
+		let lastOperation = operationQueue.last
+		if (lastOperation != nil) {
+			runPagination(pagination: lastOperation!)
+		}
+	}
+	
+	// MARK: - Convenience
+	
+	/// Returns the *actual* page size for either the latest operation or from current settings
+	@objc var pageSize:NSSize {
+		if (self.finishedPagination != nil) {
+			return BeatPaperSizing.size(for: self.finishedPagination!.settings.paperSize)
+		} else {
+			return BeatPaperSizing.size(for: self.settings.paperSize)
+		}
+	}
+	
+	/*
 	/// Returns both screenplay pages and the title page
 	var allRenderedPages:[BeatPageView] {
 		return self.finishedOperation?.getPages(titlePage: true) ?? []
@@ -84,52 +147,7 @@ class BeatRenderManager:NSObject, BeatRenderOperationDelegate {
 		
 		return [pageCount, eights]
 	}
-	
-	/// Pagination or render was finished
-	func renderDidFinish(renderer: BeatRenderer) {
-		//print("# Render did finish")
-		let i = self.queue.firstIndex(of: renderer) ?? NSNotFound
-		if i != NSNotFound {
-			self.queue.remove(at: i)
-		}
-		
-		// Only accept newest results
-		// NSTimeInterval timeDiff = [operation.startTime timeIntervalSinceDate:_finishedOperation.startTime];
-		// if (operation.success && (timeDiff > 0 || self.finishedOperation == nil)) {
-		
-		self.finishedOperation = renderer
-		self.pages = renderer.pages
-		
-		self.delegate?.renderingDidFinish(pages: self.pages)
-		
-		// Once finished, run the next operation, if it exists
-		let lastOperation = queue.last
-		if (lastOperation != nil) {
-			runOperation(renderer: lastOperation!)
-		}
-	}
-	
-	/// Run a render operation
-	func runOperation(renderer: BeatRenderer) {
-		// Cancel any running operations
-		cancelAllOperations()
-		
-		queue.append(renderer)
-		
-		// If the queue is empty, run it right away. Otherwise the operation will be run once other renderers have finished.
-		if queue.count == 1 {
-			if renderer.livePagination { renderer.paginateForEditor() }
-			else { renderer.paginate() }
-		}
-	}
-	
-	/// Cancels all background operations
-	func cancelAllOperations() {
-		for operation in queue {
-			operation.canceled = true
-		}
-	}
-	
+	*/
 	
 	// MARK: - Forwarded delegate properties
 	

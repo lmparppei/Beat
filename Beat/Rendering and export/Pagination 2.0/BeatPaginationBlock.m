@@ -10,6 +10,7 @@
 #import "BeatPagination.h"
 #import <BeatParsing/BeatParsing.h>
 #import "Beat-Swift.h"
+#import "BeatPageBreak.h"
 
 @interface BeatPaginationBlock ()
 @property (nonatomic) bool dualDialogueElement;
@@ -79,15 +80,23 @@
 		}
 	}
 	
+	_calculatedHeight = height;
 	return height;
 }
 
 - (CGFloat)heightForLine:(Line*)line {
+	// We'll cache the line heights in a dictionary by UUID
 	if (self.lineHeights == nil) self.lineHeights = NSMutableDictionary.new;
-	if (self.lineHeights[line.uuid] != nil) return self.lineHeights[line.uuid].floatValue;
+
+	// If the height has already been calculated, return the result
+	if (self.lineHeights[line.uuid] != nil) {
+		return self.lineHeights[line.uuid].floatValue;
+	}
 	
+	// Calculate the line height
 	CGFloat height = 0.0;
 	
+	// Create a bare-bones paragraph style
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 	pStyle.maximumLineHeight = BeatPagination.lineHeight;
 	
@@ -96,9 +105,9 @@
 		NSParagraphStyleAttributeName: pStyle
 	}];
 	
-	// If this is a *dual dialogue* column, we'll need to convert the style.
+	// If this is a *dual dialogue column*, we'll need to convert the style.
 	LineType type = line.type;
-	if (self.dualDialogueElement && (type == dialogue || type == character || type == parenthetical)) {
+	if (self.dualDialogueElement) {
 		if (type == dialogue) type = dualDialogue;
 		else if (type == character) type = dualDialogueCharacter;
 		else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
@@ -108,41 +117,11 @@
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 	height = [string heightWithContainerWidth:width] + style.marginTop;
 	
+	// Save the calculated top margin if this is the first element on page
+	if (line == self.lines.firstObject) self.topMargin = style.marginTop;
+	
 	self.lineHeights[line.uuid] = [NSNumber numberWithFloat:height];
 	return height;
-}
-
-- (NSAttributedString*)attributedString {
-	if (_renderedString == nil) {
-		if (self.dualDialogueContainer) {
-			//
-			NSLog(@"## DUAL DIALOGUE RENDERING MISSING");
-		}
-		
-		NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
-		for (Line* line in self.lines) { @autoreleasepool {
-			NSAttributedString *lineStr = [self renderLine:line];
-			[attrStr appendAttributedString:lineStr];
-			
-			_renderedString = attrStr;
-		} }
-	}
-	
-	return _renderedString;
-}
-
-/// Create and render the individual line elements
-- (NSAttributedString*)renderLine:(Line*)line {
-	return [self renderLine:line firstElementOnPage:false];
-}
-
-- (NSAttributedString*)renderLine:(Line*)line firstElementOnPage:(bool)firstElementOnPage {
-	self.leftColumn = nil;
-	self.rightColumn = nil;
-	
-	NSMutableAttributedString *attributedString = NSMutableAttributedString.new;
-	
-	return attributedString;
 }
 
 - (Line*)lineAt:(CGFloat)y {
@@ -271,7 +250,7 @@
 	NSString *str = line.stripFormatting;
 	NSString *retain = @"";
 
-	RenderStyle *style = [self.delegate.styles forElement:line.typeAsString];
+	RenderStyle *style = [self.delegate.styles forElement:line.typeName];
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 	
 	// Create the layout manager for remaining space calculation
@@ -289,7 +268,8 @@
 		if (numberOfLines < remainingSpace / BeatPagination.lineHeight) {
 			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
 			length += charRange.length;
-			pageBreakPos += usedRect.size.height;
+			//pageBreakPos += usedRect.size.height;
+			pageBreakPos += numberOfLines * BeatPagination.lineHeight;
 		} else {
 			*stop = true;
 		}
@@ -302,8 +282,7 @@
 	Line *postPageBreak = splitElements[1];
 	
 	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:pageBreakPos element:line reason:@"Paragraph split"];
-	
-	return @[prePageBreak, postPageBreak, @(pageBreakPos)];
+	return @[@[prePageBreak], @[postPageBreak], pageBreak];
 }
 
 - (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace {
@@ -355,7 +334,7 @@
 	}
 	
 	// If nothing fits, move the whole block on next page
-	if (remainingSpace < BeatPaginator.lineHeight) {
+	if (remainingSpace < BeatPagination.lineHeight) {
 		return @[@[], self.lines, [BeatPageBreak.alloc initWithY:0 element:self.lines.firstObject reason:@"No page break index found"]];
 	}
 	
@@ -378,7 +357,7 @@
 
 	// For dialogue, we'll see if we can split the current line of dialogue
 	if (spiller.isAnyDialogue) {
-		if (remainingSpace > BeatPaginator.lineHeight) {
+		if (remainingSpace > BeatPagination.lineHeight) {
 			// Split dialogue according to remaining space
 			NSArray* splitLine = [self splitDialogueLine:spiller remainingSpace:remainingSpace];
 			
@@ -417,11 +396,11 @@
 			 [dialogueBlock subarrayWithRange:NSMakeRange(0, splitAt)]
 		];
 		[onThisPage addObjectsFromArray:tmpThisPage];
-		[onThisPage addObject:[BeatPaginator moreLineFor:spiller]];
+		[onThisPage addObject:[BeatPagination moreLineFor:spiller]];
 	}
 			
 	// Add stuff on next page if needed
-	if (onThisPage.count) [onNextPage addObject:[BeatPaginator contdLineFor:dialogueBlock.firstObject]];
+	if (onThisPage.count) [onNextPage addObject:[BeatPagination contdLineFor:dialogueBlock.firstObject]];
 	[onNextPage addObjectsFromArray:tmpNextPage];
 	NSRange splitRange = NSMakeRange(splitAt, dialogueBlock.count - splitAt);
 	if (splitRange.length > 0) [onNextPage addObjectsFromArray:[dialogueBlock subarrayWithRange:splitRange]];
@@ -547,6 +526,152 @@
 	[layoutManager glyphRangeForTextContainer:textContainer];
 	
 	return layoutManager;
+}
+
+
+#pragma mark - Rendering blocks to attributed strings
+
+- (NSAttributedString*)attributedString {
+	if (_renderedString == nil) {
+		if (self.dualDialogueContainer) {
+			NSLog(@"This is a dual dialogue container");
+			// Render dual dialogue block (enter kind of recursion)
+			_renderedString = [self renderDualDialogueContainer];
+			
+		} else {
+			NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
+			for (Line* line in self.lines) { @autoreleasepool {
+				NSAttributedString *lineStr = [self renderLine:line];
+				[attrStr appendAttributedString:lineStr];
+			} }
+			
+			_renderedString = attrStr;
+		}
+	}
+	
+	return _renderedString;
+}
+
+/// Render a block with left/right columns. This block will know the contents of both columns.
+- (NSAttributedString*)renderDualDialogueContainer {
+	NSArray<Line*>* left = [self leftSideDialogue];
+	NSArray<Line*>* right = [self rightSideDialogue];
+	
+	self.leftColumnBlock = [BeatPaginationBlock withLines:left delegate:_delegate isDualDialogueElement:true];
+	self.rightColumnBlock = [BeatPaginationBlock withLines:right delegate:_delegate isDualDialogueElement:true];
+	
+	// Create table
+	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? _delegate.styles.page.defaultWidthA4 : _delegate.styles.page.defaultWidthLetter;
+	
+	NSTextTable* table = NSTextTable.new;
+	[table setContentWidth:width + _delegate.styles.page.contentPadding type:NSTextBlockAbsoluteValueType];
+	table.numberOfColumns = 2;
+	
+	// Create cells
+	__block NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
+	__block NSTextTableBlock* rightCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
+		
+	CGFloat fullWidth = (_delegate.settings.paperSize == BeatA4) ? _delegate.styles.page.defaultWidthA4 : _delegate.styles.page.defaultWidthLetter;
+	
+	[leftCell setContentWidth:_delegate.styles.page.contentPadding + fullWidth / 2 type:NSTextBlockAbsoluteValueType];
+	[rightCell setContentWidth:fullWidth / 2 type:NSTextBlockAbsoluteValueType];
+	
+	// Render content for left/right cell
+	NSMutableAttributedString* leftContent = self.leftColumnBlock.attributedString.mutableCopy;
+	NSMutableAttributedString* rightContent = self.rightColumnBlock.attributedString.mutableCopy;
+	
+	// If there is nothing in the left column, we need to create a placeholder
+	if (leftContent.length == 0) {
+		NSMutableParagraphStyle* p = NSMutableParagraphStyle.new;
+		leftContent = [NSMutableAttributedString.alloc initWithString:@" \n"];
+		[leftContent addAttribute:NSParagraphStyleAttributeName value:p range:NSMakeRange(0, leftContent.length)];
+	}
+	
+	// Enumerate the paragraph styles inside left/right column content, and set the cell as their text block
+	[leftContent enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(0, leftContent.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		NSMutableParagraphStyle* pStyle = value;
+		pStyle = pStyle.mutableCopy;
+		
+		pStyle.headIndent += _delegate.styles.page.contentPadding;
+		pStyle.firstLineHeadIndent += _delegate.styles.page.contentPadding;
+		pStyle.textBlocks = @[leftCell];
+		
+		[leftContent addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
+	}];
+	
+	[rightContent enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(0, rightContent.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		NSMutableParagraphStyle* pStyle = value;
+		pStyle = pStyle.mutableCopy;
+		
+		pStyle.textBlocks = @[rightCell];
+		[rightContent addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
+	}];
+	
+	// Store the rendered left/right content
+	self.leftColumn = leftContent.copy;
+	self.rightColumn = rightContent.copy;
+	
+	// Create the resulting string
+	[leftContent appendAttributedString:rightContent];
+	return leftContent;
+}
+
+/// Create and render the individual line elements
+- (NSAttributedString*)renderLine:(Line*)line {
+	return [self renderLine:line firstElementOnPage:false];
+}
+
+- (NSAttributedString*)renderLine:(Line*)line firstElementOnPage:(bool)firstElementOnPage {
+	NSDictionary* attrs = [self.delegate attributesForLine:line dualDialogue:self.dualDialogueElement];
+	NSString* string = [NSString stringWithFormat:@"%@\n", line.string]; // Add a line break
+	NSMutableAttributedString *attributedString = [NSMutableAttributedString.alloc initWithString:string attributes:attrs];
+	
+	// Inline stylization
+	if (!line.noFormatting) {
+		NSAttributedString* inlineAttrs = line.attributedStringForFDX;
+		[inlineAttrs enumerateAttribute:@"Style" inRange:NSMakeRange(0, inlineAttrs.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+			NSString* styleStr = (NSString*)value;
+			if (styleStr.length == 0) return;
+			
+			NSArray* styleNames = [styleStr componentsSeparatedByString:@","];
+			NSFontTraitMask traits = 0;
+			
+			if ([styleNames containsObject:@"Bold"]) traits |= NSBoldFontMask;
+			if ([styleNames containsObject:@"Italic"]) traits |= NSItalicFontMask;
+			[attributedString applyFontTraits:traits range:range];
+			
+			// Apply underline if needed
+			if ([styleNames containsObject:@"Underline"]) {
+				[attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:range];
+				[attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:range];
+			}
+		}];
+	}
+	
+	bool multiline = [attributedString.string containsString:@"\n"];
+	if (multiline) {
+		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
+		NSMutableParagraphStyle* fixedStyle = pStyle.mutableCopy;
+		fixedStyle.paragraphSpacingBefore = 0.0;
+		
+		NSInteger i = [attributedString.string rangeOfString:@"\n"].location;
+		[attributedString addAttribute:NSParagraphStyleAttributeName value:fixedStyle range:NSMakeRange(0, attributedString.length)];
+		[attributedString addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(0, i)];
+	}
+	
+	// Strip invisible stuff
+	NSMutableIndexSet* contentRanges = [NSMutableIndexSet.alloc initWithIndexSet:line.contentRanges];
+	[contentRanges addIndex:attributedString.length - 1]; // Add the last index to include our newly-added line break
+	NSMutableAttributedString *result = NSMutableAttributedString.new;
+	
+	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+		if (range.length == 0) return;
+		
+		NSAttributedString* content = [attributedString attributedSubstringFromRange:range];
+		[result appendAttributedString:content];
+	}];
+	
+	return result;
 }
 
 @end

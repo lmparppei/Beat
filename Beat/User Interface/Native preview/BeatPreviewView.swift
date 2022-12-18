@@ -13,6 +13,10 @@ protocol BeatPreviewDelegate:BeatEditorDelegate {
 }
 
 final class BeatPreviewController:NSObject, BeatRenderDelegate {
+	func renderingDidFinish(pages: [BeatPageView]) {
+		
+	}
+	
 	@IBOutlet weak var previewView:BeatPreviewView?
 	@IBOutlet weak var delegate:BeatEditorDelegate?
 	
@@ -44,20 +48,29 @@ final class BeatPreviewController:NSObject, BeatRenderDelegate {
 	// MARK: Create preview data in background
 	@objc func createPreview(changeAt index:Int) {
 		guard let parser = delegate?.parser else { return }
-		renderer?.newRender(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
+		//renderer?.newRender(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
+		renderer?.newPagination(screenplay: parser.forPrinting(), settings: settings, forEditor: true, changeAt: index)
 	}
-	
-	/// Called when a render is done.
-	func renderingDidFinish(pages: [BeatPageView]) {
-		print("Rendering finished")
 		
+	func paginationDidFinish(pages: [BeatPaginationPage]) {
+		print("Preview View: Pagination finished")
 	}
 		
 	@objc func renderOnScreen() {
-		let pages = renderer!.getRenderedPages(titlePage: true)
-		
 		self.previewView?.clear()
-		self.previewView?.addPages(pages: pages)
+		
+		guard let pages = renderer?.pages else { return }
+		let size = BeatPaperSizing.size(for: settings.paperSize)
+		let pageStyle = Styles.shared.page()
+		
+		for i in 0..<pages.count {
+			let page = pages[i]
+			let string = page.attributedString()
+			
+			let pageView = BeatPaginationPageView(size: size, content: string, pageStyle: pageStyle)
+			
+			self.previewView?.addPage(page: pageView)
+		}
 	}
 	
 	func closeAndJumpToRange(_ range:NSRange) {
@@ -87,15 +100,8 @@ final class BeatPreviewView:NSView {
 		self.enclosingScrollView?.documentView?.frame = NSMakeRect(0, 0, pageSize.width, height)
 		self.frame = NSMakeRect(0, 0, pageSize.width, height)
 	}
-	
-	@objc func addPages(pages:[BeatPageView]) {
-		for page in pages {
-			addPage(page: page.forDisplay(previewController: self.previewController))
-		}
-		updateSize()
-	}
-	
-	func addPage(page:BeatPagePrintView) {
+		
+	func addPage(page:BeatPaginationPageView) {
 		var y = (self.subviews.last?.frame.height ?? 0.0) + (self.subviews.last?.frame.origin.y ?? 0.0)
 		y += 10
 		
@@ -104,8 +110,6 @@ final class BeatPreviewView:NSView {
 		
 		self.addSubview(page)
 	}
-	
-	
 }
 
 // Stolen from Victor Gama, https://vito.io/articles/2021-12-04-centered-nsscrollview

@@ -10,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @class BeatPaginationBlock;
+@class Line;
 
 @interface BeatPaginationBlockGroup : NSObject
 @property (nonatomic) NSArray<BeatPaginationBlock*>* blocks;

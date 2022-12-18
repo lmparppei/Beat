@@ -59,43 +59,39 @@ class BeatRendererTester:NSWindowController {
 	}
 	
 	func showRender() {
-		renderer!.newRender(screenplay: screenplay!, settings: settings!, forEditor: false, changeAt: 0)
+		renderer!.newPagination(screenplay: screenplay!, settings: settings!, forEditor: false, changeAt: 0)
 		
-		if(self.scrollView == nil) {
+		guard let scrollView = self.scrollView,
+			  let renderer = self.renderer,
+			  let container = self.container
+		else {
 			return
 		}
-		
-		let pages = renderer!.getRenderedPages(titlePage: true)
-		let content = container
-		
-		for view in content!.subviews {
+
+		for view in container.subviews {
 			view.removeFromSuperview()
 		}
 		
-		if (pages.count == 0) {
-			print("No pages")
-			return
+		let contentHeight = CGFloat(renderer.pages.count) * (renderer.pageSize.height + 10.0)
+		var rect = NSMakeRect(0, 0, renderer.pageSize.width, contentHeight)
+		container.frame = rect
+		
+		for page in renderer.pages {
+			let y = (container.subviews.last?.frame.origin.y ?? 0.0) + 10.0 + (container.subviews.last?.frame.size.height ?? 0.0)
+			let string = page.attributedString()
+			
+			let view = BeatPaginationPageView(size: renderer.pageSize, content: string, pageStyle: Styles.shared.page())
+			let r = NSMakeRect(0, y, view.frame.width, view.frame.height)
+			view.frame = r
+			
+			container.addSubview(view)
 		}
 		
-		let pageSize = pages.last!.size
-		let contentHeight = CGFloat(pages.count) * (pageSize.height + 10.0)
+		scrollView.documentView?.frame = NSMakeRect(0, 0, renderer.pageSize.width, contentHeight + 30)
 		
-		let rect = NSMakeRect(0, 0, pageSize.width, contentHeight)
-		content?.frame = rect
+		rect = NSMakeRect(0, 0, renderer.pageSize.width, contentHeight)
+		container.frame = rect
 		
-		var i = 1
-		for page in pages {
-			let pageView = page.forDisplay()
-			content!.addSubview(pageView)
-			
-			var f = pageView.frame
-			f.origin.y = rect.height - (CGFloat(i) * pageView.frame.height) - (CGFloat(i) * 10)
-			pageView.frame = f
-			
-			i += 1
-		}
-		
-		self.scrollView?.documentView?.frame = NSMakeRect(0, 0, pageSize.width, contentHeight + 30)
 		self.window?.viewsNeedDisplay = true
 	}
 }

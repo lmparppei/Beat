@@ -18,28 +18,25 @@
 #import "Beat-Swift.h"
 #import "BeatPaginationBlock.h"
 #import "BeatPaginationBlockGroup.h"
+#import "BeatPageBreak.h"
 
 
 @interface BeatPagination() <BeatPageDelegate>
 @property (nonatomic) NSArray<Line*>* lines;
+
 @property (nonatomic) NSMutableArray<Line*>* lineQueue;
 @property (nonatomic) BeatFonts* fonts;
-@property (nonatomic) BeatExportSettings* settings;
 @property (nonatomic) Styles* styles;
 @property (nonatomic) NSInteger location;
 
+@property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
+
 @property (nonatomic) bool livePagination;
-@property (nonatomic) bool canceled;
-@property (nonatomic) bool success;
 
 @property (weak, nonatomic) id<BeatPaginationDelegate> delegate;
-
-@property (nonatomic) NSArray<BeatPaginationPage*>* cachedPages;
 @property (nonatomic) BeatPaginationPage* currentPage;
 
-@property (nonatomic) NSMutableArray<BeatPaginationPage*>* pages;
-
-@property (nonatomic) NSDate* startTime;
+@property (nonatomic) NSArray<BeatPaginationPage*>* cachedPages;
 @end
 
 @implementation BeatPagination
@@ -59,12 +56,17 @@
 	
 	if (self) {
 		_delegate = delegate;
+		
+		_fonts = BeatFonts.sharedFonts;
+		_styles = Styles.shared;
+		
 		_lines = (screenplay.lines != nil) ? screenplay.lines : @[];
 		_livePagination = livePagination;
 		_location = changeAt;
 		_cachedPages = cachedPages;
 		_settings = settings;
 		_pages = NSMutableArray.new;
+		_lineTypeAttributes = NSMutableDictionary.new;
 		
 		_startTime = NSDate.new;
 	}
@@ -100,7 +102,7 @@
 }
 
 - (bool)paginateFromIndex:(NSInteger)index {
-	_startTime = NSDate.new;
+	_startTime = [NSDate date];
 	
 	// Reset queue
 	_lineQueue = [NSMutableArray arrayWithArray:[self.lines subarrayWithRange:NSMakeRange(index, self.lines.count - index)]];
@@ -119,8 +121,12 @@
 		Line* line = _lineQueue[0];
 		
 		// Catch wrong parsing (just in case)
-		if (line.string.length == 0) continue;
-		else if (line.isInvisible && !(_settings.printNotes && line.note)) continue;
+		if (line.string.length == 0 ||
+			line.isTitlePage ||
+			(line.isInvisible && !(_settings.printNotes && line.note))) {
+			[_lineQueue removeObjectAtIndex:0];
+			continue;
+		}
 				
 		// catch forced page breaks first
 		if (line.type == pageBreak) {
@@ -133,7 +139,6 @@
 		
 		// Add initial page break when needed
 		if (self.pages.count == 0 && _currentPage.blocks.count == 0) {
-			NSLog(@"Adding initial page break: %@", line);
 			_currentPage.pageBreak = [BeatPageBreak.alloc initWithY:0 element:line reason:@"Initial page break"];
 		}
 		
@@ -150,6 +155,8 @@
 		}
 	}
 	
+	[_pages addObject:_currentPage];
+	
 	return true;
 }
 
@@ -159,8 +166,8 @@
 	for (NSArray<Line*>* block in blocks) {
 		BeatPaginationBlock *pageBlock = [BeatPaginationBlock withLines:block delegate:self];
 		[pageBlocks addObject:pageBlock];
-		//[_queue addObjectsFromArray:block];
-		[_lineQueue removeObjectsInRange:NSMakeRange(0, pageBlock.lines.count)];
+		
+		[_lineQueue removeObjectsInRange:NSMakeRange(0, block.count)];
 	}
 	
 	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks];
@@ -207,7 +214,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	NSMutableArray<Line*>* block = [NSMutableArray arrayWithObject:line];
 	
 	if (line.isAnyCharacter) {
-		return [self dialogueBlockForLineAt:idx];
+		return @[[self dialogueBlockForLineAt:idx]];
 	}
 	else if (line == _lineQueue.lastObject) {
 		return @[block];
@@ -255,7 +262,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 }
 
 /// Returns dialogue block for the given line index
-- (NSArray*)dialogueBlockForLineAt:(NSInteger)idx {
+- (NSArray<Line*>*)dialogueBlockForLineAt:(NSInteger)idx {
 	Line *line = _lineQueue[idx];
 	NSMutableArray<Line*>* block = NSMutableArray.new;
 	[block addObject:line];
@@ -272,7 +279,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 		[block addObject:l];
 	}
-	
+		
 	return block;
 }
 
@@ -282,7 +289,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	[_pages addObject:_currentPage];
 	
 	// Add objects to queue
-	NSRange range = NSMakeRange(0, toQueue.count - 1);
+	NSRange range = NSMakeRange(0, toQueue.count);
 	NSIndexSet* indices = [NSIndexSet indexSetWithIndexesInRange:range];
 	[_lineQueue insertObjects:toQueue atIndexes:indices];
 	
@@ -309,6 +316,82 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	}
 	
 	return NSNotFound;
+}
+
+#pragma mark - Managing styles
+
+- (RenderStyle*)styleForType:(LineType)type {
+	return [self.styles forElement:[Line typeName:type]];
+}
+
+- (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
+	LineType type = line.type;
+	if (isDualDialogue) {
+		if (line.type == character) type = dualDialogueCharacter;
+		else if (line.type == parenthetical) type = dualDialogueParenthetical;
+		else if (line.type == dialogue) type = dualDialogue;
+		else if (line.type == more) type = dualDialogueMore;
+	}
+	
+	NSNumber* n = [NSNumber numberWithInteger:type];
+	
+	if (_lineTypeAttributes[n] == nil) {
+		RenderStyle *style = [self styleForType:type];
+		
+		NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
+			NSForegroundColorAttributeName: BXColor.blackColor
+		}];
+		
+		if (style.italic && style.bold) styles[NSFontAttributeName] = self.fonts.boldItalicCourier;
+		else if (style.italic) 			styles[NSFontAttributeName] = self.fonts.italicCourier;
+		else if (style.bold) 			styles[NSFontAttributeName] = self.fonts.boldCourier;
+		else 							styles[NSFontAttributeName] = self.fonts.courier;
+		
+		CGFloat width = (_settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+		CGFloat blockWidth = width + style.marginLeft;
+		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
+		
+		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+		pStyle.headIndent = style.marginLeft;
+		pStyle.firstLineHeadIndent = style.marginLeft;
+		pStyle.paragraphSpacingBefore = style.marginTop;
+		pStyle.paragraphSpacing = style.marginBottom;
+		pStyle.tailIndent = -1 * style.marginRight; // Negative value;
+		
+		pStyle.maximumLineHeight = BeatPagination.lineHeight;
+		
+		if (!isDualDialogue && !line.isTitlePage) {
+			// Add content padding where needed
+			pStyle.firstLineHeadIndent += self.styles.page.contentPadding;
+			pStyle.headIndent += self.styles.page.contentPadding;
+		} else if (!line.isTitlePage) {
+			pStyle.firstLineHeadIndent = style.marginLeft;
+			pStyle.headIndent = style.marginLeft;
+		}
+		
+		// Create text block for non-title page elements to restrict horizontal size
+		if (!line.isTitlePage) {
+			NSTextBlock* textBlock = NSTextBlock.new;
+			[textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
+			pStyle.textBlocks = @[textBlock];
+		}
+		
+		// Text alignment
+		if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
+		else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
+		
+		// Special rules for some blocks
+		if ((type == lyrics || type == centered) && !line.beginsNewParagraph) {
+			pStyle.paragraphSpacingBefore = 0;
+		}
+		
+		styles[NSParagraphStyleAttributeName] = pStyle;
+		
+		// Apply to existing styles
+		_lineTypeAttributes[n] = [NSDictionary dictionaryWithDictionary:styles];
+	}
+	
+	return _lineTypeAttributes[n];
 }
 
 

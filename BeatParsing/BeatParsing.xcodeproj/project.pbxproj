@@ -127,7 +127,6 @@
 				B6D53C7729379A730039DF88 /* BeatMeasure.h */,
 				B6D53C7829379A740039DF88 /* BeatMeasure.m */,
 				B6B37F3B28F0279700657F5F /* Categories */,
-				B6B37F2C28F020EA00657F5F /* EditorData */,
 				B6B37F2428F01B4200657F5F /* ScreenplayData */,
 				B6B37F2328F01B1500657F5F /* Parsing */,
 			);
@@ -166,13 +165,6 @@
 				B6B37F6228F0285D00657F5F /* BeatExportSettings.m */,
 			);
 			path = ScreenplayData;
-			sourceTree = "<group>";
-		};
-		B6B37F2C28F020EA00657F5F /* EditorData */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = EditorData;
 			sourceTree = "<group>";
 		};
 		B6B37F2F28F0212700657F5F /* PaperSizing */ = {

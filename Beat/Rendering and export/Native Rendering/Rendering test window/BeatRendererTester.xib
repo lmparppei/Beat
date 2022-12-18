@@ -35,7 +35,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="673" height="574"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <customView id="IPN-vR-UYi">
+                                        <customView id="IPN-vR-UYi" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="-96" width="328" height="670"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </customView>

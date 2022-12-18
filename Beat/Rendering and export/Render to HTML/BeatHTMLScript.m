@@ -102,6 +102,7 @@
 //#import "FountainRegexes.h"
 #import "RegExCategories.h"
 #import "BeatUserDefaults.h"
+#import "BeatMeasure.h"
 
 #define PRINT_CSS @"ScreenplayStyles"
 #define PREVIEW_CSS @"PreviewStyles"

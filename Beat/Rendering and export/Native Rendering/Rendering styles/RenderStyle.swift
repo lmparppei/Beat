@@ -11,7 +11,7 @@ import Foundation
 // MARK: Stylesheet
 
 class Styles:NSObject {
-	static let shared = Styles()
+	@objc static let shared = Styles()
 	var styles:[String:RenderStyle] = [:]
 	
 	override init() {
@@ -30,7 +30,7 @@ class Styles:NSObject {
 		}
 	}
 	
-	func page() -> RenderStyle {
+	@objc func page() -> RenderStyle {
 		return styles["page"]!
 	}
 	

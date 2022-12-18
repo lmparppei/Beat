@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate;
 -(void)addBlock:(BeatPaginationBlock*)block;
 -(NSRange)representedRange;
-
+-(NSAttributedString*)attributedString;
 
 @end
 

@@ -2590,8 +2590,6 @@ NSUInteger prevLineAtLocationIndex = 0;
 
 
 - (NSArray*)linesInRange:(NSRange)range {
-    static NSInteger searchIndex = 0;
-    
 	NSArray *lines = self.safeLines;
 	NSMutableArray *linesInRange = NSMutableArray.array;
 	

@@ -311,7 +311,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			// Add initial page break when needed
 			if self.pages.count == 0 && currentPage!.blocks.count == 0 {
 				print("Adding initial page break: ", line)
-				currentPage?.pageBreak = BeatPageBreak(y: 0, element: line)
+				currentPage?.pageBreak = BeatPageBreak(y: 0, element: line, reason: "Initial page break")
 			}
 			
 			/**
@@ -383,7 +383,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 			if (remainingSpace < BeatRenderer.lineHeight()) {
 				// Less than 1 row, just roll over to the next page.
 				// No need to create a page break here, as the page will take care of it.
-				let pageBreak = BeatPageBreak(y: 0, element: queue.first!)
+				let pageBreak = BeatPageBreak(y: 0, element: queue.first!, reason: "No space left")
 				addPage(currentPage, onCurrentPage: [], onNextPage: queue, pageBreak: pageBreak)
 				return
 			}
@@ -577,11 +577,6 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
  A page object holds references to the blocks that have been added on it, and the attributed string is
  rendered based on content of those blocks.
  */
-class BeatPagePrintView:NSView {
-	override var isFlipped: Bool { return true }
-	weak var previewController:BeatPreviewController?
-
-}
 class BeatPageView:NSObject {
 	weak var delegate:BeatPageViewDelegate?
 	
@@ -749,7 +744,7 @@ class BeatPageView:NSObject {
 		if self.pageBreak == nil && block.lines.first != nil {
 			// No page break set, let's make it the first object
 			let line = block.lines.first!
-			if !line.unsafeForPageBreak { self.pageBreak = BeatPageBreak(y: 0, element: line) }
+			if !line.unsafeForPageBreak { self.pageBreak = BeatPageBreak(y: 0, element: line, reason: "Page break on empty page") }
 		}
 		
 		self.blocks.append(block)
@@ -1650,12 +1645,6 @@ class BeatPageBlock:NSObject {
 			leftContent.addAttribute(NSAttributedString.Key.paragraphStyle, value: p, range: leftContent.range)
 		}
 		
-		// Create new styles for cells
-		let leftStyle = NSMutableParagraphStyle()
-		let rightStyle = NSMutableParagraphStyle()
-		leftStyle.textBlocks = [leftCell]
-		rightStyle.textBlocks = [rightCell]
-		
 //		leftCell.backgroundColor = NSColor.red
 //		rightCell.backgroundColor = NSColor.blue
 		
@@ -1794,7 +1783,7 @@ class BeatPageBlock:NSObject {
 				onNextPage.append(contentsOf: splitRight.1)
 			}
 			
-			pageBreak = BeatPageBreak(y: splitRight.2.y, element: splitRight.2.element)
+			pageBreak = BeatPageBreak(y: splitRight.2.y, element: splitRight.2.element, reason: "Dual dialogue break")
 		}
 		
 		// Otherwise, just push the whole block on next page
@@ -1802,7 +1791,7 @@ class BeatPageBlock:NSObject {
 			onNextPage.append(contentsOf: left)
 			onNextPage.append(contentsOf: right)
 			
-			pageBreak = BeatPageBreak(y: 0, element: left.first!)
+			pageBreak = BeatPageBreak(y: 0, element: left.first!, reason: "Dual dialogue, nothing fit")
 		}
 				
 		return (onThisPage, onNextPage, pageBreak)
@@ -1835,7 +1824,7 @@ class BeatPageBlock:NSObject {
 
 		let splittableIndex = self.splittableIndex(remainingSpace: remainingSpace)
 		if splittableIndex == NSNotFound {
-			return ([], self.lines, BeatPageBreak(y: 0, element: self.lines.first!))
+			return ([], self.lines, BeatPageBreak(y: 0, element: self.lines.first!, reason: "No place to break the element"))
 		}
 		
 		// Get the element that overlows
@@ -1918,7 +1907,7 @@ class BeatPageBlock:NSObject {
 					}
 					
 					// Set page break
-					pageBreak = BeatPageBreak(y: split.2, element: el.line)
+					pageBreak = BeatPageBreak(y: split.2, element: el.line, reason: "Dialogue break")
 				} else {
 					// Nothing was left, break the element on next page.
 					// Check that the previous element is OK for us to split here. Otherwise we'll need to find a better spot.
@@ -2247,70 +2236,7 @@ class BeatBlockGroup {
 	}
 }
 
-@objc class BeatPageBreak:NSObject {
-	@objc var y:CGFloat
-	@objc var element:Line
-	@objc var reason:String = "None"
-	
-	@objc convenience init(y:CGFloat, element:Line) {
-		self.init(y: y, element: element, reason: "None")
-	}
-	
-	@objc init(y:CGFloat, element:Line, reason:String) {
-		self.y = y
-		self.element = element
-		self.reason = reason
-		super.init()
-	}
-}
 
-
-// MARK: - Custom text view
-
-class BeatPageTextView:NSTextView {
-	var previewController:BeatPreviewController?
-	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		let trackingArea = NSTrackingArea(rect: bounds, options: [.activeAlways, .inVisibleRect, .mouseEnteredAndExited], owner: self, userInfo: nil)
-		addTrackingArea(trackingArea)
-	}
-	
-	override func mouseMoved(with event: NSEvent) {
-		super.mouseMoved(with: event)
-		/*
-		guard
-			let lm = self.layoutManager,
-			let tc = self.textContainer
-		else { return }
-
-		let localMousePosition = convert(event.locationInWindow, from: nil)
-		var partial = CGFloat(1.0)
-		let glyphIndex = lm.glyphIndex(for: localMousePosition, in: tc, fractionOfDistanceThroughGlyph: &partial)
-
-		let rect = lm.lineFragmentUsedRect(forGlyphAt: glyphIndex, effectiveRange: nil)
-		let range = lm.glyphRange(forBoundingRect: rect, in: self.textContainer!)
-		let charRange = lm.characterRange(forGlyphRange: range, actualGlyphRange: nil)
-			
-		let key = NSAttributedString.Key(rawValue: "ActiveLine")
-		
-		lm.removeTemporaryAttribute(key, forCharacterRange: self.textStorage!.range)
-		lm.addTemporaryAttribute(key, value: true, forCharacterRange: charRange)
-		*/
-	}
-	
-	override func clicked(onLink link: Any, at charIndex: Int) {
-		guard
-			let line = link as? Line,
-			let previewController = self.previewController
-		else { return }
-		
-		let range = NSMakeRange(line.position, 0)
-		previewController.delegate?.returnToEditor()
-		previewController.delegate?.setSelectedRange(range)
-		previewController.delegate?.scroll(to: range, callback: {})
-	}
-}
 
 /*
  

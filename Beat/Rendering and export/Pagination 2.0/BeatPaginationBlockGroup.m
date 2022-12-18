@@ -11,6 +11,7 @@
 #import "BeatPagination.h"
 #import "BeatPaginationBlock.h"
 #import "Beat-Swift.h"
+#import "BeatPageBreak.h"
 
 @interface BeatPaginationBlockGroup()
 @end
@@ -68,17 +69,26 @@
 		}
 	}
 	
+	if (passedBlocks.count == 1) {
+		// Shot and heading are *never* left behind
+		BeatPaginationBlock *passedBlock = passedBlocks.firstObject;
+		if (passedBlock.type == heading || passedBlock.type == shot) {
+			return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject reason:@"Block group"]];
+		}
+	}
+	
+	// Add anything that was passed
+	for (BeatPaginationBlock* passedBlock in passedBlocks) {
+		[onThisPage addObjectsFromArray:passedBlock.lines];
+	}
+	
 	if (offendingBlock == nil) {
 		// There was no offending block for some reason?
 		// To be on the safe side, push everything on next page.
 		return @[@[], [self lines], [BeatPageBreak.alloc initWithY:0 element:[self lines].firstObject reason:@"Something went wrong when breaking a block"]];
 	}
-
+		
 	NSArray* pageBreak = [offendingBlock breakBlockWithRemainingSpace:space];
-	
-	for (BeatPaginationBlock* passedBlock in passedBlocks) {
-		[onThisPage addObjectsFromArray:passedBlock.lines];
-	}
 	
 	NSArray<Line*>* remainingLines = pageBreak[0];
 	[onThisPage addObjectsFromArray:remainingLines];
@@ -88,8 +98,10 @@
 	
 	// If there were more blocks that didn't get handled, add them on next page
 	if (offendingBlock != self.blocks.lastObject) {
-		NSArray* remainingBlocks = [_blocks subarrayWithRange:NSMakeRange(idx+1, _blocks.count-idx)];
-		[onNextPage addObjectsFromArray:remainingBlocks];
+		NSArray* remainingBlocks = [_blocks subarrayWithRange:NSMakeRange(idx+1, _blocks.count-idx-1)];
+		for (BeatPaginationBlock *remainingBlock in remainingBlocks) {
+			[onNextPage addObjectsFromArray:remainingBlock.lines];
+		}
 	}
 
 	BeatPageBreak* pageBreakItem = pageBreak[2];

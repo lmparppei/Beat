@@ -6,15 +6,16 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatPaginationPage.h"
 #import "BeatPagination.h"
 #import "BeatPaginationBlock.h"
+#import "BeatPageBreak.h"
 #import "Beat-Swift.h"
 
 @interface BeatPaginationPage()
 @property (nonatomic, weak) id<BeatPageDelegate> delegate;
 @property (nonatomic) NSMutableArray<Line*>* lines;
-
 @end
 
 @implementation BeatPaginationPage
@@ -25,9 +26,25 @@
 	if (self) {
 		self.delegate = delegate;
 		self.blocks = NSMutableArray.new;
+		
+		NSSize size = [BeatPaperSizing sizeFor:delegate.settings.paperSize];
+		RenderStyle* style = delegate.styles.page;
+		
+		// Max height for page content is formed by subtracting margins and the page header from page height
+		self.maxHeight = size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight * 2;
 	}
 	
 	return self;
+}
+
+-(NSAttributedString*)attributedString {
+	NSMutableAttributedString* string = NSMutableAttributedString.new;
+	
+	for (BeatPaginationBlock* block in self.blocks) {
+		[string appendAttributedString:block.attributedString];
+	}
+	
+	return string;
 }
 
 -(NSArray*)lines {
@@ -42,6 +59,11 @@
 	CGFloat height = 0.0;
 	for (BeatPaginationBlock *block in self.blocks) {
 		height += block.height;
+		
+		// Remove top margin for the first object
+		if (block == self.blocks.firstObject) {
+			height -= block.topMargin;
+		}
 	}
 	
 	return _maxHeight - height;
