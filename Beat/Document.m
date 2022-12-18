@@ -635,6 +635,8 @@ static BeatAppDelegate *appDelegate;
 	return [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
 }
 -(void)renderTest {
+	return;
+	
 	 [self bakeRevisions];
 	 [self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 	 }];
@@ -4038,11 +4040,6 @@ static NSArray<Line*>* cachedTitlePage;
 	NSInteger wait = 1.0;
 	if (sync) wait = 0;
 	
-	BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:YES];
-	static BeatRenderManager *manager;
-	if (manager == nil) manager = [BeatRenderManager.alloc initWithSettings:settings delegate:self];
-	[manager newPaginationWithScreenplay:self.parser.forPrinting settings:settings forEditor:false changeAt:0];
-
 	self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
 		cachedTitlePage = [ContinuousFountainParser titlePageForString:self.text];
 
@@ -4053,8 +4050,6 @@ static NSArray<Line*>* cachedTitlePage;
 		// Dispatch to a background thread
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
 			// [self.previewController createPreviewWithChangeAt:range.location];
-						
-			//[manager newRenderWithScreenplay:self.parser.forPrinting settings:settings forEditor:true changeAt:range.location];
 			[self.paginator livePaginationFor:lines changeAt:range.location];
 		});
 	}];
