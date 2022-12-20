@@ -5,7 +5,11 @@
 //  Created by Lauri-Matti Parppei on 12.12.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
-
+/*
+ 
+NOTE: iOS can't use this code.
+ 
+ */
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPaginationPage.h"
 #import "BeatPagination.h"
@@ -41,7 +45,11 @@
 	NSMutableAttributedString* string = NSMutableAttributedString.new;
 	
 	for (BeatPaginationBlock* block in self.blocks) {
-		[string appendAttributedString:block.attributedString];
+		if (block == self.blocks.firstObject) {
+			[string appendAttributedString:block.attributedStringForFirstElementOnPage];
+		} else {
+			[string appendAttributedString:block.attributedString];
+		}
 	}
 	
 	return string;

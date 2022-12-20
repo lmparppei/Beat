@@ -49,13 +49,14 @@ class BeatPaginationPageView:NSView {
 	
 	func createTextView() {
 		self.textView = BeatPageTextView(
-			frame: NSRect(x: self.pageStyle.marginLeft - linePadding * 2,
+			frame: NSRect(x: self.pageStyle.marginLeft - linePadding,
 						  y: self.pageStyle.marginTop,
 						  width: size.width - self.pageStyle.marginLeft,
 						  height: size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom)
 		)
-		self.textView!.drawsBackground = true
-		self.textView!.backgroundColor = NSColor.white
+		
+		self.textView?.isEditable = false
+
 		self.textView?.linkTextAttributes = [
 			NSAttributedString.Key.font: fonts.courier,
 			NSAttributedString.Key.foregroundColor: NSColor.black,
@@ -66,12 +67,12 @@ class BeatPaginationPageView:NSView {
 		
 		self.textView?.font = fonts.courier
 		
-		self.textView!.textContainer!.lineFragmentPadding = linePadding
-		self.textView!.textContainerInset = NSSize(width: 0, height: 0)
+		self.textView?.textContainer?.lineFragmentPadding = linePadding
+		self.textView?.textContainerInset = NSSize(width: 0, height: 0)
 		
 		let layoutManager = BeatRenderLayoutManager()
-		self.textView!.textContainer?.replaceLayoutManager(layoutManager)
-		self.textView!.textContainer?.lineFragmentPadding = linePadding
+		self.textView?.textContainer?.replaceLayoutManager(layoutManager)
+		self.textView?.textContainer?.lineFragmentPadding = linePadding
 		
 		textView?.backgroundColor = .white
 		textView?.drawsBackground = true

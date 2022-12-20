@@ -38,6 +38,9 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) NSArray * revisions;
 @property (nonatomic) BeatPaperSize paperSize;
 
+/// Styles for new pagination / export system
+@property (nonatomic) id _Nullable styles;
+
 /// Custom CSS for HTML rendering
 @property (nonatomic) NSString * _Nullable customCSS;
 /// Custom styles for the new, native rendering

@@ -145,9 +145,9 @@ final class CenteringClipView: NSClipView {
 		super.scrollWheel(with: customEvent)
 		 */
 		
-		if event.deltaX != 0 {
+		//if event.deltaX != 0 {
 			super.scrollWheel(with: event)
-		}
+		//}
 	}
 	override func touchesBegan(with event: NSEvent) {
 		if event.deltaX != 0 {

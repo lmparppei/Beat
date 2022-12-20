@@ -53,7 +53,7 @@ class BeatRendererTester:NSWindowController {
 	
 		timer?.invalidate()
 		
-		timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { timer in
+		timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
 			self.showRender()
 		})
 	}
@@ -76,11 +76,13 @@ class BeatRendererTester:NSWindowController {
 		var rect = NSMakeRect(0, 0, renderer.pageSize.width, contentHeight)
 		container.frame = rect
 		
+		let style = Styles.shared.page()
+		
 		for page in renderer.pages {
 			let y = (container.subviews.last?.frame.origin.y ?? 0.0) + 10.0 + (container.subviews.last?.frame.size.height ?? 0.0)
 			let string = page.attributedString()
 			
-			let view = BeatPaginationPageView(size: renderer.pageSize, content: string, pageStyle: Styles.shared.page())
+			let view = BeatPaginationPageView(size: renderer.pageSize, content: string, pageStyle: style)
 			let r = NSMakeRect(0, y, view.frame.width, view.frame.height)
 			view.frame = r
 			

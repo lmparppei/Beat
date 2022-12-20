@@ -635,8 +635,6 @@ static BeatAppDelegate *appDelegate;
 	return [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
 }
 -(void)renderTest {
-	return;
-	
 	 [self bakeRevisions];
 	 [self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 	 }];

@@ -64,10 +64,10 @@ class BeatRenderManager:NSObject, BeatPaginationDelegate {
 	 Adds a new render to queue. Once rendering is complete, render manager will call `renderingDidFinish()` on its delegate.
 	 - note: If you are queuing only a single render, the results can be fetched in sync:
 	 ```
-	 let renderer = BeatRenderManager(...)
-	 renderer.newRender(...)
-	 let pages = renderer.pages
-	 let titlePage = renderer.titlePage
+	 let pagination = BeatRenderManager(...)
+	 pagination.newPagination(...)
+	 let pages = pagination.pages
+	 let titlePage = pagination.titlePage
 	 */
 	@objc func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
 		self.pageCache = []

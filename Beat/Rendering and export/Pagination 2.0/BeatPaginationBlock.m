@@ -13,8 +13,6 @@
 #import "BeatPageBreak.h"
 
 @interface BeatPaginationBlock ()
-@property (nonatomic) bool dualDialogueElement;
-@property (nonatomic) bool dualDialogueContainer;
 @property (nonatomic) NSAttributedString* renderedString;
 @property (nonatomic) CGFloat calculatedHeight;
 
@@ -65,7 +63,7 @@
 }
 
 - (CGFloat)height {
-	if (_calculatedHeight > 0) return _calculatedHeight;
+	if (_calculatedHeight > 0.0) return _calculatedHeight;
 	
 	CGFloat height = 0.0;
 	if (self.dualDialogueContainer) {
@@ -76,7 +74,9 @@
 		else height = rightHeight;
 	} else {
 		for (Line* line in self.lines) {
-			height += [self heightForLine:line];
+			if (line.isInvisible) continue;
+			CGFloat lineHeight = [self heightForLine:line];
+			height += lineHeight;
 		}
 	}
 	
@@ -182,6 +182,21 @@
 	}
 	return lines;
 }
+
+- (BeatPaginationBlock*)leftColumnBlock {
+	if (_leftColumnBlock == nil) {
+		_leftColumnBlock = [BeatPaginationBlock.alloc initWithLines:[self leftSideDialogue] delegate:self.delegate isDualDialogueElement:true];
+	}
+	return _leftColumnBlock;
+}
+
+- (BeatPaginationBlock*)rightColumnBlock {
+	if (_rightColumnBlock == nil) {
+		_rightColumnBlock = [BeatPaginationBlock.alloc initWithLines:[self rightSideDialogue] delegate:self.delegate isDualDialogueElement:true];
+	}
+	return _rightColumnBlock;
+}
+
 
 #pragma mark - Breaking block across pages
 
@@ -532,16 +547,32 @@
 #pragma mark - Rendering blocks to attributed strings
 
 - (NSAttributedString*)attributedString {
+	return [self attributedStringForFirstElement:false];
+}
+- (NSAttributedString*)attributedStringForFirstElementOnPage {
+	return [self attributedStringForFirstElement:true];
+}
+
+/// Renders an attributed string for the whole block. Result is cached and won't be rendered again.
+- (NSAttributedString*)attributedStringForFirstElement:(bool)isFirstElement {
 	if (_renderedString == nil) {
 		if (self.dualDialogueContainer) {
-			NSLog(@"This is a dual dialogue container");
 			// Render dual dialogue block (enter kind of recursion)
 			_renderedString = [self renderDualDialogueContainer];
 			
 		} else {
 			NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
+			
 			for (Line* line in self.lines) { @autoreleasepool {
-				NSAttributedString *lineStr = [self renderLine:line];
+				NSAttributedString *lineStr;
+				
+				// Render the element without top margin if it's the first line on page.
+				if (line == self.lines.firstObject) {
+					lineStr = [self renderLine:line firstElementOnPage:isFirstElement];
+				} else {
+					lineStr = [self renderLine:line];
+				}
+				
 				[attrStr appendAttributedString:lineStr];
 			} }
 			
@@ -554,12 +585,6 @@
 
 /// Render a block with left/right columns. This block will know the contents of both columns.
 - (NSAttributedString*)renderDualDialogueContainer {
-	NSArray<Line*>* left = [self leftSideDialogue];
-	NSArray<Line*>* right = [self rightSideDialogue];
-	
-	self.leftColumnBlock = [BeatPaginationBlock withLines:left delegate:_delegate isDualDialogueElement:true];
-	self.rightColumnBlock = [BeatPaginationBlock withLines:right delegate:_delegate isDualDialogueElement:true];
-	
 	// Create table
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? _delegate.styles.page.defaultWidthA4 : _delegate.styles.page.defaultWidthLetter;
 	
@@ -620,11 +645,18 @@
 - (NSAttributedString*)renderLine:(Line*)line {
 	return [self renderLine:line firstElementOnPage:false];
 }
-
 - (NSAttributedString*)renderLine:(Line*)line firstElementOnPage:(bool)firstElementOnPage {
 	NSDictionary* attrs = [self.delegate attributesForLine:line dualDialogue:self.dualDialogueElement];
 	NSString* string = [NSString stringWithFormat:@"%@\n", line.string]; // Add a line break
+	
 	NSMutableAttributedString *attributedString = [NSMutableAttributedString.alloc initWithString:string attributes:attrs];
+	
+	// Remove top margin for first elements on a page
+	if (firstElementOnPage) {
+		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
+		pStyle = pStyle.mutableCopy;
+		pStyle.paragraphSpacingBefore = 0.0;
+	}
 	
 	// Inline stylization
 	if (!line.noFormatting) {
@@ -671,7 +703,92 @@
 		[result appendAttributedString:content];
 	}];
 	
+	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
+	if (line.type == heading) {
+		result = [self renderHeading:line content:result firstElementOnPage:firstElementOnPage];
+	}
+	
 	return result;
+}
+
+- (CGFloat)widthFor:(Line*)line {
+	RenderStyle* style = [_delegate.styles forElement:line.typeName];
+	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+	return width;
+}
+
+/// Adds scene numbers to a heading block
+- (NSMutableAttributedString*)renderHeading:(Line*)line content:(NSMutableAttributedString*)content firstElementOnPage:(bool)firstElementOnPage {
+	// Get render settings
+	bool printSceneNumbers = _delegate.settings.printSceneNumbers;
+	CGFloat contentPadding = _delegate.styles.page.contentPadding;
+	CGFloat width = [self widthFor:line];
+	RenderStyle* style = [_delegate.styles forElement:line.typeName];
+	
+	// Initialize result
+	NSMutableAttributedString* attrStr = NSMutableAttributedString.new;
+	
+	// Create a table with three cells:
+	// [scene number] [INT. SCENE HEADING] [scene number]
+	
+	NSTextTable* table = NSTextTable.new;
+	table.collapsesBorders = true;
+	table.numberOfColumns = 3;
+
+	NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
+	NSTextTableBlock* contentCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
+	NSTextTableBlock* rightCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:2 columnSpan:1];
+	
+	[leftCell setContentWidth:contentPadding type:NSTextBlockAbsoluteValueType];
+	[contentCell setContentWidth:width type:NSTextBlockAbsoluteValueType];
+	[rightCell setContentWidth:contentPadding - 10.0 type:NSTextBlockAbsoluteValueType];
+	
+	// Stylize the actual heading part.
+	// Make a copy of the style just in case.
+	NSMutableParagraphStyle* contentStyle = [content attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:nil];
+	contentStyle = contentStyle.mutableCopy;
+	BXFont* font = [content attribute:NSFontAttributeName atIndex:0 effectiveRange:nil];
+	
+	// Set margins and indents to zero (as we're inside a cell)
+	contentStyle.headIndent = 0;
+	contentStyle.firstLineHeadIndent = 0;
+	contentStyle.textBlocks = @[contentCell];
+	if (firstElementOnPage) contentStyle.paragraphSpacingBefore = 0.0;
+	
+	// Replace paragraph attributes in the content style
+	[content addAttribute:NSParagraphStyleAttributeName value:contentStyle range:NSMakeRange(0, content.length)];
+		
+	NSMutableParagraphStyle* leftStyle = contentStyle.mutableCopy;
+	leftStyle.textBlocks = @[leftCell];
+	leftStyle.paragraphSpacingBefore = contentStyle.paragraphSpacingBefore;
+	leftStyle.firstLineHeadIndent = 6.0;
+	
+	NSMutableParagraphStyle* rightStyle = leftStyle.mutableCopy;
+	rightStyle.textBlocks = @[rightCell];
+	rightStyle.alignment = NSTextAlignmentRight;
+	
+	// Create scene number string
+	NSString* sceneNumber = (printSceneNumbers) ? [NSString stringWithFormat:@"%@\n", line.sceneNumber] : @" \n";
+
+	// Create left/right scene numbers
+	NSMutableAttributedString* sceneNumberLeft = [NSMutableAttributedString.alloc initWithString:sceneNumber attributes: @{
+												  NSFontAttributeName: font,
+												  NSForegroundColorAttributeName: BXColor.blackColor,
+												  NSParagraphStyleAttributeName: leftStyle
+	}];
+	
+	NSMutableAttributedString* sceneNumberRight = [NSMutableAttributedString.alloc initWithString:sceneNumber attributes: @{
+												  NSFontAttributeName: font,
+												  NSForegroundColorAttributeName: BXColor.blackColor,
+												  NSParagraphStyleAttributeName: rightStyle
+	}];
+
+	// Combine the parts
+	[attrStr appendAttributedString:sceneNumberLeft];
+	[attrStr appendAttributedString:content];
+	[attrStr appendAttributedString:sceneNumberRight];
+	
+	return attrStr;
 }
 
 @end

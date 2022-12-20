@@ -177,7 +177,6 @@
 		for (BeatPaginationBlock *pageBlock in pageBlocks) {
 			[_currentPage addBlock:pageBlock];
 		}
-
 		return;
 	}
 	
@@ -189,8 +188,7 @@
 		BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:0 element:group.blocks.firstObject.lines.firstObject reason:@"Nothing fit"];
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
 	}
-	
-	if (group.blocks.count > 0) {
+	else if (group.blocks.count > 0) {
 		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace];
 		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
 	}
