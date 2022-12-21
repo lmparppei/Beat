@@ -17,14 +17,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat topMargin;
 @property (nonatomic) LineType type;
 
+/// Contains the rendered string. Use this property only after rendering.
+@property (nonatomic) NSAttributedString* renderedString;
+
 @property (nonatomic) bool dualDialogueElement;
 @property (nonatomic) bool dualDialogueContainer;
+
+// Left/right dialogue blocks for rendering
+@property (nonatomic) BeatPaginationBlock* leftColumnBlock;
+@property (nonatomic) BeatPaginationBlock* rightColumnBlock;
+
+// Stored dialogue blocks
+@property (nonatomic) NSMutableAttributedString* leftColumn;
+@property (nonatomic) NSMutableAttributedString* rightColumn;
 
 + (BeatPaginationBlock*)withLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate;
 + (BeatPaginationBlock*)withLines:(NSArray<Line*>*)lines delegate:(id<BeatPageDelegate>)delegate isDualDialogueElement:(bool)dualDialogueElement;
 
-- (NSAttributedString*)attributedString;
-- (NSAttributedString*)attributedStringForFirstElementOnPage;
 - (NSArray*)breakBlockWithRemainingSpace:(CGFloat)remainingSpace;
 - (CGFloat)height;
 

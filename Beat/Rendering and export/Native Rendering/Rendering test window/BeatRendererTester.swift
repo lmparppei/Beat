@@ -15,7 +15,8 @@ class BeatRendererTester:NSWindowController {
 	var doc:Document?
 	var screenplay:BeatScreenplay?
 	var settings:BeatExportSettings?
-	var renderer:BeatRenderManager?
+	var pagination:BeatPaginationManager?
+	var renderer:BeatRendering
 	@IBOutlet var container:NSView?
 	var timer:Timer?
 	
@@ -28,17 +29,21 @@ class BeatRendererTester:NSWindowController {
 	
 	}
 	
-	@objc init(screenplay:BeatScreenplay, settings:BeatExportSettings, delegate:BeatRenderDelegate) {
+	@objc init(screenplay:BeatScreenplay, settings:BeatExportSettings, delegate:BeatRenderManagerDelegate) {
 		self.screenplay = screenplay
 		self.settings = settings
 		
-		self.renderer = BeatRenderManager(settings: self.settings!, delegate: delegate)
+		// Create renderer instance
+		self.renderer = BeatRendering(settings: settings)
+		// Create pagination instance and hook up the renderer
+		self.pagination = BeatPaginationManager(settings: self.settings!, delegate: delegate, renderer: self.renderer)
 				
 		super.init(window: nil) // Call this to get NSWindowController to init with the windowNibName property
 		print("tester window:", self.window ?? "(null)")
 	}
 
 	override init(window: NSWindow?) {
+		self.renderer = BeatRendering(settings: BeatExportSettings())
 		super.init(window: window)
 	}
 	
@@ -59,10 +64,10 @@ class BeatRendererTester:NSWindowController {
 	}
 	
 	func showRender() {
-		renderer!.newPagination(screenplay: screenplay!, settings: settings!, forEditor: false, changeAt: 0)
+		pagination!.newPagination(screenplay: screenplay!, settings: settings!, forEditor: false, changeAt: 0)
 		
 		guard let scrollView = self.scrollView,
-			  let renderer = self.renderer,
+			  let renderer = self.pagination,
 			  let container = self.container
 		else {
 			return
@@ -76,7 +81,7 @@ class BeatRendererTester:NSWindowController {
 		var rect = NSMakeRect(0, 0, renderer.pageSize.width, contentHeight)
 		container.frame = rect
 		
-		let style = Styles.shared.page()
+		let style = RenderStyles.shared.page()
 		
 		for page in renderer.pages {
 			let y = (container.subviews.last?.frame.origin.y ?? 0.0) + 10.0 + (container.subviews.last?.frame.size.height ?? 0.0)

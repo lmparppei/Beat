@@ -12,15 +12,13 @@ protocol BeatPreviewDelegate:BeatEditorDelegate {
 	
 }
 
-final class BeatPreviewController:NSObject, BeatRenderDelegate {
-	func renderingDidFinish(pages: [BeatPageView]) {
-		
-	}
-	
+final class BeatPreviewController:NSObject, BeatRenderManagerDelegate {
 	@IBOutlet weak var previewView:BeatPreviewView?
 	@IBOutlet weak var delegate:BeatEditorDelegate?
 	
-	var renderer:BeatRenderManager?
+	
+	var pagination:BeatPaginationManager?
+	var renderer:BeatRendering?
 	
 	override init() {
 		super.init()
@@ -30,7 +28,8 @@ final class BeatPreviewController:NSObject, BeatRenderDelegate {
 		settings.revisions = BeatRevisions.revisionColors()
 
 		// Create render manager
-		self.renderer = BeatRenderManager(settings: settings, delegate: self)
+		self.renderer = BeatRendering(settings: settings)
+		self.pagination = BeatPaginationManager(settings: settings, delegate: self, renderer: self.renderer)
 	}
 	
 	var settings:BeatExportSettings {
@@ -48,8 +47,8 @@ final class BeatPreviewController:NSObject, BeatRenderDelegate {
 	// MARK: Create preview data in background
 	@objc func createPreview(changeAt index:Int) {
 		guard let parser = delegate?.parser else { return }
-		//renderer?.newRender(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
-		renderer?.newPagination(screenplay: parser.forPrinting(), settings: settings, forEditor: true, changeAt: index)
+		//pagination?.newRender(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
+		pagination?.newPagination(screenplay: parser.forPrinting(), settings: settings, forEditor: true, changeAt: index)
 	}
 		
 	func paginationDidFinish(pages: [BeatPaginationPage]) {
@@ -58,17 +57,16 @@ final class BeatPreviewController:NSObject, BeatRenderDelegate {
 		
 	@objc func renderOnScreen() {
 		self.previewView?.clear()
-		
-		guard let pages = renderer?.pages else { return }
+				
+		guard let pages = pagination?.pages else { return }
 		let size = BeatPaperSizing.size(for: settings.paperSize)
-		let pageStyle = Styles.shared.page()
+		let pageStyle = RenderStyles.shared.page()
 		
 		for i in 0..<pages.count {
 			let page = pages[i]
 			let string = page.attributedString()
 			
 			let pageView = BeatPaginationPageView(size: size, content: string, pageStyle: pageStyle)
-			
 			self.previewView?.addPage(page: pageView)
 		}
 	}

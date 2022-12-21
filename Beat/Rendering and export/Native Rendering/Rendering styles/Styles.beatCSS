@@ -6,6 +6,8 @@
  Changing values without knowing what you are doing can very
  well cause a crash. Dread lightly.
  
+ "Class" names are internal type names, not .typeAsString names.
+ 
  © Lauri-Matti Parppei 2021-2022
 
 */
@@ -78,12 +80,6 @@ more {
     
     margin-left: 130px;
     margin-top: 0;
-}
-
-DD Block {
-    /* margin-top: 1l; */
-	width-a4: 59ch;
-	width-us: 61ch;
 }
 
 dualDialogueCharacter {

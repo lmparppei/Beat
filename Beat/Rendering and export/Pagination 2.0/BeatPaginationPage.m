@@ -12,7 +12,6 @@ NOTE: iOS can't use this code.
  */
 #import <BeatParsing/BeatParsing.h>
 #import "BeatPaginationPage.h"
-#import "BeatPagination.h"
 #import "BeatPaginationBlock.h"
 #import "BeatPageBreak.h"
 #import "Beat-Swift.h"
@@ -20,6 +19,7 @@ NOTE: iOS can't use this code.
 @interface BeatPaginationPage()
 @property (nonatomic, weak) id<BeatPageDelegate> delegate;
 @property (nonatomic) NSMutableArray<Line*>* lines;
+
 @end
 
 @implementation BeatPaginationPage
@@ -41,19 +41,33 @@ NOTE: iOS can't use this code.
 	return self;
 }
 
+/**
+ This method returns page content as `NSAttributedString`. To get it working, you'll need to hook up a `BeatRendererDelegate` instance to the paginator. macOS and iOS require their own respective classes which comply to the protocol.
+ */
 -(NSAttributedString*)attributedString {
+	if (self.delegate.renderer == nil) {
+		NSLog(@"WARNING: No renderer set for paginator");
+		return NSAttributedString.new;
+	}
+	
+	NSInteger pageNumber = [self.delegate.pages indexOfObject:self];
+	if (pageNumber == NSNotFound) pageNumber = self.delegate.pages.count - 1;
+	
 	NSMutableAttributedString* string = NSMutableAttributedString.new;
 	
+	// Add page number header
+	NSAttributedString* header = [self.delegate.renderer pageNumberBlockForPageNumber:pageNumber + 1];
+	[string appendAttributedString:header];
+	
 	for (BeatPaginationBlock* block in self.blocks) {
-		if (block == self.blocks.firstObject) {
-			[string appendAttributedString:block.attributedStringForFirstElementOnPage];
-		} else {
-			[string appendAttributedString:block.attributedString];
-		}
+		bool firstElement = (block == self.blocks.firstObject) ? true : false;
+		NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
+		[string appendAttributedString:renderedBlock];
 	}
 	
 	return string;
 }
+
 
 -(NSArray*)lines {
 	NSMutableArray* lines = NSMutableArray.new;

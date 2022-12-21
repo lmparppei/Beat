@@ -11,9 +11,13 @@
 @class BeatExportSettings;
 @class Line;
 @interface BeatScreenplay : NSObject
+@property (nonatomic) NSArray <Line*>* lines;
+
+/// Title page content is formed as dictionaries inside an array: `[ ["key": [Line, Line]], ... ]`
+@property (nonatomic) NSArray<NSDictionary <NSString*, NSArray<Line*>*>*>* titlePageContent;
+@property (nonatomic) NSArray <NSDictionary<NSString*, NSArray<NSString*>*>*> *titlePage;
+
 +(instancetype)from:(ContinuousFountainParser*)parser;
 +(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings;
-@property (nonatomic) NSArray <Line*>* lines;
-@property (nonatomic) NSArray <Line*>* titlePageLines;
-@property (nonatomic) NSArray <NSDictionary<NSString*, NSArray<NSString*>*>*> *titlePage;
+
 @end

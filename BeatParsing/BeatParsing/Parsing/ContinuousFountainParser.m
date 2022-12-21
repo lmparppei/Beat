@@ -704,7 +704,6 @@ static NSDictionary* patterns;
 	
 	// Parse multi-line note ranges
 	// This is a mess, and written using trial & error. Dread lightly.
-		
 	if (currentLine.endsNoteBlock != oldEndsNoteBlock) {
 		// A note block which was previously terminated, is no longer that
 		if (!currentLine.endsNoteBlock && currentLine.noteIn) currentLine.noteOut = YES;
@@ -782,7 +781,6 @@ static NSDictionary* patterns;
  		}
 	}
 	
-    
 	//If there is a next element, check if it might need a reparse because of a change in type or omit out
 	if (oldType != currentLine.type || oldOmitOut != currentLine.omitOut || lastToParse ||
 		currentLine.isDialogueElement || currentLine.isDualDialogueElement || currentLine.type == empty) {
@@ -1834,10 +1832,13 @@ static NSDictionary* patterns;
     return lines;
 }
 
-- (void)parseTitlePage {
-    NSString *key = @"";
+- (NSArray< NSDictionary<NSString*,NSArray<Line*>*>*>*)parseTitlePage {
     [self.titlePage removeAllObjects];
     
+    // Store the latest key
+    NSString *key = @"";
+    
+    // Iterate through lines and break when we encounter a non- title page line
     for (Line* line in self.safeLines) {
         if (!line.isTitlePage) break;
         
@@ -1848,22 +1849,19 @@ static NSDictionary* patterns;
             [self.titlePage addObject:titlePageValue];
         }
         
-        // Find the correct item in array of dictionaries
-        // [ { "title": "Untitled" } , { ... }, ... ]
+        // Find the correct item in an array of dictionaries
+        // [ { "title": [Line] } , { ... }, ... ]
         NSMutableArray *items = [self titlePageArrayForKey:key];
         if (items == nil) continue;
         
         // Add the line into the items of the current line
         [items addObject:line];
     }
-}
-
-- (NSArray*)getTitlePage {
-    [self parseTitlePage];
+    
     return self.titlePage;
 }
 
-- (NSMutableArray*)titlePageArrayForKey:(NSString*)key {
+- (NSMutableArray<Line*>*)titlePageArrayForKey:(NSString*)key {
     for (NSMutableDictionary* d in self.titlePage) {
         if ([d.allKeys.firstObject isEqualToString:key]) return d[d.allKeys.firstObject];
     }

@@ -29,6 +29,8 @@
 #import "BeatMeasure.h"
 #import "BeatBrowserView.h"
 #import "BeatPagination.h"
+#import "BeatPaginationBlock.h"
 #import "BeatPageBreak.h"
+#import "BeatRendering.h"
 
 #endif /* Beat_Bridging_Header_h */

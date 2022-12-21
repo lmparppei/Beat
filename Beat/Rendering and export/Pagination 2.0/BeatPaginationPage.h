@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <BeatParsing/BeatParsing.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol BeatPageDelegate;

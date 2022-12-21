@@ -52,7 +52,7 @@
 - (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber;
 - (NSString*)titlePageAsString;
 - (NSArray<Line*>*)titlePageLines;
-- (NSArray*)getTitlePage;
+- (NSArray<NSDictionary<NSString*,NSArray<Line*>*>*>*)parseTitlePage;
 
 - (Line*)previousLine:(Line*)line;
 - (Line*)nextLine:(Line*)line;

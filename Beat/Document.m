@@ -122,7 +122,7 @@
 #import "Document+Plugins.h"
 #import "BeatPaginationTest.h"
 
-@interface Document () <BeatRenderDelegate, BeatPaginationDelegate> {
+@interface Document () <BeatRenderManagerDelegate, BeatPaginationDelegate> {
 	NSString *bufferedText;
 	NSData *dataCache;
 	NSMutableArray *autocompleteCharacterNames;
@@ -4064,11 +4064,6 @@ static NSArray<Line*>* cachedTitlePage;
 	
 	// Update preview in background
 	[self.preview updatePreviewWithPages:pages titlePage:cachedTitlePage];
-}
-
-
-- (void)renderingDidFinishWithPages:(NSArray<BeatPageView *> * _Nonnull)pages {
-	NSLog(@"Rendering did finish with %lu pages", pages.count);
 }
 
 - (void)paginationDidFinishWithPages:(NSArray<BeatPaginationPage *> *)pages {

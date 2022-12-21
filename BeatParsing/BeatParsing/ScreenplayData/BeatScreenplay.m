@@ -22,7 +22,7 @@
 +(instancetype)from:(ContinuousFountainParser*)parser settings:(BeatExportSettings*)settings {
     BeatScreenplay *screenplay = BeatScreenplay.new;
     screenplay.titlePage = [ContinuousFountainParser titlePageForString:parser.titlePageAsString];
-    screenplay.titlePageLines = parser.getTitlePage;
+    screenplay.titlePageContent = parser.parseTitlePage;
     
     if (settings.printNotes) screenplay.lines = [parser preprocessForPrintingPrintNotes:YES];
     else screenplay.lines = parser.preprocessForPrinting;

@@ -1,5 +1,5 @@
 //
-//  BeatRenderManager.swift
+//  BeatPaginationManager.swift
 //  Beat
 //
 //  Created by Lauri-Matti Parppei on 10.11.2022.
@@ -8,15 +8,16 @@
 
 import Foundation
 
-@objc protocol BeatRenderDelegate {
-	func renderingDidFinish(pages:[BeatPageView])
+@objc protocol BeatRenderManagerDelegate {
 	func paginationDidFinish(pages: [BeatPaginationPage])
 	var parser:ContinuousFountainParser? { get }
 }
 
-class BeatRenderManager:NSObject, BeatPaginationDelegate {
-	weak var delegate:BeatRenderDelegate?
-	var document:Document?
+class BeatPaginationManager:NSObject, BeatPaginationDelegate {
+	/// Delegate which is informed when pagination is finished. Useful when using background pagination.
+	weak var delegate:BeatRenderManagerDelegate?
+	/// Optional renderer delegate to be used for rendering `BeatPaginationBlock` objects on screen/print/whatever.
+	var renderer: BeatRendererDelegate?
 	
 	@objc var settings:BeatExportSettings
 	var livePagination = false
@@ -29,9 +30,13 @@ class BeatRenderManager:NSObject, BeatPaginationDelegate {
 		
 	var finishedPagination:BeatPagination?
 	
-	@objc init(settings:BeatExportSettings, delegate:BeatRenderDelegate) {
+	//@objc convenience init(settings:BeatExportSettings, delegate:BeatRenderManagerDelegate) {
+//		self.init(settings: settings, delegate: delegate, renderer: nil)
+//	}
+	@objc init(settings:BeatExportSettings, delegate:BeatRenderManagerDelegate, renderer:BeatRendererDelegate?) {
 		self.settings = settings
 		self.delegate = delegate
+		self.renderer = renderer
 	}
 	
 	//MARK: - Run operations
@@ -64,7 +69,7 @@ class BeatRenderManager:NSObject, BeatPaginationDelegate {
 	 Adds a new render to queue. Once rendering is complete, render manager will call `renderingDidFinish()` on its delegate.
 	 - note: If you are queuing only a single render, the results can be fetched in sync:
 	 ```
-	 let pagination = BeatRenderManager(...)
+	 let pagination = BeatPaginationManager(...)
 	 pagination.newPagination(...)
 	 let pages = pagination.pages
 	 let titlePage = pagination.titlePage
@@ -114,23 +119,13 @@ class BeatRenderManager:NSObject, BeatPaginationDelegate {
 		}
 	}
 	
-	/*
-	/// Returns both screenplay pages and the title page
-	var allRenderedPages:[BeatPageView] {
-		return self.finishedOperation?.getPages(titlePage: true) ?? []
-	}
-	var titlePage:BeatPageView? {
-		return self.finishedOperation?.titlePage() ?? nil
-	}
-	
-	/// Returns page views and
-	func getRenderedPages(titlePage:Bool) -> [BeatPageView] {
-		return self.finishedOperation?.getPages(titlePage: titlePage) ?? []
+	@objc var titlePage:[[String: [Line]]] {
+		return self.finishedPagination?.titlePageContent ?? []
 	}
 	
 	/// Legacy plugin compatibility
-	var numberOfPages:Int {
-		return self.pages.count
+	@objc var numberOfPages:Int {
+		return self.finishedPagination?.pages.count ?? 0
 	}
 	
 	/// Returns `[numberOfFullPages, eightsOfLastpage]`, ie. `[5, 2]` for 5 2/8
@@ -147,7 +142,7 @@ class BeatRenderManager:NSObject, BeatPaginationDelegate {
 		
 		return [pageCount, eights]
 	}
-	*/
+	
 	
 	// MARK: - Forwarded delegate properties
 	

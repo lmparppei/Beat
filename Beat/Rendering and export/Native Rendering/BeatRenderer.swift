@@ -24,7 +24,7 @@ import Cocoa
 
 protocol BeatPageViewDelegate:NSObject {
 	var canceled:Bool { get }
-	var styles:Styles { get }
+	var styles:RenderStyles { get }
 	var settings:BeatExportSettings { get }
 	var fonts:BeatFonts { get }
 	var pages:[BeatPageView] { get }
@@ -43,7 +43,7 @@ class BeatRenderer:NSObject, BeatPageViewDelegate {
 	var livePagination = false
 	var fonts = BeatFonts.shared()
 	var settings:BeatExportSettings
-	var styles:Styles = Styles.shared
+	var styles:RenderStyles = RenderStyles.shared
 	var location:Int = 0
 	
 	@objc var pages = [BeatPageView]()
@@ -598,7 +598,7 @@ class BeatPageView:NSObject {
 	
 	var pageView:BeatPagePrintView?
 	
-	var styles:Styles { return delegate!.styles }
+	var styles:RenderStyles { return delegate!.styles }
 	
 	convenience init(delegate:BeatPageViewDelegate) {
 		self.init(delegate: delegate, titlePage: false)
@@ -917,62 +917,6 @@ class BeatPageView:NSObject {
 	}
 }
 
-// MARK: - Layout manager for displaying revisions
-
-class BeatRenderLayoutManager:NSLayoutManager {
-	override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
-		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
-				
-		let container = self.textContainers.first!
-	
-		NSGraphicsContext.saveGraphicsState()
-		
-		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, range, stop in
-			let markerRect = NSMakeRect(container.size.width - 50, usedRect.origin.y, 15, rect.size.height)
-			
-			var highestRevision = ""
-			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
-				if (obj == nil) { return }
-				
-				let revision = obj as! String
-				
-				if highestRevision == "" {
-					highestRevision = revision
-				}
-				else if BeatRevisions.isNewer(revision, than: highestRevision) {
-					highestRevision = revision
-				}
-			})
-			
-			if highestRevision == "" { return }
-			
-			let marker:NSString = BeatRevisions.revisionMarkers()[highestRevision]! as NSString
-			let font = BeatFonts.shared().courier
-			marker.draw(at: markerRect.origin, withAttributes: [
-				NSAttributedString.Key.font: font,
-				NSAttributedString.Key.foregroundColor: NSColor.black
-			])
-		}
-		
-		NSGraphicsContext.restoreGraphicsState()
-	}
-	
-	override func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
-		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
-		/*
-		let chrRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
-		let key = NSAttributedString.Key(rawValue: "ActiveLine")
-		
-		let attr = self.temporaryAttribute(key, atCharacterIndex: chrRange.location, effectiveRange: nil) as? Bool ?? false
-		if (attr) {
-			print("Active line at ", chrRange.location)
-			let rect = self.lineFragmentUsedRect(forGlyphAt: glyphsToShow.location, effectiveRange: nil, withoutAdditionalLayout: true)
-			NSColor.red.setFill()
-			rect.fill()
-		}
-		*/
-	}
-}
 
 // MARK: - Title page
 
@@ -1172,14 +1116,14 @@ class BeatPageElement:NSObject {
 	
 	var noTopMargin = false
 	
-	weak var styles:Styles?
+	weak var styles:RenderStyles?
 	weak var delegate:BeatPageViewDelegate?
 	
 	init(line:Line, delegate:BeatPageViewDelegate?, dualDialogue:Bool) {
 		self.line = line
 		self.paperSize = delegate?.settings.paperSize ?? .A4
 		self.delegate = delegate
-		self.styles = delegate?.styles ?? Styles.shared
+		self.styles = delegate?.styles ?? RenderStyles.shared
 		self.dualDialogue = dualDialogue
 				
 		if delegate == nil { print("Warning: Page delegate missing") }
@@ -1413,7 +1357,7 @@ class BeatPageElement:NSObject {
 		return lineStr
 	}
 	
-	func renderHeading(firstElementOnPage:Bool, line:Line, content:NSMutableAttributedString, styles:Styles) -> NSMutableAttributedString {
+	func renderHeading(firstElementOnPage:Bool, line:Line, content:NSMutableAttributedString, styles:RenderStyles) -> NSMutableAttributedString {
 		let printSceneNumbers = self.delegate!.settings.printSceneNumbers
 		
 		let attrStr = NSMutableAttributedString(string: "")
@@ -1477,7 +1421,7 @@ class BeatPageBlock:NSObject {
 	var dualDialogueBlock = false
 	var lines = [Line]()
 	var renderedString:NSAttributedString?
-	var styles:Styles
+	var styles:RenderStyles
 	var calculatedHeight = -1.0
 	
 	// Dual dialogue blocks
@@ -1496,7 +1440,7 @@ class BeatPageBlock:NSObject {
 	init(block:[Line], isDualDialogueElement:Bool, delegate:BeatPageViewDelegate?) {
 		self.lines = block
 		self.dualDialogueElement = isDualDialogueElement
-		self.styles = Styles.shared
+		self.styles = RenderStyles.shared
 		self.delegate = delegate
 		self.elements = []
 		

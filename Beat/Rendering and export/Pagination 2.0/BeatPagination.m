@@ -7,9 +7,20 @@
 //
 /**
  
- This is an Objective C port of native pagination / rendering code.
- In this iteration, pages won't return an `NSTextView`, only an attributed string, to
- make the class more easily compatible with the upcoming iOS version.
+ This class paginates the screenplay based on styles provided by the host delegate.
+ 
+ The new pagination code began as an attempt to both replace the old `BeatPaginator`,
+ which was originally based on the very old Fountain pagination code and later rewritten from scratch,
+ and to directly render the results when needed.
+ 
+ It turned out that iOS and macOS have varying support for different kinds of `NSAttributedString`
+ elements, so rendering had to be separated from this class.
+ 
+ However, you can hook up a class which conforms to `BeatRendererDelegate`, to provide
+ extra convenience. With a renderer connected to the pagination, you'll be able to request
+ a rendered attributed string directly from the results, ie. `.pages[0].attributedString`
+ 
+ This is still a work in progress. Dread lightly.
  
  */
 
@@ -26,7 +37,7 @@
 
 @property (nonatomic) NSMutableArray<Line*>* lineQueue;
 @property (nonatomic) BeatFonts* fonts;
-@property (nonatomic) Styles* styles;
+@property (nonatomic) RenderStyles* styles;
 @property (nonatomic) NSInteger location;
 
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
@@ -51,6 +62,7 @@
 + (BeatPagination*)newLivePaginationWithScreenplay:(BeatScreenplay*)screenplay changeAt:(NSInteger)location delegate:(id<BeatPaginationDelegate>)delegate {
 	return [BeatPagination.alloc initWithDelegate:delegate screenplay:screenplay settings:delegate.settings livePagination:true changeAt:location cachedPages:nil];
 }
+
 - (instancetype)initWithDelegate:(id<BeatPaginationDelegate>)delegate screenplay:(BeatScreenplay*)screenplay settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* __nullable)cachedPages {
 	self = [super init];
 	
@@ -58,15 +70,23 @@
 		_delegate = delegate;
 		
 		_fonts = BeatFonts.sharedFonts;
-		_styles = Styles.shared;
 		
 		_lines = (screenplay.lines != nil) ? screenplay.lines : @[];
+		_titlePageContent = (screenplay.titlePageContent != nil) ? screenplay.titlePageContent : @[];
+		
 		_livePagination = livePagination;
 		_location = changeAt;
 		_cachedPages = cachedPages;
 		_settings = settings;
 		_pages = NSMutableArray.new;
 		_lineTypeAttributes = NSMutableDictionary.new;
+				
+		// Possible renderer module. This can be null.
+		_renderer = _delegate.renderer;
+		
+		// Check for custom styles. If not present, use the shared styles.
+		if (_settings.styles != nil) _styles = _settings.styles;
+		else _styles = RenderStyles.shared;
 		
 		_startTime = NSDate.new;
 	}
@@ -94,7 +114,37 @@
 
 - (void)paginate {
 	if (_livePagination) {
+		NSInteger startIndex = 0;
+		
+		
 		// Do live pagination magic here
+		/*
+		 //var actualIndex:Int = NSNotFound
+		 //var safePageIndex = 0 // self.findSafePage(position: self.location, actualIndex:actualIndex)
+		 
+		 var startIndex = 0
+
+		 // This returns the index for both page and the line inside that page
+		 let indexPath = findSafeLine(position: self.location, pages: cachedPages)
+		 
+		 if indexPath.0 != NSNotFound && indexPath.1 != NSNotFound && indexPath.0 < cachedPages.count && cachedPages.count > 0 {
+			 self.pages = Array(self.cachedPages[0..<indexPath.0])
+			 currentPage = self.cachedPages[indexPath.0]
+			 
+			 let safeLine = currentPage!.lines[indexPath.1]
+			 currentPage!.clearUntil(line: safeLine)
+			 
+			 startIndex = self.lines.firstIndex(of: safeLine) ?? NSNotFound
+		 }
+
+		 if startIndex == 0 || startIndex == NSNotFound {
+			 currentPage = nil
+			 startIndex = 0
+		 }
+		 
+		 self.success = self.paginate(fromIndex: startIndex)
+		 self.renderFinished()
+		 */
 	}
 	
 	self.success = [self paginateFromIndex:self.location];
@@ -314,82 +364,6 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	}
 	
 	return NSNotFound;
-}
-
-#pragma mark - Managing styles
-
-- (RenderStyle*)styleForType:(LineType)type {
-	return [self.styles forElement:[Line typeName:type]];
-}
-
-- (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
-	LineType type = line.type;
-	if (isDualDialogue) {
-		if (line.type == character) type = dualDialogueCharacter;
-		else if (line.type == parenthetical) type = dualDialogueParenthetical;
-		else if (line.type == dialogue) type = dualDialogue;
-		else if (line.type == more) type = dualDialogueMore;
-	}
-	
-	NSNumber* n = [NSNumber numberWithInteger:type];
-	
-	if (_lineTypeAttributes[n] == nil) {
-		RenderStyle *style = [self styleForType:type];
-		
-		NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
-			NSForegroundColorAttributeName: BXColor.blackColor
-		}];
-		
-		if (style.italic && style.bold) styles[NSFontAttributeName] = self.fonts.boldItalicCourier;
-		else if (style.italic) 			styles[NSFontAttributeName] = self.fonts.italicCourier;
-		else if (style.bold) 			styles[NSFontAttributeName] = self.fonts.boldCourier;
-		else 							styles[NSFontAttributeName] = self.fonts.courier;
-		
-		CGFloat width = (_settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-		CGFloat blockWidth = width + style.marginLeft;
-		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
-		
-		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
-		pStyle.headIndent = style.marginLeft;
-		pStyle.firstLineHeadIndent = style.marginLeft;
-		pStyle.paragraphSpacingBefore = style.marginTop;
-		pStyle.paragraphSpacing = style.marginBottom;
-		pStyle.tailIndent = -1 * style.marginRight; // Negative value;
-		
-		pStyle.maximumLineHeight = BeatPagination.lineHeight;
-		
-		if (!isDualDialogue && !line.isTitlePage) {
-			// Add content padding where needed
-			pStyle.firstLineHeadIndent += self.styles.page.contentPadding;
-			pStyle.headIndent += self.styles.page.contentPadding;
-		} else if (!line.isTitlePage) {
-			pStyle.firstLineHeadIndent = style.marginLeft;
-			pStyle.headIndent = style.marginLeft;
-		}
-		
-		// Create text block for non-title page elements to restrict horizontal size
-		if (!line.isTitlePage) {
-			NSTextBlock* textBlock = NSTextBlock.new;
-			[textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
-			pStyle.textBlocks = @[textBlock];
-		}
-		
-		// Text alignment
-		if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
-		else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
-		
-		// Special rules for some blocks
-		if ((type == lyrics || type == centered) && !line.beginsNewParagraph) {
-			pStyle.paragraphSpacingBefore = 0;
-		}
-		
-		styles[NSParagraphStyleAttributeName] = pStyle;
-		
-		// Apply to existing styles
-		_lineTypeAttributes[n] = [NSDictionary dictionaryWithDictionary:styles];
-	}
-	
-	return _lineTypeAttributes[n];
 }
 
 

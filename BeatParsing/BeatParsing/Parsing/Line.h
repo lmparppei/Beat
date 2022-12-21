@@ -273,7 +273,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSRange)characterNameRange;
 /// Reformats Fountain string inside the line and stores the ranges
 - (void)resetFormatting;
-/// Join this line with another `Line` object, and combine the attributes of th two
+/// Joins a line into this line. Copies all stylization and offsets the formatting ranges.
 - (void)joinWithLine:(Line*)line;
 /// Does what it says
 - (NSArray<Line*>*)splitAndFormatToFountainAt:(NSInteger)index;

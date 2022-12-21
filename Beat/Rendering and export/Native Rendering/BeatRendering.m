@@ -7,8 +7,8 @@
 //
 /**
  
- This class renders paginated content to `NSAttributedString`.
- Only works with macOS.
+ This class renders paginated content to `NSAttributedString` on **macOS**.
+ Can be used both stand-alone and as hooked up to `BeatPaginationManager` or `BeatPagination`.
  
  */
 
@@ -20,8 +20,11 @@
 @interface BeatRendering()
 @property (nonatomic) BeatExportSettings* settings;
 //@property (nonatomic) id<BeatPageDelegate> delegate;
-@property (nonatomic) Styles* styles;
+@property (nonatomic) RenderStyles* styles;
 @property (nonatomic) BeatFonts* fonts;
+
+@property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
+
 @end
 
 @implementation BeatRendering
@@ -33,11 +36,14 @@
 		_fonts = BeatFonts.sharedFonts;
 		
 		// If we have received custom styles, use those
-		if ([settings.styles isKindOfClass:Styles.class]) {
+		if ([settings.styles isKindOfClass:RenderStyles.class]) {
 			_styles = settings.styles;
 		} else {
-			_styles = Styles.shared;
+			_styles = RenderStyles.shared;
 		}
+		
+		// Initialize attribute store
+		_lineTypeAttributes = NSMutableDictionary.new;
 	}
 	return self;
 }
@@ -47,7 +53,7 @@
 	NSMutableAttributedString* attrStr = NSMutableAttributedString.new;
 	for (BeatPaginationPage* page in pages) {
 		for (BeatPaginationBlock* block in page.blocks) {
-			NSAttributedString* renderedBlock = [self renderBlock:block dualDialogueElement:false firstElementOnPage:false];
+			NSAttributedString* renderedBlock = [self renderBlock:block firstElementOnPage:false];
 			[attrStr appendAttributedString:renderedBlock];
 		}
 	}
@@ -73,24 +79,51 @@
 	for (BeatPaginationBlock* block in page.blocks) {
 		bool firstElement = (block == page.blocks.firstObject) ? true : false;
 		
-		NSAttributedString* blockString = [self renderBlock:block dualDialogueElement:false firstElementOnPage:firstElement];
+		NSAttributedString* blockString = [self renderBlock:block firstElementOnPage:firstElement];
 		[attrStr appendAttributedString:blockString];
 	}
 	
 	return attrStr;
 }
 
-- (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage {
-	NSMutableAttributedString* string = NSMutableAttributedString.new;
+
+- (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage {
+	if (block.renderedString == nil) {
+		if (block.dualDialogueContainer) {
+			// Render dual dialogue block (enter kind of recursion)
+			block.renderedString = [self renderDualDialogueContainer:block];
+			
+		} else {
+			NSMutableAttributedString *attrStr = NSMutableAttributedString.new;
+			
+			for (Line* line in block.lines) { @autoreleasepool {
+				NSAttributedString *lineStr;
+				
+				// Render the element without top margin if it's the first line on page.
+				if (firstElementOnPage && line == block.lines.firstObject) {
+					lineStr = [self renderLine:line ofBlock:block dualDialogueElement:block.dualDialogueElement firstElementOnPage:true];
+				} else {
+					lineStr = [self renderLine:line ofBlock:block dualDialogueElement:block.dualDialogueElement firstElementOnPage:false];
+				}
+				
+				[attrStr appendAttributedString:lineStr];
+			} }
+			
+			block.renderedString = attrStr;
+		}
+	}
 	
-	
-	
-	return string;
+	return block.renderedString;
+}
+
+/// Renders a single line, probably outside of screenplay context
+- (NSAttributedString*)renderLine:(Line*)line {
+	return [self renderLine:line ofBlock:nil dualDialogueElement:false firstElementOnPage:false];
 }
 
 /// Renders a single line
-- (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock*)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage {
-	NSDictionary* attrs = [self.delegate attributesForLine:line dualDialogue:block.dualDialogueElement];
+- (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage {
+	NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
 	NSString* string = [NSString stringWithFormat:@"%@\n", line.string]; // Add a line break
 	
 	NSMutableAttributedString *attributedString = [NSMutableAttributedString.alloc initWithString:string attributes:attrs];
@@ -161,7 +194,6 @@
 	bool printSceneNumbers = _settings.printSceneNumbers;
 	CGFloat contentPadding = _styles.page.contentPadding;
 	CGFloat width = [self widthFor:line];
-	RenderStyle* style = [_styles forElement:line.typeName];
 	
 	// Initialize result
 	NSMutableAttributedString* attrStr = NSMutableAttributedString.new;
@@ -229,9 +261,69 @@
 	return attrStr;
 }
 
-- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page {
-	NSInteger index = [self.delegate.pages indexOfObject:page];
-	if (index == NSNotFound) index = self.delegate.pages.count;
+/// Render a block with left/right columns. This block will know the contents of both columns.
+- (NSAttributedString*)renderDualDialogueContainer:(BeatPaginationBlock*)dualDialogueBlock {
+	// Create table
+	CGFloat width = (_settings.paperSize == BeatA4) ? _styles.page.defaultWidthA4 : _styles.page.defaultWidthLetter;
+	
+	NSTextTable* table = NSTextTable.new;
+	[table setContentWidth:width + _styles.page.contentPadding type:NSTextBlockAbsoluteValueType];
+	table.numberOfColumns = 2;
+	
+	// Create cells
+	__block NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
+	__block NSTextTableBlock* rightCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
+		
+	CGFloat fullWidth = (_settings.paperSize == BeatA4) ? _styles.page.defaultWidthA4 : _styles.page.defaultWidthLetter;
+	
+	[leftCell setContentWidth:_styles.page.contentPadding + fullWidth / 2 type:NSTextBlockAbsoluteValueType];
+	[rightCell setContentWidth:fullWidth / 2 type:NSTextBlockAbsoluteValueType];
+	
+	// Render content for left/right cell
+	NSMutableAttributedString* leftContent = [self renderBlock:dualDialogueBlock.leftColumnBlock firstElementOnPage:false].mutableCopy;
+	NSMutableAttributedString* rightContent = [self renderBlock:dualDialogueBlock.rightColumnBlock firstElementOnPage:false].mutableCopy;
+	
+	// If there is nothing in the left column, we need to create a placeholder
+	if (leftContent.length == 0) {
+		NSMutableParagraphStyle* p = NSMutableParagraphStyle.new;
+		leftContent = [NSMutableAttributedString.alloc initWithString:@" \n"];
+		[leftContent addAttribute:NSParagraphStyleAttributeName value:p range:NSMakeRange(0, leftContent.length)];
+	}
+	
+	// Enumerate the paragraph styles inside left/right column content, and set the cell as their text block
+	[leftContent enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(0, leftContent.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		NSMutableParagraphStyle* pStyle = value;
+		pStyle = pStyle.mutableCopy;
+		
+		pStyle.headIndent += _styles.page.contentPadding;
+		pStyle.firstLineHeadIndent += _styles.page.contentPadding;
+		pStyle.textBlocks = @[leftCell];
+		
+		[leftContent addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
+	}];
+	
+	[rightContent enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(0, rightContent.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		NSMutableParagraphStyle* pStyle = value;
+		pStyle = pStyle.mutableCopy;
+		
+		pStyle.textBlocks = @[rightCell];
+		[rightContent addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
+	}];
+	
+	// Store the rendered left/right content
+	dualDialogueBlock.leftColumn = leftContent.copy;
+	dualDialogueBlock.rightColumn = rightContent.copy;
+	
+	// Create the resulting string
+	[leftContent appendAttributedString:rightContent];
+	return leftContent;
+}
+
+#pragma mark - Page number block
+
+- (NSAttributedString*)pageNumberBlockForPage:(BeatPaginationPage*)page pages:(NSArray<BeatPaginationPage*>*)pages {
+	NSInteger index = [pages indexOfObject:page];
+	if (index == NSNotFound) index = pages.count;
 	
 	return [self pageNumberBlockForPageNumber:index + 1];
 }
@@ -241,6 +333,8 @@
 	NSString* pageNumberString = (pageNumber > 1) ? [NSString stringWithFormat:@"%lu.\n", pageNumber] : @" \n";
 	
 	NSTextTable* table = NSTextTable.new;
+	[table setContentWidth:100 type:NSTextBlockPercentageValueType];
+	
 	NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
 	NSTextTableBlock* headerCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
 	NSTextTableBlock* rightCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:2 columnSpan:1];
@@ -268,7 +362,8 @@
 		NSParagraphStyleAttributeName: leftStyle
 	}];
 	// Header content (centered at the top of page)
-	NSMutableAttributedString* headerContent = [NSMutableAttributedString.alloc initWithString:self.settings.header attributes:@{
+	NSString* header = [NSString stringWithFormat:@"%@\n", (self.settings.header != nil) ? self.settings.header : @""];
+	NSMutableAttributedString* headerContent = [NSMutableAttributedString.alloc initWithString:header attributes:@{
 		NSParagraphStyleAttributeName: headerStyle,
 		NSFontAttributeName: _fonts.courier,
 		NSForegroundColorAttributeName: NSColor.blackColor
@@ -286,6 +381,83 @@
 	[pageNumberBlock appendAttributedString:rightContent];
 	
 	return pageNumberBlock;
+}
+
+
+#pragma mark - Attribute management
+
+- (RenderStyle*)styleForType:(LineType)type {
+	return [self.styles forElement:[Line typeName:type]];
+}
+
+- (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
+	LineType type = line.type;
+	if (isDualDialogue) {
+		if (line.type == character) type = dualDialogueCharacter;
+		else if (line.type == parenthetical) type = dualDialogueParenthetical;
+		else if (line.type == dialogue) type = dualDialogue;
+		else if (line.type == more) type = dualDialogueMore;
+	}
+	
+	NSNumber* n = [NSNumber numberWithInteger:type];
+	
+	if (_lineTypeAttributes[n] == nil) {
+		RenderStyle *style = [self styleForType:type];
+		
+		NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
+			NSForegroundColorAttributeName: BXColor.blackColor
+		}];
+		
+		if (style.italic && style.bold) styles[NSFontAttributeName] = self.fonts.boldItalicCourier;
+		else if (style.italic) 			styles[NSFontAttributeName] = self.fonts.italicCourier;
+		else if (style.bold) 			styles[NSFontAttributeName] = self.fonts.boldCourier;
+		else 							styles[NSFontAttributeName] = self.fonts.courier;
+		
+		CGFloat width = (_settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+		CGFloat blockWidth = width + style.marginLeft;
+		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
+		
+		NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
+		pStyle.headIndent = style.marginLeft;
+		pStyle.firstLineHeadIndent = style.marginLeft;
+		pStyle.paragraphSpacingBefore = style.marginTop;
+		pStyle.paragraphSpacing = style.marginBottom;
+		pStyle.tailIndent = -1 * style.marginRight; // Negative value;
+		
+		pStyle.maximumLineHeight = BeatPagination.lineHeight;
+		
+		if (!isDualDialogue && !line.isTitlePage) {
+			// Add content padding where needed
+			pStyle.firstLineHeadIndent += self.styles.page.contentPadding;
+			pStyle.headIndent += self.styles.page.contentPadding;
+		} else if (!line.isTitlePage) {
+			pStyle.firstLineHeadIndent = style.marginLeft;
+			pStyle.headIndent = style.marginLeft;
+		}
+		
+		// Create text block for non-title page elements to restrict horizontal size
+		if (!line.isTitlePage) {
+			NSTextBlock* textBlock = NSTextBlock.new;
+			[textBlock setContentWidth:blockWidth type:NSTextBlockAbsoluteValueType];
+			pStyle.textBlocks = @[textBlock];
+		}
+		
+		// Text alignment
+		if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
+		else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
+		
+		// Special rules for some blocks
+		if ((type == lyrics || type == centered) && !line.beginsNewParagraph) {
+			pStyle.paragraphSpacingBefore = 0;
+		}
+		
+		styles[NSParagraphStyleAttributeName] = pStyle;
+		
+		// Apply to existing styles
+		_lineTypeAttributes[n] = [NSDictionary dictionaryWithDictionary:styles];
+	}
+	
+	return _lineTypeAttributes[n];
 }
 
 
