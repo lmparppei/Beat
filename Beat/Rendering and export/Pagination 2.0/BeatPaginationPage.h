@@ -22,9 +22,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate;
 -(void)addBlock:(BeatPaginationBlock*)block;
+-(void)clearUntil:(Line*)line;
+
 -(NSRange)representedRange;
 -(NSAttributedString*)attributedString;
+-(NSArray<Line*>*)lines;
 
+- (NSInteger)indexForLineAtPosition:(NSInteger)position;
+- (NSInteger)findSafeLineFromIndex:(NSInteger)index;
+- (NSInteger)blockIndexForLine:(Line*)line;
 @end
 
 NS_ASSUME_NONNULL_END

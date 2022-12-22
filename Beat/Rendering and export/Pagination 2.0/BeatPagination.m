@@ -20,6 +20,9 @@
  extra convenience. With a renderer connected to the pagination, you'll be able to request
  a rendered attributed string directly from the results, ie. `.pages[0].attributedString`
  
+ "Live pagination" means continuous pagination. This is used for updating the preview and providing
+ page numbering to the editor. Page breaks don't have any use in static/export pagination.
+ 
  This is still a work in progress. Dread lightly.
  
  */
@@ -47,7 +50,7 @@
 @property (weak, nonatomic) id<BeatPaginationDelegate> delegate;
 @property (nonatomic) BeatPaginationPage* currentPage;
 
-@property (nonatomic) NSArray<BeatPaginationPage*>* cachedPages;
+@property (nonatomic) NSArray<BeatPaginationPage*>* _Nullable cachedPages;
 @end
 
 @implementation BeatPagination
@@ -56,14 +59,15 @@
 	return 12.0;
 }
 
-+ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate {
-	return [BeatPagination.alloc initWithDelegate:delegate screenplay:screenplay settings:delegate.settings livePagination:false changeAt:0 cachedPages:nil];
-}
-+ (BeatPagination*)newLivePaginationWithScreenplay:(BeatScreenplay*)screenplay changeAt:(NSInteger)location delegate:(id<BeatPaginationDelegate>)delegate {
-	return [BeatPagination.alloc initWithDelegate:delegate screenplay:screenplay settings:delegate.settings livePagination:true changeAt:location cachedPages:nil];
++ (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPaginationDelegate>)delegate {
+	return [BeatPagination.alloc initWithDelegate:delegate lines:lines titlePage:nil settings:delegate.settings livePagination:false changeAt:0 cachedPages:nil];
 }
 
-- (instancetype)initWithDelegate:(id<BeatPaginationDelegate>)delegate screenplay:(BeatScreenplay*)screenplay settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* __nullable)cachedPages {
++ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination {
+	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:0 cachedPages:cachedPages];
+}
+
+- (instancetype)initWithDelegate:(id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages {
 	self = [super init];
 	
 	if (self) {
@@ -71,12 +75,12 @@
 		
 		_fonts = BeatFonts.sharedFonts;
 		
-		_lines = (screenplay.lines != nil) ? screenplay.lines : @[];
-		_titlePageContent = (screenplay.titlePageContent != nil) ? screenplay.titlePageContent : @[];
+		_lines = (lines != nil) ? lines : @[];
+		_titlePageContent = (titlePage != nil) ? titlePage : @[];
+		_cachedPages = cachedPages;
 		
 		_livePagination = livePagination;
 		_location = changeAt;
-		_cachedPages = cachedPages;
 		_settings = settings;
 		_pages = NSMutableArray.new;
 		_lineTypeAttributes = NSMutableDictionary.new;
@@ -109,67 +113,80 @@
 	[self.delegate paginationFinished:self];
 }
 
+- (CGFloat)maxPageHeight {
+	NSSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
+	RenderStyle* style = _styles.page;
+	
+	return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight * 2;
+}
 
 #pragma mark - Running pagination
 
 - (void)paginate {
+	NSInteger startIndex = 0;
+	
 	if (_livePagination) {
-		NSInteger startIndex = 0;
+		// This returns the index for both page and the line inside that page
+		NSArray<NSNumber*>* indexPath = [self findSafePageAndLineForPosition:self.location pages:self.cachedPages];
 		
+		NSInteger pageIndex = indexPath[0].integerValue;
+		NSInteger lineIndex = indexPath[1].integerValue;
 		
-		// Do live pagination magic here
-		/*
-		 //var actualIndex:Int = NSNotFound
-		 //var safePageIndex = 0 // self.findSafePage(position: self.location, actualIndex:actualIndex)
-		 
-		 var startIndex = 0
-
-		 // This returns the index for both page and the line inside that page
-		 let indexPath = findSafeLine(position: self.location, pages: cachedPages)
-		 
-		 if indexPath.0 != NSNotFound && indexPath.1 != NSNotFound && indexPath.0 < cachedPages.count && cachedPages.count > 0 {
-			 self.pages = Array(self.cachedPages[0..<indexPath.0])
-			 currentPage = self.cachedPages[indexPath.0]
-			 
-			 let safeLine = currentPage!.lines[indexPath.1]
-			 currentPage!.clearUntil(line: safeLine)
-			 
-			 startIndex = self.lines.firstIndex(of: safeLine) ?? NSNotFound
-		 }
-
-		 if startIndex == 0 || startIndex == NSNotFound {
-			 currentPage = nil
-			 startIndex = 0
-		 }
-		 
-		 self.success = self.paginate(fromIndex: startIndex)
-		 self.renderFinished()
-		 */
+		if (pageIndex != NSNotFound && lineIndex != NSNotFound && pageIndex < _cachedPages.count && _cachedPages.count > 0) {
+			NSArray* sparedPages = [self.cachedPages subarrayWithRange:NSMakeRange(0, pageIndex)];
+			[self.pages setArray:sparedPages];
+			
+			self.currentPage = _cachedPages[pageIndex];
+			Line* safeLine = self.currentPage.lines[lineIndex];
+			[self.currentPage clearUntil:safeLine];
+			
+			startIndex = [self.lines indexOfObject:safeLine];
+		}
 	}
 	
-	self.success = [self paginateFromIndex:self.location];
+	if (startIndex == 0 || startIndex == NSNotFound) {
+		_pages = NSMutableArray.new;
+		_currentPage = nil;
+		startIndex = 0;
+	}
+	
+	self.success = [self paginateFromIndex:startIndex];
 	[self paginationFinished];
 }
 
+- (void)useCachedPaginationFrom:(NSInteger)pageIndex {
+	NSArray* reusablePages = [self.cachedPages subarrayWithRange:NSMakeRange(pageIndex, self.cachedPages.count - pageIndex)];
+	[_pages addObjectsFromArray:reusablePages];
+}
+
 - (bool)paginateFromIndex:(NSInteger)index {
+	// Save start time
 	_startTime = [NSDate date];
 	
-	// Reset queue
+	// Reset queue and use cached pagination if applicable
 	_lineQueue = [NSMutableArray arrayWithArray:[self.lines subarrayWithRange:NSMakeRange(index, self.lines.count - index)]];
 	
-	if (index == 0) {
-		_pages = NSMutableArray.new;
-		_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
-	}
+	// Store the number of pages so we can tell if we've begun a new page
+	NSInteger pageCountAtStart = _pages.count;
 	
 	while (_lineQueue.count > 0) {
-	//for (NSInteger i=index; i<_lineQueue.count; i++) {
 		// Do nothing if this operation is canceled
 		if (_canceled) { return false; }
-		
+				
 		// Get the first object in the queue array until no lines are left
 		Line* line = _lineQueue[0];
 		
+		// Let's see if we can use cached pages here
+		if (_pages.count == pageCountAtStart+1 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count) {
+			Line* firstLineOnCachedPage = _cachedPages[_pages.count].lines.firstObject;
+			
+			if ([line.uuid isEqualTo:firstLineOnCachedPage.uuid]) {
+				// We can use cached pagination here.
+				[self useCachedPaginationFrom:_pages.count];
+				return true;
+			}
+		}
+	
 		// Catch wrong parsing (just in case)
 		if (line.string.length == 0 ||
 			line.isTitlePage ||
@@ -349,10 +366,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 #pragma mark - Line lookup
 
 /// Returns page index based on line position
-- (NSInteger)findPageIndexAt:(NSInteger)position {
-	NSLog(@"findPageIndexAt: not implemented");
-	for (NSInteger i=0; i<self.pages.count; i++) {
-		BeatPaginationPage *page = _pages[i];
+- (NSInteger)findPageIndexAt:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages {
+	for (NSInteger i=0; i<pages.count; i++) {
+		BeatPaginationPage *page = pages[i];
 		NSRange range = page.representedRange;
 		// get page.representedRange etc
 		
@@ -365,6 +381,105 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	
 	return NSNotFound;
 }
+
+- (NSInteger)findPageIndexForLine:(Line*)line {
+	for (NSInteger i=0; i<self.pages.count; i++) {
+		BeatPaginationPage* page = self.pages[i];
+		if (NSLocationInRange(line.position, page.representedRange)) {
+			return i;
+		}
+		else if (i > 0 && line.position > NSMaxRange(self.pages[i-1].representedRange)) {
+			return i - 1;
+		}
+	}
+	
+	return NSNotFound;
+}
+
+- (NSArray*)findSafePageAndLineForPosition:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages {
+	NSInteger pageIndex = [self findPageIndexAt:position pages:pages];
+	if (pageIndex == NSNotFound) return @[ @0, @0 ];
+	
+	while (pageIndex >= 0) {
+		BeatPaginationPage* page = pages[pageIndex];
+		
+		NSInteger i = [page indexForLineAtPosition:position];
+		NSInteger safeIndex = [page findSafeLineFromIndex:i];
+		
+		// No suitable line found or we ended up on the first line of the page,
+		// let's find a suitable line on the previous page.
+		if (safeIndex == NSNotFound || safeIndex == 0) {
+			pageIndex -= 1;
+			continue;
+		}
+		
+		return @[@(pageIndex), @(safeIndex)];
+	}
+	
+	return @[@0, @0];
+}
+
+#pragma mark - Heights of scenes
+
+- (CGFloat)heightForScene:(OutlineScene*)scene {
+	NSInteger pageIndex = [self findPageIndexForLine:scene.line];
+	if (pageIndex == NSNotFound) return 0.0;
+	
+	BeatPaginationPage* page = self.pages[pageIndex];
+	CGFloat height = 0.0;
+	NSInteger numberOfBlocks = 0;
+	
+	NSInteger blockIndex = [page blockIndexForLine:scene.line];
+	
+	for (NSInteger i = pageIndex; i < self.pages.count; i++) {
+		BeatPaginationPage* page = self.pages[i];
+		
+		for (NSInteger j = blockIndex; j < page.blocks.count; j++) {
+			BeatPaginationBlock* block = page.blocks[j];
+			if (block.type != heading) {
+				height += block.height;
+				if (numberOfBlocks == 0) height -= block.topMargin; // No top margin for first block
+				
+				numberOfBlocks += 1;
+			} else {
+				// Next heading block was encountered
+				return height;
+			}
+		}
+		blockIndex = 0;
+	}
+	
+	return 0.0;
+}
+
+/*
+ func heightForScene(_ scene:OutlineScene) -> CGFloat {
+	 let pageIndex = page(forScene: scene)
+	 
+	 // No page found for this scene
+	 if (pageIndex < 0) { return 0.0 }
+	 
+	 let page = pages[pageIndex]
+	 var blockIndex = page.blockIndex(for: scene.line)
+	 var height = 0.0
+	 
+	 for i in pageIndex ..< pages.count {
+		 let page = pages[i]
+		 
+		 for j in blockIndex ..< page.blocks.count {
+			 let block = page.blocks[j] as! BeatPaginationBlock
+			 if block.type != .heading {
+				 height += block.height()
+			 } else {
+				 break
+			 }
+		 }
+		 blockIndex = 0
+	 }
+	 
+	 return height
+ }
+ */
 
 
 #pragma mark - CONT'D and (MORE)

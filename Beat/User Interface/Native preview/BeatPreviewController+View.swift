@@ -8,17 +8,17 @@
 
 import AppKit
 
-protocol BeatPreviewDelegate:BeatEditorDelegate {
-	
+@objc protocol BeatPreviewDelegate:BeatEditorDelegate {
+	@objc func paginationFinished(pages:[BeatPaginationPage])
 }
 
 final class BeatPreviewController:NSObject, BeatRenderManagerDelegate {
 	@IBOutlet weak var previewView:BeatPreviewView?
-	@IBOutlet weak var delegate:BeatEditorDelegate?
-	
+	@IBOutlet weak var delegate:BeatPreviewDelegate?
 	
 	var pagination:BeatPaginationManager?
 	var renderer:BeatRendering?
+	var timer:Timer?
 	
 	override init() {
 		super.init()
@@ -44,15 +44,26 @@ final class BeatPreviewController:NSObject, BeatRenderManagerDelegate {
 	// MARK: Delegate methods (delegated from delegate)
 	@objc var parser: ContinuousFountainParser? { return delegate?.parser }
 	
-	// MARK: Create preview data in background
-	@objc func createPreview(changeAt index:Int) {
+	// MARK: Create preview data
+	/// Preview data can be created either in background (async) or in main thread (sync).
+	/// - note: This method doesn't create the actual preview yet, just paginates it.
+	@objc func createPreview(changeAt index:Int, sync:Bool) {
+		// Let's invalidate the timer (if it exists)
+		timer?.invalidate()
+		
 		guard let parser = delegate?.parser else { return }
-		//pagination?.newRender(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
-		pagination?.newPagination(screenplay: parser.forPrinting(), settings: settings, forEditor: true, changeAt: index)
+		if (sync) {
+			pagination?.newPagination(screenplay: parser.forPrinting(), settings: settings, forEditor: true, changeAt: index)
+		} else {
+			timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
+				self.pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
+			})
+		}
 	}
 		
 	func paginationDidFinish(pages: [BeatPaginationPage]) {
-		print("Preview View: Pagination finished")
+		print("Pagination finished with: ", pages.count)
+		//self.delegate?.paginationFinished(pages: pages)
 	}
 		
 	@objc func renderOnScreen() {
@@ -60,13 +71,12 @@ final class BeatPreviewController:NSObject, BeatRenderManagerDelegate {
 				
 		guard let pages = pagination?.pages else { return }
 		let size = BeatPaperSizing.size(for: settings.paperSize)
-		let pageStyle = RenderStyles.shared.page()
 		
 		for i in 0..<pages.count {
 			let page = pages[i]
 			let string = page.attributedString()
 			
-			let pageView = BeatPaginationPageView(size: size, content: string, pageStyle: pageStyle)
+			let pageView = BeatPaginationPageView(size: size, content: string, settings: settings)
 			self.previewView?.addPage(page: pageView)
 		}
 	}

@@ -87,7 +87,7 @@ class BeatRendererTester:NSWindowController {
 			let y = (container.subviews.last?.frame.origin.y ?? 0.0) + 10.0 + (container.subviews.last?.frame.size.height ?? 0.0)
 			let string = page.attributedString()
 			
-			let view = BeatPaginationPageView(size: renderer.pageSize, content: string, pageStyle: style)
+			let view = BeatPaginationPageView(size: renderer.pageSize, content: string, settings: settings!)
 			let r = NSMakeRect(0, y, view.frame.width, view.frame.height)
 			view.frame = r
 			

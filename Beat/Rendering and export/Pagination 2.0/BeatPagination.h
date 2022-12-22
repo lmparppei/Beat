@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSMutableArray<BeatPaginationPage*>* pages;
 @property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;
 @property (nonatomic, readonly) NSArray<Line*>* __nullable lines;
+@property (nonatomic, readonly) CGFloat maxPageHeight;
 @end
 
 @interface BeatPagination : NSObject
@@ -53,14 +54,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BeatExportSettings* settings;
 @property (nonatomic) NSDate* startTime;
 @property (nonatomic) NSMutableArray<BeatPaginationPage*>* pages;
+@property (nonatomic, readonly) CGFloat maxPageHeight;
 
-+ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate;
-+ (BeatPagination*)newLivePaginationWithScreenplay:(BeatScreenplay*)screenplay changeAt:(NSInteger)location delegate:(id<BeatPaginationDelegate>)delegate;
++ (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPaginationDelegate>)delegate;
++ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination;
+
 + (Line*)contdLineFor:(Line*)line;
 + (Line*)moreLineFor:(Line*)line;
-+ (CGFloat) lineHeight;
++ (CGFloat)lineHeight;
 
 - (void)paginate;
+- (NSInteger)findPageIndexForLine:(Line*)line;
+- (CGFloat)heightForScene:(OutlineScene*)scene;
 @end
 
 NS_ASSUME_NONNULL_END

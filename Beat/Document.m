@@ -120,9 +120,8 @@
 #import "BeatAutocomplete.h"
 #import "Document+Scrolling.h"
 #import "Document+Plugins.h"
-#import "BeatPaginationTest.h"
 
-@interface Document () <BeatRenderManagerDelegate, BeatPaginationDelegate> {
+@interface Document () <BeatRenderManagerDelegate> {
 	NSString *bufferedText;
 	NSData *dataCache;
 	NSMutableArray *autocompleteCharacterNames;
@@ -376,6 +375,8 @@
 #define PARENTHETICAL_INDENT_P 14 * CHR_WIDTH
 #define DIALOGUE_INDENT_P 8 * CHR_WIDTH
 #define DIALOGUE_RIGHT_P 44 * CHR_WIDTH
+
+#define NEW_PAGINATION true
 
 @implementation Document
 
@@ -631,7 +632,7 @@ static BeatAppDelegate *appDelegate;
 	[self renderTest];
 }
 
--(BeatExportSettings*)settings {
+-(BeatExportSettings*)exportSettings {
 	return [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
 }
 -(void)renderTest {
@@ -639,8 +640,8 @@ static BeatAppDelegate *appDelegate;
 	 [self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 	 }];
 	 
-	 if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:[self settings] delegate:self];
-	 [_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:[self settings]];
+	 if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:[self exportSettings] delegate:self];
+	 [_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:[self exportSettings]];
 }
 
 -(void)awakeFromNib {
@@ -889,6 +890,11 @@ static BeatAppDelegate *appDelegate;
 		if (sidebarWidth == 0) sidebarWidth = MIN_OUTLINE_WIDTH;
 		_splitHandle.mainConstraint.constant = sidebarWidth;
 	}
+}
+
+/// Focuses the editor window
+- (void)focusEditor {
+	[self.documentWindow makeKeyWindow];
 }
 
 #pragma mark - Update Editor View by Mode
@@ -1767,6 +1773,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
+	// New pagination
+	[self.previewController createPreviewWithChangeAt:_lastChangedRange.location sync:false];
 	
 	// Update scene number labels
 	// A larger chunk of text was pasted or there was a change in outline. Ensure layout.
@@ -3697,23 +3705,23 @@ static bool _skipAutomaticLineBreaks = false;
 
 - (NSDictionary *) colors {
 	return @{
-			 @"red" : [self colorWithRed:239 green:0 blue:73],
-			 @"blue" : [self colorWithRed:0 green:129 blue:239],
-			 @"green": [self colorWithRed:0 green:223 blue:121],
-			 @"pink": [self colorWithRed:250 green:111 blue:193],
-			 @"magenta": [self colorWithRed:236 green:0 blue:140],
-			 @"gray": NSColor.grayColor,
-			 @"grey": NSColor.grayColor, // for the illiterate
-			 @"purple": [self colorWithRed:181 green:32 blue:218],
-			 @"prince": [self colorWithRed:181 green:32 blue:218], // for the purple one
-			 @"yellow": [self colorWithRed:251 green:193 blue:35],
-			 @"cyan": [self colorWithRed:7 green:189 blue:235],
-			 @"teal": [self colorWithRed:12 green:224 blue:227], // gotta have teal & orange
-			 @"orange": [self colorWithRed:255 green:161 blue:13],
-			 @"brown": [self colorWithRed:169 green:106 blue:7],
-			 @"darkGray": [self colorWithRed:170 green:170 blue:170],
-			 @"veryDarkGray": [self colorWithRed:100 green:100 blue:100]
-    };
+		@"red" : [self colorWithRed:239 green:0 blue:73],
+		@"blue" : [self colorWithRed:0 green:129 blue:239],
+		@"green": [self colorWithRed:0 green:223 blue:121],
+		@"pink": [self colorWithRed:250 green:111 blue:193],
+		@"magenta": [self colorWithRed:236 green:0 blue:140],
+		@"gray": NSColor.grayColor,
+		@"grey": NSColor.grayColor, // for the illiterate
+		@"purple": [self colorWithRed:181 green:32 blue:218],
+		@"prince": [self colorWithRed:181 green:32 blue:218], // for the purple one
+		@"yellow": [self colorWithRed:251 green:193 blue:35],
+		@"cyan": [self colorWithRed:7 green:189 blue:235],
+		@"teal": [self colorWithRed:12 green:224 blue:227], // gotta have teal & orange
+		@"orange": [self colorWithRed:255 green:161 blue:13],
+		@"brown": [self colorWithRed:169 green:106 blue:7],
+		@"darkGray": [self colorWithRed:170 green:170 blue:170],
+		@"veryDarkGray": [self colorWithRed:100 green:100 blue:100]
+	};
 }
 - (NSColor *) colorWithRed: (CGFloat) red green:(CGFloat)green blue:(CGFloat)blue {
 	return [NSColor colorWithDeviceRed:(red / 255) green:(green / 255) blue:(blue / 255) alpha:1.0f];
@@ -3773,7 +3781,7 @@ static bool _skipAutomaticLineBreaks = false;
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *) message{
 	if ([message.name isEqualToString:@"selectSceneFromScript"]) {
 		NSInteger sceneIndex = [message.body integerValue];
-				
+		
 		[self preview:nil];
 		if (sceneIndex < self.getOutlineItems.count) {
 			OutlineScene *scene = [self.getOutlineItems objectAtIndex:sceneIndex];
@@ -3831,7 +3839,7 @@ static bool _skipAutomaticLineBreaks = false;
 	} else {
 		[_documentSettings remove:DocSettingSceneNumberStart];
 	}
-		
+	
 	// Rebuild outline everywhere
 	[self.parser createOutline];
 	[self.outlineView reloadOutline];
@@ -3900,18 +3908,18 @@ static bool _skipAutomaticLineBreaks = false;
 - (IBAction)toggleTimeline:(id)sender
 {
 	NSPoint scrollPosition = self.textScrollView.contentView.documentVisibleRect.origin;
-		
-	if (!_timeline.visible) {
 	
+	if (!_timeline.visible) {
+		
 		[_timeline show];
 		[self ensureLayout];
 		[_timelineButton setState:NSOnState];
-
+		
 		// ???
 		// For some reason the NSTextView scrolls into some weird position when the view
 		// height is changed. Restoring scroll position does NOT fix this.
 		//[self.textScrollView.contentView scrollToPoint:scrollPosition];
-
+		
 	} else {
 		[_timeline hide];
 		scrollPosition.y = scrollPosition.y * self.magnification;
@@ -3932,7 +3940,7 @@ static bool _skipAutomaticLineBreaks = false;
  nyt tulevaisuus
  on musta aukko
  
-*/
+ */
 
 
 #pragma mark - Timeline Delegation
@@ -3988,18 +3996,18 @@ static bool _skipAutomaticLineBreaks = false;
 }
 
 /*
-
-5am
-out again
-triangle walks
-
-*/
+ 
+ 5am
+ out again
+ triangle walks
+ 
+ */
 
 
 #pragma mark - Pagination
 
 /*
-
+ 
  Pagination was a dream of mine which I managed to make happen.
  Live pagination should still be optimized so that we only paginate
  from a given index.
@@ -4040,7 +4048,7 @@ static NSArray<Line*>* cachedTitlePage;
 	
 	self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
 		cachedTitlePage = [ContinuousFountainParser titlePageForString:self.text];
-
+		
 		// Make a copy of the array for thread-safety
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
@@ -4051,7 +4059,7 @@ static NSArray<Line*>* cachedTitlePage;
 			[self.paginator livePaginationFor:lines changeAt:range.location];
 		});
 	}];
-
+	
 }
 
 - (void)paginationDidFinish:(NSArray<Line*>*)pages pageBreaks:(NSArray*)pageBreaks {
@@ -4083,7 +4091,7 @@ static NSArray<Line*>* cachedTitlePage;
 	else size = BeatA4;
 	
 	//[self.documentSettings setInt:DocSettingPageSize as:size];
-		
+	
 	[self updateLayout];
 }
 - (IBAction)selectPaperSize:(id)sender {
@@ -4095,7 +4103,7 @@ static NSArray<Line*>* cachedTitlePage;
 	BeatPaperSize size;
 	if ([item.title isEqualToString:@"A4"]) size = BeatA4;
 	else size = BeatUSLetter;
-		
+	
 	self.pageSize = size;
 }
 
@@ -4237,7 +4245,7 @@ static NSArray<Line*>* cachedTitlePage;
 			
 			NSRange titlePageRange = NSMakeRange(0, titlePageEnd);
 			NSString *oldTitlePage = [self.text substringWithRange:titlePageRange];
-
+			
 			[self replaceString:oldTitlePage withString:titlePage atIndex:0];
 		}
 		
@@ -4267,7 +4275,7 @@ static NSArray<Line*>* cachedTitlePage;
 #pragma mark - Autosave
 
 /*
-
+ 
  Beat has two kinds of autosave: recovery & saving in place.
  
  Autosave provided by NSDocument is used to saving drafts and
@@ -4357,7 +4365,7 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 - (void)initAutosave {
- 	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
+	_autosaveTimer = [NSTimer scheduledTimerWithTimeInterval:AUTOSAVE_INPLACE_INTERVAL target:self selector:@selector(autosaveInPlace) userInfo:nil repeats:YES];
 }
 
 - (void)saveDocumentAs:(id)sender {
@@ -4365,11 +4373,11 @@ static NSArray<Line*>* cachedTitlePage;
 	NSString *previousName = self.fileNameString;
 	
 	[super saveDocumentAs:sender];
-
+	
 	NSURL *url = [BeatAppDelegate appDataPath:@"Autosave"];
 	url = [url URLByAppendingPathComponent:previousName];
 	url = [url URLByAppendingPathExtension:@"fountain"];
-		 
+	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
 	if ([fileManager fileExistsAtPath:url.path]) {
@@ -4476,7 +4484,7 @@ static NSArray<Line*>* cachedTitlePage;
 		self.textView.editable = YES;
 		[self.documentSettings setBool:@"Locked" as:NO];
 		[self updateChangeCount:NSChangeDone];
-
+		
 		[self.lockButton hide];
 	}
 }
@@ -4498,7 +4506,6 @@ static NSArray<Line*>* cachedTitlePage;
 		return YES;
 	}
 }
-
 
 @end
 

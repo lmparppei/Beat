@@ -8,12 +8,19 @@
 
 import Foundation
 
+@objc protocol BeatPaginationManagerExports:JSExport {
+	var pages:[BeatPaginationPage] { get }
+	var maxPageHeight:CGFloat { get }
+	func heightForScene(_ scene:OutlineScene) -> CGFloat
+	
+}
+
 @objc protocol BeatRenderManagerDelegate {
 	func paginationDidFinish(pages: [BeatPaginationPage])
 	var parser:ContinuousFountainParser? { get }
 }
 
-class BeatPaginationManager:NSObject, BeatPaginationDelegate {
+class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
 	/// Delegate which is informed when pagination is finished. Useful when using background pagination.
 	weak var delegate:BeatRenderManagerDelegate?
 	/// Optional renderer delegate to be used for rendering `BeatPaginationBlock` objects on screen/print/whatever.
@@ -23,7 +30,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate {
 	var livePagination = false
 	
 	var operationQueue:[BeatPagination] = [];
-	var pageCache:[BeatPaginationPage] = []
+	var pageCache:NSMutableArray?
 	var pages:[BeatPaginationPage] {
 		return (finishedPagination?.pages ?? []) as! [BeatPaginationPage]
 	}
@@ -33,10 +40,11 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate {
 	//@objc convenience init(settings:BeatExportSettings, delegate:BeatRenderManagerDelegate) {
 //		self.init(settings: settings, delegate: delegate, renderer: nil)
 //	}
-	@objc init(settings:BeatExportSettings, delegate:BeatRenderManagerDelegate, renderer:BeatRendererDelegate?) {
+	@objc init(settings:BeatExportSettings, delegate:BeatRenderManagerDelegate, renderer:BeatRendererDelegate? = nil, livePagination:Bool) {
 		self.settings = settings
 		self.delegate = delegate
 		self.renderer = renderer
+		self.livePagination = livePagination
 	}
 	
 	//MARK: - Run operations
@@ -55,7 +63,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate {
 			operationQueue.last!.paginate()
 		}
 	}
-	
+		
 	//MARK: - Cancel operations
 	
 	/// Cancels all background operations
@@ -75,9 +83,18 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate {
 	 let titlePage = pagination.titlePage
 	 */
 	@objc func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
-		self.pageCache = []
+		self.pageCache = self.finishedPagination?.pages
 		
-		let operation = BeatPagination.newPagination(with: screenplay, delegate: self)
+		let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination)
+		runPagination(pagination: operation)
+	}
+	
+	/// Paginates only the given lines
+	func paginate(lines:[Line]) {
+		let screenplay = BeatScreenplay()
+		screenplay.lines = lines
+		
+		let operation = BeatPagination.newPagination(with: lines, delegate: self)
 		runPagination(pagination: operation)
 	}
 	
@@ -148,5 +165,20 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate {
 	
 	var parser:ContinuousFountainParser? {
 		return self.delegate?.parser
+	}
+	
+	
+	// MARK: - Convenience methods
+	
+	func page(forScene scene:OutlineScene) -> Int {
+		return self.finishedPagination?.findPageIndex(for: scene.line) ?? -1
+	}
+	
+	var maxPageHeight:CGFloat {
+		return self.finishedPagination?.maxPageHeight ?? BeatPaperSizing.size(for: settings.paperSize).height
+	}
+	
+	func heightForScene(_ scene:OutlineScene) -> CGFloat {
+		return self.finishedPagination?.height(for: scene) ?? 0.0
 	}
 }

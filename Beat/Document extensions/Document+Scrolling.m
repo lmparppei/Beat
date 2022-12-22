@@ -59,9 +59,5 @@
 	[textView scrollToRange:range callback:nil];
 }
 
-/// Focuses the editor window
-- (void)focusEditor {
-	[self.documentWindow makeKeyWindow];
-}
 
 @end

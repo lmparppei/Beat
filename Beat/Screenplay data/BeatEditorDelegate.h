@@ -98,6 +98,8 @@
 
 @property (atomic) NSAttributedString *attrTextCache;
 
+@property (nonatomic) BeatExportSettings* exportSettings;
+
 #if !TARGET_OS_IOS
 @property (strong, nonatomic) NSMutableArray<BeatPrintView*>* printViews;
 - (CGFloat)sidebarWidth;

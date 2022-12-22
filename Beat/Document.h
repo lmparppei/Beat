@@ -85,7 +85,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
 @property (nonatomic) BeatPaperSize pageSize;
-
+@property (nonatomic) BeatExportSettings* exportSettings;
 @property (nonatomic) bool contentLocked;
 
 // Fonts

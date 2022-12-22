@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)scrollToSceneIndex:(NSInteger)index;
 /// Selects the given range and scrolls it into view
 - (void)selectAndScrollTo:(NSRange)range;
-/// Focuses the editor window
-- (void)focusEditor;
 
 @end
 
