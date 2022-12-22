@@ -5,9 +5,10 @@
 //  Created by Lauri-Matti Parppei on 12.12.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
-/*
+/**
  
-NOTE: iOS can't use this code.
+ This class represents a page. It contains the blocks generated from screenplay during pagination
+ and knows the height of its content and remaining space etc.
  
  */
 #import <BeatParsing/BeatParsing.h>
@@ -142,6 +143,7 @@ NOTE: iOS can't use this code.
 	return NSNotFound;
 }
 
+/// Returns the index of a block (on this page) containing the given line.
 - (NSInteger)blockIndexForLine:(Line*)line {
 	for (NSInteger i=0; i<_blocks.count; i++) {
 		BeatPaginationBlock* block = _blocks[i];
@@ -201,7 +203,7 @@ NOTE: iOS can't use this code.
 	// Iterate blocks and store stuff until given line
 	NSMutableArray<BeatPaginationBlock*>* blocks = NSMutableArray.new;
 	for (BeatPaginationBlock* block in self.blocks) {
-		if ([block.lines containsObject:line]) break;
+		if ([block containsLine:line]) break;
 		[blocks addObject:block];
 	}
 	self.blocks = blocks;

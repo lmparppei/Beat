@@ -15,6 +15,7 @@
 @interface BeatPaginationBlock ()
 @property (nonatomic) CGFloat calculatedHeight;
 @property (nonatomic) id<BeatPageDelegate> delegate;
+@property (nonatomic) NSArray<NSUUID*>* UUIDs;
 
 @property (nonatomic) NSMutableDictionary<NSUUID*, NSNumber*>* lineHeights;
 
@@ -556,6 +557,25 @@
 	RenderStyle* style = [_delegate.styles forElement:line.typeName];
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 	return width;
+}
+
+#pragma mark - Convenience
+
+/// Returns an array of line UUIDs
+- (NSArray<NSUUID*>*)UUIDs {
+	if (_UUIDs == nil) {
+		NSMutableArray* UUIDs = NSMutableArray.new;
+		for (Line* line in self.lines) {
+			[UUIDs addObject:line.uuid];
+		}
+		_UUIDs = UUIDs;
+	}
+	
+	return _UUIDs;
+}
+
+- (bool)containsLine:(Line*)line {
+	return [self.UUIDs containsObject:line.uuid];
 }
 
 @end

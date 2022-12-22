@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray*)breakBlockWithRemainingSpace:(CGFloat)remainingSpace;
 - (CGFloat)height;
+- (bool)containsLine:(Line*)line;
 
 @end
 
