@@ -29,7 +29,7 @@ final class BeatPreviewController:NSObject, BeatRenderManagerDelegate {
 
 		// Create render manager
 		self.renderer = BeatRendering(settings: settings)
-		self.pagination = BeatPaginationManager(settings: settings, delegate: self, renderer: self.renderer)
+		self.pagination = BeatPaginationManager(settings: settings, delegate: self, renderer: self.renderer, livePagination: true)
 	}
 	
 	var settings:BeatExportSettings {

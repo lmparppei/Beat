@@ -148,7 +148,7 @@
 	
 	if (startIndex == 0 || startIndex == NSNotFound) {
 		_pages = NSMutableArray.new;
-		_currentPage = nil;
+		_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
 		startIndex = 0;
 	}
 	
@@ -360,11 +360,12 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 {
 	BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
 	[_currentPage addBlock:block];
-	[_pages addObject:_currentPage];
+	[self.pages addObject:_currentPage];
 	
 	// Add objects to queue
 	NSRange range = NSMakeRange(0, toQueue.count);
 	NSIndexSet* indices = [NSIndexSet indexSetWithIndexesInRange:range];
+	NSLog(@"• Adding %lu objects at indices starting from %lu  (total count %lu)", toQueue.count, indices.firstIndex, _lineQueue.count);
 	[_lineQueue insertObjects:toQueue atIndexes:indices];
 	
 	_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];

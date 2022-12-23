@@ -27,7 +27,10 @@ class BeatPaginationPageView:NSView {
 	
 	var fonts = BeatFonts.shared()
 	
-	init(size:NSSize, content:NSAttributedString, settings:BeatExportSettings, previewController: BeatPreviewController? = nil) {
+	@objc convenience init(size:NSSize, content:NSAttributedString, settings:BeatExportSettings, previewController:BeatPreviewController? = nil) {
+		self.init(size: size, content: content, settings: settings, titlePage: false)
+	}
+	@objc init(size:NSSize, content:NSAttributedString, settings:BeatExportSettings, titlePage:Bool, previewController: BeatPreviewController? = nil) {
 		self.size = size
 		self.attributedString = content
 		self.previewController = previewController
@@ -206,9 +209,10 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let size = BeatPaperSizing.size(for: previewController?.settings.paperSize ?? .A4)
 		
 		self.titlePageLines = titlePage
-		super.init(size: size, content: NSMutableAttributedString(string: ""), settings: settings)
+		super.init(size: size, content: NSMutableAttributedString(string: ""), settings: settings, titlePage:true)
 		
-		render()
+		createViews()
+		createTitlePage()
 	}
 		
 	required init?(coder: NSCoder) {
@@ -217,9 +221,17 @@ class BeatTitlePageView:BeatPaginationPageView {
 
 	/// Creates title page content and places the text snippets into correct spots
 	func createTitlePage() {
-		textView?.string = "\n" // Add one extra line break to make title top margin have effect
-		leftColumn?.string = ""
-		rightColumn?.string = ""
+		guard let leftColumn = self.leftColumn,
+			  let rightColumn = self.rightColumn,
+			  let textView = self.textView
+		else {
+			print("ERROR: No text views found, returning empty page")
+			return
+		}
+		
+		textView.string = "\n" // Add one extra line break to make title top margin have effect
+		leftColumn.string = ""
+		rightColumn.string = ""
 		
 		let renderer = BeatRendering(settings: self.settings)
 		
@@ -236,17 +248,17 @@ class BeatTitlePageView:BeatPaginationPageView {
 			let attrStr = renderer.renderLine(el, of: nil, dualDialogueElement: false, firstElementOnPage: false)
 			topContent.append(attrStr)
 		}
-		textView!.textStorage?.append(topContent)
+		textView.textStorage?.append(topContent)
 		
 		// Draft date on right side
 		if let draftDate = titlePageElement("draft date") {
 			let attrStr = renderer.renderLine(draftDate)
-			rightColumn?.textStorage?.append(attrStr)
+			rightColumn.textStorage?.append(attrStr)
 		}
 		
 		if let contact = titlePageElement("contact") {
 			let attrStr = renderer.renderLine(contact)
-			leftColumn?.textStorage?.append(attrStr)
+			leftColumn.textStorage?.append(attrStr)
 		}
 		
 		// Add the rest on left side
@@ -255,21 +267,21 @@ class BeatTitlePageView:BeatPaginationPageView {
 			
 			if let element = titlePageElement(dict.keys.first ?? "") {
 				let attrStr = renderer.renderLine(element)
-				leftColumn?.textStorage?.append(attrStr)
+				leftColumn.textStorage?.append(attrStr)
 			}
 		}
 
 		// Once we've set the content, let's adjust top inset to align text to bottom
-		_ = leftColumn!.layoutManager!.glyphRange(for: leftColumn!.textContainer!)
-		_ = rightColumn!.layoutManager!.glyphRange(for: rightColumn!.textContainer!)
-		let leftRect = leftColumn!.layoutManager!.usedRect(for: leftColumn!.textContainer!)
-		let rightRect = rightColumn!.layoutManager!.usedRect(for: rightColumn!.textContainer!)
+		_ = leftColumn.layoutManager!.glyphRange(for: leftColumn.textContainer!)
+		_ = rightColumn.layoutManager!.glyphRange(for: rightColumn.textContainer!)
+		let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
+		let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
 		
-		let insetLeft = leftColumn!.frame.height - leftRect.height
-		let insetRight = rightColumn!.frame.height - rightRect.height
+		let insetLeft = leftColumn.frame.height - leftRect.height
+		let insetRight = rightColumn.frame.height - rightRect.height
 		
-		leftColumn?.textContainerInset = NSSize(width: 0, height: insetLeft)
-		rightColumn?.textContainerInset = NSSize(width: 0, height: insetRight)
+		leftColumn.textContainerInset = NSSize(width: 0, height: insetLeft)
+		rightColumn.textContainerInset = NSSize(width: 0, height: insetRight)
 	}
 	
 	/// Gets **and removes** a title page element from title page array. The array looks like `[ [key: value], [key: value], ...]` to keep the title page elements organized.
@@ -320,27 +332,28 @@ class BeatTitlePageView:BeatPaginationPageView {
 	}
 	
 	/// Override page render method for title pages
-	func render() {
-		if self.textView == nil {
-			let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
-			let textViewFrame = NSRect(x: pageStyle.marginLeft,
-									   y: pageStyle.marginTop,
-									   width: frame.size.width - pageStyle.marginLeft * 2,
-									   height: 400)
-			
-			textView = BeatPageTextView(frame: textViewFrame)
-			textView?.isEditable = false
-			textView?.backgroundColor = .white
-						
-			let columnFrame = NSRect(x: pageStyle.marginLeft,
-									 y: textViewFrame.origin.y + textViewFrame.height,
-									 width: textViewFrame.width / 2 - 10,
-									 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom)
-			
+	func createViews() {
+		let frame = NSRect(x: 0, y: 0, width: size.width, height: size.height)
+		let textViewFrame = NSRect(x: pageStyle.marginLeft,
+								   y: pageStyle.marginTop,
+								   width: frame.size.width - pageStyle.marginLeft * 2,
+								   height: 400)
+		textView?.frame = frame
+		
+		let columnFrame = NSRect(x: pageStyle.marginLeft,
+								 y: textViewFrame.origin.y + textViewFrame.height,
+								 width: textViewFrame.width / 2 - 10,
+								 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom)
+		
+		if (leftColumn == nil) {
 			leftColumn = NSTextView(frame: columnFrame)
 			leftColumn?.isEditable = false
 			leftColumn?.backgroundColor = .white
 			
+			self.addSubview(leftColumn!)
+		}
+		
+		if (rightColumn == nil) {
 			let rightColumnFrame = NSRect(x: frame.width - pageStyle.marginLeft - columnFrame.width,
 										  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
 			
@@ -348,15 +361,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 			rightColumn?.isEditable = false
 			rightColumn?.backgroundColor = .white
 			
-			self.addSubview(textView!)
-			self.addSubview(leftColumn!)
 			self.addSubview(rightColumn!)
 		}
-		
-		textView?.string = ""
-		leftColumn?.string = ""
-		rightColumn?.string = ""
-		
-		createTitlePage()
 	}
 }

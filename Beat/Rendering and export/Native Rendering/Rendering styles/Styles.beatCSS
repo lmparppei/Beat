@@ -139,7 +139,7 @@ shot {
 }
 
 titlePageTitle {
-	margin-top: 18l;
+	margin-top: 23l;
 	textAlign: center;
 }
 titlePageAuthor {

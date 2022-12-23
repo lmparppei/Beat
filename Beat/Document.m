@@ -1744,9 +1744,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
 	
 	// Update formatting
-	//[BeatMeasure start:@"Formatting"];
 	[self applyFormatChanges];
-	//[BeatMeasure end:@"Formatting"];
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
@@ -1773,8 +1771,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
-	// New pagination
-	[self.previewController createPreviewWithChangeAt:_lastChangedRange.location sync:false];
 	
 	// Update scene number labels
 	// A larger chunk of text was pasted or there was a change in outline. Ensure layout.
@@ -1787,7 +1783,7 @@ static NSWindow __weak *currentKeyWindow;
 	// Update preview screen
 	// [self.preview updatePreviewInSync:NO];
 	
-	// Update any currently running plugins
+	// Update any running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
 	
 	// Save to buffer
@@ -4035,6 +4031,17 @@ static bool _skipAutomaticLineBreaks = false;
 
 static NSArray<Line*>* cachedTitlePage;
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
+	if (NEW_PAGINATION) {
+		static bool paginationWarning = false;
+		if (!paginationWarning) {
+			NSLog(@"NOTE: Running new pagination.");
+			paginationWarning = true;
+		}
+		
+		if (sync) [self.previewController createPreviewWithChangeAt:range.location sync:sync];
+		return;
+	}
+		
 	self.preview.previewUpdated = false;
 	
 	// Null the timer so we don't have too many of these operations queued
@@ -4055,7 +4062,6 @@ static NSArray<Line*>* cachedTitlePage;
 		
 		// Dispatch to a background thread
 		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
-			// [self.previewController createPreviewWithChangeAt:range.location];
 			[self.paginator livePaginationFor:lines changeAt:range.location];
 		});
 	}];

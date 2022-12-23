@@ -36,7 +36,7 @@ class BeatRendererTester:NSWindowController {
 		// Create renderer instance
 		self.renderer = BeatRendering(settings: settings)
 		// Create pagination instance and hook up the renderer
-		self.pagination = BeatPaginationManager(settings: self.settings!, delegate: delegate, renderer: self.renderer)
+		self.pagination = BeatPaginationManager(settings: self.settings!, delegate: delegate, renderer: self.renderer, livePagination: false)
 				
 		super.init(window: nil) // Call this to get NSWindowController to init with the windowNibName property
 		print("tester window:", self.window ?? "(null)")
@@ -82,6 +82,9 @@ class BeatRendererTester:NSWindowController {
 		container.frame = rect
 		
 		let style = RenderStyles.shared.page()
+		
+		let titlePage = BeatTitlePageView(titlePage: pagination?.titlePage ?? [], settings: self.settings!)
+		container.addSubview(titlePage)
 		
 		for page in renderer.pages {
 			let y = (container.subviews.last?.frame.origin.y ?? 0.0) + 10.0 + (container.subviews.last?.frame.size.height ?? 0.0)
