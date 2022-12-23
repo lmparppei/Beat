@@ -55,19 +55,20 @@
 
 @implementation BeatPagination
 
-+ (CGFloat) lineHeight; {
-	return 12.0;
-}
++ (CGFloat) lineHeight { return 12.0; }
 
-+ (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPaginationDelegate>)delegate {
++ (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPaginationDelegate>)delegate
+{
 	return [BeatPagination.alloc initWithDelegate:delegate lines:lines titlePage:nil settings:delegate.settings livePagination:false changeAt:0 cachedPages:nil];
 }
 
-+ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination {
++ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination
+{
 	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:0 cachedPages:cachedPages];
 }
 
-- (instancetype)initWithDelegate:(id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages {
+- (instancetype)initWithDelegate:(id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages
+{
 	self = [super init];
 	
 	if (self) {
@@ -101,19 +102,19 @@
 #pragma mark - Convenience stuff
 
 /// A method for backwards compatibility with the old pagination code
-- (NSInteger)numberOfPages {
-	if (self.pages.count == 0) {
-		[self paginate];
-	}
-	
+- (NSInteger)numberOfPages
+{
+	if (self.pages.count == 0) [self paginate];
 	return self.pages.count;
 }
 
-- (void)paginationFinished {
+- (void)paginationFinished
+{
 	[self.delegate paginationFinished:self];
 }
 
-- (CGFloat)maxPageHeight {
+- (CGFloat)maxPageHeight
+{
 	NSSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
 	RenderStyle* style = _styles.page;
 	
@@ -122,7 +123,8 @@
 
 #pragma mark - Running pagination
 
-- (void)paginate {
+- (void)paginate
+{
 	NSInteger startIndex = 0;
 	
 	if (_livePagination) {
@@ -154,12 +156,14 @@
 	[self paginationFinished];
 }
 
-- (void)useCachedPaginationFrom:(NSInteger)pageIndex {
+- (void)useCachedPaginationFrom:(NSInteger)pageIndex
+{
 	NSArray* reusablePages = [self.cachedPages subarrayWithRange:NSMakeRange(pageIndex, self.cachedPages.count - pageIndex)];
 	[_pages addObjectsFromArray:reusablePages];
 }
 
-- (bool)paginateFromIndex:(NSInteger)index {
+- (bool)paginateFromIndex:(NSInteger)index
+{
 	// Save start time
 	_startTime = [NSDate date];
 	
@@ -227,7 +231,9 @@
 	return true;
 }
 
-- (void)addBlocks:(NSArray<NSArray<Line*>*>*)blocks {
+/// Creates blocks out of arrays of `Line` objects and adds them onto pages. Also handles breaking the blocks across pages, and adds the overflowing lines to queue.
+- (void)addBlocks:(NSArray<NSArray<Line*>*>*)blocks
+{
 	NSMutableArray<BeatPaginationBlock*>* pageBlocks = NSMutableArray.new;
 		
 	for (NSArray<Line*>* block in blocks) {
@@ -274,7 +280,8 @@ That's why we are returning `[ [Line], [Line], ... ]`, and converting those bloc
 
 The layout blocks (`BeatPageBlock`) won't contain anything else than the rendered block, which can also mean a full dual-dialogue block.
 */
-- (NSArray<NSArray<Line*>*>*)blocksForLineAt:(NSInteger)idx {
+- (NSArray<NSArray<Line*>*>*)blocksForLineAt:(NSInteger)idx
+{
 	Line* line = self.lineQueue[idx];
 	NSMutableArray<Line*>* block = [NSMutableArray arrayWithObject:line];
 	
@@ -327,7 +334,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 }
 
 /// Returns dialogue block for the given line index
-- (NSArray<Line*>*)dialogueBlockForLineAt:(NSInteger)idx {
+- (NSArray<Line*>*)dialogueBlockForLineAt:(NSInteger)idx
+{
 	Line *line = _lineQueue[idx];
 	NSMutableArray<Line*>* block = NSMutableArray.new;
 	[block addObject:line];
@@ -348,7 +356,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	return block;
 }
 
-- (void)addPage:(NSArray<Line*>*)elements toQueue:(NSArray<Line*>*)toQueue pageBreak:(BeatPageBreak*)pageBreak {
+- (void)addPage:(NSArray<Line*>*)elements toQueue:(NSArray<Line*>*)toQueue pageBreak:(BeatPageBreak*)pageBreak
+{
 	BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
 	[_currentPage addBlock:block];
 	[_pages addObject:_currentPage];
@@ -366,7 +375,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 #pragma mark - Line lookup
 
 /// Returns page index based on line position
-- (NSInteger)findPageIndexAt:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages {
+- (NSInteger)findPageIndexAt:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages
+{
 	for (NSInteger i=0; i<pages.count; i++) {
 		BeatPaginationPage *page = pages[i];
 		NSRange range = page.representedRange;
@@ -382,7 +392,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	return NSNotFound;
 }
 
-- (NSInteger)findPageIndexForLine:(Line*)line {
+/// Returns page index for given line
+- (NSInteger)findPageIndexForLine:(Line*)line
+{
 	for (NSInteger i=0; i<self.pages.count; i++) {
 		BeatPaginationPage* page = self.pages[i];
 		if (NSLocationInRange(line.position, page.representedRange)) {
@@ -396,7 +408,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	return NSNotFound;
 }
 
-- (NSArray*)findSafePageAndLineForPosition:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages {
+/// Returns an array with index path to a safe line from the given position in screenplay.
+- (NSArray*)findSafePageAndLineForPosition:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages
+{
 	NSInteger pageIndex = [self findPageIndexAt:position pages:pages];
 	if (pageIndex == NSNotFound) return @[ @0, @0 ];
 	
@@ -421,7 +435,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 #pragma mark - Heights of scenes
 
-- (CGFloat)heightForScene:(OutlineScene*)scene {
+- (CGFloat)heightForScene:(OutlineScene*)scene
+{
 	NSInteger pageIndex = [self findPageIndexForLine:scene.line];
 	if (pageIndex == NSNotFound) return 0.0;
 	
@@ -485,7 +500,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 #pragma mark - CONT'D and (MORE)
 
 /// Returns a `Line` object with character cue followed by `(CONT'D)` extension for continuing dialogue block after a page break.
-+ (Line*)contdLineFor:(Line*)line {
++ (Line*)contdLineFor:(Line*)line
+{
 	NSString *extension = BeatPagination.contdString;
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
 	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
@@ -500,7 +516,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 }
 
 /// Returns a `Line` object for the `(MORE)` at the bottom of a page when a dialogue block is broken across pages.
-+ (Line*)moreLineFor:(Line*)line {
++ (Line*)moreLineFor:(Line*)line
+{
 	LineType type = (line.isDualDialogue) ? dualDialogueMore : more;
 	Line *more = [Line.alloc initWithString:[BeatPagination moreString] type:type];
 	more.position = line.position;
@@ -508,12 +525,14 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	return more;
 }
 
-+ (NSString*)moreString {
++ (NSString*)moreString
+{
 	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemMore"];
 	return [NSString stringWithFormat:@"(%@)", moreStr];
 }
 
-+ (NSString*)contdString {
++ (NSString*)contdString
+{
 	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
 	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue
 }
