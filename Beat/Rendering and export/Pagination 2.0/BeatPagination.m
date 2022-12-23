@@ -365,7 +365,6 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	// Add objects to queue
 	NSRange range = NSMakeRange(0, toQueue.count);
 	NSIndexSet* indices = [NSIndexSet indexSetWithIndexesInRange:range];
-	NSLog(@"• Adding %lu objects at indices starting from %lu  (total count %lu)", toQueue.count, indices.firstIndex, _lineQueue.count);
 	[_lineQueue insertObjects:toQueue atIndexes:indices];
 	
 	_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];

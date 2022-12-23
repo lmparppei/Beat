@@ -22,6 +22,7 @@
 #import "BeatRevisions.h"
 #import "BeatConsole.h"
 #import "BeatPreview.h"
+#import "Beat-Swift.h"
 #import <objc/runtime.h>
 
 @interface BeatPlugin ()
@@ -1083,15 +1084,18 @@
 #pragma mark - Window management
 
 /// Makes the given window move along its parent document window. **Never use with standalone plugins.**
-- (void)gangWithDocumentWindow:(NSWindow*)window {
+- (void)gangWithDocumentWindow:(NSWindow*)window
+{
 	[self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
 }
 /// Window no longer moves aside its document window.
-- (void)detachFromDocumentWindow:(NSWindow*)window {
+- (void)detachFromDocumentWindow:(NSWindow*)window
+{
 	[self.delegate.documentWindow removeChildWindow:window];
 }
 /// Show all plugin windows.
-- (void)showAllWindows {
+- (void)showAllWindows
+{
 	if (_terminating) return;
 	
 	for (BeatPluginHTMLWindow *window in self.pluginWindows) {
@@ -1099,7 +1103,8 @@
 	}
 }
 /// All plugin windows become normal level windows, so they no longer float above the document window.
-- (void)hideAllWindows {
+- (void)hideAllWindows
+{
 	if (_terminating) return;
 	
 	for (BeatPluginHTMLWindow *window in self.pluginWindows) {
@@ -1149,7 +1154,8 @@
 	});
 }
 
-- (void)closePluginWindow:(id)sender {
+- (void)closePluginWindow:(id)sender
+{
 	if (_terminating) return;
 	
 	BeatPluginHTMLWindow *window = (BeatPluginHTMLWindow*)sender;
@@ -1168,7 +1174,8 @@
 	[window closeWindow];
 }
 
-- (void)windowWillClose:(NSNotification *)notification {
+- (void)windowWillClose:(NSNotification *)notification
+{
 	NSLog(@"HTML window will close");
 	//_terminating = YES;
 	
@@ -1188,15 +1195,18 @@
 	//[self end];
 }
 
-- (void)windowDidBecomeKey:(NSNotification *)notification {
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
 	if (NSApp.mainWindow != self.delegate.documentWindow) {
 		[self.delegate.documentWindow makeMainWindow];
 	}
 }
 
+
 #pragma mark - Tagging interface
 
-- (NSArray*)availableTags {
+- (NSArray*)availableTags
+{
 	return [BeatTagging tags];
 }
 - (NSDictionary*)tagsForScene:(OutlineScene *)scene
@@ -1204,21 +1214,39 @@
 	return [self.delegate.tagging tagsForScene:scene];
 }
 
+
 #pragma mark - Pagination interface
 
-- (BeatPaginator*)paginator:(NSArray*)lines {
+- (BeatPaginator*)paginator:(NSArray*)lines
+{
 	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines printInfo:_delegate.printInfo];
 	return paginator;
 }
 
-- (NSString*)htmlForLines:(NSArray*)lines {
+- (NSString*)htmlForLines:(NSArray*)lines
+{
 	BeatHTMLScript *html = [BeatHTMLScript.alloc initWithLines:lines];
 	return html.html;
 }
 
+
+#pragma mark - New pagination interface
+
+- (BeatPaginationManager*)pagination
+{
+	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
+}
+
+- (BeatPaginationManager*)currentPagination
+{
+	return self.delegate.previewController.pagination;
+}
+
+
 #pragma mark - Widget interface and Plugin UI API
 
-- (BeatPluginUIView*)widget:(CGFloat)height {
+- (BeatPluginUIView*)widget:(CGFloat)height
+{
 	// Allow only one widget view
 	if (_widgetView) return _widgetView;
 	
@@ -1232,23 +1260,28 @@
 	return view;
 }
 
-- (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame {
+- (BeatPluginUIButton*)button:(NSString*)name action:(JSValue*)action frame:(NSRect)frame
+{
 	return [BeatPluginUIButton buttonWithTitle:name action:action frame:frame];
 }
-- (BeatPluginUIDropdown*)dropdown:(nonnull NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame {
+- (BeatPluginUIDropdown*)dropdown:(nonnull NSArray<NSString *> *)items action:(JSValue*)action frame:(NSRect)frame
+{
 	return [BeatPluginUIDropdown withItems:items action:action frame:frame];
 }
-- (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame {
+- (BeatPluginUICheckbox*)checkbox:(NSString*)title action:(JSValue*)action frame:(NSRect)frame
+{
 	return [BeatPluginUICheckbox withTitle:title action:action frame:frame];
 }
-- (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName {
+- (BeatPluginUILabel*)label:(NSString*)title frame:(NSRect)frame color:(NSString*)color size:(CGFloat)size font:(NSString*)fontName
+{
 	return [BeatPluginUILabel withText:title frame:frame color:color size:size font:fontName];
 }
 
 
 #pragma mark - Printing interface
 
-- (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback {
+- (void)printHTML:(NSString*)html settings:(NSDictionary*)settings callback:(JSValue*)callback
+{
 	NSPrintInfo *printInfo = NSPrintInfo.sharedPrintInfo.copy;
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
@@ -1272,34 +1305,53 @@
 	});
 }
 
+
 #pragma mark - Window interface
 
-- (void)nextTab {
+- (void)nextTab
+{
 	[self.delegate.documentWindow selectNextTab:nil];
 }
-- (void)previousTab {
+- (void)previousTab
+{
 	[self.delegate.documentWindow selectPreviousTab:nil];
 }
 
 #pragma mark - Utilities
 
-- (NSArray*)screen {
+/// Returns screen frame as an array
+/// - returns: `[x, y, width, height]`
+- (NSArray*)screen
+{
 	NSRect screen = self.delegate.documentWindow.screen.frame;
 	return @[ @(screen.origin.x), @(screen.origin.y), @(screen.size.width), @(screen.size.height) ];
 }
-- (NSArray*)windowFrame {
+/// Returns window frame as an array
+/// - returns: `[x, y, width, height]`
+- (NSArray*)windowFrame
+{
 	NSRect frame = self.delegate.documentWindow.frame;
 	return @[ @(frame.origin.x), @(frame.origin.y), @(frame.size.width), @(frame.size.height) ];
 }
-- (void)setWindowFrameX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height {
+/// Sets host document window frame
+- (void)setWindowFrameX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
+{
 	NSRect frame = NSMakeRect(x, y, width, height);
 	[self.delegate.documentWindow setFrame:frame display:true];
 }
 
-- (void)setPropertyValue:(NSString*)key value:(id)value {
+
+#pragma mark - Objective C interface
+
+/// Set any value in `Document` class
+- (void)setPropertyValue:(NSString*)key value:(id)value
+{
 	[self.delegate setPropertyValue:key value:value];
 }
-- (id)getPropertyValue:(NSString *)key {
+
+/// Get any value in `Document` class
+- (id)getPropertyValue:(NSString *)key
+{
 	return [self.delegate getPropertyValue:key];
 }
 
@@ -1319,7 +1371,6 @@
 		return nil;
 	}
 	
-	//NSMethodSignature* signature = [NSMethodSignature signatureWithObjCTypes:"v@:BqfdIi"];
 	NSMethodSignature* signature = [self.delegate.document methodSignatureForSelector:selector];
 	
 	NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
@@ -1347,29 +1398,36 @@
 	return nil;
 }
 
-/// This crashes the whole app when needed. Use with extreme care.
+/// This crashes the whole app when needed. Can lead to data loss, so use with extreme care.
 - (void)crash {
 	@throw([NSException exceptionWithName:NSInternalInconsistencyException reason:@"Crash thrown by plugin" userInfo:nil]);
 }
 
 #pragma mark - Document utilities
 
-- (NSString*)createDocumentFile {
+/// Returns the plain-text file content used to save current screenplay (including settings block etc.)
+- (NSString*)createDocumentFile
+{
 	return _delegate.createDocumentFile;
 }
-- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings {
+/// Returns the plain-text file content used to save current screenplay (including settings block etc.) with additional `BeatDocumentSettings` block
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings
+{
 	return [_delegate createDocumentFileWithAdditionalSettings:additionalSettings];
 }
-
-- (BeatPreview*)preview {
+/// Returns the old HTML preview controller
+- (BeatPreview*)preview
+{
 	return _delegate.preview;
 }
-
-- (NSString*)previewHTML {
+/// Returns the old HTML preview content
+- (NSString*)previewHTML
+{
 	return _delegate.preview.htmlString;
 }
-
-- (NSString*)screenplayHTML:(NSDictionary*)exportSettings {
+/// Creates a HTML render for current document, with given export settings.
+- (NSString*)screenplayHTML:(NSDictionary*)exportSettings
+{
 	
 	BeatExportSettings *settings = [BeatExportSettings
 									operation:ForPrint
@@ -1391,10 +1449,12 @@
 
 #pragma mark - Parser data delegation
 
-- (Line*)lineWithString:(NSString*)string type:(LineType)type {
+/// Creates a new `Line` object with given string and type.
+- (Line*)lineWithString:(NSString*)string type:(LineType)type
+{
 	return [Line withString:string type:type];
 }
-
+/// Returns parsed `Line` objects for current document.
 - (NSArray*)lines
 {
 	return self.delegate.parser.lines;
@@ -1416,19 +1476,23 @@
 	return self.delegate.parser.outline;
 }
 
-- (Line*)lineAtPosition:(NSInteger)index {
+- (Line*)lineAtPosition:(NSInteger)index
+{
 	return [_delegate.parser lineAtPosition:index];
 }
-- (OutlineScene*)sceneAtIndex:(NSInteger)index {
+- (OutlineScene*)sceneAtIndex:(NSInteger)index
+{
 	return [_delegate.parser sceneAtIndex:index];
 }
 
-- (NSDictionary*)type {
+- (NSDictionary*)type
+{
 	if (!_type) _type = Line.typeDictionary;
 	return _type;
 }
 
-- (NSString*)scenesAsJSON {
+- (NSString*)scenesAsJSON
+{
 	[self.delegate.parser createOutline];
 	
 	NSMutableArray *scenesToSerialize = [NSMutableArray array];
@@ -1443,7 +1507,8 @@
 	return json;
 }
 
-- (NSString*)outlineAsJSON {
+- (NSString*)outlineAsJSON
+{
 	[self.delegate.parser createOutline];
 	
 	NSMutableArray *scenesToSerialize = [NSMutableArray array];

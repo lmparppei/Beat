@@ -9,12 +9,22 @@
 #import "BeatLayoutManager.h"
 #import "BeatTextView.h"
 #import "BeatRevisions.h"
+#import "BeatEditorFormatting.h"
+
+@interface BeatLayoutManager()
+@property (nonatomic) NSMutableParagraphStyle* _Nullable markerStyle;
+@end
 
 @implementation BeatLayoutManager
 
 @dynamic delegate;
 
 - (void)drawGlyphsForGlyphRange:(NSRange)glyphsToShow atPoint:(NSPoint)origin {
+	if (_markerStyle == nil) {
+		_markerStyle = NSMutableParagraphStyle.new;
+		_markerStyle.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
+	}
+	
 	if (!self.textView) {
 		NSLog(@"WARNING: No text view set for BeatLayoutManager.");
 		[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
@@ -43,30 +53,39 @@
 	 
 	 It's a bit convoluted scheme, but works surprisingly well and efficiently.
 	 
-	 */
+	 2022/12: Thanks, past me, for this completely useless documentation.
+	 
+	*/
 	NSMutableDictionary<NSString*, NSMutableSet<NSValue*>*> *revisions = NSMutableDictionary.new;
 	for (NSString *string in BeatRevisions.revisionColors) revisions[string] = NSMutableSet.new;
 	
 	while (glyphRange.length > 0) {
+		// Get character range for the range we're displaying
 		NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL], attributeCharRange, attributeGlyphRange;
 		
-		BeatRevisionItem *revision = [textStorage attribute:@"Revision"
+		// Get revision attributes at this range
+		BeatRevisionItem *revision = [textStorage attribute:BeatRevisions.attributeKey
 													atIndex:charRange.location longestEffectiveRange:&attributeCharRange
 													inRange:charRange];
+		// Get actual glyphs
 		attributeGlyphRange = [self glyphRangeForCharacterRange:attributeCharRange actualCharacterRange:NULL];
+		// Get intersection range between the glyphs being displayed and the actual attribute range
 		attributeGlyphRange = NSIntersectionRange(attributeGlyphRange, glyphRange);
-		
+				
+		// Check if there actually was a revision attribute
 		if (revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) {
+			// Get bounding rect for the range
 			NSRect boundingRect = [self boundingRectForGlyphRange:attributeGlyphRange
 												  inTextContainer:textContainer];
 			
 			// Calculate rect for the marker position
 			NSRect rect = NSMakeRect(offset.width + _textView.documentWidth - 22,
-									offset.height + boundingRect.origin.y + 1.0,
+									offset.height + boundingRect.origin.y,
 									 22,
-									 boundingRect.size.height);
+									 boundingRect.size.height + 1.0);
 			
-			// Add the marker to dictionary
+			// Add the marker to dictionary:
+			// dict["colorName"][] -> rect
 			[revisions[revision.colorName] addObject:[NSNumber valueWithRect:rect]];
 		}
 				
@@ -84,10 +103,12 @@
 		[rects enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
 			NSRect rect = [(NSValue*)obj rectValue];
 			NSMutableString *markerStr = NSMutableString.new;
-			NSUInteger lineCount = round(rect.size.height / 22); // line height is 22, based on my scientific reasearch lol
+			NSUInteger lineCount = round(rect.size.height / BeatEditorFormatting.editorLineHeight);
 			
 			// Create markers by line count
-			for (NSUInteger i=0; i<lineCount; i++) [markerStr appendFormat:@"%@\n", marker];
+			for (NSUInteger i=0; i<lineCount; i++) {
+				[markerStr appendFormat:@"%@\n", marker];
+			}
 
 			// Draw a background rect under the marker to block out earlier markers
 			[bgColor setFill];
@@ -96,7 +117,8 @@
 			// Draw string
 			[markerStr drawAtPoint:rect.origin withAttributes:@{
 				NSFontAttributeName: self.textView.editorDelegate.courier,
-				NSForegroundColorAttributeName: ThemeManager.sharedManager.textColor.effectiveColor
+				NSForegroundColorAttributeName: ThemeManager.sharedManager.textColor.effectiveColor,
+				NSParagraphStyleAttributeName: _markerStyle
 			}];
 		}];
 		

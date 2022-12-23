@@ -12,6 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatEditorFormatting : NSObject
++ (CGFloat)editorLineHeight;
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 

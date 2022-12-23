@@ -61,6 +61,9 @@ static NSString *underlinedSymbol = @"_";
 static NSString *strikeoutSymbolOpen = @"{{";
 static NSString *strikeoutSymbolClose = @"}}";
 
++ (CGFloat)editorLineHeight {
+	return 16.0;
+}
 
 - (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
 	Line *tempLine = [Line withString:@"" type:type];
@@ -71,7 +74,8 @@ static NSString *strikeoutSymbolClose = @"}}";
 	LineType type = line.type;
 	
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
-	style.lineHeightMultiple = LINE_HEIGHT;
+	//style.lineHeightMultiple = LINE_HEIGHT;
+	style.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
 	
 	if (type == lyrics || type == centered || type == pageBreak) {
 		[style setAlignment:NSTextAlignmentCenter];

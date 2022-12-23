@@ -123,9 +123,14 @@
 
 /// Renders a single line
 - (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage {
-	NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
-	NSString* string = [NSString stringWithFormat:@"%@\n", line.string]; // Add a line break
+	RenderStyle* style = [self styleForType:line.type];
 	
+	// Get string content and apply transforms if needed
+	NSString* string = [NSString stringWithFormat:@"%@\n", line.string]; // Add a line break
+	if (style.uppercase) string = string.uppercaseString;
+	
+	// Create attributed string with attributes for current style
+	NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
 	NSMutableAttributedString *attributedString = [NSMutableAttributedString.alloc initWithString:string attributes:attrs];
 	
 	// Remove top margin for first elements on a page
@@ -157,6 +162,19 @@
 		}];
 	}
 	
+	// Apply revisions
+	NSArray* revisionColors = BeatRevisions.revisionColors;
+	for (NSString* color in revisionColors) {
+		if (line.revisedRanges[color] == nil) continue;
+		
+		NSIndexSet* revisions = line.revisedRanges[color];
+		[revisions enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+			[attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
+		}];
+	}
+	
+	// If the block has line breaks in it, we need to remove margin spacing.
+	// This *shouldn't* happen, but this is here mostly for backwards-compatibility.
 	bool multiline = [attributedString.string containsString:@"\n"];
 	if (multiline) {
 		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
@@ -172,13 +190,19 @@
 	NSMutableIndexSet* contentRanges = [NSMutableIndexSet.alloc initWithIndexSet:line.contentRanges];
 	[contentRanges addIndex:attributedString.length - 1]; // Add the last index to include our newly-added line break
 	NSMutableAttributedString *result = NSMutableAttributedString.new;
-	
+		
+	// Enumerate visible ranges and build up the resulting string
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length == 0) return;
 		
 		NSAttributedString* content = [attributedString attributedSubstringFromRange:range];
 		[result appendAttributedString:content];
 	}];
+	
+	// Add hyperlink for the represented line
+	if (!line.unsafeForPageBreak && !line.isTitlePage) {
+		[result addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, result.length - 1)];
+	}
 	
 	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
 	if (line.type == heading) {
@@ -210,9 +234,9 @@
 	NSTextTableBlock* rightCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:2 columnSpan:1];
 	
 	[leftCell setContentWidth:contentPadding type:NSTextBlockAbsoluteValueType];
-	[contentCell setContentWidth:width type:NSTextBlockAbsoluteValueType];
-	[rightCell setContentWidth:contentPadding - 10.0 type:NSTextBlockAbsoluteValueType];
-	
+	[contentCell setContentWidth:width - 5.0 type:NSTextBlockAbsoluteValueType];
+	[rightCell setContentWidth:contentPadding type:NSTextBlockAbsoluteValueType];
+		
 	// Stylize the actual heading part.
 	// Make a copy of the style just in case.
 	NSMutableParagraphStyle* contentStyle = [content attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:nil];
@@ -231,7 +255,7 @@
 	NSMutableParagraphStyle* leftStyle = contentStyle.mutableCopy;
 	leftStyle.textBlocks = @[leftCell];
 	leftStyle.paragraphSpacingBefore = contentStyle.paragraphSpacingBefore;
-	leftStyle.firstLineHeadIndent = 6.0;
+	leftStyle.firstLineHeadIndent = 0.0;
 	
 	NSMutableParagraphStyle* rightStyle = leftStyle.mutableCopy;
 	rightStyle.textBlocks = @[rightCell];

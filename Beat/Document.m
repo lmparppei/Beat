@@ -121,7 +121,7 @@
 #import "Document+Scrolling.h"
 #import "Document+Plugins.h"
 
-@interface Document () <BeatRenderManagerDelegate> {
+@interface Document () <BeatPaginationManagerDelegate> {
 	NSString *bufferedText;
 	NSData *dataCache;
 	NSMutableArray *autocompleteCharacterNames;

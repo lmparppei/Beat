@@ -22,7 +22,7 @@ class BeatPaginationPageView:NSView {
 	var settings:BeatExportSettings
 	
 	var textView:BeatPageTextView?
-	var linePadding = 20.0
+	var linePadding = 0.0
 	var size:NSSize
 	
 	var fonts = BeatFonts.shared()
@@ -61,7 +61,7 @@ class BeatPaginationPageView:NSView {
 		self.textView = BeatPageTextView(
 			frame: NSRect(x: self.pageStyle.marginLeft - linePadding,
 						  y: self.pageStyle.marginTop,
-						  width: size.width - self.pageStyle.marginLeft,
+						  width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
 						  height: size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom)
 		)
 		
@@ -102,6 +102,19 @@ class BeatPageTextView:NSTextView {
 		super.awakeFromNib()
 		let trackingArea = NSTrackingArea(rect: bounds, options: [.activeAlways, .inVisibleRect, .mouseEnteredAndExited], owner: self, userInfo: nil)
 		addTrackingArea(trackingArea)
+	}
+	
+	override func mouseExited(with event: NSEvent) {
+		super.mouseExited(with: event)
+		
+		/*
+		guard
+			let lm = self.layoutManager
+		else { return }
+		
+		let key = NSAttributedString.Key(rawValue: "ActiveLine")
+		lm.removeTemporaryAttribute(key, forCharacterRange: self.textStorage!.range)
+		*/
 	}
 	
 	override func mouseMoved(with event: NSEvent) {
@@ -152,7 +165,7 @@ class BeatRenderLayoutManager:NSLayoutManager {
 		NSGraphicsContext.saveGraphicsState()
 		
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, range, stop in
-			let markerRect = NSMakeRect(container.size.width - 50, usedRect.origin.y, 15, rect.size.height)
+			let markerRect = NSMakeRect(container.size.width - 20, usedRect.origin.y - 2.0, 15, usedRect.size.height)
 			
 			var highestRevision = ""
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
@@ -189,12 +202,11 @@ class BeatRenderLayoutManager:NSLayoutManager {
 		
 		let attr = self.temporaryAttribute(key, atCharacterIndex: chrRange.location, effectiveRange: nil) as? Bool ?? false
 		if (attr) {
-			print("Active line at ", chrRange.location)
 			let rect = self.lineFragmentUsedRect(forGlyphAt: glyphsToShow.location, effectiveRange: nil, withoutAdditionalLayout: true)
 			NSColor.red.setFill()
 			rect.fill()
 		}
-		*/
+		 */
 	}
 }
 

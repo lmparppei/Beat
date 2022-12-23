@@ -1845,6 +1845,8 @@ static NSDictionary* patterns;
         // See if there is a key present on the line ("Title: ..." -> "Title")
         if (line.titlePageKey.length > 0) {
             key = line.titlePageKey.lowercaseString;
+            if ([key isEqualToString:@"author"]) key = @"authors";
+            
             NSMutableDictionary* titlePageValue = [NSMutableDictionary dictionaryWithDictionary:@{ key: NSMutableArray.new }];
             [self.titlePage addObject:titlePageValue];
         }

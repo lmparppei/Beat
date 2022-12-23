@@ -12,13 +12,18 @@ import AppKit
 	@objc func paginationFinished(pages:[BeatPaginationPage])
 }
 
-final class BeatPreviewController:NSObject, BeatRenderManagerDelegate {
+final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
+	
 	@IBOutlet weak var previewView:BeatPreviewView?
 	@IBOutlet weak var delegate:BeatPreviewDelegate?
 	
-	var pagination:BeatPaginationManager?
+	@objc var pagination:BeatPaginationManager?
 	var renderer:BeatRendering?
 	var timer:Timer?
+	
+	var exportSettings: BeatExportSettings? {
+		return self.delegate?.exportSettings
+	}
 	
 	override init() {
 		super.init()

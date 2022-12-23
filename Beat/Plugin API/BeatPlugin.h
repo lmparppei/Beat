@@ -37,6 +37,7 @@
 
 @class BeatPluginWindow;
 @class BeatPreview;
+@class BeatPreviewController;
 
 @protocol BeatScriptingExports <JSExport>
 @property (readonly) Line* currentLine;
@@ -212,6 +213,7 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 @property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
 @property (nonatomic, readonly) BeatPaginator *paginator;
 @property (nonatomic, readonly) BeatPreview *preview;
+@property (nonatomic, readonly) BeatPreviewController* previewController;
 
 - (id)document;
 - (NSString*)createDocumentFile;

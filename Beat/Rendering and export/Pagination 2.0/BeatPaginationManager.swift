@@ -9,20 +9,26 @@
 import Foundation
 
 @objc protocol BeatPaginationManagerExports:JSExport {
-	var pages:[BeatPaginationPage] { get }
-	var maxPageHeight:CGFloat { get }
-	func heightForScene(_ scene:OutlineScene) -> CGFloat
-	
+	@objc var pages:[BeatPaginationPage] { get }
+	@objc var maxPageHeight:CGFloat { get }
+	@objc var lengthInEights:[Int] { get }
+	@objc var numberOfPages:Int { get }
+	@objc var lastPageHeight:CGFloat { get }
+
+	@objc func heightForScene(_ scene:OutlineScene) -> CGFloat
+	@objc func paginate(lines: [Line])
 }
 
-@objc protocol BeatRenderManagerDelegate {
+@objc protocol BeatPaginationManagerDelegate {
 	func paginationDidFinish(pages: [BeatPaginationPage])
 	var parser:ContinuousFountainParser? { get }
+	var exportSettings:BeatExportSettings? { get }
 }
 
 class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
 	/// Delegate which is informed when pagination is finished. Useful when using background pagination.
-	weak var delegate:BeatRenderManagerDelegate?
+	weak var delegate:BeatPaginationManagerDelegate?
+	weak var editorDelegate:BeatEditorDelegate?
 	/// Optional renderer delegate to be used for rendering `BeatPaginationBlock` objects on screen/print/whatever.
 	var renderer: BeatRendererDelegate?
 	
@@ -37,14 +43,20 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		
 	var finishedPagination:BeatPagination?
 	
-	//@objc convenience init(settings:BeatExportSettings, delegate:BeatRenderManagerDelegate) {
-//		self.init(settings: settings, delegate: delegate, renderer: nil)
-//	}
-	@objc init(settings:BeatExportSettings, delegate:BeatRenderManagerDelegate, renderer:BeatRendererDelegate? = nil, livePagination:Bool) {
+	@objc convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
+		self.init(settings: delegate.exportSettings!, delegate: delegate, renderer:renderer, livePagination: livePagination)
+	}
+	@objc init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		self.settings = settings
 		self.delegate = delegate
 		self.renderer = renderer
 		self.livePagination = livePagination
+		
+		super.init()
+	}
+@objc init(editorDelegate:BeatEditorDelegate) {
+		self.settings = editorDelegate.exportSettings
+		super.init()
 	}
 	
 	//MARK: - Run operations
@@ -160,6 +172,12 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		return [pageCount, eights]
 	}
 	
+	var lastPageHeight:CGFloat {
+		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
+		else { return 0.0 }
+		
+		return lastPage.maxHeight - lastPage.remainingSpace
+	}
 	
 	// MARK: - Forwarded delegate properties
 	

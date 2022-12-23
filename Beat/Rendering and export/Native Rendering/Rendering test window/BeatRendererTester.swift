@@ -29,7 +29,7 @@ class BeatRendererTester:NSWindowController {
 	
 	}
 	
-	@objc init(screenplay:BeatScreenplay, settings:BeatExportSettings, delegate:BeatRenderManagerDelegate) {
+	@objc init(screenplay:BeatScreenplay, settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate) {
 		self.screenplay = screenplay
 		self.settings = settings
 		
@@ -77,15 +77,13 @@ class BeatRendererTester:NSWindowController {
 			view.removeFromSuperview()
 		}
 		
-		let contentHeight = CGFloat(renderer.pages.count) * (renderer.pageSize.height + 10.0)
+		let contentHeight = CGFloat(renderer.pages.count+1) * (renderer.pageSize.height + 10.0)
 		var rect = NSMakeRect(0, 0, renderer.pageSize.width, contentHeight)
 		container.frame = rect
 		
-		let style = RenderStyles.shared.page()
-		
 		let titlePage = BeatTitlePageView(titlePage: pagination?.titlePage ?? [], settings: self.settings!)
 		container.addSubview(titlePage)
-		
+				
 		for page in renderer.pages {
 			let y = (container.subviews.last?.frame.origin.y ?? 0.0) + 10.0 + (container.subviews.last?.frame.size.height ?? 0.0)
 			let string = page.attributedString()
