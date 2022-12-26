@@ -1556,16 +1556,22 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="gHp-kE-iK5">
+                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" maxMagnification="2" minMagnification="0.5" usesPredominantAxisScrolling="NO" id="gHp-kE-iK5" customClass="CenteringScrollView" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                            <clipView key="contentView" id="OZQ-4j-Tie">
+                                            <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="1" y="1" width="1153" height="659"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <view id="vJ9-CT-bdC">
+                                                    <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="0.0" width="1138" height="644"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                                        <subviews>
+                                                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lvV-vu-Nc5" customClass="BeatPreviewView" customModule="Beat" customModuleProvider="target">
+                                                                <rect key="frame" x="0.0" y="0.0" width="705" height="644"/>
+                                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                            </customView>
+                                                        </subviews>
                                                     </view>
                                                 </subviews>
                                             </clipView>
@@ -1578,6 +1584,10 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
+                                        <progressIndicator fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="5Sr-mR-kfa">
+                                            <rect key="frame" x="570" y="322" width="16" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                        </progressIndicator>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -1651,6 +1661,9 @@
         <customObject id="wZv-WF-8R7" customClass="BeatPreviewController" customModule="Beat" customModuleProvider="target">
             <connections>
                 <outlet property="delegate" destination="-2" id="LYe-d0-cEE"/>
+                <outlet property="previewView" destination="lvV-vu-Nc5" id="Vdq-ol-Evj"/>
+                <outlet property="scrollView" destination="gHp-kE-iK5" id="B5R-QO-uQ5"/>
+                <outlet property="spinner" destination="5Sr-mR-kfa" id="GVA-ul-aNc"/>
             </connections>
         </customObject>
         <touchBar id="FXM-lH-N3d" userLabel="Outline Touch Bar">

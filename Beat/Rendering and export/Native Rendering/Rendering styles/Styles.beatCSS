@@ -117,7 +117,9 @@ transition {
 	width-us: 61ch;
 	
     margin-top: 1l;
-    textAlign: right;
+	
+    text-align: right;
+	uppercase: true;
 }
 
 lyrics {
@@ -125,7 +127,7 @@ lyrics {
 	width-us: 61ch;
 	
     margin-top: 1l;
-    textAlign: center;
+    text-align: center;
 	italic: true;
 }
 
@@ -142,26 +144,26 @@ shot {
 titlePageTitle {
 	margin-top: 23l;
 	margin-bottom: 2l;
-	textAlign: center;
+	text-align: center;
 	uppercase: true;
 }
 titlePageAuthor {
 	margin-top: 1l;
-	textAlign: center;
+	text-align: center;
 }
 titlePageCredit {
 	margin-top: 1l;
-	textAlign: center;
+	text-align: center;
 }
 titlePageSource {
 	margin-top: 1l;
-	textAlign: center;
+	text-align: center;
 }
 titlePageContact {
-	textAlign: left;
+	text-align: left;
 }
 titlePageDraftDate {
-	textAlign: right;
+	text-align: right;
 }
 titlePageUnknown {
 	margin-top: 1l;

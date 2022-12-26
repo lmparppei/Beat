@@ -62,9 +62,9 @@
 	return [BeatPagination.alloc initWithDelegate:delegate lines:lines titlePage:nil settings:delegate.settings livePagination:false changeAt:0 cachedPages:nil];
 }
 
-+ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination
++ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt 
 {
-	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:0 cachedPages:cachedPages];
+	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:changeAt cachedPages:cachedPages];
 }
 
 - (instancetype)initWithDelegate:(id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages
@@ -123,6 +123,14 @@
 
 #pragma mark - Running pagination
 
+/// Look up current line from array of lines. We are using UUIDs for matching, so `indexOfObject:` is redundant here.
+- (NSInteger)indexOfLine:(Line*)line {
+	for (NSInteger i=0; i<self.lines.count; i++) {
+		if ([_lines[i].uuid isEqualTo:line.uuid]) return i;
+	}
+	return NSNotFound;
+}
+
 - (void)paginate
 {
 	NSInteger startIndex = 0;
@@ -142,7 +150,8 @@
 			Line* safeLine = self.currentPage.lines[lineIndex];
 			[self.currentPage clearUntil:safeLine];
 			
-			startIndex = [self.lines indexOfObject:safeLine];
+			startIndex = [self indexOfLine:safeLine];
+			NSLog(@"starting index: %lu", startIndex);
 		}
 	}
 	
@@ -203,7 +212,7 @@
 		if (line.type == pageBreak) {
 			[_lineQueue removeObjectAtIndex:0];
 			
-			BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:-1 element:line reason:@"Forced page break"];
+			BeatPageBreak *pageBreak = [BeatPageBreak.alloc initWithY:-1.0 element:line reason:@"Forced page break"];
 			[self addPage:@[line] toQueue:@[] pageBreak:pageBreak];
 			continue;
 		}
@@ -418,6 +427,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		BeatPaginationPage* page = pages[pageIndex];
 		
 		NSInteger i = [page indexForLineAtPosition:position];
+		if (i == NSNotFound) return @[ @0, @0 ];
+			
 		NSInteger safeIndex = [page findSafeLineFromIndex:i];
 		
 		// No suitable line found or we ended up on the first line of the page,

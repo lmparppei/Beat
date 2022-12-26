@@ -68,10 +68,10 @@
 	
 	return _renderedString;
 }
+
 - (void)invalidateRender {
 	_renderedString = nil;
 }
-
 
 -(NSArray*)lines {
 	NSMutableArray* lines = NSMutableArray.new;
@@ -99,7 +99,7 @@
 /// Finds the index which we can restart pagination from. It's kind of a reverse block search.
 - (NSInteger)findSafeLineFromIndex:(NSInteger)index {
 	NSArray<Line*>* lines = self.lines;
-	Line* line = lines[index];
+		Line* line = lines[index];
 	
 	bool isDialogue = (line.isDialogue || line.isDualDialogue) ? true : false;
 	
@@ -159,6 +159,31 @@
 	return NSNotFound;
 }
 
+- (NSRange)rangeForLocation:(NSInteger)location
+{
+	__block NSRange prevRange = NSMakeRange(NSNotFound, 0);
+	__block NSRange result = NSMakeRange(NSNotFound, 0);
+	
+	NSAttributedString* attrStr = self.attributedString;
+	[attrStr enumerateAttribute:NSLinkAttributeName inRange:NSMakeRange(0, attrStr.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		Line* line = (Line*)value;
+		if (line == nil) return;
+		
+		if (NSLocationInRange(location, line.textRange)) {
+			result = range;
+			*stop = true;
+		}
+		else if (NSMaxRange(line.range) > location) {
+			result = prevRange;
+			*stop = true;
+		}
+		
+		prevRange = range;
+	}];
+	
+	return result;
+}
+
 /// Returns the range of the screenplay which current page represents.
 -(NSRange)representedRange {
 	NSInteger begin = NSNotFound;
@@ -177,7 +202,9 @@
 		Line *line = lines[i];
 		if (!line.unsafeForPageBreak) {
 			end = NSMaxRange(line.range);
+			break;
 		}
+		i -= 1;
 	}
 	
 	if (begin == NSNotFound || end == NSNotFound)
@@ -203,13 +230,18 @@
 	// Iterate blocks and store stuff until given line
 	NSMutableArray<BeatPaginationBlock*>* blocks = NSMutableArray.new;
 	for (BeatPaginationBlock* block in self.blocks) {
+		NSLog(@"Sparing:");
+		for (Line* line in block.lines) {
+			NSLog(@"    %@", line);
+		}
 		if ([block containsLine:line]) break;
 		[blocks addObject:block];
 	}
-	self.blocks = blocks;
+	[self.blocks setArray:blocks];
 	
 	// Invalidate current render
 	[self invalidateRender];
 }
+
 
 @end

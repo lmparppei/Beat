@@ -82,6 +82,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @end
 
 @class BeatTagging;
+@class BeatPaginationPage;
 
 @interface BeatTextView : NSTextView <NSTableViewDataSource, NSTableViewDelegate, NSLayoutManagerDelegate, NSTextStorageDelegate>
 @property (weak) IBOutlet id<BeatTextViewDelegate> editorDelegate;
@@ -117,6 +118,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (void)deletePageNumbers;
 - (void)updatePageNumbers;
 - (void)updatePageNumbers:(NSArray*)pageBreaks;
+// Native pagination
+- (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages;
 
 -(void)redrawAllGlyphs;
 -(void)redrawUI;

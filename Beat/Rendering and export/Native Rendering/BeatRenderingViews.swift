@@ -21,20 +21,29 @@ class BeatPaginationPageView:NSView {
 	var pageStyle:RenderStyle
 	var settings:BeatExportSettings
 	
+	var page:BeatPaginationPage?
+	
 	var textView:BeatPageTextView?
 	var linePadding = 0.0
 	var size:NSSize
 	
 	var fonts = BeatFonts.shared()
 	
-	@objc convenience init(size:NSSize, content:NSAttributedString, settings:BeatExportSettings, previewController:BeatPreviewController? = nil) {
-		self.init(size: size, content: content, settings: settings, titlePage: false)
-	}
-	@objc init(size:NSSize, content:NSAttributedString, settings:BeatExportSettings, titlePage:Bool, previewController: BeatPreviewController? = nil) {
+	var paperSize:BeatPaperSize
+	
+	@objc init(size:NSSize, page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewController?, titlePage:Bool = false) {
 		self.size = size
 		self.attributedString = content
 		self.previewController = previewController
 		self.settings = settings
+		self.paperSize = settings.paperSize
+		
+		self.page = page
+		if (page != nil) {
+			self.attributedString = page!.attributedString()
+		} else {
+			self.attributedString = content
+		}
 		
 		let styles = self.settings.styles as? RenderStyles
 		if (styles != nil) {
@@ -49,6 +58,10 @@ class BeatPaginationPageView:NSView {
 		self.wantsLayer = true
 		self.layer?.backgroundColor = .white
 		
+		// Force light appearance to get highlights show up correctly
+		self.appearance = NSAppearance(named: .aqua)
+		
+		// Create text views and set attributed string
 		createTextView()
 		self.textView?.textStorage?.setAttributedString(self.attributedString ?? NSAttributedString(string: ""))
 	}
@@ -58,12 +71,9 @@ class BeatPaginationPageView:NSView {
 	}
 	
 	func createTextView() {
-		self.textView = BeatPageTextView(
-			frame: NSRect(x: self.pageStyle.marginLeft - linePadding,
-						  y: self.pageStyle.marginTop,
-						  width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
-						  height: size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom)
-		)
+		self.textView = BeatPageTextView(frame: self.textViewFrame())
+		
+		self.textView?.previewController = self.previewController
 		
 		self.textView?.isEditable = false
 
@@ -90,66 +100,52 @@ class BeatPaginationPageView:NSView {
 		self.addSubview(textView!)
 	}
 	
+	func textViewFrame() -> NSRect {
+		let size = BeatPaperSizing.size(for: settings.paperSize)
+		
+		let textFrame = NSRect(x: self.pageStyle.marginLeft - linePadding,
+							   y: self.pageStyle.marginTop,
+							   width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
+							   height: size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom)
+		
+		return textFrame
+	}
+	
+	func updateContainerSize() {
+		paperSize = settings.paperSize
+		self.textView?.frame = self.textViewFrame()
+	}
+	
+	// Update content
+	func update(page:BeatPaginationPage, settings:BeatExportSettings) {
+		self.settings = settings
+		
+		// Update container frame if paper size has changed
+		if (self.settings.paperSize != self.paperSize) {
+			updateContainerSize()
+			page.invalidateRender()
+		}
+		
+		self.textView?.textStorage?.setAttributedString(page.attributedString())
+		
+	}
+	
 	required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
 // MARK: - Custom text view
 
 class BeatPageTextView:NSTextView {
-	var previewController:BeatPreviewController?
+	weak var previewController:BeatPreviewController?
 	
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		let trackingArea = NSTrackingArea(rect: bounds, options: [.activeAlways, .inVisibleRect, .mouseEnteredAndExited], owner: self, userInfo: nil)
-		addTrackingArea(trackingArea)
-	}
-	
-	override func mouseExited(with event: NSEvent) {
-		super.mouseExited(with: event)
-		
-		/*
-		guard
-			let lm = self.layoutManager
-		else { return }
-		
-		let key = NSAttributedString.Key(rawValue: "ActiveLine")
-		lm.removeTemporaryAttribute(key, forCharacterRange: self.textStorage!.range)
-		*/
-	}
-	
-	override func mouseMoved(with event: NSEvent) {
-		super.mouseMoved(with: event)
-		/*
-		guard
-			let lm = self.layoutManager,
-			let tc = self.textContainer
-		else { return }
-
-		let localMousePosition = convert(event.locationInWindow, from: nil)
-		var partial = CGFloat(1.0)
-		let glyphIndex = lm.glyphIndex(for: localMousePosition, in: tc, fractionOfDistanceThroughGlyph: &partial)
-
-		let rect = lm.lineFragmentUsedRect(forGlyphAt: glyphIndex, effectiveRange: nil)
-		let range = lm.glyphRange(forBoundingRect: rect, in: self.textContainer!)
-		let charRange = lm.characterRange(forGlyphRange: range, actualGlyphRange: nil)
-			
-		let key = NSAttributedString.Key(rawValue: "ActiveLine")
-		
-		lm.removeTemporaryAttribute(key, forCharacterRange: self.textStorage!.range)
-		lm.addTemporaryAttribute(key, value: true, forCharacterRange: charRange)
-		*/
-	}
-	
+	/// The user clicked on a link, which direct to `Line` objects
 	override func clicked(onLink link: Any, at charIndex: Int) {
 		guard
 			let line = link as? Line,
 			let previewController = self.previewController
 		else { return }
 		
-		let range = NSMakeRange(line.position, 0)
-		previewController.delegate?.returnToEditor()
-		previewController.delegate?.setSelectedRange(range)
-		previewController.delegate?.scroll(to: range, callback: {})
+		previewController.closeAndJumpToRange(line.textRange())
 	}
 }
 
@@ -221,8 +217,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let size = BeatPaperSizing.size(for: previewController?.settings.paperSize ?? .A4)
 		
 		self.titlePageLines = titlePage
-		super.init(size: size, content: NSMutableAttributedString(string: ""), settings: settings, titlePage:true)
-		
+		super.init(size: size, page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController, titlePage: true)
+				
 		createViews()
 		createTitlePage()
 	}

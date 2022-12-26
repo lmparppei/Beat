@@ -121,11 +121,8 @@
 #import "Document+Scrolling.h"
 #import "Document+Plugins.h"
 
-@interface Document () <BeatPaginationManagerDelegate> {
+@interface Document () <BeatNativePreviewDelegate> {
 	NSString *bufferedText;
-	NSData *dataCache;
-	NSMutableArray *autocompleteCharacterNames;
-	NSMutableArray *autocompleteSceneHeadings;
 }
 
 // Window
@@ -134,6 +131,9 @@
 @property (nonatomic) NSArray *itemsToValidate; // Menu items
 
 @property (nonatomic) BeatRendererTester *tester;
+
+// Cached
+@property (atomic) NSData* dataCache;
 
 // Autosave
 @property (nonatomic) bool autosave;
@@ -628,20 +628,10 @@ static BeatAppDelegate *appDelegate;
 	
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
-	
-	[self renderTest];
 }
 
 -(BeatExportSettings*)exportSettings {
 	return [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
-}
--(void)renderTest {
-	 [self bakeRevisions];
-	 [self.getAttributedText enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, self.getAttributedText.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-	 }];
-	 
-	 if (_tester == nil) _tester = [BeatRendererTester.alloc initWithScreenplay:self.parser.forPrinting settings:[self exportSettings] delegate:self];
-	 [_tester renderWithDoc:self screenplay:self.parser.forPrinting settings:[self exportSettings]];
 }
 
 -(void)awakeFromNib {
@@ -1171,14 +1161,14 @@ static NSWindow __weak *currentKeyWindow;
 		os_log(OS_LOG_DEFAULT, "Error (auto)saving file: %@", exception);
 		
 		// If there is data in the cache, return it
-		if (dataCache != nil) return dataCache;
+		if (_dataCache != nil) return _dataCache;
 		else dataRepresentation = [self.textView.string dataUsingEncoding:NSUTF8StringEncoding];
 		
 		// Everything is terrible, crash and don't overwrite anything.
 		if (dataRepresentation == nil) @throw NSInternalInconsistencyException;
 	} @finally {
 		// If saving was successful, let's store the data into cache
-		if (success) dataCache = dataRepresentation.copy;
+		if (success) _dataCache = dataRepresentation.copy;
 	}
 	
 	if (dataRepresentation == nil) {
@@ -1736,9 +1726,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-	
-	// Render test
-	[self renderTest];
 	
 	// Register changes
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
@@ -3268,17 +3255,18 @@ static bool _skipAutomaticLineBreaks = false;
 	[self.preview updatePreviewInSync:NO];
 }
 
-- (IBAction)toggleNewPreview:(id)sender {
-	if (self.currentTab != _nativePreviewTab) {
-		[self.previewController renderOnScreen];
-		[self showTab:_nativePreviewTab];
-	} else {
-		[self returnToEditor];
-	}
-}
-
 - (IBAction)preview:(id)sender
 {
+	if (NEW_PAGINATION) {
+		if (self.currentTab != _nativePreviewTab) {
+			[self.previewController renderOnScreen];
+			[self showTab:_nativePreviewTab];
+		} else {
+			[self returnToEditor];
+		}
+		return;
+	}
+	
 	if (self.currentTab != _previewTab) {
 		[self.preview displayPreview];
 		[self showTab:_previewTab];
@@ -3296,8 +3284,10 @@ static bool _skipAutomaticLineBreaks = false;
 - (void)cancelOperation:(id) sender
 {
 	// ESCAPE KEY pressed
-	if (_printPreview) [self preview:nil];
-	if (_cardsVisible) [self toggleCards:nil];
+	if (self.currentTab == _previewTab) [self preview:nil];
+	else if (self.currentTab == _nativePreviewTab) [self preview:nil];
+	else if (self.currentTab == _cardsTab) [self toggleCards:nil];
+	
 }
 
 /*
@@ -4032,13 +4022,10 @@ static bool _skipAutomaticLineBreaks = false;
 static NSArray<Line*>* cachedTitlePage;
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
 	if (NEW_PAGINATION) {
-		static bool paginationWarning = false;
-		if (!paginationWarning) {
-			NSLog(@"NOTE: Running new pagination.");
-			paginationWarning = true;
-		}
+		// Bake revisions into lines
+		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		
-		if (sync) [self.previewController createPreviewWithChangeAt:range.location sync:sync];
+		[self.previewController createPreviewWithChangeAt:range.location sync:sync];
 		return;
 	}
 		
@@ -4068,6 +4055,7 @@ static NSArray<Line*>* cachedTitlePage;
 	
 }
 
+/// Old-style pagination finished
 - (void)paginationDidFinish:(NSArray<Line*>*)pages pageBreaks:(NSArray*)pageBreaks {
 	// Update text view page breaks in main queue
 	if (self.showPageNumbers) {
@@ -4080,12 +4068,14 @@ static NSArray<Line*>* cachedTitlePage;
 	[self.preview updatePreviewWithPages:pages titlePage:cachedTitlePage];
 }
 
-- (void)paginationDidFinishWithPages:(NSArray<BeatPaginationPage *> *)pages {
-	NSLog(@"... Finished in document");
-}
-
-- (void)paginationFinished:(BeatPagination *)pagination {
-	NSLog(@"nope");
+/// Native pagination finished.
+- (void)paginationFinished:(NSArray<BeatPaginationPage*>*)pages {
+	if (self.showPageNumbers) {
+		// We might be in a background thread, so make sure to dispach this call to main thread
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			[self.textView updatePagination:pages];
+		});
+	}
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {

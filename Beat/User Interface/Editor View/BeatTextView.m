@@ -42,6 +42,7 @@
 #import "Beat-Swift.h"
 #import "BeatAttributes.h"
 #import "BeatFonts.h"
+#import "BeatEditorFormatting.h"
 
 #define DEFAULT_MAGNIFICATION 1.47
 #define MAGNIFICATION_KEY @"magnification"
@@ -1321,6 +1322,35 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 #pragma mark - Page numbering
 
+- (void)updatePagination:(NSArray<BeatPaginationPage*>*)pages {
+	NSMutableArray* breakPositions = NSMutableArray.new;
+	
+	CGFloat lineHeight = BeatPagination.lineHeight; // Line height from pagination
+	CGFloat UIlineHeight = BeatEditorFormatting.editorLineHeight; // Line height in UI
+	
+	for (BeatPaginationPage* page in pages) {
+		BeatPageBreak* pageBreak = page.pageBreak;
+		
+		Line* line = pageBreak.element;
+		CGFloat position = pageBreak.y;
+		
+		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:line.textRange actualCharacterRange:nil];
+		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
+				
+		if (position >= 0) {
+			position = round(position / lineHeight) * UIlineHeight;
+			position = rect.origin.y + position;
+		} else {
+			// Position -1 from pagination means that we'll position the line break after this element
+			position = rect.origin.y;
+		}
+		
+		[breakPositions addObject:@(position)];
+	}
+	
+	[self updatePageNumbers:breakPositions];
+}
+
 - (void)updatePageBreaks:(NSArray<NSDictionary*>*)pageBreaks {
 	// Sort page breaks based on their position
 	NSMutableArray *breakPositions = NSMutableArray.new;
@@ -1334,11 +1364,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		return [pos1 compare:pos2];
 	}];
 	
-	Line *prevLine;
-	
 	for (NSDictionary *pageBreak in sortedPageBreaks) { @autoreleasepool {
-		CGFloat lineHeight = 13; // Line height from pagination
-		CGFloat UIlineHeight = 13.2;
+		CGFloat lineHeight = BeatPagination.lineHeight; // Line height from pagination
+		CGFloat UIlineHeight = BeatEditorFormatting.editorLineHeight; // Line height in UI
 		CGFloat y;
 		
 		Line *line = pageBreak[@"line"];
@@ -1351,14 +1379,12 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		// We return -1 for elements that should have page break after them
 		if (position >= 0) {
-			if (position != 0) position = round(position / lineHeight) * UIlineHeight;
-			//y = rect.origin.y + position - FONT_SIZE; // y is calculated from BOTTOM of line, so make it match its tow
+			position = round(position / lineHeight) * UIlineHeight;
 			y =  rect.origin.y + position;
 		}
 		else y = rect.origin.y + rect.size.height;
 	
 		[breakPositions addObject:@(y)];
-		prevLine = line;
 	} }
 	
 	[self updatePageNumbers:breakPositions];

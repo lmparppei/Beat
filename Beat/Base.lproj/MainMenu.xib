@@ -789,12 +789,6 @@ DQ
                                     <action selector="preview:" target="-1" id="Wir-n0-gpi"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New preview (alpha)" hidden="YES" keyEquivalent="p" id="I9u-z3-G39">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="toggleNewPreview:" target="-1" id="iXl-yo-caw"/>
-                                </connections>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="Trs-SM-X3K"/>
                             <menuItem title="Show Scene Numbers" state="on" id="V7o-Tn-OF3">
                                 <modifierMask key="keyEquivalentModifierMask"/>

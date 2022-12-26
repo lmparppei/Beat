@@ -123,6 +123,9 @@
 
 /// Renders a single line
 - (NSAttributedString*)renderLine:(Line*)line ofBlock:(BeatPaginationBlock* __nullable)block dualDialogueElement:(bool)dualDialogueElement firstElementOnPage:(bool)firstElementOnPage {
+	// Page breaks are just empty lines
+	if (line.type == pageBreak) return NSAttributedString.new;
+		
 	RenderStyle* style = [self styleForType:line.type];
 	
 	// Get string content and apply transforms if needed
