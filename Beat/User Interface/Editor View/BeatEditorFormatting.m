@@ -23,6 +23,11 @@
 #import "BeatMeasure.h"
 #import "NSFont+CFTraits.h"
 
+@interface BeatEditorFormatting()
+// Paragraph styles are stored as { @(paperSize): { @(type): style } }
+@property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSMutableParagraphStyle*>*>* paragraphStyles;
+@end
+
 @implementation BeatEditorFormatting
 
 // DOCUMENT LAYOUT SETTINGS
@@ -69,75 +74,103 @@ static NSString *strikeoutSymbolClose = @"}}";
 	Line *tempLine = [Line withString:@"" type:type];
 	return [self paragraphStyleFor:tempLine];
 }
+
 - (NSMutableParagraphStyle*)paragraphStyleFor:(Line*)line {
 	if (line == nil) line = [Line withString:@"" type:action];
+	
 	LineType type = line.type;
 	
+	// Catch forced character cue
+	if (_delegate.characterInputForLine == line && _delegate.characterInput) {
+		type = character;
+	}
+	
+	if (type == character) NSLog(@"Character type: %lu", type);
+	
+	// Extended types for title page fields
+	else if (line.isTitlePage) {
+		if ([line.string rangeOfString:@":"].location == NSNotFound) {
+			type = (LineType)titlePageSubField;
+		}
+	}
+	else if (line.type == section) {
+		if (line.sectionDepth > 1) {
+			type = (LineType)subSection;
+		}
+	}
+	/*
+	// This is an idea for caching paragraph styles, but it doesn't seem to work for forced character cues.
+	BeatPaperSize paperSize = self.delegate.pageSize;
+	NSNumber* paperSizeKey = @(paperSize);
+	NSNumber* typeKey = @(type);
+		
+	// Create dictionary for page size when needed
+	if (_paragraphStyles == nil) _paragraphStyles = NSMutableDictionary.new;
+	if (_paragraphStyles[paperSizeKey] == nil) _paragraphStyles[paperSizeKey] = NSMutableDictionary.new;
+		
+	// The style already exists, return the premade value
+	if (_paragraphStyles[paperSizeKey][typeKey] != nil) {
+		return _paragraphStyles[paperSizeKey][typeKey];
+	}
+	*/
+	
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
-	//style.lineHeightMultiple = LINE_HEIGHT;
 	style.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
 	
 	if (type == lyrics || type == centered || type == pageBreak) {
-		[style setAlignment:NSTextAlignmentCenter];
+		style.alignment = NSTextAlignmentCenter;
+	}
+	else if (type == titlePageSubField) {
+		style.firstLineHeadIndent = TITLE_INDENT * 1.25;
+		style.headIndent = TITLE_INDENT * 1.25;
 	}
 	else if (line.isTitlePage) {
-		[style setFirstLineHeadIndent:TITLE_INDENT];
-		[style setHeadIndent:TITLE_INDENT];
-		
-		// Indent lines following a first-level title page element a bit more
-		if ([line.string rangeOfString:@":"].location != NSNotFound) {
-			[style setFirstLineHeadIndent:TITLE_INDENT];
-			[style setHeadIndent:TITLE_INDENT];
-		} else {
-			[style setFirstLineHeadIndent:TITLE_INDENT * 1.25];
-			[style setHeadIndent:TITLE_INDENT * 1.25];
-		}
+		style.firstLineHeadIndent = TITLE_INDENT;
+		style.headIndent = TITLE_INDENT;
 	}
 	else if (type == transitionLine) {
-		[style setAlignment:NSTextAlignmentRight];
+		style.alignment = NSTextAlignmentRight;
 	}
-	else if (type == character || (_delegate.characterInputForLine == line && _delegate.characterInput)) {
-		[style setFirstLineHeadIndent:CHARACTER_INDENT];
-		[style setHeadIndent:CHARACTER_INDENT];
+	else if (type == character) {
+		style.firstLineHeadIndent = CHARACTER_INDENT;
+		style.headIndent = CHARACTER_INDENT;
+		
 	} else if (line.type == parenthetical) {
-		// Parenthetical after character
-		[style setFirstLineHeadIndent:PARENTHETICAL_INDENT];
-		[style setHeadIndent:PARENTHETICAL_INDENT];
-		[style setTailIndent:DIALOGUE_RIGHT];
+		style.firstLineHeadIndent = PARENTHETICAL_INDENT;
+		style.headIndent = PARENTHETICAL_INDENT;
+		style.tailIndent = DIALOGUE_RIGHT;
 		
 	} else if (line.type == dialogue) {
 		// Dialogue block
-		[style setFirstLineHeadIndent:DIALOGUE_INDENT];
-		[style setHeadIndent:DIALOGUE_INDENT];
-		[style setTailIndent:DIALOGUE_RIGHT];
+		style.firstLineHeadIndent = DIALOGUE_INDENT;
+		style.headIndent = DIALOGUE_INDENT;
+		style.tailIndent = DIALOGUE_RIGHT;
 		
 	} else if (line.type == dualDialogueCharacter) {
-		[style setFirstLineHeadIndent:DD_CHARACTER_INDENT];
-		[style setHeadIndent:DD_CHARACTER_INDENT];
-		[style setTailIndent:DD_RIGHT];
+		style.firstLineHeadIndent = DD_CHARACTER_INDENT;
+		style.headIndent = DD_CHARACTER_INDENT;
+		style.tailIndent = DD_RIGHT;
 		
 	} else if (line.type == dualDialogueParenthetical) {
-		[style setFirstLineHeadIndent:DD_PARENTHETICAL_INDENT];
-		[style setHeadIndent:DD_PARENTHETICAL_INDENT];
-		[style setTailIndent:DD_RIGHT];
+		style.firstLineHeadIndent = DD_PARENTHETICAL_INDENT;
+		style.headIndent = DD_PARENTHETICAL_INDENT;
+		style.tailIndent = DD_RIGHT;
 		
 	} else if (line.type == dualDialogue) {
-		[style setFirstLineHeadIndent:DUAL_DIALOGUE_INDENT];
-		[style setHeadIndent:DUAL_DIALOGUE_INDENT];
-		[style setTailIndent:DD_RIGHT];
+		style.firstLineHeadIndent = DUAL_DIALOGUE_INDENT;
+		style.headIndent = DUAL_DIALOGUE_INDENT;
+		style.tailIndent = DD_RIGHT;
+	}
+	else if (type == subSection) {
+		style.paragraphSpacingBefore = 20.0;
+		style.paragraphSpacing = 0.0;
+	}
+	else if (type == section) {
+		style.paragraphSpacingBefore = 30.0;
+		style.paragraphSpacing = 0.0;
 	}
 	
-	else if (type == section) {
-		if (line.sectionDepth == 1) {
-			[style setParagraphSpacingBefore:30];
-			[style setParagraphSpacing:0];
-		} else {
-			if (line.sectionDepth == 2) {
-				[style setParagraphSpacingBefore:20];
-				[style setParagraphSpacing:0];
-			}
-		}
-	}
+	//_paragraphStyles[paperSizeKey][typeKey] = style;
 	
 	return style;
 }
@@ -175,13 +208,6 @@ static NSString *strikeoutSymbolClose = @"}}";
 	
 	// Don't overwrite revision attribute
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
-	/*
-	 // Replace font with default
-	 if ([attributes valueForKey:NSFontAttributeName] != _delegate.courier) {
-	 [attributes removeObjectForKey:NSFontAttributeName];
-	 [textStorage addAttribute:NSFontAttributeName value:_delegate.courier range:range];
-	 }
-	 */
 	
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff when formatting is disabled
