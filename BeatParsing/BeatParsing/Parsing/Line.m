@@ -339,7 +339,12 @@
 
 /// Returns the last character as `unichar`
 -(unichar)lastCharacter {
-	return [_string characterAtIndex:self.length - 1];
+    if (_string.length > 0) {
+        return [_string characterAtIndex:self.length - 1];
+    } else {
+        // Return error value
+        return 0;
+    }
 }
 
 #pragma mark - Strip formatting
@@ -740,30 +745,8 @@
 		if (name) [string replaceCharactersInRange:self.characterNameRange withString:name];
 	}
     
-    /*
-    for (NSInteger i=0; i<string.length; i++) {
-        NSFontTraitMask mask = 0;
-        NSRange r = NSMakeRange(i, 1);
-        
-        if ([self.italicRanges containsIndex:i]) {
-            //mask |= NSItalicFontMask;
-            [string addAttribute:@"BeatItalic" value:@(1) range:r];
-        }
-        if ([self.boldRanges containsIndex:i]) {
-            //mask |= NSBoldFontMask;
-            [string addAttribute:@"BeatBold" value:@(1) range:r];
-        }
-        if ([self.boldItalicRanges containsIndex:i]) {
-            [string addAttribute:@"BeatBoldItalic" value:@(1) range:r];
-        }
-        
-        if ([self.underlinedRanges containsIndex:i]) {
-            [string addAttribute:@"BeatUnderline" value:@(1) range:r];
-        }
-    }
-    */
-		
 	// Add font stylization
+    
 	[self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		if (range.length > ITALIC_PATTERN.length * 2) {
 			if ([self rangeInStringRange:range]) [self addAttr:ITALIC_STYLE toString:string range:range];
