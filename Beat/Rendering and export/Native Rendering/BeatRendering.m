@@ -13,39 +13,47 @@
  */
 
 #import "BeatRendering.h"
-#import "BeatPagination.h"
 #import "BeatPaginationBlock.h"
 #import "Beat-Swift.h"
 
 @interface BeatRendering()
-@property (nonatomic) BeatExportSettings* settings;
 //@property (nonatomic) id<BeatPageDelegate> delegate;
 @property (nonatomic) RenderStyles* styles;
-@property (nonatomic) BeatFonts* fonts;
-
-@property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
+@property (nonatomic, weak) BeatFonts* fonts;
+@property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSDictionary*>*>* lineTypeAttributes;
 
 @end
 
 @implementation BeatRendering
 
-- (instancetype)initWithSettings:(BeatExportSettings*)settings {
+- (instancetype)initWithSettings:(BeatExportSettings*)settings  {
 	self = [super init];
 	if (self) {
 		_settings = settings;
-		_fonts = BeatFonts.sharedFonts;
-		
-		// If we have received custom styles, use those
-		if ([settings.styles isKindOfClass:RenderStyles.class]) {
-			_styles = settings.styles;
-		} else {
-			_styles = RenderStyles.shared;
-		}
-		
-		// Initialize attribute store
-		_lineTypeAttributes = NSMutableDictionary.new;
+		[self setup];
 	}
 	return self;
+}
+
+- (void)setup {
+	_fonts = BeatFonts.sharedFonts;
+	_lineTypeAttributes = NSMutableDictionary.new;
+}
+
+- (BeatExportSettings*)settings {
+	if (self.pagination != nil) {
+		return self.pagination.settings;
+	} else {
+		return _settings;
+	}
+}
+
+- (RenderStyles*)styles {
+	if ([self.settings.styles isKindOfClass:RenderStyles.class] && self.settings.styles != nil) {
+		return self.settings.styles;
+	} else {
+		return RenderStyles.shared;
+	}
 }
 
 /// Returns a long attributed string, rather than paginated content. Not compatible with iOS.
@@ -141,6 +149,7 @@
 		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
 		pStyle = pStyle.mutableCopy;
 		pStyle.paragraphSpacingBefore = 0.0;
+		[attributedString addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(0, attributedString.length)];
 	}
 	
 	// Inline stylization
@@ -178,7 +187,7 @@
 	
 	// If the block has line breaks in it, we need to remove margin spacing.
 	// This *shouldn't* happen, but this is here mostly for backwards-compatibility.
-	bool multiline = [attributedString.string containsString:@"\n"];
+	bool multiline = [line.string containsString:@"\n"];
 	if (multiline) {
 		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
 		NSMutableParagraphStyle* fixedStyle = pStyle.mutableCopy;
@@ -203,7 +212,7 @@
 	}];
 	
 	// Add hyperlink for the represented line
-	if (!line.unsafeForPageBreak && !line.isTitlePage) {
+	if (!line.isTitlePage) {
 		[result addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, result.length - 1)];
 	}
 	
@@ -218,8 +227,8 @@
 /// Adds scene numbers to a heading block
 - (NSMutableAttributedString*)renderHeading:(Line*)line content:(NSMutableAttributedString*)content firstElementOnPage:(bool)firstElementOnPage {
 	// Get render settings
-	bool printSceneNumbers = _settings.printSceneNumbers;
-	CGFloat contentPadding = _styles.page.contentPadding;
+	bool printSceneNumbers = self.settings.printSceneNumbers;
+	CGFloat contentPadding = self.styles.page.contentPadding;
 	CGFloat width = [self widthFor:line];
 	
 	// Initialize result
@@ -291,19 +300,19 @@
 /// Render a block with left/right columns. This block will know the contents of both columns.
 - (NSAttributedString*)renderDualDialogueContainer:(BeatPaginationBlock*)dualDialogueBlock {
 	// Create table
-	CGFloat width = (_settings.paperSize == BeatA4) ? _styles.page.defaultWidthA4 : _styles.page.defaultWidthLetter;
+	CGFloat width = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
 	
 	NSTextTable* table = NSTextTable.new;
-	[table setContentWidth:width + _styles.page.contentPadding type:NSTextBlockAbsoluteValueType];
+	[table setContentWidth:width + self.styles.page.contentPadding type:NSTextBlockAbsoluteValueType];
 	table.numberOfColumns = 2;
 	
 	// Create cells
 	__block NSTextTableBlock* leftCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
 	__block NSTextTableBlock* rightCell = [NSTextTableBlock.alloc initWithTable:table startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
 		
-	CGFloat fullWidth = (_settings.paperSize == BeatA4) ? _styles.page.defaultWidthA4 : _styles.page.defaultWidthLetter;
+	CGFloat fullWidth = (self.settings.paperSize == BeatA4) ? self.styles.page.defaultWidthA4 : self.styles.page.defaultWidthLetter;
 	
-	[leftCell setContentWidth:_styles.page.contentPadding + fullWidth / 2 type:NSTextBlockAbsoluteValueType];
+	[leftCell setContentWidth:self.styles.page.contentPadding + fullWidth / 2 type:NSTextBlockAbsoluteValueType];
 	[rightCell setContentWidth:fullWidth / 2 type:NSTextBlockAbsoluteValueType];
 	
 	// Render content for left/right cell
@@ -322,8 +331,8 @@
 		NSMutableParagraphStyle* pStyle = value;
 		pStyle = pStyle.mutableCopy;
 		
-		pStyle.headIndent += _styles.page.contentPadding;
-		pStyle.firstLineHeadIndent += _styles.page.contentPadding;
+		pStyle.headIndent += self.styles.page.contentPadding;
+		pStyle.firstLineHeadIndent += self.styles.page.contentPadding;
 		pStyle.textBlocks = @[leftCell];
 		
 		[leftContent addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
@@ -418,7 +427,9 @@
 }
 
 - (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
+	BeatPaperSize paperSize = self.settings.paperSize;
 	LineType type = line.type;
+	
 	if (isDualDialogue) {
 		if (line.type == character) type = dualDialogueCharacter;
 		else if (line.type == parenthetical) type = dualDialogueParenthetical;
@@ -426,9 +437,13 @@
 		else if (line.type == more) type = dualDialogueMore;
 	}
 	
-	NSNumber* n = [NSNumber numberWithInteger:type];
+	// A dictionary for paper size
+	NSNumber* paperSizeKey = @(paperSize);
+	if (_lineTypeAttributes[paperSizeKey] == nil) _lineTypeAttributes[paperSizeKey] = NSMutableDictionary.new;
 	
-	if (_lineTypeAttributes[n] == nil) {
+	// Dictionary for the actual attributes
+	NSNumber* typeKey = @(type);
+	if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
 		RenderStyle *style = [self styleForType:type];
 		
 		NSMutableDictionary* styles = [NSMutableDictionary dictionaryWithDictionary:@{
@@ -440,7 +455,7 @@
 		else if (style.bold) 			styles[NSFontAttributeName] = self.fonts.boldCourier;
 		else 							styles[NSFontAttributeName] = self.fonts.courier;
 		
-		CGFloat width = (_settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+		CGFloat width = (self.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 		CGFloat blockWidth = width + style.marginLeft;
 		if (!isDualDialogue) blockWidth += self.styles.page.contentPadding;
 		
@@ -481,18 +496,18 @@
 		styles[NSParagraphStyleAttributeName] = pStyle;
 		
 		// Apply to existing styles
-		_lineTypeAttributes[n] = [NSDictionary dictionaryWithDictionary:styles];
+		_lineTypeAttributes[paperSizeKey][typeKey] = [NSDictionary dictionaryWithDictionary:styles];
 	}
 	
-	return _lineTypeAttributes[n];
+	return _lineTypeAttributes[paperSizeKey][typeKey];
 }
 
 
 #pragma mark - Convenience methods
 
 - (CGFloat)widthFor:(Line*)line {
-	RenderStyle* style = [_styles forElement:line.typeName];
-	CGFloat width = (_settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
+	RenderStyle* style = [self.styles forElement:line.typeName];
+	CGFloat width = (self.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 	return width;
 }
 

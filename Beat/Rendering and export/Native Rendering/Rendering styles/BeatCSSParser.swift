@@ -19,7 +19,6 @@ final class CssParser {
 	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
 	
 	/// Parses the CSS file string into an array of CSS styles.
-	///
 	/// - Parameter fileContent: CSS file content.
 	/// - Returns: Array of CSS styles.
 	func parse(fileContent: String) -> [String: RenderStyle] {
@@ -64,14 +63,16 @@ final class CssParser {
 			if character == "{" {
 				pendingStyleName = pendingLine.replacingOccurrences(strings: ["\n", "{"])
 				pendingLine = ""
-			} else if character == ";" {
+			}
+			else if character == ";" {
 				let propertyLine = pendingLine.replacingOccurrences(strings: [";", "\n"])
 				let key = propertyLine.removeTrailing(startWith: ":").replacingOccurrences(strings: [" "]).trimmingCharacters(in: .whitespaces)
 				let value = propertyLine.removeLeading(startWith: ":").removeLeading(startWith: " ")
 				
 				pendingStyleProperties[key] = value
 				pendingLine = ""
-			} else if character == "}" {
+			}
+			else if character == "}" {
 				pendingStyleName = pendingStyleName.trimmingCharacters(in: .whitespaces)
 				
 				if var existingStyles = styles[pendingStyleName] {
@@ -153,47 +154,4 @@ final class CssParser {
 		let exp = NSExpression(format: value)
 		return exp.expressionValue(with: nil, context: nil) ?? 0
 	}
-}
-
-
-extension String {
-	/// Returns the substring that contains the characters after first occurrence of the provided token.
-	///
-	/// - Parameter token: The token
-	/// - Returns: The substring that contains the characters after first occurrence of the provided token.
-	func removeLeading(startWith token: String) -> String {
-		if let token = range(of: token) {
-			var newString = self
-			newString.removeSubrange(startIndex..<token.upperBound)
-			return newString
-		}
-		return self
-	}
-	
-	/// Returns the substring that contains the characters before first occurrence of the provided token.
-	///
-	/// - Parameter token: The token
-	/// - Returns: The substring that contains the characters before first occurrence of the provided token.
-	func removeTrailing(startWith token: String) -> String {
-		
-		if let token = range(of: token) {
-			var newString = self
-			newString.removeSubrange(token.lowerBound..<endIndex)
-			return newString
-		}
-		return self
-	}
-	
-	/// Replaces the occurrences of the strings provided.
-	///
-	/// - Parameter strings: Strings to remove.
-	/// - Returns: Updated string with the strings removed.
-	func replacingOccurrences(strings: [String]) -> String {
-		var updatedString = self
-		for string in strings {
-			updatedString = updatedString.replacingOccurrences(of: string, with: "")
-		}
-		return updatedString
-	}
- 
 }

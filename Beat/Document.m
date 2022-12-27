@@ -631,7 +631,9 @@ static BeatAppDelegate *appDelegate;
 }
 
 -(BeatExportSettings*)exportSettings {
-	return [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
+	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
+	settings.paperSize = self.pageSize;
+	return settings;
 }
 
 -(void)awakeFromNib {

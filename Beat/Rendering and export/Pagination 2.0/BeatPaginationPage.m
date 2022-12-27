@@ -46,27 +46,31 @@
 		return NSAttributedString.new;
 	}
 	
+	// Create page number header
+	NSInteger pageNumber = [self.delegate.pages indexOfObject:self];
+	if (pageNumber == NSNotFound) pageNumber = self.delegate.pages.count - 1;
+	
+	NSMutableAttributedString* result = [NSMutableAttributedString.alloc initWithAttributedString:[self.delegate.renderer pageNumberBlockForPageNumber:pageNumber + 1]];
+	
 	// If the page hasn't been rendered, do it now.
 	if (_renderedString == nil) {
-		NSInteger pageNumber = [self.delegate.pages indexOfObject:self];
-		if (pageNumber == NSNotFound) pageNumber = self.delegate.pages.count - 1;
+		// Make a copy of the block so we won't disturb other threads
+		NSArray* blocks = self.safeBlocks;
+		NSMutableAttributedString* renderedString = NSMutableAttributedString.new;
 		
-		NSMutableAttributedString* string = NSMutableAttributedString.new;
-		
-		// Add page number header
-		NSAttributedString* header = [self.delegate.renderer pageNumberBlockForPageNumber:pageNumber + 1];
-		[string appendAttributedString:header];
-		
-		for (BeatPaginationBlock* block in self.blocks) {
-			bool firstElement = (block == self.blocks.firstObject) ? true : false;
+		for (BeatPaginationBlock* block in blocks) {
+			bool firstElement = (block == blocks.firstObject) ? true : false;
+			
 			NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
-			[string appendAttributedString:renderedBlock];
+			[renderedString appendAttributedString:renderedBlock];
 		}
 		
-		_renderedString = string;
+		_renderedString = renderedString;
 	}
 	
-	return _renderedString;
+	// Add rendered content to the header block
+	[result appendAttributedString:_renderedString];
+	return result;
 }
 
 - (void)invalidateRender {
@@ -75,19 +79,25 @@
 
 -(NSArray*)lines {
 	NSMutableArray* lines = NSMutableArray.new;
-	for (BeatPaginationBlock* block in self.blocks) {
+	for (BeatPaginationBlock* block in self.safeBlocks) {
 		[lines addObjectsFromArray:block.lines];
 	}
 	return lines;
 }
 
+-(NSArray*)safeBlocks {
+	NSArray* blocks = [NSArray arrayWithArray:self.blocks];
+	return blocks;
+}
+
 -(CGFloat)remainingSpace {
 	CGFloat height = 0.0;
-	for (BeatPaginationBlock *block in self.blocks) {
+	NSArray* blocks = self.safeBlocks;
+	for (BeatPaginationBlock *block in blocks) {
 		height += block.height;
 		
 		// Remove top margin for the first object
-		if (block == self.blocks.firstObject) {
+		if (block == blocks.firstObject) {
 			height -= block.topMargin;
 		}
 	}
@@ -229,11 +239,7 @@
 	
 	// Iterate blocks and store stuff until given line
 	NSMutableArray<BeatPaginationBlock*>* blocks = NSMutableArray.new;
-	for (BeatPaginationBlock* block in self.blocks) {
-		NSLog(@"Sparing:");
-		for (Line* line in block.lines) {
-			NSLog(@"    %@", line);
-		}
+	for (BeatPaginationBlock* block in self.safeBlocks) {
 		if ([block containsLine:line]) break;
 		[blocks addObject:block];
 	}

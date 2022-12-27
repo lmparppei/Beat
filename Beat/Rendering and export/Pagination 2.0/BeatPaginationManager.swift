@@ -49,10 +49,14 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	@objc init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		self.settings = settings
 		self.delegate = delegate
-		self.renderer = renderer
 		self.livePagination = livePagination
 		
 		super.init()
+		
+		if (renderer != nil) {
+			self.renderer = renderer
+			self.renderer?.pagination = self
+		}
 	}
 @objc init(editorDelegate:BeatEditorDelegate) {
 		self.settings = editorDelegate.exportSettings

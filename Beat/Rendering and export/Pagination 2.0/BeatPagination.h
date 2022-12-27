@@ -19,8 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class BeatPagination;
 @class BeatPaginationPage;
 @class BeatPaginationBlock;
+@class BeatPaginationManager;
 
 @protocol BeatRendererDelegate
+@property (nonatomic, weak) BeatPaginationManager* pagination;
 - (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber;
 - (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage;
 @end

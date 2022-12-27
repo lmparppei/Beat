@@ -1568,8 +1568,11 @@
                                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                                         <subviews>
                                                             <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lvV-vu-Nc5" customClass="BeatPreviewView" customModule="Beat" customModuleProvider="target">
-                                                                <rect key="frame" x="0.0" y="0.0" width="705" height="644"/>
+                                                                <rect key="frame" x="1" y="0.0" width="705" height="644"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                                <connections>
+                                                                    <outlet property="previewController" destination="wZv-WF-8R7" id="GmX-at-u6K"/>
+                                                                </connections>
                                                             </customView>
                                                         </subviews>
                                                     </view>

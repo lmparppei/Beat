@@ -218,9 +218,9 @@ class BeatTitlePageView:BeatPaginationPageView {
 		
 		self.titlePageLines = titlePage
 		super.init(size: size, page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController, titlePage: true)
-				
+			
 		createViews()
-		createTitlePage()
+		createTitlePage()		
 	}
 		
 	required init?(coder: NSCoder) {
@@ -337,6 +337,12 @@ class BeatTitlePageView:BeatPaginationPageView {
 		}
 		
 		return firstLine
+	}
+	
+	/// Updates title page content 
+	func updateTitlePage(_ titlePageContent: [[String:[Line]]]) {
+		self.titlePageLines = titlePageContent
+		createTitlePage()
 	}
 	
 	/// Override page render method for title pages

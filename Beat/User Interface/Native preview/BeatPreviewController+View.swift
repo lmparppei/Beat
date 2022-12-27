@@ -5,6 +5,12 @@
 //  Created by Lauri-Matti Parppei on 1.12.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/*
+ 
+ This class handles previews and pagination in editor.
+ It's a mess and I apologize.
+ 
+ */
 
 import AppKit
 
@@ -22,9 +28,13 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	@objc var pagination:BeatPaginationManager?
 	var renderer:BeatRendering?
 	var timer:Timer?
+	var paginationUpdated = false
+	var lastChangeAt = 0
 	
+	/// Returns export settings from editor
 	var settings:BeatExportSettings {
 		if self.delegate?.exportSettings == nil {
+			// This shouldn't ever happen, but if the delegate fails to return settings, we'll just create our own.
 			return BeatExportSettings.operation(.ForPrint, document: nil, header: "", printSceneNumbers: true)
 		} else {
 			return self.delegate!.exportSettings
@@ -34,6 +44,9 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	var exportSettings:BeatExportSettings? {
 		return self.delegate?.exportSettings
 	}
+	
+	
+	// MARK: - Initialization
 	
 	override init() {
 		super.init()
@@ -47,19 +60,33 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		self.scrollView?.magnification = 1.2;
 	}
 	
-	// MARK: Delegate methods (delegated from delegate)
+	
+	// MARK: - Pagination delegation
+	
+	/// When pagination has finished, we'll inform the host document and mark our pagination as done
+	func paginationDidFinish(pages: [BeatPaginationPage]) {
+		self.paginationUpdated = true
+		self.delegate?.paginationFinished(pages)
+	}
+
+	
+	// MARK: - Delegate methods (delegated from delegate)
 	@objc var parser: ContinuousFountainParser? { return delegate?.parser }
 	
-	// MARK: Create preview data
+	
+	// MARK: - Creating  preview data
+	
 	/// Preview data can be created either in background (async) or in main thread (sync).
 	/// - note: This method doesn't create the actual preview yet, just paginates it.
 	@objc func createPreview(changeAt index:Int, sync:Bool) {
 		// Let's invalidate the timer (if it exists)
-		timer?.invalidate()
+		self.timer?.invalidate()
+		self.paginationUpdated = false
+		self.lastChangeAt = index
 		
 		guard let parser = delegate?.parser else { return }
 		if (sync) {
-			pagination?.newPagination(screenplay: parser.forPrinting(), settings: settings, forEditor: true, changeAt: index)
+			pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
 		} else {
 			timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
 				// Dispatch pagination to a background thread after one second
@@ -69,54 +96,77 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			})
 		}
 	}
-
-		
-	func paginationDidFinish(pages: [BeatPaginationPage]) {
-		self.delegate?.paginationFinished(pages)
+	
+	@objc func clearPreview() {
+		self.previewView?.clear()
 	}
-		
+	
+	/// Renders pages on screen
 	@objc func renderOnScreen() {
+		// Show spinner while loading
 		self.spinner?.isHidden = false
 		self.spinner?.startAnimation(nil)
 		
+		guard let previewView = self.previewView,
+			  let pagination = self.pagination
+		else { return }
+		
+		// Check if pagination is up to date
+		if !paginationUpdated {
+			createPreview(changeAt: self.lastChangeAt, sync: true)
+		}
+				
+		// Create page strings in background
+		// At least some of the pages are usually cached, so this should be pretty fast.
 		DispatchQueue.global(qos: .userInteractive).async {
 			guard let pages = self.pagination?.pages
 			else { return }
 			
+			// Add strings into an array (surprisingly slow in Swift)
 			var strings:[NSAttributedString] = []
-			
 			for p in pages {
 				strings.append(p.attributedString())
 			}
 			
 			DispatchQueue.main.async {
-				guard let previewView = self.previewView
-				else { return }
+				// Back in main thread, create (or reuse) page content
 				
 				let size = BeatPaperSizing.size(for: self.settings.paperSize)
-				
+								
+				// Iterate through paginated pages
 				for i in 0 ..< pages.count {
 					let page = pages[i]
 					
 					var pageView:BeatPaginationPageView
 					if i < previewView.pageViews.count {
-						pageView = self.previewView!.pageViews[i]
+						// If a page view already exist in the given page number, let's reuse it.
+						pageView = previewView.pageViews[i]
 						pageView.update(page: page, settings: self.settings)
-					}
-					else {
+					} else {
+						// .. and if not, create a new page view.
 						pageView = BeatPaginationPageView(size: size, page: page, content: nil, settings: self.settings, previewController: self)
 						previewView.addPage(page: pageView)
 					}
 				}
 				
+				// Add title page
+				if pagination.titlePage.count > 0 {
+					previewView.addTitlePage(titlePageContent: pagination.titlePage)
+				}
+				
 				// Remove excess views
-				while previewView.pageViews.count > pages.count {
+				let pageCount = pages.count + ((pagination.titlePage.count > 0) ? 1 : 0)
+				while previewView.pageViews.count > pageCount {
 					previewView.removePage(at: previewView.pageViews.count - 1)
 				}
 				
+				// Update container size
 				previewView.updateSize()
+				
+				// Scroll view to the last edited position
 				self.scrollToRange(self.delegate?.selectedRange() ?? NSMakeRange(0, 0))
 				
+				// Hide animation
 				self.spinner?.stopAnimation(nil)
 			}
 		}
@@ -153,6 +203,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		}
 	}
 	
+	/// Closes preview and selects the given range
 	func closeAndJumpToRange(_ range:NSRange) {
 		delegate?.returnToEditor()
 		self.delegate?.setSelectedRange(range)
@@ -165,6 +216,7 @@ final class BeatPreviewView:NSView {
 	override var isFlipped: Bool { return true }
 	var pageViews:[BeatPaginationPageView] = []
 	var bottomSpacing = 10.0
+	var titlePage:BeatTitlePageView?
 	
 	@IBOutlet weak var previewController:BeatPreviewController?
 		
@@ -178,16 +230,31 @@ final class BeatPreviewView:NSView {
 
 	/// Update container size based on page count
 	func updateSize() {
-		let pageSize = self.subviews.first?.frame.size ?? NSSize(width: 0, height: 0)
-		let height = (self.subviews.last?.frame.height ?? 0.0) + (self.subviews.last?.frame.origin.y ?? 0.0) + self.bottomSpacing
+		let pageSize = self.pageViews.first?.frame.size ?? NSSize(width: 0, height: 0)
+		let height = (self.pageViews.last?.frame.height ?? 0.0) + (self.pageViews.last?.frame.origin.y ?? 0.0) + self.bottomSpacing
 		
 		self.enclosingScrollView?.documentView?.frame = NSMakeRect(0, 0, pageSize.width, height)
 		self.frame = NSMakeRect(0, 0, pageSize.width, height)
 	}
 	
+	func updatePagePositions() {
+		var y = bottomSpacing
+		for pageView in pageViews {
+			pageView.frame = NSMakeRect(0, y, pageView.frame.width, pageView.frame.height)
+			y += pageView.frame.height + bottomSpacing
+		}
+	}
+	
+	func insertPage(page:BeatPaginationPageView, atIndex index:Int) {
+		self.addSubview(page)
+		pageViews.insert(page, at: index)
+		updatePagePositions()
+	}
+	
+	/// Adds a page view onto the page
 	func addPage(page:BeatPaginationPageView) {
-		var y = (self.subviews.last?.frame.height ?? 0.0) + (self.subviews.last?.frame.origin.y ?? 0.0)
-		y += 10
+		var y = (self.pageViews.last?.frame.height ?? 0.0) + (self.pageViews.last?.frame.origin.y ?? 0.0)
+		y += self.bottomSpacing
 		
 		let frame = NSMakeRect(0, y, page.frame.width, page.frame.height)
 		page.frame = frame
@@ -196,11 +263,37 @@ final class BeatPreviewView:NSView {
 		self.pageViews.append(page)
 	}
 	
+	func addTitlePage(titlePageContent:[[String: [Line]]]) {
+		if (self.previewController == nil) { return }
+		
+		if (self.titlePage != nil) {
+			print("Updating title page...")
+			// Update title page
+			self.titlePage?.updateTitlePage(titlePageContent)
+		} else {
+			self.titlePage = BeatTitlePageView(previewController: self.previewController, titlePage: titlePageContent, settings: self.previewController!.settings)
+			insertPage(page: self.titlePage!, atIndex: 0)
+		}
+	}
+	func removeTitlePage() {
+		if (self.titlePage == nil) { return }
+		else {
+			self.titlePage = nil
+			removePage(at: 0)
+		}
+	}
+	
 	func removePage(at idx:Int) {
 		let pageView = self.pageViews[idx]
 		pageView.removeFromSuperview()
 		
 		self.pageViews.remove(at: idx)
+		
+		// If we didn't remove the last page, update page positions
+		if (idx != pageViews.count) {
+			updatePagePositions()
+		}
+			
 	}
 }
 
