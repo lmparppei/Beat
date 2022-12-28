@@ -4075,13 +4075,20 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 /// Native pagination finished.
-- (void)paginationFinished:(NSArray<BeatPaginationPage*>*)pages {
-	if (self.showPageNumbers) {
-		// We might be in a background thread, so make sure to dispach this call to main thread
-		dispatch_async(dispatch_get_main_queue(), ^(void) {
+- (void)paginationFinished:(NSArray<BeatPaginationPage*>*)pages {	
+	// We might be in a background thread, so make sure to dispach this call to main thread
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		// Update pagination in text view
+		if (self.showPageNumbers) {
 			[self.textView updatePagination:pages];
-		});
-	}
+		}
+		
+		// Tell plugins the preview has been finished
+		for (NSString *name in self.runningPlugins.allKeys) {
+			BeatPlugin *plugin = self.runningPlugins[name];
+			[plugin previewDidFinish];
+		}
+	});
 }
 
 - (void)setPrintInfo:(NSPrintInfo *)printInfo {

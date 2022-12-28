@@ -8,11 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol BeatPageDelegate;
 @class BeatPaginationBlock;
 @class BeatPageBreak;
+
+@protocol BeatPaginationPageExports <JSExport>
+@property (nonatomic, readonly) BeatPageBreak *pageBreak;
+//@property (nonatomic, readonly) NSMutableArray<BeatPaginationBlock*>* blocks;
+@property (nonatomic, readonly) CGFloat maxHeight;
+@property (nonatomic, readonly) CGFloat remainingSpace;
+@property (nonatomic, readonly) NSArray<Line*>* lines;
+-(NSRange)representedRange;
+@end
 
 @interface BeatPaginationPage : NSObject
 @property (nonatomic) BeatPageBreak *pageBreak;
