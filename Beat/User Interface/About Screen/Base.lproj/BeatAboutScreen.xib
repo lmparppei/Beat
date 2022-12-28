@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -30,7 +30,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="RwM-kX-8d4">
-                                    <rect key="frame" x="270" y="164" width="227" height="52"/>
+                                    <rect key="frame" x="262" y="194" width="173" height="37"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" title="beat" allowsEditingTextAttributes="YES" id="IhX-oQ-xOK">
                                         <font key="font" size="35" name="Courier"/>
@@ -38,19 +38,8 @@
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NI3-iZ-dLT">
-                                    <rect key="frame" x="266" y="49" width="136" height="35"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <buttonCell key="cell" type="push" title="Acknowledgements" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="umj-be-CzI">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <action selector="showAcknowledgements:" target="-2" id="IhF-Ek-n3G"/>
-                                    </connections>
-                                </button>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="xmR-Pi-3fd">
-                                    <rect key="frame" x="271" y="109" width="187" height="18"/>
+                                    <rect key="frame" x="262" y="124" width="187" height="18"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="© Lauri-Matti Parppei 2019–2022" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="Vew-4a-6k0">
                                         <font key="font" size="10" name="HelveticaNeue"/>
@@ -59,9 +48,18 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="hn9-cx-tdl">
-                                    <rect key="frame" x="271" y="94" width="187" height="19"/>
+                                    <rect key="frame" x="262" y="109" width="187" height="19"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Released under GPL license" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="kFC-VJ-RDd">
+                                        <font key="font" size="10" name="HelveticaNeue"/>
+                                        <color key="textColor" white="0.2770926339" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Yzm-ld-dQV">
+                                    <rect key="frame" x="262" y="69" width="182" height="32"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="No animal products were consumed while creating this app." allowsEditingTextAttributes="YES" id="Xit-ir-kKo">
                                         <font key="font" size="10" name="HelveticaNeue"/>
                                         <color key="textColor" white="0.2770926339" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -73,7 +71,7 @@
                                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="B_256" id="hBU-Ie-V8p"/>
                                 </imageView>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="Zwe-T1-ZW3">
-                                    <rect key="frame" x="270" y="135" width="202" height="35"/>
+                                    <rect key="frame" x="262" y="151" width="202" height="35"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Version" allowsEditingTextAttributes="YES" id="p0n-Zp-SgA">
                                         <font key="font" size="10" name="HelveticaNeue"/>
@@ -81,6 +79,17 @@
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NI3-iZ-dLT">
+                                    <rect key="frame" x="258" y="34" width="136" height="35"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="push" title="Acknowledgements" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="umj-be-CzI">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="showAcknowledgements:" target="-2" id="IhF-Ek-n3G"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </view>
                         <color key="fillColor" red="0.082352941176470587" green="0.086274509803921567" blue="0.098039215686274508" alpha="1" colorSpace="calibratedRGB"/>
