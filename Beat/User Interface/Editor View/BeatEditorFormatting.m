@@ -85,8 +85,6 @@ static NSString *strikeoutSymbolClose = @"}}";
 		type = character;
 	}
 	
-	if (type == character) NSLog(@"Character type: %lu", type);
-	
 	// Extended types for title page fields
 	else if (line.isTitlePage) {
 		if ([line.string rangeOfString:@":"].location == NSNotFound) {

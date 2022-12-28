@@ -431,6 +431,10 @@
 		B6B462F227099C160056EEF1 /* BeatUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B462EB2708ADFB0056EEF1 /* BeatUserDefaults.m */; };
 		B6B51B19295A30B7002182D2 /* BeatStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B18295A30B7002182D2 /* BeatStringExtensions.swift */; };
 		B6B51B1A295A30B7002182D2 /* BeatStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B18295A30B7002182D2 /* BeatStringExtensions.swift */; };
+		B6B51B1D295B562D002182D2 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */; };
+		B6B51B1E295B562D002182D2 /* BeatNativePrinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */; };
+		B6B51B23295B5DF5002182D2 /* BeatValueTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B22295B5DF5002182D2 /* BeatValueTransformers.swift */; };
+		B6B51B24295B5DF5002182D2 /* BeatValueTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B51B22295B5DF5002182D2 /* BeatValueTransformers.swift */; };
 		B6B6C87625650BA4005294FE /* HighlandImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B6C87525650BA4005294FE /* HighlandImport.m */; };
 		B6B80BE02726949E00557461 /* BeatPieGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B80BDF2726949E00557461 /* BeatPieGraph.m */; };
 		B6B80BE12726949E00557461 /* BeatPieGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B80BDF2726949E00557461 /* BeatPieGraph.m */; };
@@ -1008,6 +1012,8 @@
 		B6B462EA2708ADFB0056EEF1 /* BeatUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatUserDefaults.h; sourceTree = "<group>"; };
 		B6B462EB2708ADFB0056EEF1 /* BeatUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatUserDefaults.m; sourceTree = "<group>"; };
 		B6B51B18295A30B7002182D2 /* BeatStringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatStringExtensions.swift; sourceTree = "<group>"; };
+		B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatNativePrinting.swift; sourceTree = "<group>"; };
+		B6B51B22295B5DF5002182D2 /* BeatValueTransformers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatValueTransformers.swift; sourceTree = "<group>"; };
 		B6B6C87425650BA4005294FE /* HighlandImport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HighlandImport.h; sourceTree = "<group>"; };
 		B6B6C87525650BA4005294FE /* HighlandImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HighlandImport.m; sourceTree = "<group>"; };
 		B6B6C87F25650D04005294FE /* TextBundleWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextBundleWrapper.h; sourceTree = "<group>"; };
@@ -1623,6 +1629,7 @@
 		B6467AAF2899502E00231B25 /* Native Rendering */ = {
 			isa = PBXGroup;
 			children = (
+				B6B51B1B295B55F4002182D2 /* Native Printing */,
 				B6305487291C0DE1006B8039 /* Rendering styles */,
 				B6A4F49D29192C3F006B3A89 /* Rendering test window */,
 				B65B81C0290B210B00962E3F /* BeatRenderer.swift */,
@@ -2093,6 +2100,7 @@
 				B669E03D29238AC400891DD1 /* BeatFontExtensions.swift */,
 				B6F056582926ACDA00E44C01 /* BeatArrayExtensions.swift */,
 				B6B51B18295A30B7002182D2 /* BeatStringExtensions.swift */,
+				B6B51B22295B5DF5002182D2 /* BeatValueTransformers.swift */,
 			);
 			path = "Overall Categories";
 			sourceTree = "<group>";
@@ -2184,6 +2192,14 @@
 				B655B1052714607700BA52ED /* BeatMarkerScroller.m */,
 			);
 			path = "Scroll View";
+			sourceTree = "<group>";
+		};
+		B6B51B1B295B55F4002182D2 /* Native Printing */ = {
+			isa = PBXGroup;
+			children = (
+				B6B51B1C295B562D002182D2 /* BeatNativePrinting.swift */,
+			);
+			path = "Native Printing";
 			sourceTree = "<group>";
 		};
 		B6B6C87E25650CDD005294FE /* TextBundle */ = {
@@ -2881,6 +2897,7 @@
 				B6305489291D0054006B8039 /* BeatPaginationManager.swift in Sources */,
 				B6764B31251367BF00731A36 /* TKSplitHandle.m in Sources */,
 				B6055CED23CDBA3800F7D54C /* RegExCategories.m in Sources */,
+				B6B51B23295B5DF5002182D2 /* BeatValueTransformers.swift in Sources */,
 				B6B9CEEB28EB1DA300EB9F6B /* BeatPluginMenuItem.swift in Sources */,
 				B6FD5D912563B5320037ACBA /* GTMNSString+HTML.m in Sources */,
 				B66B5AC12739B75500BBC9C6 /* ioapi.c in Sources */,
@@ -2992,6 +3009,7 @@
 				B6A79C9827B6565C008D3AFC /* BeatLayoutManager.m in Sources */,
 				B63C81E7294B74590012DC8A /* BeatPluginWebView.swift in Sources */,
 				B6B462EC2708ADFB0056EEF1 /* BeatUserDefaults.m in Sources */,
+				B6B51B1D295B562D002182D2 /* BeatNativePrinting.swift in Sources */,
 				B63B2630294F4CFD00DF70F7 /* BeatRenderingViews.swift in Sources */,
 				B62CD511279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */,
 				B6F58B69279B81DC009522C1 /* BeatValidationItem.swift in Sources */,
@@ -3083,6 +3101,7 @@
 				B630548A291D0054006B8039 /* BeatPaginationManager.swift in Sources */,
 				B68B6042260B849300463AD8 /* TKSplitHandle.m in Sources */,
 				B68B6043260B849300463AD8 /* RegExCategories.m in Sources */,
+				B6B51B24295B5DF5002182D2 /* BeatValueTransformers.swift in Sources */,
 				B6B9CEEC28EB1DA300EB9F6B /* BeatPluginMenuItem.swift in Sources */,
 				B68B6044260B849300463AD8 /* GTMNSString+HTML.m in Sources */,
 				B66B5AC22739B75500BBC9C6 /* ioapi.c in Sources */,
@@ -3194,6 +3213,7 @@
 				B6A79C9927B6565C008D3AFC /* BeatLayoutManager.m in Sources */,
 				B63C81E8294B74590012DC8A /* BeatPluginWebView.swift in Sources */,
 				B6B462ED2708ADFB0056EEF1 /* BeatUserDefaults.m in Sources */,
+				B6B51B1E295B562D002182D2 /* BeatNativePrinting.swift in Sources */,
 				B63B2631294F4CFD00DF70F7 /* BeatRenderingViews.swift in Sources */,
 				B62CD512279754300070DE17 /* BeatLaunchScreenButton.swift in Sources */,
 				B6F58B6A279B81DC009522C1 /* BeatValidationItem.swift in Sources */,

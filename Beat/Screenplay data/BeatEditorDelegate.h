@@ -51,6 +51,9 @@
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 @property (nonatomic, readonly) BeatPaginator *paginator;
+
+// TODO: Remove this when native export is implemented
+@property (nonatomic) bool nativeRendering;
 #endif
 
 @property (nonatomic, readonly) bool documentIsLoading;

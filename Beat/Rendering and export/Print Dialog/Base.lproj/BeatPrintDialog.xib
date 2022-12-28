@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
-        <plugIn identifier="com.apple.pdfkit.ibplugin" version="20037"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <plugIn identifier="com.apple.pdfkit.ibplugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -18,6 +18,7 @@
                 <outlet property="pdfView" destination="VcW-6f-wYm" id="OSu-5y-Te4"/>
                 <outlet property="primaryButton" destination="oP5-3G-eOr" id="YBK-15-EbI"/>
                 <outlet property="printSceneNumbers" destination="7Oz-ue-27o" id="Kx0-DP-V4D"/>
+                <outlet property="progressIndicator" destination="1qf-XO-k41" id="hBs-0c-V1r"/>
                 <outlet property="radioA4" destination="Pvt-SR-b7W" id="Lmm-Vh-QgX"/>
                 <outlet property="radioLetter" destination="fcQ-tU-V1q" id="6S4-MG-ayT"/>
                 <outlet property="revisedPageColorMenu" destination="GVT-Zp-Amr" id="7bV-5h-t6k"/>
@@ -369,7 +370,7 @@ DQ
                                         <nil key="backgroundColor"/>
                                     </clipView>
                                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="ZS3-Ca-UDM">
-                                        <rect key="frame" x="1" y="105" width="193" height="16"/>
+                                        <rect key="frame" x="1" y="94" width="179" height="16"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="wLE-TY-Peg">
@@ -409,6 +410,10 @@ DQ
                             <action selector="toggleAdvancedOptions:" target="-2" id="gAv-on-WEj"/>
                         </connections>
                     </button>
+                    <progressIndicator fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" id="1qf-XO-k41">
+                        <rect key="frame" x="160" y="205" width="32" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                    </progressIndicator>
                 </subviews>
             </view>
             <connections>

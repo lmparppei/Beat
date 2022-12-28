@@ -41,6 +41,8 @@
 @property (weak) IBOutlet NSView *advancedOptions;
 @property (weak) IBOutlet NSButton* advancedOptionsButton;
 
+@property (weak) IBOutlet NSProgressIndicator* progressIndicator;
+
 @property (weak) IBOutlet NSLayoutConstraint *advancedOptionsWidthConstraint;
 
 @property (weak) IBOutlet NSButton* revisionFirst;
@@ -55,6 +57,8 @@
 @property (nonatomic) BeatPrintView *printView;
 
 @property (nonatomic) bool automaticPreview;
+
+@property (nonatomic) NSMutableArray<BeatNativePrinting*>* renderQueue;
 
 @end
 
@@ -82,8 +86,10 @@ static CGFloat panelWidth;
 #pragma mark - Window actions
 
 -(void)awakeFromNib {
-	panelWidth = self.window.frame.size.width;
+	self.renderQueue = NSMutableArray.new;
 	
+	// Show advanced options?
+	panelWidth = self.window.frame.size.width;
 	bool showAdvancedOptions = [NSUserDefaults.standardUserDefaults boolForKey:ADVANCED_PRINT_OPTIONS_KEY];
 	if (showAdvancedOptions) _advancedOptionsButton.state = NSOnState; else _advancedOptionsButton.state = NSOffState;
 	
@@ -118,11 +124,8 @@ static CGFloat panelWidth;
 	_secondaryButton.action = @selector(print:);
 }
 - (void)openPanel {
-	// We have to show the panel here to be able to set the radio buttons (???)
-	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
-		[self.documentDelegate releasePrintDialog];
-	}];
-
+	NSLog(@"Opening print dialog: %@", self.window);
+		
 	// Remove the previous preview
 	[_pdfView setDocument:nil];
 			
@@ -141,8 +144,14 @@ static CGFloat panelWidth;
 	// To be absolutely sure, set print info to match page size setting
 	[BeatPaperSizing setPageSize:_documentDelegate.pageSize printInfo:_documentDelegate.printInfo];
 	
+	// We have to show the panel here to be able to set the radio buttons (???)
+	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
+		[self.documentDelegate releasePrintDialog];
+	}];
+	
 	// Reload PDF preview
 	[self loadPreview];
+
 }
 - (IBAction)close:(id)sender {
 	[self.documentDelegate.documentWindow endSheet:self.window];
@@ -166,17 +175,37 @@ static CGFloat panelWidth;
 	[self.documentDelegate.documentWindow endSheet:self.window];
 }
 
+- (void)printingDidFinish {
+	[self.documentDelegate.documentWindow endSheet:self.window];
+}
+
 - (void)loadPreview {
+	// Start progress indicator
+	[self.progressIndicator startAnimation:nil];
+	
 	// Update PDF preview
 	BeatExportSettings *settings = [self exportSettings];
 	
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		@synchronized (self) {
-			BeatPrintView * printView = [[BeatPrintView alloc] initWithDocument:self.documentDelegate.document script:nil operation:BeatToPreview settings:settings delegate:self];
-			[self addPrintViewToQueue:printView];
-		}
+	if (self.documentDelegate.nativeRendering) {
+		// Native rendering for development
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			BeatNativePrinting* operation = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:settings delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+				[self.renderQueue removeObject:operation];
+				
+				NSURL* url = (NSURL*)value;
+				[self didFinishPreviewAt:url];
+			}];
+			[self.renderQueue addObject:operation];
+		});
 		
-	});
+	} else {
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			@synchronized (self) {
+				BeatPrintView * printView = [[BeatPrintView alloc] initWithDocument:self.documentDelegate.document script:nil operation:BeatToPreview settings:settings delegate:self];
+				[self addPrintViewToQueue:printView];
+			}
+		});
+	}
 }
 
 /// Adds the print view to document's queue. It will be automatically removed by the print view itself.
@@ -256,14 +285,15 @@ static CGFloat panelWidth;
 
 
 - (void)didFinishPreviewAt:(NSURL *)url {
+	// Stop progress indicator
+	[self.progressIndicator stopAnimation:nil];
+	
 	// This is a hack. Sorry.
 	// We find the scroll view for PDFView, save its bounds and load them when
 	// the preview is refreshed. Because the coordinate system is flipped, we
 	// can only do it after the initial preview was created, not to end up at the
 	// end of the document.
-	
 	static bool firstPreview = YES;
-	
 	NSScrollView *scrollView = _pdfView.subviews.firstObject;
 	NSRect frame = scrollView.contentView.bounds;
 	
@@ -271,6 +301,7 @@ static CGFloat panelWidth;
 	PDFDocument *doc = [[PDFDocument alloc] initWithURL:url];
 	[_pdfView setDocument:doc];
 	
+	// Load the old bounds (if this is not the first time preview was loaded)
 	if (!firstPreview) scrollView.contentView.bounds = frame;
 	firstPreview = NO;
 }
@@ -291,7 +322,7 @@ static CGFloat panelWidth;
 	
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.documentDelegate.document header:header printSceneNumbers:self.documentDelegate.printSceneNumbers printNotes:NO revisions:[self printedRevisions] scene:@"" coloredPages:coloredPages revisedPageColor:revisionColor];
 
-	settings.paperSize = [self.documentDelegate.documentSettings getInt:DocSettingPageSize];
+	settings.paperSize = self.documentDelegate.pageSize;
 	settings.customCSS = css;
 	
 	return settings;

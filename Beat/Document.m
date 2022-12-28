@@ -376,7 +376,7 @@
 #define DIALOGUE_INDENT_P 8 * CHR_WIDTH
 #define DIALOGUE_RIGHT_P 44 * CHR_WIDTH
 
-#define NEW_PAGINATION true
+#define NATIVE_RENDERING true
 
 @implementation Document
 
@@ -1357,6 +1357,10 @@ static NSWindow __weak *currentKeyWindow;
 
 
 #pragma mark - Print & Export
+
+- (bool)nativeRendering {
+	return NATIVE_RENDERING;
+}
 
 - (NSString*)fileNameString
 {
@@ -3259,7 +3263,7 @@ static bool _skipAutomaticLineBreaks = false;
 
 - (IBAction)preview:(id)sender
 {
-	if (NEW_PAGINATION) {
+	if (NATIVE_RENDERING) {
 		if (self.currentTab != _nativePreviewTab) {
 			[self.previewController renderOnScreen];
 			[self showTab:_nativePreviewTab];
@@ -4023,7 +4027,7 @@ static bool _skipAutomaticLineBreaks = false;
 
 static NSArray<Line*>* cachedTitlePage;
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
-	if (NEW_PAGINATION) {
+	if (NATIVE_RENDERING) {
 		// Bake revisions into lines
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		

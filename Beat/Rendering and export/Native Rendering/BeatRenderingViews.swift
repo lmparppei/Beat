@@ -30,14 +30,14 @@ class BeatPaginationPageView:NSView {
 	var fonts = BeatFonts.shared()
 	
 	var paperSize:BeatPaperSize
-	
-	@objc init(size:NSSize, page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewController?, titlePage:Bool = false) {
-		self.size = size
+		
+	@objc init(page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewController?, titlePage:Bool = false) {
+		self.size = BeatPaperSizing.size(for: settings.paperSize)
 		self.attributedString = content
 		self.previewController = previewController
 		self.settings = settings
 		self.paperSize = settings.paperSize
-		
+				
 		self.page = page
 		if (page != nil) {
 			self.attributedString = page!.attributedString()
@@ -214,10 +214,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 	var titlePageLines:[[String:[Line]]]
 	
 	init(previewController: BeatPreviewController? = nil, titlePage:[[String:[Line]]], settings:BeatExportSettings) {
-		let size = BeatPaperSizing.size(for: previewController?.settings.paperSize ?? .A4)
-		
 		self.titlePageLines = titlePage
-		super.init(size: size, page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController, titlePage: true)
+		super.init(page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController, titlePage: true)
 			
 		createViews()
 		createTitlePage()		

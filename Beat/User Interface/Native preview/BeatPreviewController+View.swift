@@ -144,7 +144,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 						pageView.update(page: page, settings: self.settings)
 					} else {
 						// .. and if not, create a new page view.
-						pageView = BeatPaginationPageView(size: size, page: page, content: nil, settings: self.settings, previewController: self)
+						pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: self)
 						previewView.addPage(page: pageView)
 					}
 				}
