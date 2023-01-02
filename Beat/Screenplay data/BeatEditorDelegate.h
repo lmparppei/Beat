@@ -118,6 +118,8 @@
 - (UIPrintInfo*)printInfo;
 #endif
 
+- (NSString*)fileNameString;
+
 - (void)setPrintSceneNumbers:(bool)value;
 
 - (NSMutableArray*)scenes;

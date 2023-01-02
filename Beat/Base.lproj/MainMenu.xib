@@ -773,7 +773,7 @@ DQ
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="8U3-o3-D1z"/>
-                            <menuItem title="Show Cards" keyEquivalent="D" id="ab0-W3-2f9">
+                            <menuItem title="Show Cards" keyEquivalent="e" id="ab0-W3-2f9">
                                 <connections>
                                     <action selector="toggleCards:" target="-1" id="W45-hd-uTy"/>
                                 </connections>

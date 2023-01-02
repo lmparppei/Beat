@@ -376,7 +376,7 @@
 #define DIALOGUE_INDENT_P 8 * CHR_WIDTH
 #define DIALOGUE_RIGHT_P 44 * CHR_WIDTH
 
-#define NATIVE_RENDERING true
+#define NATIVE_RENDERING false
 
 @implementation Document
 
@@ -1502,7 +1502,7 @@ static NSWindow __weak *currentKeyWindow;
 		// Note: This logic is a bit faulty. We should probably just move on next line regardless of next character
 		else if (currentLine.isAnyParenthetical && self.selectedRange.length == 0) {
 			if (self.textView.string.length >= affectedCharRange.location + 1) {
-				char chr = [self.textView.string characterAtIndex:affectedCharRange.location];
+				unichar chr = [self.textView.string characterAtIndex:affectedCharRange.location];
 				if (chr == ')') {
 					[self addString:@"\n" atIndex:affectedCharRange.location + 1];
 					Line *nextLine = [self getNextLine:currentLine];
