@@ -22,6 +22,7 @@ class BeatNativePrinting:NSView {
 	var callback:(BeatNativePrinting, AnyObject?) -> ()
 	var progressPanel:NSPanel = NSPanel(contentRect: NSMakeRect(0, 0, 350, 30), styleMask: [.docModalWindow], backing: .buffered, defer: false)
 	var host:NSWindow
+	var operation:BeatPrintingOperation = .toPrint
 	
 	var pageViews:[BeatPaginationPageView] = []
 	var url:URL?
@@ -37,16 +38,18 @@ class BeatNativePrinting:NSView {
 		
 		self.host = window
 		self.callback = callback
+		
 		self.renderer = BeatRendering(settings: settings)
 		self.settings = settings
 		self.pagination = BeatPaginationManager(settings: settings, delegate: nil, renderer: renderer, livePagination: false)
+		self.operation = operation
 		
 		let size = BeatPaperSizing.size(for: self.settings.paperSize)
 		let frame = NSMakeRect(0, 0, size.width, size.height)
 		super.init(frame: frame)
 		
 		// Render the screenplay
-		paginateAndRender(operation: operation)
+		paginateAndRender()
 	}
 	
 	required init?(coder: NSCoder) {
@@ -70,45 +73,60 @@ class BeatNativePrinting:NSView {
 	}
 	
 	var data:NSMutableData = NSMutableData()
-	func paginateAndRender(operation:BeatPrintingOperation) {
+	func paginateAndRender() {
 		DispatchQueue.global(qos: .userInteractive).async {
 			self.pagination.newPagination(screenplay: self.screenplay, settings: self.settings, forEditor: false, changeAt: 0)
 			
 			DispatchQueue.main.sync {
 				self.createPageViews()
 				
-				self.url = self.tempURL()
+				if self.operation == .toPreview {
+					self.url = self.tempURL()
+				}
+				else if self.operation == .toPDF {
+					self.getURLforPDF()
+				}
 				
 				let printInfo = NSPrintInfo.shared.copy() as! NSPrintInfo
-				
-				printInfo.dictionary().addEntries(from: [
-					NSPrintInfo.AttributeKey.jobDisposition: NSPrintInfo.JobDisposition.save,
-					NSPrintInfo.AttributeKey.jobSavingURL: NSURL(fileURLWithPath: self.url!.absoluteString)
-				])
-				
-				/*
-				let printOperation = NSPrintOperation.pdfOperation(with: self, inside: self.frame, to: self.data)
-				printOperation.runModal(for: self.host, delegate: self, didRun: #selector(self.printOperationDidRun), contextInfo: nil)
-				*/
+				printInfo.horizontalPagination = .fit
+				printInfo.verticalPagination = .fit
 				
 				let printOperation = NSPrintOperation(view: self, printInfo: printInfo)
-				printOperation.showsPrintPanel = false
 				
+				// Specific rules for PDF operations
+				if (self.operation != .toPrint) {
+					printInfo.dictionary().addEntries(from: [
+						NSPrintInfo.AttributeKey.jobDisposition: NSPrintInfo.JobDisposition.save,
+						NSPrintInfo.AttributeKey.jobSavingURL: NSURL(fileURLWithPath: self.url!.absoluteString)
+					])
+					printOperation.showsPrintPanel = false
+				}
+				
+				// Run print operation
 				printOperation.runModal(for: self.host, delegate: self, didRun: #selector(self.printOperationDidRun), contextInfo: nil)
 			}
 		}
 	}
 	
+	/// Called after the operation has finished
 	@objc func printOperationDidRun(_ operation:Any?, success:Bool, contextInfo:Any?) {
-		guard let _ = operation as? NSPrintOperation,
-			  let url = self.url
+		guard let _ = operation as? NSPrintOperation
 		else { return }
 		
-		callback(self, NSURL(fileURLWithPath: url.relativePath))
+		if (self.operation != .toPrint) {
+			guard let url = self.url else {
+				print("ERROR: No PDF file found")
+				return
+			}
+			callback(self, NSURL(fileURLWithPath: url.relativePath))
+		} else {
+			// Inform that the printing was successful
+			callback(self, nil)
+		}
 	}
-	//- (void)printOperationDidRun:(id)operation success:(bool)success contextInfo:(nullable void *)contextInfo {
 	
-	func render(operation:BeatPrintingOperation) {
+	// This is a low-performance alternative
+	func render() {
 		let pdf = renderPages()
 		
 		if (operation == .toPreview) {
@@ -174,4 +192,37 @@ class BeatNativePrinting:NSView {
 			.appendingPathExtension("pdf")
 		return url
 	}
+	
+	func getURLforPDF() {
+		var filename = "Untitled"
+		if self.delegate != nil {
+			filename = self.delegate!.fileNameString()
+		}
+
+		let saveDialog = NSSavePanel()
+		saveDialog.allowedFileTypes = ["pdf"]
+		saveDialog.nameFieldStringValue = filename
+		
+		
+		if (self.window != nil) {
+			saveDialog.beginSheetModal(for: self.window!) { value in
+				let response = value as NSApplication.ModalResponse
+				
+				if (response == .OK) {
+					self.url = saveDialog.url
+				}
+				else {
+					self.url = nil
+				}
+			}
+		} else {
+			let response = saveDialog.runModal()
+			if (response == .OK) {
+				self.url = saveDialog.url
+			} else {
+				self.url = nil
+			}
+		}
+	}
+	
 }

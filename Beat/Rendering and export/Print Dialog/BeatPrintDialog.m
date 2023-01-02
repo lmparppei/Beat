@@ -168,11 +168,23 @@ static CGFloat panelWidth;
 	[self.documentDelegate.documentWindow endSheet:self.window];
 }
 - (IBAction)pdf:(id)sender {
-	
-	BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
-	[self addPrintViewToQueue:printView];
-	
-	[self.documentDelegate.documentWindow endSheet:self.window];
+	if (self.documentDelegate.nativeRendering) {
+		BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:[self exportSettings] delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+			[self.renderQueue removeObject:operation];
+			
+			NSURL* url = (NSURL*)value;
+			[self didFinishPreviewAt:url];
+		}];
+		
+		// Add to render queue (to keep the printing operation in memory)
+		[self.renderQueue addObject:printing];
+		
+	} else {
+		BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
+		[self addPrintViewToQueue:printView];
+		
+		[self.documentDelegate.documentWindow endSheet:self.window];
+	}
 }
 
 - (void)printingDidFinish {

@@ -243,14 +243,22 @@
 /// Creates blocks out of arrays of `Line` objects and adds them onto pages. Also handles breaking the blocks across pages, and adds the overflowing lines to queue.
 - (void)addBlocks:(NSArray<NSArray<Line*>*>*)blocks
 {
+	// Do nothing. This can happen with live pagination.
+	if (blocks.count == 0) return;
+
+	// Array for possible blocks
 	NSMutableArray<BeatPaginationBlock*>* pageBlocks = NSMutableArray.new;
 		
 	for (NSArray<Line*>* block in blocks) {
+		if (block.count == 0) continue;
+		
 		BeatPaginationBlock *pageBlock = [BeatPaginationBlock withLines:block delegate:self];
 		[pageBlocks addObject:pageBlock];
 		
 		[_lineQueue removeObjectsInRange:NSMakeRange(0, block.count)];
 	}
+	
+	if (pageBlocks.count == 0) return;
 	
 	BeatPaginationBlockGroup *group = [BeatPaginationBlockGroup withBlocks:pageBlocks];
 	
