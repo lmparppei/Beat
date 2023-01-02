@@ -41,7 +41,8 @@
 	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"log"];
-
+	if (@available(macOS 12.3, *)) [config.preferences setElementFullscreenEnabled:true];
+	
 	// Initialize (custom) webkit view
 	_webview = [[BeatPluginWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height) configuration:config];
 	_webview.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
@@ -56,6 +57,25 @@
 	return self;
 }
 
+/// Returns `true` when window is in full screen mode
+- (bool)isFullScreen {
+	if ((self.styleMask & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/// Toggles between full screen mode
+- (void)toggleFullScreen {
+	if (!self.isFullScreen) {
+		self.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
+	} else {
+		self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
+	}
+	
+	[self toggleFullScreen:nil];
+}
 
 #pragma mark - Set content
 
