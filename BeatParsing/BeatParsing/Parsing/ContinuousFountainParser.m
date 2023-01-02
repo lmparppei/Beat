@@ -1050,7 +1050,7 @@ static NSDictionary* patterns;
         
     // Check forced elements
     unichar firstChar = [line.string characterAtIndex:0];
-    unichar lastChar = [line.string characterAtIndex:line.length - 1];
+    unichar lastChar = line.lastCharacter;
     
     // Forced whitespace
     bool containsOnlyWhitespace = line.string.containsOnlyWhitespace; // Save to use again later
@@ -1157,7 +1157,7 @@ static NSDictionary* patterns;
             if (line.length == 3) return heading;
             else {
                 // To avoid words like "international" from becoming headings, the extension HAS to end with either dot, space or slash
-                char nextChar = [line.string characterAtIndex:3];
+                unichar nextChar = [line.string characterAtIndex:3];
                 if (nextChar == '.' || nextChar == ' ' || nextChar == '/')  return heading;
             }
         }
@@ -1452,7 +1452,7 @@ static NSDictionary* patterns;
 	int note = 0;
 	
     for(NSInteger i = length - 1; i >= 0; i--) {
-        char c = string[i];
+        unichar c = string[i];
 		
 		// Exclude note ranges: [[ Note ]]
 		if (c == ' ') continue;

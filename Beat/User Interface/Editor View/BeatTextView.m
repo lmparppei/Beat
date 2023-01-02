@@ -986,14 +986,14 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// If the row item is an attributed string, handle the previous attributes
 	if ([label isKindOfClass:NSAttributedString.class]) {
 		as = [[NSMutableAttributedString alloc] initWithAttributedString:(NSAttributedString*)label];
-		[as addAttribute:NSFontAttributeName value:POPOVER_FONT range:NSMakeRange(0, as.string.length)];
+		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.courier range:NSMakeRange(0, as.string.length)];
 	} else {
-		as = [[NSMutableAttributedString alloc] initWithString:(NSString*)label attributes:@{NSFontAttributeName:POPOVER_FONT, NSForegroundColorAttributeName:POPOVER_TEXTCOLOR}];
+		as = [[NSMutableAttributedString alloc] initWithString:(NSString*)label attributes:@{NSFontAttributeName:BeatFonts.sharedFonts.courier, NSForegroundColorAttributeName:POPOVER_TEXTCOLOR}];
 	}
 	
 	if (self.substring) {
 		NSRange range = [as.string rangeOfString:self.substring options:NSAnchoredSearch|NSCaseInsensitiveSearch];
-		[as addAttribute:NSFontAttributeName value:POPOVER_BOLDFONT range:range];
+		[as addAttribute:NSFontAttributeName value:BeatFonts.sharedFonts.boldCourier range:range];
 	}
 	
 	[cellView.textField setAttributedStringValue:as];
