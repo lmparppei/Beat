@@ -9,7 +9,7 @@
 
 "general.yes" = "Yes";
 "general.no" = "No";
-"general.ok" = "OK";
+"general.OK" = "OK";
 "general.cancel" = "Cancel";
 "general.undo" = "Undo";
 "general.redo" = "Redo";
