@@ -17,14 +17,13 @@
 
 @implementation BeatUserDefaults
 
-// Magnifying stuff
-#define MAGNIFYLEVEL_KEY @"magnification"
-#define DEFAULT_MAGNIFY 1.46
-#define MAGNIFY YES
+// Magnification
+#define MAGNIFICATION_KEY @"magnification"
+#define DEFAULT_MAGNIFICATION 1.47
 
-// User preferences key names
+// User preference key names for backwards compatibility
 #define MATCH_PARENTHESES_KEY @"Match Parentheses"
-#define SHOW_PAGENUMBERS_KEY @"Show Page Numbers"
+#define SHOW_PAGE_NUMBERS_KEY @"Show Page Numbers"
 #define SHOW_SCENE_LABELS_KEY @"Show Scene Number Labels"
 #define PRINT_SCENE_NUMBERS_KEY @"Print scene numbers"
 #define DARKMODE_KEY @"Dark Mode"
@@ -35,6 +34,17 @@
 #define AUTOSAVE_KEY @"Autosave"
 #define AUTOCOMPLETE_KEY @"Autocomplete"
 
+NSString const * BeatSettingMatchParentheses = @"matchParentheses";
+NSString const * BeatSettingShowPageNumbers = @"showPageNumbers";
+NSString const * BeatSettingShowSceneNumbers = @"showSceneNumberLabels";
+NSString const * BeatSettingPrintSceneNumbers = @"printSceneNumbers";
+NSString const * BeatSettingAutosave = @"autosave";
+NSString const * BeatSettingTypewriterMode = @"typewriterMode";
+NSString const * BeatSettingHideFountainMarkup = @"hideFountainMarkup";
+NSString const * BeatSettingAutocomplete = @"autocomplete";
+NSString const * BeatSettingUseSansSerif = @"useSansSerif";
+NSString const * BeatSettingMagnification = @"magnification";
+NSString const * BeatSettingAutomaticLineBreaks = @"autoLineBreaks";
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -54,16 +64,17 @@
 	
 	return @{
 		// Structure: Document class property name, key, default
-		@"matchParentheses": @[MATCH_PARENTHESES_KEY, @YES],
-		@"showPageNumbers": @[SHOW_PAGENUMBERS_KEY, @YES],
-		@"autoLineBreaks": @[AUTOMATIC_LINEBREAKS_KEY, @YES],
-		@"showSceneNumberLabels": @[SHOW_SCENE_LABELS_KEY, @YES],
-		@"hideFountainMarkup": @[HIDE_FOUNTAIN_MARKUP_KEY, @NO],
-		@"typewriterMode": @[TYPEWRITER_KEY, @NO],
-		@"autosave": @[AUTOSAVE_KEY, @NO],
-		@"autocomplete": @[AUTOCOMPLETE_KEY, @YES],
-		@"useSansSerif": @[FONT_STYLE_KEY, @NO],
-		@"printSceneNumbers": @[PRINT_SCENE_NUMBERS_KEY, @YES],
+		BeatSettingMatchParentheses: @[MATCH_PARENTHESES_KEY, @YES],
+		BeatSettingShowPageNumbers: @[SHOW_PAGE_NUMBERS_KEY, @YES],
+		BeatSettingAutomaticLineBreaks: @[AUTOMATIC_LINEBREAKS_KEY, @YES],
+		BeatSettingShowSceneNumbers: @[SHOW_SCENE_LABELS_KEY, @YES],
+		BeatSettingHideFountainMarkup: @[HIDE_FOUNTAIN_MARKUP_KEY, @NO],
+		BeatSettingTypewriterMode: @[TYPEWRITER_KEY, @NO],
+		BeatSettingAutosave: @[AUTOSAVE_KEY, @NO],
+		BeatSettingAutocomplete: @[AUTOCOMPLETE_KEY, @YES],
+		BeatSettingUseSansSerif: @[FONT_STYLE_KEY, @NO],
+		BeatSettingPrintSceneNumbers: @[PRINT_SCENE_NUMBERS_KEY, @YES],
+		BeatSettingMagnification: @[BeatSettingMagnification, @(DEFAULT_MAGNIFICATION)],
 		@"headingStyleBold": @[@"headingStyleBold", @YES],
 		@"headingStyleUnderline": @[@"headingStyleUnderline", @NO],
 		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)],
@@ -83,8 +94,6 @@
 
 - (instancetype)init {
 	self = [super init];
-	
-	
 	return self;
 }
 
