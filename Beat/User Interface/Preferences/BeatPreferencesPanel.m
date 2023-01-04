@@ -10,6 +10,7 @@
 #import "BeatUserDefaults.h"
 #import "Document.h"
 #import "BeatModalInput.h"
+#import "BeatFonts.h"
 
 //#define HEADING_SAMPLE @"INT. SCENE - DAY"
 
@@ -65,12 +66,16 @@
 	_controls = NSMutableDictionary.new;
 	_locales = NSMutableDictionary.new;
 	
+	// Iterate through user default keys and find the property by that name. This is a bit shady, but works.
+	// For example: "showSceneNumbers" -> @IBOutlet NSButton* showSceneNumbers
 	for (NSString *key in userDefaults.allKeys) {
 		if ([self valueForKey:key]) {
-			// Find an object in the NIB by the name of this value
+			// Find the property by the name of this value
 			id item = [self valueForKey:key];
+			// Check that the property is a control, otherwise we'll carry on.
+			if (![item isKindOfClass:NSControl.class]) continue;
 			
-			// Add control into dictionary by the default name
+			// Add the control into dictionary (with the property name as its key)
 			[_controls setValue:item forKey:key];
 			
 			// Check control type
@@ -142,19 +147,26 @@
 	[self updateHeadingSample:NO];
 }
 - (void)updateHeadingSample:(bool)windowDidLoad {
+	// Save the original heading
 	if (!_headingSample) _headingSample = self.sampleHeading.stringValue.copy;
 	
-	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:_headingSample];
+	NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:_headingSample attributes:@{
+		NSFontAttributeName: BeatFonts.sharedFonts.courier
+	}];
 	
 	// Add line break for spacing 2
-	if (_headingSpacing2.state == NSOnState) attrStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"\n%@", _headingSample]];
-
-	if (_headingStyleBold.state == NSOnState) {
-		self.sampleHeading.font = [NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize];
-		[attrStr addAttribute:NSFontAttributeName value:[NSFont fontWithName:@"Courier Prime Bold" size:self.sampleHeading.font.pointSize] range:(NSRange){0,attrStr.length}];
-	} else {
-		[attrStr addAttribute:NSFontAttributeName value:[NSFont fontWithName:@"Courier Prime" size:self.sampleHeading.font.pointSize] range:(NSRange){0,attrStr.length}];
+	if (_headingSpacing2.state == NSOnState) {
+		attrStr = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"\n%@", _headingSample]];
 	}
+
+	// Heading weight
+	if (_headingStyleBold.state == NSOnState) {
+		[attrStr addAttribute:NSFontAttributeName value:[BeatFonts.sharedFonts boldWithSize:15.0] range:(NSRange){0,attrStr.length}];
+	} else {
+		[attrStr addAttribute:NSFontAttributeName value:[BeatFonts.sharedFonts withSize:15.0] range:(NSRange){0,attrStr.length}];
+	}
+	
+	// Heading underline
 	if (_headingStyleUnderline.state == NSOnState) {
 		[attrStr addAttribute:NSUnderlineStyleAttributeName value:@1 range:(NSRange){0,attrStr.length}];
 	} else {
@@ -162,9 +174,10 @@
 	}
 	[attrStr addAttribute:NSForegroundColorAttributeName value:NSColor.blackColor range:(NSRange){0,attrStr.length}];
 
+	// Set sample value
 	[self.sampleHeading setAttributedStringValue:attrStr];
 	
-	// Invalidate previews for all documents when layout settings are changed
+	// Invalidate previews for all documents when layout settings are changed after loading
 	if (!windowDidLoad) {
 		for (Document *doc in NSDocumentController.sharedDocumentController.documents) {
 			[doc invalidatePreview];
