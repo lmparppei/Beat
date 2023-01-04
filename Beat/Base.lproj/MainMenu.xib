@@ -271,7 +271,20 @@
                                     <action selector="nextScene:" target="-1" id="24F-yl-Y0s"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Jump to Scene..." keyEquivalent="g" id="2Rt-P2-vV4">
+                            <menuItem title="Previous Section" keyEquivalent="" id="zTa-Mk-4pe">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="previousSection:" target="-1" id="grx-Zk-trF"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Next Section" keyEquivalent="" id="JQL-DI-csB">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="nextSection:" target="-1" id="uhd-HD-TzW"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="ldH-mf-IBw"/>
+                            <menuItem title="Find Scene..." keyEquivalent="g" id="2Rt-P2-vV4">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="goToScene:" target="-1" id="iLS-0S-OjL"/>
@@ -1042,5 +1055,6 @@ DQ
             </connections>
         </customObject>
         <customObject id="N5l-jq-jtZ" customClass="BeatWebResources" customModule="Beat" customModuleProvider="target"/>
+        <userDefaultsController representsSharedInstance="YES" id="62Y-BT-kav"/>
     </objects>
 </document>

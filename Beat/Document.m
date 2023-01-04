@@ -333,6 +333,9 @@
 @property (nonatomic, weak) IBOutlet NSTabViewItem *tabReviews;
 @property (nonatomic, weak) IBOutlet NSTabViewItem *tabWidgets;
 
+// Closing flag
+@property (nonatomic) bool closing;
+
 // Debug flags
 @property (nonatomic) bool debug;
 
@@ -393,6 +396,8 @@
 	return self;
 }
 - (void)close {
+	self.closing = true;
+	
 	if (!self.hasUnautosavedChanges) {
 		[self.documentWindow saveFrameUsingName:self.fileNameString];
 	}
@@ -1818,8 +1823,10 @@ static NSWindow __weak *currentKeyWindow;
 	// Correct parsing for character cues (we need to move this to parser somehow)
 	Line *previouslySelectedLine = self.previouslySelectedLine;
 	__weak static Line *previousCue;
-	if (previouslySelectedLine.isAnyCharacter) previousCue = previouslySelectedLine;
 	
+	if (previouslySelectedLine.isAnyCharacter) {
+		previousCue = previouslySelectedLine;
+	}
 	if (previouslySelectedLine != self.currentLine && previousCue.isAnyCharacter) {
 		[_parser ensureDialogueParsingFor:previousCue];
 	}
@@ -1935,28 +1942,26 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position {
+	// If the position is inside the stored current scene, just return that.
 	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
 		return _currentScene;
 	}
 	
-	if (position >= self.text.length) {
-		return self.parser.outline.lastObject;
-	}
+	// At the end, return last scene
+	 if (position >= self.text.length) return self.parser.outline.lastObject;
 	
-	NSInteger lastPosition = -1;
-	OutlineScene *lastScene;
+	NSInteger prevPosition = -1;
+	OutlineScene *prevScene;
 	
-	// Remember to create outline first
 	for (OutlineScene *scene in self.outline) {
-		if (NSLocationInRange(position, scene.range)) {
+		if (NSLocationInRange(position, scene.range))  {
 			return scene;
 		}
-		else if (position >= lastPosition && position < scene.position && lastScene) {
-			return lastScene;
+		else if (position >= NSMaxRange(prevScene.range) && position < scene.position && prevScene) {
+			return prevScene;
 		}
 		
-		lastPosition = scene.position + scene.length;
-		lastScene = scene;
+		prevScene = scene;
 	}
 	
 	return nil;
@@ -2002,6 +2007,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	return nil;
 }
+
 
 /*
  
@@ -4216,10 +4222,8 @@ static NSArray<Line*>* cachedTitlePage;
 #pragma mark - Title page editor
 
 /*
- 
  Move most of this to the title page editor class.
  Should be easy using BeatEditorDelegate.
- 
  */
 
 - (IBAction)editTitlePage:(id)sender {
@@ -4263,6 +4267,7 @@ static NSArray<Line*>* cachedTitlePage;
 	}];
 }
 
+
 #pragma mark - Timer
 
 - (IBAction)showTimer:(id)sender {
@@ -4270,16 +4275,28 @@ static NSArray<Line*>* cachedTitlePage;
 	[_beatTimer showTimer];
 }
 
+
 #pragma mark - touchbar buttons
 
 - (IBAction)nextScene:(id)sender {
-	OutlineScene *scene = [self getNextScene];
-	if (scene) [self scrollToScene:scene];
+	Line* line = [self.parser nextOutlineItemOfType:heading from:self.selectedRange.location];
+	if (line != nil) [self scrollToLine:line];
 }
 - (IBAction)previousScene:(id)sender {
-	OutlineScene *scene = [self getPreviousScene];
-	if (scene) [self scrollToScene:scene];
+	Line* line = [self.parser previousOutlineItemOfType:heading from:self.selectedRange.location];
+	if (line != nil) [self scrollToLine:line];
 }
+
+- (IBAction)nextSection:(id)sender {
+	Line* line = [self.parser nextOutlineItemOfType:section from:self.selectedRange.location];
+	if (line != nil) [self scrollToLine:line];
+}
+
+- (IBAction)previousSection:(id)sender {
+	Line* line = [self.parser previousOutlineItemOfType:section from:self.selectedRange.location];
+	if (line != nil) [self scrollToLine:line];
+}
+
 
 #pragma mark - Autosave
 
