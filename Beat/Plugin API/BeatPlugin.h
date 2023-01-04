@@ -214,6 +214,7 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 @property (nonatomic, readonly) BeatPaginator *paginator;
 @property (nonatomic, readonly) BeatPreview *preview;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
+@property (nonatomic, readonly) bool closing;
 
 - (id)document;
 - (NSString*)createDocumentFile;

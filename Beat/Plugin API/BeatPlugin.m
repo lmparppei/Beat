@@ -1174,31 +1174,35 @@
 	[window closeWindow];
 }
 
+/// A plugin (HTML) window will close.
 - (void)windowWillClose:(NSNotification *)notification
 {
 	NSLog(@"HTML window will close");
-	//_terminating = YES;
-	
+
 	BeatPluginHTMLWindow *window = notification.object;
 	if (window == nil) return;
 	
 	window.isClosing = YES;
 	
-	// Remove webview from memory, for sure
+	// Remove webview from memory
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"sendData"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndLog"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
 	
 	[window.webview removeFromSuperview];
-	
-	//[self end];
 }
 
+/// When the plugin window is set as main window, the document will become active. (If applicable.)
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-	if (NSApp.mainWindow != self.delegate.documentWindow) {
-		[self.delegate.documentWindow makeMainWindow];
+	if (NSApp.mainWindow != self.delegate.documentWindow && self.delegate.documentWindow != nil) {
+		@try {
+			[self.delegate.documentWindow makeMainWindow];
+		}
+		@catch (NSException* e) {
+			NSLog(@"Error when setting main window: %@", e);
+		}
 	}
 }
 
