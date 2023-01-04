@@ -1270,6 +1270,7 @@
 				B6C35D5F2934F9F600FF2630 /* Document extensions */,
 				B6D2B72D2218B589005B8447 /* Document.xib */,
 				B6D2B72F2218B589005B8447 /* MainMenu.xib */,
+				B6FE451F296372D600C22431 /* User Defaults */,
 				B600DD5C254C22CC006A09D0 /* Screenplay data */,
 				B667796223C5D10B0029D508 /* User Interface */,
 				B6907E39233FE16200741071 /* Statistics */,
@@ -1702,9 +1703,9 @@
 		B667796223C5D10B0029D508 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				B69C74D12773CC7D0022D9D5 /* Launch Screen */,
 				B623D15829391F2000B5F0CA /* Native preview */,
 				B611EB9C28CA911B0067D104 /* Scene Heading Search */,
-				B69C74D12773CC7D0022D9D5 /* Launch Screen */,
 				B6A79C9127B64A05008D3AFC /* Editor View */,
 				B69FCF61272313E20022A9D9 /* Sidebar */,
 				B68AE21526EDEE9700F6DF59 /* Preferences */,
@@ -2009,8 +2010,6 @@
 				B68AE23426EDF7E300F6DF59 /* BeatPreferencesPanel.h */,
 				B68AE23526EDF7E300F6DF59 /* BeatPreferencesPanel.m */,
 				B6763E942782482400284907 /* BeatPreferencesPanel.xib */,
-				B6B462EA2708ADFB0056EEF1 /* BeatUserDefaults.h */,
-				B6B462EB2708ADFB0056EEF1 /* BeatUserDefaults.m */,
 			);
 			path = Preferences;
 			sourceTree = "<group>";
@@ -2459,6 +2458,15 @@
 				B6FD5D8B2563B5320037ACBA /* GTMNSString+HTML.m */,
 			);
 			path = "NSString + HTML";
+			sourceTree = "<group>";
+		};
+		B6FE451F296372D600C22431 /* User Defaults */ = {
+			isa = PBXGroup;
+			children = (
+				B6B462EA2708ADFB0056EEF1 /* BeatUserDefaults.h */,
+				B6B462EB2708ADFB0056EEF1 /* BeatUserDefaults.m */,
+			);
+			path = "User Defaults";
 			sourceTree = "<group>";
 		};
 		B6FF56DB25AA5082004E4752 /* Browser View */ = {
@@ -3705,7 +3713,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133055;
+				CURRENT_PROJECT_VERSION = 133056;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3737,7 +3745,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133055;
+				CURRENT_PROJECT_VERSION = 133056;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

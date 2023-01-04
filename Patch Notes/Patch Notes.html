@@ -40,9 +40,9 @@
 				margin-right: 1rem;
 				margin-bottom: 1rem;
 			}
-			#heading img { max-height: 5rem; width: auto; margin-right: 2rem; }
+			#heading img { max-height: 5rem; width: auto; margin-right: 1rem; }
 		
-			#intro section { padding-top: 1rem; background: transparent; padding-bottom: 0; }
+			#intro section { background: transparent; padding-bottom: 0; }
 			#intro { background-color: #f5f5f5; }
 
 			h1, h2, h3, p, ul, ol, blockquote, dl {
@@ -51,9 +51,9 @@
 			}
 
 			h1 {
-				margin-top: .25em;
-				margin-bottom: .6rem;
-				font-weight: 300;
+				margin-top: .5em;
+				margin-bottom: 0;
+				font-weight: 200;
 				font-size: 2em;
 				text-align: center;
 			}
@@ -318,14 +318,85 @@
 				}
 			}
 			
-			#note {
-				background: rgba(255,0,5, .15);
-				border: solid 1px rgba(255,0,5, .4);
+			.note {
 				font-size: .8em;
 				padding: .5em;
 			}
-			#note h2 { margin-top: .5em; }
+			.ngo-pledge {
+				background: rgba(255,0,5, .15);
+				border: solid 1px rgba(255,0,5, .4);
+			}
+			.patreon {
+				padding: 3em 0 3em 0;
+			}
+			.note h2 { margin-top: .5em; }
 		
+			.patreon h2 {
+				margin-top: 0;
+				font-weight: 200;
+				font-size: 2em;
+				color: white;
+			}
+			.patreon p {
+				font-size: 1.1em;
+				font-weight: 400;
+				line-height: 1.3em;
+				max-width: 25rem;
+			}
+			.patreon img {
+				max-width: 100%;
+			}
+			.patreon .note-info {
+				padding: 2em;
+				max-width: 24rem;
+			}
+			.patreon .callToAction {
+				padding: 0;
+				max-width: 20em;
+				margin-top: 1.5em;
+			}
+			.patreon .callToAction img {
+				max-height: 1em;
+			}
+			.patreon p.callToAction {
+				display: flex;
+				align-items: center;
+				margin-top: 2em;
+				margin-bottom: 0;
+			}
+			.callToAction button {
+				background: white;
+				color: black;
+				font-weight: bold;
+				padding: .5em 2em .5em 2em;
+				border-radius: 1em;
+				margin-right: 1em;
+			}
+			
+			.patreon p.small {
+				font-size: .8em;
+			}
+		
+			.patreon-note {
+				max-width: 38rem;
+				min-width: 20rem;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		
+			#intro section#lift {
+				max-width: 100%;
+				min-height: 15em;
+				color: black;
+				margin-bottom: 0;
+				padding-top: 2.5em;
+				padding-bottom: 2em;
+				padding-left: 1em;
+				padding-right: 1em;
+				background-color: #FF424D;
+			}
+			
+			
 		</style>
 		<!--[if lt IE 9]>
 			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -340,12 +411,18 @@
 						<img src='B_256_logo.png' alt='b'>
 						<h1>Welcome to Beat 1.98.1!</h1>
 					</div>
-
-					<div id='note'>
-						<h2>No to War / Нет войне</h2>
-						<p>Beat is free and always will be, but if you use the app daily, please consider <a href='#' onclick='openLink("http://kapitan.fi/beat/support.html")'>donating</a> to any NGOs providing humanitarian aid for victims of wars.</p>
+				</section>
+				<section id='lift' class='patreon'>
+					<div class='patreon-note'>
+						
+						<h2>Support the Development</h2>
+						<p>Do you love Beat? To ensure the ongoing development, you can pledge to the Patreon campaign. Even a small sum helps to keep the app afloat.</p>
+						<p class='small'>Alternatively, you could <a href='#' onclick='openLink("http://kapitan.fi/beat/support.html")'>donate</a> to any NGOs providing humanitarian aid.</p>
+						<p class='callToAction'><button onclick="openLink('https://patreon.com/user?u=61753992')">Subscribe</button> <img src='patreon_logo.png'></p>
+						
 					</div>
-					
+				</section>
+				<section>
 					<!-- <p><b>Support Beat:</b> If you enjoy Beat, please consider <a href='#' onclick='openLink("http://kapitan.fi/beat/support.html")'>donating</a> some loose change to help the project alive. All of the funds will be used to cover development costs, including future license and hosting fees. And occasional cups of coffee.</p> -->
 
 					<h2>New features</h2>
@@ -358,6 +435,7 @@
 					<h2>Bug fixes</h2>
 					<ul>
 						<li>Fixed minor parsing issues with dialogue
+						<li>Fixed a bug which could make a closed document window unresponsive, when a plugin window is present
 					</ul>
 
 					<!-- <p><button onclick='openTemplate("Filename")'>Open The Screenplay</button></p> -->
