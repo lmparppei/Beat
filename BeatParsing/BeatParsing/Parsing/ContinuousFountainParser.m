@@ -753,12 +753,14 @@ static NSDictionary* patterns;
 	}
 	
 	if (index > 0) {
-        
         // Parse faulty and orphaned dialogue (this can happen, because... well, there are *reasons*)
-		Line *prevLine = self.lines[index - 1];
-        NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0;
+		
+        Line *prevLine = self.lines[index - 1]; // Get previous line
+        NSInteger selection = (NSThread.isMainThread) ? self.delegate.selectedRange.location : 0; // Get selection
+        
+        // If previous line is NOT EMPTY, has content and the selection is not at the preceding position, go through preceding lines
 		if (prevLine.type != empty && prevLine.length == 0 && selection != prevLine.position - 1) {
-            NSInteger i = index;
+            NSInteger i = index - 1;
             
             while (i >= 0) {
                 Line *l = self.lines[i];
@@ -771,7 +773,7 @@ static NSDictionary* patterns;
                     }
                     break;
                 }
-                else if (l.type != empty) {
+                else if (l.type != empty && l.length == 0) {
                     l.type = empty;
                     [self.changedIndices addIndex:i];
                 }
@@ -1762,46 +1764,7 @@ static NSDictionary* patterns;
 	return self.lines.count - 1;
 }
 
-- (NSString*)stringAtLine:(NSUInteger)line
-{
-    if (line >= [self.lines count]) {
-        return @"";
-    } else {
-        Line* l = self.lines[line];
-        return l.string;
-    }
-}
-
-- (LineType)typeAtLine:(NSUInteger)line
-{
-    if (line >= [self.lines count]) {
-        return NSNotFound;
-    } else {
-        Line* l = self.lines[line];
-        return l.type;
-    }
-}
-
-- (NSUInteger)positionAtLine:(NSUInteger)line
-{
-    if (line >= self.lines.count) {
-        return NSNotFound;
-    } else {
-        Line* l = self.lines[line];
-        return l.position;
-    }
-}
-
-- (NSString*)sceneNumberAtLine:(NSUInteger)line
-{
-    if (line >= self.lines.count) {
-        return nil;
-    } else {
-        Line* l = self.lines[line];
-        return l.sceneNumber;
-    }
-}
-
+/// Returns line type at given full string index 
 - (LineType)lineTypeAt:(NSInteger)index
 {
 	Line * line = [self lineAtPosition:index];
@@ -2344,6 +2307,50 @@ static NSDictionary* patterns;
 	if (line == lines.lastObject || lines.count < 2 || lineIndex == NSNotFound) return nil;
 	
 	return lines[lineIndex + 1];
+}
+
+- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position {
+    return [self nextOutlineItemOfType:type from:position depth:NSNotFound];
+}
+- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth {
+    NSInteger idx = [self lineIndexAtPosition:position] + 1;
+    NSArray* lines = self.safeLines;
+    
+    for (NSInteger i=idx; i<lines.count; i++) {
+        Line* line = lines[i];
+        
+        // If no depth was specified, we'll just pass this check.
+        NSInteger wantedDepth = (depth == NSNotFound) ? line.sectionDepth : depth;
+        
+        if (line.type == type && wantedDepth == line.sectionDepth) {
+            return line;
+        }
+    }
+    
+    return nil;
+}
+
+- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position {
+    return [self previousOutlineItemOfType:type from:position depth:NSNotFound];
+}
+- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth {
+    NSInteger idx = [self lineIndexAtPosition:position] - 1;
+    if (idx == NSNotFound || idx < 0) return nil;
+    
+    NSArray* lines = self.safeLines;
+    
+    for (NSInteger i=idx; i>=0; i--) {
+        Line* line = lines[i];
+
+        // If no depth was specified, we'll just pass this check.
+        NSInteger wantedDepth = (depth == NSNotFound) ? line.sectionDepth : depth;
+        
+        if (line.type == type && wantedDepth == line.sectionDepth) {
+            return line;
+        }
+    }
+    
+    return nil;
 }
 
 

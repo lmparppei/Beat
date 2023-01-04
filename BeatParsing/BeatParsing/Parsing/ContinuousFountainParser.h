@@ -57,6 +57,11 @@
 - (Line*)previousLine:(Line*)line;
 - (Line*)nextLine:(Line*)line;
 
+- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position;
+- (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth;
+- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position;
+- (Line*)previousOutlineItemOfType:(LineType)type from:(NSInteger)position depth:(NSInteger)depth;
+
 @end
 
 @interface ContinuousFountainParser : NSObject <ContinuousFountainParserExports, LineDelegate>
@@ -106,12 +111,6 @@
 - (NSArray*)preprocessForPrintingPrintNotes:(bool)printNotes;
 
 - (void)ensureDialogueParsingFor:(Line*)line;
-
-//Convenience Methods for Testing
-- (NSString*)stringAtLine:(NSUInteger)line;
-- (LineType)typeAtLine:(NSUInteger)line;
-- (NSUInteger)positionAtLine:(NSUInteger)line;
-- (NSString*)sceneNumberAtLine:(NSUInteger)line;
 
 //Convenience Methods for Other Stuff
 - (NSUInteger)indexOfLine:(Line*)line;
