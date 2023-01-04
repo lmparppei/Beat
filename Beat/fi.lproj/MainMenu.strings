@@ -18,7 +18,7 @@
 "1Xt-HY-uBw.title" = "Beat";
 
 /* Class = "NSMenuItem"; title = "Go To Scene Number..."; ObjectID = "2Rt-P2-vV4"; */
-"2Rt-P2-vV4.title" = "Siirry kohtausnumeroon…";
+"2Rt-P2-vV4.title" = "Etsi kohtaus…";
 
 /* Class = "NSMenuItem"; title = "Zoom"; ObjectID = "2bU-pu-Jv0"; */
 "2bU-pu-Jv0.title" = "Suurennus";
@@ -36,7 +36,7 @@
 "3Iw-My-Ycz.title" = "Text Cell";
 
 /* Class = "NSMenuItem"; title = "Set Number For Current Scene..."; ObjectID = "3x7-V3-rMc"; */
-"3x7-V3-rMc.title" = "Aseta kohtauksen numero...";
+"3x7-V3-rMc.title" = "Aseta kohtauksen numero…";
 
 /* Class = "NSMenuItem"; title = "Notepad"; ObjectID = "4fZ-b1-hYG"; */
 "4fZ-b1-hYG.title" = "Muistio";
@@ -69,7 +69,7 @@
 "6uV-eM-FCI.title" = "Poista lukitut kohtausnumerot";
 
 /* Class = "NSMenuItem"; title = "Import Celtx..."; ObjectID = "7pb-G3-Rqt"; */
-"7pb-G3-Rqt.title" = "Tuo Celtx...";
+"7pb-G3-Rqt.title" = "Tuo Celtx…";
 
 /* Class = "NSMenuItem"; title = "Paste"; ObjectID = "7un-dE-J4V"; */
 "7un-dE-J4V.title" = "Liitä";
@@ -84,7 +84,7 @@
 "8a1-24-Jc9.title" = "Tumma tila";
 
 /* Class = "NSMenuItem"; title = "Print Episodes..."; ObjectID = "8yV-oo-VX1"; */
-"8yV-oo-VX1.title" = "Tulosta jaksoja...";
+"8yV-oo-VX1.title" = "Tulosta jaksoja…";
 
 /* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "9FA-i7-Voq"; */
 "9FA-i7-Voq.title" = "Versio";
@@ -234,7 +234,7 @@
 "S6f-Ft-GW9.title" = "Etsi edellinen";
 
 /* Class = "NSMenuItem"; title = "Plugin Library..."; ObjectID = "SYS-Os-Ktb"; */
-"SYS-Os-Ktb.title" = "Laajennuskirjasto...";
+"SYS-Os-Ktb.title" = "Laajennuskirjasto…";
 
 /* Class = "NSMenuItem"; title = "Bold"; ObjectID = "SoY-Ie-ajo"; */
 "SoY-Ie-ajo.title" = "Lihavointi";
@@ -325,6 +325,9 @@
 
 /* Class = "NSMenuItem"; title = "Next Scene"; ObjectID = "d5r-XM-q5U"; */
 "d5r-XM-q5U.title" = "Seuraava kohtaus";
+
+"zTa-Mk-4pe.title" = "Edellinen osio";
+"JQL-DI-csB.title" = "Seuraava osio";
 
 /* Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ"; */
 "dMs-cI-mzQ.title" = "Tiedosto";
@@ -552,7 +555,7 @@
 "zJ5-vm-Omp.title" = "Fontin tyyli";
 
 /* Class = "NSMenuItem"; title = "Force Element..."; ObjectID = "zQH-Oq-iw8"; */
-"zQH-Oq-iw8.title" = "Pakota elementti...";
+"zQH-Oq-iw8.title" = "Pakota elementti…";
 
 /* Class = "NSMenuItem"; title = "Speech"; ObjectID = "zZ3-DN-fPe"; */
 "zZ3-DN-fPe.title" = "Puhe";
