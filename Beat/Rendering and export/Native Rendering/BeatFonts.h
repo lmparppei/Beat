@@ -18,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BeatFonts*)sharedFonts;
 + (CGFloat)characterWidth;
+
+- (NSFont*)withSize:(CGFloat)size;
+- (NSFont*)boldWithSize:(CGFloat)size;
 @end
 
 NS_ASSUME_NONNULL_END

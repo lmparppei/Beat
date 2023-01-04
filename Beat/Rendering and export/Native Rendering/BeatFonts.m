@@ -37,11 +37,25 @@
 }
 
 - (NSFont*)fontWithTrait:(NSFontDescriptorSymbolicTraits)traits {
-	NSFontDescriptor *fd = [self.courier.fontDescriptor fontDescriptorWithSymbolicTraits:traits];
-	NSFont *font = [NSFont fontWithDescriptor:fd size:self.courier.pointSize];
+	return [self fontWithTrait:traits font:self.courier];
+}
+
+- (NSFont*)fontWithTrait:(NSFontDescriptorSymbolicTraits)traits font:(NSFont*)originalFont {
+	NSFontDescriptor *fd = [originalFont.fontDescriptor fontDescriptorWithSymbolicTraits:traits];
+	NSFont *font = [NSFont fontWithDescriptor:fd size:originalFont.pointSize];
 	
-	if (font == nil) return self.courier;
+	if (font == nil) return originalFont;
 	else return font;
+}
+
+- (NSFont*)boldWithSize:(CGFloat)size {
+	NSFont* f = [NSFont fontWithName:self.courier.fontName size:size];
+	f = [self fontWithTrait:NSFontDescriptorTraitBold font:f];
+	return f;
+}
+- (NSFont*)withSize:(CGFloat)size {
+	NSFont* f = [NSFont fontWithName:self.courier.fontName size:size];
+	return f;
 }
 
 + (CGFloat)characterWidth {
