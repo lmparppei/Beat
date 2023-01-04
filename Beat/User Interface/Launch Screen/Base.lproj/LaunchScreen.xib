@@ -57,7 +57,7 @@
                                                     <subviews>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="yOf-hz-UJL">
                                                             <rect key="frame" x="36" y="25" width="263" height="16"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingMiddle" truncatesLastVisibleLine="YES" allowsUndo="NO" title="Filename" id="zWH-Fi-sua">
                                                                 <font key="font" usesAppearanceFont="YES"/>
                                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -163,7 +163,7 @@
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="6A1-pb-8fd">
                                     <rect key="frame" x="208" y="28" width="148" height="10"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="© Lauri-Matti Parppei 2019–2021" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="5XR-Rf-IWg">
+                                    <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="© Lauri-Matti Parppei 2019–2023" allowsEditingTextAttributes="YES" usesSingleLineMode="YES" id="5XR-Rf-IWg">
                                         <font key="font" metaFont="system" size="8"/>
                                         <color key="textColor" white="0.28000000000000003" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
