@@ -56,7 +56,6 @@
 
 @property (nonatomic) BeatTest *tests;
 
-
 @property (nonatomic) IBOutlet BeatWebResources *resources;
 @property (nonatomic) IBOutlet BeatSpellCheckingUtils *spellCheckingUtils;
 

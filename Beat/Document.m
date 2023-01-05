@@ -3506,7 +3506,7 @@ static bool _skipAutomaticLineBreaks = false;
 			picker.showsAlpha = NO;
 			picker.colorList = [[NSColorList alloc] init];
 			
-			[picker.colorList setColor:NSColor.blackColor forKey:@"none"]; // THE HOUSE IS BLACK.
+			[picker.colorList setColor:NSColor.blackColor forKey:@"none"];
 			[picker.colorList setColor:[BeatColors color:@"red"] forKey:@"red"];
 			[picker.colorList setColor:[BeatColors color:@"blue"] forKey:@"blue"];
 			[picker.colorList setColor:[BeatColors color:@"green"] forKey:@"green"];
@@ -3568,8 +3568,8 @@ static bool _skipAutomaticLineBreaks = false;
 - (void)setColor:(NSString *)color forLine:(Line *)line {
 	if (line == nil) return;
 	
+	// First replace the existing color range (if it exists)
 	if (line.colorRange.length > 0) {
-		// First replace the existing color range
 		NSRange localRange = line.colorRange;
 		NSRange globalRange = [self globalRangeFromLocalRange:&localRange inLineAtPosition:line.position];
 		[self removeRange:globalRange];
@@ -3588,7 +3588,7 @@ static bool _skipAutomaticLineBreaks = false;
 }
 
 - (void)setColor:(NSString *)color forScene:(OutlineScene *) scene {
-	if (!scene) return;
+	if (scene == nil) return;
 	[self setColor:color forLine:scene.line];
 }
 

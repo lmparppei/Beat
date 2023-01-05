@@ -961,14 +961,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	if (row >= self.matches.count) return cellView; // Return an empty view if something is wrong
 	
 	if (cellView == nil) {
-		cellView = [[NSTableCellView alloc] initWithFrame:NSZeroRect];
 		NSTextField *textField = [[NSTextField alloc] initWithFrame:NSZeroRect];
 		[textField setBezeled:NO];
 		[textField setDrawsBackground:NO];
 		[textField setEditable:NO];
 		[textField setSelectable:NO];
+		
+		cellView = [[NSTableCellView alloc] initWithFrame:NSZeroRect];
 		[cellView addSubview:textField];
 		cellView.textField = textField;
+		
 		if ([self.delegate respondsToSelector:@selector(textView:imageForCompletion:)]) {
 			NSImageView *imageView = [[NSImageView alloc] initWithFrame:NSZeroRect];
 			[imageView setImageFrameStyle:NSImageFrameNone];
@@ -1364,6 +1366,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		return [pos1 compare:pos2];
 	}];
 	
+	// We could add exclusion paths at page breaks:
+	// NSMutableArray* exclusionPaths = NSMutableArray.new;
+	
 	for (NSDictionary *pageBreak in sortedPageBreaks) { @autoreleasepool {
 		CGFloat lineHeight = BeatPagination.lineHeight; // Line height from pagination
 		CGFloat UIlineHeight = BeatEditorFormatting.editorLineHeight; // Line height in UI
@@ -1379,11 +1384,16 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		
 		// We return -1 for elements that should have page break after them
 		if (position >= 0) {
-			position = round(position / lineHeight) * UIlineHeight;
-			y =  rect.origin.y + position;
+			y =  rect.origin.y + (position / lineHeight) * UIlineHeight;
 		}
 		else y = rect.origin.y + rect.size.height;
 	
+		// This is how you add the exclusion paths, while also continuously laying out the text:
+		//NSRect exclusion = NSMakeRect(0, y, self.frame.size.width, 50);
+		//NSBezierPath* path = [NSBezierPath bezierPathWithRect:exclusion];
+		//[exclusionPaths addObject:path];
+		//self.textContainer.exclusionPaths = exclusionPaths;
+		
 		[breakPositions addObject:@(y)];
 	} }
 	

@@ -372,6 +372,8 @@
 		B68E17B52790A7C30038945F /* BeatColorMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E17B32790A7C30038945F /* BeatColorMenuItem.m */; };
 		B68E78A92951164200455A8B /* BeatRendering.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E78A82951164200455A8B /* BeatRendering.m */; };
 		B68E78AA2951164200455A8B /* BeatRendering.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E78A82951164200455A8B /* BeatRendering.m */; };
+		B68F14A7296757E000E72A6D /* patreon_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B68F14A6296757DF00E72A6D /* patreon_logo.png */; };
+		B68F14A8296757E000E72A6D /* patreon_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = B68F14A6296757DF00E72A6D /* patreon_logo.png */; };
 		B6907E3B233FE17C00741071 /* BeatStatisticsPanel.html in Resources */ = {isa = PBXBuildFile; fileRef = B6907E3A233FE17C00741071 /* BeatStatisticsPanel.html */; };
 		B69154652480EB7E002393D1 /* RoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154642480EB7E002393D1 /* RoundedButton.m */; };
 		B69154692480F68E002393D1 /* BeatRoundedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B69154682480F68E002393D1 /* BeatRoundedButton.m */; };
@@ -952,6 +954,7 @@
 		B68E17B32790A7C30038945F /* BeatColorMenuItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatColorMenuItem.m; sourceTree = "<group>"; };
 		B68E78A72951164200455A8B /* BeatRendering.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRendering.h; sourceTree = "<group>"; };
 		B68E78A82951164200455A8B /* BeatRendering.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRendering.m; sourceTree = "<group>"; };
+		B68F14A6296757DF00E72A6D /* patreon_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = patreon_logo.png; sourceTree = "<group>"; };
 		B6907E3A233FE17C00741071 /* BeatStatisticsPanel.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BeatStatisticsPanel.html; sourceTree = "<group>"; };
 		B69154632480EB7E002393D1 /* RoundedButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RoundedButton.h; path = "Beat/User Interface/Buttons etc/RoundedButton.h"; sourceTree = SOURCE_ROOT; };
 		B69154642480EB7E002393D1 /* RoundedButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RoundedButton.m; path = "Beat/User Interface/Buttons etc/RoundedButton.m"; sourceTree = SOURCE_ROOT; };
@@ -1538,6 +1541,7 @@
 		B636AEE827BD56470018C6CC /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				B68F14A6296757DF00E72A6D /* patreon_logo.png */,
 				B6C401382810339F00330AC3 /* review_mode.jpg */,
 				B636AEE927BD56500018C6CC /* revisions_2022.jpg */,
 			);
@@ -2679,6 +2683,7 @@
 				B68B60E6260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B66ED8BD25AA5BF100C77A03 /* Credits.pdf in Resources */,
 				B60A593325993FF000207D00 /* Find Longest Scene.beatPlugin in Resources */,
+				B68F14A7296757E000E72A6D /* patreon_logo.png in Resources */,
 				B6F712A9276BC78D00C4489B /* PreviewStyles.css in Resources */,
 				B6E3894F270DDE130067DD0C /* timeline.png in Resources */,
 				B623BD3D2549AEDD00201BC9 /* Outlining.fountain in Resources */,
@@ -2762,6 +2767,7 @@
 				B68B60B6260B849300463AD8 /* Plugin HTML template.html in Resources */,
 				B63704FB2768A6A400BEAD53 /* Plugin Page.html in Resources */,
 				B68B60B7260B849300463AD8 /* B_256_logo.png in Resources */,
+				B68F14A8296757E000E72A6D /* patreon_logo.png in Resources */,
 				B68B60E8260BA8D600463AD8 /* beat_manual.html in Resources */,
 				B68B60B8260B849300463AD8 /* Credits.pdf in Resources */,
 				B6467ABE289990D000231B25 /* Styles.beatCSS in Resources */,
@@ -3625,7 +3631,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133059;
+				CURRENT_PROJECT_VERSION = 133061;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3659,7 +3665,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133059;
+				CURRENT_PROJECT_VERSION = 133061;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3689,7 +3695,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133059;
+				CURRENT_PROJECT_VERSION = 133060;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3721,7 +3727,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133059;
+				CURRENT_PROJECT_VERSION = 133060;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";

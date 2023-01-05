@@ -131,8 +131,6 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 			DispatchQueue.main.async {
 				// Back in main thread, create (or reuse) page content
 				
-				let size = BeatPaperSizing.size(for: self.settings.paperSize)
-								
 				// Iterate through paginated pages
 				for i in 0 ..< pages.count {
 					let page = pages[i]
