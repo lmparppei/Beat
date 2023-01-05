@@ -328,6 +328,8 @@
 
 "zTa-Mk-4pe.title" = "Edellinen osio";
 "JQL-DI-csB.title" = "Seuraava osio";
+"o3i-w3-weT.title" = "Edellinen osio tässä syvyydessä";
+"qDd-yI-vJh.title" = "Seuraava osio tässä syvyydessä";
 
 /* Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ"; */
 "dMs-cI-mzQ.title" = "Tiedosto";

@@ -259,31 +259,50 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Twe-tk-qY1"/>
-                            <menuItem title="Previous Scene" keyEquivalent="" id="jdx-FP-GzA">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="previousScene:" target="-1" id="zHh-Aa-XHS"/>
-                                </connections>
+                            <menuItem title="Go to..." id="VUa-7O-npW">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Go to..." id="o6p-p9-AIx">
+                                    <items>
+                                        <menuItem title="Previous Scene" keyEquivalent="" id="jdx-FP-GzA">
+                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="previousScene:" target="-1" id="zHh-Aa-XHS"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next Scene" keyEquivalent="" id="d5r-XM-q5U">
+                                            <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextScene:" target="-1" id="24F-yl-Y0s"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="xpK-TY-ggI"/>
+                                        <menuItem title="Previous Section" keyEquivalent="" id="zTa-Mk-4pe">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="previousSection:" target="-1" id="grx-Zk-trF"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next Section" keyEquivalent="" id="JQL-DI-csB">
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextSection:" target="-1" id="uhd-HD-TzW"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Previous Section of Current Depth" keyEquivalent="" id="o3i-w3-weT">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="previousSectionOfSameDepth:" target="-1" id="ElY-cl-gkb"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Next Section of Current Depth" keyEquivalent="" id="qDd-yI-vJh">
+                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES" option="YES" command="YES"/>
+                                            <connections>
+                                                <action selector="nextSectionOfSameDepth:" target="-1" id="XrS-46-JqP"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
                             </menuItem>
-                            <menuItem title="Next Scene" keyEquivalent="" id="d5r-XM-q5U">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="nextScene:" target="-1" id="24F-yl-Y0s"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Previous Section" keyEquivalent="" id="zTa-Mk-4pe">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="previousSection:" target="-1" id="grx-Zk-trF"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Next Section" keyEquivalent="" id="JQL-DI-csB">
-                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="nextSection:" target="-1" id="uhd-HD-TzW"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="ldH-mf-IBw"/>
                             <menuItem title="Find Scene..." keyEquivalent="g" id="2Rt-P2-vV4">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
@@ -374,7 +393,8 @@
                                                 <action selector="performTextFinderAction:" target="-1" id="WAM-SC-YnF"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Use Selection for Find" tag="7" keyEquivalent="e" id="kjc-fS-FOY">
+                                        <menuItem title="Use Selection for Find" tag="7" id="kjc-fS-FOY">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="performTextFinderAction:" target="-1" id="Bou-mi-9nK"/>
                                             </connections>
@@ -786,7 +806,7 @@ DQ
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="8U3-o3-D1z"/>
-                            <menuItem title="Show Cards" keyEquivalent="e" id="ab0-W3-2f9">
+                            <menuItem title="Show Cards" keyEquivalent="D" id="ab0-W3-2f9">
                                 <connections>
                                     <action selector="toggleCards:" target="-1" id="W45-hd-uTy"/>
                                 </connections>
@@ -1046,6 +1066,7 @@ DQ
                 <outlet property="pluginManager" destination="MpY-Uw-HUk" id="LTu-gv-i9k"/>
                 <outlet property="pluginMenu" destination="T42-tx-tAb" id="6xJ-7u-v4o"/>
                 <outlet property="resources" destination="N5l-jq-jtZ" id="zAq-SA-CUN"/>
+                <outlet property="spellCheckingUtils" destination="Ibp-oA-JIB" id="dE7-Pz-M2x"/>
                 <outlet property="versionMenu" destination="7oT-pt-wId" id="5Nx-Wf-wFz"/>
             </connections>
         </customObject>
