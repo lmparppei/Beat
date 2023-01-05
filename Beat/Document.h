@@ -67,17 +67,17 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @class BeatWidgetView;
 
 @protocol DocumentExports <JSExport>
-@property (nonatomic, readonly) ContinuousFountainParser *parser;
-@property (atomic) BeatDocumentSettings *documentSettings;
-- (NSMutableArray<Line*>*)lines;
+@property (nonatomic, readonly) ContinuousFountainParser* _Nonnull parser;
+@property (atomic) BeatDocumentSettings * _Nonnull documentSettings;
+- (NSMutableArray<Line*>* _Nonnull)lines;
 @end
 
 @interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports, BeatPaginatorDelegate>
 
-@property (strong, nonatomic) NSMutableArray<BeatPrintView*>* printViews; //To keep the asynchronously working print data generator in memory
+@property (strong, nonatomic) NSMutableArray<BeatPrintView*>* _Nullable printViews; //To keep the asynchronously working print data generator in memory
 
-@property(readonly, copy) NSArray<NSURL *> *recentDocumentURLs;
-@property (nonatomic, readonly) NSString* preprocessedText;
+@property(readonly, copy) NSArray<NSURL *> * _Nullable recentDocumentURLs;
+@property (nonatomic, readonly) NSString* _Nullable preprocessedText;
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) CGFloat inset;
 @property (nonatomic) bool printSceneNumbers;
@@ -85,56 +85,56 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
 @property (nonatomic) BeatPaperSize pageSize;
-@property (nonatomic) BeatExportSettings* exportSettings;
+@property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
 @property (nonatomic) bool contentLocked;
 
 // Fonts
-@property (strong, nonatomic) NSFont *courier;
-@property (strong, nonatomic) NSFont *boldCourier;
-@property (strong, nonatomic) NSFont *boldItalicCourier;
-@property (strong, nonatomic) NSFont *italicCourier;
+@property (strong, nonatomic) NSFont* _Nonnull courier;
+@property (strong, nonatomic) NSFont* _Nonnull boldCourier;
+@property (strong, nonatomic) NSFont* _Nonnull boldItalicCourier;
+@property (strong, nonatomic) NSFont* _Nonnull italicCourier;
 
 // For delegation
-@property (nonatomic, weak) OutlineScene *currentScene; // Don't retain the Outline Scene
-@property (nonatomic) NSMutableIndexSet *changes;
-@property (atomic) NSString *textCache;
-@property (atomic) NSAttributedString *attrTextCache;
-- (NSAttributedString*)getAttributedText; // ONLY IN MAIN THREAD
+@property (nonatomic, weak) OutlineScene* _Nullable currentScene; // Don't retain the Outline Scene
+@property (nonatomic) NSMutableIndexSet*  _Nullable changes;
+@property (atomic) NSString*  _Nullable textCache;
+@property (atomic) NSAttributedString*  _Nullable attrTextCache;
+- (NSAttributedString* _Nullable)getAttributedText; // ONLY IN MAIN THREAD
 
 // Character input
-@property (nonatomic) Line* characterInputForLine;
+@property (nonatomic) Line* _Nullable characterInputForLine;
 
 // Plugin support
-@property (nonatomic) NSMutableDictionary <NSString*, BeatPlugin*>* runningPlugins;
-@property (weak) IBOutlet BeatWidgetView *widgetView;
+@property (nonatomic) NSMutableDictionary <NSString*, BeatPlugin*>* _Nullable runningPlugins;
+@property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
 
 // Document settings
-@property (atomic) BeatDocumentSettings *documentSettings;
+@property (atomic) BeatDocumentSettings* _Nullable documentSettings;
 
 // Versioning
-@property (nonatomic) NSURL *revertedTo;
+@property (nonatomic) NSURL* _Nullable revertedTo;
 
 // Tagging
-@property (nonatomic) IBOutlet BeatTagging *tagging;
+@property (nonatomic) IBOutlet BeatTagging* _Nullable tagging;
 
 // Tab
-@property (nonatomic) NSTabViewItem *currentTab;
+@property (nonatomic) NSTabViewItem* _Nonnull currentTab;
 
 // Content
-- (NSString*)text;
-- (NSString*)fileNameString;
+- (NSString* _Nullable)text;
+- (NSString* _Nullable)fileNameString;
 
 - (void)setPrintSceneNumbers:(bool)value;
-- (IBAction)togglePrintSceneNumbers:(id)sender;
+- (IBAction)togglePrintSceneNumbers:(id _Nullable)sender;
 - (void)readUserSettings;
 - (void)applyUserSettings;
 
 // Analysis
-@property (nonatomic) NSMutableDictionary<NSString*, NSString*> *characterGenders;
+@property (nonatomic) NSMutableDictionary<NSString*, NSString*>* _Nullable characterGenders;
 
 // Revision Tracking
-@property (nonatomic) IBOutlet BeatRevisions *revisionTracking;
-@property (nonatomic) NSString *revisionColor;
+@property (nonatomic) IBOutlet BeatRevisions* _Nonnull revisionTracking;
+@property (nonatomic) NSString* _Nullable revisionColor;
 
 // Set document colors
 - (void)updateTheme;
@@ -145,10 +145,10 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) BeatEditorMode mode;
 
 // Review
-@property (nonatomic) IBOutlet BeatReview *review;
+@property (nonatomic) IBOutlet BeatReview* _Nonnull review;
 
 @property (nonatomic, readwrite) bool outlineEdit;
-- (NSMutableArray*)filteredOutline;
+- (NSMutableArray* _Nullable)filteredOutline;
 
 // Skip selection change events when needed
 @property (nonatomic) bool skipSelectionChangeEvent;
@@ -162,7 +162,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 /// Scroll to given scene number (number is `NSString`)
 - (void)scrollToSceneNumber:(NSString* __nullable)sceneNumber;
 /// Scroll to given scene object.
-- (void)scrollToScene:(OutlineScene*)scene;
+- (void)scrollToScene:(OutlineScene* __nullable)scene;
 /// Legacy method. Use selectAndScrollToRange
 - (void)scrollToRange:(NSRange)range;
 /// Scrolls to given range and runs a callback after animation is done.
@@ -170,7 +170,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 /// Scrolls the given position into view
 - (void)scrollTo:(NSInteger)location;
 /// Selects the given line and scrolls it into view
-- (void)scrollToLine:(Line*)line;
+- (void)scrollToLine:(Line* __nullable)line;
 /// Selects the line at given index and scrolls it into view
 - (void)scrollToLineIndex:(NSInteger)index;
 /// Selects the scene at given index and scrolls it into view
