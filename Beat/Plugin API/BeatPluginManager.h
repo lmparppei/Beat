@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, BeatPluginType) {
 - (void)getPluginLibraryWithCallback:(void (^)(void))callbackBlock;
 - (void)refreshAvailablePlugins;
 - (void)loadPlugins;
-- (void)downloadPlugin:(NSString*)pluginName library:(id)library withCallback:(void (^)(NSString* pluginName))callbackBlock;
+- (void)downloadPlugin:(NSString*)pluginName withCallback:(void (^)(NSString* pluginName))callbackBlock;
 - (NSArray*)availablePluginNames;
 
 - (void)checkForUpdates;

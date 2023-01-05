@@ -169,7 +169,7 @@
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message {
 	if ([message.name isEqualToString:@"download"]) {
 		// Download request
-		[_pluginManager downloadPlugin:message.body library:self withCallback:^(NSString * _Nonnull pluginName) {
+		[_pluginManager downloadPlugin:message.body withCallback:^(NSString * _Nonnull pluginName) {
 			[self downloadComplete:pluginName];
 		}];
 	}

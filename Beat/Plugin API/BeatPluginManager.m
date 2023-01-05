@@ -292,6 +292,7 @@ static BeatPluginManager *sharedManager;
 
 - (void)checkForUpdates {
 	NSArray *disabled = [self disabledPlugins];
+	bool autoUpdate = [BeatUserDefaults.sharedDefaults getBool:@"updatePluginsAutomatically"];
 	
 	[self refreshAvailablePlugins];
 	[self getPluginLibraryWithCallback:^{
@@ -307,12 +308,26 @@ static BeatPluginManager *sharedManager;
 			if (plugin.updateAvailable) [availableUpdates addObject:name];
 		}
 		
-		if (availableUpdates.count > 0) {
-			// Show notification
+		
+		if (availableUpdates.count == 0) return;
+		
+		// Update plugins automatically or show a notification
+		if (autoUpdate) {
+			[self updatePlugins:availableUpdates];
+		} else {
+			// Show notification if there are updates available
 			NSString *text = [NSString stringWithFormat:@"%@", [availableUpdates componentsJoinedByString:@", "]];
 			[(BeatAppDelegate*)NSApp.delegate showNotification:@"Update Available" body:text identifier:@"PluginUpdates" oneTime:YES interval:5.0];
 		}
 	}];
+}
+
+- (void)updatePlugins:(NSArray*)availableUpdates {
+	for (NSString* name in availableUpdates) {
+		[self downloadPlugin:name withCallback:^(NSString * _Nonnull pluginName) {
+			[(BeatAppDelegate*)NSApp.delegate showNotification:@"Plugin Updated" body:pluginName identifier:@"PluginUpdates" oneTime:YES interval:3.0];
+		}];
+	}
 }
 
 #pragma mark - Disabling and enabling plugins
@@ -712,7 +727,7 @@ static BeatPluginManager *sharedManager;
 	if (error) os_log(OS_LOG_DEFAULT, "Error deleting plugin: %@", name);
 }
 
-- (void)downloadPlugin:(NSString*)pluginName library:(BeatPluginLibrary*)library withCallback:(void (^)(NSString* pluginName))callbackBlock {
+- (void)downloadPlugin:(NSString*)pluginName withCallback:(void (^)(NSString* pluginName))callbackBlock {
 	if (!_incompleteDownloads) _incompleteDownloads = NSMutableSet.set;
 	[_incompleteDownloads addObject:pluginName];
 	
