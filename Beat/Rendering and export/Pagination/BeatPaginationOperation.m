@@ -624,7 +624,7 @@
 	else if (line.type == lyrics) expectedType = lyrics;
 	else if (line.type == centered) expectedType = centered;
 	else expectedType = action;
-	
+		
 	while (l < self.script.count) {
 		Line *el = self.script[l];
 
@@ -634,7 +634,7 @@
 		}
 		
 		if (el.type == expectedType) {
-			if (el.beginsNewParagraph) break;
+			if (el.beginsNewParagraph && (line.type != heading && line.type != shot)) break;
 			
 			[block addObject:el];
 			
@@ -644,7 +644,7 @@
 		}
 		else break;
 	}
-		
+			
 	return block;
 }
 

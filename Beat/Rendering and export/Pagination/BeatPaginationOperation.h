@@ -26,7 +26,7 @@
 
 @interface BeatPaginationOperation:NSObject <BeatPageDelegate>
 
-@property (nonatomic) id<BeatPaginationOperationDelegate> paginator;
+@property (nonatomic, weak) id<BeatPaginationOperationDelegate> paginator;
 
 @property (nonatomic) NSArray* script;
 @property (nonatomic) NSInteger location;
