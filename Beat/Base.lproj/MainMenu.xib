@@ -816,8 +816,7 @@ DQ
                                     <action selector="toggleTimeline:" target="-1" id="fm3-Tp-UB7"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show Preview" keyEquivalent="p" id="sme-b1-Ytt">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                            <menuItem title="Show Preview" keyEquivalent="e" id="sme-b1-Ytt">
                                 <connections>
                                     <action selector="preview:" target="-1" id="Wir-n0-gpi"/>
                                 </connections>
