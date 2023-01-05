@@ -39,7 +39,7 @@
 @class BeatPreview;
 @class BeatPreviewController;
 
-@protocol BeatScriptingExports <JSExport>
+@protocol BeatPluginExports <JSExport>
 @property (readonly) Line* currentLine;
 @property (weak, readonly) ContinuousFountainParser *currentParser;
 
@@ -69,11 +69,13 @@
 
 - (void)log:(NSString*)string;
 - (void)openConsole;
+
 - (void)scrollTo:(NSInteger)location;
 - (void)scrollToLineIndex:(NSInteger)index;
 - (void)scrollToLine:(Line*)line;
 - (void)scrollToScene:(OutlineScene*)scene;
 - (void)scrollToSceneIndex:(NSInteger)index;
+
 - (void)newDocument:(NSString*)string;
 - (id)newDocumentObject:(NSString*)string;
 - (NSString*)getText;
@@ -201,7 +203,7 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 @end
 
 // Interfacing with the document
-@protocol BeatScriptingDelegate <NSObject>
+@protocol BeatPluginDelegate <NSObject>
 @property (nonatomic, strong) ContinuousFountainParser *parser;
 @property (nonatomic, weak, readonly) NSWindow *documentWindow;
 @property (nonatomic, readonly) BeatTagging *tagging;
@@ -216,41 +218,55 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 @property (nonatomic, readonly) bool closing;
 
+/// Runs a plugin with given name
+- (void)runPluginWithName:(NSString*)pluginName;
+/// Registers the plugin to stay running in background
+- (void)registerPlugin:(id)parser;
+/// Removes the plugin from memory
+- (void)deregisterPlugin:(id)parser;
+
+/// Sets the given property value in host document. Use only if you *REALLY*, **REALLY** know what the fuck you are doing.
+- (void)setPropertyValue:(NSString*)key value:(id)value;
+/// Gets a property value from host document.
+- (id)getPropertyValue:(NSString*)key;
+
 - (id)document;
 - (NSString*)createDocumentFile;
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
-- (void)registerPlugin:(id)parser;
-- (void)deregisterPlugin:(id)parser;
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
-- (void)scrollTo:(NSInteger)location;
-- (void)scrollToLine:(Line*)line;
-- (void)scrollToLineIndex:(NSInteger)index;
-- (void)scrollToSceneIndex:(NSInteger)index;
-- (void)scrollToScene:(OutlineScene*)scene;
+
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
 - (void)removeRange:(NSRange)range;
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)setColor:(NSString *)color forScene:(OutlineScene *)scene;
 - (void)setColor:(NSString *)color forLine:(Line *)line;
+
 - (void)focusEditor;
+
 - (NSString*)text;
 - (OutlineScene*)getCurrentSceneWithPosition:(NSInteger)position;
+
 - (void)forceFormatChangesInRange:(NSRange)range;
 - (void)formatLine:(Line*)line;
-- (void)setPropertyValue:(NSString*)key value:(id)value;
-- (id)getPropertyValue:(NSString*)key;
+
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
 - (NSString*)previewHTML; /// Returns HTML string of the current preview. Only for debugging.
 - (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
 - (void)bakeRevisions; /// Bakes current revisions into lines
 - (NSAttributedString*)getAttributedText;
-- (void)runPluginWithName:(NSString*)pluginName;
+
+- (void)scrollTo:(NSInteger)location;
+- (void)scrollToLine:(Line*)line;
+- (void)scrollToLineIndex:(NSInteger)index;
+- (void)scrollToSceneIndex:(NSInteger)index;
+- (void)scrollToScene:(OutlineScene*)scene;
+
 @end
 
-@interface BeatPlugin : NSObject <BeatScriptingExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost, WKScriptMessageHandlerWithReply>
-@property (weak) id<BeatScriptingDelegate> delegate;
+@interface BeatPlugin : NSObject <BeatPluginExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost, WKScriptMessageHandlerWithReply>
+@property (weak) id<BeatPluginDelegate> delegate;
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
 
