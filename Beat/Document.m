@@ -118,8 +118,7 @@
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
 #import "BeatAutocomplete.h"
-#import "Document+Scrolling.h"
-#import "Document+Plugins.h"
+
 
 @interface Document () <BeatNativePreviewDelegate> {
 	NSString *bufferedText;
@@ -342,42 +341,25 @@
 
 @end
 
-#define APP_NAME @"Beat"
-
 #define MIN_WINDOW_HEIGHT 400
 #define MIN_OUTLINE_WIDTH 270
 
 #define AUTOSAVE_INTERVAL 10.0
 #define AUTOSAVE_INPLACE_INTERVAL 60.0
 
-#define SECTION_FONT_SIZE 20.0 // base value for section sizes
 #define FONT_SIZE 12.0
 #define LINE_HEIGHT 1.1
 
 #define CHR_WIDTH 7.25
 #define DOCUMENT_WIDTH_MODIFIER 61 * CHR_WIDTH
+#define CHARACTER_INDENT_P 18 * CHR_WIDTH
+
 #define DOCUMENT_WIDTH_A4 59 * CHR_WIDTH
 #define DOCUMENT_WIDTH_US 61 * CHR_WIDTH
-#define TEXT_INSET_TOP 80
 
 // DOCUMENT LAYOUT SETTINGS
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
-
-// The 0.?? values represent percentages of view width
-#define DD_CHARACTER_INDENT_P 0.56
-#define DD_PARENTHETICAL_INDENT_P 0.50
-#define DUAL_DIALOGUE_INDENT_P 0.40
-#define DD_RIGHT 650
-#define DD_RIGHT_P .95
-
-// Title page element indent
-#define TITLE_INDENT .15
-
-#define CHARACTER_INDENT_P 18 * CHR_WIDTH
-#define PARENTHETICAL_INDENT_P 14 * CHR_WIDTH
-#define DIALOGUE_INDENT_P 8 * CHR_WIDTH
-#define DIALOGUE_RIGHT_P 44 * CHR_WIDTH
 
 #define NATIVE_RENDERING false
 
@@ -769,7 +751,7 @@ static BeatAppDelegate *appDelegate;
 	NSPoint origin =_documentWindow.frame.origin;
 	NSSize size = NSMakeSize([_documentSettings getFloat:DocSettingWindowWidth], [_documentSettings getFloat:DocSettingWindowHeight]);
 	
-	CGFloat preferredWidth = self.documentWindow.minSize.width + 190;
+	CGFloat preferredWidth = self.documentWindow.minSize.width + BeatTextView.linePadding * 2 + 300;
 	
 
 	if (size.width < 1) {
@@ -867,7 +849,7 @@ static BeatAppDelegate *appDelegate;
 }
 
 - (void)setMinimumWindowSize {
-	CGFloat width = self.textView.documentWidth * self.magnification + 50;
+	CGFloat width = (self.textView.documentWidth - (2 * BeatTextView.linePadding)) * self.magnification;
 	if (_sidebarVisible) width += _outlineView.frame.size.width;
 
 	// Clamp the value. I can't use max methods.
@@ -1363,6 +1345,7 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Print & Export
 
+@synthesize nativeRendering;
 - (bool)nativeRendering {
 	return NATIVE_RENDERING;
 }
@@ -1950,9 +1933,7 @@ static NSWindow __weak *currentKeyWindow;
 	// At the end, return last scene
 	 if (position >= self.text.length) return self.parser.outline.lastObject;
 	
-	NSInteger prevPosition = -1;
 	OutlineScene *prevScene;
-	
 	for (OutlineScene *scene in self.outline) {
 		if (NSLocationInRange(position, scene.range))  {
 			return scene;
@@ -2699,11 +2680,11 @@ static bool _skipAutomaticLineBreaks = false;
 # pragma  mark - Fonts
 
 - (void)loadSerifFonts {
-	_courier = [NSFont fontWithName:@"Courier Prime" size:[self fontSize]];
+	_courier = BeatFonts.sharedFonts.courier;
 	[self loadFont];
 }
 - (void)loadSansSerifFonts {
-	_courier = [NSFont fontWithName:@"Courier Prime Sans" size:[self fontSize]];
+	_courier = BeatFonts.sharedSansSerifFonts.courier;
 	[self loadFont];
 }
 - (void)loadFont {
@@ -2773,8 +2754,7 @@ static bool _skipAutomaticLineBreaks = false;
 // This is here for legacy reasons
 - (NSUInteger)fontSize
 {
-	_fontSize = FONT_SIZE;
-	return _fontSize;
+	return BeatFonts.sharedFonts.courier.pointSize;
 }
 - (CGFloat)lineHeight { return LINE_HEIGHT; }
 
@@ -4297,6 +4277,27 @@ static NSArray<Line*>* cachedTitlePage;
 	if (line != nil) [self scrollToLine:line];
 }
 
+- (IBAction)nextSectionOfSameDepth:(id)sender {
+	Line* line = self.currentLine;
+	if (line.type != section) {
+		line = [self.parser previousOutlineItemOfType:section from:line.position];
+	}
+	
+	line = [self.parser nextOutlineItemOfType:section from:line.position depth:line.sectionDepth];
+	if (line != nil) [self scrollToLine:line];
+}
+
+- (IBAction)previousSectionOfSameDepth:(id)sender {
+	Line* line = self.currentLine;
+	if (line.type != section) {
+		line = [self.parser previousOutlineItemOfType:section from:line.position];
+	}
+	
+	Line * sectionLine = [self.parser previousOutlineItemOfType:section from:self.selectedRange.location depth:line.sectionDepth];
+	if (sectionLine != nil) [self scrollToLine:sectionLine];
+	else if (line != nil) [self scrollToLine:line];
+}
+
 
 #pragma mark - Autosave
 
@@ -4520,6 +4521,181 @@ static NSArray<Line*>* cachedTitlePage;
 
 -(bool)contentLocked {
 	return [self.documentSettings getBool:@"Locked"];
+}
+
+
+#pragma mark - Plugin support
+
+/*
+ 
+ Some explanation:
+ 
+ Plugins are run inside document scope, unless they are standalone tools.
+ If the plugins are "resident" (can be left running in the background),
+ they are registered and deregistered when launching and shutting down.
+ 
+ Some changes made to the document are sent to all of the running plugins,
+ if they have any change listeners.
+ 
+ This should be separated to its own class, something like PluginAgent or something.
+ 
+ */
+
+- (void)setupPlugins {
+	self.pluginManager = BeatPluginManager.sharedManager;
+}
+- (IBAction)runPlugin:(id)sender {
+	// Get plugin filename from menu item
+	BeatPluginMenuItem *menuItem = (BeatPluginMenuItem*)sender;
+	NSString *pluginName = menuItem.pluginName;
+	
+	[self runPluginWithName:pluginName];
+}
+- (void)runPluginWithName:(NSString*)pluginName {
+	os_log(OS_LOG_DEFAULT, "# Run plugin: %@", pluginName);
+	
+	// See if the plugin is running and disable it if needed
+	if (self.runningPlugins[pluginName]) {
+		[(BeatPlugin*)self.runningPlugins[pluginName] forceEnd];
+		[self.runningPlugins removeObjectForKey:pluginName];
+		return;
+	}
+
+	// Run a new plugin
+	BeatPlugin *pluginParser = [[BeatPlugin alloc] init];
+	pluginParser.delegate = self;
+	
+	BeatPluginData *pluginData = [self.pluginManager pluginWithName:pluginName];
+	[pluginParser loadPlugin:pluginData];
+		
+	// Null the local variable just in case.
+	// If the plugin asks to stay in memory, it will call registerPlugin:
+	pluginParser = nil;
+}
+
+- (void)registerPlugin:(id)plugin {
+	BeatPlugin *parser = (BeatPlugin*)plugin;
+	if (!self.runningPlugins) self.runningPlugins = NSMutableDictionary.new;
+	
+	self.runningPlugins[parser.pluginName] = parser;
+}
+- (void)deregisterPlugin:(id)plugin {
+	BeatPlugin *parser = (BeatPlugin*)plugin;
+	[self.runningPlugins removeObjectForKey:parser.pluginName];
+	parser = nil;
+}
+
+- (void)updatePlugins:(NSRange)range {
+	// Run resident plugins
+	if (!self.runningPlugins) return;
+	
+	for (NSString *pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		[plugin update:range];
+	}
+}
+
+- (void)updatePluginsWithSelection:(NSRange)range {
+	// Run resident plugins which are listening for selection changes
+	if (!self.runningPlugins) return;
+	
+	for (NSString *pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		[plugin updateSelection:range];
+	}
+}
+
+- (void)updatePluginsWithSceneIndex:(NSInteger)index {
+	// Run resident plugins which are listening for selection changes
+	if (!self.runningPlugins) return;
+	
+	for (NSString *pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		[plugin updateSceneIndex:index];
+	}
+}
+
+- (void)updatePluginsWithOutline:(NSArray*)outline {
+	// Run resident plugins which are listening for selection changes
+	if (!self.runningPlugins) return;
+	
+	for (NSString *pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		[plugin updateOutline:outline];
+	}
+}
+
+- (void)notifyPluginsThatWindowBecameMain {
+	if (!self.runningPlugins) return;
+	
+	for (NSString *pluginName in self.runningPlugins.allKeys) {
+		BeatPlugin *plugin = self.runningPlugins[pluginName];
+		[plugin documentDidBecomeMain];
+	}
+}
+
+- (void)addWidget:(id)widget {
+	[self.widgetView addWidget:widget];
+	[self showWidgets:nil];
+}
+
+// For those who REALLY, REALLY know what the fuck they are doing
+- (void)setPropertyValue:(NSString*)key value:(id)value {
+	[self setValue:value forKey:key];
+}
+- (id)getPropertyValue:(NSString*)key {
+	return [self valueForKey:key];
+}
+
+
+#pragma mark - Scrolling
+
+- (void)scrollToSceneNumber:(NSString*)sceneNumber {
+	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)
+	OutlineScene *scene = [self.parser sceneWithNumber:sceneNumber];
+	if (scene != nil) [self scrollToScene:scene];
+}
+- (void)scrollToScene:(OutlineScene*)scene {
+	[self selectAndScrollTo:scene.line.textRange];
+	[self.documentWindow makeFirstResponder:self.textView];
+}
+/// Legacy method. Use selectAndScrollToRange
+- (void)scrollToRange:(NSRange)range {
+	[self selectAndScrollTo:range];
+}
+
+- (void)scrollToRange:(NSRange)range callback:(nullable void (^)(void))callbackBlock {
+	BeatTextView *textView = (BeatTextView*)self.textView;
+	[textView scrollToRange:range callback:callbackBlock];
+}
+
+/// Scrolls the given position into view
+- (void)scrollTo:(NSInteger)location {
+	NSRange range = NSMakeRange(location, 0);
+	[self selectAndScrollTo:range];
+}
+/// Selects the given line and scrolls it into view
+- (void)scrollToLine:(Line*)line {
+	if (line != nil) [self selectAndScrollTo:line.textRange];
+}
+/// Selects the line at given index and scrolls it into view
+- (void)scrollToLineIndex:(NSInteger)index {
+	Line *line = [self.parser.lines objectAtIndex:index];
+	if (line != nil) [self selectAndScrollTo:line.textRange];
+}
+/// Selects the scene at given index and scrolls it into view
+- (void)scrollToSceneIndex:(NSInteger)index {
+	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
+	if (!scene) return;
+	
+	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
+	[self selectAndScrollTo:range];
+}
+/// Selects the given range and scrolls it into view
+- (void)selectAndScrollTo:(NSRange)range {
+	BeatTextView *textView = (BeatTextView*)self.textView;
+	[textView setSelectedRange:range];
+	[textView scrollToRange:range callback:nil];
 }
 
 
