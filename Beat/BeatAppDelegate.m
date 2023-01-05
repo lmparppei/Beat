@@ -38,8 +38,8 @@
 #define APPNAME @"Beat"
 
 @interface BeatAppDelegate ()
-@property (weak) IBOutlet NSMenuItem *checkForUpdatesItem;
-@property (weak) IBOutlet NSMenuItem *menuManual;
+@property (nonatomic) IBOutlet NSMenuItem *checkForUpdatesItem;
+@property (nonatomic) IBOutlet NSMenuItem *menuManual;
 @property (nonatomic) IBOutlet BeatPluginManager *pluginManager; // Set main ownership to avoid leaks
 
 @property (nonatomic) BeatNotifications *notifications;
@@ -56,7 +56,9 @@
 
 @property (nonatomic) BeatTest *tests;
 
-@property (nonatomic, weak) IBOutlet BeatWebResources *resources;
+
+@property (nonatomic) IBOutlet BeatWebResources *resources;
+@property (nonatomic) IBOutlet BeatSpellCheckingUtils *spellCheckingUtils;
 
 #ifdef ADHOC
 // I'm supporting ad hoc distribution for now
