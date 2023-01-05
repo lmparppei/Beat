@@ -45,6 +45,10 @@
 #define OMIT_STYLE @"Omit"
 #define NOTE_STYLE @"Note"
 
+@interface Line()
+@property (nonatomic) NSUInteger oldHash;
+@end
+
 @implementation Line
 
 #pragma mark - Initialization
@@ -575,15 +579,34 @@
                 contentRange.length = i - contentRange.location;
                 inspectedRange = -1;
                 
-                NSString* string = [self.string.lowercaseString substringWithRange:contentRange];
+                NSString* string = [self.string substringWithRange:contentRange];
                 if (string.length > 0) {
                     NSRange actualRange = NSMakeRange(contentRange.location - 2, contentRange.length + 4);
+                    
                     rangesAndStrings[[NSNumber valueWithRange:actualRange]] = string;
                     [strings addObject:string];
                 }
             }
         }
     }];
+    
+    if (self.noteInIndices.count) {
+        NSRange range = NSMakeRange(0, self.noteInIndices.count);
+        NSString* string = [self.string substringToIndex:self.noteInIndices.count - 2];
+        
+        rangesAndStrings[[NSNumber valueWithRange:range]] = string;
+        [strings insertObject:string atIndex:0];
+    }
+    
+    if (self.noteOutIndices.count) {
+        NSRange range = NSMakeRange(self.noteOutIndices.firstIndex, self.noteOutIndices.count);
+        NSString* string = [self.string substringFromIndex:self.noteOutIndices.firstIndex + 2];
+        
+        rangesAndStrings[[NSNumber valueWithRange:range]] = string;
+        [strings addObject:string];
+    }
+    
+    NSLog(@"strings: %@", strings);
     
     if (withRanges) return rangesAndStrings;
     else return strings;
