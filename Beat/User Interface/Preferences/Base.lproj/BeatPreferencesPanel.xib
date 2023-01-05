@@ -12,6 +12,9 @@
                 <outlet property="autoLineBreaks" destination="lU2-0R-Qlm" id="fBz-wJ-Q33"/>
                 <outlet property="autocomplete" destination="g8c-VD-hRA" id="zLg-J1-PCB"/>
                 <outlet property="automaticContd" destination="GfG-mn-QkH" id="IFQ-Mf-yZK"/>
+                <outlet property="backupURLdisplay" destination="Oab-Bq-rFv" id="zZ5-WF-aGP"/>
+                <outlet property="backupUseCustom" destination="sRv-r1-TUu" id="ner-gH-1vS"/>
+                <outlet property="backupUseDefault" destination="5Lw-3n-rPc" id="nMo-rY-3Oy"/>
                 <outlet property="defaultPageSize" destination="OOl-ZM-PBd" id="fxe-zL-gpN"/>
                 <outlet property="headingSpacing1" destination="IO7-Hz-k6N" id="kgE-0i-OlE"/>
                 <outlet property="headingSpacing2" destination="BHk-g1-cy2" id="CHZ-to-mfu"/>
@@ -27,6 +30,7 @@
                 <outlet property="showPageNumbers" destination="Als-Po-nVY" id="GMW-Uw-bCL"/>
                 <outlet property="showSceneNumberLabels" destination="Fx2-XA-GLr" id="dHe-kX-AXN"/>
                 <outlet property="tabView" destination="vYj-Wj-ba8" id="ieg-AQ-lKV"/>
+                <outlet property="updatePluginsAutomatically" destination="fcm-jg-Qcc" id="nb5-Bo-sSL"/>
                 <outlet property="useSansSerif" destination="b7A-fE-zyc" id="oNQ-yj-Wju"/>
                 <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
             </connections>
@@ -36,7 +40,7 @@
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" animationBehavior="default" toolbarStyle="preference" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <rect key="contentRect" x="196" y="240" width="564" height="363"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="564" height="363"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -404,7 +408,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="T5d-xl-Ubg">
-                                            <rect key="frame" x="86" y="322" width="182" height="16"/>
+                                            <rect key="frame" x="22" y="322" width="186" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Backup vault location" usesSingleLineMode="YES" id="ROG-62-Evk">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -412,39 +416,71 @@
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="kyW-X0-rCt">
+                                            <rect key="frame" x="22" y="217" width="186" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Plugins" usesSingleLineMode="YES" id="gW4-1f-ZbP">
+                                                <font key="font" usesAppearanceFont="YES"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                         <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="n8i-W0-bmG">
-                                            <rect key="frame" x="24" y="274" width="513" height="5"/>
+                                            <rect key="frame" x="24" y="259" width="513" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
-                                        <button identifier="8" verticalHuggingPriority="750" id="5Lw-3n-rPc">
-                                            <rect key="frame" x="281" y="321" width="209" height="18"/>
+                                        <button identifier="default" verticalHuggingPriority="750" id="5Lw-3n-rPc">
+                                            <rect key="frame" x="221" y="321" width="209" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="Use default" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="kU3-zB-g60">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="toggleHeadingSpacing:" target="-2" id="ED2-2m-lLQ"/>
+                                                <action selector="toggleBackupLocation:" target="-2" id="Rol-Pk-czD"/>
                                             </connections>
                                         </button>
-                                        <button identifier="9" verticalHuggingPriority="750" id="sRv-r1-TUu">
-                                            <rect key="frame" x="280" y="299" width="196" height="18"/>
+                                        <button identifier="custom" verticalHuggingPriority="750" id="sRv-r1-TUu">
+                                            <rect key="frame" x="220" y="299" width="196" height="18"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="radio" title="Custom" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="moV-CN-wy9">
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="toggleHeadingSpacing:" target="-2" id="AcU-iY-fo4"/>
+                                                <action selector="toggleBackupLocation:" target="-2" id="KBl-hM-pfB"/>
                                             </connections>
                                         </button>
-                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sc3-Wt-lXR">
-                                            <rect key="frame" x="484" y="299" width="55" height="16"/>
+                                        <button verticalHuggingPriority="750" id="sc3-Wt-lXR">
+                                            <rect key="frame" x="470" y="299" width="69" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Select..." bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OWc-Ih-dLg">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="miniSystem"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="selectBackupLocation:" target="-2" id="gSl-Ux-SDE"/>
+                                            </connections>
+                                        </button>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oab-Bq-rFv">
+                                            <rect key="frame" x="220" y="281" width="319" height="11"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" id="7HE-gl-wVS">
+                                                <font key="font" metaFont="miniSystem"/>
+                                                <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fcm-jg-Qcc">
+                                            <rect key="frame" x="221" y="216" width="316" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="check" title="Automatically update plugins" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="1mF-I3-loO">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="toggle:" target="-2" id="DJs-Rn-bGT"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                 </view>
@@ -466,10 +502,19 @@
                             <action selector="toggleTab:" target="-2" id="wTh-QK-A1o"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="7FA3851C-DB41-4CB7-9714-F28F74CA68AA" explicitItemIdentifier="System" label="System" paletteLabel="System" tag="-1" selectable="YES" id="0Hr-jR-zGH">
+                        <imageReference key="image" image="folder" catalog="system" symbolScale="medium" renderingMode="template"/>
+                        <size key="minSize" width="46" height="27"/>
+                        <size key="maxSize" width="46" height="27"/>
+                        <connections>
+                            <action selector="toggleTab:" target="-2" id="aCY-KH-dhn"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="2No-Jf-9GH"/>
                     <toolbarItem reference="ha1-yG-obd"/>
+                    <toolbarItem reference="0Hr-jR-zGH"/>
                 </defaultToolbarItems>
             </toolbar>
             <connections>
@@ -481,6 +526,7 @@
     <resources>
         <image name="Layout-Gradient" width="800" height="50"/>
         <image name="SettingIcon_black" width="370" height="370"/>
-        <image name="doc" catalog="system" width="14" height="16"/>
+        <image name="doc" catalog="system" width="15" height="16"/>
+        <image name="folder" catalog="system" width="19" height="14"/>
     </resources>
 </document>

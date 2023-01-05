@@ -41,6 +41,12 @@
 @property (nonatomic, weak) IBOutlet NSTextField *screenplayItemContd;
 @property (nonatomic, weak) IBOutlet NSTextField *screenplayItemMore;
 
+@property (nonatomic, weak) IBOutlet NSTextField *backupURLdisplay;
+@property (nonatomic, weak) IBOutlet NSButton *backupUseDefault;
+@property (nonatomic, weak) IBOutlet NSButton *backupUseCustom;
+
+@property (nonatomic, weak) IBOutlet NSButton *updatePluginsAutomatically;
+
 @property (nonatomic) NSMutableDictionary *controls;
 
 @property (weak) IBOutlet NSTabView *tabView;
@@ -99,12 +105,22 @@
 				textField.delegate = self;
 				textField.stringValue = value;
 			}
+			
 		} else {
 			
 			if ([key isEqualToString:@"sceneHeadingSpacing"]) {
 				NSInteger value = [BeatUserDefaults.sharedDefaults getInteger:key];
 				if (value == 1) _headingSpacing1.state = NSOnState;
 				else _headingSpacing2.state = NSOnState;
+			}
+			else if ([key isEqualToString:@"backupURL"]) {
+				NSString* url = [BeatUserDefaults.sharedDefaults get:@"backupURL"];
+				
+				if (url.length == 0) self.backupUseDefault.state = NSOnState;
+				else self.backupUseCustom.state = NSOnState;
+					
+					
+				self.backupURLdisplay.stringValue = url;
 			}
 			
 		}
@@ -197,6 +213,31 @@
 	if (sender == _headingSpacing1) [BeatUserDefaults.sharedDefaults saveInteger:1 forKey:@"sceneHeadingSpacing"];
 	else if (sender == _headingSpacing2) [BeatUserDefaults.sharedDefaults saveInteger:2 forKey:@"sceneHeadingSpacing"];
 	[self updateHeadingSample];
+}
+
+- (IBAction)toggleBackupLocation:(id)sender {
+	NSButton* b = sender;
+	if ([b.identifier isEqualToString:@"default"]) [BeatUserDefaults.sharedDefaults save:@"" forKey:@"backupURL"];
+	else {
+		if (self.backupURLdisplay.stringValue.length > 0) {
+			[BeatUserDefaults.sharedDefaults save:self.backupURLdisplay.stringValue forKey:@"backupURL"];
+		} else {
+			[self selectBackupLocation:nil];
+		}
+	}
+}
+
+- (IBAction)selectBackupLocation:(id)sender {
+	NSOpenPanel* panel = NSOpenPanel.new;
+	panel.canChooseFiles = false;
+	panel.canChooseDirectories = true;
+	panel.canCreateDirectories = true;
+	
+	[panel beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse result) {
+		if (result != NSModalResponseOK) return;
+		[BeatUserDefaults.sharedDefaults save:panel.URL.path forKey:@"backupURL"];
+		self.backupURLdisplay.stringValue = panel.URL.path;
+	}];
 }
 
 - (IBAction)toggle:(id)sender {
