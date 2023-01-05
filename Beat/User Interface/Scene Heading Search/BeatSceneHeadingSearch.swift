@@ -93,9 +93,13 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 	}
 	
 	func closeModal() {
-		if (self.window != nil) {
-			self.delegate?.documentWindow.endSheet(self.window!)
+		guard let window = self.window,
+			  let documentWindow = self.delegate?.documentWindow
+		else {
+			return
 		}
+		
+		documentWindow.endSheet(window)
 	}
 	
 	// MARK: - Filtering and jumping to scene
@@ -108,12 +112,9 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 			// Scroll to selected scene and close this menu
 			if (scene != nil) {
 				self.delegate?.scroll(to: scene!.line)
-				closeModal()
-				return
 			}
 		}
 		
-		// Something went wrong or the search was empty, so just close the dialog
 		closeModal()
 	}
 	
