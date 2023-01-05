@@ -45,6 +45,8 @@ NSString const * BeatSettingAutocomplete = @"autocomplete";
 NSString const * BeatSettingUseSansSerif = @"useSansSerif";
 NSString const * BeatSettingMagnification = @"magnification";
 NSString const * BeatSettingAutomaticLineBreaks = @"autoLineBreaks";
+NSString const * BeatSettingUpdatePluginsAutomatically = @"updatePluginsAutomatically";
+NSString const * BeatSettingBackupURL = @"backupURL";
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -75,6 +77,7 @@ NSString const * BeatSettingAutomaticLineBreaks = @"autoLineBreaks";
 		BeatSettingUseSansSerif: @[FONT_STYLE_KEY, @NO],
 		BeatSettingPrintSceneNumbers: @[PRINT_SCENE_NUMBERS_KEY, @YES],
 		BeatSettingMagnification: @[BeatSettingMagnification, @(DEFAULT_MAGNIFICATION)],
+		BeatSettingUpdatePluginsAutomatically: @[BeatSettingUpdatePluginsAutomatically, @YES],
 		@"headingStyleBold": @[@"headingStyleBold", @YES],
 		@"headingStyleUnderline": @[@"headingStyleUnderline", @NO],
 		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)],
@@ -88,7 +91,7 @@ NSString const * BeatSettingAutomaticLineBreaks = @"autoLineBreaks";
 		@"automaticContd": @[@"automaticContd", @YES],
 		@"zoomLevel": @[@"zoomLevel", @0.97],
 		@"showSynopsisInOutline": @[@"showSynopsisInOutline", @YES],
-		@"backupURL": @[@"backupURL", @""]
+		BeatSettingBackupURL: @[BeatSettingBackupURL, @""]
 	};
 }
 
