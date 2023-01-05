@@ -1505,49 +1505,37 @@ static NSDictionary* patterns;
 
 	return markerColor;
 }
+
+/// Finds and sets the color for given outline-level line. The last one is used, preceding color notes are ignored.
 - (NSString *)colorForHeading:(Line *)line
 {
-	__block NSString *headingColor = @"";
-	
+    NSArray *colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
+    
+    __block NSString* headingColor = @"";
 	line.colorRange = NSMakeRange(0, 0);
-	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		// This is just an empty note
-		if (range.length == NOTE_PATTERN_LENGTH * 2) return;
-		
-		NSString * note = [line.string substringWithRange:range];
-		NSRange noteRange = NSMakeRange(NOTE_PATTERN_LENGTH, note.length - NOTE_PATTERN_LENGTH * 2);
-		NSString *color = @"";
-		note = [note substringWithRange:noteRange];
-		note = [note stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-		
-		// Check for different ways of setting a color
-		
-		if ([note localizedCaseInsensitiveContainsString:@COLOR_PATTERN]) {
-			NSRange colorRange = [note rangeOfString:@COLOR_PATTERN options:NSCaseInsensitiveSearch];
-			color = [note substringWithRange:NSMakeRange(colorRange.length, note.length - colorRange.length)];
-			color = [color stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
-		}
-		else if ([note characterAtIndex:0] == '#' && note.length == 7) {
-			color = note;
-		}
-		else {
-			NSArray *colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
-			for (NSString *c in colors) {
-				if ([note.lowercaseString isEqualToString:c]) {
-					color = c;
-					break;
-				}
-			}
-		}
-		
-		if (color.length > 0) {
-			line.colorRange = range;
-			headingColor = color;
-		}
-	}];
+    
+    NSDictionary<NSNumber*, NSString*>* noteContents = line.noteContentsAndRanges;
+    for (NSNumber* key in noteContents.allKeys) {
+        NSRange range = key.rangeValue;
+        NSString* content = noteContents[key].lowercaseString;
+        
+        // We only want the last color on the line. The values come from a dictionary, so we can't be sure, so just skip it if it's an earlier one.
+        if (line.colorRange.location > range.location) continue;
+        
+        // We can define a color using both [[color red]] or just [[red]]
+        if ([content containsString:@"color "]) {
+            headingColor = [content substringFromIndex:@"color ".length];
+            line.colorRange = range;
+        }
+        else if ([colors containsObject:content]) {
+            headingColor = content;
+            line.colorRange = range;
+        }
+    }
 
 	return headingColor;
 }
+
 - (NSArray *)beatsFor:(Line *)line {
     if (line.length == 0) return @[];
     

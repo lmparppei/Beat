@@ -541,6 +541,53 @@
 	}
 }
 
+- (NSArray*)noteContents {
+    return [self noteContentsWithRanges:false];
+}
+
+- (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges {
+    return [self noteContentsWithRanges:true];
+}
+
+- (id)noteContentsWithRanges:(bool)withRanges {
+    __block NSMutableDictionary<NSNumber*, NSString*>* rangesAndStrings = NSMutableDictionary.new;
+    __block NSMutableArray* strings = NSMutableArray.new;
+    
+    [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length == @"[[".length * 2) return;
+        
+        NSInteger inspectedRange = -1;
+        NSRange contentRange = NSMakeRange(0, 0);
+        
+        for (NSInteger i = range.location; i<NSMaxRange(range); i++) {
+            unichar c = [self.string characterAtIndex:i];
+            
+            if (c == '[') {
+                inspectedRange += 1;
+                
+                if (inspectedRange == 1) {
+                    // A beginning of a new note
+                    contentRange.location = i + 1;
+                }
+            }
+            
+            else if (c == ']' && inspectedRange > 0) {
+                contentRange.length = i - contentRange.location;
+                inspectedRange = -1;
+                
+                NSString* string = [self.string.lowercaseString substringWithRange:contentRange];
+                if (string.length > 0) {
+                    NSRange actualRange = NSMakeRange(contentRange.location - 2, contentRange.length + 4);
+                    rangesAndStrings[[NSNumber valueWithRange:actualRange]] = string;
+                    [strings addObject:string];
+                }
+            }
+        }
+    }];
+    
+    if (withRanges) return rangesAndStrings;
+    else return strings;
+}
 
 #pragma mark Centered
 

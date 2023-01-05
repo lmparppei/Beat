@@ -97,9 +97,14 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (BOOL)matchesUUIDString:(NSString*)uuid;
 - (NSString*)uuidString;
 
+/// Returns a dictionary with the *actual range* (including brackets) as the key
+- (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges;
+/// Returns note content strings as an array
+- (NSArray*)noteContents;
+
+
 JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(id)value);
 - (id)getCustomData:(NSString*)key;
-
 @end
 
 @protocol LineDelegate <NSObject>
@@ -281,6 +286,13 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 - (NSDictionary*)forSerialization;
 
 -(bool)noFormatting;
+
+// Note contents
+
+/// Returns a dictionary with the *actual range* (including brackets) as the key
+- (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges;
+/// Returns note content strings as an array
+- (NSArray*)noteContents;
 
 // For revision data
 @property (nonatomic) bool changed;
