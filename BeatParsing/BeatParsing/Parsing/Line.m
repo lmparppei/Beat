@@ -606,8 +606,6 @@
         [strings addObject:string];
     }
     
-    NSLog(@"strings: %@", strings);
-    
     if (withRanges) return rangesAndStrings;
     else return strings;
 }
