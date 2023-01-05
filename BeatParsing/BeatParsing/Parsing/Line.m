@@ -1321,8 +1321,10 @@
 }
 
 - (NSString*)titlePageKey {
+    if (self.string.length == 0) return @"";
+    
     NSInteger i = [self.string rangeOfString:@":"].location;
-    if (i == NSNotFound || i == 0) return @"";
+    if (i == NSNotFound || i == 0 || [self.string characterAtIndex:0] == ' ') return @"";
     
     return [self.string substringToIndex:i].lowercaseString;
 }

@@ -86,11 +86,10 @@ static NSString *strikeoutSymbolClose = @"}}";
 	}
 	
 	// Extended types for title page fields
-	else if (line.isTitlePage) {
-		if ([line.string rangeOfString:@":"].location == NSNotFound) {
-			type = (LineType)titlePageSubField;
-		}
+	else if (line.isTitlePage && line.titlePageKey.length == 0) {
+		type = (LineType)titlePageSubField;
 	}
+	
 	else if (line.type == section) {
 		if (line.sectionDepth > 1) {
 			type = (LineType)subSection;
