@@ -133,7 +133,7 @@
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
 
 - (Line*)currentLine;
-- (NSInteger)lineTypeAt:(NSInteger)index;
+- (LineType)lineTypeAt:(NSInteger)index;
 
 - (void)setSelectedRange:(NSRange)range;
 - (NSRange)selectedRange;
