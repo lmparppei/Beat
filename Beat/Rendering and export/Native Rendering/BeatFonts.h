@@ -11,12 +11,16 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatFonts : NSObject
-@property (nonatomic) NSFont *courier;
-@property (nonatomic) NSFont *boldCourier;
-@property (nonatomic) NSFont *italicCourier;
-@property (nonatomic) NSFont *boldItalicCourier;
+@property (nonatomic) NSFont* courier;
+@property (nonatomic) NSFont* boldCourier;
+@property (nonatomic) NSFont* italicCourier;
+@property (nonatomic) NSFont* boldItalicCourier;
+
+@property (nonatomic) NSFont* synopsisFont;
+@property (nonatomic) NSFont* sectionFont;
 
 + (BeatFonts*)sharedFonts;
++ (BeatFonts*)sharedSansSerifFonts;
 + (CGFloat)characterWidth;
 
 - (NSFont*)withSize:(CGFloat)size;

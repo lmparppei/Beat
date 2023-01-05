@@ -10,11 +10,30 @@
 
 @implementation BeatFonts
 
-- (instancetype)init {
++ (BeatFonts*)sharedFonts {
+	static dispatch_once_t once;
+	static id sharedInstance;
+	dispatch_once(&once, ^{
+		sharedInstance = [[self alloc] initWithSansSerif:false];
+	});
+	return sharedInstance;
+}
+
++ (BeatFonts*)sharedSansSerifFonts {
+	static dispatch_once_t once;
+	static id sharedSansSerifInstance;
+	dispatch_once(&once, ^{
+		sharedSansSerifInstance = [[self alloc] initWithSansSerif:true];
+	});
+	return sharedSansSerifInstance;
+}
+
+- (instancetype)initWithSansSerif:(bool)sansSerif {
 	self = [super init];
 	
 	if (self) {
-		[self loadSerifFont];
+		if (sansSerif) [self loadSansSerifFont];
+		else [self loadSerifFont];
 	}
 	
 	return self;
@@ -24,6 +43,8 @@
 	self.boldCourier = [self fontWithTrait:NSFontDescriptorTraitBold];
 	self.italicCourier = [self fontWithTrait:NSFontDescriptorTraitItalic];
 	self.boldItalicCourier = [self fontWithTrait:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
+	
+	self.synopsisFont = [self fontWithTrait:NSFontDescriptorTraitItalic font:[NSFont systemFontOfSize:11.0]];
 }
 
 - (void)loadSerifFont {
@@ -60,15 +81,6 @@
 
 + (CGFloat)characterWidth {
 	return 7.25;
-}
-
-+ (BeatFonts*)sharedFonts {
-	static dispatch_once_t once;
-	static id sharedInstance;
-	dispatch_once(&once, ^{
-		sharedInstance = [[self alloc] init];
-	});
-	return sharedInstance;
 }
 
 @end
