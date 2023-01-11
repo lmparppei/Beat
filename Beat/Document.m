@@ -3155,16 +3155,16 @@ static bool _skipAutomaticLineBreaks = false;
 - (void)setThemeFor:(Document*)doc setTextColor:(bool)setTextColor {
 	if (!doc) doc = self;
 	
-	doc.textView.textColor = self.themeManager.currentTextColor;
-	doc.textView.marginColor = self.themeManager.currentMarginColor;
-	doc.textScrollView.marginColor = self.themeManager.currentMarginColor;
+	doc.textView.textColor = self.themeManager.textColor;
+	doc.textView.marginColor = self.themeManager.marginColor;
+	doc.textScrollView.marginColor = self.themeManager.marginColor;
 	
 	[doc.textView setSelectedTextAttributes:@{
-		NSBackgroundColorAttributeName: self.themeManager.currentSelectionColor,
-		NSForegroundColorAttributeName: self.themeManager.currentBackgroundColor
+		NSBackgroundColorAttributeName: self.themeManager.selectionColor,
+		NSForegroundColorAttributeName: self.themeManager.backgroundColor
 	}];
 	
-	if (setTextColor) [doc.textView setTextColor:self.themeManager.currentTextColor];
+	if (setTextColor) [doc.textView setTextColor:self.themeManager.textColor];
 	else {
 		[self.textView setNeedsLayout:YES];
 		[self.textView setNeedsDisplay:YES];
@@ -3173,8 +3173,6 @@ static bool _skipAutomaticLineBreaks = false;
 	[doc.textView setInsertionPointColor:self.themeManager.caretColor];
 	
 	// Set global background
-	//doc.backgroundView.fillColor = self.themeManager.outlineBackground;
-	//doc.backgroundView.fillColor = NSColor.redColor;
 	doc.backgroundView.layer.backgroundColor = self.themeManager.outlineBackground.effectiveColor.CGColor;
 	
 	[doc updateUIColors];

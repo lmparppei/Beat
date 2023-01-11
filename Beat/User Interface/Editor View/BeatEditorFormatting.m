@@ -253,7 +253,7 @@ static NSString *strikeoutSymbolClose = @"}}";
 			[textView setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
-			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.currentTextColor forCharacterRange:line.range];
+			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor forCharacterRange:line.range];
 		}
 		
 		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.

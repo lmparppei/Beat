@@ -1071,7 +1071,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_updatingSceneNumberLabels = YES;
 	
 	ContinuousFountainParser *parser = self.editorDelegate.parser;
-	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
+	NSColor *textColor = self.editorDelegate.themeManager.textColor.effectiveColor;
 	if (!self.sceneNumberLabels) self.sceneNumberLabels = NSMutableArray.array;
 	
 	bool layoutEnsured = NO;
@@ -1119,7 +1119,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			NSString *colorName = scene.color.lowercaseString;
 			NSColor *color = [BeatColors color:colorName];
 			if (color) [label setTextColor:color];
-			else [label setTextColor:ThemeManager.sharedManager.currentTextColor];
+			else [label setTextColor:ThemeManager.sharedManager.textColor];
 		} else {
 			[label setTextColor:textColor];
 		}
@@ -1210,7 +1210,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	_updatingSceneNumberLabels = YES;
 	
 	ContinuousFountainParser *parser = self.editorDelegate.parser;
-	NSColor *textColor = self.editorDelegate.themeManager.currentTextColor.effectiveColor;
+	NSColor *textColor = self.editorDelegate.themeManager.textColor.effectiveColor;
 	if (!self.sceneLayerLabels) self.sceneLayerLabels = NSMutableArray.array;
 	
 	bool layoutEnsured = NO;
@@ -1254,7 +1254,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			NSString *colorName = scene.color.lowercaseString;
 			NSColor *color = [BeatColors color:colorName];
 			if (color) label.foregroundColor = color.CGColor;
-			else label.foregroundColor = ThemeManager.sharedManager.currentTextColor.effectiveColor.CGColor;
+			else label.foregroundColor = ThemeManager.sharedManager.textColor.effectiveColor.CGColor;
 		} else {
 			label.foregroundColor = textColor.CGColor;
 		}
