@@ -43,8 +43,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B138B57219E1C973000489C4"
-               BuildableName = "Beat Ad Hoc.app"
-               BlueprintName = "Beat"
+               BuildableName = "Beat.app"
+               BlueprintName = "Beat Ad Hoc"
                ReferencedContainer = "container:Beat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

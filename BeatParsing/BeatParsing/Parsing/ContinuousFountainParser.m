@@ -1056,8 +1056,10 @@ static NSDictionary* patterns;
     
     // Forced whitespace
     bool containsOnlyWhitespace = line.string.containsOnlyWhitespace; // Save to use again later
-    bool twoSpaces = (firstChar == ' ' && lastChar == ' '); // Contains at least two spaces
+    bool twoSpaces = (firstChar == ' ' && lastChar == ' ' && line.length > 1); // Contains at least two spaces
+    
     if (containsOnlyWhitespace && !twoSpaces) return empty;
+
         
     if ([trimmedString isEqualToString:@"==="]) return pageBreak;
     else if (firstChar == '!') {
@@ -2705,7 +2707,7 @@ NSUInteger prevLineAtLocationIndex = 0;
             l.beginsNewParagraph = true;
             
             // BUT in some cases, they don't.
-            if (precedingLine.type != empty && precedingLine.type == l.type) {
+            if (!precedingLine.effectivelyEmpty && precedingLine.type == l.type) {
                 l.beginsNewParagraph = false;
                 // This is here for backwards compatibility
                 if (precedingLine.type == action) l.isSplitParagraph = true;

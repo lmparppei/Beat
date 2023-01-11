@@ -40,7 +40,7 @@
         <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" animationBehavior="default" toolbarStyle="preference" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <rect key="contentRect" x="196" y="240" width="564" height="363"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="564" height="363"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -69,7 +69,7 @@
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="gEt-24-IA4">
                                             <rect key="frame" x="18" y="322" width="161" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Editor View" id="O3D-76-kt4">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Editor View" usesSingleLineMode="YES" id="O3D-76-kt4">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -98,9 +98,9 @@
                                             </connections>
                                         </button>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="nyM-eM-UVN">
-                                            <rect key="frame" x="18" y="226" width="161" height="16"/>
+                                            <rect key="frame" x="18" y="227" width="161" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Editor Font" id="Wyn-hc-s1G">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Editor Font" usesSingleLineMode="YES" id="Wyn-hc-s1G">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -124,9 +124,9 @@
                                             </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="F1v-qV-l7r">
-                                            <rect key="frame" x="18" y="29" width="161" height="16"/>
+                                            <rect key="frame" x="18" y="31" width="161" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Language" id="5o4-U4-n7H">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Language" usesSingleLineMode="YES" id="5o4-U4-n7H">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -156,9 +156,9 @@
                                             </connections>
                                         </button>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="85P-cf-gYd">
-                                            <rect key="frame" x="18" y="167" width="161" height="16"/>
+                                            <rect key="frame" x="18" y="168" width="161" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Editor Behavior" id="lzW-qc-hjs">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Editor Behavior" usesSingleLineMode="YES" id="lzW-qc-hjs">
                                                 <font key="font" usesAppearanceFont="YES"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -280,7 +280,7 @@
                                             </connections>
                                         </popUpButton>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DEO-Es-4wX">
-                                            <rect key="frame" x="86" y="322" width="182" height="16"/>
+                                            <rect key="frame" x="86" y="323" width="182" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" alignment="right" title="Default Paper Size" usesSingleLineMode="YES" id="nUl-8Q-mMa">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -526,7 +526,7 @@
     <resources>
         <image name="Layout-Gradient" width="800" height="50"/>
         <image name="SettingIcon_black" width="370" height="370"/>
-        <image name="doc" catalog="system" width="15" height="16"/>
-        <image name="folder" catalog="system" width="19" height="14"/>
+        <image name="doc" catalog="system" width="14" height="16"/>
+        <image name="folder" catalog="system" width="18" height="14"/>
     </resources>
 </document>

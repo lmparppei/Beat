@@ -70,11 +70,13 @@ static NSString *strikeoutSymbolClose = @"}}";
 	return 16.0;
 }
 
+/// Returns paragraph style for given line type
 - (NSMutableParagraphStyle*)paragraphStyleForType:(LineType)type {
 	Line *tempLine = [Line withString:@"" type:type];
 	return [self paragraphStyleFor:tempLine];
 }
 
+/// Returns paragraph style for given line
 - (NSMutableParagraphStyle*)paragraphStyleFor:(Line*)line {
 	if (line == nil) line = [Line withString:@"" type:action];
 	
@@ -96,7 +98,7 @@ static NSString *strikeoutSymbolClose = @"}}";
 		}
 	}
 	/*
-	// This is an idea for caching paragraph styles, but it doesn't seem to work for forced character cues.
+	// This is an idea for storing paragraph styles, but it doesn't seem to work for forced character cues.
 	BeatPaperSize paperSize = self.delegate.pageSize;
 	NSNumber* paperSizeKey = @(paperSize);
 	NSNumber* typeKey = @(type);
@@ -172,6 +174,7 @@ static NSString *strikeoutSymbolClose = @"}}";
 	return style;
 }
 
+/// Formats a single line in editor
 - (void)formatLine:(Line*)line {
 	[self formatLine:line firstTime:NO];
 }

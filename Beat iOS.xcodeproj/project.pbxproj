@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
 		B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */; };
+		B69311BE296EDFF400CF4869 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311BD296EDFF400CF4869 /* WebKit.framework */; };
+		B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311BF296EDFFD00CF4869 /* UIKit.framework */; };
+		B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311C1296EE00500CF4869 /* BeatParsing.framework */; };
+		B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B69311C1296EE00500CF4869 /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B69311C7296EE0EA00CF4869 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B69311C5296EE0EA00CF4869 /* BeatColors.m */; };
+		B69311CD296EE11700CF4869 /* DynamicColor.m in Sources */ = {isa = PBXBuildFile; fileRef = B69311CC296EE11600CF4869 /* DynamicColor.m */; };
 		B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
 		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
@@ -47,12 +53,33 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		B69311C4296EE00500CF4869 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
 		B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatiOSFormatting.m; sourceTree = "<group>"; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
+		B69311BD296EDFF400CF4869 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
+		B69311BF296EDFFD00CF4869 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		B69311C1296EE00500CF4869 /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B69311C5296EE0EA00CF4869 /* BeatColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatColors.m; path = "Beat/User Interface/Colors/BeatColors.m"; sourceTree = SOURCE_ROOT; };
+		B69311C6296EE0EA00CF4869 /* BeatColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatColors.h; path = "Beat/User Interface/Colors/BeatColors.h"; sourceTree = SOURCE_ROOT; };
+		B69311CB296EE11600CF4869 /* DynamicColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicColor.h; sourceTree = "<group>"; };
+		B69311CC296EE11600CF4869 /* DynamicColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DynamicColor.m; sourceTree = "<group>"; };
 		B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B6B6D9F928EF519E0081327E /* Beat.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Beat.xcodeproj; sourceTree = "<group>"; };
 		B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,6 +103,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69311BE296EDFF400CF4869 /* WebKit.framework in Frameworks */,
+				B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */,
+				B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +118,7 @@
 				B6B6D9F928EF519E0081327E /* Beat.xcodeproj */,
 				B6CB96F1282FEB6500C7AFC7 /* Beat iOS */,
 				B138B57419E1C973000489C4 /* Products */,
+				B69311B6296EDFF300CF4869 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
@@ -112,6 +143,10 @@
 		B63D9F5028301E4E00D027B6 /* iOS colors */ = {
 			isa = PBXGroup;
 			children = (
+				B69311CB296EE11600CF4869 /* DynamicColor.h */,
+				B69311CC296EE11600CF4869 /* DynamicColor.m */,
+				B69311C6296EE0EA00CF4869 /* BeatColors.h */,
+				B69311C5296EE0EA00CF4869 /* BeatColors.m */,
 			);
 			path = "iOS colors";
 			sourceTree = "<group>";
@@ -124,6 +159,16 @@
 				B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */,
 			);
 			path = Editor;
+			sourceTree = "<group>";
+		};
+		B69311B6296EDFF300CF4869 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B69311C1296EE00500CF4869 /* BeatParsing.framework */,
+				B69311BF296EDFFD00CF4869 /* UIKit.framework */,
+				B69311BD296EDFF400CF4869 /* WebKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		B6B6D9FA28EF519E0081327E /* Products */ = {
@@ -186,6 +231,7 @@
 				B6CB96EC282FEB6500C7AFC7 /* Sources */,
 				B6CB96ED282FEB6500C7AFC7 /* Frameworks */,
 				B6CB96EE282FEB6500C7AFC7 /* Resources */,
+				B69311C4296EE00500CF4869 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -282,10 +328,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */,
+				B69311C7296EE0EA00CF4869 /* BeatColors.m in Sources */,
 				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
 				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
 				B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */,
 				B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */,
+				B69311CD296EE11700CF4869 /* DynamicColor.m in Sources */,
 				B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */,
 				B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */,
 				B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */,

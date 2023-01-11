@@ -26,6 +26,7 @@
 	}
 	
 	if (!self.textView) {
+		
 		NSLog(@"WARNING: No text view set for BeatLayoutManager.");
 		[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
 		return;
@@ -73,7 +74,7 @@
 		attributeGlyphRange = NSIntersectionRange(attributeGlyphRange, glyphRange);
 				
 		// Check if there actually was a revision attribute
-		if (revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) {
+		if ((revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) && revision != nil && revision.colorName != nil) {
 			// Get bounding rect for the range
 			NSRect boundingRect = [self boundingRectForGlyphRange:attributeGlyphRange
 												  inTextContainer:textContainer];

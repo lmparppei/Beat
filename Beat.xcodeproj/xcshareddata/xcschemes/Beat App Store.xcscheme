@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B68B6021260B849300463AD8"
                BuildableName = "Beat.app"
-               BlueprintName = "Beat Appstore"
+               BlueprintName = "Beat AppStore"
                ReferencedContainer = "container:Beat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -57,7 +57,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B68B6021260B849300463AD8"
             BuildableName = "Beat.app"
-            BlueprintName = "Beat Appstore"
+            BlueprintName = "Beat AppStore"
             ReferencedContainer = "container:Beat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -99,7 +99,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B68B6021260B849300463AD8"
             BuildableName = "Beat.app"
-            BlueprintName = "Beat Appstore"
+            BlueprintName = "Beat AppStore"
             ReferencedContainer = "container:Beat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -333,13 +333,14 @@
 			}
 			.patreon {
 				padding: 3em 0 3em 0;
+				color: #020202;
 			}
 			.note h2 { margin-top: .5em; }
 		
 			.patreon h2 {
 				margin-top: 0;
 				font-weight: 200;
-				font-size: 2em;
+				font-size: 1.8em;
 				color: white;
 			}
 			.patreon p {
@@ -391,11 +392,10 @@
 		
 			#intro section#lift {
 				max-width: 100%;
-				min-height: 15em;
-				color: black;
+
 				margin-bottom: 0;
 				padding-top: 2.1em;
-				padding-bottom: 1.6em;
+				padding-bottom: 2.1em;
 				padding-left: 1em;
 				padding-right: 1em;
 				background-color: #FF424D;
@@ -403,9 +403,6 @@
 			
 			
 		</style>
-		<!--[if lt IE 9]>
-			<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
 	</head>
 
 	<body lang="fi">
@@ -417,16 +414,17 @@
 						<h1>Welcome to Beat 1.98.1!</h1>
 					</div>
 				</section>
+				
+				
 				<section id='lift' class='patreon'>
 					<div class='patreon-note'>
-						
-						<h2>Support the Development</h2>
-						<p>Do you love Beat? To ensure the ongoing development, you can pledge to the Patreon campaign. Even a small sum helps to keep the app afloat.</p>
-						<p class='small'>Alternatively, you could <a href='#' onclick='openLink("http://kapitan.fi/beat/support.html")'>donate</a> to any NGOs providing humanitarian aid.</p>
-						<p class='callToAction'><button onclick="openLink('https://patreon.com/user?u=61753992')">Subscribe</button> <img src='patreon_logo.png'></p>
-						
+						<h2>A Note from the Developer</h2>
+						<p>Do you love Beat? You can now contribute to ensure the ongoing development of the app. Visit Beat web site to learn more.</p>
+						<p class='small'>Alternatively, you could donate your loose change to charities and NGOs.</p>
+						<p class='callToAction'><button onclick="openLink('https://kapitan.fi/beat/support.html')">Support Beat</button></p>
 					</div>
 				</section>
+
 				<section>
 					<!-- <p><b>Support Beat:</b> If you enjoy Beat, please consider <a href='#' onclick='openLink("http://kapitan.fi/beat/support.html")'>donating</a> some loose change to help the project alive. All of the funds will be used to cover development costs, including future license and hosting fees. And occasional cups of coffee.</p> -->
 
@@ -436,6 +434,8 @@
 						<li>Shortcut for <b>Print Preview</b> changed to <b>cmd-E</b>, and all views can now be toggled on/off by their own shortcut
 						<li>Plugins are now automatically kept up-to-date (<b>Note:</b> you can opt out in <em>Preferences → System</em>)
 						<li>Backup vault location can now be changed in <em>Preferences → System</em>
+						<li>Multiple Plugin API expansions
+						<li>Plugins can now run in full screen mode
 					</ul>
 					
 					
@@ -443,8 +443,12 @@
 					<ul>
 						<li>Pagination bugs with heading lines fixed
 						<li>Fixed minor parsing issues with dialogue
+						<li>Centered text parsed correctly again
 						<li>Fixed a bug which could make a closed document window unresponsive, when a plugin window is present
 						<li>Fixed crashes when using <em>Find Scene</em>
+						<li>Editor zoom level no longer resets between sessions
+						<li>Fixed a bug which could cause random crashes on screenplays with a lot of revisions
+						<li>Centered and lyrics lines at the end of document no longer disappear when exporting
 					</ul>
 
 					<!-- <p><button onclick='openTemplate("Filename")'>Open The Screenplay</button></p> -->

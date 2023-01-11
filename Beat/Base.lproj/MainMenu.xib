@@ -999,7 +999,7 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="eyc-hG-S9v"/>
-                            <menuItem title="Support Beat" id="oNz-fC-tr3" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
+                            <menuItem title="Support Beat" hidden="YES" id="oNz-fC-tr3" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="website" value="https://www.kapitan.fi/beat/support.html"/>
@@ -1018,10 +1018,13 @@ DQ
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="gy8-Q9-fNE"/>
-                            <menuItem title="Beat Website (Online)" id="guF-zs-YEi">
+                            <menuItem title="Beat Home Page (Online)" id="guF-zs-YEi" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">
                                 <modifierMask key="keyEquivalentModifierMask"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://kapitan.fi/beat/"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="showBeatWebsite:" target="vEX-2F-hcj" id="93l-EH-h5f"/>
+                                    <action selector="openURLWithSender:" target="N5l-jq-jtZ" id="Bvl-QS-YdD"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Beat Source Code (Online)" id="CUo-uf-t1s" customClass="BeatURLMenuItem" customModule="Beat" customModuleProvider="target">

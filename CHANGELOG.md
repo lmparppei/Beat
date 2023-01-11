@@ -1,5 +1,13 @@
 # Changelog
 
+## Beat 1.98.x
+
+- Native rendering rewritten from scratch, once again, almost working already. Pagination and rendering are also separated from each other, with protocols for rendering on different platforms.
+- Tons of plugin API extensions
+- Stability fixes
+- Fixes to parsing and export
+
+
 ## Beat 1.97.5-7
 
 - Fixed some parsing issues

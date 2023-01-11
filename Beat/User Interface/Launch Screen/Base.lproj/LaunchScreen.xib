@@ -20,7 +20,7 @@
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" tabbingMode="disallowed" titlebarAppearsTransparent="YES" id="6np-jR-XCa" userLabel="Launch screen">
             <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="179" y="217" width="704" height="404"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
             <view key="contentView" appearanceType="darkAqua" id="hUD-1d-FmA" customClass="NSVisualEffectView">
                 <rect key="frame" x="0.0" y="0.0" width="704" height="404"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -113,7 +113,7 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" id="qFU-N7-7lp" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
-                                    <rect key="frame" x="16" y="35" width="135" height="16"/>
+                                    <rect key="frame" x="16" y="16" width="135" height="16"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="→ Support Beat" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="guu-nG-SXu">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -126,21 +126,6 @@
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://www.kapitan.fi/beat/support.html"/>
                                     </userDefinedRuntimeAttributes>
-                                </button>
-                                <button verticalHuggingPriority="750" id="K8K-rE-MgM" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
-                                    <rect key="frame" x="15" y="17" width="135" height="14"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <buttonCell key="cell" type="bevel" title="→ Discord Community" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="msh-MK-CMo">
-                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="smallSystem"/>
-                                    </buttonCell>
-                                    <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
-                                    <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://discord.gg/FPHjfH7ms3"/>
-                                    </userDefinedRuntimeAttributes>
-                                    <connections>
-                                        <action selector="openURLWithSender:" target="-1" id="znp-4n-Ttc"/>
-                                    </connections>
                                 </button>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="dg6-0F-HGV">
                                     <rect key="frame" x="254" y="39" width="102" height="13"/>
@@ -179,7 +164,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" id="smF-Bq-fzW">
-                                    <rect key="frame" x="74" y="143.5" width="220" height="44"/>
+                                    <rect key="frame" x="74" y="143" width="220" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="New Screenplay" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="Tq7-Xj-tBS" customClass="BeatLaunchButton">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -210,6 +195,21 @@
                                         <action selector="showReference:" target="-1" id="577-sf-XOz"/>
                                     </connections>
                                 </button>
+                                <button verticalHuggingPriority="750" id="K8K-rE-MgM" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
+                                    <rect key="frame" x="16" y="36" width="135" height="14"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <buttonCell key="cell" type="bevel" title="→ Discord Community" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="msh-MK-CMo">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://discord.gg/FPHjfH7ms3"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="openURLWithSender:" target="-1" id="znp-4n-Ttc"/>
+                                    </connections>
+                                </button>
                             </subviews>
                         </view>
                         <color key="fillColor" red="0.086274509799999996" green="0.090196078430000007" blue="0.098039215690000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -223,7 +223,7 @@
     <resources>
         <image name="B_256" width="256" height="256"/>
         <image name="BeatDocumentIcon" width="512" height="512"/>
-        <image name="doc" catalog="system" width="18" height="21"/>
-        <image name="map" catalog="system" width="21" height="19"/>
+        <image name="doc" catalog="system" width="18" height="20"/>
+        <image name="map" catalog="system" width="21" height="18"/>
     </resources>
 </document>

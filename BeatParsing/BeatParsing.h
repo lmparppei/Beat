@@ -15,6 +15,7 @@
 #import "FountainRegexes.h"
 #import "BeatDocumentSettings.h"
 
+#import "RegExCategories.h"
 #import "NSString+CharacterControl.h"
 #import "NSString+Regex.h"
 #import "NSMutableString+Regex.h"

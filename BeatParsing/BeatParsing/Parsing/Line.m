@@ -16,6 +16,7 @@
 #import "Line.h"
 #import "RegExCategories.h"
 #import "FountainRegexes.h"
+#import "NSString+CharacterControl.h"
 
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
 
@@ -1337,7 +1338,8 @@
 
 /// Returns `true` for lines which should effectively be considered as empty when parsing.
 - (bool)effectivelyEmpty {
-    if (self.type == empty || self.length == 0 || self.opensOrClosesOmission || self.type == section || self.type == synopse) return true;
+    if (self.type == empty || self.length == 0 || self.opensOrClosesOmission || self.type == section || self.type == synopse ||
+        (self.string.containsOnlyWhitespace && self.string.length == 1)) return true;
     else return false;
 }
 
