@@ -16,10 +16,12 @@ import AppKit
 
 @objc protocol BeatNativePreviewDelegate:BeatEditorDelegate {
 	@objc func paginationFinished(_ pages:[BeatPaginationPage])
+	var contdString: String { get }
+	var moreString: String { get }
 }
 
 final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
-	
+		
 	@IBOutlet weak var previewView:BeatPreviewView?
 	@IBOutlet weak var delegate:BeatNativePreviewDelegate?
 	@IBOutlet weak var scrollView:CenteringScrollView?
@@ -44,6 +46,9 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	var exportSettings:BeatExportSettings? {
 		return self.delegate?.exportSettings
 	}
+	
+	var contdString: String { return self.delegate?.contdString ?? "" }
+	var moreString: String { return self.delegate?.moreString ?? "" }
 	
 	
 	// MARK: - Initialization
