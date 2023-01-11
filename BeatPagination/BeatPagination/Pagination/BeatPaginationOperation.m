@@ -834,11 +834,11 @@
 			 [block subarrayWithRange:NSMakeRange(0, splitAt)]
 		];
 		[onThisPage addObjectsFromArray:tmpThisPage];
-		[onThisPage addObject:[BeatPaginator moreLineFor:spiller]];
+		[onThisPage addObject:[_paginator moreLineFor:spiller]];
 	}
 			
 	// Add stuff on next page if needed
-	if (onThisPage.count) [onNextPage addObject:[BeatPaginator contdLineFor:dialogueBlock.firstObject]];
+	if (onThisPage.count) [onNextPage addObject:[_paginator contdLineFor:dialogueBlock.firstObject]];
 	[onNextPage addObjectsFromArray:tmpNextPage];
 	NSRange splitRange = NSMakeRange(splitAt, dialogueBlock.count - splitAt);
 	if (splitRange.length > 0) [onNextPage addObjectsFromArray:[dialogueBlock subarrayWithRange:splitRange]];
