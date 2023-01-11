@@ -27,7 +27,7 @@
 	// Window settings
 	self.tabbingMode = NSWindowTabbingModeDisallowed;
 	self.hidesOnDeactivate = NO;
-	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
+	self.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
 	// We can't release the panel on close, because JSContext might hang onto it and cause a crash
 	self.releasedWhenClosed = NO;
 	
@@ -68,12 +68,6 @@
 
 /// Toggles between full screen mode
 - (void)toggleFullScreen {
-	if (!self.isFullScreen) {
-		self.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
-	} else {
-		self.collectionBehavior = NSWindowCollectionBehaviorFullScreenAuxiliary;
-	}
-	
 	[self toggleFullScreen:nil];
 }
 
@@ -168,6 +162,9 @@
 #pragma mark - Window and sceren frame sizes
 
 - (CGRect)getFrame {
+	return self.frame;
+}
+- (CGRect)getWindowFrame {
 	return self.frame;
 }
 

@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 JSExportAs(runJS, - (void)runJS:(NSString*)js callback:(JSValue* __nullable)callback);
 JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height);
 - (CGRect)getFrame;
+- (CGRect)getWindowFrame;
 - (NSSize)screenSize;
 - (void)setTitle:(NSString*)title;
 - (void)setHTML:(NSString*)html;
