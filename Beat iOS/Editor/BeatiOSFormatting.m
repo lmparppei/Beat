@@ -114,7 +114,7 @@ static NSString *reviewAttribute = @"BeatReview";
 	// Line height
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
 	
-	[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.currentTextColor range:line.textRange];
+	[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.textRange];
 	[textStorage addAttribute:NSBackgroundColorAttributeName value:UIColor.clearColor range:line.textRange];
 	
 	// Redo everything we just did for forced character input
@@ -134,7 +134,7 @@ static NSString *reviewAttribute = @"BeatReview";
 			[textView setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
-			[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.currentTextColor range:line.textRange];
+			[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.textRange];
 		}
 	}
 	
@@ -352,7 +352,7 @@ static NSString *reviewAttribute = @"BeatReview";
 		NSRange sceneNumberRange = NSMakeRange(line.sceneNumberRange.location - 1, line.sceneNumberRange.length + 2);
 		// Don't go out of range, please, please
 		if (sceneNumberRange.location + sceneNumberRange.length <= line.string.length && sceneNumberRange.location >= 0) {
-			[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.currentInvisibleTextColor
+			[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor
 								range:[self globalRangeFromLocalRange:&sceneNumberRange inLineAtPosition:line.position]];
 		}
 	}

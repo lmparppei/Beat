@@ -8,11 +8,6 @@
 
 import AppKit
 
-/*
- @interface Theme : NSObject <NSCopying>
- */
-
-
 @objc class macOSTheme: NSObject, BeatTheme, NSCopying {
 	var backgroundColor: DynamicColor!
 	var selectionColor: DynamicColor!
