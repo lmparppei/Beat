@@ -74,6 +74,8 @@
 
 #import <os/log.h>
 #import <QuartzCore/QuartzCore.h>
+#import <BeatPaginationCore/BeatPaginationCore.h>
+
 #import "Document.h"
 #import "ScrollView.h"
 #import "FDXInterface.h"
@@ -86,10 +88,8 @@
 #import "ColorCheckbox.h"
 #import "SceneFiltering.h"
 #import "FDXImport.h"
-#import "BeatPaginator.h"
 #import "OutlineExtractor.h"
 #import "SceneCards.h"
-#import "RegExCategories.h"
 #import "MarginView.h"
 #import "BeatColors.h"
 #import "OutlineViewItem.h"
@@ -4698,6 +4698,21 @@ static NSArray<Line*>* cachedTitlePage;
 	[textView scrollToRange:range callback:nil];
 }
 
+
+#pragma mark - Return user-specified CONT'D and MORE
+
+- (NSString*)moreString {
+	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemMore"];
+	return [NSString stringWithFormat:@"(%@)", moreStr];
+}
+- (NSString*)contdString {
+	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
+	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue
+}
+
+- (NSInteger)spaceBeforeHeading {
+	return [BeatUserDefaults.sharedDefaults getInteger:@"sceneHeadingSpacing"];
+}
 
 #pragma mark - For avoiding throttling
 

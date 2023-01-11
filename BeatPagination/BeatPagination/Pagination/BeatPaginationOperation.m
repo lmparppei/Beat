@@ -26,12 +26,11 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
-#import "BeatFonts.h"
-#import "BeatUserDefaults.h"
-#import "RegExCategories.h"
 #import "BeatPaginationOperation.h"
-#import "BeatPage.h"
 #import "BeatPaginator.h"
+#import "BeatPage.h"
+#import "BeatFonts.h"
+
 
 #define CHARACTER_WIDTH 7.2033
 
@@ -664,12 +663,12 @@
 		// TODO: I just don't bother to think about this conditional mess right now. A problem for my future self.
 		if (block.firstObject.type == centered || block.firstObject.type == lyrics) {
 			if (currentPage.count > 0 && line == block.firstObject) {
-				spaceBefore = [BeatPaginator spaceBeforeForLine:line];
+				spaceBefore = [self spaceBeforeForLine:line];
 			}
 		}
 		else {
 			if (currentPage.count || line != block.firstObject) {
-				spaceBefore = [BeatPaginator spaceBeforeForLine:line];
+				spaceBefore = [self spaceBeforeForLine:line];
 			}
 		}
 				
@@ -711,7 +710,7 @@
 	if (previousDialogueBlockHeight > dialogueBlockHeight) dialogueBlockHeight = previousDialogueBlockHeight;
 	
 	if (currentPage.count > 0) {
-		dialogueBlockHeight += [BeatPaginator spaceBeforeForLine:block.firstObject];
+		dialogueBlockHeight += [self spaceBeforeForLine:block.firstObject];
 	}
 	
 	return dialogueBlockHeight;
@@ -1143,6 +1142,9 @@
 			else [self pageBreak:block.firstObject position:0 type:@"Dialogue moved on next page"];
 			
 			return;
+		} else {
+			// Just add on next page
+			[self resetPage:currentPage onCurrentPage:@[] onNextPage:block];
 		}
 	}
 }
@@ -1166,6 +1168,12 @@
 	if (nextPageItems.count > 0) {
 		[self addBlockOnCurrentPage:nextPageItems currentPage:currentPage];
 	}
+}
+
+#pragma mark - Forward spaceBeforeForLine from delegate
+
+- (CGFloat)spaceBeforeForLine:(Line*)line {
+    return [self.paginator spaceBeforeForLine:line];
 }
 
 @end

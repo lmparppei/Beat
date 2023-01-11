@@ -6,8 +6,8 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import "BeatPage.h"
 #import "BeatPaginator.h"
+#import "BeatPage.h"
 
 @implementation BeatPage
 
@@ -31,7 +31,7 @@
 
 - (NSInteger)remainingSpaceWithBlock:(NSArray<Line*>*)block {
 	NSInteger space = self.maxHeight - self.y;
-	if (self.items.count) space -= [BeatPaginator spaceBeforeForLine:block.firstObject];
+	if (self.items.count) space -= [self.delegate spaceBeforeForLine:block.firstObject];
 	return space;
 }
 
@@ -40,12 +40,11 @@
 }
 
 - (void)add:(Line*)line height:(NSInteger)height {
-	//if (self.items.count) self.y += [BeatPaginator spaceBeforeForLine:line];
 	
 	if (height == -1) {
 		// This is a temporary element created for pagination (such as MORE)
 		line.heightInPaginator = [self.delegate heightForBlock:@[line]];
-		if (self.items.count) self.y += [BeatPaginator spaceBeforeForLine:line];
+		if (self.items.count) self.y += [self.delegate spaceBeforeForLine:line];
 	}
 	
 	self.y += line.heightInPaginator;

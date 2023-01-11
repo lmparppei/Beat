@@ -1,0 +1,407 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B685B536296EE1F900D8EF81 /* BeatPagination.docc in Sources */ = {isa = PBXBuildFile; fileRef = B685B535296EE1F900D8EF81 /* BeatPagination.docc */; };
+		B685B537296EE1F900D8EF81 /* BeatPaginationCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B685B545296EE2BC00D8EF81 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B544296EE2BC00D8EF81 /* BeatParsing.framework */; };
+		B685B56E296EE3AC00D8EF81 /* BeatPaginationOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B685B564296EE3AC00D8EF81 /* BeatPaginationOperation.m */; };
+		B685B56F296EE3AC00D8EF81 /* BeatPaginationOperationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B565296EE3AC00D8EF81 /* BeatPaginationOperationDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B685B570296EE3AC00D8EF81 /* BeatPaginationSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = B685B566296EE3AC00D8EF81 /* BeatPaginationSizing.m */; };
+		B685B571296EE3AC00D8EF81 /* BeatPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = B685B567296EE3AC00D8EF81 /* BeatPaginator.m */; };
+		B685B572296EE3AC00D8EF81 /* BeatPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B685B568296EE3AC00D8EF81 /* BeatPage.m */; };
+		B685B573296EE3AC00D8EF81 /* BeatPaginationSizing.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B569296EE3AC00D8EF81 /* BeatPaginationSizing.h */; };
+		B685B574296EE3AC00D8EF81 /* BeatPageDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56A296EE3AC00D8EF81 /* BeatPageDelegate.h */; };
+		B685B575296EE3AC00D8EF81 /* BeatPage.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56B296EE3AC00D8EF81 /* BeatPage.h */; };
+		B685B576296EE3AC00D8EF81 /* BeatPaginationOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56C296EE3AC00D8EF81 /* BeatPaginationOperation.h */; };
+		B685B577296EE3AC00D8EF81 /* BeatPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56D296EE3AC00D8EF81 /* BeatPaginator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B685B583296EE63300D8EF81 /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B685B581296EE63300D8EF81 /* BeatFonts.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B685B531296EE1F900D8EF81 /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationCore.h; sourceTree = "<group>"; };
+		B685B535296EE1F900D8EF81 /* BeatPagination.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = BeatPagination.docc; sourceTree = "<group>"; };
+		B685B544296EE2BC00D8EF81 /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B685B564296EE3AC00D8EF81 /* BeatPaginationOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationOperation.m; sourceTree = "<group>"; };
+		B685B565296EE3AC00D8EF81 /* BeatPaginationOperationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginationOperationDelegate.h; sourceTree = "<group>"; };
+		B685B566296EE3AC00D8EF81 /* BeatPaginationSizing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationSizing.m; sourceTree = "<group>"; };
+		B685B567296EE3AC00D8EF81 /* BeatPaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginator.m; sourceTree = "<group>"; };
+		B685B568296EE3AC00D8EF81 /* BeatPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPage.m; sourceTree = "<group>"; };
+		B685B569296EE3AC00D8EF81 /* BeatPaginationSizing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginationSizing.h; sourceTree = "<group>"; };
+		B685B56A296EE3AC00D8EF81 /* BeatPageDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPageDelegate.h; sourceTree = "<group>"; };
+		B685B56B296EE3AC00D8EF81 /* BeatPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPage.h; sourceTree = "<group>"; };
+		B685B56C296EE3AC00D8EF81 /* BeatPaginationOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginationOperation.h; sourceTree = "<group>"; };
+		B685B56D296EE3AC00D8EF81 /* BeatPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginator.h; sourceTree = "<group>"; };
+		B685B581296EE63300D8EF81 /* BeatFonts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFonts.m; sourceTree = "<group>"; };
+		B685B582296EE63300D8EF81 /* BeatFonts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFonts.h; sourceTree = "<group>"; };
+		B685B5CD296EE9EF00D8EF81 /* BeatSharedUserDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatSharedUserDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B685B52E296EE1F900D8EF81 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B685B545296EE2BC00D8EF81 /* BeatParsing.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B685B527296EE1F900D8EF81 = {
+			isa = PBXGroup;
+			children = (
+				B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */,
+				B685B533296EE1F900D8EF81 /* BeatPagination */,
+				B685B532296EE1F900D8EF81 /* Products */,
+				B685B543296EE2BC00D8EF81 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B685B532296EE1F900D8EF81 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B685B531296EE1F900D8EF81 /* BeatPaginationCore.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B685B533296EE1F900D8EF81 /* BeatPagination */ = {
+			isa = PBXGroup;
+			children = (
+				B685B582296EE63300D8EF81 /* BeatFonts.h */,
+				B685B581296EE63300D8EF81 /* BeatFonts.m */,
+				B685B552296EE2EF00D8EF81 /* Pagination */,
+				B685B535296EE1F900D8EF81 /* BeatPagination.docc */,
+			);
+			path = BeatPagination;
+			sourceTree = "<group>";
+		};
+		B685B543296EE2BC00D8EF81 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B685B5CD296EE9EF00D8EF81 /* BeatSharedUserDefaults.framework */,
+				B685B544296EE2BC00D8EF81 /* BeatParsing.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B685B552296EE2EF00D8EF81 /* Pagination */ = {
+			isa = PBXGroup;
+			children = (
+				B685B56D296EE3AC00D8EF81 /* BeatPaginator.h */,
+				B685B567296EE3AC00D8EF81 /* BeatPaginator.m */,
+				B685B56B296EE3AC00D8EF81 /* BeatPage.h */,
+				B685B568296EE3AC00D8EF81 /* BeatPage.m */,
+				B685B56A296EE3AC00D8EF81 /* BeatPageDelegate.h */,
+				B685B56C296EE3AC00D8EF81 /* BeatPaginationOperation.h */,
+				B685B564296EE3AC00D8EF81 /* BeatPaginationOperation.m */,
+				B685B565296EE3AC00D8EF81 /* BeatPaginationOperationDelegate.h */,
+				B685B569296EE3AC00D8EF81 /* BeatPaginationSizing.h */,
+				B685B566296EE3AC00D8EF81 /* BeatPaginationSizing.m */,
+			);
+			path = Pagination;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B685B52C296EE1F900D8EF81 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B685B576296EE3AC00D8EF81 /* BeatPaginationOperation.h in Headers */,
+				B685B577296EE3AC00D8EF81 /* BeatPaginator.h in Headers */,
+				B685B56F296EE3AC00D8EF81 /* BeatPaginationOperationDelegate.h in Headers */,
+				B685B574296EE3AC00D8EF81 /* BeatPageDelegate.h in Headers */,
+				B685B573296EE3AC00D8EF81 /* BeatPaginationSizing.h in Headers */,
+				B685B537296EE1F900D8EF81 /* BeatPaginationCore.h in Headers */,
+				B685B575296EE3AC00D8EF81 /* BeatPage.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B685B530296EE1F900D8EF81 /* BeatPaginationCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B685B53A296EE1F900D8EF81 /* Build configuration list for PBXNativeTarget "BeatPaginationCore" */;
+			buildPhases = (
+				B685B52C296EE1F900D8EF81 /* Headers */,
+				B685B52D296EE1F900D8EF81 /* Sources */,
+				B685B52E296EE1F900D8EF81 /* Frameworks */,
+				B685B52F296EE1F900D8EF81 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeatPaginationCore;
+			productName = BeatPagination;
+			productReference = B685B531296EE1F900D8EF81 /* BeatPaginationCore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B685B528296EE1F900D8EF81 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					B685B530296EE1F900D8EF81 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+				};
+			};
+			buildConfigurationList = B685B52B296EE1F900D8EF81 /* Build configuration list for PBXProject "BeatPaginationCore" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B685B527296EE1F900D8EF81;
+			productRefGroup = B685B532296EE1F900D8EF81 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B685B530296EE1F900D8EF81 /* BeatPaginationCore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B685B52F296EE1F900D8EF81 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B685B52D296EE1F900D8EF81 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B685B536296EE1F900D8EF81 /* BeatPagination.docc in Sources */,
+				B685B570296EE3AC00D8EF81 /* BeatPaginationSizing.m in Sources */,
+				B685B56E296EE3AC00D8EF81 /* BeatPaginationOperation.m in Sources */,
+				B685B572296EE3AC00D8EF81 /* BeatPage.m in Sources */,
+				B685B583296EE63300D8EF81 /* BeatFonts.m in Sources */,
+				B685B571296EE3AC00D8EF81 /* BeatPaginator.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B685B538296EE1F900D8EF81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B685B539296EE1F900D8EF81 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		B685B53B296EE1F900D8EF81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPagination;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		B685B53C296EE1F900D8EF81 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPagination;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B685B52B296EE1F900D8EF81 /* Build configuration list for PBXProject "BeatPaginationCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B685B538296EE1F900D8EF81 /* Debug */,
+				B685B539296EE1F900D8EF81 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B685B53A296EE1F900D8EF81 /* Build configuration list for PBXNativeTarget "BeatPaginationCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B685B53B296EE1F900D8EF81 /* Debug */,
+				B685B53C296EE1F900D8EF81 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B685B528296EE1F900D8EF81 /* Project object */;
+}

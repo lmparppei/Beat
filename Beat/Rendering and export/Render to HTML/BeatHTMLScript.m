@@ -100,7 +100,6 @@
 #import "BeatHTMLScript.h"
 #import <BeatParsing/BeatParsing.h>
 //#import "FountainRegexes.h"
-#import "RegExCategories.h"
 #import "BeatUserDefaults.h"
 #import "BeatMeasure.h"
 

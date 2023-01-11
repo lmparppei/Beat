@@ -29,9 +29,8 @@
 
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatPaginationCore/BeatPaginationCore.h>
 #import "FountainAnalysis.h"
-#import "RegExCategories.h"
-#import "BeatPaginator.h"
 
 // lol
 #define LATER @[@"LATER", @"MYÖHEMMIN", @"SPÄTER", @"SENARE", @"PLUS TARD", @"ENSUITE", @"LUEGO", @"SENERE", @"SEINERE", @"SEINNA", @"BERANDUAGO", @"DESPRÉS", @"PÄRAST", @"HILJEM", @"TAGANTJÄRELE", @"SEURAAVAKSI", @"PÄRASTPOOLE", @"VĒLĀK", @"VĖLIAU", @"PÓŹNIEJ"]

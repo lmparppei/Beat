@@ -51,12 +51,8 @@
 #import <BeatParsing/BeatParsing.h>
 
 #import "BeatPaginator.h"
-#import "RegExCategories.h"
-#import "BeatUserDefaults.h"
-#import "BeatMeasure.h"
-#import "BeatAppDelegate.h"
-#import "BeatFonts.h"
 #import "BeatPaginationOperation.h"
+#import "BeatFonts.h"
 
 #if TARGET_OS_IOS
 	#define BXDocument UIDocument
@@ -241,8 +237,8 @@
 
 #pragma mark - More / Cont'd items
 
-+ (Line*)contdLineFor:(Line*)line {
-	NSString *extension = BeatPaginator.contdString;
+- (Line*)contdLineFor:(Line*)line {
+    NSString *extension = self.delegate.contdString;
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
 	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
@@ -254,20 +250,11 @@
 	return contd;
 }
 
-+ (Line*)moreLineFor:(Line*)line {
+- (Line*)moreLineFor:(Line*)line {
 	LineType type = (line.isDualDialogue) ? dualDialogueMore : more;
-	Line *more = [Line.alloc initWithString:[BeatPaginator moreString] type:type];
+	Line *more = [Line.alloc initWithString:self.delegate.moreString type:type];
 	more.unsafeForPageBreak = YES;
 	return more;
-}
-
-+ (NSString*)moreString {
-	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemMore"];
-	return [NSString stringWithFormat:@"(%@)", moreStr];
-}
-+ (NSString*)contdString {
-	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
-	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue
 }
 
 #pragma mark - Sizing helper methods
@@ -293,11 +280,11 @@
 	return self.pages.count;
 }
 
-+ (CGFloat)spaceBeforeForLine:(Line*)line {
+- (CGFloat)spaceBeforeForLine:(Line*)line {
 	if (line.isSplitParagraph) return 0;
 	else if (line.type == heading) {
 		// Get user default for scene heading spacing
-		NSInteger spacingBeforeHeading = [BeatUserDefaults.sharedDefaults getInteger:@"sceneHeadingSpacing"];
+        NSInteger spacingBeforeHeading = self.delegate.spaceBeforeHeading;
 		return BeatPaginator.lineHeight * spacingBeforeHeading;
 	}
 	else if (line.type == character || line.type == dualDialogueCharacter) return BeatPaginator.lineHeight;

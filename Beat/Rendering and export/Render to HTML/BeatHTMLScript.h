@@ -29,8 +29,8 @@
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <BeatPaginationCore/BeatPaginationCore.h>
 #import "BeatEditorDelegate.h"
-#import "BeatPaginator.h"
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>

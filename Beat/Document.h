@@ -32,6 +32,7 @@ THE SOFTWARE.
 #import <WebKit/WebKit.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatPaginationCore/BeatPaginationCore.h>
 
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
@@ -145,7 +146,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) BeatEditorMode mode;
 
 // Review
-@property (nonatomic) IBOutlet BeatReview* _Nonnull review;
+@property (nonatomic) IBOutlet BeatReview* _Nullable review;
 
 @property (nonatomic, readwrite) bool outlineEdit;
 - (NSMutableArray* _Nullable)filteredOutline;

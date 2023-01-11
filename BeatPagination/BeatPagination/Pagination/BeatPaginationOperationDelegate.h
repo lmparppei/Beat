@@ -29,10 +29,11 @@
 + (CGFloat)lineHeight;
 + (CGFloat)spaceBeforeForLine:(Line *)line;
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
-+ (Line*)moreLineFor:(Line*)line;
-+ (NSString*)moreString;
-+ (NSString*)contdString;
-+ (Line*)contdLineFor:(Line*)line;
+- (Line*)moreLineFor:(Line*)line;
+- (NSString*)moreString;
+- (NSString*)contdString;
+- (Line*)contdLineFor:(Line*)line;
+- (CGFloat)spaceBeforeForLine:(Line*)line;
 
 - (void)paginationFinished:(id)operation;
 @end

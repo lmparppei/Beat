@@ -38,6 +38,9 @@
 - (void)paginationDidFinish:(NSArray*)pages pageBreaks:(NSArray*)pageBreaks;
 - (NSMutableArray<Line*>*)lines;
 - (NSString*)text;
+- (NSString*)contdString;
+- (NSString*)moreString;
+- (NSInteger)spaceBeforeHeading;
 @end
 
 @interface BeatPaginator : NSObject <BeatPaginatorExports, BeatPaginationOperationDelegate>
@@ -78,12 +81,10 @@
 - (NSArray*)lengthInEights;
 
 // Helper methods
+- (CGFloat)spaceBeforeForLine:(Line *)line;
 + (CGFloat)lineHeight;
-+ (CGFloat)spaceBeforeForLine:(Line *)line;
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
 + (Line*)moreLineFor:(Line*)line;
-+ (NSString*)moreString;
-+ (NSString*)contdString;
 + (Line*)contdLineFor:(Line*)line;
 
 // Pagination operation finished

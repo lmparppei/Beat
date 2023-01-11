@@ -19,8 +19,8 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatPaginationSizing.h"
-#import "RegExCategories.h"
 
 @implementation BeatPaginationSizing
 
