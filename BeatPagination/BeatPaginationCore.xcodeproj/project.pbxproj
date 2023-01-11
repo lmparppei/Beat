@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B66C4F07296F6377009ADE4E /* PaginationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66C4F06296F6377009ADE4E /* PaginationTest.swift */; };
 		B685B536296EE1F900D8EF81 /* BeatPagination.docc in Sources */ = {isa = PBXBuildFile; fileRef = B685B535296EE1F900D8EF81 /* BeatPagination.docc */; };
 		B685B537296EE1F900D8EF81 /* BeatPaginationCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B685B545296EE2BC00D8EF81 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B544296EE2BC00D8EF81 /* BeatParsing.framework */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B66C4F06296F6377009ADE4E /* PaginationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationTest.swift; sourceTree = "<group>"; };
 		B685B531296EE1F900D8EF81 /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationCore.h; sourceTree = "<group>"; };
 		B685B535296EE1F900D8EF81 /* BeatPagination.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = BeatPagination.docc; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 		B685B527296EE1F900D8EF81 = {
 			isa = PBXGroup;
 			children = (
+				B66C4F06296F6377009ADE4E /* PaginationTest.swift */,
 				B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */,
 				B685B533296EE1F900D8EF81 /* BeatPagination */,
 				B685B532296EE1F900D8EF81 /* Products */,
@@ -159,6 +162,7 @@
 				TargetAttributes = {
 					B685B530296EE1F900D8EF81 = {
 						CreatedOnToolsVersion = 14.2;
+						LastSwiftMigration = 1420;
 					};
 				};
 			};
@@ -199,6 +203,7 @@
 				B685B570296EE3AC00D8EF81 /* BeatPaginationSizing.m in Sources */,
 				B685B56E296EE3AC00D8EF81 /* BeatPaginationOperation.m in Sources */,
 				B685B572296EE3AC00D8EF81 /* BeatPage.m in Sources */,
+				B66C4F07296F6377009ADE4E /* PaginationTest.swift in Sources */,
 				B685B583296EE63300D8EF81 /* BeatFonts.m in Sources */,
 				B685B571296EE3AC00D8EF81 /* BeatPaginator.m in Sources */,
 			);
@@ -325,6 +330,9 @@
 		B685B53B296EE1F900D8EF81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -348,12 +356,17 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		B685B53C296EE1F900D8EF81 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -377,6 +390,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

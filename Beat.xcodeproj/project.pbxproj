@@ -179,6 +179,12 @@
 		B66B5AC22739B75500BBC9C6 /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA82739B75500BBC9C6 /* ioapi.c */; };
 		B66B5AC32739B75500BBC9C6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA92739B75500BBC9C6 /* mztools.c */; };
 		B66B5AC42739B75500BBC9C6 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = B66B5AA92739B75500BBC9C6 /* mztools.c */; };
+		B66C4EFF296F6344009ADE4E /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4EFE296F6344009ADE4E /* BeatPaginationCore.framework */; };
+		B66C4F00296F6344009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4EFE296F6344009ADE4E /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B66C4F02296F634C009ADE4E /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; };
+		B66C4F03296F634C009ADE4E /* BeatPaginationCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B66C4F04296F635D009ADE4E /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; };
+		B66C4F05296F635D009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B66CDF112816DE5500EF4137 /* BeatCustomExportStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66CDF102816DE5500EF4137 /* BeatCustomExportStyles.swift */; };
 		B66CDF122816DE5500EF4137 /* BeatCustomExportStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66CDF102816DE5500EF4137 /* BeatCustomExportStyles.swift */; };
 		B66CDF142816E9D200EF4137 /* Use plain Courier.beatStyle in Resources */ = {isa = PBXBuildFile; fileRef = B66CDF132816E9D200EF4137 /* Use plain Courier.beatStyle */; };
@@ -230,18 +236,6 @@
 		B67BD6E123B4BBE400A99C9C /* ColorCheckbox.m in Sources */ = {isa = PBXBuildFile; fileRef = B67BD6E023B4BBE400A99C9C /* ColorCheckbox.m */; };
 		B67F4A5E22762FE600E14FCA /* CardCSS.css in Resources */ = {isa = PBXBuildFile; fileRef = B67F4A5D22762FE600E14FCA /* CardCSS.css */; };
 		B6829BFB25AB727600C0595B /* BeatEpisodePrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = B6829BF925AB727600C0595B /* BeatEpisodePrinter.m */; };
-		B685B579296EE46900D8EF81 /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B578296EE46900D8EF81 /* BeatPaginationCore.framework */; };
-		B685B57A296EE46900D8EF81 /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B685B578296EE46900D8EF81 /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B685B57C296EE47600D8EF81 /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B57B296EE47600D8EF81 /* BeatPaginationCore.framework */; };
-		B685B57D296EE47600D8EF81 /* BeatPaginationCore.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B685B57B296EE47600D8EF81 /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B685B57F296EE47E00D8EF81 /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B57E296EE47E00D8EF81 /* BeatPaginationCore.framework */; };
-		B685B580296EE47E00D8EF81 /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B685B57E296EE47E00D8EF81 /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B685B5CB296EE9E500D8EF81 /* BeatSharedUserDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B5CA296EE9E500D8EF81 /* BeatSharedUserDefaults.framework */; };
-		B685B5CC296EE9E500D8EF81 /* BeatSharedUserDefaults.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B685B5CA296EE9E500D8EF81 /* BeatSharedUserDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B685B5D1296EEA0300D8EF81 /* BeatSharedUserDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B5D0296EEA0300D8EF81 /* BeatSharedUserDefaults.framework */; };
-		B685B5D2296EEA0400D8EF81 /* BeatSharedUserDefaults.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B685B5D0296EEA0300D8EF81 /* BeatSharedUserDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B685B5D4296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B5D3296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework */; };
-		B685B5D5296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B685B5D3296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B686919F2784477700C8D5A2 /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B686919E2784477700C8D5A2 /* BeatLocalization.m */; };
 		B68691A02784477700C8D5A2 /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B686919E2784477700C8D5A2 /* BeatLocalization.m */; };
 		B68691A127845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68691A427845A8C00C8D5A2 /* BeatStatisticsPanel.xib */; };
@@ -392,10 +386,6 @@
 		B6A0392E247DC4FE0005DA6C /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A0392D247DC4FE0005DA6C /* BeatColors.m */; };
 		B6A245E1251766DC0055A034 /* BeatFileImport.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A245E0251766DC0055A034 /* BeatFileImport.m */; };
 		B6A245E72517D5E80055A034 /* BeatAntilateralThoughts.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */; };
-		B6A4F49F29192C68006B3A89 /* BeatRendererTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A4F49E29192C68006B3A89 /* BeatRendererTester.swift */; };
-		B6A4F4A029192C68006B3A89 /* BeatRendererTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A4F49E29192C68006B3A89 /* BeatRendererTester.swift */; };
-		B6A4F4A229192FF0006B3A89 /* BeatRendererTester.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6A4F4A129192FF0006B3A89 /* BeatRendererTester.xib */; };
-		B6A4F4A329192FF0006B3A89 /* BeatRendererTester.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6A4F4A129192FF0006B3A89 /* BeatRendererTester.xib */; };
 		B6A79C9827B6565C008D3AFC /* BeatLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A79C9727B6565C008D3AFC /* BeatLayoutManager.m */; };
 		B6A79C9927B6565C008D3AFC /* BeatLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B6A79C9727B6565C008D3AFC /* BeatLayoutManager.m */; };
 		B6B462EC2708ADFB0056EEF1 /* BeatUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B462EB2708ADFB0056EEF1 /* BeatUserDefaults.m */; };
@@ -548,8 +538,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				B604C8E8290CFD9300CBB32D /* BeatParsing.framework in Embed Frameworks */,
-				B685B5CC296EE9E500D8EF81 /* BeatSharedUserDefaults.framework in Embed Frameworks */,
-				B685B580296EE47E00D8EF81 /* BeatPaginationCore.framework in Embed Frameworks */,
+				B66C4F05296F635D009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -561,8 +550,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				B604C8DE290CF7E400CBB32D /* BeatParsing.framework in Embed Frameworks */,
-				B685B5D2296EEA0400D8EF81 /* BeatSharedUserDefaults.framework in Embed Frameworks */,
-				B685B57A296EE46900D8EF81 /* BeatPaginationCore.framework in Embed Frameworks */,
+				B66C4F00296F6344009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -594,8 +582,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				B655AC26296B3124006C647F /* BeatParsing.framework in CopyFiles */,
-				B685B5D5296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework in CopyFiles */,
-				B685B57D296EE47600D8EF81 /* BeatPaginationCore.framework in CopyFiles */,
+				B66C4F03296F634C009ADE4E /* BeatPaginationCore.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -743,7 +730,6 @@
 		B655B1052714607700BA52ED /* BeatMarkerScroller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMarkerScroller.m; sourceTree = "<group>"; };
 		B65B148325FF815E0087834F /* BeatRevisionItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionItem.h; sourceTree = "<group>"; };
 		B65B148425FF815E0087834F /* BeatRevisionItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionItem.m; sourceTree = "<group>"; };
-		B65B81C0290B210B00962E3F /* BeatRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRenderer.swift; sourceTree = "<group>"; };
 		B65BBF7A280C3FD500FCA23E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatAboutScreen.xib; sourceTree = "<group>"; };
 		B65BBF7D280C3FD800FCA23E /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatAboutScreen.strings; sourceTree = "<group>"; };
 		B65F02AE25B82BF8009E1D04 /* BeatStatisticsPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatStatisticsPanel.h; sourceTree = "<group>"; };
@@ -790,6 +776,8 @@
 		B66B5AAC2739B75500BBC9C6 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		B66B5AAD2739B75500BBC9C6 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
 		B66B5AAE2739B75500BBC9C6 /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		B66C4EFE296F6344009ADE4E /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B66CDF102816DE5500EF4137 /* BeatCustomExportStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatCustomExportStyles.swift; sourceTree = "<group>"; };
 		B66CDF132816E9D200EF4137 /* Use plain Courier.beatStyle */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Use plain Courier.beatStyle"; sourceTree = "<group>"; };
 		B66CDF162816EBD300EF4137 /* Print line numbers.beatStyle */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Print line numbers.beatStyle"; sourceTree = "<group>"; };
@@ -845,12 +833,6 @@
 		B6829BF825AB727600C0595B /* BeatEpisodePrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEpisodePrinter.h; sourceTree = "<group>"; };
 		B6829BF925AB727600C0595B /* BeatEpisodePrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatEpisodePrinter.m; sourceTree = "<group>"; };
 		B68387612819CEC8002DAC20 /* Tulostustesti.beatPlugin */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tulostustesti.beatPlugin; sourceTree = "<group>"; };
-		B685B578296EE46900D8EF81 /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B685B57B296EE47600D8EF81 /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B685B57E296EE47E00D8EF81 /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B685B5CA296EE9E500D8EF81 /* BeatSharedUserDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatSharedUserDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B685B5D0296EEA0300D8EF81 /* BeatSharedUserDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatSharedUserDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B685B5D3296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatSharedUserDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B686919D2784477700C8D5A2 /* BeatLocalization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatLocalization.h; sourceTree = "<group>"; };
 		B686919E2784477700C8D5A2 /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
 		B68691A327845A8C00C8D5A2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatStatisticsPanel.xib; sourceTree = "<group>"; };
@@ -922,8 +904,6 @@
 		B6A245E0251766DC0055A034 /* BeatFileImport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFileImport.m; sourceTree = "<group>"; };
 		B6A245E52517D5E80055A034 /* BeatAntilateralThoughts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BeatAntilateralThoughts.h; path = Beat/Extras/BeatAntilateralThoughts.h; sourceTree = SOURCE_ROOT; };
 		B6A245E62517D5E80055A034 /* BeatAntilateralThoughts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BeatAntilateralThoughts.m; path = Beat/Extras/BeatAntilateralThoughts.m; sourceTree = SOURCE_ROOT; };
-		B6A4F49E29192C68006B3A89 /* BeatRendererTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatRendererTester.swift; sourceTree = "<group>"; };
-		B6A4F4A129192FF0006B3A89 /* BeatRendererTester.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = BeatRendererTester.xib; sourceTree = "<group>"; };
 		B6A79C9627B6565C008D3AFC /* BeatLayoutManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatLayoutManager.h; sourceTree = "<group>"; };
 		B6A79C9727B6565C008D3AFC /* BeatLayoutManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLayoutManager.m; sourceTree = "<group>"; };
 		B6B37F6628F0585C00657F5F /* BeatFontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatFontManager.swift; sourceTree = "<group>"; };
@@ -969,7 +949,6 @@
 		B6CCF7752947CAD3009A0016 /* BeatPaginationPage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationPage.m; sourceTree = "<group>"; };
 		B6CCF7782947CAE1009A0016 /* BeatPaginationBlock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationBlock.h; sourceTree = "<group>"; };
 		B6CCF7792947CAE1009A0016 /* BeatPaginationBlock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlock.m; sourceTree = "<group>"; };
-		B6CCF77C2947CDB2009A0016 /* Why is there an ObjC port?.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Why is there an ObjC port?.md"; sourceTree = "<group>"; };
 		B6CCF77D2947E3B6009A0016 /* BeatPaginationBlockGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationBlockGroup.h; sourceTree = "<group>"; };
 		B6CCF77E2947E3B6009A0016 /* BeatPaginationBlockGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlockGroup.m; sourceTree = "<group>"; };
 		B6CD61DF27DAA02400912F09 /* BeatSpeak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatSpeak.h; sourceTree = "<group>"; };
@@ -1063,10 +1042,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6F4A2CF221EE9410065D9CB /* Cocoa.framework in Frameworks */,
-				B685B57C296EE47600D8EF81 /* BeatPaginationCore.framework in Frameworks */,
+				B66C4F02296F634C009ADE4E /* BeatPaginationCore.framework in Frameworks */,
 				B655AC25296B3124006C647F /* BeatParsing.framework in Frameworks */,
 				B6E3246724B515670001273F /* AppKit.framework in Frameworks */,
-				B685B5D4296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework in Frameworks */,
 				B6C9677E296C8542003648AD /* Sparkle in Frameworks */,
 				B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */,
 				B138B61F19E1D6A7000489C4 /* WebKit.framework in Frameworks */,
@@ -1078,10 +1056,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */,
-				B685B57F296EE47E00D8EF81 /* BeatPaginationCore.framework in Frameworks */,
+				B66C4F04296F635D009ADE4E /* BeatPaginationCore.framework in Frameworks */,
 				B604C8E7290CFD9300CBB32D /* BeatParsing.framework in Frameworks */,
 				B62ADC8F23CCE20D0015563A /* QuickLook.framework in Frameworks */,
-				B685B5CB296EE9E500D8EF81 /* BeatSharedUserDefaults.framework in Frameworks */,
 				B62ADC9523CCEF0F0015563A /* WebKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1097,8 +1074,7 @@
 				B6FF82D027EB1D1900D32A2F /* JavaScriptCore.framework in Frameworks */,
 				B68B6088260B849300463AD8 /* QuickLook.framework in Frameworks */,
 				B68B608A260B849300463AD8 /* WebKit.framework in Frameworks */,
-				B685B5D1296EEA0300D8EF81 /* BeatSharedUserDefaults.framework in Frameworks */,
-				B685B579296EE46900D8EF81 /* BeatPaginationCore.framework in Frameworks */,
+				B66C4EFF296F6344009ADE4E /* BeatPaginationCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1198,12 +1174,8 @@
 		B138B62419E1D8A4000489C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B685B5D3296EEA0B00D8EF81 /* BeatSharedUserDefaults.framework */,
-				B685B5D0296EEA0300D8EF81 /* BeatSharedUserDefaults.framework */,
-				B685B5CA296EE9E500D8EF81 /* BeatSharedUserDefaults.framework */,
-				B685B57E296EE47E00D8EF81 /* BeatPaginationCore.framework */,
-				B685B57B296EE47600D8EF81 /* BeatPaginationCore.framework */,
-				B685B578296EE46900D8EF81 /* BeatPaginationCore.framework */,
+				B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */,
+				B66C4EFE296F6344009ADE4E /* BeatPaginationCore.framework */,
 				B604C8DC290CF7E400CBB32D /* BeatParsing.framework */,
 				B6FF82D327EB1D4E00D32A2F /* QuartzCore.framework */,
 				B6FF82D127EB1D2500D32A2F /* OSLog.framework */,
@@ -1433,7 +1405,7 @@
 		B63B2627294F200E00DF70F7 /* Pagination 2.0 */ = {
 			isa = PBXGroup;
 			children = (
-				B6CCF77C2947CDB2009A0016 /* Why is there an ObjC port?.md */,
+				B6305487291C0DE1006B8039 /* Rendering styles */,
 				B6305488291D0054006B8039 /* BeatPaginationManager.swift */,
 				B650B1BB29465A300093B793 /* BeatPagination.h */,
 				B650B1BC29465A300093B793 /* BeatPagination.m */,
@@ -1492,9 +1464,6 @@
 			isa = PBXGroup;
 			children = (
 				B6B51B1B295B55F4002182D2 /* Native Printing */,
-				B6305487291C0DE1006B8039 /* Rendering styles */,
-				B6A4F49D29192C3F006B3A89 /* Rendering test window */,
-				B65B81C0290B210B00962E3F /* BeatRenderer.swift */,
 				B63B262F294F4CFD00DF70F7 /* BeatRenderingViews.swift */,
 				B6467AB4289954A900231B25 /* BeatFonts.h */,
 				B6467AB5289954A900231B25 /* BeatFonts.m */,
@@ -1987,15 +1956,6 @@
 			path = Sidebar;
 			sourceTree = "<group>";
 		};
-		B6A4F49D29192C3F006B3A89 /* Rendering test window */ = {
-			isa = PBXGroup;
-			children = (
-				B6A4F49E29192C68006B3A89 /* BeatRendererTester.swift */,
-				B6A4F4A129192FF0006B3A89 /* BeatRendererTester.xib */,
-			);
-			path = "Rendering test window";
-			sourceTree = "<group>";
-		};
 		B6A61293256C106800E4AF92 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -2419,7 +2379,6 @@
 				B6763E572782295900284907 /* Document.xib in Resources */,
 				B68691A127845A8C00C8D5A2 /* BeatStatisticsPanel.xib in Resources */,
 				B6467ABD289990D000231B25 /* Styles.beatCSS in Resources */,
-				B6A4F4A229192FF0006B3A89 /* BeatRendererTester.xib in Resources */,
 				B6763E912782482400284907 /* BeatPreferencesPanel.xib in Resources */,
 				B6E099D5276681B8005E7827 /* HeaderTemplate.html in Resources */,
 				B6054740276A9012001E571F /* ScreenplayStyles.css in Resources */,
@@ -2517,7 +2476,6 @@
 				B68B6098260B849300463AD8 /* CardCSS.css in Resources */,
 				B66CDF242817449E00EF4137 /* Uppercase actions.beatStyle in Resources */,
 				B68B6099260B849300463AD8 /* CardPrintCSS.css in Resources */,
-				B6A4F4A329192FF0006B3A89 /* BeatRendererTester.xib in Resources */,
 				B68B609B260B849300463AD8 /* dragula.js in Resources */,
 				B6EAEDC1267A687900BBD2A2 /* CardWindow.html in Resources */,
 				B6E38949270DDE120067DD0C /* cards.png in Resources */,
@@ -2686,7 +2644,6 @@
 				B6C84CA325AA566100BDF974 /* BeatAboutScreen.m in Sources */,
 				B6E66791292C29BA007A4108 /* BeatUserDefaultCheckbox.swift in Sources */,
 				B6C35D5D2934BF9400FF2630 /* BeatWebResources.swift in Sources */,
-				B6A4F49F29192C68006B3A89 /* BeatRendererTester.swift in Sources */,
 				B6CB9736254ED61900C310CC /* HorizontalPinchView.m in Sources */,
 				B64BD8E32848E1800055F2F1 /* PrintTest.swift in Sources */,
 				B62CD50E279752130070DE17 /* BeatRecentFileCell.swift in Sources */,
@@ -2878,7 +2835,6 @@
 				B68B604F260B849300463AD8 /* BeatAboutScreen.m in Sources */,
 				B6E66792292C29BA007A4108 /* BeatUserDefaultCheckbox.swift in Sources */,
 				B6C35D5E2934BF9400FF2630 /* BeatWebResources.swift in Sources */,
-				B6A4F4A029192C68006B3A89 /* BeatRendererTester.swift in Sources */,
 				B68B6050260B849300463AD8 /* HorizontalPinchView.m in Sources */,
 				B64BD8E42848E1800055F2F1 /* PrintTest.swift in Sources */,
 				B62CD50F279752130070DE17 /* BeatRecentFileCell.swift in Sources */,

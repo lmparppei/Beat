@@ -15,4 +15,6 @@ FOUNDATION_EXPORT const unsigned char BeatPaginationVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <BeatPagination/PublicHeader.h>
 
+//#import "BeatPaginator.h"
 #import "BeatPaginator.h"
+#import "BeatPaginationCore-Swift.h"

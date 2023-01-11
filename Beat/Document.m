@@ -129,8 +129,6 @@
 @property (weak) IBOutlet TKSplitHandle *splitHandle;
 @property (nonatomic) NSArray *itemsToValidate; // Menu items
 
-@property (nonatomic) BeatRendererTester *tester;
-
 // Cached
 @property (atomic) NSData* dataCache;
 
