@@ -18,7 +18,7 @@
 
 @interface BeatRendering()
 //@property (nonatomic) id<BeatPageDelegate> delegate;
-@property (nonatomic) RenderStyles* styles;
+@property (nonatomic) BeatRenderStyles* styles;
 @property (nonatomic, weak) BeatFonts* fonts;
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSMutableDictionary<NSNumber*, NSDictionary*>*>* lineTypeAttributes;
 
@@ -48,11 +48,11 @@
 	}
 }
 
-- (RenderStyles*)styles {
-	if ([self.settings.styles isKindOfClass:RenderStyles.class] && self.settings.styles != nil) {
+- (BeatRenderStyles*)styles {
+	if ([self.settings.styles isKindOfClass:BeatRenderStyles.class] && self.settings.styles != nil) {
 		return self.settings.styles;
 	} else {
-		return RenderStyles.shared;
+		return BeatRenderStyles.shared;
 	}
 }
 

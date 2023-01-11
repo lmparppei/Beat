@@ -5,6 +5,12 @@
 //  Created by Lauri-Matti Parppei on 27.12.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ This class  provides a native `NSView`-based  printing component for macOS version of Beat, replacing the old `KWWebView`-based `PrintView`.
+ You need to provide export settings, and a window which owns this operation. If you specify a delegate, screenplay content will be automatically requested from there. Otherwise you need to send a `BeatScreenplay` object.
+ 
+ */
 
 import Cocoa
 
@@ -27,6 +33,15 @@ class BeatNativePrinting:NSView {
 	var pageViews:[BeatPaginationPageView] = []
 	var url:URL?
 	
+	/**
+	 Begins a print operation. **Note**: the operation is run asynchronously, so this virtual view has to be owned by another object for the duration of the process.
+	 - parameter window: The window which owns this operation
+	 - parameter operation: Either `.toPreview` (temporary PDF file), `.toPDF` (save result into a PDF)  or `.toPrint` (sends the result to macOS printing panel)
+	 - parameter settings: Export settings
+	 - parameter delegate: Optional document delegate. If set, `screenplay` object will be requested from the parser of current document.
+	 - parameter screenplay: Screenplay object (containing title page and lines). If you have a delegate set, this can be `nil`
+	 - parameter callback: Closure run after printing is done
+	 */
 	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplay:BeatScreenplay?, callback: @escaping (BeatNativePrinting, AnyObject?) -> ()) {
 		self.delegate = delegate
 		
@@ -50,6 +65,10 @@ class BeatNativePrinting:NSView {
 		
 		// Render the screenplay
 		paginateAndRender()
+	}
+	
+	@objc convenience init(window:NSWindow, operation:BeatPrintingOperation, delegate:BeatEditorDelegate, callback:@escaping (BeatNativePrinting, AnyObject?) -> ()) {
+		self.init(window: window, operation: operation, settings: delegate.exportSettings, delegate: delegate, screenplay: nil, callback: callback)
 	}
 	
 	required init?(coder: NSCoder) {
@@ -125,23 +144,6 @@ class BeatNativePrinting:NSView {
 		}
 	}
 	
-	// This is a low-performance alternative
-	func render() {
-		let pdf = renderPages()
-		
-		if (operation == .toPreview) {
-			let url = tempURL()
-			pdf.write(to: url)
-			
-			// Send the result to callback
-			callback(self, url as NSURL)
-		}
-		
-		if (operation == .toPDF) {
-			callback(self, pdf)
-		}
-	}
-	
 	func createPageViews() {
 		self.pageViews = []
 		
@@ -156,6 +158,26 @@ class BeatNativePrinting:NSView {
 				let pageView = BeatPaginationPageView(page: page, content: nil, settings: self.pagination.settings, previewController: nil, titlePage: false)
 				pageViews.append(pageView)
 			}
+		}
+	}
+	
+	
+	// MARK: - Alternative way of printing
+	
+	/// This is a super-low-performance alternative for `paginateAndRender`
+	func render() {
+		let pdf = renderPages()
+		
+		if (operation == .toPreview) {
+			let url = tempURL()
+			pdf.write(to: url)
+			
+			// Send the result to callback
+			callback(self, url as NSURL)
+		}
+		
+		if (operation == .toPDF) {
+			callback(self, pdf)
 		}
 	}
 	
@@ -183,6 +205,9 @@ class BeatNativePrinting:NSView {
 		
 		return pdf
 	}
+	
+	
+	// MARK: - File access
 	
 	/// Returns a temporary URL for PDF preview
 	func tempURL() -> URL {
