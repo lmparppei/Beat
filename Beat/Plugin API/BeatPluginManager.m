@@ -17,9 +17,9 @@
  
  */
 
+#import <BeatParsing/BeatParsing.h>
 #import "BeatPluginManager.h"
 #import "BeatAppDelegate.h"
-#import "RegExCategories.h"
 #import "BeatCheckboxCell.h"
 #import "UnzipKit.h"
 #import "BeatPluginLibrary.h"
