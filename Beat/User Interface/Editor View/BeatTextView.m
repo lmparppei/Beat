@@ -28,10 +28,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatPaginationCore/BeatPaginationCore.h>
+
 #import "BeatTextView.h"
 #import "DynamicColor.h"
 #import "ScrollView.h"
-#import "BeatPaginator.h"
 #import "BeatColors.h"
 #import "ThemeManager.h"
 #import "BeatPasteboardItem.h"
@@ -1692,7 +1693,7 @@ double clamp(double d, double min, double max) {
 	[_editorDelegate ensureCaret];
 }
 
-/// zoom:true zooms in, zoom:false zooms out
+/// `zoom:true` zooms in, `zoom:false` zooms out
 - (void)zoom:(bool)zoomIn {
 	// For some reason, setting 1.0 scale for NSTextView causes weird sizing bugs, so we will use something that will never produce 1.0...... omg lol help
 	CGFloat newMagnification = _zoomLevel;
@@ -1700,6 +1701,8 @@ double clamp(double d, double min, double max) {
 	else newMagnification -= 0.04;
 
 	[self adjustZoomLevel:newMagnification];
+	
+	[BeatUserDefaults.sharedDefaults saveFloat:_zoomLevel forKey:MAGNIFICATION_KEY];
 }
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
