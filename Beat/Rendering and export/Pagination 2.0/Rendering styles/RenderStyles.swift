@@ -10,8 +10,8 @@ import Foundation
 
 // MARK: Stylesheet
 
-class RenderStyles:NSObject {
-	@objc static let shared = RenderStyles()
+class BeatRenderStyles:NSObject {
+	@objc static let shared = BeatRenderStyles()
 	var styles:[String:RenderStyle] = [:]
 	
 	override init() {

@@ -23,6 +23,9 @@ import Foundation
 	func paginationDidFinish(pages: [BeatPaginationPage])
 	var parser:ContinuousFountainParser? { get }
 	var exportSettings:BeatExportSettings? { get }
+	
+	var contdString:String { get }
+	var moreString:String { get }
 }
 
 class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
@@ -46,6 +49,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	@objc convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		self.init(settings: delegate.exportSettings!, delegate: delegate, renderer:renderer, livePagination: livePagination)
 	}
+	
 	@objc init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		self.settings = settings
 		self.delegate = delegate
@@ -58,10 +62,12 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 			self.renderer?.pagination = self
 		}
 	}
-@objc init(editorDelegate:BeatEditorDelegate) {
+	
+	@objc init(editorDelegate:BeatEditorDelegate) {
 		self.settings = editorDelegate.exportSettings
 		super.init()
 	}
+	
 	
 	//MARK: - Run operations
 		
@@ -142,7 +148,13 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		}
 	}
 	
-	// MARK: - Convenience
+	
+	// MARK: - Delegate methods
+	
+	
+	
+	
+	// MARK: - Getting paginated content properites
 	
 	/// Returns the *actual* page size for either the latest operation or from current settings
 	@objc var pageSize:NSSize {
@@ -190,7 +202,13 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		return self.delegate?.parser
 	}
 	
-	
+	func moreString() -> String {
+		return self.delegate?.moreString ?? ""
+	}
+	func contdString() -> String {
+		return self.delegate?.contdString ?? ""
+	}
+
 	// MARK: - Convenience methods
 	
 	func page(forScene scene:OutlineScene) -> Int {

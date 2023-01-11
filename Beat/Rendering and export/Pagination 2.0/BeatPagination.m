@@ -40,7 +40,7 @@
 
 @property (nonatomic) NSMutableArray<Line*>* lineQueue;
 @property (nonatomic) BeatFonts* fonts;
-@property (nonatomic) RenderStyles* styles;
+@property (nonatomic) BeatRenderStyles* styles;
 @property (nonatomic) NSInteger location;
 
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
@@ -91,7 +91,7 @@
 		
 		// Check for custom styles. If not present, use the shared styles.
 		if (_settings.styles != nil) _styles = _settings.styles;
-		else _styles = RenderStyles.shared;
+		else _styles = BeatRenderStyles.shared;
 		
 		_startTime = NSDate.new;
 	}
@@ -519,9 +519,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 #pragma mark - CONT'D and (MORE)
 
 /// Returns a `Line` object with character cue followed by `(CONT'D)` extension for continuing dialogue block after a page break.
-+ (Line*)contdLineFor:(Line*)line
+- (Line*)contdLineFor:(Line*)line
 {
-	NSString *extension = BeatPagination.contdString;
+	NSString *extension = self.delegate.contdString;
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
 	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
@@ -535,25 +535,14 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 }
 
 /// Returns a `Line` object for the `(MORE)` at the bottom of a page when a dialogue block is broken across pages.
-+ (Line*)moreLineFor:(Line*)line
+- (Line*)moreLineFor:(Line*)line
 {
 	LineType type = (line.isDualDialogue) ? dualDialogueMore : more;
-	Line *more = [Line.alloc initWithString:[BeatPagination moreString] type:type];
+	Line *more = [Line.alloc initWithString:self.delegate.moreString type:type];
 	more.position = line.position;
 	more.unsafeForPageBreak = YES;
 	return more;
 }
 
-+ (NSString*)moreString
-{
-	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemMore"];
-	return [NSString stringWithFormat:@"(%@)", moreStr];
-}
-
-+ (NSString*)contdString
-{
-	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
-	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue
-}
 
 @end

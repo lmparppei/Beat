@@ -15,7 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class BeatFonts;
-@class RenderStyles;
+@class BeatRenderStyles;
 @class BeatPagination;
 @class BeatPaginationPage;
 @class BeatPaginationBlock;
@@ -31,18 +31,24 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id<BeatRendererDelegate> __nullable renderer;
 @property (nonatomic) BeatExportSettings *settings;
 - (void)paginationFinished:(BeatPagination*)pagination;
+
+- (NSString*)contdString;
+- (NSString*)moreString;
 @end
 
 @protocol BeatPageDelegate
 @property (nonatomic, readonly) bool canceled;
 @property (nonatomic, weak) id<BeatRendererDelegate> __nullable renderer;
-@property (nonatomic, readonly) RenderStyles* styles;
+@property (nonatomic, readonly) BeatRenderStyles* styles;
 @property (nonatomic, readonly) BeatExportSettings *settings;
 @property (nonatomic, readonly) BeatFonts *fonts;
 @property (nonatomic, readonly) NSMutableArray<BeatPaginationPage*>* pages;
 @property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;
 @property (nonatomic, readonly) NSArray<Line*>* __nullable lines;
 @property (nonatomic, readonly) CGFloat maxPageHeight;
+
+- (Line*)moreLineFor:(Line*)line;
+- (Line*)contdLineFor:(Line*)line;
 @end
 
 @interface BeatPagination : NSObject
@@ -61,8 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPaginationDelegate>)delegate;
 + (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt;
 
-+ (Line*)contdLineFor:(Line*)line;
-+ (Line*)moreLineFor:(Line*)line;
+//+ (Line*)contdLineFor:(Line*)line;
+//+ (Line*)moreLineFor:(Line*)line;
 + (CGFloat)lineHeight;
 
 - (void)paginate;
