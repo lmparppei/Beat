@@ -111,9 +111,11 @@
 }
 
 -(IBAction)changeColor:(NSColorWell*)sender {
+	NSColor* color = [sender.color colorUsingColorSpaceName:NSCalibratedRGBColorSpace device:nil];
+	
 	id<BeatTheme> theme = ThemeManager.sharedManager.theme;
-	if (sender == _backgroundLight) theme.backgroundColor.aquaColor = sender.color;
-	else if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = sender.color;
+	if (sender == _backgroundLight) theme.backgroundColor.aquaColor = color;
+	else if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = color;
 	else if (sender == _textLight) theme.textColor.aquaColor = sender.color;
 	else if (sender == _textDark) theme.textColor.darkAquaColor = sender.color;
 	else if (sender == _marginLight) theme.marginColor.aquaColor = sender.color;

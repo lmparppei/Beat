@@ -40,8 +40,6 @@
 @interface ThemeManager ()
 @property (strong, nonatomic) NSMutableDictionary* themes;
 @property (nonatomic) NSUInteger selectedTheme;
-@property (nonatomic) NSDictionary* plistContents;
-@property (nonatomic) NSDictionary* customPlistContents;
 
 @property (nonatomic) id<BeatTheme> fallbackTheme;
 @end
@@ -77,10 +75,10 @@
     return self;
 }
 -(void)loadThemes {
-	_themes = [NSMutableDictionary dictionary];
-	[self loadThemeFile];
+	_themes = NSMutableDictionary.new;
+	NSDictionary* themes = [self loadThemeFile];
 	
-	for (NSDictionary* theme in self.plistContents[THEMES_KEY]) {
+	for (NSDictionary* theme in themes[THEMES_KEY]) {
 		NSString* name = theme[@"Name"];
 		[_themes setValue:theme forKey:name];
 	}
@@ -91,35 +89,45 @@
 	[self loadThemeForAllDocuments];
 }
 
-- (void)loadThemeFile
+/// Load both bundled default theme file, as well as the one customized by user.
+- (NSDictionary*)loadThemeFile
 {
 	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
 	
 #if !TARGET_OS_IOS
-	// Read user-created theme file
-	NSURL *userUrl = [BeatAppDelegate appDataPath:@""];
-	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
-	
-	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
-	
+	NSDictionary *customPlist = [self loadCustomTheme];
 	if (customPlist) {
 		NSMutableArray *themes = contents[THEMES_KEY];
 		[themes addObject:customPlist];
 	}
 #endif
 	
-	_plistContents = contents;
+	return contents;
 }
 
+/// Read user-created theme file into a dictionary
+- (NSDictionary*)loadCustomTheme {
+	// Read user-created theme file
+	NSURL *userUrl = [BeatAppDelegate appDataPath:@""];
+	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
+	
+	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
+	return customPlist;
+}
+
+/// Return the **bundled** `plist` file path
 - (NSString*)bundlePlistFilePath
 {
-    return [[NSBundle mainBundle] pathForResource:@"Themes" ofType:@"plist"];
+    return [NSBundle.mainBundle pathForResource:@"Themes" ofType:@"plist"];
 }
 
+/// Returns the default theme
 -(id<BeatTheme>)defaultTheme {
 	id<BeatTheme> theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 	return theme;
 }
+
+/// Resets current theme to the default one
 -(void)resetToDefault {
 	_theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 }
@@ -174,22 +182,19 @@
 }
 
 -(void)readTheme:(id<BeatTheme>)theme {
-	/*
-	 
-	 My reasoning for the following approach is that adding new customizable values could otherwise
-	 result in null value problems. Here we cross-check existing values against the default theme,
-	 and for customized theme, only the changed values are saved.
-	 
+	/**
+	 Adding new customizable values could result in null value problems.
+	 We'll cross-check existing values against the default theme, and will only use the changed values for our customized theme.
 	 */
 	
 	// First load DEFAULT theme into memory
 	_theme = [self dictionaryToTheme:_themes[DEFAULT_KEY]];
 	
-	// Load custom theme (this is a bit convoluted)
+	// Load custom theme
 	id<BeatTheme> customTheme = theme;
 	
+	// If custom theme exists, we'll get the property names from that and overwrite those in default theme.
 	if (customTheme) {
-		// We get the property names from theme, and we'll overwrite those values in default theme
 		for (NSString *property in customTheme.propertyToValue) {
 			if ([customTheme valueForKey:property]) {
 				[_theme setValue:[customTheme valueForKey:property] forKey:property];
@@ -226,9 +231,9 @@
 #endif
 }
 
+/// Returns a color from an array of doubles: `[r, g, b]`
 - (BXColor*)colorFromArray:(NSArray*)array
 {
-
     if (!array || array.count != 3)  return nil;
     
     NSNumber* redValue = array[0];
@@ -238,11 +243,10 @@
     double red = redValue.doubleValue / 255.0;
     double green = greenValue.doubleValue / 255.0;
     double blue = blueValue.doubleValue / 255.0;
-
+	
 #if TARGET_OS_IOS
 	// iOS
-	UIColor *c = BXColor.clearColor;
-	return [c initWithRed:red green:green blue:blue alpha:1.0];
+	return [BXColor.clearColor initWithRed:red green:green blue:blue alpha:1.0];
 #else
 	// macOS
 	return [BXColor colorWithCalibratedRed:red green:green blue:blue alpha:1.0];
@@ -283,11 +287,10 @@
 #endif
 }
 
-#pragma mark Value Access
 
-- (id<BeatTheme>)theme {
-	return _theme;
-}
+#pragma mark - Accessing theme values
+
+- (id<BeatTheme>)theme { return _theme; }
 
 - (DynamicColor*)backgroundColor { return _theme.backgroundColor; }
 - (DynamicColor*)marginColor { return _theme.marginColor; }
@@ -308,18 +311,6 @@
 - (DynamicColor*)genderOtherColor { return _theme.genderOtherColor; }
 - (DynamicColor*)genderUnspecifiedColor { return _theme.genderUnspecifiedColor; }
 
-- (id<BeatTheme>)currentTheme { return _theme; }
-- (DynamicColor*)currentBackgroundColor { return _theme.backgroundColor; }
-- (DynamicColor*)currentMarginColor { return _theme.marginColor; }
-- (DynamicColor*)currentSelectionColor { return _theme.selectionColor; }
-- (DynamicColor*)currentTextColor { return _theme.textColor; }
-- (DynamicColor*)currentInvisibleTextColor { return _theme.invisibleTextColor; }
-- (DynamicColor*)currentCaretColor { return _theme.caretColor; }
-- (DynamicColor*)currentCommentColor {	return _theme.commentColor; }
-- (DynamicColor*)currentOutlineHighlight { return _theme.outlineHighlight; }
-- (DynamicColor*)currentOutlineBackground { return _theme.outlineBackground; }
-- (DynamicColor*)currentPageNumberColor { return _theme.pageNumberColor; }
-- (DynamicColor*)currentHighlightColor { return _theme.highlightColor; }
 
 #pragma mark - Show Editor
 
@@ -329,6 +320,7 @@
 	[_themeEditor showWindow:_themeEditor.window];
 #endif
 }
+
 
 #pragma mark - Load selected theme for ALL documents
 

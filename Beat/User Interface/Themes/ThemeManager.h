@@ -44,17 +44,6 @@
 //Access the current theme
 - (id<BeatTheme>) theme;
 
-- (DynamicColor*)currentBackgroundColor;
-- (DynamicColor*)currentSelectionColor;
-- (DynamicColor*)currentTextColor;
-- (DynamicColor*)currentInvisibleTextColor;
-- (DynamicColor*)currentCaretColor;
-- (DynamicColor*)currentCommentColor;
-- (DynamicColor*)currentMarginColor;
-- (DynamicColor*)currentOutlineBackground;
-- (DynamicColor*)currentOutlineHighlight;
-- (DynamicColor*)currentHighlightColor;
-
 - (DynamicColor*)backgroundColor;
 - (DynamicColor*)marginColor;
 - (DynamicColor*)selectionColor;
