@@ -345,6 +345,15 @@
 	return LINE_HEIGHT;
 }
 
+- (NSString *)contdString {
+    return _delegate.contdString;
+}
+
+
+- (NSString *)moreString {
+    return _delegate.moreString;
+}
+
 - (bool)boolForKey:(NSString*)key {
 	id value = [self valueForKey:key];
 	return [(NSNumber*)value boolValue];

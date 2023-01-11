@@ -82,10 +82,11 @@
 
 // Helper methods
 - (CGFloat)spaceBeforeForLine:(Line *)line;
+- (Line*)moreLineFor:(Line*)line;
+- (Line*)contdLineFor:(Line*)line;
+
 + (CGFloat)lineHeight;
 + (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
-+ (Line*)moreLineFor:(Line*)line;
-+ (Line*)contdLineFor:(Line*)line;
 
 // Pagination operation finished
 - (void)paginationFinished:(BeatPaginationOperation*)operation;
