@@ -1508,7 +1508,7 @@ static NSDictionary* patterns;
 	return markerColor;
 }
 
-/// Finds and sets the color for given outline-level line. The last one is used, preceding color notes are ignored.
+/// Finds and sets the color for given outline-level line. Only the last one is used, preceding color notes are ignored.
 - (NSString *)colorForHeading:(Line *)line
 {
     NSArray *colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
@@ -1524,12 +1524,15 @@ static NSDictionary* patterns;
         // We only want the last color on the line. The values come from a dictionary, so we can't be sure, so just skip it if it's an earlier one.
         if (line.colorRange.location > range.location) continue;
         
-        // We can define a color using both [[color red]] or just [[red]]
+        // We can define a color using both [[color red]] or just [[red]], or #ffffff
         if ([content containsString:@"color "]) {
+            // "color red"
             headingColor = [content substringFromIndex:@"color ".length];
             line.colorRange = range;
         }
-        else if ([colors containsObject:content]) {
+        else if ([colors containsObject:content] ||
+                 (content.length == 7 && [content characterAtIndex:0] == '#')) {
+            // pure "red" or "#ff0000"
             headingColor = content;
             line.colorRange = range;
         }
