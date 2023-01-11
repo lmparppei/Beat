@@ -1332,6 +1332,9 @@
 }
 /// Returns window frame as an array
 /// - returns: `[x, y, width, height]`
+- (NSArray*)getWindowFrame {
+	return [self windowFrame];
+}
 - (NSArray*)windowFrame
 {
 	NSRect frame = self.delegate.documentWindow.frame;

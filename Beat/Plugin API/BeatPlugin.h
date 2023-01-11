@@ -7,6 +7,7 @@
 //
 
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <BeatPaginationCore/BeatPaginationCore.h>
 #import "BeatPluginManager.h"
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
@@ -21,7 +22,6 @@
 #import "WebPrinter.h"
 
 #import "TagDefinition.h"
-#import "BeatPaginator.h"
 #import "BeatPluginTimer.h"
 #import "BeatPluginHTMLWindow.h"
 
@@ -103,6 +103,7 @@
 - (NSArray*)availableTags;
 - (NSArray*)screen; /// Current screen dimensions
 - (NSArray*)windowFrame; /// Window dimensions
+- (NSArray*)getWindowFrame; // Alias for windowFrame
 - (void)async:(JSValue*)callback; /// Alias for dispatch
 - (void)sync:(JSValue*)callback; /// Alias for dispatch_syncb
 - (void)dispatch:(JSValue*)callback;
