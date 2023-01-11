@@ -38,7 +38,6 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import "BeatTagging.h"
-#import "RegExCategories.h"
 #import "BeatTagItem.h"
 #import "BeatTag.h"
 #import "ColorView.h"
