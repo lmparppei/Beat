@@ -14,8 +14,9 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatThemes/BeatThemes.h>
 #import "BeatOutlineView.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
 #import "SceneFiltering.h"
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
