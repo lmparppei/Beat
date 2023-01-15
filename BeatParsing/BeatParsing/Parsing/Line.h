@@ -60,6 +60,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 @property (nonatomic, readonly) bool noteIn;
 @property (nonatomic, readonly) bool noteOut;
 
+@property (nonatomic) NSRange markerRange;
 @property (nonatomic, readonly) NSString *marker;
 @property (nonatomic, readonly) NSString *markerDescription;
 
@@ -101,7 +102,8 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges;
 /// Returns note content strings as an array
 - (NSArray*)noteContents;
-
+/// Returns the **last** available range adn note with given prefix  (`[range, content]`)
+- (NSArray*)contentAndRangeForLastNoteWithPrefix:(NSString*)string;
 
 JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(id)value);
 - (id)getCustomData:(NSString*)key;
@@ -153,7 +155,6 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSAttributedString *attrString;
 
 @property (nonatomic) NSRange titleRange;
-@property (nonatomic) NSRange markerRange;
 @property (nonatomic) NSRange sceneNumberRange;
 @property (nonatomic) NSRange colorRange;
 //@property (nonatomic) NSMutableIndexSet *storylineRanges;
@@ -257,6 +258,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 @property (nonatomic) NSString *marker;
 /// Marker text
 @property (nonatomic) NSString *markerDescription;
+/// Marker range
+@property (nonatomic) NSRange markerRange;
 
 /// An array of story beats contained by this line
 @property (nonatomic) NSArray<Storybeat*>* beats;

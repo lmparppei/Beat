@@ -554,6 +554,39 @@
     return [self noteContentsWithRanges:true];
 }
 
+- (NSArray*)contentAndRangeForLastNoteWithPrefix:(NSString*)string {
+    string = string.lowercaseString;
+    
+    NSDictionary* notes = self.noteContentsAndRanges;
+    NSRange noteRange = NSMakeRange(0, 0);
+    NSString* noteContent = nil;
+    
+    // Iterate through notes and only accept the last one.
+    for (NSNumber* r in notes.allKeys) {
+        NSRange range = r.rangeValue;
+        NSString* noteString = notes[r];
+        NSInteger location = [noteString.lowercaseString rangeOfString:string].location;
+        
+        // Only accept notes which are later than the one already saved, and which begin with the given string
+        if (range.location < noteRange.location || location != 0 ) continue;
+        
+        // Check the last character, which can be either ' ' or ':'. If it's note, carry on.
+        if (noteString.length > string.length) {
+            unichar followingChr = [noteString characterAtIndex:string.length];
+            if (followingChr != ' ' && followingChr != ':') continue;
+        }
+        
+        noteRange = range;
+        noteContent = noteString;
+    }
+    
+    if (noteContent != nil) {
+        return @[ [NSNumber valueWithRange:noteRange], noteContent ];
+    } else {
+        return nil;
+    }
+}
+
 - (id)noteContentsWithRanges:(bool)withRanges {
     __block NSMutableDictionary<NSNumber*, NSString*>* rangesAndStrings = NSMutableDictionary.new;
     __block NSMutableArray* strings = NSMutableArray.new;

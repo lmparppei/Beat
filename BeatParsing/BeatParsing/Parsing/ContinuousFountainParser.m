@@ -1480,32 +1480,60 @@ static NSDictionary* patterns;
 }
 
 - (NSString *)markerForLine:(Line*)line {
-	__block NSString *markerColor = @"";
-	
-	line.markerRange = (NSRange){0, 0};
-	line.marker = @"";
-	line.markerDescription = @"";
-	
-	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		NSString *note = [line.string substringWithRange:range].lowercaseString;
-		if ([note containsString:@"[[marker "] && note.length > @"[[marker ]]".length) {
-			NSString *markerInfo = [note substringWithRange:(NSRange){ @"[[marker ".length, note.length - @"[[marker ".length - 2 }];
-			if ([markerInfo containsString:@":"]) {
-				NSArray *markerComponents = [markerInfo componentsSeparatedByString:@":"];
-				line.marker = markerComponents[0];
-				if (markerComponents.count > 1) line.markerDescription = markerComponents[1];
-			} else {
-				line.marker = markerInfo;
-			}
-			
-			line.markerRange = range;
-			markerColor = line.marker;
-			
-			*stop = YES;
-		}
-	}];
+    line.markerRange = (NSRange){0, 0};
+    line.marker = @"";
+    line.markerDescription = @"";
 
+    NSString *markerColor = @"";
+    NSString *markerContent = @"";
+
+    // Get the last marker. If none is found, just return ""
+    NSArray* marker = [line contentAndRangeForLastNoteWithPrefix:@"marker"];
+    if (marker == nil) return @"";
+
+    // The correct way to add a marker is to write [[marker color:Content]], but we'll be gratitious here.
+    NSRange range = ((NSNumber*)marker[0]).rangeValue;
+    NSString* string = marker[1];
+    
+    if (![string containsString:@":"] && [string containsString:@" "]) {
+        // No colon, let's separate components.
+        // First words will always be "marker", so get the second word and see if it's a color
+        NSArray<NSString*>* words = [string componentsSeparatedByString:@" "];
+        NSInteger descriptionStart = @"marker ".length;
+        
+        if (words.count > 1) {
+            NSString* potentialColor = words[1].lowercaseString;
+            if ([[self colors] containsObject:potentialColor]) {
+                markerColor = potentialColor;
+            }
+        }
+        
+        // Get the content after we've checked for potential color for this marker
+        markerContent = [string substringFromIndex:descriptionStart + markerColor.length];
+    }
+    else if ([string containsString:@":"]) {
+        NSInteger l = [string rangeOfString:@":"].location;
+        markerContent = [string substringFromIndex:l+1];
+        
+        NSString* left = [string substringToIndex:l];
+        NSArray* words = [left componentsSeparatedByString:@" "];
+        
+        if (words.count > 1) markerColor = words[1];
+    }
+    
+    // Use default as marker color if no applicable color found
+    line.marker = (markerColor.length > 0) ? markerColor.lowercaseString : @"default";
+    line.markerDescription = [markerContent stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    line.markerRange = range;
+    
 	return markerColor;
+}
+
+- (NSArray<NSString*>*)colors {
+    static NSArray* colors;
+    if (colors == nil) colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
+    return colors;
+    
 }
 
 /// Finds and sets the color for given outline-level line. Only the last one is used, preceding color notes are ignored.
