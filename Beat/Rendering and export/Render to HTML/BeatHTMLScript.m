@@ -153,8 +153,8 @@ static bool underlinedHeading;
 		if (settings.header.length == 0) settings.header = @""; // Double check that header is ""
 						
 		// Styles
-		boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
-		underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
+		boldedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
+		underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
 	}
 	
 	return self;
@@ -172,8 +172,8 @@ static bool underlinedHeading;
 		if (settings.header.length == 0) settings.header = @""; // Double check that header is ""
 						
 		// Styles
-		boldedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleBold"];
-		underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:@"headingStyleUnderline"];
+		boldedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
+		underlinedHeading = [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
 	}
 	
 	return self;

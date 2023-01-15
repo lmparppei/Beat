@@ -5,12 +5,15 @@
       location = "group:Beat.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:BeatParsing/BeatParsing.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:Beat iOS.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:BeatParsing/BeatParsing.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:/Users/lmp/Koodaus/Beat/BeatPagination/BeatPaginationCore.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Frameworks/BeatThemes/BeatThemes.xcodeproj">
    </FileRef>
 </Workspace>

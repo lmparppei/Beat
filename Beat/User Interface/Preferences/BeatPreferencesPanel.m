@@ -113,8 +113,8 @@
 				if (value == 1) _headingSpacing1.state = NSOnState;
 				else _headingSpacing2.state = NSOnState;
 			}
-			else if ([key isEqualToString:@"backupURL"]) {
-				NSString* url = [BeatUserDefaults.sharedDefaults get:@"backupURL"];
+			else if ([key isEqualToString:BeatSettingBackupURL]) {
+				NSString* url = [BeatUserDefaults.sharedDefaults get:BeatSettingBackupURL];
 				
 				if (url.length == 0) self.backupUseDefault.state = NSOnState;
 				else self.backupUseCustom.state = NSOnState;
@@ -217,10 +217,10 @@
 
 - (IBAction)toggleBackupLocation:(id)sender {
 	NSButton* b = sender;
-	if ([b.identifier isEqualToString:@"default"]) [BeatUserDefaults.sharedDefaults save:@"" forKey:@"backupURL"];
+	if ([b.identifier isEqualToString:@"default"]) [BeatUserDefaults.sharedDefaults save:@"" forKey:BeatSettingBackupURL];
 	else {
 		if (self.backupURLdisplay.stringValue.length > 0) {
-			[BeatUserDefaults.sharedDefaults save:self.backupURLdisplay.stringValue forKey:@"backupURL"];
+			[BeatUserDefaults.sharedDefaults save:self.backupURLdisplay.stringValue forKey:BeatSettingBackupURL];
 		} else {
 			[self selectBackupLocation:nil];
 		}
@@ -235,7 +235,7 @@
 	
 	[panel beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse result) {
 		if (result != NSModalResponseOK) return;
-		[BeatUserDefaults.sharedDefaults save:panel.URL.path forKey:@"backupURL"];
+		[BeatUserDefaults.sharedDefaults save:panel.URL.path forKey:BeatSettingBackupURL];
 		self.backupURLdisplay.stringValue = panel.URL.path;
 	}];
 }

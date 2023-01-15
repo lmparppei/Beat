@@ -6,6 +6,7 @@
 - Tons of plugin API extensions
 - Stability fixes
 - Fixes to parsing and export
+- Moved pagination into a separate framework
 
 
 ## Beat 1.97.5-7

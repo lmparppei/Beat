@@ -11,9 +11,9 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
-#import "BeatDocumentSettings.h"
-#import "BeatEditorDelegate.h"
-#import "BeatExportSettings.h"
+//#import "BeatDocumentSettings.h"
+//#import "BeatEditorDelegate.h"
+//#import "BeatExportSettings.h"
 #import "BeatHTMLScript.h"
 #import "BeatiOSFormatting.h"
 #import "DynamicColor.h"

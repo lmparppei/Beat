@@ -6,12 +6,13 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
 #import <TargetConditionals.h>
 
 #if TARGET_OS_IOS
+    #import <UIKit/UIKit.h>
     #define BXFont UIFont
 #else
+    #import <Cocoa/Cocoa.h>
     #define BXFont NSFont
 #endif
 
@@ -30,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BeatFonts*)sharedSansSerifFonts;
 + (CGFloat)characterWidth;
 
-- (NSFont*)withSize:(CGFloat)size;
-- (NSFont*)boldWithSize:(CGFloat)size;
+- (BXFont*)withSize:(CGFloat)size;
+- (BXFont*)boldWithSize:(CGFloat)size;
 @end
 
 NS_ASSUME_NONNULL_END

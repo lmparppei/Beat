@@ -292,7 +292,7 @@ static BeatPluginManager *sharedManager;
 
 - (void)checkForUpdates {
 	NSArray *disabled = [self disabledPlugins];
-	bool autoUpdate = [BeatUserDefaults.sharedDefaults getBool:@"updatePluginsAutomatically"];
+	bool autoUpdate = [BeatUserDefaults.sharedDefaults getBool:BeatSettingUpdatePluginsAutomatically];
 	
 	[self refreshAvailablePlugins];
 	[self getPluginLibraryWithCallback:^{

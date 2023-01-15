@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B66C4F07296F6377009ADE4E /* PaginationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66C4F06296F6377009ADE4E /* PaginationTest.swift */; };
 		B685B536296EE1F900D8EF81 /* BeatPagination.docc in Sources */ = {isa = PBXBuildFile; fileRef = B685B535296EE1F900D8EF81 /* BeatPagination.docc */; };
 		B685B537296EE1F900D8EF81 /* BeatPaginationCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B685B545296EE2BC00D8EF81 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B544296EE2BC00D8EF81 /* BeatParsing.framework */; };
@@ -25,7 +24,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B66C4F06296F6377009ADE4E /* PaginationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationTest.swift; sourceTree = "<group>"; };
 		B685B531296EE1F900D8EF81 /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationCore.h; sourceTree = "<group>"; };
 		B685B535296EE1F900D8EF81 /* BeatPagination.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = BeatPagination.docc; sourceTree = "<group>"; };
@@ -42,7 +40,6 @@
 		B685B56D296EE3AC00D8EF81 /* BeatPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginator.h; sourceTree = "<group>"; };
 		B685B581296EE63300D8EF81 /* BeatFonts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFonts.m; sourceTree = "<group>"; };
 		B685B582296EE63300D8EF81 /* BeatFonts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFonts.h; sourceTree = "<group>"; };
-		B685B5CD296EE9EF00D8EF81 /* BeatSharedUserDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatSharedUserDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +57,6 @@
 		B685B527296EE1F900D8EF81 = {
 			isa = PBXGroup;
 			children = (
-				B66C4F06296F6377009ADE4E /* PaginationTest.swift */,
 				B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */,
 				B685B533296EE1F900D8EF81 /* BeatPagination */,
 				B685B532296EE1F900D8EF81 /* Products */,
@@ -90,7 +86,6 @@
 		B685B543296EE2BC00D8EF81 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B685B5CD296EE9EF00D8EF81 /* BeatSharedUserDefaults.framework */,
 				B685B544296EE2BC00D8EF81 /* BeatParsing.framework */,
 			);
 			name = Frameworks;
@@ -203,7 +198,6 @@
 				B685B570296EE3AC00D8EF81 /* BeatPaginationSizing.m in Sources */,
 				B685B56E296EE3AC00D8EF81 /* BeatPaginationOperation.m in Sources */,
 				B685B572296EE3AC00D8EF81 /* BeatPage.m in Sources */,
-				B66C4F07296F6377009ADE4E /* PaginationTest.swift in Sources */,
 				B685B583296EE63300D8EF81 /* BeatFonts.m in Sources */,
 				B685B571296EE3AC00D8EF81 /* BeatPaginator.m in Sources */,
 			);
@@ -345,6 +339,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -355,9 +350,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPagination;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -379,6 +378,7 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -389,8 +389,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPagination;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
 		};
