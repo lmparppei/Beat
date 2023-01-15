@@ -7,7 +7,8 @@
 //
 
 #import "BeatiOSFormatting.h"
-#import "ThemeManager.h"
+#import <BeatThemes/BeatThemes.h>
+//#import "ThemeManager.h"
 #import "ContinuousFountainParser.h"
 #import "BeatColors.h"
 #import "NSString+CharacterControl.h"
