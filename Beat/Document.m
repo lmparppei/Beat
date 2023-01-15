@@ -75,14 +75,15 @@
 #import <os/log.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatThemes/BeatThemes.h>
 
 #import "Document.h"
 #import "ScrollView.h"
 #import "FDXInterface.h"
 #import "BeatPrintView.h"
 #import "ColorView.h"
-#import "ThemeManager.h"
-#import "DynamicColor.h"
+//#import "ThemeManager.h"
+//#import "DynamicColor.h"
 #import "BeatAppDelegate.h"
 #import "FountainAnalysis.h"
 #import "ColorCheckbox.h"
@@ -120,7 +121,7 @@
 #import "BeatAutocomplete.h"
 
 
-@interface Document () <BeatNativePreviewDelegate> {
+@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument> {
 	NSString *bufferedText;
 }
 
@@ -700,7 +701,7 @@ static BeatAppDelegate *appDelegate;
 	
 	if (oldShowSceneNumbers != self.showSceneNumberLabels) {
 		if (self.showSceneNumberLabels) [self ensureLayout];
-		else [self.textView deleteSceneNumberLabels];
+		//else [self.textView deleteSceneNumberLabels];
 		
 		// Update the print preview accordingly
 		self.preview.previewUpdated = NO;
@@ -1103,8 +1104,11 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// When ensuring layout, we'll update all scene number labels
 	if (self.showPageNumbers) [self.textView updatePageNumbers];
-	if (self.showSceneNumberLabels) [self.textView resetSceneNumberLabels];
-	[self.textView setNeedsDisplay:YES];
+	//if (self.showSceneNumberLabels) [self.textView resetSceneNumberLabels];
+	
+	self.textView.needsDisplay = true;
+	self.textView.needsLayout = true;
+	
 	[self.marginView updateBackground];
 }
 
@@ -1326,7 +1330,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[self readFromData:data ofType:typeName error:nil reverting:YES];
 	
-	[self.textView deleteSceneNumberLabels];
+	//[self.textView deleteSceneNumberLabels];
 	[self.textView deletePageNumbers];
 	
 	self.textView.alphaValue = 0.0;
@@ -1692,7 +1696,7 @@ static NSWindow __weak *currentKeyWindow;
 				if (![prevLine.characterName isEqualToString:charName]) break;
 				
 				// This is the character. Put in CONT'D and a line break and return NO
-				NSString *contd = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
+				NSString *contd = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd];
 				NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
 				
 				if (![currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
@@ -1756,7 +1760,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_lastChangedRange.length > 5) {
 		[self ensureLayout];
 	} else {
-		[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
+		//[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
 	}
 	
 	// Update preview screen
@@ -2897,20 +2901,22 @@ static bool _skipAutomaticLineBreaks = false;
 		// Swift class alternative:
 		// [BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
 		
-		[BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:@"matchParentheses" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleAutoLineBreaks:) setting:@"autoLineBreaks" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleSceneLabels:) setting:@"showSceneNumberLabels" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(togglePageNumbers:) setting:@"showPageNumbers" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:@"typewriterMode" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(togglePrintSceneNumbers:) setting:@"printSceneNumbers" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleAutosave:) setting:@"autosave" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleMatchParentheses:) setting:BeatSettingMatchParentheses target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleAutoLineBreaks:) setting:BeatSettingAutomaticLineBreaks target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleSceneLabels:) setting:BeatSettingShowSceneNumbers target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(togglePageNumbers:) setting:BeatSettingShowPageNumbers target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleTypewriterMode:) setting:BeatSettingTypewriterMode target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(togglePrintSceneNumbers:) setting:BeatSettingPrintSceneNumbers target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleAutosave:) setting:BeatSettingAutosave target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleHideFountainMarkup:) setting:BeatSettingHideFountainMarkup target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleDisableFormatting:) setting:BeatSettingDisableFormatting target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisions:) setting:BeatSettingShowRevisions target:self],
+		
 		[BeatValidationItem.alloc initWithAction:@selector(toggleRevisionMode:) setting:@"revisionMode" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleTimeline:) setting:@"timelineVisible" target:self],
+		[BeatValidationItem.alloc initWithAction:@selector(toggleSidebarView:) setting:@"sidebarVisible" target:self],
+		
 		[BeatValidationItem.alloc initWithAction:@selector(lockContent:) setting:@"Locked" target:self.documentSettings],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleHideFountainMarkup:) setting:@"hideFountainMarkup" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleDisableFormatting:) setting:@"disableFormatting" target:self],
-		[BeatValidationItem.alloc initWithAction:@selector(toggleShowRevisions:) setting:@"showRevisions" target:self],
 	];
 }
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -2995,12 +3001,12 @@ static bool _skipAutomaticLineBreaks = false;
 		
 	}
 	else if (menuItem.action == @selector(selectSansSerif:)) {
-		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:@"useSansSerif"];
+		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:BeatSettingUseSansSerif];
 		if (sansSerif) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 	}
 	else if (menuItem.action == @selector(selectSerif:)) {
-		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:@"useSansSerif"];
+		bool sansSerif = [BeatUserDefaults.sharedDefaults getBool:BeatSettingUseSansSerif];
 		if (!sansSerif) menuItem.state = NSOnState;
 		else menuItem.state = NSOffState;
 		
@@ -3129,9 +3135,9 @@ static bool _skipAutomaticLineBreaks = false;
 		[self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
 		
 		[self.textView drawViewBackgroundInRect:self.textView.bounds];
-		[self.textView setNeedsDisplay:true];
 		
-		[self resetSceneNumberLabels];
+		self.textView.needsDisplay = true;
+		self.textView.needsLayout = true;
 		
 		if (_sidebarVisible) [self.outlineView setNeedsDisplay:YES];
 	}
@@ -3206,7 +3212,10 @@ static bool _skipAutomaticLineBreaks = false;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
 	[self.textView toggleHideFountainMarkup];
-	[self resetSceneNumberLabels];
+	//[self resetSceneNumberLabels];
+	self.textView.needsDisplay = true;
+	self.textView.needsLayout = true;
+	
 	[self updateLayout];
 }
 
@@ -3838,8 +3847,9 @@ static bool _skipAutomaticLineBreaks = false;
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
 	
-	if (self.showSceneNumberLabels) [self ensureLayout];
-	else [self.textView deleteSceneNumberLabels];
+	//if (self.showSceneNumberLabels) [self ensureLayout];
+	//else [self.textView deleteSceneNumberLabels];
+	[self ensureLayout];
 	
 	// Update the print preview accordingly
 	self.preview.previewUpdated = NO;
@@ -4432,7 +4442,8 @@ static NSArray<Line*>* cachedTitlePage;
 #pragma mark - Color Customization
 
 - (IBAction)customizeColors:(id)sender {
-	[_themeManager showEditor];
+	ThemeEditor* editor = ThemeEditor.sharedEditor;
+	[editor showWindow:editor.window];
 }
 
 #pragma mark - Review Mode
