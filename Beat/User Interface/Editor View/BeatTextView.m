@@ -29,12 +29,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatThemes/BeatThemes.h>
 
 #import "BeatTextView.h"
-#import "DynamicColor.h"
+//#import "DynamicColor.h"
 #import "ScrollView.h"
 #import "BeatColors.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
 #import "BeatPasteboardItem.h"
 #import "BeatMeasure.h"
 #import "BeatRevisionItem.h"
@@ -154,7 +155,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @implementation BeatTextView
 
 + (CGFloat)linePadding {
-	return 30;
+	return 50;
 }
 
 -(instancetype)initWithCoder:(NSCoder *)coder {
@@ -1053,7 +1054,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
  consumes a little less memory.
  
  */
-
+/*
 - (void)resetSceneNumberLabels {
 	[self deleteSceneNumberLabels];
 	
@@ -1061,6 +1062,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 }
 
 - (void)updateSceneLabelsFrom:(NSInteger)changedIndex {
+	return;
+	
 	// Don't do anything if the scene number labeling is not on
 	if (!self.editorDelegate.showSceneNumberLabels) return;
 	
@@ -1195,133 +1198,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	}
 	[_sceneNumberLabels removeAllObjects];
 }
-
-#pragma mark - Layer labels for scene numbers
-
-// This is a bit slower than the old NSTextField-based system.
  
-- (void)updateSceneLayerLabelsFrom:(NSInteger)changedIndex {
-	[CATransaction begin];
-	[CATransaction setValue:@YES forKey:kCATransactionDisableActions];
-	
-	// Don't do anything if the scene number labeling is not on
-	if (!self.editorDelegate.showSceneNumberLabels) return;
-	
-	_updatingSceneNumberLabels = YES;
-	
-	ContinuousFountainParser *parser = self.editorDelegate.parser;
-	NSColor *textColor = self.editorDelegate.themeManager.textColor.effectiveColor;
-	if (!self.sceneLayerLabels) self.sceneLayerLabels = NSMutableArray.array;
-	
-	bool layoutEnsured = NO;
-	bool noRepositionNeeded = NO;
-	
-	NSInteger index = -1;
-	for (OutlineScene *scene in parser.outline) {
-		if (scene.type == synopse || scene.type == section) continue;
-		
-		index++; // Add to total scene heading count
-		
-		// don't update scene labels if we are under the index
-		if (scene.line.position + scene.line.string.length < changedIndex) continue;
-		
-		// We'll have to ensure the layout from the changed character position to the next heading
-		// to correctly calculate the y position of the first scene. No idea why, but let's do
-		// this only once to save CPU time.
-		if (!layoutEnsured) {
-			[self.layoutManager ensureLayoutForCharacterRange:NSMakeRange(changedIndex, scene.position - changedIndex)];
-			layoutEnsured = YES;
-		}
-		
-		// Find label and add a new one if needed
-		CATextLayer *label;
-		if (index >= self.sceneLayerLabels.count) {
-			label = [self createLayerLabel:scene];
-			[_sceneLayerLabels addObject:label];
-			[self.layer addSublayer:label];
-		}
-		else label = self.sceneLayerLabels[index];
-		
-		
-		// Set content scale
-		label.contentsScale = NSScreen.mainScreen.backingScaleFactor;
-		
-		// Set scene number to be displayed
-		if (scene.sceneNumber) label.string = scene.sceneNumber;
-		
-		// Set label color to be the same as scene color
-		if (scene.color.length) {
-			NSString *colorName = scene.color.lowercaseString;
-			NSColor *color = [BeatColors color:colorName];
-			if (color) label.foregroundColor = color.CGColor;
-			else label.foregroundColor = ThemeManager.sharedManager.textColor.effectiveColor.CGColor;
-		} else {
-			label.foregroundColor = textColor.CGColor;
-		}
-		
-		// If we don't have to reposition anything any more, just continue the loop.
-		if (noRepositionNeeded) continue;
-		
-		// Calculate and set actual pixel position of the label
-		NSRect rect;
-		if (!self.editorDelegate.hideFountainMarkup && scene.line.numberOfPrecedingFormattingCharacters == 0) {
-			// This is a normal scene heading, just grab the visible text range
-			rect = [self rectForRange:scene.line.range];
-		} else if (scene.line.string.length > 1) {
-			// For forced scene headings, let's calculate rect using only the first visible character.
-			// This ensures that we're not trying to calculate rectangle for a invisible character (.)
-			// when hiding Fountain markup is on.
-			NSRange sceneRange = (NSRange){ scene.position + scene.line.contentRanges.firstIndex, 1  };
-			rect = [self rectForRange:sceneRange];
-		}
-		
-		CGPoint originalPosition = label.frame.origin;
-		
-		// Some hardcoded values, which seem to work (lol)
-		rect.size.width = 20 * scene.sceneNumber.length;
-		rect.origin.x = self.textContainerInset.width - rect.size.width;
-		rect.origin.y += self.textInsetY + 2;
-		label.frame = rect;
-		
-		// If we are past the edited heading, check if we didn't move the following label at all.
-		// We don't have to calculate further headings in this case.
-		if (rect.origin.x == originalPosition.x && rect.origin.y == originalPosition.y &&
-			!NSLocationInRange(changedIndex, scene.line.range)) {
-			noRepositionNeeded = YES;
-		}
-	}
-
-	// Remove excess labels
-	index++;
-	if (_sceneLayerLabels.count >= index) {
-		NSInteger labels = _sceneLayerLabels.count;
-		for (NSInteger i = index; i < labels; i++) {
-			CATextLayer *label = _sceneLayerLabels[index];
-			[self.sceneLayerLabels removeObject:label];
-			[label removeFromSuperlayer];
-		}
-	}
-	
-	[CATransaction commit];
-	
-	_updatingSceneNumberLabels = NO;
-}
-
-- (CATextLayer *)createLayerLabel:(id)item {
-	Line *line;
-	if ([item isKindOfClass:Line.class]) line = item;
-	else line = [(OutlineScene*)item line];
-	
-	CATextLayer * label = CATextLayer.new;
-	label.anchorPoint = CGPointMake(0, 1);
-	label.string = @"";
-	label.alignmentMode = kCAAlignmentRight;
-	label.font = CGFontCreateWithFontName((CFStringRef)self.editorDelegate.courier.fontName);
-	label.fontSize =  self.editorDelegate.fontSize;
-	
-	return label;
-}
-
+*/
 
 #pragma mark - Page numbering
 
