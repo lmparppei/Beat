@@ -5,8 +5,8 @@
 //  Created by Lauri-Matti Parppei on 14.5.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
-/*
-import Foundation
+
+import BeatDynamicColor
 
 @objc protocol BeatTheme: NSObjectProtocol, NSCopying {
 	var backgroundColor: DynamicColor! { get set }
@@ -34,4 +34,9 @@ import Foundation
 	func themeAsDictionary(withName name: String!) -> [AnyHashable : Any]!
 	
 }
-*/
+
+@objc class Test:NSObject {
+    func test() {
+        print("test")
+    }
+}

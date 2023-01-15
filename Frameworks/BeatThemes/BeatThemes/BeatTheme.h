@@ -8,14 +8,13 @@
 
 
 #import <TargetConditionals.h>
+#import <BeatDynamicColor/BeatDynamicColor.h>
 
 #if TARGET_OS_IOS
 #import <UIKit/UIKit.h>
 #else
 #import <Cocoa/Cocoa.h>
 #endif
-
-#import "DynamicColor.h"
 
 @protocol BeatTheme
 @property (nonatomic) NSDictionary<NSString*, NSString*> *propertyToValue;

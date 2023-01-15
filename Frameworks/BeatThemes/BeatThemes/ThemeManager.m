@@ -26,21 +26,14 @@
 
 #import "ThemeManager.h"
 
-#if TARGET_OS_IOS
-	#import "Beat_iOS-Swift.h"
-#else
-	#import "BeatAppDelegate.h"
-	#import "Beat-Swift.h"
-	#import "Document.h"
-#endif
+#import <BeatThemes/BeatThemes-Swift.h>
+#import <BeatDynamicColor/BeatDynamicColor.h>
 
 #import "BeatTheme.h"
-#import "DynamicColor.h"
 
 @interface ThemeManager ()
 @property (strong, nonatomic) NSMutableDictionary* themes;
 @property (nonatomic) NSUInteger selectedTheme;
-
 @property (nonatomic) id<BeatTheme> fallbackTheme;
 @end
 
@@ -60,7 +53,7 @@
 {
     static ThemeManager* sharedManager;
     if (!sharedManager) {
-        sharedManager = [[ThemeManager alloc] init];
+        sharedManager = ThemeManager.new;
     }
     return sharedManager;
 }
@@ -93,7 +86,7 @@
 - (NSDictionary*)loadThemeFile
 {
 	NSMutableDictionary *contents = [NSMutableDictionary dictionaryWithContentsOfFile:[self bundlePlistFilePath]];
-	
+    
 #if !TARGET_OS_IOS
 	NSDictionary *customPlist = [self loadCustomTheme];
 	if (customPlist) {
@@ -108,7 +101,8 @@
 /// Read user-created theme file into a dictionary
 - (NSDictionary*)loadCustomTheme {
 	// Read user-created theme file
-	NSURL *userUrl = [BeatAppDelegate appDataPath:@""];
+    id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)NSApp.delegate;
+	NSURL *userUrl = [delegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	NSDictionary *customPlist = [NSDictionary dictionaryWithContentsOfFile:userUrl.path];
@@ -118,7 +112,8 @@
 /// Return the **bundled** `plist` file path
 - (NSString*)bundlePlistFilePath
 {
-    return [NSBundle.mainBundle pathForResource:@"Themes" ofType:@"plist"];
+    NSBundle *bundle = [NSBundle bundleForClass:ThemeManager.class];
+    return [bundle pathForResource:@"Themes" ofType:@"plist"];
 }
 
 /// Returns the default theme
@@ -139,7 +134,8 @@
 #else
 	id<BeatTheme> theme = macOSTheme.new;
 #endif
-
+    
+    
 	NSDictionary *lightTheme = values[@"Light"];
 	NSDictionary *darkTheme = values[@"Dark"];
 	
@@ -212,6 +208,7 @@
 #if !TARGET_OS_IOS
 	id<BeatTheme> defaultTheme = [self defaultTheme];
 	id<BeatTheme> customTheme = macOSTheme.new;
+    id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)NSApp.delegate;
 	
 	for (NSString *property in customTheme.propertyToValue) {
 		DynamicColor *currentColor = [self valueForKey:property];
@@ -224,7 +221,7 @@
 	// Convert theme values into a dictionary
 	NSDictionary *themeDict = [customTheme themeAsDictionaryWithName:CUSTOM_KEY];
 	
-	NSURL *userUrl = [BeatAppDelegate appDataPath:@""];
+	NSURL *userUrl = [delegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	
 	[themeDict writeToFile:userUrl.path atomically:NO];
@@ -312,24 +309,14 @@
 - (DynamicColor*)genderUnspecifiedColor { return _theme.genderUnspecifiedColor; }
 
 
-#pragma mark - Show Editor
-
-- (void)showEditor {
-#if !TARGET_OS_IOS
-	if (!self.themeEditor) _themeEditor = [[ThemeEditor alloc] init];
-	[_themeEditor showWindow:_themeEditor.window];
-#endif
-}
-
-
 #pragma mark - Load selected theme for ALL documents
 
 - (void)loadThemeForAllDocuments
 {
 #if !TARGET_OS_IOS
-	NSArray* openDocuments = [[NSApplication sharedApplication] orderedDocuments];
+	NSArray* openDocuments = NSApplication.sharedApplication.orderedDocuments;
 	
-	for (Document* doc in openDocuments) {
+	for (id<BeatThemeManagedDocument>doc in openDocuments) {
 		[doc updateTheme];
 	}
 #endif

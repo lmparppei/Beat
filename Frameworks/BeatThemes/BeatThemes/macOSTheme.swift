@@ -7,32 +7,33 @@
 //
 
 import AppKit
+import BeatDynamicColor
 
-@objc class macOSTheme: NSObject, BeatTheme, NSCopying {
-	var backgroundColor: DynamicColor!
-	var selectionColor: DynamicColor!
-	var textColor: DynamicColor!
-	var invisibleTextColor: DynamicColor!
-	var caretColor: DynamicColor!
-	var commentColor: DynamicColor!
-	var marginColor: DynamicColor!
-	var outlineBackground: DynamicColor!
-	var outlineHighlight: DynamicColor!
-	var sectionTextColor: DynamicColor!
-	var synopsisTextColor: DynamicColor!
-	var pageNumberColor: DynamicColor!
-	var highlightColor: DynamicColor!
+@objc public class macOSTheme: NSObject, BeatTheme, NSCopying {
+	public var backgroundColor: DynamicColor!
+    public var selectionColor: DynamicColor!
+    public var textColor: DynamicColor!
+    public var invisibleTextColor: DynamicColor!
+    public var caretColor: DynamicColor!
+    public var commentColor: DynamicColor!
+    public var marginColor: DynamicColor!
+    public var outlineBackground: DynamicColor!
+    public var outlineHighlight: DynamicColor!
+    public var sectionTextColor: DynamicColor!
+    public var synopsisTextColor: DynamicColor!
+    public var pageNumberColor: DynamicColor!
+    public var highlightColor: DynamicColor!
 	
-	var genderWomanColor: DynamicColor!
-	var genderManColor: DynamicColor!
-	var genderOtherColor: DynamicColor!
-	var genderUnspecifiedColor: DynamicColor!
+    public var genderWomanColor: DynamicColor!
+    public var genderManColor: DynamicColor!
+    public var genderOtherColor: DynamicColor!
+    public var genderUnspecifiedColor: DynamicColor!
 	
 	
 	var propertyToValue:Dictionary<String, String>?
 	var name:String? = ""
 	
-	override init() {
+	override public init() {
 		super.init()
 		
 		propertyToValue = [
@@ -56,7 +57,7 @@ import AppKit
 		]
 	}
 	
-	func themeAsDictionary(withName name: String!) -> [AnyHashable : Any]! {
+	public func themeAsDictionary(withName name: String!) -> [AnyHashable : Any]! {
 		var themeName = name
 		if (themeName == "") {
 			themeName = self.name
@@ -84,7 +85,7 @@ import AppKit
 		return result
 	}
 	
-	override func copy() -> Any {
+	override public func copy() -> Any {
 		let theme = macOSTheme()
 
 		for key:String in self.propertyToValue!.keys {
@@ -95,7 +96,7 @@ import AppKit
 		return theme
 	}
 	
-	func copy(with zone: NSZone? = nil) -> Any {
+	public func copy(with zone: NSZone? = nil) -> Any {
 		let theme = macOSTheme()
 
 		for key:String in self.propertyToValue!.keys {

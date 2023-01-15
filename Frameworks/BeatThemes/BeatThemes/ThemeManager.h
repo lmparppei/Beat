@@ -7,6 +7,7 @@
 //
 
 #import <TargetConditionals.h>
+#import <BeatDynamicColor/BeatDynamicColor.h>
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>
@@ -14,24 +15,25 @@
 #else
 	#import <Cocoa/Cocoa.h>
 	#define BXColor NSColor
-	#import "ThemeEditor.h"
 #endif
 
-#import "DynamicColor.h"
-#import "BeatTheme.h"
+//#import "BeatTheme.h"
 
 @protocol BeatTheme;
-@interface ThemeManager : NSObject
 
-#if !TARGET_OS_IOS
-@property (nonatomic) ThemeEditor *themeEditor;
-#endif
+@protocol BeatThemeDelegate
+- (NSURL*)appDataPath:(NSString*)path;
+@end
+@protocol BeatThemeManagedDocument
+- (void)updateTheme;
+@end
+
+
+@interface ThemeManager : NSObject
 
 @property (nonatomic) id<BeatTheme> theme;
 
 + (ThemeManager*)sharedManager;
-
-- (void)showEditor;
 
 - (id<BeatTheme>)defaultTheme;
 - (id<BeatTheme>)dictionaryToTheme:(NSDictionary*)values;

@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import BeatDynamicColor
 
-class iOSTheme: NSObject, BeatTheme, NSCopying {
+@objc public class iOSTheme: NSObject, BeatTheme, NSCopying {
 	var backgroundColor: DynamicColor!
 	var selectionColor: DynamicColor!
 	var textColor: DynamicColor!
