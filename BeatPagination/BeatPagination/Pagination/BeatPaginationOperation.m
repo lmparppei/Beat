@@ -266,12 +266,14 @@
 		[self.pages removeLastObject];
 		[self.pageBreaks removeLastObject];
 	}
-		
-	NSArray *cachedPages = [self.pageCache subarrayWithRange:NSMakeRange(pageIndex, self.pageCache.count - pageIndex)];
-	[self.pages addObjectsFromArray:cachedPages];
-	
-	NSArray *cachedLineBreaks = [self.pageBreakCache subarrayWithRange:NSMakeRange(pageIndex + 1, self.pageBreakCache.count - pageIndex - 1)];
-	[self.pageBreaks addObjectsFromArray:cachedLineBreaks];
+    
+    if (pageIndex < self.pageCache.count) {
+        NSArray *cachedPages = [self.pageCache subarrayWithRange:NSMakeRange(pageIndex, self.pageCache.count - pageIndex)];
+        [self.pages addObjectsFromArray:cachedPages];
+        
+        NSArray *cachedLineBreaks = [self.pageBreakCache subarrayWithRange:NSMakeRange(pageIndex + 1, self.pageBreakCache.count - pageIndex - 1)];
+        [self.pageBreaks addObjectsFromArray:cachedLineBreaks];
+    }
 }
 
 - (void)getPaperSizeFromDocument {
