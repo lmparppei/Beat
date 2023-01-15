@@ -15,8 +15,9 @@
  
  */
 
+#import <BeatThemes/BeatThemes.h>
+
 #import "ScrollView.h"
-#import "DynamicColor.h"
 #import "BeatTextView.h"
 #import "Beat-Swift.h"
 #import "BeatTextView.h"

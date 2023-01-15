@@ -7,10 +7,12 @@
 //
 //  Buttons at the top of the editor
 
+#import <BeatThemes/BeatThemes.h>
 #import "BeatEditorButton.h"
 #import "BeatAppDelegate.h"
 #import "BeatColors.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
+
 
 IB_DESIGNABLE
 @interface BeatEditorButton ()

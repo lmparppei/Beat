@@ -22,7 +22,6 @@
 */
 
 #import <Cocoa/Cocoa.h>
-#import "BeatAppDelegate.h"
 
 @interface DynamicColor ()
 @property (nonatomic, strong, readonly) NSColor *effectiveColor;
@@ -80,12 +79,13 @@
 	if (!NSThread.isMainThread) return self.aquaColor;
 
 	if (@available(macOS 10.14, *)) {
-		NSAppearance *appearance = [NSAppearance currentAppearance] ?: [NSApp effectiveAppearance];
+		id<BeatDarknessDelegate> delegate = (id<BeatDarknessDelegate>)NSApp.delegate;
+		
+		NSAppearance *appearance = NSAppearance.currentAppearance ?: NSApp.effectiveAppearance;
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		
 		if (self.darkAquaColor != nil &&
-			([appearanceName isEqualToString:NSAppearanceNameDarkAqua] ||
-			[(BeatAppDelegate*)NSApp.delegate isDark]))
+			([appearanceName isEqualToString:NSAppearanceNameDarkAqua] || delegate.isDark))
 		{
 			return self.darkAquaColor;
 		}

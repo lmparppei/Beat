@@ -8,6 +8,7 @@
 
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatThemes/BeatThemes.h>
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
@@ -24,7 +25,7 @@
 #endif
 
 #import "BeatEditorDelegate.h"
-#import "DynamicColor.h"
+//#import "DynamicColor.h"
 #import "BeatColors.h"
 
 @class BeatTag;

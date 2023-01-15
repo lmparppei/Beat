@@ -6,11 +6,12 @@
 //  Copyright © 2020 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatThemes/BeatThemes.h>
+#import <QuartzCore/QuartzCore.h>
+
 #import "BeatTimerView.h"
-#import "DynamicColor.h"
 #import "BeatColors.h"
 #import "ScrollView.h"
-#import <QuartzCore/QuartzCore.h>
 
 @interface BeatTimerView ()
 @property (nonatomic, weak) IBOutlet ScrollView *parentView;

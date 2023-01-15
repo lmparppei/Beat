@@ -6,6 +6,10 @@
 // macOS implementation
 #import <Cocoa/Cocoa.h>
 
+@protocol BeatDarknessDelegate
+- (bool)isDark;
+@end
+
 @interface DynamicColor : NSColor <NSCopying>
 @property (nonatomic, strong, nonnull) NSColor *aquaColor;
 @property (nonatomic, strong, nullable) NSColor *darkAquaColor;

@@ -6,9 +6,10 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatThemes/BeatThemes.h>
 #import "BeatSegmentedControl.h"
 #import "BeatSegmentedCell.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
 #import "BeatEditorDelegate.h"
 #import "BeatSidebarTabView.h"
 #import "BeatWidgetView.h"
@@ -50,14 +51,17 @@
 - (void)awakeFromNib
 {
 	[self.cell setTrackingMode:NSSegmentSwitchTrackingSelectOne];
+	
+	self.wantsLayer = true;
+	self.layer.backgroundColor = ThemeManager.sharedManager.outlineBackground.CGColor;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
 {
-	NSRect rect = [self bounds];
-	rect.size.height -= 1;
-	
 	[self.cell drawWithFrame:self.frame inView:self];
+	
+	NSRect rect = self.bounds;
+	rect.size.height -= 1;
 	[self drawItems:rect];
 	
 }

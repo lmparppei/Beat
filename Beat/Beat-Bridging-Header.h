@@ -11,6 +11,7 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatThemes/BeatThemes.h>
 
 #import "RecentFiles.h"
 #import "BeatAppDelegate.h"
@@ -18,9 +19,9 @@
 #import "Document.h"
 #import "BeatNotepad.h"
 #import "BeatLocalization.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
+//#import "BeatTheme.h"
 #import "BeatPrintDialog.h"
-#import "BeatTheme.h"
 #import "BeatFonts.h"
 #import "BeatTextView.h"
 #import "BeatUserDefaults.h"

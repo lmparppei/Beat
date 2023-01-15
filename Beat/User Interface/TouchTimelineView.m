@@ -13,9 +13,10 @@
 */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatThemes/BeatThemes.h>
 #import "TouchTimelineView.h"
 #import "BeatColors.h"
-#import "DynamicColor.h"
+//#import "DynamicColor.h"
 
 @interface TouchTimelineView()
 @property NSMutableArray *items;

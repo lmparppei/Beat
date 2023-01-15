@@ -14,6 +14,8 @@
 #import <os/log.h>
 #import <StoreKit/StoreKit.h>
 
+#import <BeatThemes/BeatThemes.h>
+
 #import "BeatAppDelegate.h"
 #import "RecentFiles.h"
 #import "BeatFileImport.h"
@@ -37,7 +39,7 @@
 
 #define APPNAME @"Beat"
 
-@interface BeatAppDelegate ()
+@interface BeatAppDelegate () <BeatThemeDelegate>
 @property (nonatomic) IBOutlet NSMenuItem *checkForUpdatesItem;
 @property (nonatomic) IBOutlet NSMenuItem *menuManual;
 @property (nonatomic) IBOutlet BeatPluginManager *pluginManager; // Set main ownership to avoid leaks

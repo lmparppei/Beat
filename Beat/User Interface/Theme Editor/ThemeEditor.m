@@ -6,10 +6,11 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatDynamicColor/BeatDynamicColor.h>
+#import <Cocoa/Cocoa.h>
 #import "ThemeEditor.h"
-#import <BeatThemes/BeatThemes.h>
-//#import "ThemeManager.h"
-#import "Beat-Swift.h"
+#import "ThemeManager.h"
+#import "BeatThemes-Swift.h"
 
 @interface ThemeEditor ()
 @property (nonatomic, weak) IBOutlet NSColorWell *backgroundLight;

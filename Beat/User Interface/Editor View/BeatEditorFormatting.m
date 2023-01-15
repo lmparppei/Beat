@@ -13,8 +13,9 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatThemes/BeatThemes.h>
 #import "BeatEditorFormatting.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
 #import "BeatColors.h"
 #import "BeatRevisions.h"
 #import "BeatTagging.h"
@@ -523,9 +524,14 @@ static NSString *strikeoutSymbolClose = @"}}";
 	}
 	
 	// Color markers
-	else if (line.marker.length && line.markerRange.length) {
-		NSColor *color = [BeatColors color:line.marker];
+	else if (line.markerRange.length) {
+		NSColor *color;
+				
+		if (line.marker.length == 0) color = [BeatColors color:@"orange"];
+		else color = [BeatColors color:line.marker];
+		
 		NSRange markerRange = line.markerRange;
+		
 		if (color) [self setForegroundColor:color line:line range:markerRange];
 	}
 }

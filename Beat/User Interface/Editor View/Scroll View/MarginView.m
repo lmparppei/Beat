@@ -8,8 +8,9 @@
 //  This draws a "paper" view under BeatTextView using a CALayer
 
 #import "MarginView.h"
-#import "DynamicColor.h"
-#import "ThemeManager.h"
+//#import "DynamicColor.h"
+//#import "ThemeManager.h"
+#import <BeatThemes/BeatThemes.h>
 #import <QuartzCore/QuartzCore.h>
 
 #define WHITESPACE 50

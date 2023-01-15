@@ -9,9 +9,10 @@
 //#import <Cocoa/Cocoa.h>
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatThemes/BeatThemes.h>
 #import "OutlineViewItem.h"
 #import "BeatColors.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
 
 #define SECTION_FONTSIZE 13.0
 #define SYNOPSE_FONTSIZE 12.0

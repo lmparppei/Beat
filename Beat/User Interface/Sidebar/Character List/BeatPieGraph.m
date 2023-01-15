@@ -9,7 +9,8 @@
 #import "BeatPieGraph.h"
 #import "BeatColors.h"
 #import <QuartzCore/QuartzCore.h>
-#import "ThemeManager.h"
+#import <BeatThemes/BeatThemes.h>
+//#import "ThemeManager.h"
 
 @interface BeatPieGraph ()
 @property (nonatomic, weak) IBOutlet NSTextField *textField;
@@ -40,6 +41,7 @@
 }
 
 - (void)setup {
+	ThemeManager* t = ThemeManager.sharedManager;
 	
 	self.wantsLayer = YES;
 	self.graphLayers = [NSMutableArray array];
@@ -70,7 +72,7 @@
 }
 
 - (void)pieChartForData:(NSArray*)items {
-	NSMutableDictionary *data = [NSMutableDictionary dictionary];
+	NSMutableDictionary *data = NSMutableDictionary.new;
 	NSInteger total = items.count;
 	
 	for (NSString *item in items) {

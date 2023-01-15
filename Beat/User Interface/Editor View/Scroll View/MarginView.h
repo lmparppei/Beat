@@ -7,11 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "DynamicColor.h"
 #import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DynamicColor;
 @interface MarginView : NSView
 @property (nonatomic, weak) IBOutlet id<BeatEditorDelegate> editor;
 @property (nonatomic, weak) DynamicColor *backgroundColor;

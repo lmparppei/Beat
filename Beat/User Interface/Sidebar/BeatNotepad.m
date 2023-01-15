@@ -14,10 +14,12 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <QuartzCore/QuartzCore.h>
+#import <BeatThemes/BeatThemes.h>
 
 #import "BeatNotepad.h"
 #import "BeatColors.h"
-#import "ThemeManager.h"
+//#import "ThemeManager.h"
+
 #import "ColorCheckbox.h"
 
 @interface BeatNotepad ()
