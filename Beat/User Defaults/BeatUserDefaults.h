@@ -11,6 +11,37 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BeatUserDefaults : NSObject
+
+extern NSString * const BeatSettingMatchParentheses;
+extern NSString * const BeatSettingShowPageNumbers;
+extern NSString * const BeatSettingShowSceneNumbers;
+extern NSString * const BeatSettingPrintSceneNumbers;
+extern NSString * const BeatSettingAutosave;
+extern NSString * const BeatSettingTypewriterMode;
+extern NSString * const BeatSettingHideFountainMarkup;
+extern NSString * const BeatSettingAutocomplete;
+extern NSString * const BeatSettingUseSansSerif;
+extern NSString * const BeatSettingMagnification;
+extern NSString * const BeatSettingAutomaticLineBreaks;
+extern NSString * const BeatSettingUpdatePluginsAutomatically;
+extern NSString * const BeatSettingBackupURL;
+
+extern NSString * const  BeatSettingHeadingStyleBold;
+extern NSString * const  BeatSettingHeadingStyleUnderlined;
+extern NSString * const  BeatSettingDefaultPageSize;
+extern NSString * const  BeatSettingDisableFormatting;
+extern NSString * const  BeatSettingShowMarkersInScrollbar;
+extern NSString * const  BeatSettingSceneHeadingSpacing;
+extern NSString * const  BeatSettingScreenplayItemMore;
+extern NSString * const  BeatSettingScreenplayItemContd;
+extern NSString * const  BeatSettingShowRevisions;
+extern NSString * const  BeatSettingShowTags;
+extern NSString * const  BeatSettingAutomaticContd;
+extern NSString * const  BeatSettingZoomLevel;
+extern NSString * const  BeatSettingShowSynopsisInOutline;
+extern NSString * const  BeatSettingSuppressedAlert;
+
+
 + (BeatUserDefaults*)sharedDefaults;
 + (NSDictionary*)userDefaults;
 - (void)readUserDefaultsFor:(id)target;

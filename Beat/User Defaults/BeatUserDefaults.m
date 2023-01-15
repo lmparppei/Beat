@@ -34,19 +34,34 @@
 #define AUTOSAVE_KEY @"Autosave"
 #define AUTOCOMPLETE_KEY @"Autocomplete"
 
-NSString const * BeatSettingMatchParentheses = @"matchParentheses";
-NSString const * BeatSettingShowPageNumbers = @"showPageNumbers";
-NSString const * BeatSettingShowSceneNumbers = @"showSceneNumberLabels";
-NSString const * BeatSettingPrintSceneNumbers = @"printSceneNumbers";
-NSString const * BeatSettingAutosave = @"autosave";
-NSString const * BeatSettingTypewriterMode = @"typewriterMode";
-NSString const * BeatSettingHideFountainMarkup = @"hideFountainMarkup";
-NSString const * BeatSettingAutocomplete = @"autocomplete";
-NSString const * BeatSettingUseSansSerif = @"useSansSerif";
-NSString const * BeatSettingMagnification = @"magnification";
-NSString const * BeatSettingAutomaticLineBreaks = @"autoLineBreaks";
-NSString const * BeatSettingUpdatePluginsAutomatically = @"updatePluginsAutomatically";
-NSString const * BeatSettingBackupURL = @"backupURL";
+NSString* const BeatSettingMatchParentheses				= @"matchParentheses";
+NSString* const BeatSettingShowPageNumbers 				= @"showPageNumbers";
+NSString* const BeatSettingShowSceneNumbers 			= @"showSceneNumberLabels";
+NSString* const BeatSettingPrintSceneNumbers 			= @"printSceneNumbers";
+NSString* const BeatSettingAutosave 					= @"autosave";
+NSString* const BeatSettingTypewriterMode 				= @"typewriterMode";
+NSString* const BeatSettingHideFountainMarkup 			= @"hideFountainMarkup";
+NSString* const BeatSettingAutocomplete 				= @"autocomplete";
+NSString* const BeatSettingUseSansSerif 				= @"useSansSerif";
+NSString* const BeatSettingMagnification 				= @"magnification";
+NSString* const BeatSettingAutomaticLineBreaks 			= @"autoLineBreaks";
+NSString* const BeatSettingUpdatePluginsAutomatically 	= @"updatePluginsAutomatically";
+NSString* const BeatSettingBackupURL 					= @"backupURL";
+
+NSString* const BeatSettingHeadingStyleBold 			= @"headingStyleBold";
+NSString* const BeatSettingHeadingStyleUnderlined		= @"headingStyleUnderline";
+NSString* const BeatSettingDefaultPageSize 				= @"defaultPageSize";
+NSString* const BeatSettingDisableFormatting 			= @"disableFormatting";
+NSString* const BeatSettingShowMarkersInScrollbar 		= @"showMarkersInScrollbar";
+NSString* const BeatSettingSceneHeadingSpacing 			= @"sceneHeadingSpacing";
+NSString* const BeatSettingScreenplayItemMore 			= @"screenplayItemMore";
+NSString* const BeatSettingScreenplayItemContd 			= @"screenplayItemContd";
+NSString* const BeatSettingShowRevisions 				= @"showRevisions";
+NSString* const BeatSettingShowTags	 					= @"showTags";
+NSString* const BeatSettingAutomaticContd 				= @"automaticContd";
+NSString* const BeatSettingZoomLevel	 				= @"zoomLevel";
+NSString* const BeatSettingShowSynopsisInOutline		= @"showSynopsisInOutline";
+NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
 
 + (BeatUserDefaults*)sharedDefaults
 {
@@ -78,20 +93,23 @@ NSString const * BeatSettingBackupURL = @"backupURL";
 		BeatSettingPrintSceneNumbers: @[PRINT_SCENE_NUMBERS_KEY, @YES],
 		BeatSettingMagnification: @[BeatSettingMagnification, @(DEFAULT_MAGNIFICATION)],
 		BeatSettingUpdatePluginsAutomatically: @[BeatSettingUpdatePluginsAutomatically, @YES],
-		@"headingStyleBold": @[@"headingStyleBold", @YES],
-		@"headingStyleUnderline": @[@"headingStyleUnderline", @NO],
-		@"defaultPageSize": @[@"defaultPageSize", @(pageSize)],
-		@"disableFormatting": @[@"disableFormatting", @NO],
-		@"showMarkersInScrollbar": @[@"showMarkersInScrollbar", @NO],
-		@"sceneHeadingSpacing": @[@"sceneHeadingSpacing", @2],
-		@"screenplayItemMore": @[@"screenplayItemMore", @"MORE"],
-		@"screenplayItemContd": @[@"screenplayItemContd", @"CONT'D"],
-		@"showRevisions": @[@"showRevisions", @YES],
-		@"showTags": @[@"showTags", @YES],
-		@"automaticContd": @[@"automaticContd", @YES],
-		@"zoomLevel": @[@"zoomLevel", @0.97],
-		@"showSynopsisInOutline": @[@"showSynopsisInOutline", @YES],
-		BeatSettingBackupURL: @[BeatSettingBackupURL, @""]
+		BeatSettingHeadingStyleBold: @[BeatSettingHeadingStyleBold, @YES],
+		BeatSettingHeadingStyleUnderlined: @[BeatSettingHeadingStyleUnderlined, @NO],
+		
+		BeatSettingDefaultPageSize: @[BeatSettingDefaultPageSize, @(pageSize)],
+		BeatSettingDisableFormatting: @[BeatSettingDisableFormatting, @NO],
+		BeatSettingShowMarkersInScrollbar: @[BeatSettingShowMarkersInScrollbar, @NO],
+		BeatSettingSceneHeadingSpacing: @[BeatSettingSceneHeadingSpacing, @2],
+		BeatSettingScreenplayItemMore: @[BeatSettingScreenplayItemMore, @"MORE"],
+		BeatSettingScreenplayItemContd: @[BeatSettingScreenplayItemContd, @"CONT'D"],
+		BeatSettingShowRevisions: @[BeatSettingShowRevisions, @YES],
+		BeatSettingShowTags: @[BeatSettingShowTags, @YES],
+		BeatSettingAutomaticContd: @[BeatSettingAutomaticContd, @YES],
+		BeatSettingZoomLevel: @[BeatSettingZoomLevel, @0.97],
+		BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
+		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
+		
+		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""]
 	};
 }
 
@@ -158,6 +176,7 @@ NSString const * BeatSettingBackupURL = @"backupURL";
 		return [NSUserDefaults.standardUserDefaults integerForKey:settingKey];
 	}
 }
+
 - (CGFloat)getFloat:(NSString*)docKey
 {
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
@@ -170,6 +189,7 @@ NSString const * BeatSettingBackupURL = @"backupURL";
 		return [NSUserDefaults.standardUserDefaults floatForKey:settingKey];
 	}
 }
+
 - (BOOL)getBool:(NSString*)docKey
 {
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
@@ -182,6 +202,7 @@ NSString const * BeatSettingBackupURL = @"backupURL";
 		return [NSUserDefaults.standardUserDefaults boolForKey:settingKey];
 	}
 }
+
 - (__nullable id)get:(NSString*)docKey {
 	if (docKey == nil || docKey.length == 0) return nil;
 	
@@ -207,7 +228,7 @@ NSString const * BeatSettingBackupURL = @"backupURL";
 }
 
 - (BOOL)isSuppressed:(NSString*)key {
-	NSDictionary *suppressions = [NSUserDefaults.standardUserDefaults objectForKey:@"suppressedAlerts"];
+	NSDictionary *suppressions = [NSUserDefaults.standardUserDefaults objectForKey:BeatSettingSuppressedAlert];
 	if (![suppressions objectForKey:key]) {
 		return NO;
 	} else {
@@ -216,12 +237,12 @@ NSString const * BeatSettingBackupURL = @"backupURL";
 }
 
 - (void)setSuppressed:(NSString *)key value:(bool)value {
-	NSMutableDictionary *suppressions = [[NSUserDefaults.standardUserDefaults objectForKey:@"suppressedAlerts"] mutableCopy];
+	NSMutableDictionary *suppressions = [[NSUserDefaults.standardUserDefaults objectForKey:BeatSettingSuppressedAlert] mutableCopy];
 	if (!suppressions) suppressions = NSMutableDictionary.new;
 		
 
 	[suppressions setObject:@(value) forKey:key];
-	[NSUserDefaults.standardUserDefaults setValue:suppressions forKey:@"suppressedAlerts"];
+	[NSUserDefaults.standardUserDefaults setValue:suppressions forKey:BeatSettingSuppressedAlert];
 }
 
 - (void)saveBool:(bool)value forKey:(NSString*)key
