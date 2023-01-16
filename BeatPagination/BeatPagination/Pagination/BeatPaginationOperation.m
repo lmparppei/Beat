@@ -351,7 +351,6 @@
 		
 		Line *element = self.script[i];
 		
-		
 		// Skip element if it's not in the specified range for pagination
 		if (fromIndex > 0 && NSMaxRange(element.textRange) < fromIndex) continue;
 		// ... also if it's empty or non-printed
@@ -653,7 +652,7 @@
 	return [self heightForBlock:block page:nil];
 }
 
-- (NSInteger)heightForBlock:(NSArray<Line*>*)block page:(BeatPage*)currentPage {
+- (NSInteger)heightForBlock:(NSArray<Line*>*)block page:(BeatPage*)currentPage {    
 	if (block.firstObject.isDialogue || block.firstObject.isDualDialogue) {
 		return [self heightForDialogueBlock:block page:currentPage];
 	}
@@ -977,12 +976,11 @@
 		// BTW, a much more sensible approach would be to just add scene headings as-is and then
 		// drag them on next page if a block was moved in its entirety on the next page.
 		// This would fix so many things.
-		
+        if (!_livePagination) NSLog(@"BREAKING %@", block);
 		if (element.type == heading || element.type == action) {
 			// Push to next page if it the split would be only 1 line or something
 			if ((element.type == heading && fullHeight - fabs(overflow) < lineHeight * 4.5 && fabs(overflow) >= BeatPaginator.lineHeight) ||
 				(fullHeight - fabs(overflow) < lineHeight * 2 && fabs(overflow) < BeatPaginator.lineHeight * 2)) {
-				
 				[self resetPage:currentPage onCurrentPage:@[] onNextPage:block];
 				[self pageBreak:element position:0 type:@"Move the beginning of scene on next page"];
 				return;

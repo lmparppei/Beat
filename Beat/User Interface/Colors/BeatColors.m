@@ -18,7 +18,7 @@
 {
 	static BeatColors* sharedColors;
 	if (!sharedColors) {
-		sharedColors = [[BeatColors alloc] init];
+		sharedColors = BeatColors.new;
 	}
 	return sharedColors;
 }

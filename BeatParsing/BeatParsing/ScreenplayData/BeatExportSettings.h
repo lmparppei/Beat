@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) NSString * _Nullable currentScene;
 @property (nonatomic) NSArray * revisions;
 @property (nonatomic) BeatPaperSize paperSize;
+@property (nonatomic) NSInteger sceneHeadingSpacing;
 
 /// Styles for new pagination / export system
 @property (nonatomic) id _Nullable styles;

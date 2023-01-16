@@ -337,6 +337,8 @@ static CGFloat panelWidth;
 	settings.paperSize = self.documentDelegate.pageSize;
 	settings.customCSS = css;
 	
+	settings.sceneHeadingSpacing = [BeatUserDefaults.sharedDefaults getInteger:BeatSettingSceneHeadingSpacing];
+	
 	return settings;
 }
 

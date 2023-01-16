@@ -285,6 +285,8 @@
 	else if (line.type == heading) {
 		// Get user default for scene heading spacing
         NSInteger spacingBeforeHeading = self.delegate.spaceBeforeHeading;
+        if (spacingBeforeHeading == 0) spacingBeforeHeading = self.settings.sceneHeadingSpacing;
+        
 		return BeatPaginator.lineHeight * spacingBeforeHeading;
 	}
 	else if (line.type == character || line.type == dualDialogueCharacter) return BeatPaginator.lineHeight;

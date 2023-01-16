@@ -1166,6 +1166,12 @@ static NSDictionary* patterns;
             }
         }
         
+        // Check for transitions
+        NSRange transitionRange = [trimmedString rangeOfString:@"TO:"];
+        if (transitionRange.location != NSNotFound && transitionRange.location == trimmedString.length - 3) {
+            return transitionLine;
+        }
+        
         // Character
         if (line.string.onlyUppercaseUntilParenthesis && !containsOnlyWhitespace && line.noteRanges.firstIndex != 0) {
             // A character line ending in ^ is a dual dialogue character
@@ -1213,11 +1219,7 @@ static NSDictionary* patterns;
         if (line.length > 0 && [line.string characterAtIndex:0] == '(') return parenthetical;
         else return dialogue;
     }
-     
-    // Check for transitions
-    NSRange transitionRange = [trimmedString rangeOfString:@"TO:"];
-    if (transitionRange.location == trimmedString.length - 3 && transitionRange.location != NSNotFound) return transitionLine;
-    
+        
     return action;
 }
 

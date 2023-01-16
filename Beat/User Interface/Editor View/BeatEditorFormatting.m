@@ -67,6 +67,8 @@ static NSString *underlinedSymbol = @"_";
 static NSString *strikeoutSymbolOpen = @"{{";
 static NSString *strikeoutSymbolClose = @"}}";
 
+static NSString* const BeatRepresentedLineKey = @"representedLine";
+
 + (CGFloat)editorLineHeight {
 	return 16.0;
 }
@@ -207,8 +209,15 @@ static NSString *strikeoutSymbolClose = @"}}";
 	if (firstTime || line.position == textView.string.length) attributes = NSMutableDictionary.new;
 	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
 	
+	// Store the represented line 
+	NSRange fullRange = line.range;
+	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length--;
+	[textStorage addAttribute:BeatRepresentedLineKey value:line range:fullRange];
+	
 	// Don't overwrite revision attribute
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
+	// Don't overwrite represented line attribute
+	[attributes removeObjectForKey:BeatRepresentedLineKey];
 	
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff when formatting is disabled

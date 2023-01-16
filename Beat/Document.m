@@ -2925,13 +2925,16 @@ static bool _skipAutomaticLineBreaks = false;
 	if (self.currentTab != _editorTab) {
 		// If PRINT PREVIEW is enabled
 		if (self.currentTab == _previewTab) {
-			
 			if (menuItem.action == @selector(preview:)) {
 				[menuItem setState:NSOnState];
 				return YES;
 			}
-			if (menuItem.action == @selector(zoomIn:)) return YES;
-			if (menuItem.action == @selector(zoomOut:)) return YES;
+			
+			if (menuItem.action == @selector(zoomIn:) ||
+				menuItem.action == @selector(zoomOut:) ||
+				menuItem.action == @selector(openPrintPanel:) ||
+				menuItem.action == @selector(openPDFPanel:)
+				) return YES;			
 		}
 		
 		// If CARD VIEW is enabled
@@ -3061,7 +3064,7 @@ static bool _skipAutomaticLineBreaks = false;
 		}
 	}
 	
-	// So, I have overriden everything regarding undo (because I couldn't figure it out).
+	// So, I have overriden everything regarding undo (because I couldn't figure it out)
 	// That's why we need to handle enabling/disabling undo manually. This sucks.
 	else if (menuItem.action == @selector(undoEdit:)) {
 		menuItem.title = [NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"general.undo", nil), [self.undoManager undoActionName]];
@@ -4718,7 +4721,7 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 - (NSInteger)spaceBeforeHeading {
-	return [BeatUserDefaults.sharedDefaults getInteger:@"sceneHeadingSpacing"];
+	return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingSceneHeadingSpacing];
 }
 
 #pragma mark - For avoiding throttling
