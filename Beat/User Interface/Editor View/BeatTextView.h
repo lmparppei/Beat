@@ -10,8 +10,6 @@
 #import <Cocoa/Cocoa.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
-//#import "ThemeManager.h"
-//#import "DynamicColor.h"
 #import "BeatTagging.h"
 #import "BeatTextStorage.h"
 

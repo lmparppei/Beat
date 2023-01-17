@@ -99,8 +99,7 @@
 
 #import "BeatHTMLScript.h"
 #import <BeatParsing/BeatParsing.h>
-//#import "FountainRegexes.h"
-#import "BeatUserDefaults.h"
+#import <BeatDefaults/BeatDefaults.h>
 #import "BeatMeasure.h"
 
 #define PRINT_CSS @"ScreenplayStyles"
@@ -204,8 +203,8 @@ static bool underlinedHeading;
 
 
 - (NSString*)htmlHeader {
-	NSURL *templateUrl = [NSBundle.mainBundle URLForResource:@"HeaderTemplate" withExtension:@"html"];
-	NSString *template = [NSString stringWithContentsOfURL:templateUrl encoding:NSUTF8StringEncoding error:nil];
+	NSURL* templateUrl = [NSBundle.mainBundle URLForResource:@"HeaderTemplate" withExtension:@"html"];
+	NSString* template = [NSString stringWithContentsOfURL:templateUrl encoding:NSUTF8StringEncoding error:nil];
 	
 	NSString *bodyClasses = @"";
 	

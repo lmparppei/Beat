@@ -11,7 +11,6 @@
 #import "BeatEditorButton.h"
 #import "BeatAppDelegate.h"
 #import "BeatColors.h"
-//#import "ThemeManager.h"
 
 
 IB_DESIGNABLE

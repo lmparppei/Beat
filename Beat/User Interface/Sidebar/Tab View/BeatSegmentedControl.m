@@ -9,7 +9,6 @@
 #import <BeatThemes/BeatThemes.h>
 #import "BeatSegmentedControl.h"
 #import "BeatSegmentedCell.h"
-//#import "ThemeManager.h"
 #import "BeatEditorDelegate.h"
 #import "BeatSidebarTabView.h"
 #import "BeatWidgetView.h"

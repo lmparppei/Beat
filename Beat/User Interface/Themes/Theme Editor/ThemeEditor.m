@@ -8,7 +8,6 @@
 
 #import "ThemeEditor.h"
 #import <BeatThemes/BeatThemes.h>
-//#import "ThemeManager.h"
 #import "Beat-Swift.h"
 
 @interface ThemeEditor ()

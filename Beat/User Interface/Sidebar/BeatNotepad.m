@@ -18,7 +18,6 @@
 
 #import "BeatNotepad.h"
 #import "BeatColors.h"
-//#import "ThemeManager.h"
 
 #import "ColorCheckbox.h"
 

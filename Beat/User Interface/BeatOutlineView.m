@@ -15,13 +15,12 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatDefaults/BeatDefaults.h>
 #import "BeatOutlineView.h"
-//#import "ThemeManager.h"
 #import "SceneFiltering.h"
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
 #import "BeatMeasure.h"
-#import "BeatUserDefaults.h"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"

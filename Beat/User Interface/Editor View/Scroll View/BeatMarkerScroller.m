@@ -11,9 +11,9 @@
  
  */
 
+#import <BeatDefaults/BeatDefaults.h>
 #import "BeatMarkerScroller.h"
 #import "BeatColors.h"
-#import "BeatUserDefaults.h"
 
 @interface BeatMarkerScroller ()
 @property (nonatomic) NSArray *markers;

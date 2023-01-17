@@ -6,8 +6,8 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatDefaults/BeatDefaults.h>
 #import "BeatPreferencesPanel.h"
-#import "BeatUserDefaults.h"
 #import "Document.h"
 #import "BeatModalInput.h"
 #import "BeatFonts.h"

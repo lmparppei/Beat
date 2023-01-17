@@ -15,7 +15,6 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import "BeatEditorFormatting.h"
-//#import "ThemeManager.h"
 #import "BeatColors.h"
 #import "BeatRevisions.h"
 #import "BeatTagging.h"
@@ -209,7 +208,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (firstTime || line.position == textView.string.length) attributes = NSMutableDictionary.new;
 	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
 	
-	// Store the represented line 
+	// Store the represented line
 	NSRange fullRange = line.range;
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length--;
 	[textStorage addAttribute:BeatRepresentedLineKey value:line range:fullRange];

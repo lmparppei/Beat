@@ -11,7 +11,6 @@
 #import "BeatCharacterList.h"
 #import "BeatColors.h"
 #import "BeatPieGraph.h"
-//#import "ThemeManager.h"
 
 @interface BeatCharacter : NSObject
 @property (nonatomic) NSString *name;

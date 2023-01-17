@@ -32,10 +32,8 @@
 #import <BeatThemes/BeatThemes.h>
 
 #import "BeatTextView.h"
-//#import "DynamicColor.h"
 #import "ScrollView.h"
 #import "BeatColors.h"
-//#import "ThemeManager.h"
 #import "BeatPasteboardItem.h"
 #import "BeatMeasure.h"
 #import "BeatRevisionItem.h"
@@ -1654,7 +1652,12 @@ double clamp(double d, double min, double max) {
 	
 	// We create both a plaintext string & a custom pasteboard object
 	NSString *string = [self.string substringWithRange:self.selectedRange];
-	BeatPasteboardItem *item = [[BeatPasteboardItem alloc] initWithAttrString:[self.attributedString attributedSubstringFromRange:self.selectedRange]];
+	NSMutableAttributedString* attrString = [self.attributedString attributedSubstringFromRange:self.selectedRange].mutableCopy;
+	
+	// Remove the represented line, because it can't be encoded
+	if (attrString.length) [attrString removeAttribute:@"representedLine" range:NSMakeRange(0, attrString.length)];
+	
+	BeatPasteboardItem *item = [[BeatPasteboardItem alloc] initWithAttrString:attrString];
 	
 	// Copy them on pasteboard
 	NSArray *copiedObjects = @[item, string];
@@ -1669,6 +1672,7 @@ double clamp(double d, double min, double max) {
 }
 
 -(void)paste:(id)sender {
+	
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
 	NSArray *classArray = @[NSString.class, BeatPasteboardItem.class];
 	NSDictionary *options = [NSDictionary dictionary];

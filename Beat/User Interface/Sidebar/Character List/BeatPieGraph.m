@@ -10,7 +10,6 @@
 #import "BeatColors.h"
 #import <QuartzCore/QuartzCore.h>
 #import <BeatThemes/BeatThemes.h>
-//#import "ThemeManager.h"
 
 @interface BeatPieGraph ()
 @property (nonatomic, weak) IBOutlet NSTextField *textField;

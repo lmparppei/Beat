@@ -15,9 +15,9 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatDefaults/BeatDefaults.h>
 #import "BeatRevisions.h"
 #import "BeatLocalization.h"
-#import "BeatUserDefaults.h"
 #import "BeatAppDelegate.h"
 #import "BeatAttributes.h"
 #import "BeatMeasure.h"
