@@ -38,6 +38,7 @@
 @class BeatPluginWindow;
 @class BeatPreview;
 @class BeatPreviewController;
+@class BeatExportSettings;
 
 @protocol BeatPluginExports <JSExport>
 @property (readonly) Line* currentLine;
@@ -263,6 +264,8 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 - (void)scrollToLineIndex:(NSInteger)index;
 - (void)scrollToSceneIndex:(NSInteger)index;
 - (void)scrollToScene:(OutlineScene*)scene;
+
+- (BeatExportSettings*)exportSettings;
 
 @end
 

@@ -1223,7 +1223,8 @@
 
 - (BeatPaginator*)paginator:(NSArray*)lines
 {
-	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines printInfo:_delegate.printInfo];
+	BeatExportSettings* settings = self.delegate.exportSettings;
+	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines settings:settings];
 	return paginator;
 }
 
