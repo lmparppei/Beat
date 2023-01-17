@@ -550,19 +550,19 @@
     return [self noteContentsWithRanges:false];
 }
 
-- (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges {
+- (NSMutableDictionary<NSValue*, NSString*>*)noteContentsAndRanges {
     return [self noteContentsWithRanges:true];
 }
 
 - (NSArray*)contentAndRangeForLastNoteWithPrefix:(NSString*)string {
     string = string.lowercaseString;
-    
+
     NSDictionary* notes = self.noteContentsAndRanges;
     NSRange noteRange = NSMakeRange(0, 0);
     NSString* noteContent = nil;
     
     // Iterate through notes and only accept the last one.
-    for (NSNumber* r in notes.allKeys) {
+    for (NSValue* r in notes.allKeys) {
         NSRange range = r.rangeValue;
         NSString* noteString = notes[r];
         NSInteger location = [noteString.lowercaseString rangeOfString:string].location;
@@ -581,18 +581,41 @@
     }
     
     if (noteContent != nil) {
-        return @[ [NSNumber valueWithRange:noteRange], noteContent ];
+        return @[ [NSValue valueWithRange:noteRange], noteContent ];
     } else {
         return nil;
     }
 }
 
 - (id)noteContentsWithRanges:(bool)withRanges {
-    __block NSMutableDictionary<NSNumber*, NSString*>* rangesAndStrings = NSMutableDictionary.new;
+    __block NSMutableDictionary<NSValue*, NSString*>* rangesAndStrings = NSMutableDictionary.new;
     __block NSMutableArray* strings = NSMutableArray.new;
     
+    
+    if (self.noteInIndices.count) {
+        NSRange range = NSMakeRange(0, self.noteInIndices.count);
+        NSString *noteIn = [self.string substringToIndex:self.noteInIndices.count];
+        if ([noteIn containsString:@"]]"]) noteIn = [noteIn substringToIndex:self.noteInIndices.count - 2];
+        
+        rangesAndStrings[[NSNumber valueWithRange:range]] = noteIn;
+        [strings insertObject:noteIn atIndex:0];
+    }
+    
+    if (self.noteOutIndices.count) {
+        NSRange range = NSMakeRange(self.noteOutIndices.firstIndex, self.noteOutIndices.count);
+        NSString* noteOut = [self.string substringFromIndex:self.noteOutIndices.firstIndex];
+        if ([noteOut containsString:@"[["]) noteOut = [noteOut substringFromIndex:self.noteOutIndices.firstIndex + 2];
+        
+        NSValue* rangeValue = [NSValue valueWithRange:range];
+        
+        if (rangeValue != nil && noteOut != nil) {
+            rangesAndStrings[rangeValue] = noteOut;
+            [strings addObject:noteOut];
+        }
+    }
+    
     [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-        if (range.length == @"[[".length * 2) return;
+        if (range.length <= @"[[".length * 2) return;
         
         NSInteger inspectedRange = -1;
         NSRange contentRange = NSMakeRange(0, 0);
@@ -624,21 +647,6 @@
         }
     }];
     
-    if (self.noteInIndices.count) {
-        NSRange range = NSMakeRange(0, self.noteInIndices.count);
-        NSString* string = [self.string substringToIndex:self.noteInIndices.count - 2];
-        
-        rangesAndStrings[[NSNumber valueWithRange:range]] = string;
-        [strings insertObject:string atIndex:0];
-    }
-    
-    if (self.noteOutIndices.count) {
-        NSRange range = NSMakeRange(self.noteOutIndices.firstIndex, self.noteOutIndices.count);
-        NSString* string = [self.string substringFromIndex:self.noteOutIndices.firstIndex + 2];
-        
-        rangesAndStrings[[NSNumber valueWithRange:range]] = string;
-        [strings addObject:string];
-    }
     
     if (withRanges) return rangesAndStrings;
     else return strings;

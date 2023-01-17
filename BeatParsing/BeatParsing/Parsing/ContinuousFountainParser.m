@@ -194,12 +194,12 @@ static NSDictionary* patterns;
 	NSUInteger sceneIndex = -1;
 	
 	Line *previousLine;
-	
+    
     for (NSString *rawLine in lines) {
         NSInteger index = _lines.count;
         Line* line = [[Line alloc] initWithString:rawLine position:position parser:self];
         [self parseTypeAndFormattingForLine:line atIndex:index];
-		
+        
 		// Quick fix for mistaking an ALL CAPS action to character cue
 		if (previousLine.type == character && (line.string.length < 1 || line.type == empty)) {
 			previousLine.type = [self parseLineTypeFor:line atIndex:index - 1];
@@ -895,7 +895,7 @@ static NSDictionary* patterns;
         
 	// Omits have stars in them, which can be mistaken for formatting characters.
 	// We store the omit asterisks into the "excluded" index set to avoid this mixup.
-    NSMutableIndexSet* excluded = [[NSMutableIndexSet alloc] init];
+    NSMutableIndexSet* excluded = NSMutableIndexSet.new;
 	
 	// First, we handle notes and omits, which can bleed over multiple lines.
 	// The cryptically named omitOut and noteOut mean that the line bleeds an omit out,
@@ -925,7 +925,7 @@ static NSDictionary* patterns;
 							   partOfBlock:previousLine.noteOut];
 	}
     
-	line.escapeRanges = [NSMutableIndexSet indexSet];
+    line.escapeRanges = NSMutableIndexSet.new;
 
     line.boldRanges = [self rangesInChars:charArray
                                  ofLength:length
@@ -960,7 +960,7 @@ static NSDictionary* patterns;
 	
 	// Intersecting indices between bold & italic are boldItalic
 	if (line.boldRanges.count && line.italicRanges.count) line.boldItalicRanges = [line.italicRanges indexesIntersectingIndexSet:line.boldRanges].mutableCopy;
-	else line.boldItalicRanges = [NSMutableIndexSet indexSet];
+    else line.boldItalicRanges = NSMutableIndexSet.new;
 	
     if (line.type == heading) {
 		line.sceneNumberRange = [self sceneNumberForChars:charArray ofLength:length];

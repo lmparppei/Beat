@@ -293,7 +293,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 // Note contents
 
 /// Returns a dictionary with the *actual range* (including brackets) as the key
-- (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges;
+- (NSMutableDictionary<NSValue*, NSString*>*)noteContentsAndRanges;
 /// Returns note content strings as an array
 - (NSArray*)noteContents;
 
