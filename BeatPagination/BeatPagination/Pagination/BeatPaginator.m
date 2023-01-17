@@ -237,8 +237,23 @@
 
 #pragma mark - More / Cont'd items
 
+- (NSString*)contdString {
+    if (self.settings.contd) return self.settings.contd;
+    else if (self.delegate) return self.delegate.contdString;
+    else {
+        return @" (CONT'D)";
+    }
+}
+
+- (NSString*)moreString {
+    if (self.settings.more) return self.settings.more;
+    else if (self.delegate) return self.delegate.moreString;
+    else return @"(MORE)";
+}
+
 - (Line*)contdLineFor:(Line*)line {
-    NSString *extension = self.delegate.contdString;
+    NSString *extension = [self contdString];
+    
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
 	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
@@ -252,7 +267,7 @@
 
 - (Line*)moreLineFor:(Line*)line {
 	LineType type = (line.isDualDialogue) ? dualDialogueMore : more;
-	Line *more = [Line.alloc initWithString:self.delegate.moreString type:type];
+	Line *more = [Line.alloc initWithString:[self moreString] type:type];
 	more.unsafeForPageBreak = YES;
 	return more;
 }
@@ -286,6 +301,7 @@
 		// Get user default for scene heading spacing
         NSInteger spacingBeforeHeading = self.delegate.spaceBeforeHeading;
         if (spacingBeforeHeading == 0) spacingBeforeHeading = self.settings.sceneHeadingSpacing;
+        if (spacingBeforeHeading == 0) spacingBeforeHeading = 2;
         
 		return BeatPaginator.lineHeight * spacingBeforeHeading;
 	}
@@ -347,14 +363,6 @@
 	return LINE_HEIGHT;
 }
 
-- (NSString *)contdString {
-    return _delegate.contdString;
-}
-
-
-- (NSString *)moreString {
-    return _delegate.moreString;
-}
 
 - (bool)boolForKey:(NSString*)key {
 	id value = [self valueForKey:key];

@@ -976,7 +976,7 @@
 		// BTW, a much more sensible approach would be to just add scene headings as-is and then
 		// drag them on next page if a block was moved in its entirety on the next page.
 		// This would fix so many things.
-        if (!_livePagination) NSLog(@"BREAKING %@", block);
+
 		if (element.type == heading || element.type == action) {
 			// Push to next page if it the split would be only 1 line or something
 			if ((element.type == heading && fullHeight - fabs(overflow) < lineHeight * 4.5 && fabs(overflow) >= BeatPaginator.lineHeight) ||

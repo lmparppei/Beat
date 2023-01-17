@@ -132,6 +132,9 @@
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
 
+- (NSString*)contdString;
+- (NSString*)moreString;
+
 - (Line*)currentLine;
 - (LineType)lineTypeAt:(NSInteger)index;
 
