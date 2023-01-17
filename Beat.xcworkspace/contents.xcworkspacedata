@@ -11,6 +11,9 @@
       location = "group:BeatParsing/BeatParsing.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:Frameworks/BeatDefaults/BeatDefaults.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:/Users/lmp/Koodaus/Beat/BeatPagination/BeatPaginationCore.xcodeproj">
    </FileRef>
    <FileRef

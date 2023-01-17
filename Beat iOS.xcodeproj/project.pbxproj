@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B60A9F3729774F6C00916FAA /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3629774F6C00916FAA /* BeatParsing.framework */; };
+		B60A9F3829774F6C00916FAA /* BeatParsing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3629774F6C00916FAA /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B60A9F3A29774F7A00916FAA /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3929774F7A00916FAA /* BeatThemes.framework */; };
+		B60A9F3B29774F7A00916FAA /* BeatThemes.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3929774F7A00916FAA /* BeatThemes.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B60A9F3D29774F8A00916FAA /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */; };
+		B60A9F3E29774F8B00916FAA /* BeatDefaults.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B60A9F4029774FA500916FAA /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3F29774FA400916FAA /* JavaScriptCore.framework */; };
 		B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
 		B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */; };
 		B686FF842971B65800789C8D /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B686FF832971B65800789C8D /* BeatPaginationCore.framework */; };
@@ -52,7 +59,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				B60A9F3E29774F8B00916FAA /* BeatDefaults.framework in Embed Frameworks */,
 				B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */,
+				B60A9F3829774F6C00916FAA /* BeatParsing.framework in Embed Frameworks */,
+				B60A9F3B29774F7A00916FAA /* BeatThemes.framework in Embed Frameworks */,
 				B686FF852971B65800789C8D /* BeatPaginationCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -61,6 +71,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B60A9F3629774F6C00916FAA /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B60A9F3929774F7A00916FAA /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B60A9F3F29774FA400916FAA /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
@@ -113,7 +127,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B60A9F3729774F6C00916FAA /* BeatParsing.framework in Frameworks */,
 				B69311BE296EDFF400CF4869 /* WebKit.framework in Frameworks */,
+				B60A9F3A29774F7A00916FAA /* BeatThemes.framework in Frameworks */,
+				B60A9F3D29774F8A00916FAA /* BeatDefaults.framework in Frameworks */,
+				B60A9F4029774FA500916FAA /* JavaScriptCore.framework in Frameworks */,
 				B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */,
 				B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */,
 				B686FF842971B65800789C8D /* BeatPaginationCore.framework in Frameworks */,
@@ -223,6 +241,10 @@
 		B69311B6296EDFF300CF4869 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B60A9F3F29774FA400916FAA /* JavaScriptCore.framework */,
+				B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */,
+				B60A9F3929774F7A00916FAA /* BeatThemes.framework */,
+				B60A9F3629774F6C00916FAA /* BeatParsing.framework */,
 				B686FF832971B65800789C8D /* BeatPaginationCore.framework */,
 				B69311C1296EE00500CF4869 /* BeatParsing.framework */,
 				B69311BF296EDFFD00CF4869 /* UIKit.framework */,

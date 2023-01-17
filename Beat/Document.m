@@ -76,14 +76,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatDefaults/BeatDefaults.h>
 
 #import "Document.h"
 #import "ScrollView.h"
 #import "FDXInterface.h"
 #import "BeatPrintView.h"
 #import "ColorView.h"
-//#import "ThemeManager.h"
-//#import "DynamicColor.h"
 #import "BeatAppDelegate.h"
 #import "FountainAnalysis.h"
 #import "ColorCheckbox.h"
@@ -111,7 +110,6 @@
 #import "BeatWidgetView.h"
 #import "BeatSegmentedControl.h"
 #import "BeatNotepad.h"
-#import "BeatUserDefaults.h"
 #import "BeatCharacterList.h"
 #import "BeatEditorFormatting.h"
 #import "BeatEditorFormattingActions.h"
@@ -618,7 +616,13 @@ static BeatAppDelegate *appDelegate;
 
 -(BeatExportSettings*)exportSettings {
 	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
+
+	settings.sceneHeadingSpacing = [self spaceBeforeHeading];
 	settings.paperSize = self.pageSize;
+	
+	settings.contd = [self contdString];
+	settings.more = [self moreString];
+	
 	return settings;
 }
 
@@ -2934,7 +2938,7 @@ static bool _skipAutomaticLineBreaks = false;
 				menuItem.action == @selector(zoomOut:) ||
 				menuItem.action == @selector(openPrintPanel:) ||
 				menuItem.action == @selector(openPDFPanel:)
-				) return YES;			
+				) return YES;
 		}
 		
 		// If CARD VIEW is enabled
