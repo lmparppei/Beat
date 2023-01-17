@@ -33,6 +33,8 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) bool coloredPages;
 @property (nonatomic) bool printNotes;
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) NSString *contd;
+@property (nonatomic) NSString *more;
 @property (nonatomic, weak) BeatDocument  * _Nullable document;
 @property (nonatomic) NSString * _Nullable currentScene;
 @property (nonatomic) NSArray * revisions;

@@ -40,6 +40,10 @@
 		_coloredPages = coloredPages;
 		_pageRevisionColor = revisedPageColor;
 		_paperSize = NSNotFound;
+        _sceneHeadingSpacing = 2;
+        
+        _contd = @" (CONT'D)";
+        _more = @"(MORE)";
 	}
 	return self;
 }
