@@ -31,10 +31,9 @@
 			 @"green": [BeatColors colorWithRed:0 green:223 blue:121],
 			 @"pink": [BeatColors colorWithRed:250 green:111 blue:193],
 			 @"magenta": [BeatColors colorWithRed:236 green:0 blue:140],
-			 @"gray": BXColor.grayColor,
-			 @"grey": BXColor.grayColor, // for the illiterate
+			 @"gray": [BeatColors colorWithRed:128 green:128 blue:128],
+			 @"grey": [BeatColors colorWithRed:128 green:128 blue:128], // for the illiterate
 			 @"purple": [BeatColors colorWithRed:181 green:32 blue:218],
-			 @"prince": [BeatColors colorWithRed:181 green:32 blue:218], // for the purple one
 			 @"yellow": [BeatColors colorWithRed:251 green:193 blue:35],
 			 @"cyan": [BeatColors colorWithRed:7 green:189 blue:235],
 			 @"teal": [BeatColors colorWithRed:12 green:224 blue:227],

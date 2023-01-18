@@ -83,6 +83,36 @@
 					<integer>35</integer>
 					<integer>38</integer>
 				</array>
+				<key>OutlineSection</key>
+				<array>
+					<integer>255</integer>
+					<integer>255</integer>
+					<integer>255</integer>
+				</array>
+				<key>OutlineSceneNumber</key>
+				<array>
+					<integer>128</integer>
+					<integer>128</integer>
+					<integer>128</integer>
+				</array>
+				<key>OutlineSynopsis</key>
+				<array>
+					<integer>128</integer>
+					<integer>128</integer>
+					<integer>128</integer>
+				</array>
+				<key>OutlineItem</key>
+				<array>
+					<integer>220</integer>
+					<integer>220</integer>
+					<integer>220</integer>
+				</array>
+				<key>OutlineItemOmitted</key>
+				<array>
+					<integer>100</integer>
+					<integer>100</integer>
+					<integer>100</integer>
+				</array>
 				<key>Highlight</key>
 				<array>
 					<integer>0</integer>
@@ -187,6 +217,36 @@
 					<integer>80</integer>
 					<integer>80</integer>
 					<integer>80</integer>
+				</array>
+				<key>OutlineSection</key>
+				<array>
+					<integer>255</integer>
+					<integer>255</integer>
+					<integer>255</integer>
+				</array>
+				<key>OutlineSceneNumber</key>
+				<array>
+					<integer>128</integer>
+					<integer>128</integer>
+					<integer>128</integer>
+				</array>
+				<key>OutlineSynopsis</key>
+				<array>
+					<integer>128</integer>
+					<integer>128</integer>
+					<integer>128</integer>
+				</array>
+				<key>OutlineItem</key>
+				<array>
+					<integer>220</integer>
+					<integer>220</integer>
+					<integer>220</integer>
+				</array>
+				<key>OutlineItemOmitted</key>
+				<array>
+					<integer>100</integer>
+					<integer>100</integer>
+					<integer>100</integer>
 				</array>
 				<key>Highlight</key>
 				<array>

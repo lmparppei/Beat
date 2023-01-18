@@ -73,12 +73,12 @@
 }
 
 - (void)loadDefaults {
-	id<BeatTheme> defaultTheme = ThemeManager.sharedManager.defaultTheme;
+	BeatTheme* defaultTheme = ThemeManager.sharedManager.defaultTheme;
 	[self loadTheme:defaultTheme];
 	[ThemeManager.sharedManager resetToDefault];
 	[ThemeManager.sharedManager loadThemeForAllDocuments];
 }
-- (void)loadTheme:(id<BeatTheme>)theme {
+- (void)loadTheme:(BeatTheme*)theme {
 	[_backgroundLight setColor:theme.backgroundColor.aquaColor];
 	[_backgroundDark setColor:theme.backgroundColor.darkAquaColor];
 	[_textLight setColor:theme.textColor.aquaColor];
@@ -113,7 +113,7 @@
 -(IBAction)changeColor:(NSColorWell*)sender {
 	NSColor* color = [sender.color colorUsingColorSpaceName:NSCalibratedRGBColorSpace device:nil];
 	
-	id<BeatTheme> theme = ThemeManager.sharedManager.theme;
+	BeatTheme* theme = ThemeManager.sharedManager.theme;
 	if (sender == _backgroundLight) theme.backgroundColor.aquaColor = color;
 	else if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = color;
 	else if (sender == _textLight) theme.textColor.aquaColor = sender.color;

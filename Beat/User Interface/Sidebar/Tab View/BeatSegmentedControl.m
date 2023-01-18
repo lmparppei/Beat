@@ -52,7 +52,17 @@
 	[self.cell setTrackingMode:NSSegmentSwitchTrackingSelectOne];
 	
 	self.wantsLayer = true;
-	self.layer.backgroundColor = ThemeManager.sharedManager.outlineBackground.CGColor;
+}
+
+- (void)updateBackground {
+	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
+	NSColor *bgColor = (dark) ? ThemeManager.sharedManager.outlineBackground.darkAquaColor : ThemeManager.sharedManager.outlineBackground.aquaColor;
+	self.layer.backgroundColor = bgColor.CGColor;
+}
+
+-(void)viewWillDraw {
+	[self updateBackground];
+	[super viewWillDraw];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -89,9 +99,19 @@
 		if (i == self.segmentCount - 1 && ![self widgetsVisible]) continue;
 		
 		NSImage *img = [self imageForSegment:i].copy;
-		NSColor *tint = NSColor.secondaryLabelColor;
-		if (i == self.selectedSegment) tint = NSColor.whiteColor;
-
+		
+		NSColor *tint;
+		if (@available(macOS 10.14, *)) {
+			tint = NSColor.controlAccentColor;
+			if (i != self.selectedSegment) {
+				tint = [tint colorWithAlphaComponent:.5];
+			}
+		} else {
+			// Fallback on earlier versions
+			tint = NSColor.secondaryLabelColor;
+			if (i == self.selectedSegment) tint = NSColor.whiteColor;
+		}
+		
 		[img lockFocus];
 		[tint set];
 		NSRect imageRect = {NSZeroPoint, img.size};

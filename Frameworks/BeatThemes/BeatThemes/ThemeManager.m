@@ -29,12 +29,12 @@
 #import <BeatThemes/BeatThemes-Swift.h>
 #import <BeatDynamicColor/BeatDynamicColor.h>
 
-#import "BeatTheme.h"
+//#import "BeatTheme.h"
 
 @interface ThemeManager ()
 @property (strong, nonatomic) NSMutableDictionary* themes;
 @property (nonatomic) NSUInteger selectedTheme;
-@property (nonatomic) id<BeatTheme> fallbackTheme;
+@property (nonatomic) BeatTheme* fallbackTheme;
 @end
 
 @implementation ThemeManager
@@ -117,8 +117,8 @@
 }
 
 /// Returns the default theme
--(id<BeatTheme>)defaultTheme {
-	id<BeatTheme> theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
+-(BeatTheme*)defaultTheme {
+	BeatTheme* theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 	return theme;
 }
 
@@ -127,14 +127,8 @@
 	_theme = [self dictionaryToTheme:self.themes[DEFAULT_KEY]];
 }
 
--(id<BeatTheme>)dictionaryToTheme:(NSDictionary*)values {
-	// Work for the new theme model
-#if TARGET_OS_IOS
-	id<BeatTheme> theme = iOSTheme.new;
-#else
-	id<BeatTheme> theme = macOSTheme.new;
-#endif
-    
+-(BeatTheme*)dictionaryToTheme:(NSDictionary*)values {
+	BeatTheme* theme = BeatTheme.new;
     
 	NSDictionary *lightTheme = values[@"Light"];
 	NSDictionary *darkTheme = values[@"Dark"];
@@ -142,6 +136,8 @@
 	// Fall back to light theme if no dark settings are available
 	if (!darkTheme.count) darkTheme = lightTheme;
 	
+    NSDictionary* propertyValues = BeatTheme.propertyValues;
+    
 #if !TARGET_OS_IOS
 	// If it's the default color scheme, we'll use native accent colors for certain items
 	if (@available(macOS 10.14, *)) {
@@ -152,32 +148,16 @@
 	}
 #endif
 	
-	theme.backgroundColor = [self dynamicColorFromArray:lightTheme[@"Background"] darkArray:darkTheme[@"Background"]];
-	theme.textColor = [self dynamicColorFromArray:lightTheme[@"Text"] darkArray:darkTheme[@"Text"]];
-	theme.marginColor = [self dynamicColorFromArray:lightTheme[@"Margin"] darkArray:darkTheme[@"Margin"]];
-	
-	theme.commentColor  = [self dynamicColorFromArray:lightTheme[@"Comment"] darkArray:darkTheme[@"Comment"]];
-	theme.invisibleTextColor  = [self dynamicColorFromArray:lightTheme[@"InvisibleText"] darkArray:darkTheme[@"InvisibleText"]];
-	theme.caretColor = [self dynamicColorFromArray:lightTheme[@"Caret"] darkArray:darkTheme[@"Caret"]];
-	theme.pageNumberColor = [self dynamicColorFromArray:lightTheme[@"PageNumber"] darkArray:darkTheme[@"PageNumber"]];
-
-	theme.synopsisTextColor = [self dynamicColorFromArray:lightTheme[@"SynopsisText"] darkArray:darkTheme[@"SynopsisText"]];
-	theme.sectionTextColor = [self dynamicColorFromArray:lightTheme[@"SectionText"] darkArray:darkTheme[@"SectionText"]];
-
-	theme.outlineBackground = [self dynamicColorFromArray:darkTheme[@"OutlineBackground"] darkArray:darkTheme[@"OutlineBackground"]];
-	theme.outlineHighlight = [self dynamicColorFromArray:darkTheme[@"OutlineHighlight"] darkArray:darkTheme[@"OutlineHighlight"]];
-	
-	theme.highlightColor = [self dynamicColorFromArray:darkTheme[@"Highlight"] darkArray:darkTheme[@"Highlight"]];
-	
-	theme.genderWomanColor = [self dynamicColorFromArray:darkTheme[@"Woman"] darkArray:darkTheme[@"Woman"]];
-	theme.genderManColor = [self dynamicColorFromArray:darkTheme[@"Man"] darkArray:darkTheme[@"Man"]];
-	theme.genderOtherColor = [self dynamicColorFromArray:darkTheme[@"Other"] darkArray:darkTheme[@"Other"]];
-	theme.genderUnspecifiedColor = [self dynamicColorFromArray:darkTheme[@"Unspecified"] darkArray:darkTheme[@"Unspecified"]];
+    for (NSString* key in propertyValues.allKeys) {
+        NSString* property = propertyValues[key];
+        DynamicColor* color = [self dynamicColorFromArray:lightTheme[property] darkArray:darkTheme[property]];
+        [theme setValue:color forKey:key];
+    }
 	
 	return theme;
 }
 
--(void)readTheme:(id<BeatTheme>)theme {
+-(void)readTheme:(BeatTheme*)theme {
 	/**
 	 Adding new customizable values could result in null value problems.
 	 We'll cross-check existing values against the default theme, and will only use the changed values for our customized theme.
@@ -187,11 +167,12 @@
 	_theme = [self dictionaryToTheme:_themes[DEFAULT_KEY]];
 	
 	// Load custom theme
-	id<BeatTheme> customTheme = theme;
+	BeatTheme* customTheme = theme;
+    NSDictionary* propertyToValue = BeatTheme.propertyValues;
 	
 	// If custom theme exists, we'll get the property names from that and overwrite those in default theme.
 	if (customTheme) {
-		for (NSString *property in customTheme.propertyToValue) {
+		for (NSString *property in propertyToValue) {
 			if ([customTheme valueForKey:property]) {
 				[_theme setValue:[customTheme valueForKey:property] forKey:property];
 			}
@@ -200,17 +181,17 @@
 }
 
 -(void)readTheme {
-	id<BeatTheme> customTheme = [self dictionaryToTheme:_themes[CUSTOM_KEY]];
+	BeatTheme* customTheme = [self dictionaryToTheme:_themes[CUSTOM_KEY]];
 	[self readTheme:customTheme];
 }
 
 -(void)saveTheme {
 #if !TARGET_OS_IOS
-	id<BeatTheme> defaultTheme = [self defaultTheme];
-	id<BeatTheme> customTheme = macOSTheme.new;
+	BeatTheme* defaultTheme = [self defaultTheme];
+	BeatTheme* customTheme = BeatTheme.new;
     id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)NSApp.delegate;
 	
-	for (NSString *property in customTheme.propertyToValue) {
+	for (NSString *property in BeatTheme.propertyValues) {
 		DynamicColor *currentColor = [self valueForKey:property];
 		DynamicColor *defaultColor = [defaultTheme valueForKey:property];
 		
@@ -287,7 +268,7 @@
 
 #pragma mark - Accessing theme values
 
-- (id<BeatTheme>)theme { return _theme; }
+- (BeatTheme*)theme { return _theme; }
 
 - (DynamicColor*)backgroundColor { return _theme.backgroundColor; }
 - (DynamicColor*)marginColor { return _theme.marginColor; }
@@ -296,8 +277,6 @@
 - (DynamicColor*)invisibleTextColor { return _theme.invisibleTextColor; }
 - (DynamicColor*)caretColor { return _theme.caretColor; }
 - (DynamicColor*)commentColor { return _theme.commentColor; }
-- (DynamicColor*)outlineHighlight { return _theme.outlineHighlight; }
-- (DynamicColor*)outlineBackground { return _theme.outlineBackground; }
 - (DynamicColor*)pageNumberColor { return _theme.pageNumberColor; }
 - (DynamicColor*)sectionTextColor { return _theme.sectionTextColor; }
 - (DynamicColor*)synopsisTextColor { return _theme.synopsisTextColor; }
@@ -308,6 +287,13 @@
 - (DynamicColor*)genderOtherColor { return _theme.genderOtherColor; }
 - (DynamicColor*)genderUnspecifiedColor { return _theme.genderUnspecifiedColor; }
 
+- (DynamicColor*)outlineHighlight { return _theme.outlineHighlight; }
+- (DynamicColor*)outlineBackground { return _theme.outlineBackground; }
+- (DynamicColor*)outlineSection { return _theme.outlineSection; }
+- (DynamicColor*)outlineItem { return _theme.outlineItem; }
+- (DynamicColor*)outlineItemOmitted { return _theme.outlineItemOmitted; }
+- (DynamicColor*)outlineSceneNumber { return _theme.outlineSceneNumber; }
+- (DynamicColor*)outlineSynopsis { return _theme.outlineSynopsis; }
 
 #pragma mark - Load selected theme for ALL documents
 

@@ -21,6 +21,7 @@
 	#import <UIKit/UIKit.h>
 	#define BXFont UIFont
 	#define BXColor UIColor
+
 #else
 	#import <Cocoa/Cocoa.h>
 	#define BXFont NSFont
@@ -36,9 +37,17 @@
 
 
 /// Returns an attributed string for outline view
-+ (NSAttributedString*) withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current withSynopsis:(bool)includeSynopsis {
++ (NSAttributedString*) withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current withSynopsis:(bool)includeSynopsis isDark:(bool)dark {
 	Line *line = scene.line;
 	if (line == nil) { return NSMutableAttributedString.new; }
+	
+	ThemeManager* theme = ThemeManager.sharedManager;
+	NSColor* sceneNumberColor = (dark) ? theme.outlineSceneNumber.darkAquaColor : theme.outlineSceneNumber.aquaColor;
+	NSColor* outlineItemColor = (dark) ? theme.outlineItem.darkAquaColor : theme.outlineItem.aquaColor;
+	NSColor* omittedItemColor = (dark) ? theme.outlineItemOmitted.darkAquaColor : theme.outlineItemOmitted.aquaColor;
+	NSColor* sectionItemColor = (dark) ? theme.outlineSection.darkAquaColor : theme.outlineSection.aquaColor;
+	NSColor* synopsisItemColor = (dark) ? theme.outlineSynopsis.darkAquaColor : theme.outlineSynopsis.aquaColor;
+
 	
 	NSMutableAttributedString *resultString = NSMutableAttributedString.new;
 	
@@ -71,20 +80,16 @@
 		
 		NSString *sceneNumber = (!line.omitted) ? [NSString stringWithFormat:@"%@. ", line.sceneNumber] : @"";
 		NSAttributedString *header = [NSAttributedString.alloc initWithString:sceneNumber attributes:@{
-			NSForegroundColorAttributeName: [BeatColors color:@"gray"],
+			NSForegroundColorAttributeName: sceneNumberColor,
 			NSFontAttributeName: font
 		}];
 		
-		BXColor *sceneColor = (itemColor != nil) ? itemColor : [BeatColors color:@"lightGray"];
+		BXColor *sceneColor = (itemColor != nil) ? itemColor : outlineItemColor;
 		NSAttributedString *body = [NSAttributedString.alloc initWithString:string attributes:@{
-			NSForegroundColorAttributeName: (!line.omitted) ? sceneColor : [BeatColors color:@"veryDarkGray"],
+			NSForegroundColorAttributeName: (!line.omitted) ? sceneColor : omittedItemColor,
 			NSFontAttributeName: font
 		}];
-	
-		// Lines without RTF formatting have uneven leading, so let's fix that.
-		//[resultString applyFontTraits:NSUnitalicFontMask range:NSMakeRange(0, resultString.length)];
-		//[resultString applyFontTraits:NSBoldFontMask range:NSMakeRange(0, resultString.length)];
-		
+			
 		[resultString appendAttributedString:header];
 		[resultString appendAttributedString:body];
 	}
@@ -93,7 +98,7 @@
 		if (string.length > 0) {
 			BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize * 1.2 weight:NSFontWeightBold];
 			
-			BXColor *color = (itemColor != nil) ? itemColor : BXColor.whiteColor;
+			BXColor *color = (itemColor != nil) ? itemColor : sectionItemColor;
 			resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:@{
 				NSForegroundColorAttributeName: color,
 				NSFontAttributeName: font
@@ -108,7 +113,7 @@
 			BXColor *synopsisColor;
 			
 			if (synopsis.color.length > 0) synopsisColor = [BeatColors color:synopsis.color];
-			if (synopsisColor == nil) synopsisColor = [BeatColors color:@"gray"];
+			if (synopsisColor == nil) synopsisColor = synopsisItemColor;
 			
 			NSMutableParagraphStyle *synopsisStyle = NSMutableParagraphStyle.new;
 			synopsisStyle.lineSpacing = .65;

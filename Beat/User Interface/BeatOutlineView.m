@@ -21,6 +21,7 @@
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
 #import "BeatMeasure.h"
+#import "Beat-Swift.h"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"
 #define OUTLINE_DATATYPE @"OutlineDatatype"
@@ -34,6 +35,8 @@
 @property (weak) IBOutlet NSPopUpButton *characterBox;
 @property (weak) IBOutlet NSButton *resetColorFilterButton;
 @property (weak) IBOutlet NSButton *resetCharacterFilterButton;
+
+@property (weak) IBOutlet BeatAutomaticAppearanceView* appearanceView;
 
 @property (nonatomic) OutlineScene *draggedScene;
 @property (nonatomic) bool outlineEdit;
@@ -124,7 +127,7 @@
 		
 		NSBezierPath *bg = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:3 yRadius:3];
 		
-		NSColor* fillColor = ThemeManager.sharedManager.outlineHighlight;
+		NSColor* fillColor = (self.appearanceView.appearAsDark) ? ThemeManager.sharedManager.outlineHighlight.darkAquaColor : ThemeManager.sharedManager.outlineHighlight.aquaColor;
 		[fillColor setFill];
 		
 		[bg fill];		
@@ -224,8 +227,11 @@
 
 // FOR VIEW-BASED OUTLINE. Very slow.
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+ 
+	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
+	
 	NSTableCellView *view = [outlineView makeViewWithIdentifier:@"SceneView" owner:self];
-	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis];
+	view.textField.attributedStringValue = [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis isDark:dark];
 	
 	return view;
 }
@@ -290,7 +296,8 @@
 {
 	if ([item isKindOfClass:[OutlineScene class]]) {
 		// Note: OutlineViewItem returns an NSMutableAttributedString
-		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis];
+		bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
+		return [OutlineViewItem withScene:item currentScene:self.editorDelegate.currentScene withSynopsis:self.showSynopsis isDark:dark];
 	}
 	return @"";
 	

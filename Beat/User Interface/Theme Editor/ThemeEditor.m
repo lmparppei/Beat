@@ -6,11 +6,10 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <BeatDynamicColor/BeatDynamicColor.h>
+#import <BeatThemes/BeatThemes.h>
+
 #import <Cocoa/Cocoa.h>
 #import "ThemeEditor.h"
-#import "ThemeManager.h"
-#import "BeatThemes-Swift.h"
 
 @interface ThemeEditor ()
 @property (nonatomic, weak) IBOutlet NSColorWell *backgroundLight;
@@ -33,15 +32,33 @@
 @property (nonatomic, weak) IBOutlet NSColorWell *synopsisDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *sectionLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *sectionDark;
+
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineBackgroundLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineBackgroundDark;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineHighlightLight;
 @property (nonatomic, weak) IBOutlet NSColorWell *outlineHighlightDark;
 
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineSectionLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineSectionDark;
+
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineSceneNumberLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineSceneNumberDark;
+
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineItemLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineItemDark;
+
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineItemOmittedLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineItemOmittedDark;
+
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineSynopsisLight;
+@property (nonatomic, weak) IBOutlet NSColorWell *outlineSynopsisDark;
+
 @property (nonatomic, weak) IBOutlet NSColorWell *genderWoman;
 @property (nonatomic, weak) IBOutlet NSColorWell *genderMan;
 @property (nonatomic, weak) IBOutlet NSColorWell *genderOther;
 @property (nonatomic, weak) IBOutlet NSColorWell *genderUnspecified;
+
+@property (nonatomic) NSTimer* updateTimer;
 
 @end
 
@@ -75,12 +92,12 @@
 }
 
 - (void)loadDefaults {
-	id<BeatTheme> defaultTheme = ThemeManager.sharedManager.defaultTheme;
+	BeatTheme* defaultTheme = ThemeManager.sharedManager.defaultTheme;
 	[self loadTheme:defaultTheme];
 	[ThemeManager.sharedManager resetToDefault];
 	[ThemeManager.sharedManager loadThemeForAllDocuments];
 }
-- (void)loadTheme:(id<BeatTheme>)theme {
+- (void)loadTheme:(BeatTheme*)theme {
 	[_backgroundLight setColor:theme.backgroundColor.aquaColor];
 	[_backgroundDark setColor:theme.backgroundColor.darkAquaColor];
 	[_textLight setColor:theme.textColor.aquaColor];
@@ -101,11 +118,27 @@
 	[_synopsisDark setColor:theme.synopsisTextColor.darkAquaColor];
 	[_sectionLight setColor:theme.sectionTextColor.aquaColor];
 	[_sectionDark setColor:theme.sectionTextColor.darkAquaColor];
+	
 	[_outlineBackgroundLight setColor:theme.outlineBackground.aquaColor];
 	[_outlineBackgroundDark setColor:theme.outlineBackground.darkAquaColor];
 	[_outlineHighlightLight setColor:theme.outlineHighlight.aquaColor];
 	[_outlineHighlightDark setColor:theme.outlineHighlight.darkAquaColor];
+
+	[_outlineSceneNumberLight setColor:theme.outlineSceneNumber.aquaColor];
+	[_outlineSceneNumberDark setColor:theme.outlineSceneNumber.darkAquaColor];
 	
+	[_outlineItemLight setColor:theme.outlineItem.aquaColor];
+	[_outlineItemDark setColor:theme.outlineItem.darkAquaColor];
+	
+	[_outlineItemOmittedLight setColor:theme.outlineItemOmitted.aquaColor];
+	[_outlineItemOmittedDark setColor:theme.outlineItemOmitted.darkAquaColor];
+	
+	[_outlineSectionLight setColor:theme.outlineSection.aquaColor];
+	[_outlineSectionDark setColor:theme.outlineSection.darkAquaColor];
+	
+	[_outlineSynopsisLight setColor:theme.outlineSynopsis.aquaColor];
+	[_outlineSynopsisDark setColor:theme.outlineSynopsis.darkAquaColor];
+		
 	[_genderWoman setColor:theme.genderWomanColor.aquaColor];
 	[_genderMan setColor:theme.genderManColor.aquaColor];
 	[_genderOther setColor:theme.genderOtherColor.aquaColor];
@@ -115,7 +148,7 @@
 -(IBAction)changeColor:(NSColorWell*)sender {
 	NSColor* color = [sender.color colorUsingColorSpaceName:NSCalibratedRGBColorSpace device:nil];
 	
-	id<BeatTheme> theme = ThemeManager.sharedManager.theme;
+	BeatTheme* theme = ThemeManager.sharedManager.theme;
 	if (sender == _backgroundLight) theme.backgroundColor.aquaColor = color;
 	else if (sender == _backgroundDark) theme.backgroundColor.darkAquaColor = color;
 	else if (sender == _textLight) theme.textColor.aquaColor = sender.color;
@@ -142,6 +175,17 @@
 	else if (sender == _outlineBackgroundLight) theme.outlineBackground.aquaColor = sender.color;
 	else if (sender == _outlineBackgroundDark) theme.outlineBackground.darkAquaColor = sender.color;
 	
+	else if (sender == _outlineItemLight) theme.outlineItem.aquaColor = sender.color;
+	else if (sender == _outlineItemDark) theme.outlineItem.darkAquaColor = sender.color;
+	else if (sender == _outlineItemOmittedLight) theme.outlineItemOmitted.aquaColor = sender.color;
+	else if (sender == _outlineItemOmittedDark) theme.outlineItemOmitted.darkAquaColor = sender.color;
+	else if (sender == _outlineSceneNumberLight) theme.outlineSceneNumber.aquaColor = sender.color;
+	else if (sender == _outlineSceneNumberDark) theme.outlineSceneNumber.darkAquaColor = sender.color;
+	else if (sender == _outlineSynopsisLight) theme.outlineSynopsis.aquaColor = sender.color;
+	else if (sender == _outlineSynopsisDark) theme.outlineSynopsis.darkAquaColor = sender.color;
+	else if (sender == _outlineSectionLight) theme.outlineSection.aquaColor = sender.color;
+	else if (sender == _outlineSectionDark) theme.outlineSection.darkAquaColor = sender.color;
+	
 	else if (sender == _genderWoman) {
 		theme.genderWomanColor.aquaColor = sender.color;
 		theme.genderWomanColor.darkAquaColor = sender.color;
@@ -158,9 +202,18 @@
 		theme.genderUnspecifiedColor.aquaColor = sender.color;
 		theme.genderUnspecifiedColor.darkAquaColor = sender.color;
 	}
-	
-	[ThemeManager.sharedManager loadThemeForAllDocuments];
+
+	// Update changes after 0.5 seconds
+	[self scheduleUpdate];
 }
+
+- (void)scheduleUpdate {
+	[self.updateTimer invalidate];
+	self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 repeats:false block:^(NSTimer * _Nonnull timer) {
+		[ThemeManager.sharedManager loadThemeForAllDocuments];
+	}];
+}
+
 
 - (IBAction)apply:(id)sender {
 	[ThemeManager.sharedManager saveTheme];

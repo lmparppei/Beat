@@ -19,10 +19,12 @@
 	[self drawCenteredImage:image inFrame:frame];
 }
 
+/*
 -(void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView {
 	[NSColor.redColor setFill];
 	NSRectFill(cellFrame);
 }
+*/
 
 -(void)drawCenteredImage:(NSImage*)image inFrame:(NSRect)frame
 {

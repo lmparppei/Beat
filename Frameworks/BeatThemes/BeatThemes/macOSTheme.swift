@@ -9,7 +9,7 @@
 import AppKit
 import BeatDynamicColor
 
-@objc public class macOSTheme: NSObject, BeatTheme, NSCopying {
+@objc public class BeatTheme: NSObject, NSCopying {
 	public var backgroundColor: DynamicColor!
     public var selectionColor: DynamicColor!
     public var textColor: DynamicColor!
@@ -28,11 +28,17 @@ import BeatDynamicColor
     public var genderManColor: DynamicColor!
     public var genderOtherColor: DynamicColor!
     public var genderUnspecifiedColor: DynamicColor!
+    
+    public var outlineItem: DynamicColor!
+    public var outlineItemOmitted: DynamicColor!
+    public var outlineSceneNumber: DynamicColor!
+    public var outlineSection: DynamicColor!
 	
 	
 	var propertyToValue:Dictionary<String, String>?
 	var name:String? = ""
 	
+    /// For background-compatibility reasons, we have to do this sort of trickery
 	override public init() {
 		super.init()
 		
@@ -47,13 +53,18 @@ import BeatDynamicColor
 			"pageNumberColor": "PageNumber",
 			"synopsisTextColor": "SynopsisText",
 			"sectionTextColor": "SectionText",
-			"outlineBackground": "OutlineBackground",
-			"outlineHighlight": "OutlineHighlight",
 			"highlightColor": "Highlight",
 			"genderWomanColor": "Woman",
 			"genderManColor": "Man",
 			"genderOtherColor": "Other",
-			"genderUnspecifiedColor": "Unspecified"
+			"genderUnspecifiedColor": "Unspecified",
+            
+            "outlineBackground": "OutlineBackground",
+            "outlineHighlight": "OutlineHighlight",
+            "outlineItem": "OutlineItem",
+            "outlineItemOmitted": "OutlineItemOmitted",
+            "outlineSceneNumber": "OutlineSceneNumber",
+            "outlineSection": "OutlineSection"
 		]
 	}
 	
@@ -86,7 +97,7 @@ import BeatDynamicColor
 	}
 	
 	override public func copy() -> Any {
-		let theme = macOSTheme()
+		let theme = BeatTheme()
 
 		for key:String in self.propertyToValue!.keys {
 			let color:DynamicColor = self.value(forKey: key) as! DynamicColor
@@ -97,7 +108,7 @@ import BeatDynamicColor
 	}
 	
 	public func copy(with zone: NSZone? = nil) -> Any {
-		let theme = macOSTheme()
+		let theme = BeatTheme()
 
 		for key:String in self.propertyToValue!.keys {
 			let color:DynamicColor = self.value(forKey: key) as! DynamicColor

@@ -19,7 +19,7 @@
 
 //#import "BeatTheme.h"
 
-@protocol BeatTheme;
+@class BeatTheme;
 
 @protocol BeatThemeDelegate
 - (NSURL*)appDataPath:(NSString*)path;
@@ -31,20 +31,20 @@
 
 @interface ThemeManager : NSObject
 
-@property (nonatomic) id<BeatTheme> theme;
+@property (nonatomic) BeatTheme* theme;
 
 + (ThemeManager*)sharedManager;
 
-- (id<BeatTheme>)defaultTheme;
-- (id<BeatTheme>)dictionaryToTheme:(NSDictionary*)values;
+- (BeatTheme*)defaultTheme;
+- (BeatTheme*)dictionaryToTheme:(NSDictionary*)values;
 - (void)revertToSaved; /// Loads default and saved custom themes and applies them
-- (void)readTheme:(id<BeatTheme>)theme; /// Read a single, preprocessed theme
+- (void)readTheme:(BeatTheme*)theme; /// Read a single, preprocessed theme
 - (void)loadThemeForAllDocuments;
 - (void)resetToDefault;
 - (void)saveTheme;
 
 //Access the current theme
-- (id<BeatTheme>) theme;
+- (BeatTheme*) theme;
 
 - (DynamicColor*)backgroundColor;
 - (DynamicColor*)marginColor;
@@ -53,8 +53,6 @@
 - (DynamicColor*)invisibleTextColor;
 - (DynamicColor*)caretColor;
 - (DynamicColor*)commentColor;
-- (DynamicColor*)outlineHighlight;
-- (DynamicColor*)outlineBackground;
 - (DynamicColor*)pageNumberColor;
 - (DynamicColor*)sectionTextColor;
 - (DynamicColor*)synopsisTextColor;
@@ -64,5 +62,13 @@
 - (DynamicColor*)genderManColor;
 - (DynamicColor*)genderOtherColor;
 - (DynamicColor*)genderUnspecifiedColor;
+
+- (DynamicColor*)outlineHighlight;
+- (DynamicColor*)outlineBackground;
+- (DynamicColor*)outlineSection;
+- (DynamicColor*)outlineItem;
+- (DynamicColor*)outlineItemOmitted;
+- (DynamicColor*)outlineSceneNumber;
+- (DynamicColor*)outlineSynopsis;
 
 @end
