@@ -1401,7 +1401,7 @@ Line *cachedRectLine;
 	//)NSInteger index = [self.editorDelegate.parser lineIndexAtPosition:location];
 	
 	//if (_editorDelegate.showPageNumbers) [self updatePageNumbers];
-	if (_editorDelegate.showSceneNumberLabels && !_editorDelegate.sceneNumberLabelUpdateOff) [self updateSceneLabelsFrom:location];
+	//if (_editorDelegate.showSceneNumberLabels && !_editorDelegate.sceneNumberLabelUpdateOff) [self updateSceneLabelsFrom:location];
 }
 
 
