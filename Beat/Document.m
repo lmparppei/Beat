@@ -303,7 +303,6 @@
 
 // Theme settings
 @property (nonatomic) ThemeManager* themeManager;
-@property (nonatomic) bool nightMode; // THE HOUSE IS BLACK.
 
 // Timer
 @property (weak) IBOutlet BeatTimer *beatTimer;
@@ -480,7 +479,6 @@ static BeatAppDelegate *appDelegate;
 	// (before formatting the content, because we need the colors for formatting!)
 	self.themeManager = [ThemeManager sharedManager];
 	[self loadSelectedTheme:false];
-	self.nightMode = [self isDark];
 	
 	// Setup views
 	[self setupWindow];
@@ -530,31 +528,29 @@ static BeatAppDelegate *appDelegate;
 }
 
 -(void)parseAndRenderDocument {
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND,0), ^{
-		// Initialize parser
-		self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
-		
-		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			// Show a progress bar for longer documents
-			if (self.parser.lines.count > 1000) {
-				self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.documentWindow.screen.frame.size.width - 300) / 2, (self.documentWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
-				
-				// Dark mode
-				if (@available(macOS 10.14, *)) {
-					NSAppearance *appr = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
-					[self.progressPanel setAppearance:appr];
-				}
-				
-				self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
-				self.progressIndicator.indeterminate = NO;
-				[self.progressPanel.contentView addSubview:self.progressIndicator];
-				
-				[self.documentWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
+	// Initialize parser
+	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
+	
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		// Show a progress bar for longer documents
+		if (self.parser.lines.count > 1000) {
+			self.progressPanel = [[NSPanel alloc] initWithContentRect:(NSRect){(self.documentWindow.screen.frame.size.width - 300) / 2, (self.documentWindow.screen.frame.size.height - 50) / 2,300,50} styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO];
+			
+			// Dark mode
+			if (@available(macOS 10.14, *)) {
+				NSAppearance *appr = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+				[self.progressPanel setAppearance:appr];
 			}
 			
-			// Apply document formatting
-			[self applyInitialFormatting];
-		});
+			self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
+			self.progressIndicator.indeterminate = NO;
+			[self.progressPanel.contentView addSubview:self.progressIndicator];
+			
+			[self.documentWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
+		}
+		
+		// Apply document formatting
+		[self applyInitialFormatting];
 	});
 }
 
@@ -756,13 +752,12 @@ static BeatAppDelegate *appDelegate;
 	
 	CGFloat preferredWidth = self.documentWindow.minSize.width + BeatTextView.linePadding * 2 + 300;
 	
-
 	if (size.width < 1) {
 		// Default size for new windows
 		size.width = preferredWidth;
 		origin.x = (screen.size.width - size.width) / 2;
 	}
-	else if (size.width < preferredWidth || origin.x > screen.size.width) {
+	else if (size.width < self.documentWindow.minSize.width || origin.x > screen.size.width || origin.x < 0) {
 		// This window had a size saved. Let's make sure it stays inside screen bounds or is larger than minimum size.
 		size.width = self.documentWindow.minSize.width;
 		origin.x = (screen.size.width - size.width) / 2;
@@ -1907,6 +1902,8 @@ static NSWindow __weak *currentKeyWindow;
 			});
 		}
 	}
+
+	self.sideBarTabs.needsDisplay = true;
 	
 	// Update touch bar color if needed
 	if (currentScene.color) {
@@ -1914,7 +1911,7 @@ static NSWindow __weak *currentKeyWindow;
 			[_colorPicker setColor:[BeatColors color:currentScene.color.lowercaseString]];
 		}
 	}
-	
+		
 	if (_runningPlugins) [self updatePluginsWithSceneIndex:sceneIndex];
 }
 
@@ -3103,7 +3100,6 @@ static bool _skipAutomaticLineBreaks = false;
 	_darkPopup = [self isDark];
 	
 	NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
-	
 	for (Document* doc in openDocuments) {
 		[doc updateUIColors];
 	}
@@ -3128,6 +3124,8 @@ static bool _skipAutomaticLineBreaks = false;
 		// This redraws everything by default.
 		if ([self isDark]) self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
 		else self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+		self.documentWindow.viewsNeedDisplay = true;
+		
 	} else {
 		// Else, we need to force everything to redraw, in a very clunky way
 		[self.documentWindow setViewsNeedDisplay:true];
@@ -3145,9 +3143,22 @@ static bool _skipAutomaticLineBreaks = false;
 		
 		self.textView.needsDisplay = true;
 		self.textView.needsLayout = true;
-		
-		if (_sidebarVisible) [self.outlineView setNeedsDisplay:YES];
 	}
+	
+	if (_sidebarVisible) {
+		self.outlineBackgroundView.needsDisplay = true;
+		
+		self.sideBarTabs.needsDisplay = true;
+		self.sideBarTabs.needsLayout = true;
+		self.sideBarTabControl.needsDisplay = true;
+		self.sideBarTabControl.needsLayout = true;
+	
+		[self.outlineView reloadOutline];
+	}
+	
+	// Set global background
+	NSColor *bgColor = ([self isDark]) ? self.themeManager.outlineBackground.darkAquaColor : self.themeManager.outlineBackground.aquaColor;
+	self.backgroundView.layer.backgroundColor = bgColor.CGColor;
 	
 	[self.textScrollView layoutButtons];
 	[self.documentWindow setViewsNeedDisplay:true];
@@ -3182,12 +3193,10 @@ static bool _skipAutomaticLineBreaks = false;
 		[self.textView setNeedsDisplayInRect:self.textView.frame avoidAdditionalLayout:YES];
 	}
 	[doc.textView setInsertionPointColor:self.themeManager.caretColor];
-	
-	// Set global background
-	doc.backgroundView.layer.backgroundColor = self.themeManager.outlineBackground.effectiveColor.CGColor;
-	
+		
 	[doc updateUIColors];
 	
+	[doc.documentWindow setViewsNeedDisplay:YES];
 	[doc.textView setNeedsDisplay:YES];
 }
 - (void)loadSelectedTheme:(bool)forAll

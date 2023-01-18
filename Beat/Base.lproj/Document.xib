@@ -103,10 +103,10 @@
                                         <customView translatesAutoresizingMaskIntoConstraints="NO" id="ncb-yG-bCM" userLabel="Top view">
                                             <rect key="frame" x="0.0" y="120" width="1155" height="541"/>
                                             <subviews>
-                                                <customView appearanceType="darkAqua" translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Sidebar view">
+                                                <customView translatesAutoresizingMaskIntoConstraints="NO" id="ddX-aG-EER" userLabel="Sidebar view" customClass="BeatAutomaticAppearanceView" customModule="Beat" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="541"/>
                                                     <subviews>
-                                                        <tabView appearanceType="darkAqua" ambiguous="YES" type="noTabsNoBorder" initialItem="O5H-I2-RI4" id="O3A-UT-VXf" userLabel="Side tab view">
+                                                        <tabView ambiguous="YES" type="noTabsNoBorder" initialItem="O5H-I2-RI4" id="O3A-UT-VXf" userLabel="Side tab view">
                                                             <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <font key="font" metaFont="system"/>
@@ -116,7 +116,7 @@
                                                                         <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <box appearanceType="darkAqua" borderType="line" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sdd-NC-jo7" userLabel="Search box">
+                                                                            <box borderType="line" title="Box" titlePosition="noTitle" transparent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sdd-NC-jo7" userLabel="Search box">
                                                                                 <rect key="frame" x="-3" y="106" width="295" height="43"/>
                                                                                 <view key="contentView" id="Lr3-Gg-NAL">
                                                                                     <rect key="frame" x="3" y="3" width="289" height="37"/>
@@ -152,7 +152,7 @@
                                                                                     <constraint firstAttribute="height" constant="37" id="d94-xx-suo"/>
                                                                                 </constraints>
                                                                             </box>
-                                                                            <scrollView appearanceType="darkAqua" ambiguous="YES" verifyAmbiguity="ignoreSizes" borderType="none" autohidesScrollers="YES" horizontalLineScroll="23" horizontalPageScroll="10" verticalLineScroll="23" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
+                                                                            <scrollView ambiguous="YES" verifyAmbiguity="ignoreSizes" borderType="none" autohidesScrollers="YES" horizontalLineScroll="23" horizontalPageScroll="10" verticalLineScroll="23" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" scrollerKnobStyle="dark" translatesAutoresizingMaskIntoConstraints="NO" id="RaS-3C-d5c">
                                                                                 <rect key="frame" x="0.0" y="150" width="289" height="345"/>
                                                                                 <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="Rn0-we-Ao6">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="289" height="345"/>
@@ -204,6 +204,7 @@
                                                                                                 </tableColumn>
                                                                                             </tableColumns>
                                                                                             <connections>
+                                                                                                <outlet property="appearanceView" destination="ddX-aG-EER" id="TRn-Yd-JSE"/>
                                                                                                 <outlet property="blueCheck" destination="ilD-zy-XUu" id="YEt-hb-55S"/>
                                                                                                 <outlet property="brownCheck" destination="H6k-me-4mN" id="hyL-Qh-FgD"/>
                                                                                                 <outlet property="characterBox" destination="uDe-RI-kOI" id="ZUC-7F-EXt"/>
@@ -237,7 +238,7 @@
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                 </scroller>
                                                                             </scrollView>
-                                                                            <box appearanceType="darkAqua" boxType="custom" borderType="none" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="YvO-D4-qDL" userLabel="Filters">
+                                                                            <box boxType="custom" borderType="none" cornerRadius="4" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="YvO-D4-qDL" userLabel="Filters">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="289" height="110"/>
                                                                                 <view key="contentView" id="z4c-oR-Dbw">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="289" height="110"/>
@@ -507,7 +508,7 @@
                                                                         <rect key="frame" x="0.0" y="0.0" width="300" height="495"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <scrollView appearanceType="darkAqua" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="vQy-cJ-Xaj">
+                                                                            <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" horizontalScrollElasticity="none" id="vQy-cJ-Xaj">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
@@ -548,7 +549,7 @@
                                                                                 </scroller>
                                                                             </scrollView>
                                                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="ErX-VT-kPi">
-                                                                                <rect key="frame" x="7" y="481" width="52" height="14"/>
+                                                                                <rect key="frame" x="7" y="481" width="79" height="14"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Notepad" id="4ZQ-iA-Rxf">
                                                                                     <font key="font" metaFont="smallSystemBold"/>
@@ -1561,7 +1562,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="1" y="1" width="1153" height="659"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="0.0" width="1138" height="644"/>
