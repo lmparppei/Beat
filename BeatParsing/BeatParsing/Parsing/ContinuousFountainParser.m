@@ -48,7 +48,7 @@
 @property (nonatomic) BOOL changeInOutline;
 @property (nonatomic) NSMutableSet *changedOutlineElements;
 @property (nonatomic) Line *editedLine;
-@property (nonatomic) Line *lastEditedLine;
+@property (nonatomic, weak) Line *lastEditedLine;
 @property (nonatomic) NSUInteger lastLineIndex;
 @property (nonatomic) NSUInteger editedIndex;
 
@@ -348,12 +348,15 @@ static NSDictionary* patterns;
 
 #pragma mark Parsing additions
 
-- (NSIndexSet*)parseAddition:(NSString*)string  atPosition:(NSUInteger)position
+
+- (NSIndexSet*)parseAddition:(NSString*)string atPosition:(NSUInteger)position
 {
-	NSMutableIndexSet *changedIndices = [NSMutableIndexSet indexSet];
-	
+    NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
+    
 	// Get the line where into which we are adding characters
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
+    [changedIndices addIndex:lineIndex];
+    
 	Line* line = self.lines[lineIndex];
     
 	if (line.isOutlineElement) [self addChangeInOutline:line];
@@ -367,86 +370,50 @@ static NSDictionary* patterns;
         }
     }
 	
-	NSUInteger indexInLine = position - line.position;
-	
-	// If the added string is a multi-line block, we need to optimize the addition.
-	// Else, just parse it character-by-character.
-	if ([string containsString:@"\n"] && string.length > 1) {
-		// Split the original line into two
-		NSString *head = [line.string substringToIndex:indexInLine];
-		NSString *tail = (indexInLine + 1 <= line.string.length) ? [line.string substringFromIndex:indexInLine] : @"";
-		 
-		// Split the text block into pieces
-		NSArray *newLines = [string componentsSeparatedByString:@"\n"];
-		
-		// Add the first line
-		[changedIndices addIndex:lineIndex];
-
-		NSInteger offset = line.position;
-
-		[self decrementLinePositionsFromIndex:lineIndex + 1 amount:tail.length];
-				
-		// Go through the new lines
-		for (NSInteger i = 0; i < newLines.count; i++) {
-			NSString *newLine = newLines[i];
-		
-			if (i == 0) {
-				// First line
-				head = [head stringByAppendingString:newLine];
-				line.string = head;
-				[self incrementLinePositionsFromIndex:lineIndex + 1 amount:newLine.length + 1];
-				offset += head.length + 1;
-			} else {
-				Line *addedLine;
-				
-				if (i == newLines.count - 1) {
-					// Handle adding the last line a bit differently
-					tail = [newLine stringByAppendingString:tail];
-					addedLine = [[Line alloc] initWithString:tail position:offset parser:self];
-
-					[self.lines insertObject:addedLine atIndex:lineIndex + i];
-					[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:addedLine.string.length];
-					offset += newLine.length + 1;
-				} else {
-					addedLine = [[Line alloc] initWithString:newLine position:offset parser:self];
-					
-					[self.lines insertObject:addedLine atIndex:lineIndex + i];
-					[self incrementLinePositionsFromIndex:lineIndex + i + 1 amount:addedLine.string.length + 1];
-					offset += newLine.length + 1;
-				}
-			}
-		}
-		
-		[changedIndices addIndexesInRange:NSMakeRange(lineIndex, newLines.count)];
-	} else {
-		// Do it character by character...
-		
-		// Set the currently edited line index
-		if (_editedIndex >= self.lines.count || _editedIndex < 0) {
-			_editedIndex = [self lineIndexAtPosition:position];
-		}
-
-		// Find the current line and cache its previous version
-		Line* line = self.lines[lineIndex];
-		
-        for (int i = 0; i < string.length; i++) {
-            NSString* character = [string substringWithRange:NSMakeRange(i, 1)];
-			[changedIndices addIndexes:[self parseCharacterAdded:character
-													  atPosition:position+i
-															line:line]];
+    NSUInteger indexInLine = position - line.position;
+            
+    // Cut the string in half
+    NSString* tail = [line.string substringFromIndex:indexInLine];
+    line.string = [line.string substringToIndex:indexInLine];
+    
+    NSInteger currentRange = -1;
+    
+    for (NSInteger i=0; i<string.length; i++) {
+        if (currentRange < 0) currentRange = i;
+        
+        unichar chr = [string characterAtIndex:i];
+        
+        
+        if (chr == '\n') {
+            NSString* addedString = [string substringWithRange:NSMakeRange(currentRange, i - currentRange)];
+            line.string = [line.string stringByAppendingString:addedString];
+            
+            // Add a new line after line break
+            Line* newLine = [Line withString:@"" type:empty parser:self];
+            [self.lines insertObject:newLine atIndex:lineIndex + 1];
+            
+            [self adjustLinePositionsFrom:lineIndex];
+            
+            // Increment current line index and reset inspected range
+            lineIndex++;
+            currentRange = -1;
+            
+            // Set current line
+            line = self.lines[lineIndex];
         }
-		
-		if ([string isEqualToString:@"\n"]) {
-			// After a line break is added, parse the next line too, because
-			// some elements may have changed their type.
-			[changedIndices addIndex:lineIndex + 2];
-		}
-	}
-	
-	// Log any problems faced during parsing (safety measure for debugging)
-	// [self report];
-	
-	return changedIndices;
+    }
+
+    // Get the remaining string (if applicable)
+    NSString* remainder = (currentRange >= 0) ? [string substringFromIndex:currentRange] : @"";
+    line.string = [line.string stringByAppendingString:remainder];
+    line.string = [line.string stringByAppendingString:tail];
+    
+    [self adjustLinePositionsFrom:lineIndex];
+    
+    [self report];
+    [changedIndices addIndexesInRange:NSMakeRange(changedIndices.firstIndex + 1, lineIndex - changedIndices.firstIndex)];
+    
+    return changedIndices;
 }
 
 - (void)addLineWithString:(NSString*)string atPosition:(NSInteger)position lineIndex:(NSInteger)index {
@@ -456,186 +423,88 @@ static NSDictionary* patterns;
 	[self incrementLinePositionsFromIndex:index+1 amount:1];
 }
 
-- (NSIndexSet*)parseCharacterAdded:(NSString*)character atPosition:(NSUInteger)position line:(Line*)line
-{
-	NSUInteger lineIndex = _editedIndex;
 
-    NSUInteger indexInLine = position - line.position;
-	
-	if (line.isOutlineElement) [self addChangeInOutline:line];
-	
-    if ([character isEqualToString:@"\n"]) {
-        NSString* cutOffString;
-        // Split the edited line in two if needed
-		if (indexInLine == line.string.length) {
-			// Return key was pressed at the end of line
-            cutOffString = @"";
-        } else {
-			// Line break mid-line, split in two
-            cutOffString = [line.string substringFromIndex:indexInLine];
-            line.string = [line.string substringToIndex:indexInLine];
-        }
-        
-		// Add a new line
-		[self addLineWithString:cutOffString atPosition:position+1 lineIndex:lineIndex+1];
-        return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(lineIndex, 2)];
-    } else {
-		// Add characters into the string
-        NSArray* pieces = @[[line.string substringToIndex:indexInLine],
-                            character,
-                            [line.string substringFromIndex:indexInLine]];
-		
-        line.string = [pieces componentsJoinedByString:@""];
-        [self incrementLinePositionsFromIndex:lineIndex+1 amount:1];
-        
-        return [NSIndexSet indexSetWithIndex:lineIndex];
-    }
-}
 
 
 #pragma mark Parsing removal
 
-- (NSIndexSet*)parseRemovalAt:(NSRange)range {
-	NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
-	
-	NSString *stringToRemove = [self.rawText substringWithRange:range];
-	NSInteger lineBreaks = [stringToRemove componentsSeparatedByString:@"\n"].count - 1;
-	
-	if (lineBreaks > 1) {
-		// If there are 2+ line breaks, optimize the operation by removing whole lines
-		NSInteger lineIndex = [self lineIndexAtPosition:range.location];
-		Line *firstLine = self.lines[lineIndex];
-				
-		// Check if there is a change in outline
-		if (firstLine.isOutlineElement) [self addChangeInOutline:firstLine];
-		
-		// Store the index from where we'll begin the chunk removal
-		NSUInteger indexInLine = range.location - firstLine.position;
-		
-		// Create a string for the "head" of the line which remains intact
-		NSString *retain = (firstLine.string.length) ? [firstLine.string substringToIndex:indexInLine] : @"";
-		NSInteger nextIndex = lineIndex + 1;
-				
-		// +1 for line break
-		NSInteger offset = firstLine.string.length - retain.length + 1;
-		
-		// Iterate through the rest of the lines
-		Line *lastLine;
-		for (NSInteger i = 1; i <= lineBreaks; i++) {
-			Line* nextLine = self.lines[nextIndex];
-			
-			// Check if there is a change in outline
-			if (nextLine.isOutlineElement) [self addChangeInOutline:nextLine];
-			
-			if (i < lineBreaks) { // This is a line in middle of the chunk
-				[self.lines removeObjectAtIndex:nextIndex];
-				offset += nextLine.string.length + 1;
-				
-			} else { // This is the last line in the array
-				lastLine = nextLine;
-				
-				NSInteger indexInNextLine = range.location + range.length - nextLine.position;
-				NSInteger nextLineLength = nextLine.string.length - indexInNextLine;
-				NSString *nextLineString = @"";
-				
-				if (indexInNextLine + nextLineLength > 0) {
-					nextLineString = [nextLine.string substringWithRange:NSMakeRange(indexInNextLine, nextLineLength)];
-				}
-				
-				firstLine.string = [retain stringByAppendingString:nextLineString];
-				
-				// Remove the last line
-				[self.lines removeObjectAtIndex:nextIndex];
-				offset += indexInNextLine;
-			}
-		}
-		
-		// If the last line in chunk bleeded out an omission or note, let's reparse the next line, too
-		if ((lastLine.omitOut || firstLine.omitOut) && nextIndex < self.lines.count) {
-			[changedIndices addIndex:nextIndex];
-		}
-		
-		[self decrementLinePositionsFromIndex:nextIndex amount:offset];
-										
-		[changedIndices addIndex:lineIndex];
-	} else {
-		// Do it normally...
-		
-		// Set the currently edited line index
-		if (_editedIndex >= self.lines.count || _editedIndex < 0) {
-			_editedIndex = [self lineIndexAtPosition:range.location];
-		}
-		
-		// Cache previous version of the string
-		Line* line = self.lines[_editedIndex];
-		
-		// Parse removal character by character
-		for (int i = 0; i < range.length; i++) {
-			[changedIndices addIndexes:[self parseCharacterRemovedAtPosition:range.location line:line]];
-		}
-		
-		if ([stringToRemove isEqualToString:@"\n"]) {
-			// Parse previous line again too, because removing a line break can cause
-			// some elements change their type.
-			NSInteger lineIndex = [self lineIndexAtPosition:range.location];
-			[changedIndices addIndex:lineIndex - 1];
-		}
-		else if (stringToRemove.length > 1 && [stringToRemove containsString:@"/*"]) {
-			NSInteger lineIndex = [self lineIndexAtPosition:range.location];
-			if (lineIndex < self.lines.count) [changedIndices addIndex:lineIndex + 1];
-		}
-	}
-	
-	//[self report];
-	
-	return changedIndices;
+- (void)removeLineAtIndex:(NSInteger)index {
+    if (index < 0 || index >= self.lines.count) return;
+    
+    Line* line = self.lines[index];
+    [self.lines removeObjectAtIndex:index];
+    [self decrementLinePositionsFromIndex:index amount:line.range.length];
 }
-- (NSIndexSet*)parseCharacterRemovedAtPosition:(NSUInteger)position line:(Line*)line
-{
-	/*
-	 
-	 When less than one line is removed, we'll parse it character by character
-	 in this method.  lineIndex is cached so we don't have to find current
-	 line on every call.
-	 
-	 */
-		
-	NSUInteger indexInLine = position - line.position;
-	NSUInteger lineIndex = _editedIndex;
 
-	if (indexInLine > line.string.length) indexInLine = line.string.length;
-	
-    if (indexInLine == line.string.length) {
-        if (lineIndex == self.lines.count - 1) {
-            return nil; //Removed newline at end of document without there being an empty line - should never happen but to be sure...
+- (NSIndexSet*)parseRemovalAt:(NSRange)range {
+    NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
+    
+    // Note: First and last index can be the same, if we are parsing on the same line
+    NSInteger firstIndex = [self lineIndexAtPosition:range.location];
+    NSInteger lastIndex = [self lineIndexAtPosition:NSMaxRange(range)];
+    
+    Line* firstLine = self.lines[firstIndex];
+    Line* lastLine = self.lines[lastIndex];
+    
+    bool originalLineWasEmpty = (firstLine.string.length == 0);
+    bool lastLineWasEmpty = (lastLine.string.length == 0);
+    
+    bool omitOut = false;
+    bool omitIn = false;
+    
+    NSInteger i = firstIndex;
+    while (i < self.lines.count) {
+        Line* line = self.lines[i];
+        
+        // Store a flag if last handled line previously terminated an omission
+        omitOut = line.omitOut;
+        omitIn = line.omitIn;
+        
+        NSRange intersection = NSIntersectionRange(line.range, range);
+        NSRange localRange = NSMakeRange(intersection.location - line.position, intersection.length);
+        
+        if (range.length <= 0) {
+            break;
         }
-		
-		// Find the next line and join it with current line
-        Line* nextLine = self.lines[lineIndex+1];
-        line.string = [line.string stringByAppendingString:nextLine.string];
-        		
-        [self.lines removeObjectAtIndex:lineIndex+1];
-        [self decrementLinePositionsFromIndex:lineIndex+1 amount:1];
-        		
-		if (nextLine.isOutlineElement) [self addChangeInOutline:nextLine];
-		
-		if (nextLine.type == empty &&  lineIndex + 1 < self.lines.count) {
-			// An empty line was removed, which might affect parsing of follow elements, so
-			// let's be sure to parse whatever comes after the deleted line.
-			return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(lineIndex, 2)];
-		} else {
-			return [NSIndexSet indexSetWithIndex:lineIndex];
-		}
-		
-    } else {
-        NSArray* pieces = @[[line.string substringToIndex:indexInLine],
-                            [line.string substringFromIndex:indexInLine + 1]];
-        
-        line.string = [pieces componentsJoinedByString:@""];
-        [self decrementLinePositionsFromIndex:lineIndex+1 amount:1];
-        
-        return [[NSIndexSet alloc] initWithIndex:lineIndex];
+        else if (intersection.length == line.range.length) {
+            // The range covers this whole line, remove it altogether.
+            [self removeLineAtIndex:i];
+            range.length -= line.range.length; // Subtract from full range
+        }
+        else {
+            // This line is partly covered by the range
+            line.string = [line.string stringByRemovingRange:localRange];
+            [self decrementLinePositionsFromIndex:i+1 amount:localRange.length];
+            range.length -= localRange.length; // Subtract from full range
+            
+            // Move on to next line (even if we only wanted to remove one character)
+            i++;
+        }
     }
+    
+    // Join the two lines if the original line didn't get removed in the process
+    if (firstIndex != lastIndex && firstLine == self.lines[firstIndex] &&
+        self.lines.count > firstIndex + 1 && self.lines[firstIndex+1] == lastLine) {
+        firstLine.string = [firstLine.string stringByAppendingString:lastLine.string];
+        [self removeLineAtIndex:firstIndex+1];
+        
+        NSInteger diff = NSMaxRange(firstLine.range) - lastLine.position;
+        [self incrementLinePositionsFromIndex:firstIndex+1 amount:diff];
+    }
+    
+    [self report];
+    
+    // Add necessary indices
+    [changedIndices addIndex:firstIndex];
+    
+    // If the line terminated or bleeded out an omit, check surrounding indices, too.
+    // Also removing a line break can cause some elements change their type.
+    if ((omitOut || lastLineWasEmpty) && firstIndex < self.lines.count+1) [changedIndices addIndex:firstIndex+1];
+    if ((omitIn || originalLineWasEmpty) && firstIndex > 0) [changedIndices addIndex:firstIndex-1];
+    
+    _editedIndex = firstIndex;
+    
+    return changedIndices;
 }
 
 
@@ -837,6 +706,21 @@ static NSDictionary* patterns;
 
 #pragma mark - Incrementing / decrementing line positions
 
+/// A replacement for the old, clunky `incrementLinePositions` and `decrementLinePositions`. Automatically adjusts line positions based on line content.
+/// You still have to make sure that you are parsing correct stuff, though.
+- (void)adjustLinePositionsFrom:(NSInteger)index {
+    Line* line = self.lines[index];
+    NSInteger delta = NSMaxRange(line.range);
+    index++;
+    
+    for (;index<self.lines.count; index++) {
+        Line* l = self.lines[index];
+        l.position = delta;
+        
+        delta = NSMaxRange(l.range);
+    }
+}
+
 - (void)incrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
 {
 	for (; index < [self.lines count]; index++) {
@@ -848,7 +732,7 @@ static NSDictionary* patterns;
 
 - (void)decrementLinePositionsFromIndex:(NSUInteger)index amount:(NSUInteger)amount
 {
-	for (; index < [self.lines count]; index++) {
+	for (; index < self.lines.count; index++) {
 		Line* line = self.lines[index];
 		line.position -= amount;
 	}
@@ -1761,30 +1645,40 @@ static NSDictionary* patterns;
 	return 0;
 }
 
+/**
+ This method returns the line index at given position in document. It uses a cyclical lookup, so the method won't iterate through all the lines every time.
+ Instead, it first checks the line it returned the last time, and after that, starts to iterate through
+ */
 - (NSUInteger)lineIndexAtPosition:(NSUInteger)position
 {
-	// Hey, past me. I rewrote this in 1.929, because the previous iteration didn't seem to actually work.
-	
-	// First check if we are still on the cached line
-	if (_lastEditedLine) {
-		if (NSLocationInRange(position, _lastEditedLine.range)) {
+    NSArray* lines = self.safeLines;
+    NSUInteger actualIndex = NSNotFound;
+    NSInteger lastFoundPosition = 0;
+    
+    // First check if we are still on the same line as before
+	if (NSLocationInRange(_lastLineIndex, NSMakeRange(0, lines.count))) {
+        Line* lastEdited = lines[_lastLineIndex];
+        lastFoundPosition = lastEdited.position;
+        
+		if (NSLocationInRange(position, lastEdited.range)) {
 			return _lastLineIndex;
 		}
 	}
-	
-	// Else just iterate through lines and cache the result
-	for (int i = 0; i < self.lines.count; i++) {
-		Line* line = self.lines[i];
-		
-		if (NSLocationInRange(position, line.range)) {
-			_lastEditedLine = line;
-			_lastLineIndex = i;
-			return i;
-		}
-	}
-	
-	// Return last line
-	return self.lines.count - 1;
+    
+    // Cyclical array lookup from the last found position
+    Line* result = [self findNeighbourIn:lines origin:_lastLineIndex descending:(position < lastFoundPosition) cacheIndex:&actualIndex block:^BOOL(id item) {
+        Line* l = item;
+        return NSLocationInRange(position, l.range);
+    }];
+    
+    if (result != nil) {
+        _lastLineIndex = actualIndex;
+        _lastEditedLine = result;
+        
+        return actualIndex;
+    } else {
+        return self.lines.count - 1;
+    }
 }
 
 /// Returns line type at given full string index 
@@ -2504,7 +2398,16 @@ NSUInteger prevLineAtLocationIndex = 0;
 	return index;
 }
 
-- (id)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item))compare  {
+/**
+ This method finds an element in array that statisfies a certain condition, compared in the block. To optimize the search, you should provide `searchOrigin`  and the direction.
+ @returns Returns either the found element or nil if none was found.
+ @param array The array to be searched.
+ @param searchOrigin Starting index of the search, preferrably the latest result you got from this same method.
+ @param descending Set the direction of the search: true for descending, false for ascending.
+ @param cacheIndex Pointer for retrieving the index of the found element. Set to NSNotFound if the result is nil.
+ @param compare The block for comparison, with the inspected element as argument. If the element statisfies your conditions, return true.
+ */
+- (id _Nullable)findNeighbourIn:(NSArray*)array origin:(NSUInteger)searchOrigin descending:(bool)descending cacheIndex:(NSUInteger*)cacheIndex block:(BOOL (^)(id item))compare  {
 	// Don't go out of range
 	if (NSLocationInRange(searchOrigin, NSMakeRange(-1, array.count))) {
 		/** Uh, wtf, how does this work?
@@ -2548,7 +2451,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 		}
 		
 	} while (stop != YES);
-		
+    
+    *cacheIndex = NSNotFound;
 	return nil;
 }
 
