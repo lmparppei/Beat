@@ -9,7 +9,7 @@
 "B8Z-S8-DXC.title" = "Paperi";
 
 /* Class = "NSTextFieldCell"; title = "Outline Background"; ObjectID = "BS2-mF-IoS"; */
-"BS2-mF-IoS.title" = "Sivupalkin tausta";
+"BS2-mF-IoS.title" = "Tausta";
 
 /* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "DDr-T3-GTD"; */
 "DDr-T3-GTD.title" = "Tumma";
@@ -36,7 +36,7 @@
 "Whr-tU-Und.title" = "Ei määrit.";
 
 /* Class = "NSTextFieldCell"; title = "Outline Highlight"; ObjectID = "ZgE-Rl-TTE"; */
-"ZgE-Rl-TTE.title" = "Sivupalkin korostus";
+"ZgE-Rl-TTE.title" = "Korostus";
 
 /* Class = "NSButtonCell"; title = "Save"; ObjectID = "aZc-lr-r9i"; */
 "aZc-lr-r9i.title" = "Tallenna";
@@ -48,7 +48,7 @@
 "eoU-fi-QOQ.title" = "Muu";
 
 /* Class = "NSTextFieldCell"; title = "Note: Changes to text colours may require reopening documents"; ObjectID = "j5y-Wf-te4"; */
-"j5y-Wf-te4.title" = "Huomaa: Jotkin tekstin värit muuttuvat vasta uudelleenavauksen jälkeen";
+"j5y-Wf-te4.title" = "Huomaa: Jotkin värit muuttuvat vasta dokumentin uudelleenavauksen jälkeen";
 
 /* Class = "NSTextFieldCell"; title = "Man"; ObjectID = "jaw-Da-IBj"; */
 "jaw-Da-IBj.title" = "Mies";
@@ -73,3 +73,13 @@
 
 /* Class = "NSTextFieldCell"; title = "Caret"; ObjectID = "zHa-4e-Vuo"; */
 "zHa-4e-Vuo.title" = "Osoitin";
+
+"8db-n5-9bh.label" = "Editori";
+"jya-PU-GI5.label" = "Sivupalkki";
+
+"NFp-0j-8TG.title" = "Kohtaus";
+"2l8-ae-CH8.title" = "Kohtausnumero";
+"rMb-4q-N2D.title" = "Piilotettu kohtaus";
+"DQC-Ep-LAb.title" = "Osio";
+"ou5-vA-1Cw.title" = "Synopsis";
+
