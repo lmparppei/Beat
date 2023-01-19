@@ -1419,7 +1419,6 @@ static NSDictionary* patterns;
     static NSArray* colors;
     if (colors == nil) colors = @[@"red", @"blue", @"green", @"pink", @"magenta", @"gray", @"purple", @"cyan", @"teal", @"yellow", @"orange", @"brown"];
     return colors;
-    
 }
 
 /// Finds and sets the color for given outline-level line. Only the last one is used, preceding color notes are ignored.
@@ -1430,7 +1429,7 @@ static NSDictionary* patterns;
     __block NSString* headingColor = @"";
 	line.colorRange = NSMakeRange(0, 0);
     
-    NSDictionary<NSNumber*, NSString*>* noteContents = line.noteContentsAndRanges;
+    NSDictionary<NSValue*, NSString*>* noteContents = line.noteContentsAndRanges;
     for (NSNumber* key in noteContents.allKeys) {
         NSRange range = key.rangeValue;
         NSString* content = noteContents[key].lowercaseString;
