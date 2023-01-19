@@ -122,7 +122,31 @@
 	}
 	
 	return NO;
-	
+}
+
+- (NSRange)rangeBetweenFirstAndLastOccurrenceOf:(unichar)chr {
+    NSInteger first = NSNotFound;
+    NSInteger last = 0;
+    
+    for (NSInteger i=0; i<self.length; i++) {
+        unichar c = [self characterAtIndex:i];
+        if (c == chr && first == NSNotFound) {
+            first = i;
+        }
+        else if (c == chr) {
+            last = i;
+        }
+    }
+    
+    if (first == NSNotFound) return NSMakeRange(first, 0);
+    else return NSMakeRange(first, last - first);
+}
+
+- (NSString*)stringByRemovingRange:(NSRange)range {
+    NSString* head = [self substringToIndex:range.location];
+    NSString* tail = (NSMaxRange(range) < self.length) ? [self substringFromIndex:NSMaxRange(range)] : @"";
+    
+    return [NSString stringWithFormat:@"%@%@", head, tail];
 }
 
 @end

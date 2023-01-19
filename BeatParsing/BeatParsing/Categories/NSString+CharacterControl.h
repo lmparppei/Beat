@@ -15,5 +15,6 @@
 - (bool)onlyUppercaseUntilParenthesis;
 - (NSString *)stringByTrimmingTrailingCharactersInSet:(NSCharacterSet *)characterSet;
 - (NSInteger)numberOfOccurencesOfCharacter:(unichar)symbol;
-
+- (NSRange)rangeBetweenFirstAndLastOccurrenceOf:(unichar)chr;
+- (NSString*)stringByRemovingRange:(NSRange)range;
 @end
