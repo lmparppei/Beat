@@ -27,16 +27,10 @@
 		B60A9F0B2975CE9500916FAA /* FooterTemplate.html in Resources */ = {isa = PBXBuildFile; fileRef = B6E099D72766861B005E7827 /* FooterTemplate.html */; };
 		B60A9F0C2975CE9A00916FAA /* PreviewStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B6F712A8276BC78D00C4489B /* PreviewStyles.css */; };
 		B60A9F0D2975CE9D00916FAA /* ScreenplayStyles.css in Resources */ = {isa = PBXBuildFile; fileRef = B605473C276A8DDD001E571F /* ScreenplayStyles.css */; };
-		B60A9F2729774DF300916FAA /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F2629774DF300916FAA /* BeatDefaults.framework */; };
-		B60A9F2829774DF400916FAA /* BeatDefaults.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F2629774DF300916FAA /* BeatDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B60A9F2A29774E0800916FAA /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F2929774E0800916FAA /* BeatDefaults.framework */; };
-		B60A9F2B29774E0900916FAA /* BeatDefaults.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F2929774E0800916FAA /* BeatDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B60A9F2D29774E0E00916FAA /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; };
 		B60A9F2E29774E0E00916FAA /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B60A9F2F29774E1200916FAA /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B604C8DC290CF7E400CBB32D /* BeatParsing.framework */; };
 		B60A9F3029774E1200916FAA /* BeatParsing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B604C8DC290CF7E400CBB32D /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B60A9F3229774E2A00916FAA /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3129774E2A00916FAA /* BeatDefaults.framework */; };
-		B60A9F3329774E2A00916FAA /* BeatDefaults.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B60A9F3129774E2A00916FAA /* BeatDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B60A9F3429774E4B00916FAA /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF82CF27EB1D1900D32A2F /* JavaScriptCore.framework */; };
 		B60A9F3529774E6200916FAA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FF82D327EB1D4E00D32A2F /* QuartzCore.framework */; };
 		B60A9F412977EEDB00916FAA /* ThemeEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B66716C72971D1B5005B8C55 /* ThemeEditor.m */; };
@@ -418,6 +412,7 @@
 		B6BE1AD82567B93500F7476A /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */; };
 		B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */; };
 		B6C024ED2978162000249445 /* BeatAutomaticAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60A9F452977F91100916FAA /* BeatAutomaticAppearance.swift */; };
+		B6C024EF29795C8700249445 /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6C024EE29795C8700249445 /* BeatDefaults.framework */; };
 		B6C16AFB25A72D3D003EF5A7 /* Plugin HTML template.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */; };
 		B6C35D5D2934BF9400FF2630 /* BeatWebResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */; };
 		B6C35D5E2934BF9400FF2630 /* BeatWebResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */; };
@@ -542,7 +537,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B60A9F2B29774E0900916FAA /* BeatDefaults.framework in Embed Frameworks */,
 				B60A9F3029774E1200916FAA /* BeatParsing.framework in Embed Frameworks */,
 				B60A9F2E29774E0E00916FAA /* BeatPaginationCore.framework in Embed Frameworks */,
 			);
@@ -557,7 +551,6 @@
 			files = (
 				B604C8DE290CF7E400CBB32D /* BeatParsing.framework in Embed Frameworks */,
 				B66C4F00296F6344009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */,
-				B60A9F2829774DF400916FAA /* BeatDefaults.framework in Embed Frameworks */,
 				B60A9F05297466B300916FAA /* BeatThemes.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -591,7 +584,6 @@
 			files = (
 				B655AC26296B3124006C647F /* BeatParsing.framework in CopyFiles */,
 				B66C4F03296F634C009ADE4E /* BeatPaginationCore.framework in CopyFiles */,
-				B60A9F3329774E2A00916FAA /* BeatDefaults.framework in CopyFiles */,
 				B60A9F092974B05400916FAA /* BeatThemes.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -627,9 +619,6 @@
 		B60A592D259938C900207D00 /* BeatPluginManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPluginManager.m; sourceTree = "<group>"; };
 		B60A593225993FF000207D00 /* Find Longest Scene.beatPlugin */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; path = "Find Longest Scene.beatPlugin"; sourceTree = "<group>"; };
 		B60A9F03297466B300916FAA /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B60A9F2629774DF300916FAA /* BeatDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B60A9F2929774E0800916FAA /* BeatDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B60A9F3129774E2A00916FAA /* BeatDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B60A9F452977F91100916FAA /* BeatAutomaticAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatAutomaticAppearance.swift; sourceTree = "<group>"; };
 		B60D192526B0811E005C2693 /* BeatNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNotifications.h; sourceTree = "<group>"; };
 		B60D192626B0811E005C2693 /* BeatNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNotifications.m; sourceTree = "<group>"; };
@@ -936,6 +925,7 @@
 		B6BE1AD12567B93500F7476A /* Courier Prime Sans Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Italic.ttf"; sourceTree = "<group>"; };
 		B6BE1AD22567B93500F7476A /* Courier Prime Sans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans.ttf"; sourceTree = "<group>"; };
 		B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Courier Prime Sans Bold Italic.ttf"; sourceTree = "<group>"; };
+		B6C024EE29795C8700249445 /* BeatDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C0A5692214C09C00A8B33D /* RecentFiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecentFiles.h; sourceTree = "<group>"; };
 		B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "Plugin HTML template.html"; path = "Beat/Plugin API/Plugin HTML template.html"; sourceTree = SOURCE_ROOT; };
 		B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatWebResources.swift; sourceTree = "<group>"; };
@@ -1055,7 +1045,6 @@
 				B6C9677E296C8542003648AD /* Sparkle in Frameworks */,
 				B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */,
 				B138B61F19E1D6A7000489C4 /* WebKit.framework in Frameworks */,
-				B60A9F3229774E2A00916FAA /* BeatDefaults.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1065,8 +1054,8 @@
 			files = (
 				B62ADC7523CCCE560015563A /* Quartz.framework in Frameworks */,
 				B60A9F2F29774E1200916FAA /* BeatParsing.framework in Frameworks */,
+				B6C024EF29795C8700249445 /* BeatDefaults.framework in Frameworks */,
 				B60A9F2D29774E0E00916FAA /* BeatPaginationCore.framework in Frameworks */,
-				B60A9F2A29774E0800916FAA /* BeatDefaults.framework in Frameworks */,
 				B62ADC8F23CCE20D0015563A /* QuickLook.framework in Frameworks */,
 				B62ADC9523CCEF0F0015563A /* WebKit.framework in Frameworks */,
 			);
@@ -1076,7 +1065,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B60A9F2729774DF300916FAA /* BeatDefaults.framework in Frameworks */,
 				B68B6086260B849300463AD8 /* Cocoa.framework in Frameworks */,
 				B6FF82D427EB1D4F00D32A2F /* QuartzCore.framework in Frameworks */,
 				B604C8DD290CF7E400CBB32D /* BeatParsing.framework in Frameworks */,
@@ -1176,9 +1164,7 @@
 		B138B62419E1D8A4000489C4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B60A9F3129774E2A00916FAA /* BeatDefaults.framework */,
-				B60A9F2929774E0800916FAA /* BeatDefaults.framework */,
-				B60A9F2629774DF300916FAA /* BeatDefaults.framework */,
+				B6C024EE29795C8700249445 /* BeatDefaults.framework */,
 				B60A9F03297466B300916FAA /* BeatThemes.framework */,
 				B66C4F01296F634B009ADE4E /* BeatPaginationCore.framework */,
 				B66C4EFE296F6344009ADE4E /* BeatPaginationCore.framework */,
