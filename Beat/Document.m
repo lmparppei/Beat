@@ -3854,11 +3854,6 @@ static bool _skipAutomaticLineBreaks = false;
 	return [self.documentSettings getInt:DocSettingSceneNumberStart];
 }
 
-- (void)resetSceneNumberLabels {
-	if (_sceneNumberLabelUpdateOff || !_showSceneNumberLabels) return;
-	[self.textView resetSceneNumberLabels];
-}
-
 - (IBAction)toggleSceneLabels: (id) sender {
 	self.showSceneNumberLabels = !self.showSceneNumberLabels;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
