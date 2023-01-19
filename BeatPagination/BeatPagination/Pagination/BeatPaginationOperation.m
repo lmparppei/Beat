@@ -267,12 +267,34 @@
 		[self.pageBreaks removeLastObject];
 	}
     
-    if (pageIndex < self.pageCache.count) {
-        NSArray *cachedPages = [self.pageCache subarrayWithRange:NSMakeRange(pageIndex, self.pageCache.count - pageIndex)];
+    // This shouldn't happen, but let's guard the code against weirdness.
+    
+    if (pageIndex >= self.pageCache.count || self.pageCache.count == 0) {
+        NSLog(@"Skipping. Page cache count: %lu", self.pageCache.count);
+        return;
+    }
+    
+    @try {
+        // Make sure the range doesn't go out of range for some weird reason
+        NSRange subRange = NSMakeRange(pageIndex, _pageCache.count - pageIndex);
+        if (NSMaxRange(subRange) > _pageCache.count) {
+            subRange.length = NSIntersectionRange(subRange, NSMakeRange(0, _pageCache.count)).length;
+        }
+        
+        NSArray *cachedPages = [self.pageCache subarrayWithRange:subRange];
         [self.pages addObjectsFromArray:cachedPages];
         
-        NSArray *cachedLineBreaks = [self.pageBreakCache subarrayWithRange:NSMakeRange(pageIndex + 1, self.pageBreakCache.count - pageIndex - 1)];
+        // Make sure the range doesn't go out of range for some weird reason
+        NSRange lineBreakRange = NSMakeRange(pageIndex + 1, _pageBreakCache.count - pageIndex - 1);
+        if (NSMaxRange(lineBreakRange) > _pageBreakCache.count) {
+            lineBreakRange.length = NSIntersectionRange(lineBreakRange, NSMakeRange(0, _pageBreakCache.count)).length;
+        }
+        
+        NSArray *cachedLineBreaks = [self.pageBreakCache subarrayWithRange:lineBreakRange];
         [self.pageBreaks addObjectsFromArray:cachedLineBreaks];
+    }
+    @catch (NSException* e) {
+        NSLog(@"ERROR IN PAGINATION: %@", e);
     }
 }
 

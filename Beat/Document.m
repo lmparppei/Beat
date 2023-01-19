@@ -544,6 +544,7 @@ static BeatAppDelegate *appDelegate;
 			
 			self.progressIndicator = [[NSProgressIndicator alloc] initWithFrame:(NSRect){  25, 20, 250, 10}];
 			self.progressIndicator.indeterminate = NO;
+			
 			[self.progressPanel.contentView addSubview:self.progressIndicator];
 			
 			[self.documentWindow beginSheet:self.progressPanel completionHandler:^(NSModalResponse returnCode) { }];
@@ -565,7 +566,6 @@ static BeatAppDelegate *appDelegate;
 	[self.revisionTracking setup]; // Initialize edit tracking
 	[self.review setup]; // Setup review system
 	[self.tagging setup]; // Setup tagging
-	
 	
 	// Document loading has ended
 	self.documentIsLoading = NO;

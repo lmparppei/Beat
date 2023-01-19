@@ -413,6 +413,10 @@
 		B6BE1ADA2567B93500F7476A /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6BE1AD32567B93500F7476A /* Courier Prime Sans Bold Italic.ttf */; };
 		B6C024ED2978162000249445 /* BeatAutomaticAppearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60A9F452977F91100916FAA /* BeatAutomaticAppearance.swift */; };
 		B6C024EF29795C8700249445 /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6C024EE29795C8700249445 /* BeatDefaults.framework */; };
+		B6C024F12979995B00249445 /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6C024EE29795C8700249445 /* BeatDefaults.framework */; };
+		B6C024F22979995B00249445 /* BeatDefaults.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6C024EE29795C8700249445 /* BeatDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B6C024F32979996C00249445 /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6C024EE29795C8700249445 /* BeatDefaults.framework */; };
+		B6C024F42979996D00249445 /* BeatDefaults.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = B6C024EE29795C8700249445 /* BeatDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6C16AFB25A72D3D003EF5A7 /* Plugin HTML template.html in Resources */ = {isa = PBXBuildFile; fileRef = B6C16AFA25A72D3D003EF5A7 /* Plugin HTML template.html */; };
 		B6C35D5D2934BF9400FF2630 /* BeatWebResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */; };
 		B6C35D5E2934BF9400FF2630 /* BeatWebResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C35D5C2934BF9300FF2630 /* BeatWebResources.swift */; };
@@ -551,6 +555,7 @@
 			files = (
 				B604C8DE290CF7E400CBB32D /* BeatParsing.framework in Embed Frameworks */,
 				B66C4F00296F6344009ADE4E /* BeatPaginationCore.framework in Embed Frameworks */,
+				B6C024F22979995B00249445 /* BeatDefaults.framework in Embed Frameworks */,
 				B60A9F05297466B300916FAA /* BeatThemes.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -584,6 +589,7 @@
 			files = (
 				B655AC26296B3124006C647F /* BeatParsing.framework in CopyFiles */,
 				B66C4F03296F634C009ADE4E /* BeatPaginationCore.framework in CopyFiles */,
+				B6C024F42979996D00249445 /* BeatDefaults.framework in CopyFiles */,
 				B60A9F092974B05400916FAA /* BeatThemes.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1042,6 +1048,7 @@
 				B60A9F082974B05400916FAA /* BeatThemes.framework in Frameworks */,
 				B655AC25296B3124006C647F /* BeatParsing.framework in Frameworks */,
 				B6E3246724B515670001273F /* AppKit.framework in Frameworks */,
+				B6C024F32979996C00249445 /* BeatDefaults.framework in Frameworks */,
 				B6C9677E296C8542003648AD /* Sparkle in Frameworks */,
 				B62ADC9023CCE2EE0015563A /* QuickLook.framework in Frameworks */,
 				B138B61F19E1D6A7000489C4 /* WebKit.framework in Frameworks */,
@@ -1065,6 +1072,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6C024F12979995B00249445 /* BeatDefaults.framework in Frameworks */,
 				B68B6086260B849300463AD8 /* Cocoa.framework in Frameworks */,
 				B6FF82D427EB1D4F00D32A2F /* QuartzCore.framework in Frameworks */,
 				B604C8DD290CF7E400CBB32D /* BeatParsing.framework in Frameworks */,
@@ -3273,7 +3281,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 133080;
+				CURRENT_PROJECT_VERSION = 133083;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -3311,7 +3319,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 133080;
+				CURRENT_PROJECT_VERSION = 133083;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -3345,7 +3353,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133080;
+				CURRENT_PROJECT_VERSION = 133083;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
@@ -3383,7 +3391,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Mac Developer";
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 133080;
+				CURRENT_PROJECT_VERSION = 133083;
 				DEVELOPMENT_TEAM = C3R7KAVB6V;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)";
