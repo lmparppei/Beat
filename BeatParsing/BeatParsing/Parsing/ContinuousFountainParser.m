@@ -346,6 +346,8 @@ static NSDictionary* patterns;
 }
 
 
+
+
 #pragma mark Parsing additions
 
 
@@ -355,15 +357,19 @@ static NSDictionary* patterns;
     
 	// Get the line where into which we are adding characters
 	NSUInteger lineIndex = [self lineIndexAtPosition:position];
+    Line* line = self.lines[lineIndex];
+    
     [changedIndices addIndex:lineIndex];
-    
-	Line* line = self.lines[lineIndex];
-    
-	if (line.isOutlineElement) [self addChangeInOutline:line];
+
+    // Check if editing this line affects the outline
+    if (line.isOutlineElement) {
+        [self addChangeInOutline:line];
+    }
     else if (line.type == synopse) {
+        // For synopsis markers, we need to iterate backwards and find the nearest outline element
         for (NSInteger i = lineIndex; i>=0; i--) {
-            Line * l = self.lines[i];
-            if (l.type == heading) {
+            Line* l = self.lines[i];
+            if (l.isOutlineElement) {
                 [self addChangeInOutline:l];
                 break;
             }
@@ -383,16 +389,17 @@ static NSDictionary* patterns;
         
         unichar chr = [string characterAtIndex:i];
         
-        
         if (chr == '\n') {
             NSString* addedString = [string substringWithRange:NSMakeRange(currentRange, i - currentRange)];
             line.string = [line.string stringByAppendingString:addedString];
             
-            // Add a new line after line break
-            Line* newLine = [Line withString:@"" type:empty parser:self];
-            [self.lines insertObject:newLine atIndex:lineIndex + 1];
+            if (lineIndex < self.lines.count - 1) {
+                Line* nextLine = self.lines[lineIndex+1];
+                NSInteger delta = ABS(NSMaxRange(line.range) - nextLine.position);
+                [self decrementLinePositionsFromIndex:lineIndex+1 amount:delta];
+            }
             
-            [self adjustLinePositionsFrom:lineIndex];
+            [self addLineWithString:@"" atPosition:NSMaxRange(line.range) lineIndex:lineIndex+1];
             
             // Increment current line index and reset inspected range
             lineIndex++;
@@ -416,25 +423,8 @@ static NSDictionary* patterns;
     return changedIndices;
 }
 
-- (void)addLineWithString:(NSString*)string atPosition:(NSInteger)position lineIndex:(NSInteger)index {
-	// Add a new line into place and increment positions
-	Line *newLine = [Line.alloc initWithString:string position:position parser:self];
-	[self.lines insertObject:newLine atIndex:index];
-	[self incrementLinePositionsFromIndex:index+1 amount:1];
-}
-
-
-
 
 #pragma mark Parsing removal
-
-- (void)removeLineAtIndex:(NSInteger)index {
-    if (index < 0 || index >= self.lines.count) return;
-    
-    Line* line = self.lines[index];
-    [self.lines removeObjectAtIndex:index];
-    [self decrementLinePositionsFromIndex:index amount:line.range.length];
-}
 
 - (NSIndexSet*)parseRemovalAt:(NSRange)range {
     NSMutableIndexSet *changedIndices = NSMutableIndexSet.new;
@@ -505,6 +495,24 @@ static NSDictionary* patterns;
     _editedIndex = firstIndex;
     
     return changedIndices;
+}
+
+
+#pragma mark Add / remove lines
+
+- (void)removeLineAtIndex:(NSInteger)index {
+    if (index < 0 || index >= self.lines.count) return;
+    
+    Line* line = self.lines[index];
+    [self.lines removeObjectAtIndex:index];
+    [self decrementLinePositionsFromIndex:index amount:line.range.length];
+}
+
+- (void)addLineWithString:(NSString*)string atPosition:(NSInteger)position lineIndex:(NSInteger)index {
+    // Add a new line into place and increment positions
+    Line *newLine = [Line.alloc initWithString:string position:position parser:self];
+    [self.lines insertObject:newLine atIndex:index];
+    [self incrementLinePositionsFromIndex:index+1 amount:1];
 }
 
 
@@ -2584,7 +2592,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 - (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber {
-	for (OutlineScene *scene in self.outline) {
+	for (OutlineScene *scene in self.outline) {https://www.pirkka.fi/niksit?q=lumiharja
 		if ([scene.sceneNumber.lowercaseString isEqualTo:sceneNumber.lowercaseString]) {
 			return scene;
 		}
