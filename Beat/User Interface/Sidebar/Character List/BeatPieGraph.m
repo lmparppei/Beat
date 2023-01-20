@@ -40,8 +40,6 @@
 }
 
 - (void)setup {
-	ThemeManager* t = ThemeManager.sharedManager;
-	
 	self.wantsLayer = YES;
 	self.graphLayers = [NSMutableArray array];
 	self.colors = @{
