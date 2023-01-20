@@ -164,6 +164,10 @@ NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
 	return values[1];
 }
 
+- (void)resetToDefault:(NSString*)key {
+    [NSUserDefaults.standardUserDefaults removeObjectForKey:key];
+}
+
 - (NSInteger)getInteger:(NSString*)docKey
 {
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;

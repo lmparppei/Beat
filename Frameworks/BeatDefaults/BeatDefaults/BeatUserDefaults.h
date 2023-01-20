@@ -45,6 +45,7 @@ extern NSString * const  BeatSettingSuppressedAlert;
 + (BeatUserDefaults*)sharedDefaults;
 + (NSDictionary*)userDefaults;
 - (void)readUserDefaultsFor:(id)target;
+- (void)resetToDefault:(NSString*)key;
 - (void)save:(id)value forKey:(NSString*)key;
 - (BOOL)isSuppressed:(NSString*)key;
 - (void)setSuppressed:(NSString*)key value:(bool)value;
