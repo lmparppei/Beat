@@ -604,7 +604,8 @@
     if (self.noteOutIndices.count) {
         NSRange range = NSMakeRange(self.noteOutIndices.firstIndex, self.noteOutIndices.count);
         NSString* noteOut = [self.string substringFromIndex:self.noteOutIndices.firstIndex];
-        if ([noteOut containsString:@"[["]) noteOut = [noteOut substringFromIndex:self.noteOutIndices.firstIndex + 2];
+        if ([noteOut containsString:@"[["] && noteOut.length > 2) noteOut = [noteOut substringFromIndex:2];
+        else noteOut = @"";
         
         NSValue* rangeValue = [NSValue valueWithRange:range];
         
