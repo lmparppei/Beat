@@ -339,16 +339,19 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
 	// (do this earlier, you idiot)
-	if (line.string.length == 0 && !firstTime) {
+	if (line.string.length == 0 && !firstTime && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
 		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
 		Line* previousLine;
 		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
-		if (lineIndex > 0) previousLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
+
+		if (lineIndex > 0 && lineIndex != NSNotFound) previousLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
 		
 		// Keep dialogue input after any dialogue elements
-		if (previousLine.isAnyDialogue && previousLine.string.length) {
-			if (!previousLine.isDualDialogue) paragraphStyle = [self paragraphStyleForType:dialogue];
-			else paragraphStyle = [self paragraphStyleForType:dualDialogue];
+		if (previousLine.isDialogue && previousLine.length > 0) {
+			paragraphStyle = [self paragraphStyleForType:dialogue];
+		}
+		else if (previousLine.isDualDialogue && previousLine.length > 0) {
+			paragraphStyle = [self paragraphStyleForType:dualDialogue];
 		} else {
 			[paragraphStyle setFirstLineHeadIndent:0];
 			[paragraphStyle setHeadIndent:0];
@@ -370,6 +373,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		[self renderBackgroundForLine:line clearFirst:NO];
 	}
 } }
+
 
 - (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
 	NSTextStorage *textStorage = _delegate.textView.textStorage;
