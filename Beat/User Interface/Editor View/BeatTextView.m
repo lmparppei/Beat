@@ -44,8 +44,6 @@
 #import "BeatFonts.h"
 #import "BeatEditorFormatting.h"
 
-#define DEFAULT_MAGNIFICATION 1.47
-#define MAGNIFICATION_KEY @"magnification"
 
 // This helps to create some sense of easeness
 #define MARGIN_CONSTANT 10
@@ -1341,6 +1339,16 @@ Line *cachedRectLine;
 	[self.enclosingScrollView.contentView.animator setBoundsOrigin:NSMakePoint(0, y)];
 }
 
+- (void)ensureRangeIsVisible:(NSRange)range {
+	NSRect rect = [self rectForRange:range];
+	NSRect visibleRect = self.visibleRect;
+	
+	CGFloat changeY = rect.origin.y - rect.size.height;
+	if (changeY < self.visibleRect.origin.y || changeY > self.visibleRect.origin.y + self.visibleRect.size.height) {
+		[self scrollToRange:range];
+	}
+}
+
 /// Animated scrolling with a callback
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock {
 	NSRect rect = [self rectForRange:range];
@@ -1356,6 +1364,22 @@ Line *cachedRectLine;
 
 
 #pragma mark - Zooming
+
+- (void)setupZoom {
+	// This resets the zoom to the saved setting
+	self.zoomLevel = [BeatUserDefaults.sharedDefaults getFloat:BeatSettingMagnification];
+	
+	_scaleFactor = 1.0;
+	[self setScaleFactor:_zoomLevel adjustPopup:false];
+	[self.editorDelegate updateLayout];
+}
+
+- (void)resetZoom {
+	[BeatUserDefaults.sharedDefaults resetToDefault:BeatSettingMagnification];
+	CGFloat zoomLevel = [BeatUserDefaults.sharedDefaults getFloat:BeatSettingMagnification];
+	[self adjustZoomLevel:zoomLevel];
+}
+
 
 /// Adjust zoom by a delta value
 - (void)adjustZoomLevelBy:(CGFloat)value {
@@ -1401,9 +1425,7 @@ double clamp(double d, double min, double max) {
 		
 		[self.editorDelegate ensureLayout];
 	}
-	
-	[NSUserDefaults.standardUserDefaults setFloat:_zoomLevel forKey:MAGNIFICATION_KEY];
-	
+		
 	[self setInsets];
 	[_editorDelegate updateLayout];
 	[_editorDelegate ensureLayout];
@@ -1419,7 +1441,8 @@ double clamp(double d, double min, double max) {
 
 	[self adjustZoomLevel:newMagnification];
 	
-	[BeatUserDefaults.sharedDefaults saveFloat:_zoomLevel forKey:MAGNIFICATION_KEY];
+	// Save adjusted zoom level
+	[BeatUserDefaults.sharedDefaults saveFloat:_zoomLevel forKey:BeatSettingMagnification];
 }
 
 - (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag
@@ -1460,29 +1483,6 @@ double clamp(double d, double min, double max) {
 	
 	_scaleFactor = newScale;
 }
-
-- (void)setupZoom {
-	// This resets the zoom to the saved setting
-	if (![NSUserDefaults.standardUserDefaults floatForKey:MAGNIFICATION_KEY]) {
-		_zoomLevel = DEFAULT_MAGNIFICATION;
-	} else {
-		_zoomLevel = [NSUserDefaults.standardUserDefaults floatForKey:MAGNIFICATION_KEY];
-			  
-		// Some limits for magnification, if something changes between app versions
-		if (_zoomLevel < .7 || _zoomLevel > 1.19) _zoomLevel = DEFAULT_MAGNIFICATION;
-	}
-	
-	_scaleFactor = 1.0;
-	[self setScaleFactor:_zoomLevel adjustPopup:false];
-
-	[self.editorDelegate updateLayout];
-}
-
-- (void)resetZoom {
-	[NSUserDefaults.standardUserDefaults removeObjectForKey:MAGNIFICATION_KEY];
-	[self adjustZoomLevel:DEFAULT_MAGNIFICATION];
-}
-
 
 
 #pragma mark - Copy-paste
@@ -1839,26 +1839,20 @@ CGGlyph* GetGlyphsForCharacters(CTFontRef font, CFStringRef string)
 	Line *line = [self.editorDelegate.parser lineAtIndex:range.location];
 	
 	// Avoid capitalizing parentheticals
-	if (line.type == parenthetical) {
+	if (line.isAnyParenthetical) {
 		NSMutableArray<NSTextCheckingResult*> *newResults;
 		
+		NSString *textToChange = [self.textStorage.string substringWithRange:range].uppercaseString;
+		
 		for (NSTextCheckingResult *result in results) {
-			if (result.resultType == NSTextCheckingTypeCorrection && line.length > 2) {
-				// Strip () from the line for testing, then get first word and capitalize it
-				NSString *textToChange = [[self.textStorage.string substringWithRange:(NSRange){ range.location + 1, range.length - 2 }] componentsSeparatedByString:@" "].firstObject;
-				textToChange = textToChange.capitalizedString;
-				
-				// This is actually the first word in parenthetical, so let's not add it into the suggestions.
-				// Otherwise, add the replacement suggestion
-				if (![result.replacementString isEqualToString:textToChange] || result.range.location == line.position + 1) {
-					[newResults addObject:result];
-				}
-			} else {
+			// If the result type is NOT correction and the replacement IS NOT EQUAL to the original string, save for case,
+			// add the result. Otherwise we'll just skip it.
+			if (!(result.resultType == NSTextCheckingTypeCorrection && [textToChange isEqualToString:result.replacementString.uppercaseString])) {
 				[newResults addObject:result];
 			}
 		}
 		[super handleTextCheckingResults:newResults forRange:range types:checkingTypes options:options orthography:orthography wordCount:wordCount];
-	} else if (line.type == heading && self.popupMode == Autocomplete) {
+	} else if ((line.isAnyCharacter || line.type == heading) && self.popupMode == Autocomplete) {
 		// Do nothing when heading autocomplete is visible
 	} else {
 		// default behaviors, including auto-correct

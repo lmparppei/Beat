@@ -106,6 +106,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (CGFloat)setInsets;
 - (void)scrollToRange:(NSRange)range;
 - (void)scrollToRange:(NSRange)range callback:(void (^)(void))callbackBlock;
+- (void)ensureRangeIsVisible:(NSRange)range;
 
 // Page numbering
 - (void)updatePageBreaks:(NSArray<NSDictionary*>*)pageBreaks;

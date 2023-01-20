@@ -1493,9 +1493,10 @@ static NSWindow __weak *currentKeyWindow;
 			if (self.textView.string.length >= affectedCharRange.location + 1) {
 				unichar chr = [self.textView.string characterAtIndex:affectedCharRange.location];
 				if (chr == ')') {
+					NSInteger lineIndex = [self.lines indexOfObject:currentLine];
 					[self addString:@"\n" atIndex:affectedCharRange.location + 1];
-					Line *nextLine = [self getNextLine:currentLine];
-					[_formatting formatLine:nextLine];
+					if (lineIndex < self.lines.count) [_formatting formatLine:self.lines[lineIndex]];
+					
 					[self.textView setSelectedRange:(NSRange){ affectedCharRange.location + 2, 0 }];
 					return NO;
 				}
@@ -1681,7 +1682,7 @@ static NSWindow __weak *currentKeyWindow;
 	Line *currentLine = self.currentLine;
 	
 	NSInteger lineIndex = [self.parser indexOfLine:currentLine] - 1;
-	if (lineIndex != NSNotFound) {
+	if (NSLocationInRange(lineIndex, NSMakeRange(0, self.parser.lines.count))) {
 		NSString *charName = currentLine.characterName;
 		
 		while (lineIndex > 0) {
@@ -1756,11 +1757,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Update scene number labels
 	// A larger chunk of text was pasted or there was a change in outline. Ensure layout.
-	if (_lastChangedRange.length > 5) {
-		[self ensureLayout];
-	} else {
-		//[self.textView updateSceneLabelsFrom:self.lastChangedRange.location];
-	}
+	if (_lastChangedRange.length > 5) [self ensureLayout];
 	
 	// Update preview screen
 	// [self.preview updatePreviewInSync:NO];
@@ -1776,7 +1773,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// If this was an undo operation, scroll to where the alteration was made
 	if (self.undoManager.isUndoing) {
-		[self.textView scrollToRange:NSMakeRange(_lastChangedRange.location, 0)];
+		//[self.textView scrollToRange:NSMakeRange(_lastChangedRange.location, 0)];
+		[self.textView ensureRangeIsVisible:_lastChangedRange];
 	}
 	
 	// Reset last changed range
@@ -2592,22 +2590,12 @@ static bool _skipAutomaticLineBreaks = false;
 	[_formatting renderBackgroundForLine:line clearFirst:clear];
 }
 
-/// Forces a type on a line and formats it accordingly. Can be abused for creating strange stuff.
+/// Forces a type on a line and formats it accordingly. Can be abused for doing strange and esoteric stuff.
 - (void)setTypeAndFormat:(Line*)line type:(LineType)type {
 	line.type = type;
 	[self formatLine:line];
 }
 
-
-#pragma mark - Scrolling
-
-- (IBAction)goToScene:(id)sender {
-	BeatSceneHeadingSearch *search = [BeatSceneHeadingSearch.alloc init];
-	search.delegate = self;
-	
-	[self.documentWindow beginSheet:search.window completionHandler:^(NSModalResponse returnCode) {
-	}];
-}
 
 #pragma mark - Parser delegation
 
@@ -4666,7 +4654,19 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 
+#pragma mark - Search for scene
+
+- (IBAction)goToScene:(id)sender {
+	BeatSceneHeadingSearch *search = [BeatSceneHeadingSearch.alloc init];
+	search.delegate = self;
+	
+	[self.documentWindow beginSheet:search.window completionHandler:^(NSModalResponse returnCode) {
+	}];
+}
+
+
 #pragma mark - Scrolling
+
 
 - (void)scrollToSceneNumber:(NSString*)sceneNumber {
 	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)
