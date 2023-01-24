@@ -455,7 +455,7 @@
  */
 
 - (void)scrollToScene:(OutlineScene*)scene {
-	if (!scene) scene = self.editorDelegate.currentScene;
+	if (scene == nil) scene = self.editorDelegate.currentScene;
 	if (scene == nil) return;
 	
 	// Check if we have filtering turned on, and do nothing if scene is not in the filter results

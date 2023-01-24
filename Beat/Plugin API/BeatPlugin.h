@@ -39,6 +39,8 @@
 @class BeatPreview;
 @class BeatPreviewController;
 @class BeatExportSettings;
+@class BeatPluginControlMenu;
+@class BeatPluginControlMenuItem;
 
 @protocol BeatPluginExports <JSExport>
 @property (readonly) Line* currentLine;
@@ -202,6 +204,8 @@ JSExportAs(objc_call, - (id)objc_call:(NSString*)methodName args:(NSArray*)argum
 // Create a new line element
 JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 
+JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
+JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
 @end
 
 // Interfacing with the document

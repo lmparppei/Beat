@@ -10,6 +10,7 @@ import Cocoa
 
 class BeatPluginMenuItem:NSMenuItem {
 	@objc var pluginName:String = ""
+
 	var type:BeatPluginType = BeatPluginType.ToolPlugin
 	
 	@objc convenience init(title string: String, pluginName:String, type:BeatPluginType) {

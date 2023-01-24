@@ -53,6 +53,7 @@
 @property (nonatomic) NSDictionary *type;
 @property (nonatomic) WebPrinter *printer;
 @property (nonatomic) BeatPluginUIView *widgetView;
+@property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
 @end
 
 @implementation BeatPlugin
@@ -183,6 +184,8 @@
 	_plugin = nil;
 	
 	[self stopBackgroundInstances];
+	[self clearMenus];
+	
 	[_delegate deregisterPlugin:self];
 }
 
@@ -213,6 +216,9 @@
 	
 	// Stop any timers left
 	[self stopBackgroundInstances];
+	
+	// Clear menus
+	[self clearMenus];
 	
 	// Remove widget
 	if (_widgetView != nil) [_widgetView remove];
@@ -1705,6 +1711,40 @@
 }
 - (NSDictionary*)revisedRanges {
 	return self.delegate.revisedRanges;
+}
+
+
+#pragma mark - Menu items
+
+- (void)clearMenus {
+	for (NSMenuItem* topMenuItem in self.menus) {
+		NSLog(@"... remove %@", topMenuItem.title);
+		[topMenuItem.submenu removeAllItems];
+		[NSApp.mainMenu removeItem:topMenuItem];
+	}
+}
+
+- (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>* _Nullable)items {
+	BeatPluginControlMenu* menu = [BeatPluginControlMenu.alloc initWithTitle:name];
+	
+	for (BeatPluginControlMenuItem* item in items) {
+		[menu addItem:item];
+	}
+	
+	NSMenuItem* topMenuItem = [NSMenuItem.alloc initWithTitle:name action:nil keyEquivalent:@""];
+	
+	NSMenu* mainMenu = NSApp.mainMenu;
+	[mainMenu insertItem:topMenuItem atIndex:mainMenu.numberOfItems];
+	[mainMenu setSubmenu:menu forItem:topMenuItem];
+	
+	if (self.menus == nil) self.menus = NSMutableArray.new;
+	[self.menus addObject:topMenuItem];
+	
+	return menu;
+}
+
+- (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method {
+	return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
 }
 
 @end
