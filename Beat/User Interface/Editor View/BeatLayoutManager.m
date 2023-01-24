@@ -33,19 +33,61 @@
 		return;
 	}
 	
+	// Replace some glyphs
+	//Line* line = [self.delegate.editorDelegate.parser lineAtPosition:];
+	
 	[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
-	
-	NSTextStorage *textStorage = self.textStorage;
-	NSTextContainer *textContainer = self.textContainers[0];
-	
-	NSRange glyphRange = glyphsToShow;
-
-	[self drawSceneNumberForGlyphRange:glyphRange];
-	
-	
-	// Save text container margins
-	NSSize offset = self.textContainers.firstObject.textView.textContainerInset;
 		
+	[self drawSceneNumberForGlyphRange:glyphsToShow];
+	[self drawRevisionMarkers:glyphsToShow];
+}
+
+- (void)drawSceneNumberForGlyphRange:(NSRange)glyphRange {
+	// Scene number drawing is off, return
+	if (!self.textView.editorDelegate.showSceneNumberLabels) return;
+	
+	// Create the style if needed
+	if (_sceneNumberStyle == nil) {
+		_sceneNumberStyle = NSMutableParagraphStyle.new;
+		_sceneNumberStyle.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
+	}
+	
+	NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
+	
+	[self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		Line* line = (Line*)value;
+		if (line == nil || line.type != heading) return;
+		
+		NSRange headingRange = NSMakeRange(line.position, 1);
+		if (self.textView.editorDelegate.hideFountainMarkup) {
+			if (line.length > 1) headingRange.location += 1;
+			else headingRange = line.range;
+		}
+		
+		NSRange lineRange = [self glyphRangeForCharacterRange:headingRange actualCharacterRange:nil];
+		NSRect boundingRect = [self boundingRectForGlyphRange:lineRange inTextContainer:self.textContainers.firstObject];
+		
+		// Calculate rect for the marker position
+		NSRect rect = NSMakeRect(self.textView.textContainerInset.width,
+								 self.textView.textContainerInset.height + boundingRect.origin.y,
+								 7.5 * line.sceneNumber.length,
+								 boundingRect.size.height + 1.0);
+		
+		NSColor* color;
+		if (line.color.length > 0) color = [BeatColors color:line.color];
+		if (color == nil) color = ThemeManager.sharedManager.textColor.effectiveColor;
+		
+		NSString *sceneNumber = line.sceneNumber;
+		[sceneNumber drawAtPoint:rect.origin withAttributes:@{
+			NSFontAttributeName: self.textView.editorDelegate.courier,
+			NSForegroundColorAttributeName: color,
+			NSParagraphStyleAttributeName: self.sceneNumberStyle
+		}];
+	}];
+}
+
+
+-(void)drawRevisionMarkers:(NSRange)glyphRange {
 	/*
 	 
 	 This works in a peculiar way:
@@ -61,6 +103,11 @@
 	 2022/12: Thanks, past me, for this completely useless documentation.
 	 
 	*/
+	
+	
+	NSTextStorage* textStorage = self.textStorage;
+	NSTextContainer* textContainer = self.textContainers.firstObject;
+	NSSize offset = textContainer.textView.textContainerInset;
 	
 	NSMutableDictionary<NSString*, NSMutableSet<NSValue*>*> *revisions = NSMutableDictionary.new;
 	for (NSString *string in BeatRevisions.revisionColors) revisions[string] = NSMutableSet.new;
@@ -130,50 +177,6 @@
 		
 		[NSGraphicsContext restoreGraphicsState];
 	}
-}
-
-- (void)drawSceneNumberForGlyphRange:(NSRange)glyphRange {
-	// Scene number drawing is off, return
-	if (!self.textView.editorDelegate.showSceneNumberLabels) return;
-	
-	// Create the style if needed
-	if (_sceneNumberStyle == nil) {
-		_sceneNumberStyle = NSMutableParagraphStyle.new;
-		_sceneNumberStyle.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
-	}
-	
-	NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
-	
-	[self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
-		Line* line = (Line*)value;
-		if (line == nil || line.type != heading) return;
-		
-		NSRange headingRange = NSMakeRange(line.position, 1);
-		if (self.textView.editorDelegate.hideFountainMarkup) {
-			if (line.length > 1) headingRange.location += 1;
-			else headingRange = line.range;
-		}
-		
-		NSRange lineRange = [self glyphRangeForCharacterRange:headingRange actualCharacterRange:nil];
-		NSRect boundingRect = [self boundingRectForGlyphRange:lineRange inTextContainer:self.textContainers.firstObject];
-		
-		// Calculate rect for the marker position
-		NSRect rect = NSMakeRect(self.textView.textContainerInset.width,
-								 self.textView.textContainerInset.height + boundingRect.origin.y,
-								 7.5 * line.sceneNumber.length,
-								 boundingRect.size.height + 1.0);
-		
-		NSColor* color;
-		if (line.color.length > 0) color = [BeatColors color:line.color];
-		if (color == nil) color = ThemeManager.sharedManager.textColor.effectiveColor;
-		
-		NSString *sceneNumber = line.sceneNumber;
-		[sceneNumber drawAtPoint:rect.origin withAttributes:@{
-			NSFontAttributeName: self.textView.editorDelegate.courier,
-			NSForegroundColorAttributeName: color,
-			NSParagraphStyleAttributeName: self.sceneNumberStyle
-		}];
-	}];
 }
 
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(NSPoint)origin {

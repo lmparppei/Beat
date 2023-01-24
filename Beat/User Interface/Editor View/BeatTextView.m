@@ -1237,10 +1237,6 @@ Line *cachedRectLine;
 	[self refreshLayoutElementsFrom:0];
 }
 - (void)refreshLayoutElementsFrom:(NSInteger)location {
-	//)NSInteger index = [self.editorDelegate.parser lineIndexAtPosition:location];
-	
-	//if (_editorDelegate.showPageNumbers) [self updatePageNumbers];
-	//if (_editorDelegate.showSceneNumberLabels && !_editorDelegate.sceneNumberLabelUpdateOff) [self updateSceneLabelsFrom:location];
 }
 
 
@@ -1341,7 +1337,6 @@ Line *cachedRectLine;
 
 - (void)ensureRangeIsVisible:(NSRange)range {
 	NSRect rect = [self rectForRange:range];
-	NSRect visibleRect = self.visibleRect;
 	
 	CGFloat changeY = rect.origin.y - rect.size.height;
 	if (changeY < self.visibleRect.origin.y || changeY > self.visibleRect.origin.y + self.visibleRect.size.height) {
@@ -1527,50 +1522,14 @@ double clamp(double d, double min, double max) {
 		// readable objects.
 		
 		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
-
+		
 		id obj = objectsToPaste[0];
 		
 		if ([obj isKindOfClass:NSString.class]) {
-			NSString *rawString = [obj stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
-			NSString * stringToPaste = [rawString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-			
-			// Let's force some line breaks if it's a long string with no line breaks
-			// TODO: I really should create a separate class for sanitizing pasting. This is just a quick fix for Word users.
-			if ([stringToPaste rangeOfString:@"\n\n"].location == NSNotFound && stringToPaste.length > 500) {
-				NSArray *lines = [rawString componentsSeparatedByString:@"\n"];
-				NSInteger lengths = 0;
-				NSMutableString *result = NSMutableString.new;
-				bool dialogue = false;
-				
-				for (NSString *line in lines) {
-					lengths += line.length;
-					
-					if (line != lines.firstObject) {
-						[result appendString:@"\n"];
-					}
-					
-					if ([line.uppercaseString isEqualToString:line] && line.length < 25) {
-						[result appendFormat:@"%@", line];
-						dialogue = true;
-					}
-					else if ([line rangeOfString:@"INT."].location != NSNotFound || [line rangeOfString:@"EXT."].location != NSNotFound) {
-						[result appendFormat:@"\n%@\n", line.uppercaseString];
-					}
-					else {
-						[result appendFormat:@"%@\n", line];
-						if (dialogue) dialogue = false;
-					}
-				}
-				[result appendString:@"\n"];
-				
-				[self.editorDelegate replaceRange:self.selectedRange withString:result];
-				
-				return;
-			}
-
-			
-			[super paste:sender];
+			NSString* result = [BeatPasteboardItem sanitizeString:obj];
+			[self.editorDelegate replaceRange:self.selectedRange withString:result];
 			return;
+
 		}
 		else if ([obj isKindOfClass:BeatPasteboardItem.class]) {
 			// Paste custom Beat pasteboard data
@@ -1601,7 +1560,9 @@ double clamp(double d, double min, double max) {
 			for (Line* l in linesToRender) {
 				[self.editorDelegate renderBackgroundForLine:l clearFirst:YES];
 			}
-			
+		}
+		else {
+			[super paste:sender];
 		}
 	}
 }
@@ -1622,10 +1583,8 @@ double clamp(double d, double min, double max) {
 		
 	if (line != prevLine) {
 		// If the line changed, let's redraw the range
-		bool lineInRange = NO;
-		if (NSMaxRange(line.textRange) <= self.string.length) lineInRange = YES;
-		bool prevLineInRange = NO;
-		if (NSMaxRange(prevLine.textRange) <= self.string.length) prevLineInRange = YES;
+		bool lineInRange = (NSMaxRange(line.textRange) <= self.string.length);
+		bool prevLineInRange = (NSMaxRange(prevLine.textRange) <= self.string.length);
 		
 		if (lineInRange) [self.layoutManager invalidateGlyphsForCharacterRange:line.textRange changeInLength:0 actualCharacterRange:nil];
 		if (prevLineInRange) [self.layoutManager invalidateGlyphsForCharacterRange:prevLine.textRange changeInLength:0 actualCharacterRange:nil];
@@ -1636,36 +1595,28 @@ double clamp(double d, double min, double max) {
 	prevLine = line;
 }
 
--(void)toggleHideFountainMarkup {
+-(void)toggleHideFountainMarkup
+{
 	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
 	[self updateMarkdownView];
 }
 
--(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange {
+-(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange
+{
 	return attrs;
 }
 
--(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange {
-	/*
-	if (_editorDelegate.documentIsLoading) {
-		Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
-		NSLog(@"Still loading: %@", line);
-		return 0;
-	}
-	*/
+-(NSUInteger)layoutManager:(NSLayoutManager *)layoutManager shouldGenerateGlyphs:(const CGGlyph *)glyphs properties:(const NSGlyphProperty *)props characterIndexes:(const NSUInteger *)charIndexes font:(NSFont *)aFont forGlyphRange:(NSRange)glyphRange
+{
 	
 	Line *line = [self.editorDelegate.parser lineAtPosition:charIndexes[0]];
 	if (line == nil) return 0;
-		
-	// If we are updating scene number labels AND we didn't just enter a scene heading, skip this
-	//if (_updatingSceneNumberLabels && line != self.editorDelegate.currentLine && !NSLocationInRange(self.editorDelegate.currentLine.position - 4, line.range)) return 0;
 	
 	LineType type = line.type;
-	
+	bool currentlyEditing = NSLocationInRange(self.selectedRange.location, line.range);
+
 	// Ignore story markers
-	if (line.type == section || line.type == synopse) {
-		return 0;
-	}
+	if (line.type == section || line.type == synopse) return 0;
 	
 	// Clear formatting characters etc.
 	NSMutableIndexSet *muIndices = [line formattingRangesWithGlobalRange:YES includeNotes:NO].mutableCopy;
@@ -1700,22 +1651,24 @@ double clamp(double d, double min, double max) {
 	
 	if (line.string.containsOnlyWhitespace && line.string.length >= 2) {
 		// Show bullets instead of spaces on lines which are only whitespace
+		
 		CFStringFindAndReplace(modifiedStr, CFSTR(" "), CFSTR("•"), CFRangeMake(0, CFStringGetLength(modifiedStr)), 0);
 		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
 		[self.layoutManager setGlyphs:newGlyphs properties:props characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
 		free(newGlyphs);
 	}
-	else if (_editorDelegate.hideFountainMarkup) {
+	
+	else if (_editorDelegate.hideFountainMarkup && !currentlyEditing) {
+		// Hide markdown characters for the line we're not currently editing
+		
 		modifiedProps = (NSGlyphProperty *)malloc(sizeof(NSGlyphProperty) * glyphRange.length);
 				
-		// Hide markdown characters
 		for (NSInteger i = 0; i < glyphRange.length; i++) {
 			NSUInteger index = charIndexes[i];
 			NSGlyphProperty prop = props[i];
-						
-			if (muIndices.count && !NSLocationInRange(self.selectedRange.location, line.range)) {
-				// Make it a null glyph if it's NOT on the current line
-				if ([muIndices containsIndex:index]) prop |= NSGlyphPropertyNull;
+			
+			if ([muIndices containsIndex:index]) {
+				prop |= NSGlyphPropertyNull;
 			}
 			
 			modifiedProps[i] = prop;
@@ -1727,6 +1680,7 @@ double clamp(double d, double min, double max) {
 		[self.layoutManager setGlyphs:newGlyphs properties:modifiedProps characterIndexes:charIndexes font:aFont forGlyphRange:glyphRange];
 		free(newGlyphs);
 		free(modifiedProps);
+		
 	} else {
 		// Create the new glyphs
 		CGGlyph *newGlyphs = GetGlyphsForCharacters((__bridge CTFontRef)(aFont), modifiedStr);
