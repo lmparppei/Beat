@@ -13,5 +13,6 @@
 
 @property (nonatomic) NSAttributedString *attrString;
 - (id)initWithAttrString:(NSAttributedString*)string;
++ (NSString*)sanitizeString:(NSString*)string;
 @end
 
