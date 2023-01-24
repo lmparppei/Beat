@@ -760,35 +760,44 @@
 /// Parse and apply Fountain stylization inside the string contained by this line
 - (void)resetFormatting {
 	NSUInteger length = self.string.length;
-	unichar charArray[length];
-	[self.string getCharacters:charArray];
+    if (length > 300000) return; // Objective C doesn't take too kindly to these amounts of symbols.
+    
+    @try {
+        unichar charArray[length];
+        [self.string getCharacters:charArray];
+        
+        self.boldRanges = [self rangesInChars:charArray
+                                     ofLength:length
+                                      between:BOLD_CHAR
+                                          and:BOLD_CHAR
+                                   withLength:2];
+        self.italicRanges = [self rangesInChars:charArray
+                                     ofLength:length
+                                      between:ITALIC_CHAR
+                                          and:ITALIC_CHAR
+                                   withLength:1];
+        self.underlinedRanges = [self rangesInChars:charArray
+                                           ofLength:length
+                                            between:UNDERLINE_CHAR
+                                                and:UNDERLINE_CHAR
+                                         withLength:1];
+                
+        self.strikeoutRanges = [self rangesInChars:charArray
+                                     ofLength:length
+                                      between:STRIKEOUT_OPEN_CHAR
+                                          and:STRIKEOUT_CLOSE_CHAR
+                                   withLength:2];
+        self.noteRanges = [self rangesInChars:charArray
+                                     ofLength:length
+                                      between:NOTE_OPEN_CHAR
+                                          and:NOTE_CLOSE_CHAR
+                                   withLength:2];
+    }
+    @catch (NSException* e) {
+        NSLog(@"Error when trying to reset formatting: %@", e);
+        return;
+    }
 	
-	self.boldRanges = [self rangesInChars:charArray
-								 ofLength:length
-								  between:BOLD_CHAR
-									  and:BOLD_CHAR
-							   withLength:2];
-	self.italicRanges = [self rangesInChars:charArray
-								 ofLength:length
-								  between:ITALIC_CHAR
-									  and:ITALIC_CHAR
-							   withLength:1];
-	self.underlinedRanges = [self rangesInChars:charArray
-									   ofLength:length
-										between:UNDERLINE_CHAR
-											and:UNDERLINE_CHAR
-									 withLength:1];
-			
-	self.strikeoutRanges = [self rangesInChars:charArray
-								 ofLength:length
-								  between:STRIKEOUT_OPEN_CHAR
-									  and:STRIKEOUT_CLOSE_CHAR
-							   withLength:2];
-	self.noteRanges = [self rangesInChars:charArray
-								 ofLength:length
-								  between:NOTE_OPEN_CHAR
-									  and:NOTE_CLOSE_CHAR
-							   withLength:2];
 }
 
 - (NSString*)attributedStringToFountain:(NSAttributedString*)attrStr {
