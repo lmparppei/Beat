@@ -2691,7 +2691,7 @@ NSUInteger prevLineAtLocationIndex = 0;
 			line.sceneNumber = @"";
 		}
 		
-		// Eliminate faux empty lines with only single space (let's use two)
+		// Eliminate faux empty lines with only single space. To force whitespace you have to use two spaces.
 		if ([line.string isEqualToString:@" "]) {
 			line.type = empty;
 			continue;
@@ -2728,30 +2728,32 @@ NSUInteger prevLineAtLocationIndex = 0;
 			previousLine = line;
 			continue;
 		}
-            
-		[elements addObject:line];
-		
-		// If this is dual dialogue character cue, we'll need to search for the previous one too,
+            		
+		// If this is a dual dialogue character cue, we'll need to search for the previous one
         // and make it aware of being a part of a dual dialogue block.
-		if (line.isDualDialogueElement) {
-			NSInteger i = elements.count - 2; // Previous element index
-			while (i > 0) {
+		if (line.type == dualDialogueCharacter) {
+			NSInteger i = elements.count - 1;
+			while (i >= 0) {
 				Line *precedingLine = [elements objectAtIndex:i];
-				
-                // Break the loop if this is not a dialogue element OR it's another dual dialogue element.
-				if (!(precedingLine.isDialogueElement || precedingLine.isDualDialogueElement)) break;
-				
+								
 				if (precedingLine.type == character ) {
 					precedingLine.nextElementIsDualDialogue = YES;
 					break;
 				}
+                
+                // Break the loop if this is not a dialogue element OR it's another dual dialogue element.
+                if (!(precedingLine.isDialogueElement || precedingLine.isDualDialogueElement)) break;
+
 				i--;
 			}
 		}
+        
+        [elements addObject:line];
+
 		
 		previousLine = line;
 	}
-	
+    
 	return elements;
 }
 
