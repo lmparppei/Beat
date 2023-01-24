@@ -1743,6 +1743,16 @@
 	return menu;
 }
 
+- (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items {
+	NSMenuItem* topItem = [NSMenuItem.alloc initWithTitle:name action:nil keyEquivalent:@""];
+	
+	BeatPluginControlMenu* menu = [BeatPluginControlMenu.alloc initWithTitle:name];
+	for (BeatPluginControlMenuItem* item in items) [menu addItem:item];
+	topItem.submenu = menu;
+	
+	return topItem;
+}
+
 - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method {
 	return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
 }

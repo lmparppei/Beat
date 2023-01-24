@@ -24,6 +24,7 @@ import JavaScriptCore
 
 @objc protocol BeatPluginControlMenuItemExports:JSExport {
 	@objc var on:Bool { get set }
+	@objc var submenu:NSMenu? { get set }
 }
 
 class BeatPluginControlMenuItem:NSMenuItem, BeatPluginControlMenuItemExports {
