@@ -448,17 +448,20 @@
 	NSString *retain = @"";
 
 	// Create the layout manager for remaining space calculation
-	NSLayoutManager *lm = [self viewForSizeCalculation:str line:spillerElement];
-	
+    NSTextStorage* storage;
+    NSLayoutManager *lm = [self viewForSizeCalculation:str line:spillerElement storage:&storage];
+    NSInteger glyphs = lm.numberOfGlyphs;
+    
 	// We'll get the number of lines rather than calculating exact size in NSTextField
 	__block NSInteger numberOfLines = 0;
 	
 	// Iterate through line fragments
 	__block CGFloat pageBreakPos = 0;
 	__block NSInteger length = 0;
-	
-	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, lm.numberOfGlyphs) usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+    
+	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, glyphs) usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		numberOfLines++;
+        
 		if (numberOfLines < space / BeatPaginator.lineHeight) {
 			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
 			length += charRange.length;
@@ -467,7 +470,7 @@
 			*stop = true;
 		}
 	}];
-		
+    
 	retain = [str substringToIndex:length];
 	
 	NSArray *splitElements = [spillerElement splitAndFormatToFountainAt:retain.length];
@@ -551,15 +554,17 @@
  of lines of text we have, then multiply that by the line height. This is NOT the method Apple describes
  in their docs, but we have to do this because getting the size of the layout box returns strange values.
  */
-
-- (NSLayoutManager*)viewForSizeCalculation:(NSString*)string line:(Line*)element{
+- (NSLayoutManager*)viewForSizeCalculation:(NSString*)string line:(Line*)element {
+    return [self viewForSizeCalculation:string line:element];
+}
+- (NSLayoutManager*)viewForSizeCalculation:(NSString*)string line:(Line*)element storage:(NSTextStorage**)storage {
 	if (_paginator.font == nil) _paginator.font = BeatFonts.sharedFonts.courier;
 	
 	NSInteger maxWidth = [self widthForElement:element];
 	BeatFont *font = _paginator.font;
 	
 	if (string == nil) string = @"";
-	
+    
 #if TARGET_OS_IOS
 	// Set font size to 80% on iOS
 	font = [font fontWithSize:font.pointSize * 0.8];
@@ -568,6 +573,7 @@
 	// set up the layout manager
 	NSTextStorage   *textStorage   = [[NSTextStorage alloc] initWithString:string attributes:@{NSFontAttributeName: font}];
 	NSLayoutManager *layoutManager = NSLayoutManager.new;
+    *storage = textStorage;
 
 	NSTextContainer *textContainer = NSTextContainer.new;
 	[textContainer setSize:CGSizeMake(maxWidth, MAXFLOAT)];
@@ -575,8 +581,7 @@
 	[layoutManager addTextContainer:textContainer];
 	[textStorage addLayoutManager:layoutManager];
 	[textContainer setLineFragmentPadding:0];
-	[layoutManager glyphRangeForTextContainer:textContainer];
-	
+    
 	return layoutManager;
 }
 
@@ -957,6 +962,12 @@
 - (void)addBlockOnCurrentPage:(NSArray<Line*>*)block currentPage:(BeatPage*)currentPage {
 	// Do nothing if the thread is killed
 	if (self.cancelled) return;
+
+    if (self.livePagination && fabs([self.startTime timeIntervalSinceNow]) > 8.0) {
+        NSLog(@"Pagination timed out.");
+        self.cancelled = true;
+        return;
+    }
 	
 	Line *element = block.firstObject;
 	CGFloat lineHeight = BeatPaginator.lineHeight;
@@ -1012,6 +1023,7 @@
 			if (fabs(overflow) > lineHeight && space > lineHeight * 2) {
 				// See if we can split stuff across pages
 				NSArray *splitElements = [self splitParagraph:spillerElement currentPage:currentPage];
+                
 				Line *prePageBreak = splitElements[0];
 				Line *postPageBreak = splitElements[1];
 				CGFloat breakPosition = ((NSNumber*)splitElements[2]).floatValue;
