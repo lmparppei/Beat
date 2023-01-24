@@ -1386,7 +1386,10 @@ static NSWindow __weak *currentKeyWindow;
 	
 	[saveDialog beginSheetModalForWindow:self.windowControllers[0].window completionHandler:^(NSInteger result) {
 		if (result == NSModalResponseOK) {
-			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:self.text attributedString:self.textView.attributedString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
+			NSString* string = (self.text) ? self.text : @"";
+			NSAttributedString* attrString = (self.textView.attributedString) ? self.textView.attributedString : NSAttributedString.new;
+			
+			BeatFDXExport *fdxExport = [[BeatFDXExport alloc] initWithString:string attributedString:attrString includeTags:YES includeRevisions:YES paperSize:[self.documentSettings getInt:DocSettingPageSize]];
 			[fdxExport.fdxString writeToURL:saveDialog.URL atomically:YES encoding:NSUTF8StringEncoding error:nil];
 		}
 	}];
@@ -2038,12 +2041,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
 	if (range.length + range.location > self.textView.string.length) {
-		NSLog(@"replacement over bounds: %lu / %lu", range.location + range.length, self.textView.string.length);
-		
 		NSInteger length = self.textView.string.length - range.location;
 		range = NSMakeRange(range.location, length);
-		
-		NSLog(@"fixed to: %lu / %lu", range.location + range.length, self.textView.string.length);
 	}
 	
 	// Text view fires up shouldChangeTextInRange only when the text is changed by the user.
@@ -2573,7 +2572,6 @@ static bool _skipAutomaticLineBreaks = false;
 
 - (void)renderBackgroundForLines {
 	for (Line* line in self.lines) {
-		NSLog(@"Remove bg at %@", line);
 		[_formatting renderBackgroundForLine:line clearFirst:YES];
 	}
 }
@@ -4117,10 +4115,7 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (void)setPageSize:(BeatPaperSize)pageSize {
 	self.printInfo = [BeatPaperSizing setSize:pageSize printInfo:self.printInfo];
-	
-	NSLog(@"Setting page size");
-	NSLog(@"Margins: %f / %f / %f /%f", self.printInfo.topMargin, self.printInfo.rightMargin, self.printInfo.bottomMargin, self.printInfo.leftMargin);
-	
+		
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
 	[self paginate];

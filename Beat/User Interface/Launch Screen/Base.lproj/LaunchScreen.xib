@@ -20,26 +20,26 @@
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" appearanceType="darkAqua" frameAutosaveName="" animationBehavior="default" tabbingMode="disallowed" titlebarAppearsTransparent="YES" id="6np-jR-XCa" userLabel="Launch screen">
             <windowStyleMask key="styleMask" titled="YES" fullSizeContentView="YES"/>
             <rect key="contentRect" x="179" y="217" width="704" height="404"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" appearanceType="darkAqua" id="hUD-1d-FmA" customClass="NSVisualEffectView">
                 <rect key="frame" x="0.0" y="0.0" width="704" height="404"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="49" horizontalPageScroll="10" verticalLineScroll="49" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LAN-tK-igz">
-                        <rect key="frame" x="369" y="-1" width="336" height="404"/>
+                        <rect key="frame" x="368" y="-1" width="337" height="404"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" drawsBackground="NO" id="SeF-Cu-2xE">
-                            <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
+                            <rect key="frame" x="0.0" y="0.0" width="337" height="404"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="inset" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="49" rowSizeStyle="automatic" viewBased="YES" indentationPerLevel="13" outlineTableColumn="8ZX-mZ-t9n" id="r0R-uH-iFW">
-                                    <rect key="frame" x="0.0" y="0.0" width="336" height="404"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="337" height="404"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <size key="intercellSpacing" width="17" height="0.0"/>
                                     <color key="backgroundColor" red="0.1960784314" green="0.1960784314" blue="0.1960784314" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn editable="NO" width="304" minWidth="40" maxWidth="1000" id="8ZX-mZ-t9n">
+                                        <tableColumn editable="NO" width="305" minWidth="40" maxWidth="1000" id="8ZX-mZ-t9n">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -52,11 +52,11 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="RecentFile" id="DX0-Ts-n9B" customClass="BeatRecentFileCell" customModule="Beat" customModuleProvider="target">
-                                                    <rect key="frame" x="18" y="0.0" width="299" height="49"/>
+                                                    <rect key="frame" x="18" y="0.0" width="300" height="49"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="yOf-hz-UJL">
-                                                            <rect key="frame" x="36" y="25" width="263" height="16"/>
+                                                            <rect key="frame" x="36" y="25" width="264" height="16"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" lineBreakMode="truncatingMiddle" truncatesLastVisibleLine="YES" allowsUndo="NO" title="Filename" id="zWH-Fi-sua">
                                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -65,7 +65,7 @@
                                                             </textFieldCell>
                                                         </textField>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="AlC-c5-ljc">
-                                                            <rect key="frame" x="36" y="11" width="264" height="11"/>
+                                                            <rect key="frame" x="36" y="11" width="265" height="11"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                             <textFieldCell key="cell" controlSize="mini" lineBreakMode="clipping" title="Date" id="8Jp-kw-Q5K">
                                                                 <font key="font" metaFont="miniSystem"/>
@@ -113,19 +113,19 @@
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <button verticalHuggingPriority="750" id="qFU-N7-7lp" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
-                                    <rect key="frame" x="16" y="16" width="135" height="16"/>
+                                    <rect key="frame" x="16" y="16" width="186" height="16"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="→ Support Beat" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="guu-nG-SXu">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="smallSystem"/>
-                                        <connections>
-                                            <action selector="openURLWithSender:" target="-1" id="4sq-SU-vVo"/>
-                                        </connections>
                                     </buttonCell>
                                     <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://www.kapitan.fi/beat/support.html"/>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="openURLwithButtonWithSender:" target="-1" id="iuT-pT-5nA"/>
+                                    </connections>
                                 </button>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="dg6-0F-HGV">
                                     <rect key="frame" x="254" y="39" width="102" height="13"/>
@@ -164,7 +164,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" id="smF-Bq-fzW">
-                                    <rect key="frame" x="74" y="143" width="220" height="44"/>
+                                    <rect key="frame" x="74" y="143.5" width="220" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="New Screenplay" bezelStyle="rounded" imagePosition="left" imageScaling="proportionallyDown" inset="2" id="Tq7-Xj-tBS" customClass="BeatLaunchButton">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -196,19 +196,19 @@
                                     </connections>
                                 </button>
                                 <button verticalHuggingPriority="750" id="K8K-rE-MgM" customClass="BeatURLButton" customModule="Beat" customModuleProvider="target">
-                                    <rect key="frame" x="16" y="36" width="135" height="14"/>
+                                    <rect key="frame" x="16" y="36" width="186" height="14"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <buttonCell key="cell" type="bevel" title="→ Discord Community" bezelStyle="rounded" alignment="left" imageScaling="proportionallyDown" inset="2" id="msh-MK-CMo">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="smallSystem"/>
+                                        <connections>
+                                            <action selector="openURLwithButtonWithSender:" target="-1" id="WT5-yU-sUE"/>
+                                        </connections>
                                     </buttonCell>
                                     <color key="contentTintColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="string" keyPath="website" value="http://discord.gg/FPHjfH7ms3"/>
                                     </userDefinedRuntimeAttributes>
-                                    <connections>
-                                        <action selector="openURLWithSender:" target="-1" id="znp-4n-Ttc"/>
-                                    </connections>
                                 </button>
                             </subviews>
                         </view>
@@ -223,7 +223,7 @@
     <resources>
         <image name="B_256" width="256" height="256"/>
         <image name="BeatDocumentIcon" width="512" height="512"/>
-        <image name="doc" catalog="system" width="18" height="20"/>
-        <image name="map" catalog="system" width="21" height="18"/>
+        <image name="doc" catalog="system" width="18" height="21"/>
+        <image name="map" catalog="system" width="21" height="19"/>
     </resources>
 </document>

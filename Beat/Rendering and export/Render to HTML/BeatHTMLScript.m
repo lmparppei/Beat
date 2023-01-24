@@ -382,11 +382,10 @@ static bool underlinedHeading;
 		
 		if (line.type == dualDialogueCharacter && dualDialogueCharacterCount == 1) {
 			dualDialogueCharacterCount++;
-				[body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
+			[body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
 		}
 		
-		NSMutableString *text = [NSMutableString string];
-	
+		NSMutableString *text = NSMutableString.new;
 
 		// Begin lyrics or centered block
 		if (block != empty) {
@@ -640,7 +639,6 @@ static bool underlinedHeading;
 		indices = line.contentRangesWithNotes;
 	}
 	
-	
 	[indices enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[result appendAttributedString:[string attributedSubstringFromRange:range]];
 	}];
@@ -651,8 +649,8 @@ static bool underlinedHeading;
 	[result enumerateAttributesInRange:(NSRange){0, result.length} options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 		NSMutableString* text = [result.string substringWithRange:range].mutableCopy;
 		// Opening and closing tags
-		NSMutableString *open = [NSMutableString stringWithString:@""];
-		NSMutableString *close = [NSMutableString stringWithString:@""];
+		NSMutableString *open = NSMutableString.new;
+		NSMutableString *close = NSMutableString.new;
 		
 		NSString *styleString = attrs[@"Style"];
 

@@ -151,7 +151,6 @@
 			[self.currentPage clearUntil:safeLine];
 			
 			startIndex = [self indexOfLine:safeLine];
-			NSLog(@"starting index: %lu", startIndex);
 		}
 	}
 	
