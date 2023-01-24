@@ -256,7 +256,7 @@ body > p:first-child {
 	margin-top: 0pt;
 }
 
-.dialogue {
+.dialogue, .dd-dialogue {
 	position: relative;
 
 	margin: 0px;
