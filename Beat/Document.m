@@ -1683,34 +1683,36 @@ static NSWindow __weak *currentKeyWindow;
 
 - (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString {
 	Line *currentLine = self.currentLine;
-	
 	NSInteger lineIndex = [self.parser indexOfLine:currentLine] - 1;
-	if (NSLocationInRange(lineIndex, NSMakeRange(0, self.parser.lines.count))) {
-		NSString *charName = currentLine.characterName;
+	
+	// Don't add CONT'D when not editing this line
+	if (!NSLocationInRange(lineIndex, NSMakeRange(0, self.parser.lines.count))) return NO;
 		
-		while (lineIndex > 0) {
-			Line * prevLine = self.parser.lines[lineIndex];
+	NSString *charName = currentLine.characterName;
+		
+	while (lineIndex > 0) {
+		Line * prevLine = self.parser.lines[lineIndex];
+		
+		// Stop at headings
+		if (prevLine.type == heading) break;
+		
+		if (prevLine.type == character) {
+			// Stop if the previous character is not the current one
+			if (![prevLine.characterName isEqualToString:charName]) break;
 			
-			// Stop at headings
-			if (prevLine.type == heading) break;
+			// This is the character. Put in CONT'D and a line break and return NO
+			NSString *contd = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd];
+			NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
 			
-			if (prevLine.type == character) {
-				// Stop if the previous character is not the current one
-				if (![prevLine.characterName isEqualToString:charName]) break;
-				
-				// This is the character. Put in CONT'D and a line break and return NO
-				NSString *contd = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd];
-				NSString *contdString = [NSString stringWithFormat:@" (%@)\n", contd];
-				
-				if (![currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
-					[self addString:contdString atIndex:currentLine.position + currentLine.length];
-					return YES;
-				}
+			if (![currentLine.string containsString:[NSString stringWithFormat:@"(%@)", contd]]) {
+				[self addString:contdString atIndex:currentLine.position + currentLine.length];
+				return YES;
 			}
-			
-			lineIndex--;
 		}
+		
+		lineIndex--;
 	}
+
 	return NO;
 }
 
@@ -1895,22 +1897,18 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Locate current scene & reload outline without building it in parser
 	// I don't know what this is, to be honest
-	if (_sidebarVisible && !_outlineEdit) {
-		
-		if (self.sidebarVisible && !self.outlineView.dragging) {
-			dispatch_async(dispatch_get_main_queue(), ^(void) {
-				if (currentScene) [self.outlineView scrollToScene:currentScene];
-			});
-		}
+	if (self.sidebarVisible && !self.outlineView.dragging && !self.outlineView.editing) {
+		dispatch_async(dispatch_get_main_queue(), ^(void) {
+			[self.outlineView scrollToScene:currentScene];
+		});
 	}
 
 	self.sideBarTabs.needsDisplay = true;
 	
 	// Update touch bar color if needed
 	if (currentScene.color) {
-		if ([BeatColors color:currentScene.color.lowercaseString]) {
-			[_colorPicker setColor:[BeatColors color:currentScene.color.lowercaseString]];
-		}
+		NSColor* color = [BeatColors color:currentScene.color];
+		if (color != nil) [_colorPicker setColor:[BeatColors color:currentScene.color]];
 	}
 		
 	if (_runningPlugins) [self updatePluginsWithSceneIndex:sceneIndex];
@@ -1922,8 +1920,7 @@ static NSWindow __weak *currentKeyWindow;
 	// If we are not on the main thread, return the latest known scene
 	if (!NSThread.isMainThread) return _currentScene;
 	
-	OutlineScene *scene = [self getCurrentSceneWithPosition:self.textView.selectedRange.location];
-	
+	OutlineScene* scene = [self getCurrentSceneWithPosition:self.textView.selectedRange.location];
 	_currentScene = scene;
 	return scene;
 }
@@ -1997,12 +1994,7 @@ static NSWindow __weak *currentKeyWindow;
 /*
  
  FREE ABORTIONS.
- 
  CLEAN WATER.
- 
- DESTROY NUCLEAR.
- 
- DESTROY BORING.
  
  */
 
@@ -2071,6 +2063,7 @@ static bool _skipAutomaticLineBreaks = false;
 	[self replaceCharactersInRange:NSMakeRange(index, string.length) withString:@""];
 	[[self.undoManager prepareWithInvocationTarget:self] addString:string atIndex:index];
 }
+
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString
 {
 	// Remove unnecessary line breaks
@@ -2081,6 +2074,7 @@ static bool _skipAutomaticLineBreaks = false;
 	[self replaceCharactersInRange:range withString:newString];
 	[[self.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
 }
+
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
 {
 	// Replace with undo registration
@@ -2088,11 +2082,13 @@ static bool _skipAutomaticLineBreaks = false;
 	[self replaceCharactersInRange:range withString:newString];
 	[[self.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
 }
+
 - (void)removeRange:(NSRange)range {
 	NSString *string = [self.text substringWithRange:range];
 	[self replaceCharactersInRange:range withString:@""];
 	[[self.undoManager prepareWithInvocationTarget:self] addString:string atIndex:range.location];
 }
+
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string {
 	_moving = YES;
 	NSString *oldString = [self.text substringWithRange:range];
@@ -2128,6 +2124,7 @@ static bool _skipAutomaticLineBreaks = false;
 	
 	_moving = NO;
 }
+
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
 	NSString *stringToMove = [self.text substringWithRange:range];
 	[self moveStringFrom:range to:position actualString:stringToMove];
