@@ -5,12 +5,27 @@
 //  Created by Lauri-Matti Parppei on 11.4.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
-/*
+/**
  
  Review system + items + editor/display window classes.
  
  This is also me learning some Swift, which is not going too well.
  Dread lightly.
+ 
+ Edit 01/2023:
+ Yeah, thanks past me. This class is an abomination, but appears to do what it says.
+ I've never had to touch this until I went and changed how text backgrounds are displayed.
+ 
+ From what I've gathered, it's split into three parts:
+ - Review manager (`BeatReview`)
+ - Review items (`BeatReviewItem`, added as attributes to the document)
+ - Review editor (`BeatReviewEditor`, displayed when either showing or editing review items)
+ 
+ When porting to iOS, this should be split into even more abstract classes. Review items and the manager
+ should almost be OK as they are, but we need to change `NSColor` and `NSPopover`to some cross-platform aliases.
+ 
+ Like the revision module, review class also provides ranges and text content for the reviews for
+ saving into the document as JSON.
  
  */
 
@@ -153,12 +168,14 @@ class BeatReview: NSObject {
 		if (range.length == 0) {
 			let attrs = delegate?.textView.textStorage?.attributes(at: range.location, effectiveRange: effectiveRange)
 			
-			if (attrs?[BeatReview.attributeKey()] == nil) {
+			guard let item = attrs?[BeatReview.attributeKey()] as? BeatReviewItem
+			else {
+				// Close any popovers and return if there is no review item here
 				closePopover()
 				return
-			} else {
-				reviewItem = attrs?[BeatReview.attributeKey()] as! BeatReviewItem
 			}
+			
+			reviewItem = item
 		}
 		
 		if ((currentRange == range || reviewItem == item) && self.popover.isShown) {
@@ -173,6 +190,7 @@ class BeatReview: NSObject {
 		item = reviewItem
 		var reviewRange = range
 		
+		// This is a NEW, empty review. We'll check if there's another item right next to it.
 		if (reviewItem.emptyReview) {
 			delegate?.textView.textStorage?.enumerateAttribute(BeatReview.attributeKey(), in: range, using: { value, rng, stop in
 				let item:BeatReviewItem = value as? BeatReviewItem ?? BeatReviewItem.init(reviewString: "")
@@ -186,8 +204,8 @@ class BeatReview: NSObject {
 		}
 		
 		// The range has to be at least 1 in length for the popover to display correctly.
-		// Ensure we're not going out of range.
 		if (reviewRange.length == 0) {
+			
 			var displayRange = NSMakeRange(reviewRange.location, 1)
 			if (NSMaxRange(displayRange) > delegate?.textView.string.count ?? 0) {
 				displayRange.location -= 1
@@ -198,6 +216,9 @@ class BeatReview: NSObject {
 		var rect = delegate?.textView.firstRect(forCharacterRange: reviewRange, actualRange: nil)
 		rect = (self.delegate?.textView.window?.convertFromScreen(rect ?? NSZeroRect))!
 		rect = self.delegate?.textView.convert(rect ?? NSZeroRect, from: nil)
+		
+		// Rect has to be at least 1px wide the popover to display correctly
+		if rect?.width ?? 0.0 < 1.0 { rect?.size.width = 1.0 }
 		
 		editorView.controller = self
 		editorView.item = reviewItem
