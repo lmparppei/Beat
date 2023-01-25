@@ -81,7 +81,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <rect key="contentRect" x="384" y="326" width="1155" height="661"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -517,7 +517,7 @@
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <size key="minSize" width="290" height="470"/>
+                                                                                            <size key="minSize" width="280" height="470"/>
                                                                                             <size key="maxSize" width="304" height="10000000"/>
                                                                                             <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                             <connections>
@@ -1409,7 +1409,7 @@
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <subviews>
                                                             <view translatesAutoresizingMaskIntoConstraints="NO" id="pm8-b1-sOe" customClass="BeatTimeline">
-                                                                <rect key="frame" x="0.0" y="15" width="1140" height="81"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="1140" height="96"/>
                                                                 <connections>
                                                                     <outlet property="delegate" destination="-2" id="PLf-hv-Xg4"/>
                                                                     <outlet property="heightConstraint" destination="naH-It-ilq" id="jIc-sf-Bru"/>
@@ -1558,11 +1558,11 @@
                                             <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
-                                                <rect key="frame" x="1" y="1" width="1138" height="644"/>
+                                                <rect key="frame" x="1" y="1" width="1153" height="659"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="-15" width="1138" height="644"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="1138" height="644"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                                         <subviews>
                                                             <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lvV-vu-Nc5" customClass="BeatPreviewView" customModule="Beat" customModuleProvider="target">
@@ -1810,7 +1810,7 @@
             <windowStyleMask key="styleMask" titled="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="181" y="118" width="276" height="240"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="oN0-ql-Q6R">
                 <rect key="frame" x="0.0" y="0.0" width="276" height="240"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1890,7 +1890,7 @@ Gw
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="181" y="118" width="311" height="156"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="8SB-Du-J31">
                 <rect key="frame" x="0.0" y="0.0" width="311" height="156"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -2584,12 +2584,12 @@ Gw
         <image name="Color_Purple" width="15" height="15"/>
         <image name="Color_Red" width="15" height="15"/>
         <image name="Dialogue" width="512" height="512"/>
-        <image name="NSLockLockedTemplate" width="15" height="15"/>
+        <image name="NSLockLockedTemplate" width="14" height="15"/>
         <image name="NSRefreshTemplate" width="14" height="16"/>
         <image name="NSStatusNone" width="16" height="16"/>
         <image name="NSStopProgressFreestandingTemplate" width="15" height="15"/>
-        <image name="NSTouchBarGoDownTemplate" width="16" height="9"/>
-        <image name="NSTouchBarGoUpTemplate" width="16" height="9"/>
+        <image name="NSTouchBarGoDownTemplate" width="15" height="9"/>
+        <image name="NSTouchBarGoUpTemplate" width="15" height="9"/>
         <image name="Notepad" width="512" height="512"/>
         <image name="OutlineIcon" width="370" height="370"/>
         <image name="OutlineIcon_template" width="512" height="512"/>

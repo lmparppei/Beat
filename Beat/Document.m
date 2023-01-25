@@ -1818,7 +1818,6 @@ static NSWindow __weak *currentKeyWindow;
 		[_parser ensureDialogueParsingFor:previousCue];
 	}
 	
-	
 	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update all views which are affected by the caret position
@@ -1836,7 +1835,7 @@ static NSWindow __weak *currentKeyWindow;
 		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
 	});
 	
-	[_textView updateMarkdownView];
+	[_textView updateMarkupVisibility];
 }
 
 
