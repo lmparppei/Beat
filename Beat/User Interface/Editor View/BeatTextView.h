@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 -(void)redrawAllGlyphs;
 -(void)redrawUI;
--(void)updateMarkdownView;
+-(void)updateMarkupVisibility;
 -(void)toggleHideFountainMarkup;
 - (NSRect)rectForRange:(NSRange)range;
 

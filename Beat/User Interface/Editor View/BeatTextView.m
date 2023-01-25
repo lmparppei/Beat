@@ -1574,7 +1574,7 @@ double clamp(double d, double min, double max) {
 	[self.layoutManager invalidateLayoutForCharacterRange:(NSRange){0, self.string.length} actualCharacterRange:nil];
 }
 
--(void)updateMarkdownView {
+-(void)updateMarkupVisibility {
 	if (!_editorDelegate.hideFountainMarkup || _editorDelegate.documentIsLoading) return;
 	if (!self.string.length) return;
 	
@@ -1598,7 +1598,7 @@ double clamp(double d, double min, double max) {
 -(void)toggleHideFountainMarkup
 {
 	[self.layoutManager invalidateGlyphsForCharacterRange:(NSRange){ 0, self.string.length } changeInLength:0 actualCharacterRange:nil];
-	[self updateMarkdownView];
+	[self updateMarkupVisibility];
 }
 
 -(NSDictionary<NSAttributedStringKey,id> *)layoutManager:(NSLayoutManager *)layoutManager shouldUseTemporaryAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs forDrawingToScreen:(BOOL)toScreen atCharacterIndex:(NSUInteger)charIndex effectiveRange:(NSRangePointer)effectiveCharRange

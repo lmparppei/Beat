@@ -11,6 +11,8 @@
 #import "BeatRevisions.h"
 #import "BeatEditorFormatting.h"
 #import "BeatMeasure.h"
+#import "Beat-Swift.h"
+#import "BeatTag.h"
 
 @interface BeatLayoutManager()
 @property (nonatomic) NSMutableParagraphStyle* _Nullable markerStyle;
@@ -180,48 +182,98 @@
 }
 
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(NSPoint)origin {
-	[super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
+	static NSMutableDictionary* bgColors;
+	if (bgColors == nil) bgColors = NSMutableDictionary.new;
 		
-	/*
-	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:NULL];
-	
-	NSArray *lines = [self.delegate.editorDelegate.parser linesInRange:charRange];
-	
-	for (Line *l in lines) {
-		if (l.markerRange.length > 0) {
-			NSRange markerRange = NSMakeRange(l.position + l.markerRange.location, l.markerRange.length);
-			NSRange glyphRange = [self glyphRangeForCharacterRange:markerRange actualCharacterRange:nil];
-			NSArray * rects = [self rectsForGlyphRange:glyphRange];
+	[self enumerateLineFragmentsForGlyphRange:glyphsToShow usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+		NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+		
+		[self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+			if (range.location < 0 || NSMaxRange(range) < 0) return;
 			
-			for (NSValue* v in rects) {
-				NSRect r = v.rectValue;
-				r.origin.x += self.textView.textContainerInset.width;
-				r.origin.y += self.textView.textContainerInset.height;
-
-				NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:r xRadius:3 yRadius:3];
-				
-				NSColor * color = [BeatColors color:l.marker];
-				//if (NSLocationInRange(self.textView.selectedRange.location, l.range)) color = [color colorWithAlphaComponent:.1];
-				color = [color colorWithAlphaComponent:.1];
-				
-				if (color != nil) {
-					[color setFill];
-					[path fill];
+			BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
+			BeatTag* tag = attrs[BeatTagging.attributeKey];
+			BeatReviewItem *review = attrs[BeatReview.attributeKey];
+			
+			// Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
+			NSRange rRange = range;
+			for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
+				if (i < 0) break; // Why do we need this?
+				if ([self.textStorage.string characterAtIndex:i] == '\n') {
+					rRange.length = NSMaxRange(rRange) - i - 1;
+					break;
 				}
 			}
-		}
-	}
-	 */
+			
+			NSRange usedRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
+			NSRect aRect = [self boundingRectForGlyphRange:usedRange inTextContainer:self.textContainers.firstObject];
+			aRect.origin.x += self.textView.textContainerInset.width;
+			aRect.origin.y += self.textView.textContainerInset.height;
+			
+			if (review != nil && !review.emptyReview) {
+				if (bgColors[@"review"] == nil) {
+					NSColor *reviewColor = BeatReview.reviewColor;
+					bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.5];
+				}
+				
+				NSColor *color = bgColors[@"review"];
+				[color setFill];
+				
+				NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
+				NSRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
+				bool fullLine = (fullGlyphRange.length == glyphRange.length - 1);
+				
+				fullRect.origin.x += self.textView.textContainerInset.width;
+				fullRect.origin.y += self.textView.textContainerInset.height;
+				
+				if (fullLine) {
+					fullRect.origin.x = self.textView.textContainerInset.width + BeatTextView.linePadding;
+					fullRect.size.width = self.textView.textContainer.size.width - BeatTextView.linePadding * 2;
+				}
+				
+				//NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:fullRect xRadius:2.0 yRadius:2.0];
+				//[path fill];
+				NSRectFill(fullRect);
+			}
+			
+			if (tag != nil && self.textView.editorDelegate.showTags) {
+				if (bgColors[tag.typeAsString] == nil) {
+					bgColors[tag.typeAsString] = [[BeatTagging colorFor:tag.type] colorWithAlphaComponent:0.5];
+				}
+
+				NSColor *tagColor = bgColors[tag.typeAsString];
+				[tagColor setFill];
+				
+				NSRectFill(aRect);
+			}
+			
+			// Draw revision backgrounds last, so the underlines go on top of other stuff.
+			if (revision.type != RevisionNone && self.textView.editorDelegate.showRevisions && rRange.length > 0) {
+				NSRect revisionRect = aRect;
+				
+				if (bgColors[revision.colorName] == nil) {
+					bgColors[revision.colorName] = [[BeatColors color:revision.colorName] colorWithAlphaComponent:.3];
+				}
+				[bgColors[revision.colorName] setFill];
+				
+				revisionRect.origin.y += revisionRect.size.height - 1.0;
+				revisionRect.size.height = 2.0;
+				
+				NSRectFill(revisionRect);
+			}
+		}];
+	}];
+	
+	[super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
+
 }
 
 
 -(NSArray*)rectsForGlyphRange:(NSRange)glyphsToShow {
 	NSMutableArray *rects = NSMutableArray.new;
-	
 	NSTextContainer *tc = self.textContainers.firstObject;
 	
 	[self enumerateLineFragmentsForGlyphRange:glyphsToShow usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
-		
 		NSRect lfRect = [self boundingRectForGlyphRange:NSIntersectionRange(glyphsToShow, glyphRange) inTextContainer:tc];
 		[rects addObject:[NSNumber valueWithRect:lfRect]];
 	}];

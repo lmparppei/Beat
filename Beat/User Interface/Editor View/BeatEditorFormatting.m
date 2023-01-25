@@ -446,37 +446,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	 
 	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:line.range];
 	
-	if (_delegate.showRevisions || _delegate.showTags) {
+	if (_delegate.showRevisions) {
 		// Enumerate attributes
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 			if (attrs[BeatRevisions.attributeKey] && _delegate.showRevisions) {
 				BeatRevisionItem *revision = attrs[BeatRevisions.attributeKey];
 				
-				if (revision.type == RevisionAddition) {
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor forCharacterRange:range];
-				}
-				else if (revision.type == RevisionRemovalSuggestion) {
+				if (revision.type == RevisionRemovalSuggestion) {
 					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
 					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
 					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.125] forCharacterRange:range];
 				}
-			}
-			
-			if (attrs[BeatReview.attributeKey]) {
-				BeatReviewItem *review = attrs[BeatReview.attributeKey];
-				if (!review.emptyReview) {
-					NSColor *reviewColor = BeatReview.reviewColor;
-					reviewColor = [reviewColor colorWithAlphaComponent:.5];
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:reviewColor forCharacterRange:range];
-				}
-			}
-			
-			if (attrs[BeatTagging.attributeKey] && _delegate.showTags) {
-				BeatTag *tag = attrs[BeatTagging.attributeKey];
-				NSColor *tagColor = [BeatTagging colorFor:tag.type];
-				tagColor = [tagColor colorWithAlphaComponent:.5];
-			   
-				[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:tagColor forCharacterRange:range];
 			}
 		}];
 	}
