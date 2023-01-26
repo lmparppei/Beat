@@ -1753,6 +1753,10 @@
 	return topItem;
 }
 
+- (NSMenuItem*)separatorMenuItem {
+	return [NSMenuItem separatorItem];
+}
+
 - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method {
 	return [BeatPluginControlMenuItem.alloc initWithTitle:title shortcut:shortcut method:method];
 }
