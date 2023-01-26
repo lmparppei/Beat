@@ -30,10 +30,11 @@
 @property(nonatomic) bool contentFound;
 @property(nonatomic) bool titlePage;
 @property(nonatomic, strong) NSString *lastFoundElement;
-@property(nonatomic, strong) NSString *lastFoundString;
+@property(nonatomic, strong) NSMutableAttributedString *lastFoundString;
 @property(nonatomic, strong) NSMutableAttributedString *lastAddedLine;
 @property(nonatomic, strong) NSString *style;
 @property(nonatomic, strong) NSMutableAttributedString *elementText;
+@property(nonatomic, strong) NSMutableAttributedString *paragraphText;
 @property(nonatomic, strong) NSMutableArray <NSAttributedString*>* scriptLines;
 @property(nonatomic) NSUInteger dualDialogue;
 @end
@@ -72,6 +73,7 @@
 
 - (void)parse:(NSData*)data {
 	_elementText = NSMutableAttributedString.new;
+	_paragraphText = NSMutableAttributedString.new;
 	_scriptLines = NSMutableArray.new;
 	_titlePageElements = NSMutableArray.new;
 	_titlePage = NO;
@@ -141,24 +143,11 @@
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string{
 	if (_contentFound || _titlePage) {
-		//string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-				
+		NSMutableAttributedString* attrString;
+		
 		if ([_lastFoundElement isEqualToString:@"text"]) {
-			//if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
-						
-			// Add inline formatting
-			if ([_textProperties[@"bold"] isEqualToString:@"1"]) {
-				string = [NSString stringWithFormat:@"**%@**", string];
-			}
-			if ([_textProperties[@"italic"] isEqualToString:@"1"]) {
-				string = [NSString stringWithFormat:@"*%@*", string];
-			}
-			if ([_textProperties[@"underline"] isEqualToString:@"1"]) {
-				string = [NSString stringWithFormat:@"_%@_", string];
-			}
-			
 			// Create attributed string
-			NSMutableAttributedString* attrString = [NSMutableAttributedString.alloc initWithString:string];
+			attrString = [NSMutableAttributedString.alloc initWithString:string];
 			if (_textProperties[@"revision"] != nil) {
 				NSInteger generation = [(NSString*)_textProperties[@"revision"] integerValue] - 1;
 				if (generation < 0) generation = 0;
@@ -168,17 +157,14 @@
 				BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition color:color];
 				[attrString addAttribute:BeatRevisions.attributeKey value:revision range:NSMakeRange(0, attrString.length)];
 			}
-			
-			[_elementText appendAttributedString:attrString];
 		}
 		else {
 			string = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-			NSAttributedString* attrString = [NSMutableAttributedString.alloc initWithString:string];
-			[_elementText appendAttributedString:attrString];
+			attrString = [NSMutableAttributedString.alloc initWithString:string];
 		}
 		
 		// Save the string for later use
-		_lastFoundString = string;
+		[_elementText appendAttributedString:attrString];
 	}
 }
 
@@ -204,19 +190,43 @@
 	elementName = elementName.lowercaseString;
 	
 	if ([elementName isEqualToString:@"text"]) {
+		//if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
+					
+		// Add inline formatting
+		NSMutableString* left = NSMutableString.new;
+		NSMutableString* right = NSMutableString.new;
+		
+		if ([_textProperties[@"bold"] isEqualToString:@"1"]) {
+			[left appendString:@"**"];
+			[right insertString:@"**" atIndex:0];
+		}
+		if ([_textProperties[@"italic"] isEqualToString:@"1"]) {
+			[left appendString:@"*"];
+			[right insertString:@"*" atIndex:0];
+		}
+		if ([_textProperties[@"underline"] isEqualToString:@"1"]) {
+			[left appendString:@"_"];
+			[right insertString:@"_" atIndex:0];
+		}
+		
+		[_elementText insertAttributedString:[NSAttributedString.alloc initWithString:left] atIndex:0];
+		[_elementText appendAttributedString:[NSAttributedString.alloc initWithString:right]];
+			
+		[_paragraphText appendAttributedString:_elementText];
+		
+		_elementText = NSMutableAttributedString.new;
 		_lastFoundElement = @"";
-
 		//[_elementText appendString:@" "];
 	}
 	else if ([elementName isEqualToString:@"para"]) {
-		NSMutableAttributedString* result = _elementText.mutableCopy;
+		NSMutableAttributedString* result = _paragraphText.mutableCopy;
 		NSLog(@"Result class: %@", result.className);
 		
 		// Add empty rows before required elements.
 		if (_scriptLines.count > 0) {
 			NSAttributedString *previousLine = _scriptLines.lastObject;
 			
-			if (previousLine.length > 0 && _elementText.length > 0) {
+			if (previousLine.length > 0 && _paragraphText.length > 0) {
 				if ([_style isEqualToString:@"character"] ||
 					[_style isEqualToString:@"scene heading"] ||
 					[_style isEqualToString:@"action"] ||
@@ -321,7 +331,7 @@
 			_lastAddedLine = result;
 		}
 		
-		_elementText = NSMutableAttributedString.new;
+		_paragraphText = NSMutableAttributedString.new;
 	}
 	
 	// Start & end sections
