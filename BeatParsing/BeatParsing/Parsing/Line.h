@@ -78,6 +78,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (bool)isDialogueElement;
 - (bool)isDualDialogueElement;
 - (bool)isOutlineElement;
+- (bool)effectivelyEmpty;
 - (NSString*)typeAsString;
 - (NSString*)characterName;
 - (NSString*)textContent;
