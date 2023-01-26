@@ -14,14 +14,16 @@
  */
 
 #import "OSFImport.h"
+#import "BeatRevisions.h"
 
 @interface OSFImport () <NSXMLParserDelegate>
 @property(nonatomic, strong) NSXMLParser *xmlParser;
 @property (nonatomic) bool paragraph;
 @property (nonatomic) NSDictionary *paraProperties;
+@property (nonatomic) NSDictionary *textProperties;
 
 @property(nonatomic, strong) NSMutableArray *results;
-@property (nonatomic, strong) NSMutableArray *titlePageElements;
+@property (nonatomic, strong) NSMutableArray<NSAttributedString*>* titlePageElements;
 @property(nonatomic, strong) NSMutableString *parsedString;
 @property(nonatomic, strong) NSMutableString *resultScript;
 
@@ -29,10 +31,10 @@
 @property(nonatomic) bool titlePage;
 @property(nonatomic, strong) NSString *lastFoundElement;
 @property(nonatomic, strong) NSString *lastFoundString;
-@property(nonatomic, strong) NSString *lastAddedLine;
+@property(nonatomic, strong) NSMutableAttributedString *lastAddedLine;
 @property(nonatomic, strong) NSString *style;
-@property(nonatomic, strong) NSMutableString *elementText;
-@property(nonatomic, strong) NSMutableArray *scriptLines;
+@property(nonatomic, strong) NSMutableAttributedString *elementText;
+@property(nonatomic, strong) NSMutableArray <NSAttributedString*>* scriptLines;
 @property(nonatomic) NSUInteger dualDialogue;
 @end
 
@@ -69,9 +71,9 @@
 }
 
 - (void)parse:(NSData*)data {
-	_elementText = [NSMutableString string];
-	_scriptLines = [NSMutableArray array];
-	_titlePageElements = [NSMutableArray array];
+	_elementText = NSMutableAttributedString.new;
+	_scriptLines = NSMutableArray.new;
+	_titlePageElements = NSMutableArray.new;
 	_titlePage = NO;
 	_dualDialogue = -1;
 	
@@ -91,7 +93,7 @@
 	// with lowercase counterparts. Style names are correctly capitalized, though.
 	
 	elementName = elementName.lowercaseString;
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+	NSMutableDictionary *attributes = NSMutableDictionary.new;
 	
 	for (id key in attributeDict) {
 		[attributes setValue:[attributeDict objectForKey:key] forKey:[key lowercaseString]];
@@ -101,29 +103,32 @@
 		_contentFound = YES;
 		_titlePage = NO;
 	}
+	else if ([elementName isEqualToString:@"text"]) {
+		_textProperties = attributes;
+	}
 	else if ([elementName isEqualToString:@"titlepage"]) {
 		_titlePage = YES;
 	}
 	else if ([elementName isEqualToString:@"para"]) {
 		_paraProperties = attributes;
 		_paragraph = YES;
-		_elementText = [NSMutableString string];
+		_elementText = NSMutableAttributedString.new;
 	}
 	else if ([elementName isEqualToString:@"style"]) {
-		if (attributes[@"basestylename"]) _style = (NSString*)attributes[@"basestylename"];
-		if (attributes[@"basestyle"]) _style = (NSString*)attributes[@"basestyle"];
+		if (attributes[@"basestylename"]) _style = ((NSString*)attributes[@"basestylename"]).lowercaseString;
+		if (attributes[@"basestyle"]) _style = ((NSString*)attributes[@"basestyle"]).lowercaseString;
 		
 		if (attributes[@"synopsis"]) {
 			// Add synopsis to script
-			[_scriptLines addObject:@""];
-			[_scriptLines addObject:[NSString stringWithFormat:@"\n= %@", attributes[@"synopsis"]]];
+			[_scriptLines addObject:NSAttributedString.new];
+			[_scriptLines addObject:[NSAttributedString.alloc initWithString:[NSString stringWithFormat:@"\n= %@", attributes[@"synopsis"]]]];
 		}
 		
-		if ([_style isEqualToString:@"Character"]) {
+		if ([_style isEqualToString:@"character"]) {
 			if (_dualDialogue > 0) _dualDialogue += 1;
 			if (_dualDialogue > 2) _dualDialogue = 0;
 		}
-		else if ([_style isEqualToString:@"Dialogue"]) {
+		else if ([_style isEqualToString:@"dialogue"]) {
 			if (_dualDialogue == 2) _dualDialogue = 0;
 		}
 		
@@ -136,13 +141,41 @@
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string{
 	if (_contentFound || _titlePage) {
-		string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
-		
+		//string = [string stringByTrimmingCharactersInSet:NSCharacterSet.newlineCharacterSet];
+				
 		if ([_lastFoundElement isEqualToString:@"text"]) {
-			if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
-			[_elementText appendString:string];
+			//if (![self isLastCharacterSpace:_elementText]) _elementText = [NSMutableString stringWithString:[_elementText stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
+						
+			// Add inline formatting
+			if ([_textProperties[@"bold"] isEqualToString:@"1"]) {
+				string = [NSString stringWithFormat:@"**%@**", string];
+			}
+			if ([_textProperties[@"italic"] isEqualToString:@"1"]) {
+				string = [NSString stringWithFormat:@"*%@*", string];
+			}
+			if ([_textProperties[@"underline"] isEqualToString:@"1"]) {
+				string = [NSString stringWithFormat:@"_%@_", string];
+			}
+			
+			// Create attributed string
+			NSMutableAttributedString* attrString = [NSMutableAttributedString.alloc initWithString:string];
+			if (_textProperties[@"revision"] != nil) {
+				NSInteger generation = [(NSString*)_textProperties[@"revision"] integerValue] - 1;
+				if (generation < 0) generation = 0;
+				if (generation >= BeatRevisions.revisionColors.count) generation = BeatRevisions.revisionColors.count - 1;
+				NSString* color = BeatRevisions.revisionColors[generation];
+				
+				BeatRevisionItem* revision = [BeatRevisionItem type:RevisionAddition color:color];
+				[attrString addAttribute:BeatRevisions.attributeKey value:revision range:NSMakeRange(0, attrString.length)];
+			}
+			
+			[_elementText appendAttributedString:attrString];
 		}
-		else [_elementText appendString:[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+		else {
+			string = [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+			NSAttributedString* attrString = [NSMutableAttributedString.alloc initWithString:string];
+			[_elementText appendAttributedString:attrString];
+		}
 		
 		// Save the string for later use
 		_lastFoundString = string;
@@ -172,76 +205,97 @@
 	
 	if ([elementName isEqualToString:@"text"]) {
 		_lastFoundElement = @"";
-		[_elementText appendString:@" "];
+
+		//[_elementText appendString:@" "];
 	}
 	else if ([elementName isEqualToString:@"para"]) {
-		NSString *result = [NSString stringWithFormat:@"%@", _elementText];
+		NSMutableAttributedString* result = _elementText.mutableCopy;
+		NSLog(@"Result class: %@", result.className);
 		
 		// Add empty rows before required elements.
 		if (_scriptLines.count > 0) {
-			NSString *previousLine = [_scriptLines lastObject];
+			NSAttributedString *previousLine = _scriptLines.lastObject;
 			
 			if (previousLine.length > 0 && _elementText.length > 0) {
-				if ([_style isEqualToString:@"Character"] ||
-					[_style isEqualToString:@"Scene Heading"] ||
-					[_style isEqualToString:@"Action"]) {
-					[_scriptLines addObject:@""];
+				if ([_style isEqualToString:@"character"] ||
+					[_style isEqualToString:@"scene heading"] ||
+					[_style isEqualToString:@"action"] ||
+					[_style isEqualToString:@"left column"] ||
+					[_style isEqualToString:@"rigth column"] ||
+					[_style isEqualToString:@"shot"] ||
+					[_style isEqualToString:@"transition"]) {
+					[_scriptLines addObject:NSAttributedString.new];
 				}
 			}
 		}
 		
-		if ([_style isEqualToString:@"Scene Heading"]) {
-			result = [result uppercaseString];
+		if ([_style isEqualToString:@"scene heading"]) {
+			[result.mutableString setString:result.string.uppercaseString];
 			
 			// Force scene prefix if there is none and the style is scene heading anyway
-			if ([result rangeOfString:@"INT."].location == NSNotFound &&
-				[result rangeOfString:@"EXT."].location == NSNotFound &&
-				[result rangeOfString:@"I./E."].location == NSNotFound
+			if ([result.string rangeOfString:@"INT"].location == NSNotFound &&
+				[result.string rangeOfString:@"EXT"].location == NSNotFound &&
+				[result.string rangeOfString:@"I./E"].location == NSNotFound &&
+				[result.string rangeOfString:@"E./I"].location == NSNotFound
 			) {
-				result = [NSString stringWithFormat:@".%@", result];
+				//result = [NSString stringWithFormat:@".%@", result];
+				[result insertAttributedString:[NSAttributedString.alloc initWithString:@"."] atIndex:0];
 			}
 			
 			if (_paraProperties[@"scenenumber"]) {
-				result = [NSString stringWithFormat:@"%@ #%@#", result, _paraProperties[@"scenenumber"]];
+				NSString* sceneNumber = [NSString stringWithFormat:@" #%@#", _paraProperties[@"scenenumber"]];
+				[result appendAttributedString:[NSAttributedString.alloc initWithString:sceneNumber]];
 			}
 		}
-		else if ([_style isEqualToString:@"Lyrics"]) {
-			result = [NSString stringWithFormat:@"~%@~", result];
+		else if ([_style isEqualToString:@"lyrics"]) {
+			NSAttributedString* f = [NSAttributedString.alloc initWithString:@"~"];
+			[result insertAttributedString:f atIndex:0];
+			[result appendAttributedString:f];
 		}
-		if ([_style isEqualToString:@"Character"]) {
+		if ([_style isEqualToString:@"character"]) {
 			if (_dualDialogue == 2) {
-				result = [result stringByAppendingString:@" ^"];
+				NSAttributedString* f = [NSAttributedString.alloc initWithString:@"^"];
+				[result appendAttributedString:f];
 				_dualDialogue = 0;
 			}
-			result = [result uppercaseString];
+			[result.mutableString setString:result.string.uppercaseString];
 			
 			// Force character if it's under 4 letters (like LI or PO)
-			if (result.length < 4) result = [NSString stringWithFormat:@"@%@", result];
+			//if (result.length < 4) result = [NSString stringWithFormat:@"@%@", result];
 		}
-		else if ([_style isEqualToString:@"Transition"]) {
-			result = [NSString stringWithFormat:@"> %@", [result uppercaseString]];
+		else if ([_style isEqualToString:@"transition"]) {
+			NSAttributedString* f = [NSAttributedString.alloc initWithString:@"> "];
+			[result insertAttributedString:f atIndex:0];
 		}
-		else {
-			result = [NSString stringWithFormat:@"%@", result];
+		else if ([_style isEqualToString:@"shot"]) {
+			NSAttributedString* f = [NSAttributedString.alloc initWithString:@"!! "];
+			[result insertAttributedString:f atIndex:0];
 		}
 		
 		if (_paraProperties[@"alignment"]) {
 			if ([_paraProperties[@"alignment"] isEqualToString:@"right"]) {
-				result = [NSString stringWithFormat:@"> %@", result];
+				NSAttributedString* f = [NSAttributedString.alloc initWithString:@"> "];
+				[result insertAttributedString:f atIndex:0];
 			}
 			else if ([_paraProperties[@"alignment"] isEqualToString:@"center"]) {
-				result = [NSString stringWithFormat:@"> %@ <", result];
+				NSAttributedString* f = [NSAttributedString.alloc initWithString:@">"];
+				NSAttributedString* f2 = [NSAttributedString.alloc initWithString:@"<"];
+				[result insertAttributedString:f atIndex:0];
+				[result appendAttributedString:f2];
 			}
 		}
 		
 		// Add () for parentheticals
-		if ([_style isEqualToString:@"Parenthetical"]) {
-			result = [result stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-			result = [NSString stringWithFormat:@"(%@)", result];
+		if ([_style isEqualToString:@"parenthetical"]) {
+			[result.mutableString setString:[result.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet]];
+			NSAttributedString* f = [NSAttributedString.alloc initWithString:@"("];
+			NSAttributedString* f2 = [NSAttributedString.alloc initWithString:@")"];
+			[result insertAttributedString:f atIndex:0];
+			[result appendAttributedString:f2];
 		}
 		
 		// Add object
-		if ([result isEqualToString:@""] && [_lastAddedLine isEqualToString:@""]) {
+		if ([result.string isEqualToString:@""] && [_lastAddedLine.string isEqualToString:@""]) {
 			// Do nothing for now
 		} else {
 			// For title pages we append the correct param name first
@@ -249,30 +303,31 @@
 				if (_paraProperties[@"bookmark"]) {
 					NSString *bookmark = _paraProperties[@"bookmark"];
 					NSString *prefix;
-					if ([bookmark isEqualToString:@"Title"]) prefix = @"Title";
-					else if ([bookmark isEqualToString:@"Author"]) prefix = @"Author";
-					else if ([bookmark isEqualToString:@"Draft"]) prefix = @"Draft date";
-					else if ([bookmark isEqualToString:@"Contact"]) prefix = @"Contact";
+					if ([bookmark isEqualToString:@"title"]) prefix = @"Title";
+					else if ([bookmark isEqualToString:@"author"]) prefix = @"Author";
+					else if ([bookmark isEqualToString:@"draft"]) prefix = @"Draft date";
+					else if ([bookmark isEqualToString:@"contact"]) prefix = @"Contact";
 					
 					// Only add KNOWN title page elements
 					if (prefix.length && result.length) {
-						result = [NSString stringWithFormat:@"%@: %@", prefix, result];
-						[_titlePageElements addObject:[NSString stringWithString:result]];
+						NSString* titleLine = [NSString stringWithFormat:@"%@: %@", prefix, result];
+						NSAttributedString* titlePageItem = [NSAttributedString.alloc initWithString:titleLine];
+						[_titlePageElements addObject:titlePageItem];
 					}
 				}
 			} else {
-				[_scriptLines addObject:[NSString stringWithString:result]];
+				[_scriptLines addObject:result];
 			}
 			_lastAddedLine = result;
 		}
 		
-		_elementText = [NSMutableString string];
+		_elementText = NSMutableAttributedString.new;
 	}
 	
 	// Start & end sections
 	if ([elementName isEqualToString:@"titlepage"]) {
 		// Add a separator line
-		[_titlePageElements addObject:@""];
+		[_titlePageElements addObject:NSMutableAttributedString.new];
 		_titlePage = NO;
 	}
     if ([elementName isEqualToString:@"paragraphs"]) {
@@ -286,7 +341,22 @@
 			_scriptLines = [NSMutableArray arrayWithArray:[_titlePageElements arrayByAddingObjectsFromArray:_scriptLines]];
 		}
 		
-		return [_scriptLines componentsJoinedByString:@"\n"];
+		NSMutableAttributedString* result = NSMutableAttributedString.new;
+		for (NSAttributedString* string in _scriptLines) {
+			[result appendAttributedString:string];
+			[result appendAttributedString:[NSAttributedString.alloc initWithString:@"\n"]];
+		}
+		
+		NSDictionary* revisions = [BeatRevisions rangesForSaving:result];
+		BeatDocumentSettings* settings = BeatDocumentSettings.new;
+		NSString* settingsString = [settings getSettingsStringWithAdditionalSettings:@{
+			DocSettingRevisions: revisions
+		}];
+		
+		NSMutableString* resultString = result.string.mutableCopy;
+		[resultString appendFormat:@"\n\n%@", settingsString];
+		
+		return resultString;
 	}
 	return @"";
 }

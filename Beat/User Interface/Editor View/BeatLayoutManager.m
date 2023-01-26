@@ -106,6 +106,10 @@
 	 
 	*/
 	
+	/*
+	NSArray<NSString*>* shownRevisions = self.textView.editorDelegate.shownRevisionGenerations;
+	*/
+	NSArray<NSString*>* shownRevisions = BeatRevisions.revisionColors;
 	
 	NSTextStorage* textStorage = self.textStorage;
 	NSTextContainer* textContainer = self.textContainers.firstObject;
@@ -122,13 +126,15 @@
 		BeatRevisionItem *revision = [textStorage attribute:BeatRevisions.attributeKey
 													atIndex:charRange.location longestEffectiveRange:&attributeCharRange
 													inRange:charRange];
+			
 		// Get actual glyphs
 		attributeGlyphRange = [self glyphRangeForCharacterRange:attributeCharRange actualCharacterRange:NULL];
 		// Get intersection range between the glyphs being displayed and the actual attribute range
 		attributeGlyphRange = NSIntersectionRange(attributeGlyphRange, glyphRange);
 				
 		// Check if there actually was a revision attribute
-		if ((revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) && revision != nil && revision.colorName != nil) {
+		if ((revision.type == RevisionAddition || revision.type == RevisionCharacterRemoved) &&
+			revision != nil && revision.colorName != nil && [shownRevisions containsObject:revision.colorName.lowercaseString]) {
 			// Get bounding rect for the range
 			NSRect boundingRect = [self boundingRectForGlyphRange:attributeGlyphRange
 												  inTextContainer:textContainer];
