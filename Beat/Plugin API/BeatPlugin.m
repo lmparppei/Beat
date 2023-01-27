@@ -1325,10 +1325,12 @@
 
 - (void)nextTab
 {
+	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
 	[self.delegate.documentWindow selectNextTab:nil];
 }
 - (void)previousTab
 {
+	for (NSWindow* w in self.pluginWindows) [w resignKeyWindow];
 	[self.delegate.documentWindow selectPreviousTab:nil];
 }
 
@@ -1722,7 +1724,6 @@
 
 - (void)clearMenus {
 	for (NSMenuItem* topMenuItem in self.menus) {
-		NSLog(@"... remove %@", topMenuItem.title);
 		[topMenuItem.submenu removeAllItems];
 		[NSApp.mainMenu removeItem:topMenuItem];
 	}
