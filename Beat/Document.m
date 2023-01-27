@@ -948,6 +948,7 @@ static NSWindow __weak *currentKeyWindow;
 - (void)hidePluginWindowsWithMain:(NSWindow*)mainWindow {
 	for (NSString *pluginName in _runningPlugins.allKeys) {
 		[_runningPlugins[pluginName] hideAllWindows];
+		[_runningPlugins[pluginName] documentDidResignMain];
 	}
 	
 	if (!mainWindow.isMainWindow && _runningPlugins.count > 0) {

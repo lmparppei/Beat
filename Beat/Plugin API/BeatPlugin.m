@@ -61,11 +61,11 @@
 - (id)init
 {
 	if ((self = [super init]) == nil) { return nil; }
-		
+	
 	// Create virtual machine and JS context
 	_vm = [[JSVirtualMachine alloc] init];
 	_context = [[JSContext alloc] initWithVirtualMachine:_vm];
-
+	
 	[self setupErrorHandler];
 	[self setupRequire];
 	
@@ -99,7 +99,7 @@
 	// Thank you, ocodo on stackoverflow.
 	// Based on https://github.com/kasper/phoenix
 	BeatPlugin * __weak weakSelf = self;
-
+	
 	self.context[@"require"] = ^(NSString *path) {
 		NSString *modulePath = [[BeatPluginManager.sharedManager pathForPlugin:weakSelf.pluginName] stringByAppendingPathComponent:path];
 		modulePath = [weakSelf resolvePath:modulePath];
@@ -115,7 +115,7 @@
 				modulePath = url.path;
 			}
 		}
-
+		
 		[weakSelf importScript:modulePath];
 	};
 }
@@ -124,14 +124,14 @@
 - (void)importScript:(NSString *)path {
 	NSError *error;
 	NSString *script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
-
+	
 	if (error) {
 		script = @"";
 		NSString *errorMsg = [NSString stringWithFormat:@"Error: Could not import JavaScript module '%@'", path.lastPathComponent];
 		[self log:errorMsg];
 		return;
 	}
-
+	
 	[self.context evaluateScript:script];
 }
 
@@ -154,7 +154,7 @@
 {
 	//pluginString = [self preprocess:pluginString];
 	[self.context evaluateScript:pluginString];
-
+	
 	// Kill it if the plugin is not resident
 	if (!self.sheet && !self.resident && self.pluginWindows.count < 1 && !self.widgetView) {
 		[self end];
@@ -333,6 +333,10 @@
 }
 - (void)documentDidBecomeMain {
 	[_documentDidBecomeMainMethod callWithArguments:nil];
+	[self refreshMenus];
+}
+- (void)documentDidResignMain {
+	[self refreshMenus];
 }
 
 /// Creates a listener for when preview was updated.
@@ -1721,6 +1725,14 @@
 		NSLog(@"... remove %@", topMenuItem.title);
 		[topMenuItem.submenu removeAllItems];
 		[NSApp.mainMenu removeItem:topMenuItem];
+	}
+}
+
+/// Adds / removes menu items based on the currently active document
+- (void)refreshMenus {
+	for (NSMenuItem* item in self.menus) {
+		if (_delegate.documentWindow.mainWindow && ![NSApp.mainMenu.itemArray containsObject:item]) [NSApp.mainMenu addItem:item];
+		else if (!_delegate.documentWindow.mainWindow && [NSApp.mainMenu.itemArray containsObject:item]) [NSApp.mainMenu removeItem:item];
 	}
 }
 

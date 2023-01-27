@@ -207,6 +207,7 @@ JSExportAs(line, - (Line*)lineWithString:(NSString*)string type:(LineType)type);
 #pragma mark Menu items
 
 - (NSMenuItem*)separatorMenuItem;
+- (void)refreshMenus;
 JSExportAs(menu, - (BeatPluginControlMenu*)menu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
 JSExportAs(menuItem, - (BeatPluginControlMenuItem*)menuItem:(NSString*)title shortcut:(NSArray<NSString*>*)shortcut action:(JSValue*)method);
 JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPluginControlMenuItem*>*)items);
@@ -239,6 +240,8 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)setPropertyValue:(NSString*)key value:(id)value;
 /// Gets a property value from host document.
 - (id)getPropertyValue:(NSString*)key;
+
+- (void)refreshMenus;
 
 - (id)document;
 - (NSString*)createDocumentFile;
@@ -303,6 +306,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
 - (void)documentDidBecomeMain;
+- (void)documentDidResignMain;
 - (void)documentWasSaved;
 
 // Autocompletion callbacks
