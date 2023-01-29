@@ -76,31 +76,37 @@
 	
 	LineType lastType = empty;
 	
-	for (NSString* line in lines) {
-		if (lastType == heading && line.length > 0) [result appendString:@"\n"];
+	for (NSInteger i=0; i<lines.count; i++) {
+		NSString* line = lines[i];
+		NSString* lineToAdd = line.copy;
 		
-		if ([line.uppercaseString rangeOfString:@"INT."].location == 0 || [line.uppercaseString rangeOfString:@"EXT."].location == 0) {
+		if (lastType == heading && lineToAdd.length > 0) [result appendString:@"\n"];
+		
+		if ([lineToAdd.uppercaseString rangeOfString:@"INT."].location == 0 || [lineToAdd.uppercaseString rangeOfString:@"EXT."].location == 0) {
 			// Add extra line break for headings if needed
-			if (previousLine.length > 0) [result appendFormat:@"\n%@", line.uppercaseString];
+			if (previousLine.length > 0) [result appendFormat:@"\n"];
+			
+			lineToAdd = line.uppercaseString;
 			lastType = heading;
 		}
 		else if (line.onlyUppercaseUntilParenthesis) {
 			// Add extra line break for character cues
-			if (previousLine.length > 0) [result appendFormat:@"\n%@", line];
+			if (previousLine.length > 0) [result appendFormat:@"\n"];
 			lastType = character;
 		}
 		else {
-			[result appendFormat:@"%@", line];
 			lastType = (line.length > 0) ? action : empty;
 		}
 	
-		if (line != lines.lastObject) {
+		[result appendString:lineToAdd];
+		
+		if (i < lines.count - 1) {
 			[result appendString:@"\n"];
-		} else {
-			
 		}
 		
-		previousLine = line;
+		
+		NSLog(@"Added: %@",lineToAdd);
+		previousLine = lineToAdd;
 	}
 	
 	return result;
