@@ -591,9 +591,9 @@ p.page-break {
 }
 p.page-break-render {
 	text-align: right;
-	padding-top: 10px;
+	padding-top: 8px;
 	margin-top: 0px;
-	margin-bottom: 15px;
+	margin-bottom: 12px;
 	padding-right: 0px;
 }
 .header-top {

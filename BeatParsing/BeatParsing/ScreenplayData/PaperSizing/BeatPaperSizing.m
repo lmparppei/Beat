@@ -70,7 +70,7 @@
 		offset.height = imageableOrigin.height - referenceMargin;
 	
 	printInfo.topMargin = margins.top - offset.height;
-	printInfo.bottomMargin = margins.bottom;
+	printInfo.bottomMargin = margins.bottom - offset.height;
 	printInfo.leftMargin = margins.left - offset.width;
 	printInfo.rightMargin = margins.right;
 	
