@@ -241,8 +241,6 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 /// Gets a property value from host document.
 - (id)getPropertyValue:(NSString*)key;
 
-- (void)refreshMenus;
-
 - (id)document;
 - (NSString*)createDocumentFile;
 - (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings;
@@ -317,4 +315,8 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)hideAllWindows;
 
 - (void)restart;
+
+- (void)refreshMenus;
+
+
 @end

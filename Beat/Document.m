@@ -4701,6 +4701,7 @@ static NSArray<Line*>* cachedTitlePage;
 	NSRange range = NSMakeRange(scene.line.position, scene.string.length);
 	[self selectAndScrollTo:range];
 }
+
 /// Selects the given range and scrolls it into view
 - (void)selectAndScrollTo:(NSRange)range {
 	BeatTextView *textView = (BeatTextView*)self.textView;
