@@ -69,6 +69,7 @@
 - (void)onCharacterAutocompletion:(JSValue*)callback;
 - (void)onPreviewFinished:(JSValue*)updateMethod;
 - (void)onDocumentSaved:(JSValue*)updateMethod;
+- (void)onEscape:(JSValue*)updateMethod;
 
 - (void)log:(NSString*)string;
 - (void)openConsole;
