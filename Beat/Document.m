@@ -3283,7 +3283,12 @@ static bool _skipAutomaticLineBreaks = false;
 	if (self.currentTab == _previewTab) [self preview:nil];
 	else if (self.currentTab == _nativePreviewTab) [self preview:nil];
 	else if (self.currentTab == _cardsTab) [self toggleCards:nil];
-	
+	else {
+		for (NSString* pluginName in _runningPlugins.allKeys) {
+			BeatPlugin* plugin = _runningPlugins[pluginName];
+			[plugin escapePressed];
+		}
+	}
 }
 
 /*

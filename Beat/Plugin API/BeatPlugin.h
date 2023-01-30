@@ -306,6 +306,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)documentDidBecomeMain;
 - (void)documentDidResignMain;
 - (void)documentWasSaved;
+- (void)escapePressed;
 
 // Autocompletion callbacks
 - (NSArray*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion

@@ -44,6 +44,7 @@
 @property (nonatomic, nullable) JSValue* updateSceneMethod;
 @property (nonatomic, nullable) JSValue* documentDidBecomeMainMethod;
 @property (nonatomic, nullable) JSValue* updatePreviewMethod;
+@property (nonatomic, nullable) JSValue* escapeMethod;
 @property (nonatomic) bool resident;
 @property (nonatomic) bool terminating;
 @property (nonatomic) bool windowClosing;
@@ -306,10 +307,7 @@
 	[self makeResident];
 }
 - (void)updateOutline:(NSArray*)outline {
-	if (!_updateOutlineMethod || [_updateOutlineMethod isNull]) {
-		return;
-	}
-	
+	if (!_updateOutlineMethod || [_updateOutlineMethod isNull]) return;
 	if (!self.onOutlineChangeDisabled) [_updateOutlineMethod callWithArguments:self.delegate.parser.outline];
 }
 
@@ -325,6 +323,17 @@
 - (void)updateSceneIndex:(NSInteger)sceneIndex {
 	if (!self.onSceneIndexUpdateDisabled) [_updateSceneMethod callWithArguments:@[@(sceneIndex)]];
 }
+
+/// Creates a listener for escape key
+- (void)onEscape:(JSValue*)updateMethod {
+	_escapeMethod = updateMethod;
+	[self makeResident];
+}
+- (void)escapePressed {
+	if (!_escapeMethod || [_escapeMethod isNull]) return;
+	[_escapeMethod callWithArguments:nil];
+}
+
 
 /// Creates a listener for the window becoming main.
 - (void)onDocumentBecameMain:(JSValue*)updateMethod {

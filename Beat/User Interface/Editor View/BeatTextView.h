@@ -78,6 +78,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 
 - (void)setSplitHandleMinSize:(CGFloat)value;
 
+- (void)cancelOperation:(id)sender;
+
 @end
 
 @class BeatTagging;

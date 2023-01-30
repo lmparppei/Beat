@@ -357,6 +357,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	NSInteger row = self.autocompleteTableView.selectedRow;
 	BOOL shouldComplete = YES;
+	BOOL preventDefault = NO;
 	
 	switch (theEvent.keyCode) {
 		case 51:
@@ -367,16 +368,25 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			break;
 		case 53:
 			// Esc
-			if (self.autocompletePopover.isShown || self.infoPopover.isShown) [self closePopovers];
-		
-			return; // Skip default behavior
+			if (self.autocompletePopover.isShown || self.infoPopover.isShown) {
+				[self closePopovers];
+			}
+			else {
+				[self.editorDelegate cancelOperation:self];
+			}
+			
+			preventDefault = YES;
+			break;
+			
+			//return; // Skip default behavior
 		case 125:
 			// Down
 			if (self.autocompletePopover.isShown) {
 				if (row + 1 >= self.autocompleteTableView.numberOfRows) row = -1;
 				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row+1] byExtendingSelection:NO];
 				[self.autocompleteTableView scrollRowToVisible:self.autocompleteTableView.selectedRow];
-				return; // Skip default behavior
+				preventDefault = YES;
+				//return; // Skip default behavior
 			}
 			break;
 		case 126:
@@ -386,7 +396,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				
 				[self.autocompleteTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:row-1] byExtendingSelection:NO];
 				[self.autocompleteTableView scrollRowToVisible:self.autocompleteTableView.selectedRow];
-				return; // Skip default behavior
+				preventDefault = YES;
+				//return; // Skip default behavior
 			}
 			break;
 		case 48:
@@ -394,15 +405,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			if (_forceElementMenu || _popupMode == ForceElement) {
 				// force element + skip default
 				[self force:self];
-				return;
+				preventDefault = YES;
+				//return;
 				
 			} else if (_popupMode == Tagging) {
 				// handle tagging + skip default
-				return;
+				preventDefault = YES;
+				//return;
 				
 			} else if (self.autocompletePopover.isShown && _popupMode == Autocomplete) {
 				[self insert:self];
-				return; // don't insert a line-break after tab key
+				preventDefault = YES;
+				//return; // don't insert a line-break after tab key
 				
 			} else {
 				// Call delegate to handle normal tab press
@@ -410,10 +424,9 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 				if (flags == 0 || flags == NSEventModifierFlagCapsLock) {
 					[self.editorDelegate handleTabPress];
-					return; // skip default
-				} else {
-					return;
 				}
+				
+				preventDefault = YES;
 			}
 			break;
 		case 36:
@@ -422,13 +435,19 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 				// Check whether to force an element or to just autocomplete
 				if (_forceElementMenu || _popupMode == ForceElement) {
 					[self force:self];
-					return; // skip default
+					preventDefault = YES;
+					break;
+					//return; // skip default
 				} else if (_popupMode == Tagging) {
 					[self setTag:self];
-					return;
+					preventDefault = YES;
+					break;
+					//return;
 				} else if (_popupMode == SelectTag) {
 					[self selectTag:self];
-					return;
+					preventDefault = YES;
+					break;
+					//return;
 				} else if (self.autocompletePopover.isShown) {
 					[self insert:self];
 				}
@@ -444,13 +463,18 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 					self.automaticTextCompletionEnabled = YES;
 
 					[self forceElement:self];
-					return; // Skip defaut behavior
+					preventDefault = YES;
+					break;
+					//return; // Skip defaut behavior
 				}
 			}
 	}
 	
 	if (self.infoPopover.isShown) [self closePopovers];
-		
+	
+	// Skip super methods when needed
+	if (preventDefault) return;
+	
 	// Run superclass method for the event
 	[super keyDown:theEvent];
 	
