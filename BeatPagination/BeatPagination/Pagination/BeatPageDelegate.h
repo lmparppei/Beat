@@ -11,6 +11,6 @@
 
 @protocol BeatPageDelegate
 @property (atomic) bool livePagination;
-- (NSInteger)heightForBlock:(NSArray*)block;
+- (CGFloat)heightForBlock:(NSArray*)block;
 - (CGFloat)spaceBeforeForLine:(Line*)line;
 @end

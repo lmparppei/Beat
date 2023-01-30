@@ -355,7 +355,7 @@
 	[self getPaperSizeFromDocument];
 	
 	BeatPage *currentPage = BeatPage.new;
-	currentPage.maxHeight = _paperSize.height - 72; // We'll remove one inch to make space for (MORE) etc.
+	currentPage.maxHeight = _paperSize.height - 75;
 	currentPage.delegate = self;
 	
 	bool hasStartedANewPage = false;
@@ -493,7 +493,6 @@
 #pragma mark - Helper class methods
 
 - (bool)printNotes {
-	NSLog(@"PrintNotes requested");
 	return _paginator.printNotes;
 }
 
@@ -675,33 +674,33 @@
 	return block;
 }
 
-- (NSInteger)heightForBlock:(NSArray*)block {
+- (CGFloat)heightForBlock:(NSArray*)block {
 	return [self heightForBlock:block page:nil];
 }
 
-- (NSInteger)heightForBlock:(NSArray<Line*>*)block page:(BeatPage*)currentPage {    
+- (CGFloat)heightForBlock:(NSArray<Line*>*)block page:(BeatPage*)currentPage {
 	if (block.firstObject.isDialogue || block.firstObject.isDualDialogue) {
 		return [self heightForDialogueBlock:block page:currentPage];
 	}
 	
-	NSInteger fullHeight = 0;
+	CGFloat fullHeight = 0;
 	for (Line *line in block) {
 		CGFloat spaceBefore = 0;
 		
 		// TODO: I just don't bother to think about this conditional mess right now. A problem for my future self.
 		if (block.firstObject.type == centered || block.firstObject.type == lyrics) {
-			if (currentPage.count > 0 && line == block.firstObject) {
+			if (currentPage.count > 0 && line == block.firstObject && line.beginsNewParagraph) {
 				spaceBefore = [self spaceBeforeForLine:line];
 			}
 		}
 		else {
-			if (currentPage.count || line != block.firstObject) {
+			if (currentPage.count > 0 || line != block.firstObject) {
 				spaceBefore = [self spaceBeforeForLine:line];
 			}
 		}
-				
+                
 		CGFloat elementWidth = [self widthForElement:line];
-		NSInteger height = [BeatPaginator heightForString:line.stripFormatting font:_paginator.font maxWidth:elementWidth lineHeight:BeatPaginator.lineHeight];
+		CGFloat height = [BeatPaginator heightForString:line.stripFormatting font:_paginator.font maxWidth:elementWidth lineHeight:BeatPaginator.lineHeight];
 		fullHeight += spaceBefore + height;
 		
 		line.heightInPaginator = height;
@@ -785,7 +784,7 @@
 	NSUInteger suggestedPageBreak = 0;
 		
 	NSUInteger index = [dialogueBlock indexOfObject:spiller];
-	NSInteger remainingSpace = page.remainingSpace - BeatPaginator.lineHeight; // Make space for (MORE) etc.
+	CGFloat remainingSpace = page.remainingSpace - BeatPaginator.lineHeight; // Make space for (MORE) etc.
 	
 	// If it doesn't fit, move the whole block on next apge
 	if (remainingSpace < BeatPaginator.lineHeight) {
@@ -973,9 +972,9 @@
 	CGFloat lineHeight = BeatPaginator.lineHeight;
 	
 	// Calculate block height
-	NSInteger fullHeight = [self heightForBlock:block page:currentPage];
-	if (fullHeight <= 0) return; // Ignore this block if it's empty
-	
+	CGFloat fullHeight = [self heightForBlock:block page:currentPage];
+	if (fullHeight <= 0.0) return; // Ignore this block if it's empty
+	    
 	Line *f = block.firstObject;
 	NSString *snip = f.string;
 	if (f.string.length > 100) snip = [f.string substringToIndex:100];

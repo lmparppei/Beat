@@ -86,7 +86,7 @@
 - (Line*)contdLineFor:(Line*)line;
 
 + (CGFloat)lineHeight;
-+ (NSInteger)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
++ (CGFloat)heightForString:(NSString *)string font:(BeatFont *)font maxWidth:(NSInteger)maxWidth lineHeight:(CGFloat)lineHeight;
 
 // Pagination operation finished
 - (void)paginationFinished:(BeatPaginationOperation*)operation;
