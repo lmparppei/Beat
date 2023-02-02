@@ -1734,7 +1734,11 @@
 - (void)clearMenus {
 	for (NSMenuItem* topMenuItem in self.menus) {
 		[topMenuItem.submenu removeAllItems];
-		[NSApp.mainMenu removeItem:topMenuItem];
+		
+		// Remove menus when needed
+		if ([NSApp.mainMenu.itemArray containsObject:topMenuItem]) {
+			[NSApp.mainMenu removeItem:topMenuItem];
+		}
 	}
 }
 
