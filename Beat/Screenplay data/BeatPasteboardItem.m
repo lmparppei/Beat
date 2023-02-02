@@ -104,8 +104,6 @@
 			[result appendString:@"\n"];
 		}
 		
-		
-		NSLog(@"Added: %@",lineToAdd);
 		previousLine = lineToAdd;
 	}
 	
