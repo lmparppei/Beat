@@ -155,7 +155,7 @@
 			continue;
 		}
 		
-		NSString *title = scene.line.stripFormatting;
+		NSString *title = [scene.line.stripFormatting stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 		if (scene.type == section) title = scene.line.stripFormatting;
 		
 		NSDictionary *sceneCard = @{
