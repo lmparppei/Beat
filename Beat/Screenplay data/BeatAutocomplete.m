@@ -126,20 +126,21 @@
 - (void)autocompleteOnCurrentLine {
 	Line *currentLine = self.delegate.currentLine;
 	
-	if (_delegate.textView.selectedRange.location == NSMaxRange(currentLine.textRange)) {
-		if (currentLine.isAnyCharacter) {
-			if (characterNames.count == 0) [self collectCharacterNames];
-			[_delegate.textView setAutomaticTextCompletionEnabled:YES];
-		} else if (currentLine.type == heading) {
-			if (sceneHeadings.count == 0) [self collectHeadings];
-			[_delegate.textView setAutomaticTextCompletionEnabled:YES];
-		} else {
-			[characterNames removeAllObjects];
-			[sceneHeadings removeAllObjects];
-			[_delegate.textView setAutomaticTextCompletionEnabled:NO];
-		}
-		
+	// We'll only autocomplete when cursor is at the end of line.
+	if (_delegate.textView.selectedRange.location != NSMaxRange(currentLine.textRange)) {
+		[_delegate.textView setAutomaticTextCompletionEnabled:NO];
+		return;
+	}
+
+	if (currentLine.isAnyCharacter || currentLine.forcedCharacterCue) {
+		if (characterNames.count == 0) [self collectCharacterNames];
+		[_delegate.textView setAutomaticTextCompletionEnabled:YES];
+	} else if (currentLine.type == heading) {
+		if (sceneHeadings.count == 0) [self collectHeadings];
+		[_delegate.textView setAutomaticTextCompletionEnabled:YES];
 	} else {
+		[characterNames removeAllObjects];
+		[sceneHeadings removeAllObjects];
 		[_delegate.textView setAutomaticTextCompletionEnabled:NO];
 	}
 }
