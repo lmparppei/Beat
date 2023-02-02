@@ -23,7 +23,7 @@
 	margins.bottom = [(NSNumber*)contents[@"Margin Bottom"] floatValue];
 	margins.left = [(NSNumber*)contents[@"Margin Left"] floatValue];
 	margins.right = [(NSNumber*)contents[@"Margin Right"] floatValue];
-	
+	    
 	return margins;
 }
 
@@ -66,8 +66,8 @@
 	// The user's system has less visible space on paper than it should (???), so let's fix that in margins.
 	if (imageableOrigin.width - referenceMargin > 0)
 		offset.width = imageableOrigin.width - referenceMargin;
-	if (imageableOrigin.height - referenceMargin > 0)
-		offset.height = imageableOrigin.height - referenceMargin;
+	if (imageableOrigin.height - margins.top > 0)
+		offset.height = imageableOrigin.height - margins.top;
 	
 	printInfo.topMargin = margins.top - offset.height;
 	printInfo.bottomMargin = margins.bottom - offset.height;

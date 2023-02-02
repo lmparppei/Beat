@@ -139,9 +139,9 @@ article {
 }
 
 section {
-	margin-left: 0pt; /* Hack to MOVE THE PAGE TO THE LEFT in order to fit overflowing stars without shrinking the page */
-
-	margin-bottom: 0;
+	margin: 0pt; /* Hack to MOVE THE PAGE TO THE LEFT in order to fit overflowing stars without shrinking the page */
+	padding: 0;
+	
 	page-break-after: always;
 }
 
@@ -582,6 +582,7 @@ hr {
 /* PAGE-RELATED STUFF */
 /* ================== */
 
+/*
 p.page-break {
 	text-align: right;
 	border-top: 1px solid #ccc;
@@ -589,11 +590,13 @@ p.page-break {
 	padding-right: 10px;
 	margin-top: 20px;
 }
+*/
+
 p.page-break-render {
 	text-align: right;
-	padding-top: 8px;
+	padding-top: 0;
 	margin-top: 0px;
-	margin-bottom: 12px;
+	margin-bottom: 12.5pt;
 	padding-right: 0px;
 }
 .header-top {
