@@ -179,7 +179,11 @@ static NSDictionary* patterns;
 
 #pragma mark Bulk parsing
 
-- (void)parseText:(NSString*)text
+- (void)parseText:(NSString*)text {
+    [self parseText:text outlineUUIDs:@[]];
+}
+
+- (void)parseText:(NSString*)text outlineUUIDs:(NSArray*)outlineUUIDs
 {
 	_firstTime = YES;
 	_lines = NSMutableArray.new;
@@ -238,6 +242,9 @@ static NSDictionary* patterns;
     _changeInOutline = YES;
 	[self createOutline];
 	
+    // Set identifiers
+    if (outlineUUIDs.count) [self setIdentifiersForOutlineElements:outlineUUIDs];
+    
 	_firstTime = NO;
 }
 
@@ -2784,6 +2791,26 @@ NSUInteger prevLineAtLocationIndex = 0;
 			line.uuid = uuid;
 		}
 	}
+}
+- (void)setIdentifiersForOutlineElements:(NSArray*)uuids {
+    NSInteger i = 0;
+    
+    for (Line* line in self.safeLines) {
+        if (!line.isOutlineElement) continue;
+        
+        NSUUID* uuid;
+                
+        // We can supply both UUID objects and strings
+        id item = uuids[i];
+        if ([item isKindOfClass:NSString.class]) uuid = [NSUUID.alloc initWithUUIDString:item];
+        else if ([item isKindOfClass:NSUUID.class]) uuid = item;
+        
+        line.uuid = uuid;
+
+        i += 1;
+        
+        if (i >= uuids.count) break; // Don't go out of range
+    }
 }
 
 #pragma mark - Document settings
