@@ -355,7 +355,7 @@
 	[self getPaperSizeFromDocument];
 	
 	BeatPage *currentPage = BeatPage.new;
-	currentPage.maxHeight = _paperSize.height - 75;
+	currentPage.maxHeight = _paperSize.height - 72;
 	currentPage.delegate = self;
 	
 	bool hasStartedANewPage = false;
@@ -442,7 +442,7 @@
 
 - (NSArray*)splitParagraph:(Line*)spillerElement currentPage:(BeatPage*)currentPage {
 	// Get space left on current page
-	NSInteger space = currentPage.maxHeight - currentPage.y;
+	NSInteger space = currentPage.maxHeight - currentPage.y - BeatPaginator.lineHeight;
 
 	NSString *str = spillerElement.stripFormatting;
 	NSString *retain = @"";
@@ -784,7 +784,7 @@
 	NSUInteger suggestedPageBreak = 0;
 		
 	NSUInteger index = [dialogueBlock indexOfObject:spiller];
-	CGFloat remainingSpace = page.remainingSpace - BeatPaginator.lineHeight; // Make space for (MORE) etc.
+	CGFloat remainingSpace = page.remainingSpace; // Make space for (MORE) etc.
 	
 	// If it doesn't fit, move the whole block on next apge
 	if (remainingSpace < BeatPaginator.lineHeight) {
@@ -854,14 +854,16 @@
 	if (splitAt > 0) {
 		// Don't allow the last element in block to be parenthetical
 		Line *prevElement = block[splitAt - 1];
-		if (prevElement.isAnyParenthetical && tmpThisPage.count == 0) splitAt -= 1;
+        if (prevElement.isAnyParenthetical && tmpThisPage.count == 0) {
+            splitAt -= 2;
+        }
 		
 		// Split the block
 		[onThisPage addObjectsFromArray:
 			 [block subarrayWithRange:NSMakeRange(0, splitAt)]
 		];
 		[onThisPage addObjectsFromArray:tmpThisPage];
-		[onThisPage addObject:[_paginator moreLineFor:spiller]];
+        if (onThisPage.count > 0) [onThisPage addObject:[_paginator moreLineFor:spiller]];
 	}
 			
 	// Add stuff on next page if needed
@@ -896,7 +898,7 @@
 }
 
 /// Returns an array with [retainedText, splitText]
-- (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(NSUInteger)remainingSpace pageBreakPosition:(NSUInteger*)suggestedPageBreak
+- (NSArray*)splitDialogueLine:(Line*)line remainingSpace:(CGFloat)remainingSpace pageBreakPosition:(NSUInteger*)suggestedPageBreak
 {
 	NSString *stripped = line.stripFormatting;
 	NSMutableArray *sentences = [NSMutableArray arrayWithArray:[stripped matches:RX(@"(.+?[\\.\\?\\!]+\\s*)")]];
@@ -924,9 +926,9 @@
 		
 		// Create a temporary element and fetch its height
 		Line *tempElement = [Line withString:text type:dialogue];
-		NSInteger h = [self elementHeight:tempElement lineHeight:BeatPaginator.lineHeight];
+        CGFloat h = [self elementHeight:tempElement lineHeight:BeatPaginator.lineHeight];
 		
-		if (h + BeatPaginator.lineHeight > remainingSpace && !forceNextpage) {
+		if (h > remainingSpace && !forceNextpage) {
 			// If there is space left for less than a single line, avoid trying to squeeze stuff in,
 			// and let it flow onto the next page.
 			breakPosition = h;
