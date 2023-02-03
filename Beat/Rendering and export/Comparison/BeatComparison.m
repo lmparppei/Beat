@@ -38,9 +38,9 @@
 
 //#import <DiffMatchPatch/DiffMatchPatch.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatRevisions.h>
 #import "BeatComparison.h"
 #import "DiffMatchPatch.h"
-#import "BeatRevisions.h"
 
 @implementation BeatComparison
 

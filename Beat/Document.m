@@ -91,7 +91,6 @@
 #import "OutlineExtractor.h"
 #import "SceneCards.h"
 #import "MarginView.h"
-#import "BeatColors.h"
 #import "OutlineViewItem.h"
 #import "BeatModalInput.h"
 #import "ThemeEditor.h"
@@ -2235,6 +2234,20 @@ static bool _skipAutomaticLineBreaks = false;
 		offset += range.length;
 	}];
 }
+
+- (void)removeAttribute:(NSString*)key range:(NSRange)range {
+	if (key == nil) return;
+	[self.textView.textStorage removeAttribute:key range:range];
+}
+- (void)addAttribute:(NSString*)key value:(id)value range:(NSRange)range {
+	if (value == nil) return;
+	[self.textView.textStorage addAttribute:key value:value range:range];
+}
+- (void)setAttributes:(NSDictionary*)attributes range:(NSRange)range {
+	if (attributes == nil) return;
+	[self.textView.textStorage setAttributes:attributes range:range];
+}
+
 
 
 // There is no shortage of ugliness in the world.

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 
 @class BeatEditorDelegate;
 

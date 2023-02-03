@@ -8,8 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatEditorDelegate.h>
 #import "SceneFiltering.h"
-#import "BeatEditorDelegate.h"
+
 
 @protocol BeatOutlineViewEditorDelegate <NSObject>
 @property (readonly, nonatomic) OutlineScene *currentScene;

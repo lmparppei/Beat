@@ -9,7 +9,7 @@
 #import "BeatPluginLibrary.h"
 #import "BeatPluginManager.h"
 #import "BeatCheckboxCell.h"
-#import "BeatColors.h"
+#import <BeatCore/BeatColors.h>
 #import "BeatAppDelegate.h"
 
 @interface BeatPluginLibrary ()

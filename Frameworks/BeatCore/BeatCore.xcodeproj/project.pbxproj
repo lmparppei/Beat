@@ -1,0 +1,439 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B633C1B9298C5F750011449D /* BeatCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1B8298C5F750011449D /* BeatCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1C5298C5FEE0011449D /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1C4298C5FEE0011449D /* BeatParsing.framework */; };
+		B633C1C9298C60040011449D /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1C8298C60040011449D /* BeatDefaults.framework */; };
+		B633C1D6298C60600011449D /* BeatRevisions.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1D0298C602C0011449D /* BeatRevisions.m */; };
+		B633C1D7298C60600011449D /* BeatRevisions.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1CF298C602C0011449D /* BeatRevisions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1D8298C60600011449D /* BeatRevisionItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1CD298C602C0011449D /* BeatRevisionItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1CE298C602C0011449D /* BeatRevisionItem.m */; };
+		B633C1DA298C60640011449D /* BeatColors.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1C0298C5FA50011449D /* BeatColors.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1DB298C60640011449D /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1C1298C5FA50011449D /* BeatColors.m */; };
+		B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1E0298C60F10011449D /* BeatEditorMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1E2298C61150011449D /* BeatEditorDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1EC298C63210011449D /* BeatLocalization.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1E9298C631E0011449D /* BeatLocalization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1ED298C63250011449D /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1EA298C631E0011449D /* BeatLocalization.m */; };
+		B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1EF298C63E60011449D /* BeatAttributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1F0298C63E70011449D /* BeatAttributes.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B633C1B5298C5F750011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B633C1B8298C5F750011449D /* BeatCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCore.h; sourceTree = "<group>"; };
+		B633C1C0298C5FA50011449D /* BeatColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatColors.h; sourceTree = "<group>"; };
+		B633C1C1298C5FA50011449D /* BeatColors.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatColors.m; sourceTree = "<group>"; };
+		B633C1C4298C5FEE0011449D /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B633C1C8298C60040011449D /* BeatDefaults.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDefaults.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B633C1CD298C602C0011449D /* BeatRevisionItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisionItem.h; sourceTree = "<group>"; };
+		B633C1CE298C602C0011449D /* BeatRevisionItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisionItem.m; sourceTree = "<group>"; };
+		B633C1CF298C602C0011449D /* BeatRevisions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatRevisions.h; sourceTree = "<group>"; };
+		B633C1D0298C602C0011449D /* BeatRevisions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatRevisions.m; sourceTree = "<group>"; };
+		B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorDelegate.h; sourceTree = "<group>"; };
+		B633C1E0298C60F10011449D /* BeatEditorMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorMode.h; sourceTree = "<group>"; };
+		B633C1E9298C631E0011449D /* BeatLocalization.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatLocalization.h; sourceTree = "<group>"; };
+		B633C1EA298C631E0011449D /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
+		B633C1EF298C63E60011449D /* BeatAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatAttributes.h; sourceTree = "<group>"; };
+		B633C1F0298C63E70011449D /* BeatAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatAttributes.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B633C1B2298C5F750011449D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B633C1C9298C60040011449D /* BeatDefaults.framework in Frameworks */,
+				B633C1C5298C5FEE0011449D /* BeatParsing.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B633C1AB298C5F750011449D = {
+			isa = PBXGroup;
+			children = (
+				B633C1B7298C5F750011449D /* BeatCore */,
+				B633C1B6298C5F750011449D /* Products */,
+				B633C1C3298C5FEE0011449D /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B633C1B6298C5F750011449D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B633C1B5298C5F750011449D /* BeatCore.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B633C1B7298C5F750011449D /* BeatCore */ = {
+			isa = PBXGroup;
+			children = (
+				B633C1B8298C5F750011449D /* BeatCore.h */,
+				B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */,
+				B633C1E0298C60F10011449D /* BeatEditorMode.h */,
+				B633C1EE298C63C10011449D /* Screenplay data */,
+				B633C1EB298C631E0011449D /* Localization */,
+				B633C1C2298C5FA50011449D /* BeatColors */,
+			);
+			path = BeatCore;
+			sourceTree = "<group>";
+		};
+		B633C1C2298C5FA50011449D /* BeatColors */ = {
+			isa = PBXGroup;
+			children = (
+				B633C1C0298C5FA50011449D /* BeatColors.h */,
+				B633C1C1298C5FA50011449D /* BeatColors.m */,
+			);
+			path = BeatColors;
+			sourceTree = "<group>";
+		};
+		B633C1C3298C5FEE0011449D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B633C1C8298C60040011449D /* BeatDefaults.framework */,
+				B633C1C4298C5FEE0011449D /* BeatParsing.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B633C1D1298C602C0011449D /* BeatRevisions */ = {
+			isa = PBXGroup;
+			children = (
+				B633C1CD298C602C0011449D /* BeatRevisionItem.h */,
+				B633C1CE298C602C0011449D /* BeatRevisionItem.m */,
+				B633C1CF298C602C0011449D /* BeatRevisions.h */,
+				B633C1D0298C602C0011449D /* BeatRevisions.m */,
+			);
+			path = BeatRevisions;
+			sourceTree = "<group>";
+		};
+		B633C1EB298C631E0011449D /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				B633C1E9298C631E0011449D /* BeatLocalization.h */,
+				B633C1EA298C631E0011449D /* BeatLocalization.m */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		B633C1EE298C63C10011449D /* Screenplay data */ = {
+			isa = PBXGroup;
+			children = (
+				B633C1EF298C63E60011449D /* BeatAttributes.h */,
+				B633C1F0298C63E70011449D /* BeatAttributes.m */,
+				B633C1D1298C602C0011449D /* BeatRevisions */,
+			);
+			path = "Screenplay data";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B633C1B0298C5F750011449D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B633C1DA298C60640011449D /* BeatColors.h in Headers */,
+				B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */,
+				B633C1EC298C63210011449D /* BeatLocalization.h in Headers */,
+				B633C1D8298C60600011449D /* BeatRevisionItem.h in Headers */,
+				B633C1E2298C61150011449D /* BeatEditorDelegate.h in Headers */,
+				B633C1B9298C5F750011449D /* BeatCore.h in Headers */,
+				B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */,
+				B633C1D7298C60600011449D /* BeatRevisions.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B633C1B4298C5F750011449D /* BeatCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B633C1BC298C5F750011449D /* Build configuration list for PBXNativeTarget "BeatCore" */;
+			buildPhases = (
+				B633C1B0298C5F750011449D /* Headers */,
+				B633C1B1298C5F750011449D /* Sources */,
+				B633C1B2298C5F750011449D /* Frameworks */,
+				B633C1B3298C5F750011449D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeatCore;
+			productName = BeatCore;
+			productReference = B633C1B5298C5F750011449D /* BeatCore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B633C1AC298C5F750011449D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					B633C1B4298C5F750011449D = {
+						CreatedOnToolsVersion = 14.2;
+					};
+				};
+			};
+			buildConfigurationList = B633C1AF298C5F750011449D /* Build configuration list for PBXProject "BeatCore" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B633C1AB298C5F750011449D;
+			productRefGroup = B633C1B6298C5F750011449D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B633C1B4298C5F750011449D /* BeatCore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B633C1B3298C5F750011449D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B633C1B1298C5F750011449D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B633C1D6298C60600011449D /* BeatRevisions.m in Sources */,
+				B633C1DB298C60640011449D /* BeatColors.m in Sources */,
+				B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */,
+				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
+				B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B633C1BA298C5F750011449D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B633C1BB298C5F750011449D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		B633C1BD298C5F750011449D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		B633C1BE298C5F750011449D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B633C1AF298C5F750011449D /* Build configuration list for PBXProject "BeatCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B633C1BA298C5F750011449D /* Debug */,
+				B633C1BB298C5F750011449D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B633C1BC298C5F750011449D /* Build configuration list for PBXNativeTarget "BeatCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B633C1BD298C5F750011449D /* Debug */,
+				B633C1BE298C5F750011449D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B633C1AC298C5F750011449D /* Project object */;
+}

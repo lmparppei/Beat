@@ -26,7 +26,7 @@
 #import "NSString+VersionNumber.h"
 #import "BeatPlugin.h"
 #import "Beat-Swift.h"
-#import "BeatLocalization.h"
+#import <BeatCore/BeatLocalization.h>
 #import <os/log.h>
 
 // Hard-coded JSON file URL

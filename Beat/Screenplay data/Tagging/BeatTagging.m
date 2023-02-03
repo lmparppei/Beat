@@ -37,12 +37,12 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
 #import "BeatTagging.h"
 #import "BeatTagItem.h"
 #import "BeatTag.h"
 #import "ColorView.h"
 #import "NSString+Levenshtein.h"
-#import "BeatAttributes.h"
 
 
 #define UIFontSize 11.0
@@ -640,7 +640,7 @@
 #pragma mark - Editor methods
 
 - (void)tagRange:(NSRange)range withType:(BeatTagType)type {
-	NSString *string = [self.delegate.textView.string substringWithRange:range];
+	NSString *string = [self.delegate.text substringWithRange:range];
 	BeatTag* tag = [self addTag:string type:type];
 	
 	if (tag) {
@@ -662,22 +662,20 @@
 	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
 	// So the tagging system basically only relies on the attributes in the NSTextView's rich-text string.
 	
-	// TODO: Somehow check if the range has revision attributes?
-	
-	NSDictionary *oldAttributes = [self.delegate.textView.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+	NSDictionary *oldAttributes = [self.delegate.getAttributedText attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
 	
 	if (tag == nil) {
 		// Clear tags
-		[_delegate.textView.textStorage removeAttribute:BeatTagging.attributeKey range:range];
+		[_delegate removeAttribute:BeatTagging.attributeKey range:range];
 		[self saveTags];
 	} else {
-		[_delegate.textView.textStorage addAttribute:BeatTagging.attributeKey value:tag range:range];
+		[_delegate addAttribute:BeatTagging.attributeKey value:tag range:range];
 		[self saveTags];
 	}
 	
 	if (!_delegate.documentIsLoading) {
 		[self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-			[self.delegate.textView.textStorage setAttributes:oldAttributes range:range];
+			[self.delegate setAttributes:oldAttributes range:range];
 		}];
 	}
 }

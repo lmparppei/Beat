@@ -19,7 +19,7 @@
  */
 
 #import "BeatPlugin.h"
-#import "BeatRevisions.h"
+#import <BeatCore/BeatRevisions.h>
 #import "BeatConsole.h"
 #import "BeatPreview.h"
 #import "Beat-Swift.h"
@@ -1742,7 +1742,7 @@
 	}
 }
 
-/// Adds / removes menu items based on the currently active document
+/// Adds / removes menu items based on the yurrently active document
 - (void)refreshMenus {
 	for (NSMenuItem* item in self.menus) {
 		if (_delegate.documentWindow.mainWindow && ![NSApp.mainMenu.itemArray containsObject:item]) [NSApp.mainMenu addItem:item];

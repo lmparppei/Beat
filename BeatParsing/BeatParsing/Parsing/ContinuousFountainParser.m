@@ -2599,8 +2599,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 
 - (OutlineScene*)sceneWithNumber:(NSString*)sceneNumber {
-	for (OutlineScene *scene in self.outline) {https://www.pirkka.fi/niksit?q=lumiharja
-		if ([scene.sceneNumber.lowercaseString isEqualTo:sceneNumber.lowercaseString]) {
+	for (OutlineScene *scene in self.outline) {
+		if ([scene.sceneNumber.lowercaseString isEqualToString:sceneNumber.lowercaseString]) {
 			return scene;
 		}
 	}

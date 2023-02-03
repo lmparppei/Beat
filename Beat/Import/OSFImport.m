@@ -14,7 +14,7 @@
  */
 
 #import "OSFImport.h"
-#import "BeatRevisions.h"
+#import <BeatCore/BeatRevisions.h>
 
 @interface OSFImport () <NSXMLParserDelegate>
 @property(nonatomic, strong) NSXMLParser *xmlParser;

@@ -225,7 +225,7 @@
 
 - (void)setPageSize:(BeatPaperSize)pageSize {
 #if TARGET_OS_IOS
-	_paginator.paperSize = [BeatPaperSizing printableAreaFor:pageSize];
+    self.paperSize = [BeatPaperSizing printableAreaFor:pageSize];
 #else
 	_paginator.printInfo = [BeatPaperSizing printInfoFor:pageSize];
 #endif
@@ -332,7 +332,7 @@
 	
 #else
 	// iOS paper sizing
-	_paperSize = [BeatPaperSizing printableAreaFor:_settings.paperSize];
+	_paperSize = [BeatPaperSizing printableAreaFor:_paginator.paperSize];
 #endif
 }
 
@@ -459,7 +459,7 @@
 	__block CGFloat pageBreakPos = 0;
 	__block NSInteger length = 0;
     
-	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, glyphs) usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, glyphs) usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		numberOfLines++;
         
 		if (numberOfLines < space / BeatPaginator.lineHeight) {

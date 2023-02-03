@@ -18,7 +18,7 @@
  */
 
 #import "BeatModalInput.h"
-#import "BeatLocalization.h"
+#import <BeatCore/BeatLocalization.h>
 #import <Cocoa/Cocoa.h>
 
 @interface BeatModalInput ()

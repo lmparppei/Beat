@@ -30,7 +30,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
-#import "BeatEditorDelegate.h"
+//#import <BeatCore/BeatEditorDelegate.h>
 
 #if TARGET_OS_IOS
 	#import <UIKit/UIKit.h>

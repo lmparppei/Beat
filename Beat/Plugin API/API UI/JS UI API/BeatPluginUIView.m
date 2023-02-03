@@ -13,7 +13,7 @@
  */
 
 #import "BeatPluginUIView.h"
-#import "BeatColors.h"
+#import <BeatCore/BeatColors.h>
 #import "BeatWidgetView.h"
 
 @interface BeatPluginUIView ()

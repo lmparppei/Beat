@@ -22,8 +22,8 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <Quartz/Quartz.h>
+#import <BeatCore/BeatColors.h>
 #import "BeatTimeline.h"
-#import "BeatColors.h"
 #import "BeatTimelineItem.h"
 #import "HorizontalPinchView.h"
 

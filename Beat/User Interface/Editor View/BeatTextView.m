@@ -30,17 +30,14 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatCore/BeatCore.h>
 
 #import "BeatTextView.h"
 #import "ScrollView.h"
-#import "BeatColors.h"
 #import "BeatPasteboardItem.h"
 #import "BeatMeasure.h"
-#import "BeatRevisionItem.h"
-#import "BeatRevisions.h"
 #import "BeatLayoutManager.h"
 #import "Beat-Swift.h"
-#import "BeatAttributes.h"
 #import "BeatFonts.h"
 #import "BeatEditorFormatting.h"
 

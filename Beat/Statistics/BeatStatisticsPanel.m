@@ -9,7 +9,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import "BeatStatisticsPanel.h"
 #import "FountainAnalysis.h"
-#import "BeatLocalization.h"
+#import <BeatCore/BeatLocalization.h>
 
 @interface BeatStatisticsPanel ()
 @property (nonatomic) FountainAnalysis *analysis;

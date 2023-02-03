@@ -33,6 +33,7 @@ THE SOFTWARE.
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatCore/BeatCore.h>
 
 #import "BeatTextView.h"
 #import "TouchTimelineView.h"
@@ -45,9 +46,6 @@ THE SOFTWARE.
 #import "BeatPlugin.h"
 #import "BeatOutlineView.h"
 #import "BeatStatisticsPanel.h"
-#import "BeatEditorDelegate.h"
-#import "BeatRevisions.h"
-#import "BeatRevisionItem.h"
 //#import "Beat-Swift.h"
 
 /*

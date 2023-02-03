@@ -103,6 +103,8 @@
 	printInfo = [self setMargins:printInfo];
 }
 
+#endif
+
 + (CGSize)a4 {
 	return CGSizeMake(PAPER_A4);
 }
@@ -113,8 +115,6 @@
 	if (size == BeatA4) return BeatPaperSizing.a4;
 	else return BeatPaperSizing.usLetter;
 }
-
-#endif
 
 @end
 /*

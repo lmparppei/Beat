@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Quartz/Quartz.h>
+#import <BeatCore/BeatEditorDelegate.h>
 #import "BeatPrintView.h"
-#import "BeatEditorDelegate.h"
 
 @interface BeatPrintDialog: NSWindowController <PrintViewDelegate>
 @property (weak) id<BeatEditorDelegate> documentDelegate;

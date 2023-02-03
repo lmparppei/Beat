@@ -83,11 +83,12 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatRevisions.h>
 #import "BeatFDXExport.h"
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "TagDefinition.h"
-#import "BeatRevisions.h"
+
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
 #define RevisionColors @[@"none", @"blue", @"orange", @"purple", @"green"]

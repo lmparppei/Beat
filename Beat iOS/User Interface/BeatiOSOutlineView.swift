@@ -40,7 +40,7 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, UITableViewDataSourc
 		
 		let scene = self.editorDelegate.parser.outline[indexPath.row] as! OutlineScene
 		
-		let string = OutlineViewItem.withScene(scene, currentScene: editorDelegate.currentScene)
+		let string = OutlineViewItem.withScene(scene, currentScene: editorDelegate.currentScene, withSynopsis: true, isDark: true)
 		cell.textLabel?.attributedText = string
 		
 		return cell

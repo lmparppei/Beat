@@ -17,7 +17,7 @@
 	#import <Cocoa/Cocoa.h>
 #endif
 
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 
 typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 	BeatPrintPreview = 0,

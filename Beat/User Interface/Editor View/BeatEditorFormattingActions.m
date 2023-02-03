@@ -7,6 +7,7 @@
 //
 
 #import "BeatEditorFormattingActions.h"
+#import <BeatCore/BeatLocalization.h>
 
 @implementation BeatEditorFormattingActions
 

@@ -9,13 +9,12 @@
 #import <Cocoa/Cocoa.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatDefaults/BeatDefaults.h>
+#import <BeatCore/BeatCore.h>
 
 #import "BeatEpisodePrinter.h"
 #import "NSMutableArray+MoveItem.h"
 #import "BeatHTMLScript.h"
 #import "BeatPrintView.h"
-#import "BeatRevisions.h"
-#import "BeatRevisionItem.h"
 
 @interface BeatEpisodePrinter ()
 @property (weak) IBOutlet NSTableView *table;

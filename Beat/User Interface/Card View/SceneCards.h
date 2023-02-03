@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
+#import <BeatCore/BeatEditorDelegate.h>
 #import "WebPrinter.h"
-#import "BeatEditorDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

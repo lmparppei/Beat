@@ -7,9 +7,9 @@
 //
 
 #import <BeatThemes/BeatThemes.h>
+#import <BeatCore/BeatEditorDelegate.h>
 #import "BeatSegmentedControl.h"
 #import "BeatSegmentedCell.h"
-#import "BeatEditorDelegate.h"
 #import "BeatSidebarTabView.h"
 #import "BeatWidgetView.h"
 

@@ -47,6 +47,12 @@
 #define DEFAULT_KEY @"Default"
 #define CUSTOM_KEY @"Custom"
 
+#if TARGET_OS_IOS
+    #define BXApp UIApplication.sharedApplication
+#else
+    #define BXApp NSApp
+#endif
+
 #pragma mark File Loading
 
 + (ThemeManager*)sharedManager
@@ -101,7 +107,8 @@
 /// Read user-created theme file into a dictionary
 - (NSDictionary*)loadCustomTheme {
 	// Read user-created theme file
-    id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)NSApp.delegate;
+    id<BeatThemeDelegate> delegate = (id<BeatThemeDelegate>)BXApp.delegate;
+    
 	NSURL *userUrl = [delegate appDataPath:@""];
 	userUrl = [userUrl URLByAppendingPathComponent:USER_THEME_FILE];
 	

@@ -8,9 +8,9 @@
 
 #import <BeatThemes/BeatThemes.h>
 #import <QuartzCore/QuartzCore.h>
+#import <BeatCore/BeatColors.h>
 
 #import "BeatTimerView.h"
-#import "BeatColors.h"
 #import "ScrollView.h"
 
 @interface BeatTimerView ()

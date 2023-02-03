@@ -29,11 +29,11 @@
 #import <BeatParsing/BeatParsing.h>
 #import <PDFKit/PDFKit.h>
 #import <Webkit/Webkit.h>
+#import <BeatCore/BeatCore.h>
 
 #import "BeatPrintView.h"
 #import "BeatHTMLScript.h"
 #import "Document.h"
-#import "BeatRevisions.h"
 
 #define WEBKIT true
 

@@ -17,9 +17,9 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
 #import "BeatPreview.h"
 #import "BeatHTMLScript.h"
-#import "BeatRevisions.h"
 
 @interface BeatPreview ()
 @property (nonatomic) BeatHTMLScript *htmlGenerator;

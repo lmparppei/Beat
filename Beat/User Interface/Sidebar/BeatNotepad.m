@@ -17,7 +17,6 @@
 #import <BeatThemes/BeatThemes.h>
 
 #import "BeatNotepad.h"
-#import "BeatColors.h"
 
 #import "ColorCheckbox.h"
 

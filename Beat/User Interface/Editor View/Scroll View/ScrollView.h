@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 @class DynamicColor;
 
 @interface ScrollView : NSScrollView

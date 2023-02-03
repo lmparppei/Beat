@@ -7,7 +7,7 @@
 //
 
 #import "BeatPieGraph.h"
-#import "BeatColors.h"
+#import <BeatCore/BeatColors.h>
 #import <QuartzCore/QuartzCore.h>
 #import <BeatThemes/BeatThemes.h>
 

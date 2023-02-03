@@ -7,8 +7,9 @@
 //
 
 #import "BeatLayoutManager.h"
+#import <BeatCore/BeatCore.h>
+
 #import "BeatTextView.h"
-#import "BeatRevisions.h"
 #import "BeatEditorFormatting.h"
 #import "BeatMeasure.h"
 #import "Beat-Swift.h"

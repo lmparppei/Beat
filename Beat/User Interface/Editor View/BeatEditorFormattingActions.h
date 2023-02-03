@@ -8,10 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
 
-#import "BeatEditorDelegate.h"
 #import "BeatModalInput.h"
-#import "BeatLocalization.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

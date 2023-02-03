@@ -14,8 +14,9 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatCore/BeatColors.h>
 #import "TouchTimelineView.h"
-#import "BeatColors.h"
+
 //#import "DynamicColor.h"
 
 @interface TouchTimelineView()

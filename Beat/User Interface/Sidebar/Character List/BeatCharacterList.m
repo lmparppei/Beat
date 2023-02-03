@@ -8,8 +8,8 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatCore/BeatColors.h>
 #import "BeatCharacterList.h"
-#import "BeatColors.h"
 #import "BeatPieGraph.h"
 
 @interface BeatCharacter : NSObject

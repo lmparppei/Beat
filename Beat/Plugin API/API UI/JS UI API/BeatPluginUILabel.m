@@ -8,7 +8,7 @@
 
 #import "BeatPluginUILabel.h"
 #import "BeatWidgetView.h"
-#import "BeatColors.h"
+#import <BeatCore/BeatColors.h>
 
 @implementation BeatPluginUILabel 
 

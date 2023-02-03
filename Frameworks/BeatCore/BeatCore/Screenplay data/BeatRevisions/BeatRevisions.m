@@ -18,9 +18,7 @@
 #import <BeatDefaults/BeatDefaults.h>
 #import "BeatRevisions.h"
 #import "BeatLocalization.h"
-#import "BeatAppDelegate.h"
 #import "BeatAttributes.h"
-#import "BeatMeasure.h"
 
 #define REVISION_ATTR @"Revision"
 #define DEFAULT_COLOR @"blue"
@@ -35,7 +33,7 @@
 	#define BXChangeDone NSChangeDone
 #else
     #import <UIKit/UIKit.h>
-	#import "Beat_iOS-Swift.h"
+	//#import "Beat_iOS-Swift.h"
 
 	#define BXChangeDone UIDocumentChangeDone
 #endif

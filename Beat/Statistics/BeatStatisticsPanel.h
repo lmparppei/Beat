@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 @class ContinuousFountainParser;
 
 NS_ASSUME_NONNULL_BEGIN

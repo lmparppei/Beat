@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
 #import "FountainAnalysis.h"
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

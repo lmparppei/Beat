@@ -10,7 +10,7 @@
 		B667168E2971C0F2005B8C55 /* BeatTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66716872971C0F2005B8C55 /* BeatTheme.swift */; };
 		B66716922971C0F2005B8C55 /* ThemeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B667168B2971C0F2005B8C55 /* ThemeManager.m */; };
 		B66716932971C0F2005B8C55 /* Themes.plist in Resources */ = {isa = PBXBuildFile; fileRef = B667168C2971C0F2005B8C55 /* Themes.plist */; };
-		B66716942971C0F2005B8C55 /* ThemeManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B667168D2971C0F2005B8C55 /* ThemeManager.h */; platformFilters = (macos, ); settings = {ATTRIBUTES = (Public, ); }; };
+		B66716942971C0F2005B8C55 /* ThemeManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B667168D2971C0F2005B8C55 /* ThemeManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B66716C12971CEEB005B8C55 /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66716BB2971CDC3005B8C55 /* BeatDynamicColor.framework */; };
 		B66716C22971CEEB005B8C55 /* BeatDynamicColor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B66716BB2971CDC3005B8C55 /* BeatDynamicColor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B66716C52971D0C0005B8C55 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B66716C42971D0C0005B8C55 /* Cocoa.framework */; platformFilters = (macos, ); };

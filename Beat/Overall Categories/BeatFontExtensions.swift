@@ -20,27 +20,47 @@ typealias BFontDescriptor = NSFontDescriptor
 extension BFont {
 
 	@objc func withTraits(_ traits: BFontDescriptor.SymbolicTraits) -> BFont {
-
-		// create a new font descriptor with the given traits
-		let fd = self.fontDescriptor.withSymbolicTraits(traits)
+		// Creates a new font descriptor with the given traits.
+		// macOS and iOS have differing optional types, hence this mess.
 		
-		// return a new font with the created font descriptor
-		let font = BFont(descriptor: fd, size: pointSize)
-		
-		if (font == nil) { return self }
-		else { return font! }
+		#if os(iOS)
+			guard let fd = self.fontDescriptor.withSymbolicTraits(traits)
+			else { return self }
+			
+			let font = BFont(descriptor: fd, size: pointSize)
+			return font
+		#else
+			let fd = self.fontDescriptor.withSymbolicTraits(traits)
+			
+			guard let font = BFont(descriptor: fd, size: pointSize)
+			else { return self }
+			 
+			return font
+		#endif
 	}
 
 	@objc func italics() -> BFont {
-		return withTraits(.italic)
+		#if os(iOS)
+			return withTraits(.traitItalic)
+		#else
+			return withTraits(.italic)
+		#endif
 	}
 
 	@objc func bold() -> BFont {
-		return withTraits(.bold)
+		#if os(iOS)
+			return withTraits(.traitBold)
+		#else
+			return withTraits(.bold)
+		#endif
 	}
 
 	@objc func boldItalics() -> BFont {
-		return withTraits([ .bold, .italic ])
+		#if os(iOS)
+			return withTraits([ .traitBold, .traitItalic ])
+		#else
+			return withTraits([ .bold, .italic ])
+		#endif
 	}
 }
 

@@ -6,8 +6,8 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import "BeatRevisionItem.h"
 #import "BeatColors.h"
+#import "BeatRevisionItem.h"
 #import "BeatRevisions.h"
 
 #if !TARGET_OS_IOS

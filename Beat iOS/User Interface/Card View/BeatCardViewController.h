@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatEditorDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

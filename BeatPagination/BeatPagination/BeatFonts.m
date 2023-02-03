@@ -7,6 +7,19 @@
 //
 
 #import "BeatFonts.h"
+#import <TargetConditionals.h>
+
+#if TARGET_OS_IOS
+    #define BXFontDescriptorSymbolicTraits UIFontDescriptorSymbolicTraits
+    #define BXFontDescriptor UIFontDescriptor
+    #define BXFontDescriptorTraitBold UIFontDescriptorTraitBold
+    #define BXFontDescriptorTraitItalic UIFontDescriptorTraitItalic
+#else
+    #define BXFontDescriptorSymbolicTraits NSFontDescriptorSymbolicTraits
+    #define BXFontDescriptor NSFontDescriptor
+    #define BXFontDescriptorTraitBold NSFontDescriptorTraitBold
+    #define BXFontDescriptorTraitItalic NSFontDescriptorTraitItalic
+#endif
 
 @implementation BeatFonts
 
@@ -39,12 +52,14 @@
 	return self;
 }
 
+#pragma mark - macOS fonts
+
 - (void)loadFontStyles {
-	self.boldCourier = [self fontWithTrait:NSFontDescriptorTraitBold];
-	self.italicCourier = [self fontWithTrait:NSFontDescriptorTraitItalic];
-	self.boldItalicCourier = [self fontWithTrait:NSFontDescriptorTraitBold | NSFontDescriptorTraitItalic];
+	self.boldCourier = [self fontWithTrait:BXFontDescriptorTraitBold];
+	self.italicCourier = [self fontWithTrait:BXFontDescriptorTraitItalic];
+	self.boldItalicCourier = [self fontWithTrait:BXFontDescriptorTraitBold | BXFontDescriptorTraitItalic];
 	
-	self.synopsisFont = [self fontWithTrait:NSFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
+	self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
 }
 
 - (void)loadSerifFont {
@@ -57,12 +72,12 @@
 	[self loadFontStyles];
 }
 
-- (BXFont*)fontWithTrait:(NSFontDescriptorSymbolicTraits)traits {
+- (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits {
 	return [self fontWithTrait:traits font:self.courier];
 }
 
-- (BXFont*)fontWithTrait:(NSFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont {
-	NSFontDescriptor *fd = [originalFont.fontDescriptor fontDescriptorWithSymbolicTraits:traits];
+- (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits font:(BXFont*)originalFont {
+	BXFontDescriptor *fd = [originalFont.fontDescriptor fontDescriptorWithSymbolicTraits:traits];
 	BXFont *font = [BXFont fontWithDescriptor:fd size:originalFont.pointSize];
 	
 	if (font == nil) return originalFont;
@@ -71,13 +86,14 @@
 
 - (BXFont*)boldWithSize:(CGFloat)size {
 	BXFont* f = [BXFont fontWithName:self.courier.fontName size:size];
-	f = [self fontWithTrait:NSFontDescriptorTraitBold font:f];
+	f = [self fontWithTrait:BXFontDescriptorTraitBold font:f];
 	return f;
 }
 - (BXFont*)withSize:(CGFloat)size {
 	BXFont* f = [BXFont fontWithName:self.courier.fontName size:size];
 	return f;
 }
+
 
 + (CGFloat)characterWidth {
 	return 7.25;

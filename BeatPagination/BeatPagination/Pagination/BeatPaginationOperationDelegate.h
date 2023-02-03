@@ -24,6 +24,7 @@
 
 @property (weak, nonatomic) BeatDocument *document;
 @property (atomic) BeatPrintInfo *printInfo;
+@property (atomic) BeatPaperSize paperSize;
 @property (atomic) bool printNotes;
 
 + (CGFloat)lineHeight;

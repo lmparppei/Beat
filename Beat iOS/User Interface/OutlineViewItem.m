@@ -11,7 +11,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import "OutlineViewItem.h"
-#import "BeatColors.h"
+#import <BeatCore/BeatColors.h>
 
 #define SECTION_FONTSIZE 13.0
 #define SYNOPSE_FONTSIZE 12.0
@@ -21,11 +21,14 @@
 	#import <UIKit/UIKit.h>
 	#define BXFont UIFont
 	#define BXColor UIColor
-
+	#define BXFontWeightRegular UIFontWeightRegular
+	#define BXFontWeightBold UIFontWeightBold
 #else
 	#import <Cocoa/Cocoa.h>
 	#define BXFont NSFont
 	#define BXColor NSColor
+	#define BXFontWeightRegular NSFontWeightRegular
+	#define BXFontWeightBold NSFontWeightBold
 #endif
 
 
@@ -42,11 +45,11 @@
 	if (line == nil) { return NSMutableAttributedString.new; }
 	
 	ThemeManager* theme = ThemeManager.sharedManager;
-	NSColor* sceneNumberColor = (dark) ? theme.outlineSceneNumber.darkAquaColor : theme.outlineSceneNumber.aquaColor;
-	NSColor* outlineItemColor = (dark) ? theme.outlineItem.darkAquaColor : theme.outlineItem.aquaColor;
-	NSColor* omittedItemColor = (dark) ? theme.outlineItemOmitted.darkAquaColor : theme.outlineItemOmitted.aquaColor;
-	NSColor* sectionItemColor = (dark) ? theme.outlineSection.darkAquaColor : theme.outlineSection.aquaColor;
-	NSColor* synopsisItemColor = (dark) ? theme.outlineSynopsis.darkAquaColor : theme.outlineSynopsis.aquaColor;
+	BXColor* sceneNumberColor = (dark) ? theme.outlineSceneNumber.darkAquaColor : theme.outlineSceneNumber.aquaColor;
+	BXColor* outlineItemColor = (dark) ? theme.outlineItem.darkAquaColor : theme.outlineItem.aquaColor;
+	BXColor* omittedItemColor = (dark) ? theme.outlineItemOmitted.darkAquaColor : theme.outlineItemOmitted.aquaColor;
+	BXColor* sectionItemColor = (dark) ? theme.outlineSection.darkAquaColor : theme.outlineSection.aquaColor;
+	BXColor* synopsisItemColor = (dark) ? theme.outlineSynopsis.darkAquaColor : theme.outlineSynopsis.aquaColor;
 
 	
 	NSMutableAttributedString *resultString = NSMutableAttributedString.new;
@@ -61,12 +64,12 @@
 	NSString *string = rawString;
 	
 	// Set item color
-	NSColor *itemColor;
+	BXColor *itemColor;
 	if (line.color && !line.omitted) itemColor = [BeatColors color:line.color];
 	
 	// Style the item
 	if (line.type == heading) {
-		BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize weight:NSFontWeightRegular];
+		BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize weight:BXFontWeightRegular];
 		
 		//Replace "INT/EXT" with "I/E" to make the lines match nicely
 		string = string.uppercaseString;
@@ -96,7 +99,7 @@
 
 	else if (line.type == section) {
 		if (string.length > 0) {
-			BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize * 1.2 weight:NSFontWeightBold];
+			BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize * 1.2 weight:BXFontWeightBold];
 			
 			BXColor *color = (itemColor != nil) ? itemColor : sectionItemColor;
 			resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:@{
@@ -119,13 +122,22 @@
 			synopsisStyle.lineSpacing = .65;
 			synopsisStyle.paragraphSpacingBefore = 4.0;
 			
+			#if TARGET_OS_IOS
+				BXFont* synopsisFont = [BXFont italicSystemFontOfSize:BXFont.smallSystemFontSize];
+			#else
+				BXFont* synopsisFont = [BXFont systemFontOfSize:BXFont.smallSystemFontSize];
+			#endif
+			
 			NSMutableAttributedString *synopsisLine = [NSMutableAttributedString.alloc initWithString:synopsisStr attributes:@{
-				NSFontAttributeName: [BXFont systemFontOfSize:BXFont.smallSystemFontSize],
+				NSFontAttributeName: synopsisFont,
 				NSForegroundColorAttributeName: synopsisColor,
 				NSParagraphStyleAttributeName: synopsisStyle
 			}];
 			
-			[synopsisLine applyFontTraits:NSItalicFontMask range:NSMakeRange(0, synopsisLine.length)];
+			#if !TARGET_OS_IOS
+				[synopsisLine applyFontTraits:NSItalicFontMask range:NSMakeRange(0, synopsisLine.length)];
+			#endif
+			
 			[resultString appendAttributedString:synopsisLine];
 		}
 	}

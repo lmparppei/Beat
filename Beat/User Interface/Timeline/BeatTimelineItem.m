@@ -8,8 +8,8 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <Quartz/Quartz.h>
+#import <BeatCore/BeatColors.h>
 #import "BeatTimelineItem.h"
-#import "BeatColors.h"
 #import "BeatColorMenuItem.h"
 
 #define TEXT_PADDING 4.0

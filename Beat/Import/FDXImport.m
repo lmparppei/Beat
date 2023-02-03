@@ -22,10 +22,10 @@
 
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatRevisions.h>
 #import "FDXImport.h"
-#import "BeatRevisionItem.h"
 #import "FDXElement.h"
-#import "BeatRevisions.h"
+
 
 @interface FDXImport () <NSXMLParserDelegate>
 @property(nonatomic, strong) NSXMLParser *xmlParser;

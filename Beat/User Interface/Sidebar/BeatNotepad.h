@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "BeatEditorDelegate.h"
+#import <BeatCore/BeatCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

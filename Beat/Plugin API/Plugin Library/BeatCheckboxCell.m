@@ -8,7 +8,7 @@
 
 #import "BeatCheckboxCell.h"
 #import "BeatPluginManager.h"
-#import "BeatColors.h"
+#import <BeatCore/BeatColors.h>
 
 @interface BeatCheckboxCell ()
 @property (weak) BeatPluginManager *pluginManager;

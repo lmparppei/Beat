@@ -15,8 +15,6 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import "BeatEditorFormatting.h"
-#import "BeatColors.h"
-#import "BeatRevisions.h"
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "Beat-Swift.h"

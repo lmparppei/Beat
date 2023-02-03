@@ -17,7 +17,7 @@
  */
 
 #import "ColorCheckbox.h"
-#import "BeatColors.h"
+#import <BeatCore/BeatColors.h>
 #import <QuartzCore/QuartzCore.h>
 IB_DESIGNABLE
 
