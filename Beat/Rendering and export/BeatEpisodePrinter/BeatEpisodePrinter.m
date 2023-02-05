@@ -235,12 +235,21 @@
 	
 	BeatExportSettings *settings = [BeatExportSettings operation:ForPrint document:self.doc header:header printSceneNumbers:YES printNotes:NO revisions:BeatRevisions.revisionColors scene:nil coloredPages:colorCodePages revisedPageColor:revisedPageColor];
 	
-	settings.contd = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd];
-	settings.more = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemMore];
+	settings.contd = [self contdString];
+	settings.more = [self moreString];
 	settings.sceneHeadingSpacing = [BeatUserDefaults.sharedDefaults getInteger:BeatSettingSceneHeadingSpacing];
 	
 	return settings;
 	
+}
+
+- (NSString*)moreString {
+	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemMore];
+	return [NSString stringWithFormat:@"(%@)", moreStr];
+}
+- (NSString*)contdString {
+	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd];
+	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue
 }
 
 - (void)printDocuments:(bool)toPDF {
