@@ -105,7 +105,7 @@
 		if (uuids.count) [self.parser setIdentifiers:uuids];
 		
 		// Bake revision attributes
-		NSAttributedString *attrStr = self.delegate.getAttributedText.copy;
+		NSAttributedString *attrStr = self.delegate.attributedString.copy;
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:attrStr];
 	} else {
 		// This is probably a QuickLook preview

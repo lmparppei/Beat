@@ -127,21 +127,21 @@
 	Line *currentLine = self.delegate.currentLine;
 	
 	// We'll only autocomplete when cursor is at the end of line.
-	if (_delegate.textView.selectedRange.location != NSMaxRange(currentLine.textRange)) {
-		[_delegate.textView setAutomaticTextCompletionEnabled:NO];
+	if (_delegate.selectedRange.location != NSMaxRange(currentLine.textRange)) {
+		[_delegate setAutomaticTextCompletionEnabled:NO];
 		return;
 	}
 
 	if (currentLine.isAnyCharacter || currentLine.forcedCharacterCue) {
 		if (characterNames.count == 0) [self collectCharacterNames];
-		[_delegate.textView setAutomaticTextCompletionEnabled:YES];
+		[_delegate setAutomaticTextCompletionEnabled:YES];
 	} else if (currentLine.type == heading) {
 		if (sceneHeadings.count == 0) [self collectHeadings];
-		[_delegate.textView setAutomaticTextCompletionEnabled:YES];
+		[_delegate setAutomaticTextCompletionEnabled:YES];
 	} else {
 		[characterNames removeAllObjects];
 		[sceneHeadings removeAllObjects];
-		[_delegate.textView setAutomaticTextCompletionEnabled:NO];
+		[_delegate setAutomaticTextCompletionEnabled:NO];
 	}
 }
 

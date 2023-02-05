@@ -47,6 +47,7 @@
                 <outlet property="revisionColorPopup" destination="qQI-Yr-iVj" id="Z6u-99-C0d"/>
                 <outlet property="revisionModeSwitch" destination="EIZ-TU-2Aq" id="KYW-ZN-35t"/>
                 <outlet property="revisionTracking" destination="N8j-Ng-1O5" id="1d2-Fn-OGe"/>
+                <outlet property="rightSidebarConstraint" destination="O0i-Sv-K16" id="i9U-UK-D8o"/>
                 <outlet property="sceneNumberStartInput" destination="MmF-s9-or8" id="Zr7-zx-nba"/>
                 <outlet property="sceneNumberingPanel" destination="IUI-JC-aZs" id="fnB-g1-4Eb"/>
                 <outlet property="sceneNumbersSwitch" destination="bKc-za-gPA" id="26c-hz-YMj"/>

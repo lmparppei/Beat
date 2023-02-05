@@ -10,7 +10,7 @@
 #import <Cocoa/Cocoa.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
-#import "BeatTagging.h"
+#import <BeatCore/BeatCore.h>
 #import "BeatTextStorage.h"
 
 typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {

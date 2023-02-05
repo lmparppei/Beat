@@ -7,6 +7,7 @@
 //
 
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <BeatCore/BeatCore.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import "BeatPluginManager.h"
 #import <Cocoa/Cocoa.h>
@@ -16,12 +17,10 @@
 
 #import "BeatAppDelegate.h"
 #import "BeatPluginManager.h"
-#import "BeatTagging.h"
 #import "BeatAppDelegate.h"
 #import "BeatModalAccessoryView.h"
 #import "WebPrinter.h"
 
-#import "TagDefinition.h"
 #import "BeatPluginTimer.h"
 #import "BeatPluginHTMLWindow.h"
 
@@ -277,6 +276,9 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 
 - (BeatExportSettings*)exportSettings;
 
+- (NSLayoutManager*)layoutManager;
+- (NSTextStorage*)textStorage;
+
 @end
 
 @interface BeatPlugin : NSObject <BeatPluginExports, WKScriptMessageHandler, NSWindowDelegate, PluginWindowHost, WKScriptMessageHandlerWithReply>
@@ -308,6 +310,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)documentDidResignMain;
 - (void)documentWasSaved;
 - (void)escapePressed;
+
 
 // Autocompletion callbacks
 - (NSArray*)completionsForSceneHeadings; /// Called if the resident plugin has a callback for scene heading autocompletion

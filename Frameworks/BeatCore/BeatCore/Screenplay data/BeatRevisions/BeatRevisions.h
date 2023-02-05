@@ -7,13 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
 #import "BeatEditorDelegate.h"
 #import "BeatRevisionItem.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BeatRevisions : NSResponder
+#if TARGET_OS_IOS
+@interface BeatRevisions: NSObject
+#else
+@interface BeatRevisions: NSResponder
+#endif
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines text:(NSAttributedString*)string includeRevisions:(NSArray*)includedRevisions;
 + (void)bakeRevisionsIntoLines:(NSArray*)lines revisions:(NSDictionary*)revisions string:(NSString*)string;

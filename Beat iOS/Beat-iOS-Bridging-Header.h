@@ -10,8 +10,11 @@
 #define Beat_iOS_Bridging_Header_h
 
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
+#import <BeatDefaults/BeatDefaults.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
+
 #import "BeatHTMLScript.h"
 #import "BeatiOSFormatting.h"
 #import "OutlineViewItem.h"

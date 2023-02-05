@@ -8,8 +8,6 @@
 
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
-#import <BeatThemes/BeatThemes.h>
-#import <BeatCore/BeatCore.h>
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
@@ -22,10 +20,9 @@
     #define TagColor NSColor
     #define TagFont NSFont
     #define BeatTagView NSTextView
-	#import "BeatTextView.h"
 #endif
 
-#import <BeatCore/BeatEditorDelegate.h>
+#import "BeatEditorDelegate.h"
 
 @class BeatTag;
 
@@ -60,8 +57,8 @@ typedef NS_ENUM(NSInteger, BeatTagType) {
 @interface BeatTagging : NSObject
 @property (weak) IBOutlet id<BeatTaggingDelegate> delegate;
 #if !TARGET_OS_IOS
-@property (weak) IBOutlet BeatTagView* taggingTextView;
-@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
+//@property (weak) IBOutlet BeatTagView* taggingTextView;
+//@property (weak) IBOutlet NSLayoutConstraint *sideViewCostraint;
 #endif
 
 + (NSString*)attributeKey;

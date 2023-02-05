@@ -14,9 +14,9 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
+#import <BeatCore/BeatCore.h>
+
 #import "BeatEditorFormatting.h"
-#import "BeatTagging.h"
-#import "BeatTag.h"
 #import "Beat-Swift.h"
 #import "BeatMeasure.h"
 #import "NSFont+CFTraits.h"
@@ -193,17 +193,16 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// SAFETY MEASURES:
 	if (line == nil) return; // Don't do anything if the line is null
-	if (line.position + line.string.length > _delegate.textView.string.length) return; // Don't go out of range
+	if (line.position + line.string.length > _delegate.text.length) return; // Don't go out of range
 	
 	NSRange range = line.textRange;
 	
-	NSTextView *textView = _delegate.textView;
-	NSLayoutManager *layoutMgr = textView.layoutManager;
-	NSTextStorage *textStorage = textView.textStorage;
+	NSLayoutManager *layoutMgr = _delegate.layoutManager;
+	NSTextStorage *textStorage = _delegate.textStorage;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 	
 	NSMutableDictionary *attributes;
-	if (firstTime || line.position == textView.string.length) attributes = NSMutableDictionary.new;
+	if (firstTime || line.position == _delegate.text.length) attributes = NSMutableDictionary.new;
 	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
 	
 	// Store the represented line
@@ -249,15 +248,15 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
 		else line.type = character;
 		
-		NSRange selectedRange = textView.selectedRange;
+		NSRange selectedRange = _delegate.selectedRange;
 		
 		// Only do this if we are REALLY typing at this location
 		// Foolproof fix for a strange, rare bug which changes multiple
 		// lines into character cues and the user is unable to undo the changes
 		if (NSMaxRange(range) <= selectedRange.location) {
-			[textView replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
+			[_delegate.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
 			line.string = line.string.uppercaseString;
-			[textView setSelectedRange:selectedRange];
+			[_delegate setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
 			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor forCharacterRange:line.range];
@@ -358,7 +357,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		[textView setTypingAttributes:attributes];
+		[_delegate setTypingAttributes:attributes];
 	}
 	
 	
@@ -374,7 +373,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 
 - (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
-	NSTextStorage *textStorage = _delegate.textView.textStorage;
+	NSTextStorage *textStorage = _delegate.textStorage;
 	
 	// Remove underline/strikeout
 	if (attributes[NSUnderlineStyleAttributeName] || attributes[NSStrikethroughStyleAttributeName]) {
@@ -418,7 +417,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Don't go out of range and add attributes
 	if (NSMaxRange(localRange) <= line.string.length && localRange.location >= 0 && color != nil) {
-		[_delegate.textView.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:globalRange];
+		[_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:globalRange];
 	}
 	
 }
@@ -432,8 +431,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	NSLayoutManager *layoutMgr = _delegate.textView.layoutManager;
-	NSTextStorage *textStorage = _delegate.textView.textStorage;
+	NSLayoutManager *layoutMgr = _delegate.layoutManager;
+	NSTextStorage *textStorage = _delegate.textStorage;
 	
 	//[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 
@@ -530,8 +529,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Don't add a nil value
 	if (!value) return;
 	
-	NSTextView *textView = _delegate.textView;
-	
 	NSUInteger symLen = sym.length;
 	NSRange effectiveRange;
 	
@@ -547,8 +544,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		effectiveRange = NSMakeRange(range.location + symLen, 0);
 	}
 	
-	if (key.length) [textView.textStorage addAttribute:key value:value
-												 range:[self globalRangeFromLocalRange:&effectiveRange
+	if (key.length) [_delegate.textStorage addAttribute:key value:value
+												  range:[self globalRangeFromLocalRange:&effectiveRange
 																	  inLineAtPosition:line.position]];
 }
 
@@ -558,8 +555,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Don't add a nil value
 	if (!value) return;
 	
-	NSTextView *textView = _delegate.textView;
-	NSTextStorage *textStorage = textView.textStorage;
+	NSTextStorage *textStorage = _delegate.textStorage;
 	
 	NSRange effectiveRange;
 	

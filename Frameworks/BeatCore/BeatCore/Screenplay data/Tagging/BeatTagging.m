@@ -41,8 +41,8 @@
 #import "BeatTagging.h"
 #import "BeatTagItem.h"
 #import "BeatTag.h"
-#import "ColorView.h"
 #import "NSString+Levenshtein.h"
+#import "BeatColors.h"
 
 
 #define UIFontSize 11.0
@@ -59,7 +59,6 @@
 @interface BeatTagging ()
 @property (nonatomic) NSMutableArray *tagDefinitions;
 @property (nonatomic) OutlineScene *lastScene;
-@property (weak) IBOutlet ColorView *sideView;
 
 @end
 
@@ -74,7 +73,6 @@
 	self = [super init];
 	if (self) {
 		self.delegate = delegate;
-		self.sideViewCostraint.constant = 0.5; // Why?
 	}
 	
 	return self;
@@ -82,10 +80,7 @@
 
 -(void)awakeFromNib {
     [super awakeFromNib];
-#if !TARGET_OS_IOS
-	self.taggingTextView.textContainerInset = (NSSize){ 8, 8 };
-	[self.sideView setFillColor:[BeatColors color:@"backgroundGray"]];
-#endif
+
 }
 
 - (void)setup {
@@ -281,12 +276,7 @@
 
 - (NSArray*)allTags {
 	NSMutableArray *tags = [NSMutableArray array];
-    
-#if TARGET_OS_IOS
-    NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.taggingTextView.attributedText];
-#else
-	NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.taggingTextView.attributedString];
-#endif
+    NSAttributedString *string = _delegate.attributedString;
 	
 	[string enumerateAttribute:BeatTagging.attributeKey inRange:(NSRange){0, string.length} options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
@@ -302,12 +292,7 @@
 
 - (NSDictionary*)sortedTagsInRange:(NSRange)searchRange {
 	NSDictionary *tags = [BeatTagging tagDictionary];
-    
-#if TARGET_OS_IOS
-    NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.taggingTextView.attributedText];
-#else
-    NSAttributedString *string = [[NSAttributedString alloc] initWithAttributedString:self.taggingTextView.attributedString];
-#endif
+    NSAttributedString *string = _delegate.attributedString;
 	
 	[string enumerateAttribute:BeatTagging.attributeKey inRange:searchRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatTag *tag = (BeatTag*)value;
@@ -365,12 +350,7 @@
 }
 
 - (void)bakeTags {
-#if TARGET_OS_IOS
-    NSAttributedString *string = self.taggingTextView.attributedText;
-#else
-    NSAttributedString *string = self.taggingTextView.attributedString;
-#endif
-
+    NSAttributedString *string = _delegate.attributedString;
 	[BeatTagging bakeAllTagsInString:string toLines:self.delegate.parser.lines];
 }
 
@@ -662,7 +642,8 @@
 	// NOTE that this just sets attribute ranges and doesn't save the tag data anywhere else.
 	// So the tagging system basically only relies on the attributes in the NSTextView's rich-text string.
 	
-	NSDictionary *oldAttributes = [self.delegate.getAttributedText attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+	//NSDictionary *oldAttributes = [self.delegate.attributedString attributesAtIndex:range.location longestEffectiveRange:nil inRange:range];
+    NSAttributedString* oldAttributedString = self.delegate.attributedString;
 	
 	if (tag == nil) {
 		// Clear tags
@@ -673,11 +654,22 @@
 		[self saveTags];
 	}
 	
-	if (!_delegate.documentIsLoading) {
-		[self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
-			[self.delegate setAttributes:oldAttributes range:range];
+	if (_delegate.documentIsLoading) return;
+	
+	
+	// If document is not loading, set undo states
+	//id tagValue = oldAttributes[BeatTagging.attributeKey];
+	
+	[self.delegate.undoManager registerUndoWithTarget:self handler:^(id  _Nonnull target) {
+		NSLog(@"# NOTE: Test this before making tagging public.");
+		[self.delegate removeAttribute:BeatTagging.attributeKey range:range];
+		[oldAttributedString enumerateAttribute:BeatTagging.attributeKey inRange:range options:0 usingBlock:^(id  _Nullable value, NSRange tRange, BOOL * _Nonnull stop) {
+			if (value == nil) return;
+			
+			[self.delegate addAttribute:BeatTagging.attributeKey value:value range:tRange];
 		}];
-	}
+	}];
+	
 }
 
 - (void)saveTags {
@@ -689,21 +681,24 @@
 }
 
 - (void)updateTaggingData {
-	[self.taggingTextView.textStorage setAttributedString:[self displayTagsForScene:self.delegate.currentScene]];
+	NSLog(@"# NOTE: Either move this to document controller or make it non-OS-dependent in some other way.");
+	//[self.taggingTextView.textStorage setAttributedString:[self displayTagsForScene:self.delegate.currentScene]];
 }
 
 - (void)open {
-	[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
-	[_sideViewCostraint setConstant:180];
+	NSLog(@"# NOTE: Either move this to document controller or make it non-OS-dependent in some other way.");
+//	[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
+//	[_sideViewCostraint setConstant:180];
 }
 
 - (void)close {
-	if (_sideViewCostraint.constant != 0) {
-		[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
-		[_sideViewCostraint setConstant:0];
+	NSLog(@"# NOTE: Either move this to document controller or make it non-OS-dependent in some other way.");
+//	if (_sideViewCostraint.constant != 0) {
+//		[_taggingTextView.enclosingScrollView setHasHorizontalScroller:NO];
+//		[_sideViewCostraint setConstant:0];
 		
-		[_delegate toggleMode:TaggingMode];
-	}
+//		[_delegate toggleMode:TaggingMode];
+//	}
 }
 
 #pragma mark - Editor actions

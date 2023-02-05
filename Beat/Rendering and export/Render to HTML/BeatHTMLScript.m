@@ -100,7 +100,6 @@
 #import "BeatHTMLScript.h"
 #import <BeatParsing/BeatParsing.h>
 #import <BeatDefaults/BeatDefaults.h>
-#import "BeatMeasure.h"
 
 #define PRINT_CSS @"ScreenplayStyles"
 #define PREVIEW_CSS @"PreviewStyles"

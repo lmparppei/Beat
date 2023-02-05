@@ -17,3 +17,4 @@ FOUNDATION_EXPORT const unsigned char BeatPaginationVersionString[];
 
 //#import "BeatPaginator.h"
 #import "BeatPaginator.h"
+#import "BeatFonts.h"

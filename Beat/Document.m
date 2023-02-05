@@ -77,6 +77,7 @@
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatDefaults/BeatDefaults.h>
+#import <BeatCore/BeatCore.h>
 
 #import "Document.h"
 #import "ScrollView.h"
@@ -94,10 +95,6 @@
 #import "OutlineViewItem.h"
 #import "BeatModalInput.h"
 #import "ThemeEditor.h"
-#import "BeatTagging.h"
-#import "BeatTagItem.h"
-#import "BeatTag.h"
-#import "TagDefinition.h"
 #import "BeatFDXExport.h"
 #import "ITSwitch.h"
 #import "BeatTitlePageEditor.h"
@@ -204,6 +201,9 @@
 @property (nonatomic, weak) IBOutlet NSMenu *colorMenu;
 
 @property (nonatomic, weak) IBOutlet BeatCharacterList *characterList;
+
+// Right side view
+@property (nonatomic, weak) IBOutlet NSLayoutConstraint *rightSidebarConstraint;
 
 // Outline view filtering
 @property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
@@ -732,7 +732,8 @@ static BeatAppDelegate *appDelegate;
 - (void)setupWindow {
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
-	self.tagging.sideViewCostraint.constant = 0;
+	
+	self.rightSidebarConstraint.constant = 0;
 	
 	// Split view
 	_splitHandle.bottomOrLeftMinSize = MIN_OUTLINE_WIDTH;
@@ -1281,6 +1282,13 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Make the text view first responder
 	[_documentWindow makeFirstResponder:self.textView];
+}
+
+- (NSMutableAttributedString*)textStorage {
+	return self.textView.textStorage;
+}
+- (NSLayoutManager*)layoutManager {
+	return self.textView.layoutManager;
 }
 
 - (NSString *)text {
@@ -2012,6 +2020,9 @@ static NSWindow __weak *currentKeyWindow;
 		return _attrTextCache;
 	}
 }
+- (NSAttributedString*)attributedString {
+	return [self getAttributedText];
+}
 
 - (void)setText:(NSString *)text
 {
@@ -2024,12 +2035,15 @@ static NSWindow __weak *currentKeyWindow;
 	}
 }
 
+- (void)setTypingAttributes:(NSDictionary*)attrs {
+	self.textView.typingAttributes = attrs;
+}
+
+/**
+ Main method for adding text to editor view.  Forces added text to be parsed. Does NOT invoke undo manager.
+ */
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
 {
-	/**
-	 Main method for adding text to editor view.  Forces added text to be parsed.
-	 */
-	
 	// If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
 	if (range.length + range.location > self.textView.string.length) {
 		NSInteger length = self.textView.string.length - range.location;
@@ -2248,7 +2262,9 @@ static bool _skipAutomaticLineBreaks = false;
 	[self.textView.textStorage setAttributes:attributes range:range];
 }
 
-
+- (void)setAutomaticTextCompletionEnabled:(BOOL)value {
+	self.textView.automaticTextCompletionEnabled = value;
+}
 
 // There is no shortage of ugliness in the world.
 // If a person closed their eyes to it,

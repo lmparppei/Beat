@@ -21,6 +21,7 @@
 		B685B576296EE3AC00D8EF81 /* BeatPaginationOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56C296EE3AC00D8EF81 /* BeatPaginationOperation.h */; };
 		B685B577296EE3AC00D8EF81 /* BeatPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56D296EE3AC00D8EF81 /* BeatPaginator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B685B583296EE63300D8EF81 /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B685B581296EE63300D8EF81 /* BeatFonts.m */; };
+		B6D32046298F0A95003DA45D /* BeatFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B582296EE63300D8EF81 /* BeatFonts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -118,6 +119,7 @@
 				B685B576296EE3AC00D8EF81 /* BeatPaginationOperation.h in Headers */,
 				B685B577296EE3AC00D8EF81 /* BeatPaginator.h in Headers */,
 				B685B56F296EE3AC00D8EF81 /* BeatPaginationOperationDelegate.h in Headers */,
+				B6D32046298F0A95003DA45D /* BeatFonts.h in Headers */,
 				B685B574296EE3AC00D8EF81 /* BeatPageDelegate.h in Headers */,
 				B685B573296EE3AC00D8EF81 /* BeatPaginationSizing.h in Headers */,
 				B685B537296EE1F900D8EF81 /* BeatPaginationCore.h in Headers */,

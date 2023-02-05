@@ -1672,7 +1672,7 @@
 - (void)textHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
 {
 	NSColor *color = [BeatColors color:hexColor];
-	[_delegate.textView.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+	[_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
 }
 - (void)removeTextHighlight:(NSInteger)loc len:(NSInteger)len {
 	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
@@ -1681,7 +1681,7 @@
 - (void)textBackgroundHighlight:(NSString*)hexColor loc:(NSInteger)loc len:(NSInteger)len
 {
 	NSColor *color = [BeatColors color:hexColor];
-	[_delegate.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
+	[_delegate.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName value:color forCharacterRange:(NSRange){ loc,len }];
 }
 
 - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len {

@@ -6,9 +6,9 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatCore/BeatCore.h>
+#import <BeatParsing/BeatParsing.h>
 #import "BeatCardViewController.h"
-#import "BeatColors.h"
-#import "OutlineScene.h"
 
 @interface BeatCardViewController ()
 @property (nonatomic) NSArray *outline;

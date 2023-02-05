@@ -45,7 +45,6 @@
 		B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311BF296EDFFD00CF4869 /* UIKit.framework */; };
 		B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B69311C1296EE00500CF4869 /* BeatParsing.framework */; };
 		B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B69311C1296EE00500CF4869 /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B69311C7296EE0EA00CF4869 /* BeatColors.m in Sources */ = {isa = PBXBuildFile; fileRef = B69311C5296EE0EA00CF4869 /* BeatColors.m */; };
 		B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */; };
 		B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */; };
 		B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */; };
@@ -58,6 +57,17 @@
 		B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */; };
 		B6CE250428393BA500D53CE8 /* BeatiOSOutlineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */; };
 		B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6CE25062839681500D53CE8 /* BeatSidebar.swift */; };
+		B6D3202F298EC64C003DA45D /* BeatDynamicColor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */; };
+		B6D32030298EC64C003DA45D /* BeatDynamicColor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B6D32032298F03BC003DA45D /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B6D32031298F03AB003DA45D /* Tutorial.fountain */; };
+		B6D3203E298F04C3003DA45D /* Courier Prime Sans Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D32036298F04C3003DA45D /* Courier Prime Sans Italic.ttf */; };
+		B6D3203F298F04C3003DA45D /* Courier Prime Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D32037298F04C3003DA45D /* Courier Prime Sans.ttf */; };
+		B6D32040298F04C3003DA45D /* Courier Prime Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D32038298F04C3003DA45D /* Courier Prime Italic.ttf */; };
+		B6D32041298F04C3003DA45D /* Courier Prime Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D32039298F04C3003DA45D /* Courier Prime Bold.ttf */; };
+		B6D32042298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203A298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf */; };
+		B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */; };
+		B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */; };
+		B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203D298F04C3003DA45D /* Courier Prime.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -68,6 +78,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				B60A9F3E29774F8B00916FAA /* BeatDefaults.framework in Embed Frameworks */,
+				B6D32030298EC64C003DA45D /* BeatDynamicColor.framework in Embed Frameworks */,
 				B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */,
 				B60A9F3829774F6C00916FAA /* BeatParsing.framework in Embed Frameworks */,
 				B633C1E5298C622F0011449D /* BeatCore.framework in Embed Frameworks */,
@@ -95,7 +106,6 @@
 		B633C14E298C566E0011449D /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineViewItem.m; path = "Beat iOS/User Interface/OutlineViewItem.m"; sourceTree = SOURCE_ROOT; };
 		B633C150298C58130011449D /* BeatPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = "Beat/Rendering and export/BeatPreview.m"; sourceTree = SOURCE_ROOT; };
 		B633C151298C58130011449D /* BeatPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = "Beat/Rendering and export/BeatPreview.h"; sourceTree = SOURCE_ROOT; };
-		B633C173298C5C260011449D /* BeatScreenplayRevisions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatScreenplayRevisions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B633C1E3298C622F0011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
 		B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatiOSFormatting.m; sourceTree = "<group>"; };
@@ -120,8 +130,6 @@
 		B69311BD296EDFF400CF4869 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/WebKit.framework; sourceTree = DEVELOPER_DIR; };
 		B69311BF296EDFFD00CF4869 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.2.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		B69311C1296EE00500CF4869 /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B69311C5296EE0EA00CF4869 /* BeatColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatColors.m; path = "Beat/User Interface/Colors/BeatColors.m"; sourceTree = SOURCE_ROOT; };
-		B69311C6296EE0EA00CF4869 /* BeatColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatColors.h; path = "Beat/User Interface/Colors/BeatColors.h"; sourceTree = SOURCE_ROOT; };
 		B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPreviewView.swift; sourceTree = "<group>"; };
 		B6CB96F0282FEB6500C7AFC7 /* Beat iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -137,6 +145,16 @@
 		B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentViewController.swift; sourceTree = "<group>"; };
 		B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatiOSOutlineView.swift; sourceTree = "<group>"; };
 		B6CE25062839681500D53CE8 /* BeatSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatSidebar.swift; sourceTree = "<group>"; };
+		B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatDynamicColor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6D32031298F03AB003DA45D /* Tutorial.fountain */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tutorial.fountain; sourceTree = "<group>"; };
+		B6D32036298F04C3003DA45D /* Courier Prime Sans Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans Italic.ttf"; path = "Beat/Fonts/Courier Prime Sans Italic.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D32037298F04C3003DA45D /* Courier Prime Sans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans.ttf"; path = "Beat/Fonts/Courier Prime Sans.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D32038298F04C3003DA45D /* Courier Prime Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Italic.ttf"; path = "Beat/Fonts/Courier Prime Italic.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D32039298F04C3003DA45D /* Courier Prime Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Bold.ttf"; path = "Beat/Fonts/Courier Prime Bold.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D3203A298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans Bold Italic.ttf"; path = "Beat/Fonts/Courier Prime Sans Bold Italic.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Bold Italic.ttf"; path = "Beat/Fonts/Courier Prime Bold Italic.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans Bold.ttf"; path = "Beat/Fonts/Courier Prime Sans Bold.ttf"; sourceTree = SOURCE_ROOT; };
+		B6D3203D298F04C3003DA45D /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime.ttf"; path = "Beat/Fonts/Courier Prime.ttf"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +170,7 @@
 				B60A9F4029774FA500916FAA /* JavaScriptCore.framework in Frameworks */,
 				B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */,
 				B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */,
+				B6D3202F298EC64C003DA45D /* BeatDynamicColor.framework in Frameworks */,
 				B686FF842971B65800789C8D /* BeatPaginationCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,8 +227,6 @@
 		B63D9F5028301E4E00D027B6 /* iOS colors */ = {
 			isa = PBXGroup;
 			children = (
-				B69311C6296EE0EA00CF4869 /* BeatColors.h */,
-				B69311C5296EE0EA00CF4869 /* BeatColors.m */,
 			);
 			path = "iOS colors";
 			sourceTree = "<group>";
@@ -277,8 +294,8 @@
 		B69311B6296EDFF300CF4869 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6D3202E298EC64C003DA45D /* BeatDynamicColor.framework */,
 				B633C1E3298C622F0011449D /* BeatCore.framework */,
-				B633C173298C5C260011449D /* BeatScreenplayRevisions.framework */,
 				B60A9F3F29774FA400916FAA /* JavaScriptCore.framework */,
 				B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */,
 				B60A9F3929774F7A00916FAA /* BeatThemes.framework */,
@@ -294,6 +311,8 @@
 		B6CB96F1282FEB6500C7AFC7 /* Beat iOS */ = {
 			isa = PBXGroup;
 			children = (
+				B6D32035298F04B5003DA45D /* Fonts */,
+				B6D32031298F03AB003DA45D /* Tutorial.fountain */,
 				B633C155298C58930011449D /* Screenplay data */,
 				B633C132298C54BC0011449D /* Extensions */,
 				B686FF892971BC6500789C8D /* Exporting and rendering */,
@@ -334,6 +353,21 @@
 				B6CE24DD2838541500D53CE8 /* Utilities.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B6D32035298F04B5003DA45D /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */,
+				B6D32039298F04C3003DA45D /* Courier Prime Bold.ttf */,
+				B6D32038298F04C3003DA45D /* Courier Prime Italic.ttf */,
+				B6D3203A298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf */,
+				B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */,
+				B6D32036298F04C3003DA45D /* Courier Prime Sans Italic.ttf */,
+				B6D32037298F04C3003DA45D /* Courier Prime Sans.ttf */,
+				B6D3203D298F04C3003DA45D /* Courier Prime.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -403,17 +437,26 @@
 				B6CB9701282FEB6700C7AFC7 /* LaunchScreen.storyboard in Resources */,
 				B6CB96FE282FEB6700C7AFC7 /* Assets.xcassets in Resources */,
 				B686FFBB2971BC7E00789C8D /* Uppercase actions.beatStyle in Resources */,
+				B6D32042298F04C3003DA45D /* Courier Prime Sans Bold Italic.ttf in Resources */,
+				B6D3203E298F04C3003DA45D /* Courier Prime Sans Italic.ttf in Resources */,
 				B686FFBF2971BC7E00789C8D /* Scale down.beatStyle in Resources */,
 				B686FFBA2971BC7E00789C8D /* Uppercase actions.beatStyle in Resources */,
 				B686FFBD2971BC7E00789C8D /* Print line numbers.beatStyle in Resources */,
 				B686FFBE2971BC7E00789C8D /* Use plain Courier.beatStyle in Resources */,
+				B6D32032298F03BC003DA45D /* Tutorial.fountain in Resources */,
+				B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */,
+				B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */,
 				B686FFCC2971BC7E00789C8D /* HeaderTemplate.html in Resources */,
 				B686FFBC2971BC7E00789C8D /* Scale down.beatStyle in Resources */,
 				B686FFC52971BC7E00789C8D /* ScreenplayStyles.css in Resources */,
+				B6D32041298F04C3003DA45D /* Courier Prime Bold.ttf in Resources */,
 				B6CB96FC282FEB6600C7AFC7 /* Main.storyboard in Resources */,
 				B686FFC62971BC7E00789C8D /* PreviewStyles-iOS.css in Resources */,
 				B686FFB82971BC7E00789C8D /* Use plain Courier.beatStyle in Resources */,
+				B6D32040298F04C3003DA45D /* Courier Prime Italic.ttf in Resources */,
 				B686FFB92971BC7E00789C8D /* Print line numbers.beatStyle in Resources */,
+				B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */,
+				B6D3203F298F04C3003DA45D /* Courier Prime Sans.ttf in Resources */,
 				B686FFC02971BC7E00789C8D /* PreviewStyles.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -426,7 +469,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */,
-				B69311C7296EE0EA00CF4869 /* BeatColors.m in Sources */,
 				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
 				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
 				B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */,

@@ -13,7 +13,6 @@
 #import "BeatEditorFormatting.h"
 #import "BeatMeasure.h"
 #import "Beat-Swift.h"
-#import "BeatTag.h"
 
 @interface BeatLayoutManager()
 @property (nonatomic) NSMutableParagraphStyle* _Nullable markerStyle;
@@ -41,11 +40,36 @@
 	
 	[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
 		
-	[self drawSceneNumberForGlyphRange:glyphsToShow];
+	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
+	
+	[self drawSceneNumberForGlyphRange:glyphsToShow charRange:charRange];
+	//[self drawDisclosureForRange:glyphsToShow charRange:charRange];
 	[self drawRevisionMarkers:glyphsToShow];
 }
 
-- (void)drawSceneNumberForGlyphRange:(NSRange)glyphRange {
+- (void)drawDisclosureForRange:(NSRange)glyphRange charRange:(NSRange)charRange {
+	NSInteger i = [self.textView.editorDelegate.parser lineIndexAtPosition:charRange.location];
+	ContinuousFountainParser* parser = self.textView.editorDelegate.parser;
+	
+	NSMutableArray<Line*>* lines = NSMutableArray.new;
+	for (; i < parser.lines.count; i++) {
+		Line* l = parser.lines[i];
+		if (!NSLocationInRange(l.position, charRange)) break;
+		
+		if (l.type == section) [lines addObject:l];
+	}
+	
+	for (Line* l in lines) {
+		NSRange sectionGlyphRange = [self glyphRangeForCharacterRange:NSMakeRange(l.position, 1) actualCharacterRange:nil];
+		NSRect r = [self boundingRectForGlyphRange:sectionGlyphRange inTextContainer:self.textContainers.firstObject];
+		
+		NSRect triangle = NSMakeRect(self.textView.textContainerInset.width, r.origin.y + self.textView.textContainerInset.height + r.size.height - 15, 12, 12);
+		[NSColor.redColor setFill];
+		NSRectFill(triangle);
+	}
+}
+
+- (void)drawSceneNumberForGlyphRange:(NSRange)glyphRange charRange:(NSRange)charRange {
 	// Scene number drawing is off, return
 	if (!self.textView.editorDelegate.showSceneNumberLabels) return;
 	
@@ -54,9 +78,7 @@
 		_sceneNumberStyle = NSMutableParagraphStyle.new;
 		_sceneNumberStyle.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
 	}
-	
-	NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
-	
+		
 	[self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		Line* line = (Line*)value;
 		if (line == nil || line.type != heading) return;

@@ -148,7 +148,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 @implementation BeatTextView
 
 + (CGFloat)linePadding {
-	return 50;
+	return 50.0;
 }
 
 -(instancetype)initWithCoder:(NSCoder *)coder {

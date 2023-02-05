@@ -15,37 +15,43 @@ class BeatUITextView: UITextView {
 	@IBOutlet weak var enclosingScrollView:UIScrollView!
 	@IBOutlet weak var pageView:UIView!
 	
-	var insets = UIEdgeInsets(top: 50, left: 50, bottom: 50, right: 50)
+	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
 	var pinchRecognizer = UIGestureRecognizer()
-	var magnification = 1.0
-	var oldMagnification = 0.0
-	var prevScale = 0.0
 	
-	var documentWidth = 640.0
-
-	/*
-	override var insetsLayoutMarginsFromSafeArea: Bool {
-		get { return true }
-		set { super.insetsLayoutMarginsFromSafeArea = true }
+	class func linePadding() -> CGFloat {
+		return 40.0
 	}
-	 */
 	
+	var documentWidth:CGFloat {
+		var width = 0.0
+		let padding = self.textContainer.lineFragmentPadding
+		
+		guard let delegate = self.editorDelegate else { return 0.0 }
+		
+		if delegate.pageSize == .A4 {
+			width = BeatFonts.characterWidth() * 59
+		} else {
+			width = BeatFonts.characterWidth() * 61
+		}
+		
+		return width + padding * 2
+	}
+	
+
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
 		self.textContainerInset = insets
 		self.isScrollEnabled = false
 		
-	
+		// Delegates
 		enclosingScrollView?.delegate = self
-		
-		 
-		// Layout delegation
 		layoutManager.delegate = self
 		
-		
+		// View setup
 		self.textContainer.widthTracksTextView = false
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
+		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
 		
 		resizePaper()
 		resize()
@@ -59,7 +65,7 @@ class BeatUITextView: UITextView {
 	func resizePaper() {
 		var frame = pageView.frame
 		frame.size.height = textContainer.size.height
-		frame.size.width = self.documentWidth + textContainerInset.left + textContainerInset.right
+		frame.size.width = self.documentWidth + textContainerInset.left + textContainerInset.right + BeatUITextView.linePadding()
 		
 		pageView.frame = frame
 	}
@@ -90,16 +96,15 @@ class BeatUITextView: UITextView {
 			let factor = targetHeight / enclosingScrollView.frame.height
 			zoom = enclosingScrollView.zoomScale / factor
 		}
-				
+		
 		resizeScrollViewContent()
 		
 		frame.size.height = enclosingScrollView.contentSize.height
-				
+		self.pageView.frame = frame
+		
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
-			self.pageView.frame = frame
 			self.enclosingScrollView.zoomScale = zoom
 		} completion: { _ in
-
 		}
 	}
 	

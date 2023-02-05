@@ -8,9 +8,87 @@
 
 import UIKit
 import WebKit
+import BeatCore
+import BeatParsing
+import BeatDefaults
+import BeatPaginationCore
+import BeatDynamicColor
+import BeatThemes
 
 class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate, iOSDocumentDelegate {
+	var hideFountainMarkup: Bool = false
 	
+	var exportSettings: BeatExportSettings {
+		return BeatExportSettings()
+	}
+	
+	func fileNameString() -> String! {
+		return self.document?.fileURL.lastPathComponent ?? "Untitled"
+	}
+	
+	func setAutomaticTextCompletionEnabled(_ value: Bool) {
+		print("# Automatic text completion missing")
+	}
+	
+	func attributedString() -> NSAttributedString! {
+		if (Thread.isMainThread) {
+			return self.textView.attributedText
+		} else {
+			return self.cachedText
+		}
+	}
+	
+	func add(_ string: String!, at index: UInt) {
+		self.replace(NSMakeRange(Int(index), 0), with: string)
+	}
+	
+	func remove(_ string: String!, at index: UInt) {
+		self.replace(NSMakeRange(Int(index), string.count), with: "")
+	}
+	
+	func replace(_ string: String!, with newString: String!, at index: UInt) {
+		replace(NSMakeRange(Int(index), string.count), with: newString)
+	}
+	
+	func contdString() -> String! {
+		return BeatUserDefaults.shared().get(BeatSettingScreenplayItemContd)  as? String ?? ""
+	}
+	
+	func moreString() -> String! {
+		return BeatUserDefaults.shared().get(BeatSettingScreenplayItemMore) as? String ?? ""
+	}
+	
+	var selectedRange: NSRange {
+		get {
+			return self.textView.selectedRange
+		}
+		set {
+			self.textView.selectedRange = newValue
+		}
+	}
+	
+	func selectedTextRange() -> UITextRange! {
+		return self.textView.selectedTextRange
+	}
+	
+	func setSelectedTextRange(_ textRange: UITextRange!) {
+		self.textView.selectedTextRange = textRange
+	}
+	
+	func move(_ sceneToMove: OutlineScene!, from: Int, to: Int) {
+		print("Implement move scene")
+	}
+	
+	
+	func returnToEditor() {
+		print("Return to editor...")
+	}
+	
+	func toggle(_ mode: BeatEditorMode) {
+		self.mode = mode
+	}
+	
+		
 	var document: iOSDocument?
 	var contentBuffer = ""
 	
@@ -20,60 +98,66 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	@IBOutlet weak var sidebar: UIView!
 	@IBOutlet weak var titleBar:UINavigationItem?
 	
-	var textStorage:NSTextStorage?
-	
-	var parser: ContinuousFountainParser?
-	var cachedText:NSMutableAttributedString = NSMutableAttributedString()
-	@objc var attrTextCache:NSMutableAttributedString {
-		get { return cachedText }
+	var attrTextCache: NSAttributedString! {
+		get { cachedText }
 	}
 	
-	var documentIsLoading = true
+	@objc var parser: ContinuousFountainParser?
+	var cachedText:NSMutableAttributedString = NSMutableAttributedString()
 	
-	var documentSettings:BeatDocumentSettings! { get { return document?.settings } set {} }
-	var printSceneNumbers: Bool = true
-	var characterInputForLine: Line?
-	var formatting: BeatiOSFormatting = BeatiOSFormatting()
+	@objc var documentIsLoading = true
+	
+	@objc var documentSettings:BeatDocumentSettings! { get { return document?.settings } set {} }
+	@objc var printSceneNumbers: Bool = true
+	@objc var characterInputForLine: Line?
+	@objc var formatting: BeatiOSFormatting = BeatiOSFormatting()
 
-	var showSceneNumberLabels: Bool = true
-	var typewriterMode: Bool = false
-	var magnification: CGFloat = 1.0
-	var inset: CGFloat = 0.0
-	var documentWidth: UInt = 640
-	var characterGenders: NSMutableDictionary = NSMutableDictionary()
-	var revisionColor: String = "blue"
-	var revisionMode: Bool = false
-	var courier: UIFont! = UIFont(name: "Courier Prime", size: 17.92)
-	var boldCourier: UIFont! = UIFont(name: "Courier Bold", size: 17.92)
-	var boldItalicCourier: UIFont! = UIFont(name: "Courier Bold Oblique", size: 17.92)
-	var italicCourier: UIFont! = UIFont(name: "Courier Oblique", size: 17.92)
-	var characterInput: Bool = false
-	var headingStyleBold: Bool = true
-	var headingStyleUnderline: Bool = false
-	var showRevisions: Bool = true
-	var showTags: Bool = true
-	var sectionFont: UIFont! = UIFont.boldSystemFont(ofSize: 22)
-	var sectionFonts: NSMutableDictionary! = NSMutableDictionary()
-	var synopsisFont: UIFont! = UIFont.italicSystemFont(ofSize: 14.92)
-	var mode: Int = 0
+	@objc var showSceneNumberLabels: Bool = true
+	@objc var typewriterMode: Bool = false
+	@objc var magnification:CGFloat { return self.textView.enclosingScrollView.zoomScale }
+	@objc var inset: CGFloat = 0.0
+	@objc var documentWidth: CGFloat {
+		if (self.pageSize == .A4) { return BeatFonts.characterWidth() * 59 }
+		else { return BeatFonts.characterWidth() * 61 }
+	}
+	@objc var characterGenders: NSMutableDictionary = NSMutableDictionary()
+	@objc var revisionColor: String = "blue"
+	@objc var revisionMode: Bool = false
 	
-	var automaticContd = true
-	var autoLineBreaks = true
-	var matchParentheses = true
+	@objc var courier: UIFont! = BeatFonts.shared().courier
+	@objc var boldCourier: UIFont! = BeatFonts.shared().boldCourier
+	@objc var boldItalicCourier: UIFont! = BeatFonts.shared().boldItalicCourier
+	@objc var italicCourier: UIFont! = BeatFonts.shared().italicCourier
 	
-	var preview:BeatPreview?
-	var previewView:BeatPreviewView?
-	var previewUpdated = false
-	var previewHTML = ""
-	var previewTimer:Timer?
+	@objc var paginator:BeatPaginator?
 	
-	var sidebarVisible = false
-	@IBOutlet weak var sidebarConstraint:NSLayoutConstraint!
-		
+	@objc var characterInput: Bool = false
+	@objc var headingStyleBold: Bool = true
+	@objc var headingStyleUnderline: Bool = false
+	@objc var showRevisions: Bool = true
+	@objc var showTags: Bool = true
+	@objc var sectionFont: UIFont! = UIFont.boldSystemFont(ofSize: 18.0)
+	@objc var sectionFonts: NSMutableDictionary! = NSMutableDictionary()
+	@objc var synopsisFont: UIFont! = UIFont.italicSystemFont(ofSize: 12.0)
+	@objc var mode: BeatEditorMode = .EditMode
+	
+	@objc var automaticContd = true
+	@objc var autoLineBreaks = true
+	@objc var matchParentheses = true
+	
+	@objc var preview:BeatPreview?
+	@objc var previewView:BeatPreviewView?
+	@objc var previewUpdated = false
+	@objc var previewHTML = ""
+	@objc var previewTimer:Timer?
+	
+	@objc var sidebarVisible = false
+	@objc @IBOutlet weak var sidebarConstraint:NSLayoutConstraint!
+	
 	var keyboardManager = KeyboardManager()
 		//var documentWindow: UIWindow!
 	
-	@IBOutlet weak var documentNameLabel: UILabel!
+	@objc @IBOutlet weak var documentNameLabel: UILabel!
 	
 	
 	// MARK: - Preparing the view
@@ -151,15 +235,13 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		parser = ContinuousFountainParser(string: contentBuffer, delegate: self)
 		formatting.delegate = self
 		
-		print("text", contentBuffer)
-		
 		// Init preview
 		preview = BeatPreview(document: self)
 		previewView = self.storyboard?.instantiateViewController(withIdentifier: "Preview") as? BeatPreviewView
 		previewView?.loadViewIfNeeded()
 				
 		// Fit to view here
-		scrollView.zoomScale = 1.0
+		scrollView.zoomScale = 1.4
 		
 		// Keyboard manager
 		keyboardManager.delegate = self
@@ -244,10 +326,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	// Delegation
 	func sceneNumberingStartsFrom() -> Int {
 		return 1
-	}
-	
-	func selectedRange() -> NSRange {
-		return self.textView!.selectedRange
 	}
 	
 	
@@ -346,23 +424,22 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	}
 	
 	var cachedCurrentLine:Line?
-	var currentLine: Line! {
-		get {
-			let loc = self.selectedRange().location
-			if (loc >= textView.text.count) {
-				return parser!.lines.lastObject as? Line
-			}
-			
-			if (cachedCurrentLine != nil) {
-				if (NSLocationInRange(loc, cachedCurrentLine!.range())) {
-					return cachedCurrentLine
-				}
-			}
-			
-			cachedCurrentLine = parser?.line(atPosition: loc)
-			return cachedCurrentLine
+	func currentLine() -> Line! {
+		let loc = self.selectedRange.location
+		if (loc >= textView.text.count) {
+			return parser!.lines.lastObject as? Line
 		}
+		
+		if (cachedCurrentLine != nil) {
+			if (NSLocationInRange(loc, cachedCurrentLine!.range())) {
+				return cachedCurrentLine
+			}
+		}
+		
+		cachedCurrentLine = parser?.line(atPosition: loc)
+		return cachedCurrentLine
 	}
+	
 	
 	func lines() -> NSMutableArray! {
 		let lines = parser!.lines
@@ -436,15 +513,34 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		}
 	}
 	
+	/**
+	 The main method for adding text to text view. Forces added text to be parsed, and **does not** invoke undo manager.
+	 */
 	func replaceCharacters(inRange range:NSRange, string:String) {
-		/**
-		 The main method for adding text to text view. Forces added text to be parsed.
-		 */
-		
 		if (textView(textView, shouldChangeTextIn: range, replacementText: string)) {
 			textView.textStorage.replaceCharacters(in: range, with: string)
 			textViewDidChange(textView)
 		}
+	}
+	
+	func setTypingAttributes(_ attrs: [AnyHashable : Any]!) {
+		self.textView.typingAttributes = attrs as? Dictionary<NSAttributedString.Key, Any> ?? [:]
+	}
+	
+	func addAttribute(_ key: String!, value: Any!, range: NSRange) {
+		guard let attrValue = value else { return }
+		self.textView.textStorage.addAttribute(NSAttributedString.Key(key), value: attrValue, range: range)
+	}
+	
+	func removeAttribute(_ key: String!, range: NSRange) {
+		self.textView.textStorage.removeAttribute(NSAttributedString.Key(key), range: range)
+	}
+	
+	@objc func layoutManager() -> NSLayoutManager {
+		return self.textView.layoutManager
+	}
+	@objc func textStorage() -> NSTextStorage {
+		return self.textView.textStorage
 	}
 	
 	// MARK: - Misc stuff
@@ -500,6 +596,11 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	
 	func scroll(to range: NSRange) {
 		textView.scrollRangeToVisible(range)
+	}
+	
+	func scroll(to range: NSRange, callback callbackBlock: (() -> Void)!) {
+		textView.scrollRangeToVisible(range)
+		callbackBlock()
 	}
 	
 	func updateChangeCount(_ change: UIDocument.ChangeKind) {
@@ -558,13 +659,13 @@ extension DocumentViewController {
 	
 	
 	func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-		let currentLine = self.currentLine
+		let currentLine = self.currentLine()
 		if (!undoManager!.isUndoing && !undoManager!.isRedoing &&
-			self.selectedRange().length == 0 && currentLine != nil) {
+			self.selectedRange.length == 0 && currentLine != nil) {
 			
 			if (range.length == 0 && text == "\n") {
 				// Test if we'll add extra line breaks and exit the method
-				if shouldAddLineBreak(currentLine: currentLine!, range: range) {
+				if shouldAddLineBreak(currentLine: self.currentLine()!, range: range) {
 					return false
 				}
 			}
@@ -695,6 +796,10 @@ extension DocumentViewController {
 		
 		return false
 	}
+	
+	@objc func lineType(at index: Int) -> LineType {
+		return self.parser?.lineType(at: index) ?? .empty
+	}
 }
 
 // MARK: - Keyboard delegate
@@ -707,8 +812,8 @@ extension DocumentViewController:KeyboardManagerDelegate {
 		} completion: { finished in
 			self.textView.resize()
 			
-			if (self.selectedRange().location != NSNotFound) {
-				let rect = self.textView.rectForRange(range: self.selectedRange())
+			if (self.selectedRange.location != NSNotFound) {
+				let rect = self.textView.rectForRange(range: self.selectedRange)
 				let visible = self.textView.convert(rect, to: self.scrollView)
 				self.scrollView.scrollRectToVisible(visible, animated: true)
 			}

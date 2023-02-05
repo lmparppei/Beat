@@ -8,12 +8,9 @@
 
 #import "BeatiOSFormatting.h"
 #import <BeatThemes/BeatThemes.h>
-#import "ContinuousFountainParser.h"
-#import "BeatColors.h"
-#import "NSString+CharacterControl.h"
-#import "BeatRevisions.h"
-#import "BeatTagging.h"
-#import "BeatTag.h"
+#import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
+
 #import "Beat_iOS-Swift.h"
 
 @implementation BeatiOSFormatting
@@ -67,10 +64,10 @@ static NSString *tagAttribute = @"BeatTag";
 static NSString *reviewAttribute = @"BeatReview";
 
 - (UITextRange*)getTextRangeFor:(NSRange)range {
-	UITextRange *oldRange = self.delegate.textView.selectedTextRange;
-	[self.delegate.textView setSelectedRange:range];
-	UITextRange *newRange = [self.delegate.textView selectedTextRange];
-	[self.delegate.textView setSelectedTextRange:oldRange];
+	UITextRange *oldRange = self.delegate.selectedTextRange;
+	[self.delegate setSelectedRange:range];
+	UITextRange *newRange = self.delegate.selectedTextRange;
+	[self.delegate setSelectedTextRange:oldRange];
 	return newRange;
 }
 
@@ -88,15 +85,13 @@ static NSString *reviewAttribute = @"BeatReview";
 	 
 	*/
 
-	UITextView *textView = _delegate.textView;
-
 	// Don't go out of range (just a safety measure for plugins etc.)
-	if (line.position + line.string.length > textView.text.length) return;	
+	if (line.position + line.string.length > _delegate.text.length) return;
 	
 	NSRange range = line.textRange;
 	UITextRange *textRange = [self getTextRangeFor:range];
 	
-	NSTextStorage *textStorage = textView.textStorage;
+	NSTextStorage *textStorage = _delegate.textStorage;
 	NSMutableDictionary *attributes = NSMutableDictionary.new;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 
@@ -123,15 +118,15 @@ static NSString *reviewAttribute = @"BeatReview";
 		if (line.length && line.lastCharacter == '^') line.type = dualDialogueCharacter;
 		else line.type = character;
 		
-		NSRange selectedRange = textView.selectedRange;
+		NSRange selectedRange = _delegate.selectedRange;
 		
 		// Only do this if we are REALLY typing at this location
 		// Foolproof fix for a strange, rare bug which changes multiple
 		// lines into character cues and the user is unable to undo the changes
 		if (range.location + range.length <= selectedRange.location) {
-			[textView replaceRange:textRange withText:[textStorage.string substringWithRange:range].uppercaseString];
+			[_delegate.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
 			line.string = line.string.uppercaseString;
-			[textView setSelectedRange:selectedRange];
+			[_delegate setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
 			[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.textRange];
@@ -344,7 +339,7 @@ static NSString *reviewAttribute = @"BeatReview";
 			[paragraphStyle setTailIndent:0];
 		}
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		[textView setTypingAttributes:attributes];
+		[_delegate setTypingAttributes:attributes];
 	}
 	
 	// Format scene number as invisible
@@ -455,7 +450,7 @@ static NSString *reviewAttribute = @"BeatReview";
 }
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	NSTextStorage *textStorage = _delegate.textView.textStorage;
+	NSTextStorage *textStorage = _delegate.textStorage;
 	
 	// First clear the background attribute if needed
 	if (clear) [textStorage addAttribute:NSBackgroundColorAttributeName value:UIColor.clearColor range:line.textRange];
@@ -465,8 +460,8 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (_delegate.showRevisions || _delegate.showTags) {
 		// Enumerate attributes
 		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			if (attrs[BeatRevisions.revisionAttribute] && _delegate.showRevisions) {
-				BeatRevisionItem *revision = attrs[BeatRevisions.revisionAttribute];
+			if (attrs[BeatRevisions.attributeKey] && _delegate.showRevisions) {
+				BeatRevisionItem *revision = attrs[BeatRevisions.attributeKey];
 				if (revision.type == RevisionAddition) {
 					[textStorage addAttribute:NSBackgroundColorAttributeName value:revision.backgroundColor range:range];
 				}
@@ -513,8 +508,7 @@ static NSString *reviewAttribute = @"BeatReview";
 	if (!value) return;
 	
 	ThemeManager *themeManager = ThemeManager.sharedManager;
-	UITextView *textView = _delegate.textView;
-	NSTextStorage *textStorage = textView.textStorage;
+	NSTextStorage *textStorage = _delegate.textStorage;
 	
 	NSUInteger symLen = sym.length;
 	NSRange openRange = (NSRange){ range.location, symLen };
@@ -534,24 +528,25 @@ static NSString *reviewAttribute = @"BeatReview";
 		effectiveRange = NSMakeRange(range.location + symLen, 0);
 	}
 	
-	if (key.length) [textView.textStorage addAttribute:key value:value
+	if (key.length) [_delegate.textStorage addAttribute:key value:value
 						range:[self globalRangeFromLocalRange:&effectiveRange
 											 inLineAtPosition:line.position]];
 	
 	if (openRange.length) {
 		// Fuck. We need to format these ranges twice, because there is a weird bug in glyph setter.
-		[textView.textStorage addAttribute:NSForegroundColorAttributeName
-									 value:themeManager.invisibleTextColor
-									 range:[self globalRangeFromLocalRange:&openRange
+		[_delegate.textStorage addAttribute:NSForegroundColorAttributeName
+									  value:themeManager.invisibleTextColor
+									  range:[self globalRangeFromLocalRange:&openRange
 														  inLineAtPosition:line.position]];
-		[textView.textStorage addAttribute:NSForegroundColorAttributeName
-									 value:themeManager.invisibleTextColor
-									 range:[self globalRangeFromLocalRange:&closeRange
+		[_delegate.textStorage addAttribute:NSForegroundColorAttributeName
+									  value:themeManager.invisibleTextColor
+									  range:[self globalRangeFromLocalRange:&closeRange
 														  inLineAtPosition:line.position]];
 		
-		[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor
-					   range:[self globalRangeFromLocalRange:&openRange inLineAtPosition:line.position]];
-		[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor
+		[_delegate addAttribute:NSForegroundColorAttributeName
+						  value:themeManager.invisibleTextColor
+						  range:[self globalRangeFromLocalRange:&openRange inLineAtPosition:line.position]];
+		[_delegate addAttribute:NSForegroundColorAttributeName value:themeManager.invisibleTextColor
 					   range:[self globalRangeFromLocalRange:&closeRange inLineAtPosition:line.position]];
 	}
 }

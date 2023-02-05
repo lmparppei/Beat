@@ -20,9 +20,9 @@
 @property (nonatomic) bool printSceneNumbers;
 @property (atomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) Line* characterInputForLine;
+@property (nonatomic, readonly) NSRange selectedRange;
 
 - (NSInteger)sceneNumberingStartsFrom;
-- (NSRange)selectedRange;
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;
 - (void)applyFormatChanges;
 

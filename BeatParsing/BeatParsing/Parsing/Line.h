@@ -71,6 +71,8 @@ typedef NS_ENUM(NSUInteger, LineType) {
 
 @property (nonatomic, readonly) NSInteger heightInPaginator;
 
+@property (nonatomic) bool collapsed;
+
 - (NSString*)stripFormatting;
 - (bool)isTitlePage;
 - (bool)isInvisible;
@@ -219,6 +221,11 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 #pragma mark Generated metadata
 
 @property (nonatomic, readonly) NSUInteger index; /// Index of line in parser, experimental
+
+
+#pragma mark - Editor booleans
+
+@property (nonatomic) bool collapsed;
 
 
 #pragma mark - Ranges

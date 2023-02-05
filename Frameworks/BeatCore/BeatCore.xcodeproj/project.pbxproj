@@ -22,6 +22,16 @@
 		B633C1ED298C63250011449D /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1EA298C631E0011449D /* BeatLocalization.m */; };
 		B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1EF298C63E60011449D /* BeatAttributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1F0298C63E70011449D /* BeatAttributes.m */; };
+		B6D32021298EBE39003DA45D /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201B298EBE2B003DA45D /* TagDefinition.m */; };
+		B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3201A298EBE2B003DA45D /* TagDefinition.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3201E298EBE2B003DA45D /* BeatTagItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6D32024298EBE45003DA45D /* BeatTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201F298EBE2B003DA45D /* BeatTagItem.m */; };
+		B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D32019298EBE2B003DA45D /* BeatTagging.m */; };
+		B6D32026298EBE45003DA45D /* BeatTagging.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D32018298EBE2B003DA45D /* BeatTagging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6D32027298EBE45003DA45D /* BeatTag.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3201C298EBE2B003DA45D /* BeatTag.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6D32028298EBE45003DA45D /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201D298EBE2B003DA45D /* BeatTag.m */; };
+		B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */; };
+		B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +51,16 @@
 		B633C1EA298C631E0011449D /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
 		B633C1EF298C63E60011449D /* BeatAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatAttributes.h; sourceTree = "<group>"; };
 		B633C1F0298C63E70011449D /* BeatAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatAttributes.m; sourceTree = "<group>"; };
+		B6D32018298EBE2B003DA45D /* BeatTagging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagging.h; sourceTree = "<group>"; };
+		B6D32019298EBE2B003DA45D /* BeatTagging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagging.m; sourceTree = "<group>"; };
+		B6D3201A298EBE2B003DA45D /* TagDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TagDefinition.h; sourceTree = "<group>"; };
+		B6D3201B298EBE2B003DA45D /* TagDefinition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TagDefinition.m; sourceTree = "<group>"; };
+		B6D3201C298EBE2B003DA45D /* BeatTag.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTag.h; sourceTree = "<group>"; };
+		B6D3201D298EBE2B003DA45D /* BeatTag.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTag.m; sourceTree = "<group>"; };
+		B6D3201E298EBE2B003DA45D /* BeatTagItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTagItem.h; sourceTree = "<group>"; };
+		B6D3201F298EBE2B003DA45D /* BeatTagItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagItem.m; sourceTree = "<group>"; };
+		B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein.m"; sourceTree = "<group>"; };
+		B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +96,7 @@
 		B633C1B7298C5F750011449D /* BeatCore */ = {
 			isa = PBXGroup;
 			children = (
+				B6D32029298EBEDA003DA45D /* Extensions */,
 				B633C1B8298C5F750011449D /* BeatCore.h */,
 				B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */,
 				B633C1E0298C60F10011449D /* BeatEditorMode.h */,
@@ -129,9 +150,34 @@
 			children = (
 				B633C1EF298C63E60011449D /* BeatAttributes.h */,
 				B633C1F0298C63E70011449D /* BeatAttributes.m */,
+				B6D32020298EBE2B003DA45D /* Tagging */,
 				B633C1D1298C602C0011449D /* BeatRevisions */,
 			);
 			path = "Screenplay data";
+			sourceTree = "<group>";
+		};
+		B6D32020298EBE2B003DA45D /* Tagging */ = {
+			isa = PBXGroup;
+			children = (
+				B6D32018298EBE2B003DA45D /* BeatTagging.h */,
+				B6D32019298EBE2B003DA45D /* BeatTagging.m */,
+				B6D3201A298EBE2B003DA45D /* TagDefinition.h */,
+				B6D3201B298EBE2B003DA45D /* TagDefinition.m */,
+				B6D3201C298EBE2B003DA45D /* BeatTag.h */,
+				B6D3201D298EBE2B003DA45D /* BeatTag.m */,
+				B6D3201E298EBE2B003DA45D /* BeatTagItem.h */,
+				B6D3201F298EBE2B003DA45D /* BeatTagItem.m */,
+			);
+			path = Tagging;
+			sourceTree = "<group>";
+		};
+		B6D32029298EBEDA003DA45D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */,
+				B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -144,11 +190,16 @@
 				B633C1DA298C60640011449D /* BeatColors.h in Headers */,
 				B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */,
 				B633C1EC298C63210011449D /* BeatLocalization.h in Headers */,
+				B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */,
 				B633C1D8298C60600011449D /* BeatRevisionItem.h in Headers */,
 				B633C1E2298C61150011449D /* BeatEditorDelegate.h in Headers */,
 				B633C1B9298C5F750011449D /* BeatCore.h in Headers */,
-				B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */,
 				B633C1D7298C60600011449D /* BeatRevisions.h in Headers */,
+				B6D32026298EBE45003DA45D /* BeatTagging.h in Headers */,
+				B6D32027298EBE45003DA45D /* BeatTag.h in Headers */,
+				B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */,
+				B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */,
+				B633C1E1298C610B0011449D /* BeatEditorMode.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,9 +272,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B633C1D6298C60600011449D /* BeatRevisions.m in Sources */,
+				B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */,
 				B633C1DB298C60640011449D /* BeatColors.m in Sources */,
+				B6D32024298EBE45003DA45D /* BeatTagItem.m in Sources */,
 				B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */,
+				B6D32021298EBE39003DA45D /* TagDefinition.m in Sources */,
+				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
+				B6D32028298EBE45003DA45D /* BeatTag.m in Sources */,
 				B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -349,6 +405,7 @@
 		B633C1BD298C5F750011449D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -382,6 +439,7 @@
 		B633C1BE298C5F750011449D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;

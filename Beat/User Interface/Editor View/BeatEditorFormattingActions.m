@@ -54,7 +54,7 @@ static NSString *revisionAttribute = @"Revision";
 	if (!firstLine.isTitlePage) {
 		[_delegate addString:[self titlePage] atIndex:0];
 
-		_delegate.textView.selectedRange = NSMakeRange(7, 0);
+		_delegate.selectedRange = NSMakeRange(7, 0);
 	}
 }
 
@@ -125,7 +125,7 @@ static NSString *revisionAttribute = @"Revision";
 			
 			location++;
 		}
-		_delegate.textView.selectedRange = NSMakeRange(location, 0);
+		_delegate.selectedRange = NSMakeRange(location, 0);
 		[_delegate addString:lineBreak atIndex:location];
 	}
 }
@@ -232,7 +232,7 @@ static NSString *revisionAttribute = @"Revision";
 	if (cursorLocation.location  + cursorLocation.length > _delegate.text.length) return;
 	
 	// Check if the selected text is already formated in the specified way
-	NSString *selectedString = [_delegate.textView.string substringWithRange:cursorLocation];
+	NSString *selectedString = [_delegate.text substringWithRange:cursorLocation];
 	NSInteger selectedLength = selectedString.length;
 	NSInteger symbolLength = beginningSymbol.length + endSymbol.length;
 	
@@ -293,7 +293,7 @@ static NSString *revisionAttribute = @"Revision";
 	}
 	
 	// Return range to how it was
-	_delegate.textView.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
+	self.delegate.selectedRange = NSMakeRange(cursorLocation.location+addedCharactersBeforeRange, cursorLocation.length+addedCharactersInRange);
 }
 
 - (void)forceElement:(LineType)lineType {

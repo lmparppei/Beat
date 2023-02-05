@@ -83,11 +83,8 @@
  */
 
 #import <BeatParsing/BeatParsing.h>
-#import <BeatCore/BeatRevisions.h>
+#import <BeatCore/BeatCore.h>
 #import "BeatFDXExport.h"
-#import "BeatTagging.h"
-#import "BeatTag.h"
-#import "TagDefinition.h"
 
 
 #define format(s, ...) [NSString stringWithFormat:s, ##__VA_ARGS__]
