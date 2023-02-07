@@ -16,7 +16,6 @@ import BeatDynamicColor
 import BeatThemes
 
 class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate, iOSDocumentDelegate {
-	var hideFountainMarkup: Bool = false
 	
 	var exportSettings: BeatExportSettings {
 		return BeatExportSettings()
@@ -58,15 +57,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		return BeatUserDefaults.shared().get(BeatSettingScreenplayItemMore) as? String ?? ""
 	}
 	
-	var selectedRange: NSRange {
-		get {
-			return self.textView.selectedRange
-		}
-		set {
-			self.textView.selectedRange = newValue
-		}
-	}
-	
 	func selectedTextRange() -> UITextRange! {
 		return self.textView.selectedTextRange
 	}
@@ -88,7 +78,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		self.mode = mode
 	}
 	
-		
 	var document: iOSDocument?
 	var contentBuffer = ""
 	
@@ -106,6 +95,7 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	var cachedText:NSMutableAttributedString = NSMutableAttributedString()
 	
 	@objc var documentIsLoading = true
+	@objc var hideFountainMarkup: Bool = false
 	
 	@objc var documentSettings:BeatDocumentSettings! { get { return document?.settings } set {} }
 	@objc var printSceneNumbers: Bool = true
@@ -154,6 +144,15 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	@objc var sidebarVisible = false
 	@objc @IBOutlet weak var sidebarConstraint:NSLayoutConstraint!
 	
+	var selectedRange: NSRange {
+		get {
+			return self.textView.selectedRange
+		}
+		set {
+			self.textView.selectedRange = newValue
+		}
+	}
+	
 	var keyboardManager = KeyboardManager()
 		//var documentWindow: UIWindow!
 	
@@ -180,7 +179,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 				// Display the content of the document, e.g.:
 				//self.documentNameLabel.text = self.document?.fileURL.lastPathComponent
 				self.titleBar?.title = self.document?.fileURL.lastPathComponent
-				print("setting up document")
 				
 				self.setupDocument()
 				self.renderDocument()
@@ -221,6 +219,14 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		dismiss(animated: true) {
 			self.document?.close(completionHandler: nil)
 		}
+	}
+	
+	func focusEditor() {
+		// This does nothing in iOS
+	}
+	
+	func getTextView() -> UITextView! {
+		return self.textView as UITextView
 	}
 	
 	

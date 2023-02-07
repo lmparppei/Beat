@@ -11,7 +11,6 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
-#import <BeatDefaults/BeatDefaults.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
 
