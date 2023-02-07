@@ -12,12 +12,14 @@
     #import <UIKit/UIKit.h>
     #define BXFont UIFont
     #define BXChangeType UIDocumentChangeKind
+    #define BXTextView UITextView
     #define BXWindow UIWindow
     #define BXPrintInfo UIPrintInfo
 #else
     #import <Cocoa/Cocoa.h>
     #define BXFont NSFont
     #define BXChangeType NSDocumentChangeType
+    #define BXTextView NSTextView
     #define BXWindow NSWindow
     #define BXPrintInfo NSPrintInfo
 #endif
@@ -48,6 +50,7 @@
 @protocol BeatEditorDelegate <NSObject>
 
 @property (nonatomic, readonly) bool documentIsLoading;
+- (BXTextView*)getTextView;
 
 #if !TARGET_OS_IOS
 @property (weak, readonly) BXWindow* documentWindow;
@@ -200,6 +203,9 @@
 - (void)textDidChange:(NSNotification *)notification;
 - (void)returnToEditor;
 - (void)toggleMode:(BeatEditorMode)mode;
+
+- (void)focusEditor;
+
 @optional - (IBAction)toggleCards:(id)sender;
 
 // Attributes
@@ -210,6 +216,7 @@
 #if TARGET_OS_IOS
     - (CGFloat)fontSize;
 #endif
+
 
 @optional - (NSDictionary*)runningPlugins;
 

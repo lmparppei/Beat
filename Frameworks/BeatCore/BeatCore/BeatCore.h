@@ -32,3 +32,5 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #import "BeatTag.h"
 
 #import "NSString+Levenshtein.h"
+
+#import "BeatUserDefaults.h"
