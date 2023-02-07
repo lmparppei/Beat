@@ -8,27 +8,53 @@
 
 import Foundation
 
-// MARK: Stylesheet
+// MARK: Initialization and stylesheet loading
+
+@objc protocol BeatRenderStyleDelegate {
+	var settings:BeatExportSettings { get }
+}
 
 class BeatRenderStyles:NSObject {
-	@objc static let shared = BeatRenderStyles()
+	@objc static let shared = BeatRenderStyles(stylesheet: "Styles")
+	@objc static let editor = BeatRenderStyles(stylesheet: "EditorStyles")
 	var styles:[String:RenderStyle] = [:]
+	
+	weak var delegate:BeatRenderStyleDelegate?
+	var settings:BeatExportSettings?
+	
+	init(stylesheet:String, delegate:BeatRenderStyleDelegate? = nil, settings:BeatExportSettings? = nil) {
+		self.delegate = delegate
+		self.settings = settings
+		
+		super.init()
+		loadStyles(stylesheet: stylesheet)
+	}
 	
 	override init() {
 		super.init()
-		reloadStyles()
+		loadStyles(stylesheet: "Styles")
 	}
 	
-	func reloadStyles() {
-		let url = Bundle.main.url(forResource: "Styles", withExtension: "beatCSS")
+	init(stylesheet:String) {
+		super.init()
+		loadStyles(stylesheet: stylesheet)
+	}
+	
+	func loadStyles(stylesheet:String = "Styles", additionalStyles:String = "") {
+		let url = Bundle.main.url(forResource: stylesheet, withExtension: "beatCSS")
 		do {
-			let stylesheet = try String(contentsOf: url!)
+			var stylesheet = try String(contentsOf: url!)
+			stylesheet.append("\n\n" + additionalStyles)
+			
 			let parser = CssParser()
-			styles = parser.parse(fileContent: stylesheet)
+			let settings = (self.delegate != nil) ? self.delegate!.settings : self.settings
+			
+			styles = parser.parse(fileContent: stylesheet, settings: settings)
 		} catch {
 			print("Loading stylesheet failed")
 		}
 	}
+	
 	
 	@objc func page() -> RenderStyle {
 		return styles["page"]!

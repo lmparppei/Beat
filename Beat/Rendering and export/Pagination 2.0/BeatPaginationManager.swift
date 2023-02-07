@@ -51,10 +51,15 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	}
 	
 	@objc init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
+		// Load default styles if none were explicitly delivered through export settings
+		if (settings.styles == nil) {
+			settings.styles = BeatRenderStyles()
+		}
+	
 		self.settings = settings
 		self.delegate = delegate
 		self.livePagination = livePagination
-		
+				
 		super.init()
 		
 		if (renderer != nil) {
@@ -65,6 +70,11 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	
 	@objc init(editorDelegate:BeatEditorDelegate) {
 		self.settings = editorDelegate.exportSettings
+		
+		if (settings.styles == nil) {
+			settings.styles = BeatRenderStyles()
+		}
+		
 		super.init()
 	}
 	

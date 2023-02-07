@@ -27,8 +27,8 @@
  
  */
 
+#import <BeatPaginationCore/BeatPaginationCore.h>
 #import "BeatPagination.h"
-#import "BeatFonts.h"
 #import "Beat-Swift.h"
 #import "BeatPaginationBlock.h"
 #import "BeatPaginationBlockGroup.h"
@@ -520,7 +520,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 /// Returns a `Line` object with character cue followed by `(CONT'D)` extension for continuing dialogue block after a page break.
 - (Line*)contdLineFor:(Line*)line
 {
-	NSString *extension = self.delegate.contdString;
+	NSString *extension = self.settings.contd;
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
 	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
@@ -537,7 +537,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 - (Line*)moreLineFor:(Line*)line
 {
 	LineType type = (line.isDualDialogue) ? dualDialogueMore : more;
-	Line *more = [Line.alloc initWithString:self.delegate.moreString type:type];
+	Line *more = [Line.alloc initWithString:self.settings.more type:type];
 	more.position = line.position;
 	more.unsafeForPageBreak = YES;
 	return more;

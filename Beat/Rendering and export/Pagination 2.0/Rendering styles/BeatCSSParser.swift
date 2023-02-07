@@ -9,6 +9,10 @@
 
 import Foundation
 
+protocol BeatCssParserDelegate {
+	func get(key:String)
+}
+
 final class CssParser {
 	
 	var styles:[String:RenderStyle] = [:]
@@ -17,11 +21,15 @@ final class CssParser {
 	let stringTypes:Set = ["textAlign", "text-align"]
 	let boolTypes:Set = ["bold", "italic", "underline", "uppercase"]
 	let userSettings:Set = ["headingStyleBold", "headingStyleUnderline", "sceneHeadingSpacing"]
+
+	var settings:BeatExportSettings?
 	
 	/// Parses the CSS file string into an array of CSS styles.
 	/// - Parameter fileContent: CSS file content.
 	/// - Returns: Array of CSS styles.
-	func parse(fileContent: String) -> [String: RenderStyle] {
+	func parse(fileContent: String, settings:BeatExportSettings? = nil) -> [String: RenderStyle] {
+		self.settings = settings
+		
 		var styles:[String: Dictionary<String, String>] = [:]
 		
 		var pendingStyleName = ""
@@ -117,19 +125,34 @@ final class CssParser {
 		return self.styles
 	}
 	
+	func convertValueToString(_ value:Any) -> String {
+		var userSettingValue = ""
+		
+		if value is Bool { userSettingValue = (value as! Bool) ? "true" : "false" }
+		else if value is Int { userSettingValue = String(value as? Int ?? 0) }
+		else if value is String { userSettingValue = String(value as? String ?? "") }
+		
+		return userSettingValue
+	}
+	
 	func readValue<T: Decodable>(string:String, type: T.Type) -> Any {
 		var value = string
 
 		if value.contains("userSetting(") {
 			for userSetting in userSettings {
-				let s = BeatUserDefaults.shared().get(userSetting)
-				var userSettingValue = ""
+				guard let val = BeatUserDefaults.shared().get(userSetting) else { continue }
 				
-				if s is Bool { userSettingValue = (s as! Bool) ? "true" : "false" }
-				else if s is Int { userSettingValue = String(s as? Int ?? 0) }
-				else if s is String { userSettingValue = String(s as? String ?? "") }
-								
+				var userSettingValue = convertValueToString(val)
 				value = value.replacingOccurrences(of: "userSetting(" + userSetting + ")", with: userSettingValue)
+			}
+		}
+		
+		if value.contains("setting(") && settings != nil {
+			for userSetting in userSettings {
+				guard let val = settings?.value(forKey: userSetting) else { continue }
+				
+				var userSettingValue = convertValueToString(val)
+				value = value.replacingOccurrences(of: "setting(" + userSetting + ")", with: userSettingValue)
 			}
 		}
 		
