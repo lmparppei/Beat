@@ -39,7 +39,8 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	override func awakeFromNib() {
 		self.delegate = self
 		self.dataSource = self
-		self.editorDelegate?.registerEditorView(self)
+		
+		self.editorDelegate?.registerEditorView?(self)
 		
 		reload()
 	}
@@ -74,7 +75,7 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	}
 	
 	func reload() {
-		string = (self.editorDelegate?.textView.attributedString().copy() as! NSAttributedString)
+		string = (self.editorDelegate?.attributedString().copy() as! NSAttributedString)
 		let bounds = self.enclosingScrollView?.contentView.bounds
 		
 		DispatchQueue.global().async { [weak self] in
@@ -146,16 +147,16 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
 		let review = item as! ReviewListItem
 		
-		editorDelegate?.scroll(to: review.range, callback: {
-			self.editorDelegate?.setSelectedRange(NSMakeRange(review.range.location, 0))
-			self.editorDelegate?.textView.window?.makeFirstResponder(self.editorDelegate?.textView)
+		editorDelegate?.scroll?(to: review.range, callback: {
+			self.editorDelegate?.selectedRange = NSMakeRange(review.range.location, 0)
+			self.editorDelegate?.focusEditor?()
 		});
 		
 		return true
 	}
 	
 	override func becomeFirstResponder() -> Bool {
-		editorDelegate?.textView.window?.makeFirstResponder(editorDelegate?.textView)
+		editorDelegate?.focusEditor?()
 		return false
 	}
 }

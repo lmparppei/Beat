@@ -76,7 +76,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
-#import <BeatDefaults/BeatDefaults.h>
 #import <BeatCore/BeatCore.h>
 
 #import "Document.h"
@@ -1284,6 +1283,10 @@ static NSWindow __weak *currentKeyWindow;
 	[_documentWindow makeFirstResponder:self.textView];
 }
 
+/// These are separate getters for easier iOS and Swift integration.
+- (NSTextView*)getTextView {
+	return self.textView;
+}
 - (NSMutableAttributedString*)textStorage {
 	return self.textView.textStorage;
 }

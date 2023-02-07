@@ -28,7 +28,7 @@ class BeatModeDisplay:NSView {
 	}
 	
 	@IBAction func closeMode(sender: Any?) {
-		self.editorDelegate?.mode = 0
+		self.editorDelegate?.mode = .EditMode
 	}
 	
 	

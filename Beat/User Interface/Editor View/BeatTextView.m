@@ -38,7 +38,6 @@
 #import "BeatMeasure.h"
 #import "BeatLayoutManager.h"
 #import "Beat-Swift.h"
-#import "BeatFonts.h"
 #import "BeatEditorFormatting.h"
 
 

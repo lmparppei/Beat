@@ -167,7 +167,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 				previewView.updateSize()
 				
 				// Scroll view to the last edited position
-				self.scrollToRange(self.delegate?.selectedRange() ?? NSMakeRange(0, 0))
+				self.scrollToRange(self.delegate?.selectedRange ?? NSMakeRange(0, 0))
 				
 				// Hide animation
 				self.spinner?.stopAnimation(nil)
@@ -208,9 +208,9 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	/// Closes preview and selects the given range
 	func closeAndJumpToRange(_ range:NSRange) {
-		delegate?.returnToEditor()
-		self.delegate?.setSelectedRange(range)
-		self.delegate?.scroll(to: range, callback: {})
+		delegate?.returnToEditor?()
+		self.delegate?.selectedRange = range
+		self.delegate?.scroll?(to: range, callback: {})
 	}
 }
 

@@ -11,7 +11,7 @@
  
  */
 
-#import <BeatDefaults/BeatDefaults.h>
+#import <BeatCore/BeatUserDefaults.h>
 #import "BeatMarkerScroller.h"
 
 @interface BeatMarkerScroller ()

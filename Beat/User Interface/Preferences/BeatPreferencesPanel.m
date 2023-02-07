@@ -6,11 +6,11 @@
 //  Copyright © 2021 Lauri-Matti Parppei. All rights reserved.
 //
 
-#import <BeatDefaults/BeatDefaults.h>
+#import <BeatCore/BeatUserDefaults.h>
+#import <BeatPaginationCore/BeatFonts.h>
 #import "BeatPreferencesPanel.h"
 #import "Document.h"
 #import "BeatModalInput.h"
-#import "BeatFonts.h"
 
 //#define HEADING_SAMPLE @"INT. SCENE - DAY"
 

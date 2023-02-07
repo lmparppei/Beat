@@ -7,7 +7,7 @@
 //
 
 #import <BeatParsing/BeatParsing.h>
-#import <BeatDefaults/BeatDefaults.h>
+#import <BeatCore/BeatUserDefaults.h>
 #import "BeatAutocomplete.h"
 #import "BeatPlugin.h"
 

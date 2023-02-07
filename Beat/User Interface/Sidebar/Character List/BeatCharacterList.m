@@ -152,7 +152,7 @@
 	NSArray *lines = self.editorDelegate.lines.copy;
 	NSMutableDictionary *charactersAndLines = NSMutableDictionary.dictionary;
 	
-	NSMutableArray *genders = [NSMutableArray array];
+	NSMutableArray *genders = NSMutableArray.new;
 	
 	// Proces in a background thread
 	// (This is pretty light, but still
@@ -176,7 +176,7 @@
 					character = BeatCharacter.alloc.init;
 					character.name = name.copy;
 					character.lines = 1;
-					character.scenes = [NSMutableSet set];
+					character.scenes = NSMutableSet.new;
 					charactersAndLines[name] = character;
 				}
 				
@@ -327,13 +327,6 @@
 }
 
 - (NSArray<NSButton*>*)buttonsForGenders {
-	/*
-	"gender.unspecified" = "Määrittelemätön";
-	"gender.other" = "Muu";
-	"gender.woman" = "Nainen";
-	"gender.man" = "Mies";
-*/
-	
 	NSArray *genders = @[NSLocalizedString(@"gender.unspecified", nil), NSLocalizedString(@"gender.woman", nil), NSLocalizedString(@"gender.man", nil), NSLocalizedString(@"gender.other", nil)];
 	NSMutableArray *buttons = [NSMutableArray array];
 	

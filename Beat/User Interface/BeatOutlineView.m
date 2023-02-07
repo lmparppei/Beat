@@ -15,7 +15,7 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
-#import <BeatDefaults/BeatDefaults.h>
+#import <BeatCore/BeatUserDefaults.h>
 #import "BeatOutlineView.h"
 #import "SceneFiltering.h"
 #import "OutlineViewItem.h"
