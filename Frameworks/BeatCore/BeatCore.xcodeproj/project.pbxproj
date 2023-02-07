@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */; };
+		B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */ = {isa = PBXBuildFile; fileRef = B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1B9298C5F750011449D /* BeatCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1B8298C5F750011449D /* BeatCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1C5298C5FEE0011449D /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1C4298C5FEE0011449D /* BeatParsing.framework */; };
-		B633C1C9298C60040011449D /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1C8298C60040011449D /* BeatDefaults.framework */; };
 		B633C1D6298C60600011449D /* BeatRevisions.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1D0298C602C0011449D /* BeatRevisions.m */; };
 		B633C1D7298C60600011449D /* BeatRevisions.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1CF298C602C0011449D /* BeatRevisions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1D8298C60600011449D /* BeatRevisionItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1CD298C602C0011449D /* BeatRevisionItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -35,6 +36,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B62FB00D298FB662003492B5 /* BeatCore.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatCore.md; sourceTree = "<group>"; };
+		B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatUserDefaults.h; sourceTree = "<group>"; };
+		B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatUserDefaults.m; sourceTree = "<group>"; };
 		B633C1B5298C5F750011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B633C1B8298C5F750011449D /* BeatCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCore.h; sourceTree = "<group>"; };
 		B633C1C0298C5FA50011449D /* BeatColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatColors.h; sourceTree = "<group>"; };
@@ -68,7 +72,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B633C1C9298C60040011449D /* BeatDefaults.framework in Frameworks */,
 				B633C1C5298C5FEE0011449D /* BeatParsing.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,9 +79,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B62FB011298FB6A8003492B5 /* User defaults */ = {
+			isa = PBXGroup;
+			children = (
+				B62FB00E298FB6A5003492B5 /* BeatUserDefaults.h */,
+				B62FB00F298FB6A5003492B5 /* BeatUserDefaults.m */,
+			);
+			path = "User defaults";
+			sourceTree = "<group>";
+		};
 		B633C1AB298C5F750011449D = {
 			isa = PBXGroup;
 			children = (
+				B62FB00D298FB662003492B5 /* BeatCore.md */,
 				B633C1B7298C5F750011449D /* BeatCore */,
 				B633C1B6298C5F750011449D /* Products */,
 				B633C1C3298C5FEE0011449D /* Frameworks */,
@@ -96,13 +109,14 @@
 		B633C1B7298C5F750011449D /* BeatCore */ = {
 			isa = PBXGroup;
 			children = (
-				B6D32029298EBEDA003DA45D /* Extensions */,
 				B633C1B8298C5F750011449D /* BeatCore.h */,
 				B633C1DF298C60DF0011449D /* BeatEditorDelegate.h */,
 				B633C1E0298C60F10011449D /* BeatEditorMode.h */,
+				B62FB011298FB6A8003492B5 /* User defaults */,
 				B633C1EE298C63C10011449D /* Screenplay data */,
 				B633C1EB298C631E0011449D /* Localization */,
 				B633C1C2298C5FA50011449D /* BeatColors */,
+				B6D32029298EBEDA003DA45D /* Extensions */,
 			);
 			path = BeatCore;
 			sourceTree = "<group>";
@@ -196,6 +210,7 @@
 				B633C1B9298C5F750011449D /* BeatCore.h in Headers */,
 				B633C1D7298C60600011449D /* BeatRevisions.h in Headers */,
 				B6D32026298EBE45003DA45D /* BeatTagging.h in Headers */,
+				B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */,
 				B6D32027298EBE45003DA45D /* BeatTag.h in Headers */,
 				B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */,
 				B6D32023298EBE45003DA45D /* BeatTagItem.h in Headers */,
@@ -272,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B633C1D6298C60600011449D /* BeatRevisions.m in Sources */,
+				B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */,
 				B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */,
 				B633C1DB298C60640011449D /* BeatColors.m in Sources */,
 				B6D32024298EBE45003DA45D /* BeatTagItem.m in Sources */,

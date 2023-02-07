@@ -14,7 +14,6 @@
 #import "Line.h"
 #import "BeatHTMLScript.h"
 #import "BeatPlugin.h"
-#import "NSString+Levenshtein.h"
 #import "UnzipKit.h"
 #import "WebPrinter.h"
 

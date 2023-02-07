@@ -77,6 +77,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (bool)isTitlePage;
 - (bool)isInvisible;
 - (bool)isDialogue;
+- (bool)isDualDialogue;
 - (bool)isDialogueElement;
 - (bool)isDualDialogueElement;
 - (bool)isOutlineElement;

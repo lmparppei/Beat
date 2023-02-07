@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import <BeatParsing/BeatParsing.h>
-#import <BeatDefaults/BeatDefaults.h>
 #import <BeatCore/BeatCore.h>
 
 #import "BeatEpisodePrinter.h"
