@@ -1619,7 +1619,7 @@
                 <outlet property="textField" destination="hPv-kP-W8a" id="QYQ-aA-vY8"/>
             </connections>
         </customObject>
-        <customObject id="Qdx-LL-csu" customClass="BeatReview" customModule="Beat" customModuleProvider="target">
+        <customObject id="Qdx-LL-csu" customClass="BeatReview" customModule="BeatCore">
             <connections>
                 <outlet property="delegate" destination="-2" id="VoA-7l-8YG"/>
             </connections>

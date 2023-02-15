@@ -2497,6 +2497,8 @@ static bool _skipAutomaticLineBreaks = false;
  Actual formatting is handled in BeatFormatting, and these methods either forward there or handle specific tasks, such as formatting all lines etc.
  */
 
+- (CGFloat)editorLineHeight { return BeatEditorFormatting.editorLineHeight; }
+
 - (void)formatLine:(Line*)line {
 	// Forwarding for delegation
 	[_formatting formatLine:line];

@@ -142,7 +142,7 @@ final class CssParser {
 			for userSetting in userSettings {
 				guard let val = BeatUserDefaults.shared().get(userSetting) else { continue }
 				
-				var userSettingValue = convertValueToString(val)
+				let userSettingValue = convertValueToString(val)
 				value = value.replacingOccurrences(of: "userSetting(" + userSetting + ")", with: userSettingValue)
 			}
 		}
@@ -151,7 +151,7 @@ final class CssParser {
 			for userSetting in userSettings {
 				guard let val = settings?.value(forKey: userSetting) else { continue }
 				
-				var userSettingValue = convertValueToString(val)
+				let userSettingValue = convertValueToString(val)
 				value = value.replacingOccurrences(of: "setting(" + userSetting + ")", with: userSettingValue)
 			}
 		}

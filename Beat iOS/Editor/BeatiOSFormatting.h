@@ -11,7 +11,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef enum {
+	titlePageSubField = typeCount + 1,
+	subSection
+} ParagraphStyleType;
+
 @interface BeatiOSFormatting : NSObject
++ (CGFloat)editorLineHeight;
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 

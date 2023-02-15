@@ -21,12 +21,14 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 	SelectTag
 };
 
+@class BeatReview;
+
 @protocol NCRAutocompleteTableViewDelegate <NSObject>
 @optional
 - (NSImage *)textView:(NSTextView *)textView imageForCompletion:(NSString *)word;
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index;
 @end
- 
+
 @protocol BeatTextViewDelegate <NSTextViewDelegate, BeatEditorDelegate>
 
 @property (nonatomic) CGFloat magnification;
@@ -44,7 +46,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (readonly) bool documentIsLoading;
 @property (nonatomic) bool skipSelectionChangeEvent;
 
-@property (nonatomic) id review;
+@property (nonatomic) BeatReview* review;
 
 @property (readonly) NSRange lastChangedRange;
 

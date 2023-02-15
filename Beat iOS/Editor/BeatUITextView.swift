@@ -18,6 +18,12 @@ class BeatUITextView: UITextView {
 	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
 	var pinchRecognizer = UIGestureRecognizer()
 	
+	required init?(coder: NSCoder) {
+		super.init(coder: coder)
+		
+		self.textContainer.replaceLayoutManager(BeatLayoutManager())
+	}
+	
 	class func linePadding() -> CGFloat {
 		return 40.0
 	}
@@ -47,6 +53,11 @@ class BeatUITextView: UITextView {
 		// Delegates
 		enclosingScrollView?.delegate = self
 		layoutManager.delegate = self
+		
+		let layoutMgr = self.layoutManager as? BeatLayoutManager
+		if (layoutMgr != nil && self.editorDelegate != nil) {
+			layoutMgr?.editorDelegate = self.editorDelegate!
+		}
 		
 		// View setup
 		self.textContainer.widthTracksTextView = false

@@ -15,6 +15,7 @@
  */
 
 import Cocoa
+import BeatCore
 
 struct ReviewListItem {
 	var content = ""

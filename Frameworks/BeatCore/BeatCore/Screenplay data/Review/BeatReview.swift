@@ -29,19 +29,30 @@
  
  */
 
+#if os(macOS)
 import Cocoa
+#else
+import UIKit
+#endif
+import UXKit
 
-protocol BeatReviewDelegate: AnyObject {
+public protocol BeatReviewDelegate: AnyObject {
 	func confirm(sender:Any?)
 	//func forwardKeypress(event:NSEvent)
 }
 
+public protocol BeatReviewInterface {
+    func showReviewItem(range:NSRange, forEditing:Bool)
+    func applyReview()
+    func deleteReview(item:BeatReviewItem)
+}
+
 // MARK: Review item
 
-class BeatReviewItem:NSObject, NSCopying, NSCoding {
-	var string:NSString! = ""
+@objc public class BeatReviewItem:NSObject, NSCopying, NSCoding {
+	public var string:NSString! = ""
 	
-	@objc var emptyReview:Bool {
+	@objc public var emptyReview:Bool {
 		get {
 			if (string.length == 0) {
 				return true
@@ -51,21 +62,21 @@ class BeatReviewItem:NSObject, NSCopying, NSCoding {
 		}
 	}
 	
-	@objc init(reviewString:NSString?) {
+	@objc public init(reviewString:NSString?) {
 		string = reviewString ?? ""
 		super.init()
 	}
 	
-	required init?(coder: NSCoder) {
+	public required init?(coder: NSCoder) {
 		super.init()
 		string = coder.decodeObject(forKey: "string") as? NSString ?? ""
 	}
 	
-	func encode(with coder: NSCoder) {
+	public func encode(with coder: NSCoder) {
 		coder.encode(string, forKey: "string")
 	}
 	
-	func copy(with zone: NSZone? = nil) -> Any {
+	public func copy(with zone: NSZone? = nil) -> Any {
 		let item = BeatReviewItem(reviewString: self.string)
 		return item
 	}
@@ -74,46 +85,56 @@ class BeatReviewItem:NSObject, NSCopying, NSCoding {
 
 // MARK: Review manager class
 
-class BeatReview: NSObject {
-	@objc var popover:NSPopover
-	@objc var editorView:BeatReviewEditor
+@objc public class BeatReview: NSObject {
+    #if os(macOS)
+        @objc public var popover:NSPopover
+        @objc public var editorView:BeatReviewEditor
+    #else
+        @objc public var popover:UIPopoverPresentationController
+    #endif
 	
 	@IBOutlet var delegate:BeatEditorDelegate?
-	//@IBOutlet weak var textView:BeatTextView?
-	
+    
 	var currentRange:NSRange = NSMakeRange(0, 0)
 	var item:BeatReviewItem?
 	
-	let editorContentSize = NSMakeSize(200, 160)
+    let editorContentSize = CGSizeMake(200, 160)
 	
-	@objc class func reviewColor() -> NSColor {
-		return NSColor.init(red: 255.0 / 255.0, green: 229.0 / 255.0, blue: 117.0 / 255, alpha: 1.0)
+	@objc public class func reviewColor() -> UXColor {
+		return UXColor.init(red: 255.0 / 255.0, green: 229.0 / 255.0, blue: 117.0 / 255, alpha: 1.0)
 	}
-	@objc class func attributeKey () -> NSAttributedString.Key {
+	@objc public class func attributeKey () -> NSAttributedString.Key {
 		return NSAttributedString.Key(rawValue: "BeatReview")
 	}
 		
-	override init() {
+	override public init() {
 		// Register custom attribute 
 		BeatAttributes.registerAttribute(BeatReview.attributeKey().rawValue)
 		
+        #if os(macOS)
 		popover = NSPopover()
 		editorView = BeatReviewEditor()
 		popover.contentViewController = editorView
+        
+        if #available(macOS 10.14, *) {
+            popover.appearance = NSAppearance(named: .aqua)
+        }
+        #else
+        
+        print("Implement review manager")
+        
+        #endif
 	
-		if #available(macOS 10.14, *) {
-			popover.appearance = NSAppearance(named: .aqua)
-		}
 		
 		super.init()
 	}
 	
-	@objc func setup() {
+	@objc public func setup() {
 		if (delegate == nil) { return }		
 		setupReviews(ranges: delegate!.documentSettings.get(DocSettingReviews) as? NSArray ?? [])
 	}
 	
-	@objc func rangesForSaving(string:NSAttributedString) -> NSArray {
+	@objc public func rangesForSaving(string:NSAttributedString) -> NSArray {
 		let ranges:NSMutableArray = NSMutableArray()
 		var prevRange:NSRange = NSMakeRange(0, 0)
 		var prevString:NSString = ""
@@ -125,7 +146,7 @@ class BeatReview: NSObject {
 				return
 			}
 			
-			if (NSMaxRange(prevRange) + 1 == range.location && item.string.isEqual(to: prevString)) {
+			if (NSMaxRange(prevRange) + 1 == range.location && item.string.isEqual(to: prevString as String)) {
 				print("We should fix this attribute...")
 			}
 			
@@ -143,7 +164,7 @@ class BeatReview: NSObject {
 		return ranges
 	}
 	
-	@objc func setupReviews(ranges:NSArray) {
+	@objc public func setupReviews(ranges:NSArray) {
 		guard let delegate = self.delegate else { return }
 		
 		for item in ranges {
@@ -163,11 +184,83 @@ class BeatReview: NSObject {
 			}
 		}
 	}
+    
+    @objc public func saveReview(item: BeatReviewItem) {
+        let textView = delegate?.getTextView()
+        let trimmedString = item.string.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if (trimmedString.count > 0 && trimmedString != "") {
+            // Save review if it's not empty
+            delegate?.addAttribute?(BeatReview.attributeKey().rawValue, value: item, range: currentRange)
+        }
+        
+        self.delegate?.renderBackground?(for: currentRange)
+        delegate?.textDidChange?(Notification(name: Notification.Name(rawValue: "Review edit")))
+        #if os(macOS)
+        delegate?.updateChangeCount?(.changeDone)
+        #else
+        delegate?.updateChangeCount?(.done)
+        #endif
+    }
 	
-	@objc func showReviewItem(range:NSRange, forEditing:Bool) {
+    public func deleteReview(item:BeatReviewItem) {
+        var deleteRange = NSMakeRange(NSNotFound, 0)
+        delegate?.textStorage?().enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, delegate?.text().count ?? 0), using: { value, range, stop in
+            let review = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
+            
+            if (review == item) {
+                deleteRange = range
+                stop.pointee = true
+            }
+        })
+        
+        if (deleteRange.location != NSNotFound) {
+            delegate?.textStorage?().removeAttribute(BeatReview.attributeKey(), range: deleteRange)
+            delegate?.textDidChange?(Notification(name: Notification.Name(rawValue: "Review deletion")))
+            
+#if os(macOS)
+            editorView.item = nil
+            popover.close()
+            
+            delegate?.renderBackground?(for: deleteRange)
+            delegate?.updateChangeCount?(.changeDone)
+#endif
+        }
+
+        
+        // Commit to attributed text cache
+        delegate?.attributedString()
+    }
+    
+    @objc public func applyReview() {
+        #if os(macOS)
+            self.closePopover()
+        #endif
+            
+        let textView = delegate?.getTextView()
+        
+        // Move the cursor at the end of review
+        var effectiveRange: NSRange = NSMakeRange(0, 0)
+        guard let textStorage = textView?.textStorage else { return }
+        
+        let attr:BeatReviewItem = textStorage.attribute(BeatReview.attributeKey(), at:textView?.selectedRange().location ?? 0,
+                                                        longestEffectiveRange: &effectiveRange,
+                                                        in: NSMakeRange(0, delegate?.text().count ?? 0)) as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
+        
+        if (effectiveRange.location != NSNotFound && currentRange.length > 0 && !attr.emptyReview) {
+            delegate?.selectedRange = NSMakeRange(effectiveRange.location + effectiveRange.length, 0)
+        }
+        
+        // Commit to attributed text cache
+        delegate?.attributedString()
+    }
+    
+#if os(macOS)
+    
+	@objc public func showReviewItem(range:NSRange, forEditing:Bool) {
 		// Initialize empty review item
 		var reviewItem = BeatReviewItem(reviewString: "")
-		var textView = delegate?.getTextView()
+		let textView = delegate?.getTextView()
 		let effectiveRange:NSRangePointer? = nil
 		
 		// If the cursor landed on a review, display the review at that location
@@ -253,67 +346,9 @@ class BeatReview: NSObject {
 			editorView.editor?.window?.makeFirstResponder(editorView.editor)
 		}
 	}
+
 	
-	@objc func saveReview(item: BeatReviewItem) {
-		var textView = delegate?.getTextView()
-		let trimmedString = item.string.trimmingCharacters(in: .whitespacesAndNewlines)
-		
-		if (trimmedString.count > 0 && trimmedString != "") {
-			// Save review if it's not empty
-			textView?.textStorage?.addAttribute(BeatReview.attributeKey(), value: item, range: currentRange)
-		}
-		
-		self.delegate?.renderBackground?(for: currentRange)
-		delegate?.textDidChange?(Notification(name: Notification.Name(rawValue: "Review edit")))
-		delegate?.updateChangeCount?(.changeDone)
-	}
-	
-	@objc func applyReview() {
-		self.closePopover()
-		var textView = delegate?.getTextView()
-		
-		// Move the cursor at the end of review
-		var effectiveRange: NSRange = NSMakeRange(0, 0)
-		let attr:BeatReviewItem = textView?.textStorage?.attribute(BeatReview.attributeKey(),
-																			at:textView?.selectedRange().location ?? 0,
-																			longestEffectiveRange: &effectiveRange,
-																   in: NSMakeRange(0, delegate?.text().count ?? 0))
-								  as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
-		
-		if (effectiveRange.location != NSNotFound && currentRange.length > 0 && !attr.emptyReview) {
-			delegate?.selectedRange = NSMakeRange(effectiveRange.location + effectiveRange.length, 0)
-		}
-		
-		// Commit to attributed text cache
-		delegate?.getAttributedText()
-	}
-	
-	func deleteReview(item:BeatReviewItem) {
-		var deleteRange = NSMakeRange(NSNotFound, 0)
-		delegate?.textStorage?().enumerateAttribute(BeatReview.attributeKey(), in: NSMakeRange(0, delegate?.text().count ?? 0), using: { value, range, stop in
-			let review = value as? BeatReviewItem ?? BeatReviewItem(reviewString: "")
-			
-			if (review == item) {
-				deleteRange = range
-				stop.pointee = true
-			}
-		})
-		
-		if (deleteRange.location != NSNotFound) {
-			editorView.item = nil
-			delegate?.textStorage?().removeAttribute(BeatReview.attributeKey(), range: deleteRange)
-			delegate?.textDidChange?(Notification(name: Notification.Name(rawValue: "Review deletion")))
-			popover.close()
-			
-			delegate?.renderBackground?(for: deleteRange)
-			delegate?.updateChangeCount?(.changeDone)
-		}
-		
-		// Commit to attributed text cache
-		delegate?.getAttributedText()
-	}
-	
-	@objc func closePopover() {
+	@objc public func closePopover() {
 		// When closing, let's see if the text view is empty.
 		// If so, remove the review altogether.
 		let string = editorView.editor?.string.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -324,9 +359,13 @@ class BeatReview: NSObject {
 		editorView.shown = false
 		popover.close()
 	}
+#endif
+    
 }
 
-class BeatReviewEditor: NSViewController, NSTextViewDelegate, BeatReviewDelegate {
+#if os(macOS)
+
+@objc public class BeatReviewEditor: UXViewController, BeatReviewDelegate, UXTextViewDelegate {
 	@IBOutlet weak var editor:BeatReviewTextView?
 	@IBOutlet weak var editButton:NSButton?
 	
@@ -335,37 +374,38 @@ class BeatReviewEditor: NSViewController, NSTextViewDelegate, BeatReviewDelegate
 	weak var controller:BeatReview?
 	
 	init() {
-		super.init(nibName: "ReviewView", bundle: Bundle.main)
+        let bundle = Bundle(for: type(of: self))
+		super.init(nibName: "ReviewView", bundle: bundle)
 	}
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 	}
 	
-	override func dismiss(_ viewController: NSViewController) {
+	override public func dismiss(_ viewController: UXViewController) {
 		editor = nil
 		editButton = nil
 		super.dismiss(viewController)
 	}
 	
-	override func viewDidLoad() {
+	override public func viewDidLoad() {
 		editor?.delegate = self
 		editor?.reviewDelegate = self
 		editor?.textContainerInset = NSMakeSize(5.0, 8.0)
 	}
 	
-	@IBAction func confirm(sender:Any?) {
+	@IBAction public func confirm(sender:Any?) {
 		item?.string = editor?.string as? NSString
 		controller?.applyReview()
 	}
 	
-	@IBAction func edit(sender:Any?) {
+	@IBAction public func edit(sender:Any?) {
 		editor?.isEditable = true
 		editor?.window?.makeFirstResponder(editor)
 		controller?.popover.contentSize = controller?.editorContentSize ?? NSMakeSize(200, 160)
 		editButton?.isHidden = true
 	}
 	
-	@IBAction func delete(sender:Any?) {
+	@IBAction public func delete(sender:Any?) {
 		if (item != nil) {
 			controller?.deleteReview(item: item!)
 		}
@@ -382,7 +422,7 @@ class BeatReviewEditor: NSViewController, NSTextViewDelegate, BeatReviewDelegate
 	
 	/* Text view delegation */
 	
-	func textDidChange(_ notification: Notification) {
+    public func textDidChange(_ notification: Notification) {
 		if (shown) {
 			item?.string = editor?.string as? NSString
 			
@@ -392,10 +432,14 @@ class BeatReviewEditor: NSViewController, NSTextViewDelegate, BeatReviewDelegate
 	}
 }
 
-class BeatReviewTextView:NSTextView {
+#endif
+
+@objc public class BeatReviewTextView:UXTextView {
 	weak var reviewDelegate: BeatReviewDelegate?
-	
-	override func keyDown(with event: NSEvent) {
+	    
+    #if os(macOS)
+
+	override public func keyDown(with event: NSEvent) {
 		/*
 		 
 		 The following doesn't work:
@@ -418,7 +462,8 @@ class BeatReviewTextView:NSTextView {
 		
 		super.keyDown(with: event)
 	}
-	
+    
+    #endif
 }
 
 /*
@@ -426,25 +471,78 @@ class BeatReviewTextView:NSTextView {
  Popover views
  
  */
-
-class PopoverContentView:NSView {
+#if os(macOS)
+class PopoverContentView:UXView {
 	var backgroundView:PopoverBackgroundView?
+    
 	override func viewDidMoveToWindow() {
 		super.viewDidMoveToWindow()
 		if let frameView = self.window?.contentView?.superview {
 			if backgroundView == nil {
 				backgroundView = PopoverBackgroundView(frame: frameView.bounds)
-				backgroundView!.autoresizingMask = NSView.AutoresizingMask([.width, .height]);
+				backgroundView!.autoresizingMask = UXView.AutoresizingMask([.width, .height]);
 				frameView.addSubview(backgroundView!, positioned: NSWindow.OrderingMode.below, relativeTo: frameView)
 			}
 		}
 	}
 }
+#endif
 
-class PopoverBackgroundView:NSView {
+class PopoverBackgroundView:UXView {
+    #if os(macOS)
 	override func draw(_ dirtyRect: NSRect) {
 		BeatReview.reviewColor().set()
 		self.bounds.fill()
 	}
+    #else
+    override func awakeFromNib() {
+        self.layer.backgroundColor = BeatReview.reviewColor().cgColor
+    }
+    #endif
 }
 
+#if os(iOS)
+class PopoverContentViewController: UIViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = .systemBackground
+        
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(systemName: "square.grid.2x2.fill"), for: .normal)
+        button.addTarget(self, action: #selector(displayPopover), for: .touchUpInside)
+        self.view.addSubview(button)
+        
+        NSLayoutConstraint.activate([
+            button.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 100),
+            button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            button.widthAnchor.constraint(equalToConstant: 40),
+            button.heightAnchor.constraint(equalToConstant: 40),
+        ])
+        
+    }
+    
+    @IBAction func displayPopover(sender: UIButton!) {
+        let popoverVC = PopoverViewController()
+        popoverVC.modalPresentationStyle = .popover
+        popoverVC.popoverPresentationController?.sourceView = sender
+        popoverVC.popoverPresentationController?.permittedArrowDirections = .up
+        popoverVC.popoverPresentationController?.delegate = self
+        self.present(popoverVC, animated: true, completion: nil)
+    }
+}
+
+extension UIViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .none
+    }
+}
+
+class PopoverViewController: UIViewController {
+    override func viewDidLoad() {
+        self.view.backgroundColor = .systemGray
+        self.preferredContentSize = CGSize(width: 300, height: 200)
+    }
+}
+#endif

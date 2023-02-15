@@ -2,10 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Frameworks/BeatCore/BeatCore.xcodeproj">
+      location = "group:Beat.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Beat.xcodeproj">
+      location = "group:Frameworks/BeatCore/BeatCore.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Beat iOS.xcodeproj">
@@ -18,5 +18,8 @@
    </FileRef>
    <FileRef
       location = "group:Frameworks/BeatThemes/BeatThemes.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Frameworks/UXKit/UXKit.xcodeproj">
    </FileRef>
 </Workspace>

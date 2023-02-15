@@ -17,8 +17,8 @@
 #import <BeatCore/BeatCore.h>
 
 #import "BeatEditorFormatting.h"
-#import "Beat-Swift.h"
-#import "BeatMeasure.h"
+//#import "Beat-Swift.h"
+//#import "BeatMeasure.h"
 #import "NSFont+CFTraits.h"
 
 @interface BeatEditorFormatting()
@@ -440,7 +440,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// First clear the background attribute if needed
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 	}
-	 
+	
 	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:line.range];
 	
 	if (_delegate.showRevisions) {

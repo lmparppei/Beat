@@ -31,12 +31,12 @@
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 #import "BeatTextView.h"
 #import "ScrollView.h"
 #import "BeatPasteboardItem.h"
 #import "BeatMeasure.h"
-#import "BeatLayoutManager.h"
 #import "Beat-Swift.h"
 #import "BeatEditorFormatting.h"
 
@@ -157,7 +157,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// to fit our revision markers in the margin
 	
 	BeatLayoutManager *layoutMgr = BeatLayoutManager.new;
-	layoutMgr.textView = self;
+	//layoutMgr.textView = self;
 	[self.textContainer replaceLayoutManager:layoutMgr];
 	self.textContainer.lineFragmentPadding = [BeatTextView linePadding];
 	
@@ -171,6 +171,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 
 
 - (void)awakeFromNib {
+	((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
+	
 	self.matches = NSMutableArray.array;
 	self.pageBreaks = NSArray.new;
 	
@@ -739,7 +741,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			[_editorDelegate.review showReviewItemWithRange:NSMakeRange(pos, 0) forEditing:NO];
 			[self.window makeFirstResponder:self];
 		} else {
-			[[_editorDelegate.review popover] close];
+			[_editorDelegate.review.popover close];
 		}
 	}
 	

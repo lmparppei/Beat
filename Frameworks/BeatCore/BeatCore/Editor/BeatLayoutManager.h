@@ -7,7 +7,6 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "BeatTextView.h"
 #import <BeatCore/BeatEditorDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,8 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface BeatLayoutManager : NSLayoutManager
-@property(atomic, weak) id<BeatLayoutManagerDelegate> delegate;
-@property (nonatomic, weak) BeatTextView * textView;
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)editorDelegate;
+@property (nonatomic) id<BeatEditorDelegate> editorDelegate;
+@property (atomic, weak) id<BeatLayoutManagerDelegate> delegate;
+//@property (nonatomic, weak) BeatTextView * textView;
 @end
 
 NS_ASSUME_NONNULL_END

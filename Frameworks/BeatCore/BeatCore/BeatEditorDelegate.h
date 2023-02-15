@@ -51,6 +51,7 @@
 
 @property (nonatomic, readonly) bool documentIsLoading;
 - (BXTextView*)getTextView;
+- (CGFloat)editorLineHeight;
 
 #if !TARGET_OS_IOS
 @property (weak, readonly) BXWindow* documentWindow;
