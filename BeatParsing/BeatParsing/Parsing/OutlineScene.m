@@ -121,7 +121,7 @@
 	if (!_delegate) return _length;
 	if (self.type == synopse) return self.line.range.length;
 	
-	NSArray *lines = self.delegate.lines;
+	NSArray <Line*> *lines = self.delegate.lines;
 	NSInteger index = [lines indexOfObject:self.line];
 	
 	NSInteger length = -1;
@@ -137,7 +137,7 @@
 	}
 	
 	if (length == -1) {
-		return [(Line*)lines.lastObject position] - self.position;
+		return NSMaxRange(lines.lastObject.textRange) - self.position;
 	}
 	
 	return length;

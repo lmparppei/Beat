@@ -2064,10 +2064,6 @@ static NSDictionary* patterns;
 		}
 	}
 	if (sceneIndex == 0) [_outline removeAllObjects];
-	
-	OutlineScene *lastScene = _outline.lastObject;
-	Line *lastLine = _lines.lastObject;
-	lastScene.length = lastLine.position + lastLine.string.length - lastScene.position;
 }
 
 /*
@@ -2560,7 +2556,10 @@ NSUInteger prevLineAtLocationIndex = 0;
 	NSArray *outline = self.safeOutline; // Thread-safe outline
 	
 	// When length is zero, return just the scene at the beginning of range
-	if (range.length == 0) return @[ [self sceneAtPosition:range.location] ];
+    if (range.length == 0) {
+        OutlineScene* scene = [self sceneAtPosition:range.location];
+        return (scene != nil) ? @[scene] : @[];
+    }
 	
 	for (OutlineScene* scene in outline) {
 		NSRange intersection = NSIntersectionRange(range, scene.range);
@@ -2574,7 +2573,10 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 - (OutlineScene*)sceneAtPosition:(NSInteger)index {
 	for (OutlineScene *scene in self.safeOutline) {
-		if (NSLocationInRange(index, scene.range) && scene.line) return scene;
+        NSLog(@"scene: %@", scene);
+        NSLog(@"  ..%lu/%lu", scene.position, scene.length);
+        NSLog(@"   looking for %lu", index);
+		if (NSLocationInRange(index, scene.range) && scene.line != nil) return scene;
 	}
 	return nil;
 }

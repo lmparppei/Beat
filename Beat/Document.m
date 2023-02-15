@@ -3099,10 +3099,12 @@ static bool _skipAutomaticLineBreaks = false;
 	[[sender representedObject] performWithItems:@[self.fileURL]];
 }
 
+/*
 -(NSMenu *)textView:(NSTextView *)view menu:(NSMenu *)menu forEvent:(NSEvent *)event atIndex:(NSUInteger)charIndex {
-	return self.textView.contextMenu;
+	return [self.textView menu];
+	//return self.textView.contextMenu;
 }
-
+*/
 
 #pragma mark - Themes & UI
 
@@ -3581,7 +3583,7 @@ static bool _skipAutomaticLineBreaks = false;
 	
 	NSRange range = self.selectedRange;
 	NSArray *scenes = [_parser scenesInRange:range];
-	
+		
 	for (OutlineScene* scene in scenes) {
 		[self setColor:color forScene:scene];
 	}

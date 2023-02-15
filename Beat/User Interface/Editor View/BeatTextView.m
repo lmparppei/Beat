@@ -1339,9 +1339,22 @@ Line *cachedRectLine;
 
 #pragma mark - Context Menu
 
+
 -(NSMenu *)menu {
-	return self.contextMenu.copy;
+	static NSMenu* menu;
+	if (menu == nil) {
+		menu = [super menu];
+		[menu addItem:NSMenuItem.separatorItem];
+		
+		for (id item in self.contextMenu.itemArray) {
+			[menu addItem:[item copy]];
+		}
+	}
+	
+	return menu;
+	//return self.contextMenu.copy;
 }
+
 
 #pragma mark - Scrolling interface
 

@@ -1674,7 +1674,6 @@
                     <viewController key="viewController" id="1lb-pf-av9">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="kVd-IJ-8g1">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="OutlineIcon_white" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OS4-Pc-U6L">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1689,7 +1688,6 @@
                     <viewController key="viewController" id="2hM-bM-hIJ">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="q8P-yB-ZHg">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="CardsIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="b8j-5x-Bvp">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1704,7 +1702,6 @@
                     <viewController key="viewController" id="s2w-pc-SMc">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LJ9-op-UOF">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="TimelineIcon_white" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Ysm-8B-b7r">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1720,7 +1717,6 @@
                     <viewController key="viewController" id="4Ye-z8-Rbe">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EX8-3T-2S9">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoUpTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="w9h-KQ-O8T">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -1735,7 +1731,6 @@
                     <viewController key="viewController" id="f5E-6W-jOD">
                         <button key="view" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zLo-23-u8a">
                             <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             <buttonCell key="cell" type="push" bezelStyle="rounded" image="NSTouchBarGoDownTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TaB-Om-lXF">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2131,104 +2126,6 @@ Gw
         </menu>
         <menu id="DrH-zx-R7H" userLabel="TextView Context Menu">
             <items>
-                <menuItem title="Cut" keyEquivalent="x" id="axM-px-rlb">
-                    <connections>
-                        <action selector="cut:" target="-1" id="aP6-Fj-AeC"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Copy" keyEquivalent="c" id="Lwv-Iv-oxi">
-                    <connections>
-                        <action selector="copy:" target="-1" id="Ig9-xd-oF2"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Paste" keyEquivalent="v" id="cDb-FF-7Yh">
-                    <connections>
-                        <action selector="paste:" target="-1" id="DJV-ac-rnG"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="FK8-jq-0Bd"/>
-                <menuItem title="Transformations" id="hsK-HD-ZF6">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Transformations" id="3Ww-vZ-GWB">
-                        <items>
-                            <menuItem title="Make Upper Case" id="gYW-We-YV1">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="uppercaseWord:" target="-1" id="Qe7-xp-GlK"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Make Lower Case" id="jZI-02-ygY">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="lowercaseWord:" target="-1" id="1Ad-In-65q"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Capitalize" id="KCV-1L-Tgi">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="capitalizeWord:" target="-1" id="Jrn-VQ-ei8"/>
-                                </connections>
-                            </menuItem>
-                        </items>
-                    </menu>
-                </menuItem>
-                <menuItem title="Speech" id="zdG-bo-7vy">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Speech" id="ALA-vh-Qmm">
-                        <items>
-                            <menuItem title="Start Speaking" id="iSJ-Qh-fbM">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="startSpeaking:" target="-1" id="hlL-3L-fHX"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Stop Speaking" id="OBz-up-lLC">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="stopSpeaking:" target="-1" id="pTa-ow-BQF"/>
-                                </connections>
-                            </menuItem>
-                        </items>
-                    </menu>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="lWQ-M3-8iO"/>
-                <menuItem title="Spelling and Grammar" id="9mq-p8-xgn">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Spelling" id="NGQ-s0-1UN">
-                        <items>
-                            <menuItem title="Show Spelling and Grammar" keyEquivalent=":" id="NCB-Un-1Sv">
-                                <connections>
-                                    <action selector="showGuessPanel:" target="-1" id="cwF-JJ-mIb"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Check Document Now" keyEquivalent=";" id="PI0-iU-WRM">
-                                <connections>
-                                    <action selector="checkSpelling:" target="-1" id="HbK-2U-nam"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="hJ6-CD-PSn"/>
-                            <menuItem title="Check Spelling While Typing" id="QNX-Vh-rk0">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleContinuousSpellChecking:" target="-1" id="dxg-8m-7u9"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Check Grammar With Spelling" id="Qv9-dn-iAA">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleGrammarChecking:" target="-1" id="HwQ-gf-qay"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Correct Spelling Automatically" id="Atc-GY-N44">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="toggleAutomaticSpellingCorrection:" target="-1" id="hti-H2-VeB"/>
-                                </connections>
-                            </menuItem>
-                        </items>
-                    </menu>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="NhL-UV-6hs"/>
                 <menuItem title="Scene Color" id="xjT-UK-F6b">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Scene Color" id="cAg-Ag-Ivb">
