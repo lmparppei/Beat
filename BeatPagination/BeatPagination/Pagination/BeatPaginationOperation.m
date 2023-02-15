@@ -1180,6 +1180,7 @@
 		} else {
 			// Just add on next page
 			[self resetPage:currentPage onCurrentPage:@[] onNextPage:block];
+            [self pageBreak:block.firstObject position:0 type:@"Did not fit."];
 		}
 	}
 }
@@ -1189,7 +1190,7 @@
 - (void)resetPage:(BeatPage*)currentPage onCurrentPage:(NSArray*)prevPageItems onNextPage:(NSArray*)nextPageItems {
 	// Do nothing if the current thread is cancelled
 	if (self.cancelled) return;
-	
+    
 	// Global page reset
 	if (prevPageItems.count) [currentPage addBlock:prevPageItems height:0]; // No need to calculate height for these elements
 	[self.pages addObject:currentPage.contents];
