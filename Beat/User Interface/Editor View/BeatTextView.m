@@ -1116,6 +1116,11 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSRange characterRange = NSMakeRange(line.position, line.string.length);
 		NSRange glyphRange = [self.layoutManager glyphRangeForCharacterRange:characterRange actualCharacterRange:nil];
 		
+		if (glyphRange.length == 0) {
+			// We are in trouble here. Let's do some things to avoid weird positioning of the scene numbers.
+			if (glyphRange.location < self.layoutManager.numberOfGlyphs) glyphRange.length += 1;
+		}
+		
 		NSRect rect = [self.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textContainer];
 		
 		// We return -1 for elements that should have page break after them
