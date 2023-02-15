@@ -2573,9 +2573,6 @@ NSUInteger prevLineAtLocationIndex = 0;
 }
 - (OutlineScene*)sceneAtPosition:(NSInteger)index {
 	for (OutlineScene *scene in self.safeOutline) {
-        NSLog(@"scene: %@", scene);
-        NSLog(@"  ..%lu/%lu", scene.position, scene.length);
-        NSLog(@"   looking for %lu", index);
 		if (NSLocationInRange(index, scene.range) && scene.line != nil) return scene;
 	}
 	return nil;

@@ -217,15 +217,10 @@ static bool insideParagraph = false;
 				
 		// Format contents
 		//result = [self fountainString:_attrText];
-		NSLog(@"Ending %@   ----  %@", _activeElement, _element.string);
 
 		if ([_activeElement isEqualToString:@"Scene Heading"]) {
 			// Set to uppercase
-			NSLog(@"Scene: %@", _element.string);
-			
 			[_element makeUppercase];
-			
-			NSLog(@"Scene: %@", _element.string);
 			
 			// Force scene prefix if needed
 			if (
