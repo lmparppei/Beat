@@ -359,7 +359,6 @@
 	currentPage.delegate = self;
 	
 	bool hasStartedANewPage = false;
-	bool didUseCache = false;
 
 	// create a tmp array that will hold elements to be added to the pages
 	_elementQueue = NSMutableArray.new;
@@ -399,7 +398,6 @@
 			
 			if (firstLineOnCachedPage.uuid == element.uuid) {
 				[self useCachedPaginationFrom:self.pages.count];
-				didUseCache = true;
 				// Stop pagination
 				break;
 			}

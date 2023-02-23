@@ -310,11 +310,10 @@ static NSDictionary* patterns;
     if (i == NSNotFound) return;
     
 	NSArray *lines = self.lines;
-	Line *precedingLine;
+
 	Line *nextLine;
 	
 	// Get the neighboring lines
-	if (i > 0) precedingLine = lines[i - 1];
 	if (i < self.lines.count - 1) nextLine = lines[i + 1];
 	
 	// Let's not do anything, if we are currently editing these lines.
@@ -2117,6 +2116,8 @@ static NSDictionary* patterns;
 }
 
 - (NSArray*)changesInOutline {
+    if (_changedOutlineElements == nil) return @[];
+    
 	NSArray *changes = _changedOutlineElements.copy;
 	[_changedOutlineElements removeAllObjects];
 	return changes;

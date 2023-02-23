@@ -138,7 +138,6 @@
 			range = (NSRange){ range.location + startIndex, range.length };
 			
 			if (NSIntersectionRange(range, lineRange).length > 0) {
-				changed = YES;
 				BeatRevisionItem *revision = [BeatRevisionItem type:RevisionAddition color:BeatRevisions.defaultRevisionColor];
 				[attrStr addAttribute:BeatRevisions.attributeKey value:revision range:range];
 			}

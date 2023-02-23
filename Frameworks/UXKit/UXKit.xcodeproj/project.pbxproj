@@ -1,0 +1,531 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		E85CBD30233F736A0065D1DB /* UXKit-AllPlatforms */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = E85CBD33233F736A0065D1DB /* Build configuration list for PBXAggregateTarget "UXKit-AllPlatforms" */;
+			buildPhases = (
+			);
+			dependencies = (
+				E85CBD35233F73730065D1DB /* PBXTargetDependency */,
+				E85CBD37233F73730065D1DB /* PBXTargetDependency */,
+			);
+			name = "UXKit-AllPlatforms";
+			productName = "UXKit-AllPlatforms";
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		E8080ECF234E43060022D71A /* UXAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8080ECE234E43060022D71A /* UXAlert.swift */; };
+		E8080ED0234E43060022D71A /* UXAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8080ECE234E43060022D71A /* UXAlert.swift */; };
+		E82E9D42223A953A005A52AE /* UXViewType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82E9D41223A953A005A52AE /* UXViewType.swift */; };
+		E82E9D43223A953A005A52AE /* UXViewType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82E9D41223A953A005A52AE /* UXViewType.swift */; };
+		E83935322698823E00272DA7 /* NSSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = E83935312698823E00272DA7 /* NSSound.swift */; };
+		E8A937071FD7322800F180F8 /* UXGestureActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A937061FD7322800F180F8 /* UXGestureActions.swift */; };
+		E8A937081FD7322800F180F8 /* UXGestureActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A937061FD7322800F180F8 /* UXGestureActions.swift */; };
+		E8A9B25D1FBB326800C1063B /* NSTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2451FBB326800C1063B /* NSTableViewCell.swift */; };
+		E8A9B25E1FBB326800C1063B /* UXCollectionView-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2461FBB326800C1063B /* UXCollectionView-AppKit.swift */; };
+		E8A9B25F1FBB326800C1063B /* UXFont-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2471FBB326800C1063B /* UXFont-AppKit.swift */; };
+		E8A9B2601FBB326800C1063B /* UXGestures-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2481FBB326800C1063B /* UXGestures-AppKit.swift */; };
+		E8A9B2611FBB326800C1063B /* UXGraphics-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2491FBB326800C1063B /* UXGraphics-AppKit.swift */; };
+		E8A9B2621FBB326800C1063B /* UXLayout-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B24A1FBB326800C1063B /* UXLayout-AppKit.swift */; };
+		E8A9B2631FBB326800C1063B /* UXTableView-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B24B1FBB326800C1063B /* UXTableView-AppKit.swift */; };
+		E8A9B2641FBB326800C1063B /* UXTargetAction-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B24C1FBB326800C1063B /* UXTargetAction-AppKit.swift */; };
+		E8A9B2651FBB326800C1063B /* UXView-AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B24D1FBB326800C1063B /* UXView-AppKit.swift */; };
+		E8A9B2891FBB352300C1063B /* UXIndexPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B24F1FBB326800C1063B /* UXIndexPath.swift */; };
+		E8A9B28A1FBB352300C1063B /* UXObjectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2501FBB326800C1063B /* UXObjectControl.swift */; };
+		E8A9B28B1FBB352300C1063B /* UXObjectPresentingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2511FBB326800C1063B /* UXObjectPresentingType.swift */; };
+		E8A9B28C1FBB352300C1063B /* UXPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2521FBB326800C1063B /* UXPasteboard.swift */; };
+		E8A9B28D1FBB352300C1063B /* UXViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2531FBB326800C1063B /* UXViewController.swift */; };
+		E8A9B28E1FBB352400C1063B /* UXIndexPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B24F1FBB326800C1063B /* UXIndexPath.swift */; };
+		E8A9B28F1FBB352400C1063B /* UXObjectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2501FBB326800C1063B /* UXObjectControl.swift */; };
+		E8A9B2901FBB352400C1063B /* UXObjectPresentingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2511FBB326800C1063B /* UXObjectPresentingType.swift */; };
+		E8A9B2911FBB352400C1063B /* UXPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2521FBB326800C1063B /* UXPasteboard.swift */; };
+		E8A9B2921FBB352400C1063B /* UXViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2531FBB326800C1063B /* UXViewController.swift */; };
+		E8A9B2931FBB352B00C1063B /* UXCollectionView-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2551FBB326800C1063B /* UXCollectionView-UIKit.swift */; };
+		E8A9B2941FBB352B00C1063B /* UXFont-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2561FBB326800C1063B /* UXFont-UIKit.swift */; };
+		E8A9B2951FBB352B00C1063B /* UXGestures-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2571FBB326800C1063B /* UXGestures-UIKit.swift */; };
+		E8A9B2961FBB352B00C1063B /* UXGraphics-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2581FBB326800C1063B /* UXGraphics-UIKit.swift */; };
+		E8A9B2971FBB352B00C1063B /* UXLayout-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B2591FBB326800C1063B /* UXLayout-UIKit.swift */; };
+		E8A9B2981FBB352B00C1063B /* UXTableView-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B25A1FBB326800C1063B /* UXTableView-UIKit.swift */; };
+		E8A9B2991FBB352B00C1063B /* UXTargetAction-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B25B1FBB326800C1063B /* UXTargetAction-UIKit.swift */; };
+		E8A9B29A1FBB352B00C1063B /* UXView-UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A9B25C1FBB326800C1063B /* UXView-UIKit.swift */; };
+		E8BF4DC5247025F30055AA53 /* UXTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BF4DC4247025F20055AA53 /* UXTextView.swift */; };
+		E8BF4DC6247025F30055AA53 /* UXTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BF4DC4247025F20055AA53 /* UXTextView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E85CBD34233F73730065D1DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8A9B22E1FBB318700C1063B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E8A9B2351FBB318700C1063B;
+			remoteInfo = "UXKit-AppKit";
+		};
+		E85CBD36233F73730065D1DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E8A9B22E1FBB318700C1063B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E8A9B27F1FBB351D00C1063B;
+			remoteInfo = "UXKit-UIKit";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E8A9B27E1FBB351D00C1063B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		E8080ECE234E43060022D71A /* UXAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UXAlert.swift; sourceTree = "<group>"; };
+		E82E9D41223A953A005A52AE /* UXViewType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UXViewType.swift; sourceTree = "<group>"; };
+		E83935312698823E00272DA7 /* NSSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSSound.swift; sourceTree = "<group>"; };
+		E8460D751FBF12D2002CDC28 /* AppKitBase.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppKitBase.xcconfig; sourceTree = "<group>"; };
+		E8460D761FBF12D2002CDC28 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		E8460D771FBF12D2002CDC28 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		E8460D781FBF12D2002CDC28 /* MacStaticLib.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MacStaticLib.xcconfig; sourceTree = "<group>"; };
+		E8460D791FBF12D2002CDC28 /* MobileStaticLib.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = MobileStaticLib.xcconfig; sourceTree = "<group>"; };
+		E8460D7A1FBF12D2002CDC28 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		E8460D7B1FBF12D2002CDC28 /* StaticLib.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = StaticLib.xcconfig; sourceTree = "<group>"; };
+		E8460D7C1FBF12D2002CDC28 /* UIKitBase.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = UIKitBase.xcconfig; sourceTree = "<group>"; };
+		E8A937061FD7322800F180F8 /* UXGestureActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UXGestureActions.swift; sourceTree = "<group>"; };
+		E8A9B2361FBB318800C1063B /* libUXKit-AppKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libUXKit-AppKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8A9B2451FBB326800C1063B /* NSTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSTableViewCell.swift; sourceTree = "<group>"; };
+		E8A9B2461FBB326800C1063B /* UXCollectionView-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXCollectionView-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B2471FBB326800C1063B /* UXFont-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXFont-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B2481FBB326800C1063B /* UXGestures-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXGestures-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B2491FBB326800C1063B /* UXGraphics-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXGraphics-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B24A1FBB326800C1063B /* UXLayout-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXLayout-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B24B1FBB326800C1063B /* UXTableView-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXTableView-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B24C1FBB326800C1063B /* UXTargetAction-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXTargetAction-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B24D1FBB326800C1063B /* UXView-AppKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXView-AppKit.swift"; sourceTree = "<group>"; };
+		E8A9B24F1FBB326800C1063B /* UXIndexPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UXIndexPath.swift; sourceTree = "<group>"; };
+		E8A9B2501FBB326800C1063B /* UXObjectControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UXObjectControl.swift; sourceTree = "<group>"; };
+		E8A9B2511FBB326800C1063B /* UXObjectPresentingType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UXObjectPresentingType.swift; sourceTree = "<group>"; };
+		E8A9B2521FBB326800C1063B /* UXPasteboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UXPasteboard.swift; sourceTree = "<group>"; };
+		E8A9B2531FBB326800C1063B /* UXViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UXViewController.swift; sourceTree = "<group>"; };
+		E8A9B2551FBB326800C1063B /* UXCollectionView-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXCollectionView-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B2561FBB326800C1063B /* UXFont-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXFont-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B2571FBB326800C1063B /* UXGestures-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXGestures-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B2581FBB326800C1063B /* UXGraphics-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXGraphics-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B2591FBB326800C1063B /* UXLayout-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXLayout-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B25A1FBB326800C1063B /* UXTableView-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXTableView-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B25B1FBB326800C1063B /* UXTargetAction-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXTargetAction-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B25C1FBB326800C1063B /* UXView-UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UXView-UIKit.swift"; sourceTree = "<group>"; };
+		E8A9B2801FBB351D00C1063B /* libUXKit-UIKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libUXKit-UIKit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8A9B29B1FBB381000C1063B /* README.md */ = {isa = PBXFileReference; explicitFileType = text; path = README.md; sourceTree = "<group>"; };
+		E8BF4DC4247025F20055AA53 /* UXTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UXTextView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E8A9B2331FBB318700C1063B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8A9B27D1FBB351D00C1063B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E8460D741FBF12D2002CDC28 /* xcconfig */ = {
+			isa = PBXGroup;
+			children = (
+				E8460D751FBF12D2002CDC28 /* AppKitBase.xcconfig */,
+				E8460D761FBF12D2002CDC28 /* Base.xcconfig */,
+				E8460D771FBF12D2002CDC28 /* Debug.xcconfig */,
+				E8460D781FBF12D2002CDC28 /* MacStaticLib.xcconfig */,
+				E8460D791FBF12D2002CDC28 /* MobileStaticLib.xcconfig */,
+				E8460D7A1FBF12D2002CDC28 /* Release.xcconfig */,
+				E8460D7B1FBF12D2002CDC28 /* StaticLib.xcconfig */,
+				E8460D7C1FBF12D2002CDC28 /* UIKitBase.xcconfig */,
+			);
+			path = xcconfig;
+			sourceTree = "<group>";
+		};
+		E8A9B22D1FBB318700C1063B = {
+			isa = PBXGroup;
+			children = (
+				E8A9B29B1FBB381000C1063B /* README.md */,
+				E8A9B2421FBB326800C1063B /* Sources */,
+				E8460D741FBF12D2002CDC28 /* xcconfig */,
+				E8A9B2371FBB318800C1063B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E8A9B2371FBB318800C1063B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8A9B2361FBB318800C1063B /* libUXKit-AppKit.a */,
+				E8A9B2801FBB351D00C1063B /* libUXKit-UIKit.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8A9B2421FBB326800C1063B /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				E8A9B2431FBB326800C1063B /* UXKit */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		E8A9B2431FBB326800C1063B /* UXKit */ = {
+			isa = PBXGroup;
+			children = (
+				E8A9B24E1FBB326800C1063B /* Common */,
+				E8A9B2441FBB326800C1063B /* AppKit */,
+				E8A9B2541FBB326800C1063B /* UIKit */,
+			);
+			path = UXKit;
+			sourceTree = "<group>";
+		};
+		E8A9B2441FBB326800C1063B /* AppKit */ = {
+			isa = PBXGroup;
+			children = (
+				E8A9B2451FBB326800C1063B /* NSTableViewCell.swift */,
+				E8A9B2461FBB326800C1063B /* UXCollectionView-AppKit.swift */,
+				E8A9B2471FBB326800C1063B /* UXFont-AppKit.swift */,
+				E8A9B2481FBB326800C1063B /* UXGestures-AppKit.swift */,
+				E8A9B2491FBB326800C1063B /* UXGraphics-AppKit.swift */,
+				E8A9B24A1FBB326800C1063B /* UXLayout-AppKit.swift */,
+				E8A9B24B1FBB326800C1063B /* UXTableView-AppKit.swift */,
+				E8A9B24C1FBB326800C1063B /* UXTargetAction-AppKit.swift */,
+				E8A9B24D1FBB326800C1063B /* UXView-AppKit.swift */,
+			);
+			path = AppKit;
+			sourceTree = "<group>";
+		};
+		E8A9B24E1FBB326800C1063B /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				E8A9B24F1FBB326800C1063B /* UXIndexPath.swift */,
+				E8A9B2501FBB326800C1063B /* UXObjectControl.swift */,
+				E8A9B2511FBB326800C1063B /* UXObjectPresentingType.swift */,
+				E8A9B2521FBB326800C1063B /* UXPasteboard.swift */,
+				E8A9B2531FBB326800C1063B /* UXViewController.swift */,
+				E8A937061FD7322800F180F8 /* UXGestureActions.swift */,
+				E82E9D41223A953A005A52AE /* UXViewType.swift */,
+				E8080ECE234E43060022D71A /* UXAlert.swift */,
+				E8BF4DC4247025F20055AA53 /* UXTextView.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		E8A9B2541FBB326800C1063B /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				E8A9B2551FBB326800C1063B /* UXCollectionView-UIKit.swift */,
+				E8A9B2561FBB326800C1063B /* UXFont-UIKit.swift */,
+				E8A9B2571FBB326800C1063B /* UXGestures-UIKit.swift */,
+				E8A9B2581FBB326800C1063B /* UXGraphics-UIKit.swift */,
+				E8A9B2591FBB326800C1063B /* UXLayout-UIKit.swift */,
+				E8A9B25A1FBB326800C1063B /* UXTableView-UIKit.swift */,
+				E8A9B25B1FBB326800C1063B /* UXTargetAction-UIKit.swift */,
+				E8A9B25C1FBB326800C1063B /* UXView-UIKit.swift */,
+				E83935312698823E00272DA7 /* NSSound.swift */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		E8A9B2341FBB318700C1063B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		E8A9B2351FBB318700C1063B /* UXKit-AppKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8A9B23F1FBB318800C1063B /* Build configuration list for PBXNativeTarget "UXKit-AppKit" */;
+			buildPhases = (
+				E8A9B2321FBB318700C1063B /* Sources */,
+				E8A9B2331FBB318700C1063B /* Frameworks */,
+				E8A9B2341FBB318700C1063B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "UXKit-AppKit";
+			productName = UXKit;
+			productReference = E8A9B2361FBB318800C1063B /* libUXKit-AppKit.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		E8A9B27F1FBB351D00C1063B /* UXKit-UIKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E8A9B2861FBB351D00C1063B /* Build configuration list for PBXNativeTarget "UXKit-UIKit" */;
+			buildPhases = (
+				E8A9B27C1FBB351D00C1063B /* Sources */,
+				E8A9B27D1FBB351D00C1063B /* Frameworks */,
+				E8A9B27E1FBB351D00C1063B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "UXKit-UIKit";
+			productName = "UXKit-UIKit";
+			productReference = E8A9B2801FBB351D00C1063B /* libUXKit-UIKit.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E8A9B22E1FBB318700C1063B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1400;
+				ORGANIZATIONNAME = "ZeeZide GmbH";
+				TargetAttributes = {
+					E85CBD30233F736A0065D1DB = {
+						CreatedOnToolsVersion = 11.1;
+						ProvisioningStyle = Automatic;
+					};
+					E8A9B2351FBB318700C1063B = {
+						CreatedOnToolsVersion = 9.1;
+						LastSwiftMigration = 1110;
+						ProvisioningStyle = Automatic;
+					};
+					E8A9B27F1FBB351D00C1063B = {
+						CreatedOnToolsVersion = 9.1;
+						LastSwiftMigration = 1110;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = E8A9B2311FBB318700C1063B /* Build configuration list for PBXProject "UXKit" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E8A9B22D1FBB318700C1063B;
+			productRefGroup = E8A9B2371FBB318800C1063B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E8A9B2351FBB318700C1063B /* UXKit-AppKit */,
+				E8A9B27F1FBB351D00C1063B /* UXKit-UIKit */,
+				E85CBD30233F736A0065D1DB /* UXKit-AllPlatforms */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E8A9B2321FBB318700C1063B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8A9B2901FBB352400C1063B /* UXObjectPresentingType.swift in Sources */,
+				E82E9D42223A953A005A52AE /* UXViewType.swift in Sources */,
+				E8A9B28F1FBB352400C1063B /* UXObjectControl.swift in Sources */,
+				E8A9B2921FBB352400C1063B /* UXViewController.swift in Sources */,
+				E8A9B2611FBB326800C1063B /* UXGraphics-AppKit.swift in Sources */,
+				E8A9B25F1FBB326800C1063B /* UXFont-AppKit.swift in Sources */,
+				E8A9B2911FBB352400C1063B /* UXPasteboard.swift in Sources */,
+				E8080ECF234E43060022D71A /* UXAlert.swift in Sources */,
+				E8A9B25E1FBB326800C1063B /* UXCollectionView-AppKit.swift in Sources */,
+				E8A9B2621FBB326800C1063B /* UXLayout-AppKit.swift in Sources */,
+				E8BF4DC5247025F30055AA53 /* UXTextView.swift in Sources */,
+				E8A9B25D1FBB326800C1063B /* NSTableViewCell.swift in Sources */,
+				E8A9B28E1FBB352400C1063B /* UXIndexPath.swift in Sources */,
+				E8A9B2601FBB326800C1063B /* UXGestures-AppKit.swift in Sources */,
+				E8A9B2641FBB326800C1063B /* UXTargetAction-AppKit.swift in Sources */,
+				E8A9B2631FBB326800C1063B /* UXTableView-AppKit.swift in Sources */,
+				E8A937071FD7322800F180F8 /* UXGestureActions.swift in Sources */,
+				E8A9B2651FBB326800C1063B /* UXView-AppKit.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E8A9B27C1FBB351D00C1063B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8A9B2961FBB352B00C1063B /* UXGraphics-UIKit.swift in Sources */,
+				E8A9B2981FBB352B00C1063B /* UXTableView-UIKit.swift in Sources */,
+				E83935322698823E00272DA7 /* NSSound.swift in Sources */,
+				E8A9B28B1FBB352300C1063B /* UXObjectPresentingType.swift in Sources */,
+				E8A9B2891FBB352300C1063B /* UXIndexPath.swift in Sources */,
+				E8A9B28C1FBB352300C1063B /* UXPasteboard.swift in Sources */,
+				E8A9B2971FBB352B00C1063B /* UXLayout-UIKit.swift in Sources */,
+				E8A9B2991FBB352B00C1063B /* UXTargetAction-UIKit.swift in Sources */,
+				E8A9B29A1FBB352B00C1063B /* UXView-UIKit.swift in Sources */,
+				E8A937081FD7322800F180F8 /* UXGestureActions.swift in Sources */,
+				E8BF4DC6247025F30055AA53 /* UXTextView.swift in Sources */,
+				E8A9B2941FBB352B00C1063B /* UXFont-UIKit.swift in Sources */,
+				E8A9B28A1FBB352300C1063B /* UXObjectControl.swift in Sources */,
+				E8A9B2951FBB352B00C1063B /* UXGestures-UIKit.swift in Sources */,
+				E8080ED0234E43060022D71A /* UXAlert.swift in Sources */,
+				E8A9B2931FBB352B00C1063B /* UXCollectionView-UIKit.swift in Sources */,
+				E8A9B28D1FBB352300C1063B /* UXViewController.swift in Sources */,
+				E82E9D43223A953A005A52AE /* UXViewType.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E85CBD35233F73730065D1DB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E8A9B2351FBB318700C1063B /* UXKit-AppKit */;
+			targetProxy = E85CBD34233F73730065D1DB /* PBXContainerItemProxy */;
+		};
+		E85CBD37233F73730065D1DB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E8A9B27F1FBB351D00C1063B /* UXKit-UIKit */;
+			targetProxy = E85CBD36233F73730065D1DB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		E85CBD31233F736A0065D1DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E85CBD32233F736A0065D1DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E8A9B23D1FBB318800C1063B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8460D771FBF12D2002CDC28 /* Debug.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		E8A9B23E1FBB318800C1063B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8460D7A1FBF12D2002CDC28 /* Release.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		E8A9B2401FBB318800C1063B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8460D781FBF12D2002CDC28 /* MacStaticLib.xcconfig */;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_MODULE_NAME = UXKit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E8A9B2411FBB318800C1063B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8460D781FBF12D2002CDC28 /* MacStaticLib.xcconfig */;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_MODULE_NAME = UXKit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E8A9B2871FBB351D00C1063B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8460D791FBF12D2002CDC28 /* MobileStaticLib.xcconfig */;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_MODULE_NAME = UXKit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E8A9B2881FBB351D00C1063B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E8460D791FBF12D2002CDC28 /* MobileStaticLib.xcconfig */;
+			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_MODULE_NAME = UXKit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E85CBD33233F736A0065D1DB /* Build configuration list for PBXAggregateTarget "UXKit-AllPlatforms" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E85CBD31233F736A0065D1DB /* Debug */,
+				E85CBD32233F736A0065D1DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8A9B2311FBB318700C1063B /* Build configuration list for PBXProject "UXKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8A9B23D1FBB318800C1063B /* Debug */,
+				E8A9B23E1FBB318800C1063B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8A9B23F1FBB318800C1063B /* Build configuration list for PBXNativeTarget "UXKit-AppKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8A9B2401FBB318800C1063B /* Debug */,
+				E8A9B2411FBB318800C1063B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E8A9B2861FBB351D00C1063B /* Build configuration list for PBXNativeTarget "UXKit-UIKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E8A9B2871FBB351D00C1063B /* Debug */,
+				E8A9B2881FBB351D00C1063B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E8A9B22E1FBB318700C1063B /* Project object */;
+}

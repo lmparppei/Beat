@@ -1,0 +1,9 @@
+// Static Library for any platform
+
+EXECUTABLE_PREFIX = lib
+
+GCC_DYNAMIC_NO_PIC = NO
+
+DEFINES_MODULE = YES
+
+SKIP_INSTALL = YES

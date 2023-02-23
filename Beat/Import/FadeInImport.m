@@ -38,8 +38,10 @@
 		}
 	}
 	
-	OSFImport *import = [[OSFImport alloc] initWithData:scriptData];
-	_script = import.script;
+	if (scriptData != nil) {
+		OSFImport *import = [[OSFImport alloc] initWithData:scriptData];
+		_script = import.script;
+	}
 }
 
 @end

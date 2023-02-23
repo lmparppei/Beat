@@ -1,0 +1,9 @@
+// Base config for Phone projects
+
+#include "Base.xcconfig"
+
+IPHONEOS_DEPLOYMENT_TARGET = 10.0
+//SDKROOT                    = iphoneos9.0
+SDKROOT                    = iphoneos
+
+// Also: iphonesimulator

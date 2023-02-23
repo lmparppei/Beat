@@ -1,0 +1,62 @@
+// Base config
+
+// Signing
+CODE_SIGN_IDENTITY                            = -
+
+// Include
+ALWAYS_SEARCH_USER_PATHS                      = NO
+
+// Language
+GCC_C_LANGUAGE_STANDARD                       = gnu99
+GCC_NO_COMMON_BLOCKS                          = YES
+CLANG_ENABLE_MODULES                          = YES
+CLANG_ENABLE_OBJC_ARC                         = YES
+ENABLE_STRICT_OBJC_MSGSEND                    = YES
+
+// Warnings
+CLANG_WARN_BOOL_CONVERSION                    = YES
+CLANG_WARN_CONSTANT_CONVERSION                = YES
+CLANG_WARN_DIRECT_OBJC_ISA_USAGE              = YES_ERROR
+CLANG_WARN_EMPTY_BODY                         = YES
+CLANG_WARN_ENUM_CONVERSION                    = YES
+CLANG_WARN_INT_CONVERSION                     = YES
+CLANG_WARN_OBJC_ROOT_CLASS                    = YES_ERROR
+CLANG_WARN_UNREACHABLE_CODE                   = YES
+CLANG_WARN__DUPLICATE_METHOD_MATCH            = YES
+GCC_WARN_64_TO_32_BIT_CONVERSION              = YES
+GCC_WARN_ABOUT_RETURN_TYPE                    = YES_ERROR
+GCC_WARN_UNDECLARED_SELECTOR                  = YES
+GCC_WARN_UNINITIALIZED_AUTOS                  = YES_AGGRESSIVE
+GCC_WARN_UNUSED_FUNCTION                      = YES
+GCC_WARN_UNUSED_VARIABLE                      = YES
+
+CLANG_ANALYZER_NONNULL                        = YES
+CLANG_WARN_INFINITE_RECURSION                 = YES
+CLANG_WARN_SUSPICIOUS_MOVE                    = YES
+
+CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING        = YES
+CLANG_WARN_COMMA                              = YES
+CLANG_WARN_NON_LITERAL_NULL_CONVERSION        = YES
+CLANG_WARN_OBJC_LITERAL_CONVERSION            = YES
+CLANG_WARN_RANGE_LOOP_ANALYSIS                = YES
+CLANG_WARN_STRICT_PROTOTYPES                  = YES
+
+CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS    = YES
+CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF          = YES
+CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES
+DEAD_CODE_STRIPPING                           = YES
+
+COMBINE_HIDPI_IMAGES                          = YES
+
+// For embedded frameworks.
+LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]          = $(inherited) @executable_path/../Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*]        = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*] = $(inherited) @executable_path/Frameworks @loader_path/Frameworks
+
+OTHER_LDFLAGS = $(inherited) -ObjC // to import categories in static libs
+
+OTHER_SWIFT_FLAGS                             = -DXcode
+
+// This is a little lame (Xcode shouldn't tie the code to a version ..)
+SWIFT_VERSION                                 = 5.0
+//SWIFT_VERSION                               = 4.2

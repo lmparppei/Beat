@@ -1,0 +1,18 @@
+// Platform agnostic release settings
+
+#include "Base.xcconfig"
+
+// Optimization
+GCC_OPTIMIZATION_LEVEL = s
+
+// Debugging
+DEBUG_INFORMATION_FORMAT           = dwarf-with-dsym
+ENABLE_TESTABILITY                 = YES
+COPY_PHASE_STRIP                   = YES
+ENABLE_NS_ASSERTIONS               = NO
+MTL_ENABLE_DEBUG_INFO              = NO
+
+GCC_PREPROCESSOR_DEFINITIONS       = RELEASE=1
+
+SWIFT_OPTIMIZATION_LEVEL = -Owholemodule
+SWIFT_COMPILATION_MODE   = wholemodule

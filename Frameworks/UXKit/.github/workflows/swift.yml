@@ -1,0 +1,78 @@
+name: Build and Test
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "42 10 * * 1"
+
+jobs:
+  SwiftPackage:
+    runs-on: macos-latest
+    steps:
+      - name: Select latest available Xcode
+        uses: maxim-lobanov/setup-xcode@v1.2.1
+        with:
+          xcode-version: 12.4
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Build Swift Debug Package
+        run: swift build -c debug
+      - name: Build Swift Release Package
+        run: swift build -c release
+  iOS:
+    runs-on: macos-latest
+    steps:
+      - name: Select latest available Xcode
+        uses: maxim-lobanov/setup-xcode@v1.2.1
+        with:
+          xcode-version: 12.4
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Prerequisites
+        run: gem install xcpretty
+      - name: Build
+        run: set -o pipefail; xcodebuild -scheme UXKit-UIKit build | xcpretty --color
+  iOS15:
+    runs-on: macos-latest
+    steps:
+      - name: Select latest available Xcode
+        uses: maxim-lobanov/setup-xcode@v1.2.1
+        with:
+          xcode-version: 13.2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Prerequisites
+        run: gem install xcpretty
+      - name: Build
+        run: set -o pipefail; xcodebuild -scheme UXKit-UIKit build | xcpretty --color
+  iOS-Swift-Package:
+    runs-on: macos-latest
+    steps:
+      - name: Select latest available Xcode
+        uses: maxim-lobanov/setup-xcode@v1.2.1
+        with:
+          xcode-version: 13.2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Prerequisites
+        run: gem install xcpretty
+      - name: Drop xcproj
+        run: rm -rf *.xcodeproj
+      - name: Show destinations
+        run: xcodebuild -showdestinations -scheme UXKit
+      - name: Build
+        run: set -o pipefail; xcodebuild -scheme UXKit -destination "platform=iOS Simulator,OS=15.2,name=iPhone 13 Pro" build | xcpretty --color
+  NeXTstep:
+    runs-on: macos-latest
+    steps:
+      - name: Select latest available Xcode
+        uses: maxim-lobanov/setup-xcode@v1.2.1
+        with:
+          xcode-version: 12.4
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Prerequisites
+        run: gem install xcpretty
+      - name: Build
+        run: set -o pipefail; xcodebuild -scheme UXKit-AppKit build | xcpretty --color
