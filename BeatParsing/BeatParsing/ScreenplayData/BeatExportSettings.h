@@ -10,10 +10,10 @@
 
 #if TARGET_OS_IOS
     #import <UIKit/UIKit.h>
-    #define BeatDocument UIDocument
+    #define BeatHostDocument UIDocument
 #else
     #import <Cocoa/Cocoa.h>
-    #define BeatDocument NSDocument
+    #define BeatHostDocument NSDocument
 #endif
 
 #import "BeatPaperSizing.h"
@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) NSString *contd;
 @property (nonatomic) NSString *more;
-@property (nonatomic, weak) BeatDocument  * _Nullable document;
+@property (nonatomic, weak) BeatHostDocument  * _Nullable document;
 @property (nonatomic) NSString * _Nullable currentScene;
 @property (nonatomic) NSArray * revisions;
 @property (nonatomic) BeatPaperSize paperSize;
@@ -49,13 +49,13 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 /// Custom styles for the new, native rendering
 @property (nonatomic) NSString * _Nullable customStyles;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatDocument* _Nullable)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument* _Nullable)doc header:(NSString*)header  printSceneNumbers:(bool)printSceneNumbers;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene;
 
-+ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor;
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor;
 
 - (BeatPaperSize)paperSize; /// Get page size. For safety reasons, the value is checked from the actual print settings
 
