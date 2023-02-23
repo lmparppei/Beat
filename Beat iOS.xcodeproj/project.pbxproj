@@ -11,15 +11,9 @@
 		B60A9F3829774F6C00916FAA /* BeatParsing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3629774F6C00916FAA /* BeatParsing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B60A9F3A29774F7A00916FAA /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3929774F7A00916FAA /* BeatThemes.framework */; };
 		B60A9F3B29774F7A00916FAA /* BeatThemes.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3929774F7A00916FAA /* BeatThemes.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B60A9F3D29774F8A00916FAA /* BeatDefaults.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */; };
-		B60A9F3E29774F8B00916FAA /* BeatDefaults.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3C29774F8A00916FAA /* BeatDefaults.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B60A9F4029774FA500916FAA /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60A9F3F29774FA400916FAA /* JavaScriptCore.framework */; };
 		B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
-		B633C138298C54CF0011449D /* BeatArrayExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633C133298C54CF0011449D /* BeatArrayExtensions.swift */; };
-		B633C139298C54CF0011449D /* BeatValueTransformers.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633C134298C54CF0011449D /* BeatValueTransformers.swift */; };
-		B633C13A298C54CF0011449D /* BeatAttributedStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633C135298C54CF0011449D /* BeatAttributedStringExtensions.swift */; };
 		B633C13B298C54CF0011449D /* BeatFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633C136298C54CF0011449D /* BeatFontExtensions.swift */; };
-		B633C13C298C54CF0011449D /* BeatStringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633C137298C54CF0011449D /* BeatStringExtensions.swift */; };
 		B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C14E298C566E0011449D /* OutlineViewItem.m */; };
 		B633C152298C58130011449D /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C150298C58130011449D /* BeatPreview.m */; };
 		B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; };
@@ -68,6 +62,8 @@
 		B6D32043298F04C3003DA45D /* Courier Prime Bold Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */; };
 		B6D32044298F04C3003DA45D /* Courier Prime Sans Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */; };
 		B6D32045298F04C3003DA45D /* Courier Prime.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6D3203D298F04C3003DA45D /* Courier Prime.ttf */; };
+		B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F61400299FF051002188C0 /* BeatPopover.swift */; };
+		B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -77,7 +73,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				B60A9F3E29774F8B00916FAA /* BeatDefaults.framework in Embed Frameworks */,
 				B6D32030298EC64C003DA45D /* BeatDynamicColor.framework in Embed Frameworks */,
 				B69311C3296EE00500CF4869 /* BeatParsing.framework in Embed Frameworks */,
 				B60A9F3829774F6C00916FAA /* BeatParsing.framework in Embed Frameworks */,
@@ -97,11 +92,7 @@
 		B60A9F3F29774FA400916FAA /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
-		B633C133298C54CF0011449D /* BeatArrayExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatArrayExtensions.swift; path = "Beat/Overall Categories/BeatArrayExtensions.swift"; sourceTree = SOURCE_ROOT; };
-		B633C134298C54CF0011449D /* BeatValueTransformers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatValueTransformers.swift; path = "Beat/Overall Categories/BeatValueTransformers.swift"; sourceTree = SOURCE_ROOT; };
-		B633C135298C54CF0011449D /* BeatAttributedStringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatAttributedStringExtensions.swift; path = "Beat/Overall Categories/BeatAttributedStringExtensions.swift"; sourceTree = SOURCE_ROOT; };
 		B633C136298C54CF0011449D /* BeatFontExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatFontExtensions.swift; path = "Beat/Overall Categories/BeatFontExtensions.swift"; sourceTree = SOURCE_ROOT; };
-		B633C137298C54CF0011449D /* BeatStringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatStringExtensions.swift; path = "Beat/Overall Categories/BeatStringExtensions.swift"; sourceTree = SOURCE_ROOT; };
 		B633C14D298C566E0011449D /* OutlineViewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutlineViewItem.h; path = "Beat iOS/User Interface/OutlineViewItem.h"; sourceTree = SOURCE_ROOT; };
 		B633C14E298C566E0011449D /* OutlineViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OutlineViewItem.m; path = "Beat iOS/User Interface/OutlineViewItem.m"; sourceTree = SOURCE_ROOT; };
 		B633C150298C58130011449D /* BeatPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = "Beat/Rendering and export/BeatPreview.m"; sourceTree = SOURCE_ROOT; };
@@ -155,6 +146,9 @@
 		B6D3203B298F04C3003DA45D /* Courier Prime Bold Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Bold Italic.ttf"; path = "Beat/Fonts/Courier Prime Bold Italic.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203C298F04C3003DA45D /* Courier Prime Sans Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime Sans Bold.ttf"; path = "Beat/Fonts/Courier Prime Sans Bold.ttf"; sourceTree = SOURCE_ROOT; };
 		B6D3203D298F04C3003DA45D /* Courier Prime.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier Prime.ttf"; path = "Beat/Fonts/Courier Prime.ttf"; sourceTree = SOURCE_ROOT; };
+		B6F61400299FF051002188C0 /* BeatPopover.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatPopover.swift; sourceTree = "<group>"; };
+		B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocumentViewController.h; sourceTree = "<group>"; };
+		B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocumentViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,7 +160,6 @@
 				B60A9F3729774F6C00916FAA /* BeatParsing.framework in Frameworks */,
 				B69311BE296EDFF400CF4869 /* WebKit.framework in Frameworks */,
 				B60A9F3A29774F7A00916FAA /* BeatThemes.framework in Frameworks */,
-				B60A9F3D29774F8A00916FAA /* BeatDefaults.framework in Frameworks */,
 				B60A9F4029774FA500916FAA /* JavaScriptCore.framework in Frameworks */,
 				B69311C2296EE00500CF4869 /* BeatParsing.framework in Frameworks */,
 				B69311C0296EDFFE00CF4869 /* UIKit.framework in Frameworks */,
@@ -208,11 +201,7 @@
 		B633C132298C54BC0011449D /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				B633C135298C54CF0011449D /* BeatAttributedStringExtensions.swift */,
 				B633C136298C54CF0011449D /* BeatFontExtensions.swift */,
-				B633C133298C54CF0011449D /* BeatArrayExtensions.swift */,
-				B633C137298C54CF0011449D /* BeatStringExtensions.swift */,
-				B633C134298C54CF0011449D /* BeatValueTransformers.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -321,6 +310,8 @@
 				B6CB96F2282FEB6500C7AFC7 /* AppDelegate.swift */,
 				B6CB96F4282FEB6500C7AFC7 /* DocumentBrowserViewController.swift */,
 				B6CE24E128392C0900D53CE8 /* DocumentViewController.swift */,
+				B6FC406029A151CE00004A9D /* BeatDocumentViewController.h */,
+				B6FC406129A151CE00004A9D /* BeatDocumentViewController.m */,
 				B6CB96F8282FEB6500C7AFC7 /* iOSDocument.swift */,
 				B6CB96FA282FEB6500C7AFC7 /* Main.storyboard */,
 				B6CB96FF282FEB6700C7AFC7 /* LaunchScreen.storyboard */,
@@ -343,6 +334,7 @@
 				B69E0A2F28428ECE009A02D0 /* BeatPreviewView.swift */,
 				B633C14D298C566E0011449D /* OutlineViewItem.h */,
 				B633C14E298C566E0011449D /* OutlineViewItem.m */,
+				B6F61400299FF051002188C0 /* BeatPopover.swift */,
 			);
 			path = "User Interface";
 			sourceTree = "<group>";
@@ -470,9 +462,10 @@
 			files = (
 				B6CB96F9282FEB6500C7AFC7 /* iOSDocument.swift in Sources */,
 				B6CE24DE2838541500D53CE8 /* Utilities.swift in Sources */,
+				B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */,
 				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
+				B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */,
 				B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */,
-				B633C138298C54CF0011449D /* BeatArrayExtensions.swift in Sources */,
 				B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */,
 				B633C13B298C54CF0011449D /* BeatFontExtensions.swift in Sources */,
 				B6CE24E228392C0900D53CE8 /* DocumentViewController.swift in Sources */,
@@ -480,10 +473,7 @@
 				B633C152298C58130011449D /* BeatPreview.m in Sources */,
 				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */,
-				B633C13A298C54CF0011449D /* BeatAttributedStringExtensions.swift in Sources */,
-				B633C13C298C54CF0011449D /* BeatStringExtensions.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
-				B633C139298C54CF0011449D /* BeatValueTransformers.swift in Sources */,
 				B686FFCA2971BC7E00789C8D /* BeatHTMLScript.m in Sources */,
 				B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */,
 				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,
@@ -649,7 +639,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -698,7 +688,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;

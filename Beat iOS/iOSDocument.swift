@@ -8,15 +8,19 @@
 
 import UIKit
 
-protocol iOSDocumentDelegate {
+@objc protocol iOSDocumentDelegate {
+	var parser:ContinuousFountainParser? { get }
 	func text() -> String!
 }
 
 class iOSDocument: UIDocument {
     
-	var rawText:String! = ""
-	var settings:BeatDocumentSettings = BeatDocumentSettings()
-	var delegate:iOSDocumentDelegate?
+	@objc var rawText:String! = ""
+	@objc var settings:BeatDocumentSettings = BeatDocumentSettings()
+	@objc var delegate:iOSDocumentDelegate?
+	@objc var parser:ContinuousFountainParser {
+		return self.delegate?.parser ?? ContinuousFountainParser()
+	}
 	
 	override var description: String {
 		return fileURL.deletingPathExtension().lastPathComponent
@@ -40,8 +44,6 @@ class iOSDocument: UIDocument {
 		if (range.length > 0) {
 			rawText = rawText.stringByReplacing(range: range, withString: "")
 		}
-		
-		if (rawText == nil) { return }
     }
 }
 

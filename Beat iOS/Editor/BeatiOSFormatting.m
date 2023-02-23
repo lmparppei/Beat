@@ -183,7 +183,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	NSRange range = line.textRange;
 	UITextRange *textRange = [self getTextRangeFor:range];
 	
-	NSLayoutManager *layoutMgr = _delegate.layoutManager;
 	NSTextStorage *textStorage = _delegate.textStorage;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
 
@@ -207,7 +206,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine) {
-		[textStorage addAttribute:NSBackgroundColorAttributeName value:UIColor.clearColor range:line.range];
+		[textStorage addAttribute:NSBackgroundColorAttributeName value:UIColor.clearColor range:range];
 		return;
 	}
 	

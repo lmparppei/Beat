@@ -28,7 +28,7 @@ class BeatiOSOutlineView: UITableView, UITableViewDelegate, UITableViewDataSourc
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if (editorDelegate.parser == nil) { return 0 }
 		editorDelegate.parser.createOutline()
-		print("count ", editorDelegate.parser.outline.count)
+
 		return editorDelegate.parser.outline.count
 	}
 	

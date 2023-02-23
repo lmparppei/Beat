@@ -18,17 +18,26 @@ class BeatUITextView: UITextView {
 	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
 	var pinchRecognizer = UIGestureRecognizer()
 	
+	var customLayoutManager:BeatLayoutManager = BeatLayoutManager()
+	
 	required init?(coder: NSCoder) {
 		super.init(coder: coder)
 		
-		self.textContainer.replaceLayoutManager(BeatLayoutManager())
+		customLayoutManager.textStorage = self.textStorage
+		customLayoutManager.addTextContainer(self.textContainer)
+		
+		self.textContainer.replaceLayoutManager(customLayoutManager)
+	}
+	
+	override var layoutManager: NSLayoutManager {
+		return customLayoutManager
 	}
 	
 	class func linePadding() -> CGFloat {
 		return 40.0
 	}
 	
-	var documentWidth:CGFloat {
+	@objc var documentWidth:CGFloat {
 		var width = 0.0
 		let padding = self.textContainer.lineFragmentPadding
 		
@@ -54,7 +63,8 @@ class BeatUITextView: UITextView {
 		enclosingScrollView?.delegate = self
 		layoutManager.delegate = self
 		
-		let layoutMgr = self.layoutManager as? BeatLayoutManager
+		
+		let layoutMgr = self.textContainer.layoutManager as? BeatLayoutManager
 		if (layoutMgr != nil && self.editorDelegate != nil) {
 			layoutMgr?.editorDelegate = self.editorDelegate!
 		}
@@ -63,6 +73,12 @@ class BeatUITextView: UITextView {
 		self.textContainer.widthTracksTextView = false
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
+		
+		if (self.layoutManager.textContainers.contains(self.textContainer)) {
+			print("Yes")
+		} else {
+			print("No")
+		}
 		
 		resizePaper()
 		resize()
@@ -73,7 +89,7 @@ class BeatUITextView: UITextView {
 		resize()
 	}
 	
-	func resizePaper() {
+	@objc func resizePaper() {
 		var frame = pageView.frame
 		frame.size.height = textContainer.size.height
 		frame.size.width = self.documentWidth + textContainerInset.left + textContainerInset.right + BeatUITextView.linePadding()
@@ -81,8 +97,13 @@ class BeatUITextView: UITextView {
 		pageView.frame = frame
 	}
 	
-	func resize() {
+	@objc func resize() {
 		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
+		guard let enclosingScrollView = self.enclosingScrollView else {
+			print("WARNING: No scroll view set for text view")
+			return
+		}
+		
 		if (containerHeight < enclosingScrollView.frame.height) {
 			containerHeight = enclosingScrollView.frame.height
 		}
@@ -122,7 +143,7 @@ class BeatUITextView: UITextView {
 
 	// MARK: - Rects for ranges
 	
-	func rectForRange (range: NSRange) -> CGRect {
+	@objc func rectForRange (range: NSRange) -> CGRect {
 		let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
 		let rect = self.layoutManager.boundingRect(forGlyphRange: glyphRange, in: self.textContainer)
 		
@@ -296,6 +317,19 @@ extension BeatUITextView: UIScrollViewDelegate {
 								height: (contentSize.height + self.textContainerInset.top + self.textContainerInset.bottom) * factor)
 		
 		self.enclosingScrollView.contentSize = scrollSize
+	}
+	
+	override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+		guard let key = presses.first?.key else { return }
+
+			switch key.keyCode {
+			case .keyboardTab:
+				editorDelegate?.handleTabPress?()
+				return
+				
+			default:
+				super.pressesBegan(presses, with: event)
+			}
 	}
 }
 

@@ -23,7 +23,7 @@ import Foundation
 	@objc optional func keyboardDidHide()
 }
 
-public final class KeyboardManager {
+@objc public final class KeyboardManager:NSObject {
 	
 	private enum KeyboardState {
 		case shown, hidden
@@ -31,12 +31,13 @@ public final class KeyboardManager {
 	
 	// MARK: Properties
 	
-	weak public var delegate: KeyboardManagerDelegate?
+	@objc weak public var delegate: KeyboardManagerDelegate?
 	private var keyboardState: KeyboardState = .hidden
 	
 	// MARK: Lifecycle
 	
-	public init() {
+	public override init() {
+		super.init()
 		registerForKeyboardNotification()
 	}
 	
