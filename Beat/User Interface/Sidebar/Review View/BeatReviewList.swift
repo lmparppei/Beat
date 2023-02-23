@@ -148,7 +148,7 @@ class BeatReviewList:NSOutlineView, NSOutlineViewDataSource, NSOutlineViewDelega
 	func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
 		let review = item as! ReviewListItem
 		
-		editorDelegate?.scroll?(to: review.range, callback: {
+		editorDelegate?.scroll(to: review.range, callback: {
 			self.editorDelegate?.selectedRange = NSMakeRange(review.range.location, 0)
 			self.editorDelegate?.focusEditor?()
 		});

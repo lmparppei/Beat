@@ -8,6 +8,8 @@
 //
 
 import Foundation
+import BeatCore
+import BeatPaginationCore
 
 protocol BeatCssParserDelegate {
 	func get(key:String)
@@ -166,7 +168,7 @@ final class CssParser {
 			if (value == "true" || value == "1") { return true }
 			else { return false }
 		}
-		
+				
 		// Calculate different units based on *fixed values*
 		value = value.replacingOccurrences(of: "ch", with: "* 7.25")
 		value = value.replacingOccurrences(of: "l", with: "* \(BeatPagination.lineHeight())")

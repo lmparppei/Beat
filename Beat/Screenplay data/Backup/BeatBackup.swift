@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BeatCore
 
 class BeatBackupFile:NSObject {
 	@objc var name:String!
@@ -125,7 +126,7 @@ class BeatBackup:NSObject {
 				
 				let range = NSRange(r!, in: file)
 				let actualName = filename.substring(range: NSMakeRange(0, range.location))
-				
+								
 				let dateStr = filename.substring(range: NSMakeRange(NSMaxRange(range), filename.count - NSMaxRange(range)))
 				
 				let formatter = BeatBackup.formatter

@@ -125,7 +125,7 @@
 		NSString *close = [NSString stringWithFormat:@"</%@>", color];
 		
 		NSInteger prevLoc = 0;
-		NSRange openRange = NSMakeRange(0, 0);
+		NSRange openRange;
 		NSRange closeRange = NSMakeRange(0, 0);
 		
 		do {

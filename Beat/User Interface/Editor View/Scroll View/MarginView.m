@@ -38,8 +38,7 @@
 
 - (void)viewWillDraw {
 	self.wantsLayer = YES;
-	
-	CGFloat marginWidth = (_editor.inset - WHITESPACE) * self.editor.magnification;
+	CGFloat marginWidth = (_editor.getTextView.textContainerInset.width - WHITESPACE) * self.editor.magnification;
 	
 	if (!_paper) {
 		// Setup background

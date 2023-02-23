@@ -111,7 +111,7 @@ class BeatSceneHeadingSearch:NSWindowController, NSTableViewDataSource, NSTableV
 			
 			// Scroll to selected scene and close this menu
 			if (scene != nil) {
-				self.delegate?.scroll?(to: scene!.line)
+				self.delegate?.scroll(to: scene!.line)
 			}
 		}
 		

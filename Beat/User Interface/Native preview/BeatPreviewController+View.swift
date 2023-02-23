@@ -210,7 +210,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	func closeAndJumpToRange(_ range:NSRange) {
 		delegate?.returnToEditor?()
 		self.delegate?.selectedRange = range
-		self.delegate?.scroll?(to: range, callback: {})
+		self.delegate?.scroll(to: range, callback: {})
 	}
 }
 

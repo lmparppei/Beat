@@ -65,8 +65,8 @@
 	_characterLines = [NSMutableDictionary dictionary];
 	_TOD = [NSMutableDictionary dictionary];
 		
-	_lines = [NSArray arrayWithArray:self.delegate.lines];
-	_scenes = [NSArray arrayWithArray:self.delegate.scenes];
+	_lines = self.delegate.lines.copy;
+	_scenes = self.delegate.scenes.copy;
 	_genders = self.delegate.characterGenders;
 	
 	return self;

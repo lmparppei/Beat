@@ -157,7 +157,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	// to fit our revision markers in the margin
 	
 	BeatLayoutManager *layoutMgr = BeatLayoutManager.new;
-	//layoutMgr.textView = self;
 	[self.textContainer replaceLayoutManager:layoutMgr];
 	self.textContainer.lineFragmentPadding = [BeatTextView linePadding];
 	
@@ -206,8 +205,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	[self.window setAcceptsMouseMovedEvents:YES];
 	[self addTrackingArea:_trackingArea];
 	
-	// Turn layers on if you want to use CATextLayer labels.
-	// self.wantsLayer = YES;
 	[self setInsets];
 }
 

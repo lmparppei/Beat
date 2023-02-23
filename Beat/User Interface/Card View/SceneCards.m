@@ -198,16 +198,19 @@
 	// Somebody might be just using card view to craft a step outline, so we need to check that this line is not a scene heading.
 	// Also, we'll use SYNOPSIS line as the snippet in case it's the first line
 	while (lineIndex < _delegate.lines.count) {
-		Line* snippetLine = [_delegate.lines objectAtIndex:lineIndex];
-		if (snippetLine.type != heading && snippetLine.type != section && !(snippetLine.omitted && !snippetLine.note)) {
-			if (!snippetLine.note) snippet = snippetLine.stripFormatting;
-			else {
-				snippet = [snippetLine.string stringByReplacingOccurrencesOfString:@"[[" withString:@""];
-				snippet = [snippet stringByReplacingOccurrencesOfString:@"]]" withString:@""];
-			}
-			break;
+		Line* line = _delegate.lines[lineIndex];
+		if (line.isOutlineElement) break;
+		else if (line.omitted && !line.note) {
+			lineIndex++;
+			continue;
 		}
-		lineIndex++;
+		
+		if (!line.note) snippet = line.stripFormatting;
+		else {
+			snippet = [line.string stringByReplacingOccurrencesOfString:@"[[" withString:@""];
+			snippet = [snippet stringByReplacingOccurrencesOfString:@"]]" withString:@""];
+		}
+		break;
 	}
 	
 	// If it's longer than we want, split into sentences
@@ -369,7 +372,7 @@
 			NSInteger changedIndex = -1;
 			if (from < to) changedIndex = to -1; else changedIndex = to;
 			
-			NSMutableArray *outline = self.delegate.getOutlineItems;
+			NSArray *outline = self.delegate.getOutlineItems;
 			if (outline.count < 1) return;
 			
 			OutlineScene *scene = [outline objectAtIndex:from];

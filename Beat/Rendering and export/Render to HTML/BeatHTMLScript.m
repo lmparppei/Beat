@@ -514,8 +514,8 @@ static bool underlinedHeading;
 	[pages addObject:titlePageString];
     	
 	// Header string (make sure it's not null)
-	NSString *header = (_settings.header) ? _settings.header : @"";
-	if (header.length) header = [header stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
+	if (_settings.header == nil) _settings.header = @"";
+	_settings.header = [_settings.header stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	
 	for (NSInteger pageIndex = 0; pageIndex < paginatedContent.count; pageIndex++) {
         NSArray *elementsOnPage = paginatedContent[pageIndex];

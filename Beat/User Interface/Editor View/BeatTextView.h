@@ -59,7 +59,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (nonatomic, readonly) Line *currentLine;
 
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
-- (NSMutableArray*)getOutlineItems;
+- (NSArray*)getOutlineItems;
 - (Line*)getCurrentLine;
 - (bool)isDark;
 - (void)updateLayout;

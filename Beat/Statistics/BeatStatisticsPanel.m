@@ -58,7 +58,9 @@
 	}
 }
 - (void)setGenderFor:(NSString*)name gender:(NSString*)gender {
-	[self.delegate.characterGenders setObject:gender forKey:name];
+	NSMutableDictionary* genders = self.delegate.characterGenders.mutableCopy;
+	[genders setValue:gender forKey:name];
+	self.delegate.characterGenders = genders;
 }
 
 - (IBAction)close:(id)sender {

@@ -403,7 +403,8 @@
 			 [dialogueBlock subarrayWithRange:NSMakeRange(0, splitAt)]
 		];
 		[onThisPage addObjectsFromArray:tmpThisPage];
-		[onThisPage addObject:[self.delegate moreLineFor:spiller]];
+		
+		if (self.delegate) [onThisPage addObject:[self.delegate moreLineFor:spiller]];
 	}
 			
 	// Add stuff on next page if needed

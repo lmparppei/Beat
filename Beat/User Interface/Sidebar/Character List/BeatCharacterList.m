@@ -363,7 +363,10 @@
 	
 	if (gender.length && character.name.length) {
 		// Set gender
-		_editorDelegate.characterGenders[character.name] = gender;
+		NSMutableDictionary* genders = _editorDelegate.characterGenders.mutableCopy;
+		genders[character.name] = gender;
+		_editorDelegate.characterGenders = genders;
+		
 		[self reloadView];
 	}
 }
