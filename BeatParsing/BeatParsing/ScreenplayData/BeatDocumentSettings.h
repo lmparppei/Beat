@@ -30,6 +30,8 @@ extern NSString * const DocSettingChangedIndices;
 extern NSString * const DocSettingReviews;
 extern NSString * const DocSettingSidebarVisible;
 extern NSString * const DocSettingSidebarWidth;
+extern NSString * const DocSettingLocked;
+extern NSString * const DocSettingCharacterGenders;
 
 extern NSString * const DocSettingWindowWidth;
 extern NSString * const DocSettingWindowHeight;

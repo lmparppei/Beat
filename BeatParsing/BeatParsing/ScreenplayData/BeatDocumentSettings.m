@@ -45,6 +45,9 @@ NSString * const DocSettingActivePlugins = @"Active Plugins";
 
 NSString * const DocSettingPageSize = @"Page Size";
 
+NSString * const DocSettingCharacterGenders = @"CharacterGenders";
+
+
 -(id)init
 {
 	self = [super init];
