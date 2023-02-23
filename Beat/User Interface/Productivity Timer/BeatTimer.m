@@ -8,6 +8,7 @@
 
 #import "BeatTimer.h"
 #import "BeatComparison.h"
+#import <BeatCore/BeatLocalization.h>
 
 #define BUTTON_DONE @"✔︎"
 #define BUTTON_REPEAT @"↻"
@@ -61,7 +62,7 @@
 	_done = NO;
 	
 	[_resetButton setHidden:NO];
-	[_startButton setTitle:@"Reset"];
+	[_startButton setTitle:[BeatLocalization localizedStringForKey:@"timer.reset"]];
 	[_pauseButton setHidden:NO];
 	[_label setHidden:YES];
 	
@@ -127,7 +128,7 @@
 	// Reset everything to default
 	[_resetButton setHidden:YES];
 	
-	[_startButton setTitle:@"Start"];
+	[_startButton setTitle:[BeatLocalization localizedStringForKey:@"timer.start"]];
 	[_pauseButton setHidden:YES];
 	[_label setHidden:NO];
 	[_minutes setEnabled:YES];
@@ -167,7 +168,7 @@
 		NSInteger numberOfRemovals = [(NSNumber*)changes[@"removed"] integerValue];
 		
 		NSAttributedString *strChangesMade = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%lu\n", numberOfRemovals] attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:14] }];
-		NSAttributedString *strChanges = [[NSAttributedString alloc] initWithString:@"characters erased" attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:9] }];
+		NSAttributedString *strChanges = [[NSAttributedString alloc] initWithString:[BeatLocalization localizedStringForKey:@"timer.charactersRemoved"] attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:9] }];
 		
 		[removals appendAttributedString:strChangesMade];
 		[removals appendAttributedString:strChanges];
@@ -176,7 +177,7 @@
 	
 	NSMutableAttributedString *typed = [[NSMutableAttributedString alloc] initWithString:@""];
 	NSAttributedString *strCharactersTyped = [[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%lu\n", _charactersTyped] attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:14] }];
-	NSAttributedString *strTyped = [[NSAttributedString alloc] initWithString:@"characters\ntyped" attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:9] }];
+	NSAttributedString *strTyped = [[NSAttributedString alloc] initWithString:[BeatLocalization localizedStringForKey:@"timer.charactersRemoved"] attributes:@{ NSFontAttributeName: [NSFont systemFontOfSize:9] }];
 	[typed appendAttributedString:strCharactersTyped];
 	[typed appendAttributedString:strTyped];
 	[typed addAttributes:@{ NSParagraphStyleAttributeName: style } range:NSMakeRange(0, typed.string.length)];

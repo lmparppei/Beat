@@ -14,12 +14,20 @@
 "unlock_document.title" = "Avaa dokumentin lukitus";
 "unlock_document.confirm" = "Haluatko varmasti avata lukituksen ja sallia muutokset käsikirjoitukseen?";
 "general.OK" = "OK";
+"general.ok" = "OK";
 "general.yes" = "Kyllä";
 "general.no" = "Ei";
 "general.cancel" = "Peruuta";
 "general.undo" = "Peru";
 "general.redo" = "Tee sittenkin";
 "general.revert" = "Palauta";
+"general.close" = "Sulje";
+
+"storyline.placeholder" = "Uuden tarinalinjan nimi";
+"storyline.add" = "Lisää tarinalinja...";
+
+"plugins.errorRunningScript" = "Laajennuksen koodia ei voitu suorittaa";
+"plugins.input.select" = "Valitse...";
 
 "language.alert" = "Käynnistä Beat uudelleen";
 "language.informative" = "Kielen vaihtaminen vaatii ohjelman uudelleenkäynnistyksen.";
@@ -107,10 +115,15 @@
 "force.character" = "Hahmo";
 "force.heading" = "Kohtausotsikko";
 "force.action" = "Toiminta";
-"force.lyrics" = "Lyriikat";
+"force.lyrics" = "Laulunsanat";
 
 "editor.goToSceneNumber.message" = "Siirry kohtaukseen numero...";
 "editor.goToSceneNumber.placeholder" = "esim. 123";
 
 "export.prefix" = "Vie";
 "import.prefix" = "Tuo";
+
+"timer.reset" = "Nollaa";
+"timer.start" = "Käynnistä";
+"timer.charactersRemoved" = "merkkiä poistettu";
+"timer.charactersTyped" = "merkkiä\nlisätty";

@@ -131,9 +131,7 @@
 			l.changed = NO;
 			continue;
 		}
-		
-		bool changed = NO;
-		
+				
 		NSRange lineRange = l.textRange;
 		for (NSNumber *rangeNum in changedRanges) {
 			NSRange range = rangeNum.rangeValue;

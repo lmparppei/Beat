@@ -81,9 +81,9 @@
 	[_context setExceptionHandler:^(JSContext *context, JSValue *exception) {
 		if (NSThread.isMainThread) {
 			NSAlert *alert = [[NSAlert alloc] init];
-			alert.messageText = @"Error Running Script";
+			alert.messageText = [BeatLocalization localizedStringForKey:@"plugins.errorRunningScript"];
 			alert.informativeText = [NSString stringWithFormat:@"%@", exception];
-			[alert addButtonWithTitle:@"OK"];
+			[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
 			[alert runModal];
 		} else {
 			NSString *errMsg = [NSString stringWithFormat:@"Error: %@", exception];
@@ -127,7 +127,6 @@
 	NSString *script = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
 	
 	if (error) {
-		script = @"";
 		NSString *errorMsg = [NSString stringWithFormat:@"Error: Could not import JavaScript module '%@'", path.lastPathComponent];
 		[self log:errorMsg];
 		return;
@@ -660,6 +659,8 @@
 /// Logs the given message to plugin developer log
 - (void)log:(NSString*)string
 {
+	if (string == nil) return;
+	
 	BeatConsole *console = BeatConsole.shared;
 	if (NSThread.isMainThread) [console logToConsole:string pluginName:_pluginName];
 	else {
@@ -766,7 +767,7 @@
 	if ([info isEqualToString:@"undefined"]) info = @"";
 	
 	NSAlert *alert = [self dialog:title withInfo:info];
-	[alert addButtonWithTitle:@"OK"];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
 	[alert runModal];
 }
 
@@ -777,8 +778,8 @@
 	alert.messageText = title;
 	alert.informativeText = info;
 	
-	[alert addButtonWithTitle:@"OK"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
 	
 	NSModalResponse response = [alert runModal];
 	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
@@ -836,15 +837,15 @@
 - (NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback {
 	// We support both return & callback in modal windows
 	
-	NSString *title = (settings[@"title"]) ? settings[@"title"] : @"";
-	NSString *info  = (settings[@"info"]) ? settings[@"info"] : @"";
+	NSString *title = (settings[@"title"] != nil) ? settings[@"title"] : @"";
+	NSString *info  = (settings[@"info"] != nil) ? settings[@"info"] : @"";
 	
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = title;
 	alert.informativeText = info;
 	
-	[alert addButtonWithTitle:@"OK"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
 	
 	BeatModalAccessoryView *itemView = [[BeatModalAccessoryView alloc] init];
 	
@@ -882,8 +883,8 @@
 	if ([defaultText isEqualToString:@"undefined"]) defaultText = @"";
 	
 	NSAlert *alert = [self dialog:prompt withInfo:info];
-	[alert addButtonWithTitle:@"OK"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
 	
 	NSRect frame = NSMakeRect(0, 0, 300, 24);
 	NSTextField *inputField = [[NSTextField alloc] initWithFrame:frame];
@@ -909,12 +910,12 @@
 - (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items
 {
 	NSAlert *alert = [self dialog:prompt withInfo:info];
-	[alert addButtonWithTitle:@"OK"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
+	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
 	
 	NSPopUpButton *popup = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(0,0, 300, 24)];
 	
-	[popup addItemWithTitle:@"Select..."];
+	[popup addItemWithTitle:[BeatLocalization localizedStringForKey:@"plugins.input.select"]];
 	
 	for (id item in items) {
 		// Make sure the title becomes a string
@@ -926,7 +927,7 @@
 	
 	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
 		// Return an empty string if the user didn't select anything
-		if ([popup.selectedItem.title isEqualToString:@"Select..."]) return @"";
+		if ([BeatLocalization localizedStringForKey:@"plugins.input.select"]) return @"";
 		else return popup.selectedItem.title;
 	} else {
 		return nil;
@@ -938,7 +939,7 @@
 {
 	if ([info isEqualToString:@"undefined"]) info = @"";
 
-	NSAlert *alert = [[NSAlert alloc] init];
+	NSAlert *alert = NSAlert.new;
 	alert.messageText = title;
 	alert.informativeText = info;
 	
@@ -1015,7 +1016,7 @@
 
 	// Make esc close the panel
 	okButton.keyEquivalent = [NSString stringWithFormat:@"%C", 0x1b];
-	okButton.title = @"Close";
+	okButton.title = [BeatLocalization localizedStringForKey:@"general.close"];
 	[panel.contentView addSubview:okButton];
 	
 	// Add cancel button if needed

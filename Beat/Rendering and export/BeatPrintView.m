@@ -228,7 +228,7 @@ static NSURL *pdfURL;
 	
 	// Default filename when printing a single document
 	if ([self.document isKindOfClass:Document.class]) [saveDialog setNameFieldStringValue:self.document.fileNameString];
-	else [saveDialog setNameFieldStringValue:@"Untitled"];
+	else [saveDialog setNameFieldStringValue:[BeatLocalization localizedStringForKey:@"general.untitled"]];
 	
 	// Display sheet for documents, normal modal for other cases
 	if (self.document.windowControllers.count) {

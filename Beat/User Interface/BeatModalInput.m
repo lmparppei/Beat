@@ -58,8 +58,9 @@
 	
 	if (!_dialog) {
 		_dialog = [[NSAlert alloc] init];
-		[_dialog addButtonWithTitle:@"OK"];
-		[_dialog addButtonWithTitle:@"Cancel"];
+		
+		[_dialog addButtonWithTitle:NSLocalizedString(@"general.OK", nil)];
+		[_dialog addButtonWithTitle:NSLocalizedString(@"general.cancel", nil)];
 		
 		NSRect frame = NSMakeRect(0, 0, 250, 24);
 		_inputField = [[NSTextField alloc] initWithFrame:frame];

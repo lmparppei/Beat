@@ -10,12 +10,18 @@
 "general.yes" = "Yes";
 "general.no" = "No";
 "general.OK" = "OK";
+"general.ok" = "OK";
 "general.cancel" = "Cancel";
 "general.undo" = "Undo";
 "general.redo" = "Redo";
+"general.close" = "Close";
+"general.untitled" = "Untitled";
 "app.manual" = "Manual";
 "app.patchNotes" = "Patch Notes";
 "general.revert" = "Revert";
+
+"plugins.errorRunningScript" = "Error running script";
+"plugins.input.select" = "Select...";
 
 "launch.newDocument.subtitle" = "Start a new, blank project";
 "launch.tutorial.subtitle" = "Begin here, if you are new to Beat";
@@ -37,6 +43,9 @@
 
 "plugins.libraryWelcome" = "<p>A selection of official plugins for Beat. Enabled (checked) plugins will be shown under <b>Tools</b> menu. Grayed out plugins are not yet installed. Click on their label to install and learn more.</p>\
    <p class='small gray'>Click on the folder icon to manually manage your plugins. You can write your own plugins using JavaScript &mdash; learn more on Beat website.</p>";
+
+"storyline.placeholder" = "New Storyline Name";
+"storyline.add" = "Add Storyline...";
 
 "gender.other" = "Other";
 "gender.woman" = "Woman";
@@ -102,7 +111,7 @@
 "mode.taggingMode" = "Tagging Mode";
 "mode.reviewMode" = "Review Mode";
 
-"backup.revertToSaved" = "To Saved";
+"backup.revertToSaved" = "Revert To Saved";
 "backup.backupVault" = "Open Backup Vault...";
 
 "backup.reverting.title" = "Revert File";
@@ -121,3 +130,8 @@
 
 "export.prefix" = "Export";
 "import.prefix" = "Import";
+
+"timer.reset" = "Reset";
+"timer.start" = "Start";
+"timer.charactersRemoved" = "characters removed";
+"timer.charactersTyped" = "characters\ntyped";

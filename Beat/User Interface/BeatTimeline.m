@@ -22,7 +22,7 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <Quartz/Quartz.h>
-#import <BeatCore/BeatColors.h>
+#import <BeatCore/BeatCore.h>
 #import "BeatTimeline.h"
 #import "BeatTimelineItem.h"
 #import "HorizontalPinchView.h"
@@ -120,7 +120,7 @@
 	NSView *storylineView = [[NSView alloc] initWithFrame:NSZeroRect];
 	_storylineField = [[NSTextField alloc] initWithFrame:NSMakeRect(POPOVER_PADDING, POPOVER_PADDING, POPOVER_WIDTH - POPOVER_PADDING * 2, POPOVER_HEIGHT - POPOVER_PADDING * 2)];
 	_storylineField.editable = YES;
-	_storylineField.placeholderString = @"New Storyline Name";
+	_storylineField.placeholderString = [BeatLocalization localizedStringForKey:@"storyline.placeholder"];
 	_storylineField.bezeled = NO;
 	_storylineField.drawsBackground = NO;
 	[storylineView addSubview:_storylineField];
@@ -256,7 +256,6 @@
 	NSInteger index = 0;
 	NSInteger storylineIndex = 0;
 	
-	OutlineScene *previousScene;
 	BeatTimelineItem *previousItem;
 	//BeatTimelineItem *previousSynopsis;
 	BeatTimelineItem *previousSection;
@@ -329,35 +328,6 @@
 			
 			previousSection = item;
 		}
-		/*
-		else if (scene.type == synopse) {
-			// There is a chance that the synopsis line describes the CONTENT OF A SCENE and not a story point.
-			// The parser already takes this into account, so we'll just check if it is within the ranges.
-			if (NSLocationInRange(scene.position, previousScene.range)) {
-				NSRect frame = item.frame;
-				frame.origin.x = previousItem.frame.origin.x;
-				item.frame = frame;
-			}
-			
-			if (previousSynopsis) {
-				if (previousSynopsis.frame.origin.x + previousSynopsis.frame.size.width > item.frame.origin.x) {
-					CGFloat difference = previousSynopsis.frame.origin.x + previousSynopsis.frame.size.width - item.frame.origin.x;
-					NSRect frame = previousSynopsis.frame;
-					
-					frame.size.width -= difference - 1;
-					if (frame.size.width < 0) frame.size.width = 0;
-					
-					[previousSynopsis setFrame:frame];
-					[previousSynopsis setNeedsDisplay:YES];
-				} else {
-					NSRect frame = previousSynopsis.frame;
-					frame.size.width = item.frame.origin.x - frame.origin.x;
-					[previousSynopsis setFrame:frame];
-				}
-			}
-			previousSynopsis = item;
-		}
-		*/
 		
 		// Only add the width to the total width if it's a scene
 		// Sections add 3 px to account for the separator, while synopses add 0
@@ -368,7 +338,6 @@
 		}
 		
 		previousItem = item;
-		previousScene = scene;
 		index++;
 	}
 		

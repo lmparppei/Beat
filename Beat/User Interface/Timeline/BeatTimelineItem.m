@@ -9,6 +9,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <Quartz/Quartz.h>
 #import <BeatCore/BeatColors.h>
+#import <BeatCore/BeatLocalization.h>
 #import "BeatTimelineItem.h"
 #import "BeatColorMenuItem.h"
 
@@ -339,7 +340,7 @@
 		}
 	}
 	
-	[menu addItemWithTitle:@"Add Storyline..." action:@selector(newStoryline) keyEquivalent:@""];
+	[menu addItemWithTitle:[BeatLocalization localizedStringForKey:@"storyline.add"] action:@selector(newStoryline) keyEquivalent:@""];
 
 	
 	return menu;

@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 
 - (NSRange)selectedRange;
-- (NSMutableArray*)getOutlineItems;
+- (NSArray*)getOutlineItems;
 - (NSArray*)getOutline; // ???
 - (void)didSelectTimelineItem:(NSInteger)index;
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;

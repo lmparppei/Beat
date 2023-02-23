@@ -637,14 +637,11 @@ static BeatPluginManager *sharedManager;
 	if (matchDescription) pluginInfo.text = [[(RxMatchGroup*)matchDescription.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	if (matchHTML) pluginInfo.html = [[(RxMatchGroup*)matchHTML.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
-	// Check cmopatibility
+	// Check compatibility
 	pluginInfo.compatible = YES;
 	if (matchCompatibility) {
 		pluginInfo.requiredVersion = [[(RxMatchGroup*)matchCompatibility.groups[1] value] stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 		pluginInfo.requiredVersion = [pluginInfo.requiredVersion stringByReplacingOccurrencesOfString:@"+" withString:@""];
-		
-		NSString * currentVersion = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleShortVersionString"];
-		currentVersion = currentVersion.shortenedVersionNumberString;
 		
 		if (pluginInfo.requiredVersion.length && ![self isCompatible:pluginInfo.requiredVersion]) pluginInfo.compatible = NO;
 	}
