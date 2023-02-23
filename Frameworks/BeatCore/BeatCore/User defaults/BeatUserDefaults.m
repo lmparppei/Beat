@@ -155,7 +155,7 @@ NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
 
 - (id)defaultValueFor:(NSString*)key {
 	NSDictionary* userDefaults = BeatUserDefaults.userDefaults;
-	if (!userDefaults[key]) {
+	if (userDefaults[key] == nil) {
 		NSLog(@"WARNING: User default key does not exist: %@", key);
 		return nil;
 	}

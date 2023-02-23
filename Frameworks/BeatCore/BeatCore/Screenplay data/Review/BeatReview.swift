@@ -122,6 +122,7 @@ public protocol BeatReviewInterface {
         #else
         
         print("Implement review manager")
+        self.popover = UIPopoverPresentationController(presentedViewController: PopoverViewController(), presenting: nil)
         
         #endif
 	
@@ -191,13 +192,13 @@ public protocol BeatReviewInterface {
         
         if (trimmedString.count > 0 && trimmedString != "") {
             // Save review if it's not empty
-            delegate?.addAttribute?(BeatReview.attributeKey().rawValue, value: item, range: currentRange)
+            delegate?.addAttribute(BeatReview.attributeKey().rawValue, value: item, range: currentRange)
         }
         
         self.delegate?.renderBackground?(for: currentRange)
-        delegate?.textDidChange?(Notification(name: Notification.Name(rawValue: "Review edit")))
+        delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review edit")))
         #if os(macOS)
-        delegate?.updateChangeCount?(.changeDone)
+        delegate?.updateChangeCount(.changeDone)
         #else
         delegate?.updateChangeCount?(.done)
         #endif
@@ -216,14 +217,14 @@ public protocol BeatReviewInterface {
         
         if (deleteRange.location != NSNotFound) {
             delegate?.textStorage?().removeAttribute(BeatReview.attributeKey(), range: deleteRange)
-            delegate?.textDidChange?(Notification(name: Notification.Name(rawValue: "Review deletion")))
+            delegate?.textDidChange(Notification(name: Notification.Name(rawValue: "Review deletion")))
             
 #if os(macOS)
             editorView.item = nil
             popover.close()
             
             delegate?.renderBackground?(for: deleteRange)
-            delegate?.updateChangeCount?(.changeDone)
+            delegate?.updateChangeCount(.changeDone)
 #endif
         }
 

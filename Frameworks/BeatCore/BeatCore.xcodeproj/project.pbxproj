@@ -36,7 +36,7 @@
 		B68C0F67299D845A0031AE6B /* BeatArrayExtensions.swift in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F61299D843C0031AE6B /* BeatArrayExtensions.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F68299D845A0031AE6B /* BeatStringExtensions.swift in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F60299D843C0031AE6B /* BeatStringExtensions.swift */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F69299D845A0031AE6B /* BeatValueTransformers.swift in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F5F299D843B0031AE6B /* BeatValueTransformers.swift */; settings = {ATTRIBUTES = (Public, ); }; };
-		B68C0F6B299D8A4F0031AE6B /* ReviewView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68C0F6A299D8A4F0031AE6B /* ReviewView.xib */; };
+		B68C0F6B299D8A4F0031AE6B /* ReviewView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B68C0F6A299D8A4F0031AE6B /* ReviewView.xib */; platformFilters = (macos, ); };
 		B68C0F6E299D8D300031AE6B /* libUXKit-AppKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F6C299D8D300031AE6B /* libUXKit-AppKit.a */; platformFilters = (macos, ); };
 		B68C0F6F299D8D300031AE6B /* libUXKit-UIKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F6D299D8D300031AE6B /* libUXKit-UIKit.a */; platformFilter = ios; };
 		B6D32021298EBE39003DA45D /* TagDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201B298EBE2B003DA45D /* TagDefinition.m */; };
@@ -49,6 +49,8 @@
 		B6D32028298EBE45003DA45D /* BeatTag.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3201D298EBE2B003DA45D /* BeatTag.m */; };
 		B6D3202C298EBEEB003DA45D /* NSString+Levenshtein.m in Sources */ = {isa = PBXBuildFile; fileRef = B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */; };
 		B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FC406329A1784700004A9D /* BeatTextIO.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */ = {isa = PBXBuildFile; fileRef = B6FC406429A1784700004A9D /* BeatTextIO.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,6 +73,8 @@
 		B633C1EA298C631E0011449D /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
 		B633C1EF298C63E60011449D /* BeatAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatAttributes.h; sourceTree = "<group>"; };
 		B633C1F0298C63E70011449D /* BeatAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatAttributes.m; sourceTree = "<group>"; };
+		B681D58F29A37DBD00DF16CA /* BeatDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocument.h; sourceTree = "<group>"; };
+		B681D59029A37DBD00DF16CA /* BeatDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocument.m; sourceTree = "<group>"; };
 		B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatLayoutManager.h; sourceTree = "<group>"; };
 		B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatLayoutManager.m; sourceTree = "<group>"; };
 		B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,6 +96,8 @@
 		B6D3201F298EBE2B003DA45D /* BeatTagItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTagItem.m; sourceTree = "<group>"; };
 		B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Levenshtein.m"; sourceTree = "<group>"; };
 		B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Levenshtein.h"; sourceTree = "<group>"; };
+		B6FC406329A1784700004A9D /* BeatTextIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTextIO.h; sourceTree = "<group>"; };
+		B6FC406429A1784700004A9D /* BeatTextIO.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTextIO.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +154,8 @@
 				B633C1EB298C631E0011449D /* Localization */,
 				B633C1C2298C5FA50011449D /* BeatColors */,
 				B6D32029298EBEDA003DA45D /* Extensions */,
+				B681D58F29A37DBD00DF16CA /* BeatDocument.h */,
+				B681D59029A37DBD00DF16CA /* BeatDocument.m */,
 			);
 			path = BeatCore;
 			sourceTree = "<group>";
@@ -210,6 +218,8 @@
 			children = (
 				B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */,
 				B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */,
+				B6FC406329A1784700004A9D /* BeatTextIO.h */,
+				B6FC406429A1784700004A9D /* BeatTextIO.m */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -267,6 +277,7 @@
 				B633C1B9298C5F750011449D /* BeatCore.h in Headers */,
 				B633C1D7298C60600011449D /* BeatRevisions.h in Headers */,
 				B6D32026298EBE45003DA45D /* BeatTagging.h in Headers */,
+				B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */,
 				B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */,
 				B6D32027298EBE45003DA45D /* BeatTag.h in Headers */,
 				B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */,
@@ -366,6 +377,7 @@
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
 				B6D32028298EBE45003DA45D /* BeatTag.m in Sources */,
 				B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */,
+				B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */,
 				B68C0F54299D7D590031AE6B /* BeatLayoutManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -503,7 +515,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -538,7 +550,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

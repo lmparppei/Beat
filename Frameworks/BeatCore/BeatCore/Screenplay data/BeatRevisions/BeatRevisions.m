@@ -196,7 +196,7 @@
 		if (line.changed) {
 			NSString *revisionColor = line.revisionColor;
 			if (revisionColor.length == 0) revisionColor = BeatRevisions.defaultRevisionColor;
-			[changedLines setValue:line.revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
+			[changedLines setValue:revisionColor forKey:[NSString stringWithFormat:@"%lu", i]];
 		}
 	}
 	

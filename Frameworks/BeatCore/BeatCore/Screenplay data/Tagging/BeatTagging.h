@@ -13,7 +13,7 @@
     #import <UIKit/UIKit.h>
     #define TagColor UIColor
     #define TagFont UIFont
-    #define BeatEditorView UITextView
+    #define BeatEditorTextView UITextView
     #define BeatTagView UITextView
 #else
     #import <Cocoa/Cocoa.h>
