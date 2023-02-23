@@ -114,7 +114,7 @@
 #import "BeatAutocomplete.h"
 
 
-@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument> {
+@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate> {
 	NSString *bufferedText;
 }
 
@@ -158,6 +158,7 @@
 
 // Text view
 @property (weak, nonatomic) IBOutlet BeatTextView *textView;
+@property (nonatomic) IBOutlet BeatTextIO* textActions;
 @property (weak, nonatomic) IBOutlet ScrollView *textScrollView;
 @property (weak, nonatomic) IBOutlet MarginView *marginView;
 @property (weak, nonatomic) IBOutlet NSClipView *textClipView;
@@ -166,7 +167,6 @@
 @property (nonatomic) BeatPaginator *paginator;
 @property (nonatomic) NSTimer *paginationTimer;
 @property (nonatomic) bool autocomplete;
-@property (nonatomic) bool moving;
 @property (nonatomic) bool showPageNumbers;
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
@@ -192,7 +192,6 @@
 @property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (weak) NSArray *draggedNodes;
 @property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
-@property (nonatomic) NSMutableArray *outline;
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint *outlineViewWidth;
 @property (nonatomic) BOOL sidebarVisible;
@@ -568,6 +567,8 @@ static BeatAppDelegate *appDelegate;
 	// Document loading has ended
 	self.documentIsLoading = NO;
 	
+	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
+	
 	// Ensure layout with pagination
 	[self setupLayoutWithPagination:YES];
 	
@@ -846,7 +847,7 @@ static BeatAppDelegate *appDelegate;
 }
 
 - (void)setMinimumWindowSize {
-	CGFloat width = (self.textView.documentWidth - (2 * BeatTextView.linePadding)) * self.magnification;
+	CGFloat width = (self.textView.documentWidth - (2 * BeatTextView.linePadding)) * self.magnification + 30;
 	if (_sidebarVisible) width += _outlineView.frame.size.width;
 
 	// Clamp the value. I can't use max methods.
@@ -1031,10 +1032,8 @@ static NSWindow __weak *currentKeyWindow;
 	
 	if (self.mode == TaggingMode) [_taggingModeSwitch setChecked:YES]; else [_taggingModeSwitch setChecked:NO];
 	
-	if (_revisionColor) {
-		for (BeatColorMenuItem* item in _revisionColorPopup.itemArray) {
-			if ([item.colorKey.lowercaseString isEqualToString:_revisionColor.lowercaseString]) [_revisionColorPopup selectItem:item];
-		}
+	for (BeatColorMenuItem* item in _revisionColorPopup.itemArray) {
+		if ([item.colorKey.lowercaseString isEqualToString:self.revisionColor.lowercaseString]) [_revisionColorPopup selectItem:item];
 	}
 	
 	if (self.mode == TaggingMode) {
@@ -1195,7 +1194,7 @@ static NSWindow __weak *currentKeyWindow;
 	[_documentSettings set:DocSettingRevisions as:revisions];
 	
 	// Save current revision color
-	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
+	[_documentSettings setString:DocSettingRevisionColor as:self.revisionColor];
 	
 	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
 	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
@@ -1208,9 +1207,6 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Save caret position
 	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
-	
-	// Save character genders (if set)
-	if (_characterGenders) [self.documentSettings set:@"CharacterGenders" as:_characterGenders];
 	
 	[self unblockUserInteraction];
 	
@@ -1485,7 +1481,7 @@ static NSWindow __weak *currentKeyWindow;
 	}
 	
 	// Don't repeat ) or ]
-	if ([self shouldJumpOverParentheses:replacementString range:affectedCharRange] &&
+	if ([self.textActions shouldJumpOverParentheses:replacementString range:affectedCharRange] &&
 		!self.undoManager.redoing && !self.undoManager.undoing) {
 		return NO;
 	}
@@ -1519,7 +1515,7 @@ static NSWindow __weak *currentKeyWindow;
 		
 		// Handle automatic line breaks
 		else if (self.autoLineBreaks) {
-			if ([self shouldAddLineBreaks:currentLine range:affectedCharRange]) {
+			if ([self.textActions shouldAddLineBreaks:currentLine range:affectedCharRange]) {
 				return NO;
 			}
 		}
@@ -1543,7 +1539,7 @@ static NSWindow __weak *currentKeyWindow;
 	// Some checks for single characters
 	else if (replacementString.length == 1 && !self.undoManager.isUndoing && !self.undoManager.isRedoing) {
 		// Auto-close () and [[]]
-		if (self.matchParentheses) [self matchParenthesesIn:affectedCharRange string:replacementString];
+		if (self.matchParentheses) [self.textActions matchParenthesesIn:affectedCharRange string:replacementString];
 		
 		// When adding to a dialogue block, add an extra line break
 		if (self.currentLine.length == 0 && ![replacementString isEqualToString:@" "]) {
@@ -1576,121 +1572,6 @@ static NSWindow __weak *currentKeyWindow;
 	return YES;
 }
 
-/// Checks if we should add additional line breaks. Returns `true` if line breaks were added.
-/// **Warning:** Do **NOT** add a *single* line break here, because you'll end up with an infinite loop.
-- (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange {
-	if (_skipAutomaticLineBreaks) {
-		// Some methods can opt out of this behavior. Reset the flag once it's been used.
-		_skipAutomaticLineBreaks = false;
-		return NO;
-	}
-	
-	// Don't add a dual line break if shift is pressed
-	NSUInteger currentIndex = [self.parser indexOfLine:currentLine];
-	
-	// Handle lines with content
-	if (currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
-		// Add double breaks for outline element lines
-		if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
-			[self addString:@"\n\n" atIndex:affectedCharRange.location];
-			return YES;
-		}
-		
-		// Action lines need to perform some checks
-		else if (currentLine.type == action) {
-			// Perform a double-check if there is a next line
-			if (currentIndex + 1 < self.parser.lines.count && currentIndex != NSNotFound) {
-				Line* nextLine = self.parser.lines[currentIndex + 1];
-				if (nextLine.string.length == 0) {
-					// If it *might* be a character cue, skip this behavior.
-					if (currentLine.string.onlyUppercaseUntilParenthesis) return NO;
-					// Otherwise add dual line break
-					[self addString:@"\n\n" atIndex:affectedCharRange.location];
-					return YES;
-				}
-			} else {
-				[self addString:@"\n\n" atIndex:affectedCharRange.location];
-				return YES;
-			}
-		}
-	}
-	else if (currentLine.string.length == 0) {
-		Line *prevLine = [self.parser previousLine:currentLine];
-		Line *nextLine = [self.parser nextLine:currentLine];
-		
-		// Add a line break above and below when writing something in between two dialogue blocks
-		if ((prevLine.isDialogueElement || prevLine.isDualDialogueElement) && prevLine.string.length > 0 && nextLine.isAnyCharacter) {
-			[self addString:@"\n\n" atIndex:affectedCharRange.location];
-			self.textView.selectedRange = NSMakeRange(affectedCharRange.location + 1, 0);
-			return YES;
-		}
-	}
-	
-	return NO;
-}
-
-- (bool)shouldJumpOverParentheses:(NSString*)replacementString range:(NSRange)affectedCharRange {
-	// Jump over matched parentheses
-	if ([replacementString isEqualToString:@")"] || [replacementString isEqualToString:@"]"]) {
-		if (affectedCharRange.location < self.text.length) {
-			unichar currentCharacter = [self.textView.string characterAtIndex:affectedCharRange.location];
-			if ((currentCharacter == ')' && [replacementString isEqualToString:@")"]) ||
-				(currentCharacter == ']' && [replacementString isEqualToString:@"]"])) {
-				[self.textView setSelectedRange:NSMakeRange(affectedCharRange.location + 1, 0)];
-				return YES;
-			}
-		}
-	}
-	
-	return NO;
-}
-
-- (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString {
-	/**
-	 This method finds a matching closure for parenthesis, notes and omissions.
-	 It works by checking the entered symbol and if the previous symbol in text
-	 matches its counterpart (like with *, if the previous is /, terminator is appended.
-	 */
-	
-	if (replacementString.length > 1) return;;
-	
-	static NSDictionary *matches;
-	if (matches == nil) matches = @{
-		@"(" : @")",
-		@"[[" : @"]]",
-		@"/*" : @"*/",
-		@"<<" : @">>",
-		@"{{" : @"}}"
-	};
-	
-	// Find match for the parenthesis symbol
-	NSString *match = nil;
-	for (NSString* key in matches.allKeys) {
-		NSString *lastSymbol = [key substringWithRange:NSMakeRange(key.length - 1, 1)];
-		
-		if ([replacementString isEqualToString:lastSymbol]) {
-			match = key;
-			break;
-		}
-	}
-	
-	if (matches[match] == nil) {
-		// No match for this parenthesis
-		return;
-	}
-	else if (match.length > 1) {
-		if (affectedCharRange.location == 0) return;
-		
-		// Check for dual symbol matches, and don't allow them if the previous character doesn't match
-		unichar characterBefore = [self.textView.string characterAtIndex:affectedCharRange.location-1];
-		if (characterBefore != [match characterAtIndex:0]) {
-			return;
-		}
-	}
-	
-	[self addString:matches[match] atIndex:affectedCharRange.location];
-	[self.textView setSelectedRange:affectedCharRange];
-}
 
 - (BOOL)shouldAddContdIn:(NSRange)affectedCharRange string:(NSString*)replacementString {
 	Line *currentLine = self.currentLine;
@@ -2045,211 +1926,21 @@ static NSWindow __weak *currentKeyWindow;
 /**
  Main method for adding text to editor view.  Forces added text to be parsed. Does NOT invoke undo manager.
  */
-- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string
-{
-	// If range is over bounds (this can happen with certain undo operations for some reason), let's fix it
-	if (range.length + range.location > self.textView.string.length) {
-		NSInteger length = self.textView.string.length - range.location;
-		range = NSMakeRange(range.location, length);
-	}
-	
-	// Text view fires up shouldChangeTextInRange only when the text is changed by the user.
-	// When replacing stuff directly in the view, we need to call it manually.
-	if ([self textView:self.textView shouldChangeTextInRange:range replacementString:string]) {
-		[self.textView replaceCharactersInRange:range withString:string];
-		[self textDidChange:[NSNotification notificationWithName:@"" object:nil]];
-	}
-}
-
-static bool _skipAutomaticLineBreaks = false;
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index {
-	[self addString:string atIndex:index skipAutomaticLineBreaks:false];
-}
-- (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks
-{
-	_skipAutomaticLineBreaks = skipLineBreaks;
-	[self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
-	_skipAutomaticLineBreaks = false;
-	
-	[[self.undoManager prepareWithInvocationTarget:self] removeString:string atIndex:index];
-}
-
-- (void)removeString:(NSString*)string atIndex:(NSUInteger)index
-{
-	[self replaceCharactersInRange:NSMakeRange(index, string.length) withString:@""];
-	[[self.undoManager prepareWithInvocationTarget:self] addString:string atIndex:index];
-}
-
-- (void)replaceRange:(NSRange)range withString:(NSString*)newString
-{
-	// Remove unnecessary line breaks
-	newString = [newString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
-	
-	// Replace with undo registration
-	NSString *oldString = [self.textView.string substringWithRange:range];
-	[self replaceCharactersInRange:range withString:newString];
-	[[self.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
-}
-
-- (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
-{
-	// Replace with undo registration
-	NSRange range = NSMakeRange(index, string.length);
-	[self replaceCharactersInRange:range withString:newString];
-	[[self.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
-}
-
-- (void)removeRange:(NSRange)range {
-	NSString *string = [self.text substringWithRange:range];
-	[self replaceCharactersInRange:range withString:@""];
-	[[self.undoManager prepareWithInvocationTarget:self] addString:string atIndex:range.location];
-}
-
-- (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string {
-	_moving = YES;
-	NSString *oldString = [self.text substringWithRange:range];
-	
-	NSString *stringToMove = string;
-	NSInteger length = self.text.length;
-	
-	if (position > length) position = length;
-	
-	[self replaceCharactersInRange:range withString:@""];
-	
-	NSInteger newPosition = position;
-	if (range.location < position) {
-		newPosition = position - range.length;
-	}
-	if (newPosition < 0) newPosition = 0;
-	
-	[self replaceCharactersInRange:NSMakeRange(newPosition, 0) withString:stringToMove];
-	
-	NSRange undoingRange;
-	NSInteger undoPosition;
-	
-	if (range.location > position) {
-		undoPosition = range.location + stringToMove.length;
-		undoingRange = NSMakeRange(position, stringToMove.length);
-	} else {
-		undoingRange = NSMakeRange(newPosition, stringToMove.length);
-		undoPosition = range.location;
-	}
-	
-	[[self.undoManager prepareWithInvocationTarget:self] moveStringFrom:undoingRange to:undoPosition actualString:oldString];
-	[self.undoManager setActionName:@"Move Scene"];
-	
-	_moving = NO;
-}
-
-- (void)moveStringFrom:(NSRange)range to:(NSInteger)position {
-	NSString *stringToMove = [self.text substringWithRange:range];
-	[self moveStringFrom:range to:position actualString:stringToMove];
-}
+FORWARD_TO(self.textActions, void, replaceCharactersInRange:(NSRange)range withString:(NSString*)string);
+FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index);
+FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks);
+FORWARD_TO(self.textActions, void, removeString:(NSString*)string atIndex:(NSUInteger)index);
+FORWARD_TO(self.textActions, void, replaceRange:(NSRange)range withString:(NSString*)newString);
+FORWARD_TO(self.textActions, void, replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index);
+FORWARD_TO(self.textActions, void, removeRange:(NSRange)range);
+FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string);
+FORWARD_TO(self.textActions, void, moveStringFrom:(NSRange)range to:(NSInteger)position);
+FORWARD_TO(self.textActions, void, moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to);
+FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet);
 
 - (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
 {
 	return NSMakeRange(range->location + position, range->length);
-}
-
-- (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to {
-	// FOLLOWING CODE IS A MESS. Dread lightly.
-	// Thanks for the heads up, past me, but I'll just dive right in
-	
-	// NOTE FROM BEAT 1.1 r4:
-	// The scenes know if they miss omission begin / terminator. The trouble is, I have no idea how to put that information into use without dwelving into an endless labyrinth of string indexes... soooo... do it later?
-	
-	// On to the very dangerous stuff :-) fuck me :----)
-	NSRange range = NSMakeRange(sceneToMove.position, sceneToMove.length);
-	NSString *string = [self.text substringWithRange:range];
-	
-	NSInteger omissionStartsAt = NSNotFound;
-	NSInteger omissionEndsAt = NSNotFound;
-	
-	if (sceneToMove.omitted) {
-		// We need to find out where the omission begins & ends
-		NSInteger idx = [self.parser.lines indexOfObject:sceneToMove.line];
-		if (idx == NSNotFound) return; // Shouldn't happen
-		
-		if (idx > 0) {
-			// Look for start of omission, but break when encountering an outline item
-			for (NSInteger i = idx - 1; i >= 0; i++) {
-				Line *prevLine = self.lines[i];
-				if (prevLine.isOutlineElement) break;
-				else if (prevLine.omitOut && [prevLine.string rangeOfString:@"/*"].location != NSNotFound) {
-					omissionStartsAt = prevLine.position + [prevLine.string rangeOfString:@"/*"].location;
-					break;
-				}
-			}
-			
-			// Look for end of omission
-			for (NSInteger i = idx + 1; i < self.lines.count; i++) {
-				Line *nextLine = self.lines[i];
-				if (nextLine.type == heading || nextLine.type == section) break;
-				else if (nextLine.omitIn && [nextLine.string rangeOfString:@"*/"].location != NSNotFound) {
-					omissionEndsAt = nextLine.position + [nextLine.string rangeOfString:@"*/"].location + 2;
-				}
-			}
-		}
-		
-		
-		// Recreate range to represent the actual range with omission symbols
-		// (if applicable)
-		NSInteger loc = (omissionStartsAt == NSNotFound) ? sceneToMove.position : omissionStartsAt;
-		NSInteger len = (omissionEndsAt == NSNotFound) ? (sceneToMove.position + sceneToMove.length) - loc : omissionEndsAt - loc;
-		
-		range = (NSRange){ loc, len };
-		
-		string = [self.text substringWithRange:range];
-		
-		// Add omission markup if needed
-		if (omissionStartsAt == NSNotFound) string = [NSString stringWithFormat:@"\n/*\n\n%@", string];
-		if (omissionEndsAt == NSNotFound) string = [string stringByAppendingString:@"\n*/\n\n"];
-		
-		// Normal omitted blocks end with */, so add some line breaks if needed
-		if ([[string substringFromIndex:string.length - 2] isEqualToString:@"*/"]) string = [string stringByAppendingString:@"\n\n"];
-	}
-	
-	// Create a new outline before trusting it
-	NSMutableArray *outline = [self getOutlineItems];
-	
-	// When an item is dropped at the end, its target index will be +1 from the last item
-	bool moveToEnd = false;
-	if (to >= outline.count) {
-		to = outline.count - 1;
-		moveToEnd = true;
-	}
-	
-	// Scene before which this scene will be moved, if not moved to the end
-	OutlineScene *sceneAfter;
-	if (!moveToEnd) sceneAfter = [outline objectAtIndex:to];
-	
-	NSInteger position = (!moveToEnd) ? sceneAfter.position : self.text.length;
-	
-	// Add some line breaks if needed
-	if (position != 0) {
-		Line * lineAtPosition = [self.parser lineAtPosition:position - 1];
-		if (lineAtPosition.type != empty) {
-			[self addString:@"\n\n" atIndex:position skipAutomaticLineBreaks:true];
-			position += 2;
-		}
-	}
-	
-	[self moveStringFrom:range to:position actualString:string];
-	
-	// If needed, add extra line breaks at end
-	if (string.length > 0 && [string characterAtIndex:string.length - 1] != '\n') {
-		[self addString:@"\n\n" atIndex:position+string.length skipAutomaticLineBreaks:true];
-	}
-}
-
-- (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet {
-	__block NSUInteger offset = 0;
-	[indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		// Remove beats on any line
-		NSRange globalRange = [self globalRangeFromLocalRange:&range inLineAtPosition:line.position];
-		[self removeRange:(NSRange){ globalRange.location - offset, globalRange.length }];
-		offset += range.length;
-	}];
 }
 
 - (void)removeAttribute:(NSString*)key range:(NSRange)range {
@@ -2260,9 +1951,9 @@ static bool _skipAutomaticLineBreaks = false;
 	if (value == nil) return;
 	[self.textView.textStorage addAttribute:key value:value range:range];
 }
-- (void)setAttributes:(NSDictionary*)attributes range:(NSRange)range {
+- (void)addAttributes:(NSDictionary*)attributes range:(NSRange)range {
 	if (attributes == nil) return;
-	[self.textView.textStorage setAttributes:attributes range:range];
+	[self.textView.textStorage addAttributes:attributes range:range];
 }
 
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value {
@@ -2648,8 +2339,7 @@ static bool _skipAutomaticLineBreaks = false;
 }
 
 - (bool)caretAtEnd {
-	if (self.textView.selectedRange.location == self.textView.string.length) return YES;
-	else return NO;
+	return (self.textView.selectedRange.location == self.textView.string.length);
 }
 
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices {
@@ -2841,9 +2531,15 @@ static bool _skipAutomaticLineBreaks = false;
 - (IBAction)selectRevisionColor:(id)sender {
 	NSPopUpButton *button = sender;
 	BeatColorMenuItem *item = (BeatColorMenuItem *)button.selectedItem;
-	_revisionColor = item.colorKey;
+	NSString* revisionColor = item.colorKey;
 	
-	[_documentSettings setString:DocSettingRevisionColor as:_revisionColor];
+	[_documentSettings setString:DocSettingRevisionColor as:revisionColor];
+}
+
+- (NSString*)revisionColor {
+	NSString* revisionColor = [_documentSettings getString:DocSettingRevisionColor];
+	if (revisionColor == nil) revisionColor = BeatRevisions.defaultRevisionColor;
+	return revisionColor;
 }
 
 
@@ -3756,7 +3452,7 @@ static bool _skipAutomaticLineBreaks = false;
 	return self.parser.lines;
 }
 
-- (NSMutableArray *)scenes {
+- (NSArray *)scenes {
 	return [self getOutlineItems];
 }
 
@@ -3967,7 +3663,7 @@ static bool _skipAutomaticLineBreaks = false;
 - (bool)timelineVisible { return self.timeline.visible; }
 
 - (void)reloadTouchTimeline {
-	[_touchbarTimeline setData:[self getOutlineItems]];
+	[_touchbarTimeline setData:[self getOutlineItems].mutableCopy];
 }
 - (void)didSelectTouchTimelineItem:(NSInteger)index {
 	OutlineScene *scene = [[self getOutlineItems] objectAtIndex:index];
@@ -3999,19 +3695,16 @@ static bool _skipAutomaticLineBreaks = false;
 	}];
 }
 
+- (NSDictionary<NSString*, NSString*>*)characterGenders {
+	NSDictionary * genders = [self.documentSettings get:DocSettingCharacterGenders];
+	if (genders != nil) return genders;
+	return @{};
+}
+-(void)setCharacterGenders:(NSDictionary<NSString *,NSString *> *)characterGenders {
+	[self.documentSettings set:DocSettingCharacterGenders as:characterGenders];
+}
+
 - (void)setupAnalysis {
-	// Move this to the analysis/statistics class
-	NSMutableDictionary *genders = [(NSDictionary*)[self.documentSettings get:@"CharacterGenders"] mutableCopy];
-	
-	if (!genders) _characterGenders = [NSMutableDictionary dictionary];
-	else {
-		_characterGenders = [NSMutableDictionary dictionaryWithDictionary:genders];
-		for (NSString *name in _characterGenders.allKeys) {
-			// Backwards compatibility
-			if ([_characterGenders[name] isEqualToString:@"male"]) _characterGenders[name] = @"man";
-			else if ([_characterGenders[name] isEqualToString:@"female"]) _characterGenders[name] = @"woman";
-		}
-	}
 }
 
 /*
@@ -4699,7 +4392,6 @@ static NSArray<Line*>* cachedTitlePage;
 
 
 #pragma mark - Scrolling
-
 
 - (void)scrollToSceneNumber:(NSString*)sceneNumber {
 	// Note: scene numbers are STRINGS, because they can be anything (2B, EXTRA, etc.)

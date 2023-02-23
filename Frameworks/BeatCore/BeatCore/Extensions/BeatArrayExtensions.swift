@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension RangeReplaceableCollection where Iterator.Element : Equatable {
+public extension RangeReplaceableCollection where Iterator.Element : Equatable {
 	// Remove first collection element that is equal to the given `object`:
 	mutating func removeObject(object : Iterator.Element) {
 		if let index = self.firstIndex(of: object) {
@@ -17,7 +17,7 @@ extension RangeReplaceableCollection where Iterator.Element : Equatable {
 	}
 }
 
-extension NSArray {
+public extension NSArray {
 	func swiftArray<T>() -> [T] {
 		return self.compactMap({ $0 as? T })
 	}

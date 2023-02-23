@@ -19,6 +19,9 @@ FOUNDATION_EXPORT double BeatCoreVersionNumber;
 //! Project version string for BeatCore.
 FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 
+#define FORWARD_TO( CLASS, TYPE, METHOD ) \
+- (TYPE)METHOD { [CLASS METHOD]; }
+
 #import "BeatColors.h"
 
 #import "BeatAttributes.h"
@@ -37,3 +40,5 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #import "BeatUserDefaults.h"
 
 #import "BeatLayoutManager.h"
+
+#import "BeatTextIO.h"

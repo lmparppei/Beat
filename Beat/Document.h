@@ -67,7 +67,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nonnull parser;
-@property (atomic) BeatDocumentSettings * _Nonnull documentSettings;
+@property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
 - (NSMutableArray<Line*>* _Nonnull)lines;
 @end
 
@@ -78,7 +78,6 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property(readonly, copy) NSArray<NSURL *> * _Nullable recentDocumentURLs;
 @property (nonatomic, readonly) NSString* _Nullable preprocessedText;
 @property (nonatomic) CGFloat magnification;
-@property (nonatomic) CGFloat inset;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) bool revisionMode;
 @property (nonatomic) bool showRevisions;
@@ -86,6 +85,8 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) BeatPaperSize pageSize;
 @property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
 @property (nonatomic) bool contentLocked;
+
+@property (nonatomic) NSArray *outline;
 
 // Fonts
 @property (strong, nonatomic) NSFont* _Nonnull courier;
@@ -129,7 +130,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (void)applyUserSettings;
 
 // Analysis
-@property (nonatomic) NSMutableDictionary<NSString*, NSString*>* _Nullable characterGenders;
+@property (nonatomic) NSDictionary<NSString*, NSString*>* _Nullable characterGenders;
 
 // Revision Tracking
 @property (nonatomic) IBOutlet BeatRevisions* _Nonnull revisionTracking;
@@ -151,6 +152,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 // Skip selection change events when needed
 @property (nonatomic) bool skipSelectionChangeEvent;
+@property (nonatomic) bool moving;
 
 //- (void)setScaleFactor:(CGFloat)newScaleFactor adjustPopup:(BOOL)flag;
 - (void)invalidatePreview;

@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension String {
+public extension String {
 	/// Returns a substring with given `NSRange`
 	func substring(range:NSRange) -> String {
 		if (range.length == 0) { return "" }
@@ -66,7 +66,7 @@ extension String {
 	}
 }
 
-extension StringProtocol {
+public extension StringProtocol {
 	subscript(offset: Int) -> Character { self[index(startIndex, offsetBy: offset)] }
 	subscript(range: Range<Int>) -> SubSequence {
 		let startIndex = index(self.startIndex, offsetBy: range.lowerBound)

@@ -10,12 +10,28 @@ import UIKit
 import WebKit
 import BeatCore
 import BeatParsing
-import BeatDefaults
 import BeatPaginationCore
 import BeatDynamicColor
 import BeatThemes
 
-class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate, iOSDocumentDelegate {
+class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate, iOSDocumentDelegate, BeatTextIODelegate {
+	
+	func getOutlineItems() -> [OutlineScene]! {
+		self.parser?.createOutline()
+		return self.parser?.outline as? [OutlineScene] ?? []
+	}
+
+	func scenes() -> [Any]! {
+		return self.parser?.scenes() ?? []
+	}
+	
+	func addAttributes(_ attributes: [AnyHashable : Any]!, range: NSRange) {
+		self.textView.textStorage.addAttributes(attributes as? [NSAttributedString.Key: Any] ?? [:], range: range)
+	}
+	
+	func editorLineHeight() -> CGFloat {
+		return BeatiOSFormatting.editorLineHeight()
+	}
 	
 	var exportSettings: BeatExportSettings {
 		return BeatExportSettings()
@@ -37,6 +53,8 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		}
 	}
 	
+	
+	var skipAutomaticLineBreaks = false
 	func add(_ string: String!, at index: UInt) {
 		self.replace(NSMakeRange(Int(index), 0), with: string)
 	}
@@ -94,8 +112,11 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	@objc var parser: ContinuousFountainParser?
 	var cachedText:NSMutableAttributedString = NSMutableAttributedString()
 	
+	@objc var textActions:BeatTextIO = BeatTextIO()
+	
 	@objc var documentIsLoading = true
 	@objc var hideFountainMarkup: Bool = false
+	@objc var moving: Bool = false
 	
 	@objc var documentSettings:BeatDocumentSettings! { get { return document?.settings } set {} }
 	@objc var printSceneNumbers: Bool = true
@@ -110,7 +131,15 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		if (self.pageSize == .A4) { return BeatFonts.characterWidth() * 59 }
 		else { return BeatFonts.characterWidth() * 61 }
 	}
-	@objc var characterGenders: NSMutableDictionary = NSMutableDictionary()
+	
+	@objc var characterGenders: [String : String]! {
+		get {
+			return self.documentSettings.get(DocSettingCharacterGenders) as? [String:String] ?? [:]
+		}
+		set {
+			self.documentSettings.set(DocSettingCharacterGenders, as: newValue ?? [:])
+		}
+	}
 	@objc var revisionColor: String = "blue"
 	@objc var revisionMode: Bool = false
 	
@@ -143,6 +172,8 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 	
 	@objc var sidebarVisible = false
 	@objc @IBOutlet weak var sidebarConstraint:NSLayoutConstraint!
+	
+	@objc var lastChangedRange:NSRange = NSRange(location: NSNotFound, length: 0)
 	
 	var selectedRange: NSRange {
 		get {
@@ -245,7 +276,10 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		preview = BeatPreview(document: self)
 		previewView = self.storyboard?.instantiateViewController(withIdentifier: "Preview") as? BeatPreviewView
 		previewView?.loadViewIfNeeded()
-				
+		
+		// Init text actions
+		self.textActions.delegate = self
+		
 		// Fit to view here
 		scrollView.zoomScale = 1.4
 		
@@ -460,36 +494,41 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		return Int(parser!.lineType(at: index).rawValue)
 	}
 	
-	func setSelectedRange(_ range: NSRange) {
-		self.textView.selectedRange = range
-	}
-	
 	func getOutline() -> [Any]! {
 		let outline = parser!.outline
 		return outline as? [Any]
 	}
 	
 	
-	// MARK: - Text I/o
+	// MARK: - Text I/O
 	
 	// Return raw text from text view
 	func text() -> String! { return textView.text }
 	
 	func replace(_ range: NSRange, with newString: String!) {
-		let textRange = formatting.getTextRange(for: range)
-		textView.replace(textRange, withText: newString)
+		self.textActions.replace(range, with: newString)
 	}
 	
 	func addString(string: String, atIndex index:Int) {
+		addString(string: string, atIndex: index, skipAutomaticLineBreaks: false)
+	}
+	
+	func addString(string: String, atIndex index:Int, skipAutomaticLineBreaks:Bool) {
+		self.skipAutomaticLineBreaks = skipAutomaticLineBreaks
 		replaceCharacters(inRange: NSRange(location: index, length: 0), string: string)
+		self.skipAutomaticLineBreaks = false
+		
 		if let target = undoManager?.prepare(withInvocationTarget: self) as? DocumentViewController {
 			target.removeString(string: string, atIndex: index)
-			
 		}
 	}
 		
 	func removeString(string: String, atIndex index:Int) {
 		replaceCharacters(inRange: NSRange(location: index, length: string.count), string: string)
+		
+		if let target = undoManager?.prepare(withInvocationTarget: self) as? DocumentViewController {
+			target.addString(string: string, atIndex: index)
+		}
 	}
 	
 	func replaceRange(range: NSRange, withString string:String) {
@@ -654,11 +693,57 @@ extension DocumentViewController {
 	}
 	
 	func textViewDidChange(_ textView: UITextView) {
-		applyFormatChanges()
-		self.textView.resize()
-		
+		if (lastChangedRange.location == NSNotFound) { lastChangedRange = NSMakeRange(0, 0); }
 		cachedText.setAttributedString(textView.attributedText)
 		
+		// Do nothing if the document is lodaing
+		if (documentIsLoading) { return }
+		
+		// Register changes
+		if (self.revisionMode) {
+			// [self.revisionTracking registerChangesInRange:_lastChangedRange];
+		}
+		
+		// Update formatting
+		applyFormatChanges()
+		
+		// If outline has changed, we will rebuild outline & timeline if needed
+		let changeInOutline = self.parser?.getAndResetChangeInOutline() ?? false
+		//var changesInOutline = self.parser?.changesInOutline() ?? []
+		
+		if (changeInOutline) {
+			self.parser?.updateOutlineWithChange(in: lastChangedRange)
+			
+			if (self.sidebarVisible) {
+				self.outlineView.reloadData()
+			}
+		}
+		
+		/*
+		 // Editor views can register themselves and have to conform to BeatEditorView protocol,
+		 // which includes methods for reloading both in sync and async
+		 for (id<BeatEditorView> view in _registeredViews) {
+			 if (view.visible) [view reloadInBackground];
+		 }
+		 */
+		
+		// Paginate
+		// [self paginateAt:_lastChangedRange sync:NO];
+		
+		// if (self.autocomplete) [self.autocompletion autocompleteOnCurrentLine];
+		
+		// If this was an undo operation, scroll to where the alteration was made
+		if (self.undoManager?.isUndoing ?? false) {
+			//[self.textView scrollToRange:NSMakeRange(_lastChangedRange.location, 0)];
+			//[self.textView ensureRangeIsVisible:_lastChangedRange];
+			self.textView.scrollRangeToVisible(lastChangedRange)
+		}
+		
+		// Reset last changed range
+		lastChangedRange = NSMakeRange(NSNotFound, 0);
+		
+		self.textView.resize()
+			
 		// Update preview
 		updatePreview()
 	}
@@ -703,6 +788,79 @@ extension DocumentViewController {
 		return false
 	}
 	
+	func handleTabPress() {
+		guard let currentLine = self.currentLine() else { return }
+		
+		if (currentLine.isAnyCharacter() && currentLine.length > 0) {
+			// [self addCharacterExtension];
+			print("add character extension")
+		} else {
+			self.forceCharacterInput()
+		}
+	}
+	
+	func forceCharacterInput() {
+		// Do nothing if we're already adding a character
+		if (self.characterInput) { return }
+		
+		guard var currentLine = self.currentLine() else { return }
+		
+		// Move at the beginning of the line to avoid issues with .currentLine
+		self.selectedRange = NSMakeRange(currentLine.position, 0)
+		
+		// If the line is not empty, move at the end of block
+		if (currentLine.type != .empty) {
+			let block = self.parser?.block(for: currentLine)
+			guard let lastLine = block?.last else { return }
+			self.selectedRange = NSMakeRange(lastLine.position, 0)
+		}
+		
+		// ... then check again
+		guard var currentLine = self.currentLine() else { return }
+		if (currentLine.type != .empty) {
+			// Break at line break
+			self.addString(string: "\n", atIndex: NSMaxRange(currentLine.textRange()), skipAutomaticLineBreaks:true)
+			self.selectedRange = NSMakeRange(NSMaxRange(self.currentLine().textRange()) + 2, 0)
+		}
+		
+		/*
+		 
+		 Line *prevLine = [self.parser previousLine:self.currentLine];
+		 if (prevLine != nil && prevLine.type != empty && prevLine.string.length != 0) {
+			 [self addString:@"\n" atIndex:NSMaxRange(prevLine.textRange) skipAutomaticLineBreaks:true];
+		 }
+		 
+		 Line *nextLine = [self.parser nextLine:self.currentLine];
+		 if (nextLine != nil && nextLine.type != empty && nextLine.string.length != 0) {
+			 NSInteger loc = self.currentLine.position;
+			 [self addString:@"\n" atIndex:NSMaxRange(self.currentLine.textRange) skipAutomaticLineBreaks:true];
+			 self.selectedRange = NSMakeRange(loc, 0);
+		 }
+		 
+		 // If no line is selected, return
+		 Line *currentLine = self.currentLine;
+		 if (currentLine == nil) return;
+		 
+		 currentLine.type = character;
+		 _characterInputForLine = currentLine;
+		 
+		 _characterInput = YES;
+		 
+		 // Format the line (if mid-screenplay)
+		 [_formatting formatLine:currentLine];
+		 
+		 // Set typing attributes (just in case, and if at the end)
+		 NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
+		 NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
+		 
+		 [paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
+		 [paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
+		 [attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
+		 
+		 [self.textView setTypingAttributes:attributes];
+		 */
+	}
+	
 	func tryToMatchParentheses(range:NSRange, string:String) {
 		/**
 		 This method finds a matching closure for parenthesis, notes and omissions.
@@ -727,8 +885,6 @@ extension DocumentViewController {
 		
 		if matches[match] == nil { return }
 		
-		print("Matching parentheses", match, matches[match]!)
-	
 		if match.count > 1 {
 			// Check for dual symbol matches, and don't allow them if the previous char doesn't match
 			if range.location == 0 { return } // We can't be at the beginning
