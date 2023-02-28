@@ -1,0 +1,85 @@
+//
+//  BeatQuickSettings.swift
+//  Beat iOS
+//
+//  Created by Lauri-Matti Parppei on 23.2.2023.
+//  Copyright © 2023 Lauri-Matti Parppei. All rights reserved.
+//
+
+import UIKit
+
+class BeatQuickSettings:BeatPopoverContentController {
+	@IBOutlet var showPageNumbers:UISwitch?
+	@IBOutlet var showSceneNumbers:UISwitch?
+	@IBOutlet var revisionMode:UISwitch?
+	@IBOutlet var pageSizeSwitch:UISegmentedControl?
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		showPageNumbers?.isOn = self.delegate?.showPageNumbers ?? false
+		showSceneNumbers?.isOn = self.delegate?.showPageNumbers ?? false
+		revisionMode?.isOn = self.delegate?.revisionMode ?? false
+		
+		pageSizeSwitch?.selectedSegmentIndex = (self.delegate?.pageSize ?? .A4 == .A4) ? 0 : 1
+	}
+	
+	@IBAction func toggleShowPageNumbers(_ sender:UISwitch) {
+		self.delegate?.showPageNumbers = sender.isOn
+	}
+	
+	@IBAction func toggleShowSceneNumbers(_ sender:UISwitch) {
+		self.delegate?.showSceneNumberLabels = sender.isOn
+	}
+	
+	@IBAction func togglePageSize(_ sender:UISegmentedControl) {
+		/// OK lol, this is a silly thing to do, but `BeatPageSize` is an enum (`0` is A4 and `1` is US Letter) so why not.
+		self.delegate?.pageSize = BeatPaperSize(rawValue: sender.selectedSegmentIndex) ?? .A4
+	}
+}
+
+extension BeatDocumentViewController {
+	
+	@IBAction func buttonClicked(_ sender: AnyObject) {
+		//get the button frame
+		/* 1 */
+		
+		let view = sender.value(forKey: "view") as! UIView
+		
+		var frame = view.frame
+		frame.origin.x += view.superview?.frame.origin.x ?? 0
+		frame.origin.y += 20
+		let buttonFrame = frame
+		
+		/* 2 */
+		//Configure the presentation controller
+		let popoverContentController = self.storyboard?.instantiateViewController(withIdentifier: "QuickSettings") as? BeatPopoverContentController
+		popoverContentController?.modalPresentationStyle = .popover
+		popoverContentController?.delegate = self
+
+		/* 3 */
+		// Present popover
+		if let popoverPresentationController = popoverContentController?.popoverPresentationController {
+			popoverPresentationController.permittedArrowDirections = .up
+			popoverPresentationController.sourceView = self.view
+			popoverPresentationController.sourceRect = buttonFrame
+			popoverPresentationController.delegate = self
+			if let popoverController = popoverContentController {
+				present(popoverController, animated: true, completion: nil)
+			}
+		}
+	}
+	
+	func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+		return .none
+	}
+	
+	func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+		
+	}
+	
+	func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+		return true
+	}
+	
+}
