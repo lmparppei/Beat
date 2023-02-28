@@ -76,7 +76,7 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
 		 */
 		
 		let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-		let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! DocumentViewController
+		let documentViewController = storyBoard.instantiateViewController(withIdentifier: "DocumentViewController") as! BeatDocumentViewController
 		documentViewController.document = iOSDocument(fileURL: documentURL)
 		
 		let navigationController = UINavigationController(rootViewController: documentViewController)

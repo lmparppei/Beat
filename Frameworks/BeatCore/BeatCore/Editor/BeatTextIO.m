@@ -33,14 +33,20 @@
         NSInteger length = _delegate.text.length - range.location;
         range = NSMakeRange(range.location, length);
     }
-    
-#if TARGET_OS_IOS
+
     // Text view fires up shouldChangeTextInRange only when the text is changed by the user.
     // When replacing stuff directly in the view, we need to call it manually.
-    if ([self textView:_delegate.textView shouldChangeTextInRange:range replacementText:string]) {
-        UITextRange* textRange = [_formatting getTextRangeFor:range];
+
+#if TARGET_OS_IOS
+    if ([self.delegate textView:textView shouldChangeTextInRange:range replacementText:string]) {
+        UITextRange *oldRange = textView.selectedTextRange;
+        [self.delegate setSelectedRange:range];
+        UITextRange *textRange = textView.selectedTextRange;
+        [self.delegate.getTextView setSelectedTextRange:oldRange];
+        
         [textView replaceRange:textRange withText:string];
-        [self textViewDidChange:_delegate.textView];
+        
+        [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #else
     if ([self.delegate textView:textView shouldChangeTextInRange:range replacementString:string]) {
@@ -261,7 +267,11 @@ static bool _skipAutomaticLineBreaks = false;
     NSUInteger currentIndex = [_delegate.parser indexOfLine:currentLine];
     
     // Handle lines with content
+#if TARGET_OS_IOS
+    if (currentLine.string.length > 0) {
+#else
     if (currentLine.string.length > 0 && !(NSEvent.modifierFlags & NSEventModifierFlagShift)) {
+#endif
         // Add double breaks for outline element lines
         if (currentLine.isOutlineElement || currentLine.isAnyDialogue) {
             [self addString:@"\n\n" atIndex:affectedCharRange.location];

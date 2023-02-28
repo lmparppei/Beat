@@ -5,6 +5,15 @@
 //  Created by Lauri-Matti Parppei on 21.5.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/*
+ 
+ NOTE NOTE NOTE:
+ 
+ This class is obsolete.
+ It was fun learning some Swift, but I moved back to Objective C for the document view controller, because
+ interoperability was MUCH easier that way.
+ 
+ */
 
 import UIKit
 import WebKit
@@ -15,6 +24,7 @@ import BeatDynamicColor
 import BeatThemes
 
 class DocumentViewController: UIViewController, ContinuousFountainParserDelegate, BeatEditorDelegate, UITextViewDelegate, iOSDocumentDelegate, BeatTextIODelegate {
+	var showPageNumbers: Bool = false
 	
 	func getOutlineItems() -> [OutlineScene]! {
 		self.parser?.createOutline()
@@ -204,7 +214,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		// Hide page view until loading is complete
 		self.textView.pageView.layer.opacity = 0.0
 
-		
 		document?.open(completionHandler: { (success) in
 			if success {
 				// Display the content of the document, e.g.:

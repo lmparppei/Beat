@@ -29,7 +29,7 @@
         <!--Screenplay-->
         <scene sceneID="dkP-xk-x6W">
             <objects>
-                <viewController storyboardIdentifier="DocumentViewController" id="M2k-L8-Olo" customClass="DocumentViewController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DocumentViewController" id="M2k-L8-Olo" customClass="BeatDocumentViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="SIE-Uh-Zny">
                         <rect key="frame" x="0.0" y="0.0" width="1366" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -42,7 +42,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="esq-Xm-Lfw" customClass="BeatPageView" customModule="Beat_iOS" customModuleProvider="target">
-                                                <rect key="frame" x="171" y="-1" width="796" height="953"/>
+                                                <rect key="frame" x="0.0" y="-1" width="796" height="953"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" textAlignment="natural" layoutManager="textKit1" id="3C3-uS-JZp" customClass="BeatUITextView" customModule="Beat_iOS" customModuleProvider="target">
@@ -130,7 +130,7 @@
                             </barButtonItem>
                             <barButtonItem title="Toggle Sidebar" image="sidebar.left" catalog="system" id="ZWy-f9-0tx">
                                 <connections>
-                                    <action selector="toggleSidebar" destination="M2k-L8-Olo" id="lDO-wp-DMs"/>
+                                    <action selector="toggleSidebar:" destination="M2k-L8-Olo" id="bKe-Uz-jzv"/>
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>
@@ -151,7 +151,9 @@
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
+                        <outlet property="formatting" destination="jJ6-Lc-Cgd" id="yTP-Ue-GJg"/>
                         <outlet property="outlineView" destination="9d5-dC-tki" id="vVF-aa-NqO"/>
+                        <outlet property="revisionTracking" destination="ubw-WD-Ovu" id="PPg-zd-u1B"/>
                         <outlet property="scrollView" destination="a5I-w2-fVd" id="F4J-6d-Zfz"/>
                         <outlet property="sidebar" destination="L6d-7A-aQd" id="Jui-ta-HXU"/>
                         <outlet property="sidebarConstraint" destination="6By-uQ-Ux5" id="iAK-k4-XG7"/>
@@ -160,6 +162,12 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <customObject id="ubw-WD-Ovu" customClass="BeatRevisions">
+                    <connections>
+                        <outlet property="delegate" destination="M2k-L8-Olo" id="Aoa-AK-y2C"/>
+                    </connections>
+                </customObject>
+                <customObject id="jJ6-Lc-Cgd" customClass="BeatiOSFormatting"/>
             </objects>
             <point key="canvasLocation" x="1723.1332357247436" y="652.734375"/>
         </scene>
@@ -172,7 +180,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" id="hUb-18-I71">
-                                <rect key="frame" x="0.0" y="23" width="1364" height="999"/>
+                                <rect key="frame" x="-1" y="23" width="1364" height="999"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -181,7 +189,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="Ct9-qx-tht">
-                                <rect key="frame" x="1314" y="51" width="26" height="30"/>
+                                <rect key="frame" x="1313" y="51" width="26" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill">
@@ -215,7 +223,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" dataMode="prototypes" id="MMc-Yb-WFu">
-                                <rect key="frame" x="17" y="23" width="1321" height="976"/>
+                                <rect key="frame" x="16" y="23" width="1321" height="976"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="44l-Jj-zVz">
@@ -310,44 +318,44 @@
             </objects>
             <point key="canvasLocation" x="1029.1361639824304" y="652.734375"/>
         </scene>
-        <!--Beat Popover Content Controller-->
+        <!--Beat Quick Settings-->
         <scene sceneID="Ez1-VE-dLe">
             <objects>
-                <viewController storyboardIdentifier="QuickSettings" id="X4t-9A-WDL" customClass="BeatPopoverContentController" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="QuickSettings" id="X4t-9A-WDL" customClass="BeatQuickSettings" customModule="Beat_iOS" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="I6f-hr-Fcd">
-                        <rect key="frame" x="0.0" y="0.0" width="350" height="500"/>
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="385"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="65z-eP-m9k">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="65z-eP-m9k">
                                 <rect key="frame" x="16" y="24" width="49" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Show Scene Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cos-Q4-sqH">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Scene Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Cos-Q4-sqH">
                                 <rect key="frame" x="87" y="29" width="247" height="21"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qrr-7e-Uez">
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="qrr-7e-Uez">
                                 <rect key="frame" x="16" y="63" width="49" height="31"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Show Page Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sxk-a4-4qz">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Page Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Sxk-a4-4qz">
                                 <rect key="frame" x="87" y="68" width="247" height="21"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paper Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gV2-ze-CGI">
+                                <rect key="frame" x="16" y="123" width="142" height="21"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Page Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gV2-ze-CGI">
-                                <rect key="frame" x="16" y="123" width="143" height="21"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="I6b-zv-KGS">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="I6b-zv-KGS">
                                 <rect key="frame" x="160" y="118" width="174" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
                                 <segments>
@@ -355,16 +363,33 @@
                                     <segment title="US Letter"/>
                                 </segments>
                             </segmentedControl>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="TEb-Op-nAC">
+                                <rect key="frame" x="16" y="177" width="49" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Revision Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="je6-Ic-owz">
+                                <rect key="frame" x="87" y="182" width="247" height="21"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="ai7-yR-2lp"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="350" height="500"/>
+                    <size key="freeformSize" width="350" height="385"/>
+                    <connections>
+                        <outlet property="pageSizeSwitch" destination="I6b-zv-KGS" id="b0i-lX-Cim"/>
+                        <outlet property="revisionMode" destination="TEb-Op-nAC" id="ntx-dp-YRE"/>
+                        <outlet property="showPageNumbers" destination="qrr-7e-Uez" id="PRu-Js-H34"/>
+                        <outlet property="showSceneNumbers" destination="65z-eP-m9k" id="z2t-ye-c0I"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="giJ-Id-e7f" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1481.9912152269399" y="-196.2890625"/>
+            <point key="canvasLocation" x="1481.9912152269399" y="-229.98046874999997"/>
         </scene>
     </scenes>
     <resources>

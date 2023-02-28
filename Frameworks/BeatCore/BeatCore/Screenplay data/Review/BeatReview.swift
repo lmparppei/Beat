@@ -187,7 +187,6 @@ public protocol BeatReviewInterface {
 	}
     
     @objc public func saveReview(item: BeatReviewItem) {
-        let textView = delegate?.getTextView()
         let trimmedString = item.string.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if (trimmedString.count > 0 && trimmedString != "") {
@@ -200,7 +199,7 @@ public protocol BeatReviewInterface {
         #if os(macOS)
         delegate?.updateChangeCount(.changeDone)
         #else
-        delegate?.updateChangeCount?(.done)
+        delegate?.updateChangeCount(.done)
         #endif
     }
 	

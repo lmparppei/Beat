@@ -142,7 +142,8 @@
 
 #pragma mark - Editor item visibility
 
-@property (nonatomic, readonly) bool showSceneNumberLabels;
+@property (nonatomic) bool showSceneNumberLabels;
+@property (nonatomic) bool showPageNumbers;
 @property (nonatomic, readonly) bool showRevisions;
 @property (nonatomic, readonly) bool showTags;
 

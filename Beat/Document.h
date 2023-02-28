@@ -79,6 +79,8 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic, readonly) NSString* _Nullable preprocessedText;
 @property (nonatomic) CGFloat magnification;
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) bool showPageNumbers;
+@property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) bool revisionMode;
 @property (nonatomic) bool showRevisions;
 @property (nonatomic) bool showTags;
@@ -86,7 +88,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
 @property (nonatomic) bool contentLocked;
 
-@property (nonatomic) NSArray *outline;
+@property (nonatomic) NSArray* _Nullable outline;
 
 // Fonts
 @property (strong, nonatomic) NSFont* _Nonnull courier;
@@ -109,7 +111,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
 
 // Document settings
-@property (atomic) BeatDocumentSettings* _Nullable documentSettings;
+@property (nonatomic) BeatDocumentSettings* _Nullable documentSettings;
 
 // Versioning
 @property (nonatomic) NSURL* _Nullable revertedTo;

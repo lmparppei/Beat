@@ -32,7 +32,7 @@
 - (void)textDidChange:(NSNotification *)notification;
 
 #if TARGET_OS_IOS
-
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
 #else
 - (BOOL)textView:(NSTextView *)textView shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
 #endif

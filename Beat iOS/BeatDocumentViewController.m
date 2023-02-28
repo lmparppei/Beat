@@ -18,8 +18,6 @@
 
 @interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate>
 
-@property (nonatomic) iOSDocument* document;
-
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 
 @property (nonatomic) bool documentIsLoading;
@@ -45,7 +43,6 @@
 @property (nonatomic, weak) IBOutlet NSLayoutConstraint* sidebarConstraint;
 
 @property (nonatomic) bool matchParentheses;
-@property (nonatomic) bool showPageNumbers;
 
 @property (strong, nonatomic) BXFont *sectionFont;
 @property (strong, nonatomic) NSMutableDictionary *sectionFonts;
@@ -70,25 +67,37 @@
 @property (nonatomic) bool hideFountainMarkup;
 //@objc var hideFountainMarkup: Bool = false
 
-@property (nonatomic, weak) UISwitch* showPageNumberSwitch;
-@property (nonatomic, weak) UISwitch* showSceneNumberSwitch;
-@property (nonatomic, weak) UISegmentedControl* pageSizeSwitch;
-
 @end
 
 @implementation BeatDocumentViewController 
+
+-(instancetype)initWithCoder:(NSCoder *)coder {
+	self = [super initWithCoder:coder];
+	if (self) {
+		_documentIsLoading = true;
+	}
+	
+	return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
 
 	if (!self.documentIsLoading) return;
 		
+	// Setup revision tracking
 	_revisionTracking = BeatRevisions.new;
 	_revisionTracking.delegate = self;
 	[_revisionTracking setup];
 	
 	// Hide text from view until loaded
 	self.textView.pageView.layer.opacity = 0.0;
+	
+	// Hide sidebar
+	self.sidebarConstraint.constant = 0.0;
+	
+	// Load fonts
+	[self loadSerifFonts];
 	
 	[self.document openWithCompletionHandler:^(BOOL success) {
 		if (!success) {
@@ -162,6 +171,21 @@
 	[self.outlineView reloadData];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+
+	[_textView resize];
+	
+	if (_documentIsLoading) {
+		// Loading is complete, show page view
+		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+			self.documentIsLoading = false;
+			self.textView.pageView.layer.opacity = 1.0;
+		} completion:^(BOOL finished) {
+			
+		}];
+	}
+}
 
 /*
 #pragma mark - Navigation
@@ -248,7 +272,7 @@
 }
 
 - (Line*)currentLine {
-	_previouslySelectedLine = self.currentLine;
+	_previouslySelectedLine = _currentLine;
 	
 	NSInteger location = self.selectedRange.location;
 	if (location >= self.text.length) return self.parser.lines.lastObject;
@@ -733,7 +757,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setMatchParentheses:(bool)matchParentheses {
 	[BeatUserDefaults.sharedDefaults saveBool:matchParentheses forKey:BeatSettingMatchParentheses];
-	//[self updateQuickSettings];
+
 }
 
 - (bool)showRevisions {
@@ -741,7 +765,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setShowRevisions:(bool)showRevisions {
 	[BeatUserDefaults.sharedDefaults saveBool:showRevisions forKey:BeatSettingShowRevisions];
-	//[self updateQuickSettings];
+
 }
 
 - (bool)showPageNumbers {
@@ -749,9 +773,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setShowPageNumbers:(bool)showPageNumbers {
 	[BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
-	//[self updateQuickSettings];
 }
 
+- (bool)showSceneNumberLabels {
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowSceneNumbers];
+}
+-(void)setShowSceneNumberLabels:(bool)showSceneNumberLabels {
+	[BeatUserDefaults.sharedDefaults saveBool:showSceneNumberLabels forKey:BeatSettingShowSceneNumbers];
+}
 
 #pragma mark - Document setting shorthands
 
@@ -960,7 +989,11 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)reformatLinesAtIndices:(NSMutableIndexSet *)indices {
-	<#code#>
+	[indices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		if (idx < self.parser.lines.count) {
+			[self.formatting formatLine:self.parser.lines[idx]];
+		}
+	}];
 }
 
 
@@ -1003,9 +1036,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - General editor stuff
 
 - (void)updateQuickSettings {
-	self.showSceneNumberSwitch.on = (self.showSceneNumberLabels) ? true : false;
-	self.showPageNumberSwitch.on = (self.showPageNumbers) ? true : false;
-	NSLog(@"• Implement update quick settings");
 }
 
 - (void)handleTabPress {

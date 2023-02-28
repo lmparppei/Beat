@@ -167,7 +167,6 @@
 @property (nonatomic) BeatPaginator *paginator;
 @property (nonatomic) NSTimer *paginationTimer;
 @property (nonatomic) bool autocomplete;
-@property (nonatomic) bool showPageNumbers;
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
 @property (nonatomic) bool characterInput;
@@ -246,7 +245,6 @@
 @property (weak) IBOutlet BeatTimeline *timeline;
 
 // Scene number labels
-@property (nonatomic) bool showSceneNumberLabels;
 @property (nonatomic) bool sceneNumberLabelUpdateOff;
 
 // Scene number settings

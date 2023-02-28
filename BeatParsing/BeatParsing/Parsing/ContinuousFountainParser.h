@@ -18,7 +18,7 @@
 
 @protocol ContinuousFountainParserDelegate <NSObject>
 @property (nonatomic) bool printSceneNumbers;
-@property (atomic) BeatDocumentSettings *documentSettings;
+@property (nonatomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) Line* characterInputForLine;
 @property (nonatomic, readonly) NSRange selectedRange;
 

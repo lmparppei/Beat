@@ -11,7 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class iOSDocument;
+
 @interface BeatDocumentViewController : UIViewController <BeatEditorDelegate, UITextViewDelegate, ContinuousFountainParserDelegate>
+
+@property (nonatomic) iOSDocument* document;
 @property (nonatomic) BeatDocumentSettings *documentSettings;
 
 @property (nonatomic) bool printSceneNumbers;
