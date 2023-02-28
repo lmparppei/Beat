@@ -1,0 +1,78 @@
+/* Class = "NSButtonCell"; title = "First"; ObjectID = "0QJ-wG-2Gh"; */
+"0QJ-wG-2Gh.title" = "Första";
+
+/* Class = "NSButtonCell"; title = "PDF"; ObjectID = "8t8-IM-hHv"; */
+"8t8-IM-hHv.title" = "PDF";
+
+/* Class = "NSMenuItem"; title = "Orange"; ObjectID = "83k-sp-7QO"; */
+"83k-sp-7QO.title" = "Orange";
+
+/* Class = "NSTextFieldCell"; title = "Print"; ObjectID = "B23-AL-UUS"; */
+"B23-AL-UUS.title" = "Skriv ut";
+
+/* Class = "NSMenuItem"; title = "Green"; ObjectID = "BEN-AI-rRD"; */
+"BEN-AI-rRD.title" = "Grön";
+
+/* Class = "NSButtonCell"; title = "  Print  "; ObjectID = "BTh-vA-fQk"; */
+"BTh-vA-fQk.title" = "  Skriv ut  ";
+
+/* Class = "NSTextFieldCell"; title = "Table View Cell"; ObjectID = "Esx-Jo-Itg"; */
+"Esx-Jo-Itg.title" = "Tabellruta";
+
+/* Class = "NSTextFieldCell"; title = "Page size"; ObjectID = "Gug-Yv-fGM"; */
+"Gug-Yv-fGM.title" = "Pappersstorlek";
+
+/* Class = "NSTextFieldCell"; title = "Text Cell"; ObjectID = "GXe-Aj-Gd5"; */
+"GXe-Aj-Gd5.title" = "Textruta";
+
+/* Class = "NSTextFieldCell"; placeholderString = "Revision, Version, ..."; ObjectID = "HOf-0E-WLn"; */
+"HOf-0E-WLn.placeholderString" = "Revision, Version, ...";
+
+/* Class = "NSTextFieldCell"; title = "Custom Styles"; ObjectID = "JRa-aX-aLe"; */
+"JRa-aX-aLe.title" = "Anpassade stilar";
+
+/* Class = "NSMenuItem"; title = "Red"; ObjectID = "jyA-d7-eqg"; */
+"jyA-d7-eqg.title" = "Röd";
+
+/* Class = "NSButtonCell"; title = "Show advanced options"; ObjectID = "K23-C7-mRO"; */
+"K23-C7-mRO.title" = "Visa avancerat";
+
+/* Class = "NSMenuItem"; title = "Cyan"; ObjectID = "LmY-As-h9q"; */
+"LmY-As-h9q.title" = "Cyan";
+
+/* Class = "NSButtonCell"; title = "Color-code revised pages"; ObjectID = "MFT-DM-C4L"; */
+"MFT-DM-C4L.title" = "Färgkoda sidor med revisioner";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "oDa-5Z-L46"; */
+"oDa-5Z-L46.title" = "Ruta";
+
+/* Class = "NSButtonCell"; title = "A4"; ObjectID = "QKZ-PI-6GB"; */
+"QKZ-PI-6GB.title" = "A4";
+
+/* Class = "NSWindow"; title = "Print"; ObjectID = "Rg7-lI-xne"; */
+"Rg7-lI-xne.title" = "Skriv ut";
+
+/* Class = "NSButtonCell"; title = "Third"; ObjectID = "RoI-NZ-573"; */
+"RoI-NZ-573.title" = "Tredje";
+
+/* Class = "NSButtonCell"; title = "Second"; ObjectID = "s1c-o3-r3e"; */
+"s1c-o3-r3e.title" = "Andra";
+
+/* Class = "NSTextFieldCell"; title = "Print Revision Markers"; ObjectID = "tAR-96-UAV"; */
+"tAR-96-UAV.title" = "Skriv ut revisionsmarkeringar";
+
+/* Class = "NSTextFieldCell"; title = "Include Header"; ObjectID = "vz7-gT-RKM"; */
+"vz7-gT-RKM.title" = "Inkludera sidhuvud";
+
+/* Class = "NSButtonCell"; title = "US Letter"; ObjectID = "XaA-mb-KGd"; */
+"XaA-mb-KGd.title" = "US Letter";
+
+/* Class = "NSButtonCell"; title = "Fourth"; ObjectID = "XLr-0o-DaH"; */
+"XLr-0o-DaH.title" = "Fjärde";
+
+/* Class = "NSButtonCell"; title = "Print Scene Numbers"; ObjectID = "XTs-KO-ZjG"; */
+"XTs-KO-ZjG.title" = "Skriv ut scennummer";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "y6u-Lj-RR8"; */
+"y6u-Lj-RR8.title" = "Avbryt";
+

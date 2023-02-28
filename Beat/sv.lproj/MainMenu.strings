@@ -1,0 +1,561 @@
+/* Class = "NSMenuItem"; title = "Smart Copy/Paste"; ObjectID = "0KX-h8-z4v"; */
+"0KX-h8-z4v.title" = "Smart kopiera/klistra";
+
+/* Class = "NSMenuItem"; title = "Beat"; ObjectID = "1Xt-HY-uBw"; */
+"1Xt-HY-uBw.title" = "Beat";
+
+/* Class = "NSMenuItem"; title = "Zoom"; ObjectID = "2bU-pu-Jv0"; */
+"2bU-pu-Jv0.title" = "Zooma";
+
+/* Class = "NSMenuItem"; title = "Find and Replace…"; ObjectID = "2DA-pz-zR5"; */
+"2DA-pz-zR5.title" = "Sök och ersätt...";
+
+/* Class = "NSMenuItem"; title = "Underlined"; ObjectID = "2nS-I6-My1"; */
+"2nS-I6-My1.title" = "Understruken";
+
+/* Class = "NSMenuItem"; title = "Find Scene..."; ObjectID = "2Rt-P2-vV4"; */
+"2Rt-P2-vV4.title" = "Sök scen...";
+
+/* Class = "NSMenuItem"; title = "Cut Current Block"; ObjectID = "3wC-eS-bpF"; */
+"3wC-eS-bpF.title" = "Klipp ut aktuellt block";
+
+/* Class = "NSMenuItem"; title = "Set Number For Current Scene..."; ObjectID = "3x7-V3-rMc"; */
+"3x7-V3-rMc.title" = "Anpassa scennummer...";
+
+/* Class = "NSMenuItem"; title = "Notepad"; ObjectID = "4fZ-b1-hYG"; */
+"4fZ-b1-hYG.title" = "Snabbnoteringar";
+
+/* Class = "NSMenuItem"; title = "Quit Beat"; ObjectID = "4sb-4s-VLi"; */
+"4sb-4s-VLi.title" = "Avsluta Beat";
+
+/* Class = "NSMenuItem"; title = "About Beat"; ObjectID = "5kV-Vb-QxS"; */
+"5kV-Vb-QxS.title" = "Om Beat";
+
+/* Class = "NSMenuItem"; title = "Edit"; ObjectID = "5QF-Oa-p0T"; */
+"5QF-Oa-p0T.title" = "Redigera";
+
+/* Class = "NSMenuItem"; title = "Select All"; ObjectID = "5tL-Bq-kho"; */
+"5tL-Bq-kho.title" = "Markera allt";
+
+/* Class = "NSMenuItem"; title = "Omit"; ObjectID = "5Y3-LZ-qMb"; */
+"5Y3-LZ-qMb.title" = "Göm text";
+
+/* Class = "NSMenuItem"; title = "Clear Locked Scene Numbers"; ObjectID = "6uV-eM-FCI"; */
+"6uV-eM-FCI.title" = "Rensa låsta scennummer";
+
+/* Class = "NSMenuItem"; title = "Automatic Paragraph Breaks"; ObjectID = "6Wc-Ky-Bx7"; */
+"6Wc-Ky-Bx7.title" = "Automatiskt avstånd efter Enter";
+
+/* Class = "NSMenuItem"; title = "Import Celtx..."; ObjectID = "7pb-G3-Rqt"; */
+"7pb-G3-Rqt.title" = "Importera Celtx...";
+
+/* Class = "NSMenuItem"; title = "Paste"; ObjectID = "7un-dE-J4V"; */
+"7un-dE-J4V.title" = "Klistra in";
+
+/* Class = "NSMenuItem"; title = "Dark Mode"; ObjectID = "8a1-24-Jc9"; */
+"8a1-24-Jc9.title" = "Mörkt läge";
+
+/* Class = "NSMenuItem"; title = "Go to Next Revision"; ObjectID = "8bv-zg-FyC"; */
+"8bv-zg-FyC.title" = "Gå till nästa revision";
+
+/* Class = "NSMenuItem"; title = "Undo"; ObjectID = "8MR-vZ-fmM"; */
+"8MR-vZ-fmM.title" = "Ångra";
+
+/* Class = "NSMenuItem"; title = "Print Episodes..."; ObjectID = "8yV-oo-VX1"; */
+"8yV-oo-VX1.title" = "Skriv ut episoder...";
+
+/* Class = "NSMenuItem"; title = "Start Scene Numbering From..."; ObjectID = "12m-8C-qlE"; */
+"12m-8C-qlE.title" = "Börja scennumrering från...";
+
+/* Class = "NSMenuItem"; title = "Print..."; ObjectID = "30L-NJ-b29"; */
+"30L-NJ-b29.title" = "Skriv ut...";
+
+/* Class = "NSMenuItem"; title = "Check for Updates"; ObjectID = "34f-vH-vWb"; */
+"34f-vH-vWb.title" = "Sök efter uppdateringar";
+
+/* Class = "NSMenuItem"; title = "Substitutions"; ObjectID = "80c-ME-9pZ"; */
+"80c-ME-9pZ.title" = "Ersättningar";
+
+/* Class = "NSMenuItem"; title = "Show Cards"; ObjectID = "ab0-W3-2f9"; */
+"ab0-W3-2f9.title" = "Visa indexkort";
+
+/* Class = "NSMenuItem"; title = "Mark Selection as Revised"; ObjectID = "Ah1-Kr-xrQ"; */
+"Ah1-Kr-xrQ.title" = "Slå på revision för markering";
+
+/* Class = "NSMenuItem"; title = "Show Sidebar"; ObjectID = "AiU-nN-4mA"; */
+"AiU-nN-4mA.title" = "Visa sidopanelen";
+
+/* Class = "NSMenuItem"; title = "Window"; ObjectID = "aUF-d1-5bR"; */
+"aUF-d1-5bR.title" = "Fönster";
+
+/* Class = "NSMenuItem"; title = "Find"; ObjectID = "AVO-sB-rdP"; */
+"AVO-sB-rdP.title" = "Sök";
+
+/* Class = "NSMenuItem"; title = "Import Highland..."; ObjectID = "aWg-Y0-xdB"; */
+"aWg-Y0-xdB.title" = "Importera Highland...";
+
+/* Class = "NSMenuItem"; title = "Hide Fountain Markup"; ObjectID = "ayj-TQ-Go1"; */
+"ayj-TQ-Go1.title" = "Göm Fountain-koder";
+
+/* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
+"AYu-sK-qS6.title" = "Huvudmeny";
+
+/* Class = "NSMenuItem"; title = "Preferences"; ObjectID = "B4z-XP-1B0"; */
+"B4z-XP-1B0.title" = "Inställningar";
+
+/* Class = "NSMenu"; title = "File"; ObjectID = "bib-Uj-vzu"; */
+"bib-Uj-vzu.title" = "Arkiv";
+
+/* Class = "NSMenuItem"; title = "Sans Serif"; ObjectID = "bip-ME-GPp"; */
+"bip-ME-GPp.title" = "Sans Serif";
+
+/* Class = "NSMenuItem"; title = "Sidebar"; ObjectID = "bng-yV-h71"; */
+"bng-yV-h71.title" = "Sidopanel";
+
+/* Class = "NSMenuItem"; title = "Save As…"; ObjectID = "Bw7-FT-i3A"; */
+"Bw7-FT-i3A.title" = "Spara som...";
+
+/* Class = "NSMenuItem"; title = "Import Final Draft..."; ObjectID = "bYQ-u3-P9F"; */
+"bYQ-u3-P9F.title" = "Importera Final Draft...";
+
+/* Class = "NSMenuItem"; title = "Export Final Draft (FDX) File..."; ObjectID = "C9z-84-Cmq"; */
+"C9z-84-Cmq.title" = "Exportera Final Draft (FDX)...";
+
+/* Class = "NSMenuItem"; title = "Title Page Editor"; ObjectID = "ce9-gT-GJX"; */
+"ce9-gT-GJX.title" = "Redigera försättsblad...";
+
+/* Class = "NSMenuItem"; title = "Beat Source Code (Online)"; ObjectID = "CUo-uf-t1s"; */
+"CUo-uf-t1s.title" = "Beat källkod (Online)";
+
+/* Class = "NSMenuItem"; title = "Next Scene"; ObjectID = "d5r-XM-q5U"; */
+"d5r-XM-q5U.title" = "Nästa scen";
+
+/* Class = "NSMenuItem"; title = "Check Spelling While Typing"; ObjectID = "daM-sR-Ab6"; */
+"daM-sR-Ab6.title" = "Kontrollera stavning medan du skriver";
+
+/* Class = "NSMenuItem"; title = "Find Next"; ObjectID = "DDL-Xk-f31"; */
+"DDL-Xk-f31.title" = "Sök nästa";
+
+/* Class = "NSMenuItem"; title = "Stop Speaking"; ObjectID = "det-Zn-CBw"; */
+"det-Zn-CBw.title" = "Avsluta tal";
+
+/* Class = "NSMenuItem"; title = "Make Upper Case"; ObjectID = "DII-3I-Hfz"; */
+"DII-3I-Hfz.title" = "Gör till versaler";
+
+/* Class = "NSMenuItem"; title = "Review Mode"; ObjectID = "dmq-UY-1zc"; */
+"dmq-UY-1zc.title" = "Kommentarsläge";
+
+/* Class = "NSMenuItem"; title = "File"; ObjectID = "dMs-cI-mzQ"; */
+"dMs-cI-mzQ.title" = "Arkiv";
+
+/* Class = "NSMenuItem"; title = "Lock Document"; ObjectID = "dTg-uk-VoW"; */
+"dTg-uk-VoW.title" = "Lås dokument";
+
+/* Class = "NSMenuItem"; title = "Close"; ObjectID = "DVo-aG-piG"; */
+"DVo-aG-piG.title" = "Stäng";
+
+/* Class = "NSMenuItem"; title = "Smart Quotes"; ObjectID = "DYb-Gf-Awk"; */
+"DYb-Gf-Awk.title" = "Smarta citattecken";
+
+/* Class = "NSMenuItem"; title = "Format"; ObjectID = "ewI-gv-uGC"; */
+"ewI-gv-uGC.title" = "Format";
+
+/* Class = "NSMenuItem"; title = "Force Character"; ObjectID = "EyT-o0-jab"; */
+"EyT-o0-jab.title" = "Forcera karaktärsnamn";
+
+/* Class = "NSMenuItem"; title = "Autosave"; ObjectID = "eZ7-I2-Df6"; */
+"eZ7-I2-Df6.title" = "Spara automatiskt";
+
+/* Class = "NSMenuItem"; title = "Check Grammar With Spelling"; ObjectID = "f1v-Oj-qcf"; */
+"f1v-Oj-qcf.title" = "Kontrollera grammatik med stavning";
+
+/* Class = "NSMenuItem"; title = "Font Style"; ObjectID = "f5C-Dm-IC8"; */
+"f5C-Dm-IC8.title" = "Skärmtypsnitt";
+
+/* Class = "NSMenuItem"; title = "Show Page Numbers"; ObjectID = "FCU-0n-nVu"; */
+"FCU-0n-nVu.title" = "Visa sidnummer";
+
+/* Class = "NSMenuItem"; title = "Tagging Mode"; ObjectID = "Fdy-fO-lco"; */
+"Fdy-fO-lco.title" = "Taggningsläge";
+
+/* Class = "NSMenuItem"; title = "Note"; ObjectID = "fKt-Xk-jG8"; */
+"fKt-Xk-jG8.title" = "Anteckning";
+
+/* Class = "NSMenuItem"; title = "Move Block Down"; ObjectID = "fVz-La-McU"; */
+"fVz-La-McU.title" = "Flytta block nedåt";
+
+/* Class = "NSMenuItem"; title = "Import"; ObjectID = "G4e-G3-Hfz"; */
+"G4e-G3-Hfz.title" = "Importera";
+
+/* Class = "NSMenuItem"; title = "Correct Spelling Automatically"; ObjectID = "g86-P3-GpL"; */
+"g86-P3-GpL.title" = "Rätta stavning automatiskt";
+
+/* Class = "NSMenuItem"; title = "HTML…"; ObjectID = "gFk-1w-5jg"; */
+"gFk-1w-5jg.title" = "HTML...";
+
+/* Class = "NSMenuItem"; title = "Reformat Everything"; ObjectID = "giJ-d7-DJr"; */
+"giJ-d7-DJr.title" = "Formatera om allt";
+
+/* Class = "NSMenuItem"; title = "Add Page Break"; ObjectID = "GOV-Kw-xCI"; */
+"GOV-Kw-xCI.title" = "Lägg till sidbrytning";
+
+/* Class = "NSMenuItem"; title = "Beat Home Page (Online)"; ObjectID = "guF-zs-YEi"; */
+"guF-zs-YEi.title" = "Beat på webben (Online)";
+
+/* Class = "NSMenuItem"; title = "Commit Revisions"; ObjectID = "H1U-Aa-dJH"; */
+"H1U-Aa-dJH.title" = "Acceptera revisioner";
+
+/* Class = "NSMenuItem"; title = "Tools"; ObjectID = "h9m-JI-q3y"; */
+"h9m-JI-q3y.title" = "Verktyg";
+
+/* Class = "NSMenuItem"; title = "Disable Formatting"; ObjectID = "hAp-vJ-Myg"; */
+"hAp-vJ-Myg.title" = "Stäng av formatering";
+
+/* Class = "NSMenuItem"; title = "Clear Selected Markers"; ObjectID = "hrl-ti-1fN"; */
+"hrl-ti-1fN.title" = "Rensa markerade revisioner";
+
+/* Class = "NSMenuItem"; title = "Copy"; ObjectID = "HTa-3i-PGo"; */
+"HTa-3i-PGo.title" = "Kopiera";
+
+/* Class = "NSMenu"; title = "Services"; ObjectID = "hz9-B4-Xy5"; */
+"hz9-B4-Xy5.title" = "Tjänster";
+
+/* Class = "NSMenuItem"; title = "Open…"; ObjectID = "IAo-SY-fd9"; */
+"IAo-SY-fd9.title" = "Öppna...";
+
+/* Class = "NSMenuItem"; title = "Force Lyrics"; ObjectID = "iAy-tL-tFv"; */
+"iAy-tL-tFv.title" = "Forcera lyrik";
+
+/* Class = "NSMenu"; title = "Substitutions"; ObjectID = "iKJ-5K-P9I"; */
+"iKJ-5K-P9I.title" = "Ersättningar";
+
+/* Class = "NSMenuItem"; title = "Outline"; ObjectID = "imw-Bx-OVw"; */
+"imw-Bx-OVw.title" = "Outline";
+
+/* Class = "NSMenuItem"; title = "Import Fade In..."; ObjectID = "InR-hQ-LKX"; */
+"InR-hQ-LKX.title" = "Importera Fade In...";
+
+/* Class = "NSMenuItem"; title = "Set Timer..."; ObjectID = "ite-qD-YVS"; */
+"ite-qD-YVS.title" = "Ställ in timer...";
+
+/* Class = "NSMenuItem"; title = "Redo"; ObjectID = "IVb-dF-Odn"; */
+"IVb-dF-Odn.title" = "Gör om";
+
+/* Class = "NSMenuItem"; title = "Reset Zoom"; ObjectID = "iVC-v6-5CT"; */
+"iVC-v6-5CT.title" = "Återställ zoom";
+
+/* Class = "NSMenu"; title = "Help"; ObjectID = "jA1-Lj-Irm"; */
+"jA1-Lj-Irm.title" = "Hjälp";
+
+/* Class = "NSMenuItem"; title = "Text Replacement"; ObjectID = "JDR-5g-yEn"; */
+"JDR-5g-yEn.title" = "Ersätt text";
+
+/* Class = "NSMenuItem"; title = "Previous Scene"; ObjectID = "jdx-FP-GzA"; */
+"jdx-FP-GzA.title" = "Föregående scen";
+
+/* Class = "NSMenuItem"; title = "Patch Notes"; ObjectID = "jMf-Y4-igF"; */
+"jMf-Y4-igF.title" = "Nytt i denna version";
+
+/* Class = "NSMenuItem"; title = "Next Section"; ObjectID = "JQL-DI-csB"; */
+"JQL-DI-csB.title" = "Nästa sektion";
+
+/* Class = "NSMenu"; title = "Find"; ObjectID = "jxo-3x-AhN"; */
+"jxo-3x-AhN.title" = "Sök";
+
+/* Class = "NSMenuItem"; title = "Show All"; ObjectID = "Kd2-mp-pUS"; */
+"Kd2-mp-pUS.title" = "Visa alla";
+
+/* Class = "NSMenuItem"; title = "Use Selection for Find"; ObjectID = "kjc-fS-FOY"; */
+"kjc-fS-FOY.title" = "Sök efter markering";
+
+/* Class = "NSMenuItem"; title = "Add Title Page"; ObjectID = "kNr-WO-rzd"; */
+"kNr-WO-rzd.title" = "Lägg till försättsblad";
+
+/* Class = "NSMenuItem"; title = "Automatic"; ObjectID = "kZW-1X-LFR"; */
+"kZW-1X-LFR.title" = "Automatiskt";
+
+/* Class = "NSMenuItem"; title = "Item"; ObjectID = "l2Z-ad-YVx"; */
+"l2Z-ad-YVx.title" = "Punkt";
+
+/* Class = "NSMenuItem"; title = "Export Outline..."; ObjectID = "lAo-B9-uaU"; */
+"lAo-B9-uaU.title" = "Exportera outline...";
+
+/* Class = "NSMenuItem"; title = "Zoom Out"; ObjectID = "LBq-PQ-NGT"; */
+"LBq-PQ-NGT.title" = "Zooma ut";
+
+/* Class = "NSMenuItem"; title = "Bring all to front"; ObjectID = "LE2-aR-0XJ"; */
+"LE2-aR-0XJ.title" = "Lägg alla överst";
+
+/* Class = "NSMenuItem"; title = "Typewriter Mode"; ObjectID = "Lej-vD-RFS"; */
+"Lej-vD-RFS.title" = "Skrivmaskinsläge";
+
+/* Class = "NSMenuItem"; title = "Find…"; ObjectID = "ltr-sy-WI6"; */
+"ltr-sy-WI6.title" = "Sök...";
+
+/* Class = "NSMenuItem"; title = "Jump to Selection"; ObjectID = "mQ6-YH-j6X"; */
+"mQ6-YH-j6X.title" = "Gå till markering";
+
+/* Class = "NSMenuItem"; title = "Cut"; ObjectID = "Mrv-cs-HZz"; */
+"Mrv-cs-HZz.title" = "Klipp ut";
+
+/* Class = "NSMenuItem"; title = "Backups"; ObjectID = "NBi-pE-q3K"; */
+"NBi-pE-q3K.title" = "Backuper";
+
+/* Class = "NSMenuItem"; title = "Lock All Scene Numbers"; ObjectID = "neY-LE-02O"; */
+"neY-LE-02O.title" = "Lås alla scennummer";
+
+/* Class = "NSMenu"; title = "Transformations"; ObjectID = "ngy-iE-uPP"; */
+"ngy-iE-uPP.title" = "Omvandlingar";
+
+/* Class = "NSMenuItem"; title = "Delete"; ObjectID = "niE-Hd-2rL"; */
+"niE-Hd-2rL.title" = "Radera";
+
+/* Class = "NSMenuItem"; title = "Enter full screen"; ObjectID = "NJj-Ow-1UU"; */
+"NJj-Ow-1UU.title" = "Helskärmsläge";
+
+/* Class = "NSMenuItem"; title = "Paste and Match Style"; ObjectID = "NLE-HM-5a7"; */
+"NLE-HM-5a7.title" = "Klistra in och matcha formatering";
+
+/* Class = "NSMenuItem"; title = "Show Spelling and Grammar"; ObjectID = "NLP-m6-wMr"; */
+"NLP-m6-wMr.title" = "Visa stavning och grammatik";
+
+/* Class = "NSMenuItem"; title = "Mark Selection for Removal"; ObjectID = "nM4-un-Ivn"; */
+"nM4-un-Ivn.title" = "Ange markerad text för borttagning";
+
+/* Class = "NSMenuItem"; title = "Services"; ObjectID = "NMo-om-nkz"; */
+"NMo-om-nkz.title" = "Tjänster";
+
+/* Class = "NSMenuItem"; title = "Transformations"; ObjectID = "noH-xX-7MC"; */
+"noH-xX-7MC.title" = "Omvandlingar";
+
+/* Class = "NSMenuItem"; title = "Screenplay"; ObjectID = "nrq-Qs-Sou"; */
+"nrq-Qs-Sou.title" = "Manuskript";
+
+/* Class = "NSMenuItem"; title = "Make Scene Non-Numbered"; ObjectID = "nRS-St-fYj"; */
+"nRS-St-fYj.title" = "Gör aktuell scen onumrerad";
+
+/* Class = "NSMenuItem"; title = "Highlight Revisions"; ObjectID = "nSA-Ck-Viv"; */
+"nSA-Ck-Viv.title" = "Stryk under revisioner";
+
+/* Class = "NSMenuItem"; title = "Previous Section of Current Depth"; ObjectID = "o3i-w3-weT"; */
+"o3i-w3-weT.title" = "Föregående sektion på samma nivå";
+
+/* Class = "NSMenu"; title = "Format"; ObjectID = "O6A-iY-8hf"; */
+"O6A-iY-8hf.title" = "Format";
+
+/* Class = "NSMenu"; title = "Go to..."; ObjectID = "o6p-p9-AIx"; */
+"o6p-p9-AIx.title" = "Gå till...";
+
+/* Class = "NSMenu"; title = "Export"; ObjectID = "o7H-J0-CK2"; */
+"o7H-J0-CK2.title" = "Exportera";
+
+/* Class = "NSMenu"; title = "Open Recent"; ObjectID = "oas-Oc-fiZ"; */
+"oas-Oc-fiZ.title" = "Öppna senaste";
+
+/* Class = "NSMenuItem"; title = "Help"; ObjectID = "oC7-oi-xzg"; */
+"oC7-oi-xzg.title" = "Hjälp";
+
+/* Class = "NSMenuItem"; title = "Hide Beat"; ObjectID = "Olw-nP-bQN"; */
+"Olw-nP-bQN.title" = "Göm Beat";
+
+/* Class = "NSMenuItem"; title = "Support Beat"; ObjectID = "oNz-fC-tr3"; */
+"oNz-fC-tr3.title" = "Stöd Beat";
+
+/* Class = "NSMenuItem"; title = "Force Action"; ObjectID = "Oob-ml-0qq"; */
+"Oob-ml-0qq.title" = "Forcera scenanvisning";
+
+/* Class = "NSMenu"; title = "Screenplay"; ObjectID = "Oru-rb-IOS"; */
+"Oru-rb-IOS.title" = "Manus";
+
+/* Class = "NSMenuItem"; title = "Fountain Website (Online)"; ObjectID = "oSB-uU-Wcb"; */
+"oSB-uU-Wcb.title" = "Fountain på webben (Online)";
+
+/* Class = "NSMenuItem"; title = "Review Notes"; ObjectID = "Otr-Sx-8w0"; */
+"Otr-Sx-8w0.title" = "Kommentarer";
+
+/* Class = "NSMenuItem"; title = "Minimize"; ObjectID = "OY7-WF-poV"; */
+"OY7-WF-poV.title" = "Minimera";
+
+/* Class = "NSMenuItem"; title = "Reformat Selected"; ObjectID = "OYT-mJ-6Jc"; */
+"OYT-mJ-6Jc.title" = "Formatera om markering";
+
+/* Class = "NSMenuItem"; title = "Move Block Up"; ObjectID = "P2e-v3-Dx2"; */
+"P2e-v3-Dx2.title" = "Flytta block uppåt";
+
+/* Class = "NSMenuItem"; title = "Save"; ObjectID = "pxx-59-PXV"; */
+"pxx-59-PXV.title" = "Spara";
+
+/* Class = "NSMenuItem"; title = "Next Section of Current Depth"; ObjectID = "qDd-yI-vJh"; */
+"qDd-yI-vJh.title" = "Nästa sektion på samma nivå";
+
+/* Class = "NSMenuItem"; title = "Page Setup…"; ObjectID = "qIS-W8-SiK"; */
+"qIS-W8-SiK.title" = "Sidinställningar...";
+
+/* Class = "NSMenuItem"; title = "Force Transition"; ObjectID = "QOz-eE-b10"; */
+"QOz-eE-b10.title" = "Forcera övergång";
+
+/* Class = "NSMenuItem"; title = "Create PDF..."; ObjectID = "qUE-cb-x1G"; */
+"qUE-cb-x1G.title" = "Skapa PDF...";
+
+/* Class = "NSMenuItem"; title = "Make Lower Case"; ObjectID = "QvQ-v2-0Mq"; */
+"QvQ-v2-0Mq.title" = "Gör till gemener";
+
+/* Class = "NSMenuItem"; title = "Start Speaking"; ObjectID = "qZv-6v-l78"; */
+"qZv-6v-l78.title" = "Börja tala";
+
+/* Class = "NSMenuItem"; title = "Language"; ObjectID = "r1G-J4-Ri5"; */
+"r1G-J4-Ri5.title" = "Språk";
+
+/* Class = "NSMenuItem"; title = "Show Selection Info"; ObjectID = "r8I-XP-gc2"; */
+"r8I-XP-gc2.title" = "Visa information om markering";
+
+/* Class = "NSMenuItem"; title = "Revision Mode"; ObjectID = "R8Y-SU-vpO"; */
+"R8Y-SU-vpO.title" = "Revisionsläge";
+
+/* Class = "NSMenuItem"; title = "Export"; ObjectID = "RGT-hK-aoo"; */
+"RGT-hK-aoo.title" = "Exportera";
+
+/* Class = "NSMenu"; title = "Edit"; ObjectID = "rly-4q-iux"; */
+"rly-4q-iux.title" = "Redigera";
+
+/* Class = "NSMenu"; title = "View"; ObjectID = "Rpw-TR-9FQ"; */
+"Rpw-TR-9FQ.title" = "Visa";
+
+/* Class = "NSMenuItem"; title = "Serif"; ObjectID = "s0K-P8-fQr"; */
+"s0K-P8-fQr.title" = "Serif";
+
+/* Class = "NSMenuItem"; title = "Find Previous"; ObjectID = "S6f-Ft-GW9"; */
+"S6f-Ft-GW9.title" = "Sök föregående";
+
+/* Class = "NSMenuItem"; title = "Match Parentheses"; ObjectID = "s7C-kV-oq3"; */
+"s7C-kV-oq3.title" = "Matcha parenteser";
+
+/* Class = "NSMenuItem"; title = "Show Substitutions"; ObjectID = "SeA-3M-ykm"; */
+"SeA-3M-ykm.title" = "Visa ersättningar";
+
+/* Class = "NSMenuItem"; title = "Show Preview"; ObjectID = "sme-b1-Ytt"; */
+"sme-b1-Ytt.title" = "Förhandsvisning";
+
+/* Class = "NSMenuItem"; title = "Copy Current Block"; ObjectID = "soE-DO-Gl8"; */
+"soE-DO-Gl8.title" = "Kopiera aktuellt block";
+
+/* Class = "NSMenuItem"; title = "Bold"; ObjectID = "SoY-Ie-ajo"; */
+"SoY-Ie-ajo.title" = "Fet";
+
+/* Class = "NSMenuItem"; title = "Spelling and Grammar"; ObjectID = "sS0-sX-bUZ"; */
+"sS0-sX-bUZ.title" = "Stavning och grammatik";
+
+/* Class = "NSMenuItem"; title = "Review Selection"; ObjectID = "SxS-6o-8ac"; */
+"SxS-6o-8ac.title" = "Kommentera markerad text";
+
+/* Class = "NSMenuItem"; title = "Plugin Library..."; ObjectID = "SYS-Os-Ktb"; */
+"SYS-Os-Ktb.title" = "Plugin-bibliotek...";
+
+/* Class = "NSMenu"; title = "Tools"; ObjectID = "T42-tx-tAb"; */
+"T42-tx-tAb.title" = "Verktyg";
+
+/* Class = "NSMenuItem"; title = "Screenplay Statistics"; ObjectID = "TCn-De-Kk7"; */
+"TCn-De-Kk7.title" = "Statistik";
+
+/* Class = "NSMenu"; title = "Window"; ObjectID = "Td7-aD-5lo"; */
+"Td7-aD-5lo.title" = "Fönster";
+
+/* Class = "NSMenuItem"; title = "Show Timeline"; ObjectID = "tMJ-KE-ZTw"; */
+"tMJ-KE-ZTw.title" = "Visa timeline";
+
+/* Class = "NSMenuItem"; title = "Dual Dialogue"; ObjectID = "tXd-FU-iE5"; */
+"tXd-FU-iE5.title" = "Dubbel dialog";
+
+/* Class = "NSMenuItem"; title = "Open Recent"; ObjectID = "tXI-mr-wws"; */
+"tXI-mr-wws.title" = "Öppna senaste";
+
+/* Class = "NSMenuItem"; title = "View"; ObjectID = "tYD-GA-KC2"; */
+"tYD-GA-KC2.title" = "Visa";
+
+/* Class = "NSMenuItem"; title = "Share"; ObjectID = "tZ7-Ir-m78"; */
+"tZ7-Ir-m78.title" = "Dela";
+
+/* Class = "NSMenu"; title = "Share"; ObjectID = "u2H-KZ-IwH"; */
+"u2H-KZ-IwH.title" = "Dela";
+
+/* Class = "NSMenuItem"; title = "Discord Community"; ObjectID = "u5m-eu-948"; */
+"u5m-eu-948.title" = "Community på Discord";
+
+/* Class = "NSMenu"; title = "Spelling"; ObjectID = "uCf-KN-clX"; */
+"uCf-KN-clX.title" = "Stavning";
+
+/* Class = "NSMenuItem"; title = "Go to Previous Revision"; ObjectID = "ucQ-IG-VAd"; */
+"ucQ-IG-VAd.title" = "Gå till föregående revision";
+
+/* Class = "NSMenuItem"; title = "Widgets"; ObjectID = "upd-G6-QM0"; */
+"upd-G6-QM0.title" = "Widgets";
+
+/* Class = "NSMenu"; title = "Beat"; ObjectID = "uQy-DD-JDr"; */
+"uQy-DD-JDr.title" = "Beat";
+
+/* Class = "NSMenuItem"; title = "Show Scene Numbers"; ObjectID = "V7o-Tn-OF3"; */
+"V7o-Tn-OF3.title" = "Visa scennummer";
+
+/* Class = "NSMenu"; title = "Sidebar"; ObjectID = "VbC-YB-YfH"; */
+"VbC-YB-YfH.title" = "Sidopanel";
+
+/* Class = "NSMenuItem"; title = "Hide Others"; ObjectID = "Vdr-fp-XzO"; */
+"Vdr-fp-XzO.title" = "Göm övriga";
+
+/* Class = "NSMenuItem"; title = "Capitalize"; ObjectID = "vgX-u1-hVY"; */
+"vgX-u1-hVY.title" = "Versaler";
+
+/* Class = "NSMenuItem"; title = "Clear Menu"; ObjectID = "vNY-rz-j42"; */
+"vNY-rz-j42.title" = "Rensa meny";
+
+/* Class = "NSMenuItem"; title = "Zoom In"; ObjectID = "Vt3-Oc-Iy3"; */
+"Vt3-Oc-Iy3.title" = "Zooma in";
+
+/* Class = "NSMenuItem"; title = "Go to..."; ObjectID = "VUa-7O-npW"; */
+"VUa-7O-npW.title" = "Gå till...";
+
+/* Class = "NSMenu"; title = "Speech"; ObjectID = "VWX-PD-9Xv"; */
+"VWX-PD-9Xv.title" = "Tal";
+
+/* Class = "NSMenuItem"; title = "New"; ObjectID = "Was-JA-tGl"; */
+"Was-JA-tGl.title" = "Ny";
+
+/* Class = "NSMenuItem"; title = "Force Scene Heading"; ObjectID = "WPf-Ao-Wcs"; */
+"WPf-Ao-Wcs.title" = "Forcera scenhuvud";
+
+/* Class = "NSMenuItem"; title = "Italic"; ObjectID = "x90-pI-9f6"; */
+"x90-pI-9f6.title" = "Kursiv";
+
+/* Class = "NSMenu"; title = "Zoom"; ObjectID = "xgR-jy-OLL"; */
+"xgR-jy-OLL.title" = "Zooma";
+
+/* Class = "NSMenu"; title = "Import"; ObjectID = "xR8-x2-hNB"; */
+"xR8-x2-hNB.title" = "Importera";
+
+/* Class = "NSMenuItem"; title = "Check Document Now"; ObjectID = "xxp-CU-vBk"; */
+"xxp-CU-vBk.title" = "Kontrollera dokument nu";
+
+/* Class = "NSMenuItem"; title = "Dialogue"; ObjectID = "Yd0-6c-3eE"; */
+"Yd0-6c-3eE.title" = "Dialog";
+
+/* Class = "NSMenuItem"; title = "Beat Manual"; ObjectID = "Yiy-8c-i5h"; */
+"Yiy-8c-i5h.title" = "Beat användarmanual";
+
+/* Class = "NSMenu"; title = "Font Style"; ObjectID = "zJ5-vm-Omp"; */
+"zJ5-vm-Omp.title" = "Skärmtypsnitt";
+
+/* Class = "NSMenuItem"; title = "Customize Colours..."; ObjectID = "Zms-ef-jSw"; */
+"Zms-ef-jSw.title" = "Anpassa färger...";
+
+/* Class = "NSMenuItem"; title = "Force Element..."; ObjectID = "zQH-Oq-iw8"; */
+"zQH-Oq-iw8.title" = "Forcera radtyp...";
+
+/* Class = "NSMenuItem"; title = "Beat Tutorial"; ObjectID = "ZsI-w6-Fec"; */
+"ZsI-w6-Fec.title" = "Beat handledning";
+
+/* Class = "NSMenuItem"; title = "Previous Section"; ObjectID = "zTa-Mk-4pe"; */
+"zTa-Mk-4pe.title" = "Föregående sektion";
+
+/* Class = "NSMenuItem"; title = "Speech"; ObjectID = "zZ3-DN-fPe"; */
+"zZ3-DN-fPe.title" = "Tal";
+

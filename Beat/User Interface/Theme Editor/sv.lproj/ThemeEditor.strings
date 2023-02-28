@@ -1,0 +1,102 @@
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "0hH-er-0kR"; */
+"0hH-er-0kR.title" = "Avbryt";
+
+/* Class = "NSTextFieldCell"; title = "Scene Number"; ObjectID = "2l8-ae-CH8"; */
+"2l8-ae-CH8.title" = "Scennumer";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis Text"; ObjectID = "7vv-ql-pEx"; */
+"7vv-ql-pEx.title" = "Synopsistext";
+
+/* Class = "NSTabViewItem"; label = "Editor"; ObjectID = "8db-n5-9bh"; */
+"8db-n5-9bh.label" = "Dokumentvy";
+
+/* Class = "NSButtonCell"; title = "Save"; ObjectID = "aZc-lr-r9i"; */
+"aZc-lr-r9i.title" = "Spara";
+
+/* Class = "NSTextFieldCell"; title = "Paper"; ObjectID = "B8Z-S8-DXC"; */
+"B8Z-S8-DXC.title" = "Pappersyta";
+
+/* Class = "NSTextFieldCell"; title = "Background"; ObjectID = "BS2-mF-IoS"; */
+"BS2-mF-IoS.title" = "Bakgrund";
+
+/* Class = "NSTextFieldCell"; title = "Section"; ObjectID = "cTA-xN-AxG"; */
+"cTA-xN-AxG.title" = "Sektion";
+
+/* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "DDr-T3-GTD"; */
+"DDr-T3-GTD.title" = "Mörkt";
+
+/* Class = "NSTextFieldCell"; title = "Light"; ObjectID = "DI5-MO-BfR"; */
+"DI5-MO-BfR.title" = "Ljust";
+
+/* Class = "NSTextFieldCell"; title = "Woman"; ObjectID = "e7b-TI-SvW"; */
+"e7b-TI-SvW.title" = "Kvinna";
+
+/* Class = "NSTextFieldCell"; title = "Other"; ObjectID = "eoU-fi-QOQ"; */
+"eoU-fi-QOQ.title" = "Annat";
+
+/* Class = "NSWindow"; title = "Customize Colors"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "Anpassa färger";
+
+/* Class = "NSTextFieldCell"; title = "Genders"; ObjectID = "Ghh-a5-XuU"; */
+"Ghh-a5-XuU.title" = "Genus";
+
+/* Class = "NSTextFieldCell"; title = "Note: Some changes may require reopening documents"; ObjectID = "j5y-Wf-te4"; */
+"j5y-Wf-te4.title" = "OBS: Vissa ändringar kräver att dokumentet öppnas på nytt";
+
+/* Class = "NSTextFieldCell"; title = "Man"; ObjectID = "jaw-Da-IBj"; */
+"jaw-Da-IBj.title" = "Man";
+
+/* Class = "NSTextFieldCell"; title = "Margin"; ObjectID = "jiK-x1-9Kb"; */
+"jiK-x1-9Kb.title" = "Marginaler";
+
+/* Class = "NSTabViewItem"; label = "Sidebar"; ObjectID = "jya-PU-GI5"; */
+"jya-PU-GI5.label" = "Sidopanel";
+
+/* Class = "NSTextFieldCell"; title = "Text"; ObjectID = "KtE-ZB-M0o"; */
+"KtE-ZB-M0o.title" = "Text";
+
+/* Class = "NSTextFieldCell"; title = "Light"; ObjectID = "lFB-D9-I3Z"; */
+"lFB-D9-I3Z.title" = "Ljust";
+
+/* Class = "NSTextFieldCell"; title = "Page Numbers"; ObjectID = "MhL-0X-jUG"; */
+"MhL-0X-jUG.title" = "Sidnummer";
+
+/* Class = "NSTextFieldCell"; title = "Synopsis"; ObjectID = "mKl-Sz-vq1"; */
+"mKl-Sz-vq1.title" = "Synopsis";
+
+/* Class = "NSButtonCell"; title = "Reset to Default"; ObjectID = "neE-Mb-Rip"; */
+"neE-Mb-Rip.title" = "Återställ";
+
+/* Class = "NSTextFieldCell"; title = "Scene"; ObjectID = "NFp-0j-8TG"; */
+"NFp-0j-8TG.title" = "Scen";
+
+/* Class = "NSTextFieldCell"; title = "Note"; ObjectID = "omc-Qp-Wls"; */
+"omc-Qp-Wls.title" = "Anteckning";
+
+/* Class = "NSTextFieldCell"; title = "Invisible Text"; ObjectID = "pol-nH-YUx"; */
+"pol-nH-YUx.title" = "Osynlig text";
+
+/* Class = "NSTextFieldCell"; title = "Section Text"; ObjectID = "QCU-q7-Dab"; */
+"QCU-q7-Dab.title" = "Sektionstext";
+
+/* Class = "NSTextFieldCell"; title = "Omitted Scene"; ObjectID = "rMb-4q-N2D"; */
+"rMb-4q-N2D.title" = "Gömd scen";
+
+/* Class = "NSTextFieldCell"; title = "Dark"; ObjectID = "TbH-8k-B7K"; */
+"TbH-8k-B7K.title" = "Mörkt";
+
+/* Class = "NSTextFieldCell"; title = "Selection"; ObjectID = "vMr-Yo-A4o"; */
+"vMr-Yo-A4o.title" = "Markering";
+
+/* Class = "NSTextFieldCell"; title = "Customize Colours"; ObjectID = "W10-WX-mev"; */
+"W10-WX-mev.title" = "Anpassa färger";
+
+/* Class = "NSTextFieldCell"; title = "Unspec."; ObjectID = "Whr-tU-Und"; */
+"Whr-tU-Und.title" = "Ej angett";
+
+/* Class = "NSTextFieldCell"; title = "Highlight"; ObjectID = "ZgE-Rl-TTE"; */
+"ZgE-Rl-TTE.title" = "Markering";
+
+/* Class = "NSTextFieldCell"; title = "Caret"; ObjectID = "zHa-4e-Vuo"; */
+"zHa-4e-Vuo.title" = "Markör";
+

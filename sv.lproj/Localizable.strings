@@ -1,0 +1,280 @@
+
+"plugins.errorRunningScript" = "Ett fel uppstod när skriptet kördes";
+"plugins.input.select" = "Välja...";
+
+/* (No Comment) */
+"app.manual" = "Manual";
+
+/* (No Comment) */
+"app.patchNotes" = "Nytt i denna version";
+
+/* (No Comment) */
+"backup.backupVault" = "Öppna Backup Vault...";
+
+/* (No Comment) */
+"backup.reverting.message" = "Alla osparade ändringar försvinner när du återgår till en tidigare version.";
+
+/* (No Comment) */
+"backup.reverting.title" = "Återgå";
+
+/* (No Comment) */
+"cardView.noScenes" = "Inga scener";
+
+/* (No Comment) */
+"cardView.noScenesInformation" = "Scenhuvuden som du skriver in i ditt manus blir synliga som kort i denna vy";
+
+/* (No Comment) */
+"cardView.print" = "Skriv ut";
+
+/* (No Comment) */
+"color.blue" = "Blå";
+
+/* (No Comment) */
+"color.brown" = "Brun";
+
+/* (No Comment) */
+"color.cyan" = "Cyan";
+
+/* (No Comment) */
+"color.green" = "Grön";
+
+/* (No Comment) */
+"color.magenta" = "Magenta";
+
+/* (No Comment) */
+"color.none" = "Ingen";
+
+/* (No Comment) */
+"color.orange" = "Orange";
+
+/* (No Comment) */
+"color.pink" = "Rosa";
+
+/* (No Comment) */
+"color.red" = "Röd";
+
+/* (No Comment) */
+"color.yellow" = "Gul";
+
+/* (No Comment) */
+"editor.goToSceneNumber.message" = "Gå till scen nummer...";
+
+/* (No Comment) */
+"editor.goToSceneNumber.placeholder" = "t.ex. 123";
+
+/* (No Comment) */
+"editor.setSceneNumber" = "Ange scennummer";
+
+/* (No Comment) */
+"editor.setSceneNumber.info" = "Önskat scennummer (kan även innehålla bokstäver, alternativt tryck på mellanslag för att ange scen utan scennummer)";
+
+/* (No Comment) */
+"export.prefix" = "Export";
+
+/* (No Comment) */
+"force.action" = "Scenbeskrivning";
+
+/* (No Comment) */
+"force.character" = "Karaktärsnamn";
+
+/* (No Comment) */
+"force.heading" = "Scenhuvud";
+
+/* (No Comment) */
+"force.lyrics" = "Lyrik";
+
+/* (No Comment) */
+"gender.man" = "Man";
+
+/* (No Comment) */
+"gender.man.plural" = "Män";
+
+/* (No Comment) */
+"gender.other" = "Annan";
+
+/* (No Comment) */
+"gender.other.plural" = "Andra";
+
+/* (No Comment) */
+"gender.unspecified" = "Ej angett";
+
+/* (No Comment) */
+"gender.unspecified.plural" = "Ej angett";
+
+/* (No Comment) */
+"gender.woman" = "Kvinna";
+
+/* (No Comment) */
+"gender.woman.plural" = "Kvinnor";
+
+/* (No Comment) */
+"general.cancel" = "Avbryt";
+
+/* (No Comment) */
+"general.no" = "Nej";
+
+/* (No Comment) */
+"general.OK" = "OK";
+"general.ok" = "OK";
+
+/* (No Comment) */
+"general.redo" = "Gör om";
+
+/* (No Comment) */
+"general.revert" = "Återställ";
+
+/* (No Comment) */
+"general.undo" = "Ångra";
+
+/* Localizable.strings
+  Beat
+
+  Created by Lauri-Matti Parppei on 2.1.2022.
+  Copyright © 2022 Lauri-Matti Parppei. All rights reserved. */
+"general.yes" = "Ja";
+
+/* (No Comment) */
+"import.prefix" = "Import";
+
+/* (No Comment) */
+"language.alert" = "Omstart behövs";
+
+/* (No Comment) */
+"language.informative" = "Du måste starta om Beat för att språkinställningarna ska ändras.";
+
+/* (No Comment) */
+"launch.newDocument.subtitle" = "Starta ett nytt tomt projekt";
+
+/* (No Comment) */
+"launch.tutorial.subtitle" = "Börja här om du inte har använt Beat tidigare";
+
+/* (No Comment) */
+"lock.clickToUnlock" = "Klicka för att låsa upp";
+
+/* (No Comment) */
+"lock.documentLocked" = "Dokumentet är låst";
+
+/* (No Comment) */
+"mode.reviewMode" = "Kommentarsläge";
+
+/* (No Comment) */
+"mode.taggingMode" = "Taggningsläge";
+
+/* (No Comment) */
+"plugins.compatibilityWarning" = "<b>Varning</b>: Denna plugin kan vara inkompatibel med din version av Beat. För att säkerställa att den fungerar, ladda ner den senaste versionen av Beat från App Store innan du fortsätter.";
+
+/* (No Comment) */
+"plugins.currentVersion" = "Installerad version";
+
+/* (No Comment) */
+"plugins.download" = "Ladda ner";
+
+/* (No Comment) */
+"plugins.installed" = "Installerad";
+
+/* (No Comment) */
+"plugins.library" = "Plugin-bibliotek";
+
+/* (No Comment) */
+"plugins.libraryWelcome" = "<p>Ett urval av officiella plugin-program för Beat. Installerade (ikryssade) plugins visas i menyn <b>Verktyg</b>. Grå/dimmade plugins är ännu inte installerade. Klicka på respektive namn för att läsa mer och/eller installera.</p>\n   <p class='small gray'>Klicka på mapp-ikonen för att manuellt hantera dina plugins. Du kan skapa egna plugins med hjälp av JavaScript &mdash; läs mer på Beats webbsida.</p>";
+
+/* (No Comment) */
+"plugins.update" = "Updatera";
+
+/* (No Comment) */
+"plugins.updateAvailable" = "Updatering tillgänglig";
+
+/* (No Comment) */
+"plugins.version" = "Version";
+
+/* (No Comment) */
+"print.createPDF" = "Skapa PDF";
+
+/* (No Comment) */
+"print.pdfButton" = "PDF";
+
+/* (No Comment) */
+"print.print" = "Skriv ut";
+
+/* (No Comment) */
+"print.printButton" = "Skriv ut";
+
+/* (No Comment) */
+"revisionMode.clearLine" = "Ta bort revision för aktuell rad";
+
+/* (No Comment) */
+"revisionMode.clearSelection" = "Ta bort revision för aktuell markering";
+
+/* (No Comment) */
+"revisionMode.reviseLine" = "Slå på revision för aktuell rad";
+
+/* (No Comment) */
+"revisionMode.reviseSelection" = "Slå på revision för aktuell markering";
+
+/* (No Comment) */
+"revisions.commitPrompt.text" = "Detta tar bort alla revisionsmarkeringar och raderar all text som markerats för borttagning. Är du säker på att du vill fortsätta?";
+
+/* (No Comment) */
+"revisions.commitPrompt.title" = "Acceptera alla revisioner";
+
+/* (No Comment) */
+"statistics.lines" = "Rader";
+
+/* (No Comment) */
+"statistics.scenes" = "Scener";
+
+/* (No Comment) */
+"statisticsPanel.averageSceneLength" = "Genomsnittlig scenlängd";
+
+/* (No Comment) */
+"statisticsPanel.linesByGender" = "Repliker per genus";
+
+/* (No Comment) */
+"statisticsPanel.linesPerCharacter" = "Repliker per karaktär";
+
+/* (No Comment) */
+"statisticsPanel.locations" = "Platser";
+
+/* (No Comment) */
+"statisticsPanel.locations.exterior" = "Exteriör";
+
+/* (No Comment) */
+"statisticsPanel.locations.interior" = "Interiör";
+
+/* (No Comment) */
+"statisticsPanel.locations.other" = "Övrigt";
+
+/* (No Comment) */
+"statisticsPanel.longestScene" = "Längsta scen";
+
+/* (No Comment) */
+"statisticsPanel.noDialogue" = "Ingen dialog";
+
+/* (No Comment) */
+"statisticsPanel.setGenderInfo" = "Ange genus för respektive karaktär till vänster";
+
+/* (No Comment) */
+"statisticsPanel.shortForPages" = "sidor";
+
+/* (No Comment) */
+"statisticsPanel.stats.characters" = "karaktärer";
+
+/* (No Comment) */
+"statisticsPanel.stats.scenes" = "scener";
+
+/* (No Comment) */
+"statisticsPanel.stats.words" = "ord";
+
+/* (No Comment) */
+"statisticsPanel.title" = "Statistik för manus";
+
+/* (No Comment) */
+"unlock_document.confirm" = "Är du säker på att du vill låsa upp dokumentet och tillåta ändringar?";
+
+/* (No Comment) */
+"unlock_document.title" = "Lås upp dokument";
+
+"timer.reset" = "Återställa";
+"timer.start" = "Starta";
+"timer.charactersRemoved" = "tecken borttagna";
+"timer.charactersTyped" = "tecken skriven";

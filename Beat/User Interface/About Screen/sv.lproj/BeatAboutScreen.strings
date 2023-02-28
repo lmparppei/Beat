@@ -1,0 +1,18 @@
+/* Class = "NSWindow"; title = "About Beat"; ObjectID = "2ip-76-u7o"; */
+"2ip-76-u7o.title" = "Om Beat";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "7rY-cc-HqE"; */
+"7rY-cc-HqE.title" = "ruta";
+
+/* Class = "NSTextFieldCell"; title = "beat"; ObjectID = "IhX-oQ-xOK"; */
+"IhX-oQ-xOK.title" = "beat";
+
+/* Class = "NSTextFieldCell"; title = "Version"; ObjectID = "p0n-Zp-SgA"; */
+"p0n-Zp-SgA.title" = "Version";
+
+/* Class = "NSButtonCell"; title = "Acknowledgements"; ObjectID = "umj-be-CzI"; */
+"umj-be-CzI.title" = "Tack till";
+
+/* Class = "NSTextFieldCell"; title = "© Lauri-Matti Parppei 2019–2023. Released under GPL license. No animal products were consumed when creating this app."; ObjectID = "Vew-4a-6k0"; */
+"Vew-4a-6k0.title" = "© Lauri-Matti Parppei 2019–2023. Utgiven under GPL-licens. Inga animaliska produkter konsumerades under tillblivandet av denna app.";
+

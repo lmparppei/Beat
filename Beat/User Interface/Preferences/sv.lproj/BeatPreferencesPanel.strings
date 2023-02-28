@@ -1,0 +1,135 @@
+/* Class = "NSToolbarItem"; label = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.label" = "System";
+
+/* Class = "NSToolbarItem"; paletteLabel = "System"; ObjectID = "0Hr-jR-zGH"; */
+"0Hr-jR-zGH.paletteLabel" = "System";
+
+/* Class = "NSTextFieldCell"; title = "Split dialogue indicator"; ObjectID = "0oB-rC-ac3"; */
+"0oB-rC-ac3.title" = "Text vid sidbruten dialog";
+
+/* Class = "NSButtonCell"; title = "Automatically update plugins"; ObjectID = "1mF-I3-loO"; */
+"1mF-I3-loO.title" = "Updatera plugins automatiskt";
+
+/* Class = "NSToolbarItem"; label = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.label" = "Allmänt";
+
+/* Class = "NSToolbarItem"; paletteLabel = "General"; ObjectID = "2No-Jf-9GH"; */
+"2No-Jf-9GH.paletteLabel" = "Allmänt";
+
+/* Class = "NSMenuItem"; title = "US Letter"; ObjectID = "3O7-zn-jUw"; */
+"3O7-zn-jUw.title" = "US Letter";
+
+/* Class = "NSButtonCell"; title = "Automatic CONT'D extensions"; ObjectID = "5Bc-al-gWv"; */
+"5Bc-al-gWv.title" = "Automatiskt suffix när dialog fortsätter";
+
+/* Class = "NSTextFieldCell"; title = "Language"; ObjectID = "5o4-U4-n7H"; */
+"5o4-U4-n7H.title" = "Språk";
+
+/* Class = "NSMenuItem"; title = "A4"; ObjectID = "7Xj-J1-Y92"; */
+"7Xj-J1-Y92.title" = "A4";
+
+/* Class = "NSButtonCell"; title = "Show scene numbers"; ObjectID = "a44-hn-h2m"; */
+"a44-hn-h2m.title" = "Visa scennummer";
+
+/* Class = "NSButtonCell"; title = "Automatic paragraph breaks"; ObjectID = "Br1-nj-6zn"; */
+"Br1-nj-6zn.title" = "Automatiskt avstånd efter Enter";
+
+/* Class = "NSButtonCell"; title = "Auto-complete scene headings and characters"; ObjectID = "d0m-zv-bHH"; */
+"d0m-zv-bHH.title" = "Föreslå automatiskt scenhuvud och karaktärsnamn";
+
+/* Class = "NSTextFieldCell"; title = "Heading Spacing"; ObjectID = "EHa-PH-tc4"; */
+"EHa-PH-tc4.title" = "Avstånd före scenhuvud";
+
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "F0z-JX-Cv5"; */
+"F0z-JX-Cv5.title" = "Inställningar";
+
+/* Class = "NSButtonCell"; title = "2 lines"; ObjectID = "fan-Jn-FOW"; */
+"fan-Jn-FOW.title" = "2 rader";
+
+/* Class = "NSTextFieldCell"; title = "Automatically closes elements like () and [[]]"; ObjectID = "fxb-nx-hJp"; */
+"fxb-nx-hJp.title" = "Stänger automatiskt element som () och [[]]";
+
+/* Class = "NSButtonCell"; title = "Match parentheses"; ObjectID = "Gir-t4-vbC"; */
+"Gir-t4-vbC.title" = "Matcha parenteser";
+
+/* Class = "NSTextFieldCell"; title = "Plugins"; ObjectID = "gW4-1f-ZbP"; */
+"gW4-1f-ZbP.title" = "Plugins";
+
+/* Class = "NSToolbarItem"; label = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.label" = "Layout";
+
+/* Class = "NSToolbarItem"; paletteLabel = "Layout"; ObjectID = "ha1-yG-obd"; */
+"ha1-yG-obd.paletteLabel" = "Layout";
+
+/* Class = "NSButtonCell"; title = "Automatically hide Fountain markup"; ObjectID = "KAa-hh-Rua"; */
+"KAa-hh-Rua.title" = "Göm Fountain-kod automatiskt";
+
+/* Class = "NSButtonCell"; title = "Use default"; ObjectID = "kU3-zB-g60"; */
+"kU3-zB-g60.title" = "Använd förval";
+
+/* Class = "NSTextFieldCell"; title = "Editor Behavior"; ObjectID = "lzW-qc-hjs"; */
+"lzW-qc-hjs.title" = "Funktioner";
+
+/* Class = "NSTextFieldCell"; title = "INT. SCENE - DAY"; ObjectID = "m9T-8O-t6l"; */
+"m9T-8O-t6l.title" = "INT. SCEN -- DAG";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "Mb6-nH-PQK"; */
+"Mb6-nH-PQK.label" = "Vy";
+
+/* Class = "NSButtonCell"; title = "Custom"; ObjectID = "moV-CN-wy9"; */
+"moV-CN-wy9.title" = "Anpassat";
+
+/* Class = "NSButtonCell"; title = "Bolded"; ObjectID = "MPF-7c-b3u"; */
+"MPF-7c-b3u.title" = "Fet";
+
+/* Class = "NSTextFieldCell"; title = "Default Paper Size"; ObjectID = "nUl-8Q-mMa"; */
+"nUl-8Q-mMa.title" = "Förvald pappersstorlek";
+
+/* Class = "NSTextFieldCell"; title = "Editor View"; ObjectID = "O3D-76-kt4"; */
+"O3D-76-kt4.title" = "Dokumentvyn";
+
+/* Class = "NSTabViewItem"; label = "Tab"; ObjectID = "ok7-BF-Eme"; */
+"ok7-BF-Eme.label" = "Flik";
+
+/* Class = "NSButtonCell"; title = "Select..."; ObjectID = "OWc-Ih-dLg"; */
+"OWc-Ih-dLg.title" = "Ange...";
+
+/* Class = "NSTextFieldCell"; title = "as she walks to pick up the noodles."; ObjectID = "pUG-6V-246"; */
+"pUG-6V-246.title" = "medan hon går och hämtar sina nudlar.";
+
+/* Class = "NSTextFieldCell"; title = "Backup vault location"; ObjectID = "ROG-62-Evk"; */
+"ROG-62-Evk.title" = "Mapp för Backup Vault";
+
+/* Class = "NSTextFieldCell"; title = "Continued character cue extension"; ObjectID = "Ump-3W-bbM"; */
+"Ump-3W-bbM.title" = "Suffix vid fortsatt dialog";
+
+/* Class = "NSBox"; title = "Box"; ObjectID = "V8X-hl-rUl"; */
+"V8X-hl-rUl.title" = "Ruta";
+
+/* Class = "NSTabViewItem"; label = "View"; ObjectID = "vls-Bk-euL"; */
+"vls-Bk-euL.label" = "Visa";
+
+/* Class = "NSMenuItem"; title = "Courier Prime"; ObjectID = "VTU-wq-qyb"; */
+"VTU-wq-qyb.title" = "Courier Prime";
+
+/* Class = "NSMenuItem"; title = "Courier Prime Sans"; ObjectID = "w8y-6i-bdp"; */
+"w8y-6i-bdp.title" = "Courier Prime Sans";
+
+/* Class = "NSTextFieldCell"; title = "Editor Font"; ObjectID = "Wyn-hc-s1G"; */
+"Wyn-hc-s1G.title" = "Skärmtypsnitt";
+
+/* Class = "NSButtonCell"; title = "Show scene colors in scroll bar"; ObjectID = "xYL-rJ-JMw"; */
+"xYL-rJ-JMw.title" = "Visa scenfärger i rullningslisten";
+
+/* Class = "NSButtonCell"; title = "Show page numbers"; ObjectID = "yde-p1-D3O"; */
+"yde-p1-D3O.title" = "Visa sidnummer";
+
+/* Class = "NSTextFieldCell"; title = "Heading Style"; ObjectID = "yHb-oc-ujO"; */
+"yHb-oc-ujO.title" = "Stil på scenhuvuden";
+
+/* Class = "NSButtonCell"; title = "1 line"; ObjectID = "Yuw-0s-K2b"; */
+"Yuw-0s-K2b.title" = "1 rad";
+
+/* Class = "NSButtonCell"; title = "Underlined"; ObjectID = "Zfa-HM-161"; */
+"Zfa-HM-161.title" = "Understruken";
+

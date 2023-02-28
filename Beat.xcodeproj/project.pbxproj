@@ -691,6 +691,19 @@
 		B655B1052714607700BA52ED /* BeatMarkerScroller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatMarkerScroller.m; sourceTree = "<group>"; };
 		B65BBF7A280C3FD500FCA23E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/BeatAboutScreen.xib; sourceTree = "<group>"; };
 		B65BBF7D280C3FD800FCA23E /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/BeatAboutScreen.strings; sourceTree = "<group>"; };
+		B65E03D429AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Document.strings; sourceTree = "<group>"; };
+		B65E03D529AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/MainMenu.strings; sourceTree = "<group>"; };
+		B65E03D629AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatEpisodePrinter.strings; sourceTree = "<group>"; };
+		B65E03D729AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatPrintDialog.strings; sourceTree = "<group>"; };
+		B65E03D829AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatStatisticsPanel.strings; sourceTree = "<group>"; };
+		B65E03D929AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatAboutScreen.strings; sourceTree = "<group>"; };
+		B65E03DA29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		B65E03DB29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatPreferencesPanel.strings; sourceTree = "<group>"; };
+		B65E03DC29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatSceneHeadingSearch.strings; sourceTree = "<group>"; };
+		B65E03DD29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/ThemeEditor.strings; sourceTree = "<group>"; };
+		B65E03DE29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BeatTitlePageEditor.strings; sourceTree = "<group>"; };
+		B65E03DF29AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		B65E03E029AE18D600927056 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/UnzipKit.strings; sourceTree = "<group>"; };
 		B65F02AE25B82BF8009E1D04 /* BeatStatisticsPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatStatisticsPanel.h; sourceTree = "<group>"; };
 		B65F02AF25B82BF8009E1D04 /* BeatStatisticsPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatStatisticsPanel.m; sourceTree = "<group>"; };
 		B661936E26BE81FC00152CA1 /* BeatModalAccessoryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatModalAccessoryView.h; sourceTree = "<group>"; };
@@ -2227,6 +2240,7 @@
 				en,
 				Base,
 				fi,
+				sv,
 			);
 			mainGroup = B138B56A19E1C973000489C4;
 			packageReferences = (
@@ -2789,6 +2803,7 @@
 			children = (
 				B606FDC42817F09C00D89CD6 /* Base */,
 				B606FDC72817F09E00D89CD6 /* fi */,
+				B65E03D729AE18D600927056 /* sv */,
 			);
 			name = BeatPrintDialog.xib;
 			sourceTree = "<group>";
@@ -2798,6 +2813,7 @@
 			children = (
 				B607519328CB27A700F4E68F /* Base */,
 				B607519628CB27AB00F4E68F /* fi */,
+				B65E03DC29AE18D600927056 /* sv */,
 			);
 			name = BeatSceneHeadingSearch.xib;
 			sourceTree = "<group>";
@@ -2816,6 +2832,7 @@
 			children = (
 				B640767627D7FE7D0053D63A /* Base */,
 				B640767927D7FE800053D63A /* fi */,
+				B65E03DA29AE18D600927056 /* sv */,
 			);
 			name = LaunchScreen.xib;
 			sourceTree = "<group>";
@@ -2825,6 +2842,7 @@
 			children = (
 				B65BBF7A280C3FD500FCA23E /* Base */,
 				B65BBF7D280C3FD800FCA23E /* fi */,
+				B65E03D929AE18D600927056 /* sv */,
 			);
 			name = BeatAboutScreen.xib;
 			sourceTree = "<group>";
@@ -2834,6 +2852,7 @@
 			children = (
 				B66716C82971D1B5005B8C55 /* Base */,
 				B66716C92971D1B5005B8C55 /* fi */,
+				B65E03DD29AE18D600927056 /* sv */,
 			);
 			name = ThemeEditor.xib;
 			sourceTree = "<group>";
@@ -2842,6 +2861,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				B66B5A972739B75500BBC9C6 /* en */,
+				B65E03E029AE18D600927056 /* sv */,
 			);
 			name = UnzipKit.strings;
 			sourceTree = "<group>";
@@ -2859,6 +2879,7 @@
 			children = (
 				B6763E4D27820CCF00284907 /* fi */,
 				B6763E50278221F300284907 /* en */,
+				B65E03DF29AE18D600927056 /* sv */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -2868,6 +2889,7 @@
 			children = (
 				B6763E8127822DE500284907 /* Base */,
 				B6763E8427822DE900284907 /* fi */,
+				B65E03DE29AE18D600927056 /* sv */,
 			);
 			name = BeatTitlePageEditor.xib;
 			sourceTree = "<group>";
@@ -2877,6 +2899,7 @@
 			children = (
 				B6763E8D2782317600284907 /* Base */,
 				B6763E902782317A00284907 /* fi */,
+				B65E03D629AE18D600927056 /* sv */,
 			);
 			name = BeatEpisodePrinter.xib;
 			sourceTree = "<group>";
@@ -2886,6 +2909,7 @@
 			children = (
 				B6763E932782482400284907 /* Base */,
 				B6763EA82782545400284907 /* fi */,
+				B65E03DB29AE18D600927056 /* sv */,
 			);
 			name = BeatPreferencesPanel.xib;
 			sourceTree = "<group>";
@@ -2895,6 +2919,7 @@
 			children = (
 				B68691A327845A8C00C8D5A2 /* Base */,
 				B68691A627845A8F00C8D5A2 /* fi */,
+				B65E03D829AE18D600927056 /* sv */,
 			);
 			name = BeatStatisticsPanel.xib;
 			sourceTree = "<group>";
@@ -2904,6 +2929,7 @@
 			children = (
 				B6D2B72E2218B589005B8447 /* Base */,
 				B6D4BB142788B09100915682 /* fi */,
+				B65E03D429AE18D600927056 /* sv */,
 			);
 			name = Document.xib;
 			sourceTree = "<group>";
@@ -2913,6 +2939,7 @@
 			children = (
 				B6D2B7302218B589005B8447 /* Base */,
 				B6763E4627820BF600284907 /* fi */,
+				B65E03D529AE18D600927056 /* sv */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
