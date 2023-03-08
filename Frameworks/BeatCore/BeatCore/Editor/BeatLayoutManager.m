@@ -101,8 +101,10 @@
 {
     BXTextView* textView = self.editorDelegate.getTextView;
     
+    // iOS and macOS have different types of edge insets
 #if TARGET_OS_IOS
     CGSize inset = CGSizeMake(textView.textContainerInset.left, textView.textContainerInset.top);
+    inset.height += 3.0; // This is here to make up for weird iOS line sizing
 #else
     CGSize inset = textView.textContainerInset;
 #endif
