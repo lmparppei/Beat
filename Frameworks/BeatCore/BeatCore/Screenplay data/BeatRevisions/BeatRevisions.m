@@ -45,6 +45,14 @@
 	[BeatAttributes registerAttribute:BeatRevisions.attributeKey];
 }
 
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate {
+    self = [super init];
+    if (self) {
+        self.delegate = delegate;
+    }
+    return self;
+}
+
 /// Returns the default color, which is FIRST generation
 + (NSString*)defaultRevisionColor {
 	return DEFAULT_COLOR;
@@ -148,6 +156,47 @@
 {
 	NSAttributedString *attrStr = [self attrStringWithRevisions:revisions string:string];
 	[self bakeRevisionsIntoLines:lines text:attrStr];
+}
+
+/// Adds  revision attributes from the delegate
+- (void)loadRevisions {
+    NSDictionary* revisions = [_delegate.documentSettings get:DocSettingRevisions];
+    if (revisions == nil) return;
+    
+    [self loadRevisionsFromDictionary:revisions];
+}
+
+/// Adds given revision attributes using a `BeatEditorDelegate`
+- (void)loadRevisionsFromDictionary:(NSDictionary*)revisions {
+    for (NSString *key in revisions.allKeys) {
+        NSArray *items = revisions[key];
+        
+        for (NSArray *item in items) {
+            NSString *color;
+            NSInteger loc = [(NSNumber*)item[0] integerValue];
+            NSInteger len = [(NSNumber*)item[1] integerValue];
+            
+            // Load color if available
+            if (item.count > 2) color = item[2];
+            
+            // Ensure the revision is in range, find lines in range and bake revisions
+            if (len > 0 && loc + len <= _delegate.text.length) {
+                RevisionType type;
+                NSRange range = (NSRange){loc, len};
+                
+                if ([key isEqualToString:@"Addition"]) type = RevisionAddition;
+                else if ([key isEqualToString:@"Removal"] || [key isEqualToString:@"RemovalSuggestion"]) type = RevisionRemovalSuggestion;
+                else type = RevisionNone;
+                
+                BeatRevisionItem *revision = [BeatRevisionItem type:type color:color];
+                
+                if (revision.type != RevisionNone) {
+                    [_delegate addAttribute:BeatRevisions.attributeKey value:revision range:range];
+                }
+            }
+        }
+    }
+    
 }
 
 /// Writes the given revisions into a plain text string, and returns an attributed string

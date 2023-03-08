@@ -35,7 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 //@property (nonatomic) NSMutableIndexSet *additions;
 //@property (nonatomic) NSMutableIndexSet *removals;
+- (instancetype)initWithDelegate:(id<BeatEditorDelegate>)delegate;
 - (void)setup;
+- (void)loadRevisions;
 - (void)registerChangesInRange:(NSRange)range;
 - (void)markerAction:(RevisionType)type;
 //- (void)markRangeAsAddition:(NSRange)range;
