@@ -350,9 +350,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		else if (previousLine.isDualDialogue && previousLine.length > 0) {
 			paragraphStyle = [self paragraphStyleForType:dualDialogue];
 		} else {
-			[paragraphStyle setFirstLineHeadIndent:0];
-			[paragraphStyle setHeadIndent:0];
-			[paragraphStyle setTailIndent:0];
+			paragraphStyle = [self paragraphStyleFor:line];
+//			[paragraphStyle setFirstLineHeadIndent:0];
+//			[paragraphStyle setHeadIndent:0];
+//			[paragraphStyle setTailIndent:0];
 		}
 		
 		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
@@ -367,7 +368,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Render backgrounds according to text attributes
 	// This is AMAZINGLY slow
 	if (!firstTime && line.string.length) {
-		[self renderBackgroundForLine:line clearFirst:NO];
+		// [self renderBackgroundForLine:line clearFirst:NO];
 	}
 } }
 
@@ -457,14 +458,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			}
 		}];
 	}
-}
-
-- (void)initialTextBackgroundRender {
-	if (!_delegate.showTags && !_delegate.showRevisions) return;
-	
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[self renderBackgroundForLines];
-	});
 }
 
 - (void)setTextColorFor:(Line*)line {

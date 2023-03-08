@@ -24,7 +24,6 @@ typedef enum {
 - (void)formatLine:(Line*)line;
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime;
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear;
-- (void)initialTextBackgroundRender;
 //- (void)updateTypingAttributes;
 @end
 

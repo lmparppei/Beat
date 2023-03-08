@@ -84,6 +84,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Catch forced character cue
 	if (_delegate.characterInputForLine == line && _delegate.characterInput) {
+		line.type = character;
 		type = character;
 	}
 	
@@ -203,10 +204,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	// Apply paragraph styles
 	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:line];
 	[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-	
+		
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine) {
-		[textStorage addAttribute:NSBackgroundColorAttributeName value:UIColor.clearColor range:range];
+		//[textStorage addAttribute:NSBackgroundColorAttributeName value:UIColor.clearColor range:range];
 		return;
 	}
 	
@@ -224,13 +225,13 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		// Only do this if we are REALLY typing at this location
 		// Foolproof fix for a strange, rare bug which changes multiple
 		// lines into character cues and the user is unable to undo the changes
-		if (NSMaxRange(range) <= selectedRange.location) {
+		if (NSMaxRange(range) <= selectedRange.location && line.length > 0) {
 			[_delegate.textStorage replaceCharactersInRange:range withString:[textStorage.string substringWithRange:range].uppercaseString];
 			line.string = line.string.uppercaseString;
 			[_delegate setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
-			[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range];
+			//[textStorage addAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range];
 		}
 		
 		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.
@@ -304,8 +305,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		}
 	}
 	
-	// INPUT ATTRIBUTES FOR CARET / CURSOR
-	// (do this earlier, you idiot)
+	// INPUT ATTRIBUTES
 	if (line.string.length == 0 && !firstTime && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
 		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
 		Line* previousLine;
@@ -314,15 +314,16 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		if (lineIndex > 0 && lineIndex != NSNotFound) previousLine = [_delegate.parser.lines objectAtIndex:lineIndex - 1];
 		
 		// Keep dialogue input after any dialogue elements
-		if (previousLine.isDialogue && previousLine.length > 0) {
+		if ((previousLine.isDialogue && previousLine.length > 0) || line.type == dialogue) {
 			paragraphStyle = [self paragraphStyleForType:dialogue];
 		}
-		else if (previousLine.isDualDialogue && previousLine.length > 0) {
+		else if ((previousLine.isDualDialogue && previousLine.length > 0) || line.type == parenthetical) {
 			paragraphStyle = [self paragraphStyleForType:dualDialogue];
 		} else {
-			[paragraphStyle setFirstLineHeadIndent:0];
-			[paragraphStyle setHeadIndent:0];
-			[paragraphStyle setTailIndent:0];
+			paragraphStyle = [self paragraphStyleFor:line];
+//			[paragraphStyle setFirstLineHeadIndent:0];
+//			[paragraphStyle setHeadIndent:0];
+//			[paragraphStyle setTailIndent:0];
 		}
 		
 		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
@@ -457,11 +458,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	NSLayoutManager *layoutMgr = _delegate.layoutManager;
+	return;
+	
 	NSTextStorage *textStorage = _delegate.textStorage;
 	
-	//[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
-
 	if (clear) {
 		// First clear the background attribute if needed
 		[_delegate addAttribute:NSBackgroundColorAttributeName value:BXColor.clearColor range:line.range];
@@ -485,15 +485,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		}];
 	}
 }
-
-- (void)initialTextBackgroundRender {
-	if (!_delegate.showTags && !_delegate.showRevisions) return;
-	
-	dispatch_async(dispatch_get_main_queue(), ^(void){
-		[self renderBackgroundForLines];
-	});
-}
-
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
 	// Don't add a nil value
