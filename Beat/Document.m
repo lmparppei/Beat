@@ -555,7 +555,6 @@ static BeatAppDelegate *appDelegate;
 	self.progressPanel = nil;
 	
 	[_parser.changedIndices removeAllIndexes];
-	[self.formatting initialTextBackgroundRender];
 	_attrTextCache = self.textView.attributedString;
 	
 	[self.revisionTracking setup]; // Initialize edit tracking
@@ -728,6 +727,8 @@ static BeatAppDelegate *appDelegate;
 }
 
 - (void)setupWindow {
+	[self updateUIColors];
+	
 	[_tagTextView.enclosingScrollView setHasHorizontalScroller:NO];
 	[_tagTextView.enclosingScrollView setHasVerticalScroller:NO];
 	
@@ -1655,7 +1656,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_lastChangedRange.length > 5) [self ensureLayout];
 	
 	// Update preview screen
-	// [self.preview updatePreviewInSync:NO];
+	[self.preview updatePreviewInSync:NO];
 	
 	// Update any running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
@@ -2214,6 +2215,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		@autoreleasepool { [_formatting formatLine:line]; }
 	}
 	
+	[self.parser.changedIndices removeAllIndexes];
 	[self ensureLayout];
 }
 
@@ -2486,7 +2488,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	if (_showRevisions) {
 		// Show revisions
-		[self.formatting initialTextBackgroundRender];
 		[self.textView refreshLayoutElements];
 	} else {
 		// Hide revisions
@@ -3562,6 +3563,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.outlineView reloadOutline];
 	[self.timeline reload];
 	
+	self.textView.needsDisplay = true;
 	[self.textView refreshLayoutElements];
 	[self updateChangeCount:NSChangeDone];
 	
