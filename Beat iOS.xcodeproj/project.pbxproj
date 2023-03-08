@@ -19,6 +19,8 @@
 		B633C152298C58130011449D /* BeatPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C150298C58130011449D /* BeatPreview.m */; };
 		B633C1E4298C622F0011449D /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; };
 		B633C1E5298C622F0011449D /* BeatCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B633C1E3298C622F0011449D /* BeatCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636F76E29B7C9B80024D73A /* InputAssistantView.swift */; };
+		B636F77129B7C9C60024D73A /* InputAssistantCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */; };
 		B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */; };
 		B686FF842971B65800789C8D /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B686FF832971B65800789C8D /* BeatPaginationCore.framework */; };
 		B686FF852971B65800789C8D /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B686FF832971B65800789C8D /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -99,6 +101,8 @@
 		B633C150298C58130011449D /* BeatPreview.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatPreview.m; path = "Beat/Rendering and export/BeatPreview.m"; sourceTree = SOURCE_ROOT; };
 		B633C151298C58130011449D /* BeatPreview.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatPreview.h; path = "Beat/Rendering and export/BeatPreview.h"; sourceTree = SOURCE_ROOT; };
 		B633C1E3298C622F0011449D /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B636F76E29B7C9B80024D73A /* InputAssistantView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantView.swift; sourceTree = "<group>"; };
+		B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputAssistantCollectionView.swift; sourceTree = "<group>"; };
 		B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatiOSFormatting.h; sourceTree = "<group>"; };
 		B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatiOSFormatting.m; sourceTree = "<group>"; };
 		B657F54C2832960C008A1EA5 /* Beat iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beat iOS.entitlements"; sourceTree = "<group>"; };
@@ -212,6 +216,15 @@
 			children = (
 			);
 			path = "Screenplay data";
+			sourceTree = "<group>";
+		};
+		B636F76D29B7C99B0024D73A /* Input Assistant */ = {
+			isa = PBXGroup;
+			children = (
+				B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */,
+				B636F76E29B7C9B80024D73A /* InputAssistantView.swift */,
+			);
+			path = "Input Assistant";
 			sourceTree = "<group>";
 		};
 		B63D9F5028301E4E00D027B6 /* iOS colors */ = {
@@ -328,6 +341,7 @@
 		B6CB9707282FEDAF00C7AFC7 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				B636F76D29B7C99B0024D73A /* Input Assistant */,
 				B629FE3C2846B8DB00E8B9BD /* Card View */,
 				B63D9F5028301E4E00D027B6 /* iOS colors */,
 				B6CE250328393BA500D53CE8 /* BeatiOSOutlineView.swift */,
@@ -467,6 +481,7 @@
 				B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */,
 				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
 				B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */,
+				B636F77129B7C9C60024D73A /* InputAssistantCollectionView.swift in Sources */,
 				B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */,
 				B6CB96F5282FEB6500C7AFC7 /* DocumentBrowserViewController.swift in Sources */,
 				B633C13B298C54CF0011449D /* BeatFontExtensions.swift in Sources */,
@@ -476,6 +491,7 @@
 				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
+				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
 				B686FFCA2971BC7E00789C8D /* BeatHTMLScript.m in Sources */,
 				B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */,
 				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,
@@ -641,7 +657,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -690,7 +706,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportsDocumentBrowser = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
