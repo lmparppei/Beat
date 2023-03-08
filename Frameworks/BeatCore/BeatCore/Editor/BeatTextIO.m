@@ -412,5 +412,26 @@ static bool _skipAutomaticLineBreaks = false;
     return NO;
 }
 
+/// Adds a new, clean paragraph
+- (void)addNewParagraph:(NSString*)string {
+    NSInteger position = self.delegate.currentLine.position;
+    self.delegate.selectedRange = NSMakeRange(position, 0);
+    
+    // If previous line is not empty, add a line break at current line.
+    Line* previous = [self.delegate.parser previousLine:self.delegate.currentLine];
+    if (previous.type != empty) {
+        [self addString:@"\n" atIndex:self.delegate.currentLine.position];
+        self.delegate.selectedRange = NSMakeRange(position + 1, 0);
+    }
+
+    // If current or next line are not empty, add two line breaks at current line.
+    Line* next = [self.delegate.parser nextLine:self.delegate.currentLine];
+    if (self.delegate.currentLine.type != empty || next.string.length != 0) {
+        [self addString:@"\n\n" atIndex:NSMaxRange(self.delegate.currentLine.textRange)];
+    }
+        
+    [self addString:string atIndex:self.delegate.selectedRange.location];
+}
+
 
 @end

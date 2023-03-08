@@ -55,6 +55,8 @@
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
 - (void)removeTextOnLine:(Line*)line inLocalIndexSet:(NSIndexSet*)indexSet;
 
+- (void)addNewParagraph:(NSString*)string;
+
 - (bool)shouldAddLineBreaks:(Line*)currentLine range:(NSRange)affectedCharRange;
 - (bool)shouldJumpOverParentheses:(NSString*)replacementString range:(NSRange)affectedCharRange;
 - (void)matchParenthesesIn:(NSRange)affectedCharRange string:(NSString*)replacementString;
