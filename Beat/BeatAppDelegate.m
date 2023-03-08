@@ -173,7 +173,8 @@
 		NSAppearance *appearance = NSAppearance.currentAppearance ?: NSApp.effectiveAppearance;
 		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
 		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			_darkMode = true;
+			if (_darkMode == false) _forceLightMode = YES;
+			//_darkMode = true;
 		} else {
 			if (_darkMode) _forceDarkMode = YES;
 		}
