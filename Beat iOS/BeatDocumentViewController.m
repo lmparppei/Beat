@@ -19,12 +19,15 @@
 @interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate>
 
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
+@property (nonatomic, weak) IBOutlet BeatPageView* pageView;
 
 @property (nonatomic) bool documentIsLoading;
 
 @property (nonatomic) BeatPreview* preview;
 @property (nonatomic) BeatPreviewView* previewView;
 @property (nonatomic) NSTimer* previewTimer;
+
+@property (nonatomic, weak) IBOutlet UIView* accessoryView;
 
 @property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool typewriterMode;
@@ -59,7 +62,7 @@
 
 @property (nonatomic) KeyboardManager* keyboardManager;
 
-@property (nonatomic, weak) IBOutlet UIScrollView* scrollView;
+@property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
 @property (nonatomic, weak) IBOutlet UIView* sidebar;
 @property (nonatomic, weak) IBOutlet UINavigationItem* titleBar;
@@ -80,11 +83,32 @@
 	return self;
 }
 
+- (void)createTextView {
+	// Create text view
+	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height) pageView:self.pageView scrollView:self.scrollView];
+	textView.inputAccessoryView = self.accessoryView;
+		
+	[self.textView removeFromSuperview];
+	self.textView = textView;
+	[self.pageView addSubview:self.textView];
+	
+	self.textView.delegate = self;
+	self.textView.editorDelegate = self;
+	self.textView.enclosingScrollView = self.scrollView;
+	
+	self.textView.font = self.courier;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
 	if (!self.documentIsLoading) return;
-		
+	
+	// Load fonts
+	[self loadSerifFonts];
+	// Create text view
+	[self createTextView];
+	
 	// Setup revision tracking
 	_revisionTracking = BeatRevisions.new;
 	_revisionTracking.delegate = self;
@@ -96,9 +120,9 @@
 	// Hide sidebar
 	self.sidebarConstraint.constant = 0.0;
 	
-	// Load fonts
-	[self loadSerifFonts];
-	
+	self.scrollView.backgroundColor = ThemeManager.sharedManager.marginColor;
+	self.textView.backgroundColor = ThemeManager.sharedManager.backgroundColor;
+		
 	[self.document openWithCompletionHandler:^(BOOL success) {
 		if (!success) {
 			// Do something
@@ -122,20 +146,19 @@
 	}];
 }
 
-
 - (void)setupDocument {
 	self.titleBar.title = self.fileNameString;
 	
 	self.document.delegate = self;
-	self.contentBuffer = self.document.rawText;
+	//self.contentBuffer = self.document.rawText;
 	
 	self.formatting = BeatiOSFormatting.new;
 	self.formatting.delegate = self;
-	
+		
 	self.paginator = [BeatPaginator.alloc initForLivePagination:self.document];
 	
 	// Load document into parser
-	self.parser = [ContinuousFountainParser.alloc initWithString:_contentBuffer delegate:self];
+	self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
 	
 	// Init preview
 	self.preview = [BeatPreview.alloc initWithDocument:self];
@@ -151,22 +174,17 @@
 	
 	// Text I/O
 	self.textActions = [BeatTextIO.alloc initWithDelegate:self];
-	
+
 	// Text view settings
 	self.textView.textStorage.delegate = self;
+	
+	// Set text
+	self.textView.text = self.document.rawText;
+	//[self.revisionTracking loadRevisions];
+	
 }
 
 - (void)renderDocument {
-	/*
-	 textView?.text = contentBuffer
-	 cachedText.setAttributedString(NSAttributedString(string: contentBuffer))
-	 
-	 formatAllLines()
-	 outlineView.reloadData()
-	 */
-	
-	self.textView.text = _contentBuffer;
-	
 	[self formatAllLines];
 	[self.outlineView reloadData];
 }
@@ -200,15 +218,12 @@
 
 #pragma mark -
 
-
 - (BXTextView*)getTextView {
 	return self.textView;
 }
 - (CGFloat)editorLineHeight {
 	return BeatPaginator.lineHeight;
 }
-
-#pragma mark - Core functionality
 
 
  
@@ -230,6 +245,33 @@
 - (BeatDocumentSettings*)documentSettings {
 	return self.document.settings;
 }
+
+- (IBAction)dismissDocumentViewController:(id)sender {
+	[self.previewView.webview removeFromSuperview];
+	self.previewView.webview = nil;
+	
+	[self.previewView.nibBundle unload];
+	self.previewView = nil;
+	
+	[self dismissViewControllerAnimated:YES completion:^{
+		[self.document closeWithCompletionHandler:nil];
+	}];
+}
+
+/*
+ 
+ @IBAction func dismissDocumentViewController() {
+	 self.previewView?.webview?.removeFromSuperview()
+	 self.previewView?.webview = nil
+	 
+	 self.previewView?.nibBundle?.unload()
+	 self.previewView = nil
+	 
+	 dismiss(animated: true) {
+		 self.document?.close(completionHandler: nil)
+	 }
+ }
+ */
 
 #pragma mark - Getters for parser data
 
@@ -470,6 +512,30 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 
+#pragma mark - Editor actions
+
+- (IBAction)addDialogue:(id)sender {
+	
+}
+
+- (IBAction)addINT:(id)sender {
+	[self.textActions addNewParagraph:@"INT. "];
+}
+
+- (IBAction)addEXT:(id)sender {
+	[self.textActions addNewParagraph:@"EXT. "];
+}
+
+- (IBAction)addCharacterCue:(id)sender {
+	[self.textActions addNewParagraph:@""];
+	self.characterInput = true;
+	self.characterInputForLine = self.currentLine;
+	
+	self.currentLine.type = dialogue;
+	[self.formatting formatLine:self.currentLine];
+}
+
+
 #pragma mark - Screenplay document data shorthands
 
 - (NSString*)revisionColor {
@@ -484,7 +550,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)setPrintSceneNumbers:(bool)value {
 	[BeatUserDefaults.sharedDefaults saveBool:value forKey:BeatSettingPrintSceneNumbers];
-	[self updateQuickSettings];
 }
 
 - (void)setAutomaticTextCompletionEnabled:(BOOL)value {
@@ -615,7 +680,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (self.documentIsLoading) return;
 	
 	// Don't parse anything when editing attributes
-	if (editedMask == NSTextStorageEditedAttributes) return;
+	if (editedMask == NSTextStorageEditedAttributes) {
+		return;
+	}
 	
 	NSRange affectedRange = NSMakeRange(NSNotFound, 0);
 	NSString* string = @"";
@@ -660,15 +727,27 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self textViewDidChange:self.textView];
 }
 
+-(void)textViewDidChangeSelection:(UITextView *)textView {
+	if (self.currentLine != self.characterInputForLine) {
+		self.characterInput = false;
+		self.characterInputForLine = nil;
+	}
+}
+
 -(void)textViewDidChange:(UITextView *)textView {
 	if (_lastChangedRange.location == NSNotFound) _lastChangedRange = NSMakeRange(0, 0);
 	_attrTextCache = textView.attributedText;
 	
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
-		
+			
 	// Register changes
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
+	
+	// Save
+	[self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForOverwriting completionHandler:^(BOOL success) {
+		NSLog(@"Saved");
+	}];
 	
 	// Update formatting
 	[self applyFormatChanges];
@@ -765,7 +844,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setShowRevisions:(bool)showRevisions {
 	[BeatUserDefaults.sharedDefaults saveBool:showRevisions forKey:BeatSettingShowRevisions];
-
+	[self refreshTextViewLayoutElements];
 }
 
 - (bool)showPageNumbers {
@@ -773,6 +852,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 - (void)setShowPageNumbers:(bool)showPageNumbers {
 	[BeatUserDefaults.sharedDefaults saveBool:showPageNumbers forKey:BeatSettingShowPageNumbers];
+	[self refreshTextViewLayoutElements];
 }
 
 - (bool)showSceneNumberLabels {
@@ -780,7 +860,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 -(void)setShowSceneNumberLabels:(bool)showSceneNumberLabels {
 	[BeatUserDefaults.sharedDefaults saveBool:showSceneNumberLabels forKey:BeatSettingShowSceneNumbers];
+	[self refreshTextViewLayoutElements];
 }
+
 
 #pragma mark - Document setting shorthands
 
@@ -788,13 +870,17 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	BeatPaperSize pageSize = [self.documentSettings getInt:DocSettingPageSize];
 	return pageSize;
 }
+- (void)setPageSize:(BeatPaperSize)pageSize {
+	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
+	[self.textView resize];
+}
+
 - (NSInteger)sceneNumberingStartsFrom {
 	return [self.documentSettings getInt:DocSettingSceneNumberStart];
 }
 - (void)setSceneNumberingStartsFrom:(NSInteger)number {
 	[self.documentSettings setInt:DocSettingSceneNumberStart as:number];
 }
-
 
 
 #pragma mark - Export options
@@ -840,7 +926,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)refreshTextViewLayoutElements {
-	
+	[self.textView setNeedsDisplay];
 }
 - (void)refreshTextViewLayoutElementsFrom:(NSInteger)location {
 	
@@ -969,6 +1055,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	for (Line* line in self.parser.lines) {
 		[_formatting formatLine:line];
 	}
+	[self.parser.changedIndices removeAllIndexes];
 }
 
 - (void)forceFormatChangesInRange:(NSRange)range {
@@ -982,9 +1069,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (void)applyFormatChanges
 {
 	[self.parser.changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		if (idx >= self.parser.lines.count) return;
 		[_formatting formatLine:self.parser.lines[idx]];
 	}];
-	
 	[self.parser.changedIndices removeAllIndexes];
 }
 
@@ -1034,9 +1121,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 
 #pragma mark - General editor stuff
-
-- (void)updateQuickSettings {
-}
 
 - (void)handleTabPress {
 	NSLog(@"• Implement handle tab press");

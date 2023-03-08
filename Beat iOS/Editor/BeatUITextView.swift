@@ -18,13 +18,45 @@ class BeatUITextView: UITextView {
 	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
 	var pinchRecognizer = UIGestureRecognizer()
 	
-	var customLayoutManager:BeatLayoutManager = BeatLayoutManager()
+	var customLayoutManager:BeatLayoutManager
+	
+	@objc class func createTextView(editorDelegate:BeatEditorDelegate, frame:CGRect, pageView:BeatPageView, scrollView:BeatScrollView) -> BeatUITextView {
+		let textContainer = NSTextContainer()
+		let layoutManager = BeatLayoutManager()
+		let textStorage = NSTextStorage(string: "")
+		
+		layoutManager.addTextContainer(textContainer)
+		textStorage.addLayoutManager(layoutManager)
+		
+		let textView = BeatUITextView(frame: frame, textContainer: textContainer, layoutManager: layoutManager)
+		textView.autoresizingMask = [.flexibleHeight, .flexibleTopMargin, .flexibleLeftMargin, .flexibleRightMargin, .flexibleBottomMargin]
+		
+		textView.textContainer.widthTracksTextView = false
+		textView.pageView = pageView
+		textView.enclosingScrollView = scrollView
+		
+		layoutManager.editorDelegate = editorDelegate
+		textView.setup()
+		
+		return textView
+	}
+	
+	init(frame: CGRect, textContainer: NSTextContainer?, layoutManager:BeatLayoutManager) {
+		customLayoutManager = layoutManager
+		super.init(frame: frame, textContainer: textContainer)
+	}
+	override var textLayoutManager: NSTextLayoutManager? {
+		return nil
+	}
 	
 	required init?(coder: NSCoder) {
+		customLayoutManager = BeatLayoutManager()
 		super.init(coder: coder)
+
+		self.textStorage.removeLayoutManager(self.textStorage.layoutManagers.first!)
 		
-		customLayoutManager.textStorage = self.textStorage
 		customLayoutManager.addTextContainer(self.textContainer)
+		customLayoutManager.textStorage = self.textStorage
 		
 		self.textContainer.replaceLayoutManager(customLayoutManager)
 	}
@@ -52,36 +84,32 @@ class BeatUITextView: UITextView {
 		return width + padding * 2
 	}
 	
-
-	override func awakeFromNib() {
-		super.awakeFromNib()
-		
+	func setup() {
 		self.textContainerInset = insets
 		self.isScrollEnabled = false
 		
 		// Delegates
 		enclosingScrollView?.delegate = self
 		layoutManager.delegate = self
-		
-		
-		let layoutMgr = self.textContainer.layoutManager as? BeatLayoutManager
+		/*
+		let layoutMgr = self.layoutManager as? BeatLayoutManager
 		if (layoutMgr != nil && self.editorDelegate != nil) {
 			layoutMgr?.editorDelegate = self.editorDelegate!
 		}
+		 */
 		
 		// View setup
 		self.textContainer.widthTracksTextView = false
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
-		
-		if (self.layoutManager.textContainers.contains(self.textContainer)) {
-			print("Yes")
-		} else {
-			print("No")
-		}
-		
+				
 		resizePaper()
 		resize()
+	}
+	
+	override func awakeFromNib() {
+		super.awakeFromNib()
+		setup()
 	}
 	
 	override func layoutSubviews() {
@@ -131,6 +159,7 @@ class BeatUITextView: UITextView {
 		
 		resizeScrollViewContent()
 		
+		frame.size.width = zoom * (self.documentWidth + self.insets.left + self.insets.right)
 		frame.size.height = enclosingScrollView.contentSize.height
 		self.pageView.frame = frame
 		
@@ -183,6 +212,7 @@ class BeatUITextView: UITextView {
 
 extension BeatUITextView: NSLayoutManagerDelegate {
 	func layoutManager(_ layoutManager: NSLayoutManager, shouldGenerateGlyphs glyphs: UnsafePointer<CGGlyph>, properties props: UnsafePointer<NSLayoutManager.GlyphProperty>, characterIndexes charIndexes: UnsafePointer<Int>, font aFont: UIFont, forGlyphRange glyphRange: NSRange) -> Int {
+		if self.editorDelegate?.documentIsLoading ?? false { return 0 }
 		
 		let line = editorDelegate?.parser.line(atPosition: charIndexes[0])
 		if line == nil { return 0 }
@@ -313,7 +343,8 @@ extension BeatUITextView: UIScrollViewDelegate {
 	func resizeScrollViewContent() {
 		let factor = self.enclosingScrollView.zoomScale
 		let contentSize = self.sizeThatFits(CGSize(width: self.documentWidth, height: CGFloat.greatestFiniteMagnitude))
-		let scrollSize = CGSize(width: (contentSize.width + self.textContainerInset.left + self.textContainerInset.right) * factor,
+		var width = contentSize.width + self.textContainerInset.left + self.textContainerInset.right
+		let scrollSize = CGSize(width: width * factor,
 								height: (contentSize.height + self.textContainerInset.top + self.textContainerInset.bottom) * factor)
 		
 		self.enclosingScrollView.contentSize = scrollSize

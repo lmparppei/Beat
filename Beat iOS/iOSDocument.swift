@@ -28,10 +28,7 @@ class iOSDocument: UIDocument {
 	
     override func contents(forType typeName: String) throws -> Any {
         // Encode your document with an instance of NSData or NSFileWrapper
-		let text = delegate?.text() ?? ""
-		
-		print("Resulting text:", text)
-		
+		let text = delegate?.text() ?? ""		
 		return text.data(using: .utf8) as Any
     }
     
@@ -45,5 +42,7 @@ class iOSDocument: UIDocument {
 			rawText = rawText.stringByReplacing(range: range, withString: "")
 		}
     }
+
+
 }
 

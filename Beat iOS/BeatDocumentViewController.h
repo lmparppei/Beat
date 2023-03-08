@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Editor flags
 @property (nonatomic) bool revisionMode;
-@property (nonatomic, readonly) bool characterInput;
-@property (nonatomic) Line* characterInputForLine;
+@property (nonatomic) bool characterInput;
+@property (nonatomic) Line* _Nullable characterInputForLine;
 @property (nonatomic) BeatEditorMode mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
 

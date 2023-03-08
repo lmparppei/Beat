@@ -17,9 +17,9 @@ class BeatQuickSettings:BeatPopoverContentController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		showPageNumbers?.isOn = self.delegate?.showPageNumbers ?? false
-		showSceneNumbers?.isOn = self.delegate?.showPageNumbers ?? false
-		revisionMode?.isOn = self.delegate?.revisionMode ?? false
+		showPageNumbers?.setOn(self.delegate?.showPageNumbers ?? false, animated: false)
+		showSceneNumbers?.setOn(self.delegate?.showSceneNumberLabels ?? false, animated: false)
+		revisionMode?.setOn(self.delegate?.revisionMode ?? false, animated: false)
 		
 		pageSizeSwitch?.selectedSegmentIndex = (self.delegate?.pageSize ?? .A4 == .A4) ? 0 : 1
 	}
