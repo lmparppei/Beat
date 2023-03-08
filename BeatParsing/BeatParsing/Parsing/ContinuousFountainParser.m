@@ -2428,7 +2428,8 @@ NSUInteger prevLineAtLocationIndex = 0;
 		 */
 		return nil;
 	}
-		
+    else if (array.count == 0) return nil;
+    
 	NSInteger i = searchOrigin;
 	NSInteger origin = (descending) ? i - 1 : i + 1;
 	if (origin == -1) origin = array.count - 1;
