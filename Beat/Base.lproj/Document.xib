@@ -1555,15 +1555,15 @@
                                     <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <scrollView horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" maxMagnification="2" minMagnification="0.5" usesPredominantAxisScrolling="NO" id="gHp-kE-iK5" customClass="CenteringScrollView" customModule="Beat" customModuleProvider="target">
+                                        <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" maxMagnification="2" minMagnification="0.5" usesPredominantAxisScrolling="NO" id="gHp-kE-iK5" customClass="CenteringScrollView" customModule="Beat" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
-                                                <rect key="frame" x="1" y="1" width="1153" height="659"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="1138" height="644"/>
+                                                        <rect key="frame" x="0.0" y="2" width="1138" height="644"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                                         <subviews>
                                                             <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lvV-vu-Nc5" customClass="BeatPreviewView" customModule="Beat" customModuleProvider="target">
@@ -1576,13 +1576,14 @@
                                                         </subviews>
                                                     </view>
                                                 </subviews>
+                                                <color key="backgroundColor" red="0.10196078431372549" green="0.10196078431372549" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </clipView>
                                             <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="fAh-jO-lBN">
-                                                <rect key="frame" x="1" y="644" width="1153" height="16"/>
+                                                <rect key="frame" x="0.0" y="645" width="1155" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="2Il-WL-PyV">
-                                                <rect key="frame" x="1138" y="1" width="16" height="659"/>
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="2Il-WL-PyV">
+                                                <rect key="frame" x="1139" y="0.0" width="16" height="661"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>

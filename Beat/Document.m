@@ -352,15 +352,14 @@
 #define INITIAL_WIDTH 900
 #define INITIAL_HEIGHT 700
 
-#define NATIVE_RENDERING false
+#define NATIVE_RENDERING true
 
 @implementation Document
 
 #pragma mark - Document Initialization
 
+/// **Warning**: This is used for returning the actual document through editor delegate. Handle with care.
 -(Document*)document {
-	// WARNING: This is only for transferring the document from a delegate to another place.
-	// Handle with care.
 	return self;
 }
 
@@ -368,6 +367,7 @@
 	self = [super init];
 	return self;
 }
+
 - (void)close {
 	self.closing = true;
 	
@@ -809,6 +809,7 @@ static BeatAppDelegate *appDelegate;
 /// Move to another editor view
 - (void)showTab:(NSTabViewItem*)tab {
 	[self.tabView selectTabViewItem:tab];
+	[tab.view.subviews.firstObject becomeFirstResponder];
 }
 
 /// Returns the currently visible "tab" in main window (meaning editor, preview, index cards, etc.)
@@ -2294,20 +2295,22 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)renderBackgroundForLines {
 	for (Line* line in self.lines) {
-		[_formatting renderBackgroundForLine:line clearFirst:YES];
+		// Invalidate layout
+		[self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
 	}
 }
 
 - (void)renderBackgroundForRange:(NSRange)range {
 	NSArray *lines = [self.parser linesInRange:range];
 	for (Line* line in lines) {
-		[self renderBackgroundForLine:line clearFirst:YES];
+		// Invalidate layout
+		[self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
 	}
 }
 
 - (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	// Forward (for delegation)
-	[_formatting renderBackgroundForLine:line clearFirst:clear];
+	// Invalidate layout
+	[self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
 }
 
 /// Forces a type on a line and formats it accordingly. Can be abused for doing strange and esoteric stuff.
@@ -2486,14 +2489,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 -(IBAction)toggleShowRevisions:(id)sender {
 	_showRevisions = !_showRevisions;
 	
-	if (_showRevisions) {
-		// Show revisions
-		[self.textView refreshLayoutElements];
-	} else {
-		// Hide revisions
-		for (Line* line in self.parser.lines) [self renderBackgroundForLine:line clearFirst:YES];
-	}
-	
+	// Refresh layout + settings
+	[self.textView refreshLayoutElements];
 	[self updateQuickSettings];
 	
 	// Save user default
@@ -2637,7 +2634,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// Special conditions for other than normal edit view
 	if (self.currentTab != _editorTab) {
 		// If PRINT PREVIEW is enabled
-		if (self.currentTab == _previewTab) {
+		if (self.currentTab == _previewTab || self.currentTab == _nativePreviewTab) {
 			if (menuItem.action == @selector(preview:)) {
 				[menuItem setState:NSOnState];
 				return YES;
