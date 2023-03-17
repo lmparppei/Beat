@@ -60,6 +60,8 @@
 
 @property (nonatomic) NSMutableArray<BeatNativePrinting*>* renderQueue;
 
+@property (nonatomic) NSTimer* previewTimer;
+
 @end
 
 @implementation BeatPrintDialog
@@ -154,6 +156,8 @@ static CGFloat panelWidth;
 
 }
 - (IBAction)close:(id)sender {
+	[self.previewTimer invalidate];
+	
 	[self.documentDelegate.documentWindow endSheet:self.window];
 	[self.documentDelegate releasePrintDialog];
 	
@@ -161,23 +165,32 @@ static CGFloat panelWidth;
 
 #pragma mark - Printing
 
+- (void)exportWithType:(BeatPrintingOperation)type {
+	BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:type settings:[self exportSettings] delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+		// Remove from queue
+		[self.renderQueue removeObject:operation];
+		[self printingDidFinish];
+	}];
+
+	// Add to render queue (to keep the printing operation in memory)
+	[self.renderQueue addObject:printing];
+
+}
+
 - (IBAction)print:(id)sender {
-	BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
-	[self addPrintViewToQueue:printView];
-	
-	[self.documentDelegate.documentWindow endSheet:self.window];
+	if (self.documentDelegate.nativeRendering) {
+		[self exportWithType:BeatPrintingOperationToPrint];
+		
+	} else {
+		BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
+		[self addPrintViewToQueue:printView];
+		
+		[self.documentDelegate.documentWindow endSheet:self.window];
+	}
 }
 - (IBAction)pdf:(id)sender {
 	if (self.documentDelegate.nativeRendering) {
-		BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:[self exportSettings] delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
-			[self.renderQueue removeObject:operation];
-			
-			NSURL* url = (NSURL*)value;
-			[self didFinishPreviewAt:url];
-		}];
-		
-		// Add to render queue (to keep the printing operation in memory)
-		[self.renderQueue addObject:printing];
+		[self exportWithType:BeatPrintingOperationToPDF];
 		
 	} else {
 		BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
@@ -192,9 +205,18 @@ static CGFloat panelWidth;
 }
 
 - (void)loadPreview {
+	[self.previewTimer invalidate];
+
 	// Start progress indicator
 	[self.progressIndicator startAnimation:nil];
+	self.pdfView.alphaValue = 0.5;
 	
+	self.previewTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:false block:^(NSTimer * _Nonnull timer) {
+		[self updatePreview];
+	}];
+}
+
+- (void)updatePreview {
 	// Update PDF preview
 	BeatExportSettings *settings = [self exportSettings];
 	
@@ -299,6 +321,7 @@ static CGFloat panelWidth;
 - (void)didFinishPreviewAt:(NSURL *)url {
 	// Stop progress indicator
 	[self.progressIndicator stopAnimation:nil];
+	self.pdfView.alphaValue = 1.0;
 	
 	// This is a hack. Sorry.
 	// We find the scroll view for PDFView, save its bounds and load them when

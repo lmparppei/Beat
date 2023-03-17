@@ -585,15 +585,12 @@
 		if (revision.type == RevisionRemovalSuggestion && range.length > 0) {
 			[self markerAction:RevisionNone range:range];
 			[self.delegate replaceRange:range withString:@""];
-			
-			[self.delegate renderBackgroundForLines];
 		}
 	}];
 	
 	// Then clear all attributes
 	[self markerAction:RevisionNone range:NSMakeRange(0, _delegate.text.length)];
-	for (Line* line in _delegate.lines) [_delegate renderBackgroundForLine:line clearFirst:YES];
-
+	[_delegate refreshTextViewLayoutElements];
 }
 
 #else

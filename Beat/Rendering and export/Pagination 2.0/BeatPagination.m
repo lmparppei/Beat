@@ -189,7 +189,7 @@
 		Line* line = _lineQueue[0];
 		
 		// Let's see if we can use cached pages here
-		if (_pages.count == pageCountAtStart+1 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count) {
+		if (_pages.count == pageCountAtStart+1 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count && line.position > _location) {
 			Line* firstLineOnCachedPage = _cachedPages[_pages.count].lines.firstObject;
 			
 			if ([line.uuid isEqualTo:firstLineOnCachedPage.uuid]) {

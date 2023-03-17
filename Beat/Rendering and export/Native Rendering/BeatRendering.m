@@ -174,20 +174,23 @@
 		}];
 	}
 	
-	// Apply revisions. By default, we'll display revisions defined in export settings,
-	// but if no revisions were supplied (the value is nil), let's render all of them.
-	NSArray* revisionColors = self.settings.revisions;
-	if (revisionColors == nil) revisionColors = BeatRevisions.revisionColors;
-	
-	for (NSString* color in revisionColors) {
-		if (line.revisedRanges[color] == nil) continue;
+	// Apply revisions.
+	if (line.revisedRanges.count) {
+		// By default, we'll display revisions defined in export settings,
+		// but if no revisions were supplied (the value is nil), let's render all of them.
+		NSArray* revisionColors = self.settings.revisions;
+		if (revisionColors.count == 0) revisionColors = BeatRevisions.revisionColors;
 		
-		NSIndexSet* revisions = line.revisedRanges[color];
-		[revisions enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-			[attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
-		}];
+		for (NSString* color in revisionColors) {
+			if (line.revisedRanges[color] == nil) continue;
+			
+			NSIndexSet* revisions = line.revisedRanges[color];
+			[revisions enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+				[attributedString addAttribute:BeatRevisions.attributeKey value:color range:range];
+			}];
+		}
 	}
-	
+		
 	// If the block has line breaks in it, we need to remove margin spacing.
 	// This *shouldn't* happen, but this is here mostly for backwards-compatibility.
 	bool multiline = [line.string containsString:@"\n"];

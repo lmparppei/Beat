@@ -77,15 +77,18 @@ class BeatNativePrinting:NSView {
 	
 	override func knowsPageRange(_ range: NSRangePointer) -> Bool {
 		// NOTE: Page numbers begin from 1
-		range.pointee = NSMakeRange(1, self.pagination.pages.count)
+		var pageCount = self.pagination.pages.count
+		if (self.pagination.hasTitlePage) { pageCount += 1 }
+		
+		range.pointee = NSMakeRange(1, pageCount)
 		
 		return true
 	}
 	
 	override func rectForPage(_ page: Int) -> NSRect {
 		self.subviews.removeAll()
-		
-		let pageView = self.pageViews[page]
+
+		let pageView = self.pageViews[page - 1] // -1 because this is an array index
 		self.addSubview(pageView)
 		
 		return NSMakeRect(0, 0, self.frame.width, self.frame.height)
@@ -100,26 +103,39 @@ class BeatNativePrinting:NSView {
 				self.createPageViews()
 				
 				if self.operation == .toPreview {
+					// Our URL will be a random, temp url
 					self.url = self.tempURL()
 				}
 				else if self.operation == .toPDF {
+					// Request URL from user
 					self.getURLforPDF()
 				}
 				
-				let printInfo = NSPrintInfo.shared.copy() as! NSPrintInfo
+				// No URL set for PDF operations, just exit this bowling alley
+				if (self.url == nil && self.operation == .toPDF) {
+					print(self.className, "- no URL set")
+					self.printOperationDidRun(nil, success: false, contextInfo: nil)
+					return
+				}
+								
+				let printInfo = NSPrintInfo()
 				printInfo.horizontalPagination = .fit
 				printInfo.verticalPagination = .fit
+
+				printInfo.leftMargin = 0.0
+				printInfo.rightMargin = 0.0
+				printInfo.topMargin = 0.0
+				printInfo.bottomMargin = 0.0
+				printInfo.jobDisposition = .spool
+				
+				if (self.operation != .toPrint) {
+					printInfo.jobDisposition = .save
+					printInfo.dictionary().setObject(NSURL(fileURLWithPath: self.url!.absoluteString), forKey: NSPrintInfo.AttributeKey.jobSavingURL as NSCopying)
+				}
 				
 				let printOperation = NSPrintOperation(view: self, printInfo: printInfo)
-				
-				// Specific rules for PDF operations
-				if (self.operation != .toPrint) {
-					printInfo.dictionary().addEntries(from: [
-						NSPrintInfo.AttributeKey.jobDisposition: NSPrintInfo.JobDisposition.save,
-						NSPrintInfo.AttributeKey.jobSavingURL: NSURL(fileURLWithPath: self.url!.absoluteString)
-					])
-					printOperation.showsPrintPanel = false
-				}
+				printOperation.showsProgressPanel = (self.operation != .toPreview)
+				printOperation.showsPrintPanel = (self.operation == .toPrint)
 				
 				// Run print operation
 				printOperation.runModal(for: self.host, delegate: self, didRun: #selector(self.printOperationDidRun), contextInfo: nil)
@@ -127,12 +143,14 @@ class BeatNativePrinting:NSView {
 		}
 	}
 	
+	
 	/// Called after the operation has finished
 	@objc func printOperationDidRun(_ operation:Any?, success:Bool, contextInfo:Any?) {
 		guard let _ = operation as? NSPrintOperation
 		else { return }
 		
 		if (self.operation != .toPrint) {
+			print("PDF operation finished")
 			guard let url = self.url else {
 				print("ERROR: No PDF file found")
 				return
@@ -143,11 +161,11 @@ class BeatNativePrinting:NSView {
 			callback(self, nil)
 		}
 	}
-	
+
 	func createPageViews() {
 		self.pageViews = []
 		
-		if pagination.titlePage.count > 0 {
+		if pagination.hasTitlePage {
 			// Add title page
 			let titlePageView = BeatTitlePageView(titlePage: pagination.titlePage, settings: self.pagination.settings)
 			pageViews.append(titlePageView)
@@ -227,7 +245,6 @@ class BeatNativePrinting:NSView {
 		let saveDialog = NSSavePanel()
 		saveDialog.allowedFileTypes = ["pdf"]
 		saveDialog.nameFieldStringValue = filename
-		
 		
 		if (self.window != nil) {
 			saveDialog.beginSheetModal(for: self.window!) { value in

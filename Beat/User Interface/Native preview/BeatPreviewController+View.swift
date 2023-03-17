@@ -71,6 +71,8 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	/// When pagination has finished, we'll inform the host document and mark our pagination as done
 	func paginationDidFinish(pages: [BeatPaginationPage]) {
 		self.paginationUpdated = true
+		
+		// Let's tell the delegate this, too
 		self.delegate?.paginationFinished(pages)
 	}
 
@@ -144,6 +146,10 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 					if i < previewView.pageViews.count {
 						// If a page view already exist in the given page number, let's reuse it.
 						pageView = previewView.pageViews[i]
+						
+						var s = pageView.textView!.string
+						if (s.count > 150) { s = s.substring(range: NSMakeRange(0, 150)) }
+						
 						pageView.update(page: page, settings: self.settings)
 					} else {
 						// .. and if not, create a new page view.
@@ -153,9 +159,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 				}
 				
 				// Add title page
-				if pagination.titlePage.count > 0 {
-					previewView.addTitlePage(titlePageContent: pagination.titlePage)
-				}
+				previewView.updateTitlePage(content: pagination.titlePage)
 				
 				// Remove excess views
 				let pageCount = pages.count + ((pagination.titlePage.count > 0) ? 1 : 0)
@@ -241,8 +245,14 @@ final class BeatPreviewView:NSView {
 	}
 	
 	func updatePagePositions() {
+		var views = [BeatPaginationPageView]()
+		if self.titlePage != nil {
+			views.append(self.titlePage!)
+		}
+		views.append(contentsOf: self.pageViews)
+		
 		var y = bottomSpacing
-		for pageView in pageViews {
+		for pageView in views {
 			pageView.frame = NSMakeRect(0, y, pageView.frame.width, pageView.frame.height)
 			y += pageView.frame.height + bottomSpacing
 		}
@@ -266,24 +276,30 @@ final class BeatPreviewView:NSView {
 		self.pageViews.append(page)
 	}
 	
-	func addTitlePage(titlePageContent:[[String: [Line]]]) {
-		if (self.previewController == nil) { return }
-		
-		if (self.titlePage != nil) {
-			print("Updating title page...")
-			// Update title page
-			self.titlePage?.updateTitlePage(titlePageContent)
-		} else {
-			self.titlePage = BeatTitlePageView(previewController: self.previewController, titlePage: titlePageContent, settings: self.previewController!.settings)
-			insertPage(page: self.titlePage!, atIndex: 0)
-		}
-	}
-	func removeTitlePage() {
-		if (self.titlePage == nil) { return }
-		else {
+	func updateTitlePage(content:[[String: [Line]]]) {
+		// If no title page data is provided, let's try to remove any existing title page
+		if content.count == 0 {
+			guard let titlePage = self.titlePage else { return }
+			
+			// Remove from superview and nil
+			titlePage.removeFromSuperview()
 			self.titlePage = nil
-			removePage(at: 0)
+			updatePagePositions()
+			
+			return
 		}
+		
+		// Update or create title page
+		if (self.titlePage != nil) {
+			// Update title page
+			self.titlePage?.updateTitlePage(content)
+		} else {
+			// Create title page
+			self.titlePage = BeatTitlePageView(previewController: self.previewController, titlePage: content, settings: self.previewController!.settings)
+			self.addSubview(self.titlePage!)
+		}
+		
+		updatePagePositions()
 	}
 	
 	func removePage(at idx:Int) {
@@ -296,7 +312,14 @@ final class BeatPreviewView:NSView {
 		if (idx != pageViews.count) {
 			updatePagePositions()
 		}
-			
+	}
+	
+	override func cancelOperation(_ sender: Any?) {
+		guard let owner = window?.windowController?.owner as? Document else {
+			print("No owner")
+			return
+		}
+		owner.cancelOperation(sender)
 	}
 }
 
@@ -353,5 +376,13 @@ final class CenteringScrollView: NSScrollView {
 		
 		let newEvent = NSEvent.init(cgEvent: fixedEvent)
 		super.scrollWheel(with: newEvent!)
+	}
+	
+	override func cancelOperation(_ sender: Any?) {
+		guard let owner = window?.windowController?.owner as? Document else {
+			print("No owner")
+			return
+		}
+		owner.cancelOperation(sender)
 	}
 }

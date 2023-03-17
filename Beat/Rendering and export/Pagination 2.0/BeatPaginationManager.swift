@@ -178,6 +178,9 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	@objc var titlePage:[[String: [Line]]] {
 		return self.finishedPagination?.titlePageContent ?? []
 	}
+	@objc var hasTitlePage:Bool {
+		return (self.titlePage.count > 0)
+	}
 	
 	/// Legacy plugin compatibility
 	@objc var numberOfPages:Int {

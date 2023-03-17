@@ -19,8 +19,8 @@ page {
     margin-top: 30;
 	margin-bottom: 50;
 	
-	default-width-a4: 59ch;
-	default-width-us: 61ch;
+	default-width-a4: 60ch;
+	default-width-us: 62ch;
 	
 	line-height: 12;
 	
@@ -28,8 +28,8 @@ page {
 }
 
 heading {
-    width-a4: 59ch - 2ch;
-    width-us: 61ch - 2ch;
+    width-a4: 60ch - 2ch;
+    width-us: 62ch - 2ch;
     
     margin-top: 2l;
     bold: userSetting(headingStyleBold);
@@ -37,15 +37,15 @@ heading {
 }
 
 action {
-    width-a4: 59ch;
-    width-us: 61ch;
+    width-a4: 60ch;
+    width-us: 62ch;
 
     margin-top: 1l;
 }
 
 centered {
-	width-a4: 59ch;
-	width-us: 61ch;
+	width-a4: 60ch;
+	width-us: 62ch;
 
 	margin-top: 1l;
 	text-align: center;
@@ -113,8 +113,8 @@ dualDialogue {
 }
 
 transition {
-    width-a4: 59ch;
-	width-us: 61ch;
+    width-a4: 60ch;
+	width-us: 62ch;
 	
     margin-top: 1l;
 	
@@ -123,8 +123,8 @@ transition {
 }
 
 lyrics {
-	width-a4: 59ch;
-	width-us: 61ch;
+	width-a4: 60ch;
+	width-us: 62ch;
 	
     margin-top: 1l;
     text-align: center;
@@ -132,8 +132,8 @@ lyrics {
 }
 
 shot {
-	width-a4: 59ch;
-	width-us: 61ch;
+	width-a4: 60ch;
+	width-us: 62ch;
 	
 	bold: true;
 	uppercase: true;

@@ -130,6 +130,10 @@ class BeatPaginationPageView:NSView {
 		
 	}
 	
+	override func cancelOperation(_ sender: Any?) {
+		superview?.cancelOperation(sender)
+	}
+	
 	required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 }
 
@@ -146,6 +150,10 @@ class BeatPageTextView:NSTextView {
 		else { return }
 		
 		previewController.closeAndJumpToRange(line.textRange())
+	}
+	
+	override func cancelOperation(_ sender: Any?) {
+		superview?.cancelOperation(sender)
 	}
 }
 
@@ -266,7 +274,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 			let attrStr = renderer.renderLine(contact)
 			leftColumn.textStorage?.append(attrStr)
 		}
-		
+				
 		// Add the rest on left side
 		for d in self.titlePageLines {
 			let dict = d
@@ -278,6 +286,9 @@ class BeatTitlePageView:BeatPaginationPageView {
 		}
 
 		// Once we've set the content, let's adjust top inset to align text to bottom
+		leftColumn.textContainerInset = NSSize(width: 0, height: 0)
+		rightColumn.textContainerInset = NSSize(width: 0, height: 0)
+		
 		_ = leftColumn.layoutManager!.glyphRange(for: leftColumn.textContainer!)
 		_ = rightColumn.layoutManager!.glyphRange(for: rightColumn.textContainer!)
 		let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
@@ -355,7 +366,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let columnFrame = NSRect(x: pageStyle.marginLeft,
 								 y: textViewFrame.origin.y + textViewFrame.height,
 								 width: textViewFrame.width / 2 - 10,
-								 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom)
+								 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom - BeatPagination.lineHeight())
 		
 		if (leftColumn == nil) {
 			leftColumn = NSTextView(frame: columnFrame)
