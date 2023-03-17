@@ -303,7 +303,7 @@ DQ
                                         </popUpButton>
                                     </subviews>
                                 </customView>
-                                <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="23" horizontalPageScroll="10" verticalLineScroll="23" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="S9U-Dz-uDr">
+                                <scrollView hidden="YES" fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="23" horizontalPageScroll="10" verticalLineScroll="23" verticalPageScroll="10" hasVerticalScroller="NO" usesPredominantAxisScrolling="NO" verticalScrollElasticity="none" translatesAutoresizingMaskIntoConstraints="NO" id="S9U-Dz-uDr">
                                     <rect key="frame" x="13" y="13" width="195" height="117"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <clipView key="contentView" drawsBackground="NO" id="iC6-Fg-QnQ">
@@ -382,7 +382,7 @@ DQ
                                     <rect key="frame" x="12" y="165" width="193" height="5"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 </box>
-                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n4A-bS-eMr">
+                                <textField hidden="YES" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="n4A-bS-eMr">
                                     <rect key="frame" x="11" y="138" width="92" height="16"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <textFieldCell key="cell" lineBreakMode="clipping" title="Custom Styles" id="JRa-aX-aLe">
@@ -410,7 +410,7 @@ DQ
                             <action selector="toggleAdvancedOptions:" target="-2" id="gAv-on-WEj"/>
                         </connections>
                     </button>
-                    <progressIndicator fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" id="1qf-XO-k41">
+                    <progressIndicator maxValue="100" displayedWhenStopped="NO" indeterminate="YES" style="spinning" id="1qf-XO-k41">
                         <rect key="frame" x="160" y="205" width="32" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     </progressIndicator>
