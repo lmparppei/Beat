@@ -129,6 +129,7 @@
 
 - (NSArray<Line*>*)blockForRange:(NSRange)range;
 - (NSArray<Line*>*)blockFor:(Line*)line;
+- (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue;
 
 - (NSArray*)lineIdentifiers:(NSArray<Line*>*)lines;
 - (void)setIdentifiers:(NSArray*)uuids;

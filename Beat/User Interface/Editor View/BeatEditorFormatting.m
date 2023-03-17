@@ -60,6 +60,10 @@
 #define DUAL_DIALOGUE_INDENT 22 * CHR_WIDTH
 #define DD_RIGHT 59 * CHR_WIDTH
 
+#define DD_BLOCK_INDENT 0.0
+#define DD_BLOCK_CHARACTER_INDENT 9 * CHR_WIDTH
+#define DD_BLOCK_PARENTHETICAL_INDENT 6 * CHR_WIDTH
+
 static NSString *underlinedSymbol = @"_";
 static NSString *strikeoutSymbolOpen = @"{{";
 static NSString *strikeoutSymbolClose = @"}}";
@@ -218,7 +222,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (_delegate.disableFormatting) {
 		// Only add bare-bones stuff when formatting is disabled
 		[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor forCharacterRange:line.range];
-		[self renderBackgroundForLine:line clearFirst:NO];
 		
 		NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleFor:nil];
 		[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
@@ -321,7 +324,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		//[attributes setObject:NSColor.clearColor forKey:NSBackgroundColorAttributeName];
 		[textStorage addAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:range];
 	}
-	
+		
 	// Add selected attributes
 	if (range.length > 0) {
 		// Line does have content
@@ -332,6 +335,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			range = NSMakeRange(range.location, range.length + 1);
 			[textStorage addAttributes:attributes range:range];
 		}
+	}
+	
+	// Dual dialogue
+	if (line.isDialogue || line.isDualDialogue) {
+		// [self renderDualDialogueForLine:line paragraphStyle:paragraphStyle];
 	}
 	
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
@@ -364,12 +372,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	[self applyInlineFormatting:line withAttributes:attributes];
 	[self setTextColorFor:line];
-	
-	// Render backgrounds according to text attributes
-	// This is AMAZINGLY slow
-	if (!firstTime && line.string.length) {
-		// [self renderBackgroundForLine:line clearFirst:NO];
-	}
 } }
 
 
@@ -423,42 +425,110 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 }
 
-#pragma mark - Text backgrounds (for revisions + tagging)
+#pragma mark - Render dual dialogue
 
-- (void)renderBackgroundForLines {
-	for (Line* line in self.delegate.lines) {
-		[self renderBackgroundForLine:line clearFirst:YES];
+/// Note that this method modifies the `paragraph` pointer
+- (void)renderDualDialogueForLine:(Line*)line paragraphStyle:(NSMutableParagraphStyle*)paragraph
+{
+	return;
+/*
+	// An die Nachgeborenen.
+	// For future generations.
+	 
+	bool isDualDialogue = false;
+	NSArray* dialogueBlocks = [self.delegate.parser dualDialogueFor:line isDualDialogue:&isDualDialogue];
+	
+	if (!isDualDialogue) return;
+	
+	NSArray<Line*>* left = dialogueBlocks[0];
+	NSArray<Line*>* right = dialogueBlocks[1];
+	
+	NSDictionary* attrs = [self.delegate.textStorage attributesAtIndex:left.firstObject.position effectiveRange:nil];
+	NSMutableParagraphStyle* ddPStyle = [attrs[NSParagraphStyleAttributeName] mutableCopy];
+		
+	NSTextTable* textTable;
+	
+	if (ddPStyle == nil) ddPStyle = paragraph;
+	if (ddPStyle.textBlocks.count > 0) {
+		NSTextTableBlock* b = ddPStyle.textBlocks.firstObject;
+		if (b != nil) textTable = b.table;
 	}
+	
+	ddPStyle.tailIndent = 0.0;
+	
+	if (textTable == nil) {
+		textTable = [NSTextTable.alloc init];
+		textTable.numberOfColumns = 2;
+		[textTable setContentWidth:100.0 type:NSTextBlockPercentageValueType];
+	}
+	
+	CGFloat indent = 0.0;
+	if (line.isAnyCharacter) {
+		indent = DD_BLOCK_CHARACTER_INDENT;
+	}
+	else if (line.isAnyParenthetical) {
+		indent = DD_BLOCK_PARENTHETICAL_INDENT;
+	}
+	
+	ddPStyle.headIndent = indent;
+	ddPStyle.firstLineHeadIndent = indent;
+	ddPStyle.tailIndent = 0.0;
+	[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:ddPStyle range:line.range];
+	
+	NSTextTableBlock* leftCell = [[NSTextTableBlock alloc] initWithTable:textTable startingRow:0 rowSpan:1 startingColumn:0 columnSpan:1];
+	NSTextTableBlock* rightCell = [[NSTextTableBlock alloc] initWithTable:textTable startingRow:0 rowSpan:1 startingColumn:1 columnSpan:1];
+	
+	[leftCell setContentWidth:50.0 type:NSTextBlockPercentageValueType];
+	[rightCell setContentWidth:50.0 type:NSTextBlockPercentageValueType];
+		
+	NSRange leftRange = NSMakeRange(left.firstObject.position, NSMaxRange(left.lastObject.range) - left.firstObject.position);
+	NSRange rightRange = NSMakeRange(right.firstObject.position, NSMaxRange(right.lastObject.range) - right.firstObject.position);
+		
+	[self.delegate.textStorage enumerateAttribute:NSParagraphStyleAttributeName inRange:leftRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		NSMutableParagraphStyle* pStyle = value;
+		pStyle = pStyle.mutableCopy;
+		
+		pStyle.textBlocks = @[leftCell];
+		pStyle.tailIndent = 0.0;
+		
+		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
+	}];
+	[self.delegate.textStorage enumerateAttribute:NSParagraphStyleAttributeName inRange:rightRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		
+		NSMutableParagraphStyle* pStyle = value;
+		pStyle = pStyle.mutableCopy;
+		pStyle.textBlocks = @[rightCell];
+		
+		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:range];
+	}];
+
+	*/
+	/*
+	
+	
+	for (Line* l in left) {
+		NSLog(@" --> %@", l);
+		NSDictionary* a = [self.delegate.textStorage attributesAtIndex:l.position effectiveRange:nil];
+		NSMutableParagraphStyle* pStyle = [a[NSParagraphStyleAttributeName] mutableCopy];
+		
+		if (pStyle.textBlocks.firstObject != leftCell) pStyle.textBlocks = @[leftCell];
+		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:l.range];
+	}
+	
+	
+	for (Line* l in right) {
+		NSLog(@" --> %@", l);
+		NSDictionary* a = [self.delegate.textStorage attributesAtIndex:l.position effectiveRange:nil];
+		NSMutableParagraphStyle* pStyle = [a[NSParagraphStyleAttributeName] mutableCopy];
+		
+		if (pStyle.textBlocks.firstObject != rightCell) pStyle.textBlocks = @[rightCell];
+		[self.delegate.textStorage addAttribute:NSParagraphStyleAttributeName value:pStyle range:line.range];
+	}
+	*/
 }
 
-- (void)renderBackgroundForLine:(Line*)line clearFirst:(bool)clear {
-	NSLayoutManager *layoutMgr = _delegate.layoutManager;
-	NSTextStorage *textStorage = _delegate.textStorage;
-	
-	//[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 
-	if (clear) {
-		// First clear the background attribute if needed
-		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
-	}
-	
-	[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@0 forCharacterRange:line.range];
-	
-	if (_delegate.showRevisions) {
-		// Enumerate attributes
-		[textStorage enumerateAttributesInRange:line.textRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			if (attrs[BeatRevisions.attributeKey] && _delegate.showRevisions) {
-				BeatRevisionItem *revision = attrs[BeatRevisions.attributeKey];
-				
-				if (revision.type == RevisionRemovalSuggestion) {
-					[layoutMgr addTemporaryAttribute:NSStrikethroughColorAttributeName value:[BeatColors color:@"red"] forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSStrikethroughStyleAttributeName value:@1 forCharacterRange:range];
-					[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:[[BeatColors color:@"red"] colorWithAlphaComponent:0.125] forCharacterRange:range];
-				}
-			}
-		}];
-	}
-}
+#pragma mark - Text color
 
 - (void)setTextColorFor:(Line*)line {
 	// Foreground color attributes (NOTE: These are TEMPORARY attributes)

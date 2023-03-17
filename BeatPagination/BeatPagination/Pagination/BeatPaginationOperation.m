@@ -959,6 +959,9 @@
  to be added on pages.
  */
 - (void)addBlockOnCurrentPage:(NSArray<Line*>*)block currentPage:(BeatPage*)currentPage {
+    [self addBlockOnCurrentPage:block currentPage:currentPage force:false];
+}
+- (void)addBlockOnCurrentPage:(NSArray<Line*>*)block currentPage:(BeatPage*)currentPage force:(bool)force {
 	// Do nothing if the thread is killed
 	if (self.cancelled) return;
 
@@ -1186,7 +1189,7 @@
 #pragma mark - Reset page
  
 - (void)resetPage:(BeatPage*)currentPage onCurrentPage:(NSArray*)prevPageItems onNextPage:(NSArray*)nextPageItems {
-	// Do nothing if the current thread is cancelled
+    // Do nothing if the current thread is cancelled
 	if (self.cancelled) return;
     
 	// Global page reset
@@ -1198,7 +1201,7 @@
 	// Let's run the next page block through height calculator, so its line objects get the correct height.
 	// NSInteger nextPageHeight = [self heightForBlock:nextPageItems];
 	// if (nextPageItems.count) [currentPage addBlock:nextPageItems height:nextPageHeight];
-	
+    
 	if (nextPageItems.count > 0) {
 		[self addBlockOnCurrentPage:nextPageItems currentPage:currentPage];
 	}

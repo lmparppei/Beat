@@ -2284,6 +2284,47 @@ static NSDictionary* patterns;
 
 #pragma mark - Element blocks
 
+- (NSArray<NSArray<Line*>*>*)dualDialogueFor:(Line*)line isDualDialogue:(bool*)isDualDialogue {
+    if (!line.isDialogue && !line.isDualDialogue) return @[];
+    
+    NSMutableArray<Line*>* left = NSMutableArray.new;
+    NSMutableArray<Line*>* right = NSMutableArray.new;
+    
+    NSInteger i = [self indexOfLine:line];
+    if (i == NSNotFound) return @[];
+    
+    NSArray* lines = self.safeLines;
+    
+    while (i >= 0) {
+        Line* l = lines[i];
+        
+        // Break at first normal character
+        if (l.type == character) break;
+        
+        i--;
+    }
+    
+    // Iterate forward
+    for (NSInteger j = i; j < lines.count; j++) {
+        Line* l = lines[j];
+        
+        // Break when encountering a character cue (which is not the first line), and whenever seeing anything else than dialogue.
+        if (j > i && l.type == character) break;
+        else if (!l.isDialogue && !l.isDualDialogue && l.type != empty) break;
+        
+        if (l.isDialogue) [left addObject:l];
+        else [right addObject:l];
+    }
+    
+    // Trim left & right
+    while (left.firstObject.type == empty && left.count > 0) [left removeObjectAtIndex:0];
+    while (right.lastObject.length == 0 && right.count > 0) [right removeObjectAtIndex:right.count-1];
+    
+    *isDualDialogue = (left.count > 0 && right.count > 0);
+    
+    return @[left, right];
+}
+
 - (NSArray<Line*>*)blockForRange:(NSRange)range {
 	NSMutableArray *blockLines = NSMutableArray.new;
 	NSArray *lines;
