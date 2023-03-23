@@ -172,12 +172,16 @@
 	@try {
 		NSRect frame = (NSRect){ x, y, width, height };
 		[self setFrame:frame display:YES];
+		
 	}
 	@catch (NSException* error) {
 		[self.host log:@"Error setting frame. Use .setFrame(x, y, width, height), not .setFrame(frame)"];
 	}
 }
 
+- (NSRect)screenFrame {
+	return self.screen.frame;
+}
 - (NSSize)screenSize {
 	return self.screen.frame.size;
 }

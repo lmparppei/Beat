@@ -21,6 +21,7 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 - (CGRect)getFrame;
 - (CGRect)getWindowFrame;
 - (NSSize)screenSize;
+- (NSRect)screenFrame;
 - (void)setTitle:(NSString*)title;
 - (void)setHTML:(NSString*)html;
 - (void)setRawHTML:(NSString*)html;
