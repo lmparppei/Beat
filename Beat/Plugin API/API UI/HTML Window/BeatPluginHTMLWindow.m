@@ -39,7 +39,7 @@
 	
 	// Message handlers
 	if (@available(macOS 11.0, *)) {
-		[config.userContentController addScriptMessageHandlerWithReply:self.host contentWorld:WKContentWorld.pageWorld name:NSUUID.new.UUIDString];
+		[config.userContentController addScriptMessageHandlerWithReply:self.host contentWorld:WKContentWorld.pageWorld name:@"callAndWait"];
 	}
 	
 	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
