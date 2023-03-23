@@ -219,6 +219,10 @@
 					if (!logCall) window.webkit.messageHandlers.call.postMessage(value.toString())
 					else window.webkit.messageHandlers.callAndLog.postMessage(value.toString())
 				}
+				callAndWait: function(value, callback) {
+					// We convert the value into a string, just as a safety measure
+					if (!logCall) window.webkit.messageHandlers.callAndWait.postMessage(value.toString(), callback)
+				}
 			};
 		
 			function sendBeatData() {

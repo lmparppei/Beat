@@ -1712,21 +1712,8 @@
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message replyHandler:(void (^)(id _Nullable, NSString * _Nullable))replyHandler {
-	if ([message.name isEqualToString:@"log"]) {
-		[self log:message.body];
-		replyHandler(nil, nil);
-	}
-	else if (_context == nil) {
-		replyHandler(nil, @"Plugin error: No context available. The plugin might not be resident.");
-	}
-	
-	if ([message.name isEqualToString:@"call"]) {
+	if ([message.name isEqualToString:@"callAndWait"]) {
 		JSValue* value = [_context evaluateScript:message.body];
-		replyHandler(value, nil);
-	}
-	else if ([message.name isEqualToString:@"callAndLog"]) {
-		JSValue* value = [_context evaluateScript:message.body];
-		[self log:[NSString stringWithFormat:@"Evaluate: %@", message.body]];
 		replyHandler(value, nil);
 	}
 }
