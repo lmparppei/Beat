@@ -38,6 +38,10 @@
 	config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
 	
 	// Message handlers
+	if (@available(macOS 11.0, *)) {
+		[config.userContentController addScriptMessageHandlerWithReply:self.host contentWorld:WKContentWorld.pageWorld name:NSUUID.new.UUIDString];
+	}
+	
 	[config.userContentController addScriptMessageHandler:self.host name:@"sendData"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"call"];
 	[config.userContentController addScriptMessageHandler:self.host name:@"log"];

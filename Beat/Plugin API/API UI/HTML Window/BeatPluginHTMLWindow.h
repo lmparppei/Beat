@@ -33,7 +33,7 @@ JSExportAs(setFrame, - (void)setPositionX:(CGFloat)x y:(CGFloat)y width:(CGFloat
 - (bool)isFullScreen;
 @end
 
-@protocol PluginWindowHost <NSObject, WKScriptMessageHandler>
+@protocol PluginWindowHost <NSObject, WKScriptMessageHandler, WKScriptMessageHandlerWithReply>
 @property (readonly) NSString *pluginName;
 - (void)gangWithDocumentWindow:(NSWindow*)window;
 - (void)detachFromDocumentWindow:(NSWindow*)window;
