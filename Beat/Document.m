@@ -1657,7 +1657,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (_lastChangedRange.length > 5) [self ensureLayout];
 	
 	// Update preview screen
-	[self.preview updatePreviewInSync:NO];
+	if (!self.nativeRendering) [self.preview updatePreviewInSync:NO];
 	
 	// Update any running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
@@ -2957,6 +2957,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Preview
 
 - (void)invalidatePreview {
+	if (self.nativeRendering) return;
+	
 	// Mark the current preview as invalid
 	self.preview.previewUpdated = NO;
 	
@@ -2976,12 +2978,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)updatePreview {
+	if (self.nativeRendering) return;
 	[self.preview updatePreviewInSync:NO];
 }
 
 - (IBAction)preview:(id)sender
 {
-	if (NATIVE_RENDERING) {
+	if (self.nativeRendering) {
 		if (self.currentTab != _nativePreviewTab) {
 			[self.previewController renderOnScreen];
 			[self showTab:_nativePreviewTab];
