@@ -214,9 +214,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length--;
 	[textStorage addAttribute:BeatRepresentedLineKey value:line range:fullRange];
 	
-	// Don't overwrite revision attribute
+	// Don't overwrite some attributes, such as represented line, revisions or reviews
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
-	// Don't overwrite represented line attribute
+	[attributes removeObjectForKey:BeatReview.attributeKey];
 	[attributes removeObjectForKey:BeatRepresentedLineKey];
 	
 	if (_delegate.disableFormatting) {
