@@ -1209,6 +1209,7 @@
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndLog"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
+	
 	if (@available(macOS 11.0, *)) {
 		[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndWait" contentWorld:WKContentWorld.pageWorld];
 	}
@@ -1694,6 +1695,14 @@
 
 
 #pragma mark - WebKit controller
+
+- (bool)promisesAvailable {
+	if (@available(macOS 11.0, *)) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
 - (void)userContentController:(nonnull WKUserContentController *)userContentController didReceiveScriptMessage:(nonnull WKScriptMessage *)message
 {

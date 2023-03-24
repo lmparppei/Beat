@@ -145,6 +145,9 @@
 /// Crash the app
 - (void)crash;
 
+/// Returns `true` when you can use promises in JS
+- (bool)promisesAvailable;
+
 // Revisions
 /// Returns all the revised ranges in attributed text
 - (NSDictionary*)revisedRanges;
