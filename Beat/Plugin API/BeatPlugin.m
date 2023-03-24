@@ -1209,6 +1209,9 @@
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"call"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndLog"];
 	[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"log"];
+	if (@available(macOS 11.0, *)) {
+		[window.webview.configuration.userContentController removeScriptMessageHandlerForName:@"callAndWait" contentWorld:WKContentWorld.pageWorld];
+	}
 	
 	[window.webview removeFromSuperview];
 }
@@ -1714,7 +1717,17 @@
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message replyHandler:(void (^)(id _Nullable, NSString * _Nullable))replyHandler {
 	if ([message.name isEqualToString:@"callAndWait"]) {
 		JSValue* value = [_context evaluateScript:message.body];
-		replyHandler(value, nil);
+		
+		id returnValue;
+		if (value.isArray) returnValue = value.toArray;
+		else if (value.isNumber) returnValue = value.toNumber;
+		else if (value.isObject) returnValue = value.toDictionary;
+		else if (value.isString) returnValue = value.toString;
+		else if (value.isDate) returnValue = value.toDate;
+		else returnValue = nil;
+
+		if (returnValue) replyHandler(returnValue, nil);
+		else replyHandler(nil, @"Could not convert return value to JSON.");
 	}
 }
 

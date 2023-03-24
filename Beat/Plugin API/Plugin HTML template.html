@@ -218,10 +218,27 @@
 					// We convert the value into a string, just as a safety measure
 					if (!logCall) window.webkit.messageHandlers.call.postMessage(value.toString())
 					else window.webkit.messageHandlers.callAndLog.postMessage(value.toString())
-				}
-				callAndWait: function(value, callback) {
+				},
+				callAndWait: function(value) {
 					// We convert the value into a string, just as a safety measure
-					if (!logCall) window.webkit.messageHandlers.callAndWait.postMessage(value.toString(), callback)
+					return window.webkit.messageHandlers.callAndWait.postMessage(value.toString())
+				},
+				callback: function(value, method, errorMethod) {
+					// We convert the value into a string, just as a safety measure
+					var promise = window.webkit.messageHandlers.callAndWait.postMessage(value.toString())
+					promise.then(
+						(result) => {
+							method(result)
+						},
+						(error) => {
+							if (errorMethod != null) {
+								errorMethod()
+							}
+							else {
+								console.log("Error returning value")
+							}
+						}
+					)
 				}
 			};
 		
