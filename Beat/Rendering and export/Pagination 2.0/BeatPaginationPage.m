@@ -159,8 +159,8 @@
 		BeatPaginationBlock* block = _blocks[i];
 		
 		for (NSInteger j=0; j<block.lines.count; j++) {
-			Line* line = block.lines[j];
-			if ([line.uuid isEqualTo:line.uuid]) {
+			Line* l = block.lines[j];
+			if ([l.uuid isEqualTo:line.uuid]) {
 				return i;
 			}
 		}

@@ -233,6 +233,12 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	}
 	
 	func heightForScene(_ scene:OutlineScene) -> CGFloat {
-		return self.finishedPagination?.height(for: scene) ?? 0.0
+		guard let height = self.finishedPagination?.height(for: scene)
+		else {
+			print("No height available for scene:", scene)
+			return 0.0
+		}
+		
+		return height
 	}
 }

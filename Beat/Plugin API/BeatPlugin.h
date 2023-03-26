@@ -40,6 +40,7 @@
 @class BeatExportSettings;
 @class BeatPluginControlMenu;
 @class BeatPluginControlMenuItem;
+@class BeatPaginationManager;
 
 @protocol BeatPluginExports <JSExport>
 @property (readonly) Line* currentLine;
@@ -119,7 +120,13 @@
 
 - (ContinuousFountainParser*)parser:(NSString*)string;
 
+/// Returns old-style paginator object
 - (BeatPaginator*)paginator:(NSArray*)lines;
+/// Returns a NEW pagination object
+- (BeatPaginationManager*)pagination;
+/// Returns the CURRENT pagination in document
+- (BeatPaginationManager*)currentPagination;
+
 
 - (void)reformat:(Line*)line;
 

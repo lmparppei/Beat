@@ -2279,6 +2279,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	});
 }
 
+
 - (IBAction)reformatRange:(id)sender {
 	if (self.textView.selectedRange.length > 0) {
 		NSArray *lines = [self.parser linesInRange:self.textView.selectedRange];
@@ -2970,7 +2971,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)previewDidFinish {
-	// Tell plugins the preview has been finished
+	// Tell plugins the preview has been finished (called by preview controller)
 	for (NSString *name in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[name];
 		[plugin previewDidFinish];

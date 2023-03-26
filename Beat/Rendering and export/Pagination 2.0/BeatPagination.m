@@ -469,25 +469,27 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	
 	NSInteger blockIndex = [page blockIndexForLine:scene.line];
 	
+	NSLog(@" • block index: %lu (%@)", blockIndex, scene.line);
+	
 	for (NSInteger i = pageIndex; i < self.pages.count; i++) {
 		BeatPaginationPage* page = self.pages[i];
-		
+				
 		for (NSInteger j = blockIndex; j < page.blocks.count; j++) {
 			BeatPaginationBlock* block = page.blocks[j];
-			if (block.type != heading) {
+			if (block.type != heading || j == blockIndex) {
 				height += block.height;
 				if (numberOfBlocks == 0) height -= block.topMargin; // No top margin for first block
 				
 				numberOfBlocks += 1;
 			} else {
-				// Next heading block was encountered
+				// Next heading found, so we'll end the calculation here.
 				return height;
 			}
 		}
 		blockIndex = 0;
 	}
 	
-	return 0.0;
+	return height;
 }
 
 /*

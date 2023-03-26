@@ -120,6 +120,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		
 		// Check if pagination is up to date
 		if !paginationUpdated {
+			print("Pagination IS NOT UPDATED")
 			createPreview(changeAt: self.lastChangeAt, sync: true)
 		}
 				
@@ -188,11 +189,13 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 				let textView = pageView.textView
 			else { continue }
 			
-			// The range is not represented by this page
-			if !NSLocationInRange(range.location, page.representedRange()) { continue }
+			// If the range is not represented by this page, continue
+			if !NSLocationInRange(range.location, page.representedRange()) {
+				continue
+			}
 			
-			// Get range in *attributed string* for given location in editor text
-			let range = page.range(forLocation: range.location)
+			let range = page.range(forLocation: range.location) // Ask for the range in current attributed string
+			
 			if range.location != NSNotFound {
 				guard let lm = textView.layoutManager else { return }
 
