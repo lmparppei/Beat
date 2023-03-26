@@ -16,6 +16,7 @@ import Foundation
 	@objc var lastPageHeight:CGFloat { get }
 
 	@objc func heightForScene(_ scene:OutlineScene) -> CGFloat
+	@objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int]
 	@objc func paginate(lines: [Line])
 }
 
@@ -197,6 +198,32 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		if eights == 8 {
 			pageCount += 1
 			eights = 0
+		}
+		
+		return [pageCount, eights]
+	}
+	
+	@objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int] {
+		let height = self.heightForScene(scene)
+		return heightToEights(height)
+	}
+	
+	@objc func heightToEights(_ height:CGFloat) -> [Int] {
+		if height == 0 { return [0,0] }
+		
+		var pageCount = Int(floor(height / self.maxPageHeight))
+		let remainder = height - (CGFloat(pageCount) * self.maxPageHeight)
+		var eights = Int(round((remainder / self.maxPageHeight) / (1.0/8.0)))
+		
+		// It's almost a full page, so let's report it so
+		if eights == 8 {
+			pageCount += 1
+			eights = 0
+		}
+		
+		// The shortest scene ever will still be 1/8 pages
+		if pageCount == 0 && eights == 0 {
+			eights = 1
 		}
 		
 		return [pageCount, eights]
