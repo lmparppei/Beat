@@ -561,9 +561,26 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}];
 	
 	// Enumerate note ranges and set it as COMMENT color
-	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[self setForegroundColor:themeManager.commentColor line:line range:range];
-	}];
+//	[line.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+//		[self setForegroundColor:themeManager.commentColor line:line range:range];
+//	}];
+	
+	NSDictionary* notes = line.noteContentsAndRanges;
+	for (NSNumber* r in notes.allKeys) {
+		NSString* content = notes[r];
+		NSRange range = r.rangeValue;
+		
+		NSColor* color = themeManager.commentColor;
+		
+		if ([content containsString:@":"]) {
+			NSInteger i = [content rangeOfString:@":"].location;
+			NSString* colorName = [content substringToIndex:i];
+			NSColor* c = [BeatColors color:colorName];
+			if (c != nil) color = c;
+		}
+		
+		[self setForegroundColor:color line:line range:range];
+	}
 	
 	// Enumerate title page ranges
 	if (line.isTitlePage && line.titleRange.length > 0) {
@@ -586,6 +603,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		if (color) [self setForegroundColor:color line:line range:markerRange];
 	}
+	
 }
 
 - (void)stylize:(NSString*)key value:(id)value line:(Line*)line range:(NSRange)range formattingSymbol:(NSString*)sym {
