@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "Storybeat.h"
+#import "BeatNoteData.h"
 
 typedef NS_ENUM(NSUInteger, LineType) {
     empty = 0,
@@ -106,6 +107,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 - (NSMutableDictionary<NSNumber*, NSString*>*)noteContentsAndRanges;
 /// Returns note content strings as an array
 - (NSArray*)noteContents;
+- (NSArray*)noteData;
 /// Returns the **last** available range adn note with given prefix  (`[range, content]`)
 - (NSArray*)contentAndRangeForLastNoteWithPrefix:(NSString*)string;
 

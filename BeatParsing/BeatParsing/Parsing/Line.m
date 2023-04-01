@@ -653,6 +653,64 @@
     else return strings;
 }
 
+- (NSArray*)noteData {
+    __block NSMutableArray<BeatNoteData*>* noteData = NSMutableArray.new;
+    
+    if (self.noteInIndices.count) {
+        NSRange range = NSMakeRange(0, self.noteInIndices.count);
+        NSString *noteIn = [self.string substringToIndex:self.noteInIndices.count];
+        if ([noteIn containsString:@"]]"]) noteIn = [noteIn substringToIndex:self.noteInIndices.count - 2];
+        
+        [noteData addObject:[BeatNoteData withNote:noteIn range:range]];
+    }
+    
+    if (self.noteOutIndices.count) {
+        NSRange range = NSMakeRange(self.noteOutIndices.firstIndex, self.noteOutIndices.count);
+        NSString* noteOut = [self.string substringFromIndex:self.noteOutIndices.firstIndex];
+        if ([noteOut containsString:@"[["] && noteOut.length > 2) noteOut = [noteOut substringFromIndex:2];
+        else noteOut = @"";
+        
+        if (range.length > 0 && noteOut != nil) {
+            [noteData addObject:[BeatNoteData withNote:noteOut range:range]];
+        }
+    }
+    
+    [self.noteRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        if (range.length <= @"[[".length * 2) return;
+        
+        NSInteger inspectedRange = -1;
+        NSRange contentRange = NSMakeRange(0, 0);
+        
+        for (NSInteger i = range.location; i<NSMaxRange(range); i++) {
+            unichar c = [self.string characterAtIndex:i];
+            
+            if (c == '[') {
+                inspectedRange += 1;
+                
+                if (inspectedRange == 1) {
+                    // A beginning of a new note
+                    contentRange.location = i + 1;
+                }
+            }
+            
+            else if (c == ']' && inspectedRange > 0) {
+                contentRange.length = i - contentRange.location;
+                inspectedRange = -1;
+                
+                NSString* string = [self.string substringWithRange:contentRange];
+                if (string.length > 0) {
+                    NSRange actualRange = NSMakeRange(contentRange.location - 2, contentRange.length + 4);
+                    
+                    [noteData addObject:[BeatNoteData withNote:string range:actualRange]];
+                }
+            }
+        }
+    }];
+    
+    
+    return noteData;
+}
+
 #pragma mark Centered
 
 /// Returns TRUE if the line is *actually* centered.
