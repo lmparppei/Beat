@@ -216,16 +216,16 @@
 				},
 				call: function(value, logCall = false) {
 					// We convert the value into a string, just as a safety measure
-					if (!logCall) window.webkit.messageHandlers.call.postMessage(value.toString())
-					else window.webkit.messageHandlers.callAndLog.postMessage(value.toString())
+					if (!logCall) window.webkit.messageHandlers.call.postMessage(evalToString(value))
+					else window.webkit.messageHandlers.callAndLog.postMessage(evalToString(value))
 				},
 				callAndWait: function(value) {
 					// We convert the value into a string, just as a safety measure
-					return window.webkit.messageHandlers.callAndWait.postMessage(value.toString())
+					return window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value))
 				},
 				callback: function(value, method, errorMethod) {
 					// We convert the value into a string, just as a safety measure
-					var promise = window.webkit.messageHandlers.callAndWait.postMessage(value.toString())
+					var promise = window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value))
 					promise.then(
 						(result) => {
 							method(result)
@@ -241,6 +241,24 @@
 					)
 				}
 			};
+			
+			function evalToString (value) {
+				// It's a string, do nothing
+				if (value instanceof String || typeof value === 'string') {
+					return value
+				}
+				
+				if (value instanceof Function || typeof value === 'function') {
+					// We'll make the value a self-executing function
+					value = "(" + value.toString() + ")()"
+				} else {
+					value = value.toString()
+				}
+				
+				Beat.log("value" + value)
+				
+				return value
+			}
 		
 			function sendBeatData() {
 				let inputs = document.querySelectorAll("[rel='beat']");
