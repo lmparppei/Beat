@@ -214,48 +214,73 @@
 				closeAndSendData: function() {
 					sendBeatData();
 				},
-				call: function(value, logCall = false) {
+				call: function(value, ...parameters) {
 					// We convert the value into a string, just as a safety measure
-					if (!logCall) window.webkit.messageHandlers.call.postMessage(evalToString(value))
-					else window.webkit.messageHandlers.callAndLog.postMessage(evalToString(value))
+					window.webkit.messageHandlers.call.postMessage(evalToString(value, parameters))
 				},
-				callAndWait: function(value) {
+				callAndWait: function(value, ...parameters) {
 					// We convert the value into a string, just as a safety measure
-					return window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value))
+					return window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value, parameters))
 				},
-				callback: function(value, method, errorMethod) {
+				callback: function(value, param1, param2) {
+					let method
+					let parameters
+					
+					if (param1 instanceof Function || typeof param1 === 'function') {
+						method = param1
+						parameters = param2
+					}
+					else {
+						parameters = param1
+						method = param2
+					}
+					
 					// We convert the value into a string, just as a safety measure
-					var promise = window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value))
+					var promise = window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value, parameters))
 					promise.then(
 						(result) => {
 							method(result)
 						},
 						(error) => {
-							if (errorMethod != null) {
-								errorMethod()
-							}
-							else {
-								console.log("Error returning value")
-							}
+							console.log("Error returning value", error)
 						}
 					)
 				}
 			};
 			
-			function evalToString (value) {
-				// It's a string, do nothing
+			function evalToString (value, parameters) {
+				// It's a string, do nothing, we'll just eval it
 				if (value instanceof String || typeof value === 'string') {
 					return value
 				}
 				
 				if (value instanceof Function || typeof value === 'function') {
 					// We'll make the value a self-executing function
-					value = "(" + value.toString() + ")()"
+					let params = ""
+										
+					// Handle parameters if needed
+					if (parameters != null) {
+						// Convert parameters to arguments by stringifying them
+						for (const p of parameters) {
+							// JS doesn't fucking care for my types, so let's misuse it.
+							let pStr = p
+							
+							// Why the fuck do we need this? instanceof and typeof seem to return different values at times, so both have to be checked. Sigh.
+							if (p instanceof String || p instanceof Array || p instanceof Object ||
+								typeof p === "string" || typeof p === "array" || typeof p === Object) {
+								pStr = JSON.stringify(pStr)
+							}
+							
+							// Add to string and add commas
+							params += pStr
+							if (p != parameters[parameters.length - 1]) params += ',';
+						}
+					}
+					
+					value = "(" + value.toString() + ")(" + params + ")"
 				} else {
 					value = value.toString()
 				}
-				
-				Beat.log("value" + value)
 				
 				return value
 			}
