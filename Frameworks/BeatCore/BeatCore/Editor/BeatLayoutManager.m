@@ -24,9 +24,11 @@
 #if TARGET_OS_IOS
 #define BXPoint CGPoint
 #define BXRectFill UIRectFill
+#define BXBezierPath UIBezierPath
 #else
 #define BXPoint NSPoint
 #define BXRectFill NSRectFill
+#define BXBezierPath NSBezierPath
 #endif
 
 @implementation BeatLayoutManager
@@ -61,9 +63,113 @@
 		
 	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
 	
-	[self drawSceneNumberForGlyphRange:glyphsToShow charRange:charRange];
-	//[self drawDisclosureForRange:glyphsToShow charRange:charRange];
+    BXTextView* textView = self.editorDelegate.getTextView;
+#if TARGET_OS_IOS
+    CGSize inset = CGSizeMake(textView.textContainerInset.left, textView.textContainerInset.top);
+#else
+    CGSize inset = textView.textContainerInset;
+#endif
+    
+    // Enumerate lines in drawn range
+    [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+        Line* line = (Line*)value;
+        if (line == nil) return;
+        
+        // Do nothing if this line is not a marker or a heading
+        if (line.markerRange.length == 0 && line.type != heading && line.beats.count == 0) return;
+        
+        // Get range for the first character. For headings and markers we won't need anything else.
+        NSRange r = NSMakeRange(line.position, 1);
+        if (self.editorDelegate.hideFountainMarkup) {
+            // If the editor hides Fountain markup, there's a chance that the line is hidden (if using a formatting character, ie. ".INT. SOMETHING"
+            if (line.length > 1) r.location += 1;
+            else r = line.range;
+        }
+        
+        NSRange lineRange = [self glyphRangeForCharacterRange:r actualCharacterRange:nil];
+        CGRect boundingRect = [self boundingRectForGlyphRange:lineRange inTextContainer:self.textContainers.firstObject];
+
+        // Actual rect position
+        CGRect rect = CGRectMake(inset.width + boundingRect.origin.x, inset.height + boundingRect.origin.y, boundingRect.size.width, boundingRect.size.height);
+        
+        // Draw scene numbers
+        if (line.type == heading) {
+            [self drawSceneNumberForLine:line rect:rect inset:inset];
+        }
+        
+        // Draw markers
+        if (line.markerRange.length > 0) {
+            [self drawMarkerForLine:line rect:rect inset:inset];
+        }
+                
+        if (line.beats.count > 0) {
+            [self drawBeat:rect inset:inset];
+        }
+
+    }];
+    
+	//[self drawSceneNumberForGlyphRange:glyphsToShow charRange:charRange];
+    //[self drawMarkerForGlyphRange:glyphsToShow charRange:charRange];
+    //[self drawDisclosureForRange:glyphsToShow charRange:charRange];
+    
 	[self drawRevisionMarkers:glyphsToShow];
+}
+
+- (void)drawBeat:(CGRect)rect inset:(CGSize)inset {
+    BXBezierPath* path = BXBezierPath.bezierPath;
+    NSLog(@"doc width %f", _editorDelegate.documentWidth);
+    CGFloat m = 16.0;
+    CGFloat x = (inset.width + _editorDelegate.documentWidth) - 45.0;
+
+    CGFloat y = rect.origin.y + 2.0;
+    CGFloat h = rect.size.height - 2.0;
+
+    [path moveToPoint:NSMakePoint(x, y + h / 2)];
+    [path lineToPoint:NSMakePoint(x + m * .25, y + h / 2)];
+    [path lineToPoint:NSMakePoint(x + m * .45, y + 1.0)];
+    [path lineToPoint:NSMakePoint(x + m * .55, y + h - 1.0)];
+    [path lineToPoint:NSMakePoint(x + m * .75, y + h / 2)];
+    [path lineToPoint:NSMakePoint(x + m * 1.0, y + h / 2)];
+    
+    path.lineJoinStyle = NSLineJoinStyleRound;
+    path.lineCapStyle = NSLineCapStyleRound;
+    path.lineWidth = 2.0;
+    
+    [BeatColors.colors[@"cyan"] setStroke];
+    [path stroke];
+    //NSRectFill(NSMakeRect(x, y, m, h));
+}
+
+- (void)drawSceneNumberForLine:(Line*)line rect:(CGRect)rect inset:(CGSize)inset {
+    // Scene number drawing is off, return
+    if (!self.editorDelegate.showSceneNumberLabels) return;
+    
+    // Create the style if needed
+    if (_sceneNumberStyle == nil) {
+        _sceneNumberStyle = NSMutableParagraphStyle.new;
+        _sceneNumberStyle.minimumLineHeight = self.editorDelegate.editorLineHeight;
+    }
+    
+    // Create rect for the marker position
+    rect.size.width = 7.5 * line.sceneNumber.length;
+    rect.size.height = rect.size.height + 1.0;
+    
+    rect = CGRectMake(inset.width,
+                             rect.origin.y,
+                             7.5 * line.sceneNumber.length,
+                             rect.size.height + 1.0);
+    
+    BXColor* color;
+    if (line.color.length > 0) color = [BeatColors color:line.color];
+    if (color == nil) color = ThemeManager.sharedManager.textColor.effectiveColor;
+    
+    NSString *sceneNumber = line.sceneNumber;
+
+    [sceneNumber drawAtPoint:rect.origin withAttributes:@{
+        NSFontAttributeName: self.editorDelegate.courier,
+        NSForegroundColorAttributeName: color,
+        NSParagraphStyleAttributeName: self.sceneNumberStyle
+    }];
 }
 
 - (void)drawDisclosureForRange:(NSRange)glyphRange charRange:(NSRange)charRange
@@ -95,6 +201,35 @@
         
 		BXRectFill(triangle);
 	}
+}
+
+- (void)drawMarkerForLine:(Line*)line rect:(CGRect)rect inset:(CGSize)inset {
+    
+    CGRect r = CGRectMake(inset.width, rect.origin.y, 12, rect.size.height);
+    
+    BXColor* color;
+    if (line.marker.length > 0) color = [BeatColors color:line.marker];
+    if (color == nil) color = BeatColors.colors[@"orange"];
+    [color setFill];
+    
+    BXBezierPath* path = [self markerPath:r];
+    [path fill];
+}
+
+- (BXBezierPath*)markerPath:(CGRect)rect {
+    CGFloat left = rect.origin.x;
+    CGFloat right = 40.0 + rect.origin.x;
+    CGFloat y = rect.origin.y + 2.0;
+    CGFloat h = rect.size.height - 2.0;
+    
+    BXBezierPath *path = BXBezierPath.bezierPath;
+    [path moveToPoint:NSMakePoint(right, y)];
+    [path lineToPoint:NSMakePoint(left, y)];
+    [path lineToPoint:NSMakePoint(left + 10.0, y + h / 2)];
+    [path lineToPoint:NSMakePoint(left, y + h)];
+    [path lineToPoint:NSMakePoint(right, y + h)];
+    [path closePath];
+    return path;
 }
 
 - (void)drawSceneNumberForGlyphRange:(NSRange)glyphRange charRange:(NSRange)charRange
