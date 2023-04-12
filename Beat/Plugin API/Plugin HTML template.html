@@ -222,9 +222,10 @@
 					// We convert the value into a string, just as a safety measure
 					return window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value, parameters))
 				},
-				callback: function(value, param1, param2) {
+				callback: function(value, param1, param2, param3) {
 					let method
 					let parameters
+					let errorHandler
 					
 					if (param1 instanceof Function || typeof param1 === 'function') {
 						method = param1
@@ -235,6 +236,12 @@
 						method = param2
 					}
 					
+					if (param2 instanceof Function || typeof param2 === 'function') {
+						errorHandler = param2
+					} else {
+						errorHandler = param3
+					}
+					 
 					// We convert the value into a string, just as a safety measure
 					var promise = window.webkit.messageHandlers.callAndWait.postMessage(evalToString(value, parameters))
 					promise.then(
@@ -242,7 +249,7 @@
 							method(result)
 						},
 						(error) => {
-							console.log("Error returning value", error)
+							errorHandler()
 						}
 					)
 				}

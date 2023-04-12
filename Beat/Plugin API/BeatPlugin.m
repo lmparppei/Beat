@@ -1690,7 +1690,8 @@
 }
 
 - (void)removeBackgroundHighlight:(NSInteger)loc len:(NSInteger)len {
-	[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
+	[_delegate.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName forCharacterRange:(NSRange){ loc, len }];
+	//[_delegate forceFormatChangesInRange:(NSRange){ loc, len }];
 }
 
 

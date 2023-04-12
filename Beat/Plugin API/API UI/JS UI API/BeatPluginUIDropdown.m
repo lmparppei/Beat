@@ -25,6 +25,7 @@
 		if (items.count) [self addItemsWithTitles:items];
 		self.target = self;
 		self.action = @selector(runAction);
+		self.jsAction = action;
 	}
 	
 	return self;
@@ -66,6 +67,7 @@
 -(void)selectItemAtIndex:(NSInteger)index {
 	if (index >= self.itemArray.count) return;
 	[super selectItemAtIndex:index];
+	
 }
 
 @end

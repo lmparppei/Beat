@@ -30,6 +30,7 @@
 #import "BeatPluginUIView.h"
 #import "BeatPluginUICheckbox.h"
 #import "BeatPluginUILabel.h"
+
 #import "BeatSpeak.h"
 
 #import "BeatHTMLScript.h"
