@@ -23,6 +23,8 @@
 		B633C1ED298C63250011449D /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1EA298C631E0011449D /* BeatLocalization.m */; };
 		B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1EF298C63E60011449D /* BeatAttributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1F0298C63E70011449D /* BeatAttributes.m */; };
+		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
 		B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F54299D7D590031AE6B /* BeatLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */; };
 		B68C0F56299D7F2F0031AE6B /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */; };
@@ -73,6 +75,8 @@
 		B633C1EA298C631E0011449D /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
 		B633C1EF298C63E60011449D /* BeatAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatAttributes.h; sourceTree = "<group>"; };
 		B633C1F0298C63E70011449D /* BeatAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatAttributes.m; sourceTree = "<group>"; };
+		B679B6F529DFEB68005FFC40 /* BeatTranslation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTranslation.h; sourceTree = "<group>"; };
+		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
 		B681D58F29A37DBD00DF16CA /* BeatDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocument.h; sourceTree = "<group>"; };
 		B681D59029A37DBD00DF16CA /* BeatDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocument.m; sourceTree = "<group>"; };
 		B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatLayoutManager.h; sourceTree = "<group>"; };
@@ -206,11 +210,21 @@
 			children = (
 				B633C1EF298C63E60011449D /* BeatAttributes.h */,
 				B633C1F0298C63E70011449D /* BeatAttributes.m */,
+				B679B6F429DFEB28005FFC40 /* Translations */,
 				B68C0F5B299D82130031AE6B /* Review */,
 				B6D32020298EBE2B003DA45D /* Tagging */,
 				B633C1D1298C602C0011449D /* BeatRevisions */,
 			);
 			path = "Screenplay data";
+			sourceTree = "<group>";
+		};
+		B679B6F429DFEB28005FFC40 /* Translations */ = {
+			isa = PBXGroup;
+			children = (
+				B679B6F529DFEB68005FFC40 /* BeatTranslation.h */,
+				B679B6F629DFEB68005FFC40 /* BeatTranslation.m */,
+			);
+			path = Translations;
 			sourceTree = "<group>";
 		};
 		B68C0F50299D7D1F0031AE6B /* Editor */ = {
@@ -278,6 +292,7 @@
 				B633C1D7298C60600011449D /* BeatRevisions.h in Headers */,
 				B6D32026298EBE45003DA45D /* BeatTagging.h in Headers */,
 				B6FC406529A1784700004A9D /* BeatTextIO.h in Headers */,
+				B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */,
 				B62FB014298FB6B1003492B5 /* BeatUserDefaults.h in Headers */,
 				B6D32027298EBE45003DA45D /* BeatTag.h in Headers */,
 				B6D32022298EBE45003DA45D /* TagDefinition.h in Headers */,
@@ -375,6 +390,7 @@
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
+				B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */,
 				B6D32028298EBE45003DA45D /* BeatTag.m in Sources */,
 				B633C1D9298C60600011449D /* BeatRevisionItem.m in Sources */,
 				B6FC406629A1784700004A9D /* BeatTextIO.m in Sources */,

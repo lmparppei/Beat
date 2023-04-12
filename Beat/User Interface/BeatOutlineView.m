@@ -147,10 +147,15 @@
 		return;
 	}
 	
+	// Disable animation
+	[NSAnimationContext beginGrouping];
+	[NSAnimationContext.currentContext setDuration:0.0];
+	
 	NSMutableSet *handled = NSMutableSet.new;
 	for (OutlineScene *scene in self.outline)
 	{
 		if ([changesInOutline containsObject:scene]) {
+			// Reload item
 			[self reloadItem:scene];
 			[handled addObject:scene];
 		}
@@ -160,11 +165,15 @@
 		[self reloadData];
 	}
 	
-	// Expand scenes
+	// Sections should be expanded by default
 	for (OutlineScene *scene in self.outline) {
-		// Sections are expanded by default
-		if (![_collapsed containsObject:scene] && scene.type == section) [self expandItem:scene expandChildren:YES];
+		if (![_collapsed containsObject:scene] && scene.type == section && ![self isItemExpanded:scene]) {
+			[self expandItem:scene expandChildren:YES];
+		}
 	}
+	
+	// Enable animations again
+	[NSAnimationContext endGrouping];
 }
 
 -(void)reloadOutline {
@@ -190,7 +199,6 @@
 }
 
 -(void)outlineViewItemDidCollapse:(NSNotification *)notification {
-	// We use lines rather than outline objects to keep track of collapsed an expanded sections
 	OutlineScene *collapsedSection = [notification.userInfo valueForKey:@"NSObject"];
 	[_collapsed addObject:collapsedSection];
 }
@@ -199,6 +207,8 @@
 	OutlineScene *expandedSection = [notification.userInfo valueForKey:@"NSObject"];
 	[_collapsed removeObject:expandedSection];
 }
+
+
 
 #pragma mark - Toggle synopsis / section visibility
 

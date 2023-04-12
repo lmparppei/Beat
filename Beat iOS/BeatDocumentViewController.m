@@ -54,6 +54,8 @@
 @property (nonatomic) IBOutlet BeatiOSFormatting* formatting;
 @property (nonatomic) IBOutlet BeatRevisions* revisionTracking;
 
+@property (nonatomic) IBOutlet BeatReview* review;
+
 @property (nonatomic) Line* previouslySelectedLine;
 @property (nonatomic) OutlineScene* currentScene;
 @property (nonatomic) NSArray *outline;
@@ -95,6 +97,7 @@
 	self.textView.delegate = self;
 	self.textView.editorDelegate = self;
 	self.textView.enclosingScrollView = self.scrollView;
+	self.textView.scrollEnabled = false;
 	
 	self.textView.font = self.courier;
 }
@@ -113,7 +116,7 @@
 	_revisionTracking = BeatRevisions.new;
 	_revisionTracking.delegate = self;
 	[_revisionTracking setup];
-	
+		
 	// Hide text from view until loaded
 	self.textView.pageView.layer.opacity = 0.0;
 	
@@ -167,6 +170,7 @@
 			
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
+	self.scrollView.zoomScale = 1.0;
 	
 	// Keyboard manager
 	self.keyboardManager = KeyboardManager.new;
@@ -203,6 +207,18 @@
 			
 		}];
 	}
+}
+
+- (IBAction)dismissDocumentViewController:(id)sender {
+	[self.previewView.webview removeFromSuperview];
+	self.previewView.webview = nil;
+	
+	[self.previewView.nibBundle unload];
+	self.previewView = nil;
+	
+	[self dismissViewControllerAnimated:YES completion:^{
+		[self.document closeWithCompletionHandler:nil];
+	}];
 }
 
 /*
@@ -246,16 +262,65 @@
 	return self.document.settings;
 }
 
-- (IBAction)dismissDocumentViewController:(id)sender {
-	[self.previewView.webview removeFromSuperview];
-	self.previewView.webview = nil;
+
+- (NSString*)contentForSaving {
+	return [self createDocumentFile];
+}
+- (NSString*)createDocumentFile {
+	return [self createDocumentFileWithAdditionalSettings:nil];
+}
+- (NSString*)createDocumentFileWithAdditionalSettings:(NSDictionary*)additionalSettings {
+	// This puts together string content & settings block. It is returned to dataOfType:
 	
-	[self.previewView.nibBundle unload];
-	self.previewView = nil;
+	// Save tagged ranges
+	// [self saveTags];
 	
-	[self dismissViewControllerAnimated:YES completion:^{
-		[self.document closeWithCompletionHandler:nil];
-	}];
+	// For async saving & thread safety, make a copy of the lines array
+	NSAttributedString *attrStr = self.getAttributedText;
+	NSString *content = self.parser.screenplayForSaving;
+	if (content == nil) {
+		NSLog(@"ERROR: Something went horribly wrong, trying to crash the app to avoid data loss.");
+		@throw NSInternalInconsistencyException;
+	}
+	
+	// Resort to content buffer if needed
+	// if (content == nil) content = self.contentCache;
+	
+	// Save added/removed ranges
+	// This saves the revised ranges into Document Settings
+	NSDictionary *revisions = [BeatRevisions rangesForSaving:attrStr];
+	[_documentSettings set:DocSettingRevisions as:(revisions != nil) ? revisions : @{}];
+	
+	// Save current revision color
+	[_documentSettings setString:DocSettingRevisionColor as:self.revisionColor];
+	
+	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
+	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
+	
+	// [_documentSettings set:@"Running Plugins" as:self.runningPlugins.allKeys];
+	
+	// Save reviewed ranges
+	NSArray *reviews = [_review rangesForSavingWithString:attrStr];
+	[_documentSettings set:DocSettingReviews as:(reviews != nil) ? reviews : @[]];
+	
+	// Save caret position
+	[self.documentSettings setInt:DocSettingCaretPosition as:self.textView.selectedRange.location];
+	
+	//[self unblockUserInteraction];
+	
+	NSString * settingsString = [self.documentSettings getSettingsStringWithAdditionalSettings:additionalSettings];
+	NSString * result = [NSString stringWithFormat:@"%@%@", content, (settingsString) ? settingsString : @""];
+	
+	/*
+	if (_runningPlugins.count) {
+		for (NSString *pluginName in _runningPlugins.allKeys) {
+			BeatPlugin *plugin = _runningPlugins[pluginName];
+			[plugin documentWasSaved];
+		}
+	}
+	*/
+	
+	return result;
 }
 
 /*
@@ -745,9 +810,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
 	
 	// Save
-	[self.document saveToURL:self.document.fileURL forSaveOperation:UIDocumentSaveForOverwriting completionHandler:^(BOOL success) {
-		NSLog(@"Saved");
-	}];
+	[self.document updateChangeCount:UIDocumentChangeDone];
 	
 	// Update formatting
 	[self applyFormatChanges];
@@ -1168,7 +1231,7 @@ static NSString* bufferedText;
 #pragma mark - Keyboard manager delegate
 
 -(void)keyboardWillShowWith:(CGSize)size animationTime:(double)animationTime {
-	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, 0, 0);
+	UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, size.height, 0);
 	
 	[UIView animateWithDuration:0.0 animations:^{
 		self.scrollView.contentInset = insets;
@@ -1181,6 +1244,10 @@ static NSString* bufferedText;
 		CGRect visible = [self.textView convertRect:rect toView:self.scrollView];
 		[self.scrollView scrollRectToVisible:visible animated:true];
 	}];
+}
+
+-(void)keyboardWillHide {
+	self.scrollView.contentInset = UIEdgeInsetsZero;
 }
 
 

@@ -117,7 +117,7 @@
 
 - (void)drawBeat:(CGRect)rect inset:(CGSize)inset {
     BXBezierPath* path = BXBezierPath.bezierPath;
-    NSLog(@"doc width %f", _editorDelegate.documentWidth);
+    
     CGFloat m = 16.0;
     CGFloat x = (inset.width + _editorDelegate.documentWidth) - 45.0;
 

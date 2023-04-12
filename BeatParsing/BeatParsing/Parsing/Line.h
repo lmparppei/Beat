@@ -149,6 +149,7 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 @property LineType type;
 @property (strong, atomic) NSString* string;
+@property (strong, atomic) NSString* originalString;
 
 @property (nonatomic) NSInteger position;
 @property (nonatomic) NSInteger length;

@@ -2243,7 +2243,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 /// Applies the initial formatting while document is loading
 -(void)applyInitialFormatting {
-	if (self.parser.lines.count == 0) {
+	if (self.parser.lines.count == 0) { // addition
 		[self loadingComplete];
 		return;
 	}

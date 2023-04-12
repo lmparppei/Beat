@@ -100,6 +100,8 @@ class BeatUITextView: UITextView {
 		
 		// View setup
 		self.textContainer.widthTracksTextView = false
+		self.textContainer.heightTracksTextView = false
+		
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
 				
@@ -126,18 +128,25 @@ class BeatUITextView: UITextView {
 	}
 	
 	@objc func resize() {
-		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
 		guard let enclosingScrollView = self.enclosingScrollView else {
 			print("WARNING: No scroll view set for text view")
 			return
 		}
+		/*
+		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
+		let scaledHeight = enclosingScrollView.zoomScale * containerHeight + 1.0
 		
 		if (containerHeight < enclosingScrollView.frame.height) {
 			containerHeight = enclosingScrollView.frame.height
 		}
+		 */
+		self.pageView.sizeToFit()
+		self.enclosingScrollView.contentSize = CGSize(width: self.frame.size.width * self.enclosingScrollView.zoomScale, height: self.frame.size.height * enclosingScrollView.zoomScale)
+		/*
+		var containerHeight = self.contentSize.height
 		
-		self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
-		self.textContainerInset = insets
+		//self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
+		//self.textContainerInset = insets
 		
 		var frame = pageView.frame
 				
@@ -160,13 +169,15 @@ class BeatUITextView: UITextView {
 		resizeScrollViewContent()
 		
 		frame.size.width = zoom * (self.documentWidth + self.insets.left + self.insets.right)
-		frame.size.height = enclosingScrollView.contentSize.height
+		frame.size.height = self.contentSize.height
+		//frame.size.height = containerHeight
 		self.pageView.frame = frame
 		
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
 			self.enclosingScrollView.zoomScale = zoom
 		} completion: { _ in
 		}
+		 */
 	}
 	
 
@@ -342,8 +353,11 @@ extension BeatUITextView: UIScrollViewDelegate {
 	
 	func resizeScrollViewContent() {
 		let factor = self.enclosingScrollView.zoomScale
-		let contentSize = self.sizeThatFits(CGSize(width: self.documentWidth, height: CGFloat.greatestFiniteMagnitude))
-		var width = contentSize.width + self.textContainerInset.left + self.textContainerInset.right
+		
+		//let contentSize = self.sizeThatFits(CGSize(width: self.documentWidth, height: self.frame.height))
+		let contentSize = self.contentSize
+		
+		let width = contentSize.width + self.textContainerInset.left + self.textContainerInset.right
 		let scrollSize = CGSize(width: width * factor,
 								height: (contentSize.height + self.textContainerInset.top + self.textContainerInset.bottom) * factor)
 		

@@ -11,6 +11,7 @@ import UIKit
 @objc protocol iOSDocumentDelegate {
 	var parser:ContinuousFountainParser? { get }
 	func text() -> String!
+	func contentForSaving() -> String!
 }
 
 class iOSDocument: UIDocument {
@@ -28,7 +29,7 @@ class iOSDocument: UIDocument {
 	
     override func contents(forType typeName: String) throws -> Any {
         // Encode your document with an instance of NSData or NSFileWrapper
-		let text = delegate?.text() ?? ""		
+		let text = delegate?.text() ?? ""
 		return text.data(using: .utf8) as Any
     }
     

@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B604C8E0290CF8C500CBB32D /* BeatParsing.h in Headers */ = {isa = PBXBuildFile; fileRef = B604C8DF290CF82700CBB32D /* BeatParsing.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */ = {isa = PBXBuildFile; fileRef = B689C80629D8808A00ADC746 /* BeatNoteData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */ = {isa = PBXBuildFile; fileRef = B689C80729D8808A00ADC746 /* BeatNoteData.m */; };
 		B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */; };
 		B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0728F01A8700657F5F /* BeatSceneTree.m */; };
 		B6B37F1528F01A8700657F5F /* OutlineScene.m in Sources */ = {isa = PBXBuildFile; fileRef = B6B37F0828F01A8700657F5F /* OutlineScene.m */; };
@@ -50,6 +52,8 @@
 /* Begin PBXFileReference section */
 		B604C8DF290CF82700CBB32D /* BeatParsing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatParsing.h; sourceTree = "<group>"; };
 		B67E5DD0290EB3E5001FC051 /* BeatParsing.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BeatParsing.md; sourceTree = "<group>"; };
+		B689C80629D8808A00ADC746 /* BeatNoteData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatNoteData.h; sourceTree = "<group>"; };
+		B689C80729D8808A00ADC746 /* BeatNoteData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatNoteData.m; sourceTree = "<group>"; };
 		B6B37E8328F018A100657F5F /* BeatParsing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatParsing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6B37F0628F01A8700657F5F /* ContinuousFountainParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContinuousFountainParser.m; sourceTree = "<group>"; };
 		B6B37F0728F01A8700657F5F /* BeatSceneTree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatSceneTree.m; sourceTree = "<group>"; };
@@ -149,6 +153,8 @@
 				B6B37F1128F01A8700657F5F /* Storybeat.m */,
 				B6B37F1228F01A8700657F5F /* FountainRegexes.h */,
 				B6B37F0C28F01A8700657F5F /* FountainRegexes.m */,
+				B689C80629D8808A00ADC746 /* BeatNoteData.h */,
+				B689C80729D8808A00ADC746 /* BeatNoteData.m */,
 			);
 			path = Parsing;
 			sourceTree = "<group>";
@@ -229,6 +235,7 @@
 				B6D53C7929379A740039DF88 /* BeatMeasure.h in Headers */,
 				B6B37F3A28F0275800657F5F /* RegExCategories.h in Headers */,
 				B6B37F5328F0279700657F5F /* NSString+Regex.h in Headers */,
+				B689C80829D8808A00ADC746 /* BeatNoteData.h in Headers */,
 				B6B37F5A28F0279700657F5F /* NSMutableIndexSet+Lowest.h in Headers */,
 				B6B37F3528F0212700657F5F /* BeatPaperSizing.h in Headers */,
 				B6B37F5628F0279700657F5F /* NSIndexSet+Subset.h in Headers */,
@@ -311,6 +318,7 @@
 				B6B37F1428F01A8700657F5F /* BeatSceneTree.m in Sources */,
 				B6B37F6428F0285D00657F5F /* BeatExportSettings.m in Sources */,
 				B6B37F1328F01A8700657F5F /* ContinuousFountainParser.m in Sources */,
+				B689C80929D8808A00ADC746 /* BeatNoteData.m in Sources */,
 				B6B37F3328F0212700657F5F /* BeatPaperSizing.m in Sources */,
 				B6B37F5928F0279700657F5F /* NSString+Regex.m in Sources */,
 				B6B37F5D28F0279700657F5F /* NSDictionary+Values.m in Sources */,
