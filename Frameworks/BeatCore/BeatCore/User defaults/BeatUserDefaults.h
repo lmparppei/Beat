@@ -26,23 +26,25 @@ extern NSString * const BeatSettingAutomaticLineBreaks;
 extern NSString * const BeatSettingUpdatePluginsAutomatically;
 extern NSString * const BeatSettingBackupURL;
 
-extern NSString * const  BeatSettingHeadingStyleBold;
-extern NSString * const  BeatSettingHeadingStyleUnderlined;
-extern NSString * const  BeatSettingDefaultPageSize;
-extern NSString * const  BeatSettingDisableFormatting;
-extern NSString * const  BeatSettingShowMarkersInScrollbar;
-extern NSString * const  BeatSettingSceneHeadingSpacing;
-extern NSString * const  BeatSettingScreenplayItemMore;
-extern NSString * const  BeatSettingScreenplayItemContd;
-extern NSString * const  BeatSettingShowRevisions;
-extern NSString * const  BeatSettingShowTags;
-extern NSString * const  BeatSettingAutomaticContd;
-extern NSString * const  BeatSettingZoomLevel;
-extern NSString * const  BeatSettingShowSynopsisInOutline;
-extern NSString * const  BeatSettingSuppressedAlert;
+extern NSString * const BeatSettingHeadingStyleBold;
+extern NSString * const BeatSettingHeadingStyleUnderlined;
+extern NSString * const BeatSettingDefaultPageSize;
+extern NSString * const BeatSettingDisableFormatting;
+extern NSString * const BeatSettingShowMarkersInScrollbar;
+extern NSString * const BeatSettingSceneHeadingSpacing;
+extern NSString * const BeatSettingScreenplayItemMore;
+extern NSString * const BeatSettingScreenplayItemContd;
+extern NSString * const BeatSettingShowRevisions;
+extern NSString * const BeatSettingShowTags;
+extern NSString * const BeatSettingAutomaticContd;
+extern NSString * const BeatSettingZoomLevel;
+extern NSString * const BeatSettingShowSynopsisInOutline;
+extern NSString * const BeatSettingSuppressedAlert;
 
+extern NSString * const BeatSettingOutlineFontSizeModifier;
 
 + (BeatUserDefaults*)sharedDefaults;
+
 + (NSDictionary*)userDefaults;
 - (void)readUserDefaultsFor:(id)target;
 - (void)resetToDefault:(NSString*)key;

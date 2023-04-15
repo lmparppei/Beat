@@ -351,7 +351,24 @@ static NSDictionary* patterns;
 	}
 }
 
-
+- (void)addChangeInOutlineIfNeededAtIndex:(NSInteger)lineIndex {
+    Line* line = self.lines[lineIndex];
+    
+    // Check if editing this line affects a single scene in the outline
+    if (line.type == heading) {
+        [self addChangeInOutline:line];
+    }
+    else if (line.type == synopse) {
+        // For synopsis markers, we need to iterate backwards and find the nearest outline element
+        for (NSInteger i = lineIndex; i>=0; i--) {
+            Line* l = self.lines[i];
+            if (l.isOutlineElement) {
+                [self addChangeInOutline:l];
+                break;
+            }
+        }
+    }
+}
 
 
 #pragma mark Parsing additions
@@ -367,20 +384,7 @@ static NSDictionary* patterns;
     
     [changedIndices addIndex:lineIndex];
 
-    // Check if editing this line affects the outline
-    if (line.isOutlineElement) {
-        [self addChangeInOutline:line];
-    }
-    else if (line.type == synopse) {
-        // For synopsis markers, we need to iterate backwards and find the nearest outline element
-        for (NSInteger i = lineIndex; i>=0; i--) {
-            Line* l = self.lines[i];
-            if (l.isOutlineElement) {
-                [self addChangeInOutline:l];
-                break;
-            }
-        }
-    }
+    [self addChangeInOutlineIfNeededAtIndex:lineIndex];
 	
     NSUInteger indexInLine = position - line.position;
             
@@ -441,6 +445,8 @@ static NSDictionary* patterns;
     
     Line* firstLine = self.lines[firstIndex];
     Line* lastLine = self.lines[lastIndex];
+    
+    if (firstLine == lastLine) [self addChangeInOutlineIfNeededAtIndex:firstIndex];
     
     bool originalLineWasEmpty = (firstLine.string.length == 0);
     bool lastLineWasEmpty = (lastLine.string.length == 0);
@@ -1839,8 +1845,18 @@ static NSDictionary* patterns;
 }
 
 - (void)createOutline {
-	if (NSThread.isMainThread) [self createOutlineUsingLines:self.lines];
-	else [self createOutlineUsingLines:self.lines.copy];
+	[self createOutlineUsingLines:self.safeLines];
+}
+
+- (NSArray*)outlineTree {
+    NSMutableArray* tree = NSMutableArray.new;
+    
+    for (OutlineScene* scene in self.outline) {
+        // Only add top-level scenes
+        if (scene.sectionDepth == 0 || (scene.sectionDepth == 1 && scene.type == section)) [tree addObject:scene];
+    }
+    
+    return tree;
 }
 
 - (OutlineScene*)outlineElementInRange:(NSRange)range {

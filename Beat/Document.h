@@ -67,7 +67,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 
 @protocol DocumentExports <JSExport>
 @property (nonatomic, readonly) ContinuousFountainParser* _Nonnull parser;
-@property (nonatomic) BeatDocumentSettings * _Nonnull documentSettings;
+@property (atomic) BeatDocumentSettings * _Nonnull documentSettings;
 - (NSMutableArray<Line*>* _Nonnull)lines;
 @end
 
@@ -89,6 +89,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) bool contentLocked;
 
 @property (nonatomic) NSArray* _Nullable outline;
+- (void)reloadOutline;
 
 // Fonts
 @property (strong, nonatomic) NSFont* _Nonnull courier;
@@ -111,7 +112,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (weak) IBOutlet BeatWidgetView* _Nullable widgetView;
 
 // Document settings
-@property (nonatomic) BeatDocumentSettings* _Nullable documentSettings;
+@property (atomic) BeatDocumentSettings* _Nullable documentSettings;
 
 // Versioning
 @property (nonatomic) NSURL* _Nullable revertedTo;

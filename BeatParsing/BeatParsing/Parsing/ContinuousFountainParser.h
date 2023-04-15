@@ -18,7 +18,7 @@
 
 @protocol ContinuousFountainParserDelegate <NSObject>
 @property (nonatomic) bool printSceneNumbers;
-@property (nonatomic) BeatDocumentSettings *documentSettings;
+@property (atomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) Line* characterInputForLine;
 @property (nonatomic, readonly) NSRange selectedRange;
 
@@ -93,6 +93,7 @@
 - (void)parseChangeInRange:(NSRange)range withString:(NSString*)string;
 - (void)resetParsing;
 - (void)createOutline;
+- (NSArray*)outlineTree;
 - (void)updateOutlineWithChangeInRange:(NSRange)range;
 - (NSArray*)scenes;
 - (void)ensurePositions;

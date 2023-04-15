@@ -6,16 +6,10 @@
 //  Copyright © 2019 Lauri-Matti Parppei. All rights reserved.
 //
 
-/*
- 
- BeatOutlineView uses a temporary structure (BeatSceneTree + BeatSceneTreeItem)
- to handle the sections. Represented item is still always an OutlineScene.
- 
- */
-
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatUserDefaults.h>
+
 #import "BeatOutlineView.h"
 #import "SceneFiltering.h"
 #import "OutlineViewItem.h"
@@ -63,6 +57,11 @@
 //	  2022 edit: Ok, so your latest OS versions support IBOutletCollection,
 //	  but you are STILL using basically slave labour in China and other countries.
 //	  FUCK YOU. Bring down capitalism, please.
+//
+//	  2023 edit: I removed the weird SceneTree structure and the class again uses
+//    plain OutlineScene object. One thing still stands: Apple CAN STILL GO FUCK THEMSELVES.
+//    They stil don't give a fuck for the lives of their workers. BURN DOWN THEIR FACTORIES.
+//    STEAL YOUR MAC.
 
 //    So, back to the code:
 
@@ -75,24 +74,26 @@
 @property (weak) IBOutlet ColorCheckbox *magentaCheck;
 @property (weak) IBOutlet ColorCheckbox *pinkCheck;
 
-@property (nonatomic) BeatSceneTree *sceneTree;
 @property (nonatomic) NSMutableArray *collapsed;
-
 @property (nonatomic) NSArray *cachedOutline;
 
 @property (weak, nonatomic) IBOutlet NSButton *synopsisCheckbox;
 @property (nonatomic) bool showSynopsis;
 
+@property (nonatomic) NSArray *tree;
+
 @end
 
 @implementation BeatOutlineView
 
--(instancetype)initWithCoder:(NSCoder *)coder {
+-(instancetype)initWithCoder:(NSCoder *)coder
+{
 	self = [super initWithCoder:coder];
 	return self;
 }
 
--(void)awakeFromNib {
+-(void)awakeFromNib
+{
 	self.delegate = self;
 	self.dataSource = self;
 	
@@ -110,15 +111,17 @@
 	[self hideFilterView];
 }
 
-- (void)drawRect:(NSRect)dirtyRect {
+- (void)drawRect:(NSRect)dirtyRect
+{
 	[super drawRect:dirtyRect];
 }
-- (void)drawBackgroundInClipRect:(NSRect)clipRect {
+
+- (void)drawBackgroundInClipRect:(NSRect)clipRect
+{
 	//[super drawBackgroundInClipRect:clipRect];
 	
 	// Get current scene and represented row
-	OutlineScene *currentScene = self.editorDelegate.currentScene;
-	NSInteger row = [self rowForItem:currentScene];
+	NSInteger row = [self rowForItem:self.editorDelegate.currentScene];
 	
 	if (row != NSNotFound) {
 		NSRect rect = [self rectOfRow:row];
@@ -134,29 +137,62 @@
 	}
 }
 
-- (NSTouchBar*)makeTouchBar {
+- (NSTouchBar*)makeTouchBar
+{
 	return _touchBar;
 }
 
 
 #pragma mark - Reload data
 
--(void)reloadOutline:(NSArray*)changesInOutline {
+/*
+// For those who come after.
+-(void)reloadDiffedOutline {
+	NSArray* outline = self.outline;
+	
+	if (@available(macOS 10.15, *)) {
+		NSOrderedCollectionDifference* diff = [outline differenceFromArray:self.cachedOutline];
+		
+		for (OutlineScene* removed in diff.removals) {
+			NSLog(@"Removed: %@", removed);
+		}
+		
+		for (OutlineScene* inserted in diff.insertions) {
+			NSLog(@"Added: %@", inserted);
+		}
+		
+		self.cachedOutline = outline.copy;
+		
+	} else {
+		[self reloadData];
+		return;
+	}
+}
+ */
+
+-(void)reloadOutline:(NSArray*)changesInOutline
+{
+	// Reload full data when no specific changes are sent
 	if (changesInOutline.count == 0) {
 		[self reloadOutline];
+		//[self reloadDiffedOutline];
 		return;
 	}
 	
-	// Disable animation
+	// Store current outline
+	NSArray* outline = self.outline;
+	
+	// Disable animations
+	[self beginUpdates];
 	[NSAnimationContext beginGrouping];
 	[NSAnimationContext.currentContext setDuration:0.0];
 	
+	// Go through the whole outline and see which ones we need to update
 	NSMutableSet *handled = NSMutableSet.new;
-	for (OutlineScene *scene in self.outline)
-	{
-		if ([changesInOutline containsObject:scene]) {
+	for (OutlineScene *scene in self.outline) {
+		if ([changesInOutline containsObject:scene.line]) {
 			// Reload item
-			[self reloadItem:scene];
+			[self reloadItem:scene reloadChildren:true];
 			[handled addObject:scene];
 		}
 	}
@@ -166,7 +202,7 @@
 	}
 	
 	// Sections should be expanded by default
-	for (OutlineScene *scene in self.outline) {
+	for (OutlineScene *scene in outline) {
 		if (![_collapsed containsObject:scene] && scene.type == section && ![self isItemExpanded:scene]) {
 			[self expandItem:scene expandChildren:YES];
 		}
@@ -174,36 +210,57 @@
 	
 	// Enable animations again
 	[NSAnimationContext endGrouping];
+	[self endUpdates];
+	
+	self.cachedOutline = outline;
 }
 
--(void)reloadOutline {
+-(void)reloadOutline
+{
+	[self beginUpdates];
+	
+	// Store the current outline
+	NSArray* outline = self.outline;
+	
 	// Save outline scroll position
 	NSRect bounds = self.enclosingScrollView.contentView.bounds;
 	
+	// Check if there are filters on and then reload data
 	[self filterOutline];
 	[self reloadData];
 	
+	// Initialize collapsed item array if needed
 	if (_collapsed == nil) _collapsed = NSMutableArray.new;
 	
-	for (OutlineScene *scene in self.outline) {
-		// Sections are expanded by default
+	// Expand any new sections by default
+	for (OutlineScene *scene in outline) {
 		if (![_collapsed containsObject:scene] && scene.type == section) [self expandItem:scene expandChildren:YES];
 	}
 
+	// Scroll back to where we were
 	[self.enclosingScrollView.contentView setBounds:bounds];
+	
+	[self endUpdates];
+	
+	self.cachedOutline = outline;
 }
 
--(void)reloadData {
-	self.dragging = false;
+-(void)reloadData
+{
+	self.dragging = false; // Stop any drag operations
 	[super reloadData];
 }
 
--(void)outlineViewItemDidCollapse:(NSNotification *)notification {
+-(void)outlineViewItemDidCollapse:(NSNotification *)notification
+{
+	// Store the collapsed section
 	OutlineScene *collapsedSection = [notification.userInfo valueForKey:@"NSObject"];
 	[_collapsed addObject:collapsedSection];
 }
 
-- (void)outlineViewItemDidExpand:(NSNotification *)notification {
+- (void)outlineViewItemDidExpand:(NSNotification *)notification
+{
+	// Remove this from list of collapsed sections
 	OutlineScene *expandedSection = [notification.userInfo valueForKey:@"NSObject"];
 	[_collapsed removeObject:expandedSection];
 }
@@ -212,7 +269,8 @@
 
 #pragma mark - Toggle synopsis / section visibility
 
-- (IBAction)toggleSynopsis:(id)sender {
+- (IBAction)toggleSynopsis:(id)sender
+{
 	NSButton *checkbox = sender;
 	bool value = (checkbox.state == NSOnState) ? true : false;
 	
@@ -224,7 +282,8 @@
 
 #pragma mark - Delegation
 
--(void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(nonnull id)cell forTableColumn:(nullable NSTableColumn *)tableColumn item:(nonnull id)item {
+-(void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(nonnull id)cell forTableColumn:(nullable NSTableColumn *)tableColumn item:(nonnull id)item
+{
 	/*
 	// For those who come after
 	if (![item isKindOfClass:[OutlineScene class]]) return;
@@ -236,7 +295,8 @@
 
 
 // FOR VIEW-BASED OUTLINE. Very slow.
-- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
  
 	bool dark = ((id<BeatDarknessDelegate>)NSApp.delegate).isDark;
 	
@@ -246,7 +306,8 @@
 	return view;
 }
 
-- (void)outlineViewColumnDidResize:(NSNotification *)notification {
+- (void)outlineViewColumnDidResize:(NSNotification *)notification
+{
 	// Update row heights when needed
 	[self noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:(NSRange){ 0, self.numberOfRows }]];
 }
@@ -257,12 +318,13 @@
 	if (_filters.activeFilters) {
 		return _filteredOutline.count;
 	} else {
-		_sceneTree = [BeatSceneTree fromOutline:self.outline];
-		
-		if (!item) return _sceneTree.items.count;
-		else {
-			BeatSceneTreeItem *section = [_sceneTree itemWithScene:item];
-			return section.children.count;
+		_tree = self.editorDelegate.parser.outlineTree;
+
+		if (item == nil) {
+			return _tree.count;
+		} else {
+			OutlineScene* scene = item;
+			return scene.children.count;
 		}
 	}
 }
@@ -275,10 +337,9 @@
 	} else {
 		if (item) {
 			OutlineScene *section = item;
-			return [_sceneTree sceneInSection:section index:index];
+			return section.children[index];
 		} else {
-			BeatSceneTreeItem *sceneItem = _sceneTree.items[index];
-			return sceneItem.scene;
+			return _tree[index];
 		}
 	}
 }
@@ -339,17 +400,19 @@
 }
  */
 
-- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems {
-	//_draggedNodes = draggedItems;
+- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session willBeginAtPoint:(NSPoint)screenPoint forItems:(NSArray *)draggedItems
+{
 	_editing = NO;
 	[session.draggingPasteboard setData:[NSData data] forType:LOCAL_REORDER_PASTEBOARD_TYPE];
 }
 
-- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation {
+- (void)outlineView:(NSOutlineView *)outlineView draggingSession:(NSDraggingSession *)session endedAtPoint:(NSPoint)screenPoint operation:(NSDragOperation)operation
+{
 	// ?
 }
 
-- (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item{
+- (id <NSPasteboardWriting>)outlineView:(NSOutlineView *)outlineView pasteboardWriterForItem:(id)item
+{
 	// Don't allow reordering a filtered list
 	if (_filters.activeFilters) return nil;
 	
@@ -361,7 +424,8 @@
 	return pboardItem;
 }
 
-- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index{
+- (NSDragOperation)outlineView:(NSOutlineView *)outlineView validateDrop:(id < NSDraggingInfo >)info proposedItem:(id)targetItem proposedChildIndex:(NSInteger)index
+{
 	// Don't allow reordering a filtered list
 	if (_filters.activeFilters) return NSDragOperationNone;
 	
@@ -373,7 +437,8 @@
 	return NSDragOperationMove;
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index{
+- (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)targetItem childIndex:(NSInteger)index
+{
 	// Don't allow reordering a filtered list
 	if (_filteredOutline.count > 0 || _outlineSearchField.stringValue.length > 0) return NSDragOperationNone;
 	
@@ -387,6 +452,8 @@
 	OutlineScene *scene;
 	NSArray *outline = self.outline;
 	NSInteger numberOfChildren = [self numberOfChildrenOfItem:targetItem];
+	
+	OutlineScene* targetScene = targetItem;
 
 	if (index < numberOfChildren) scene = [self outlineView:self child:index ofItem:targetItem];
 	
@@ -396,8 +463,7 @@
 	
 	if (index == NSNotFound || index < 0) {
 		// Dropped directly into a section
-		BeatSceneTreeItem *sceneTreeItem = [_sceneTree itemWithScene:targetItem];
-		OutlineScene *lastInSection = sceneTreeItem.lastScene;
+		OutlineScene *lastInSection = ((OutlineScene*)targetItem).parent.children.lastObject;
 		
 		if (lastInSection != nil) {
 			// There were items in the section
@@ -416,9 +482,9 @@
 		else {
 			if (targetItem != nil) {
 				// Dropped at the end of a section
-				BeatSceneTreeItem *sceneTreeItem = [_sceneTree itemWithScene:targetItem];
-				to = [self.outline indexOfObject:(sceneTreeItem.children.count > 0) ? sceneTreeItem.lastScene : targetItem] + 1;
-				position = sceneTreeItem.lastScene.position + sceneTreeItem.lastScene.length;
+				OutlineScene* parent = targetScene.parent;
+				to = [self.outline indexOfObject:(parent.children.count > 0) ? parent.children.lastObject : targetScene] + 1;
+				position = parent.children.lastObject.position + parent.children.lastObject.length;
 			} else {
 				to = self.outline.count;
 				position = self.editorDelegate.text.length;
@@ -464,7 +530,8 @@
 }
  */
 
-- (void)scrollToScene:(OutlineScene*)scene {
+- (void)scrollToScene:(OutlineScene*)scene
+{
 	if (scene == nil) scene = self.editorDelegate.currentScene;
 	if (scene == nil) return;
 	
@@ -474,8 +541,9 @@
 	}
 	
 	// If the current scene is inside a section, show the section
-	BeatSceneTreeItem *treeItem = [_sceneTree itemWithScene:scene];
-	if (treeItem.parent) [self expandItem:treeItem.parent];
+	if (scene.parent != nil) {
+		if (![self isItemExpanded:scene.parent]) [self expandItem:scene.parent];
+	}
 
 	// Redraw selection
 	[self setNeedsDisplay];
@@ -491,7 +559,8 @@
 
 #pragma mark - Filtering
 
-- (void)filterOutline {
+- (void)filterOutline
+{
 	// We don't need to GET outline at this point, let's use the cached one
 	[_filteredOutline removeAllObjects];
 	if (!_filters.activeFilters) return;
@@ -512,7 +581,8 @@
 
 #pragma mark - Advanced Filtering
 
-- (IBAction)toggleFilterView:(id)sender {
+- (IBAction)toggleFilterView:(id)sender
+{
 	NSButton *button = (NSButton*)sender;
 	
 	if (button.state == NSControlStateValueOn) {
@@ -521,11 +591,13 @@
 		[_filterViewHeight setConstant:0.0];
 	}
 }
-- (void)hideFilterView {
+- (void)hideFilterView
+{
 	[_filterViewHeight setConstant:0.0];
 }
 
-- (IBAction)toggleColorFilter:(id)sender {
+- (IBAction)toggleColorFilter:(id)sender
+{
 	ColorCheckbox *button = (ColorCheckbox*)sender;
 		
 	if (button.state == NSControlStateValueOn) {
@@ -542,7 +614,8 @@
 	[self reloadOutline];
 }
 
-- (IBAction)resetColorFilters:(id)sender {
+- (IBAction)resetColorFilters:(id)sender
+{
 	[_filters.colors removeAllObjects];
 	
 	// Read more about this (and my political views) in the property declarations
@@ -562,7 +635,8 @@
 	[_resetColorFilterButton setHidden:YES];
 }
 
-- (IBAction)filterByCharacter:(id)sender {
+- (IBAction)filterByCharacter:(id)sender
+{
 	NSString *characterName = _characterBox.selectedItem.title;
 
 	if ([characterName isEqualToString:@" "] || characterName.length == 0) {
@@ -578,7 +652,8 @@
 	[_resetCharacterFilterButton setHidden:NO];
 }
 
-- (IBAction)resetCharacterFilter:(id)sender {
+- (IBAction)resetCharacterFilter:(id)sender
+{
 	[_filters resetScenes];
 	_filters.character = @"";
 	
@@ -592,13 +667,15 @@
 }
 
 
-- (IBAction)expandAll:(id)sender {
+- (IBAction)expandAll:(id)sender
+{
 	for (OutlineScene *scene in self.editorDelegate.outline) {
 		if ([self isExpandable:scene]) [self expandItem:scene expandChildren:YES];
 	}
 }
 
-- (IBAction)collapseAll:(id)sender {
+- (IBAction)collapseAll:(id)sender
+{
 	for (OutlineScene *scene in self.editorDelegate.outline) {
 		if ([self isExpandable:scene]) [self collapseItem:scene collapseChildren:YES];
 	}

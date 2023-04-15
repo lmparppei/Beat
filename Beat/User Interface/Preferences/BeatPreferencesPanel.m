@@ -29,6 +29,7 @@
 @property (nonatomic, weak) IBOutlet NSPopUpButton *useSansSerif;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *defaultPageSize;
 @property (nonatomic, weak) IBOutlet NSPopUpButton *language;
+@property (nonatomic, weak) IBOutlet NSPopUpButton *outlineFontSizeModifier;
 
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleBold;
 @property (nonatomic, weak) IBOutlet NSButton *headingStyleUnderline;
@@ -89,6 +90,8 @@
 				// We need to check for subclasses of NSButton first
 				NSPopUpButton *button = item;
 				NSInteger value = [BeatUserDefaults.sharedDefaults getInteger:key];
+				if ([key isEqualToString:BeatSettingOutlineFontSizeModifier]) value = value / 2;
+				
 				[button selectItem:button.itemArray[value]];
 			}
 			else if ([item isKindOfClass:NSButton.class]) {
@@ -224,6 +227,16 @@
 		} else {
 			[self selectBackupLocation:nil];
 		}
+	}
+}
+
+- (IBAction)selectOutlineFontSize:(id)sender {
+	NSPopUpButton* button = sender;
+	NSInteger modifier = button.indexOfSelectedItem * 2;
+	[BeatUserDefaults.sharedDefaults saveInteger:modifier forKey:BeatSettingOutlineFontSizeModifier];
+	
+	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {
+		[doc reloadOutline];
 	}
 }
 

@@ -15,7 +15,7 @@
 @protocol BeatOutlineViewEditorDelegate <NSObject>
 @property (readonly, nonatomic) OutlineScene *currentScene;
 @property (nonatomic) bool outlineEdit;
-@property (readonly, nonatomic) NSMutableArray *outline;
+@property (readonly, nonatomic) NSArray *outline;
 @property (nonatomic, strong, readonly) ContinuousFountainParser *parser;
 - (NSMutableArray<Line*>*)lines;
 - (NSArray*)getOutlineItems;

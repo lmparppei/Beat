@@ -63,6 +63,17 @@ NSString* const BeatSettingZoomLevel	 				= @"zoomLevel";
 NSString* const BeatSettingShowSynopsisInOutline		= @"showSynopsisInOutline";
 NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
 
+NSString* const BeatSettingOutlineSectionFontSize       = @"outlineSectionFontSize";
+NSString* const BeatSettingOutlineSceneFontSize         = @"outlineSceneFontSize";
+NSString* const BeatSettingOutlineSceneSynopsisFontSize = @"outlineSynopsisFontSize";
+
+NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModifier";
+
+#define SECTION_FONTSIZE 13.0
+#define SYNOPSE_FONTSIZE 12.0
+#define SCENE_FONTSIZE 11.5
+
+
 + (BeatUserDefaults*)sharedDefaults
 {
 	static BeatUserDefaults* sharedDefaults;
@@ -109,7 +120,10 @@ NSString* const BeatSettingSuppressedAlert 				= @"suppressedAlerts";
 		BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
 		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
 		
-		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""]
+		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""],
+        
+        BeatSettingOutlineFontSizeModifier: @[BeatSettingOutlineFontSizeModifier, @0]
+        
 	};
 }
 

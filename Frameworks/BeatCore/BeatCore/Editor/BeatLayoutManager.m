@@ -124,15 +124,27 @@
     CGFloat y = rect.origin.y + 2.0;
     CGFloat h = rect.size.height - 2.0;
 
-    [path moveToPoint:NSMakePoint(x, y + h / 2)];
-    [path lineToPoint:NSMakePoint(x + m * .25, y + h / 2)];
-    [path lineToPoint:NSMakePoint(x + m * .45, y + 1.0)];
-    [path lineToPoint:NSMakePoint(x + m * .55, y + h - 1.0)];
-    [path lineToPoint:NSMakePoint(x + m * .75, y + h / 2)];
-    [path lineToPoint:NSMakePoint(x + m * 1.0, y + h / 2)];
+    [path moveToPoint:CGPointMake(x, y + h / 2)];
+#if TARGET_OS_IOS
+    [path addLineToPoint:CGPointMake(x + m * .25, y + h / 2)];
+    [path addLineToPoint:CGPointMake(x + m * .45, y + 1.0)];
+    [path addLineToPoint:CGPointMake(x + m * .55, y + h - 1.0)];
+    [path addLineToPoint:CGPointMake(x + m * .75, y + h / 2)];
+    [path addLineToPoint:CGPointMake(x + m * 1.0, y + h / 2)];
+    
+    path.lineJoinStyle = kCGLineJoinRound;
+    path.lineCapStyle = kCGLineCapRound;
+#else
+    [path lineToPoint:CGPointMake(x + m * .25, y + h / 2)];
+    [path lineToPoint:CGPointMake(x + m * .45, y + 1.0)];
+    [path lineToPoint:CGPointMake(x + m * .55, y + h - 1.0)];
+    [path lineToPoint:CGPointMake(x + m * .75, y + h / 2)];
+    [path lineToPoint:CGPointMake(x + m * 1.0, y + h / 2)];
     
     path.lineJoinStyle = NSLineJoinStyleRound;
     path.lineCapStyle = NSLineCapStyleRound;
+#endif
+
     path.lineWidth = 2.0;
     
     [BeatColors.colors[@"cyan"] setStroke];
@@ -223,11 +235,20 @@
     CGFloat h = rect.size.height - 2.0;
     
     BXBezierPath *path = BXBezierPath.bezierPath;
-    [path moveToPoint:NSMakePoint(right, y)];
+    [path moveToPoint:CGPointMake(right, y)];
+    
+#if TARGET_OS_IOS
+    [path addLineToPoint:CGPointMake(left, y)];
+    [path addLineToPoint:CGPointMake(left + 10.0, y + h / 2)];
+    [path addLineToPoint:CGPointMake(left, y + h)];
+    [path addLineToPoint:CGPointMake(right, y + h)];
+#else
     [path lineToPoint:NSMakePoint(left, y)];
     [path lineToPoint:NSMakePoint(left + 10.0, y + h / 2)];
     [path lineToPoint:NSMakePoint(left, y + h)];
     [path lineToPoint:NSMakePoint(right, y + h)];
+#endif
+    
     [path closePath];
     return path;
 }

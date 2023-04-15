@@ -3180,6 +3180,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 }
 
+- (void)reloadOutline {
+	[self.outlineView reloadOutline];
+}
+
 /*
  
  you say: it's gonna happen soon

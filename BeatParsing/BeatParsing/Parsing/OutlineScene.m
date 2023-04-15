@@ -213,6 +213,14 @@
 
 @synthesize omited;
 
+
+#pragma mark - Debugging
+
+-(NSString *)description {
+    return [NSString stringWithFormat:@"Scene: %@ (pos %lu / len %lu)", self.string, self.position, self.length];
+}
+
+
 @end
 /*
  

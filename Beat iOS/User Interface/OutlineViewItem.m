@@ -11,7 +11,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import "OutlineViewItem.h"
-#import <BeatCore/BeatColors.h>
+#import <BeatCore/BeatCore.h>
 
 #define SECTION_FONTSIZE 13.0
 #define SYNOPSE_FONTSIZE 12.0
@@ -38,9 +38,19 @@
 
 @implementation OutlineViewItem
 
++ (CGFloat)fontSize {
+	CGFloat size = BXFont.smallSystemFontSize;
+	size += [BeatUserDefaults.sharedDefaults getInteger:BeatSettingOutlineFontSizeModifier];
+	return size;
+}
++ (CGFloat)sectionFontSize {
+	CGFloat size = BXFont.smallSystemFontSize;
+	size += [BeatUserDefaults.sharedDefaults getInteger:BeatSettingOutlineFontSizeModifier];
+	return size * 1.2;
+}
 
 /// Returns an attributed string for outline view
-+ (NSAttributedString*) withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current withSynopsis:(bool)includeSynopsis isDark:(bool)dark {
++ (NSAttributedString*)withScene:(OutlineScene *)scene currentScene:(OutlineScene *)current withSynopsis:(bool)includeSynopsis isDark:(bool)dark {
 	Line *line = scene.line;
 	if (line == nil) { return NSMutableAttributedString.new; }
 	
@@ -69,7 +79,8 @@
 	
 	// Style the item
 	if (line.type == heading) {
-		BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize weight:BXFontWeightRegular];
+		CGFloat fontSize = [OutlineViewItem fontSize];
+		BXFont *font = [BXFont systemFontOfSize:fontSize weight:BXFontWeightRegular];
 		
 		//Replace "INT/EXT" with "I/E" to make the lines match nicely
 		string = string.uppercaseString;
@@ -99,7 +110,8 @@
 
 	else if (line.type == section) {
 		if (string.length > 0) {
-			BXFont *font = [BXFont systemFontOfSize:BXFont.smallSystemFontSize * 1.2 weight:BXFontWeightBold];
+			CGFloat fontSize = [OutlineViewItem sectionFontSize];
+			BXFont *font = [BXFont systemFontOfSize:fontSize weight:BXFontWeightBold];
 			
 			BXColor *color = (itemColor != nil) ? itemColor : sectionItemColor;
 			resultString = [[NSMutableAttributedString alloc] initWithString:(string) ? string : @"" attributes:@{
@@ -122,10 +134,12 @@
 			synopsisStyle.lineSpacing = .65;
 			synopsisStyle.paragraphSpacingBefore = 4.0;
 			
+			CGFloat fontSize = [OutlineViewItem fontSize];
+			
 			#if TARGET_OS_IOS
-				BXFont* synopsisFont = [BXFont italicSystemFontOfSize:BXFont.smallSystemFontSize];
+				BXFont* synopsisFont = [BXFont italicSystemFontOfSize:fontSize];
 			#else
-				BXFont* synopsisFont = [BXFont systemFontOfSize:BXFont.smallSystemFontSize];
+				BXFont* synopsisFont = [BXFont systemFontOfSize:fontSize];
 			#endif
 			
 			NSMutableAttributedString *synopsisLine = [NSMutableAttributedString.alloc initWithString:synopsisStr attributes:@{
