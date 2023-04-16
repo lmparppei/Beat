@@ -188,7 +188,6 @@
 @property (weak) IBOutlet BeatSegmentedControl *sideBarTabControl;
 @property (weak) IBOutlet NSTabView *sideBarTabs;
 @property (weak) IBOutlet BeatOutlineView *outlineView;
-@property (weak) IBOutlet NSScrollView *outlineScrollView;
 @property (weak) NSArray *draggedNodes;
 @property (weak) OutlineScene *draggedScene; // Drag & drop for outline view
 @property (nonatomic, weak) IBOutlet NSSearchField *outlineSearchField;
@@ -344,9 +343,6 @@
 #define CHR_WIDTH 7.25
 #define DOCUMENT_WIDTH_MODIFIER 61 * CHR_WIDTH
 #define CHARACTER_INDENT_P 18 * CHR_WIDTH
-
-#define DOCUMENT_WIDTH_A4 59 * CHR_WIDTH
-#define DOCUMENT_WIDTH_US 61 * CHR_WIDTH
 
 // DOCUMENT LAYOUT SETTINGS
 #define INITIAL_WIDTH 900
@@ -626,6 +622,7 @@ static BeatAppDelegate *appDelegate;
 	[NSDistributedNotificationCenter.defaultCenter addObserver:self selector:@selector(didChangeAppearance) name:@"AppleInterfaceThemeChangedNotification" object:nil];
 }
 
+	
 #pragma mark - Misc document stuff
 
 - (NSString *)displayName {
@@ -1710,12 +1707,14 @@ static NSWindow __weak *currentKeyWindow;
 		[_parser ensureDialogueParsingFor:previousCue];
 	}
 	
+	// Update hidden Fountain markup
+	[_textView updateMarkupVisibility];
+	
 	// We REALLY REALLY should make some sort of cache for these, or optimize outline creation
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update all views which are affected by the caret position
 		if (self.sidebarVisible || self.timeline.visible || self.runningPlugins) {
 			self.outline = [self getOutlineItems];
-			self.currentScene = [self getCurrentSceneWithPosition:self.selectedRange.location];
 		}
 		
 		[self updateUIwithCurrentScene];
@@ -1726,8 +1725,6 @@ static NSWindow __weak *currentKeyWindow;
 		// Update running plugins
 		if (self.runningPlugins.count) [self updatePluginsWithSelection:self.selectedRange];
 	});
-	
-	[_textView updateMarkupVisibility];
 }
 
 
@@ -2137,6 +2134,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// Format the line (if mid-screenplay)
 	[_formatting formatLine:currentLine];
 	
+	// TODO: Move this to text view
+	
 	// Set typing attributes (just in case, and if at the end)
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
@@ -2149,6 +2148,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (void)cancelCharacterInput {
+	// TODO: Move this to text view
 	_characterInput = NO;
 	
 	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
@@ -2813,7 +2813,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	NSArray* openDocuments = NSDocumentController.sharedDocumentController.documents;
 	for (Document* doc in openDocuments) {
-		[doc updateUIColors];
+		if (doc != self) [doc updateUIColors];
 	}
 	
 	[self.textView refreshLayoutElements];
@@ -2831,13 +2831,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)updateUIColors {
 	if (_documentWindow.frame.size.height == 0 || _documentWindow.frame.size.width == 0) return;
+
 	if (@available(macOS 10.14, *)) {
 		// Force the whole window into dark mode if possible.
 		// This redraws everything by default.
 		if ([self isDark]) self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
 		else self.documentWindow.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
 		self.documentWindow.viewsNeedDisplay = true;
-		
 	} else {
 		// Else, we need to force everything to redraw, in a very clunky way
 		[self.documentWindow setViewsNeedDisplay:true];
@@ -2864,7 +2864,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		self.sideBarTabs.needsLayout = true;
 		self.sideBarTabControl.needsDisplay = true;
 		self.sideBarTabControl.needsLayout = true;
-	
+		
 		[self.outlineView reloadOutline];
 	}
 	
@@ -2875,7 +2875,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.textScrollView layoutButtons];
 	[self.documentWindow setViewsNeedDisplay:true];
 	[self.textView redrawUI];
-	
+
+
 	// Update background layers
 	[_marginView updateBackground];
 }
@@ -2901,7 +2902,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if (setTextColor) [doc.textView setTextColor:self.themeManager.textColor];
 	else {
 		[self.textView setNeedsLayout:YES];
-		[self.textView setNeedsDisplay:YES];
 		[self.textView setNeedsDisplayInRect:self.textView.frame avoidAdditionalLayout:YES];
 	}
 	[doc.textView setInsertionPointColor:self.themeManager.caretColor];

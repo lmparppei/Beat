@@ -172,6 +172,8 @@
 
 -(void)reloadOutline:(NSArray*)changesInOutline
 {
+	NSRect bounds = self.enclosingScrollView.contentView.bounds;
+	
 	// Reload full data when no specific changes are sent
 	if (changesInOutline.count == 0) {
 		[self reloadOutline];
@@ -204,9 +206,12 @@
 	// Sections should be expanded by default
 	for (OutlineScene *scene in outline) {
 		if (![_collapsed containsObject:scene] && scene.type == section && ![self isItemExpanded:scene]) {
-			[self expandItem:scene expandChildren:YES];
+			[self expandItemWithoutAnimation:scene expandChildren:true];
 		}
 	}
+	
+	// Scroll back to where we were
+	self.enclosingScrollView.contentView.bounds = bounds;
 	
 	// Enable animations again
 	[NSAnimationContext endGrouping];
@@ -217,13 +222,12 @@
 
 -(void)reloadOutline
 {
-	[self beginUpdates];
-	
 	// Store the current outline
 	NSArray* outline = self.outline;
 	
 	// Save outline scroll position
 	NSRect bounds = self.enclosingScrollView.contentView.bounds;
+	NSRect b = self.enclosingScrollView.contentView.bounds;
 	
 	// Check if there are filters on and then reload data
 	[self filterOutline];
@@ -234,13 +238,13 @@
 	
 	// Expand any new sections by default
 	for (OutlineScene *scene in outline) {
-		if (![_collapsed containsObject:scene] && scene.type == section) [self expandItem:scene expandChildren:YES];
+		if (![_collapsed containsObject:scene] && scene.type == section) {
+			[self expandItem:scene expandChildren:YES];
+		}
 	}
 
 	// Scroll back to where we were
-	[self.enclosingScrollView.contentView setBounds:bounds];
-	
-	[self endUpdates];
+	self.enclosingScrollView.contentView.bounds = bounds;
 	
 	self.cachedOutline = outline;
 }
@@ -540,21 +544,21 @@
 		if (![self.filteredOutline containsObject:scene]) return;
 	}
 	
+	NSRect r = [self rectOfRow:[self rowForItem:scene]];
+	NSRect b = self.enclosingScrollView.contentView.bounds;
+	
 	// If the current scene is inside a section, show the section
 	if (scene.parent != nil) {
-		if (![self isItemExpanded:scene.parent]) [self expandItem:scene.parent];
+		if (![self isItemExpanded:scene.parent]) [self expandItemWithoutAnimation:scene expandChildren:false];
 	}
 
-	// Redraw selection
-	[self setNeedsDisplay];
-	[self reloadItem:scene];
-	
 	dispatch_async(dispatch_get_main_queue(), ^(void){
 		[NSAnimationContext runAnimationGroup:^(NSAnimationContext *context){
 			context.allowsImplicitAnimation = YES;
 			[self scrollRowToVisible:[self rowForItem:scene]];
 		} completionHandler:NULL];
 	});
+
 }
 
 #pragma mark - Filtering
@@ -574,7 +578,6 @@
 	//_filteredOutline = _filters.filteredScenes;
 
 	for (OutlineScene * scene in self.editorDelegate.outline) {
-		//NSLog(@"%@ - %@", scene.string, [_filters match:scene] ? @"YES" : @"NO");
 		if ([_filters match:scene]) [_filteredOutline addObject:scene];
 	}
 }
@@ -679,6 +682,15 @@
 	for (OutlineScene *scene in self.editorDelegate.outline) {
 		if ([self isExpandable:scene]) [self collapseItem:scene collapseChildren:YES];
 	}
+}
+
+-(void)expandItemWithoutAnimation:(id)item expandChildren:(BOOL)expandChildren {
+	[NSAnimationContext beginGrouping];
+	[[NSAnimationContext currentContext] setDuration:0.0];
+
+	[super expandItem:item expandChildren:expandChildren];
+
+	[NSAnimationContext endGrouping];
 }
 
 @end

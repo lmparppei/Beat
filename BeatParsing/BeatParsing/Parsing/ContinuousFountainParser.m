@@ -1879,21 +1879,20 @@ static NSDictionary* patterns;
     }
 }
 
+/// Updates the current outline with given change.
 - (void)updateOutlineWithChangeInRange:(NSRange)range {
-	if (range.length > 1) {
+	// If more than one character was changed, we'll recreate the whole outline
+    if (range.length > 1) {
 		[self createOutline];
 		return;
 	}
 	
 	// Get the line at edited position
 	Line *line = [self lineAtPosition:range.location];
+    NSArray* outline = self.safeOutline;
     
+    // Sections require recreating the whole outline.
 	if (line.type == section) {
-        // If the section already exists, do nothing.
-        for (OutlineScene* scene in self.safeOutline) {
-            if (scene.line == line) return;
-        }
-        
 		[self createOutline];
 		return;
 	}
@@ -1909,7 +1908,7 @@ static NSDictionary* patterns;
     }
     
 	else if (line.type == heading) {
-		for (OutlineScene *scene in self.outline) {
+		for (OutlineScene *scene in outline) {
 			if (scene.type == heading && scene.line.sceneNumberRange.length == 0 && !scene.omitted) {
 				sceneNumber++;
 			}
@@ -1952,7 +1951,7 @@ static NSDictionary* patterns;
 	
 	OutlineScene *lastFoundSection;
 	OutlineScene *lastFoundScene;
-	NSMutableArray *sectionTree = NSMutableArray.new; // NOTE: This is not a real tree structure, just a path to get where we're now
+	NSMutableArray *sectionPath = NSMutableArray.new; // This is the path to the current section
 	
 	for (Line* line in lines) {
         // We've encountered a new outline element
@@ -1985,26 +1984,24 @@ static NSDictionary* patterns;
 			[scene.beats removeAllObjects];
 			
 			if (scene.type == section) {
-				// Check setion depth
+				// Check section depth
 				if (sectionDepth < line.sectionDepth) {
 					// This is deeper than the previous one
-					scene.parent = sectionTree.lastObject;
-					[sectionTree addObject:scene];
+					scene.parent = sectionPath.lastObject;
+					[sectionPath addObject:scene];
 				} else {
 					// This is a higher-level section, so remove anything that's lower-level
-					while (sectionTree.count) {
-						OutlineScene *pSection = sectionTree.lastObject;
-						if (pSection.sectionDepth >= scene.sectionDepth) {
-							[sectionTree removeLastObject];
-						} else {
-							[sectionTree removeLastObject];
+					while (sectionPath.count) {
+						OutlineScene *pSection = sectionPath.lastObject;
+                        [sectionPath removeLastObject];
+                        
+                        if (pSection.sectionDepth <= scene.sectionDepth) {
 							break;
 						}
 					}
 					
-					scene.parent = sectionTree.lastObject;
-					
-					[sectionTree addObject:scene];
+					scene.parent = sectionPath.lastObject;
+					[sectionPath addObject:scene];
 				}
 				
 				// Save section depth
