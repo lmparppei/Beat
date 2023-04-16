@@ -242,6 +242,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
 		else { return 0.0 }
 		//(float)currentPage.y / (float)currentPage.maxHeight
+		print("---> last page height", (lastPage.maxHeight - lastPage.remainingSpace) / lastPage.maxHeight)
 		return (lastPage.maxHeight - lastPage.remainingSpace) / lastPage.maxHeight
 	}
 	

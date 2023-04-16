@@ -204,10 +204,13 @@
 			}
 		}
 	
-		// Catch wrong parsing (just in case)
+		// Catch wrong parsing (just as a precaution)
 		if (line.string.length == 0 ||
+			line.type == empty ||
 			line.isTitlePage ||
-			(line.isInvisible && !(_settings.printNotes && line.note))) {
+			(line.isInvisible && !(_settings.printNotes && line.note)) ||
+			line.type == synopse ||
+			line.type == section) {
 			[_lineQueue removeObjectAtIndex:0];
 			continue;
 		}
@@ -239,7 +242,7 @@
 		}
 	}
 	
-	[_pages addObject:_currentPage];
+	if (_currentPage.blocks.count > 0) [_pages addObject:_currentPage];
 	
 	return true;
 }
@@ -468,8 +471,6 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	NSInteger numberOfBlocks = 0;
 	
 	NSInteger blockIndex = [page blockIndexForLine:scene.line];
-	
-	NSLog(@" • block index: %lu (%@)", blockIndex, scene.line);
 	
 	for (NSInteger i = pageIndex; i < self.pages.count; i++) {
 		BeatPaginationPage* page = self.pages[i];
