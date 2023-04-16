@@ -1245,11 +1245,17 @@
 
 #pragma mark - Pagination interface
 
-- (BeatPaginator*)paginator:(NSArray*)lines
+- (id)paginator:(NSArray*)lines
 {
-	BeatExportSettings* settings = self.delegate.exportSettings;
-	BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines settings:settings];
-	return paginator;
+	if (_delegate.nativeRendering) {
+		BeatPagination* pagination = [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
+		return pagination;
+
+	} else {
+		BeatExportSettings* settings = self.delegate.exportSettings;
+		BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines settings:settings];
+		return paginator;
+	}
 }
 
 - (NSString*)htmlForLines:(NSArray*)lines

@@ -18,6 +18,7 @@ import Foundation
 	@objc func heightForScene(_ scene:OutlineScene) -> CGFloat
 	@objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int]
 	@objc func paginate(lines: [Line])
+	@objc func paginateLines(_ lines:[Line])
 }
 
 @objc protocol BeatPaginationManagerDelegate {
@@ -91,8 +92,6 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		
 		// If the queue is empty, run it right away. Otherwise the operation will be run once other renderers have finished.
 		if operationQueue.last != nil {
-			//if pagination.livePagination { renderer.paginateForEditor() }
-			//else { renderer.paginate() }
 			operationQueue.last!.paginate()
 		}
 	}
@@ -130,6 +129,9 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		
 		let operation = BeatPagination.newPagination(with: lines, delegate: self)
 		runPagination(pagination: operation)
+	}
+	func paginateLines(_ lines:[Line]) {
+		self.paginate(lines: lines)
 	}
 	
 	// MARK: - Finished operations
@@ -229,11 +231,18 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		return [pageCount, eights]
 	}
 	
-	var lastPageHeight:CGFloat {
+	var actualLastPageHeight:CGFloat {
 		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
 		else { return 0.0 }
 		
 		return lastPage.maxHeight - lastPage.remainingSpace
+	}
+	
+	var lastPageHeight:CGFloat {
+		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
+		else { return 0.0 }
+		//(float)currentPage.y / (float)currentPage.maxHeight
+		return (lastPage.maxHeight - lastPage.remainingSpace) / lastPage.maxHeight
 	}
 	
 	// MARK: - Forwarded delegate properties
