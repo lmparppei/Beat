@@ -450,9 +450,9 @@
 			// Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
 			NSRange rRange = range;
 			for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
-				if (i < 0) break; // Why do we need this?
+				if (i < 0) break;
 				if ([self.textStorage.string characterAtIndex:i] == '\n') {
-					rRange.length = NSMaxRange(rRange) - i - 1;
+					rRange.length = NSMaxRange(rRange) - 1;
 					break;
 				}
 			}
@@ -481,7 +481,7 @@
 				if (fullLine) {
                     CGFloat padding = textView.textContainer.lineFragmentPadding;
 					fullRect.origin.x = inset.width + padding;
-					fullRect.size.width = inset.width - padding * 2;
+					fullRect.size.width = textView.textContainer.size.width - padding * 2;
 				}
 				
 				//NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:fullRect xRadius:2.0 yRadius:2.0];

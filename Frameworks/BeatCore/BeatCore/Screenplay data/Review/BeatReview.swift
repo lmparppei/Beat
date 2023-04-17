@@ -50,7 +50,7 @@ public protocol BeatReviewInterface {
 // MARK: Review item
 
 @objc public class BeatReviewItem:NSObject, NSCopying, NSCoding {
-	public var string:NSString! = ""
+	@objc public var string:NSString! = ""
 	
 	@objc public var emptyReview:Bool {
 		get {
