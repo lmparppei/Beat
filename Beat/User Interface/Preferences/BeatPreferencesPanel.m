@@ -11,6 +11,7 @@
 #import "BeatPreferencesPanel.h"
 #import "Document.h"
 #import "BeatModalInput.h"
+#import "Beat-Swift.h"
 
 //#define HEADING_SAMPLE @"INT. SCENE - DAY"
 
@@ -166,6 +167,9 @@
 	[self updateHeadingSample:NO];
 }
 - (void)updateHeadingSample:(bool)windowDidLoad {
+	// Reload global styles whenever something was changed style-wise
+	[BeatRenderStyles.shared reload];
+	
 	// Save the original heading
 	if (!_headingSample) _headingSample = self.sampleHeading.stringValue.copy;
 	
