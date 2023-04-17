@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) BeatPaginationManager* pagination;
 - (NSAttributedString*)pageNumberBlockForPageNumber:(NSInteger)pageNumber;
 - (NSAttributedString*)renderBlock:(BeatPaginationBlock*)block firstElementOnPage:(bool)firstElementOnPage;
+- (void)reloadStyles;
 @end
 
 @protocol BeatPaginationDelegate

@@ -108,6 +108,10 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		self.previewView?.clear()
 	}
 	
+	@objc func reloadStyles() {
+		self.renderer?.reloadStyles()
+	}
+	
 	/// Renders pages on screen
 	@objc func renderOnScreen() {
 		// Show spinner while loading

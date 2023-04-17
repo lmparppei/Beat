@@ -366,7 +366,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let columnFrame = NSRect(x: pageStyle.marginLeft,
 								 y: textViewFrame.origin.y + textViewFrame.height,
 								 width: textViewFrame.width / 2 - 10,
-								 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom - BeatPagination.lineHeight())
+								 height: frame.height - textViewFrame.size.height - pageStyle.marginTop - BeatPagination.lineHeight())
 		
 		if (leftColumn == nil) {
 			leftColumn = NSTextView(frame: columnFrame)

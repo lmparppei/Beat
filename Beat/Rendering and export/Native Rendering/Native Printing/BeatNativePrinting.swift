@@ -100,15 +100,17 @@ class BeatNativePrinting:NSView {
 			self.pagination.newPagination(screenplay: self.screenplay, settings: self.settings, forEditor: false, changeAt: 0)
 			
 			DispatchQueue.main.sync {
-				self.createPageViews()
-				
+				// PDF operations require a URL. Temporary one for preview, user-selected for export.
 				if self.operation == .toPreview {
-					// Our URL will be a random, temp url
 					self.url = self.tempURL()
 				}
 				else if self.operation == .toPDF {
 					// Request URL from user
-					self.getURLforPDF()
+					self.url = self.getURLforPDF()
+					if (!(self.url?.startAccessingSecurityScopedResource() ?? false)) {
+						print("ERROR")
+						return
+					}
 				}
 				
 				// No URL set for PDF operations, just exit this bowling alley
@@ -117,22 +119,36 @@ class BeatNativePrinting:NSView {
 					self.printOperationDidRun(nil, success: false, contextInfo: nil)
 					return
 				}
-								
+				
+				// Create page views
+				self.createPageViews()
+				
 				let printInfo = NSPrintInfo()
 				printInfo.horizontalPagination = .fit
 				printInfo.verticalPagination = .fit
 
+				// We don't want *any* margins (they are drawn on page)
 				printInfo.leftMargin = 0.0
 				printInfo.rightMargin = 0.0
 				printInfo.topMargin = 0.0
 				printInfo.bottomMargin = 0.0
 				printInfo.jobDisposition = .spool
-				
+								
+				// Special rules for PDF export
 				if (self.operation != .toPrint) {
+					// Convert URL to NSURL
+					let url:NSURL
+					if #available(macOS 13.0, *) {
+						url = NSURL(fileURLWithPath: self.url!.path())
+					} else {
+						url = NSURL(fileURLWithPath: self.url!.path)
+					}
+					
 					printInfo.jobDisposition = .save
-					printInfo.dictionary().setObject(NSURL(fileURLWithPath: self.url!.absoluteString), forKey: NSPrintInfo.AttributeKey.jobSavingURL as NSCopying)
+					printInfo.dictionary().setObject(url, forKey: NSPrintInfo.AttributeKey.jobSavingURL as NSCopying)
 				}
 				
+				// Create the actual print operation with specific settings for preview and printing options
 				let printOperation = NSPrintOperation(view: self, printInfo: printInfo)
 				printOperation.showsProgressPanel = (self.operation != .toPreview)
 				printOperation.showsPrintPanel = (self.operation == .toPrint)
@@ -155,6 +171,9 @@ class BeatNativePrinting:NSView {
 				print("ERROR: No PDF file found")
 				return
 			}
+			
+			self.url?.stopAccessingSecurityScopedResource()
+			
 			callback(self, NSURL(fileURLWithPath: url.relativePath))
 		} else {
 			// Inform that the printing was successful
@@ -236,7 +255,7 @@ class BeatNativePrinting:NSView {
 		return url
 	}
 	
-	func getURLforPDF() {
+	func getURLforPDF() -> URL? {
 		var filename = "Untitled"
 		if self.delegate != nil {
 			filename = self.delegate!.fileNameString()
@@ -247,6 +266,7 @@ class BeatNativePrinting:NSView {
 		saveDialog.nameFieldStringValue = filename
 		
 		if (self.window != nil) {
+			// If we are running this from a document, let's use a sheet
 			saveDialog.beginSheetModal(for: self.window!) { value in
 				let response = value as NSApplication.ModalResponse
 				
@@ -257,12 +277,15 @@ class BeatNativePrinting:NSView {
 					self.url = nil
 				}
 			}
+			return self.url
+			
 		} else {
+			// Else, we're using a normal modal
 			let response = saveDialog.runModal()
 			if (response == .OK) {
-				self.url = saveDialog.url
+				return saveDialog.url
 			} else {
-				self.url = nil
+				return nil
 			}
 		}
 	}

@@ -256,7 +256,6 @@
 #pragma mark - General editor stuff
 
 - (void)updateQuickSettings;
-- (void)updatePreview;
 
 - (void)handleTabPress;
 - (void)registerEditorView:(id)view;
@@ -273,6 +272,9 @@
 @optional - (NSDictionary*)runningPlugins;
 
 
+#pragma mark - Preview
+
+- (void)updatePreview;
 
 @end
 

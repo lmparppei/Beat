@@ -48,6 +48,10 @@
 	}
 }
 
+- (void)reloadStyles {
+	[BeatRenderStyles.shared reload];
+}
+
 - (BeatRenderStyles*)styles {
 	if ([self.settings.styles isKindOfClass:BeatRenderStyles.class] && self.settings.styles != nil) {
 		return self.settings.styles;

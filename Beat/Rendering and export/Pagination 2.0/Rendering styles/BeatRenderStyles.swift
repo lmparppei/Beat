@@ -14,7 +14,7 @@ import Foundation
 	var settings:BeatExportSettings { get }
 }
 
-class BeatRenderStyles:NSObject {
+@objc class BeatRenderStyles:NSObject {
 	@objc static let shared = BeatRenderStyles(stylesheet: "Styles")
 	@objc static let editor = BeatRenderStyles(stylesheet: "EditorStyles")
 	var styles:[String:RenderStyle] = [:]
@@ -32,7 +32,7 @@ class BeatRenderStyles:NSObject {
 	
 	override init() {
 		super.init()
-		loadStyles(stylesheet: "Styles")
+		loadStyles()
 	}
 	
 	init(stylesheet:String) {
@@ -55,6 +55,9 @@ class BeatRenderStyles:NSObject {
 		}
 	}
 	
+	@objc func reload() {
+		self.loadStyles()
+	}
 	
 	@objc func page() -> RenderStyle {
 		return styles["page"]!
