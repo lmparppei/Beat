@@ -1788,6 +1788,7 @@ static NSWindow __weak *currentKeyWindow;
 	if (self.sidebarVisible && !self.outlineView.dragging && !self.outlineView.editing) {
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
 			[self.outlineView scrollToScene:currentScene];
+			self.outlineView.needsDisplay = true;
 		});
 	}
 

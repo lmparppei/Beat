@@ -159,7 +159,7 @@
                                                                                     <rect key="frame" x="0.0" y="0.0" width="289" height="345"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
-                                                                                        <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="7" autoresizesOutlineColumn="YES" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
+                                                                                        <outlineView focusRingType="none" appearanceType="darkAqua" verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" tableStyle="fullWidth" selectionHighlightStyle="none" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="15" usesAutomaticRowHeights="YES" viewBased="YES" indentationPerLevel="7" outlineTableColumn="1GC-LJ-Pxa" id="7yW-8d-gb9" customClass="BeatOutlineView">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="289" height="345"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <size key="intercellSpacing" width="0.0" height="8"/>
@@ -176,14 +176,13 @@
                                                                                                         <color key="textColor" red="0.80841159326424872" green="0.80841159326424872" blue="0.80841159326424872" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                                         <color key="backgroundColor" name="selectedTextColor" catalog="System" colorSpace="catalog"/>
                                                                                                     </textFieldCell>
-                                                                                                    <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                                    <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                                                                     <prototypeCellViews>
-                                                                                                        <tableCellView identifier="SceneView" id="mpy-KU-4Le">
-                                                                                                            <rect key="frame" x="0.0" y="4" width="289" height="14"/>
-                                                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                                        <tableCellView identifier="SceneView" translatesAutoresizingMaskIntoConstraints="NO" id="mpy-KU-4Le">
+                                                                                                            <rect key="frame" x="0.0" y="4" width="277" height="14"/>
                                                                                                             <subviews>
                                                                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="vvi-uv-1gF">
-                                                                                                                    <rect key="frame" x="-2" y="0.0" width="293" height="14"/>
+                                                                                                                    <rect key="frame" x="-2" y="0.0" width="281" height="14"/>
                                                                                                                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Table View Cell" id="LeM-Df-kg2">
                                                                                                                         <font key="font" metaFont="smallSystem"/>
                                                                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -192,10 +191,10 @@
                                                                                                                 </textField>
                                                                                                             </subviews>
                                                                                                             <constraints>
-                                                                                                                <constraint firstItem="vvi-uv-1gF" firstAttribute="leading" secondItem="mpy-KU-4Le" secondAttribute="leading" id="RVZ-PF-JYU"/>
-                                                                                                                <constraint firstAttribute="trailing" secondItem="vvi-uv-1gF" secondAttribute="trailing" id="V28-6W-xNy"/>
-                                                                                                                <constraint firstAttribute="bottom" secondItem="vvi-uv-1gF" secondAttribute="bottom" id="WQf-ql-Pmc"/>
-                                                                                                                <constraint firstItem="vvi-uv-1gF" firstAttribute="top" secondItem="mpy-KU-4Le" secondAttribute="top" id="Yay-ze-C5i"/>
+                                                                                                                <constraint firstItem="vvi-uv-1gF" firstAttribute="top" secondItem="mpy-KU-4Le" secondAttribute="top" id="IMY-FG-M97"/>
+                                                                                                                <constraint firstAttribute="bottom" secondItem="vvi-uv-1gF" secondAttribute="bottom" id="LLW-gJ-jhg"/>
+                                                                                                                <constraint firstAttribute="trailing" secondItem="vvi-uv-1gF" secondAttribute="trailing" id="gMi-w5-voa"/>
+                                                                                                                <constraint firstItem="vvi-uv-1gF" firstAttribute="leading" secondItem="mpy-KU-4Le" secondAttribute="leading" id="tFA-5P-vP1"/>
                                                                                                             </constraints>
                                                                                                             <connections>
                                                                                                                 <outlet property="textField" destination="vvi-uv-1gF" id="QRB-wh-h1K"/>
@@ -511,7 +510,7 @@
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="KMN-Ua-n4W">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="300" height="480"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <textView drawsBackground="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsUndo="YES" allowsNonContiguousLayout="YES" spellingCorrection="YES" smartInsertDelete="YES" id="717-An-Uvy" customClass="BeatNotepad">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="280" height="470"/>
