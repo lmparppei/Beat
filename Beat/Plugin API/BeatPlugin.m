@@ -1248,9 +1248,7 @@
 - (id)paginator:(NSArray*)lines
 {
 	if (_delegate.nativeRendering) {
-		BeatPagination* pagination = [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
-		return pagination;
-
+		return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
 	} else {
 		BeatExportSettings* settings = self.delegate.exportSettings;
 		BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines settings:settings];
