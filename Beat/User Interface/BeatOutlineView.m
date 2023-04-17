@@ -227,7 +227,6 @@
 	
 	// Save outline scroll position
 	NSRect bounds = self.enclosingScrollView.contentView.bounds;
-	NSRect b = self.enclosingScrollView.contentView.bounds;
 	
 	// Check if there are filters on and then reload data
 	[self filterOutline];
@@ -543,9 +542,6 @@
 	if (self.filteredOutline.count) {
 		if (![self.filteredOutline containsObject:scene]) return;
 	}
-	
-	NSRect r = [self rectOfRow:[self rowForItem:scene]];
-	NSRect b = self.enclosingScrollView.contentView.bounds;
 	
 	// If the current scene is inside a section, show the section
 	if (scene.parent != nil) {
