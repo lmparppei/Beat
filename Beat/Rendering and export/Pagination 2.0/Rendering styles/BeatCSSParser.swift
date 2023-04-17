@@ -130,8 +130,8 @@ final class CssParser {
 	func convertValueToString(_ value:Any) -> String {
 		var userSettingValue = ""
 		
-		if value is Bool { userSettingValue = (value as! Bool) ? "true" : "false" }
-		else if value is Int { userSettingValue = String(value as? Int ?? 0) }
+		if value is Int { userSettingValue = String(value as? Int ?? 0) }
+		else if value is Bool { userSettingValue = (value as! Bool) ? "true" : "false" }
 		else if value is String { userSettingValue = String(value as? String ?? "") }
 		
 		return userSettingValue
@@ -146,6 +146,14 @@ final class CssParser {
 				
 				let userSettingValue = convertValueToString(val)
 				value = value.replacingOccurrences(of: "userSetting(" + userSetting + ")", with: userSettingValue)
+			}
+		}
+		if value.contains("userValue(") {
+			for userSetting in userSettings {
+				guard let val = BeatUserDefaults.shared().get(userSetting) else { continue }
+				
+				let userSettingValue = convertValueToString(val)
+				value = value.replacingOccurrences(of: "userValue(" + userSetting + ")", with: userSettingValue)
 			}
 		}
 		

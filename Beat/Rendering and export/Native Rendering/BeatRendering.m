@@ -403,7 +403,7 @@
 	rightStyle.textBlocks = @[rightCell];
 	rightStyle.alignment = NSTextAlignmentRight;
 	rightStyle.maximumLineHeight = BeatPagination.lineHeight;
-	rightStyle.paragraphSpacing = BeatPagination.lineHeight;
+	rightStyle.paragraphSpacing = BeatPagination.lineHeight * 2;
 	
 	// Left cell is just empty, no additional styles needed
 	NSMutableAttributedString* leftContent = [NSMutableAttributedString.alloc initWithString:@" \n" attributes:@{
@@ -475,6 +475,7 @@
 		pStyle.headIndent = style.marginLeft;
 		pStyle.firstLineHeadIndent = style.marginLeft;
 		pStyle.paragraphSpacingBefore = style.marginTop;
+		
 		pStyle.paragraphSpacing = style.marginBottom;
 		pStyle.tailIndent = -1 * style.marginRight; // Negative value;
 		

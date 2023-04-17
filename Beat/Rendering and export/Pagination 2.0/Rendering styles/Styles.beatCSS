@@ -17,7 +17,7 @@ page {
 	margin-right: 25;
 	padding-left: 60;
     margin-top: 30;
-	margin-bottom: 50;
+	margin-bottom: 105;
 	
 	default-width-a4: 60ch;
 	default-width-us: 62ch;
@@ -31,7 +31,7 @@ heading {
     width-a4: 60ch - 2ch;
     width-us: 62ch - 2ch;
     
-    margin-top: 2l;
+    margin-top: userSetting(sceneHeadingSpacing)l;
     bold: userSetting(headingStyleBold);
 	underline: userSetting(headingStyleUnderline);
 	
@@ -140,7 +140,7 @@ shot {
 	bold: true;
 	uppercase: true;
 	
-	margin-top: 1l;
+	margin-top: userSetting(sceneHeadingSpacing)l;
 }
 
 titlePageTitle {
