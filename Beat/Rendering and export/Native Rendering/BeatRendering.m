@@ -144,6 +144,12 @@
 	NSDictionary* attrs = [self attributesForLine:line dualDialogue:(block != nil) ? block.dualDialogueElement : false];
 	NSMutableAttributedString *attributedString = [NSMutableAttributedString.alloc initWithString:string attributes:attrs];
 	
+	// Underlining
+	if (style.underline) {
+		[attributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0, attributedString.length)];
+		[attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:NSMakeRange(0, attributedString.length)];
+	}
+	
 	// Remove top margin for first elements on a page
 	if (firstElementOnPage) {
 		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];

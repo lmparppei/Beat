@@ -34,6 +34,8 @@ heading {
     margin-top: 2l;
     bold: userSetting(headingStyleBold);
 	underline: userSetting(headingStyleUnderline);
+	
+	uppercase: true;
 }
 
 action {
