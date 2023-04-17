@@ -23,6 +23,7 @@
 		B633C1ED298C63250011449D /* BeatLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1EA298C631E0011449D /* BeatLocalization.m */; };
 		B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = B633C1EF298C63E60011449D /* BeatAttributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B633C1F2298C63E70011449D /* BeatAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C1F0298C63E70011449D /* BeatAttributes.m */; };
+		B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */; };
 		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
 		B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -75,6 +76,7 @@
 		B633C1EA298C631E0011449D /* BeatLocalization.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatLocalization.m; sourceTree = "<group>"; };
 		B633C1EF298C63E60011449D /* BeatAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatAttributes.h; sourceTree = "<group>"; };
 		B633C1F0298C63E70011449D /* BeatAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatAttributes.m; sourceTree = "<group>"; };
+		B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatURLExtensions.swift; sourceTree = "<group>"; };
 		B679B6F529DFEB68005FFC40 /* BeatTranslation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatTranslation.h; sourceTree = "<group>"; };
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
 		B681D58F29A37DBD00DF16CA /* BeatDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocument.h; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				B68C0F5F299D843B0031AE6B /* BeatValueTransformers.swift */,
 				B6D3202B298EBEEB003DA45D /* NSString+Levenshtein.h */,
 				B6D3202A298EBEEB003DA45D /* NSString+Levenshtein.m */,
+				B6607E9029EDCE43000A6E41 /* BeatURLExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 				B68C0F64299D843C0031AE6B /* BeatStringExtensions.swift in Sources */,
 				B68C0F63299D843C0031AE6B /* BeatArrayExtensions.swift in Sources */,
 				B6D32025298EBE45003DA45D /* BeatTagging.m in Sources */,
+				B6607E9129EDCE43000A6E41 /* BeatURLExtensions.swift in Sources */,
 				B633C1ED298C63250011449D /* BeatLocalization.m in Sources */,
 				B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */,
 				B6D32028298EBE45003DA45D /* BeatTag.m in Sources */,

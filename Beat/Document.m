@@ -2959,7 +2959,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Preview
 
 - (void)invalidatePreview {
-	if (self.nativeRendering) return;
+	if (self.nativeRendering) {
+		[self.previewController clearPreview];
+		return;
+	}
 	
 	// Mark the current preview as invalid
 	self.preview.previewUpdated = NO;

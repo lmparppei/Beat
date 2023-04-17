@@ -48,7 +48,7 @@
 @property (weak) id<BeatPaginatorDelegate> delegate;
 @property (nonatomic, readonly) NSUInteger numberOfPages;
 @property (nonatomic, readonly) NSArray* lengthInEights;
-@property (nonatomic) CGSize paperSize;
+@property (atomic) CGSize paperSize;
 @property (nonatomic) CGFloat lastPageHeight;
 @property (strong, atomic) NSMutableArray<NSMutableArray<Line*>*> *pages;
 @property (nonatomic) NSMutableIndexSet *updatedPages;
