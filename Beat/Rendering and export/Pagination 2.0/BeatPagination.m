@@ -438,7 +438,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	if (pages.count == 0) return @[ @0, @0 ];
 	
 	NSInteger pageIndex = [self findPageIndexAt:position pages:pages];
-	if (pageIndex == NSNotFound) return @[ @0, @0 ];
+	if (pageIndex == NSNotFound || pageIndex < 0) return @[ @0, @0 ];
 	
 	while (pageIndex >= 0) {
 		BeatPaginationPage* page = pages[pageIndex];
