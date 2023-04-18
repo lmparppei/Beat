@@ -137,12 +137,15 @@ class BeatNativePrinting:NSView {
 				// Special rules for PDF export
 				if (self.operation != .toPrint) {
 					// Convert URL to NSURL
-					let url:NSURL
+					let url:NSURL = NSURL(fileURLWithPath: self.url!.path)
+					
+					/*
 					if #available(macOS 13.0, *) {
-						url = NSURL(fileURLWithPath: self.url!.path())
+						url = NSURL(fileURLWithPath: self.url!.path(percentEncoded: true))
 					} else {
 						url = NSURL(fileURLWithPath: self.url!.path)
 					}
+					*/
 					
 					printInfo.jobDisposition = .save
 					printInfo.dictionary().setObject(url, forKey: NSPrintInfo.AttributeKey.jobSavingURL as NSCopying)
@@ -154,7 +157,12 @@ class BeatNativePrinting:NSView {
 				printOperation.showsPrintPanel = (self.operation == .toPrint)
 				
 				// Run print operation
-				printOperation.runModal(for: self.host, delegate: self, didRun: #selector(self.printOperationDidRun), contextInfo: nil)
+				if self.operation == .toPrint {
+					printOperation.runModal(for: self.host, delegate: self, didRun: nil, contextInfo: nil)
+				} else {
+					// PDF operations have to run asynchronously
+					printOperation.runModal(for: self.host, delegate: self, didRun: #selector(self.printOperationDidRun), contextInfo: nil)
+				}
 			}
 		}
 	}
