@@ -411,6 +411,14 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[line.strikeoutRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
 		[self stylize:NSStrikethroughStyleAttributeName value:@1 line:line range:range formattingSymbol:strikeoutSymbolOpen];
 	}];
+	
+	[textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:line.textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		BeatRevisionItem* revision = value;
+		if (revision.type == RevisionRemovalSuggestion) {
+			[textStorage addAttribute:NSStrikethroughStyleAttributeName value:@1 range:range];
+			[textStorage addAttribute:NSStrikethroughColorAttributeName value:BeatColors.colors[@"red"] range:range];
+		}
+	}];
 }
 
 #pragma mark - Set foreground color

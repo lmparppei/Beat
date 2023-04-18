@@ -1932,150 +1932,154 @@ static NSDictionary* patterns;
 
 - (void)createOutlineUsingLines:(NSArray<Line*>*)lines
 {
-    if (_storybeats == nil) _storybeats = NSMutableDictionary.new;
-    if (_storylines == nil) _storylines = NSMutableSet.new;
-    
-	[_storybeats removeAllObjects];
-    [_storylines removeAllObjects];
-	
-	// Set first scene number
-	NSUInteger sceneNumber = 1;
-	
-	if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 0) {
-		sceneNumber = [self.documentSettings getInt:DocSettingSceneNumberStart];
-	}
-	
-	OutlineScene *previousScene;
-	NSUInteger sectionDepth = 0; // We will store a section depth to adjust depth for scenes that come after a section
-	NSInteger sceneIndex = 0; // Calculate index for scene numbering
-	
-	OutlineScene *lastFoundSection;
-	OutlineScene *lastFoundScene;
-	NSMutableArray *sectionPath = NSMutableArray.new; // This is the path to the current section
-	
-	for (Line* line in lines) {
-        // We've encountered a new outline element
-		if (line.isOutlineElement) {
-			OutlineScene *scene;
-			
-            // Create new outline elements when needed
-			if (sceneIndex >= _outline.count) {
-				scene = [OutlineScene withLine:line delegate:self];
-			} else {
-				scene = _outline[sceneIndex];
-				scene.line = line;
-			}
-			
-			// Reset parent
-			scene.parent = nil;
-			scene.children = NSMutableArray.new;
-            scene.synopsis = NSMutableArray.new;
-			
-			// Create scene heading (for display)
-			if (!scene.omitted) scene.string = line.stripFormatting;
-			else scene.string = line.stripNotes;
-			
-			// Add storylines to the storyline bank
-			// scene.storylines = NSMutableArray.array;
-			[scene.beats addObjectsFromArray:line.beats];
-			[_storylines addObjectsFromArray:line.storylines];
-			
-			// Remove story beats
-			[scene.beats removeAllObjects];
-			
-			if (scene.type == section) {
-				// Check section depth
-				if (sectionDepth < line.sectionDepth) {
-					// This is deeper than the previous one
-					scene.parent = sectionPath.lastObject;
-					[sectionPath addObject:scene];
-				} else {
-					// This is a higher-level section, so remove anything that's lower-level
-					while (sectionPath.count) {
-						OutlineScene *pSection = sectionPath.lastObject;
-                        [sectionPath removeLastObject];
-                        
-                        if (pSection.sectionDepth <= scene.sectionDepth) {
-							break;
-						}
-					}
-					
-					scene.parent = sectionPath.lastObject;
-					[sectionPath addObject:scene];
-				}
-				
-				// Save section depth
-				sectionDepth = line.sectionDepth;
-				scene.sectionDepth = sectionDepth;
-				
-				lastFoundSection = scene;
-				lastFoundScene = nil; // Reset last found scene so we won't orphan synopsis lines
-			} else {
-				scene.sectionDepth = sectionDepth;
-			}
-			
-			if (line.type == heading) {
-				// Check if the scene is omitted
-				// If the scene is omited, let's not increment scene number for it.
-				// However, if the scene has a forced number, we'll maintain it
-				if (line.sceneNumberRange.length > 0) {
-					scene.sceneNumber = line.sceneNumber;
-				}
-				else {
-					if (!line.omitted) {
-						scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-						line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-						sceneNumber++;
-					} else {
-						scene.sceneNumber = @"";
-						line.sceneNumber = @"";
-					}
-				}
-				
-				// Set parent (NOTE: can be nil)
-				scene.parent = lastFoundSection;
-				
-				// Reset marker array
-				scene.markerColors = NSMutableSet.set;
-				
-				lastFoundScene = scene;
-			}
-			
-			// This was a new scene
-			if (sceneIndex >= _outline.count) [_outline addObject:scene];
-			
-			// Add this object to the children of its parent
-			if (scene.parent) [scene.parent.children addObject:scene];
-			
-			previousScene = scene;
-			sceneIndex++;
-		}
-		
-        // Add markers to item
-		if (line.marker.length) {
-			[previousScene.markerColors addObject:line.marker];
-		}
-		
-        // Add synopsis items to last scene
-        if (line.type == synopse && !line.omitted) {
-            if (lastFoundScene != nil) [lastFoundScene.synopsis addObject:line];
-            else if (lastFoundSection != nil) [lastFoundSection.synopsis addObject:line];
+    @synchronized (self) {
+        if (_storybeats == nil) _storybeats = NSMutableDictionary.new;
+        if (_storylines == nil) _storylines = NSMutableSet.new;
+        
+        [_storybeats removeAllObjects];
+        [_storylines removeAllObjects];
+        
+        // Set first scene number
+        NSUInteger sceneNumber = 1;
+        
+        if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 0) {
+            sceneNumber = [self.documentSettings getInt:DocSettingSceneNumberStart];
         }
         
-		if (line.beats.count) {
-			for (Storybeat *beat in line.beats) {
-				if (![previousScene.beats containsObject:beat]) [previousScene.beats addObject:beat];
-			}
-		}
-	}
-	
-	// Remove excess scene items
-	if (sceneIndex - 1 < _outline.count - 1) {
-		while (sceneIndex - 1 < _outline.count - 1) {
-			[_outline removeLastObject];
-		}
-	}
-	if (sceneIndex == 0) [_outline removeAllObjects];
+        OutlineScene *previousScene;
+        NSUInteger sectionDepth = 0; // We will store a section depth to adjust depth for scenes that come after a section
+        NSInteger sceneIndex = 0; // Calculate index for scene numbering
+        
+        OutlineScene *lastFoundSection;
+        OutlineScene *lastFoundScene;
+        NSMutableArray *sectionPath = NSMutableArray.new; // This is the path to the current section
+        
+        for (Line* line in lines) {
+            // We've encountered a new outline element
+            if (line.isOutlineElement) {
+                OutlineScene *scene;
+                
+                // Create new outline elements when needed
+                if (sceneIndex >= _outline.count) {
+                    scene = [OutlineScene withLine:line delegate:self];
+                } else {
+                    scene = _outline[sceneIndex];
+                    scene.line = line;
+                }
+                
+                // Reset parent
+                scene.parent = nil;
+                scene.children = NSMutableArray.new;
+                scene.synopsis = NSMutableArray.new;
+                
+                // Create scene heading (for display)
+                if (!scene.omitted) scene.string = line.stripFormatting;
+                else scene.string = line.stripNotes;
+                
+                // Add storylines to the storyline bank
+                // scene.storylines = NSMutableArray.array;
+                [scene.beats addObjectsFromArray:line.beats];
+                [_storylines addObjectsFromArray:line.storylines];
+                
+                // Remove story beats
+                [scene.beats removeAllObjects];
+                
+                if (scene.type == section) {
+                    // Check section depth
+                    if (sectionDepth < line.sectionDepth) {
+                        // This is deeper than the previous one
+                        scene.parent = sectionPath.lastObject;
+                        [sectionPath addObject:scene];
+                    } else {
+                        // This is a higher-level section, so remove anything that's lower-level
+                        while (sectionPath.count) {
+                            OutlineScene *pSection = sectionPath.lastObject;
+                            [sectionPath removeLastObject];
+                            
+                            if (pSection.sectionDepth <= scene.sectionDepth) {
+                                break;
+                            }
+                        }
+                        
+                        scene.parent = sectionPath.lastObject;
+                        [sectionPath addObject:scene];
+                    }
+                    
+                    // Save section depth
+                    sectionDepth = line.sectionDepth;
+                    scene.sectionDepth = sectionDepth;
+                    
+                    lastFoundSection = scene;
+                    lastFoundScene = nil; // Reset last found scene so we won't orphan synopsis lines
+                } else {
+                    scene.sectionDepth = sectionDepth;
+                }
+                
+                if (line.type == heading) {
+                    // Check if the scene is omitted
+                    // If the scene is omited, let's not increment scene number for it.
+                    // However, if the scene has a forced number, we'll maintain it
+                    if (line.sceneNumberRange.length > 0) {
+                        scene.sceneNumber = line.sceneNumber;
+                    }
+                    else {
+                        if (!line.omitted) {
+                            scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+                            line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
+                            sceneNumber++;
+                        } else {
+                            scene.sceneNumber = @"";
+                            line.sceneNumber = @"";
+                        }
+                    }
+                    
+                    // Set parent (NOTE: can be nil)
+                    scene.parent = lastFoundSection;
+                    
+                    // Reset marker array
+                    scene.markerColors = NSMutableSet.set;
+                    
+                    lastFoundScene = scene;
+                }
+                
+                // This was a new scene
+                if (sceneIndex >= _outline.count) [_outline addObject:scene];
+                
+                // Add this object to the children of its parent
+                if (scene.parent) {
+                    [scene.parent.children addObject:scene];
+                }
+                
+                previousScene = scene;
+                sceneIndex++;
+            }
+            
+            // Add markers to item
+            if (line.marker.length) {
+                [previousScene.markerColors addObject:line.marker];
+            }
+            
+            // Add synopsis items to last scene
+            if (line.type == synopse && !line.omitted) {
+                if (lastFoundScene != nil) [lastFoundScene.synopsis addObject:line];
+                else if (lastFoundSection != nil) [lastFoundSection.synopsis addObject:line];
+            }
+            
+            if (line.beats.count) {
+                for (Storybeat *beat in line.beats) {
+                    if (![previousScene.beats containsObject:beat]) [previousScene.beats addObject:beat];
+                }
+            }
+        }
+        
+        // Remove excess scene items
+        if (sceneIndex - 1 < _outline.count - 1) {
+            while (sceneIndex - 1 < _outline.count - 1) {
+                [_outline removeLastObject];
+            }
+        }
+        if (sceneIndex == 0) [_outline removeAllObjects];
+    }
 }
 
 /*

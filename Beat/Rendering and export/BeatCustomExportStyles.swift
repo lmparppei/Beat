@@ -44,6 +44,7 @@ class BeatCustomExportStyles: NSOutlineView, NSOutlineViewDataSource, NSOutlineV
 		}
 				
 		for filename in outerStyles {
+			if filename.count < "beatStyle".count { continue }
 			if !filename.hasSuffix("beatStyle") { continue }
 			
 			

@@ -135,14 +135,14 @@
 {
 	NSInteger startIndex = 0;
 	
-	if (_livePagination) {
+	if (_livePagination && self.cachedPages.count > 0) {
 		// This returns the index for both page and the line inside that page
 		NSArray<NSNumber*>* indexPath = [self findSafePageAndLineForPosition:self.location pages:self.cachedPages];
 		
 		NSInteger pageIndex = indexPath[0].integerValue;
 		NSInteger lineIndex = indexPath[1].integerValue;
 		
-		if (pageIndex != NSNotFound && lineIndex != NSNotFound && pageIndex < _cachedPages.count && _cachedPages.count > 0) {
+		if (pageIndex != NSNotFound && lineIndex != NSNotFound && pageIndex < _cachedPages.count) {
 			NSArray* sparedPages = [self.cachedPages subarrayWithRange:NSMakeRange(0, pageIndex)];
 			[self.pages setArray:sparedPages];
 						
@@ -203,7 +203,7 @@
 				return true;
 			}
 		}
-	
+			
 		// Catch wrong parsing (just as a precaution)
 		if (line.string.length == 0 ||
 			line.type == empty ||
@@ -435,6 +435,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 /// Returns an array with index path to a safe line from the given position in screenplay.
 - (NSArray*)findSafePageAndLineForPosition:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages
 {
+	if (pages.count == 0) return @[ @0, @0 ];
+	
 	NSInteger pageIndex = [self findPageIndexAt:position pages:pages];
 	if (pageIndex == NSNotFound) return @[ @0, @0 ];
 	

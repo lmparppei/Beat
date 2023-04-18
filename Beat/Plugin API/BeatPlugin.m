@@ -1504,13 +1504,13 @@
 
 - (NSArray*)scenes
 {
-	[self.delegate.parser createOutline];
+	//[self.delegate.parser createOutline];
 	return self.delegate.parser.scenes;
 }
 
 - (NSArray*)outline
 {
-	[self.delegate.parser createOutline];
+	//[self.delegate.parser createOutline];
 	return self.delegate.parser.outline;
 }
 
@@ -1531,11 +1531,12 @@
 
 - (NSString*)scenesAsJSON
 {
-	[self.delegate.parser createOutline];
+	//[self.delegate.parser createOutline];
 	
-	NSMutableArray *scenesToSerialize = [NSMutableArray array];
+	NSMutableArray *scenesToSerialize = NSMutableArray.new;
+	NSArray* scenes = self.delegate.parser.scenes.copy;
 	
-	for (OutlineScene* scene in self.delegate.parser.scenes) {
+	for (OutlineScene* scene in scenes) {
 		[scenesToSerialize addObject:scene.forSerialization];
 	}
 	
@@ -1547,11 +1548,12 @@
 
 - (NSString*)outlineAsJSON
 {
-	[self.delegate.parser createOutline];
+	//[self.delegate.parser createOutline];
 	
-	NSMutableArray *scenesToSerialize = [NSMutableArray array];
+	NSMutableArray *scenesToSerialize = NSMutableArray.new;
+	NSArray* outline = self.delegate.parser.outline.copy;
 	
-	for (OutlineScene* scene in self.delegate.parser.outline) {
+	for (OutlineScene* scene in outline) {
 		[scenesToSerialize addObject:scene.forSerialization];
 	}
 	

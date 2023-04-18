@@ -521,6 +521,7 @@ static BeatAppDelegate *appDelegate;
 -(void)parseAndRenderDocument {
 	// Initialize parser
 	self.parser = [[ContinuousFountainParser alloc] initWithString:self.contentBuffer delegate:self];
+	[self.revisionTracking setup]; // Initialize edit tracking
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Show a progress bar for longer documents
@@ -553,7 +554,6 @@ static BeatAppDelegate *appDelegate;
 	[_parser.changedIndices removeAllIndexes];
 	_attrTextCache = self.textView.attributedString;
 	
-	[self.revisionTracking setup]; // Initialize edit tracking
 	[self.review setup]; // Setup review system
 	[self.tagging setup]; // Setup tagging
 	

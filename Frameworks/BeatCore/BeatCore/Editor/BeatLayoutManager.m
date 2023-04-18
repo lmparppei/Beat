@@ -501,7 +501,7 @@
 			}
 			
 			// Draw revision backgrounds last, so the underlines go on top of other stuff.
-			if (revision.type != RevisionNone && self.editorDelegate.showRevisions && rRange.length > 0) {
+			if (revision.type == RevisionAddition && self.editorDelegate.showRevisions && rRange.length > 0) {
 				CGRect revisionRect = aRect;
 				
 				if (bgColors[revision.colorName] == nil) {

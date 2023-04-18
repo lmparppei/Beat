@@ -30,5 +30,6 @@
 #import "BeatPaginationBlock.h"
 #import "BeatPageBreak.h"
 #import "BeatRendering.h"
+#import "BeatConsole.h"
 
 #endif /* Beat_Bridging_Header_h */

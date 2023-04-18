@@ -373,7 +373,13 @@
 	
 	__block NSMutableString *content = NSMutableString.string;
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
-		[content appendString:[self.string substringWithRange:range]];
+		// Let's make sure we don't have bad data here (can happen in some multithreaded instances)
+        if (NSMaxRange(range) > self.string.length) {
+            range.length = self.string.length - NSMaxRange(range);
+            if (range.length <= 0) return;
+        }
+        
+        [content appendString:[self.string substringWithRange:range]];
 	}];
 
 	return content;
