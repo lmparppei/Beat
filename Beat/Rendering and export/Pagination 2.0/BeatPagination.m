@@ -141,14 +141,14 @@
 		
 		NSInteger pageIndex = indexPath[0].integerValue;
 		NSInteger lineIndex = indexPath[1].integerValue;
-		
-		if (pageIndex != NSNotFound && lineIndex != NSNotFound && pageIndex < _cachedPages.count) {
+				
+		if (pageIndex != NSNotFound && lineIndex != NSNotFound && pageIndex < _cachedPages.count && pageIndex >= 0 && lineIndex >= 0) {
 			NSArray* sparedPages = [self.cachedPages subarrayWithRange:NSMakeRange(0, pageIndex)];
 			[self.pages setArray:sparedPages];
 						
 			self.currentPage = _cachedPages[pageIndex];
 			
-			if (self.currentPage.lines.count > 0) {
+			if (self.currentPage.lines.count > 0 && lineIndex != NSNotFound) {
 				Line* safeLine = self.currentPage.lines[lineIndex];
 				[self.currentPage clearUntil:safeLine];
 				

@@ -4043,14 +4043,8 @@ static NSArray<Line*>* cachedTitlePage;
 
 /*
  
- Beat has two kinds of autosave: recovery & saving in place.
- 
- Autosave provided by NSDocument is used to saving drafts and
- recovery files, while the custom autosave (enabled by the
- user and triggered once a minute) just saves the file.
- 
- Recovery happens in ApplicationDelegate when launching the app
- 
+ Beat has *three* kinds of autosave: autosave vault, saving in place and automatic macOS autosave.
+  
  */
 
 + (BOOL)autosavesInPlace {
