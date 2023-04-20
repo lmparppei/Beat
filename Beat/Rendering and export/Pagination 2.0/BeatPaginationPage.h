@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @interface BeatPaginationPage : NSObject
+@property (nonatomic, weak) id<BeatPageDelegate> delegate;
 @property (nonatomic) BeatPageBreak *pageBreak;
 @property (nonatomic) NSMutableArray<BeatPaginationBlock*>* blocks;
 @property (nonatomic) CGFloat maxHeight;

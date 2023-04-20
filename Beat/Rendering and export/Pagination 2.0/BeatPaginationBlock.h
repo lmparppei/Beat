@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol BeatPageDelegate;
 
 @interface BeatPaginationBlock : NSObject
+@property (weak, nonatomic) id<BeatPageDelegate> delegate;
+
 @property (nonatomic) NSArray<Line*>* lines;
 @property (nonatomic) CGFloat topMargin;
 @property (nonatomic) LineType type;

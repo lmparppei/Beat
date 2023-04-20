@@ -55,7 +55,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	@objc init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		// Load default styles if none were explicitly delivered through export settings
 		if (settings.styles == nil) {
-			settings.styles = BeatRenderStyles()
+			settings.styles = BeatRenderStyles.shared
 		}
 	
 		self.settings = settings
@@ -72,9 +72,10 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	
 	@objc init(editorDelegate:BeatEditorDelegate) {
 		self.settings = editorDelegate.exportSettings
+		self.editorDelegate = editorDelegate
 		
 		if (settings.styles == nil) {
-			settings.styles = BeatRenderStyles()
+			settings.styles = BeatRenderStyles.shared
 		}
 		
 		super.init()
@@ -131,6 +132,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		runPagination(pagination: operation)
 	}
 	func paginateLines(_ lines:[Line]) {
+		//self.finishedPagination = nil
 		self.paginate(lines: lines)
 	}
 	
@@ -151,7 +153,9 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		}
 		
 		if pagination.success {
+			self.finishedPagination = nil
 			self.finishedPagination = pagination
+
 			self.delegate?.paginationDidFinish(pages: self.pages)
 		}
 		

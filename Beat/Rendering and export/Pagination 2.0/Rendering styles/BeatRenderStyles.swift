@@ -15,7 +15,7 @@ import Foundation
 }
 
 @objc class BeatRenderStyles:NSObject {
-	@objc static let shared = BeatRenderStyles(stylesheet: "Styles")
+	@objc static let shared = BeatRenderStyles()
 	@objc static let editor = BeatRenderStyles(stylesheet: "EditorStyles")
 	var styles:[String:RenderStyle] = [:]
 	
@@ -30,12 +30,12 @@ import Foundation
 		loadStyles(stylesheet: stylesheet)
 	}
 	
-	override init() {
+	override private init() {
 		super.init()
 		loadStyles()
 	}
 	
-	init(stylesheet:String) {
+	private init(stylesheet:String) {
 		super.init()
 		loadStyles(stylesheet: stylesheet)
 	}

@@ -40,7 +40,7 @@
 
 @property (nonatomic) NSMutableArray<Line*>* lineQueue;
 @property (nonatomic) BeatFonts* fonts;
-@property (nonatomic) BeatRenderStyles* styles;
+//@property (nonatomic) BeatRenderStyles* styles;
 @property (nonatomic) NSInteger location;
 
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
@@ -57,28 +57,35 @@
 
 + (CGFloat) lineHeight { return 12.0; }
 
-+ (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(id<BeatPaginationDelegate>)delegate
++ (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(__weak id<BeatPaginationDelegate>)delegate
 {
 	return [BeatPagination.alloc initWithDelegate:delegate lines:lines titlePage:nil settings:delegate.settings livePagination:false changeAt:0 cachedPages:nil];
 }
 
-+ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt 
++ (BeatPagination*)newPaginationWithScreenplay:(BeatScreenplay*)screenplay delegate:(__weak id<BeatPaginationDelegate>)delegate cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages livePagination:(bool)livePagination changeAt:(NSInteger)changeAt
 {
 	return [BeatPagination.alloc initWithDelegate:delegate lines:screenplay.lines titlePage:screenplay.titlePageContent settings:delegate.settings livePagination:livePagination changeAt:changeAt cachedPages:cachedPages];
 }
 
-- (instancetype)initWithDelegate:(id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages
+- (instancetype)initWithDelegate:(__weak id<BeatPaginationDelegate>)delegate lines:(NSArray<Line*>*)lines titlePage:(NSArray* _Nullable)titlePage settings:(BeatExportSettings*)settings livePagination:(bool)livePagination changeAt:(NSInteger)changeAt cachedPages:(NSArray<BeatPaginationPage*>* _Nullable)cachedPages
 {
 	self = [super init];
 	
 	if (self) {
 		_delegate = delegate;
-		
 		_fonts = BeatFonts.sharedFonts;
 		
 		_lines = (lines != nil) ? lines : @[];
 		_titlePageContent = (titlePage != nil) ? titlePage : @[];
 		_cachedPages = cachedPages;
+		
+		// Transfer ownership of cached pages
+		for (BeatPaginationPage* page in _cachedPages) {
+			page.delegate = self;
+			for (BeatPaginationBlock* b in page.blocks) {
+				b.delegate = self;
+			}
+		}
 		
 		_livePagination = livePagination;
 		_location = changeAt;
@@ -88,15 +95,16 @@
 				
 		// Possible renderer module. This can be null.
 		_renderer = _delegate.renderer;
-		
-		// Check for custom styles. If not present, use the shared styles.
-		if (_settings.styles != nil) _styles = _settings.styles;
-		else _styles = BeatRenderStyles.shared;
-		
+				
 		_startTime = NSDate.new;
 	}
 	
 	return self;
+}
+
+- (BeatRenderStyles*)styles {
+	if (_settings.styles != nil) return _settings.styles;
+	else return BeatRenderStyles.shared;
 }
 
 #pragma mark - Convenience stuff
@@ -116,9 +124,9 @@
 - (CGFloat)maxPageHeight
 {
 	NSSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
-	RenderStyle* style = _styles.page;
+	RenderStyle* style = self.styles.page;
 	
-	return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight * 2;
+	return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight * 3;
 }
 
 #pragma mark - Running pagination
@@ -145,14 +153,18 @@
 		if (pageIndex != NSNotFound && lineIndex != NSNotFound && pageIndex < _cachedPages.count && pageIndex >= 0 && lineIndex >= 0) {
 			NSArray* sparedPages = [self.cachedPages subarrayWithRange:NSMakeRange(0, pageIndex)];
 			[self.pages setArray:sparedPages];
-						
-			self.currentPage = _cachedPages[pageIndex];
 			
-			if (self.currentPage.lines.count > 0 && lineIndex != NSNotFound) {
-				Line* safeLine = self.currentPage.lines[lineIndex];
-				[self.currentPage clearUntil:safeLine];
+			if (self.pages.count > 0) {
+				self.currentPage = _cachedPages[pageIndex];
 				
-				startIndex = [self indexOfLine:safeLine];
+				if (self.currentPage.lines.count > 0 && lineIndex != NSNotFound) {
+					Line* safeLine = self.currentPage.lines[lineIndex];
+					[self.currentPage clearUntil:safeLine];
+					
+					startIndex = [self indexOfLine:safeLine];
+				} else {
+					startIndex = 0;
+				}
 			} else {
 				startIndex = 0;
 			}
@@ -164,13 +176,14 @@
 		_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
 		startIndex = 0;
 	}
-	
+		
 	self.success = [self paginateFromIndex:startIndex];
 	[self paginationFinished];
 }
 
 - (void)useCachedPaginationFrom:(NSInteger)pageIndex
 {
+	NSLog(@"Using cached pagination from: %lu", pageIndex);
 	NSArray* reusablePages = [self.cachedPages subarrayWithRange:NSMakeRange(pageIndex, self.cachedPages.count - pageIndex)];
 	[_pages addObjectsFromArray:reusablePages];
 }
@@ -194,9 +207,9 @@
 		Line* line = _lineQueue[0];
 		
 		// Let's see if we can use cached pages here
-		if (_pages.count == pageCountAtStart+1 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count && line.position > _location) {
+		if (_pages.count == pageCountAtStart+2 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count && line.position > _location) {
 			Line* firstLineOnCachedPage = _cachedPages[_pages.count].lines.firstObject;
-			
+
 			if ([line.uuid isEqualTo:firstLineOnCachedPage.uuid]) {
 				// We can use cached pagination here.
 				[self useCachedPaginationFrom:_pages.count];
@@ -407,9 +420,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		// get page.representedRange etc
 		
 		if (range.location > position) {
-			// Return PREVIOUS page (as we've actually passed the position we've been looking for)
-			if (i > 0) return i - 1;
-			else return 0 ;
+			return (i > 0) ? i - 1 : 0;
 		}
 	}
 	

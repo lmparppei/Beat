@@ -14,7 +14,6 @@
 
 @interface BeatPaginationBlock ()
 @property (nonatomic) CGFloat calculatedHeight;
-@property (nonatomic) id<BeatPageDelegate> delegate;
 @property (nonatomic) NSArray<NSUUID*>* UUIDs;
 
 @property (nonatomic) NSMutableDictionary<NSUUID*, NSNumber*>* lineHeights;
@@ -84,10 +83,7 @@
 	if (self.lineHeights[line.uuid] != nil) {
 		return self.lineHeights[line.uuid].floatValue;
 	}
-	
-	// Calculate the line height
-	CGFloat height = 0.0;
-	
+		
 	// Create a bare-bones paragraph style
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 	pStyle.maximumLineHeight = BeatPagination.lineHeight;
@@ -96,7 +92,7 @@
 		NSFontAttributeName: _delegate.fonts.courier,
 		NSParagraphStyleAttributeName: pStyle
 	}];
-	
+		
 	// If this is a *dual dialogue column*, we'll need to convert the style.
 	LineType type = line.type;
 	if (self.dualDialogueElement) {
@@ -106,11 +102,15 @@
 	}
 	
 	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
+	CGFloat topMargin = (line.canBeSplitParagraph && !line.beginsNewParagraph) ? 0.0 : style.marginTop;
+
+	// Calculate the line height
+	CGFloat height = 0.0;
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
-	height = [string heightWithContainerWidth:width] + style.marginTop;
-	
-	// Save the calculated top margin if this is the first element on page
-	if (line == self.lines.firstObject) self.topMargin = style.marginTop;
+	height = [string heightWithContainerWidth:width] + topMargin;
+		
+	// Save the calculated top margin for full block if this is the first element on page
+	if (line == self.lines.firstObject) self.topMargin = topMargin;
 	
 	self.lineHeights[line.uuid] = [NSNumber numberWithFloat:height];
 	return height;

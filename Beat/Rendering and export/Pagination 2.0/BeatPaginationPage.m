@@ -18,7 +18,6 @@
 #import "Beat-Swift.h"
 
 @interface BeatPaginationPage()
-@property (nonatomic, weak) id<BeatPageDelegate> delegate;
 @property (nonatomic) NSMutableArray<Line*>* lines;
 @property (nonatomic) NSAttributedString* renderedString;
 @end
@@ -41,6 +40,9 @@
  This method returns page content as `NSAttributedString`. To get it working, you'll need to hook up a `BeatRendererDelegate` instance to the paginator. macOS and iOS require their own respective classes which comply to the protocol.
  */
 -(NSAttributedString*)attributedString {
+	if (self.delegate == nil) {
+		NSLog(@"WARNING: No delegate for page.");
+	}
 	if (self.delegate.renderer == nil) {
 		NSLog(@"WARNING: No renderer set for paginator");
 		return NSAttributedString.new;

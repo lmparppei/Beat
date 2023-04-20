@@ -137,9 +137,9 @@ shot {
 	width-a4: 60ch;
 	width-us: 62ch;
 	
-	bold: true;
 	uppercase: true;
 	
+	bold: userSetting(headingStyleBold);
 	margin-top: userSetting(sceneHeadingSpacing)l;
 }
 
