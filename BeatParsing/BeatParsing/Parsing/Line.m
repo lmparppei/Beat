@@ -443,6 +443,11 @@
 
 #pragma mark - Element booleans
 
+- (bool)canBeSplitParagraph {
+    if (self.type == action || self.type == lyrics || self.type == centered) return true;
+    return false;
+}
+
 /// Returns TRUE for scene, section and synopsis elements
 - (bool)isOutlineElement {
 	if (self.type == heading

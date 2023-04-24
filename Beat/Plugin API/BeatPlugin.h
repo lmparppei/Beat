@@ -45,6 +45,7 @@
 
 @protocol BeatPluginExports <JSExport>
 @property (readonly) Line* currentLine;
+@property (readonly) OutlineScene* currentScene;
 @property (weak, readonly) ContinuousFountainParser *currentParser;
 
 @property (nonatomic) bool onOutlineChangeDisabled;
@@ -120,6 +121,7 @@
 - (id)getPropertyValue:(NSString*)key; /// For those who REALLY know what they're doing
 
 - (ContinuousFountainParser*)parser:(NSString*)string;
+- (void)createOutline;
 
 /// Returns old-style paginator object
 - (BeatPaginator*)paginator:(NSArray*)lines;

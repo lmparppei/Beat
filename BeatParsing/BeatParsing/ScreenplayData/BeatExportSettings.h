@@ -20,6 +20,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OutlineScene;
+
+@protocol BeatExportSettingDelegate
+@property (nonatomic) bool nativeRendering;
+@property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) id document;
+- (NSArray<NSString*>*)shownRevisions;
+- (NSString*)moreString;
+- (NSString*)contdString;
+- (NSInteger)spaceBeforeHeading;
+- (BeatPaperSize)pageSize;
+@end
+
 typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 	ForPrint = 0,
 	ForPreview,
@@ -27,6 +40,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 };
 
 @interface BeatExportSettings : NSObject
+@property (nonatomic, weak) id<BeatExportSettingDelegate> delegate;
 @property (nonatomic) NSString *header;
 @property (nonatomic) BeatHTMLOperation operation;
 @property (nonatomic) NSString * _Nullable pageRevisionColor;
@@ -36,10 +50,12 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) NSString *contd;
 @property (nonatomic) NSString *more;
 @property (nonatomic, weak) BeatHostDocument  * _Nullable document;
-@property (nonatomic) NSString * _Nullable currentScene;
+//@property (nonatomic) NSString * _Nullable currentScene;
 @property (nonatomic) NSArray * revisions;
 @property (nonatomic) BeatPaperSize paperSize;
 @property (nonatomic) NSInteger sceneHeadingSpacing;
+
+@property (nonatomic) bool nativeRendering;
 
 /// Styles for new pagination / export system
 @property (nonatomic) id _Nullable styles;
@@ -56,6 +72,8 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene;
 
 + (BeatExportSettings*)operation:(BeatHTMLOperation)operation document:(BeatHostDocument*)doc header:(NSString*)header printSceneNumbers:(bool)printSceneNumbers printNotes:(bool)printNotes revisions:(NSArray*)revisions scene:(NSString* _Nullable )scene coloredPages:(bool)coloredPages revisedPageColor:(NSString*)revisedPagecolor;
+
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate;
 
 - (BeatPaperSize)paperSize; /// Get page size. For safety reasons, the value is checked from the actual print settings
 

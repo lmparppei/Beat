@@ -12,6 +12,16 @@
 #import "BeatPaginationPage.h"
 #import "BeatPaginationBlock.h"
 
+#if TARGET_OS_IOS
+    #define BXFont UIFont
+    #define uuidEqualTo isEqual
+    #import <UIKit/UIKit.h>
+#else
+    #define BXFont NSFont
+    #define uuidEqualTo isEqualTo
+    #import <Cocoa/Cocoa.h>
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class BeatFonts;
@@ -75,6 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)paginate;
 - (NSInteger)findPageIndexForLine:(Line*)line;
 - (CGFloat)heightForScene:(OutlineScene*)scene;
+
+- (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage;
 @end
 
 NS_ASSUME_NONNULL_END

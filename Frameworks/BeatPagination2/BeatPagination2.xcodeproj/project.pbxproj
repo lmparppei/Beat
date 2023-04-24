@@ -1,0 +1,431 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B663A69D29F1C3940036FE6B /* BeatPagination2.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A69C29F1C3940036FE6B /* BeatPagination2.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */; };
+		B663A6CA29F1C3D80036FE6B /* BeatPaginationBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6BF29F1C3D70036FE6B /* BeatPaginationBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B663A6CB29F1C3D80036FE6B /* BeatPagination.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6C029F1C3D80036FE6B /* BeatPagination.m */; };
+		B663A6CC29F1C3D80036FE6B /* BeatPaginationPage.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6C129F1C3D80036FE6B /* BeatPaginationPage.m */; };
+		B663A6CD29F1C3D80036FE6B /* BeatPagination.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6C229F1C3D80036FE6B /* BeatPagination.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B663A6CE29F1C3D80036FE6B /* BeatPaginationBlockGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6C329F1C3D80036FE6B /* BeatPaginationBlockGroup.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B663A6CF29F1C3D80036FE6B /* BeatPaginationBlockGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6C429F1C3D80036FE6B /* BeatPaginationBlockGroup.m */; };
+		B663A6D029F1C3D80036FE6B /* BeatPageBreak.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6C529F1C3D80036FE6B /* BeatPageBreak.m */; };
+		B663A6D129F1C3D80036FE6B /* BeatPaginationPage.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6C629F1C3D80036FE6B /* BeatPaginationPage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B663A6D229F1C3D80036FE6B /* BeatPageBreak.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6C729F1C3D80036FE6B /* BeatPageBreak.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B663A6D329F1C3D80036FE6B /* BeatPaginationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B663A6C829F1C3D80036FE6B /* BeatPaginationManager.swift */; };
+		B663A6DE29F1C4F70036FE6B /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6DD29F1C4F70036FE6B /* BeatCore.framework */; };
+		B663A6EB29F1C5FC0036FE6B /* BeatRenderStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = B663A6E829F1C5FC0036FE6B /* BeatRenderStyles.swift */; };
+		B663A6EC29F1C5FC0036FE6B /* Styles.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B663A6E929F1C5FC0036FE6B /* Styles.beatCSS */; };
+		B663A6ED29F1C5FC0036FE6B /* BeatCSSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B663A6EA29F1C5FC0036FE6B /* BeatCSSParser.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B663A69929F1C3940036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B663A69C29F1C3940036FE6B /* BeatPagination2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPagination2.h; sourceTree = "<group>"; };
+		B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlock.m; sourceTree = "<group>"; };
+		B663A6BF29F1C3D70036FE6B /* BeatPaginationBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginationBlock.h; sourceTree = "<group>"; };
+		B663A6C029F1C3D80036FE6B /* BeatPagination.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPagination.m; sourceTree = "<group>"; };
+		B663A6C129F1C3D80036FE6B /* BeatPaginationPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationPage.m; sourceTree = "<group>"; };
+		B663A6C229F1C3D80036FE6B /* BeatPagination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPagination.h; sourceTree = "<group>"; };
+		B663A6C329F1C3D80036FE6B /* BeatPaginationBlockGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginationBlockGroup.h; sourceTree = "<group>"; };
+		B663A6C429F1C3D80036FE6B /* BeatPaginationBlockGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlockGroup.m; sourceTree = "<group>"; };
+		B663A6C529F1C3D80036FE6B /* BeatPageBreak.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPageBreak.m; sourceTree = "<group>"; };
+		B663A6C629F1C3D80036FE6B /* BeatPaginationPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginationPage.h; sourceTree = "<group>"; };
+		B663A6C729F1C3D80036FE6B /* BeatPageBreak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPageBreak.h; sourceTree = "<group>"; };
+		B663A6C829F1C3D80036FE6B /* BeatPaginationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatPaginationManager.swift; sourceTree = "<group>"; };
+		B663A6DD29F1C4F70036FE6B /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B663A6E829F1C5FC0036FE6B /* BeatRenderStyles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatRenderStyles.swift; sourceTree = "<group>"; };
+		B663A6E929F1C5FC0036FE6B /* Styles.beatCSS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Styles.beatCSS; sourceTree = "<group>"; };
+		B663A6EA29F1C5FC0036FE6B /* BeatCSSParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeatCSSParser.swift; sourceTree = "<group>"; };
+		B663A6F429F1DD140036FE6B /* Beat Pagination Framework.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Beat Pagination Framework.md"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B663A69629F1C3940036FE6B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B663A6DE29F1C4F70036FE6B /* BeatCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B663A68F29F1C3940036FE6B = {
+			isa = PBXGroup;
+			children = (
+				B663A6F429F1DD140036FE6B /* Beat Pagination Framework.md */,
+				B663A69B29F1C3940036FE6B /* BeatPagination2 */,
+				B663A69A29F1C3940036FE6B /* Products */,
+				B663A6DC29F1C4F70036FE6B /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		B663A69A29F1C3940036FE6B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B663A69929F1C3940036FE6B /* BeatPagination2.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B663A69B29F1C3940036FE6B /* BeatPagination2 */ = {
+			isa = PBXGroup;
+			children = (
+				B663A6A729F1C3A90036FE6B /* Rendering styles */,
+				B663A6A329F1C3A10036FE6B /* Pagination */,
+				B663A69C29F1C3940036FE6B /* BeatPagination2.h */,
+			);
+			path = BeatPagination2;
+			sourceTree = "<group>";
+		};
+		B663A6A329F1C3A10036FE6B /* Pagination */ = {
+			isa = PBXGroup;
+			children = (
+				B663A6C829F1C3D80036FE6B /* BeatPaginationManager.swift */,
+				B663A6C229F1C3D80036FE6B /* BeatPagination.h */,
+				B663A6C029F1C3D80036FE6B /* BeatPagination.m */,
+				B663A6C629F1C3D80036FE6B /* BeatPaginationPage.h */,
+				B663A6C129F1C3D80036FE6B /* BeatPaginationPage.m */,
+				B663A6BF29F1C3D70036FE6B /* BeatPaginationBlock.h */,
+				B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */,
+				B663A6C329F1C3D80036FE6B /* BeatPaginationBlockGroup.h */,
+				B663A6C429F1C3D80036FE6B /* BeatPaginationBlockGroup.m */,
+				B663A6C729F1C3D80036FE6B /* BeatPageBreak.h */,
+				B663A6C529F1C3D80036FE6B /* BeatPageBreak.m */,
+			);
+			path = Pagination;
+			sourceTree = "<group>";
+		};
+		B663A6A729F1C3A90036FE6B /* Rendering styles */ = {
+			isa = PBXGroup;
+			children = (
+				B663A6EA29F1C5FC0036FE6B /* BeatCSSParser.swift */,
+				B663A6E829F1C5FC0036FE6B /* BeatRenderStyles.swift */,
+				B663A6E929F1C5FC0036FE6B /* Styles.beatCSS */,
+			);
+			path = "Rendering styles";
+			sourceTree = "<group>";
+		};
+		B663A6DC29F1C4F70036FE6B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B663A6DD29F1C4F70036FE6B /* BeatCore.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B663A69429F1C3940036FE6B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B663A6CA29F1C3D80036FE6B /* BeatPaginationBlock.h in Headers */,
+				B663A6CD29F1C3D80036FE6B /* BeatPagination.h in Headers */,
+				B663A6CE29F1C3D80036FE6B /* BeatPaginationBlockGroup.h in Headers */,
+				B663A6D229F1C3D80036FE6B /* BeatPageBreak.h in Headers */,
+				B663A6D129F1C3D80036FE6B /* BeatPaginationPage.h in Headers */,
+				B663A69D29F1C3940036FE6B /* BeatPagination2.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B663A69829F1C3940036FE6B /* BeatPagination2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B663A6A029F1C3940036FE6B /* Build configuration list for PBXNativeTarget "BeatPagination2" */;
+			buildPhases = (
+				B663A69429F1C3940036FE6B /* Headers */,
+				B663A69529F1C3940036FE6B /* Sources */,
+				B663A69629F1C3940036FE6B /* Frameworks */,
+				B663A69729F1C3940036FE6B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BeatPagination2;
+			productName = BeatPagination2;
+			productReference = B663A69929F1C3940036FE6B /* BeatPagination2.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B663A69029F1C3940036FE6B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					B663A69829F1C3940036FE6B = {
+						CreatedOnToolsVersion = 14.2;
+					};
+				};
+			};
+			buildConfigurationList = B663A69329F1C3940036FE6B /* Build configuration list for PBXProject "BeatPagination2" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B663A68F29F1C3940036FE6B;
+			productRefGroup = B663A69A29F1C3940036FE6B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B663A69829F1C3940036FE6B /* BeatPagination2 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B663A69729F1C3940036FE6B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B663A6EC29F1C5FC0036FE6B /* Styles.beatCSS in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B663A69529F1C3940036FE6B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B663A6ED29F1C5FC0036FE6B /* BeatCSSParser.swift in Sources */,
+				B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */,
+				B663A6D029F1C3D80036FE6B /* BeatPageBreak.m in Sources */,
+				B663A6CB29F1C3D80036FE6B /* BeatPagination.m in Sources */,
+				B663A6EB29F1C5FC0036FE6B /* BeatRenderStyles.swift in Sources */,
+				B663A6CC29F1C3D80036FE6B /* BeatPaginationPage.m in Sources */,
+				B663A6CF29F1C3D80036FE6B /* BeatPaginationBlockGroup.m in Sources */,
+				B663A6D329F1C3D80036FE6B /* BeatPaginationManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B663A69E29F1C3940036FE6B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		B663A69F29F1C3940036FE6B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		B663A6A129F1C3940036FE6B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPagination2;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Debug;
+		};
+		B663A6A229F1C3940036FE6B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = C3R7KAVB6V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kapitanFI.BeatPagination2;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B663A69329F1C3940036FE6B /* Build configuration list for PBXProject "BeatPagination2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B663A69E29F1C3940036FE6B /* Debug */,
+				B663A69F29F1C3940036FE6B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B663A6A029F1C3940036FE6B /* Build configuration list for PBXNativeTarget "BeatPagination2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B663A6A129F1C3940036FE6B /* Debug */,
+				B663A6A229F1C3940036FE6B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B663A69029F1C3940036FE6B /* Project object */;
+}

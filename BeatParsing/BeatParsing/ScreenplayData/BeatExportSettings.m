@@ -7,6 +7,7 @@
 //
 
 #import "BeatExportSettings.h"
+#import "OutlineScene.h"
 
 @implementation BeatExportSettings
 
@@ -35,25 +36,57 @@
 		_header = (header.length) ? header : @"";
 		_printSceneNumbers = printSceneNumbers;
 		_revisions = revisions.copy;
-		_currentScene = scene;
+		//_currentScene = scene;
 		_printNotes = printNotes;
 		_coloredPages = coloredPages;
 		_pageRevisionColor = revisedPageColor;
 		_paperSize = NSNotFound;
         _sceneHeadingSpacing = 2;
-        
+                
         _contd = @" (CONT'D)";
         _more = @"(MORE)";
 	}
 	return self;
 }
 
++ (BeatExportSettings*)operation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate {
+    return [BeatExportSettings.alloc initWithOperation:operation delegate:delegate];
+}
+- (BeatExportSettings*)initWithOperation:(BeatHTMLOperation)operation delegate:(id<BeatExportSettingDelegate>)delegate {
+    self = super.init;
+    
+    if (self) {
+        _delegate = delegate;
+        
+        _operation = operation;
+        _document = delegate.document;
+        _nativeRendering = delegate.nativeRendering;
+        
+        _header = @"";
+        _printSceneNumbers = delegate.printSceneNumbers;
+        _revisions = delegate.shownRevisions;
+        
+        _printNotes = false;
+        
+        _coloredPages = false;
+        _pageRevisionColor = @"";
+        
+        _paperSize = delegate.pageSize;
+        _sceneHeadingSpacing = delegate.spaceBeforeHeading;
+        
+        _contd = delegate.contdString;
+        _more = delegate.moreString;
+    }
+    
+    return self;
+}
+
 - (BeatPaperSize)paperSize {
 	// Check paper size
 #if TARGET_OS_IOS
 	if (_paperSize == NSNotFound) {
-		NSLog(@"No paper size found, returning A4");
-		return BeatA4;
+        if (_delegate) return _delegate.pageSize;
+		else return BeatA4;
 	}
 	return _paperSize;
 #else

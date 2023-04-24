@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import BeatCore
 
 class BeatUITextView: UITextView {
-	
+
 	//@IBInspectable var documentWidth:CGFloat = 640
 	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
 	@IBOutlet weak var enclosingScrollView:UIScrollView!
@@ -83,7 +84,7 @@ class BeatUITextView: UITextView {
 		
 		return width + padding * 2
 	}
-	
+		
 	func setup() {
 		self.textContainerInset = insets
 		self.isScrollEnabled = false
@@ -128,25 +129,18 @@ class BeatUITextView: UITextView {
 	}
 	
 	@objc func resize() {
+		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
 		guard let enclosingScrollView = self.enclosingScrollView else {
 			print("WARNING: No scroll view set for text view")
 			return
 		}
-		/*
-		var containerHeight = textContainer.size.height + textContainerInset.top + textContainerInset.bottom
-		let scaledHeight = enclosingScrollView.zoomScale * containerHeight + 1.0
 		
 		if (containerHeight < enclosingScrollView.frame.height) {
 			containerHeight = enclosingScrollView.frame.height
 		}
-		 */
-		self.pageView.sizeToFit()
-		self.enclosingScrollView.contentSize = CGSize(width: self.frame.size.width * self.enclosingScrollView.zoomScale, height: self.frame.size.height * enclosingScrollView.zoomScale)
-		/*
-		var containerHeight = self.contentSize.height
 		
-		//self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
-		//self.textContainerInset = insets
+		self.textContainer.size = CGSize(width: self.documentWidth, height: containerHeight)
+		self.textContainerInset = insets
 		
 		var frame = pageView.frame
 				
@@ -169,15 +163,13 @@ class BeatUITextView: UITextView {
 		resizeScrollViewContent()
 		
 		frame.size.width = zoom * (self.documentWidth + self.insets.left + self.insets.right)
-		frame.size.height = self.contentSize.height
-		//frame.size.height = containerHeight
+		frame.size.height = enclosingScrollView.contentSize.height
 		self.pageView.frame = frame
 		
 		UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveLinear) {
 			self.enclosingScrollView.zoomScale = zoom
 		} completion: { _ in
 		}
-		 */
 	}
 	
 
@@ -352,16 +344,33 @@ extension BeatUITextView: UIScrollViewDelegate {
 	}
 	
 	func resizeScrollViewContent() {
+		// Add constraints to the text view
+		let layoutManager = self.layoutManager
+		let textContainerInset = self.textContainerInset
+
+		// Calculate the index of the last glyph that fits within the available height
+		let lastGlyphIndex = layoutManager.glyphIndexForCharacter(at: self.text.count)
+
+		// Get the rectangle of the line fragment that contains the last glyph
+		var lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex - 1, effectiveRange: nil)
+		var lastLineY = lastLineRect.maxY
+		if lastLineRect.origin.y == 0.0 {
+			lastLineRect = layoutManager.extraLineFragmentRect
+			lastLineY = lastLineRect.maxY * -1
+		}
+		
 		let factor = self.enclosingScrollView.zoomScale
-		
-		//let contentSize = self.sizeThatFits(CGSize(width: self.documentWidth, height: self.frame.height))
-		let contentSize = self.contentSize
-		
-		let width = contentSize.width + self.textContainerInset.left + self.textContainerInset.right
-		let scrollSize = CGSize(width: width * factor,
+		let contentSize = CGSize(width: self.documentWidth, height: lastLineY)
+		let scrollSize = CGSize(width: (contentSize.width + self.textContainerInset.left + self.textContainerInset.right) * factor,
 								height: (contentSize.height + self.textContainerInset.top + self.textContainerInset.bottom) * factor)
+
+		let heightNow = self.enclosingScrollView.contentSize.height
 		
-		self.enclosingScrollView.contentSize = scrollSize
+		// Adjust the size to fit, if the size differs more than 5.0 points
+		if (scrollSize.height < heightNow - 5.0 || scrollSize.height > heightNow + 5.0) {
+			self.enclosingScrollView.contentSize = scrollSize
+		}
+		
 	}
 	
 	override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {

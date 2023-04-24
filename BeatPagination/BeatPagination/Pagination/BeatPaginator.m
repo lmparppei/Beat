@@ -49,10 +49,11 @@
 
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatFonts.h>
 
 #import "BeatPaginator.h"
 #import "BeatPaginationOperation.h"
-#import "BeatFonts.h"
+
 
 #if TARGET_OS_IOS
 	#define BXDocument UIDocument

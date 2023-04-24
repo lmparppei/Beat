@@ -7,7 +7,8 @@
 //
 
 #import "BeatDocumentViewController.h"
-#import <BeatPaginationCore/BeatPaginationCore.h>
+//#import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatPagination2/BeatPagination2.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatParsing/BeatParsing.h>
 
@@ -16,7 +17,7 @@
 
 #import "Beat_iOS-Swift.h"
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
@@ -25,6 +26,7 @@
 
 @property (nonatomic) BeatPreview* preview;
 @property (nonatomic) BeatPreviewView* previewView;
+@property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
 
 @property (nonatomic, weak) IBOutlet UIView* accessoryView;
@@ -33,7 +35,8 @@
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 
-@property (nonatomic) BeatPaginator *paginator;
+//@property (nonatomic) BeatPaginator *paginator;
+@property (nonatomic) BeatPaginationManager *pagination;
 
 @property (atomic) NSAttributedString *attrTextCache;
 @property (atomic) NSString *cachedText;
@@ -85,10 +88,14 @@
 	return self;
 }
 
+/// Creates the text view and replaces placeholder text view
 - (void)createTextView {
-	// Create text view
 	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height) pageView:self.pageView scrollView:self.scrollView];
+	
 	textView.inputAccessoryView = self.accessoryView;
+	//textView.inputAccessoryView.frame = CGRectMake(0, 0, 200, 40);
+	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
+
 		
 	[self.textView removeFromSuperview];
 	self.textView = textView;
@@ -158,16 +165,17 @@
 	self.formatting = BeatiOSFormatting.new;
 	self.formatting.delegate = self;
 		
-	self.paginator = [BeatPaginator.alloc initForLivePagination:self.document];
+	//self.paginator = [BeatPaginator.alloc initForLivePagination:self.document];
+	self.pagination = [BeatPaginationManager.alloc initWithSettings:self.exportSettings delegate:self renderer:nil livePagination:true];
 	
 	// Load document into parser
 	self.parser = [ContinuousFountainParser.alloc initWithString:self.document.rawText delegate:self];
 	
 	// Init preview
-	self.preview = [BeatPreview.alloc initWithDocument:self];
 	self.previewView = [self.storyboard instantiateViewControllerWithIdentifier:@"Preview"];
 	[self.previewView loadViewIfNeeded];
-			
+	self.preview = [BeatPreview.alloc initWithDelegate:self];
+	
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
 	self.scrollView.zoomScale = 1.0;
@@ -238,7 +246,7 @@
 	return self.textView;
 }
 - (CGFloat)editorLineHeight {
-	return BeatPaginator.lineHeight;
+	return BeatPagination.lineHeight;
 }
 
 
@@ -490,40 +498,50 @@
 	}];
 }
 
-#pragma mark - Preview
+#pragma mark - Preview / Pagination
 
+static bool buildPreviewImmediately = false;
 - (IBAction)togglePreview:(id)sender {
-	
+	if (!_previewUpdated) {
+		buildPreviewImmediately = true;
+		[self paginate];
+	} else {
+		[self.preview displayPreview];
+	}
+	[self presentViewController:self.previewView animated:true completion:nil];
 }
 
-- (void)updatePreview {
-	[self updatePreviewInSync:false];
+- (void)previewDidFinish {
+	//
 }
-- (void)updatePreviewInSync:(bool)inSync {
-	[self.previewTimer invalidate];
+
+- (void)paginate {
+	[self paginateWithChangeAt:0 sync:true];
+}
+
+- (void)paginateWithChangeAt:(NSInteger)location sync:(bool)sync {
+	self.preview.previewUpdated = false;
+
+	if (sync) {
+		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
+		[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
+	} else {
+		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), ^(void) {
+			[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
+			[self.pagination newPaginationWithScreenplay:self.parser.forPrinting settings:self.exportSettings forEditor:true changeAt:location];
+		});
+	}
+}
+
+- (void)paginationDidFinishWithPages:(NSArray<BeatPaginationPage *> *)pages {
+
+	self.preview.previewUpdated = false;
 	
-	/*
-	// Update cache
-	self.cachedText = NSMutableAttributedString(attributedString: self.textView.attributedText)
-	
-	previewTimer?.invalidate()
-	previewUpdated = false
-	
-	// Wait 1 second after writing has ended to build preview
-	let delay = (previewHTML.count == 0 || sync) ? 0 : 1.5
-	
-	previewTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { timer in
-		let rawText = self.text()
-		
-		DispatchQueue.global(qos: .background).async {
-			self.previewHTML = self.preview!.createPreview(for: rawText, type: .printPreview)
-			DispatchQueue.main.async {
-				self.previewView?.webview?.loadHTMLString(self.previewHTML, baseURL: nil)
-				self.previewUpdated = true
-			}
-		}
-	})
-	 */
+	if (buildPreviewImmediately) {
+		[self.preview displayPreview];
+	} else {
+		[self.preview updatePreviewAsync];
+	}
 }
 
 
@@ -840,11 +858,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 	
 	// Paginate
-	// [self paginateAt:self.lastChangedRange sync:NO];
+	[self paginateWithChangeAt:self.lastChangedRange.location sync:false];
 	
-	// Update scene number labels
-	// A larger chunk of text was pasted or there was a change in outline. Ensure layout.
-	// if (_lastChangedRange.length > 5) [self ensureLayout];
 		
 	// Update any running plugins
 	// if (runningPlugins.count) [self updatePlugins:_lastChangedRange];
@@ -953,6 +968,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return settings;
 }
 
+- (bool)nativeRendering {
+	return false;
+}
 
 
 #pragma mark - Editor text view values

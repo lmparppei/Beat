@@ -11,7 +11,7 @@ import WebKit
 
 class BeatPreviewView:UIViewController {
 	
-	@IBOutlet weak var webview:WKWebView?
+	@objc @IBOutlet weak var webview:WKWebView?
 	
 	@IBAction func dismissPreviewView(sender: Any?) {
 		self.dismiss(animated: true)

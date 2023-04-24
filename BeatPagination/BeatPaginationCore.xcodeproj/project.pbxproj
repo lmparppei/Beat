@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B663A6D829F1C4900036FE6B /* BeatCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6D729F1C4900036FE6B /* BeatCore.framework */; };
 		B685B536296EE1F900D8EF81 /* BeatPagination.docc in Sources */ = {isa = PBXBuildFile; fileRef = B685B535296EE1F900D8EF81 /* BeatPagination.docc */; };
 		B685B537296EE1F900D8EF81 /* BeatPaginationCore.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B685B545296EE2BC00D8EF81 /* BeatParsing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B685B544296EE2BC00D8EF81 /* BeatParsing.framework */; };
@@ -20,11 +21,10 @@
 		B685B575296EE3AC00D8EF81 /* BeatPage.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56B296EE3AC00D8EF81 /* BeatPage.h */; };
 		B685B576296EE3AC00D8EF81 /* BeatPaginationOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56C296EE3AC00D8EF81 /* BeatPaginationOperation.h */; };
 		B685B577296EE3AC00D8EF81 /* BeatPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B56D296EE3AC00D8EF81 /* BeatPaginator.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B685B583296EE63300D8EF81 /* BeatFonts.m in Sources */ = {isa = PBXBuildFile; fileRef = B685B581296EE63300D8EF81 /* BeatFonts.m */; };
-		B6D32046298F0A95003DA45D /* BeatFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = B685B582296EE63300D8EF81 /* BeatFonts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B663A6D729F1C4900036FE6B /* BeatCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B685B531296EE1F900D8EF81 /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B685B534296EE1F900D8EF81 /* BeatPaginationCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPaginationCore.h; sourceTree = "<group>"; };
 		B685B535296EE1F900D8EF81 /* BeatPagination.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = BeatPagination.docc; sourceTree = "<group>"; };
@@ -39,8 +39,6 @@
 		B685B56B296EE3AC00D8EF81 /* BeatPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPage.h; sourceTree = "<group>"; };
 		B685B56C296EE3AC00D8EF81 /* BeatPaginationOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginationOperation.h; sourceTree = "<group>"; };
 		B685B56D296EE3AC00D8EF81 /* BeatPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatPaginator.h; sourceTree = "<group>"; };
-		B685B581296EE63300D8EF81 /* BeatFonts.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatFonts.m; sourceTree = "<group>"; };
-		B685B582296EE63300D8EF81 /* BeatFonts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatFonts.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B685B545296EE2BC00D8EF81 /* BeatParsing.framework in Frameworks */,
+				B663A6D829F1C4900036FE6B /* BeatCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,8 +75,6 @@
 		B685B533296EE1F900D8EF81 /* BeatPagination */ = {
 			isa = PBXGroup;
 			children = (
-				B685B582296EE63300D8EF81 /* BeatFonts.h */,
-				B685B581296EE63300D8EF81 /* BeatFonts.m */,
 				B685B552296EE2EF00D8EF81 /* Pagination */,
 				B685B535296EE1F900D8EF81 /* BeatPagination.docc */,
 			);
@@ -87,6 +84,7 @@
 		B685B543296EE2BC00D8EF81 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B663A6D729F1C4900036FE6B /* BeatCore.framework */,
 				B685B544296EE2BC00D8EF81 /* BeatParsing.framework */,
 			);
 			name = Frameworks;
@@ -119,7 +117,6 @@
 				B685B576296EE3AC00D8EF81 /* BeatPaginationOperation.h in Headers */,
 				B685B577296EE3AC00D8EF81 /* BeatPaginator.h in Headers */,
 				B685B56F296EE3AC00D8EF81 /* BeatPaginationOperationDelegate.h in Headers */,
-				B6D32046298F0A95003DA45D /* BeatFonts.h in Headers */,
 				B685B574296EE3AC00D8EF81 /* BeatPageDelegate.h in Headers */,
 				B685B573296EE3AC00D8EF81 /* BeatPaginationSizing.h in Headers */,
 				B685B537296EE1F900D8EF81 /* BeatPaginationCore.h in Headers */,
@@ -200,7 +197,6 @@
 				B685B570296EE3AC00D8EF81 /* BeatPaginationSizing.m in Sources */,
 				B685B56E296EE3AC00D8EF81 /* BeatPaginationOperation.m in Sources */,
 				B685B572296EE3AC00D8EF81 /* BeatPage.m in Sources */,
-				B685B583296EE63300D8EF81 /* BeatFonts.m in Sources */,
 				B685B571296EE3AC00D8EF81 /* BeatPaginator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

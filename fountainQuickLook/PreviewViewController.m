@@ -46,7 +46,7 @@
 	NSString *file = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
 	
 	if (!error) {
-		BeatPreview *preview = [[BeatPreview alloc] initWithDocument:nil];
+		BeatPreview *preview = [[BeatPreview alloc] initWithDelegate:nil];
 		NSString *html = [preview createPreviewFor:file type:BeatQuickLookPreview];
 		[self.webView loadHTMLString:html baseURL:nil];
 	} else {

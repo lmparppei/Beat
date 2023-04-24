@@ -36,6 +36,10 @@ class BeatQuickSettings:BeatPopoverContentController {
 		/// OK lol, this is a silly thing to do, but `BeatPageSize` is an enum (`0` is A4 and `1` is US Letter) so why not.
 		self.delegate?.pageSize = BeatPaperSize(rawValue: sender.selectedSegmentIndex) ?? .A4
 	}
+	
+	@IBAction func toggleRevisionMode(_ sender:UISwitch) {
+		self.delegate?.revisionMode = sender.isOn
+	}
 }
 
 extension BeatDocumentViewController {

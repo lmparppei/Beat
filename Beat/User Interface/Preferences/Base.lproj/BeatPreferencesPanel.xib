@@ -241,6 +241,7 @@
                                                         <menuItem title="Small" state="on" id="VQS-1g-QZ6"/>
                                                         <menuItem title="Medium" id="WAb-8C-Sjl"/>
                                                         <menuItem title="Big" id="MNC-PG-DYp"/>
+                                                        <menuItem title="Very big" id="YEd-uH-lo0"/>
                                                     </items>
                                                 </menu>
                                             </popUpButtonCell>

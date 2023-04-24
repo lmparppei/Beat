@@ -1,13 +1,4 @@
 
-# High-priority
-
-## New rendering engine
-
-* For now, we are using an ancient `WebView` implementation for exporting PDF files. The legacy WebKit will probably be deprecated any time soon, so it's **HIGHLY** important to create a new rendering engine. 
-
-* ALTERNATIVELY, now that HTML rendering is pretty stable and nice, let's find a way to reliably print WKWebView. 
-
-
 
 # Work in progress / considerations
 

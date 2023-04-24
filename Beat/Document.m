@@ -1254,6 +1254,9 @@ static NSWindow __weak *currentKeyWindow;
 - (void)bakeRevisions {
 	[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 }
+- (NSArray*)shownRevisions {
+	return BeatRevisions.revisionColors;
+}
 
 /*
  
@@ -4353,6 +4356,7 @@ static NSArray<Line*>* cachedTitlePage;
 - (void)updatePluginsWithOutline:(NSArray*)outline {
 	// Run resident plugins which are listening for selection changes
 	if (!self.runningPlugins) return;
+	// NSLog(@" --> Running: %@", self.runningPlugins);
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];

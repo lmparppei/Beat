@@ -7,7 +7,7 @@
 //
 
 #import <BeatCore/BeatUserDefaults.h>
-#import <BeatPaginationCore/BeatFonts.h>
+#import <BeatCore/BeatFonts.h>
 #import "BeatPreferencesPanel.h"
 #import "Document.h"
 #import "BeatModalInput.h"
@@ -91,7 +91,7 @@
 				// We need to check for subclasses of NSButton first
 				NSPopUpButton *button = item;
 				NSInteger value = [BeatUserDefaults.sharedDefaults getInteger:key];
-				if ([key isEqualToString:BeatSettingOutlineFontSizeModifier]) value = value / 2;
+				if (value >= button.itemArray.count) value = 0;
 				
 				[button selectItem:button.itemArray[value]];
 			}
@@ -236,7 +236,7 @@
 
 - (IBAction)selectOutlineFontSize:(id)sender {
 	NSPopUpButton* button = sender;
-	NSInteger modifier = button.indexOfSelectedItem * 2;
+	NSInteger modifier = button.indexOfSelectedItem;
 	[BeatUserDefaults.sharedDefaults saveInteger:modifier forKey:BeatSettingOutlineFontSizeModifier];
 	
 	for (Document* doc in NSDocumentController.sharedDocumentController.documents) {

@@ -20,6 +20,7 @@
 
 #import "BeatPlugin.h"
 #import <BeatCore/BeatRevisions.h>
+#import <BeatPagination2/BeatPagination2.h>
 #import "BeatConsole.h"
 #import "BeatPreview.h"
 #import "Beat-Swift.h"
@@ -969,6 +970,10 @@
 
 #pragma mark - Timer
 
+/** Returns a timer object, and immediately fires it.
+ @param seconds Delay in seconds
+ @param callback Closure which is run after the delay
+ */
 - (NSTimer*)timerFor:(CGFloat)seconds callback:(JSValue*)callback {
 	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:seconds repeats:NO block:^(NSTimer * _Nonnull timer) {
 		[self runCallback:callback withArguments:nil];
@@ -1106,12 +1111,12 @@
 /// Makes the given window move along its parent document window. **Never use with standalone plugins.**
 - (void)gangWithDocumentWindow:(NSWindow*)window
 {
-	[self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
+	if (self.delegate.documentWindow != nil) [self.delegate.documentWindow addChildWindow:window ordered:NSWindowAbove];
 }
 /// Window no longer moves aside its document window.
 - (void)detachFromDocumentWindow:(NSWindow*)window
 {
-	[self.delegate.documentWindow removeChildWindow:window];
+	if (self.delegate.documentWindow != nil) [self.delegate.documentWindow removeChildWindow:window];
 }
 /// Show all plugin windows.
 - (void)showAllWindows
@@ -1595,6 +1600,10 @@
 {
 	[self.delegate.parser createOutline];
 }
+- (void)createOutline
+{
+	[self.delegate.parser createOutline];
+}
 
 - (void)newDocument:(NSString*)string
 {
@@ -1609,6 +1618,9 @@
 
 - (Line*)currentLine {
 	return _delegate.currentLine;
+}
+- (OutlineScene*)currentScene {
+	return _delegate.currentScene;
 }
 
 - (ContinuousFountainParser*)currentParser {

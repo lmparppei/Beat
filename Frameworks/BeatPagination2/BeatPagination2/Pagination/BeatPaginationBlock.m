@@ -6,10 +6,12 @@
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
 
+#import <BeatParsing/BeatParsing.h>
+#import <BeatCore/BeatCore.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
+
 #import "BeatPaginationBlock.h"
 #import "BeatPagination.h"
-#import <BeatParsing/BeatParsing.h>
-#import "Beat-Swift.h"
 #import "BeatPageBreak.h"
 
 @interface BeatPaginationBlock ()
@@ -270,7 +272,7 @@
 	__block CGFloat pageBreakPos = 0;
 	__block NSInteger length = 0;
 	
-	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, lm.numberOfGlyphs) usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+	[lm enumerateLineFragmentsForGlyphRange:NSMakeRange(0, lm.numberOfGlyphs) usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		numberOfLines++;
 		if (numberOfLines < remainingSpace / BeatPagination.lineHeight) {
 			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
@@ -476,7 +478,7 @@
 		else if (type == dualDialogueParenthetical) type = dualDialogueParenthetical;
 	}
 	
-	BeatFont* font = self.delegate.fonts.courier;
+	BXFont* font = self.delegate.fonts.courier;
 	RenderStyle *style = [self.delegate.styles forElement:[Line typeName:type]];
 	CGFloat width = (_delegate.settings.paperSize == BeatA4) ? style.widthA4 : style.widthLetter;
 	
@@ -513,7 +515,7 @@
 }
 
 - (NSLayoutManager*)heightCalculatorForString:(NSString*)string width:(CGFloat)width {
-	BeatFont *font = _delegate.fonts.courier;
+	BXFont *font = _delegate.fonts.courier;
 	if (string == nil) string = @"";
 	
 #if TARGET_OS_IOS

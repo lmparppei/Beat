@@ -163,14 +163,14 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 					}
 				}
 				
-				// Add title page
-				previewView.updateTitlePage(content: pagination.titlePage)
-				
 				// Remove excess views
-				let pageCount = pages.count + ((pagination.titlePage.count > 0) ? 1 : 0)
+				let pageCount = pages.count
 				while previewView.pageViews.count > pageCount {
 					previewView.removePage(at: previewView.pageViews.count - 1)
 				}
+				
+				// Add title page if needed
+				previewView.updateTitlePage(content: pagination.titlePage)
 				
 				// Update container size
 				previewView.updateSize()

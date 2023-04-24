@@ -439,6 +439,7 @@
     
 	[self enumerateLineFragmentsForGlyphRange:glyphsToShow usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+        
 		
 		[self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
 			if (range.location < 0 || NSMaxRange(range) < 0) return;
@@ -446,13 +447,13 @@
 			BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
 			BeatTag* tag = attrs[BeatTagging.attributeKey];
 			BeatReviewItem *review = attrs[BeatReview.attributeKey];
-			
+            			
 			// Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
 			NSRange rRange = range;
 			for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
 				if (i < 0) break;
 				if ([self.textStorage.string characterAtIndex:i] == '\n') {
-					rRange.length = NSMaxRange(rRange) - 1;
+					rRange.length = rRange.length - 1;
 					break;
 				}
 			}
@@ -467,10 +468,10 @@
 					BXColor *reviewColor = BeatReview.reviewColor;
 					bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.5];
 				}
-				
 				BXColor *color = bgColors[@"review"];
 				[color setFill];
-				
+
+                
 				NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
 				CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
 				bool fullLine = (fullGlyphRange.length == glyphRange.length - 1);
@@ -484,9 +485,7 @@
 					fullRect.size.width = textView.textContainer.size.width - padding * 2;
 				}
 				
-				//NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:fullRect xRadius:2.0 yRadius:2.0];
-				//[path fill];
-				BXRectFill(fullRect);
+                BXRectFill(fullRect);
 			}
 			
 			if (tag != nil && self.editorDelegate.showTags) {

@@ -23,22 +23,16 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 - (TYPE)METHOD { [CLASS METHOD]; }
 
 #import "BeatColors.h"
-
 #import "BeatAttributes.h"
-
 #import "BeatRevisionItem.h"
 #import "BeatRevisions.h"
-
 #import "BeatLocalization.h"
-
 #import "BeatTagging.h"
 #import "BeatTag.h"
 #import "BeatTagItem.h"
-
 #import "NSString+Levenshtein.h"
-
 #import "BeatUserDefaults.h"
-
 #import "BeatLayoutManager.h"
-
 #import "BeatTextIO.h"
+#import "BeatFonts.h"
+#import "BeatTranslation.h"

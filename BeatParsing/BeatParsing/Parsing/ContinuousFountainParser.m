@@ -221,9 +221,11 @@ static NSDictionary* patterns;
 		}
 		
 		// Quick fix for recognizing split paragraphs
-        LineType currentType = line.type;
-        if (line.type == action || line.type == lyrics || line.type == transitionLine) {
-            if (previousLine.type == currentType && previousLine.string.length > 0) line.isSplitParagraph = YES;
+        if (!self.delegate.nativeRendering) {
+            LineType currentType = line.type;
+            if (line.type == action || line.type == lyrics || line.type == transitionLine) {
+                if (previousLine.type == currentType && previousLine.string.length > 0) line.isSplitParagraph = YES;
+            }
         }
 		
         //Add to lines array
@@ -2710,7 +2712,8 @@ NSUInteger prevLineAtLocationIndex = 0;
     
 	for (Line* line in lines) {
 		[linesForPrinting addObject:line.clone];
-    
+        line.isSplitParagraph = false;
+        
         // Preprocess split paragraphs
         Line *l = linesForPrinting.lastObject;
         if (l.type == action || l.type == lyrics || l.type == centered) {
@@ -2720,8 +2723,10 @@ NSUInteger prevLineAtLocationIndex = 0;
             if (!precedingLine.effectivelyEmpty && precedingLine.type == l.type) {
                 l.beginsNewParagraph = false;
                 // This is here for backwards compatibility
-                if (precedingLine.type == action) l.isSplitParagraph = true;
+                // if (precedingLine.type == action) l.isSplitParagraph = true;
             }
+        } else {
+            l.beginsNewParagraph = true;
         }
         
         precedingLine = l;
@@ -2742,7 +2747,11 @@ NSUInteger prevLineAtLocationIndex = 0;
 		
 		// Skip over certain elements. Leave notes if needed.
 		if (line.type == synopse || line.type == section || (line.omitted && !line.note)) continue;
-		if (!printNotes && line.note) continue;
+		else if (!printNotes && line.note) continue;
+        else if (line.effectivelyEmpty) {
+            previousLine = line;
+            continue;
+        }
 		
 		// Add scene numbers
 		if (line.type == heading) {
@@ -2779,11 +2788,10 @@ NSUInteger prevLineAtLocationIndex = 0;
             shown = true;
         }
         */
-		
-        // Join the line with preceding one to avoid unnecessary paragraph breaks
-		if (line.isSplitParagraph && [lines indexOfObject:line] > 0 && elements.count > 0) {
-			Line *precedingLine = [elements objectAtIndex:elements.count - 1];
 
+        // Join the line with preceding one to avoid unnecessary paragraph breaks
+		if (line.isSplitParagraph && [lines indexOfObject:line] > 0 && elements.count > 0 && !line.effectivelyEmpty) {
+			Line *precedingLine = [elements objectAtIndex:elements.count - 1];
 			[precedingLine joinWithLine:line];
 			continue;
 		}

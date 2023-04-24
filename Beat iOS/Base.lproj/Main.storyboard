@@ -151,7 +151,7 @@
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
-                        <outlet property="accessoryView" destination="RHb-Qy-Cy9" id="6n6-5p-zte"/>
+                        <outlet property="accessoryView" destination="3Kd-K0-S7o" id="RVl-oF-a5E"/>
                         <outlet property="formatting" destination="jJ6-Lc-Cgd" id="yTP-Ue-GJg"/>
                         <outlet property="outlineView" destination="9d5-dC-tki" id="vVF-aa-NqO"/>
                         <outlet property="pageView" destination="esq-Xm-Lfw" id="lTR-gU-EW1"/>
@@ -164,9 +164,40 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rl9-ES-qQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <view contentMode="scaleToFill" id="RHb-Qy-Cy9">
-                    <rect key="frame" x="0.0" y="0.0" width="691" height="45"/>
+                <view contentMode="scaleToFill" id="ZT4-d8-b9q">
+                    <rect key="frame" x="0.0" y="0.0" width="803" height="40"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <subviews>
+                        <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="3Kd-K0-S7o">
+                            <rect key="frame" x="0.0" y="0.0" width="803" height="50"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                            <items>
+                                <barButtonItem image="bubble.left.fill" catalog="system" style="plain" id="yYL-qR-jup">
+                                    <connections>
+                                        <action selector="addCharacterCue:" destination="M2k-L8-Olo" id="SAR-iJ-0AC"/>
+                                    </connections>
+                                </barButtonItem>
+                                <barButtonItem title="INT." style="plain" id="w4P-vO-F1Q">
+                                    <connections>
+                                        <action selector="addINT:" destination="M2k-L8-Olo" id="SEh-Np-Nv9"/>
+                                    </connections>
+                                </barButtonItem>
+                                <barButtonItem title="EXT." style="plain" id="s4Y-q6-d5y">
+                                    <connections>
+                                        <action selector="addEXT:" destination="M2k-L8-Olo" id="5UP-vy-yVg"/>
+                                    </connections>
+                                </barButtonItem>
+                            </items>
+                            <color key="tintColor" systemColor="labelColor"/>
+                            <color key="barTintColor" systemColor="secondarySystemGroupedBackgroundColor"/>
+                        </toolbar>
+                    </subviews>
+                    <viewLayoutGuide key="safeArea" id="p64-zC-CDd"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </view>
+                <view contentMode="scaleToFill" id="RHb-Qy-Cy9">
+                    <rect key="frame" x="0.0" y="0.0" width="853" height="45"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YWt-tK-BJn">
                             <rect key="frame" x="8" y="5" width="52.5" height="34"/>
@@ -218,7 +249,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" id="hUb-18-I71">
-                                <rect key="frame" x="-7" y="19" width="1369" height="1001"/>
+                                <rect key="frame" x="-8" y="19" width="1374" height="1005"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
@@ -227,7 +258,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="close" lineBreakMode="middleTruncation" id="Ct9-qx-tht">
-                                <rect key="frame" x="1311" y="51" width="24" height="30"/>
+                                <rect key="frame" x="1306" y="50" width="30" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill">
@@ -250,7 +281,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WQj-FA-3GT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1722.6939970717422" y="1526.953125"/>
+            <point key="canvasLocation" x="2398.6822840409955" y="653.90625"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="KKU-GZ-P8E">
@@ -261,7 +292,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="TopLeft" dataMode="prototypes" id="MMc-Yb-WFu">
-                                <rect key="frame" x="13" y="19" width="1321" height="978"/>
+                                <rect key="frame" x="12" y="19" width="1320" height="976"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="44l-Jj-zVz">
@@ -292,7 +323,7 @@
                                         <size key="customSize" width="179" height="161"/>
                                     </collectionViewCell>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Section Card" id="1ck-ek-CI5">
-                                        <rect key="frame" x="190.5" y="50" width="179" height="161"/>
+                                        <rect key="frame" x="190" y="50" width="179" height="161"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="WOQ-Xi-DC9">
                                             <rect key="frame" x="0.0" y="0.0" width="179" height="161"/>
@@ -312,11 +343,11 @@
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="Section Header" id="b1w-YS-aA5">
-                                    <rect key="frame" x="0.0" y="0.0" width="1321" height="50"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="1320" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="1" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VcS-YC-az8">
-                                            <rect key="frame" x="0.0" y="10" width="1313" height="34"/>
+                                            <rect key="frame" x="0.0" y="10" width="1312" height="34"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -332,7 +363,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SXn-Yw-Xhc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2381.9912152269399" y="1526.953125"/>
+            <point key="canvasLocation" x="3074" y="654"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="vJ4-FX-LsW">
@@ -372,7 +403,7 @@
                                 </connections>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Scene Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Cos-Q4-sqH">
-                                <rect key="frame" x="85" y="29" width="246" height="21"/>
+                                <rect key="frame" x="84" y="29" width="247" height="21"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
@@ -386,21 +417,21 @@
                                 </connections>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Show Page Numbers" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Sxk-a4-4qz">
-                                <rect key="frame" x="85" y="68" width="246" height="21"/>
+                                <rect key="frame" x="84" y="68" width="247" height="21"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Paper Size" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="gV2-ze-CGI">
-                                <rect key="frame" x="14" y="123" width="142" height="21"/>
+                                <rect key="frame" x="14" y="123" width="141" height="21"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="I6b-zv-KGS">
-                                <rect key="frame" x="158" y="118" width="173" height="32"/>
+                                <rect key="frame" x="157" y="118" width="174" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="A4"/>
@@ -415,7 +446,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </switch>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Revision Mode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="je6-Ic-owz">
-                                <rect key="frame" x="85" y="182" width="246" height="21"/>
+                                <rect key="frame" x="84" y="182" width="247" height="21"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>

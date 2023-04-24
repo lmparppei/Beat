@@ -7,22 +7,23 @@
 //
 
 import Foundation
+import OSLog
 
 // MARK: Initialization and stylesheet loading
 
-@objc protocol BeatRenderStyleDelegate {
+@objc public protocol BeatRenderStyleDelegate {
 	var settings:BeatExportSettings { get }
 }
 
-@objc class BeatRenderStyles:NSObject {
-	@objc static let shared = BeatRenderStyles()
-	@objc static let editor = BeatRenderStyles(stylesheet: "EditorStyles")
-	var styles:[String:RenderStyle] = [:]
+@objc public class BeatRenderStyles:NSObject {
+	@objc static public let shared = BeatRenderStyles()
+	@objc static public let editor = BeatRenderStyles(stylesheet: "EditorStyles")
+    public var styles:[String:RenderStyle] = [:]
 	
 	weak var delegate:BeatRenderStyleDelegate?
 	var settings:BeatExportSettings?
 	
-	init(stylesheet:String, delegate:BeatRenderStyleDelegate? = nil, settings:BeatExportSettings? = nil) {
+    public init(stylesheet:String, delegate:BeatRenderStyleDelegate? = nil, settings:BeatExportSettings? = nil) {
 		self.delegate = delegate
 		self.settings = settings
 		
@@ -40,8 +41,10 @@ import Foundation
 		loadStyles(stylesheet: stylesheet)
 	}
 	
-	func loadStyles(stylesheet:String = "Styles", additionalStyles:String = "") {
-		let url = Bundle.main.url(forResource: stylesheet, withExtension: "beatCSS")
+    public func loadStyles(stylesheet:String = "Styles", additionalStyles:String = "") {
+		let bundle = Bundle(for: type(of: self))
+		let url = bundle.url(forResource: stylesheet, withExtension: "beatCSS")
+		
 		do {
 			var stylesheet = try String(contentsOf: url!)
 			stylesheet.append("\n\n" + additionalStyles)
@@ -51,49 +54,53 @@ import Foundation
 			
 			styles = parser.parse(fileContent: stylesheet, settings: settings)
 		} catch {
-			print("Loading stylesheet failed")
+			os_log("BeatRenderStyles - WARNING: Loading stylesheet failed")
 		}
 	}
 	
-	@objc func reload() {
+	@objc public func reload() {
 		self.loadStyles()
 	}
 	
-	@objc func page() -> RenderStyle {
-		return styles["page"]!
+	@objc public func page() -> RenderStyle {
+		guard let pageStyle = styles["page"] else {
+			os_log("BeatRenderStyles - WARNING: No page style defined in stylesheet")
+			return RenderStyle(rules: [:])
+		}
+		return pageStyle
 	}
 	
-	@objc func forElement(_ name:String) -> RenderStyle {
+	@objc public func forElement(_ name:String) -> RenderStyle {
 		return styles[name] ?? RenderStyle(rules: ["width-a4": self.page().defaultWidthA4, "width-us": self.page().defaultWidthLetter])
 	}
 }
 
 // MARK: - Render style
 
-class RenderStyle:NSObject {
-	@objc var bold:Bool = false
-	@objc var italic:Bool = false
-	@objc var underline:Bool = false
-	@objc var uppercase:Bool = false
+@objc public class RenderStyle:NSObject {
+	@objc public var bold:Bool = false
+	@objc public var italic:Bool = false
+	@objc public var underline:Bool = false
+	@objc public var uppercase:Bool = false
 	
-	@objc var textAlign:String = "left"
+	@objc public var textAlign:String = "left"
 	
-	@objc var marginTop:CGFloat = 0
-	@objc var marginLeft:CGFloat = 0
-	@objc var marginBottom:CGFloat = 0
-	@objc var marginRight:CGFloat = 0
-	@objc var paddingLeft:CGFloat = 0
-	@objc var contentPadding:CGFloat = 0
+	@objc public var marginTop:CGFloat = 0
+	@objc public var marginLeft:CGFloat = 0
+	@objc public var marginBottom:CGFloat = 0
+	@objc public var marginRight:CGFloat = 0
+	@objc public var paddingLeft:CGFloat = 0
+	@objc public var contentPadding:CGFloat = 0
 
-	@objc var lineHeight:CGFloat = 0
+	@objc public var lineHeight:CGFloat = 0
 	
-	@objc var widthA4:CGFloat = 0
-	@objc var widthLetter:CGFloat = 0
+	@objc public var widthA4:CGFloat = 0
+	@objc public var widthLetter:CGFloat = 0
 	
-	@objc var defaultWidthA4:CGFloat = 0
-	@objc var defaultWidthLetter:CGFloat = 0
+	@objc public var defaultWidthA4:CGFloat = 0
+	@objc public var defaultWidthLetter:CGFloat = 0
 	
-	init(rules:[String:Any]) {
+    public init(rules:[String:Any]) {
 		super.init()
 
 		for key in rules.keys {
@@ -110,7 +117,7 @@ class RenderStyle:NSObject {
 		}
 	}
 	
-	func styleNameToProperty (name:String) -> String {
+    public func styleNameToProperty (name:String) -> String {
 		switch name.lowercased() {
 		case "width-a4":
 			return "widthA4"
@@ -141,7 +148,7 @@ class RenderStyle:NSObject {
 		}
 	}
 	
-	override class func setValue(_ value: Any?, forUndefinedKey key: String) {
+	override public class func setValue(_ value: Any?, forUndefinedKey key: String) {
 		print("RenderStyle: Unknown key: ", key)
 	}
 }

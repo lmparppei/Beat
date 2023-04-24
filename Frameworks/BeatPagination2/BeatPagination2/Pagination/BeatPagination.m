@@ -27,9 +27,12 @@
  
  */
 
-#import <BeatPaginationCore/BeatPaginationCore.h>
+//#import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
+#import <BeatCore/BeatFonts.h>
+
 #import "BeatPagination.h"
-#import "Beat-Swift.h"
+
 #import "BeatPaginationBlock.h"
 #import "BeatPaginationBlockGroup.h"
 #import "BeatPageBreak.h"
@@ -42,7 +45,6 @@
 @property (nonatomic) BeatFonts* fonts;
 //@property (nonatomic) BeatRenderStyles* styles;
 @property (nonatomic) NSInteger location;
-
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
 
 @property (nonatomic) bool livePagination;
@@ -123,8 +125,8 @@
 
 - (CGFloat)maxPageHeight
 {
-	NSSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
-	RenderStyle* style = self.styles.page;
+    CGSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
+    RenderStyle* style = self.styles.page;
 	
 	return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight * 3;
 }
@@ -134,7 +136,7 @@
 /// Look up current line from array of lines. We are using UUIDs for matching, so `indexOfObject:` is redundant here.
 - (NSInteger)indexOfLine:(Line*)line {
 	for (NSInteger i=0; i<self.lines.count; i++) {
-		if ([_lines[i].uuid isEqualTo:line.uuid]) return i;
+        if ([_lines[i].uuid uuidEqualTo:line.uuid]) return i;
 	}
 	return NSNotFound;
 }
@@ -210,7 +212,7 @@
 		if (_pages.count == pageCountAtStart+2 && _currentPage.blocks.count == 0 && _cachedPages.count > self.pages.count && line.position > _location) {
 			Line* firstLineOnCachedPage = _cachedPages[_pages.count].lines.firstObject;
 
-			if ([line.uuid isEqualTo:firstLineOnCachedPage.uuid]) {
+			if ([line.uuid uuidEqualTo:firstLineOnCachedPage.uuid]) {
 				// We can use cached pagination here.
 				[self useCachedPaginationFrom:_pages.count];
 				return true;
@@ -564,5 +566,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	return more;
 }
 
+- (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage {
+    return self.titlePageContent;
+}
 
 @end

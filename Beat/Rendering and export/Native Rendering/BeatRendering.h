@@ -8,7 +8,7 @@
 
 #import <AppKit/AppKit.h>
 #import <BeatParsing/BeatParsing.h>
-#import "BeatPagination.h"
+#import <BeatPagination2/BeatPagination2.h>
 
 @class BeatPaginationManager;
 @class BeatPaginationPage;

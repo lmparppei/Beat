@@ -12,10 +12,11 @@
  
  */
 #import <BeatParsing/BeatParsing.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
 #import "BeatPaginationPage.h"
 #import "BeatPaginationBlock.h"
 #import "BeatPageBreak.h"
-#import "Beat-Swift.h"
+
 
 @interface BeatPaginationPage()
 @property (nonatomic) NSMutableArray<Line*>* lines;
@@ -162,7 +163,8 @@
 		
 		for (NSInteger j=0; j<block.lines.count; j++) {
 			Line* l = block.lines[j];
-			if ([l.uuid isEqualTo:line.uuid]) {
+
+            if ([l.uuid uuidEqualTo:line.uuid]) {
 				return i;
 			}
 		}

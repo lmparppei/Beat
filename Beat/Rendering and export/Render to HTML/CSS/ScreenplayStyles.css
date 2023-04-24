@@ -145,6 +145,10 @@ section {
 	page-break-after: always;
 }
 
+.splitParagraph {
+	margin-top: 0 !important;
+}
+
 /* ================== */
 /*    REVISED PAGES   */
 /* ================== */
@@ -469,7 +473,7 @@ body > p:first-child {
 	height: 26.0cm;
 }
 
-#script-title .title {
+#script-title .title, #script-title .titlePageTitle {
 	text-align: center;
 	margin: 1em 0 0 0;
 	text-transform: uppercase;

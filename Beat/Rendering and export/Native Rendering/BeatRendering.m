@@ -13,7 +13,7 @@
  */
 
 #import "BeatRendering.h"
-#import "BeatPaginationBlock.h"
+#import <BeatPagination2/BeatPagination2.h>
 #import "Beat-Swift.h"
 
 @interface BeatRendering()
@@ -150,7 +150,7 @@
 	
 	// Underlining
 	if (style.underline) {
-		[attributedString addAttribute:NSUnderlineStyleAttributeName value:@1 range:NSMakeRange(0, attributedString.length)];
+		[attributedString addAttribute:NSUnderlineStyleAttributeName value:@(NSUnderlineStyleSingle) range:NSMakeRange(0, attributedString.length)];
 		[attributedString addAttribute:NSUnderlineColorAttributeName value:BXColor.blackColor range:NSMakeRange(0, attributedString.length)];
 	}
 	
@@ -442,6 +442,7 @@
 	return [self.styles forElement:[Line typeName:type]];
 }
 
+/// Returns attribute dictionary for given line. We are caching the styles.
 - (NSDictionary*)attributesForLine:(Line*)line dualDialogue:(bool)isDualDialogue {
 	BeatPaperSize paperSize = self.settings.paperSize;
 	LineType type = line.type;
@@ -453,12 +454,19 @@
 		else if (line.type == more) type = dualDialogueMore;
 	}
 	
-	// A dictionary for paper size
+	// A dictionary of styles for current paper size.
 	NSNumber* paperSizeKey = @(paperSize);
 	if (_lineTypeAttributes[paperSizeKey] == nil) _lineTypeAttributes[paperSizeKey] = NSMutableDictionary.new;
 	
 	// Dictionary for the actual attributes
 	NSNumber* typeKey = @(type);
+	
+	// We'll create additional, special attributes for some rules.
+	// Let's add 100 to the type to create separate keys for split-paragraph rules.
+	if (!line.beginsNewParagraph && (type == action || type == lyrics || type == centered)) {
+		typeKey = @(type + 100);
+	}
+	
 	if (_lineTypeAttributes[paperSizeKey][typeKey] == nil) {
 		RenderStyle *style = [self styleForType:type];
 		
@@ -504,9 +512,9 @@
 		// Text alignment
 		if ([style.textAlign isEqualToString:@"center"]) pStyle.alignment = NSTextAlignmentCenter;
 		else if ([style.textAlign isEqualToString:@"right"]) pStyle.alignment = NSTextAlignmentRight;
-		
+				
 		// Special rules for some blocks
-		if ((type == lyrics || type == centered) && !line.beginsNewParagraph) {
+		if ((type == lyrics || type == centered || type == action) && !line.beginsNewParagraph) {
 			pStyle.paragraphSpacingBefore = 0;
 		}
 		

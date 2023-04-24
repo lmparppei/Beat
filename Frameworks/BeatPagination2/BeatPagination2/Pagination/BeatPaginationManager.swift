@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import BeatCore
 
 @objc protocol BeatPaginationManagerExports:JSExport {
 	@objc var pages:[BeatPaginationPage] { get }
@@ -21,7 +22,7 @@ import Foundation
 	@objc func paginateLines(_ lines:[Line])
 }
 
-@objc protocol BeatPaginationManagerDelegate {
+@objc public protocol BeatPaginationManagerDelegate {
 	func paginationDidFinish(pages: [BeatPaginationPage])
 	var parser:ContinuousFountainParser? { get }
 	var exportSettings:BeatExportSettings? { get }
@@ -30,34 +31,34 @@ import Foundation
 	var moreString:String { get }
 }
 
-class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
+public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
 	/// Delegate which is informed when pagination is finished. Useful when using background pagination.
 	weak var delegate:BeatPaginationManagerDelegate?
 	weak var editorDelegate:BeatEditorDelegate?
 	/// Optional renderer delegate to be used for rendering `BeatPaginationBlock` objects on screen/print/whatever.
-	var renderer: BeatRendererDelegate?
+	public var renderer: BeatRendererDelegate?
 	
-	@objc var settings:BeatExportSettings
-	var livePagination = false
+	@objc public var settings:BeatExportSettings
+    public var livePagination = false
 	
 	var operationQueue:[BeatPagination] = [];
 	var pageCache:NSMutableArray?
-	var pages:[BeatPaginationPage] {
+    public var pages:[BeatPaginationPage] {
 		return (finishedPagination?.pages ?? []) as! [BeatPaginationPage]
 	}
 		
-	var finishedPagination:BeatPagination?
+    @objc public var finishedPagination:BeatPagination?
 	
 	@objc convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		self.init(settings: delegate.exportSettings!, delegate: delegate, renderer:renderer, livePagination: livePagination)
 	}
 	
-	@objc init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
+	@objc public init(settings:BeatExportSettings, delegate:BeatPaginationManagerDelegate?, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		// Load default styles if none were explicitly delivered through export settings
 		if (settings.styles == nil) {
 			settings.styles = BeatRenderStyles.shared
 		}
-	
+        
 		self.settings = settings
 		self.delegate = delegate
 		self.livePagination = livePagination
@@ -70,7 +71,8 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		}
 	}
 	
-	@objc init(editorDelegate:BeatEditorDelegate) {
+    /// What is this?
+	@objc public init(editorDelegate:BeatEditorDelegate) {
 		self.settings = editorDelegate.exportSettings
 		self.editorDelegate = editorDelegate
 		
@@ -115,7 +117,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	 let pages = pagination.pages
 	 let titlePage = pagination.titlePage
 	 */
-	@objc func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
+	@objc public func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
 		self.pageCache = self.finishedPagination?.pages
 		self.settings = settings
 		
@@ -124,21 +126,22 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	}
 	
 	/// Paginates only the given lines
-	func paginate(lines:[Line]) {
+    public func paginate(lines:[Line]) {
 		let screenplay = BeatScreenplay()
 		screenplay.lines = lines
 		
 		let operation = BeatPagination.newPagination(with: lines, delegate: self)
 		runPagination(pagination: operation)
 	}
-	func paginateLines(_ lines:[Line]) {
+    public func paginateLines(_ lines:[Line]) {
 		//self.finishedPagination = nil
 		self.paginate(lines: lines)
 	}
 	
 	// MARK: - Finished operations
 	
-	func paginationFinished(_ pagination: BeatPagination) {
+	public func paginationFinished(_ pagination: BeatPagination) {
+        print("• Pagination finished")
 		if (self.finishedPagination != nil) {
 			if (pagination.startTime < self.finishedPagination!.startTime) { return }
 		}
@@ -156,6 +159,8 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 			self.finishedPagination = nil
 			self.finishedPagination = pagination
 
+            print("   ... sending to delegate...")
+            
 			self.delegate?.paginationDidFinish(pages: self.pages)
 		}
 		
@@ -174,7 +179,7 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	// MARK: - Getting paginated content properites
 	
 	/// Returns the *actual* page size for either the latest operation or from current settings
-	@objc var pageSize:NSSize {
+	@objc public var pageSize:CGSize {
 		if (self.finishedPagination != nil) {
 			return BeatPaperSizing.size(for: self.finishedPagination!.settings.paperSize)
 		} else {
@@ -182,20 +187,20 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		}
 	}
 	
-	@objc var titlePage:[[String: [Line]]] {
+	@objc public var titlePage:[[String: [Line]]] {
 		return self.finishedPagination?.titlePageContent ?? []
 	}
-	@objc var hasTitlePage:Bool {
+	@objc public var hasTitlePage:Bool {
 		return (self.titlePage.count > 0)
 	}
 	
 	/// Legacy plugin compatibility
-	@objc var numberOfPages:Int {
+	@objc public var numberOfPages:Int {
 		return self.finishedPagination?.pages.count ?? 0
 	}
 	
 	/// Returns `[numberOfFullPages, eightsOfLastpage]`, ie. `[5, 2]` for 5 2/8
-	var lengthInEights:[Int] {
+    @objc public var lengthInEights:[Int] {
 		if self.pages.count == 0 { return [0,0] }
 		
 		var pageCount = self.pages.count - 1
@@ -209,12 +214,12 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		return [pageCount, eights]
 	}
 	
-	@objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int] {
+	@objc public func sceneLengthInEights(_ scene:OutlineScene) -> [Int] {
 		let height = self.heightForScene(scene)
 		return heightToEights(height)
 	}
 	
-	@objc func heightToEights(_ height:CGFloat) -> [Int] {
+	@objc public func heightToEights(_ height:CGFloat) -> [Int] {
 		if height == 0 { return [0,0] }
 		
 		var pageCount = Int(floor(height / self.maxPageHeight))
@@ -235,14 +240,14 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 		return [pageCount, eights]
 	}
 	
-	var actualLastPageHeight:CGFloat {
+    public var actualLastPageHeight:CGFloat {
 		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
 		else { return 0.0 }
 		
 		return lastPage.maxHeight - lastPage.remainingSpace
 	}
 	
-	var lastPageHeight:CGFloat {
+    public var lastPageHeight:CGFloat {
 		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
 		else { return 0.0 }
 		return (lastPage.maxHeight - lastPage.remainingSpace) / lastPage.maxHeight
@@ -250,28 +255,28 @@ class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationMana
 	
 	// MARK: - Forwarded delegate properties
 	
-	var parser:ContinuousFountainParser? {
+    public var parser:ContinuousFountainParser? {
 		return self.delegate?.parser
 	}
 	
-	func moreString() -> String {
+    public func moreString() -> String {
 		return self.delegate?.moreString ?? ""
 	}
-	func contdString() -> String {
+    public func contdString() -> String {
 		return self.delegate?.contdString ?? ""
 	}
 
 	// MARK: - Convenience methods
 	
-	func page(forScene scene:OutlineScene) -> Int {
+    @objc public func page(forScene scene:OutlineScene) -> Int {
 		return self.finishedPagination?.findPageIndex(for: scene.line) ?? -1
 	}
 	
-	var maxPageHeight:CGFloat {
+    @objc public var maxPageHeight:CGFloat {
 		return self.finishedPagination?.maxPageHeight ?? BeatPaperSizing.size(for: settings.paperSize).height
 	}
 	
-	func heightForScene(_ scene:OutlineScene) -> CGFloat {
+    @objc public func heightForScene(_ scene:OutlineScene) -> CGFloat {
 		guard let height = self.finishedPagination?.height(for: scene)
 		else {
 			print("No height available for scene:", scene)

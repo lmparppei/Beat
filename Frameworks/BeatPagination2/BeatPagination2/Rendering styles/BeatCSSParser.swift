@@ -9,13 +9,12 @@
 
 import Foundation
 import BeatCore
-import BeatPaginationCore
 
-protocol BeatCssParserDelegate {
+public protocol BeatCssParserDelegate {
 	func get(key:String)
 }
 
-final class CssParser {
+public final class CssParser {
 	
 	var styles:[String:RenderStyle] = [:]
 	

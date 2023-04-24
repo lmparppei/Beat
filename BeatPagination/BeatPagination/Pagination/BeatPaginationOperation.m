@@ -29,7 +29,7 @@
 #import "BeatPaginationOperation.h"
 #import "BeatPaginator.h"
 #import "BeatPage.h"
-#import "BeatFonts.h"
+#import <BeatCore/BeatFonts.h>
 
 
 #define CHARACTER_WIDTH 7.2033

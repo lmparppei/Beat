@@ -401,6 +401,8 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 /// @warning Be careful not to go out of range!
 - (unichar)lastCharacter;
 
+/// Returns TRUE for anything that can be part of a split paragraph block
+- (bool)canBeSplitParagraph;
 /// returns TRUE for any title page element
 - (bool)isTitlePage;
 /// returns TRUE when the line is non-printed
