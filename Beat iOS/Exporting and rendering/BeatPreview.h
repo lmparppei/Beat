@@ -25,41 +25,43 @@ typedef NS_ENUM(NSUInteger, BeatPreviewType) {
 	BeatComparisonPreview
 };
 
-@class BeatPaginator;
+@class BeatPaginationManager;
+@class BeatPagination;
+@class BeatPreviewView;
 
 @protocol BeatPreviewExports <JSExport>
 @property (nonatomic, readonly) NSString* htmlString;
 @property (nonatomic, readonly) bool previewUpdated;
-@property (nonatomic, readonly) BeatPaginator* paginator;
 @property (nonatomic, readonly) ContinuousFountainParser* parser;
 @end
 
-@protocol BeatPreviewDelegate
+@protocol BeatPreviewDelegate <BeatEditorDelegate>
 @property (atomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic, readonly, weak) OutlineScene *currentScene;
 @property (readonly) NSAttributedString *attrTextCache;
-@property (nonatomic, readonly) BeatPaperSize pageSize;
+@property (readonly) BeatPaginationManager *pagination;
+@property (nonatomic, readonly) BeatPreviewView* previewView;
+
 - (NSString*)text;
 - (id)document;
 - (void)previewDidFinish;
 @end
 
 @interface BeatPreview : NSObject <BeatPreviewExports>
-@property (nonatomic, weak) IBOutlet id<BeatPreviewDelegate, BeatEditorDelegate> delegate;
+@property (nonatomic, weak) IBOutlet id<BeatPreviewDelegate> delegate;
 @property (nonatomic) NSString* htmlString;
 @property (nonatomic) NSTimer* previewTimer;
 @property (nonatomic) bool previewUpdated;
-@property (nonatomic, weak) IBOutlet WKWebView *previewView;
-@property (nonatomic) BeatPaginator* paginator;
-- (id) initWithDocument:(id)document;
+
+- (id)initWithDelegate:(id<BeatPreviewDelegate>)delegate;
 - (NSString*)createPreview;
 - (NSString*)createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType;
-- (NSString*)createPreviewFromPaginator:(BeatPaginator*)paginator;
+
 - (void)displayPreview;
-- (void)updatePreviewInSync:(bool)sync;
-- (void)updatePreviewWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage;
+
 - (void)updatePreviewSynchronized;
+- (void)updatePreviewAsync;
 - (void)setup;
 - (void)deallocPreview;
 @end

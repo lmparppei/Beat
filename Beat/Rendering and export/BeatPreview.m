@@ -16,84 +16,87 @@
  
  */
 
-#import "BeatPreview.h"
-
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatCore.h>
-#import <BeatPagination2/BeatPagination2.h>
+#import "BeatPreview.h"
 #import "BeatHTMLScript.h"
-//#import "Beat_iOS-Swift.h"
 
 @interface BeatPreview ()
-@property (nonatomic) BeatHTMLRenderer *renderer;
+@property (nonatomic) BeatHTMLScript *htmlGenerator;
 @property (nonatomic) ContinuousFountainParser *parser;
-@property (nonatomic, weak) BeatPreviewView* previewView;
 @end
 
 @implementation BeatPreview
 
-- (id)initWithDelegate:(id<BeatPreviewDelegate>)delegate
-{
+- (id)initWithDocument:(id)document {
 	self = [super init];
 	if (self) {
-		_delegate = delegate;
-		_previewView = delegate.previewView;
+		_delegate = document;
 	}
 	return self;
 }
 
 - (void)setup {
-	[_previewView.webview.configuration.userContentController addScriptMessageHandler:_delegate.document name:@"selectSceneFromScript"];
-	[_previewView.webview.configuration.userContentController addScriptMessageHandler:_delegate.document name:@"closePrintPreview"];
+	[_previewView.configuration.userContentController addScriptMessageHandler:_delegate.document name:@"selectSceneFromScript"];
+	[_previewView.configuration.userContentController addScriptMessageHandler:_delegate.document name:@"closePrintPreview"];
 	
-	[_previewView.webview loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
+	[_previewView loadHTMLString:@"<html><body style='background-color: #333; margin: 0;'><section style='margin: 0; padding: 0; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; font-weight: 200; font-family: \"Helvetica Light\", Helvetica; font-size: .8em; color: #eee;'>Creating Print Preview...</section></body></html>" baseURL:nil];
 	
-	_previewView.webview.pageZoom = 1.2;
+	if (@available(macOS 11.0, *)) {
+		_previewView.pageZoom = 1.2;
+	}
 }
 
 - (void)deallocPreview {
-	[self.previewView.webview.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
-	[self.previewView.webview.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
-	self.previewView.webview.navigationDelegate = nil;
-	self.previewView.webview = nil;
+	[self.previewView.configuration.userContentController removeScriptMessageHandlerForName:@"selectSceneFromScript"];
+	[self.previewView.configuration.userContentController removeScriptMessageHandlerForName:@"closePrintPreview"];
+	self.previewView.navigationDelegate = nil;
+	self.previewView = nil;
 }
 
-
 /// Create a preview with pre-paginated content from the paginator in document (this should be the way from now on, until we get the new renderer)
-- (NSString*)createPreviewFromPagination:(BeatPagination*)pagination {
+- (NSString*)createPreviewFromPaginator:(BeatPaginator*)paginator {
+	NSArray *pages = (paginator != nil) ? paginator.pages.copy : @[];
 
+	NSArray *titlePage = @[];
+	if (_delegate != nil) {
+		NSString *strForTitlePage = _delegate.text;
+		titlePage = [ContinuousFountainParser titlePageForString:strForTitlePage];
+	}
+	
+	return [self createPreviewWithPages:pages titlePage:titlePage];
+}
+
+/// Create preview with given pages and title page
+- (NSString*)createPreviewWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage {
 #if TARGET_OS_IOS
 	id doc = _delegate.documentForDelegation;
 #else
 	id doc = _delegate.document;
 #endif
 	
-	BeatExportSettings *settings;
-	
-	if (self.delegate) {
-		settings = self.delegate.exportSettings;
-	} else {
-		settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisions.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
-		settings.paperSize = _delegate.pageSize;
-	}
+	BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisions.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
+	settings.paperSize = _delegate.pageSize;
 
 	// This following weird code salad is here to circumvent strange corpse exceptions
-	BeatHTMLRenderer *renderer = [BeatHTMLRenderer.alloc initWithPagination:pagination settings:settings];
-	settings.operation = ForPreview;
-	
-	NSString * html = renderer.html;
-	_renderer = renderer;
+	BeatHTMLScript *generator = [BeatHTMLScript.alloc initWithPages:pages titlePage:titlePage settings:settings];
+	NSString * html = generator.html;
+	_htmlGenerator = generator;
 	
 	return html;
 }
 
+- (NSString*)createPreview {
+	if (self.delegate) {
+		NSString *rawText = self.delegate.text.copy;
+		return [self createPreviewFor:rawText type:BeatPrintPreview];
+	}
+	return @"";
+}
+
 - (NSString*)createPreviewFor:(NSString*)rawScript type:(BeatPreviewType)previewType {
-	BeatExportSettings* settings;
-	
 	if (_delegate) {
 		// This is probably a normal parser, because a delegate is present
-		settings = self.delegate.exportSettings;
-		
 		// Parse script
 		self.parser = [[ContinuousFountainParser alloc] initWithString:rawScript delegate:(id<ContinuousFountainParserDelegate>)_delegate nonContinuous:YES];
 		
@@ -106,9 +109,6 @@
 		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:attrStr];
 	} else {
 		// This is probably a QuickLook preview
-		// ..... we need to get the revisions etc. here
-		NSLog(@"IMPORT REVISIONS BEFORE PREVIEW");
-		settings =  [BeatExportSettings operation:ForPreview document:nil header:@"" printSceneNumbers:true];
 		self.parser = [ContinuousFountainParser.alloc initWithString:rawScript];
 	}
 	
@@ -116,14 +116,26 @@
 	BeatScreenplay *script = self.parser.forPrinting;
 	
 	if (previewType == BeatQuickLookPreview) { // Quick look preview
-		_renderer = [BeatHTMLRenderer.alloc initWithLines:script.lines settings:settings];
-		return _renderer.html;
+		_htmlGenerator = [BeatHTMLScript.alloc initForQuickLook:script];
+		return _htmlGenerator.html;
 	} else { // Normal preview
-		// This following weird code salad is here to circumvent strange corpse exceptions
-		BeatHTMLRenderer *renderer = [BeatHTMLRenderer.alloc initWithPagination:self.delegate.pagination.finishedPagination settings:settings];
-		self.renderer = renderer;
 		
-		return renderer.html;
+#if TARGET_OS_IOS
+		id doc = _delegate.documentForDelegation;
+#else
+		id doc = _delegate.document;
+#endif
+		
+		BeatExportSettings *settings = [BeatExportSettings operation:ForPreview document:doc header:@"" printSceneNumbers:_delegate.showSceneNumberLabels printNotes:NO revisions:BeatRevisions.revisionColors scene:_delegate.currentScene.sceneNumber coloredPages:NO revisedPageColor:@""];
+		settings.paperSize = _delegate.pageSize;
+		
+		// This following weird code salad is here to circumvent strange corpse exceptions
+		BeatHTMLScript *generator = [BeatHTMLScript.alloc initWithScript:script settings:settings];
+		
+		NSString * html = generator.html;
+		_htmlGenerator = generator;
+		
+		return html;
 	}
 }
 
@@ -139,34 +151,47 @@
 	NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", currentLine.uuid.UUIDString.lowercaseString];
 	
 	_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
-	[_previewView.webview loadHTMLString:_htmlString baseURL:NSBundle.mainBundle.resourceURL]; // Load HTML
+	[_previewView loadHTMLString:_htmlString baseURL:NSBundle.mainBundle.resourceURL]; // Load HTML
 	
 	// Revert changes to the code (so we can replace the placeholder again,
 	// if needed, without recreating the whole HTML)
 	_htmlString = [_htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
 	
 	// Evaluate JS in window to be sure it shows the correct scene
-	[_previewView.webview evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
+	[_previewView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
+	
+}
+
+/// Update preview either in background or in sync
+- (void)updatePreviewInSync:(bool)sync {
+	NSLog(@"PREVIEW: updatePreviewInSync: should be deprecated.");
+	[_previewTimer invalidate];
+	self.previewUpdated = NO;
+	
+	// Wait 1.5 seconds after writing has ended to build preview
+	// If there is no preview present, do it immediately
+	CGFloat previewWait = 1.5;
+	if (_htmlString.length < 1 || sync) {
+		[self updateHTMLWithContents:self.delegate.text.copy];
+	} else {
+		_previewTimer = [NSTimer scheduledTimerWithTimeInterval:previewWait repeats:NO block:^(NSTimer * _Nonnull timer) {
+			NSString *rawText = self.delegate.text.copy;
+			
+			dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+				[self updateHTMLWithContents:rawText];
+			});
+		}];
+	}
 }
 
 - (void)updatePreviewSynchronized {
 	self.previewUpdated = false;
 	
-	self.htmlString = [self createPreviewFromPagination:self.delegate.pagination.finishedPagination];
+	self.htmlString = [self createPreviewFor:self.delegate.text type:BeatPrintPreview];
 	self.previewUpdated = true;
 	[self.delegate previewDidFinish];
 }
 
-- (void)updatePreviewAsync {
-	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void) {
-		self.htmlString = [self createPreviewFromPagination:self.delegate.pagination.finishedPagination];
-		self.previewUpdated = true;
-		[self.delegate previewDidFinish];
-	});
-}
-
-/*
- 
 - (void)updatePreviewWithPages:(NSArray*)pages titlePage:(NSArray*)titlePage {
 	self.htmlString = [self createPreviewWithPages:pages titlePage:titlePage];
 	[self.delegate previewDidFinish];
@@ -179,8 +204,11 @@
 	self.previewUpdated = YES;
 	[self.delegate previewDidFinish];
 }
- 
- */
+
+- (BeatPaginator*)paginator {
+	return _delegate.paginator;
+	//return _htmlGenerator.paginator;
+}
 
 /*
  
