@@ -169,7 +169,6 @@
 @property (nonatomic) bool autocomplete;
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
-@property (nonatomic) bool characterInput;
 @property (nonatomic) NSDictionary *postEditAction;
 @property (nonatomic) bool typewriterMode;
 @property (nonatomic) bool hideFountainMarkup;

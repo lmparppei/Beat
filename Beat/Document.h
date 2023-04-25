@@ -87,6 +87,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 @property (nonatomic) BeatPaperSize pageSize;
 @property (nonatomic) BeatExportSettings* _Nonnull exportSettings;
 @property (nonatomic) bool contentLocked;
+@property (nonatomic) bool characterInput;
 
 @property (nonatomic) NSArray* _Nullable outline;
 - (void)reloadOutline;
