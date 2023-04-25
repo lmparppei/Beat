@@ -55,7 +55,7 @@ centered {
 
 character {
     width-a4: 38ch;
-	width-us: 38ch;
+	width-us: 40ch;
     
     margin-left: 19ch;
     margin-top: 1l;
@@ -165,6 +165,7 @@ titlePageContact {
 	text-align: left;
 }
 titlePageDraftDate {
+    margin-top: 1l;
 	text-align: right;
 }
 titlePageUnknown {

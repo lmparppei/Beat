@@ -141,7 +141,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	// MARK: - Finished operations
 	
 	public func paginationFinished(_ pagination: BeatPagination) {
-        print("• Pagination finished")
 		if (self.finishedPagination != nil) {
 			if (pagination.startTime < self.finishedPagination!.startTime) { return }
 		}
@@ -159,8 +158,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			self.finishedPagination = nil
 			self.finishedPagination = pagination
 
-            print("   ... sending to delegate...")
-            
 			self.delegate?.paginationDidFinish(pages: self.pages)
 		}
 		
