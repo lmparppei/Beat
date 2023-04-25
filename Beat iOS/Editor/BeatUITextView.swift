@@ -35,7 +35,7 @@ class BeatUITextView: UITextView {
 		textView.textContainer.widthTracksTextView = false
 		textView.pageView = pageView
 		textView.enclosingScrollView = scrollView
-		
+				
 		layoutManager.editorDelegate = editorDelegate
 		textView.setup()
 		
@@ -92,12 +92,6 @@ class BeatUITextView: UITextView {
 		// Delegates
 		enclosingScrollView?.delegate = self
 		layoutManager.delegate = self
-		/*
-		let layoutMgr = self.layoutManager as? BeatLayoutManager
-		if (layoutMgr != nil && self.editorDelegate != nil) {
-			layoutMgr?.editorDelegate = self.editorDelegate!
-		}
-		 */
 		
 		// View setup
 		self.textContainer.widthTracksTextView = false
@@ -106,6 +100,9 @@ class BeatUITextView: UITextView {
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
 				
+		// Listen to changes
+		NotificationCenter.default.addObserver(self, selector: #selector(didChangeSelection), name: UITextView.textDidChangeNotification, object: self)
+		
 		resizePaper()
 		resize()
 	}
@@ -172,6 +169,47 @@ class BeatUITextView: UITextView {
 		}
 	}
 	
+	// MARK: - Dialogue input
+	
+	func shouldCancelCharacterInput() -> Bool {
+		guard let editorDelegate = self.editorDelegate else { return false }
+		let line = editorDelegate.currentLine()
+		
+		/// We'll return `true` when the current line is empty
+		if editorDelegate.characterInput && line!.string.count == 0 {
+			print("Shuould cancel")
+			return true
+		} else {
+			return false
+		}
+	}
+	
+	func cancelCharacterInput() {
+		print("Canceling character input")
+		
+		guard let editorDelegate = self.editorDelegate else { return }
+		
+		let line = editorDelegate.characterInputForLine
+		
+		editorDelegate.characterInput = false
+		editorDelegate.characterInputForLine = nil
+		
+		let paragraphStyle = NSMutableParagraphStyle()
+		paragraphStyle.firstLineHeadIndent = 0.0
+		paragraphStyle.minimumLineHeight = BeatiOSFormatting.editorLineHeight()
+		
+		let attributes:[NSAttributedString.Key:Any] = [
+			NSAttributedString.Key.font: editorDelegate.courier!,
+			NSAttributedString.Key.paragraphStyle: paragraphStyle
+		]
+		
+		self.typingAttributes = attributes
+		self.setNeedsDisplay()
+		self.setNeedsLayout()
+		
+		editorDelegate.setTypeAndFormat?(line, type: .empty)
+	}
+		
 
 	// MARK: - Rects for ranges
 	
@@ -207,6 +245,19 @@ class BeatUITextView: UITextView {
 		}
 		super.touchesEnded(touches, with: event)
 	}
+
+	// MARK: - Other events
+	
+	@objc func didChangeSelection () {
+		guard let editorDelegate = self.editorDelegate else { return }
+		
+		if (editorDelegate.currentLine().isAnyParenthetical()) {
+			self.autocapitalizationType = .none
+		} else {
+			self.autocapitalizationType = .sentences
+		}
+	}
+	
 }
 
 // MARK: - Layout manager delegate
@@ -346,7 +397,7 @@ extension BeatUITextView: UIScrollViewDelegate {
 	func resizeScrollViewContent() {
 		// Add constraints to the text view
 		let layoutManager = self.layoutManager
-		let textContainerInset = self.textContainerInset
+		//let textContainerInset = self.textContainerInset
 
 		// Calculate the index of the last glyph that fits within the available height
 		let lastGlyphIndex = layoutManager.glyphIndexForCharacter(at: self.text.count)
@@ -373,17 +424,35 @@ extension BeatUITextView: UIScrollViewDelegate {
 		
 	}
 	
+	override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+		guard let key = presses.first?.key else { return }
+		
+		if key.keyCode == .keyboardTab {
+			// Never allow tab
+			return
+		}
+		else if key.keyCode == .keyboardDeleteOrBackspace {
+			// Check if we should cancel character input
+			if self.shouldCancelCharacterInput() {
+				self.cancelCharacterInput()
+				return
+			}
+		}
+		
+		super.pressesBegan(presses, with: event)
+	}
+	
 	override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
 		guard let key = presses.first?.key else { return }
 
-			switch key.keyCode {
-			case .keyboardTab:
-				editorDelegate?.handleTabPress?()
-				return
-				
-			default:
-				super.pressesBegan(presses, with: event)
-			}
+		switch key.keyCode {
+		case .keyboardTab:
+			editorDelegate?.handleTabPress?()
+			break
+			
+		default:
+			super.pressesEnded(presses, with: event)
+		}
 	}
 }
 
