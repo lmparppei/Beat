@@ -1,6 +1,6 @@
 Title: Beat Tutorial
 Credit: Written by
-Author: Lauri-Matti Parppei
+Author: KAPITAN!
 Draft date: Version 2, 8.7.2020
 Contact:
 beat@kapitan.fi
@@ -9,7 +9,7 @@ www.kapitan.fi/beat
 
 INT. SCHOOL ROOM - DAY
 
-Is this your first time using Beat? This file is a playground for you to mess around with. For more detailed instructions, consult the user manual, which is accessible through the Help menu.
+Is this your first time using Beat? This file is a playground for you to mess around with.
 
 In Beat, you don't need to press any special keys to write dialogue or a scene header. Just type "int. school" or "ext. park" on a new line and it will become a scene header.
 
@@ -18,7 +18,7 @@ Try it out yourself!
 
 EXT. PARK - DAY
 
-The same is true with dialogue. Just type in CHARACTER NAME (all caps) and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue. 
+The same is true with dialogue. Just type in CHARACTER NAME (all caps) and then follow it with a dialogue block (or parenthetical) on the next line. It will become dialogue.
 
 Try it out!
 
@@ -37,7 +37,7 @@ You can also use transitions just by typing out something in all-caps and ending
 
 CUT TO:
 
-Well, that was easy. You should be able to write a full screenplay by using those elements. 
+Well, that was easy. You should be able to write a full screenplay by using those elements.
 
 Now, if you dare, let's get more technical!
 
@@ -58,7 +58,7 @@ Title page info you see at the beginning of this file will be printed out as a v
 
 = This is a synopsis line. Let's get a bit more technical.
 
-INT. TUNNEL - NIGHT 
+INT. TUNNEL - NIGHT
 
 You can use sections and synopses (as above) to help structure your story. They won't be printed out, don't worry.
 
@@ -73,7 +73,7 @@ Text formatting can be done with the usual commands used in any software, (⌘B,
 
 Basically, text formatting works so that anything inside dual apostrophes is **bolded** and single apostrophes make it *italic*. You can also _underline_ stuff.
 
-Every element also has a way of forcing it. Take a look at the Format menu. Elements can be quickly forced by pressing ⌥↩ (alt-enter). Try it now!
+Every element can also be forced, if it doesn't fit into the given rules. Take a look at the quick menu at the right side of keyboard.
 
 Centering text is done using surrounding it with > and <.
 
@@ -108,9 +108,9 @@ Here's some lyrics:
 ~bring me a lamp and a window I can look through
 ~at the crowd in the happy alley.”
 
-That's about it. Edit this file and try out stuff. If you ever mess something up, you can usually reformat it by just removing something and adding it back.
+That's about it. Edit this file and try out stuff.
 
-There's a lot more to dive into, such as reviews (try selecting a range and pressing ⌘R), revisions (select a range and press ⌘K, and ⌥⌘K to remove it) and plugins, which extend the functionality of Beat. See *Plugin Library* under *Tools* menu.
+If you ever mess up something, you can use automatic reformatting by selecting the text and pressing (⌘R), or by reformatting everything through the Format menu.
 
 You can find more information about the Fountain markup language at http://www.fountain.io/
 

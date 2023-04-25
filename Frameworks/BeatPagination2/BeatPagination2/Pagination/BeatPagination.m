@@ -185,7 +185,7 @@
 
 - (void)useCachedPaginationFrom:(NSInteger)pageIndex
 {
-	NSLog(@"Using cached pagination from: %lu", pageIndex);
+	//NSLog(@"Using cached pagination from: %lu", pageIndex);
 	NSArray* reusablePages = [self.cachedPages subarrayWithRange:NSMakeRange(pageIndex, self.cachedPages.count - pageIndex)];
 	[_pages addObjectsFromArray:reusablePages];
 }

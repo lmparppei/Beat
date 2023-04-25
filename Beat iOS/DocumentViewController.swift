@@ -5,11 +5,12 @@
 //  Created by Lauri-Matti Parppei on 21.5.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
-/*
+/**
  
- NOTE NOTE NOTE:
+ __NOTE NOTE NOTE__
  
- This class is obsolete.
+ THIS CLASS IS OBSOLETE AND NOT IN USE.
+ 
  It was fun learning some Swift, but I moved back to Objective C for the document view controller, because
  interoperability was MUCH easier that way.
  

@@ -30,17 +30,32 @@ class DocumentBrowserViewController: UIDocumentBrowserViewController, UIDocument
     // MARK: UIDocumentBrowserViewControllerDelegate
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, UIDocumentBrowserViewController.ImportMode) -> Void) {
-        let newDocumentURL: URL? = nil
+        //let newDocumentURL: URL? = nil
         
         // Set the URL for the new document here. Optionally, you can present a template chooser before calling the importHandler.
         // Make sure the importHandler is always called, even if the user cancels the creation request.
+		
+		let storyboard = UIStoryboard(name: "Main", bundle: nil)
+		let templateVC = storyboard.instantiateViewController(identifier: "TemplateCollectionViewController") as TemplateCollectionViewController
+		templateVC.importHandler = importHandler
+		
+		present(templateVC, animated: true)
+		
+		/*
+		 UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+		 TemplateCollectionViewController *templateCollectionViewController = [storyBoard instantiateViewControllerWithIdentifier:@"TemplateCollectionViewController"];
+		 templateCollectionViewController.importHandler = importHandler;
+		 [self presentViewController:templateCollectionViewController animated:YES completion:nil];
+		 */
 
+		/*
 		if newDocumentURL != nil {
             importHandler(newDocumentURL, .move)
         } else {
 			let url = Bundle.main.url(forResource: "Tutorial", withExtension: "fountain")
 			importHandler(url, .copy)
         }
+		 */
     }
     
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didPickDocumentsAt documentURLs: [URL]) {

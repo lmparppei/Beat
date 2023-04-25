@@ -9,7 +9,7 @@
 import UIKit
 import BeatCore
 
-class BeatUITextView: UITextView {
+class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 
 	//@IBInspectable var documentWidth:CGFloat = 640
 	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
@@ -256,6 +256,14 @@ class BeatUITextView: UITextView {
 		} else {
 			self.autocapitalizationType = .sentences
 		}
+	}
+	
+	// MARK: - Menu
+	
+	override func willPresentEditMenu(animator: UIEditMenuInteractionAnimating) {
+		let bold = UIEditMenuInteraction(delegate: self)
+		
+		self.addInteraction(bold)
 	}
 	
 }
