@@ -126,8 +126,6 @@ static CGFloat panelWidth;
 	_secondaryButton.action = @selector(print:);
 }
 - (void)openPanel {
-	NSLog(@"Opening print dialog: %@", self.window);
-		
 	// Remove the previous preview
 	[_pdfView setDocument:nil];
 			

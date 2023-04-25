@@ -312,7 +312,12 @@
 - (void)outlineViewColumnDidResize:(NSNotification *)notification
 {
 	// Update row heights when needed
+	[NSAnimationContext beginGrouping];
+	[[NSAnimationContext currentContext] setDuration:0.0];
+
 	[self noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:(NSRange){ 0, self.numberOfRows }]];
+	
+	[NSAnimationContext endGrouping];
 }
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(nullable id)item;

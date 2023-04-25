@@ -294,9 +294,6 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
 		let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
 		
-		print("left rect", leftRect)
-		print("Right rect", rightRect)
-		
 		// We'll calculate correct insets for the boxes, so the content will be bottom-aligned
 		let insetLeft = leftColumn.frame.height - leftRect.height
 		let insetRight = rightColumn.frame.height - rightRect.height
