@@ -17,7 +17,7 @@
 
 #import "Beat_iOS-Swift.h"
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
@@ -548,7 +548,8 @@ static bool buildPreviewImmediately = false;
 #pragma mark - Text I/O
 
 - (NSString *)text {
-	return self.textView.text;
+	if (NSThread.mainThread) return self.textView.text;
+	else return self.attrTextCache.string;
 }
 - (NSAttributedString*)attributedString {
 	return [self getAttributedText];
@@ -941,6 +942,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self refreshTextViewLayoutElements];
 }
 
+- (NSInteger)spaceBeforeHeading {
+	return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingSceneHeadingSpacing];
+}
+
+- (bool)printSceneNumbers {
+	return self.showSceneNumberLabels;
+}
+
 
 #pragma mark - Document setting shorthands
 
@@ -956,21 +965,25 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (NSInteger)sceneNumberingStartsFrom {
 	return [self.documentSettings getInt:DocSettingSceneNumberStart];
 }
+
 - (void)setSceneNumberingStartsFrom:(NSInteger)number {
 	[self.documentSettings setInt:DocSettingSceneNumberStart as:number];
 }
 
 
+
 #pragma mark - Export options
 
 - (BeatExportSettings*)exportSettings  {
-	BeatExportSettings* settings = BeatExportSettings.new;
+	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview delegate:self];
+	
 	return settings;
 }
 
 - (bool)nativeRendering {
 	return false;
 }
+
 
 
 #pragma mark - Editor text view values
@@ -1179,9 +1192,40 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 }
 
+/// Forces a type on a line and formats it accordingly. Can be abused for doing strange and esoteric stuff.
+- (void)setTypeAndFormat:(Line*)line type:(LineType)type {
+	line.type = type;
+	[_formatting formatLine:line];
+}
+
+
+#pragma mark - Shown revisions
+
+- (NSArray*)shownRevisions {
+	NSArray<NSString*>* hiddenRevisions = [self.documentSettings get:@"HiddenRevisions"];
+	NSMutableArray* shownRevisions = [NSMutableArray.alloc initWithArray:BeatRevisions.revisionColors];
+	if (hiddenRevisions.count > 0) {
+		[shownRevisions removeObjectsInArray:hiddenRevisions];
+	}
+	
+	return shownRevisions;
+}
 
 
 #pragma mark - Printing stuff for iOS
+
+- (IBAction)openExportPanel:(id)sender {
+	BeatExportViewController* vc = [self.storyboard instantiateViewControllerWithIdentifier:@"ExportPanel"];
+	vc.modalPresentationStyle = UIModalPresentationPopover;
+	vc.popoverPresentationController.barButtonItem = sender;
+	vc.senderButton = sender;
+	vc.senderVC = self;
+	vc.editorDelegate = self;
+	
+	[self presentViewController:vc animated:false completion:^{
+		NSLog(@" ... closed");
+	}];
+}
 
 - (id)documentForDelegation {
 	return self.document;
@@ -1204,7 +1248,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - General editor stuff
 
 - (void)handleTabPress {
-	NSLog(@"• Implement handle tab press");
+	[self addCharacterCue:nil];
 }
 
 - (void)registerEditorView:(id)view {

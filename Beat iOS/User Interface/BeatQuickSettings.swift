@@ -44,10 +44,7 @@ class BeatQuickSettings:BeatPopoverContentController {
 
 extension BeatDocumentViewController {
 	
-	@IBAction func buttonClicked(_ sender: AnyObject) {
-		//get the button frame
-		/* 1 */
-		
+	@IBAction func openQuickSettings(_ sender: AnyObject) {
 		let view = sender.value(forKey: "view") as! UIView
 		
 		var frame = view.frame
@@ -55,13 +52,11 @@ extension BeatDocumentViewController {
 		frame.origin.y += 20
 		let buttonFrame = frame
 		
-		/* 2 */
 		//Configure the presentation controller
 		let popoverContentController = self.storyboard?.instantiateViewController(withIdentifier: "QuickSettings") as? BeatPopoverContentController
 		popoverContentController?.modalPresentationStyle = .popover
 		popoverContentController?.delegate = self
 
-		/* 3 */
 		// Present popover
 		if let popoverPresentationController = popoverContentController?.popoverPresentationController {
 			popoverPresentationController.permittedArrowDirections = .up

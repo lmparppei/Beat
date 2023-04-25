@@ -36,8 +36,8 @@
 
 @implementation BeatHTMLRenderer
 
-static bool boldedHeading;
-static bool underlinedHeading;
+//static bool boldedHeading;
+//static bool underlinedHeading;
 
 /// Returns a renderer with pre-paginated content
 - (instancetype)initWithPagination:(BeatPagination*)pagination settings:(BeatExportSettings*)settings
@@ -89,6 +89,15 @@ static bool underlinedHeading;
 	[html appendString:[self htmlFooter]];
 
 	return html;
+}
+
+#pragma mark - Heading settings
+
+- (BOOL)boldedHeading {
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleBold];
+}
+- (BOOL)underlinedHeading {
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingHeadingStyleUnderlined];
 }
 
 #pragma mark - HTML sections
@@ -375,29 +384,8 @@ static bool underlinedHeading;
 	LineType block = empty;
 	
 	for (Line *line in page.lines) { @autoreleasepool {
-		//bool beginBlock = false;
 		
-		if ([ignoringTypes containsObject:line.typeAsString]) {
-			// Close possible blocks
-			/*
-			if (block != empty) {
-				// Close possible blocks
-				[body appendFormat:@"</p>\n"];
-				block = empty;
-			}
-			 */
-			continue;
-		}
-		
-		if (line.type == pageBreak) {
-			/*
-			if (block != empty) {
-				// Close the block
-				[body appendFormat:@"</p>\n"];
-				block = empty;
-			}
-			 */
-			 
+		if ([ignoringTypes containsObject:line.typeAsString] || line.type == pageBreak) {
 			continue;
 		}
 		
@@ -420,77 +408,9 @@ static bool underlinedHeading;
 			[body appendString:@"</div>\n<div class='dual-dialogue-right'>\n"];
 		}
 		
-		NSMutableString *text = NSMutableString.new;
-/*
-		// Begin lyrics or centered block
-		if (block != empty) {
-			if (line.type != block) {
-				// Close block
-				[body appendFormat:@"</p>\n"];
-				block = empty;
-			}
-			else if (line.type == block && line.beginsNewParagraph) {
-				[body appendFormat:@"</p>\n"];
-				beginBlock = true;
-			}
-		}
-		else {
-			if (line.type == lyrics || line.type == centered) {
-				block = line.type;
-				beginBlock = true;
-			}
-		}
-*/
- 
-		// Format string for HTML (if it's not a heading)
-		[text setString:[self htmlStringFor:line]];
-		
-		// To avoid underlining heading tails, let's trim the text if needed
-		if (line.type == heading && underlinedHeading) [text setString:[text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
-		
-		// Preview shortcuts
-		if (line.type == heading && _settings.operation == ForPreview) {
-			[text setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, text]];
-		}
+		NSString *element = [self htmlStringFor:line];
 
-		NSMutableString *additionalClasses = NSMutableString.string;
-		
-		if (line.type == heading && line.sceneNumber) {
-			// Add scene number ID to HTML, but don't print it if it's toggled off
-			NSString *printedSceneNumber;
-			if (_settings.printSceneNumbers) printedSceneNumber = line.sceneNumber;
-			else printedSceneNumber = @"";
-							
-			NSString* sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
-			NSString* sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
-			
-			[text setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, text, sceneNumberRight]];
-			
-			if (boldedHeading) [additionalClasses appendString:@" bold"];
-			if (underlinedHeading) [additionalClasses appendString:@" underline"];
-		}
-		
-		if (text.length > 0) {
-			if (line.type == centered) {
-				[additionalClasses appendString:@" center"];
-			}
-			if (elementCount == 0) [additionalClasses appendString:@" first"];
-			
-			// Mark as changed, if comparing against another file or the line contains added/removed text
-			if (line.changed || line.revisedRanges.count || line.removalSuggestionRanges.count) {
-				[additionalClasses appendString:@" changed"];
-				
-				// Add revision color if available
-				if (line.revisionColor.length > 0) {
-					[additionalClasses appendFormat:@" %@", line.revisionColor.lowercaseString];
-				}
-			}
-			
-			// If this line isn't part of a larger block, output it as paragraph
-
-			[body appendFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsString], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, text];
-			
-		}
+		if (element.length > 0) [body appendFormat:@"%@\n", element];
 		
 		elementCount++;
 	} }
@@ -594,17 +514,60 @@ static bool underlinedHeading;
 					[close appendString:@"</span>"];
 				}
 			}
-			
 		}
 		
 		// Append snippet to paragraph
 		[htmlString appendString:[NSString stringWithFormat:@"%@%@%@", open, [self escapeString:text], close]];
 	}];
 	
-	// Create HTML line breaks
+	// To avoid underlining heading tails, let's trim the text if needed
+	if (line.type == heading && self.underlinedHeading) [htmlString setString:[htmlString stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet]];
+	
+	// Preview shortcuts
+	if (line.type == heading && _settings.operation == ForPreview) {
+		[htmlString setString:[NSString stringWithFormat:@"<a href='#' onclick='selectScene(this);' sceneIndex='%lu'>%@</a>", line.sceneIndex, htmlString]];
+	}
+
+	NSMutableString *additionalClasses = NSMutableString.string;
+	
+	if (line.type == heading && line.sceneNumber) {
+		// Add scene number ID to HTML, but don't print it if it's toggled off
+		NSString *printedSceneNumber;
+		if (self.settings.printSceneNumbers) printedSceneNumber = line.sceneNumber;
+		else printedSceneNumber = @"";
+						
+		NSString* sceneNumberLeft = [NSString stringWithFormat:@"<span id='scene-%@' class='scene-number-left'>%@</span>", line.sceneNumber, printedSceneNumber];
+		NSString* sceneNumberRight = [NSString stringWithFormat:@"<span class='scene-number-right'>%@</span>", printedSceneNumber];
+		
+		[htmlString setString:[NSString stringWithFormat:@"%@%@%@", sceneNumberLeft, htmlString, sceneNumberRight]];
+		
+		if (self.boldedHeading) [additionalClasses appendString:@" bold"];
+		if (self.underlinedHeading) [additionalClasses appendString:@" underline"];
+	}
+	
+
+	if (line.type == centered) {
+		[additionalClasses appendString:@" center"];
+	}
+	if (line.canBeSplitParagraph && !line.beginsNewParagraph) [additionalClasses appendString:@" splitParagraph"];
+	
+	// Mark as changed, if comparing against another file or the line contains added/removed text
+	if (line.changed || line.revisedRanges.count || line.removalSuggestionRanges.count) {
+		[additionalClasses appendString:@" changed"];
+		
+		// Add revision color if available
+		if (line.revisionColor.length > 0) {
+			[additionalClasses appendFormat:@" %@", line.revisionColor.lowercaseString];
+		}
+	}
+
 	[htmlString replaceOccurrencesOfString:@"\n" withString:@"<br>" options:0 range:(NSRange){0,htmlString.length}];
 	
-	return htmlString;
+	if (htmlString.length > 0) {
+		return [NSString stringWithFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self classNameForLine:line], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, htmlString];
+	} else {
+		return @"";
+	}
 }
 
 - (NSString*)escapeString:(NSString*)stringToEscape
@@ -622,9 +585,9 @@ static bool underlinedHeading;
 
 #pragma mark - Helper methods
 
-- (NSString *)htmlClassForType:(NSString *)elementType
+- (NSString *)classNameForLine:(Line*)line
 {
-	return [elementType.lowercaseString stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+	return [line.typeName stringByReplacingOccurrencesOfString:@" " withString:@"-"];
 }
 
 @end

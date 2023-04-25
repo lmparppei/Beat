@@ -20,4 +20,7 @@
 #import "BeatPreview.h"
 #import "BeatDocumentViewController.h"
 
+#import "BeatPrintView.h"
+#import "BeatiOSFormatting.h"
+
 #endif /* Beat_iOS_Bridging_Header_h */
