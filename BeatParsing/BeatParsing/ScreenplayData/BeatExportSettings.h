@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString*>*)shownRevisions;
 - (NSString*)moreString;
 - (NSString*)contdString;
+- (NSString*)fileNameString;
 - (NSInteger)spaceBeforeHeading;
 - (BeatPaperSize)pageSize;
 @end
@@ -47,6 +48,7 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) bool coloredPages;
 @property (nonatomic) bool printNotes;
 @property (nonatomic) bool printSceneNumbers;
+@property (nonatomic) NSString *fileName;
 @property (nonatomic) NSString *contd;
 @property (nonatomic) NSString *more;
 @property (nonatomic, weak) BeatHostDocument  * _Nullable document;

@@ -120,6 +120,7 @@
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 
 
+
 #pragma mark - Editing the text content
 
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
@@ -204,7 +205,7 @@
 #pragma mark - Editor flags
 
 @property (nonatomic) bool revisionMode;
-@property (nonatomic, readonly) bool characterInput;
+@property (nonatomic) bool characterInput;
 @property (nonatomic) Line* characterInputForLine;
 @property (nonatomic) BeatEditorMode mode;
 @property (nonatomic, readonly) bool hideFountainMarkup;
@@ -221,6 +222,8 @@
 - (void)renderBackgroundForLines;
 - (void)renderBackgroundForRange:(NSRange)range;
 
+/// Forces line type and formats it. Use only if you know what you are doing.
+- (void)setTypeAndFormat:(Line*)line type:(LineType)type;
 
 
 #pragma mark - Printing stuff for macOS

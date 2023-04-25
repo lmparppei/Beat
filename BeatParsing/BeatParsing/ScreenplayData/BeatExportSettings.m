@@ -76,6 +76,8 @@
         
         _contd = delegate.contdString;
         _more = delegate.moreString;
+        
+        _fileName = delegate.fileNameString;
     }
     
     return self;
