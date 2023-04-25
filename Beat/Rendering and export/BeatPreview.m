@@ -11,7 +11,7 @@
  All hope abandon ye who enter here.
  
  Note that we use "clever" JavaScript hack to jump to the current scene.
- Line UUIDs are baked into the review, and when toggling into preview mode,
+ Line UUIDs are baked into the lines, and when toggling into preview mode,
  our document injects some JS to jump onto the correct line.
  
  */
@@ -150,15 +150,17 @@
 	
 	NSString *scrollTo = [NSString stringWithFormat:@"<script>scrollToIdentifier('%@');</script>", currentLine.uuid.UUIDString.lowercaseString];
 	
-	_htmlString = [_htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
-	[_previewView loadHTMLString:_htmlString baseURL:NSBundle.mainBundle.resourceURL]; // Load HTML
-	
-	// Revert changes to the code (so we can replace the placeholder again,
-	// if needed, without recreating the whole HTML)
-	_htmlString = [_htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
-	
-	// Evaluate JS in window to be sure it shows the correct scene
-	[_previewView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		self.htmlString = [self.htmlString stringByReplacingOccurrencesOfString:@"<script name='scrolling'></script>" withString:scrollTo];
+		[self.previewView loadHTMLString:self.htmlString baseURL:NSBundle.mainBundle.resourceURL]; // Load HTML
+		
+		// Revert changes to the code (so we can replace the placeholder again,
+		// if needed, without recreating the whole HTML)
+		self.htmlString = [self.htmlString stringByReplacingOccurrencesOfString:scrollTo withString:@"<script name='scrolling'></script>"];
+		
+		// Evaluate JS in window to be sure it shows the correct scene
+		[self.previewView evaluateJavaScript:[NSString stringWithFormat:@"scrollToIdentifier(%@);", currentLine.uuid.UUIDString.lowercaseString] completionHandler:nil];
+	});
 	
 }
 

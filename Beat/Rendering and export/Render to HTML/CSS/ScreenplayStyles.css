@@ -92,7 +92,7 @@ html {
 
 body {
 
-	--action-width: 59.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
+	--action-width: 60.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
 	--character-width: 38ch;
 	--parenthetical-width: 28ch; /* includes leading parenthesis */
 	--dialogue-width: 35ch;
@@ -107,7 +107,7 @@ body {
 	--line-height: 12.5pt;
 
 
-	color: black;
+	color: black !important;
 	font: 12pt 'Courier Prime', 'Courier', serif;
 	line-height: var(--line-height);
 
@@ -119,7 +119,7 @@ body {
 
 body.us-letter{  /* all values not present here are the same as for A4 */
 
-	--action-width: 61.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
+	--action-width: 62.1ch; /* .1 hack because some characters broke lines too soon even when they should fit */
 	--character-width: 40ch;
 
 	width: calc(8.5in - 88pt); /* this limits the usable page size to printable area and avoids WebKit shrinkage */
@@ -460,7 +460,8 @@ body > p:first-child {
 	margin: 0;
 	padding: 0 12px 2cm 0;
 	height: 23.5cm;
-
+	width: 100%;
+	
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -485,27 +486,38 @@ body > p:first-child {
 	bottom: 0;
 	left: 0;
 	width: 45%;
+	
+	display: flex;
+	flex-direction: column;
+	align-items: bottom;
+	justify-content: left;
 }
 #script-title .versionInfo {
 	position: absolute;
 	bottom: 0;
 	right: 0;
 	width: 45%;
-	text-align: right;
+	text-align: right !important;
 	margin: 0 0 .5em 0;
+	
+	display: flex;
+	flex-direction: column;
+	align-items: bottom;
+	justify-content: right;
 }
+
 #script-title .versionInfo p, #script-title .info p {
 	position: relative;
 	max-width: 100%;
 	margin: 0 0 .5em 0;
 }
-#script-title .credit {
+#script-title .credit, .titlePageCredit {
 	text-align: center;
 }
-#script-title .authors {
+#script-title .authors, .titlePageAuthor {
 	text-align: center;
 }
-#script-title .source {
+#script-title .source, .titlePageSource {
 	text-align: center;
 	padding-top: 1em;
 }

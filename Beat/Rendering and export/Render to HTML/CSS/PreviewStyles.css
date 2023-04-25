@@ -53,7 +53,7 @@ body {
 	--page-height: 29.7cm;
 
 	background: #333;
-	color: #3e3e3e;
+	color: black !important;
 
 	margin-right: auto;
 	margin-left: auto;
