@@ -256,7 +256,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		if let authors = titlePageElement("authors") { top.append(authors) }
 		if let source = titlePageElement("source") { top.append(source) }
 		
-		// Content on top
+		// Title, credit, author, source on top
 		let topContent = NSMutableAttributedString(string: "")
 		for el in top {
 			let attrStr = renderer.renderLine(el, of: nil, dualDialogueElement: false, firstElementOnPage: false)
@@ -275,7 +275,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 			leftColumn.textStorage?.append(attrStr)
 		}
 				
-		// Add the rest on left side
+		// Add the rest of the elements on left side
 		for d in self.titlePageLines {
 			let dict = d
 			
@@ -294,6 +294,10 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
 		let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
 		
+		print("left rect", leftRect)
+		print("Right rect", rightRect)
+		
+		// We'll calculate correct insets for the boxes, so the content will be bottom-aligned
 		let insetLeft = leftColumn.frame.height - leftRect.height
 		let insetRight = rightColumn.frame.height - rightRect.height
 		
@@ -345,6 +349,9 @@ class BeatTitlePageView:BeatPaginationPageView {
 			firstLine.join(with: lines[i])
 		}
 		
+		// Trim unnecessary line breaks
+		firstLine.string = firstLine.string.trimmingCharacters(in: .newlines)
+		
 		return firstLine
 	}
 	
@@ -372,9 +379,11 @@ class BeatTitlePageView:BeatPaginationPageView {
 			leftColumn = NSTextView(frame: columnFrame)
 			leftColumn?.isEditable = false
 			leftColumn?.backgroundColor = .white
+			leftColumn?.isSelectable = false
 			
 			self.addSubview(leftColumn!)
 		}
+
 		
 		if (rightColumn == nil) {
 			let rightColumnFrame = NSRect(x: frame.width - pageStyle.marginLeft - columnFrame.width,
@@ -383,6 +392,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 			rightColumn = NSTextView(frame: rightColumnFrame)
 			rightColumn?.isEditable = false
 			rightColumn?.backgroundColor = .white
+			rightColumn?.isSelectable = false
 			
 			self.addSubview(rightColumn!)
 		}
