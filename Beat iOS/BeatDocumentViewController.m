@@ -29,7 +29,7 @@
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
 
-@property (nonatomic, weak) IBOutlet UIView* accessoryView;
+@property (nonatomic, weak) IBOutlet InputAccessoryView* accessoryView;
 
 @property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool typewriterMode;
@@ -66,6 +66,8 @@
 @property (nonatomic) BeatTextIO* textActions;
 
 @property (nonatomic) KeyboardManager* keyboardManager;
+@property (nonatomic) IBOutlet InputAccessoryView* inputAcessoryView;
+@property (nonatomic) IBOutlet InputAssistantView* inputAssistantView;
 
 @property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
@@ -91,9 +93,8 @@
 /// Creates the text view and replaces placeholder text view
 - (void)createTextView {
 	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height) pageView:self.pageView scrollView:self.scrollView];
+	textView.accessoryView = self.accessoryView;
 	
-	textView.inputAccessoryView = self.accessoryView;
-	//textView.inputAccessoryView.frame = CGRectMake(0, 0, 200, 40);
 	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
 
 		
@@ -248,7 +249,6 @@
 - (CGFloat)editorLineHeight {
 	return BeatPagination.lineHeight;
 }
-
 
  
 #pragma mark - Application data and file access
@@ -596,6 +596,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 
+
 #pragma mark - Editor actions
 
 - (IBAction)addDialogue:(id)sender {
@@ -816,6 +817,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		self.characterInput = false;
 		self.characterInputForLine = nil;
 	}
+	
+	[self.textView updateAssistingViews];
 }
 
 -(void)textViewDidChange:(UITextView *)textView {

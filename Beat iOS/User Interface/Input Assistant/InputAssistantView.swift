@@ -121,43 +121,17 @@ open class InputAssistantView: UIInputView {
     }
     private var keyboardAppearanceObserver: NSKeyValueObservation?
 
-    /// Attach the inputAssistant to the given UITextView.
-    public func attach(to textInput: UITextView) {
-        self.keyboardAppearance = textInput.keyboardAppearance
-
-        // Hide default undo/redo/etc buttons
-        textInput.inputAssistantItem.leadingBarButtonGroups = []
-        textInput.inputAssistantItem.trailingBarButtonGroups = []
-
-        // Disable built-in autocomplete
-        textInput.autocorrectionType = .no
-
-        // Add the input assistant view as an accessory view
-        textInput.inputAccessoryView = self
-
-        keyboardAppearanceObserver = textInput.observe(\UITextView.keyboardAppearance) { [weak self] textInput, _ in
-            self?.keyboardAppearance = textInput.keyboardAppearance
-        }
-    }
-    /// Attach the inputAssistant to the given UITextView.
-    public func attach(to textInput: UITextField) {
-        self.keyboardAppearance = textInput.keyboardAppearance
-
-        // Hide default undo/redo/etc buttons
-        textInput.inputAssistantItem.leadingBarButtonGroups = []
-        textInput.inputAssistantItem.trailingBarButtonGroups = []
-
-        // Disable built-in autocomplete
-        textInput.autocorrectionType = .no
-
-        // Add the input assistant view as an accessory view
-        textInput.inputAccessoryView = self
-
-        keyboardAppearanceObserver = textInput.observe(\UITextField.keyboardAppearance) { [weak self] textInput, _ in
-            self?.keyboardAppearance = textInput.keyboardAppearance
-        }
-    }
-
+	public func show(for textView:UITextView) {
+		self.keyboardAppearance = textView.keyboardAppearance
+		
+		keyboardAppearanceObserver = textView.observe(\UITextView.keyboardAppearance) { [weak self] textView, _ in
+			self?.keyboardAppearance = textView.keyboardAppearance
+		}
+		
+		textView.autocorrectionType = .no
+		textView.inputAccessoryView = self
+	}
+	
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         updateActions(leadingActions, leadingStackView)

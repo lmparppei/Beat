@@ -18,6 +18,8 @@
 		B619DE5E29F80DB3007D1838 /* TemplateCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B619DE5D29F80DB3007D1838 /* TemplateCollectionViewController.m */; };
 		B619DE6229F80E40007D1838 /* Tutorial.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B619DE6029F80E40007D1838 /* Tutorial.fountain */; };
 		B619DE6329F80E40007D1838 /* New Document.fountain in Resources */ = {isa = PBXBuildFile; fileRef = B619DE6129F80E40007D1838 /* New Document.fountain */; };
+		B619DE6529F81D13007D1838 /* BeatEditMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B619DE6429F81D13007D1838 /* BeatEditMenu.swift */; };
+		B619DE6729F86D1E007D1838 /* InputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B619DE6629F86D1E007D1838 /* InputAccessoryView.swift */; };
 		B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */; };
 		B633C13B298C54CF0011449D /* BeatFontExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B633C136298C54CF0011449D /* BeatFontExtensions.swift */; };
 		B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B633C14E298C566E0011449D /* OutlineViewItem.m */; };
@@ -108,6 +110,8 @@
 		B619DE5D29F80DB3007D1838 /* TemplateCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TemplateCollectionViewController.m; sourceTree = "<group>"; };
 		B619DE6029F80E40007D1838 /* Tutorial.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Tutorial.fountain; sourceTree = "<group>"; };
 		B619DE6129F80E40007D1838 /* New Document.fountain */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "New Document.fountain"; sourceTree = "<group>"; };
+		B619DE6429F81D13007D1838 /* BeatEditMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatEditMenu.swift; sourceTree = "<group>"; };
+		B619DE6629F86D1E007D1838 /* InputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryView.swift; sourceTree = "<group>"; };
 		B629FE3D2846B90100E8B9BD /* BeatCardViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatCardViewController.h; sourceTree = "<group>"; };
 		B629FE3E2846B90100E8B9BD /* BeatCardViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatCardViewController.m; sourceTree = "<group>"; };
 		B633C136298C54CF0011449D /* BeatFontExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BeatFontExtensions.swift; path = "Beat/Overall Categories/BeatFontExtensions.swift"; sourceTree = SOURCE_ROOT; };
@@ -263,6 +267,7 @@
 			children = (
 				B636F77029B7C9C50024D73A /* InputAssistantCollectionView.swift */,
 				B636F76E29B7C9B80024D73A /* InputAssistantView.swift */,
+				B619DE6629F86D1E007D1838 /* InputAccessoryView.swift */,
 			);
 			path = "Input Assistant";
 			sourceTree = "<group>";
@@ -281,6 +286,7 @@
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
 				B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */,
 				B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */,
+				B619DE6429F81D13007D1838 /* BeatEditMenu.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -539,11 +545,13 @@
 				B633C152298C58130011449D /* BeatPreview.m in Sources */,
 				B633C14F298C566E0011449D /* OutlineViewItem.m in Sources */,
 				B619DE5629F6ED51007D1838 /* BeatExportViewController.swift in Sources */,
+				B619DE6729F86D1E007D1838 /* InputAccessoryView.swift in Sources */,
 				B6CE25072839681500D53CE8 /* BeatSidebar.swift in Sources */,
 				B6CB96F3282FEB6500C7AFC7 /* AppDelegate.swift in Sources */,
 				B636F76F29B7C9B80024D73A /* InputAssistantView.swift in Sources */,
 				B686FFCA2971BC7E00789C8D /* BeatHTMLScript.m in Sources */,
 				B619DE5829F6FD94007D1838 /* PrintingExtensions.swift in Sources */,
+				B619DE6529F81D13007D1838 /* BeatEditMenu.swift in Sources */,
 				B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */,
 				B63D9F61283036A700D027B6 /* BeatiOSFormatting.m in Sources */,
 				B6CB9709282FEDCA00C7AFC7 /* BeatUITextView.swift in Sources */,

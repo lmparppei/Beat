@@ -16,6 +16,9 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 	@IBOutlet weak var enclosingScrollView:UIScrollView!
 	@IBOutlet weak var pageView:UIView!
 	
+	@objc weak var accessoryView:InputAccessoryView?
+	@objc var assistantView:InputAssistantView = InputAssistantView()
+	
 	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
 	var pinchRecognizer = UIGestureRecognizer()
 	
@@ -100,9 +103,6 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
 				
-		// Listen to changes
-		NotificationCenter.default.addObserver(self, selector: #selector(didChangeSelection), name: UITextView.textDidChangeNotification, object: self)
-		
 		resizePaper()
 		resize()
 	}
@@ -248,7 +248,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 
 	// MARK: - Other events
 	
-	@objc func didChangeSelection () {
+	@objc func updateAssistingViews () {
 		guard let editorDelegate = self.editorDelegate else { return }
 		
 		if (editorDelegate.currentLine().isAnyParenthetical()) {
@@ -256,16 +256,78 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		} else {
 			self.autocapitalizationType = .sentences
 		}
+		
+		// Change accessory view when needed
+		
+		print("Line", editorDelegate.currentLine())
+		
+		if editorDelegate.currentLine().isAnyCharacter() {
+			print("Set assistant view", self.assistantView)
+			self.inputAccessoryView = nil
+			
+		} else if (self.inputAccessoryView != self.accessoryView) {
+			print("Set accessory view", self.accessoryView)
+			self.inputAccessoryView = self.accessoryView
+		}
 	}
+	
 	
 	// MARK: - Menu
 	
-	override func willPresentEditMenu(animator: UIEditMenuInteractionAnimating) {
-		let bold = UIEditMenuInteraction(delegate: self)
+	override func editMenu(for textRange: UITextRange, suggestedActions: [UIMenuElement]) -> UIMenu? {
+		var originalActions = suggestedActions
+		var actions:[UIMenuElement] = []
 		
-		self.addInteraction(bold)
+		for m in suggestedActions {
+			guard let menu = m as? UIMenu else { continue }
+			
+			if menu.identifier == .standardEdit ||
+				menu.identifier == .replace ||
+				menu.identifier == .find
+			{
+				actions.append(menu)
+				originalActions.removeObject(object: menu)
+			}
+		}
+		
+		guard let line = editorDelegate?.currentLine() else { return UIMenu(children: actions) }
+		
+		if line.isAnyDialogue() || line.type == .action {
+			let formatMenu = UIMenu(image: UIImage(systemName: "bold.italic.underline"), options: [], children: [
+				UIAction(image: UIImage(named: "button_bold")) { _ in
+					print("BOLD")
+				},
+				UIAction(image: UIImage(named: "button_italic")) { _ in
+					print("ITALIC")
+				}
+			])
+			
+			actions.append(formatMenu)
+		}
+		
+		if self.selectedRange.length > 0 {
+			let revisionMenu = UIMenu(subtitle: "Revisions", image: UIImage(systemName: "asterisk"), options: [], children: [
+				UIAction(title: "Mark As Revised") { _ in
+					print("Mark as revised")
+				},
+				UIMenu(options: [.destructive, .displayInline], children: [
+					UIAction(title: "Clear Revisions") { _ in
+						print("Clear revisions")
+					}
+				])
+			])
+			
+			actions.append(revisionMenu)
+		}
+				
+		// Add remaining actions from original menu
+		actions.append(contentsOf: originalActions)
+		
+		let menu = UIMenu(children: actions)
+		
+		return menu
 	}
-	
+		
 }
 
 // MARK: - Layout manager delegate
