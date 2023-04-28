@@ -107,11 +107,9 @@
 #import "BeatNotepad.h"
 #import "BeatCharacterList.h"
 #import "BeatEditorFormatting.h"
-#import "BeatEditorFormattingActions.h"
 #import "BeatPrintDialog.h"
 #import "Beat-Swift.h"
 #import "BeatEditorButton.h"
-#import "BeatAutocomplete.h"
 
 
 @interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate> {
@@ -278,7 +276,7 @@
 @property (nonatomic) NSUInteger ddRight;
 
 // Current line / scene
-@property (nonatomic) Line *currentLine;
+@property (nonatomic, weak) Line *currentLine;
 @property (nonatomic) Line *previouslySelectedLine;
 
 // Autocompletion
@@ -599,6 +597,21 @@ static BeatAppDelegate *appDelegate;
 	
 	[_documentWindow layoutIfNeeded];
 	[self updateLayout];
+	
+	// Open all plugins
+	if (NSEvent.modifierFlags & NSEventModifierFlagShift) {
+		// Pressing shift stops plugins from loading and stores and empty array instead
+		[self.documentSettings set:DocSettingActivePlugins as:@[]];
+	} else {
+		NSDictionary* plugins = [self.documentSettings get:DocSettingActivePlugins];
+		for (NSString* pluginName in plugins) {
+			@try {
+				[self runPluginWithName:pluginName];
+			} @catch (NSException *exception) {
+				NSLog(@"Plugin error: %@", exception);
+			}
+		}
+	}
 }
 
 -(BeatExportSettings*)exportSettings {
@@ -1195,7 +1208,8 @@ static NSWindow __weak *currentKeyWindow;
 	// Save changed indices (why do we need this? asking for myself. -these are lines that had something removed rather than added, a later response)
 	[_documentSettings set:DocSettingChangedIndices as:[BeatRevisions changedLinesForSaving:self.lines]];
 	
-	// [_documentSettings set:@"Running Plugins" as:self.runningPlugins.allKeys];
+	// Store currently running plugins
+	[_documentSettings set:DocSettingActivePlugins as:self.runningPlugins.allKeys];
 	
 	// Save reviewed ranges
 	NSArray *reviews = [_review rangesForSavingWithString:attrStr];
@@ -1753,7 +1767,9 @@ static NSWindow __weak *currentKeyWindow;
 	if (location >= self.text.length) return self.parser.lines.lastObject;
 	
 	// Don't fetch the line if we already know it
-	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
+	if (NSLocationInRange(location, _currentLine.range) && _currentLine != nil) {
+		return _currentLine;
+	}
 	else {
 		Line *line = [_parser lineAtPosition:location];
 		_currentLine = line;
@@ -1929,7 +1945,6 @@ static NSWindow __weak *currentKeyWindow;
 FORWARD_TO(self.textActions, void, replaceCharactersInRange:(NSRange)range withString:(NSString*)string);
 FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks);
-FORWARD_TO(self.textActions, void, removeString:(NSString*)string atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, replaceRange:(NSRange)range withString:(NSString*)newString);
 FORWARD_TO(self.textActions, void, replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, removeRange:(NSRange)range);
@@ -2061,7 +2076,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 /// Forwarding method for autocompletion
 - (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
-	return [_autocompletion textView:textView completions:words forPartialWordRange:charRange indexOfSelectedItem:index];
+	return [_autocompletion completions:words forPartialWordRange:charRange indexOfSelectedItem:index];
 }
 
 #pragma mark - Character input
@@ -2096,58 +2111,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// Don't allow this to happen twice
 	if (_characterInput) return;
 	
-	// Move at the beginning of the line to avoid issues with .currentLine
-	self.selectedRange = NSMakeRange(self.currentLine.position, 0);
-	
-	if (self.currentLine.type != empty) {
-		NSArray *block = [self.parser blockFor:self.currentLine];
-		Line *lastLine = block.lastObject;
-		self.selectedRange = NSMakeRange(lastLine.position, 0);
-	}
-	
-	
-	// ... then check again
-	if (self.currentLine.type != empty) {
-		// Break at line break
-		[self addString:@"\n" atIndex: NSMaxRange(self.currentLine.textRange) skipAutomaticLineBreaks:true];
-		self.selectedRange = NSMakeRange(NSMaxRange(self.currentLine.textRange) + 2, 0);
-	}
-	
-	Line *prevLine = [self.parser previousLine:self.currentLine];
-	if (prevLine != nil && prevLine.type != empty && prevLine.string.length != 0) {
-		[self addString:@"\n" atIndex:NSMaxRange(prevLine.textRange) skipAutomaticLineBreaks:true];
-	}
-	
-	Line *nextLine = [self.parser nextLine:self.currentLine];
-	if (nextLine != nil && nextLine.type != empty && nextLine.string.length != 0) {
-		NSInteger loc = self.currentLine.position;
-		[self addString:@"\n" atIndex:NSMaxRange(self.currentLine.textRange) skipAutomaticLineBreaks:true];
-		self.selectedRange = NSMakeRange(loc, 0);
-	}
-	
-	// If no line is selected, return
-	Line *currentLine = self.currentLine;
-	if (currentLine == nil) return;
-	
-	currentLine.type = character;
-	_characterInputForLine = currentLine;
-	
-	_characterInput = YES;
-	
-	// Format the line (if mid-screenplay)
-	[_formatting formatLine:currentLine];
-	
-	// TODO: Move this to text view
-	
-	// Set typing attributes (just in case, and if at the end)
-	NSMutableDictionary *attributes = NSMutableDictionary.dictionary;
-	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
-	
-	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[paragraphStyle setFirstLineHeadIndent:CHARACTER_INDENT_P * DOCUMENT_WIDTH_MODIFIER];
-	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
-	
-	[self.textView setTypingAttributes:attributes];
+	[self.formattingActions addCue];
+	[self.formatting forceEmptyCharacterCue];
 }
 
 - (void)cancelCharacterInput {
@@ -2158,7 +2123,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	NSMutableParagraphStyle *paragraphStyle = NSMutableParagraphStyle.new;
 	[attributes setValue:self.courier forKey:NSFontAttributeName];
 	[paragraphStyle setLineHeightMultiple:LINE_HEIGHT];
-	[paragraphStyle setFirstLineHeadIndent:400];
+	[paragraphStyle setFirstLineHeadIndent:0];
 	[attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
 	[self.textView setTypingAttributes:attributes];
 	self.textView.needsDisplay = YES;
@@ -2495,10 +2460,22 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	// Refresh layout + settings
 	[self.textView refreshLayoutElements];
+	self.textView.needsLayout = true;
+	self.textView.needsDisplay = true;
 	[self updateQuickSettings];
 	
 	// Save user default
 	[BeatUserDefaults.sharedDefaults saveBool:_showRevisions forKey:@"showRevisions"];
+}
+
+-(IBAction)toggleShowRevisedTextColor:(id)sender {
+	bool revisedText = [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor];
+	[BeatUserDefaults.sharedDefaults saveBool:!revisedText forKey:BeatSettingShowRevisedTextColor];
+	
+	[self.formatting refreshRevisionTextColors];
+}
+- (bool)showRevisedTextColor {
+	return [BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor];
 }
 
 -(IBAction)toggleRevisionMode:(id)sender {
@@ -2506,26 +2483,38 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	[self updateQuickSettings];
 	
-	// Save user default + document setting
-	// [BeatUserDefaults.sharedDefaults saveBool:YES forKey:@"showRevisions"];
+	// Save document setting
 	[_documentSettings setBool:DocSettingRevisionMode as:_revisionMode];
 }
 - (IBAction)markAddition:(id)sender
 {
-	if (!self.contentLocked) [self.revisionTracking markerAction:RevisionAddition];
+	if (!self.contentLocked) {
+		NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
+		[self.revisionTracking markerAction:RevisionAddition];
+		[self.formatting refreshRevisionTextColorsInRange:range];
+	}
 }
 - (IBAction)markRemoval:(id)sender
 {
-	if (!self.contentLocked) [self.revisionTracking markerAction:RevisionRemovalSuggestion];
+	if (!self.contentLocked) {
+		NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
+		[self.revisionTracking markerAction:RevisionRemovalSuggestion];
+		[self.formatting formatLinesInRange:range];
+	}
 }
 - (IBAction)clearMarkings:(id)sender
 {
 	// Remove markers
-	if (!self.contentLocked) [self.revisionTracking markerAction:RevisionNone];
+	if (!self.contentLocked) {
+		NSRange range = self.selectedRange; // Revision tracking deselects the range, so let's store it
+		[self.revisionTracking markerAction:RevisionNone];
+		[self.formatting refreshRevisionTextColorsInRange:range];
+	}
 }
 
 - (IBAction)commitRevisions:(id)sender {
 	[self.revisionTracking commitRevisions];
+	[self.formatting refreshRevisionTextColors];
 }
 
 - (IBAction)selectRevisionColor:(id)sender {
@@ -2600,6 +2589,30 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.parser createOutline];
 	
 	[self.textView refreshLayoutElements];
+}
+
+- (IBAction)forceSceneNumberForScene:(id)sender
+{
+	BeatModalInput *input = BeatModalInput.new;
+	
+	[input inputBoxWithMessage:[BeatLocalization localizedStringForKey:@"editor.setSceneNumber"]
+						  text:[BeatLocalization localizedStringForKey:@"editor.setSceneNumber.info"]
+				   placeholder:@"123A" forWindow:_documentWindow
+					completion:^(NSString * _Nonnull result) {
+						if (result.length > 0) {
+							OutlineScene *scene = self.currentScene;
+							
+							if (scene) {
+								if (scene.line.sceneNumberRange.length) {
+									// Remove existing scene number
+									[self replaceRange:(NSRange){ scene.line.position + scene.line.sceneNumberRange.location, scene.line.sceneNumberRange.length } withString:result];
+								} else {
+									// Add empty scene number
+									[self addString:[NSString stringWithFormat:@" #%@#", result] atIndex:scene.line.position + scene.line.string.length];
+								}
+							}
+						}
+	}];
 }
 
 
@@ -2976,6 +2989,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 }
 
+- (void)invalidatePreviewAt:(NSInteger)index {
+	[self.previewController invalidatePreviewAt:index];
+}
+
 - (void)previewDidFinish {
 	// Tell plugins the preview has been finished (called by preview controller)
 	for (NSString *name in self.runningPlugins.allKeys) {
@@ -2984,10 +3001,12 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 }
 
+/*
 - (void)updatePreview {
 	if (self.nativeRendering) return;
 	[self.preview updatePreviewInSync:NO];
 }
+ */
 
 - (IBAction)preview:(id)sender
 {
@@ -3760,7 +3779,7 @@ static NSArray<Line*>* cachedTitlePage;
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
 	if (NATIVE_RENDERING) {
 		// Bake revisions into lines
-		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
+//		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
 		
 		[self.previewController createPreviewWithChangeAt:range.location sync:sync];
 		return;

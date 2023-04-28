@@ -20,6 +20,28 @@
     return self;
 }
 
+#pragma mark - iOS weirdness fix
+
+- (void)restorePositionForChangeAt:(NSInteger)index length:(NSInteger)length originalRange:(NSRange)range {
+#if TARGET_OS_IOS
+    // We'll only do this on iOS
+    
+    if (range.location < index) {
+        self.delegate.selectedRange = NSMakeRange(range.location, 0);
+    } else {
+        NSRange newSelection = NSMakeRange(range.location + length, range.length);
+        if (NSMaxRange(range) > self.delegate.text.length) {
+            newSelection.length = self.delegate.text.length - newSelection.location;
+        }
+        
+        self.delegate.selectedRange = newSelection;
+    }
+    
+#endif
+}
+
+#pragma mark - Text I/O
+
 /**
  Main method for adding text to editor view.  Forces added text to be parsed, but does NOT invoke undo manager.
  Don't use this for adding text, but go through the intermediate methods instead, `addString`, `removeString` etc.
@@ -54,6 +76,7 @@
         [self.delegate textDidChange:[NSNotification notificationWithName:@"" object:nil]];
     }
 #endif
+
 }
 
 static bool _skipAutomaticLineBreaks = false;
@@ -62,21 +85,26 @@ static bool _skipAutomaticLineBreaks = false;
 }
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks
 {
+    NSRange selectedRange = _delegate.selectedRange;
+    
     _skipAutomaticLineBreaks = skipLineBreaks;
     [self replaceCharactersInRange:NSMakeRange(index, 0) withString:string];
     _skipAutomaticLineBreaks = false;
     
-    [[_delegate.undoManager prepareWithInvocationTarget:self] removeString:string atIndex:index];
+    [[_delegate.undoManager prepareWithInvocationTarget:self] removeRange:NSMakeRange(index, string.length)];
+    
+    // Restore position on iOS
+    [self restorePositionForChangeAt:index length:string.length originalRange:selectedRange];
 }
 
-- (void)removeString:(NSString*)string atIndex:(NSUInteger)index
-{
-    [self replaceCharactersInRange:NSMakeRange(index, string.length) withString:@""];
-    [[_delegate.undoManager prepareWithInvocationTarget:self] addString:string atIndex:index];
+- (void)removeAt:(NSUInteger)index length:(NSUInteger)length {
+    [self replaceRange:NSMakeRange(index, length) withString:@""];
 }
 
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString
 {
+    NSRange selectedRange = _delegate.selectedRange;
+    
     // Remove unnecessary line breaks
     newString = [newString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
     
@@ -84,21 +112,19 @@ static bool _skipAutomaticLineBreaks = false;
     NSString *oldString = [_delegate.text substringWithRange:range];
     [self replaceCharactersInRange:range withString:newString];
     [[_delegate.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:oldString atIndex:range.location];
+    
+    // Restore position on iOS
+    [self restorePositionForChangeAt:range.location length:newString.length - range.length originalRange:selectedRange];
 }
 
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index
 {
-    // Replace with undo registration
-    NSRange range = NSMakeRange(index, string.length);
-    [self replaceCharactersInRange:range withString:newString];
-    [[_delegate.undoManager prepareWithInvocationTarget:self] replaceString:newString withString:string atIndex:index];
+    [self replaceRange:NSMakeRange(index, string.length) withString:newString];
 }
 
 - (void)removeRange:(NSRange)range
 {
-    NSString *string = [_delegate.text substringWithRange:range];
-    [self replaceCharactersInRange:range withString:@""];
-    [[_delegate.undoManager prepareWithInvocationTarget:self] addString:string atIndex:range.location];
+    [self replaceRange:range withString:@""];
 }
 
 - (void)moveStringFrom:(NSRange)range to:(NSInteger)position actualString:(NSString*)string
@@ -432,6 +458,5 @@ static bool _skipAutomaticLineBreaks = false;
         
     [self addString:string atIndex:self.delegate.selectedRange.location];
 }
-
 
 @end

@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BeatPaperSize pageSize;
 
-@property (nonatomic) Line* currentLine;
+@property (nonatomic, weak) Line* currentLine; // Current line has to be weak so we don't keep anything weird in memory
 @property (nonatomic) bool moving;
 
 @property (nonatomic) bool showSceneNumberLabels;

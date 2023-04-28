@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1240"
+   LastUpgradeVersion = "1420"
    version = "2.0">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -17,7 +17,7 @@
                BlueprintIdentifier = "B62ADC7223CCCE560015563A"
                BuildableName = "fountainQuickLook.appex"
                BlueprintName = "fountainQuickLook"
-               ReferencedContainer = "container:Beat.xcodeproj">
+               ReferencedContainer = "container:Beat macOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,7 +31,7 @@
                BlueprintIdentifier = "B6F49CD9246D66B0006D88D4"
                BuildableName = "Beat Pro.app"
                BlueprintName = "Beat Pro"
-               ReferencedContainer = "container:Beat.xcodeproj">
+               ReferencedContainer = "container:Beat macOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -45,7 +45,7 @@
                BlueprintIdentifier = "B138B57219E1C973000489C4"
                BuildableName = "Beat.app"
                BlueprintName = "Beat Ad Hoc"
-               ReferencedContainer = "container:Beat.xcodeproj">
+               ReferencedContainer = "container:Beat macOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -90,7 +90,7 @@
             BlueprintIdentifier = "B62ADC7223CCCE560015563A"
             BuildableName = "fountainQuickLook.appex"
             BlueprintName = "fountainQuickLook"
-            ReferencedContainer = "container:Beat.xcodeproj">
+            ReferencedContainer = "container:Beat macOS.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

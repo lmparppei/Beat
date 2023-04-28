@@ -18,11 +18,19 @@ typedef enum {
 
 @interface BeatEditorFormatting : NSObject
 + (CGFloat)editorLineHeight;
++ (CGFloat)dialogueRight;
++ (CGFloat)dialogueLeft;
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;
 
 - (void)formatLine:(Line*)line;
 - (void)formatLine:(Line*)line firstTime:(bool)firstTime;
+- (void)formatLinesInRange:(NSRange)range;
+
+- (void)forceEmptyCharacterCue;
+- (void)refreshRevisionTextColors;
+- (void)refreshRevisionTextColorsInRange:(NSRange)range;
+
 @end
 
 NS_ASSUME_NONNULL_END

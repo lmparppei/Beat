@@ -90,8 +90,12 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		self.timer?.invalidate()
 		self.paginationUpdated = false
 		self.lastChangeAt = index
+
+		// Store revisions into lines
+		self.delegate?.bakeRevisions()
 		
 		guard let parser = delegate?.parser else { return }
+		
 		if (sync) {
 			pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
 		} else {
@@ -104,8 +108,13 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		}
 	}
 	
+	@objc func invalidatePreview(at index:Int) {
+		self.createPreview(changeAt: index, sync: false)
+	}
+	
 	@objc func clearPreview() {
 		self.previewView?.clear()
+		self.createPreview(changeAt: 0, sync: false)
 	}
 	
 	@objc func reloadStyles() {

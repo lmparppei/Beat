@@ -516,7 +516,7 @@
 	
 	[_delegate setSelectedRange:(NSRange){range.location + range.length, 0}];
 	[_delegate updateChangeCount:BXChangeDone];
-	[_delegate updatePreview];
+    [_delegate invalidatePreviewAt:range.location];
 	
 	// Create an undo step
 

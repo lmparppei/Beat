@@ -40,11 +40,8 @@
 #import "Beat-Swift.h"
 #import "BeatEditorFormatting.h"
 
-
-// This helps to create some sense of easeness
-#define MARGIN_CONSTANT 10
-#define SHADOW_WIDTH 20
-#define SHADOW_OPACITY 0.0125
+// Editor line height
+#define LINE_HEIGHT 1.1
 
 // Maximum results for autocomplete
 #define MAX_RESULTS 10
@@ -167,7 +164,6 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	return self;
 }
-
 
 - (void)awakeFromNib {
 	((BeatLayoutManager*)self.layoutManager).editorDelegate = self.editorDelegate;
@@ -741,9 +737,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 			[_editorDelegate.review.popover close];
 		}
 	}
-	
-	
 }
+
 
 #pragma mark - Tagging / Force Element menu
 
@@ -1298,9 +1293,9 @@ Line *cachedRectLine;
 	CGFloat padding = self.textContainer.lineFragmentPadding;
 	
 	if (_editorDelegate.pageSize == BeatA4) {
-		width = BeatFonts.characterWidth * 59;
+		width = BeatRenderStyles.shared.action.widthA4;
 	} else {
-		width = BeatFonts.characterWidth * 61;
+		width = BeatRenderStyles.shared.action.widthLetter;
 	}
 	
 	return width + padding * 2;

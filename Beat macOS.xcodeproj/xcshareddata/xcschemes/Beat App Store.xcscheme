@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1240"
+   LastUpgradeVersion = "1420"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -17,7 +17,7 @@
                BlueprintIdentifier = "B68B6021260B849300463AD8"
                BuildableName = "Beat.app"
                BlueprintName = "Beat AppStore"
-               ReferencedContainer = "container:Beat.xcodeproj">
+               ReferencedContainer = "container:Beat macOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "B67801D328C69054004A7AE0"
                BuildableName = "BeatTests.xctest"
                BlueprintName = "BeatTests"
-               ReferencedContainer = "container:Beat.xcodeproj">
+               ReferencedContainer = "container:Beat macOS.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -58,7 +58,7 @@
             BlueprintIdentifier = "B68B6021260B849300463AD8"
             BuildableName = "Beat.app"
             BlueprintName = "Beat AppStore"
-            ReferencedContainer = "container:Beat.xcodeproj">
+            ReferencedContainer = "container:Beat macOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -100,7 +100,7 @@
             BlueprintIdentifier = "B68B6021260B849300463AD8"
             BuildableName = "Beat.app"
             BlueprintName = "Beat AppStore"
-            ReferencedContainer = "container:Beat.xcodeproj">
+            ReferencedContainer = "container:Beat macOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
@@ -122,7 +122,7 @@
                      BlueprintIdentifier = "B68B6021260B849300463AD8"
                      BuildableName = "Beat.app"
                      BlueprintName = "Beat AppStore"
-                     ReferencedContainer = "container:Beat.xcodeproj">
+                     ReferencedContainer = "container:Beat macOS.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
             </ActionContent>

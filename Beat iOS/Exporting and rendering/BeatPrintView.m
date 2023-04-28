@@ -215,53 +215,6 @@ static NSURL *pdfURL;
 	} @catch (NSException *exception) {
 		NSLog(@"writeToURL error: %@", exception);
 	}
-	
-	
-	/*
-	WKPDFConfiguration* config = WKPDFConfiguration.new;
-	config.rect = CGRectMake(0, 0, self.webView.scrollView.contentSize.width, self.webView.scrollView.contentSize.height);
-	
-	[_webView createPDFWithConfiguration:config completionHandler:^(NSData * _Nullable pdfDocumentData, NSError * _Nullable error) {
-		if (error) {
-			NSLog(@"ERROR");
-			return;
-		}
-		
-		NSURL* url = [NSFileManager.defaultManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask].firstObject;
-		
-		if (url == nil) {
-			NSLog(@"ERROR: No URL");
-			return;
-		}
-		
-		NSURL* fileURL = [[url URLByAppendingPathComponent:@"TEST"] URLByAppendingPathExtension:@"pdf"];
-		
-		@try {
-			[pdfDocumentData writeToURL:fileURL atomically:true];
-			
-			if ([NSFileManager.defaultManager fileExistsAtPath:fileURL.path]) {
-				NSLog(@"...  file exists!");
-			}
-			
-			NSError* error;
-			NSArray* contents = [NSFileManager.defaultManager contentsOfDirectoryAtURL:url includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:&error];
-			
-			for (NSURL* url in contents) {
-				if ([url.lastPathComponent isEqualToString:fileURL.lastPathComponent]) {
-					UIActivityViewController* activityViewController = [UIActivityViewController.alloc initWithActivityItems:@[url] applicationActivities:nil];
-					activityViewController.popoverPresentationController.sourceView = self.delegate.viewController.view;
-					
-					[self.delegate.viewController presentViewController:activityViewController animated:true completion:^{
-						[self.delegate didExportFileAt:url];
-					}];
-				}
-			}
-			
-		} @catch (NSException *exception) {
-			NSLog(@"writeToURL error: %@", exception);
-		}
-	}];
-	 */
 }
 
 - (void)printOperationDidRun:(id)operation success:(bool)success contextInfo:(nullable void *)contextInfo {

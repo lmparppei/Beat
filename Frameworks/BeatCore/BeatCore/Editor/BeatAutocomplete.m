@@ -8,19 +8,15 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatUserDefaults.h>
-#import "BeatAutocomplete.h"
-#import "BeatPlugin.h"
+#import <BeatCore/BeatAutocomplete.h>
 
 @interface BeatAutocomplete ()
+#if !TARGET_OS_IOS
 @property (nonatomic, weak) IBOutlet NSPopUpButton *characterBox;
+#endif
 @end
 
 @implementation BeatAutocomplete 
-
--(void)awakeFromNib {
-	characterNames = NSMutableArray.new;
-	sceneHeadings = NSMutableArray.new;
-}
 
 - (void)collectCharacterNames {
 	/*
@@ -38,17 +34,20 @@
 		  
 	 */
 	
-	[characterNames removeAllObjects];
-	
+	[_characterNames removeAllObjects];
+    if (_characterNames == nil) _characterNames = NSMutableArray.new;
+    
+    NSMutableArray *characterList = NSMutableArray.new;
+    NSMutableDictionary <NSString*, NSNumber*>* charactersAndLines = NSMutableDictionary.new;
+    
+#if !TARGET_OS_IOS
 	// If there was a character selected in Character Filter Box, save it
 	NSString *selectedCharacter = _characterBox.selectedItem.title;
-	
-	NSMutableArray *characterList = NSMutableArray.new;
-	NSMutableDictionary <NSString*, NSNumber*>* charactersAndLines = NSMutableDictionary.new;
-	
+		
 	[_characterBox removeAllItems];
 	[_characterBox addItemWithTitle:@" "]; // Add one empty item at the beginning
-	
+#endif
+    
 	Line* currentLine = self.delegate.currentLine;
 	
 	for (Line *line in self.delegate.parser.lines) {
@@ -69,17 +68,21 @@
 			
 			// Add character to list
 			if (character && ![characterList containsObject:character]) {
+#if !TARGET_OS_IOS
 				[_characterBox addItemWithTitle:character]; // Add into the dropown
+#endif
 				[characterList addObject:character];
 			}
 		}
 	}
 	
 	// Collect character name suggestions from running plugins
+#if !TARGET_OS_IOS
 	for (NSString* pluginName in _delegate.runningPlugins.allKeys) {
-		BeatPlugin *plugin = _delegate.runningPlugins[pluginName];
-		[characterNames addObjectsFromArray:plugin.completionsForCharacters];
+		id<BeatAutocompletionProvider> plugin = _delegate.runningPlugins[pluginName];
+		[_characterNames addObjectsFromArray:[plugin completionsForCharacters]];
 	}
+#endif
 	
 	// Create an ordered list with all the character names.
 	// The one with the most lines will be the first suggestion.
@@ -90,37 +93,40 @@
 		NSInteger val2 = ((NSString*)obj2).integerValue;
 		return val2 > val1;
 	}];
-	[characterNames addObjectsFromArray:characters];
+	[_characterNames addObjectsFromArray:characters];
 	
 	// There was a character selected in the filtering menu, so select it again (if applicable)
+#if !TARGET_OS_IOS
 	if (selectedCharacter.length) {
 		for (NSMenuItem *item in _characterBox.itemArray) {
 			if ([item.title isEqualToString:selectedCharacter]) [_characterBox selectItem:item];
 		}
 	}
+#endif
 }
 
 - (void)collectHeadings {
+    if (_sceneHeadings == nil) _sceneHeadings = NSMutableArray.new;
+    [_sceneHeadings removeAllObjects];
+    
 	Line *currentLine = self.delegate.currentLine;
-	
-	[sceneHeadings removeAllObjects];
 	
 	for (Line *line in self.delegate.parser.lines) {
 		NSString *sceneHeading = line.stripFormatting;
 		
 		if (line.type == heading &&
 			line != currentLine &&
-			![sceneHeadings containsObject:sceneHeading]) {
-			[sceneHeadings addObject:sceneHeading];
+			![_sceneHeadings containsObject:sceneHeading]) {
+			[_sceneHeadings addObject:sceneHeading];
 		}
 	}
 	
 	for (NSString* pluginName in _delegate.runningPlugins.allKeys) {
-		BeatPlugin *plugin = _delegate.runningPlugins[pluginName];
-		[sceneHeadings addObjectsFromArray:plugin.completionsForSceneHeadings];
+		id<BeatAutocompletionProvider> plugin = _delegate.runningPlugins[pluginName];
+		[_sceneHeadings addObjectsFromArray:[plugin completionsForSceneHeadings]];
 	}
-	
-	[sceneHeadings sortUsingSelector:@selector(compare:)];
+
+    [_sceneHeadings sortUsingSelector:@selector(compare:)];
 }
 
 - (void)autocompleteOnCurrentLine {
@@ -133,40 +139,58 @@
 	}
 
 	if (currentLine.isAnyCharacter || currentLine.forcedCharacterCue) {
-		if (characterNames.count == 0) [self collectCharacterNames];
+		if (_characterNames.count == 0) [self collectCharacterNames];
 		[_delegate setAutomaticTextCompletionEnabled:YES];
 	} else if (currentLine.type == heading) {
-		if (sceneHeadings.count == 0) [self collectHeadings];
+		if (_sceneHeadings.count == 0) [self collectHeadings];
 		[_delegate setAutomaticTextCompletionEnabled:YES];
 	} else {
-		[characterNames removeAllObjects];
-		[sceneHeadings removeAllObjects];
+		[_characterNames removeAllObjects];
+		[_sceneHeadings removeAllObjects];
 		[_delegate setAutomaticTextCompletionEnabled:NO];
 	}
 }
 
 #pragma mark - Autocomplete delegate method (forwarded from document)
 
-- (NSArray *)textView:(NSTextView *)textView completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+- (NSArray<NSString*>*)completionsForPartialWordRange:(NSRange)charRange {
+    NSMutableArray *matches = NSMutableArray.new;
+    NSMutableArray *search = NSMutableArray.new;
+    
+    Line *currentLine = self.delegate.currentLine;
 
-	NSMutableArray *matches = [NSMutableArray array];
-	NSMutableArray *search = [NSMutableArray array];
-	
-	Line *currentLine = self.delegate.currentLine;
-	
-	// Choose which array to search
-	if (currentLine.type == character) search = characterNames;
-	else if (currentLine.type == heading) search = sceneHeadings;
-	
-	// Find matching lines for the partially typed line
-	for (NSString *string in search) {
-		if ([string.uppercaseString rangeOfString:[textView.string substringWithRange:charRange].uppercaseString options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
-			[matches addObject:string.uppercaseString];
-		}
-	}
-	
-	//[matches sortUsingSelector:@selector(compare:)];
-	return matches;
+    // Choose which array to search
+    if (currentLine.type == character) search = _characterNames;
+    else if (currentLine.type == heading) search = _sceneHeadings;
+    
+    NSString* stringToSearch = [_delegate.text substringWithRange:charRange].uppercaseString;
+    
+    // Find matching lines for the partially typed line
+    for (NSString *string in search) {
+        if ([string.uppercaseString rangeOfString:stringToSearch options:NSAnchoredSearch range:NSMakeRange(0, string.length)].location != NSNotFound) {
+            [matches addObject:string.uppercaseString];
+        }
+    }
+    
+    if (matches.count == 0 && currentLine.isAnyCharacter && ![currentLine.string containsString:@"("] && currentLine.length > 0 && currentLine.lastCharacter == ' ') {
+        NSString* name = [currentLine.string stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+        NSArray* extensions = @[[NSString stringWithFormat:@"(%@)", [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd]], @"(V.O.)", @"(O.S.)"];
+        
+        NSMutableArray* cueExtensions = NSMutableArray.new;
+        [cueExtensions addObject:name]; // Add the plain name as first option
+        
+        for (NSString* extension in extensions) {
+            [cueExtensions addObject:[NSString stringWithFormat:@"%@ %@", name, extension]];
+        }
+        
+        return cueExtensions;
+    }
+    
+    return matches;
+}
+
+- (NSArray *)completions:(NSArray *)words forPartialWordRange:(NSRange)charRange indexOfSelectedItem:(NSInteger *)index {
+    return [self completionsForPartialWordRange:charRange];
 }
 
 

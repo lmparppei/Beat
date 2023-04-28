@@ -15,6 +15,7 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
+#import <BeatPagination2/BeatPagination2-Swift.h>
 
 #import "BeatEditorFormatting.h"
 //#import "Beat-Swift.h"
@@ -56,8 +57,8 @@
 #define DIALOGUE_RIGHT 47 * CHR_WIDTH
 
 #define DD_CHARACTER_INDENT 30 * CHR_WIDTH
-#define DD_PARENTHETICAL_INDENT 26 * CHR_WIDTH
-#define DUAL_DIALOGUE_INDENT 22 * CHR_WIDTH
+#define DD_PARENTHETICAL_INDENT 27 * CHR_WIDTH
+#define DUAL_DIALOGUE_INDENT 21 * CHR_WIDTH
 #define DD_RIGHT 59 * CHR_WIDTH
 
 #define DD_BLOCK_INDENT 0.0
@@ -72,6 +73,19 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 + (CGFloat)editorLineHeight {
 	return 16.0;
+}
++ (CGFloat)characterLeft {
+	return BeatRenderStyles.shared.character.marginLeft;
+}
++ (CGFloat)dialogueLeft {
+	return BeatRenderStyles.shared.dialogue.marginLeft;
+}
+
+-(instancetype)init {
+	self = [super init];
+	
+	
+	return self;
 }
 
 /// Returns paragraph style for given line type
@@ -91,16 +105,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		type = character;
 	}
 	
-	// Extended types for title page fields
-	else if (line.isTitlePage && line.titlePageKey.length == 0) {
+	// We need to get left margin here to avoid issues with extended line types
+	CGFloat leftMargin = [BeatRenderStyles.editor forElement:[Line typeName:type]].marginLeft;
+	
+	// Extended types for title page fields and sections
+	if (line.isTitlePage && line.titlePageKey.length == 0) {
 		type = (LineType)titlePageSubField;
 	}
-	
-	else if (line.type == section) {
-		if (line.sectionDepth > 1) {
-			type = (LineType)subSection;
-		}
+	else if (line.type == section && line.sectionDepth > 1) {
+		type = (LineType)subSection;
 	}
+	
 	/*
 	// This is an idea for storing paragraph styles, but it doesn't seem to work for forced character cues.
 	BeatPaperSize paperSize = self.delegate.pageSize;
@@ -119,49 +134,38 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	NSMutableParagraphStyle *style = NSMutableParagraphStyle.new;
 	style.minimumLineHeight = BeatEditorFormatting.editorLineHeight;
+	style.firstLineHeadIndent = leftMargin;
+	style.headIndent = leftMargin;
+	
+	// TODO: Need to add calculations for tail indents. This is a mess.
 	
 	if (type == lyrics || type == centered || type == pageBreak) {
 		style.alignment = NSTextAlignmentCenter;
 	}
 	else if (type == titlePageSubField) {
-		style.firstLineHeadIndent = TITLE_INDENT * 1.25;
-		style.headIndent = TITLE_INDENT * 1.25;
+		style.firstLineHeadIndent = leftMargin * 1.25;
+		style.headIndent = leftMargin * 1.25;
 	}
 	else if (line.isTitlePage) {
-		style.firstLineHeadIndent = TITLE_INDENT;
-		style.headIndent = TITLE_INDENT;
+		style.firstLineHeadIndent = leftMargin;
+		style.headIndent = leftMargin;
 	}
 	else if (type == transitionLine) {
 		style.alignment = NSTextAlignmentRight;
-	}
-	else if (type == character) {
-		style.firstLineHeadIndent = CHARACTER_INDENT;
-		style.headIndent = CHARACTER_INDENT;
 		
 	} else if (line.type == parenthetical) {
-		style.firstLineHeadIndent = PARENTHETICAL_INDENT;
-		style.headIndent = PARENTHETICAL_INDENT;
 		style.tailIndent = DIALOGUE_RIGHT;
 		
 	} else if (line.type == dialogue) {
-		// Dialogue block
-		style.firstLineHeadIndent = DIALOGUE_INDENT;
-		style.headIndent = DIALOGUE_INDENT;
 		style.tailIndent = DIALOGUE_RIGHT;
 		
 	} else if (line.type == dualDialogueCharacter) {
-		style.firstLineHeadIndent = DD_CHARACTER_INDENT;
-		style.headIndent = DD_CHARACTER_INDENT;
 		style.tailIndent = DD_RIGHT;
 		
 	} else if (line.type == dualDialogueParenthetical) {
-		style.firstLineHeadIndent = DD_PARENTHETICAL_INDENT;
-		style.headIndent = DD_PARENTHETICAL_INDENT;
 		style.tailIndent = DD_RIGHT;
 		
 	} else if (line.type == dualDialogue) {
-		style.firstLineHeadIndent = DUAL_DIALOGUE_INDENT;
-		style.headIndent = DUAL_DIALOGUE_INDENT;
 		style.tailIndent = DD_RIGHT;
 	}
 	else if (type == subSection) {
@@ -178,8 +182,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	return style;
 }
 
+- (void)formatLinesInRange:(NSRange)range
+{
+	NSArray* lines = [_delegate.parser linesInRange:range];
+	for (Line* line in lines) {
+		[self formatLine:line];
+	}
+}
+
 /// Formats a single line in editor
-- (void)formatLine:(Line*)line {
+- (void)formatLine:(Line*)line
+{
 	[self formatLine:line firstTime:NO];
 }
 
@@ -343,9 +356,10 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	
 	// INPUT ATTRIBUTES FOR CARET / CURSOR
-	// (do this earlier, you idiot)
+	// If we are editing a dialogue block at the end of the document, the line will be empty.
+	// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
 	if (line.string.length == 0 && !firstTime && NSLocationInRange(self.delegate.selectedRange.location, line.range)) {
-		// If the line is empty, we need to set typing attributes too, to display correct positioning if this is a dialogue block.
+		
 		Line* previousLine;
 		NSInteger lineIndex = [_delegate.parser.lines indexOfObject:line];
 
@@ -359,9 +373,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			paragraphStyle = [self paragraphStyleForType:dualDialogue];
 		} else {
 			paragraphStyle = [self paragraphStyleFor:line];
-//			[paragraphStyle setFirstLineHeadIndent:0];
-//			[paragraphStyle setHeadIndent:0];
-//			[paragraphStyle setTailIndent:0];
 		}
 		
 		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
@@ -369,11 +380,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		[_delegate setTypingAttributes:attributes];
 	}
 	
-	
+
 	[self applyInlineFormatting:line withAttributes:attributes];
 	[self setTextColorFor:line];
+	[self revisedTextColorFor:line];
 } }
-
 
 - (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
 	NSTextStorage *textStorage = _delegate.textStorage;
@@ -673,6 +684,55 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 - (NSRange)globalRangeFromLocalRange:(NSRange*)range inLineAtPosition:(NSUInteger)position
 {
 	return NSMakeRange(range->location + position, range->length);
+}
+
+#pragma mark - Revision colors
+
+- (void)revisedTextColorFor:(Line*)line {
+	if (![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor]) return;
+	
+	NSTextStorage *textStorage = _delegate.textStorage;
+	NSLayoutManager *layoutManager = _delegate.layoutManager;
+	
+	[textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:line.textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		BeatRevisionItem* revision = value;
+		if (revision == nil || revision.type == RevisionNone || revision.type == RevisionRemovalSuggestion) return;
+		
+		NSColor* color = BeatColors.colors[revision.colorName];
+		if (color == nil) return;
+		
+		[layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:range];
+	}];
+}
+
+- (void)refreshRevisionTextColors {
+	[_delegate.textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:NSMakeRange(0, _delegate.text.length) options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
+		BeatRevisionItem* revision = value;
+		if (revision == nil || revision.type == RevisionNone || revision.type == RevisionRemovalSuggestion) return;
+		
+		NSColor* color = BeatColors.colors[revision.colorName];
+		if (color == nil) return;
+		
+		[_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:range];
+	}];
+}
+- (void)refreshRevisionTextColorsInRange:(NSRange)range {
+	NSArray* lines = [_delegate.parser linesInRange:range];
+	for (Line* line in lines) {
+		[self revisedTextColorFor:line];
+	}
+}
+
+
+#pragma mark - Forced dialogue
+
+- (void)forceEmptyCharacterCue
+{
+	NSMutableParagraphStyle *paragraphStyle = [self paragraphStyleForType:character];
+	paragraphStyle.maximumLineHeight = BeatEditorFormatting.editorLineHeight;
+	paragraphStyle.firstLineHeadIndent = BeatEditorFormatting.characterLeft;
+	
+	[self.delegate.getTextView setTypingAttributes:@{ NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName: _delegate.courier } ];
 }
 
 @end

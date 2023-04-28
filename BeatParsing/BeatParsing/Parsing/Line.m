@@ -1087,6 +1087,8 @@
 		retain.changed = YES;
 		split.changed = YES;
 	}
+    
+    retain.beginsNewParagraph = self.beginsNewParagraph;
 	
 	retain.uuid = self.uuid;
 	retain.position = self.position;

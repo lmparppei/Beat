@@ -36,8 +36,8 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 @property (readonly) ThemeManager* themeManager;
 @property (readonly) bool showRevisions;
 @property (readonly) bool sceneNumberLabelUpdateOff;
-@property (readonly) bool showSceneNumberLabels;
-@property (readonly) bool showPageNumbers;
+@property (nonatomic) bool showSceneNumberLabels;
+@property (nonatomic) bool showPageNumbers;
 @property (readonly) NSMutableIndexSet *changes;
 @property (readonly) bool contentLocked;
 @property (readonly) NSUInteger fontSize;

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B616519229FC643500D20882 /* EditorStyles.beatCSS in Resources */ = {isa = PBXBuildFile; fileRef = B616519129FC643500D20882 /* EditorStyles.beatCSS */; };
 		B663A69D29F1C3940036FE6B /* BeatPagination2.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A69C29F1C3940036FE6B /* BeatPagination2.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B663A6C929F1C3D80036FE6B /* BeatPaginationBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */; };
 		B663A6CA29F1C3D80036FE6B /* BeatPaginationBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6BF29F1C3D70036FE6B /* BeatPaginationBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B616519129FC643500D20882 /* EditorStyles.beatCSS */ = {isa = PBXFileReference; lastKnownFileType = text; path = EditorStyles.beatCSS; sourceTree = "<group>"; };
 		B663A69929F1C3940036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B663A69C29F1C3940036FE6B /* BeatPagination2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPagination2.h; sourceTree = "<group>"; };
 		B663A6BE29F1C3D70036FE6B /* BeatPaginationBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatPaginationBlock.m; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				B663A6EA29F1C5FC0036FE6B /* BeatCSSParser.swift */,
 				B663A6E829F1C5FC0036FE6B /* BeatRenderStyles.swift */,
 				B663A6E929F1C5FC0036FE6B /* Styles.beatCSS */,
+				B616519129FC643500D20882 /* EditorStyles.beatCSS */,
 			);
 			path = "Rendering styles";
 			sourceTree = "<group>";
@@ -196,6 +199,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B616519229FC643500D20882 /* EditorStyles.beatCSS in Resources */,
 				B663A6EC29F1C5FC0036FE6B /* Styles.beatCSS in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

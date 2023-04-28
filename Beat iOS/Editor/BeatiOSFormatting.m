@@ -182,7 +182,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line.position + line.string.length > _delegate.text.length) return; // Don't go out of range
 	
 	NSRange range = line.textRange;
-	UITextRange *textRange = [self getTextRangeFor:range];
 	
 	NSTextStorage *textStorage = _delegate.textStorage;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
@@ -491,7 +490,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (!value) return;
 	
 	ThemeManager *themeManager = ThemeManager.sharedManager;
-	NSTextStorage *textStorage = _delegate.textStorage;
 	
 	NSUInteger symLen = sym.length;
 	NSRange openRange = (NSRange){ range.location, symLen };

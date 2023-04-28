@@ -145,8 +145,8 @@
                                     <action selector="openPDFPanel:" target="-1" id="fdP-tp-VxH"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" hidden="YES" id="2p6-MU-Gqq"/>
-                            <menuItem title="Print Episodes..." id="8yV-oo-VX1">
+                            <menuItem isSeparatorItem="YES" id="2p6-MU-Gqq"/>
+                            <menuItem title="Print Episodes..." hidden="YES" id="8yV-oo-VX1">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="printEpisodes:" target="vEX-2F-hcj" id="xpT-EW-3dI"/>

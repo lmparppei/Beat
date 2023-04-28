@@ -45,7 +45,7 @@
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)string;
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks;
-- (void)removeString:(NSString*)string atIndex:(NSUInteger)index;
+- (void)removeAt:(NSUInteger)index length:(NSUInteger)length;
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
 - (void)removeRange:(NSRange)range;

@@ -17,7 +17,7 @@
 
 #import "Beat_iOS-Swift.h"
 
-@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate>
+@interface BeatDocumentViewController () <KeyboardManagerDelegate, iOSDocumentDelegate, NSTextStorageDelegate, BeatTextIODelegate, BeatPaginationManagerDelegate, BeatPreviewDelegate, BeatExportSettingDelegate, BeatTextEditorDelegate>
 
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
@@ -29,13 +29,14 @@
 @property (nonatomic) bool previewUpdated;
 @property (nonatomic) NSTimer* previewTimer;
 
-@property (nonatomic, weak) IBOutlet InputAccessoryView* accessoryView;
+@property (nonatomic) BeatEditorFormattingActions* formattingActions;
 
 @property (weak, readonly) BXWindow* documentWindow;
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 
-//@property (nonatomic) BeatPaginator *paginator;
+@property (nonatomic) NSMutableDictionary* runningPlugins;
+
 @property (nonatomic) BeatPaginationManager *pagination;
 
 @property (atomic) NSAttributedString *attrTextCache;
@@ -66,8 +67,6 @@
 @property (nonatomic) BeatTextIO* textActions;
 
 @property (nonatomic) KeyboardManager* keyboardManager;
-@property (nonatomic) IBOutlet InputAccessoryView* inputAcessoryView;
-@property (nonatomic) IBOutlet InputAssistantView* inputAssistantView;
 
 @property (nonatomic, weak) IBOutlet BeatScrollView* scrollView;
 @property (nonatomic, weak) IBOutlet BeatiOSOutlineView* outlineView;
@@ -93,11 +92,9 @@
 /// Creates the text view and replaces placeholder text view
 - (void)createTextView {
 	BeatUITextView* textView = [BeatUITextView createTextViewWithEditorDelegate:self frame:CGRectMake(0, 0, self.pageView.frame.size.width, self.pageView.frame.size.height) pageView:self.pageView scrollView:self.scrollView];
-	textView.accessoryView = self.accessoryView;
 	
 	textView.inputAccessoryView.translatesAutoresizingMaskIntoConstraints = true;
 
-		
 	[self.textView removeFromSuperview];
 	self.textView = textView;
 	[self.pageView addSubview:self.textView];
@@ -114,6 +111,7 @@
     [super viewDidLoad];
 
 	if (!self.documentIsLoading) return;
+	
 	
 	// Load fonts
 	[self loadSerifFonts];
@@ -133,7 +131,9 @@
 	
 	self.scrollView.backgroundColor = ThemeManager.sharedManager.marginColor;
 	self.textView.backgroundColor = ThemeManager.sharedManager.backgroundColor;
-		
+	
+	self.formattingActions = [BeatEditorFormattingActions.alloc initWithDelegate:self];
+
 	[self.document openWithCompletionHandler:^(BOOL success) {
 		if (!success) {
 			// Do something
@@ -179,7 +179,6 @@
 	
 	// Fit to view here
 	self.scrollView.zoomScale = 1.4;
-	self.scrollView.zoomScale = 1.0;
 	
 	// Keyboard manager
 	self.keyboardManager = KeyboardManager.new;
@@ -209,9 +208,12 @@
 	
 	if (_documentIsLoading) {
 		// Loading is complete, show page view
+		[self.textView.layoutManager invalidateGlyphsForCharacterRange:NSMakeRange(0, self.textView.text.length) changeInLength:0 actualCharacterRange:nil];
+		
 		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
 			self.documentIsLoading = false;
 			self.textView.pageView.layer.opacity = 1.0;
+			
 		} completion:^(BOOL finished) {
 			
 		}];
@@ -351,10 +353,16 @@
 - (OutlineScene*)currentScene {
 	// If we are not on the main thread, return the latest known scene
 	if (!NSThread.isMainThread) return _currentScene;
+
+	// Check if the cached scene is OK
+	NSInteger position = self.selectedRange.location;
+	if (_currentScene && NSLocationInRange(position, _currentScene.range)) {
+		return _currentScene;
+	}
 	
-	OutlineScene* scene = [self getCurrentSceneWithPosition:self.textView.selectedRange.location];
+	OutlineScene* scene = [self.parser sceneAtPosition:position];
 	_currentScene = scene;
-	return scene;
+	return _currentScene;
 }
 
 - (NSArray*)getOutlineItems {
@@ -393,7 +401,7 @@
 	if (location >= self.text.length) return self.parser.lines.lastObject;
 	
 	// Don't fetch the line if we already know it
-	if (NSLocationInRange(location, _currentLine.range)) return _currentLine;
+	if (NSLocationInRange(location, _currentLine.range) && [self.parser.lines containsObject:_currentLine]) return _currentLine;
 	else {
 		Line *line = [_parser lineAtPosition:location];
 		_currentLine = line;
@@ -500,6 +508,25 @@
 
 #pragma mark - Preview / Pagination
 
+/**
+ __N.B.__ / note to self:
+ This doesn't really make any sense. This should follow the design pattern of macOS, though written better:
+ There, pagination is just a byproduct of previews. This way, once any changes were made (including just attribute changes etc.),
+ we can just invalidate the previes at given range and get both for free. Now we're telling this controller to invalidate
+ preview, but we're *actually* invalidating pagination.
+
+ Correct pattern should be:
+ - change made
+ - invalidate preview in preview controller
+   ... build new pagination
+   ... build new preview
+   ... BOTH of them are now up to date
+ 
+ We should also allow the pagination to receive a CHANGED RANGE instead of just an index.
+ It would allow larger changes to be made, while still supporting caching previous results etc.
+ 
+ */
+
 static bool buildPreviewImmediately = false;
 - (IBAction)togglePreview:(id)sender {
 	if (!_previewUpdated) {
@@ -534,14 +561,28 @@ static bool buildPreviewImmediately = false;
 }
 
 - (void)paginationDidFinishWithPages:(NSArray<BeatPaginationPage *> *)pages {
+	// Update preview in main thread
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		self.preview.previewUpdated = false;
+		
+		if (buildPreviewImmediately) {
+			[self.preview displayPreview];
+		} else {
+			// Send back to background thread
+			[self.preview updatePreviewAsync];
+		}
+	});
+}
 
-	self.preview.previewUpdated = false;
-	
-	if (buildPreviewImmediately) {
-		[self.preview displayPreview];
-	} else {
-		[self.preview updatePreviewAsync];
-	}
+- (void)invalidatePreview {
+	// Mark the current preview as invalid
+	[self paginateWithChangeAt:0 sync:false];
+	self.preview.previewUpdated = NO;
+}
+
+- (void)invalidatePreviewAt:(NSInteger)index {
+	[self paginateWithChangeAt:index sync:false];
+	self.preview.previewUpdated = NO;
 }
 
 
@@ -569,7 +610,6 @@ static bool buildPreviewImmediately = false;
 FORWARD_TO(self.textActions, void, replaceCharactersInRange:(NSRange)range withString:(NSString*)string);
 FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks);
-FORWARD_TO(self.textActions, void, removeString:(NSString*)string atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, replaceRange:(NSRange)range withString:(NSString*)newString);
 FORWARD_TO(self.textActions, void, replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index);
 FORWARD_TO(self.textActions, void, removeRange:(NSRange)range);
@@ -612,13 +652,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (IBAction)addCharacterCue:(id)sender {
-	[self.textActions addNewParagraph:@""];
-	self.characterInput = true;
-	self.characterInputForLine = self.currentLine;
-	
-	self.currentLine.type = dialogue;
-	[self.formatting formatLine:self.currentLine];
+	[self.formattingActions addCue];
 }
+
 
 
 #pragma mark - Screenplay document data shorthands
@@ -659,7 +695,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	if ([color.lowercaseString isEqualToString:@"none"]) return;
 	
 	// Create color string and add a space at the end of heading if needed
-	NSString *colorStr = [NSString stringWithFormat:@"[[color %@]]", color.lowercaseString];
+	NSString *colorStr = [NSString stringWithFormat:@"[[%@]]", color.lowercaseString];
 	if ([line.string characterAtIndex:line.string.length - 1] != ' ') {
 		colorStr = [NSString stringWithFormat:@" %@", colorStr];
 	}
@@ -844,6 +880,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	NSArray *changesInOutline = self.parser.changesInOutline;
 	
 	if (changeInOutline == YES) {
+		[self.parser createOutline];
 		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
 		/*
 		if (self.sidebarVisible && self.sideBarTabs.selectedTabViewItem == _tabOutline) [self.outlineView reloadOutline:changesInOutline];
@@ -1226,7 +1263,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	vc.editorDelegate = self;
 	
 	[self presentViewController:vc animated:false completion:^{
-		NSLog(@" ... closed");
+		
 	}];
 }
 

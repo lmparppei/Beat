@@ -152,3 +152,33 @@ import OSLog
 		print("RenderStyle: Unknown key: ", key)
 	}
 }
+
+@objc extension BeatRenderStyles {
+    @objc public var action:RenderStyle {
+        return self.forElement(Line.typeName(.action))
+    }
+    @objc public var dialogue:RenderStyle {
+        return self.forElement(Line.typeName(.dialogue))
+    }
+    @objc public var parenthetical:RenderStyle {
+        return self.forElement(Line.typeName(.parenthetical))
+    }
+    @objc public var character:RenderStyle {
+        return self.forElement(Line.typeName(.character))
+    }
+    @objc public var titlePageElement:RenderStyle {
+        return self.forElement(Line.typeName(.titlePageTitle))
+    }
+    @objc public var dualDialogueCharacter:RenderStyle {
+        return self.forElement(Line.typeName(.dualDialogueCharacter))
+    }
+    @objc public var dualDialogueParenthetical:RenderStyle {
+        return self.forElement(Line.typeName(.dualDialogueParenthetical))
+    }
+    @objc public var dualDialogue:RenderStyle {
+        return self.forElement(Line.typeName(.dualDialogue))
+    }
+    @objc public var transition:RenderStyle {
+        return self.forElement(Line.typeName(.transitionLine))
+    }
+}

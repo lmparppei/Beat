@@ -301,10 +301,12 @@
 		[self addPage:@[] toQueue:group.lines pageBreak:pageBreak];
 	}
 	else if (group.blocks.count > 0) {
+        // Break the block group
 		NSArray* split = [group breakGroupWithRemainingSpace:remainingSpace];
 		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];
 	}
 	else {
+        // Just break a single block
 		BeatPaginationBlock *pageBlock = group.blocks.firstObject;
 		NSArray* split = [pageBlock breakBlockWithRemainingSpace:remainingSpace];
 		[self addPage:split[0] toQueue:split[1] pageBreak:split[2]];

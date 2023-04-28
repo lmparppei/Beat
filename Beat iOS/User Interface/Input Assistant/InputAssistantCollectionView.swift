@@ -99,8 +99,8 @@ extension InputAssistantCollectionView: UICollectionViewDataSource {
 private class InputAssistantCollectionViewCell: UICollectionViewCell {
     
     let label: UILabel
-    let highlightedBackgroundColor = UIColor(red: 235/255, green: 237/255, blue: 239/255, alpha: 1)
-    let regularBackgroundColor = UIColor(red: 174/255, green: 180/255, blue: 186/255, alpha: 1)
+	let highlightedBackgroundColor = UIColor.secondarySystemBackground
+	let regularBackgroundColor = UIColor.secondarySystemBackground.withAlphaComponent(0.8)
     let darkBackgroundColor = UIColor(white: 200/255, alpha: 0.4)
 
     var keyboardAppearance: UIKeyboardAppearance = .default {
@@ -116,10 +116,11 @@ private class InputAssistantCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         label = UILabel()
-        
+		
         super.init(frame: frame)
 
         label.textAlignment = .center
+		label.font = UIFont.monospacedSystemFont(ofSize: 16.0, weight: .regular)
         
         self.contentView.addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -133,6 +134,7 @@ private class InputAssistantCollectionViewCell: UICollectionViewCell {
         
         self.layer.cornerRadius = 4
         self.layer.masksToBounds = true
+		
         updateSelectionState()
     }
     

@@ -17,7 +17,7 @@
                BlueprintIdentifier = "B138B57219E1C973000489C4"
                BuildableName = "Beat.app"
                BlueprintName = "Beat Ad Hoc"
-               ReferencedContainer = "container:Beat.xcodeproj">
+               ReferencedContainer = "container:Beat macOS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "B138B57219E1C973000489C4"
             BuildableName = "Beat.app"
             BlueprintName = "Beat Ad Hoc"
-            ReferencedContainer = "container:Beat.xcodeproj">
+            ReferencedContainer = "container:Beat macOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,7 +64,7 @@
             BlueprintIdentifier = "B138B57219E1C973000489C4"
             BuildableName = "Beat.app"
             BlueprintName = "Beat Ad Hoc"
-            ReferencedContainer = "container:Beat.xcodeproj">
+            ReferencedContainer = "container:Beat macOS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
@@ -87,7 +87,7 @@
                      BlueprintIdentifier = "B138B57219E1C973000489C4"
                      BuildableName = "Beat.app"
                      BlueprintName = "Beat Ad Hoc"
-                     ReferencedContainer = "container:Beat.xcodeproj">
+                     ReferencedContainer = "container:Beat macOS.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
             </ActionContent>

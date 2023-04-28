@@ -6,22 +6,25 @@
 //  Copyright © 2020-2021 Lauri-Matti Parppei. All rights reserved.
 //
 
+
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import "BeatPluginManager.h"
-#import <Cocoa/Cocoa.h>
+
 #import <WebKit/WebKit.h>
 #import <PDFKit/PDFKit.h>
 #import <BeatParsing/BeatParsing.h>
 
-#import "BeatAppDelegate.h"
 #import "BeatPluginManager.h"
-#import "BeatAppDelegate.h"
-#import "BeatModalAccessoryView.h"
-#import "WebPrinter.h"
-
 #import "BeatPluginTimer.h"
+
+
+#if !TARGET_OS_IOS
+
+// macOS-only
+#import <Cocoa/Cocoa.h>
+#import "NSTextView+UX.h"
 #import "BeatPluginHTMLWindow.h"
 
 #import "BeatPluginUIView.h"
@@ -31,9 +34,22 @@
 #import "BeatPluginUICheckbox.h"
 #import "BeatPluginUILabel.h"
 
-#import "BeatSpeak.h"
+#import "BeatAppDelegate.h"
+#import "BeatModalAccessoryView.h"
 
+#import "BeatSpeak.h"
 #import "BeatHTMLScript.h"
+
+#import "WebPrinter.h"
+
+#else
+
+// iOS-only
+#import <UIKit/UIKit.h>
+#import "UITextView+UX.h"
+
+#endif
+
 
 @class BeatPluginWindow;
 @class BeatPreview;
@@ -228,18 +244,31 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 
 // Interfacing with the document
 @protocol BeatPluginDelegate <NSObject>
-@property (nonatomic, strong) ContinuousFountainParser *parser;
+
+// macOS-only
+#if !TARGET_OS_IOS
 @property (nonatomic, weak, readonly) NSWindow *documentWindow;
+@property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
+@property (nonatomic, readonly) BeatPaginator *paginator;
+@property (nonatomic, readonly) BeatPreviewController* previewController;
+
+- (void)addWidget:(id)widget;
+- (IBAction)showWidgets:(id)sender;
+
+#endif
+
+@property (nonatomic, readonly, weak) BXTextView *textView;
+
+@property (nonatomic, strong) ContinuousFountainParser *parser;
 @property (nonatomic, readonly) BeatTagging *tagging;
 @property (nonatomic, readonly) NSPrintInfo *printInfo;
 @property (nonatomic, readonly) Line* currentLine;
-@property (nonatomic, readonly, weak) NSTextView *textView;
+
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) OutlineScene *currentScene;
-@property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
-@property (nonatomic, readonly) BeatPaginator *paginator;
+
 @property (nonatomic, readonly) BeatPreview *preview;
-@property (nonatomic, readonly) BeatPreviewController* previewController;
+
 @property (nonatomic, readonly) bool closing;
 
 - (bool)nativeRendering;
@@ -276,8 +305,6 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)forceFormatChangesInRange:(NSRange)range;
 - (void)formatLine:(Line*)line;
 
-- (void)addWidget:(id)widget;
-- (IBAction)showWidgets:(id)sender;
 - (NSString*)previewHTML; /// Returns HTML string of the current preview. Only for debugging.
 - (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
 - (void)bakeRevisions; /// Bakes current revisions into lines

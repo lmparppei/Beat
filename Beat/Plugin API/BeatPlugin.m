@@ -21,10 +21,12 @@
 #import "BeatPlugin.h"
 #import <BeatCore/BeatRevisions.h>
 #import <BeatPagination2/BeatPagination2.h>
+
 #import "BeatConsole.h"
 #import "BeatPreview.h"
 #import "Beat-Swift.h"
 #import <objc/runtime.h>
+
 
 @interface BeatPlugin ()
 @property (nonatomic) JSVirtualMachine *vm;
@@ -53,9 +55,14 @@
 @property (nonatomic) bool terminateAfterCallback;
 @property (nonatomic) NSMutableArray *pluginWindows;
 @property (nonatomic) NSDictionary *type;
-@property (nonatomic) WebPrinter *printer;
-@property (nonatomic) BeatPluginUIView *widgetView;
+
+#if !TARGET_OS_IOS
 @property (nonatomic) NSMutableArray<NSMenuItem*>* menus;
+@property (nonatomic) BeatPluginUIView *widgetView;
+
+@property (nonatomic) WebPrinter *printer;
+#endif
+
 @end
 
 @implementation BeatPlugin
@@ -70,7 +77,7 @@
 	
 	[self setupErrorHandler];
 	[self setupRequire];
-	
+		
 	[_context setObject:self forKeyedSubscript:@"Beat"];
 	
 	return self;
@@ -1173,7 +1180,7 @@
 		self.inCallback = NO;
 		
 		if (self.terminateAfterCallback) {
-			NSLog(@"... terminate post callback");
+			NSLog(@"... terminate plugin post callback");
 			[self end];
 		}
 	});

@@ -119,12 +119,12 @@
 - (void)addStoryline:(NSString*)storyline to:(OutlineScene*)scene;
 - (void)removeStoryline:(NSString*)storyline from:(OutlineScene*)scene;
 
-
+- (void)bakeRevisions;
 
 #pragma mark - Editing the text content
 
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
-- (void)removeString:(NSString*)string atIndex:(NSUInteger)index;
+- (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks;
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;
 - (void)replaceString:(NSString*)string withString:(NSString*)newString atIndex:(NSUInteger)index;
 - (void)moveScene:(OutlineScene*)sceneToMove from:(NSInteger)from to:(NSInteger)to;
@@ -277,7 +277,9 @@
 
 #pragma mark - Preview
 
-- (void)updatePreview;
+//- (void)updatePreview;
+- (void)invalidatePreview;
+- (void)invalidatePreviewAt:(NSInteger)index;
 
 @end
 

@@ -35,6 +35,7 @@ extern NSString * const BeatSettingSceneHeadingSpacing;
 extern NSString * const BeatSettingScreenplayItemMore;
 extern NSString * const BeatSettingScreenplayItemContd;
 extern NSString * const BeatSettingShowRevisions;
+extern NSString * const BeatSettingShowRevisedTextColor;
 extern NSString * const BeatSettingShowTags;
 extern NSString * const BeatSettingAutomaticContd;
 extern NSString * const BeatSettingZoomLevel;

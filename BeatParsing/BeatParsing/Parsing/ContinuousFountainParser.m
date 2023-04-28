@@ -2239,21 +2239,19 @@ static NSDictionary* patterns;
 }
 
 - (Line*)previousLine:(Line*)line {
-	NSArray *lines = self.safeLines; // Use thread-safe lines
-	NSInteger lineIndex = [lines indexOfObject:line];
-	
-	if (line == lines.firstObject || lineIndex == 0 || lineIndex == NSNotFound) return nil;
-	
-	return lines[lineIndex - 1];
+    NSInteger i = [self lineIndexAtPosition:line.position];
+    
+    if (i > 0 && i != NSNotFound) return self.safeLines[i - 1];
+    else return nil;
 }
 
+
 - (Line*)nextLine:(Line*)line {
-	NSArray *lines = self.safeLines; // Use thread-safe lines
-	NSInteger lineIndex = [lines indexOfObject:line];
-	
-	if (line == lines.lastObject || lines.count < 2 || lineIndex == NSNotFound) return nil;
-	
-	return lines[lineIndex + 1];
+    NSArray* lines = self.safeLines;
+    NSInteger i = [self lineIndexAtPosition:line.position];
+    
+    if (i != NSNotFound && i < lines.count - 1) return lines[i + 1];
+    else return nil;
 }
 
 - (Line*)nextOutlineItemOfType:(LineType)type from:(NSInteger)position {

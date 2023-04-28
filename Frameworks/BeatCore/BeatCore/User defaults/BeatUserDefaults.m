@@ -57,6 +57,7 @@ NSString* const BeatSettingSceneHeadingSpacing 			= @"sceneHeadingSpacing";
 NSString* const BeatSettingScreenplayItemMore 			= @"screenplayItemMore";
 NSString* const BeatSettingScreenplayItemContd 			= @"screenplayItemContd";
 NSString* const BeatSettingShowRevisions 				= @"showRevisions";
+NSString* const BeatSettingShowRevisedTextColor         = @"showRevisedTextColor";
 NSString* const BeatSettingShowTags	 					= @"showTags";
 NSString* const BeatSettingAutomaticContd 				= @"automaticContd";
 NSString* const BeatSettingZoomLevel	 				= @"zoomLevel";
@@ -106,7 +107,8 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		BeatSettingUpdatePluginsAutomatically: @[BeatSettingUpdatePluginsAutomatically, @YES],
 		BeatSettingHeadingStyleBold: @[BeatSettingHeadingStyleBold, @YES],
 		BeatSettingHeadingStyleUnderlined: @[BeatSettingHeadingStyleUnderlined, @NO],
-		
+    
+        
 		BeatSettingDefaultPageSize: @[BeatSettingDefaultPageSize, @(pageSize)],
 		BeatSettingDisableFormatting: @[BeatSettingDisableFormatting, @NO],
 		BeatSettingShowMarkersInScrollbar: @[BeatSettingShowMarkersInScrollbar, @NO],
@@ -114,12 +116,13 @@ NSString* const BeatSettingOutlineFontSizeModifier      = @"outlineFontSizeModif
 		BeatSettingScreenplayItemMore: @[BeatSettingScreenplayItemMore, @"MORE"],
 		BeatSettingScreenplayItemContd: @[BeatSettingScreenplayItemContd, @"CONT'D"],
 		BeatSettingShowRevisions: @[BeatSettingShowRevisions, @YES],
+        BeatSettingShowRevisedTextColor: @[BeatSettingShowRevisedTextColor, @NO],
 		BeatSettingShowTags: @[BeatSettingShowTags, @YES],
 		BeatSettingAutomaticContd: @[BeatSettingAutomaticContd, @YES],
 		BeatSettingZoomLevel: @[BeatSettingZoomLevel, @0.97],
 		BeatSettingShowSynopsisInOutline: @[BeatSettingShowSynopsisInOutline, @YES],
 		BeatSettingBackupURL: @[BeatSettingBackupURL, @""],
-		
+        		
 		BeatSettingSuppressedAlert: @[BeatSettingSuppressedAlert, @""],
         
         BeatSettingOutlineFontSizeModifier: @[BeatSettingOutlineFontSizeModifier, @0]

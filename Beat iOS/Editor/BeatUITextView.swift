@@ -8,21 +8,31 @@
 
 import UIKit
 import BeatCore
+import BeatParsing
+
+@objc protocol BeatTextEditorDelegate:BeatEditorDelegate {
+	@objc var revisionTracking:BeatRevisions { get }
+	@objc var formattingActions:BeatEditorFormattingActions { get }
+}
 
 class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 
 	//@IBInspectable var documentWidth:CGFloat = 640
-	@IBOutlet weak var editorDelegate:BeatEditorDelegate?
+	@IBOutlet weak var editorDelegate:BeatTextEditorDelegate?
 	@IBOutlet weak var enclosingScrollView:UIScrollView!
 	@IBOutlet weak var pageView:UIView!
 	
-	@objc weak var accessoryView:InputAccessoryView?
-	@objc var assistantView:InputAssistantView = InputAssistantView()
+	@objc var assistantView:InputAssistantView?
 	
 	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
 	var pinchRecognizer = UIGestureRecognizer()
-	
 	var customLayoutManager:BeatLayoutManager
+	
+	class func linePadding() -> CGFloat {
+		return 40.0
+	}
+	
+	// MARK: - Initializers
 	
 	@objc class func createTextView(editorDelegate:BeatEditorDelegate, frame:CGRect, pageView:BeatPageView, scrollView:BeatScrollView) -> BeatUITextView {
 		let textContainer = NSTextContainer()
@@ -38,7 +48,12 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		textView.textContainer.widthTracksTextView = false
 		textView.pageView = pageView
 		textView.enclosingScrollView = scrollView
-				
+		
+		textView.assistantView = InputAssistantView(editorDelegate: editorDelegate)
+		textView.assistantView?.attach(to: textView)
+		
+		textView.autocorrectionType = .no
+		
 		layoutManager.editorDelegate = editorDelegate
 		textView.setup()
 		
@@ -65,14 +80,13 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		self.textContainer.replaceLayoutManager(customLayoutManager)
 	}
 	
+	
+	// MARK: - Getters
+	
 	override var layoutManager: NSLayoutManager {
 		return customLayoutManager
 	}
-	
-	class func linePadding() -> CGFloat {
-		return 40.0
-	}
-	
+		
 	@objc var documentWidth:CGFloat {
 		var width = 0.0
 		let padding = self.textContainer.lineFragmentPadding
@@ -87,6 +101,8 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		
 		return width + padding * 2
 	}
+	
+	// MARK: - Setup
 		
 	func setup() {
 		self.textContainerInset = insets
@@ -102,9 +118,17 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		
 		self.textContainer.size = CGSize(width: self.documentWidth, height: self.textContainer.size.height)
 		self.textContainer.lineFragmentPadding = BeatUITextView.linePadding()
-				
+		
+		self.keyboardAppearance = .dark
+		
 		resizePaper()
 		resize()
+	}
+	
+	func setupButtons() {
+		self.assistantView?.leadingActions = [
+			InputAssistantAction(image: UIImage(systemName: "bubble.left.fill")!)
+		]
 	}
 	
 	override func awakeFromNib() {
@@ -177,7 +201,6 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		
 		/// We'll return `true` when the current line is empty
 		if editorDelegate.characterInput && line!.string.count == 0 {
-			print("Shuould cancel")
 			return true
 		} else {
 			return false
@@ -246,10 +269,12 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		super.touchesEnded(touches, with: event)
 	}
 
-	// MARK: - Other events
+	
+	// MARK: - Update assisting views
 	
 	@objc func updateAssistingViews () {
-		guard let editorDelegate = self.editorDelegate else { return }
+		guard let editorDelegate = self.editorDelegate
+		else { return }
 		
 		if (editorDelegate.currentLine().isAnyParenthetical()) {
 			self.autocapitalizationType = .none
@@ -257,18 +282,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 			self.autocapitalizationType = .sentences
 		}
 		
-		// Change accessory view when needed
-		
-		print("Line", editorDelegate.currentLine())
-		
-		if editorDelegate.currentLine().isAnyCharacter() {
-			print("Set assistant view", self.assistantView)
-			self.inputAccessoryView = nil
-			
-		} else if (self.inputAccessoryView != self.accessoryView) {
-			print("Set accessory view", self.accessoryView)
-			self.inputAccessoryView = self.accessoryView
-		}
+		assistantView?.reloadData()
 	}
 	
 	
@@ -295,10 +309,13 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		if line.isAnyDialogue() || line.type == .action {
 			let formatMenu = UIMenu(image: UIImage(systemName: "bold.italic.underline"), options: [], children: [
 				UIAction(image: UIImage(named: "button_bold")) { _ in
-					print("BOLD")
+					self.editorDelegate?.formattingActions.makeBold(nil)
 				},
 				UIAction(image: UIImage(named: "button_italic")) { _ in
-					print("ITALIC")
+					self.editorDelegate?.formattingActions.makeItalic(nil)
+				},
+				UIAction(image: UIImage(systemName: "underline")) { _ in
+					self.editorDelegate?.formattingActions.makeUnderlined(nil)
 				}
 			])
 			
@@ -308,17 +325,52 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 		if self.selectedRange.length > 0 {
 			let revisionMenu = UIMenu(subtitle: "Revisions", image: UIImage(systemName: "asterisk"), options: [], children: [
 				UIAction(title: "Mark As Revised") { _ in
-					print("Mark as revised")
+					self.editorDelegate?.revisionTracking.markerAction(.addition)
 				},
 				UIMenu(options: [.destructive, .displayInline], children: [
 					UIAction(title: "Clear Revisions") { _ in
-						print("Clear revisions")
+						self.editorDelegate?.revisionTracking.markerAction(.none)
 					}
 				])
 			])
 			
 			actions.append(revisionMenu)
 		}
+		
+		let sceneMenu = UIMenu(title: "Scene...", options: [], children: [
+			UIAction(title: "Omit Scene") { _ in
+				self.editorDelegate?.formattingActions.omitScene(nil)
+			},
+			UIAction(title: "Make Non-Numbered") { _ in
+				self.editorDelegate?.formattingActions.makeSceneNonNumbered(nil)
+			},
+			UIAction(image: UIImage(named:"Color_Red")) { _ in
+				self.editorDelegate?.setColor("red", for: self.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"Color_Blue")) { _ in
+				self.editorDelegate?.setColor("blue", for: self.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"Color_Green")) { _ in
+				self.editorDelegate?.setColor("green", for: self.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"Color_Pink")) { _ in
+				self.editorDelegate?.setColor("pink", for: self.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"Color_Brown")) { _ in
+				self.editorDelegate?.setColor("brown", for: self.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"Color_Cyan")) { _ in
+				self.editorDelegate?.setColor("cyan", for: self.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"Color_Orange")) { _ in
+				self.editorDelegate?.setColor("orange", for: self.editorDelegate?.currentScene)
+			},
+			UIAction(image: UIImage(named:"Color_Magenta")) { _ in
+				self.editorDelegate?.setColor("magenta", for: self.editorDelegate?.currentScene)
+			}
+		])
+		
+		actions.append(sceneMenu)
 				
 		// Add remaining actions from original menu
 		actions.append(contentsOf: originalActions)
@@ -339,7 +391,9 @@ extension BeatUITextView: NSLayoutManagerDelegate {
 		if self.editorDelegate?.documentIsLoading ?? false { return 0 }
 		
 		let line = editorDelegate?.parser.line(atPosition: charIndexes[0])
-		if line == nil { return 0 }
+		if line == nil {
+			return 0
+		}
 		
 		let type = line?.type
 		if type == .section { return 0; }
