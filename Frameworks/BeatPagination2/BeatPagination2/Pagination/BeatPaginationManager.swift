@@ -17,7 +17,7 @@ import BeatCore
 	@objc var lastPageHeight:CGFloat { get }
 
 	@objc func heightForScene(_ scene:OutlineScene) -> CGFloat
-    @objc func heightForRange(_ range:NSRange) -> CGFloat
+    @objc func heightForRange(_ location:Int, _ length:Int) -> CGFloat
     
 	@objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int]
 	@objc func paginate(lines: [Line])
@@ -294,13 +294,18 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
         return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight() * 3
     }
 	
-    @objc public func heightForRange(_ range:NSRange) -> CGFloat {
+    @objc public func heightFor(_ range:NSRange) -> CGFloat {
         guard let height = self.finishedPagination?.height(for: range) else {
             print("No height available for range:", range)
             return 0.0
         }
         
         return height / self.maxPageHeight
+    }
+    
+    /// JS convenience method
+    func heightForRange(_ location: Int, _ length: Int) -> CGFloat {
+        return heightFor(NSMakeRange(location, length))
     }
     
     @objc public func heightForScene(_ scene:OutlineScene) -> CGFloat {
