@@ -333,7 +333,6 @@ class BeatTitlePageView:BeatPaginationPageView {
 			self.addSubview(leftColumn!)
 		}
 
-		
 		if (rightColumn == nil) {
 			let rightColumnFrame = NSRect(x: frame.width - pageStyle.marginLeft - columnFrame.width,
 										  y: columnFrame.origin.y, width: columnFrame.width, height: columnFrame.height)
