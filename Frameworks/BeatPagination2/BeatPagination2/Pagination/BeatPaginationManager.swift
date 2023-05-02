@@ -278,7 +278,13 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     
     @objc public func pageNumberAt(_ location:Int) -> Int {
         var pageNumber = self.finishedPagination?.findPageIndex(at: location) ?? 0
-        if pageNumber != 0 { pageNumber += 1 } // We'll use human-readable page numbers here
+        
+        // 0 will indicate that we didn't find anything
+        if pageNumber == NSNotFound || pageNumber == 0 { pageNumber = 0 }
+        else {
+            // We'll use human-readable page numbers here
+            pageNumber += 1
+        }
         
         return pageNumber
     }
