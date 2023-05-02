@@ -271,8 +271,6 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 
 @property (nonatomic, readonly) bool closing;
 
-- (bool)nativeRendering;
-
 /// Runs a plugin with given name
 - (void)runPluginWithName:(NSString*)pluginName;
 /// Registers the plugin to stay running in background

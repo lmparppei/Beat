@@ -21,7 +21,6 @@
 @property (atomic) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) Line* characterInputForLine;
 @property (nonatomic, readonly) NSRange selectedRange;
-- (bool)nativeRendering;
 
 - (NSInteger)sceneNumberingStartsFrom;
 - (void)reformatLinesAtIndices:(NSMutableIndexSet*)indices;

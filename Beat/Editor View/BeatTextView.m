@@ -586,7 +586,7 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 		NSInteger pages = _editorDelegate.numberOfPages;
 		if (pages > 0) infoString = [infoString stringByAppendingFormat:@"\nPages: %lu", pages];
 	} else {
-		NSInteger page = [_editorDelegate getPageNumber:self.selectedRange.location];
+		NSInteger page = [_editorDelegate getPageNumberAt:self.selectedRange.location];
 		if (page > 0) infoString = [infoString stringByAppendingFormat:@"\nPage: %lu", page];
 	}
 	

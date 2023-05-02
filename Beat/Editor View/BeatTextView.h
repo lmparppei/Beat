@@ -70,7 +70,7 @@ typedef NS_ENUM(NSInteger, BeatTextviewPopupMode) {
 - (Line*)lineAt:(NSInteger)index;
 - (void)handleTabPress;
 
-- (NSInteger)getPageNumber:(NSInteger)location;
+- (NSInteger)getPageNumberAt:(NSInteger)location;
 - (NSInteger)numberOfPages;
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta;

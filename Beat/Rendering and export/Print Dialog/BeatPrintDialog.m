@@ -176,26 +176,10 @@ static CGFloat panelWidth;
 }
 
 - (IBAction)print:(id)sender {
-	if (self.documentDelegate.nativeRendering) {
-		[self exportWithType:BeatPrintingOperationToPrint];
-		
-	} else {
-		BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPrint settings:[self exportSettings] delegate:self];
-		[self addPrintViewToQueue:printView];
-		
-		[self.documentDelegate.documentWindow endSheet:self.window];
-	}
+	[self exportWithType:BeatPrintingOperationToPrint];
 }
 - (IBAction)pdf:(id)sender {
-	if (self.documentDelegate.nativeRendering) {
-		[self exportWithType:BeatPrintingOperationToPDF];
-		
-	} else {
-		BeatPrintView *printView = [[BeatPrintView alloc] initWithDocument:_documentDelegate.document script:nil operation:BeatToPDF settings:[self exportSettings] delegate:self];
-		[self addPrintViewToQueue:printView];
-		
-		[self.documentDelegate.documentWindow endSheet:self.window];
-	}
+	[self exportWithType:BeatPrintingOperationToPDF];
 }
 
 - (void)printingDidFinish {
@@ -218,26 +202,16 @@ static CGFloat panelWidth;
 	// Update PDF preview
 	BeatExportSettings *settings = [self exportSettings];
 	
-	if (self.documentDelegate.nativeRendering) {
-		// Native rendering for development
-		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			BeatNativePrinting* operation = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:settings delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
-				[self.renderQueue removeObject:operation];
-				
-				NSURL* url = (NSURL*)value;
-				[self didFinishPreviewAt:url];
-			}];
-			[self.renderQueue addObject:operation];
-		});
-		
-	} else {
-		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			@synchronized (self) {
-				BeatPrintView * printView = [[BeatPrintView alloc] initWithDocument:self.documentDelegate.document script:nil operation:BeatToPreview settings:settings delegate:self];
-				[self addPrintViewToQueue:printView];
-			}
-		});
-	}
+	// Native rendering for development
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		BeatNativePrinting* operation = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:settings delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+			[self.renderQueue removeObject:operation];
+			
+			NSURL* url = (NSURL*)value;
+			[self didFinishPreviewAt:url];
+		}];
+		[self.renderQueue addObject:operation];
+	});
 }
 
 /// Adds the print view to document's queue. It will be automatically removed by the print view itself.
@@ -357,12 +331,7 @@ static CGFloat panelWidth;
 
 	settings.paperSize = self.documentDelegate.pageSize;
 	settings.customCSS = css;
-	
-	settings.contd = self.documentDelegate.contdString;
-	settings.more = self.documentDelegate.moreString;
-	
-	settings.sceneHeadingSpacing = [BeatUserDefaults.sharedDefaults getInteger:BeatSettingSceneHeadingSpacing];
-	
+			
 	return settings;
 }
 

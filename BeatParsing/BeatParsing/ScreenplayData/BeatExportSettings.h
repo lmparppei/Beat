@@ -23,14 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class OutlineScene;
 
 @protocol BeatExportSettingDelegate
-@property (nonatomic) bool nativeRendering;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) id document;
 - (NSArray<NSString*>*)shownRevisions;
-- (NSString*)moreString;
-- (NSString*)contdString;
 - (NSString*)fileNameString;
-- (NSInteger)spaceBeforeHeading;
 - (BeatPaperSize)pageSize;
 @end
 
@@ -49,15 +45,10 @@ typedef NS_ENUM(NSUInteger, BeatHTMLOperation) {
 @property (nonatomic) bool printNotes;
 @property (nonatomic) bool printSceneNumbers;
 @property (nonatomic) NSString *fileName;
-@property (nonatomic) NSString *contd;
-@property (nonatomic) NSString *more;
 @property (nonatomic, weak) BeatHostDocument  * _Nullable document;
 //@property (nonatomic) NSString * _Nullable currentScene;
 @property (nonatomic) NSArray * revisions;
 @property (nonatomic) BeatPaperSize paperSize;
-@property (nonatomic) NSInteger sceneHeadingSpacing;
-
-@property (nonatomic) bool nativeRendering;
 
 /// Styles for new pagination / export system
 @property (nonatomic) id _Nullable styles;

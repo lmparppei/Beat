@@ -370,34 +370,14 @@ static bool underlinedHeading;
 	// First page doesn't have a page number.
 	if (pageNumber > 1) [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> %lu.</p>\n", _settings.header, pageNumber];
 	else [body appendFormat:@"<p class='page-break-render'><span class='header-top'>%@</span> &nbsp;</p>\n", _settings.header];
-	
-	// We need to catch lyrics not to make them fill up a paragraph
-	LineType block = empty;
-	
+		
 	for (Line *line in page.lines) { @autoreleasepool {
 		//bool beginBlock = false;
 		
 		if ([ignoringTypes containsObject:line.typeAsString]) {
-			// Close possible blocks
-			/*
-			if (block != empty) {
-				// Close possible blocks
-				[body appendFormat:@"</p>\n"];
-				block = empty;
-			}
-			 */
 			continue;
 		}
-		
-		if (line.type == pageBreak) {
-			/*
-			if (block != empty) {
-				// Close the block
-				[body appendFormat:@"</p>\n"];
-				block = empty;
-			}
-			 */
-			 
+		else if (line.type == pageBreak) {
 			continue;
 		}
 		
@@ -421,26 +401,6 @@ static bool underlinedHeading;
 		}
 		
 		NSMutableString *text = NSMutableString.new;
-/*
-		// Begin lyrics or centered block
-		if (block != empty) {
-			if (line.type != block) {
-				// Close block
-				[body appendFormat:@"</p>\n"];
-				block = empty;
-			}
-			else if (line.type == block && line.beginsNewParagraph) {
-				[body appendFormat:@"</p>\n"];
-				beginBlock = true;
-			}
-		}
-		else {
-			if (line.type == lyrics || line.type == centered) {
-				block = line.type;
-				beginBlock = true;
-			}
-		}
-*/
  
 		// Format string for HTML (if it's not a heading)
 		[text setString:[self htmlStringFor:line]];
@@ -486,10 +446,7 @@ static bool underlinedHeading;
 				}
 			}
 			
-			// If this line isn't part of a larger block, output it as paragraph
-
 			[body appendFormat:@"<p class='%@%@' uuid='%@' paginatedHeight='%lu'>%@</p>\n", [self htmlClassForType:line.typeAsString], additionalClasses,line.uuid.UUIDString.lowercaseString,  line.heightInPaginator, text];
-			
 		}
 		
 		elementCount++;

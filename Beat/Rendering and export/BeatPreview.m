@@ -208,7 +208,8 @@
 }
 
 - (BeatPaginator*)paginator {
-	return _delegate.paginator;
+	return nil;
+	// return _delegate.paginator;
 	//return _htmlGenerator.paginator;
 }
 

@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)indexForLineAtPosition:(NSInteger)position;
 - (NSInteger)findSafeLineFromIndex:(NSInteger)index;
 - (NSInteger)blockIndexForLine:(Line*)line;
+- (NSInteger)nearestBlockIndexForLine:(Line*)line;
+- (NSInteger)nearestBlockIndexForRange:(NSRange)range;
 - (NSRange)rangeForLocation:(NSInteger)location;
 @end
 

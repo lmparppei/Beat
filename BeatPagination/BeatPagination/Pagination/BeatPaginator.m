@@ -50,6 +50,7 @@
 #import <TargetConditionals.h>
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatFonts.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 #import "BeatPaginator.h"
 #import "BeatPaginationOperation.h"
@@ -239,17 +240,11 @@
 #pragma mark - More / Cont'd items
 
 - (NSString*)contdString {
-    if (self.settings.contd) return self.settings.contd;
-    else if (self.delegate) return self.delegate.contdString;
-    else {
-        return @" (CONT'D)";
-    }
+    return BeatScreenplayElements.shared.contd;
 }
 
 - (NSString*)moreString {
-    if (self.settings.more) return self.settings.more;
-    else if (self.delegate) return self.delegate.moreString;
-    else return @"(MORE)";
+    return BeatScreenplayElements.shared.more;
 }
 
 - (Line*)contdLineFor:(Line*)line {
@@ -300,8 +295,7 @@
 	if (line.isSplitParagraph) return 0;
 	else if (line.type == heading) {
 		// Get user default for scene heading spacing
-        NSInteger spacingBeforeHeading = self.delegate.spaceBeforeHeading;
-        if (spacingBeforeHeading == 0) spacingBeforeHeading = self.settings.sceneHeadingSpacing;
+        NSInteger spacingBeforeHeading = BeatScreenplayElements.shared.spaceBeforeHeading;
         if (spacingBeforeHeading == 0) spacingBeforeHeading = 2;
         
 		return BeatPaginator.lineHeight * spacingBeforeHeading;

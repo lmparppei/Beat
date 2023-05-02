@@ -36,11 +36,12 @@
  
  As I started this project, I had close to zero knowledge on Objective-C, and it really shows. I have gotten gradually better at writing code, and there is even some multi-threading, omg. Some clumsy stuff is still lingering around, unfortunately. I'll keep on fixing that stuff when I have the time.
  
+ This particular class (Document) should be split into multiple chunks, as it's 4500-line monster. I've moved a ton of stuff into their respective classes, but as Objective C clases can't really be extended as easily as in Swift, I'm conflicted about how to actually modularize this mess.
+ 
  I originally started the project to combat a creative block, while overcoming some difficult PTSD symptoms. Coding helped to escape those feelings. If you are in an abusive relationship, leave RIGHT NOW. You might love that person, but it's not your job to try and help them. I wish I could have gotten this sort of advice back then from a random source code file.
  
- Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'd make a commercial version to finance the development. Beat has since become a real app with a real user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree. Or, even better, donate to a NGO helping less fortunate people. I'm already on the top of Maslow hierarchy.
- 
- I am in the process of modularizing the code so that it could be ported more easily to iOS.
+ Beat is released under GNU General Public License, so all of this code will remain open forever - even if I'd make a commercial version to finance the development. Beat has become a real app with a dedicated user base, which I'm thankful for. If you find this code or the app useful, you can always send some currency through PayPal or hide bunch of coins in an old oak tree. Or, even better, donate to a NGO helping less fortunate people. I'm already on the top of Maslow hierarchy.
+
 
  Anyway, may this be of some use to you, dear friend.
  The abandoned git repository will be my monument when I'm gone.
@@ -77,6 +78,7 @@
 #import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 #import "Document.h"
 #import "ScrollView.h"
@@ -112,9 +114,7 @@
 #import "BeatEditorButton.h"
 
 
-@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate> {
-	NSString *bufferedText;
-}
+@interface Document () <BeatNativePreviewDelegate, BeatThemeManagedDocument, BeatTextIODelegate>
 
 // Window
 @property (weak) NSWindow *documentWindow;
@@ -123,6 +123,7 @@
 
 // Cached
 @property (atomic) NSData* dataCache;
+@property (nonatomic) NSString* bufferedText;
 
 // Autosave
 @property (nonatomic) bool autosave;
@@ -162,8 +163,7 @@
 @property (weak, nonatomic) IBOutlet NSClipView *textClipView;
 @property (nonatomic) NSLayoutManager *layoutManager;
 @property (nonatomic) bool documentIsLoading;
-@property (nonatomic) BeatPaginator *paginator;
-@property (nonatomic) NSTimer *paginationTimer;
+
 @property (nonatomic) bool autocomplete;
 @property (nonatomic) bool autoLineBreaks;
 @property (nonatomic) bool automaticContd;
@@ -276,7 +276,7 @@
 @property (nonatomic) NSUInteger ddRight;
 
 // Current line / scene
-@property (nonatomic, weak) Line *currentLine;
+@property (nonatomic) Line *currentLine;
 @property (nonatomic) Line *previouslySelectedLine;
 
 // Autocompletion
@@ -383,8 +383,6 @@
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
 	[self.preview.previewTimer invalidate];
-	[self.paginationTimer invalidate];
-	self.paginationTimer = nil;
 	[self.beatTimer.timer invalidate];
 	self.beatTimer = nil;
 	
@@ -403,15 +401,14 @@
 	self.textScrollView.timerMouseMoveTimer = nil;
 	
 	// Null other stuff, just in case
+	_currentLine = nil;
 	self.parser = nil;
 	self.outlineView = nil;
 	self.documentWindow = nil;
 	self.contentBuffer = nil;
 	self.analysisWindow = nil;
 	self.currentScene = nil;
-	//self.currentLine = nil;
 	self.cardView = nil;
-	self.paginator = nil;
 	self.outlineView.filters = nil;
 	self.outline = nil;
 	self.outlineView.filteredOutline = nil;
@@ -442,6 +439,7 @@
 		[self close];
 	} else {
 		[super restoreDocumentWindowWithIdentifier:identifier state:state completionHandler:completionHandler];
+		[self updateChangeCount:NSChangeDone];
 	}
 }
 
@@ -495,9 +493,7 @@ static BeatAppDelegate *appDelegate;
 	// Setup plugin management
 	[self setupPlugins];
 	
-	// Pagination etc.
-	self.paginator = [[BeatPaginator alloc] initForLivePagination:self];
-	self.paginator.delegate = self;
+	// Print dialog
 	self.printDialog.document = nil;
 	
 	//Put any previously loaded data into the text view
@@ -617,11 +613,7 @@ static BeatAppDelegate *appDelegate;
 -(BeatExportSettings*)exportSettings {
 	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
 
-	settings.sceneHeadingSpacing = [self spaceBeforeHeading];
 	settings.paperSize = self.pageSize;
-	
-	settings.contd = [self contdString];
-	settings.more = [self moreString];
 	
 	return settings;
 }
@@ -914,11 +906,15 @@ static BeatAppDelegate *appDelegate;
 static NSWindow __weak *currentKeyWindow;
 
 -(void)windowWillBeginSheet:(NSNotification *)notification {
+	if (self.documentIsLoading) return;
+	
 	[self.documentWindow makeKeyAndOrderFront:self];
 	[self hideAllPluginWindows];
 }
 
 -(void)windowDidEndSheet:(NSNotification *)notification {
+	if (self.documentIsLoading) return;
+	
 	[self showPluginWindowsForCurrentDocument];
 }
 
@@ -930,13 +926,14 @@ static NSWindow __weak *currentKeyWindow;
 }
 -(void)windowDidBecomeKey:(NSNotification *)notification {
 	currentKeyWindow = nil;
-	
 	// Show all plugin windows associated with the current document
 	if (notification.object == self.documentWindow && self.documentWindow.sheets.count == 0) {
 		[self showPluginWindowsForCurrentDocument];
 	}
 }
 -(void)windowDidResignKey:(NSNotification *)notification {
+	if (self.documentIsLoading) return;
+	
 	currentKeyWindow = NSApp.keyWindow;
 	
 	if ([currentKeyWindow isKindOfClass:NSOpenPanel.class]) {
@@ -948,9 +945,10 @@ static NSWindow __weak *currentKeyWindow;
 }
 
 - (void)windowDidResignMain:(NSNotification *)notification {
+	if (self.documentIsLoading) return;
+	
 	// When window resigns it main status, we'll have to hide possible floating windows
 	NSWindow *mainWindow = NSApp.mainWindow;
-	
 	[self hidePluginWindowsWithMain:mainWindow];
 }
 
@@ -1366,11 +1364,6 @@ static NSWindow __weak *currentKeyWindow;
 
 #pragma mark - Print & Export
 
-@synthesize nativeRendering;
-- (bool)nativeRendering {
-	return NATIVE_RENDERING;
-}
-
 - (NSString*)fileNameString
 {
 	NSString* fileName = [self lastComponentOfFileName];
@@ -1668,9 +1661,6 @@ static NSWindow __weak *currentKeyWindow;
 	// Update scene number labels
 	// A larger chunk of text was pasted or there was a change in outline. Ensure layout.
 	if (_lastChangedRange.length > 5) [self ensureLayout];
-	
-	// Update preview screen
-	if (!self.nativeRendering) [self.preview updatePreviewInSync:NO];
 	
 	// Update any running plugins
 	if (_runningPlugins.count) [self updatePlugins:_lastChangedRange];
@@ -2974,19 +2964,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 #pragma mark - Preview
 
 - (void)invalidatePreview {
-	if (self.nativeRendering) {
-		[self.previewController clearPreview];
-		return;
-	}
-	
-	// Mark the current preview as invalid
-	self.preview.previewUpdated = NO;
-	
-	// If preview is visible, recreate it
-	if (self.currentTab == _previewTab) {
-		//[self.preview updatePreviewInSync:YES];
-		[self.preview updatePreviewSynchronized];
-	}
+	[self.previewController clearPreview];
+	return;
 }
 
 - (void)invalidatePreviewAt:(NSInteger)index {
@@ -3001,33 +2980,15 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	}
 }
 
-/*
-- (void)updatePreview {
-	if (self.nativeRendering) return;
-	[self.preview updatePreviewInSync:NO];
-}
- */
-
 - (IBAction)preview:(id)sender
 {
-	if (self.nativeRendering) {
-		if (self.currentTab != _nativePreviewTab) {
-			[self.previewController renderOnScreen];
-			[self showTab:_nativePreviewTab];
-		} else {
-			[self returnToEditor];
-		}
-		return;
-	}
-	
-	if (self.currentTab != _previewTab) {
-		[self.preview displayPreview];
-		[self showTab:_previewTab];
-		_printPreview = YES;
+	if (self.currentTab != _nativePreviewTab) {
+		[self.previewController renderOnScreen];
+		[self showTab:_nativePreviewTab];
 	} else {
-		_printPreview = NO;
 		[self returnToEditor];
 	}
+	return;
 }
 
 - (NSString*)previewHTML {
@@ -3777,38 +3738,8 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 static NSArray<Line*>* cachedTitlePage;
 - (void)paginateAt:(NSRange)range sync:(bool)sync {
-	if (NATIVE_RENDERING) {
-		// Bake revisions into lines
-//		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-		
-		[self.previewController createPreviewWithChangeAt:range.location sync:sync];
-		return;
-	}
-		
-	self.preview.previewUpdated = false;
-	
-	// Null the timer so we don't have too many of these operations queued
-	if (self.paginationTimer) {
-		[self.paginationTimer invalidate];
-		self.paginationTimer = nil;
-	}
-	
-	NSInteger wait = 1.0;
-	if (sync) wait = 0;
-	
-	self.paginationTimer = [NSTimer scheduledTimerWithTimeInterval:wait repeats:NO block:^(NSTimer * _Nonnull timer) {
-		cachedTitlePage = [ContinuousFountainParser titlePageForString:self.text];
-		
-		// Make a copy of the array for thread-safety
-		[BeatRevisions bakeRevisionsIntoLines:self.parser.lines text:self.getAttributedText];
-		NSArray *lines = [NSArray arrayWithArray:self.parser.preprocessForPrinting];
-		
-		// Dispatch to a background thread
-		dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0 ), ^(void){
-			[self.paginator livePaginationFor:lines changeAt:range.location];
-		});
-	}];
-	
+	[self.previewController createPreviewWithChangeAt:range.location sync:sync];
+	return;
 }
 
 /// Old-style pagination finished
@@ -3884,25 +3815,11 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 - (NSInteger)numberOfPages {
-	// If pagination is not on, create temporary paginator
-	if (!self.showPageNumbers) {
-		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:self.parser.preprocessForPrinting];
-		return paginator.numberOfPages;
-	} else {
-		return self.paginator.numberOfPages;
-	}
+	return self.previewController.pagination.numberOfPages;
 }
-- (NSInteger)getPageNumber:(NSInteger)location {
-	NSInteger page = 0;
-	
-	// If we don't have pagination turned on, create temporary paginator
-	if (!self.showPageNumbers) {
-		BeatPaginator *paginator = [[BeatPaginator alloc] initForLivePagination:self withElements:self.parser.preprocessForPrinting];
-		return [paginator pageNumberFor:location];
-	} else {
-		return [self.paginator pageNumberFor:location];
-	}
-	return page;
+
+- (NSInteger)getPageNumberAt:(NSInteger)location {
+	return [self.previewController.pagination pageNumberAt:location];
 }
 
 /*
@@ -4089,7 +4006,7 @@ static NSArray<Line*>* cachedTitlePage;
 	bool result = [super writeSafelyToURL:url ofType:typeName forSaveOperation:saveOperation error:outError];
 	
 	if (result && (saveOperation == NSSaveOperation || saveOperation == NSSaveAsOperation)) {
-		bool backup = [BeatBackup backupWithDocumentURL:url name:[self fileNameString]];
+		bool backup = [BeatBackup backupWithDocumentURL:url name:[self fileNameString] autosave:false];
 		if (!backup) NSLog(@"Backup failed");
 	}
 	
@@ -4106,12 +4023,14 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 // Custom autosave in place
-- (void)autosaveInPlace {
-	// Don't autosave if it's an untitled document
-	if (self.fileURL == nil) return;
-	
-	if (_autosave && self.documentEdited) {
+- (void)autosaveInPlace {	
+	if (_autosave && self.documentEdited && self.fileURL) {
 		[self saveDocument:nil];
+	} else {
+		if ([NSFileManager.defaultManager fileExistsAtPath:self.autosavedContentsFileURL.path]) {
+			bool autosave = [BeatBackup backupWithDocumentURL:self.autosavedContentsFileURL name:self.fileNameString autosave:true];
+			if (!autosave) NSLog(@"AUTOSAVE ERROR");
+		}
 	}
 }
 
@@ -4140,6 +4059,7 @@ static NSArray<Line*>* cachedTitlePage;
 	[NSDocumentController.sharedDocumentController setAutosavingDelay:AUTOSAVE_INTERVAL];
 	[self scheduleAutosaving];
 }
+
 - (BOOL)hasUnautosavedChanges {
 	// Always return YES if the file is a draft
 	if (self.fileURL == nil) return YES;
@@ -4468,27 +4388,12 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 
-#pragma mark - Return user-specified CONT'D and MORE
-
-- (NSString*)moreString {
-	NSString *moreStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemMore"];
-	return [NSString stringWithFormat:@"(%@)", moreStr];
-}
-- (NSString*)contdString {
-	NSString *contdStr = [BeatUserDefaults.sharedDefaults get:@"screenplayItemContd"];
-	return [NSString stringWithFormat:@" (%@)", contdStr]; // Extra space here to be easily able to add this after a cue
-}
-
-- (NSInteger)spaceBeforeHeading {
-	return [BeatUserDefaults.sharedDefaults getInteger:BeatSettingSceneHeadingSpacing];
-}
-
 #pragma mark - For avoiding throttling
 
 - (bool)hasChanged {
-	if ([self.textView.string isEqualToString:bufferedText]) return NO;
+	if ([self.textView.string isEqualToString:_bufferedText]) return NO;
 	else {
-		bufferedText = [NSString stringWithString:self.textView.string];
+		_bufferedText = [NSString stringWithString:self.textView.string];
 		return YES;
 	}
 }

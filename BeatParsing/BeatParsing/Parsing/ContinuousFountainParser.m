@@ -221,12 +221,14 @@ static NSDictionary* patterns;
 		}
 		
 		// Quick fix for recognizing split paragraphs
+        /*
         if (!self.delegate.nativeRendering) {
             LineType currentType = line.type;
             if (line.type == action || line.type == lyrics || line.type == transitionLine) {
                 if (previousLine.type == currentType && previousLine.string.length > 0) line.isSplitParagraph = YES;
             }
         }
+         */
 		
         //Add to lines array
         [self.lines addObject:line];

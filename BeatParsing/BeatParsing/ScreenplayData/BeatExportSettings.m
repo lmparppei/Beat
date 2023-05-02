@@ -41,10 +41,6 @@
 		_coloredPages = coloredPages;
 		_pageRevisionColor = revisedPageColor;
 		_paperSize = NSNotFound;
-        _sceneHeadingSpacing = 2;
-                
-        _contd = @" (CONT'D)";
-        _more = @"(MORE)";
 	}
 	return self;
 }
@@ -60,7 +56,6 @@
         
         _operation = operation;
         _document = delegate.document;
-        _nativeRendering = delegate.nativeRendering;
         
         _header = @"";
         _printSceneNumbers = delegate.printSceneNumbers;
@@ -72,11 +67,7 @@
         _pageRevisionColor = @"";
         
         _paperSize = delegate.pageSize;
-        _sceneHeadingSpacing = delegate.spaceBeforeHeading;
-        
-        _contd = delegate.contdString;
-        _more = delegate.moreString;
-        
+                
         _fileName = delegate.fileNameString;
     }
     

@@ -68,7 +68,7 @@
     
 	return @{
 		// String values have to be guarded so we don't try to put nil into NSDictionary
-		@"string": (self.string.length) ? self.string.copy : @"",
+		@"string": (self.string != nil) ? self.string.copy : @"",
 		@"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
 		@"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
 		@"storylines": (self.storylines) ? self.storylines.copy : @[],

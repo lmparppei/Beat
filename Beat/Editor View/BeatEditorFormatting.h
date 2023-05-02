@@ -18,7 +18,6 @@ typedef enum {
 
 @interface BeatEditorFormatting : NSObject
 + (CGFloat)editorLineHeight;
-+ (CGFloat)dialogueRight;
 + (CGFloat)dialogueLeft;
 
 @property (nonatomic) id<BeatEditorDelegate> delegate;

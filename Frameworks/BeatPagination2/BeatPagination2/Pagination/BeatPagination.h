@@ -42,9 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) id<BeatRendererDelegate> __nullable renderer;
 @property (nonatomic) BeatExportSettings *settings;
 - (void)paginationFinished:(BeatPagination*)pagination;
-
-- (NSString*)contdString;
-- (NSString*)moreString;
 @end
 
 @protocol BeatPageDelegate
@@ -84,7 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)paginate;
 - (NSInteger)findPageIndexForLine:(Line*)line;
+- (NSInteger)findPageIndexAt:(NSInteger)position;
 - (CGFloat)heightForScene:(OutlineScene*)scene;
+- (CGFloat)heightForRange:(NSRange)range;
 
 - (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage;
 @end

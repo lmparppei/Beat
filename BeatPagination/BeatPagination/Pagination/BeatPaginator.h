@@ -38,8 +38,6 @@
 - (void)paginationDidFinish:(NSArray*)pages pageBreaks:(NSArray*)pageBreaks;
 - (NSMutableArray<Line*>*)lines;
 - (NSString*)text;
-- (NSString*)contdString;
-- (NSString*)moreString;
 - (NSInteger)spaceBeforeHeading;
 @end
 

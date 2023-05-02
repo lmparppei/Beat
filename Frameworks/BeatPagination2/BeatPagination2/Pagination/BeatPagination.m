@@ -30,6 +30,7 @@
 //#import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatCore/BeatFonts.h>
+#import <BeatCore/BeatCore-Swift.h>
 
 #import "BeatPagination.h"
 
@@ -332,15 +333,18 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	else if (line == _lineQueue.lastObject) {
 		return @[block];
 	}
-	else if (line.type != heading && line.type != lyrics && line.type != centered && line.type != shot) {
+	else if (line.type != heading &&
+             line.type != lyrics &&
+             line.type != centered &&
+             line.type != shot) {
 		return @[block];
 	}
 	
 	NSInteger i = idx + 1;
 	Line* nextLine = self.lineQueue[i];
 	
-	// If next line is a heading, this block ends there
-	if (nextLine.type == heading) {
+	// If next line is a heading or a line break, this block ends here
+	if (nextLine.type == heading || nextLine.type == pageBreak) {
 		return @[block];
 	}
 	
@@ -370,7 +374,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 			break;
 		}
 	}
-	
+    
 	return @[block];
 }
 
@@ -421,14 +425,22 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	for (NSInteger i=0; i<pages.count; i++) {
 		BeatPaginationPage *page = pages[i];
 		NSRange range = page.representedRange;
-		// get page.representedRange etc
 		
+        // Location is inside this page range
+        if (NSLocationInRange(position, range)) return i;
+		
+        // We've gone past the original location, return the previous page (or the first, if something went wrong)
 		if (range.location > position) {
 			return (i > 0) ? i - 1 : 0;
 		}
 	}
 	
 	return NSNotFound;
+}
+
+- (NSInteger)findPageIndexAt:(NSInteger)position
+{
+    return [self findPageIndexAt:position pages:self.pages];
 }
 
 /// Returns page index for given line
@@ -439,7 +451,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 		if (NSLocationInRange(line.position, page.representedRange)) {
 			return i;
 		}
-		else if (i > 0 && line.position > NSMaxRange(self.pages[i-1].representedRange)) {
+		else if (i > 0 && line.position < self.pages[i].representedRange.location) {
 			return i - 1;
 		}
 	}
@@ -478,25 +490,42 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 #pragma mark - Heights of scenes
 
-- (CGFloat)heightForScene:(OutlineScene*)scene
+- (CGFloat)heightForScene:(OutlineScene*)scene {
+    return [self heightForRange:scene.range];
+}
+
+- (CGFloat)heightForRange:(NSRange)range
 {
-	NSInteger pageIndex = [self findPageIndexForLine:scene.line];
+    NSInteger pageIndex = [self findPageIndexAt:range.location];
 	if (pageIndex == NSNotFound) return 0.0;
 	
 	BeatPaginationPage* page = self.pages[pageIndex];
 	CGFloat height = 0.0;
 	NSInteger numberOfBlocks = 0;
-	
-	NSInteger blockIndex = [page blockIndexForLine:scene.line];
-	
+    
+    NSInteger blockIndex = [page nearestBlockIndexForRange:NSMakeRange(range.location, 0)];
+    if (blockIndex == NSNotFound) {
+        return 0.0;
+    }
+    
 	for (NSInteger i = pageIndex; i < self.pages.count; i++) {
 		BeatPaginationPage* page = self.pages[i];
-				
+            
 		for (NSInteger j = blockIndex; j < page.blocks.count; j++) {
 			BeatPaginationBlock* block = page.blocks[j];
-			if (block.type != heading || j == blockIndex) {
+            
+            Line* firstLine = block.lines.firstObject;
+            
+            if ((blockIndex == j || !firstLine.isOutlineElement) &&
+                firstLine.position < NSMaxRange(range)) {
 				height += block.height;
-				if (numberOfBlocks == 0) height -= block.topMargin; // No top margin for first block
+				
+                if (block.type == pageBreak || block == page.blocks.lastObject) {
+                    // For page breaks and last objects on page, we'll add the remaining space to height
+                    height += page.remainingSpace;
+                }
+
+                //if (numberOfBlocks == 0) height -= block.topMargin; // No top margin for first block
 				
 				numberOfBlocks += 1;
 			} else {
@@ -545,7 +574,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 /// Returns a `Line` object with character cue followed by `(CONT'D)` extension for continuing dialogue block after a page break.
 - (Line*)contdLineFor:(Line*)line
 {
-	NSString *extension = self.settings.contd;
+	NSString *extension = BeatScreenplayElements.shared.contd;
 	NSString *cue = [line.stripFormatting stringByReplacingOccurrencesOfString:extension withString:@""];
 	cue = [cue stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
 	
@@ -562,7 +591,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 - (Line*)moreLineFor:(Line*)line
 {
 	LineType type = (line.isDualDialogue) ? dualDialogueMore : more;
-	Line *more = [Line.alloc initWithString:self.settings.more type:type];
+	Line *more = [Line.alloc initWithString:BeatScreenplayElements.shared.more type:type];
 	more.position = line.position;
 	more.unsafeForPageBreak = YES;
 	return more;

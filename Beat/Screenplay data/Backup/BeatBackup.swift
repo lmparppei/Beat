@@ -41,6 +41,11 @@ class BeatBackup:NSObject {
 		let delegate = NSApp.delegate as! BeatAppDelegate
 		return delegate.appDataPath("Backup")
 	}
+	class var autosaveURL:URL {
+		var url = BeatBackup.backupURL
+		return url.appendingPathComponent("Autosave/")
+		
+	}
 	
 	class var formatter:DateFormatter {
 		let dateFormatter = DateFormatter()
@@ -48,9 +53,14 @@ class BeatBackup:NSObject {
 		return dateFormatter
 	}
 	
-	@objc class func backup (documentURL:URL, name:String) -> Bool {
+	@objc class func autosaveCopy (documentURL:URL, name:String) -> Bool {
+		return backup(documentURL: documentURL, name: name, autosave: true)
+	}
+	@objc class func backup (documentURL:URL, name:String, autosave:Bool = false) -> Bool {
+		let fm = FileManager.default
+
 		let date = documentURL.modificationDate
-		let backupFolderURL = BeatBackup.backupURL
+		let backupFolderURL = (autosave) ? BeatBackup.autosaveURL : BeatBackup.backupURL
 		let delegate = NSApp.delegate as! BeatAppDelegate
 		
 		if (date == nil) { return false }
@@ -61,13 +71,17 @@ class BeatBackup:NSObject {
 		var result = false
 		var backupURL = URL(fileURLWithPath: backupFolderURL.path)
 		backupURL.appendPathComponent(backupName)
-		
-		let fm = FileManager.default
-		
+				
 		do {
+			// Make sure the folder exists
+			if !fm.fileExists(atPath: backupFolderURL.path) {
+				try fm.createDirectory(at: backupURL, withIntermediateDirectories: true)
+			}
+
 			if (fm.fileExists(atPath: backupURL.path)) {
 				//_ = try fm.removeItem(at: backupURL)
 				let tempURL = URL(fileURLWithPath: delegate.pathForTemporaryFile(withPrefix: "Backup"))
+
 				try fm.copyItem(at: documentURL, to: tempURL)
 				try fm.replaceItem(at: backupURL, withItemAt: tempURL, backupItemName: name, resultingItemURL: nil)
 
@@ -110,10 +124,10 @@ class BeatBackup:NSObject {
 		let url = BeatBackup.backupURL
 		NSWorkspace.shared.open(url)
 	}
-	
-	class func getBackups() -> Dictionary<String, Array<BeatBackupFile>>? {
+
+	class func getBackups(autosavedCopies:Bool = false) -> Dictionary<String, Array<BeatBackupFile>>? {
 		var backupFiles:[String: Array<BeatBackupFile>] = Dictionary()
-		let url = BeatBackup.backupURL
+		let url = (autosavedCopies) ? BeatBackup.autosaveURL : BeatBackup.backupURL
 		
 		do {
 			let files = try FileManager.default.contentsOfDirectory(atPath: url.path)
@@ -154,10 +168,16 @@ class BeatBackup:NSObject {
 		return backupFiles
 	}
 	
-	class func manageBackups(url:URL) {
+	class func manageAutosaves(url:URL) {
+		BeatBackup.manageBackups(url: url, autosave: true)
+	}
+	
+	class func manageBackups(url:URL, autosave:Bool = false) {
 		// Keep maximum of 10 versions
 		let fm = FileManager.default
-		let backups = BeatBackup.getBackups()
+		let backups = BeatBackup.getBackups(autosavedCopies: autosave)
+		let backupCount = (autosave) ? 20 : 10
+		
 		if (backups == nil) { return }
 		
 		for name in backups!.keys {
@@ -168,8 +188,8 @@ class BeatBackup:NSObject {
 				(backup1.date < backup2.date)
 			}
 			
-			if (versions!.count > 10) {
-				while (versions!.count > 10) {
+			if (versions!.count > backupCount) {
+				while (versions!.count > backupCount) {
 					let oldVersion = versions!.first
 					do {
 						versions?.removeFirst()

@@ -26,151 +26,172 @@
 @implementation BeatPaginationPage
 
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate {
-	self = [super init];
-	
-	if (self) {
-		self.delegate = delegate;
-		self.blocks = NSMutableArray.new;
-		self.maxHeight = _delegate.maxPageHeight;
-	}
-	
-	return self;
+    self = [super init];
+    
+    if (self) {
+        self.delegate = delegate;
+        self.blocks = NSMutableArray.new;
+        self.maxHeight = _delegate.maxPageHeight;
+    }
+    
+    return self;
 }
 
 /**
  This method returns page content as `NSAttributedString`. To get it working, you'll need to hook up a `BeatRendererDelegate` instance to the paginator. macOS and iOS require their own respective classes which comply to the protocol.
  */
 -(NSAttributedString*)attributedString {
-	if (self.delegate == nil) {
-		NSLog(@"WARNING: No delegate for page.");
-	}
-	if (self.delegate.renderer == nil) {
-		NSLog(@"WARNING: No renderer set for paginator");
-		return NSAttributedString.new;
-	}
-	
-	// Create page number header
-	NSInteger pageNumber = [self.delegate.pages indexOfObject:self];
-	if (pageNumber == NSNotFound) pageNumber = self.delegate.pages.count - 1;
-	
-	NSMutableAttributedString* result = [NSMutableAttributedString.alloc initWithAttributedString:[self.delegate.renderer pageNumberBlockForPageNumber:pageNumber + 1]];
-	
-	// If the page hasn't been rendered, do it now.
-	if (_renderedString == nil) {
-		// Make a copy of the block so we won't disturb other threads
-		NSArray* blocks = self.safeBlocks;
-		NSMutableAttributedString* renderedString = NSMutableAttributedString.new;
-		
-		for (BeatPaginationBlock* block in blocks) {
-			bool firstElement = (block == blocks.firstObject) ? true : false;
-			
-			NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
-			[renderedString appendAttributedString:renderedBlock];
-		}
-		
-		_renderedString = renderedString;
-	}
-	
-	// Add rendered content to the header block
-	[result appendAttributedString:_renderedString];
-	return result;
+    if (self.delegate == nil) {
+        NSLog(@"WARNING: No delegate for page.");
+    }
+    if (self.delegate.renderer == nil) {
+        NSLog(@"WARNING: No renderer set for paginator");
+        return NSAttributedString.new;
+    }
+    
+    // Create page number header
+    NSInteger pageNumber = [self.delegate.pages indexOfObject:self];
+    if (pageNumber == NSNotFound) pageNumber = self.delegate.pages.count - 1;
+    
+    NSMutableAttributedString* result = [NSMutableAttributedString.alloc initWithAttributedString:[self.delegate.renderer pageNumberBlockForPageNumber:pageNumber + 1]];
+    
+    // If the page hasn't been rendered, do it now.
+    if (_renderedString == nil) {
+        // Make a copy of the block so we won't disturb other threads
+        NSArray* blocks = self.safeBlocks;
+        NSMutableAttributedString* renderedString = NSMutableAttributedString.new;
+        
+        for (BeatPaginationBlock* block in blocks) {
+            bool firstElement = (block == blocks.firstObject) ? true : false;
+            
+            NSAttributedString* renderedBlock = [self.delegate.renderer renderBlock:block firstElementOnPage:firstElement];
+            [renderedString appendAttributedString:renderedBlock];
+        }
+        
+        _renderedString = renderedString;
+    }
+    
+    // Add rendered content to the header block
+    [result appendAttributedString:_renderedString];
+    return result;
 }
 
 - (void)invalidateRender {
-	_renderedString = nil;
+    _renderedString = nil;
 }
 
 -(NSArray*)lines {
-	NSMutableArray* lines = NSMutableArray.new;
-	for (BeatPaginationBlock* block in self.safeBlocks) {
-		[lines addObjectsFromArray:block.lines];
-	}
-	return lines;
+    NSMutableArray* lines = NSMutableArray.new;
+    for (BeatPaginationBlock* block in self.safeBlocks) {
+        [lines addObjectsFromArray:block.lines];
+    }
+    return lines;
 }
 
 -(NSArray*)safeBlocks {
-	NSArray* blocks = [NSArray arrayWithArray:self.blocks];
-	return blocks;
+    NSArray* blocks = [NSArray arrayWithArray:self.blocks];
+    return blocks;
 }
 
 -(CGFloat)remainingSpace {
-	CGFloat height = 0.0;
-	NSArray* blocks = self.safeBlocks;
-	for (BeatPaginationBlock *block in blocks) {
-		height += block.height;
-		
-		// Remove top margin for the first object
-		if (block == blocks.firstObject) {
-			height -= block.topMargin;
-		}
-	}
-	
-	return _maxHeight - height;
+    CGFloat height = 0.0;
+    NSArray* blocks = self.safeBlocks;
+    for (BeatPaginationBlock *block in blocks) {
+        height += block.height;
+        
+        // Remove top margin for the first object
+        if (block == blocks.firstObject) {
+            height -= block.topMargin;
+        }
+    }
+    
+    return _maxHeight - height;
 }
 
 
 /// Finds the index which we can restart pagination from. It's kind of a reverse block search.
 - (NSInteger)findSafeLineFromIndex:(NSInteger)index {
-	NSArray<Line*>* lines = self.lines;
-		Line* line = lines[index];
-	
-	bool isDialogue = (line.isDialogue || line.isDualDialogue) ? true : false;
-	
-	// This line should be safe
-	if (isDialogue || line.unsafeForPageBreak) {
-		while (index >= 0) {
-			Line* l = lines[index];
-			
-			if (!isDialogue && !l.unsafeForPageBreak) break;
-			else if (isDialogue && l.type == character) break;
-			else if (isDialogue && !(l.isDialogue || l.isDualDialogue)) break;
-			
-			index -= 1;
-		}
-	}
-	
-	// Let's also check if the line is preceded by a element which affects pagination
-	if (index > 0) {
-		LineType precedingType = lines[index - 1].type;
-		if (precedingType == heading || precedingType == shot) {
-			index -= 1;
-		}
-	}
-	
-	return index;
+    NSArray<Line*>* lines = self.lines;
+    Line* line = lines[index];
+    
+    bool isDialogue = (line.isDialogue || line.isDualDialogue) ? true : false;
+    
+    // This line should be safe
+    if (isDialogue || line.unsafeForPageBreak) {
+        while (index >= 0) {
+            Line* l = lines[index];
+            
+            if (!isDialogue && !l.unsafeForPageBreak) break;
+            else if (isDialogue && l.type == character) break;
+            else if (isDialogue && !(l.isDialogue || l.isDualDialogue)) break;
+            
+            index -= 1;
+        }
+    }
+    
+    // Let's also check if the line is preceded by a element which affects pagination
+    if (index > 0) {
+        LineType precedingType = lines[index - 1].type;
+        if (precedingType == heading || precedingType == shot) {
+            index -= 1;
+        }
+    }
+    
+    return index;
 }
 
 /// Returns index for the line in given position
 - (NSInteger)indexForLineAtPosition:(NSInteger)position {
-	NSInteger index = self.lines.count - 1;
-	
-	while (index >= 0) {
-		Line* l = self.lines[index];
-		if (NSLocationInRange(position, l.range) || position > NSMaxRange(l.range)) {
-			return index;
-		}
-		
-		index -= 1;
-	}
-	
-	return NSNotFound;
+    NSInteger index = self.lines.count - 1;
+    
+    while (index >= 0) {
+        Line* l = self.lines[index];
+        if (NSLocationInRange(position, l.range) || position > NSMaxRange(l.range)) {
+            return index;
+        }
+        
+        index -= 1;
+    }
+    
+    return NSNotFound;
 }
 
 /// Returns the index of a block (on this page) containing the given line.
 - (NSInteger)blockIndexForLine:(Line*)line {
-	for (NSInteger i=0; i<_blocks.count; i++) {
-		BeatPaginationBlock* block = _blocks[i];
-		
-		for (NSInteger j=0; j<block.lines.count; j++) {
-			Line* l = block.lines[j];
-
+    for (NSInteger i=0; i<_blocks.count; i++) {
+        BeatPaginationBlock* block = _blocks[i];
+        
+        for (NSInteger j=0; j<block.lines.count; j++) {
+            Line* l = block.lines[j];
+            
             if ([l.uuid uuidEqualTo:line.uuid]) {
-				return i;
-			}
-		}
-	}
-	
-	return NSNotFound;
+                return i;
+            }
+        }
+    }
+    
+    return NSNotFound;
+}
+
+- (NSInteger)nearestBlockIndexForLine:(Line*)line {
+    return [self nearestBlockIndexForRange:line.range];
+}
+    
+- (NSInteger)nearestBlockIndexForRange:(NSRange)range {
+    for (NSInteger i=0; i<_blocks.count; i++) {
+        BeatPaginationBlock* block = _blocks[i];
+        
+        for (NSInteger j=0; j<block.lines.count; j++) {
+            Line* l = block.lines[j];
+            
+            // Return the current index if we are inside current range, OR if we've gone past it.
+            if (NSLocationInRange(range.location, l.range) || (NSMaxRange(range) < l.position)) {
+                return i;
+            }
+        }
+    }
+    
+    return NSNotFound;
 }
 
 - (NSRange)rangeForLocation:(NSInteger)location

@@ -1259,13 +1259,7 @@
 
 - (id)paginator:(NSArray*)lines
 {
-	if (_delegate.nativeRendering) {
-		return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
-	} else {
-		BeatExportSettings* settings = self.delegate.exportSettings;
-		BeatPaginator *paginator = [[BeatPaginator alloc] initWithScript:lines settings:settings];
-		return paginator;
-	}
+	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
 }
 
 - (NSString*)htmlForLines:(NSArray*)lines

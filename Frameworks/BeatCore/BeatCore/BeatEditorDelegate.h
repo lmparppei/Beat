@@ -45,7 +45,6 @@
 @class NSLayoutManager;
 @class NSTextStorage;
 @class UITextRange;
-@class BeatPaginator;
 
 @protocol BeatEditorView
 - (void)reloadInBackground;
@@ -64,8 +63,6 @@
 @property (nonatomic, readonly) bool typewriterMode;
 @property (nonatomic, readonly) bool disableFormatting;
 
-// TODO: Remove this when native export is implemented
-@property (nonatomic) bool nativeRendering;
 #endif
 
 
@@ -73,8 +70,6 @@
 
 /// Fountain parser associated with the document
 @property (readonly) ContinuousFountainParser *parser;
-/// Live pagination manager
-@property (nonatomic, readonly) BeatPaginator *paginator;
 @property (nonatomic, readonly) NSUndoManager *undoManager;
 
  
@@ -245,10 +240,6 @@
 - (id)documentForDelegation;
 - (UIPrintInfo*)printInfo;
 #endif
-
-- (NSString*)contdString;
-- (NSString*)moreString;
-
 
 #if TARGET_OS_IOS
 - (UITextRange*)selectedTextRange;

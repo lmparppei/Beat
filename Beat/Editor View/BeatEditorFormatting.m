@@ -29,31 +29,14 @@
 
 @implementation BeatEditorFormatting
 
-// DOCUMENT LAYOUT SETTINGS
-#define INITIAL_WIDTH 900
-#define INITIAL_HEIGHT 700
-
 // Base font settings
 #define SECTION_FONT_SIZE 16.0 // base value for section sizes
 #define LINE_HEIGHT 1.1
 
 // Set character width
 #define CHR_WIDTH 7.25
-#define DOCUMENT_WIDTH_MODIFIER 61 * CHR_WIDTH
-#define DOCUMENT_WIDTH_A4 59 * CHR_WIDTH
-#define DOCUMENT_WIDTH_US 61 * CHR_WIDTH
 #define TEXT_INSET_TOP 80
 
-// DOCUMENT LAYOUT SETTINGS
-#define INITIAL_WIDTH 900
-#define INITIAL_HEIGHT 700
-
-// Title page element indent
-#define TITLE_INDENT 10 * CHR_WIDTH
-
-#define CHARACTER_INDENT 20 * CHR_WIDTH
-#define PARENTHETICAL_INDENT 17 * CHR_WIDTH
-#define DIALOGUE_INDENT 11 * CHR_WIDTH
 #define DIALOGUE_RIGHT 47 * CHR_WIDTH
 
 #define DD_CHARACTER_INDENT 30 * CHR_WIDTH
@@ -106,6 +89,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	}
 	
 	// We need to get left margin here to avoid issues with extended line types
+	if (line.isTitlePage) type = titlePageUnknown;
 	CGFloat leftMargin = [BeatRenderStyles.editor forElement:[Line typeName:type]].marginLeft;
 	
 	// Extended types for title page fields and sections
@@ -736,3 +720,12 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 }
 
 @end
+
+/*
+ 
+ takana on eteenpäin
+ lautturi meitä odottaa
+ tämä joki
+ se upottaa
+ 
+ */

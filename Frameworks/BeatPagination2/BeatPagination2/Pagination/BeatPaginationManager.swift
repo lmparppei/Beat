@@ -17,18 +17,20 @@ import BeatCore
 	@objc var lastPageHeight:CGFloat { get }
 
 	@objc func heightForScene(_ scene:OutlineScene) -> CGFloat
+    @objc func heightForRange(_ range:NSRange) -> CGFloat
+    
 	@objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int]
 	@objc func paginate(lines: [Line])
 	@objc func paginateLines(_ lines:[Line])
+    
+    @objc func pageNumberAt(_ location:Int) -> Int
+    @objc func pageNumberForScene(_ scene:OutlineScene) -> Int
 }
 
 @objc public protocol BeatPaginationManagerDelegate {
 	func paginationDidFinish(pages: [BeatPaginationPage])
 	var parser:ContinuousFountainParser? { get }
 	var exportSettings:BeatExportSettings? { get }
-	
-	var contdString:String { get }
-	var moreString:String { get }
 }
 
 public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
@@ -124,6 +126,14 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: changeAt)
 		runPagination(pagination: operation)
 	}
+    
+    @objc public func newPagination() {
+        self.pageCache = self.finishedPagination?.pages
+        self.settings = self.delegate!.exportSettings!
+        
+        let operation = BeatPagination.newPagination(with: self.delegate!.parser!.forPrinting()!, delegate: self, cachedPages: self.pages, livePagination: false, changeAt: 0)
+        runPagination(pagination: operation)
+    }
 	
 	/// Paginates only the given lines
     public func paginate(lines:[Line]) {
@@ -256,23 +266,43 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		return self.delegate?.parser
 	}
 	
-    public func moreString() -> String {
-		return self.delegate?.moreString ?? ""
-	}
-    public func contdString() -> String {
-		return self.delegate?.contdString ?? ""
-	}
-
 	// MARK: - Convenience methods
 	
     @objc public func page(forScene scene:OutlineScene) -> Int {
 		return self.finishedPagination?.findPageIndex(for: scene.line) ?? -1
 	}
-	
+
+    @objc public func pageNumberForScene(_ scene:OutlineScene) -> Int {
+        return pageNumberAt(Int(scene.position))
+    }
+    
+    @objc public func pageNumberAt(_ location:Int) -> Int {
+        var pageNumber = self.finishedPagination?.findPageIndex(at: location) ?? 0
+        if pageNumber != 0 { pageNumber += 1 } // We'll use human-readable page numbers here
+        
+        return pageNumber
+    }
+    
     @objc public var maxPageHeight:CGFloat {
-		return self.finishedPagination?.maxPageHeight ?? BeatPaperSizing.size(for: settings.paperSize).height
+        return self.finishedPagination?.maxPageHeight ?? self.defaultMaxHeight
 	}
+    
+    var defaultMaxHeight:CGFloat {
+        let size = BeatPaperSizing.size(for: settings.paperSize)
+        let style = BeatRenderStyles.shared.page()
+        
+        return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight() * 3
+    }
 	
+    @objc public func heightForRange(_ range:NSRange) -> CGFloat {
+        guard let height = self.finishedPagination?.height(for: range) else {
+            print("No height available for range:", range)
+            return 0.0
+        }
+        
+        return height / self.maxPageHeight
+    }
+    
     @objc public func heightForScene(_ scene:OutlineScene) -> CGFloat {
 		guard let height = self.finishedPagination?.height(for: scene)
 		else {
@@ -280,6 +310,16 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			return 0.0
 		}
 		
-		return height
+        return height / self.maxPageHeight
 	}
+    
+    @objc public func actualHeightForScene(_ scene:OutlineScene) -> CGFloat {
+        guard let height = self.finishedPagination?.height(for: scene)
+        else {
+            print("No height available for scene:", scene)
+            return 0.0
+        }
+        
+        return height
+    }
 }

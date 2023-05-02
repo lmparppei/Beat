@@ -361,15 +361,7 @@
 
 /// Strip any Fountain formatting from the line
 - (NSString*)stripFormatting {
-	NSIndexSet *contentRanges;
-	
-	// This is an experimental thing
-	if (self.paginator) {
-		if ([_paginator boolForKey:@"printNotes"]) contentRanges = self.contentRangesWithNotes;
-		else contentRanges = self.contentRanges;
-	} else {
-		contentRanges = self.contentRanges;
-	}
+	NSIndexSet *contentRanges = self.contentRanges;
 	
 	__block NSMutableString *content = NSMutableString.string;
 	[contentRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
@@ -1068,17 +1060,13 @@
 	if (index <= attrStr.length) second = [attrStr attributedSubstringFromRange:(NSRange){ index, attrStr.length - index }];
 	
 	// Remove whitespace from the beginning if needed
-	if (second.length > 0) {
-		if ([second.string characterAtIndex:0] == ' ') {
-			while (second.string.length > 0) {
-				if ([second.string characterAtIndex:0] == ' ') {
-					second = [second attributedSubstringFromRange:NSMakeRange(1, second.length - 1)];
-				} else {
-					break;
-				}
-			}
-		}
-	}
+    while (second.string.length > 0) {
+        if ([second.string characterAtIndex:0] == ' ') {
+            second = [second attributedSubstringFromRange:NSMakeRange(1, second.length - 1)];
+        } else {
+            break;
+        }
+    }
 	
 	Line *retain = [Line withString:[self attributedStringToFountain:first] type:self.type pageSplit:YES];
 	Line *split = [Line withString:[self attributedStringToFountain:second] type:self.type pageSplit:YES];
@@ -1255,7 +1243,7 @@
 }
 
 - (NSUInteger)numberOfPrecedingFormattingCharacters {
-    if (self.string.length == 0) return 0;
+    if (self.string.length < 1) return 0;
     
     LineType type = self.type;
     unichar c = [self.string characterAtIndex:0];
