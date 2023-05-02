@@ -8,6 +8,8 @@
 
 import AppKit
 
+// MARK: - Basic page view for rendering the screenplay
+
 class BeatPagePrintView:NSView {
 	override var isFlipped: Bool { return true }
 	weak var previewController:BeatPreviewController?
@@ -158,62 +160,6 @@ class BeatPageTextView:NSTextView {
 }
 
 
-// MARK: - Layout manager for displaying revisions
-
-class BeatRenderLayoutManager:NSLayoutManager {
-	override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
-		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
-				
-		let container = self.textContainers.first!
-	
-		NSGraphicsContext.saveGraphicsState()
-		
-		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, range, stop in
-			let markerRect = NSMakeRect(container.size.width - 20, usedRect.origin.y - 2.0, 15, usedRect.size.height)
-			
-			var highestRevision = ""
-			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
-				if (obj == nil) { return }
-				
-				let revision = obj as! String
-				
-				if highestRevision == "" {
-					highestRevision = revision
-				}
-				else if BeatRevisions.isNewer(revision, than: highestRevision) {
-					highestRevision = revision
-				}
-			})
-			
-			if highestRevision == "" { return }
-			
-			let marker:NSString = BeatRevisions.revisionMarkers()[highestRevision]! as NSString
-			let font = BeatFonts.shared().courier
-			marker.draw(at: markerRect.origin, withAttributes: [
-				NSAttributedString.Key.font: font,
-				NSAttributedString.Key.foregroundColor: NSColor.black
-			])
-		}
-		
-		NSGraphicsContext.restoreGraphicsState()
-	}
-	
-	override func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
-		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
-		/*
-		let chrRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
-		let key = NSAttributedString.Key(rawValue: "ActiveLine")
-		
-		let attr = self.temporaryAttribute(key, atCharacterIndex: chrRange.location, effectiveRange: nil) as? Bool ?? false
-		if (attr) {
-			let rect = self.lineFragmentUsedRect(forGlyphAt: glyphsToShow.location, effectiveRange: nil, withoutAdditionalLayout: true)
-			NSColor.red.setFill()
-			rect.fill()
-		}
-		 */
-	}
-}
-
 // MARK: - Title page
 
 class BeatTitlePageView:BeatPaginationPageView {
@@ -284,6 +230,10 @@ class BeatTitlePageView:BeatPaginationPageView {
 				leftColumn.textStorage?.append(attrStr)
 			}
 		}
+		
+		// Layout manager doesn't handle newlines too well, so let's trim the column content
+		leftColumn.textStorage?.setAttributedString(leftColumn.attributedString().trimmedAttributedString(set: .newlines))
+		rightColumn.textStorage?.setAttributedString(rightColumn.attributedString().trimmedAttributedString(set: .newlines))
 
 		// Once we've set the content, let's adjust top inset to align text to bottom
 		leftColumn.textContainerInset = NSSize(width: 0, height: 0)
@@ -293,6 +243,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 		_ = rightColumn.layoutManager!.glyphRange(for: rightColumn.textContainer!)
 		let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
 		let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
+		
+		
 		
 		// We'll calculate correct insets for the boxes, so the content will be bottom-aligned
 		let insetLeft = leftColumn.frame.height - leftRect.height
@@ -348,7 +300,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		
 		// Trim unnecessary line breaks
 		firstLine.string = firstLine.string.trimmingCharacters(in: .newlines)
-		
+
 		return firstLine
 	}
 	
@@ -370,7 +322,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let columnFrame = NSRect(x: pageStyle.marginLeft,
 								 y: textViewFrame.origin.y + textViewFrame.height,
 								 width: textViewFrame.width / 2 - 10,
-								 height: frame.height - textViewFrame.size.height - pageStyle.marginTop - BeatPagination.lineHeight())
+								 height: frame.height - textViewFrame.size.height - pageStyle.marginBottom - BeatPagination.lineHeight() * 2)
 		
 		if (leftColumn == nil) {
 			leftColumn = NSTextView(frame: columnFrame)
@@ -395,3 +347,60 @@ class BeatTitlePageView:BeatPaginationPageView {
 		}
 	}
 }
+
+// MARK: - Custom layout manager for text views in rendered page view
+
+class BeatRenderLayoutManager:NSLayoutManager {
+	override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
+		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
+				
+		let container = self.textContainers.first!
+	
+		NSGraphicsContext.saveGraphicsState()
+		
+		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, range, stop in
+			let markerRect = NSMakeRect(container.size.width - 20, usedRect.origin.y - 2.0, 15, usedRect.size.height)
+			
+			var highestRevision = ""
+			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
+				if (obj == nil) { return }
+				
+				let revision = obj as! String
+				
+				if highestRevision == "" {
+					highestRevision = revision
+				}
+				else if BeatRevisions.isNewer(revision, than: highestRevision) {
+					highestRevision = revision
+				}
+			})
+			
+			if highestRevision == "" { return }
+			
+			let marker:NSString = BeatRevisions.revisionMarkers()[highestRevision]! as NSString
+			let font = BeatFonts.shared().courier
+			marker.draw(at: markerRect.origin, withAttributes: [
+				NSAttributedString.Key.font: font,
+				NSAttributedString.Key.foregroundColor: NSColor.black
+			])
+		}
+		
+		NSGraphicsContext.restoreGraphicsState()
+	}
+	
+	override func drawBackground(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
+		super.drawBackground(forGlyphRange: glyphsToShow, at: origin)
+		/*
+		let chrRange = self.characterRange(forGlyphRange: glyphsToShow, actualGlyphRange: nil)
+		let key = NSAttributedString.Key(rawValue: "ActiveLine")
+		
+		let attr = self.temporaryAttribute(key, atCharacterIndex: chrRange.location, effectiveRange: nil) as? Bool ?? false
+		if (attr) {
+			let rect = self.lineFragmentUsedRect(forGlyphAt: glyphsToShow.location, effectiveRange: nil, withoutAdditionalLayout: true)
+			NSColor.red.setFill()
+			rect.fill()
+		}
+		 */
+	}
+}
+

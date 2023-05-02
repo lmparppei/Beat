@@ -37,5 +37,27 @@ public extension NSAttributedString {
 
 		return result
 	}
+    
+    @objc func trimmedAttributedString(set:CharacterSet) -> NSAttributedString {
+        var str = self.copy() as! NSAttributedString
+        
+        while str.length > 0 {
+            guard let chr = str.string[str.length - 1].unicodeScalars.first else { break }
+            
+            if set.contains(chr) {
+                str = str.attributedSubstring(from: NSMakeRange(0, self.length - 1))
+            } else {
+                break
+            }
+        }
+        
+        return str
+    }
+}
+
+extension CharacterSet {
+    func containsUnicodeScalars(of character: Character) -> Bool {
+        return character.unicodeScalars.allSatisfy(contains(_:))
+    }
 }
 
