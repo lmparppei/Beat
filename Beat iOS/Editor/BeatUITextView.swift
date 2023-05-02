@@ -22,7 +22,7 @@ class BeatUITextView: UITextView, UIEditMenuInteractionDelegate {
 	@IBOutlet weak var enclosingScrollView:UIScrollView!
 	@IBOutlet weak var pageView:UIView!
 	
-	@objc var assistantView:InputAssistantView?
+	@objc public var assistantView:InputAssistantView?
 	
 	var insets = UIEdgeInsets(top: 50, left: 40, bottom: 50, right: 40)
 	var pinchRecognizer = UIGestureRecognizer()

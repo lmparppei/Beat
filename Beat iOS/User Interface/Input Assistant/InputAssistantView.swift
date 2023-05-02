@@ -44,6 +44,7 @@ public protocol InputAssistantViewDelegate:NSObject {
 	func inputAssistantView(_ inputAssistantView: InputAssistantView, didSelectSuggestionAtIndex index: Int)
 }
 
+/// Data source for autocomplete suggestions
 public class AutocompletionDataSource:NSObject, InputAssistantViewDataSource {
 	var autocompletion:BeatAutocomplete
 	weak var delegate:BeatEditorDelegate?
@@ -113,6 +114,12 @@ open class InputAssistantView: UIInputView {
 	
 	public var fullActions:[InputAssistantAction] = []
 	
+	/// Returns the number of currently visible suggestions
+	@objc
+	public var numberOfSuggestions:Int {
+		return self.suggestionsCollectionView.numberOfItems(inSection: 0)
+	}
+	
 	/// Actions to display on the leading side of the suggestions.
 	public var leadingActions: [InputAssistantAction] = [] {
 		didSet { self.updateActions(leadingActions, leadingStackView) }
@@ -144,6 +151,7 @@ open class InputAssistantView: UIInputView {
 	
 	/// Collection view, with a horizontally scrolling set of suggestions.
 	private let suggestionsCollectionView: InputAssistantCollectionView
+		
 	
 	public init(editorDelegate:BeatEditorDelegate) {
 		self.leadingStackView = UIStackView()
@@ -278,7 +286,13 @@ extension UIImage {
 }
 
 extension InputAssistantView: UICollectionViewDelegate {
-	
+	/// Manually trigger first selection
+	@objc public func selectItem(at index:Int) {
+		if self.suggestionsCollectionView.numberOfItems(inSection: 0) > 0 {
+			self.collectionView(self.suggestionsCollectionView, didSelectItemAt: IndexPath(item: index, section: 0))
+		}
+	}
+
 	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		UIDevice.current.playInputClick()
 		collectionView.deselectItem(at: indexPath, animated: true)

@@ -166,7 +166,6 @@
 	self.formatting = BeatiOSFormatting.new;
 	self.formatting.delegate = self;
 		
-	//self.paginator = [BeatPaginator.alloc initForLivePagination:self.document];
 	self.pagination = [BeatPaginationManager.alloc initWithSettings:self.exportSettings delegate:self renderer:nil livePagination:true];
 	
 	// Load document into parser
@@ -924,6 +923,9 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+	// We won't allow tabs to be inserted
+	if ([text isEqualToString:@"\t"]) return false;
+	
 	Line* currentLine = self.currentLine;
 	
 	if (!self.undoManager.isUndoing && !self.undoManager.isRedoing && self.selectedRange.length == 0 && currentLine != nil) {
@@ -1019,11 +1021,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	
 	return settings;
 }
-
-- (bool)nativeRendering {
-	return false;
-}
-
 
 
 #pragma mark - Editor text view values
@@ -1275,19 +1272,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	return UIPrintInfo.new;
 }
 
-- (NSString*)contdString {
-	NSString* contd = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemContd];
-	return [NSString stringWithFormat:@" (%@)", contd];
-}
-- (NSString*)moreString {
-	NSString* more = [BeatUserDefaults.sharedDefaults get:BeatSettingScreenplayItemMore];
-	return [NSString stringWithFormat:@"(%@)", more];
-}
-
-
 #pragma mark - General editor stuff
 
 - (void)handleTabPress {
+	if (self.textView.assistantView.numberOfSuggestions > 0) {
+		//Select the first one
+		[self.textView.assistantView selectItemAt:0];
+	}
+	
 	[self addCharacterCue:nil];
 }
 

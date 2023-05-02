@@ -78,14 +78,6 @@ class DocumentViewController: UIViewController, ContinuousFountainParserDelegate
 		replace(NSMakeRange(Int(index), string.count), with: newString)
 	}
 	
-	func contdString() -> String! {
-		return BeatUserDefaults.shared().get(BeatSettingScreenplayItemContd)  as? String ?? ""
-	}
-	
-	func moreString() -> String! {
-		return BeatUserDefaults.shared().get(BeatSettingScreenplayItemMore) as? String ?? ""
-	}
-	
 	func selectedTextRange() -> UITextRange! {
 		return self.textView.selectedTextRange
 	}
