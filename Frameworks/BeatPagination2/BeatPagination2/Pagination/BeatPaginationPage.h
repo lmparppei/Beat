@@ -22,9 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CGFloat remainingSpace;
 @property (nonatomic, readonly) NSArray<Line*>* lines;
 -(NSRange)representedRange;
+
+- (CGFloat)positionOfBlock:(BeatPaginationBlock*)block;
+- (CGFloat)positionOfBlockForLine:(Line*)line;
 @end
 
-@interface BeatPaginationPage : NSObject
+@interface BeatPaginationPage : NSObject <BeatPaginationPageExports>
 @property (nonatomic, weak) id<BeatPageDelegate> delegate;
 @property (nonatomic) BeatPageBreak *pageBreak;
 @property (nonatomic) NSMutableArray<BeatPaginationBlock*>* blocks;
@@ -45,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)nearestBlockIndexForLine:(Line*)line;
 - (NSInteger)nearestBlockIndexForRange:(NSRange)range;
 - (NSRange)rangeForLocation:(NSInteger)location;
+- (CGFloat)positionOfBlock:(BeatPaginationBlock*)block;
+- (CGFloat)positionOfBlockForLine:(Line*)line;
 @end
 
 NS_ASSUME_NONNULL_END

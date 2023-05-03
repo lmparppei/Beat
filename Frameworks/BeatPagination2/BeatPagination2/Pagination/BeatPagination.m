@@ -508,6 +508,9 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
         return 0.0;
     }
     
+    bool hasBegunNewPage = false;
+    CGFloat previousRemainingSpace = 0.0;
+    
 	for (NSInteger i = pageIndex; i < self.pages.count; i++) {
 		BeatPaginationPage* page = self.pages[i];
             
@@ -516,20 +519,29 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
             
             Line* firstLine = block.lines.firstObject;
             
-            if ((blockIndex == j || !firstLine.isOutlineElement) &&
-                firstLine.position < NSMaxRange(range)) {
-				height += block.height;
-				
-                if (block.type == pageBreak || block == page.blocks.lastObject) {
-                    // For page breaks and last objects on page, we'll add the remaining space to height
-                    height += page.remainingSpace;
+            if (firstLine.position < NSMaxRange(range)) {
+                // Check if there was a page break in-between the scene, and add the height to the scene
+                if (hasBegunNewPage) {
+                    hasBegunNewPage = false;
+                    height += previousRemainingSpace;
+                    previousRemainingSpace = 0.0;
                 }
-
-                //if (numberOfBlocks == 0) height -= block.topMargin; // No top margin for first block
+                
+                // For page breaks and last objects on page, we'll add the remaining space to height --- IF the range still continues
+                if (block.type == pageBreak) {
+                    NSLog(@"Page break height is %f", block.height);
+                    previousRemainingSpace = page.remainingSpace;
+                    hasBegunNewPage = true;
+                    numberOfBlocks += 1;
+                    continue;
+                }
 				
+                height += block.height;
+                if (blockIndex == 0) height -= block.topMargin; // No top margin for first block
+
 				numberOfBlocks += 1;
 			} else {
-				// Next heading found, so we'll end the calculation here.
+				// Out of given range, stop
 				return height;
 			}
 		}

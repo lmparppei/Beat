@@ -85,7 +85,10 @@
 	if (self.lineHeights[line.uuid] != nil) {
 		return self.lineHeights[line.uuid].floatValue;
 	}
-		
+    
+    // Page breaks have 0 height
+    if (line.type == pageBreak) return 0.0;
+    
 	// Create a bare-bones paragraph style
 	NSMutableParagraphStyle* pStyle = NSMutableParagraphStyle.new;
 	pStyle.maximumLineHeight = BeatPagination.lineHeight;

@@ -4263,7 +4263,7 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (void)updatePlugins:(NSRange)range {
 	// Run resident plugins
-	if (!self.runningPlugins) return;
+	if (!self.runningPlugins || _documentIsLoading) return;
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];
@@ -4273,7 +4273,7 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (void)updatePluginsWithSelection:(NSRange)range {
 	// Run resident plugins which are listening for selection changes
-	if (!self.runningPlugins) return;
+	if (!self.runningPlugins || _documentIsLoading) return;
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];
@@ -4283,7 +4283,7 @@ static NSArray<Line*>* cachedTitlePage;
 
 - (void)updatePluginsWithSceneIndex:(NSInteger)index {
 	// Run resident plugins which are listening for selection changes
-	if (!self.runningPlugins) return;
+	if (!self.runningPlugins || _documentIsLoading) return;
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];
@@ -4303,7 +4303,7 @@ static NSArray<Line*>* cachedTitlePage;
 }
 
 - (void)notifyPluginsThatWindowBecameMain {
-	if (!self.runningPlugins) return;
+	if (!self.runningPlugins || _documentIsLoading) return;
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];

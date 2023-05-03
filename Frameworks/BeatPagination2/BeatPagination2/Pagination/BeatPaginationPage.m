@@ -140,6 +140,33 @@
     return index;
 }
 
+- (CGFloat)positionOfBlockForLine:(Line*)line
+{
+    NSInteger i = [self blockIndexForLine:line];
+    if (i == NSNotFound) return -1.0;
+    
+    BeatPaginationBlock* block = self.blocks[i];
+    return [self positionOfBlock:block];
+}
+
+
+- (CGFloat)positionOfBlock:(BeatPaginationBlock*)block
+{
+    CGFloat height = 0.0;
+    NSInteger i = [self.blocks indexOfObject:block];
+    if (i == NSNotFound) return -1.0;
+    
+    for (NSInteger k=0; k<i; k++) {
+        BeatPaginationBlock* b = self.blocks[k];
+        height += b.height;
+        
+        // Remove top margin for first object
+        if (k == 0) height -= b.topMargin;
+    }
+    
+    return height / self.maxHeight;
+}
+
 /// Returns index for the line in given position
 - (NSInteger)indexForLineAtPosition:(NSInteger)position {
     NSInteger index = self.lines.count - 1;
