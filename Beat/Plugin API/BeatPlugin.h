@@ -52,7 +52,6 @@
 
 
 @class BeatPluginWindow;
-@class BeatPreview;
 @class BeatPreviewController;
 @class BeatExportSettings;
 @class BeatPluginControlMenu;
@@ -70,8 +69,6 @@
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
 @property (nonatomic,readonly) NSDictionary *type;
 
-@property (nonatomic, readonly) BeatPreview *preview;
-
 //@property (readonly) NSArray* scenes;
 //@property (readonly) NSArray* outline;
 
@@ -86,6 +83,7 @@
 - (void)onSceneHeadingAutocompletion:(JSValue*)callback;
 - (void)onCharacterAutocompletion:(JSValue*)callback;
 - (void)onPreviewFinished:(JSValue*)updateMethod;
+- (void)onPaginationFinished:(JSValue*)updateMethod;
 - (void)onDocumentSaved:(JSValue*)updateMethod;
 - (void)onEscape:(JSValue*)updateMethod;
 
@@ -103,7 +101,6 @@
 - (NSString*)getText;
 
 - (NSPrintInfo*)printInfo;
-- (NSString*)screenplayHTML:(NSDictionary*)exportSettings;
 
 - (NSArray*)lines;
 - (NSArray*)outline;
@@ -140,7 +137,7 @@
 - (void)createOutline;
 
 /// Returns old-style paginator object
-- (BeatPaginator*)paginator:(NSArray*)lines;
+- (BeatPaginationManager*)paginator:(NSArray*)lines;
 /// Returns a NEW pagination object
 - (BeatPaginationManager*)pagination;
 /// Returns the CURRENT pagination in document
@@ -152,8 +149,6 @@
 - (bool)compatibleWith:(NSString*)version; /// Check compatibility
 
 - (BeatPluginUIView*)widget:(CGFloat)height; /// Add widget into sidebar
-
-- (NSString*)previewHTML; /// Returns HTML string for current preview
 
 /// Move to next tab in document window
 - (void)nextTab;
@@ -249,7 +244,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 #if !TARGET_OS_IOS
 @property (nonatomic, weak, readonly) NSWindow *documentWindow;
 @property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
-@property (nonatomic, readonly) BeatPaginator *paginator;
+@property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
 
 - (void)addWidget:(id)widget;
@@ -266,8 +261,6 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 
 @property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) OutlineScene *currentScene;
-
-@property (nonatomic, readonly) BeatPreview *preview;
 
 @property (nonatomic, readonly) bool closing;
 
@@ -303,7 +296,6 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)forceFormatChangesInRange:(NSRange)range;
 - (void)formatLine:(Line*)line;
 
-- (NSString*)previewHTML; /// Returns HTML string of the current preview. Only for debugging.
 - (NSDictionary*)revisedRanges; /// Returns all the revised ranges in attributed text
 - (void)bakeRevisions; /// Bakes current revisions into lines
 - (NSAttributedString*)getAttributedText;
@@ -330,7 +322,6 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 @property (nonatomic) bool onSelectionChangeDisabled;
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
-@property (nonatomic, readonly) BeatPreview *preview;
 
 @property (nonatomic) NSArray* exportedExtensions;
 @property (nonatomic) NSArray* importedExtensions;
@@ -343,7 +334,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)updateSelection:(NSRange)selection;
 - (void)updateOutline:(NSArray*)outline;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
-- (void)previewDidFinish;
+- (void)previewDidFinish:(NSIndexSet*)changedIndices;
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
 - (void)documentDidBecomeMain;

@@ -186,7 +186,6 @@
 
 - (void)useCachedPaginationFrom:(NSInteger)pageIndex
 {
-	//NSLog(@"Using cached pagination from: %lu", pageIndex);
 	NSArray* reusablePages = [self.cachedPages subarrayWithRange:NSMakeRange(pageIndex, self.cachedPages.count - pageIndex)];
 	[_pages addObjectsFromArray:reusablePages];
 }
@@ -403,8 +402,10 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 - (void)addPage:(NSArray<Line*>*)elements toQueue:(NSArray<Line*>*)toQueue pageBreak:(BeatPageBreak*)pageBreak
 {
-	BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
-	[_currentPage addBlock:block];
+    if (elements.count > 0) {
+        BeatPaginationBlock *block = [BeatPaginationBlock withLines:elements delegate:self];
+        [_currentPage addBlock:block];
+    }
 	[self.pages addObject:_currentPage];
 	
 	// Add objects to queue
@@ -418,6 +419,24 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 
 #pragma mark - Line lookup
+
+- (NSInteger)pageIndexForScene:(OutlineScene*)scene
+{
+    return [self findPageIndexForLine:scene.line];
+}
+
+- (NSInteger)pageNumberForScene:(OutlineScene*)scene
+{
+    return [self pageNumberAt:scene.position];
+}
+
+
+- (NSInteger)pageNumberAt:(NSInteger)location
+{
+    NSInteger p = [self findPageIndexAt:location];
+    if (p == NSNotFound) return 0;
+    else return p + 1; // We'll use human-readable page numbers here, not an index
+}
 
 /// Returns page index based on line position
 - (NSInteger)findPageIndexAt:(NSInteger)position pages:(NSArray<BeatPaginationPage*>*)pages
@@ -501,7 +520,6 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	
 	BeatPaginationPage* page = self.pages[pageIndex];
 	CGFloat height = 0.0;
-	NSInteger numberOfBlocks = 0;
     
     NSInteger blockIndex = [page nearestBlockIndexForRange:NSMakeRange(range.location, 0)];
     if (blockIndex == NSNotFound) {
@@ -526,21 +544,20 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
                     height += previousRemainingSpace;
                     previousRemainingSpace = 0.0;
                 }
-                
-                // For page breaks and last objects on page, we'll add the remaining space to height --- IF the range still continues
-                if (block.type == pageBreak) {
-                    NSLog(@"Page break height is %f", block.height);
+
+                if (j == page.blocks.count - 1) {
+                    // Last block on page, we'll make a note that this we might need to include remaining space in the height.
                     previousRemainingSpace = page.remainingSpace;
                     hasBegunNewPage = true;
-                    numberOfBlocks += 1;
-                    continue;
                 }
+                
+                // No height for page break items
+                if (block.type == pageBreak) continue;
 				
                 height += block.height;
-                if (blockIndex == 0) height -= block.topMargin; // No top margin for first block
+                if (j == 0) height -= block.topMargin; // Remove top margin for first block
 
-				numberOfBlocks += 1;
-			} else {
+            } else {
 				// Out of given range, stop
 				return height;
 			}

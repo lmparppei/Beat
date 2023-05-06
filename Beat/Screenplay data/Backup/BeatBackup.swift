@@ -42,7 +42,7 @@ class BeatBackup:NSObject {
 		return delegate.appDataPath("Backup")
 	}
 	class var autosaveURL:URL {
-		var url = BeatBackup.backupURL
+		let url = BeatBackup.backupURL
 		return url.appendingPathComponent("Autosave/")
 		
 	}
@@ -63,6 +63,8 @@ class BeatBackup:NSObject {
 		let backupFolderURL = (autosave) ? BeatBackup.autosaveURL : BeatBackup.backupURL
 		let delegate = NSApp.delegate as! BeatAppDelegate
 		
+		let prefix = (autosave) ? "Autosave" : "Backup"
+		
 		if (date == nil) { return false }
 		
 		let dateFormatter = BeatBackup.formatter
@@ -80,7 +82,7 @@ class BeatBackup:NSObject {
 
 			if (fm.fileExists(atPath: backupURL.path)) {
 				//_ = try fm.removeItem(at: backupURL)
-				let tempURL = URL(fileURLWithPath: delegate.pathForTemporaryFile(withPrefix: "Backup"))
+				let tempURL = URL(fileURLWithPath: delegate.pathForTemporaryFile(withPrefix: prefix))
 
 				try fm.copyItem(at: documentURL, to: tempURL)
 				try fm.replaceItem(at: backupURL, withItemAt: tempURL, backupItemName: name, resultingItemURL: nil)
@@ -98,7 +100,11 @@ class BeatBackup:NSObject {
 		
 		if (result == true) {
 			// Remove old backups if the backup was successful
-			BeatBackup.manageBackups(url: backupFolderURL)
+			if autosave {
+				BeatBackup.manageBackups(url: backupFolderURL, autosave: true)
+			} else {
+				BeatBackup.manageBackups(url: backupFolderURL)
+			}
 		}
 		return result
 	}
@@ -173,10 +179,11 @@ class BeatBackup:NSObject {
 	}
 	
 	class func manageBackups(url:URL, autosave:Bool = false) {
-		// Keep maximum of 10 versions
+		// Keep maximum of 10 versions of backups and 20 versions of autosaves
+		let backupCount = (autosave) ? 20 : 10
+		
 		let fm = FileManager.default
 		let backups = BeatBackup.getBackups(autosavedCopies: autosave)
-		let backupCount = (autosave) ? 20 : 10
 		
 		if (backups == nil) { return }
 		

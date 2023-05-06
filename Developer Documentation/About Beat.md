@@ -13,7 +13,7 @@ As I'm writing this, situation in Europe is becoming very tense and it's complet
 
 At the heart of Beat is the `ContinunousFountainParser`. Every change made to `BeatTextView` is parsed, and the parser itself uses `Line` objects to store information about individual lines -- their position (index), string and formatted ranges.
 
-Beat is **not** a WYSIWYG editor, and it would be very hard to convert it to one. PDF export and printing are actually HTML documents, which are preprocessed and paginated. Parser does the preprocesing, and *BeatPaginator* splits stuff across multiple pages and is the most complicated and messed-up code in the whole project.
+Beat is **not** a WYSIWYG editor, and it would be very hard to convert it to one. PDF export and printing are actually HTML documents, which are preprocessed and paginated. Parser does the preprocesing, and *BeatPagination* instance splits stuff across multiple pages and is the most complicated and messed-up code in the whole project.
 
 If you are planning on developing Beat further, I'd suggest you write a completely new screenplay rendering engine using native Cocoa drawing. Do take a look at the exporting code, though, because it's really something to marvel. It's overly complicated, everything happens in multiple steps and overall makes no fucking sense.
 

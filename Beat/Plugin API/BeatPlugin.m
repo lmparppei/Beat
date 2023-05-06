@@ -23,7 +23,6 @@
 #import <BeatPagination2/BeatPagination2.h>
 
 #import "BeatConsole.h"
-#import "BeatPreview.h"
 #import "Beat-Swift.h"
 #import <objc/runtime.h>
 
@@ -360,8 +359,19 @@
 	_updatePreviewMethod = updateMethod;
 	[self makeResident];
 }
-- (void)previewDidFinish {
-	[_updatePreviewMethod callWithArguments:nil];
+/// This is an alias for onPreviewFinished
+- (void)onPaginationFinished:(JSValue*)updateMethod {
+	[self onPreviewFinished:updateMethod];
+}
+- (void)previewDidFinish:(NSIndexSet*)changedIndices {
+	NSLog(@"changed %@", changedIndices);
+	
+	NSMutableArray<NSNumber*>* indices = NSMutableArray.new;
+	[changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+		[indices addObject:@(idx)];
+	}];
+	
+	[_updatePreviewMethod callWithArguments:@[indices]];
 }
 
 /// Creates a listener for when document was saved.
@@ -1447,6 +1457,7 @@
 	@throw([NSException exceptionWithName:NSInternalInconsistencyException reason:@"Crash thrown by plugin" userInfo:nil]);
 }
 
+
 #pragma mark - Document utilities
 
 /// Returns the plain-text file content used to save current screenplay (including settings block etc.)
@@ -1459,37 +1470,7 @@
 {
 	return [_delegate createDocumentFileWithAdditionalSettings:additionalSettings];
 }
-/// Returns the old HTML preview controller
-- (BeatPreview*)preview
-{
-	return _delegate.preview;
-}
-/// Returns the old HTML preview content
-- (NSString*)previewHTML
-{
-	return _delegate.preview.htmlString;
-}
-/// Creates a HTML render for current document, with given export settings.
-- (NSString*)screenplayHTML:(NSDictionary*)exportSettings
-{
-	
-	BeatExportSettings *settings = [BeatExportSettings
-									operation:ForPrint
-									document:self.delegate.document
-									header:(exportSettings[@"header"]) ? exportSettings[@"header"] : @""
-									printSceneNumbers:(exportSettings[@"printSceneNumbers"]) ? ((NSNumber*)exportSettings[@"printSceneNumbers"]).boolValue : true
-									printNotes:(exportSettings[@"printNotes"]) ? ((NSNumber*)(exportSettings[@"printNotes"])).boolValue : false
-									revisions:(exportSettings[@"revisions"]) ? (NSArray*)exportSettings[@"revisions"] : BeatRevisions.revisionColors
-									scene:nil
-									coloredPages:(exportSettings[@"coloredPages"]) ? ((NSNumber*)(exportSettings[@"coloredPages"])).boolValue : false
-									revisedPageColor:(exportSettings[@"revisedPageColor"]) ? (exportSettings[@"revisedPageColor"]) : @""];
-	
-	BeatScreenplay *screenplay = [BeatScreenplay from:self.delegate.parser settings:settings];
-	NSString * html = [BeatHTMLScript.alloc initWithScript:screenplay settings:settings].html;
-	
-	if (html) return html;
-	return @"";
-}
+
 
 #pragma mark - Parser data delegation
 

@@ -15,6 +15,8 @@ import BeatCore
 	@objc var lengthInEights:[Int] { get }
 	@objc var numberOfPages:Int { get }
 	@objc var lastPageHeight:CGFloat { get }
+    
+    @objc var finishedPagination:BeatPagination? { get }
 
 	@objc func heightForScene(_ scene:OutlineScene) -> CGFloat
     @objc func heightForRange(_ location:Int, _ length:Int) -> CGFloat
@@ -25,6 +27,7 @@ import BeatCore
     
     @objc func pageNumberAt(_ location:Int) -> Int
     @objc func pageNumberForScene(_ scene:OutlineScene) -> Int
+
 }
 
 @objc public protocol BeatPaginationManagerDelegate {

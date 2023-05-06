@@ -147,6 +147,7 @@ class BeatNativePrinting:NSView {
 					}
 					*/
 					
+					printInfo.paperSize = BeatPaperSizing.size(for: self.settings.paperSize)
 					printInfo.jobDisposition = .save
 					printInfo.dictionary().setObject(url, forKey: NSPrintInfo.AttributeKey.jobSavingURL as NSCopying)
 				}
@@ -189,6 +190,7 @@ class BeatNativePrinting:NSView {
 		}
 	}
 
+	/// Creates all page views in memory
 	func createPageViews() {
 		self.pageViews = []
 		

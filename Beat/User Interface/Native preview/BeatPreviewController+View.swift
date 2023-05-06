@@ -15,7 +15,7 @@
 import AppKit
 
 @objc protocol BeatNativePreviewDelegate:BeatEditorDelegate {
-	@objc func paginationFinished(_ pages:[BeatPaginationPage])
+	@objc func paginationFinished(_ pages:[BeatPaginationPage], indices:NSMutableIndexSet)
 }
 
 final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
@@ -27,7 +27,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	@objc var pagination:BeatPaginationManager?
 	var renderer:BeatRendering?
-	var timer:Timer?
+	@objc var timer:Timer?
 	var paginationUpdated = false
 	var lastChangeAt = 0
 	
@@ -67,7 +67,10 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		self.paginationUpdated = true
 		
 		// Let's tell the delegate this, too
-		self.delegate?.paginationFinished(pages)
+		self.delegate?.paginationFinished(pages, indices:self.changedIndices)
+		
+		//  Clear changed indices
+		self.changedIndices.removeAllIndexes()
 	}
 
 	
@@ -77,9 +80,14 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	// MARK: - Creating  preview data
 	
+	var changedIndices:NSMutableIndexSet = NSMutableIndexSet()
+	
 	/// Preview data can be created either in background (async) or in main thread (sync).
 	/// - note: This method doesn't create the actual preview yet, just paginates it.
 	@objc func createPreview(changeAt index:Int, sync:Bool) {
+		// Add index to changed indices
+		changedIndices.add(index)
+		
 		// Let's invalidate the timer (if it exists)
 		self.timer?.invalidate()
 		self.paginationUpdated = false

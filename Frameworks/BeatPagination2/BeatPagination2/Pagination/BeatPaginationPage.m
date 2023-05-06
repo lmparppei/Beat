@@ -140,21 +140,52 @@
     return index;
 }
 
+/// Returns a RELATIVE value for position of block (`0...1`)
 - (CGFloat)positionOfBlockForLine:(Line*)line
 {
     NSInteger i = [self blockIndexForLine:line];
-    if (i == NSNotFound) return -1.0;
+    if (i == NSNotFound) {
+        return -1.0;
+    }
     
     BeatPaginationBlock* block = self.blocks[i];
     return [self positionOfBlock:block];
 }
 
+/// Returns the ACTUAL POINT value for position of block
+- (CGFloat)actualPositionOfBlockForLine:(Line*)line
+{
+    NSInteger i = [self blockIndexForLine:line];
+    if (i == NSNotFound) {
+        return -1.0;
+    }
+    
+    BeatPaginationBlock* block = self.blocks[i];
+    return [self positionOfBlock:block relative:false];
+}
 
+/// Returns the ACTUAL POINT value for position of block
+- (CGFloat)actualPositionOfBlock:(BeatPaginationBlock*)block
+{
+    return [self positionOfBlock:block relative:false];
+}
+
+/// Returns a RELATIVE value for position of block (`0...1`)
 - (CGFloat)positionOfBlock:(BeatPaginationBlock*)block
+{
+    return [self positionOfBlock:block relative:true];
+}
+
+/// Returns the position of given block on page.
+/// @param block The paginated block
+/// @param relative If set true, the method returns a relative value (0...1) instead of the actual position in points
+- (CGFloat)positionOfBlock:(BeatPaginationBlock*)block relative:(bool)relative
 {
     CGFloat height = 0.0;
     NSInteger i = [self.blocks indexOfObject:block];
-    if (i == NSNotFound) return -1.0;
+    if (i == NSNotFound) {
+        return -1.0;
+    }
     
     for (NSInteger k=0; k<i; k++) {
         BeatPaginationBlock* b = self.blocks[k];
@@ -164,7 +195,8 @@
         if (k == 0) height -= b.topMargin;
     }
     
-    return height / self.maxHeight;
+    if (relative) return height / self.maxHeight;
+    else return height;
 }
 
 /// Returns index for the line in given position

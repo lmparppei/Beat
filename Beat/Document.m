@@ -218,7 +218,7 @@
 
 // Print preview
 @property (nonatomic) NSString *htmlString;
-@property (nonatomic) IBOutlet BeatPreview *preview;
+//@property (nonatomic) IBOutlet BeatPreview *preview;
 @property (nonatomic) IBOutlet BeatPreviewController *previewController;
 
 // Analysis
@@ -369,7 +369,7 @@
 	}
 	
 	// Avoid retain cycles with WKWebView
-	[self.preview deallocPreview];
+	// [self.preview deallocPreview];
 	[self.cardView removeHandlers];
 	
 	
@@ -382,11 +382,9 @@
 	
 	// This stuff is here to fix some strange memory issues.
 	// it might be unnecessary, but I'm unfamiliar with both ARC & manual memory management
-	[self.preview.previewTimer invalidate];
+	[self.previewController.timer invalidate];
 	[self.beatTimer.timer invalidate];
 	self.beatTimer = nil;
-	
-	self.preview = nil;
 	
 	self.formatting = nil;
 	
@@ -474,9 +472,6 @@ static BeatAppDelegate *appDelegate;
 	// Load font set
 	if (self.useSansSerif) [self loadSansSerifFonts];
 	else [self loadSerifFonts];
-	
-	// Setup preview
-	[self.preview setup];
 	
 	// Setup views
 	[self setupResponderChain];
@@ -670,7 +665,7 @@ static BeatAppDelegate *appDelegate;
 	
 	if (oldHeadingStyleBold != self.headingStyleBold || oldHeadingStyleUnderline != self.headingStyleUnderline) {
 		[self formatAllLinesOfType:heading];
-		self.preview.previewUpdated = NO;
+		[self.previewController clearPreview];
 	}
 	
 	if (oldSansSerif != self.useSansSerif) {
@@ -701,7 +696,7 @@ static BeatAppDelegate *appDelegate;
 		//else [self.textView deleteSceneNumberLabels];
 		
 		// Update the print preview accordingly
-		self.preview.previewUpdated = NO;
+		[self.previewController clearPreview];
 	}
 	
 	[self updateQuickSettings];
@@ -1078,16 +1073,16 @@ static NSWindow __weak *currentKeyWindow;
 	if (self.currentTab == _editorTab) [self.textView zoom:YES];
 	
 	// Web preview zoom
-	if (@available(macOS 11.0, *)) {
-		if (self.currentTab == _previewTab) self.preview.previewView.pageZoom += .1;
+	
+	if (self.currentTab == _nativePreviewTab) {
+		self.previewController.scrollView.magnification += .05;
 	}
 }
 - (IBAction)zoomOut:(id)sender {
 	if (self.currentTab == _editorTab) [self.textView zoom:NO];
 	
-	// Web preview zoom
-	if (@available(macOS 11.0, *)) {
-		if (self.currentTab == _previewTab) self.preview.previewView.pageZoom -= .1;
+	if (self.currentTab == _nativePreviewTab) {
+		self.previewController.scrollView.magnification -= .05;
 	}
 }
 
@@ -1573,7 +1568,6 @@ static NSWindow __weak *currentKeyWindow;
 	_currentLine = [self getCurrentLine];
 	
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	self.preview.previewUpdated = NO;
 	
 	return YES;
 }
@@ -2976,7 +2970,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	// Tell plugins the preview has been finished (called by preview controller)
 	for (NSString *name in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[name];
-		[plugin previewDidFinish];
+		[plugin previewDidFinish:NSMutableIndexSet.new];
 	}
 }
 
@@ -2989,10 +2983,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 		[self returnToEditor];
 	}
 	return;
-}
-
-- (NSString*)previewHTML {
-	return self.preview.htmlString;
 }
 
 - (void)cancelOperation:(id) sender
@@ -3574,7 +3564,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self ensureLayout];
 	
 	// Update the print preview accordingly
-	self.preview.previewUpdated = NO;
+	[self.previewController clearPreview];
 	
 	[self updateQuickSettings];
 }
@@ -3719,6 +3709,13 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
  
  */
 
+- (BeatPaginationManager*)pagination {
+	return self.previewController.pagination;
+}
+- (BeatPaginationManager*)paginator {
+	return self.previewController.pagination;
+}
+
 - (IBAction)togglePageNumbers:(id)sender {
 	self.showPageNumbers = !self.showPageNumbers;
 	[BeatUserDefaults.sharedDefaults saveSettingsFrom:self];
@@ -3742,21 +3739,11 @@ static NSArray<Line*>* cachedTitlePage;
 	return;
 }
 
-/// Old-style pagination finished
-- (void)paginationDidFinish:(NSArray<Line*>*)pages pageBreaks:(NSArray*)pageBreaks {
-	// Update text view page breaks in main queue
-	if (self.showPageNumbers) {
-		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			if (pageBreaks != nil) [self.textView updatePageBreaks:pageBreaks];
-		});
-	}
-	
-	// Update preview in background
-	[self.preview updatePreviewWithPages:pages titlePage:cachedTitlePage];
-}
 
-/// Native pagination finished.
-- (void)paginationFinished:(NSArray<BeatPaginationPage*>*)pages {	
+/// Native pagination finished — called when preview controller has finished creating pagination
+- (void)paginationFinished:(NSArray<BeatPaginationPage*>*)pages indices:(NSIndexSet * _Nonnull)indices {
+	__block NSIndexSet* changedIndices = indices.copy;
+	
 	// We might be in a background thread, so make sure to dispach this call to main thread
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update pagination in text view
@@ -3767,7 +3754,7 @@ static NSArray<Line*>* cachedTitlePage;
 		// Tell plugins the preview has been finished
 		for (NSString *name in self.runningPlugins.allKeys) {
 			BeatPlugin *plugin = self.runningPlugins[name];
-			[plugin previewDidFinish];
+			[plugin previewDidFinish:changedIndices];
 		}
 	});
 }
@@ -3811,7 +3798,7 @@ static NSArray<Line*>* cachedTitlePage;
 	[self.documentSettings setInt:DocSettingPageSize as:pageSize];
 	[self updateLayout];
 	[self paginate];
-	self.preview.previewUpdated = NO;
+	[self.previewController clearPreview];
 }
 
 - (NSInteger)numberOfPages {
@@ -3821,6 +3808,7 @@ static NSArray<Line*>* cachedTitlePage;
 - (NSInteger)getPageNumberAt:(NSInteger)location {
 	return [self.previewController.pagination pageNumberAt:location];
 }
+
 
 /*
  
@@ -4294,7 +4282,6 @@ static NSArray<Line*>* cachedTitlePage;
 - (void)updatePluginsWithOutline:(NSArray*)outline {
 	// Run resident plugins which are listening for selection changes
 	if (!self.runningPlugins) return;
-	// NSLog(@" --> Running: %@", self.runningPlugins);
 	
 	for (NSString *pluginName in self.runningPlugins.allKeys) {
 		BeatPlugin *plugin = self.runningPlugins[pluginName];

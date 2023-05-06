@@ -136,19 +136,16 @@ static CGFloat panelWidth;
 	// Update export styles
 	[_exportStyles reloadData];
 	
-	// Check the paper size
-	// WIP: Unify these so the document knows its BeatPaperSize too
-	if (_documentDelegate.pageSize == BeatA4) [_radioA4 setState:NSOnState];
-	else [_radioLetter setState:NSOnState];
-
-	// To be absolutely sure, set print info to match page size setting
-	[BeatPaperSizing setPageSize:_documentDelegate.pageSize printInfo:_documentDelegate.printInfo];
-	
 	// We have to show the panel here to be able to set the radio buttons (???)
 	[self.documentDelegate.documentWindow beginSheet:self.window completionHandler:^(NSModalResponse returnCode) {
 		[self.documentDelegate releasePrintDialog];
 	}];
 	
+	// Check the paper size
+	// WIP: Unify these so the document knows its BeatPaperSize too
+	if (_documentDelegate.pageSize == BeatA4) [_radioA4 setState:NSOnState];
+	else [_radioLetter setState:NSOnState];
+		
 	// Reload PDF preview
 	[self loadPreview];
 
@@ -237,8 +234,6 @@ static CGFloat panelWidth;
 		// US Letter
 		_documentDelegate.pageSize = BeatUSLetter;
 	}
-	
-	[BeatPaperSizing setPageSize:_documentDelegate.pageSize printInfo:_documentDelegate.printInfo];
 	
 	// Preview needs refreshing
 	if (oldSize != _documentDelegate.pageSize) {

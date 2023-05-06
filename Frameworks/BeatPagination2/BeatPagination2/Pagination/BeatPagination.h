@@ -44,6 +44,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)paginationFinished:(BeatPagination*)pagination;
 @end
 
+@protocol BeatPaginationExports
+@property (nonatomic) NSMutableArray<BeatPaginationPage*>* pages;
+@property (nonatomic) BeatExportSettings* settings;
+@property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;
+
+@property (nonatomic) bool success;
+@property (nonatomic, readonly) CGFloat maxPageHeight;
+
+- (NSInteger)findPageIndexForLine:(Line*)line;
+- (NSInteger)findPageIndexAt:(NSInteger)position;
+- (CGFloat)heightForScene:(OutlineScene*)scene;
+- (CGFloat)heightForRange:(NSRange)range;
+
+- (NSInteger)pageIndexForScene:(OutlineScene*)scene;
+- (NSInteger)pageNumberForScene:(OutlineScene*)scene;
+- (NSInteger)pageNumberAt:(NSInteger)location;
+
+@end
+
 @protocol BeatPageDelegate
 @property (nonatomic, readonly) bool canceled;
 @property (nonatomic, weak) id<BeatRendererDelegate> __nullable renderer;
@@ -59,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (Line*)contdLineFor:(Line*)line;
 @end
 
-@interface BeatPagination : NSObject
+@interface BeatPagination : NSObject <BeatPaginationPageExports>
 /// A class which conforms to `BeatRenderDelegate` protocol and renders paginated blocks as `NSAttributedString` objects. 
 @property (weak, nonatomic) id<BeatRendererDelegate> renderer;
 
@@ -84,6 +103,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)findPageIndexAt:(NSInteger)position;
 - (CGFloat)heightForScene:(OutlineScene*)scene;
 - (CGFloat)heightForRange:(NSRange)range;
+
+- (NSInteger)pageIndexForScene:(OutlineScene*)scene;
+- (NSInteger)pageNumberForScene:(OutlineScene*)scene;
+- (NSInteger)pageNumberAt:(NSInteger)location;
 
 - (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage;
 @end

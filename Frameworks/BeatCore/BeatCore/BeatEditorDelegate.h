@@ -209,6 +209,12 @@
 @optional - (bool)editorTabVisible;
 
 
+#pragma mark - Pagination
+
+/// Returns the current pagination in preview controller. Typecast this to `BeatPaginationManager`.
+- (id)pagination;
+
+
 #pragma mark - Formatting
 
 - (void)formatAllLines;

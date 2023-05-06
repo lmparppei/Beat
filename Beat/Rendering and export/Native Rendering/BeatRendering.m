@@ -200,20 +200,49 @@
 			}];
 		}
 	}
-		
+	
 	// If the block has line breaks in it, we need to remove margin spacing.
 	// This *shouldn't* happen, but this is here mostly for backwards-compatibility.
 	bool multiline = [line.string containsString:@"\n"];
 	if (multiline) {
-		NSMutableParagraphStyle* pStyle = attrs[NSParagraphStyleAttributeName];
-		NSMutableParagraphStyle* fixedStyle = pStyle.mutableCopy;
-		fixedStyle.paragraphSpacingBefore = 0.0;
 		
-		NSInteger i = [attributedString.string rangeOfString:@"\n"].location;
-		[attributedString addAttribute:NSParagraphStyleAttributeName value:fixedStyle range:NSMakeRange(0, attributedString.length)];
-		[attributedString addAttribute:NSParagraphStyleAttributeName value:pStyle range:NSMakeRange(0, i)];
+		NSMutableParagraphStyle* topStyle = ((NSMutableParagraphStyle*)attrs[NSParagraphStyleAttributeName]).mutableCopy;
+		NSMutableParagraphStyle* bottomStyle = ((NSMutableParagraphStyle*)attrs[NSParagraphStyleAttributeName]).mutableCopy;
+		NSMutableParagraphStyle* noSpacingStyle = ((NSMutableParagraphStyle*)attrs[NSParagraphStyleAttributeName]).mutableCopy;
+		
+		// No bottom spacing for topmost style
+		topStyle.paragraphSpacing = 0.0;
+		
+		// No spacing for lines in the middle
+		noSpacingStyle.paragraphSpacingBefore = 0.0;
+		noSpacingStyle.paragraphSpacing = 0.0;
+		
+		// No top spacing for bottom style
+		bottomStyle.paragraphSpacingBefore = 0.0;
+		
+		NSArray<NSString*>* lines = [attributedString.string componentsSeparatedByString:@"\n"];
+		if (lines.lastObject.length == 0 && lines.count > 2) lines = [lines subarrayWithRange:NSMakeRange(0, lines.count - 1)];
+		
+		NSInteger idx = 0;
+		for (NSString* l in lines) {
+			if (l == lines.firstObject) {
+				// Top style for first line
+				[attributedString addAttribute:NSParagraphStyleAttributeName value:topStyle range:NSMakeRange(idx, l.length + 1)];
+			}
+			else if (l == lines.lastObject) {
+				// Bottom style for last line
+				[attributedString addAttribute:NSParagraphStyleAttributeName value:bottomStyle range:NSMakeRange(idx, l.length)];
+			}
+			else {
+				[attributedString addAttribute:NSParagraphStyleAttributeName value:noSpacingStyle range:NSMakeRange(idx, l.length + 1)];
+			}
+			
+			idx += l.length + 1;
+			if (l == lines.lastObject) idx -= 1; // No line break for last item
+
+		}
 	}
-	
+			
 	// Strip invisible stuff
 	NSMutableIndexSet* contentRanges = [NSMutableIndexSet.alloc initWithIndexSet:line.contentRanges];
 	[contentRanges addIndex:attributedString.length - 1]; // Add the last index to include our newly-added line break
@@ -231,6 +260,7 @@
 	if (!line.isTitlePage) {
 		[result addAttribute:NSLinkAttributeName value:line range:NSMakeRange(0, result.length - 1)];
 	}
+	
 	
 	// For headings, add some extra formatting (wrap them in a table and insert scene numbers)
 	if (line.type == heading) {

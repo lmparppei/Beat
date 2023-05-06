@@ -280,8 +280,7 @@
 		if (numberOfLines < remainingSpace / BeatPagination.lineHeight) {
 			NSRange charRange = [lm characterRangeForGlyphRange:glyphRange actualGlyphRange:nil];
 			length += charRange.length;
-			//pageBreakPos += usedRect.size.height;
-			pageBreakPos += numberOfLines * BeatPagination.lineHeight;
+			pageBreakPos = numberOfLines * BeatPagination.lineHeight;
 		} else {
 			*stop = true;
 		}

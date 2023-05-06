@@ -173,7 +173,7 @@ DQ
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="mAn-Bu-KOI">
-                                            <rect key="frame" x="-2" y="227" width="157" height="16"/>
+                                            <rect key="frame" x="-2" y="229" width="157" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" title="Include Header" id="vz7-gT-RKM">
                                                 <font key="font" metaFont="system"/>
@@ -194,7 +194,7 @@ DQ
                                             <rect key="frame" x="-1" y="188" width="197" height="5"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
-                                        <button verticalHuggingPriority="750" id="Ja0-Sl-lCe">
+                                        <button hidden="YES" verticalHuggingPriority="750" id="Ja0-Sl-lCe">
                                             <rect key="frame" x="0.0" y="29" width="183" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="check" title="Color-code revised pages" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MFT-DM-C4L">
@@ -206,13 +206,16 @@ DQ
                                             </connections>
                                         </button>
                                         <textField verticalHuggingPriority="750" id="KZX-n4-4Sn">
-                                            <rect key="frame" x="0.0" y="203" width="196" height="21"/>
+                                            <rect key="frame" x="2" y="204" width="196" height="21"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Revision, Version, ..." bezelStyle="round" id="HOf-0E-WLn">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <connections>
+                                                <action selector="headerTextChange:" target="-2" id="NOm-kU-kRg"/>
+                                            </connections>
                                         </textField>
                                         <button verticalHuggingPriority="750" id="btW-gj-SKz">
                                             <rect key="frame" x="19" y="135" width="109" height="18"/>
@@ -247,7 +250,7 @@ DQ
                                                 <action selector="toggleRevision:" target="-2" id="t4A-q4-etW"/>
                                             </connections>
                                         </button>
-                                        <box verticalHuggingPriority="750" boxType="separator" id="gOc-U6-3fn">
+                                        <box hidden="YES" verticalHuggingPriority="750" boxType="separator" id="gOc-U6-3fn">
                                             <rect key="frame" x="0.0" y="56" width="196" height="5"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
@@ -282,7 +285,7 @@ DQ
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Color_Purple" id="Syw-cx-Q2W"/>
                                         </imageView>
-                                        <popUpButton verticalHuggingPriority="750" id="GVT-Zp-Amr">
+                                        <popUpButton hidden="YES" verticalHuggingPriority="750" id="GVT-Zp-Amr">
                                             <rect key="frame" x="18" y="1" width="125" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="Red" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jyA-d7-eqg" id="iFD-aX-7Wc">
@@ -378,7 +381,7 @@ DQ
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                 </scrollView>
-                                <box verticalHuggingPriority="750" boxType="separator" id="Dgc-n1-9Es">
+                                <box hidden="YES" verticalHuggingPriority="750" boxType="separator" id="Dgc-n1-9Es">
                                     <rect key="frame" x="12" y="165" width="193" height="5"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 </box>

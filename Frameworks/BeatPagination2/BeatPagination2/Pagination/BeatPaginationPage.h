@@ -24,7 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 -(NSRange)representedRange;
 
 - (CGFloat)positionOfBlock:(BeatPaginationBlock*)block;
+- (CGFloat)actualPositionOfBlock:(BeatPaginationBlock*)block;
+
 - (CGFloat)positionOfBlockForLine:(Line*)line;
+- (CGFloat)actualPositionOfBlockForLine:(Line*)line;
+
 @end
 
 @interface BeatPaginationPage : NSObject <BeatPaginationPageExports>

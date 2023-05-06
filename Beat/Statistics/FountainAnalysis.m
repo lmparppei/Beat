@@ -29,7 +29,7 @@
 
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
-#import <BeatPaginationCore/BeatPaginationCore.h>
+#import <BeatPagination2/BeatPagination2.h>
 #import "FountainAnalysis.h"
 
 // lol
@@ -192,19 +192,13 @@
 
 - (void)calculateAverageSceneLength {
 	CGFloat totalLength = 0;
-	
 	CGFloat longest = 0;
 	
-	@autoreleasepool {
-		for (OutlineScene* scene in self.scenes) {
-			NSArray * lines = [self.delegate linesForScene:scene];
-			BeatPaginator *paginator = [BeatPaginator.alloc initWithScript:lines printInfo:self.delegate.printInfo];
-			NSArray *length = paginator.lengthInEights;
-			
-			CGFloat sceneLength = ([(NSNumber*)length[0] floatValue]) + ([(NSNumber*)length[1] floatValue] * 0.125);
-			if (sceneLength > longest) longest = sceneLength;
-			totalLength += sceneLength;
-		}
+	BeatPaginationManager* pm = self.delegate.pagination;
+	for (OutlineScene* scene in self.scenes) {
+		CGFloat length = [pm heightForScene:scene];
+		if (length > 0) totalLength += length;
+		if (length > longest) longest = length;
 	}
 	
 	CGFloat avg = totalLength / self.scenes.count;

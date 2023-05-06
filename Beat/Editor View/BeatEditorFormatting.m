@@ -19,7 +19,7 @@
 
 #import "BeatEditorFormatting.h"
 //#import "Beat-Swift.h"
-//#import "BeatMeasure.h"
+#import "BeatMeasure.h"
 #import "NSFont+CFTraits.h"
 
 @interface BeatEditorFormatting()
@@ -414,6 +414,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			[textStorage addAttribute:NSStrikethroughColorAttributeName value:BeatColors.colors[@"red"] range:range];
 		}
 	}];
+	
+
 }
 
 #pragma mark - Set foreground color

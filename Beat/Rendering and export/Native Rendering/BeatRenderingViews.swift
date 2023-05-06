@@ -96,6 +96,7 @@ class BeatPaginationPageView:NSView {
 		self.textView?.textContainer?.replaceLayoutManager(layoutManager)
 		self.textView?.textContainer?.lineFragmentPadding = linePadding
 		
+		
 		textView?.backgroundColor = .white
 		textView?.drawsBackground = true
 		
@@ -108,7 +109,7 @@ class BeatPaginationPageView:NSView {
 		let textFrame = NSRect(x: self.pageStyle.marginLeft - linePadding,
 							   y: self.pageStyle.marginTop,
 							   width: size.width - self.pageStyle.marginLeft - self.pageStyle.marginRight,
-							   height: size.height - self.pageStyle.marginTop - self.pageStyle.marginBottom)
+							   height: size.height - self.pageStyle.marginTop)
 		
 		return textFrame
 	}
@@ -206,6 +207,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		let topContent = NSMutableAttributedString(string: "")
 		for el in top {
 			let attrStr = renderer.renderLine(el, of: nil, dualDialogueElement: false, firstElementOnPage: false)
+			
 			topContent.append(attrStr)
 		}
 		textView.textStorage?.append(topContent)
@@ -289,7 +291,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 				type = .titlePageUnknown
 		}
 		
-		// Split first line
+		// Split first line to remove the key ('Title: My Film' -> 'My Film')
 		var firstLine = lines.first!
 		firstLine = firstLine.splitAndFormatToFountain(at: firstLine.titlePageKey().count + 1)[1]
 		firstLine.type = type
@@ -300,7 +302,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 		
 		// Trim unnecessary line breaks
 		firstLine.string = firstLine.string.trimmingCharacters(in: .newlines)
-
+		firstLine.resetFormatting()
+		
 		return firstLine
 	}
 	

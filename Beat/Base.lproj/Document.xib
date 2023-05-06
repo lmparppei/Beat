@@ -36,7 +36,6 @@
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
                 <outlet property="pageNumbersSwitch" destination="Mef-QD-NsX" id="Qep-HJ-CZr"/>
                 <outlet property="pageSizePopup" destination="UOV-VP-tY1" id="4Sc-YE-3pD"/>
-                <outlet property="preview" destination="jRU-W0-t3P" id="tXW-3q-Vtz"/>
                 <outlet property="previewButton" destination="DOv-x4-OK1" id="gJe-tL-TEf"/>
                 <outlet property="previewController" destination="wZv-WF-8R7" id="EJs-2O-HbJ"/>
                 <outlet property="previewTab" destination="Ycm-en-OeX" id="xI5-5m-XBi"/>
@@ -1579,11 +1578,11 @@
                                                 <color key="backgroundColor" red="0.10196078431372549" green="0.10196078431372549" blue="0.11372549019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </clipView>
                                             <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="fAh-jO-lBN">
-                                                <rect key="frame" x="0.0" y="645" width="1155" height="16"/>
+                                                <rect key="frame" x="0.0" y="646" width="1140" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="2Il-WL-PyV">
-                                                <rect key="frame" x="1139" y="0.0" width="16" height="661"/>
+                                                <rect key="frame" x="1140" y="0.0" width="15" height="646"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
@@ -1591,6 +1590,17 @@
                                             <rect key="frame" x="570" y="322" width="16" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                         </progressIndicator>
+                                        <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mat-qL-Isj">
+                                            <rect key="frame" x="1106" y="620" width="23" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="xmark.circle.fill" catalog="system" imagePosition="only" alignment="center" imageScaling="proportionallyUpOrDown" inset="2" id="77x-br-xXL">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="preview:" target="-2" id="uBX-BZ-AiS"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -1654,12 +1664,6 @@
         <customObject id="bnh-y9-2pe" customClass="BeatEditorFormattingActions">
             <connections>
                 <outlet property="delegate" destination="-2" id="Mz4-F1-x8N"/>
-            </connections>
-        </customObject>
-        <customObject id="jRU-W0-t3P" customClass="BeatPreview">
-            <connections>
-                <outlet property="delegate" destination="-2" id="Dg2-1d-hmB"/>
-                <outlet property="previewView" destination="ddy-rn-xRJ" id="oPG-JP-jo3"/>
             </connections>
         </customObject>
         <customObject id="wZv-WF-8R7" customClass="BeatPreviewController" customModule="Beat" customModuleProvider="target">
