@@ -414,7 +414,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			[textStorage addAttribute:NSStrikethroughColorAttributeName value:BeatColors.colors[@"red"] range:range];
 		}
 	}];
-	
 
 }
 
