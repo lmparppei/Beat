@@ -5,6 +5,12 @@
 //  Created by Lauri-Matti Parppei on 10.11.2022.
 //  Copyright © 2022 Lauri-Matti Parppei. All rights reserved.
 //
+/**
+ 
+ This class handles pagination operations. You can instantiate a `BeatPagination` operation without the manager, but for most use cases, the manager is preferred.
+ If you provide an editor delegate, settings and screenplay content will be automatically delivered to the manager.
+ 
+ */
 
 import Foundation
 import BeatCore
@@ -36,23 +42,33 @@ import BeatCore
 }
 
 public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginationManagerExports {
-	/// Delegate which is informed when pagination is finished. Useful when using background pagination.
+    /// If you provide an editor delegate, pagination manager will automatically fetch screenplay and export settings from the editor.
+    weak var editorDelegate:BeatEditorDelegate?
+    
+    /// Delegate which is informed when pagination is finished. Useful when using background pagination.
 	weak var delegate:BeatPaginationManagerDelegate?
-	weak var editorDelegate:BeatEditorDelegate?
+
 	/// Optional renderer delegate to be used for rendering `BeatPaginationBlock` objects on screen/print/whatever.
 	public var renderer: BeatRendererDelegate?
-	
-	@objc public var settings:BeatExportSettings
+    
+    /// When `livePagination` is set `true`, pagination operations will try to reuse pre-paginated content when possible.
     public var livePagination = false
-	
+
+    /// Export settings
+    @objc public var settings:BeatExportSettings
+    
+    /// The latest finished pagination
+    @objc public var finishedPagination:BeatPagination?
+
 	var operationQueue:[BeatPagination] = [];
 	var pageCache:NSMutableArray?
     public var pages:[BeatPaginationPage] {
 		return (finishedPagination?.pages ?? []) as! [BeatPaginationPage]
 	}
-		
-    @objc public var finishedPagination:BeatPagination?
-	
+    
+    
+    // MARK: - Initialization
+    
 	@objc convenience init(delegate:BeatPaginationManagerDelegate, renderer:BeatRendererDelegate?, livePagination:Bool) {
 		self.init(settings: delegate.exportSettings!, delegate: delegate, renderer:renderer, livePagination: livePagination)
 	}
@@ -88,7 +104,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	}
 	
 	
-	//MARK: - Run operations
+	// MARK: - Run and cancel pagination operations
 		
 	/// Run an Objc pagination operation
 	func runPagination(pagination: BeatPagination) {
@@ -103,8 +119,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		}
 	}
 		
-	//MARK: - Cancel operations
-	
 	/// Cancels all background operations
 	func cancelAllObjcOperations() {
 		for operation in operationQueue {
@@ -112,6 +126,8 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		}
 	}
 	
+    // MARK: - Create a new operation
+    
 	/**
 	 Adds a new render to queue. Once rendering is complete, render manager will call `renderingDidFinish()` on its delegate.
 	 - note: If you are queuing only a single render, the results can be fetched in sync:
@@ -129,14 +145,16 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		runPagination(pagination: operation)
 	}
     
+    /// Use this when paginating with an editor delegate
     @objc public func newPagination() {
         self.pageCache = self.finishedPagination?.pages
         self.settings = self.delegate!.exportSettings!
         
-        let operation = BeatPagination.newPagination(with: self.delegate!.parser!.forPrinting()!, delegate: self, cachedPages: self.pages, livePagination: false, changeAt: 0)
+        let operation = BeatPagination.newPagination(with: self.delegate!.parser!.forPrinting()!, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: 0)
         runPagination(pagination: operation)
     }
     
+    /// Paginates given screenplay object
     @objc public func newPagination(screenplay:BeatScreenplay) {
         self.pageCache = []
         
@@ -152,18 +170,25 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		let operation = BeatPagination.newPagination(with: lines, delegate: self)
 		runPagination(pagination: operation)
 	}
+    
+    /// This is here for backwards compatibility with plugin API
     public func paginateLines(_ lines:[Line]) {
-		//self.finishedPagination = nil
 		self.paginate(lines: lines)
 	}
 	
-	// MARK: - Finished operations
+    
+    
+	// MARK: - Delegate methods
 	
+    /// Called when a pagination operation is finished.
 	public func paginationFinished(_ pagination: BeatPagination) {
-		if (self.finishedPagination != nil) {
+		// Check if the currently finished pagination was created before the latest one.
+        // If it's older, do nothing.
+        if (self.finishedPagination != nil) {
 			if (pagination.startTime < self.finishedPagination!.startTime) { return }
 		}
 		
+        // Remove the finished pagination operation from queue
 		let i = self.operationQueue.firstIndex(of: pagination) ?? NSNotFound
 		if i != NSNotFound {
 			var n = 0
@@ -173,6 +198,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			}
 		}
 		
+        // If the pagination was successful, let's make it the latest finished pagination
 		if pagination.success {
 			self.finishedPagination = nil
 			self.finishedPagination = pagination
@@ -180,6 +206,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			self.delegate?.paginationDidFinish(pages: self.pages)
 		}
 		
+        // Move on to the next pagination operation in queue
 		let lastOperation = operationQueue.last
 		if (lastOperation != nil) {
 			runPagination(pagination: lastOperation!)
@@ -187,12 +214,9 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	}
 	
 	
-	// MARK: - Delegate methods
 	
 	
-	
-	
-	// MARK: - Getting paginated content properites
+	// MARK: - Getting paginated content properties
 	
 	/// Returns the *actual* page size for either the latest operation or from current settings
 	@objc public var pageSize:CGSize {
@@ -203,9 +227,12 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		}
 	}
 	
+    /// Returns the title page content in finished pagination
 	@objc public var titlePage:[[String: [Line]]] {
 		return self.finishedPagination?.titlePageContent ?? []
 	}
+    
+    /// Returns `true` if the paginated document has a title page
 	@objc public var hasTitlePage:Bool {
 		return (self.titlePage.count > 0)
 	}
@@ -230,11 +257,16 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		return [pageCount, eights]
 	}
 	
+    /**
+     Returns given scene length in eights.
+     - returns `[pages:Int, eights:Int]`
+     */
 	@objc public func sceneLengthInEights(_ scene:OutlineScene) -> [Int] {
 		let height = self.heightForScene(scene)
 		return heightToEights(height)
 	}
 	
+    /// Converts given height in current pagination to eights of a page
 	@objc public func heightToEights(_ height:CGFloat) -> [Int] {
 		if height == 0 { return [0,0] }
 		
@@ -256,6 +288,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		return [pageCount, eights]
 	}
 	
+    /// Returns the actual last page height in points
     public var actualLastPageHeight:CGFloat {
 		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
 		else { return 0.0 }
@@ -263,28 +296,35 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		return lastPage.maxHeight - lastPage.remainingSpace
 	}
 	
+    /// Returns relative height of the last page (`0...1`)
     public var lastPageHeight:CGFloat {
 		guard let lastPage = self.finishedPagination?.pages.lastObject as? BeatPaginationPage
 		else { return 0.0 }
 		return (lastPage.maxHeight - lastPage.remainingSpace) / lastPage.maxHeight
 	}
 	
+    
 	// MARK: - Forwarded delegate properties
 	
+    /// Returns the parser in current document
     public var parser:ContinuousFountainParser? {
 		return self.delegate?.parser
 	}
 	
+    
 	// MARK: - Convenience methods
 	
+    /// Returns the page index for given scene
     @objc public func page(forScene scene:OutlineScene) -> Int {
 		return self.finishedPagination?.findPageIndex(for: scene.line) ?? -1
 	}
 
+    /// Returns page number for given scene
     @objc public func pageNumberForScene(_ scene:OutlineScene) -> Int {
         return pageNumberAt(Int(scene.position))
     }
     
+    /// Returns page number at given location
     @objc public func pageNumberAt(_ location:Int) -> Int {
         var pageNumber = self.finishedPagination?.findPageIndex(at: location) ?? 0
         
@@ -299,10 +339,12 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
         return pageNumber
     }
     
+    /// Returns maximum content height on page for the  pagination
     @objc public var maxPageHeight:CGFloat {
         return self.finishedPagination?.maxPageHeight ?? self.defaultMaxHeight
 	}
     
+    /// Returns the default content height when no finished pagination is available
     var defaultMaxHeight:CGFloat {
         let size = BeatPaperSizing.size(for: settings.paperSize)
         let style = BeatRenderStyles.shared.page()
@@ -310,6 +352,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
         return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight() * 3
     }
 	
+    /// Returns the relative height `0...1` for given range in paginated screenplay.
     @objc public func heightFor(_ range:NSRange) -> CGFloat {
         guard let height = self.finishedPagination?.height(for: range) else {
             print("No height available for range:", range)
