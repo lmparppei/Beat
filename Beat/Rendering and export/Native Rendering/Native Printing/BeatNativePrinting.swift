@@ -22,9 +22,9 @@ class BeatNativePrinting:NSView {
 	var delegate:BeatEditorDelegate?
 	
 	var settings:BeatExportSettings
-	var pagination:BeatPaginationManager
+	//var pagination:BeatPaginationManager
 	var renderer:BeatRendering
-	var screenplay:BeatScreenplay
+	var screenplays:[BeatScreenplay]
 	var callback:(BeatNativePrinting, AnyObject?) -> ()
 	var progressPanel:NSPanel = NSPanel(contentRect: NSMakeRect(0, 0, 350, 30), styleMask: [.docModalWindow], backing: .buffered, defer: false)
 	var host:NSWindow
@@ -32,6 +32,9 @@ class BeatNativePrinting:NSView {
 	
 	var pageViews:[BeatPaginationPageView] = []
 	var url:URL?
+	
+	
+	var paginations:[BeatPaginationManager] = []
 	
 	/**
 	 Begins a print operation. **Note**: the operation is run asynchronously, so this virtual view has to be owned by another object for the duration of the process.
@@ -42,13 +45,13 @@ class BeatNativePrinting:NSView {
 	 - parameter screenplay: Screenplay object (containing title page and lines). If you have a delegate set, this can be `nil`
 	 - parameter callback: Closure run after printing is done
 	 */
-	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplay:BeatScreenplay?, callback: @escaping (BeatNativePrinting, AnyObject?) -> ()) {
+	@objc init(window:NSWindow, operation:BeatPrintingOperation, settings:BeatExportSettings, delegate:BeatEditorDelegate?, screenplays:[BeatScreenplay]?, callback: @escaping (BeatNativePrinting, AnyObject?) -> ()) {
 		self.delegate = delegate
 		
 		if (delegate != nil) {
-			self.screenplay = delegate!.parser.forPrinting()
+			self.screenplays = [delegate!.parser.forPrinting()]
 		} else {
-			self.screenplay = screenplay ?? BeatScreenplay()
+			self.screenplays = screenplays ?? [BeatScreenplay()]
 		}
 		
 		self.host = window
@@ -56,7 +59,14 @@ class BeatNativePrinting:NSView {
 		
 		self.renderer = BeatRendering(settings: settings)
 		self.settings = settings
-		self.pagination = BeatPaginationManager(settings: settings, delegate: nil, renderer: renderer, livePagination: false)
+
+		// Create a pagination for each of these screenplays
+		for _ in self.screenplays {
+			let pagination = BeatPaginationManager(settings: settings, delegate: nil, renderer: renderer, livePagination: false)
+			paginations.append(pagination)
+		}
+		
+		//self.pagination = BeatPaginationManager(settings: settings, delegate: nil, renderer: renderer, livePagination: false)
 		self.operation = operation
 		
 		let size = BeatPaperSizing.size(for: self.settings.paperSize)
@@ -68,20 +78,28 @@ class BeatNativePrinting:NSView {
 	}
 	
 	@objc convenience init(window:NSWindow, operation:BeatPrintingOperation, delegate:BeatEditorDelegate, callback:@escaping (BeatNativePrinting, AnyObject?) -> ()) {
-		self.init(window: window, operation: operation, settings: delegate.exportSettings, delegate: delegate, screenplay: nil, callback: callback)
+		self.init(window: window, operation: operation, settings: delegate.exportSettings, delegate: delegate, screenplays: nil, callback: callback)
 	}
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	var numberOfPages:Int {
+		var pageCount = 0
+		for pagination in self.paginations {
+			pageCount += pagination.pages.count
+			
+			// Add title page to page count if needed
+			pageCount += (pagination.hasTitlePage) ? 1 : 0
+		}
+		
+		return pageCount
+	}
+	
 	override func knowsPageRange(_ range: NSRangePointer) -> Bool {
 		// NOTE: Page numbers begin from 1
-		var pageCount = self.pagination.pages.count
-		if (self.pagination.hasTitlePage) { pageCount += 1 }
-		
-		range.pointee = NSMakeRange(1, pageCount)
-		
+		range.pointee = NSMakeRange(1, self.numberOfPages)
 		return true
 	}
 	
@@ -97,7 +115,10 @@ class BeatNativePrinting:NSView {
 	var data:NSMutableData = NSMutableData()
 	func paginateAndRender() {
 		DispatchQueue.global(qos: .userInteractive).async {
-			self.pagination.newPagination(screenplay: self.screenplay, settings: self.settings, forEditor: false, changeAt: 0)
+			for i in 0 ..< self.screenplays.count {
+				let pagination = self.paginations[i]
+				pagination.newPagination(screenplay: self.screenplays[i])
+			}
 			
 			DispatchQueue.main.sync {
 				// PDF operations require a URL. Temporary one for preview, user-selected for export.
@@ -138,14 +159,6 @@ class BeatNativePrinting:NSView {
 				if (self.operation != .toPrint) {
 					// Convert URL to NSURL
 					let url:NSURL = NSURL(fileURLWithPath: self.url!.path)
-					
-					/*
-					if #available(macOS 13.0, *) {
-						url = NSURL(fileURLWithPath: self.url!.path(percentEncoded: true))
-					} else {
-						url = NSURL(fileURLWithPath: self.url!.path)
-					}
-					*/
 					
 					printInfo.paperSize = BeatPaperSizing.size(for: self.settings.paperSize)
 					printInfo.jobDisposition = .save
@@ -194,63 +207,20 @@ class BeatNativePrinting:NSView {
 	func createPageViews() {
 		self.pageViews = []
 		
-		if pagination.hasTitlePage {
-			// Add title page
-			let titlePageView = BeatTitlePageView(titlePage: pagination.titlePage, settings: self.pagination.settings)
-			pageViews.append(titlePageView)
-		}
-		
-		for page in pagination.pages {
-			autoreleasepool {
-				let pageView = BeatPaginationPageView(page: page, content: nil, settings: self.pagination.settings, previewController: nil, titlePage: false)
-				pageViews.append(pageView)
+		for pagination in self.paginations {
+			if pagination.hasTitlePage {
+				// Add title page
+				let titlePageView = BeatTitlePageView(titlePage: pagination.titlePage, settings: self.settings)
+				pageViews.append(titlePageView)
 			}
-		}
-	}
-	
-	
-	// MARK: - Alternative way of printing
-	
-	/// This is a super-low-performance alternative for `paginateAndRender`
-	func render() {
-		let pdf = renderPages()
-		
-		if (operation == .toPreview) {
-			let url = tempURL()
-			pdf.write(to: url)
 			
-			// Send the result to callback
-			callback(self, url as NSURL)
-		}
-		
-		if (operation == .toPDF) {
-			callback(self, pdf)
-		}
-	}
-	
-	/// Renders pages according to export settings and returns a `PDFDocument`.
-	func renderPages() -> PDFDocument {
-		let pdf = PDFDocument()
-				
-		if pagination.titlePage.count > 0 {
-			// Add title page
-			let titlePageView = BeatTitlePageView(titlePage: pagination.titlePage, settings: self.pagination.settings)
-			let data = titlePageView.dataWithPDF(inside: NSMakeRect(0, 0, titlePageView.frame.width, titlePageView.frame.height))
-			let pdfPage = PDFPage(image: NSImage(data: data)!)!
-			pdf.insert(pdfPage, at: 0)
-		}
-				
-		for page in pagination.pages {
-			autoreleasepool {
-				let pageView = BeatPaginationPageView(page: page, content: nil, settings: self.pagination.settings, previewController: nil, titlePage: false)
-				let data = pageView.dataWithPDF(inside: NSMakeRect(0, 0, pageView.frame.width, pageView.frame.height))
-				let pdfPage = PDFPage(image: NSImage(data: data)!)!
-				
-				pdf.insert(pdfPage, at: pdf.pageCount)
+			for page in pagination.pages {
+				autoreleasepool {
+					let pageView = BeatPaginationPageView(page: page, content: nil, settings: self.settings, previewController: nil, titlePage: false)
+					pageViews.append(pageView)
+				}
 			}
 		}
-		
-		return pdf
 	}
 	
 	

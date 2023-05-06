@@ -161,7 +161,7 @@ static CGFloat panelWidth;
 #pragma mark - Printing
 
 - (void)exportWithType:(BeatPrintingOperation)type {
-	BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:type settings:[self exportSettings] delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+	BeatNativePrinting* printing = [BeatNativePrinting.alloc initWithWindow:self.window operation:type settings:[self exportSettings] delegate:self.documentDelegate screenplays:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
 		// Remove from queue
 		[self.renderQueue removeObject:operation];
 		[self printingDidFinish];
@@ -199,9 +199,8 @@ static CGFloat panelWidth;
 	// Update PDF preview
 	BeatExportSettings *settings = [self exportSettings];
 	
-	// Native rendering for development
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		BeatNativePrinting* operation = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:settings delegate:self.documentDelegate screenplay:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
+		BeatNativePrinting* operation = [BeatNativePrinting.alloc initWithWindow:self.window operation:BeatPrintingOperationToPreview settings:settings delegate:self.documentDelegate screenplays:nil callback:^(BeatNativePrinting * _Nonnull operation, id _Nullable value) {
 			[self.renderQueue removeObject:operation];
 			
 			NSURL* url = (NSURL*)value;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -25,13 +25,13 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="179" y="218" width="573" height="384"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1097"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1792" height="1095"/>
             <view key="contentView" id="K4U-hy-sTP">
                 <rect key="frame" x="0.0" y="0.0" width="573" height="384"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="LyE-Md-ngx">
-                        <rect key="frame" x="293" y="268" width="62" height="16"/>
+                        <rect key="frame" x="293" y="258" width="62" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" title="Page size" id="bQK-wT-qQj">
                             <font key="font" metaFont="system"/>
@@ -40,7 +40,7 @@
                         </textFieldCell>
                     </textField>
                     <button verticalHuggingPriority="750" tag="1" id="bMo-ca-2kn">
-                        <rect key="frame" x="294" y="243" width="39" height="18"/>
+                        <rect key="frame" x="294" y="233" width="39" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="radio" title="A4" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="DmN-tZ-Tpy">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -51,7 +51,7 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" tag="2" id="Iqn-p3-y34">
-                        <rect key="frame" x="294" y="221" width="80" height="18"/>
+                        <rect key="frame" x="294" y="211" width="80" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="radio" title="US Letter" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="EFX-sj-v43">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -84,7 +84,7 @@
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" boxType="separator" id="wfc-ET-r6N">
-                        <rect key="frame" x="295" y="291" width="266" height="5"/>
+                        <rect key="frame" x="295" y="286" width="266" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="dRC-on-Xyn">
@@ -110,7 +110,7 @@
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn width="274" minWidth="40" maxWidth="1000" id="24V-E7-93T">
+                                        <tableColumn width="265" minWidth="40" maxWidth="1000" id="24V-E7-93T">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
@@ -197,16 +197,16 @@ Gw
                             <action selector="cancel:" target="-2" id="TXY-Cl-8PF"/>
                         </connections>
                     </button>
-                    <box verticalHuggingPriority="750" boxType="separator" id="Csl-Dd-nSJ">
-                        <rect key="frame" x="295" y="137" width="240" height="5"/>
+                    <box hidden="YES" verticalHuggingPriority="750" boxType="separator" id="Csl-Dd-nSJ">
+                        <rect key="frame" x="295" y="107" width="240" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <box verticalHuggingPriority="750" boxType="separator" id="G7i-Ah-elh">
-                        <rect key="frame" x="295" y="205" width="240" height="5"/>
+                        <rect key="frame" x="295" y="190" width="240" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
-                    <popUpButton verticalHuggingPriority="750" id="tuz-Ri-jXf">
-                        <rect key="frame" x="486" y="100" width="52" height="25"/>
+                    <popUpButton hidden="YES" verticalHuggingPriority="750" id="tuz-Ri-jXf">
+                        <rect key="frame" x="486" y="75" width="52" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Red" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Q5H-ek-O4w" id="aV2-78-hoB">
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -221,8 +221,8 @@ Gw
                             </menu>
                         </popUpButtonCell>
                     </popUpButton>
-                    <button verticalHuggingPriority="750" id="ShP-J5-Psw">
-                        <rect key="frame" x="293" y="105" width="189" height="18"/>
+                    <button hidden="YES" verticalHuggingPriority="750" id="ShP-J5-Psw">
+                        <rect key="frame" x="293" y="80" width="189" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Color-code revised pages" bezelStyle="regularSquare" imagePosition="left" inset="2" id="BIV-mZ-62a">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -230,7 +230,7 @@ Gw
                         </buttonCell>
                     </button>
                     <textField verticalHuggingPriority="750" id="UdM-V1-9XJ">
-                        <rect key="frame" x="295" y="156" width="240" height="21"/>
+                        <rect key="frame" x="295" y="134" width="240" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Revision, Version, ..." drawsBackground="YES" id="1Is-Bl-rL9">
                             <font key="font" metaFont="system"/>
@@ -239,7 +239,7 @@ Gw
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="jlW-y7-ohy">
-                        <rect key="frame" x="294" y="179" width="157" height="16"/>
+                        <rect key="frame" x="294" y="159" width="157" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" title="Include Header" id="Atu-PM-dGd">
                             <font key="font" metaFont="system"/>
@@ -257,7 +257,7 @@ Gw
         <image name="Color_Green" width="15" height="15"/>
         <image name="Color_Orange" width="15" height="15"/>
         <image name="Color_Red" width="15" height="15"/>
-        <image name="NSAddTemplate" width="11" height="11"/>
-        <image name="NSRemoveTemplate" width="11" height="11"/>
+        <image name="NSAddTemplate" width="14" height="13"/>
+        <image name="NSRemoveTemplate" width="14" height="4"/>
     </resources>
 </document>

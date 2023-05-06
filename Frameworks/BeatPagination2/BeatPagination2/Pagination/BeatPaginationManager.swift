@@ -27,7 +27,6 @@ import BeatCore
     
     @objc func pageNumberAt(_ location:Int) -> Int
     @objc func pageNumberForScene(_ scene:OutlineScene) -> Int
-
 }
 
 @objc public protocol BeatPaginationManagerDelegate {
@@ -135,6 +134,13 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
         self.settings = self.delegate!.exportSettings!
         
         let operation = BeatPagination.newPagination(with: self.delegate!.parser!.forPrinting()!, delegate: self, cachedPages: self.pages, livePagination: false, changeAt: 0)
+        runPagination(pagination: operation)
+    }
+    
+    @objc public func newPagination(screenplay:BeatScreenplay) {
+        self.pageCache = []
+        
+        let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: false, changeAt: 0)
         runPagination(pagination: operation)
     }
 	

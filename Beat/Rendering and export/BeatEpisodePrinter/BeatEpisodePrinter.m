@@ -13,7 +13,7 @@
 #import "BeatEpisodePrinter.h"
 #import "NSMutableArray+MoveItem.h"
 #import "BeatHTMLScript.h"
-#import "BeatPrintView.h"
+#import "Beat-Swift.h"
 
 @interface BeatEpisodePrinter ()
 @property (weak) IBOutlet NSTableView *table;
@@ -21,7 +21,7 @@
 
 @property (nonatomic) NSMutableArray<NSURL*> *urls;
 @property (nonatomic) NSDocument *doc; // Faux document for paper sizing info
-@property (nonatomic) BeatPrintView *printView;
+@property (nonatomic) BeatNativePrinting* printView;
 
 @property (weak) IBOutlet NSProgressIndicator *progressBar;
 
@@ -243,10 +243,7 @@
 	// Create a faux document for delegation
 	self.doc = [[NSDocument alloc] init];
 	
-	BeatPaperSize size;
-	 
-	if (_radioA4.state == NSOnState) size = BeatA4;
-	else size = BeatUSLetter;
+	BeatPaperSize size = (_radioA4.state == NSOnState) ? BeatA4 : BeatUSLetter;
 	self.doc.printInfo = [BeatPaperSizing printInfoFor:size];
 	
 	BeatExportSettings *settings = [self settings];
@@ -254,17 +251,10 @@
 	// The operation can be quite heavy, so do it in another thread
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
 		NSError *error;
-		
-		// Begin the document
-		// WIP: Add a toggle switch for scene number printing!!!
-		BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initWithScript:nil settings:settings];
-		//BeatHTMLScript *htmlScript = [[BeatHTMLScript alloc] initForPrint:nil document:self.doc printSceneNumbers:YES];
-		NSString *header = htmlScript.htmlHeader;
-		NSString *footer = htmlScript.htmlFooter;
-	
-		__block NSString *html = header;
-		
-		for (NSURL *url in self.urls) {
+
+		// Parse docuents
+		NSMutableArray<BeatScreenplay*>* screenplays = NSMutableArray.new;
+		for (NSURL* url in self.urls) {
 			NSString *text = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:&error];
 			
 			if (error) {
@@ -272,8 +262,9 @@
 				[self alertPanelWithTitle:@"Error Opening File" content:[NSString stringWithFormat:@"%@ could not be opened. Other documents will be printed normally.", filename]];
 				error = nil;
 			} else {
-				NSString *documentHtml = [self htmlForDocument:text settings:settings];
-				html = [html stringByAppendingString:documentHtml];
+				// Add processed screenplay to queue
+				BeatScreenplay* screenplay = [self screenplayForText:text settings:settings];
+				[screenplays addObject:screenplay];
 				
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[self.progressBar incrementBy:1.0];
@@ -282,22 +273,18 @@
 			}
 		}
 		
-		html = [html stringByAppendingString:footer];
-		
 		dispatch_async(dispatch_get_main_queue(), ^(void) {
-			if (toPDF) self.printView = [[BeatPrintView alloc] initWithHTML:html settings:settings operation:BeatToPDF completion:^{
+			BeatPrintingOperation operation = (toPDF) ? BeatPrintingOperationToPDF : BeatPrintingOperationToPrint;
+			
+			self.printView = [BeatNativePrinting.alloc initWithWindow:self.window operation:operation settings:settings delegate:nil screenplays:screenplays callback:^(BeatNativePrinting * _Nonnull printing, id _Nullable item) {
 				[self close];
 			}];
-			else self.printView = [[BeatPrintView alloc] initWithHTML:html settings:settings operation:BeatToPrint completion:^{
-				[self close];
-			}];
+
 		});
 	});
 }
 
-
-
--(NSString*)htmlForDocument:(NSString*)text settings:(BeatExportSettings*)exportSettings {
+-(BeatScreenplay*)screenplayForText:(NSString*)text settings:(BeatExportSettings*)exportSettings {
 	BeatDocumentSettings *settings = BeatDocumentSettings.new;
 	[settings readSettingsAndReturnRange:text];
 	
@@ -306,11 +293,8 @@
 	// Bake revision data into the document
 	NSDictionary *revisions = [settings get:DocSettingRevisions];
 	if (revisions.count) [BeatRevisions bakeRevisionsIntoLines:parser.lines revisions:revisions string:text];
-		
-	BeatScreenplay *script = parser.forPrinting;
-	BeatHTMLScript *htmlScript = [BeatHTMLScript.alloc initWithScript:script settings:exportSettings];
 	
-	return htmlScript.content;
+	return parser.forPrinting;
 }
 
 -(void)alertPanelWithTitle:(NSString*)title content:(NSString*)content {
