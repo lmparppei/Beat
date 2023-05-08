@@ -8,7 +8,7 @@
       location = "group:Frameworks/BeatCore/BeatCore.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:/Users/lmp/Koodaus/Beat/Beat macOS.xcodeproj">
+      location = "group:Beat macOS.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Beat iOS.xcodeproj">
