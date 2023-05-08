@@ -21,13 +21,13 @@
  a rendered attributed string directly from the results, ie. `.pages[0].attributedString`
  
  "Live pagination" means continuous pagination. This is used for updating the preview and providing
- page numbering to the editor. Page breaks don't have any use in static/export pagination.
+ page numbering to the editor, while optimizing the process by reusing old results.
+ Page breaks don't have any use in static/export pagination.
  
  This is still a work in progress. Dread lightly.
  
  */
 
-//#import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatCore/BeatFonts.h>
 #import <BeatCore/BeatCore-Swift.h>
@@ -42,22 +42,35 @@
 @interface BeatPagination() <BeatPageDelegate>
 @property (nonatomic) NSArray<Line*>* lines;
 
-@property (nonatomic) NSMutableArray<Line*>* lineQueue;
+/// Fonts used for exporting
 @property (nonatomic) BeatFonts* fonts;
-//@property (nonatomic) BeatRenderStyles* styles;
+
+/// The position where last change was made. Used only for live pagination.
 @property (nonatomic) NSInteger location;
+
+/// Stored paragraph attributes for different line types. Used to calculate paragraph heights.
 @property (nonatomic) NSMutableDictionary<NSNumber*, NSDictionary*>* lineTypeAttributes;
 
+/// Set `true` when paginating editor content.
 @property (nonatomic) bool livePagination;
 
+/// `BeatPaginationDelegate` is called when pagination operation finishes.
 @property (weak, nonatomic) id<BeatPaginationDelegate> delegate;
+
+/// The currently "open" page which accepts new elements.
 @property (nonatomic) BeatPaginationPage* currentPage;
 
+/// The upcoming lines to be paginated. Parsed lines are separated into blocks, and inserted to this array.
+@property (nonatomic) NSMutableArray<Line*>* lineQueue;
+
+/// Reusable pages from the previous pagination operation.
 @property (nonatomic) NSArray<BeatPaginationPage*>* _Nullable cachedPages;
+
 @end
 
 @implementation BeatPagination
 
+/// Returns the default line height
 + (CGFloat) lineHeight { return 12.0; }
 
 + (BeatPagination*)newPaginationWithLines:(NSArray<Line*>*)lines delegate:(__weak id<BeatPaginationDelegate>)delegate
@@ -105,6 +118,7 @@
 	return self;
 }
 
+/// Returns either the shared render styles or custom styles included in export settings (if available)
 - (BeatRenderStyles*)styles {
 	if (_settings.styles != nil) return _settings.styles;
 	else return BeatRenderStyles.shared;
@@ -112,29 +126,32 @@
 
 #pragma mark - Convenience stuff
 
-/// A method for backwards compatibility with the old pagination code
+/// A method for backwards compatibility with the old pagination code. Begins pagination if it hasn't run yet.
 - (NSInteger)numberOfPages
 {
 	if (self.pages.count == 0) [self paginate];
 	return self.pages.count;
 }
 
+/// Called when this operation is finished.
 - (void)paginationFinished
 {
 	[self.delegate paginationFinished:self];
 }
 
+/// Returns max height for content in this current pagination context.
 - (CGFloat)maxPageHeight
 {
-    CGSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
     RenderStyle* style = self.styles.page;
-	
-	return size.height - style.marginTop - style.marginBottom - BeatPagination.lineHeight * 3;
+    CGSize size = [BeatPaperSizing sizeFor:_settings.paperSize];
+    CGFloat headerHeight = BeatPagination.lineHeight * 3;
+    
+	return size.height - style.marginTop - style.marginBottom - headerHeight;
 }
 
-#pragma mark - Running pagination
+#pragma mark - Actual pagination
 
-/// Look up current line from array of lines. We are using UUIDs for matching, so `indexOfObject:` is redundant here.
+/// Look up current line from array of lines. We are using UUIDs for matching, so `indexOfObject:` can't be used here.
 - (NSInteger)indexOfLine:(Line*)line {
 	for (NSInteger i=0; i<self.lines.count; i++) {
         if ([_lines[i].uuid uuidEqualTo:line.uuid]) return i;
@@ -146,20 +163,27 @@
 {
 	NSInteger startIndex = 0;
 	
+    /**
+        For live pagination, we'll check if we can reuse some of the earlier pages.
+        A safe page is one page before where the actual edit was made, because some content might have been rolled on to next page, and editing anything on current page might change this.
+     */
 	if (_livePagination && self.cachedPages.count > 0) {
-		// This returns the index for both page and the line inside that page
 		NSArray<NSNumber*>* indexPath = [self findSafePageAndLineForPosition:self.location pages:self.cachedPages];
 		
 		NSInteger pageIndex = indexPath[0].integerValue;
 		NSInteger lineIndex = indexPath[1].integerValue;
 				
+        // If both a safe page and a suitable line on it was found, we'll reuse pages until that line.
 		if (pageIndex != NSNotFound && lineIndex != NSNotFound && pageIndex < _cachedPages.count && pageIndex >= 0 && lineIndex >= 0) {
+            // Reuse pages until index
 			NSArray* sparedPages = [self.cachedPages subarrayWithRange:NSMakeRange(0, pageIndex)];
 			[self.pages setArray:sparedPages];
 			
+            // If any pages were stored, get current page from cached epages.
 			if (self.pages.count > 0) {
 				self.currentPage = _cachedPages[pageIndex];
 				
+                // Clear current page until given index
 				if (self.currentPage.lines.count > 0 && lineIndex != NSNotFound) {
 					Line* safeLine = self.currentPage.lines[lineIndex];
 					[self.currentPage clearUntil:safeLine];
@@ -174,22 +198,26 @@
 		}
 	}
 	
+    // If we are starting from beginning, let's just scrap everything and begin from a clean slate.
 	if (startIndex == 0 || startIndex == NSNotFound) {
 		_pages = NSMutableArray.new;
 		_currentPage = [BeatPaginationPage.alloc initWithDelegate:self];
 		startIndex = 0;
 	}
-		
+    
+    // Paginate and call delegate method when finished.
 	self.success = [self paginateFromIndex:startIndex];
 	[self paginationFinished];
 }
 
+/// Use old pagination results starting from given index.
 - (void)useCachedPaginationFrom:(NSInteger)pageIndex
 {
 	NSArray* reusablePages = [self.cachedPages subarrayWithRange:NSMakeRange(pageIndex, self.cachedPages.count - pageIndex)];
 	[_pages addObjectsFromArray:reusablePages];
 }
 
+/// Begin pagination from given line index
 - (bool)paginateFromIndex:(NSInteger)index
 {
 	// Save start time

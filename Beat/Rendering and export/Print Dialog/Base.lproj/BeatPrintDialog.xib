@@ -112,7 +112,7 @@ Gw
                         </beginningViews>
                         <endViews>
                             <button verticalHuggingPriority="750" id="a5r-9d-7pC">
-                                <rect key="frame" x="130" y="-3" width="59" height="32"/>
+                                <rect key="frame" x="128" y="-3" width="60" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="PDF" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8t8-IM-hHv">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -123,7 +123,7 @@ Gw
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" id="oP5-3G-eOr">
-                                <rect key="frame" x="179" y="-3" width="77" height="32"/>
+                                <rect key="frame" x="178" y="-3" width="78" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="  Print  " bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BTh-vA-fQk">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -207,7 +207,7 @@ DQ
                                         </button>
                                         <textField verticalHuggingPriority="750" id="KZX-n4-4Sn">
                                             <rect key="frame" x="2" y="204" width="196" height="21"/>
-                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Revision, Version, ..." bezelStyle="round" id="HOf-0E-WLn">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>

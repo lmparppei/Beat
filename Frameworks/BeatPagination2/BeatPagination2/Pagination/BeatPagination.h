@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (Line*)contdLineFor:(Line*)line;
 @end
 
-@interface BeatPagination : NSObject <BeatPaginationPageExports>
+@interface BeatPagination : NSObject <BeatPaginationExports>
 /// A class which conforms to `BeatRenderDelegate` protocol and renders paginated blocks as `NSAttributedString` objects. 
 @property (weak, nonatomic) id<BeatRendererDelegate> renderer;
 
