@@ -93,6 +93,8 @@ class BeatPaginationPageView:NSView {
 		self.textView?.textContainerInset = NSSize(width: 0, height: 0)
 		
 		let layoutManager = BeatRenderLayoutManager()
+		layoutManager.pageView = self
+		
 		self.textView?.textContainer?.replaceLayoutManager(layoutManager)
 		self.textView?.textContainer?.lineFragmentPadding = linePadding
 		
@@ -353,11 +355,14 @@ class BeatTitlePageView:BeatPaginationPageView {
 // MARK: - Custom layout manager for text views in rendered page view
 
 class BeatRenderLayoutManager:NSLayoutManager {
+	weak var pageView:BeatPaginationPageView?
+	
 	override func drawGlyphs(forGlyphRange glyphsToShow: NSRange, at origin: NSPoint) {
 		super.drawGlyphs(forGlyphRange: glyphsToShow, at: origin)
 				
 		let container = self.textContainers.first!
-	
+		let revisions = pageView?.settings.revisions as? [String] ?? []
+		
 		NSGraphicsContext.saveGraphicsState()
 		
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, range, stop in
@@ -366,8 +371,12 @@ class BeatRenderLayoutManager:NSLayoutManager {
 			var highestRevision = ""
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
 				if (obj == nil) { return }
-				
 				let revision = obj as! String
+
+				// If the revision is not included in settings, just skip it.
+				if (!revisions.contains(where: { $0 == revision })) {
+					return
+				}
 				
 				if highestRevision == "" {
 					highestRevision = revision

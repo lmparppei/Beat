@@ -189,7 +189,7 @@
 		// By default, we'll display revisions defined in export settings,
 		// but if no revisions were supplied (the value is nil), let's render all of them.
 		NSArray* revisionColors = self.settings.revisions;
-		if (revisionColors.count == 0) revisionColors = BeatRevisions.revisionColors;
+		if (revisionColors == nil) revisionColors = BeatRevisions.revisionColors;
 		
 		for (NSString* color in revisionColors) {
 			if (line.revisedRanges[color] == nil) continue;
