@@ -292,8 +292,10 @@
 	Line *prePageBreak = splitElements[0];
 	Line *postPageBreak = splitElements[1];
 	
+    NSArray* onNextPage = (postPageBreak.length > 0) ? @[postPageBreak] : @[];
+    
 	BeatPageBreak* pageBreak = [BeatPageBreak.alloc initWithY:pageBreakPos element:line reason:@"Paragraph split"];
-	return @[@[prePageBreak], @[postPageBreak], pageBreak];
+	return @[@[prePageBreak], onNextPage, pageBreak];
 }
 
 - (NSArray*)splitDualDialogueWithRemainingSpace:(CGFloat)remainingSpace {

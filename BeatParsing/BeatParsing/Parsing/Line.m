@@ -1077,6 +1077,7 @@
 	}
     
     retain.beginsNewParagraph = self.beginsNewParagraph;
+    split.beginsNewParagraph = true;
 	
 	retain.uuid = self.uuid;
 	retain.position = self.position;
