@@ -307,6 +307,12 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle isEqualTo:attributes[NSParagraphStyleAttributeName]]) {
 		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 		[_delegate setTypingAttributes:attributes];
+		
+		// If we need to update the line, do it here
+		if (newAttributes[BeatRepresentedLineKey]) {
+			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:range];
+		}
+		
 		return;
 	}
 	
