@@ -10,6 +10,7 @@
 #import <BeatCore/BeatCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore-Swift.h>
+#import <BeatCore/BeatMeasure.h>
 
 //#import "BeatTextView.h"
 //#import "BeatMeasure.h"
@@ -50,15 +51,7 @@
 		_markerStyle = NSMutableParagraphStyle.new;
 		_markerStyle.minimumLineHeight = self.editorDelegate.editorLineHeight;
 	}
-	
-    /*
-	if (!self.textView) {
-		NSLog(@"WARNING: No text view set for BeatLayoutManager.");
-		[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
-		return;
-	}
-     */
-	
+
 	[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
 		
 	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
@@ -105,12 +98,7 @@
         if (line.beats.count > 0) {
             [self drawBeat:rect inset:inset];
         }
-
     }];
-    
-	//[self drawSceneNumberForGlyphRange:glyphsToShow charRange:charRange];
-    //[self drawMarkerForGlyphRange:glyphsToShow charRange:charRange];
-    //[self drawDisclosureForRange:glyphsToShow charRange:charRange];
     
 	[self drawRevisionMarkers:glyphsToShow];
 }

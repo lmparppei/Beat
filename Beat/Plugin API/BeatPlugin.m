@@ -364,8 +364,6 @@
 	[self onPreviewFinished:updateMethod];
 }
 - (void)previewDidFinish:(NSIndexSet*)changedIndices {
-	NSLog(@"changed %@", changedIndices);
-	
 	NSMutableArray<NSNumber*>* indices = NSMutableArray.new;
 	[changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
 		[indices addObject:@(idx)];

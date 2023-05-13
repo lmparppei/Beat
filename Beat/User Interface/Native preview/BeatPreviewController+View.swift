@@ -92,16 +92,19 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 		self.timer?.invalidate()
 		self.paginationUpdated = false
 		self.lastChangeAt = index
-
-		// Store revisions into lines
-		self.delegate?.bakeRevisions()
 		
 		guard let parser = delegate?.parser else { return }
 		
 		if (sync) {
+			// Store revisions into lines
+			self.delegate?.bakeRevisions()
+
 			pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)
 		} else {
 			timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { timer in
+				// Store revisions into lines
+				self.delegate?.bakeRevisions()
+
 				// Dispatch pagination to a background thread after one second
 				DispatchQueue.global(qos: .utility).async {
 					self.pagination?.newPagination(screenplay: parser.forPrinting(), settings: self.settings, forEditor: true, changeAt: index)

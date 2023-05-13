@@ -9,12 +9,12 @@
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatUserDefaults.h>
+#import <BeatCore/BeatMeasure.h>
 
 #import "BeatOutlineView.h"
 #import "SceneFiltering.h"
 #import "OutlineViewItem.h"
 #import "ColorCheckbox.h"
-#import "BeatMeasure.h"
 #import "Beat-Swift.h"
 
 #define LOCAL_REORDER_PASTEBOARD_TYPE @"LOCAL_REORDER_PASTEBOARD_TYPE"

@@ -30,6 +30,8 @@
 		B663A6DB29F1C4E00036FE6B /* BeatFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = B663A6D529F1C47B0036FE6B /* BeatFonts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F729DFEB68005FFC40 /* BeatTranslation.h in Headers */ = {isa = PBXBuildFile; fileRef = B679B6F529DFEB68005FFC40 /* BeatTranslation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B679B6F829DFEB68005FFC40 /* BeatTranslation.m in Sources */ = {isa = PBXBuildFile; fileRef = B679B6F629DFEB68005FFC40 /* BeatTranslation.m */; };
+		B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */ = {isa = PBXBuildFile; fileRef = B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */; };
+		B6831EB42A0D1B5A00C2AC9F /* BeatMeasure.h in Headers */ = {isa = PBXBuildFile; fileRef = B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F53299D7D590031AE6B /* BeatLayoutManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B68C0F54299D7D590031AE6B /* BeatLayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */; };
 		B68C0F56299D7F2F0031AE6B /* BeatThemes.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */; };
@@ -92,6 +94,8 @@
 		B679B6F629DFEB68005FFC40 /* BeatTranslation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatTranslation.m; sourceTree = "<group>"; };
 		B681D58F29A37DBD00DF16CA /* BeatDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatDocument.h; sourceTree = "<group>"; };
 		B681D59029A37DBD00DF16CA /* BeatDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatDocument.m; sourceTree = "<group>"; };
+		B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatMeasure.m; sourceTree = "<group>"; };
+		B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatMeasure.h; sourceTree = "<group>"; };
 		B68C0F51299D7D590031AE6B /* BeatLayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatLayoutManager.h; sourceTree = "<group>"; };
 		B68C0F52299D7D590031AE6B /* BeatLayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatLayoutManager.m; sourceTree = "<group>"; };
 		B68C0F55299D7F2F0031AE6B /* BeatThemes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatThemes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -177,6 +181,8 @@
 				B6D32029298EBEDA003DA45D /* Extensions */,
 				B681D58F29A37DBD00DF16CA /* BeatDocument.h */,
 				B681D59029A37DBD00DF16CA /* BeatDocument.m */,
+				B6831EB22A0D1B2100C2AC9F /* BeatMeasure.h */,
+				B6831EB12A0D1B2100C2AC9F /* BeatMeasure.m */,
 			);
 			path = BeatCore;
 			sourceTree = "<group>";
@@ -317,6 +323,7 @@
 				B633C1DA298C60640011449D /* BeatColors.h in Headers */,
 				B633C1F1298C63E70011449D /* BeatAttributes.h in Headers */,
 				B633C1EC298C63210011449D /* BeatLocalization.h in Headers */,
+				B6831EB42A0D1B5A00C2AC9F /* BeatMeasure.h in Headers */,
 				B6D3202D298EBEEB003DA45D /* NSString+Levenshtein.h in Headers */,
 				B633C1D8298C60600011449D /* BeatRevisionItem.h in Headers */,
 				B633C1E2298C61150011449D /* BeatEditorDelegate.h in Headers */,
@@ -412,6 +419,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B68C0F5C299D821A0031AE6B /* BeatReview.swift in Sources */,
+				B6831EB32A0D1B2100C2AC9F /* BeatMeasure.m in Sources */,
 				B68C0F65299D843C0031AE6B /* BeatAttributedStringExtensions.swift in Sources */,
 				B633C1D6298C60600011449D /* BeatRevisions.m in Sources */,
 				B62FB013298FB6B1003492B5 /* BeatUserDefaults.m in Sources */,

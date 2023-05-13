@@ -118,6 +118,8 @@
 
 #pragma mark - Editing the text content
 
+@property (nonatomic, readonly) NSRange lastEditedRange;
+
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index;
 - (void)addString:(NSString*)string atIndex:(NSUInteger)index skipAutomaticLineBreaks:(bool)skipLineBreaks;
 - (void)replaceRange:(NSRange)range withString:(NSString*)newString;

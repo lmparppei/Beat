@@ -91,8 +91,8 @@
 		B6B37F5F28F027EA00657F5F /* BeatScreenplay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatScreenplay.m; sourceTree = "<group>"; };
 		B6B37F6228F0285D00657F5F /* BeatExportSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatExportSettings.m; sourceTree = "<group>"; };
 		B6B37F6328F0285D00657F5F /* BeatExportSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatExportSettings.h; sourceTree = "<group>"; };
-		B6D53C7729379A730039DF88 /* BeatMeasure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatMeasure.h; sourceTree = "<group>"; };
-		B6D53C7829379A740039DF88 /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeatMeasure.m; sourceTree = "<group>"; };
+		B6D53C7729379A730039DF88 /* BeatMeasure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeatMeasure.h; path = ../../Frameworks/BeatCore/BeatCore/BeatMeasure.h; sourceTree = "<group>"; };
+		B6D53C7829379A740039DF88 /* BeatMeasure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeatMeasure.m; path = ../../Frameworks/BeatCore/BeatCore/BeatMeasure.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

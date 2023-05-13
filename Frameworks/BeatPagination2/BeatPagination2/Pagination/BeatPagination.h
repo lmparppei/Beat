@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <BeatParsing/BeatParsing.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 
 #import "BeatPaginationPage.h"
 #import "BeatPaginationBlock.h"
@@ -44,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)paginationFinished:(BeatPagination*)pagination;
 @end
 
-@protocol BeatPaginationExports
+@protocol BeatPaginationExports <JSExport>
 @property (nonatomic) NSMutableArray<BeatPaginationPage*>* pages;
 @property (nonatomic) BeatExportSettings* settings;
 @property (nonatomic) NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>* __nullable titlePageContent;

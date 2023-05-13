@@ -105,6 +105,8 @@
 		[view addSubview:checkbox];
 		
 		height = 18;
+		
+		if (name) [_fields setValue:checkbox forKey:name];
 	} else {
 		[BeatConsole.shared logToConsole:[NSString stringWithFormat:@"'%@' is not a valid modal type. Ignoring.", type] pluginName:@"NOTE:"];
 		return;

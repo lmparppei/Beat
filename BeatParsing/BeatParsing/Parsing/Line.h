@@ -238,6 +238,9 @@ JSExportAs(setCustomData, - (NSDictionary*)setCustomData:(NSString*)key value:(i
 
 /// The type which this line was previously formatted as. Can be used for checking if the type has changed before reformatting.
 @property (nonatomic) LineType formattedAs;
+/// The resulting formatting in custom format (not compatible with AppKit/UIKit formatting)
+@property (nonatomic) NSAttributedString* formattedString;
+
 @property (nonatomic) NSUInteger numberOfPrecedingFormattingCharacters;
 
 @property (nonatomic) NSMutableIndexSet* boldRanges;

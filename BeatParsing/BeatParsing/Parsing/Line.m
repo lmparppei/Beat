@@ -412,6 +412,7 @@
 	return NSMakeRange(self.position, self.string.length + 1);
 }
 
+
 /// Range for text content only (excl. line break)
 -(NSRange)textRange {
 	// Range for the text only

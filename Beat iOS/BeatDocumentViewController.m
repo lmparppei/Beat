@@ -7,7 +7,6 @@
 //
 
 #import "BeatDocumentViewController.h"
-//#import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatPagination2/BeatPagination2.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatParsing/BeatParsing.h>

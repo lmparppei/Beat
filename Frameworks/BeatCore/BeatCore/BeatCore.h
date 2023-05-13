@@ -38,3 +38,4 @@ FOUNDATION_EXPORT const unsigned char BeatCoreVersionString[];
 #import "BeatTranslation.h"
 #import "BeatAutocomplete.h"
 #import "BeatEditorFormattingActions.h"
+#import "BeatMeasure.h"

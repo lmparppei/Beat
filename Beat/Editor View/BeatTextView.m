@@ -28,7 +28,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <BeatParsing/BeatParsing.h>
-#import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatCore/BeatCore-Swift.h>
@@ -36,7 +35,6 @@
 #import "BeatTextView.h"
 #import "ScrollView.h"
 #import "BeatPasteboardItem.h"
-#import "BeatMeasure.h"
 #import "Beat-Swift.h"
 #import "BeatEditorFormatting.h"
 

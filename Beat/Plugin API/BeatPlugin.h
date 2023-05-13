@@ -9,7 +9,6 @@
 
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <BeatCore/BeatCore.h>
-#import <BeatPaginationCore/BeatPaginationCore.h>
 #import "BeatPluginManager.h"
 
 #import <WebKit/WebKit.h>

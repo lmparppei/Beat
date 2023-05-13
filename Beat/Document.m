@@ -75,7 +75,6 @@
 
 #import <os/log.h>
 #import <QuartzCore/QuartzCore.h>
-#import <BeatPaginationCore/BeatPaginationCore.h>
 #import <BeatThemes/BeatThemes.h>
 #import <BeatCore/BeatCore.h>
 #import <BeatCore/BeatCore-Swift.h>
@@ -100,7 +99,6 @@
 #import "ITSwitch.h"
 #import "BeatTitlePageEditor.h"
 #import "BeatLockButton.h"
-#import "BeatMeasure.h"
 #import "BeatColorMenuItem.h"
 #import "BeatPlugin.h"
 #import "BeatPluginManager.h"
@@ -171,7 +169,13 @@
 @property (nonatomic) bool typewriterMode;
 @property (nonatomic) bool hideFountainMarkup;
 @property (nonatomic) NSMutableArray *recentCharacters;
+
+/// The last **change** range which was parsed, **not** the last edited range.
 @property (nonatomic) NSRange lastChangedRange;
+
+/// The range where last actual edit happened in text storage
+@property (nonatomic) NSRange lastEditedRange;
+
 @property (nonatomic) bool disableFormatting;
 @property (nonatomic, weak) IBOutlet BeatAutocomplete *autocompletion;
 
@@ -609,6 +613,7 @@ static BeatAppDelegate *appDelegate;
 	BeatExportSettings* settings = [BeatExportSettings operation:ForPreview document:self header:@"" printSceneNumbers:self.showSceneNumberLabels];
 
 	settings.paperSize = self.pageSize;
+	settings.revisions = BeatRevisions.revisionColors;
 	
 	return settings;
 }
@@ -1467,7 +1472,6 @@ static NSWindow __weak *currentKeyWindow;
 {
 	// Don't allow editing the script while tagging
 	if (_mode != EditMode || self.contentLocked) return NO;
-	
 	Line* currentLine = self.currentLine;
 	
 	// This shouldn't be here :-)
@@ -1568,7 +1572,6 @@ static NSWindow __weak *currentKeyWindow;
 	_currentLine = [self getCurrentLine];
 	
 	_lastChangedRange = (NSRange){ affectedCharRange.location, replacementString.length };
-	
 	return YES;
 }
 
@@ -1620,11 +1623,11 @@ static NSWindow __weak *currentKeyWindow;
 	// If we are just opening the document, do nothing
 	if (_documentIsLoading) return;
 	
-	// Register changes
-	if (_revisionMode) [self.revisionTracking registerChangesInRange:_lastChangedRange];
-	
 	// Update formatting
+	[BeatMeasure start:@"Format"];
 	[self applyFormatChanges];
+	[BeatMeasure end:@"Format"];
+	
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
@@ -1648,7 +1651,7 @@ static NSWindow __weak *currentKeyWindow;
 	for (id<BeatEditorView> view in _registeredViews) {
 		if (view.visible) [view reloadInBackground];
 	}
-	
+		
 	// Paginate
 	[self paginateAt:_lastChangedRange sync:NO];
 	
@@ -1673,11 +1676,31 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// Reset last changed range
 	_lastChangedRange = NSMakeRange(NSNotFound, 0);
+	
+	
 }
 
 -(void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta {
 	// Faux delegate method forwarded from NSTextView.
 	// Use if needed.
+	if (_documentIsLoading) return;
+	
+	if (editedMask & NSTextStorageEditedCharacters) {
+		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
+		
+		// Register changes
+		if (_revisionMode) {
+			NSRange changedRange = NSMakeRange(editedRange.location, delta);
+			if (delta < 0) {
+				changedRange.location -= labs(delta);
+				changedRange.length = labs(delta);
+			}
+			// Check that we didn't go out of range
+			if (changedRange.location >= 0  && changedRange.location != NSNotFound) {
+				[self.revisionTracking registerChangesInRange:changedRange];
+			}
+		}
+	}
 }
 
 - (void)textViewDidChangeSelection:(NSNotification *)notification {

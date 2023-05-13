@@ -25,7 +25,7 @@
 #import "BeatTextView.h"
 #import "BeatPlugin.h"
 #import "BeatPluginManager.h"
-#import "BeatMeasure.h"
+//#import "BeatMeasure.h"
 #import "BeatBrowserView.h"
 
 #import "BeatRendering.h"
