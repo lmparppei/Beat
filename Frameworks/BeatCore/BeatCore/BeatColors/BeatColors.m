@@ -43,7 +43,10 @@
 			 @"darkgray": [BeatColors colorWithRed:170 green:170 blue:170],
 			 @"verydarkgray": [BeatColors colorWithRed:100 green:100 blue:100],
 			 @"backgroundgray": [BeatColors colorWithRed:41 green:42 blue:45],
-			 @"fdxremoval": [BeatColors colorWithRed:255 green:190 blue:220]
+			 @"fdxremoval": [BeatColors colorWithRed:255 green:190 blue:220],
+             @"mint": [BeatColors colorWithRed:72 green:231 blue:211],
+             @"violet": [BeatColors colorWithRed:116 green:62 blue:230],
+             @"olive": [BeatColors colorWithRed:77 green:147 blue:44],
 	};
 	
 	return _colorValues;

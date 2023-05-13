@@ -359,43 +359,26 @@ static NSDictionary *fdxIds;
 		
 	NSString* paragraphType = [self typeAsFDXString:line.type];
 	if (paragraphType.length == 0) {
-		//Ignore if no type is known
+		//Ignore if no type is available
 		return;
 	}
+	// Add section depth for outline elements
+	if (line.type == section) {
+		paragraphType = format(@"%@ %lu", paragraphType, line.sectionDepth);
+	}
 	
-	NSMutableArray *paragraphStyles = [NSMutableArray array];
+	NSMutableArray<NSString*>* additionalTags = NSMutableArray.new;
+	NSMutableArray<NSString*>* paragraphStyles = NSMutableArray.new;
 	[paragraphStyles addObject:[NSString stringWithFormat:@"Type=\"%@\"", paragraphType]];
 	
-	//If no double dialogue is currently in action, and a dialogue should be printed, check if it is followed by double dialogue so both can be wrapped in a double dialogue
-	/*
-	if (!_inDualDialogue && line.type == character) {
-		for (NSUInteger i = index + 1; i < [lines count]; i++) {
-			Line* futureLine = lines[i];
-			if (futureLine.type == parenthetical ||
-				futureLine.type == dialogue ||
-				futureLine.type == empty) {
-				continue;
-			}
-			if (futureLine.type == dualDialogueCharacter) {
-				_inDualDialogue = YES;
-			}
-			break;
-		}
-		
-		if (_inDualDialogue) {
-			[_result appendString:@"    <Paragraph>\n"];
-			[_result appendString:@"      <DualDialogue>\n"];
-		}
-	}
-	 */
-	
+	// Create dual dialogue block
 	if (line.type == character && line.nextElementIsDualDialogue) {
 		[_result appendString:@"    <Paragraph>\n"];
 		[_result appendString:@"      <DualDialogue>\n"];
 		_inDualDialogue = YES;
 	}
 	
-	//Append Open Paragraph Tag
+	// Append special styles for some elements
 	if (line.type == centered) {
 		[paragraphStyles addObject: @"Alignment=\"Centered\""];
 	}
@@ -404,11 +387,20 @@ static NSDictionary *fdxIds;
 		//if (line.sceneNumber) line.string = [line.string stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"#%@#", line.sceneNumber] withString:@""];
 		
 		[paragraphStyles addObject:[NSString stringWithFormat:@"Number=\"%@\"", line.sceneNumber]];
+		
+		if (line.color) {
+			NSString* color = [BeatColors colorWith16bitHex:line.color];
+			if (color != nil) {
+				NSString* sceneProperties = format(@"      <SceneProperties Color=\"#%@\" Title=\"\">\n        <SceneArcBeats />\n      </SceneProperties>\n", color);
+				[additionalTags addObject:sceneProperties];
+			}
+		}
 	}
-	
-	// IF it's a dual dialogue block, we won't do the paragraph stylization
-	
+		
 	[_result appendFormat:@"    <Paragraph %@>\n", [paragraphStyles componentsJoinedByString:@" "]];
+	for (NSString* additionalTag in additionalTags) {
+		[_result appendString:additionalTag];
+	}
 	
 	//Append content
 	[self appendLineContents:line];
@@ -469,7 +461,7 @@ static NSDictionary *fdxIds;
 		case empty:
 			return @"";
 		case section:
-			return @"";
+			return @"Outline";
 		case synopse:
 			return @"";
 		case titlePageTitle:

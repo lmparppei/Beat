@@ -23,6 +23,7 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatCore/BeatRevisions.h>
+#import <BeatCore/BeatColors.h>
 #import "FDXImport.h"
 #import "FDXElement.h"
 
@@ -47,6 +48,8 @@
 @property (nonatomic) NSUInteger dualDialogue;
 @property (nonatomic) bool didFinishText;
 @property (nonatomic) FDXElement *element;
+
+@property (nonatomic) NSString* sceneColor;
 
 @end
 
@@ -107,6 +110,11 @@ static bool insideParagraph = false;
 			_alignment = attributeDict[@"Alignment"];
 		}
 		
+		// Null the scene color when a new scene/outline element begins
+		if ([attributeDict[@"Type"] isEqualToString:@"Scene Heading"] || [attributeDict[@"Type"] rangeOfString:@"Outline"].location != NSNotFound) {
+			_sceneColor = nil;
+		}
+		
 		// Create new element
 		_element = [FDXElement withText:@""];
 	}
@@ -116,6 +124,11 @@ static bool insideParagraph = false;
 		_textStyle = attributeDict[@"Style"];
 		_revisionID = attributeDict[@"RevisionID"];
 	}
+	else if ([elementName isEqualToString:@"SceneProperties"]) {
+		// Read possible scene color
+		_sceneColor = attributeDict[@"Color"];
+	}
+	
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string{
@@ -216,8 +229,6 @@ static bool insideParagraph = false;
 		}
 				
 		// Format contents
-		//result = [self fountainString:_attrText];
-
 		if ([_activeElement isEqualToString:@"Scene Heading"]) {
 			// Set to uppercase
 			[_element makeUppercase];
@@ -230,6 +241,29 @@ static bool insideParagraph = false;
 			) {
 				[_element insertAtBeginning:@"."];
 			}
+			
+			if (_sceneColor != nil) {
+				NSString* colorString = [NSString stringWithFormat:@" [[%@]]", [self colorNameFor16bitHex:_sceneColor]];
+				[_element append:colorString];
+			}
+		}
+		else if ([_activeElement containsString:@"Outline"]) {
+			NSInteger p = [_activeElement rangeOfString:@" "].location;
+			NSInteger depth = 1;
+			
+			// Add space if needed
+			if (_activeElement.length > 0 && [_element.string characterAtIndex:0] != ' ') {
+				[_element insertAtBeginning:@" "];
+			}
+			
+			if (p != NSNotFound && _activeElement.length > p) {
+				depth = [_activeElement substringFromIndex:p + 1].integerValue;
+			}
+
+			for (NSInteger i=0; i<depth; i++) {
+				[_element insertAtBeginning:@"#"];
+			}
+			
 		}
 		else if ([_activeElement isEqualToString:@"Lyrics"]) {
 			[_element insertAtBeginning:@"~"];
@@ -254,7 +288,7 @@ static bool insideParagraph = false;
 			_lastAddedLine = _element;
 		}
 	}
-	
+
 	// Start & end sections
 	if ([elementName isEqualToString:@"TitlePage"]) {
 		_titlePage = NO;
@@ -280,6 +314,36 @@ static bool insideParagraph = false;
 	[settings set:DocSettingRevisions as:revisionRanges];
 	
 	return [NSString stringWithFormat:@"%@\n%@", attributedScript.string, [settings getSettingsString]];
+}
+
+- (NSString*)colorNameFor16bitHex:(NSString*)hex {
+	static NSMutableDictionary* colors;
+	
+	if (colors == nil) {
+		colors = NSMutableDictionary.new;
+		
+		[colors addEntriesFromDictionary:@{
+			@"#E2E29898DDDD": @"pink",
+			@"#EBEB62627B7B": @"red",
+			@"#EFEFA4A46262": @"orange",
+			@"#E5E5CBCB6C6C": @"yellow",
+			@"#929290900000": @"olive",
+			@"#8F8FC3C36A6A": @"green",
+			@"#8888CACAB8B8": @"mint",
+			@"#6363A7A7EFEF": @"blue",
+			@"#9A9AAEAEDBDB": @"violet",
+			@"#AFAF9393E8E8": @"purple",
+			@"#B2B27C7C7373": @"brown",
+			@"#C0C0C0C0C0C0": @"gray"
+		}];
+		
+		for (NSString* key in BeatColors.colors.allKeys) {
+			NSString* hx = [NSString stringWithFormat:@"#%@", [BeatColors colorWith16bitHex:key]];
+			colors[hx] = key;
+		}
+	}
+	
+	return colors[hex];
 }
 
 @end
