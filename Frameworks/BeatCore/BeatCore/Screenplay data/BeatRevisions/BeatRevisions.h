@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setup;
 - (void)loadRevisions;
 - (void)registerChangesInRange:(NSRange)range;
+- (void)registerChangesWithLocation:(NSInteger)location length:(NSInteger)length delta:(NSInteger)delta;
 - (void)markerAction:(RevisionType)type;
 //- (void)markRangeAsAddition:(NSRange)range;
 //- (void)markRangeForRemoval:(NSRange)range;

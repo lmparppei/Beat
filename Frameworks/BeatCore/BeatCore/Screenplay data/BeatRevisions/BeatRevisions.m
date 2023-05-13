@@ -374,8 +374,25 @@
 
 #pragma mark Register changes
 
+/// This is for registering changes via `NSTextStorage` delegate method `didProcessEditing`.
+- (void)registerChangesWithLocation:(NSInteger)location length:(NSInteger)length delta:(NSInteger)delta {
+    if (delta < 0 && length == 0) {
+        // This is a removal.
+        // In the near future, we'll add a removal marker here.
+        location -= labs(delta);
+        length = 1;
+    }
+    
+    if (location < 0) return;
+    
+    [self registerChangesInRange:NSMakeRange(location, length)];
+}
+
 /// When in revision mode, this method automatically adds revision markers to given range. Should only invoked when editing has happened.
 - (void)registerChangesInRange:(NSRange)range {
+    // Avoid going out of range
+    if (NSMaxRange(range) > self.delegate.text.length) return;
+    
 	NSString * change = [self.delegate.text substringWithRange:range];
 
 	// Check if this was just a line break
