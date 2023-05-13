@@ -170,7 +170,7 @@
 }
  */
 
--(void)reloadOutline:(NSArray*)changesInOutline
+-(void)reloadOutline:(NSSet*)changesInOutline
 {
 	NSRect bounds = self.enclosingScrollView.contentView.bounds;
 	

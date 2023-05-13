@@ -137,7 +137,7 @@
 
 //Convenience Methods for Outlineview data
 - (BOOL)getAndResetChangeInOutline;
-- (NSArray*)changesInOutline;
+- (NSSet*)changesInOutline;
 - (NSUInteger)numberOfOutlineItems; //Returns the number of items for the outline view
 - (Line*)closestPrintableLineFor:(Line*)line;
 

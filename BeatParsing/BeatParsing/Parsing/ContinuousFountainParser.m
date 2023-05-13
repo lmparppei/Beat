@@ -1926,12 +1926,71 @@ static NSDictionary* patterns;
 				} else {
 					scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
 				}
+                
+                [self updateSceneNumbersInCurrentOutline];
 				return;
 			}
 		}
 	}
 	
 	[self createOutline];
+}
+
+/// This updates the scene numbers in current outline
+- (void)updateSceneNumbersInCurrentOutline {
+    NSMutableArray* autoNumbered = NSMutableArray.new;
+    NSMutableSet<NSString*>* forcedNumbers = NSMutableSet.new;
+    
+    for (OutlineScene* scene in self.outline) {
+        if (scene.line.sceneNumberRange.length > 0) [forcedNumbers addObject:scene.sceneNumber];
+        else [autoNumbered addObject:scene];
+    }
+    
+    [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
+}
+- (void)updateSceneNumbers:(NSArray*)autoNumbered forcedNumbers:(NSSet*)forcedNumbers {
+    static NSArray* postfixes;
+    if (postfixes == nil) postfixes = @[@"A", @"B", @"C", @"D", @"E", @"F", @"G"];
+
+    NSInteger sceneNumber = [self sceneNumberOrigin];
+    for (OutlineScene* scene in autoNumbered) {
+        if (scene.line.omitted) {
+            scene.sceneNumber = @"";
+            continue;
+        }
+        
+        NSString* oldSceneNumber = scene.sceneNumber;
+        NSString* s = [NSString stringWithFormat:@"%lu", sceneNumber];
+                
+        if ([forcedNumbers containsObject:s]) {
+            for (NSInteger i=0; i<postfixes.count; i++) {
+                s = [NSString stringWithFormat:@"%lu%@", sceneNumber, postfixes[i]];
+                if (![forcedNumbers containsObject:s]) break;
+            }
+        }
+        
+        if (![oldSceneNumber isEqualToString:s]) {
+            self.changeInOutline = true;
+            [self.changedOutlineElements addObject:scene.line];
+        }
+
+        scene.sceneNumber = s;
+        sceneNumber++;
+    }
+}
+
+- (NSSet*)sceneNumbersInOutline {
+    NSMutableSet<NSString*>* sceneNumbers = NSMutableSet.new;
+    for (OutlineScene* scene in self.outline) {
+        [sceneNumbers addObject:scene.sceneNumber];
+    }
+    return sceneNumbers;
+}
+
+- (NSInteger)sceneNumberOrigin {
+    NSInteger i = [self.documentSettings getInt:DocSettingSceneNumberStart];
+    if (i > 0) return i;
+    else return 1;
 }
 
 - (void)createOutlineUsingLines:(NSArray<Line*>*)lines
@@ -1943,12 +2002,9 @@ static NSDictionary* patterns;
         [_storybeats removeAllObjects];
         [_storylines removeAllObjects];
         
-        // Set first scene number
-        NSUInteger sceneNumber = 1;
-        
-        if ([self.documentSettings getInt:DocSettingSceneNumberStart] > 0) {
-            sceneNumber = [self.documentSettings getInt:DocSettingSceneNumberStart];
-        }
+        // Manage scene numbering
+        NSMutableArray<OutlineScene*>* autoNumbered = NSMutableArray.new;
+        NSMutableSet<NSString*>* forcedNumbers = NSMutableSet.new;
         
         OutlineScene *previousScene;
         NSUInteger sectionDepth = 0; // We will store a section depth to adjust depth for scenes that come after a section
@@ -2020,22 +2076,9 @@ static NSDictionary* patterns;
                 }
                 
                 if (line.type == heading) {
-                    // Check if the scene is omitted
-                    // If the scene is omited, let's not increment scene number for it.
-                    // However, if the scene has a forced number, we'll maintain it
-                    if (line.sceneNumberRange.length > 0) {
-                        scene.sceneNumber = line.sceneNumber;
-                    }
-                    else {
-                        if (!line.omitted) {
-                            scene.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-                            line.sceneNumber = [NSString stringWithFormat:@"%lu", sceneNumber];
-                            sceneNumber++;
-                        } else {
-                            scene.sceneNumber = @"";
-                            line.sceneNumber = @"";
-                        }
-                    }
+                    // Handle scene number management
+                    if (line.sceneNumberRange.length > 0) [forcedNumbers addObject:line.sceneNumber];
+                    else [autoNumbered addObject:scene];
                     
                     // Set parent (NOTE: can be nil)
                     scene.parent = lastFoundSection;
@@ -2083,6 +2126,8 @@ static NSDictionary* patterns;
             }
         }
         if (sceneIndex == 0) [_outline removeAllObjects];
+        
+        [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
     }
 }
 
@@ -2136,10 +2181,10 @@ static NSDictionary* patterns;
 	[_changedOutlineElements addObject:line];
 }
 
-- (NSArray*)changesInOutline {
-    if (_changedOutlineElements == nil) return @[];
+- (NSSet*)changesInOutline {
+    if (_changedOutlineElements == nil) return NSSet.new;
     
-	NSArray *changes = _changedOutlineElements.copy;
+	NSSet *changes = _changedOutlineElements.copy;
 	[_changedOutlineElements removeAllObjects];
 	return changes;
 }

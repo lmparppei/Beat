@@ -1624,16 +1624,22 @@ static NSWindow __weak *currentKeyWindow;
 	if (_documentIsLoading) return;
 	
 	// Update formatting
-	[BeatMeasure start:@"Format"];
+	//[BeatMeasure start:@"Format"];
 	[self applyFormatChanges];
-	[BeatMeasure end:@"Format"];
+	//[BeatMeasure end:@"Format"];
 	
 	
 	// If outline has changed, we will rebuild outline & timeline if needed
 	bool changeInOutline = [self.parser getAndResetChangeInOutline];
 	
 	// NOTE: calling this method removes the outline changes from parser
-	NSArray *changesInOutline = self.parser.changesInOutline;
+	NSSet* changesInOutline = self.parser.changesInOutline;
+
+	// Update scene numbers
+	[changesInOutline enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
+		Line* line = obj;
+		if (self.currentLine != line) [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
+	}];
 	
 	if (changeInOutline == YES) {
 		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
@@ -1689,16 +1695,8 @@ static NSWindow __weak *currentKeyWindow;
 		self.lastEditedRange = NSMakeRange(editedRange.location, delta);
 		
 		// Register changes
-		if (_revisionMode) {
-			NSRange changedRange = NSMakeRange(editedRange.location, delta);
-			if (delta < 0) {
-				changedRange.location -= labs(delta);
-				changedRange.length = labs(delta);
-			}
-			// Check that we didn't go out of range
-			if (changedRange.location >= 0  && changedRange.location != NSNotFound) {
-				[self.revisionTracking registerChangesInRange:changedRange];
-			}
+		if (_revisionMode && _lastChangedRange.location != NSNotFound) {
+			[self.revisionTracking registerChangesWithLocation:editedRange.location length:_lastChangedRange.length delta:delta];
 		}
 	}
 }
