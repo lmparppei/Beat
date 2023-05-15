@@ -280,6 +280,11 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (firstTime || line.position == _delegate.text.length) attributes = NSMutableDictionary.new;
 	else attributes = [textStorage attributesAtIndex:line.position longestEffectiveRange:nil inRange:line.textRange].mutableCopy;
 	
+	// Remove some attributes
+	[attributes removeObjectForKey:BeatRevisions.attributeKey];
+	[attributes removeObjectForKey:BeatReview.attributeKey];
+	[attributes removeObjectForKey:BeatRepresentedLineKey];
+	
 	// Store the represented line
 	NSRange representedRange;
 	if (range.length > 0) {
