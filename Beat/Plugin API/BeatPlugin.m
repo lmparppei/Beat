@@ -1314,6 +1314,11 @@
 - (void)createPreviewAt:(NSInteger)location {
 	[self.delegate.previewController createPreviewWithChangeAt:location sync:true];
 }
+
+- (void)invalidatePreview {
+	[self.delegate.previewController clearPreview];
+}
+
 #endif
 
 

@@ -119,6 +119,7 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	
 	@objc func clearPreview() {
 		self.previewView?.clear()
+		self.pagination?.finishedPagination = nil
 		self.createPreview(changeAt: 0, sync: false)
 	}
 	
