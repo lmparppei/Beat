@@ -1943,7 +1943,7 @@ static NSDictionary* patterns;
     
     for (OutlineScene* scene in self.outline) {
         if (scene.line.sceneNumberRange.length > 0) [forcedNumbers addObject:scene.sceneNumber];
-        else [autoNumbered addObject:scene];
+        else if (scene.type == heading) [autoNumbered addObject:scene];
     }
     
     [self updateSceneNumbers:autoNumbered forcedNumbers:forcedNumbers];
