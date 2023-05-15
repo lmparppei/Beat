@@ -235,6 +235,11 @@ class BeatTitlePageView:BeatPaginationPageView {
 			}
 		}
 		
+		// Remove backgrounds
+		leftColumn.drawsBackground = false
+		rightColumn.drawsBackground = false
+		textView.drawsBackground = false
+		
 		// Layout manager doesn't handle newlines too well, so let's trim the column content
 		leftColumn.textStorage?.setAttributedString(leftColumn.attributedString().trimmedAttributedString(set: .newlines))
 		rightColumn.textStorage?.setAttributedString(rightColumn.attributedString().trimmedAttributedString(set: .newlines))
@@ -247,9 +252,7 @@ class BeatTitlePageView:BeatPaginationPageView {
 		_ = rightColumn.layoutManager!.glyphRange(for: rightColumn.textContainer!)
 		let leftRect = leftColumn.layoutManager!.usedRect(for: leftColumn.textContainer!)
 		let rightRect = rightColumn.layoutManager!.usedRect(for: rightColumn.textContainer!)
-		
-		
-		
+				
 		// We'll calculate correct insets for the boxes, so the content will be bottom-aligned
 		let insetLeft = leftColumn.frame.height - leftRect.height
 		let insetRight = rightColumn.frame.height - rightRect.height
@@ -332,7 +335,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 		if (leftColumn == nil) {
 			leftColumn = NSTextView(frame: columnFrame)
 			leftColumn?.isEditable = false
-			leftColumn?.backgroundColor = .white
+			leftColumn?.drawsBackground = false
+			//leftColumn?.backgroundColor = .white
 			leftColumn?.isSelectable = false
 			
 			self.addSubview(leftColumn!)
@@ -344,7 +348,8 @@ class BeatTitlePageView:BeatPaginationPageView {
 			
 			rightColumn = NSTextView(frame: rightColumnFrame)
 			rightColumn?.isEditable = false
-			rightColumn?.backgroundColor = .white
+			rightColumn?.drawsBackground = false
+			//rightColumn?.backgroundColor = .white
 			rightColumn?.isSelectable = false
 			
 			self.addSubview(rightColumn!)

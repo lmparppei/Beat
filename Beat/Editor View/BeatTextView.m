@@ -184,6 +184,8 @@ static NSTouchBarItemIdentifier ColorPickerItemIdentifier = @"com.TouchBarCatalo
 	
 	// Style
 	self.font = _editorDelegate.courier;
+	[self.textStorage setFont:_editorDelegate.courier];
+	
 	self.automaticDataDetectionEnabled = NO;
 	self.automaticQuoteSubstitutionEnabled = NO;
 	self.automaticDashSubstitutionEnabled = NO;

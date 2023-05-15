@@ -213,7 +213,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 
 
 - (void)setFontForLine:(Line*)line {
-	[self setFontForLine:line force:true];
+	[self setFontForLine:line force:false];
 }
 - (void)setFontForLine:(Line*)line force:(bool)force {
 	NSTextStorage *textStorage = _delegate.textStorage;
@@ -268,12 +268,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	NSRange fullRange = line.range; // range WITH line break
 	if (NSMaxRange(fullRange) > textStorage.length) fullRange.length--;
 
-	// Store the type we are formatting for
-	line.formattedAs = line.type;
-	
-	// Set font face (if needed)
-	[self setFontForLine:line];
-	
+	bool forceFont = false;
+	if (line.formattedAs != line.type) forceFont = true;
+			
 	// Current attribute dictionary
 	NSMutableDictionary* attributes;
 	NSMutableDictionary* newAttributes = NSMutableDictionary.new;
@@ -284,15 +281,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[attributes removeObjectForKey:BeatRevisions.attributeKey];
 	[attributes removeObjectForKey:BeatReview.attributeKey];
 	[attributes removeObjectForKey:BeatRepresentedLineKey];
-	
+		
 	// Store the represented line
 	NSRange representedRange;
 	if (range.length > 0) {
 		Line* representedLine = [textStorage attribute:BeatRepresentedLineKey atIndex:line.position longestEffectiveRange:&representedRange inRange:range];
 		if (representedLine != line || representedRange.length != range.length) {
+			forceFont = true;
 			[textStorage addAttribute:BeatRepresentedLineKey value:line range:fullRange];
 		}
 	} else {
+		forceFont = true;
 		newAttributes[BeatRepresentedLineKey] = line;
 	}
 		
@@ -320,6 +319,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		
 		return;
 	}
+	
+	// Store the type we are formatting for
+	line.formattedAs = line.type;
 	
 	// Extra rules for character cue input
 	if (_delegate.characterInput && _delegate.characterInputForLine == line) {
@@ -378,29 +380,37 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			paragraphStyle = [self paragraphStyleFor:line];
 		}
 		
-		[attributes setObject:_delegate.courier forKey:NSFontAttributeName];
 		[attributes setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
-		[_delegate setTypingAttributes:attributes];
-	} else {
-		[_delegate setTypingAttributes:attributes];
 	}
+	
+	// Set typing attributes
+	attributes[NSFontAttributeName] = _delegate.courier;
+	[_delegate setTypingAttributes:attributes];
 
-	[self applyInlineFormatting:line withAttributes:attributes];
+	[self applyInlineFormatting:line reset:forceFont];
 	[self setTextColorFor:line];
 	[self revisedTextColorFor:line];
 } }
 
-- (void)applyInlineFormatting:(Line*)line withAttributes:(NSDictionary*)attributes {
+- (void)applyInlineFormatting:(Line*)line reset:(bool)reset {
 	NSTextStorage *textStorage = _delegate.textStorage;
-	
 	NSRange range = NSMakeRange(0, line.length);
-	
+
 	NSAttributedString* astr = line.attributedStringForFDX;
-	if ([astr isEqualToAttributedString:line.formattedString] && !line.isOutlineElement && line.type != synopse) {
+	bool formattingUnchanged = [astr isEqualToAttributedString:line.formattedString];
+	if (!reset &&
+		formattingUnchanged &&
+		!line.isOutlineElement &&
+		line.type != synopse &&
+		line.type != lyrics) {
 		// We've already formatted the string, no need to reformat inline content
 		return;
 	}
+	
+	bool force = (!reset && line.noFormatting && formattingUnchanged) ? false : true;
+	[self setFontForLine:line force:force];
 	line.formattedString = astr;
+
 	
 	/*
 	// An die Nachgeborenen.
@@ -450,6 +460,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line.type == heading) {
 		if (_delegate.headingStyleBold) [textStorage applyFontTraits:NSBoldFontMask range:line.textRange];
 		if (_delegate.headingStyleUnderline) [textStorage addAttribute:NSUnderlineStyleAttributeName value:@1 range:line.textRange];
+	}
+	else if (line.type == lyrics) {
+		[textStorage applyFontTraits:NSFontItalicTrait range:line.textRange];
 	}
 	
 	//Add in bold, underline, italics and other stylization
@@ -708,7 +721,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (!value) return;
 	
 	NSTextStorage *textStorage = _delegate.textStorage;
-	
 	NSRange effectiveRange;
 	
 	if (sym.length == 0) {
@@ -728,7 +740,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 				
 		// Add the attribute if needed
 		[textStorage enumerateAttribute:key inRange:globalRange options:0 usingBlock:^(id  _Nullable attr, NSRange range, BOOL * _Nonnull stop) {
-			if (attr != value) [textStorage addAttribute:key value:value range:range];
+			if (attr != value) {
+				[textStorage addAttribute:key value:value range:range];
+			}
 		}];
 	}
 }

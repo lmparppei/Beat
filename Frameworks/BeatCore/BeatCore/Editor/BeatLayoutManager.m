@@ -536,79 +536,82 @@
     bool showTags = _editorDelegate.showTags;
     bool showRevisions = _editorDelegate.showRevisions;
     
-    NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
-    [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-        if (range.location < 0 || NSMaxRange(range) < 0) return;
+    [self enumerateLineFragmentsForGlyphRange:glyphsToShow usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
+        NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
         
-        BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
-        BeatTag* tag = attrs[BeatTagging.attributeKey];
-        BeatReviewItem *review = attrs[BeatReview.attributeKey];
-        
-        // Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
-        NSRange rRange = range;
-        for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
-            if (i < 0) break;
-            if ([self.textStorage.string characterAtIndex:i] == '\n') {
-                rRange.length = rRange.length - 1;
-                break;
+        [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+            if (range.location < 0 || NSMaxRange(range) < 0) return;
+                        
+            BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
+            BeatTag* tag = attrs[BeatTagging.attributeKey];
+            BeatReviewItem *review = attrs[BeatReview.attributeKey];
+                        
+            // Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
+            NSRange rRange = range;
+            for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
+                if (i < 0) break;
+                if ([self.textStorage.string characterAtIndex:i] == '\n') {
+                    rRange.length = rRange.length - 1;
+                    break;
+                }
             }
-        }
-        
-        NSRange usedRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
-        CGRect aRect = [self boundingRectForGlyphRange:usedRange inTextContainer:self.textContainers.firstObject];
-        
-        aRect.origin.x += inset.width;
-        aRect.origin.y += inset.height;
-        
-        if (review != nil && !review.emptyReview) {
-            if (bgColors[@"review"] == nil) {
-                BXColor *reviewColor = BeatReview.reviewColor;
-                bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.5];
-            }
-            BXColor *color = bgColors[@"review"];
-            [color setFill];
+            
+            NSRange usedRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
+            CGRect aRect = [self boundingRectForGlyphRange:usedRange inTextContainer:self.textContainers.firstObject];
+            aRect.origin.x += inset.width;
+            aRect.origin.y += inset.height;
+            
+            if (review != nil && !review.emptyReview) {
+                if (bgColors[@"review"] == nil) {
+                    BXColor *reviewColor = BeatReview.reviewColor;
+                    bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.5];
+                }
+                BXColor *color = bgColors[@"review"];
+                [color setFill];
 
-            NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
-            CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
-            bool fullLine = (fullGlyphRange.length == glyphsToShow.length - 1);
-            
-            fullRect.origin.x += inset.width;
-            fullRect.origin.y += inset.height;
-            
-            if (fullLine) {
-                CGFloat padding = textView.textContainer.lineFragmentPadding;
-                fullRect.origin.x = inset.width + padding;
-                fullRect.size.width = textView.textContainer.size.width - padding * 2;
+                
+                NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
+                CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
+                bool fullLine = (fullGlyphRange.length == glyphRange.length - 1);
+                
+                fullRect.origin.x += inset.width;
+                fullRect.origin.y += inset.height;
+                
+                if (fullLine) {
+                    CGFloat padding = textView.textContainer.lineFragmentPadding;
+                    fullRect.origin.x = inset.width + padding;
+                    fullRect.size.width = textView.textContainer.size.width - padding * 2;
+                }
+                
+                BXRectFill(fullRect);
             }
             
-            BXRectFill(fullRect);
-        }
-        
-        if (tag != nil && showTags) {
-            if (bgColors[tag.typeAsString] == nil) {
-                bgColors[tag.typeAsString] = [[BeatTagging colorFor:tag.type] colorWithAlphaComponent:0.5];
-            }
+            if (tag != nil && self.editorDelegate.showTags) {
+                if (bgColors[tag.typeAsString] == nil) {
+                    bgColors[tag.typeAsString] = [[BeatTagging colorFor:tag.type] colorWithAlphaComponent:0.5];
+                }
 
-            BXColor *tagColor = bgColors[tag.typeAsString];
-            [tagColor setFill];
-            
-            BXRectFill(aRect);
-        }
-        
-        // Draw revision backgrounds last, so the underlines go on top of other stuff.
-        if (revision.type == RevisionAddition && showRevisions && rRange.length > 0) {
-            CGRect revisionRect = aRect;
-            
-            if (bgColors[revision.colorName] == nil) {
-                bgColors[revision.colorName] = [[BeatColors color:revision.colorName] colorWithAlphaComponent:.3];
+                BXColor *tagColor = bgColors[tag.typeAsString];
+                [tagColor setFill];
+                
+                BXRectFill(aRect);
             }
-            [bgColors[revision.colorName] setFill];
             
-            revisionRect.origin.y += revisionRect.size.height - 1.0;
-            revisionRect.size.height = 2.0;
-            
-            BXRectFill(revisionRect);
-        }
+            // Draw revision backgrounds last, so the underlines go on top of other stuff.
+            if (revision.type == RevisionAddition && self.editorDelegate.showRevisions && rRange.length > 0) {
+                CGRect revisionRect = aRect;
+                
+                if (bgColors[revision.colorName] == nil) {
+                    bgColors[revision.colorName] = [[BeatColors color:revision.colorName] colorWithAlphaComponent:.3];
+                }
+                [bgColors[revision.colorName] setFill];
+                
+                revisionRect.origin.y += revisionRect.size.height - 1.0;
+                revisionRect.size.height = 2.0;
+                
+                BXRectFill(revisionRect);
+            }
+        }];
     }];
      
 	[super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
