@@ -61,7 +61,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     @objc public var finishedPagination:BeatPagination?
 
 	var operationQueue:[BeatPagination] = [];
-	var pageCache:NSMutableArray?
     public var pages:[BeatPaginationPage] {
 		return (finishedPagination?.pages ?? []) as! [BeatPaginationPage]
 	}
@@ -139,7 +138,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 	 let titlePage = pagination.titlePage
 	 */
 	@objc public func newPagination(screenplay:BeatScreenplay, settings:BeatExportSettings, forEditor:Bool, changeAt:Int) {
-		self.pageCache = self.finishedPagination?.pages
 		self.settings = settings
 		
 		let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: changeAt)
@@ -148,7 +146,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     
     /// Use this when paginating with an editor delegate
     @objc public func newPagination() {
-        self.pageCache = self.finishedPagination?.pages
         self.settings = self.delegate!.exportSettings!
         
         let operation = BeatPagination.newPagination(with: self.delegate!.parser!.forPrinting()!, delegate: self, cachedPages: self.pages, livePagination: self.livePagination, changeAt: 0)
@@ -157,8 +154,6 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
     
     /// Paginates given screenplay object
     @objc public func newPagination(screenplay:BeatScreenplay) {
-        self.pageCache = []
-        
         let operation = BeatPagination.newPagination(with: screenplay, delegate: self, cachedPages: self.pages, livePagination: false, changeAt: 0)
         runPagination(pagination: operation)
     }

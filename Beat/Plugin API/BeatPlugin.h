@@ -245,10 +245,10 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 @property (nonatomic, strong) NSMutableArray<BeatPrintView*> *printViews;
 @property (nonatomic, readonly) BeatPaginationManager *paginator;
 @property (nonatomic, readonly) BeatPreviewController* previewController;
+- (void)createPreviewAt:(NSInteger)location;
 
 - (void)addWidget:(id)widget;
 - (IBAction)showWidgets:(id)sender;
-
 #endif
 
 @property (nonatomic, readonly, weak) BXTextView *textView;

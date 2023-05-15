@@ -1299,6 +1299,8 @@
 
 #pragma mark - New pagination interface
 
+#if !TARGET_OS_IOS
+
 - (BeatPaginationManager*)pagination
 {
 	return [BeatPaginationManager.alloc initWithEditorDelegate:self.delegate.document];
@@ -1308,6 +1310,11 @@
 {
 	return self.delegate.previewController.pagination;
 }
+
+- (void)createPreviewAt:(NSInteger)location {
+	[self.delegate.previewController createPreviewWithChangeAt:location sync:true];
+}
+#endif
 
 
 #pragma mark - Widget interface and Plugin UI API
