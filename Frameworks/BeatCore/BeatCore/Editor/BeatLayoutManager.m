@@ -32,6 +32,14 @@
 #define BXBezierPath NSBezierPath
 #endif
 
+#if TARGET_OS_IOS
+    #define rectNumberValue(s) [NSValue valueWithCGRect:rect]
+    #define getRectValue CGRectValue
+#else
+    #define rectNumberValue(s) [NSValue valueWithRect:rect]
+    #define getRectValue rectValue
+#endif
+
 @implementation BeatLayoutManager
 
 @dynamic delegate;
@@ -53,16 +61,124 @@
 	}
 
 	[super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
-		
-	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
-	
-    BXTextView* textView = self.editorDelegate.getTextView;
-#if TARGET_OS_IOS
-    CGSize inset = CGSizeMake(textView.textContainerInset.left, textView.textContainerInset.top);
-#else
-    CGSize inset = textView.textContainerInset;
-#endif
     
+    CGSize inset = [self offsetSize];
+	NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
+
+
+    /*
+     // This is an idea for unifying the attribute enumeration.
+     // Performance gain is minimal or non-existent, but if we
+     // combine some caching with this, it could be very quick.
+     
+     static NSMutableSet* representedLines;
+     static NSRange previousCharRange;
+     static NSRange previousSelectedRange;
+     
+     if (NSEqualRanges(charRange, previousCharRange) && NSEqualRanges(previousSelectedRange, self.editorDelegate.selectedRange) && representedLines.count > 0) {
+         // We can use cached results
+     }
+
+     if (representedLines == nil) representedLines = NSMutableSet.new;
+     [representedLines removeAllObjects];
+     
+     NSTextContainer* textContainer = self.textContainers.firstObject;
+     BXTextView* textView = self.editorDelegate.getTextView;
+     
+     NSArray<NSString*>* shownRevisions = BeatRevisions.revisionColors;
+     NSMutableDictionary<NSString*, NSMutableSet<NSValue*>*> *revisions = NSMutableDictionary.new;
+     for (NSString *string in BeatRevisions.revisionColors) revisions[string] = NSMutableSet.new;
+     
+    [BeatMeasure start:@"New"];
+    [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+        NSRange glyphRange = [self glyphRangeForCharacterRange:range actualCharacterRange:nil];
+        
+        // Store revision marker positions (we'll draw these later, after we've enumerated the whole range)
+        BeatRevisionItem* item = attrs[BeatRevisions.attributeKey];
+        if (item != nil && (item.type == RevisionAddition || item.type == RevisionCharacterRemoved) && [shownRevisions containsObject:item.colorName]) {
+
+            CGRect boundingRect = [self boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
+            CGRect rect = CGRectMake(inset.width + _editorDelegate.documentWidth - 22,
+                                     inset.height + boundingRect.origin.y,
+                                     22,
+                                     boundingRect.size.height + 1.0);
+            
+            // Add the marker to dictionary:
+            // dict["colorName"][] -> rect
+            [revisions[item.colorName] addObject:rectNumberValue(rect)];
+        }
+        
+        // Check that we haven't handled this line yet for line-specific graphics
+        // (scene number, marker, etc)
+        if (attrs[@"representedLine"] != nil && ![representedLines containsObject:attrs[@"representedLine"]]) {
+            Line* line = attrs[@"representedLine"];
+            
+            // Do nothing if this line is not a marker or a heading
+            if (line.markerRange.length == 0 && line.type != heading && line.beats.count == 0) return;
+            
+            [representedLines addObject:line];
+            
+            // Get range for the first character. For headings and markers we won't need anything else.
+            NSRange r = NSMakeRange(line.position, 1);
+            if (self.editorDelegate.hideFountainMarkup) {
+                // If the editor hides Fountain markup, there's a chance that the line is hidden (if using a formatting character, ie. ".INT. SOMETHING"
+                if (line.length > 1) r.location += 1;
+                else r = line.range;
+            }
+            
+            NSRange lineRange = [self glyphRangeForCharacterRange:r actualCharacterRange:nil];
+            CGRect boundingRect = [self boundingRectForGlyphRange:lineRange inTextContainer:textContainer];
+
+            // Actual rect position
+            CGRect rect = CGRectMake(inset.width + boundingRect.origin.x, inset.height + boundingRect.origin.y, boundingRect.size.width, boundingRect.size.height);
+            
+            // Draw scene numbers
+            if (line.type == heading) {
+                [self drawSceneNumberForLine:line rect:rect inset:inset];
+            }
+            
+            // Draw markers
+            if (line.markerRange.length > 0) {
+                [self drawMarkerForLine:line rect:rect inset:inset];
+            }
+                    
+            if (line.beats.count > 0) {
+                [self drawBeat:rect inset:inset];
+            }
+        }
+    }];
+    
+    for (NSString* color in shownRevisions) {
+        NSMutableSet *rects = revisions[color];
+        NSString *marker = BeatRevisions.revisionMarkers[color];
+        BXColor *bgColor = ThemeManager.sharedManager.backgroundColor.effectiveColor;
+        
+        [rects enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
+            CGRect rect = [(NSValue*)obj getRectValue];
+            
+            NSMutableString *markerStr = NSMutableString.new;
+            NSUInteger lineCount = round(rect.size.height / self.editorDelegate.editorLineHeight);
+            
+            // Create markers by line count
+            for (NSUInteger i=0; i<lineCount; i++) {
+                [markerStr appendFormat:@"%@\n", marker];
+            }
+
+            // Draw a background rect under the marker to block out earlier markers
+            [bgColor setFill];
+            BXRectFill(rect);
+            
+            // Draw string
+            [markerStr drawAtPoint:rect.origin withAttributes:@{
+                NSFontAttributeName: self.editorDelegate.courier,
+                NSForegroundColorAttributeName: ThemeManager.sharedManager.textColor.effectiveColor,
+                NSParagraphStyleAttributeName: _markerStyle
+            }];
+        }];
+    }
+    [BeatMeasure end:@"New"];
+    */
+        
     // Enumerate lines in drawn range
     [self.textStorage enumerateAttribute:@"representedLine" inRange:charRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
         Line* line = (Line*)value;
@@ -313,24 +429,18 @@
 	 
 	*/
 	
-	/*
-	NSArray<NSString*>* shownRevisions = self.textView.editorDelegate.shownRevisionGenerations;
-	*/
-    //NSTextView* textView = self.firstTextView;
+    static NSArray<NSString*>* revisionColors;
     
-	NSArray<NSString*>* shownRevisions = BeatRevisions.revisionColors;
+    if (revisionColors == nil) revisionColors = BeatRevisions.revisionColors;
+	NSArray<NSString*>* shownRevisions = revisionColors;
 	
 	NSTextStorage* textStorage = self.textStorage;
 	NSTextContainer* textContainer = self.textContainers.firstObject;
+    BXColor *bgColor = ThemeManager.sharedManager.backgroundColor.effectiveColor;
+    
+    CGSize offset = [self offsetSize];
 	
-#if TARGET_OS_IOS
-    CGSize offset = CGSizeMake(_editorDelegate.getTextView.textContainerInset.left, _editorDelegate.getTextView.textContainerInset.top);
-#else
-    CGSize offset = _editorDelegate.getTextView.textContainerInset;
-#endif
-	
-	NSMutableDictionary<NSString*, NSMutableSet<NSValue*>*> *revisions = NSMutableDictionary.new;
-	for (NSString *string in BeatRevisions.revisionColors) revisions[string] = NSMutableSet.new;
+	NSMutableDictionary<NSString*, NSMutableSet<NSValue*>*> *revisions = [NSMutableDictionary dictionaryWithCapacity:revisionColors.count];
 	
 	while (glyphRange.length > 0) {
 		// Get character range for the range we're displaying
@@ -361,11 +471,8 @@
 			
 			// Add the marker to dictionary:
 			// dict["colorName"][] -> rect
-#if TARGET_OS_IOS
-			[revisions[revision.colorName] addObject:[NSValue valueWithCGRect:rect]];
-#else
-            [revisions[revision.colorName] addObject:[NSValue valueWithRect:rect]];
-#endif
+            if (revisions[revision.colorName] == nil) revisions[revision.colorName] = [NSMutableSet setWithCapacity:50];
+			[revisions[revision.colorName] addObject:@(rect)];
 		}
 				
 		glyphRange.length = NSMaxRange(glyphRange) - NSMaxRange(attributeGlyphRange);
@@ -373,139 +480,138 @@
 	}
 	
 	for (NSString *color in BeatRevisions.revisionColors) {
-#if !TARGET_OS_IOS
-        [NSGraphicsContext saveGraphicsState];
-#endif
-		
 		NSMutableSet *rects = revisions[color];
 		NSString *marker = BeatRevisions.revisionMarkers[color];
-		BXColor *bgColor = ThemeManager.sharedManager.backgroundColor.effectiveColor;
 		
-		[rects enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
-#if TARGET_OS_IOS
-            CGRect rect = [(NSValue*)obj CGRectValue];
-#else
-            CGRect rect = [(NSValue*)obj rectValue];
-#endif
+        for (NSValue* value in rects) {
+            CGRect rect = [value getRectValue];
             
-			NSMutableString *markerStr = NSMutableString.new;
-			NSUInteger lineCount = round(rect.size.height / self.editorDelegate.editorLineHeight);
-			
-			// Create markers by line count
-			for (NSUInteger i=0; i<lineCount; i++) {
-				[markerStr appendFormat:@"%@\n", marker];
-			}
+            NSUInteger lineCount = round(rect.size.height / self.editorDelegate.editorLineHeight);
+            NSString* markerStr = [self markerStringForMarker:marker lineCount:lineCount];
 
-			// Draw a background rect under the marker to block out earlier markers
-			[bgColor setFill];
-			BXRectFill(rect);
-			
-			// Draw string
-			[markerStr drawAtPoint:rect.origin withAttributes:@{
-				NSFontAttributeName: self.editorDelegate.courier,
-				NSForegroundColorAttributeName: ThemeManager.sharedManager.textColor.effectiveColor,
-				NSParagraphStyleAttributeName: _markerStyle
-			}];
-		}];
-#if !TARGET_OS_IOS
-		[NSGraphicsContext restoreGraphicsState];
-#endif
+            // Draw a background rect under the marker to block out earlier markers
+            [bgColor setFill];
+            BXRectFill(rect);
+            
+            // Draw string
+            [markerStr drawAtPoint:rect.origin withAttributes:@{
+                NSFontAttributeName: self.editorDelegate.courier,
+                NSForegroundColorAttributeName: ThemeManager.sharedManager.textColor.effectiveColor,
+                NSParagraphStyleAttributeName: _markerStyle
+            }];
+        }
 	}
+}
+
+/// This method returns a given number of lines for a specific marker. The resutls are cached.
+-(NSString*)markerStringForMarker:(NSString*)marker lineCount:(NSInteger)lineCount {
+    static NSCache<NSString*, NSMutableDictionary*>* markers;
+    if (markers == nil) markers = NSCache.new;
+    
+    if ([markers objectForKey:marker] == nil) [markers setObject:NSMutableDictionary.new forKey:marker];
+    NSMutableDictionary* markerValues = [markers objectForKey:marker];
+    
+    if (markerValues[@(lineCount)] == nil) {
+        NSMutableString *markerStr = NSMutableString.new;
+        
+        // Create markers by line count
+        for (NSUInteger i=0; i<lineCount; i++) {
+            [markerStr appendFormat:@"%@\n", marker];
+        }
+        
+        markerValues[@(lineCount)] = markerStr;
+    }
+    
+    return markerValues[@(lineCount)];
 }
 
 -(void)drawBackgroundForGlyphRange:(NSRange)glyphsToShow atPoint:(BXPoint)origin
 {
 	static NSMutableDictionary* bgColors;
-	if (bgColors == nil) bgColors = NSMutableDictionary.new;
+    if (bgColors == nil) bgColors = [NSMutableDictionary dictionaryWithCapacity:10];
     
     BXTextView* textView = self.editorDelegate.getTextView;
-#if TARGET_OS_IOS
-    CGSize inset = CGSizeMake(textView.textContainerInset.left, textView.textContainerInset.top);
-#else
-    CGSize inset = textView.textContainerInset;
-#endif
+    CGSize inset = [self offsetSize];
     
-	[self enumerateLineFragmentsForGlyphRange:glyphsToShow usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
-		NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+    bool showTags = _editorDelegate.showTags;
+    bool showRevisions = _editorDelegate.showRevisions;
+    
+    NSRange charRange = [self characterRangeForGlyphRange:glyphsToShow actualGlyphRange:nil];
+    [self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+        if (range.location < 0 || NSMaxRange(range) < 0) return;
         
-		
-		[self.textStorage enumerateAttributesInRange:charRange options:0 usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-			if (range.location < 0 || NSMaxRange(range) < 0) return;
-			            
-			BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
-			BeatTag* tag = attrs[BeatTagging.attributeKey];
-			BeatReviewItem *review = attrs[BeatReview.attributeKey];
-            			
-			// Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
-			NSRange rRange = range;
-			for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
-				if (i < 0) break;
-				if ([self.textStorage.string characterAtIndex:i] == '\n') {
-					rRange.length = rRange.length - 1;
-					break;
-				}
-			}
-			
-			NSRange usedRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
-			CGRect aRect = [self boundingRectForGlyphRange:usedRange inTextContainer:self.textContainers.firstObject];
-			aRect.origin.x += inset.width;
-			aRect.origin.y += inset.height;
-			
-			if (review != nil && !review.emptyReview) {
-				if (bgColors[@"review"] == nil) {
-					BXColor *reviewColor = BeatReview.reviewColor;
-					bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.5];
-				}
-				BXColor *color = bgColors[@"review"];
-				[color setFill];
+        BeatRevisionItem* revision = attrs[BeatRevisions.attributeKey];
+        BeatTag* tag = attrs[BeatTagging.attributeKey];
+        BeatReviewItem *review = attrs[BeatReview.attributeKey];
+        
+        // Remove line breaks from the range (begin enumeration from the end to catch them as soon as possible)
+        NSRange rRange = range;
+        for (NSInteger i = NSMaxRange(rRange) - 1; i >= rRange.location; i--) {
+            if (i < 0) break;
+            if ([self.textStorage.string characterAtIndex:i] == '\n') {
+                rRange.length = rRange.length - 1;
+                break;
+            }
+        }
+        
+        NSRange usedRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
+        CGRect aRect = [self boundingRectForGlyphRange:usedRange inTextContainer:self.textContainers.firstObject];
+        
+        aRect.origin.x += inset.width;
+        aRect.origin.y += inset.height;
+        
+        if (review != nil && !review.emptyReview) {
+            if (bgColors[@"review"] == nil) {
+                BXColor *reviewColor = BeatReview.reviewColor;
+                bgColors[@"review"] = [reviewColor colorWithAlphaComponent:.5];
+            }
+            BXColor *color = bgColors[@"review"];
+            [color setFill];
 
-                
-				NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
-				CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
-				bool fullLine = (fullGlyphRange.length == glyphRange.length - 1);
-				
-				fullRect.origin.x += inset.width;
-				fullRect.origin.y += inset.height;
-				
-				if (fullLine) {
-                    CGFloat padding = textView.textContainer.lineFragmentPadding;
-					fullRect.origin.x = inset.width + padding;
-					fullRect.size.width = textView.textContainer.size.width - padding * 2;
-				}
-				
-                BXRectFill(fullRect);
-			}
-			
-			if (tag != nil && self.editorDelegate.showTags) {
-				if (bgColors[tag.typeAsString] == nil) {
-					bgColors[tag.typeAsString] = [[BeatTagging colorFor:tag.type] colorWithAlphaComponent:0.5];
-				}
+            NSRange fullGlyphRange = [self glyphRangeForCharacterRange:rRange actualCharacterRange:nil];
+            CGRect fullRect = [self boundingRectForGlyphRange:fullGlyphRange inTextContainer:self.textContainers.firstObject];
+            bool fullLine = (fullGlyphRange.length == glyphsToShow.length - 1);
+            
+            fullRect.origin.x += inset.width;
+            fullRect.origin.y += inset.height;
+            
+            if (fullLine) {
+                CGFloat padding = textView.textContainer.lineFragmentPadding;
+                fullRect.origin.x = inset.width + padding;
+                fullRect.size.width = textView.textContainer.size.width - padding * 2;
+            }
+            
+            BXRectFill(fullRect);
+        }
+        
+        if (tag != nil && showTags) {
+            if (bgColors[tag.typeAsString] == nil) {
+                bgColors[tag.typeAsString] = [[BeatTagging colorFor:tag.type] colorWithAlphaComponent:0.5];
+            }
 
-				BXColor *tagColor = bgColors[tag.typeAsString];
-				[tagColor setFill];
-				
-				BXRectFill(aRect);
-			}
-			
-			// Draw revision backgrounds last, so the underlines go on top of other stuff.
-			if (revision.type == RevisionAddition && self.editorDelegate.showRevisions && rRange.length > 0) {
-				CGRect revisionRect = aRect;
-				
-				if (bgColors[revision.colorName] == nil) {
-					bgColors[revision.colorName] = [[BeatColors color:revision.colorName] colorWithAlphaComponent:.3];
-				}
-				[bgColors[revision.colorName] setFill];
-				
-				revisionRect.origin.y += revisionRect.size.height - 1.0;
-				revisionRect.size.height = 2.0;
-				
-				BXRectFill(revisionRect);
-			}
-		}];
-	}];
-	
+            BXColor *tagColor = bgColors[tag.typeAsString];
+            [tagColor setFill];
+            
+            BXRectFill(aRect);
+        }
+        
+        // Draw revision backgrounds last, so the underlines go on top of other stuff.
+        if (revision.type == RevisionAddition && showRevisions && rRange.length > 0) {
+            CGRect revisionRect = aRect;
+            
+            if (bgColors[revision.colorName] == nil) {
+                bgColors[revision.colorName] = [[BeatColors color:revision.colorName] colorWithAlphaComponent:.3];
+            }
+            [bgColors[revision.colorName] setFill];
+            
+            revisionRect.origin.y += revisionRect.size.height - 1.0;
+            revisionRect.size.height = 2.0;
+            
+            BXRectFill(revisionRect);
+        }
+    }];
+     
 	[super drawBackgroundForGlyphRange:glyphsToShow atPoint:origin];
-
 }
 
 -(NSArray*)rectsForGlyphRange:(NSRange)glyphsToShow
@@ -515,15 +621,40 @@
 	
 	[self enumerateLineFragmentsForGlyphRange:glyphsToShow usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer * _Nonnull textContainer, NSRange glyphRange, BOOL * _Nonnull stop) {
 		CGRect lfRect = [self boundingRectForGlyphRange:NSIntersectionRange(glyphsToShow, glyphRange) inTextContainer:tc];
-		
-#if TARGET_OS_IOS
-        [rects addObject:[NSNumber valueWithCGRect:lfRect]];
-#else
-        [rects addObject:[NSNumber valueWithRect:lfRect]];
-#endif
+        [rects addObject:@(lfRect)];
 	}];
 	
 	return rects;
+}
+
+- (NSUInteger)hashForAttributesInRange:(NSRange)range {
+    NSTextStorage* textStorage = self.textStorage;
+    BeatRevisionItem *revision = [textStorage attribute:BeatRevisions.attributeKey atIndex:range.location effectiveRange:NULL];
+    NSString *colorName = revision.colorName ?: @"";
+    NSUInteger hash = [colorName hash];
+
+    return hash;
+}
+
+#pragma mark - Crossplatform helpers
+
+-(void)saveGraphicsState {
+#if !TARGET_OS_IOS
+        [NSGraphicsContext saveGraphicsState];
+#endif
+}
+-(void)restoreGraphicsState {
+#if !TARGET_OS_IOS
+        [NSGraphicsContext restoreGraphicsState];
+#endif
+}
+-(CGSize)offsetSize {
+#if TARGET_OS_IOS
+    CGSize offset = CGSizeMake(_editorDelegate.getTextView.textContainerInset.left, _editorDelegate.getTextView.textContainerInset.top);
+#else
+    CGSize offset = _editorDelegate.getTextView.textContainerInset;
+#endif
+    return offset;
 }
 
 @end

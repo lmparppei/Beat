@@ -81,14 +81,21 @@
 }
 
 -(NSArray*)lines {
-    NSMutableArray* lines = NSMutableArray.new;
-    for (BeatPaginationBlock* block in self.safeBlocks) {
+    if (_lines != nil) return _lines;
+    NSArray* blocks = self.safeBlocks;
+    
+    NSMutableArray* lines = [NSMutableArray arrayWithCapacity:blocks.count * 2]; // This is an average line count per page
+    for (BeatPaginationBlock* block in blocks) {
         [lines addObjectsFromArray:block.lines];
     }
+    
+    _lines = lines;
     return lines;
 }
 
 -(NSArray*)safeBlocks {
+    if (self.blocks == nil) return @[];
+    
     NSArray* blocks = [NSArray arrayWithArray:self.blocks];
     return blocks;
 }
@@ -308,11 +315,17 @@
 }
 
 -(void)addBlock:(BeatPaginationBlock*)block {
+    // Inalidate current line array
+    _lines = nil;
+    
 	[self.blocks addObject:block];
 	[self invalidateRender];
 }
 
 -(void)clearUntil:(Line*)line {
+    // Invalidate current line array
+    _lines = nil;
+    
 	NSArray<Line*>* lines = self.lines;
 	
 	NSInteger i = [lines indexOfObject:line];

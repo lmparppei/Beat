@@ -115,6 +115,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 		
 		// If the queue is empty, run it right away. Otherwise the operation will be run once other renderers have finished.
 		if operationQueue.last != nil {
+            
 			operationQueue.last!.paginate()
 		}
 	}
