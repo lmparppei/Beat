@@ -26,15 +26,29 @@
 @implementation BeatPaginationPage
 
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate {
+    return [BeatPaginationPage.alloc initWithDelegate:delegate blocks:nil pageBreak:nil];
+}
+
+-(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate blocks:(NSMutableArray*)blocks pageBreak:(BeatPageBreak*)pageBreak {
     self = [super init];
     
     if (self) {
         self.delegate = delegate;
-        self.blocks = NSMutableArray.new;
         self.maxHeight = _delegate.maxPageHeight;
+        
+        self.pageBreak = pageBreak;
+        self.blocks = (blocks != nil) ? blocks : NSMutableArray.new;
     }
     
     return self;
+}
+
+-(BeatPaginationPage*)copyWithDelegate:(id)delegate {
+    // Move ownership of blocks
+    for (BeatPaginationBlock* block in self.blocks) block.delegate = delegate;
+    
+    BeatPaginationPage* page = [BeatPaginationPage.alloc initWithDelegate:delegate blocks:self.blocks pageBreak:self.pageBreak];
+    return page;
 }
 
 /**

@@ -851,6 +851,11 @@
  @param settings Dictionary of modal window settings. Return value dictionary contains corresponding control names.
  */
 - (NSDictionary*)modal:(NSDictionary*)settings callback:(JSValue*)callback {
+	if (!NSThread.isMainThread) {
+		[self log:@"ERROR: Trying to create a modal from background thread"];
+		return nil;
+	}
+	
 	// We support both return & callback in modal windows
 	
 	NSString *title = (settings[@"title"] != nil) ? settings[@"title"] : @"";
@@ -895,6 +900,11 @@
  */
 - (NSString*)prompt:(NSString*)prompt withInfo:(NSString*)info placeholder:(NSString*)placeholder defaultText:(NSString*)defaultText
 {
+	if (!NSThread.isMainThread) {
+		[self log:@"ERROR: Trying to create a prompt from background thread"];
+		return nil;
+	}
+	
 	if ([placeholder isEqualToString:@"undefined"]) placeholder = @"";
 	if ([defaultText isEqualToString:@"undefined"]) defaultText = @"";
 	
@@ -925,6 +935,11 @@
 */
 - (NSString*)dropdownPrompt:(NSString*)prompt withInfo:(NSString*)info items:(NSArray*)items
 {
+	if (!NSThread.isMainThread) {
+		[self log:@"ERROR: Trying to create a dropdown prompt from background thread"];
+		return nil;
+	}
+	
 	NSAlert *alert = [self dialog:prompt withInfo:info];
 	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.OK"]];
 	[alert addButtonWithTitle:[BeatLocalization localizedStringForKey:@"general.cancel"]];
@@ -953,6 +968,11 @@
 /// Displays a simple alert box.
 - (NSAlert*)dialog:(NSString*)title withInfo:(NSString*)info
 {
+	if (!NSThread.isMainThread) {
+		[self log:@"ERROR: Trying to create a dialog from background thread"];
+		return nil;
+	}
+	
 	if ([info isEqualToString:@"undefined"]) info = @"";
 
 	NSAlert *alert = NSAlert.new;

@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat remainingSpace;
 
 -(instancetype)initWithDelegate:(id<BeatPageDelegate>)delegate;
+-(BeatPaginationPage*)copyWithDelegate:(id)delegate;
+
 -(void)addBlock:(BeatPaginationBlock*)block;
 -(void)clearUntil:(Line*)line;
 - (void)invalidateRender;

@@ -93,15 +93,17 @@
 		
 		_lines = (lines != nil) ? lines : @[];
 		_titlePageContent = (titlePage != nil) ? titlePage : @[];
-		_cachedPages = cachedPages;
+		//_cachedPages = cachedPages;
 		
 		// Transfer ownership of cached pages
-		for (BeatPaginationPage* page in _cachedPages) {
-			page.delegate = self;
-			for (BeatPaginationBlock* b in page.blocks) {
-				b.delegate = self;
-			}
-		}
+        if (cachedPages.count) {
+            NSMutableArray* copiedPages = [NSMutableArray arrayWithCapacity:cachedPages.count];
+            for (BeatPaginationPage* page in cachedPages) {
+                BeatPaginationPage* copiedPage = [page copyWithDelegate:self];
+                [copiedPages addObject:copiedPage];
+            }
+            _cachedPages = copiedPages;
+        }
 		
 		_livePagination = livePagination;
 		_location = changeAt;
