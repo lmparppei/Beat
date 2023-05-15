@@ -41,7 +41,7 @@ class BeatLaunchScreen : NSWindowController {
 		recentFiles.doubleAction = #selector(self.recentFilesSource.doubleClickDocument(_:))
 		recentFiles.target = self.recentFilesSource
 	}
-	
+
 }
 
 /*
