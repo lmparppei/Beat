@@ -405,10 +405,13 @@ static BeatPluginManager *sharedManager;
 }
 
 - (bool)isCompatible:(NSString*)requiredVersion current:(NSString*)currentVersion {
+	return [currentVersion isNewerVersionThan:requiredVersion];
+	/*
 	if ([requiredVersion compare:currentVersion options:NSNumericSearch] == NSOrderedDescending) {
 	  // actualVersion is lower than the requiredVersion
 		return NO;
 	} else return YES;
+	*/
 }
 - (bool)isCompatible:(NSString*)requiredVersion {
 	NSString * currentVersion = [NSBundle.mainBundle.infoDictionary objectForKey:@"CFBundleShortVersionString"];

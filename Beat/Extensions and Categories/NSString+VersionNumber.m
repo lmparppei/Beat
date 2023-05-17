@@ -21,6 +21,8 @@
 }
 
 - (bool)isNewerVersionThan:(NSString*)old {
+	if ([self isEqualToString:old]) return YES;
+		
 	NSArray* newComp = [self componentsSeparatedByString:@"."];
 	NSArray* oldComp = [old componentsSeparatedByString:@"."];
 
