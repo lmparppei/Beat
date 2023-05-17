@@ -32,7 +32,8 @@ class BeatPaginationPageView:NSView {
 	var fonts = BeatFonts.shared()
 	
 	var paperSize:BeatPaperSize
-		
+	var isTitlePage = false
+	
 	@objc init(page:BeatPaginationPage?, content:NSAttributedString?, settings:BeatExportSettings, previewController: BeatPreviewController?, titlePage:Bool = false) {
 		self.size = BeatPaperSizing.size(for: settings.paperSize)
 		self.attributedString = content
@@ -175,7 +176,9 @@ class BeatTitlePageView:BeatPaginationPageView {
 		super.init(page: nil, content: NSMutableAttributedString(string: ""), settings: settings, previewController: previewController, titlePage: true)
 			
 		createViews()
-		createTitlePage()		
+		createTitlePage()
+		
+		isTitlePage = true
 	}
 		
 	required init?(coder: NSCoder) {
@@ -368,6 +371,10 @@ class BeatRenderLayoutManager:NSLayoutManager {
 		let container = self.textContainers.first!
 		let revisions = pageView?.settings.revisions as? [String] ?? []
 		
+		if ((pageView?.isTitlePage ?? false)) {
+			return
+		}
+		
 		NSGraphicsContext.saveGraphicsState()
 		
 		self.enumerateLineFragments(forGlyphRange: glyphsToShow) { rect, usedRect, textContainer, range, stop in
@@ -377,7 +384,7 @@ class BeatRenderLayoutManager:NSLayoutManager {
 			self.textStorage?.enumerateAttribute(NSAttributedString.Key(BeatRevisions.attributeKey()), in: range, using: { obj, attrRange, stop in
 				if (obj == nil) { return }
 				let revision = obj as! String
-
+				
 				// If the revision is not included in settings, just skip it.
 				if (!revisions.contains(where: { $0 == revision })) {
 					return
