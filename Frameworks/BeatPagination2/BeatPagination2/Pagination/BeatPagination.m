@@ -548,13 +548,26 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     NSInteger pageIndex = [self findPageIndexAt:range.location];
 	if (pageIndex == NSNotFound) return 0.0;
 	
-	BeatPaginationPage* page = self.pages[pageIndex];
-	CGFloat height = 0.0;
+    // Find the page + block index.
+    // Because we might be looking at reused pages with antiquated ranges, let's try our best to find them.
+    BeatPaginationPage* page;
+    NSInteger blockIndex = NSNotFound;
     
-    NSInteger blockIndex = [page nearestBlockIndexForRange:NSMakeRange(range.location, 0)];
-    if (blockIndex == NSNotFound) {
+    for (NSInteger i=pageIndex; i<self.pages.count; i++) {
+        page = self.pages[pageIndex];
+        blockIndex = [page nearestBlockIndexForRange:(NSRange){ range.location, 0 }];
+        if (blockIndex != NSNotFound) {
+            pageIndex = i;
+            break;
+        }
+    }
+
+    if (blockIndex == NSNotFound || page == nil) {
         return 0.0;
     }
+    
+	CGFloat height = 0.0;
+    
     
     bool hasBegunNewPage = false;
     CGFloat previousRemainingSpace = 0.0;
