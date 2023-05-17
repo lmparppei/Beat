@@ -302,7 +302,7 @@ static BeatPluginManager *sharedManager;
 			BeatPluginInfo *plugin = self.availablePlugins[name];
 			
 			// Don't check updates for disabled plugins
-			if ([disabled containsObject:name]) continue;
+			// if ([disabled containsObject:name]) continue;
 			
 			// If the plugin has a update available, add it to the list
 			if (plugin.updateAvailable) [availableUpdates addObject:name];

@@ -41,7 +41,6 @@ THE SOFTWARE.
 #import "BeatTimeline.h"
 #import "TKSplitHandle.h"
 #import "BeatTimer.h"
-#import "BeatPreview.h"
 #import "BeatPlugin.h"
 #import "BeatOutlineView.h"
 #import "BeatStatisticsPanel.h"
@@ -70,7 +69,7 @@ typedef NS_ENUM(NSUInteger, BeatFormatting) {
 - (NSMutableArray<Line*>* _Nonnull)lines;
 @end
 
-@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPreviewDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
+@interface Document : NSDocument <NSTextViewDelegate, BeatOutlineViewEditorDelegate, NSTableViewDelegate, NSMenuDelegate, NSLayoutManagerDelegate, WKScriptMessageHandler, TouchTimelineDelegate, TouchPopoverDelegate, ContinuousFountainParserDelegate, BeatTimelineDelegate, TKSplitHandleDelegate, BeatTextViewDelegate, BeatTimerDelegate, BeatPluginDelegate, BeatTaggingDelegate, BeatEditorDelegate, NSWindowDelegate, DocumentExports>
 
 @property (strong, nonatomic) NSMutableArray<BeatPrintView*>* _Nullable printViews; //To keep the asynchronously working print data generator in memory
 

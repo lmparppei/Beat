@@ -30,6 +30,7 @@
 #import "Document.h"
 #import "BeatPreferencesPanel.h"
 #import "BeatPluginLibrary.h"
+#import "NSString+VersionNumber.h"
 
 #ifndef QUICKLOOK
 #import "Beat-Swift.h"
@@ -95,7 +96,7 @@
 
 - (void) awakeFromNib {
 	// [NSUserDefaults.standardUserDefaults setBool:NO forKey:@"NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints"];
-	
+		
 #ifdef ADHOC
 	// Ad hoc vector
 	NSLog(@"# ADHOC");

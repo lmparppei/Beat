@@ -25,13 +25,11 @@
                 <outlet property="formattingActions" destination="bnh-y9-2pe" id="LoR-qT-gji"/>
                 <outlet property="lockButton" destination="ftJ-Zm-jkE" id="naF-WT-rXK"/>
                 <outlet property="marginView" destination="Sy0-kF-Tby" id="3Mt-n8-mIL"/>
-                <outlet property="masterView" destination="gIp-Ho-8D9" id="s3n-ER-Rgi"/>
                 <outlet property="modeIndicator" destination="pf2-1r-P3e" id="lRp-yN-5Qs"/>
                 <outlet property="nativePreviewTab" destination="L4N-og-10d" id="Jx7-6U-Thu"/>
                 <outlet property="notepad" destination="717-An-Uvy" id="3hR-GY-4DL"/>
                 <outlet property="outlineBackgroundView" destination="ddX-aG-EER" id="uNK-hW-mWG"/>
                 <outlet property="outlineButton" destination="ULq-c1-qrj" id="TPP-Em-8Xy"/>
-                <outlet property="outlineScrollView" destination="RaS-3C-d5c" id="SfS-4K-icO"/>
                 <outlet property="outlineSearchField" destination="wQe-ic-Dmm" id="EkH-y5-5vL"/>
                 <outlet property="outlineView" destination="7yW-8d-gb9" id="2C5-4h-3og"/>
                 <outlet property="pageNumbersSwitch" destination="Mef-QD-NsX" id="Qep-HJ-CZr"/>
@@ -1531,7 +1529,7 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="OZQ-4j-Tie" customClass="CenteringClipView" customModule="Beat" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="1155" height="661"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <view id="vJ9-CT-bdC" customClass="FlippedView" customModule="Beat" customModuleProvider="target">
                                                         <rect key="frame" x="0.0" y="2" width="1138" height="644"/>

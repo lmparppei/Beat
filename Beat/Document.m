@@ -1636,10 +1636,9 @@ static NSWindow __weak *currentKeyWindow;
 	NSSet* changesInOutline = self.parser.changesInOutline;
 
 	// Update scene numbers
-	[changesInOutline enumerateObjectsUsingBlock:^(id  _Nonnull obj, BOOL * _Nonnull stop) {
-		Line* line = obj;
+	for (Line* line in changesInOutline) {
 		if (self.currentLine != line) [self.layoutManager invalidateDisplayForCharacterRange:line.textRange];
-	}];
+	}
 	
 	if (changeInOutline == YES) {
 		[self.parser updateOutlineWithChangeInRange:_lastChangedRange];
@@ -2185,6 +2184,14 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)formatAllLines
 {
+	NSUInteger count = self.parser.lines.count;
+	dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+	dispatch_apply(count, queue, ^(size_t index) {
+		// Do some work here, such as calculating a value based on the index
+		NSLog(@"%zu", index);
+	});
+	
 	for (Line* line in self.parser.lines) {
 		@autoreleasepool { [_formatting formatLine:line]; }
 	}
@@ -2987,14 +2994,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 	[self.previewController invalidatePreviewAt:index];
 }
 
-- (void)previewDidFinish {
-	// Tell plugins the preview has been finished (called by preview controller)
-	for (NSString *name in self.runningPlugins.allKeys) {
-		BeatPlugin *plugin = self.runningPlugins[name];
-		[plugin previewDidFinish:NSMutableIndexSet.new];
-	}
-}
-
 - (IBAction)preview:(id)sender
 {
 	if (self.currentTab != _nativePreviewTab) {
@@ -3760,22 +3759,21 @@ static NSArray<Line*>* cachedTitlePage;
 	return;
 }
 
-
-/// Native pagination finished — called when preview controller has finished creating pagination
-- (void)paginationFinished:(NSArray<BeatPaginationPage*>*)pages indices:(NSIndexSet * _Nonnull)indices {
+/// Pagination finished — called when preview controller has finished creating pagination
+-(void)paginationFinished:(BeatPagination *)operation indices:(NSIndexSet *)indices {
 	__block NSIndexSet* changedIndices = indices.copy;
 	
 	// We might be in a background thread, so make sure to dispach this call to main thread
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		// Update pagination in text view
 		if (self.showPageNumbers) {
-			[self.textView updatePagination:pages];
+			[self.textView updatePagination:operation.pages];
 		}
 		
 		// Tell plugins the preview has been finished
 		for (NSString *name in self.runningPlugins.allKeys) {
 			BeatPlugin *plugin = self.runningPlugins[name];
-			[plugin previewDidFinish:changedIndices];
+			[plugin previewDidFinish:operation indices:changedIndices];
 		}
 	});
 }

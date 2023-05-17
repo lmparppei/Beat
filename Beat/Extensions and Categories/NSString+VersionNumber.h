@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (VersionNumber)
 - (NSString *)shortenedVersionNumberString;
+- (bool)isNewerVersionThan:(NSString*)old;
 @end
 
 NS_ASSUME_NONNULL_END
