@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CGFloat remainingSpace;
 @property (nonatomic, readonly) NSArray<Line*>* lines;
 -(NSRange)representedRange;
+-(NSRange)safeRange;
 
 - (CGFloat)positionOfBlock:(BeatPaginationBlock*)block;
 - (CGFloat)actualPositionOfBlock:(BeatPaginationBlock*)block;
@@ -44,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)addBlock:(BeatPaginationBlock*)block;
 -(void)clearUntil:(Line*)line;
 - (void)invalidateRender;
+-(NSRange)safeRange;
 -(NSRange)representedRange;
 -(NSAttributedString*)attributedString;
 -(NSArray<Line*>*)lines;

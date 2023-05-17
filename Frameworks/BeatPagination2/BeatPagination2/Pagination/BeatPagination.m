@@ -473,7 +473,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 {
 	for (NSInteger i=0; i<pages.count; i++) {
 		BeatPaginationPage *page = pages[i];
-		NSRange range = page.representedRange;
+		NSRange range = page.safeRange;
 		
         // Location is inside this page range
         if (NSLocationInRange(position, range)) return i;
@@ -541,6 +541,8 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 {
     static NSMutableDictionary* lines;
     if (lines != nil) return lines;
+    
+    lines = NSMutableDictionary.new;
     
     for (Line* line in self.lines) {
         lines[line.uuid] = line;

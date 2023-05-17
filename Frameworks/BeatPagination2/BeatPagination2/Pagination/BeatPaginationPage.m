@@ -299,8 +299,8 @@
 	return result;
 }
 
-/// Returns the range of the screenplay which current page represents.
--(NSRange)representedRange {
+/// Returns the pagination-safe range of the screenplay which current page represents.
+-(NSRange)safeRange {
 	Line* begin = nil;
 	Line* end = nil;
 	NSArray<Line*>* lines = self.lines;
@@ -321,14 +321,44 @@
 		}
 		i -= 1;
 	}
-	
+    NSDictionary* uuids = self.delegate.uuids;
+    
 	if (begin == nil || end == nil)
 		return NSMakeRange(NSNotFound, 0);
     else {
         // Get *actual* lines by UUID
-        Line* lBegin = self.delegate.uuids[begin.uuid];
-        Line* lEnd = self.delegate.uuids[end.uuid];
+        Line* lBegin = uuids[begin.uuid];
+        Line* lEnd = uuids[end.uuid];
+        
         return NSMakeRange(lBegin.position, NSMaxRange(lEnd.range) - lBegin.position);
+    }
+}
+
+/// Returns the **ACTUAL** range that the page probably represents
+-(NSRange)representedRange {
+    Line* begin = nil;
+    Line* end = nil;
+    NSArray<Line*>* lines = self.lines;
+    
+    for (Line* line in lines) {
+        if (!line.unsafeForPageBreak) {
+            begin = line;
+            break;
+        }
+    }
+    
+    end = lines.lastObject;
+
+    NSDictionary* uuids = self.delegate.uuids;
+    
+    if (begin == nil || end == nil)
+        return NSMakeRange(NSNotFound, 0);
+    else {
+        // Get *actual* lines by UUID
+        Line* lBegin = uuids[begin.uuid];
+        Line* lEnd = uuids[end.uuid];
+        
+        return NSMakeRange(lBegin.position, (lEnd.position + lEnd.string.length) - lBegin.position);
     }
 }
 
