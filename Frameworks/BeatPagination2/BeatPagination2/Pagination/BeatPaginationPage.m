@@ -301,13 +301,13 @@
 
 /// Returns the range of the screenplay which current page represents.
 -(NSRange)representedRange {
-	NSInteger begin = NSNotFound;
-	NSInteger end = NSNotFound;
+	Line* begin = nil;
+	Line* end = nil;
 	NSArray<Line*>* lines = self.lines;
 	
 	for (Line* line in lines) {
 		if (!line.unsafeForPageBreak) {
-			begin = line.position;
+            begin = line;
 			break;
 		}
 	}
@@ -316,16 +316,20 @@
 	while (i >= 0) {
 		Line *line = lines[i];
 		if (!line.unsafeForPageBreak) {
-			end = NSMaxRange(line.range);
+            end = line;
 			break;
 		}
 		i -= 1;
 	}
 	
-	if (begin == NSNotFound || end == NSNotFound)
+	if (begin == nil || end == nil)
 		return NSMakeRange(NSNotFound, 0);
-	else
-		return NSMakeRange(begin, end - begin);
+    else {
+        // Get *actual* lines by UUID
+        Line* lBegin = self.delegate.uuids[begin.uuid];
+        Line* lEnd = self.delegate.uuids[end.uuid];
+        return NSMakeRange(lBegin.position, NSMaxRange(lEnd.range) - lBegin.position);
+    }
 }
 
 -(void)addBlock:(BeatPaginationBlock*)block {

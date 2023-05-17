@@ -77,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (Line*)moreLineFor:(Line*)line;
 - (Line*)contdLineFor:(Line*)line;
+- (NSDictionary<NSUUID*, Line*>*)uuids;
 @end
 
 @interface BeatPagination : NSObject <BeatPaginationExports>
@@ -108,6 +109,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)pageIndexForScene:(OutlineScene*)scene;
 - (NSInteger)pageNumberForScene:(OutlineScene*)scene;
 - (NSInteger)pageNumberAt:(NSInteger)location;
+
+- (NSDictionary<NSUUID*, Line*>*)uuids;
 
 - (NSArray<NSDictionary<NSString*, NSArray<Line*>*>*>*)titlePage;
 @end

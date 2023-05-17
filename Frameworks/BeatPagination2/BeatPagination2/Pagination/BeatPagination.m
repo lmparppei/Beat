@@ -537,6 +537,18 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 	return @[@0, @0];
 }
 
+- (NSDictionary<NSUUID*, Line*>*)uuids
+{
+    static NSMutableDictionary* lines;
+    if (lines != nil) return lines;
+    
+    for (Line* line in self.lines) {
+        lines[line.uuid] = line;
+    }
+    
+    return lines;
+}
+
 #pragma mark - Heights of scenes
 
 - (CGFloat)heightForScene:(OutlineScene*)scene {
