@@ -299,6 +299,40 @@
 	return result;
 }
 
+/// Returns the range of the screenplay which current page represents.
+-(NSRange)safeRange {
+    return [self representedRange];
+}
+-(NSRange)representedRange {
+    NSInteger begin = NSNotFound;
+    NSInteger end = NSNotFound;
+    NSArray<Line*>* lines = self.lines;
+    
+    for (Line* line in lines) {
+        if (!line.unsafeForPageBreak) {
+            begin = line.position;
+            break;
+        }
+    }
+    
+    NSInteger i = lines.count - 1;
+    while (i >= 0) {
+        Line *line = lines[i];
+        if (!line.unsafeForPageBreak) {
+            end = NSMaxRange(line.range);
+            break;
+        }
+        i -= 1;
+    }
+    
+    if (begin == NSNotFound || end == NSNotFound)
+        return NSMakeRange(NSNotFound, 0);
+    else
+        return NSMakeRange(begin, end - begin);
+}
+
+
+/*
 /// Returns the pagination-safe range of the screenplay which current page represents.
 -(NSRange)safeRange {
 	Line* begin = nil;
@@ -369,7 +403,8 @@
         return NSMakeRange(lBegin.position, (lEnd.position + lEnd.string.length) - lBegin.position);
     }
 }
-
+*/
+ 
 -(void)addBlock:(BeatPaginationBlock*)block {
     // Inalidate current line array
     _lines = nil;
