@@ -347,7 +347,15 @@
         }
     }
     
-    end = lines.lastObject;
+    NSInteger i = lines.count - 1;
+    while (i >= 0) {
+        Line *line = lines[i];
+        if (line.position != NSNotFound) {
+            end = line;
+            break;
+        }
+        i -= 1;
+    }
 
     NSDictionary* uuids = self.delegate.uuids;
     
