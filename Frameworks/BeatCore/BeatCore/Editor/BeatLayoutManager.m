@@ -95,7 +95,7 @@
         if (line.beats.count > 0) {
             [self drawBeat:rect inset:inset];
         }
-    }];    
+    }];
 }
 
 - (void)drawBeat:(CGRect)rect inset:(CGSize)inset {
@@ -330,7 +330,7 @@
     // Store revision names and create an array for background colors
     static NSDictionary<NSString*, NSNumber*>* revisionLevels;
 	static NSMutableDictionary* bgColors;
-    __weak static BXTextView* textView;
+    static BXTextView* textView;
 
     if (revisionLevels == nil) {
         bgColors = [NSMutableDictionary dictionaryWithCapacity:10];
@@ -339,7 +339,6 @@
     }
     
     if (textView == nil) {
-        NSLog(@"Text view missing");
         [super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
         return;
     }
