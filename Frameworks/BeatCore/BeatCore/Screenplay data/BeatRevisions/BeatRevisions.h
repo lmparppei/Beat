@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString*)defaultRevisionColor;
 + (NSArray<NSString*>*)revisionColors;
++ (NSDictionary*)revisionLevels;
 + (NSDictionary<NSString*, NSString*>*)revisionMarkers;
 + (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor;
 + (NSString*)attributeKey;

@@ -16,27 +16,59 @@ import Foundation
 import BeatCore
 
 @objc protocol BeatPaginationManagerExports:JSExport {
-	@objc var pages:[BeatPaginationPage] { get }
-	@objc var maxPageHeight:CGFloat { get }
-	@objc var lengthInEights:[Int] { get }
-	@objc var numberOfPages:Int { get }
-	@objc var lastPageHeight:CGFloat { get }
-    
+    /// The pages (`BeatPaginationPage`) in current finished pagination
+    @objc var pages:[BeatPaginationPage] { get }
+    /// The maximum height of a single page in the current pagination.
+    @objc var maxPageHeight:CGFloat { get }
+    /// The length of each page in the current pagination, measured in eights
+    @objc var lengthInEights:[Int] { get }
+    /// The number of pages in the current pagination.
+    @objc var numberOfPages:Int { get }
+    /// The height of the last page in the current pagination.
+    @objc var lastPageHeight:CGFloat { get }
+    /// The finished pagination of the Beat document, if one has been generated.
     @objc var finishedPagination:BeatPagination? { get }
-
-	@objc func heightForScene(_ scene:OutlineScene) -> CGFloat
+    
+    /// Returns the relative height (`0..1`) of a given scene in the current pagination.
+    /// - parameter scene: The scene to calculate the height for.
+    /// - Returns: The relative height of the scene
+    @objc func heightForScene(_ scene:OutlineScene) -> CGFloat
+    
+    /// Returns the relative height (`0..1`) of a range of text in the current pagination.
+    /// - Parameters:
+    ///   - location: Starting index of the range
+    ///   - length: Length of the range
+    /// - Returns: The relative height of the scene
     @objc func heightForRange(_ location:Int, _ length:Int) -> CGFloat
     
-	@objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int]
-	@objc func paginate(lines: [Line])
-	@objc func paginateLines(_ lines:[Line])
+    /// Returns the length of a given scene in eights (an eighth is a unit of musical time).
+    /// - Parameter scene: The scene to calculate the length for.
+    /// - Returns: The length of the scene in eights `[full pages, eights]`.
+    @objc func sceneLengthInEights(_ scene:OutlineScene) -> [Int]
     
+    /// Creates a new pagination for a given set of lines.
+    /// - Parameter lines: The lines to generate the pagination for.
+    /// - note: Do NOT use this with `Beat.currentPagination()`, as you might end up breaking editor page numbering
+    @objc func paginate(lines: [Line])
+    
+    /// Generates a new pagination for a given set of lines.
+    /// - Parameter lines: The lines to generate the pagination for.
+    /// - note: Do NOT use this with `Beat.currentPagination()`, as you might end up breaking editor page numbering
+    @objc func paginateLines(_ lines:[Line])
+    
+    /// Returns the human-readable page number at a given index in the current pagination.
+    /// - Parameter location: The index to retrieve the page number for.
+    /// - Returns: The page number at the given index.
     @objc func pageNumberAt(_ location:Int) -> Int
+    
+    /// Returns the page number for a given scene in the current pagination.
+    /// - Parameter scene: The scene to retrieve the page number for.
+    /// - Returns: The page number for the given scene.
     @objc func pageNumberForScene(_ scene:OutlineScene) -> Int
 }
 
 @objc public protocol BeatPaginationManagerDelegate {
-	func paginationDidFinish(pages: [BeatPaginationPage])
+    func paginationDidFinish(_ operation:BeatPagination)
 	var parser:ContinuousFountainParser? { get }
 	var exportSettings:BeatExportSettings? { get }
 }
@@ -184,8 +216,8 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			if (pagination.startTime < self.finishedPagination!.startTime) { return }
 		}
 		
-        // Remove the finished pagination operation from queue
-		let i = self.operationQueue.firstIndex(of: pagination) ?? NSNotFound
+        // Remove the finished pagination operation (and any earlier ones) from queue
+        let i = self.operationQueue.firstIndex(of: pagination) ?? NSNotFound
 		if i != NSNotFound {
 			var n = 0
 			while (n < i+1) {
@@ -199,7 +231,7 @@ public class BeatPaginationManager:NSObject, BeatPaginationDelegate, BeatPaginat
 			self.finishedPagination = nil
 			self.finishedPagination = pagination
 
-			self.delegate?.paginationDidFinish(pages: self.pages)
+			self.delegate?.paginationDidFinish(pagination)
 		}
 		
         // Move on to the next pagination operation in queue

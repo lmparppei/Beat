@@ -56,20 +56,19 @@
 @class BeatPluginControlMenu;
 @class BeatPluginControlMenuItem;
 @class BeatPaginationManager;
+@class BeatPagination;
 
 @protocol BeatPluginExports <JSExport>
 @property (readonly) Line* currentLine;
 @property (readonly) OutlineScene* currentScene;
 @property (weak, readonly) ContinuousFountainParser *currentParser;
 
+@property (nonatomic) bool onPreviewFinishedDisabled;
 @property (nonatomic) bool onOutlineChangeDisabled;
 @property (nonatomic) bool onSelectionChangeDisabled;
 @property (nonatomic) bool onTextChangeDisabled;
 @property (nonatomic) bool onSceneIndexUpdateDisabled;
 @property (nonatomic,readonly) NSDictionary *type;
-
-//@property (readonly) NSArray* scenes;
-//@property (readonly) NSArray* outline;
 
 // Alias + actual methods for update methods
 - (void)setUpdate:(JSValue*)updateMethod;
@@ -317,6 +316,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 @property (weak, nonatomic) ContinuousFountainParser *currentParser;
 @property (nonatomic) NSString* pluginName;
 
+@property (nonatomic) bool onPreviewFinishedDisabled;
 @property (nonatomic) bool onOutlineChangeDisabled;
 @property (nonatomic) bool onSelectionChangeDisabled;
 @property (nonatomic) bool onTextChangeDisabled;
@@ -333,7 +333,7 @@ JSExportAs(submenu, - (NSMenuItem*)submenu:(NSString*)name items:(NSArray<BeatPl
 - (void)updateSelection:(NSRange)selection;
 - (void)updateOutline:(NSArray*)outline;
 - (void)updateSceneIndex:(NSInteger)sceneIndex;
-- (void)previewDidFinish:(NSIndexSet*)changedIndices;
+- (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices;
 - (void)closePluginWindow:(NSPanel*)window;
 - (void)forceEnd;
 - (void)documentDidBecomeMain;

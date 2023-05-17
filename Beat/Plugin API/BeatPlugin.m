@@ -363,13 +363,15 @@
 - (void)onPaginationFinished:(JSValue*)updateMethod {
 	[self onPreviewFinished:updateMethod];
 }
-- (void)previewDidFinish:(NSIndexSet*)changedIndices {
+- (void)previewDidFinish:(BeatPagination*)pagination indices:(NSIndexSet*)changedIndices {
+	if (self.onPreviewFinishedDisabled) return;
+	
 	NSMutableArray<NSNumber*>* indices = NSMutableArray.new;
 	[changedIndices enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
 		[indices addObject:@(idx)];
 	}];
 	
-	[_updatePreviewMethod callWithArguments:@[indices]];
+	[_updatePreviewMethod callWithArguments:@[indices, pagination]];
 }
 
 /// Creates a listener for when document was saved.
@@ -958,7 +960,7 @@
 	
 	if (response == NSModalResponseOK || response == NSAlertFirstButtonReturn) {
 		// Return an empty string if the user didn't select anything
-		if ([BeatLocalization localizedStringForKey:@"plugins.input.select"]) return @"";
+		if ([popup.selectedItem.title isEqualToString: [BeatLocalization localizedStringForKey:@"plugins.input.select"]]) return @"";
 		else return popup.selectedItem.title;
 	} else {
 		return nil;

@@ -15,7 +15,7 @@
 import AppKit
 
 @objc protocol BeatNativePreviewDelegate:BeatEditorDelegate {
-	@objc func paginationFinished(_ pages:[BeatPaginationPage], indices:NSMutableIndexSet)
+	@objc func paginationFinished(_ operation:BeatPagination, indices:NSIndexSet)
 }
 
 final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
@@ -63,11 +63,11 @@ final class BeatPreviewController:NSObject, BeatPaginationManagerDelegate {
 	// MARK: - Pagination delegation
 	
 	/// When pagination has finished, we'll inform the host document and mark our pagination as done
-	func paginationDidFinish(pages: [BeatPaginationPage]) {
+	func paginationDidFinish(_ operation:BeatPagination) {
 		self.paginationUpdated = true
 		
 		// Let's tell the delegate this, too
-		self.delegate?.paginationFinished(pages, indices:self.changedIndices)
+		self.delegate?.paginationFinished(operation, indices: self.changedIndices)
 		
 		//  Clear changed indices
 		self.changedIndices.removeAllIndexes()

@@ -70,6 +70,15 @@
 + (NSString*)attributeKey {
 	return REVISION_ATTR;
 }
+/// Returns a dictionary with "color/generation" -> generation level, ie. "blue" : 0
++ (NSDictionary*)revisionLevels {
+    NSMutableDictionary* levels = NSMutableDictionary.new;
+    NSArray* colors = BeatRevisions.revisionColors;
+    for (NSInteger i=0; i<colors.count; i++) {
+        levels[colors[i]] = @(i);
+    }
+    return levels;
+}
 /// Checks if the given generation is newer than the other one. This is done because generations are separated by their COLOR and not their generation.
 + (bool)isNewer:(NSString*)currentColor than:(NSString*)oldColor {
 	NSArray * colors = BeatRevisions.revisionColors;
