@@ -62,6 +62,8 @@
 
 @property (nonatomic) NSTimer* previewTimer;
 
+@property (nonatomic) bool firstPreview;
+
 @end
 
 @implementation BeatPrintDialog
@@ -294,7 +296,7 @@ static CGFloat panelWidth;
 	// the preview is refreshed. Because the coordinate system is flipped, we
 	// can only do it after the initial preview was created, not to end up at the
 	// end of the document.
-	static bool firstPreview = YES;
+	_firstPreview = YES;
 	NSScrollView *scrollView = _pdfView.subviews.firstObject;
 	NSRect frame = scrollView.contentView.bounds;
 	
@@ -303,8 +305,8 @@ static CGFloat panelWidth;
 	[_pdfView setDocument:doc];
 	
 	// Load the old bounds (if this is not the first time preview was loaded)
-	if (!firstPreview) scrollView.contentView.bounds = frame;
-	firstPreview = NO;
+	if (!_firstPreview) scrollView.contentView.bounds = frame;
+	_firstPreview = NO;
 }
 
 - (BeatExportSettings*)exportSettings {

@@ -20,6 +20,7 @@
 @interface BeatLayoutManager()
 @property (nonatomic) NSMutableParagraphStyle* _Nullable markerStyle;
 @property (nonatomic) NSMutableParagraphStyle* _Nullable sceneNumberStyle;
+@property (nonatomic) BXTextView* textView;
 @end
 
 #if TARGET_OS_IOS
@@ -330,19 +331,14 @@
     // Store revision names and create an array for background colors
     static NSDictionary<NSString*, NSNumber*>* revisionLevels;
 	static NSMutableDictionary* bgColors;
-    static BXTextView* textView;
 
+    if (_textView == nil) _textView = _editorDelegate.getTextView;
+    
     if (revisionLevels == nil) {
         bgColors = [NSMutableDictionary dictionaryWithCapacity:10];
         revisionLevels = BeatRevisions.revisionLevels;
-        textView = self.editorDelegate.getTextView;
     }
-    
-    if (textView == nil) {
-        [super drawGlyphsForGlyphRange:glyphsToShow atPoint:origin];
-        return;
-    }
-    
+        
     CGSize inset = [self offsetSize];
     CGFloat documentWidth = _editorDelegate.documentWidth;
     
@@ -395,9 +391,9 @@
                 fullRect.origin.y += inset.height;
                 
                 if (fullLine) {
-                    CGFloat padding = textView.textContainer.lineFragmentPadding;
+                    CGFloat padding = _textView.textContainer.lineFragmentPadding;
                     fullRect.origin.x = inset.width + padding;
-                    fullRect.size.width = textView.textContainer.size.width - padding * 2;
+                    fullRect.size.width = _textView.textContainer.size.width - padding * 2;
                 }
                 
                 BXRectFill(fullRect);

@@ -20,6 +20,7 @@
 
 @property (nonatomic, weak) IBOutlet BeatUITextView* textView;
 @property (nonatomic, weak) IBOutlet BeatPageView* pageView;
+@property (nonatomic) NSString* bufferedText;
 
 @property (nonatomic) bool documentIsLoading;
 
@@ -1306,11 +1307,10 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 #pragma mark - For avoiding throttling
 
-static NSString* bufferedText;
 - (bool)hasChanged {
-	if ([self.text isEqualToString:bufferedText]) return NO;
+	if ([self.text isEqualToString:_bufferedText]) return NO;
 	else {
-		bufferedText = self.text.copy;
+		_bufferedText = self.text.copy;
 		return YES;
 	}
 }

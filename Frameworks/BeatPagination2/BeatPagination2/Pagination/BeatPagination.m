@@ -67,6 +67,8 @@
 /// Reusable pages from the previous pagination operation.
 @property (nonatomic) NSArray<BeatPaginationPage*>* _Nullable cachedPages;
 
+@property (nonatomic) NSMutableDictionary* UUIDsToLines;
+
 @end
 
 @implementation BeatPagination
@@ -540,16 +542,15 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 - (NSDictionary<NSUUID*, Line*>*)uuids
 {
-    static NSMutableDictionary* lines;
-    if (lines != nil) return lines;
+    if (_UUIDsToLines != nil) return _UUIDsToLines;
     
-    lines = NSMutableDictionary.new;
+    _UUIDsToLines = NSMutableDictionary.new;
     
     for (Line* line in self.lines) {
-        lines[line.uuid] = line;
+        _UUIDsToLines[line.uuid] = line;
     }
     
-    return lines;
+    return _UUIDsToLines;
 }
 
 #pragma mark - Heights of scenes
