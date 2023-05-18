@@ -30,6 +30,7 @@
 
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatCore/BeatFonts.h>
+#import <BeatCore/BeatMeasure.h>
 #import <BeatCore/BeatCore-Swift.h>
 
 #import "BeatPagination.h"
@@ -553,8 +554,48 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 
 #pragma mark - Heights of scenes
 
+/// Find line based on UUID
+- (NSInteger)indexForEditorLine:(Line*)line {
+    NSInteger j = NSNotFound;
+    for (NSInteger i=0; i<_lines.count; i++) {
+        if ([_lines[i].uuid isEqualTo:line.uuid]) {
+            j = i;
+            break;
+        }
+    }
+    
+    return j;
+}
+
 - (CGFloat)heightForScene:(OutlineScene*)scene {
-    return [self heightForRange:scene.range];
+    // Height for omitted scenes is always 0.0
+    if (scene.omitted) return 0.0;
+    
+    // We can't use scene.range here, because it ends where an omitted scene might begin.
+    // Let's find the next scene, then.
+    NSInteger lineIndex = [self indexForEditorLine:scene.line];
+    NSInteger endIndex = 0;
+    
+    if (lineIndex == NSNotFound) return 0.0;
+    
+    // Find next scene heading
+    for (NSInteger i=lineIndex+1; i<_lines.count; i++) {
+        Line* line = _lines[i];
+        if (line.type == heading && !line.omitted) {
+            endIndex = i - 1;
+            break;
+        }
+        else if (line == _lines.lastObject) {
+            endIndex = i;
+        }
+    }
+    
+    Line* firstLine = _lines[lineIndex];
+    Line* lastLine = _lines[endIndex];
+    
+    NSRange range = NSMakeRange(firstLine.position, NSMaxRange(lastLine.range) - firstLine.position);
+    
+    return [self heightForRange:range];
 }
 
 - (CGFloat)heightForRange:(NSRange)range
@@ -581,7 +622,6 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
     }
     
 	CGFloat height = 0.0;
-    
     
     bool hasBegunNewPage = false;
     CGFloat previousRemainingSpace = 0.0;

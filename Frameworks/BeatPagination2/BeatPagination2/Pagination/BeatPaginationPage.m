@@ -299,7 +299,7 @@
 	return result;
 }
 
-
+/*
 /// Returns the range of the screenplay which current page represents.
 -(NSRange)safeRange {
     return [self representedRange];
@@ -331,9 +331,8 @@
     else
         return NSMakeRange(begin, end - begin);
 }
+*/
 
-
-/*
 /// Returns the pagination-safe range of the screenplay which current page represents.
 -(NSRange)safeRange {
 	Line* begin = nil;
@@ -404,7 +403,6 @@
         return NSMakeRange(lBegin.position, (lEnd.position + lEnd.string.length) - lBegin.position);
     }
 }
- */
 
  
 -(void)addBlock:(BeatPaginationBlock*)block {
