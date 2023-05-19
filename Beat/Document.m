@@ -949,7 +949,7 @@ static NSWindow __weak *currentKeyWindow;
 	
 	// When window resigns it main status, we'll have to hide possible floating windows
 	NSWindow *mainWindow = NSApp.mainWindow;
-	[self hidePluginWindowsWithMain:mainWindow];
+	if (self.documentWindow.isVisible) [self hidePluginWindowsWithMain:mainWindow];
 }
 
 - (void)hidePluginWindowsWithMain:(NSWindow*)mainWindow {
