@@ -125,6 +125,7 @@
 - (void)sync:(JSValue*)callback; /// Alias for dispatch_syncb
 - (void)dispatch:(JSValue*)callback;
 - (void)dispatch_sync:(JSValue*)callback;
+- (bool)isMainThread;
 - (void)focusEditor;
 
 - (id)getDocumentSetting:(NSString*)key;

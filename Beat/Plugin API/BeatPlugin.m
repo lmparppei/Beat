@@ -453,6 +453,10 @@
 	});
 }
 
+- (bool)isMainThread {
+	return NSThread.isMainThread;
+}
+
 - (JSValue*)fetch:(JSValue*)callback {
 	return nil;
 }
@@ -782,6 +786,13 @@
 /// Presents an alert box
 - (void)alert:(NSString*)title withText:(NSString*)info
 {
+	// Send back to main thread
+	if (!NSThread.isMainThread) {
+		dispatch_async(dispatch_get_main_queue(), ^(void){
+			[self alert:title withText:info];
+		});
+		return;
+	}
 	if ([info isEqualToString:@"undefined"]) info = @"";
 	
 	NSAlert *alert = [self dialog:title withInfo:info];
