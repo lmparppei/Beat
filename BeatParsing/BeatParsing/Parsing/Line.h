@@ -1,6 +1,6 @@
 //
 //  Line.h
-//  Writer / Beat
+//  Beat
 //
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
@@ -39,6 +39,7 @@ typedef NS_ENUM(NSUInteger, LineType) {
 	dualDialogueMore, // fake element for exporting
 	typeCount // This is the the max number of line types, for data storing purposes
 };
+
 
 @protocol LineExports <JSExport>
 @property (nonatomic) NSUUID *uuid; // You can actually write into the UUID

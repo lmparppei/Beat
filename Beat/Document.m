@@ -2184,14 +2184,6 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 
 - (void)formatAllLines
 {
-	NSUInteger count = self.parser.lines.count;
-	dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-
-	dispatch_apply(count, queue, ^(size_t index) {
-		// Do some work here, such as calculating a value based on the index
-		NSLog(@"%zu", index);
-	});
-	
 	for (Line* line in self.parser.lines) {
 		@autoreleasepool { [_formatting formatLine:line]; }
 	}
@@ -2236,7 +2228,7 @@ FORWARD_TO(self.textActions, void, removeTextOnLine:(Line*)line inLocalIndexSet:
 - (void)formatAllWithDelay:(NSInteger)idx {
 	// We split the document into chunks of 400 lines and render them asynchronously
 	// to throttle the initial loading of document a bit
-	dispatch_async(dispatch_get_main_queue(), ^(void){
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		Line *line;
 		NSInteger lastIndex = idx;
 		for (NSInteger i = 0; i < 400; i++) {

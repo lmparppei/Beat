@@ -29,6 +29,7 @@
 		B663A6FA29F2A9BE0036FE6B /* BeatHTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */; };
 		B663A6FC29F2A9D30036FE6B /* BeatPagination2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; };
 		B663A6FD29F2A9D30036FE6B /* BeatPagination2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B678D69E2A1A212A00BD79D8 /* BeatEditorFormatting.m in Sources */ = {isa = PBXBuildFile; fileRef = B678D69D2A1A212A00BD79D8 /* BeatEditorFormatting.m */; };
 		B68321B729F6BD7E00A2553E /* BeatPrintView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68321B629F6BD7E00A2553E /* BeatPrintView.m */; };
 		B686FF842971B65800789C8D /* BeatPaginationCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B686FF832971B65800789C8D /* BeatPaginationCore.framework */; };
 		B686FF852971B65800789C8D /* BeatPaginationCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B686FF832971B65800789C8D /* BeatPaginationCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -119,6 +120,8 @@
 		B663A6F829F2A9BE0036FE6B /* BeatHTMLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatHTMLRenderer.h; sourceTree = "<group>"; };
 		B663A6F929F2A9BE0036FE6B /* BeatHTMLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatHTMLRenderer.m; sourceTree = "<group>"; };
 		B663A6FB29F2A9D30036FE6B /* BeatPagination2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPagination2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B678D69C2A1A212A00BD79D8 /* BeatEditorFormatting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatEditorFormatting.h; sourceTree = "<group>"; };
+		B678D69D2A1A212A00BD79D8 /* BeatEditorFormatting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatEditorFormatting.m; sourceTree = "<group>"; };
 		B68321B529F6BD7D00A2553E /* BeatPrintView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BeatPrintView.h; sourceTree = "<group>"; };
 		B68321B629F6BD7E00A2553E /* BeatPrintView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BeatPrintView.m; sourceTree = "<group>"; };
 		B686FF832971B65800789C8D /* BeatPaginationCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BeatPaginationCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -279,6 +282,8 @@
 				B686FFD42971BE3600789C8D /* BeatEditorMode.h */,
 				B63D9F5D283036A700D027B6 /* BeatiOSFormatting.h */,
 				B63D9F5E283036A700D027B6 /* BeatiOSFormatting.m */,
+				B678D69C2A1A212A00BD79D8 /* BeatEditorFormatting.h */,
+				B678D69D2A1A212A00BD79D8 /* BeatEditorFormatting.m */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -523,6 +528,7 @@
 				B6FC406229A151CE00004A9D /* BeatDocumentViewController.m in Sources */,
 				B629FE3F2846B90100E8B9BD /* BeatCardViewController.m in Sources */,
 				B6F61401299FF051002188C0 /* BeatPopover.swift in Sources */,
+				B678D69E2A1A212A00BD79D8 /* BeatEditorFormatting.m in Sources */,
 				B636F77129B7C9C60024D73A /* InputAssistantCollectionView.swift in Sources */,
 				B69E0A3028428ECE009A02D0 /* BeatPreviewView.swift in Sources */,
 				B6B61BB629F970A20098D94D /* UITextView+UX.m in Sources */,

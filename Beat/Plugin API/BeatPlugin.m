@@ -1578,10 +1578,28 @@
 
 - (NSString*)outlineAsJSON
 {
-	//[self.delegate.parser createOutline];
+	NSArray<OutlineScene*>* outline = self.delegate.parser.outline.copy;
+	NSMutableArray *scenesToSerialize = [NSMutableArray arrayWithCapacity:outline.count];
 	
-	NSMutableArray *scenesToSerialize = NSMutableArray.new;
-	NSArray* outline = self.delegate.parser.outline.copy;
+	/*
+	// This is very efficient, but I can't figure out how to fix memory management issues
+	 
+	NSMutableDictionary<NSNumber*, NSDictionary*>* items = NSMutableDictionary.new;
+	
+	// Multi-threaded JSON process
+	dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
+	dispatch_apply((size_t)outline.count, queue, ^(size_t index) {
+		if (outline[index] == nil) return;
+		NSDictionary* json = outline[index].forSerialization;
+		items[@(index)] = json;
+	});
+
+	for (NSInteger i=0; i<items.count; i++) {
+		NSNumber* idx = @(i);
+		if (items[idx] != nil) [scenesToSerialize addObject:items[@(i)]];
+	}
+	*/
+
 	
 	for (OutlineScene* scene in outline) {
 		[scenesToSerialize addObject:scene.forSerialization];
@@ -1590,6 +1608,7 @@
 	NSError *error;
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:scenesToSerialize options:NSJSONWritingPrettyPrinted error:&error];
 	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	
 	return json;
 }
 

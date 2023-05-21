@@ -14,12 +14,11 @@
 
 #import <BeatParsing/BeatParsing.h>
 #import <BeatThemes/BeatThemes.h>
-#import <BeatCore/BeatCore.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 
 #import "BeatEditorFormatting.h"
 //#import "Beat-Swift.h"
-#import "NSFont+CFTraits.h"
+//#import "NSFont+CFTraits.h"
 
 @interface BeatEditorFormatting()
 // Paragraph styles are stored as { @(paperSize): { @(type): style } }
@@ -260,9 +259,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (line == nil) return; // Don't do anything if the line is null
 	if (line.position + line.string.length > _delegate.text.length) return; // Don't go out of range
 	
-	NSLayoutManager *layoutMgr = _delegate.layoutManager;
-	NSTextStorage *textStorage = _delegate.textStorage;
 	ThemeManager *themeManager = ThemeManager.sharedManager;
+	NSTextStorage *textStorage = _delegate.textStorage;
+	[textStorage beginEditing];
 	
 	NSRange range = line.textRange; // range without line break
 	NSRange fullRange = line.range; // range WITH line break
@@ -309,7 +308,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Do nothing for already formatted empty lines (except remove the background)
 	if (line.type == empty && line.formattedAs == empty && line.string.length == 0 && line != _delegate.characterInputForLine && [paragraphStyle isEqualTo:attributes[NSParagraphStyleAttributeName]]) {
-		[layoutMgr addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor forCharacterRange:line.range];
 		[_delegate setTypingAttributes:attributes];
 		
 		// If we need to update the line, do it here
@@ -317,6 +315,9 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			[textStorage addAttribute:BeatRepresentedLineKey value:newAttributes[BeatRepresentedLineKey] range:range];
 		}
 		
+		[textStorage endEditing];
+		
+		[self addTemporaryAttribute:NSBackgroundColorAttributeName value:NSColor.clearColor range:line.range];
 		return;
 	}
 	
@@ -340,7 +341,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 			[_delegate setSelectedRange:selectedRange];
 			
 			// Reset attribute because we have replaced the text
-			[layoutMgr addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor forCharacterRange:line.range];
+			[self addTemporaryAttribute:NSForegroundColorAttributeName value:themeManager.textColor range:line.range];
 		}
 		
 		// IF we are hiding Fountain markup, we'll need to adjust the range to actually modify line break range, too.
@@ -388,6 +389,8 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	[_delegate setTypingAttributes:attributes];
 
 	[self applyInlineFormatting:line reset:forceFont];
+	[textStorage endEditing];
+	
 	[self setTextColorFor:line];
 	[self revisedTextColorFor:line];
 } }
@@ -503,10 +506,17 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	
 	// Don't go out of range and add attributes
 	if (NSMaxRange(localRange) <= line.string.length && localRange.location >= 0 && color != nil) {
-		[_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:globalRange];
+		[self addTemporaryAttribute:NSForegroundColorAttributeName value:color range:globalRange];
 	}
 	
 }
+
+#pragma mark - Set temporary attributes
+
+- (void)addTemporaryAttribute:(NSString*)key value:(id)value range:(NSRange)range {
+	[_delegate.layoutManager addTemporaryAttribute:key value:value forCharacterRange:range];
+}
+
 
 #pragma mark - Render dual dialogue
 
@@ -758,7 +768,6 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 	if (![BeatUserDefaults.sharedDefaults getBool:BeatSettingShowRevisedTextColor]) return;
 	
 	NSTextStorage *textStorage = _delegate.textStorage;
-	NSLayoutManager *layoutManager = _delegate.layoutManager;
 	
 	[textStorage enumerateAttribute:BeatRevisions.attributeKey inRange:line.textRange options:0 usingBlock:^(id  _Nullable value, NSRange range, BOOL * _Nonnull stop) {
 		BeatRevisionItem* revision = value;
@@ -767,7 +776,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		NSColor* color = BeatColors.colors[revision.colorName];
 		if (color == nil) return;
 		
-		[layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:range];
+		[self addTemporaryAttribute:NSForegroundColorAttributeName value:color range:range];
 	}];
 }
 
@@ -779,7 +788,7 @@ static NSString* const BeatRepresentedLineKey = @"representedLine";
 		NSColor* color = BeatColors.colors[revision.colorName];
 		if (color == nil) return;
 		
-		[_delegate.layoutManager addTemporaryAttribute:NSForegroundColorAttributeName value:color forCharacterRange:range];
+		[self addTemporaryAttribute:NSForegroundColorAttributeName value:color range:range];
 	}];
 }
 - (void)refreshRevisionTextColorsInRange:(NSRange)range {

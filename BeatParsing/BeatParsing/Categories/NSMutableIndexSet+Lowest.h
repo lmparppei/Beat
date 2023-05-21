@@ -1,6 +1,6 @@
 //
 //  NSMutableIndexSet+Lowest.h
-//  Writer / Beat
+//  Beat
 //
 //  Created by Hendrik Noeller on 04.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.

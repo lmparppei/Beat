@@ -1,6 +1,6 @@
 //
 //  OutlineExtractor.h
-//  Writer / Beat
+//  Beat
 //
 //  Created by Hendrik Noeller on 11.05.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.

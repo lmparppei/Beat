@@ -28,6 +28,7 @@
  
  */
 
+#import <TargetConditionals.h>
 #import <BeatPagination2/BeatPagination2-Swift.h>
 #import <BeatCore/BeatFonts.h>
 #import <BeatCore/BeatMeasure.h>
@@ -38,6 +39,12 @@
 #import "BeatPaginationBlock.h"
 #import "BeatPaginationBlockGroup.h"
 #import "BeatPageBreak.h"
+
+#if TARGET_OS_IOS
+#define BequalTo isEqual
+#else
+#define BequalTo isEqualTo
+#endif
 
 
 @interface BeatPagination() <BeatPageDelegate>
@@ -559,7 +566,7 @@ The layout blocks (`BeatPageBlock`) won't contain anything else than the rendere
 - (NSInteger)indexForEditorLine:(Line*)line {
     NSInteger j = NSNotFound;
     for (NSInteger i=0; i<_lines.count; i++) {
-        if ([_lines[i].uuid isEqualTo:line.uuid]) {
+        if ([_lines[i].uuid BequalTo:line.uuid]) {
             j = i;
             break;
         }

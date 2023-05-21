@@ -53,23 +53,38 @@
 }
 
 #pragma mark - macOS fonts
+/*
+ 
+ I used to have a more clever approach:
+ self.boldCourier = [self fontWithTrait:BXFontDescriptorTraitBold];
+ self.italicCourier = [self fontWithTrait:BXFontDescriptorTraitItalic];
+ self.boldItalicCourier = [self fontWithTrait:BXFontDescriptorTraitBold | BXFontDescriptorTraitItalic];
 
-- (void)loadFontStyles {
-	self.boldCourier = [self fontWithTrait:BXFontDescriptorTraitBold];
-	self.italicCourier = [self fontWithTrait:BXFontDescriptorTraitItalic];
-	self.boldItalicCourier = [self fontWithTrait:BXFontDescriptorTraitBold | BXFontDescriptorTraitItalic];
-	
-	self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
-}
+ However, this caused *extremely* weird issues on Mojave, such as the fonts transforming into something
+ completely different. We'll use hard-coded font names, instead.
+ 
+ */
 
 - (void)loadSerifFont {
 	self.courier = [BXFont fontWithName:@"Courier Prime" size:12.0];
-	[self loadFontStyles];
+    if (_courier == nil) self.courier = [BXFont fontWithName:@"CourierPrime" size:12.0];
+    
+    self.boldCourier = [BXFont fontWithName:@"CourierPrime-Bold" size:12.0];
+    self.italicCourier = [BXFont fontWithName:@"CourierPrime-Italic" size:12.0];
+    self.boldItalicCourier = [BXFont fontWithName:@"CourierPrime-BoldItalic" size:12.0];
+    
+    self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
 }
 
 - (void)loadSansSerifFont {
-	self.courier = [BXFont fontWithName:@"Courier Prime Sans" size:12.0];
-	[self loadFontStyles];
+    self.courier = [BXFont fontWithName:@"Courier Prime Sans" size:12.0];
+    if (_courier == nil) self.courier = [BXFont fontWithName:@"CourierPrimeSans-Regular" size:12.0];
+    
+    self.boldCourier = [BXFont fontWithName:@"CourierPrimeSans-Bold" size:12.0];
+    self.italicCourier = [BXFont fontWithName:@"CourierPrimeSans-Italic" size:12.0];
+    self.boldItalicCourier = [BXFont fontWithName:@"CourierPrimeSans-BoldItalic" size:12.0];
+    
+    self.synopsisFont = [self fontWithTrait:BXFontDescriptorTraitItalic font:[BXFont systemFontOfSize:11.0]];
 }
 
 - (BXFont*)fontWithTrait:(BXFontDescriptorSymbolicTraits)traits {

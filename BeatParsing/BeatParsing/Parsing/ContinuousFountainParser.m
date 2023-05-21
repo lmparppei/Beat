@@ -1,6 +1,6 @@
 //
 //  ContinousFountainParser.m
-//  Writer / Beat
+//  Beat
 //
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
 //  Parts copyright © 2019-2020 Lauri-Matti Parppei. All rights reserved.

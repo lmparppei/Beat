@@ -63,27 +63,27 @@
 	return [self forSerialization];
 }
 - (NSDictionary*)forSerialization {
-    NSMutableArray <NSDictionary*>*synopsis = NSMutableArray.new;
+    NSMutableArray <NSDictionary*>*synopsis = [NSMutableArray arrayWithCapacity:_synopsis.count];
     for (Line * s in _synopsis) [synopsis addObject:s.forSerialization];
     
-	return @{
-		// String values have to be guarded so we don't try to put nil into NSDictionary
-		@"string": (self.string != nil) ? self.string.copy : @"",
-		@"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
-		@"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
-		@"storylines": (self.storylines) ? self.storylines.copy : @[],
-		@"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
-		@"color": (self.color) ? self.color.copy : @"",
-		@"sectionDepth": @(self.sectionDepth),
-		@"markerColors": (self.markerColors.count) ? self.markerColors.allObjects.copy : @[],
-		@"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
-		@"sceneStart": @(self.position),
-		@"sceneLength": @(self.length),
-		@"omitted": @(self.omitted),
+    return @{
+        // String values have to be guarded so we don't try to put nil into NSDictionary
+        @"string": (self.string != nil) ? self.string.copy : @"",
+        @"typeAsString": (self.line.typeAsString) ? self.line.typeAsString : @"",
+        @"stringForDisplay": (self.stringForDisplay.length) ? self.stringForDisplay : @"",
+        @"storylines": (self.storylines) ? self.storylines.copy : @[],
+        @"sceneNumber": (self.sceneNumber) ? self.sceneNumber.copy : @"",
+        @"color": (self.color) ? self.color.copy : @"",
+        @"sectionDepth": @(self.sectionDepth),
+        @"markerColors": (self.markerColors.count) ? self.markerColors.allObjects.copy : @[],
+        @"range": @{ @"location": @(self.range.location), @"length": @(self.range.length) },
+        @"sceneStart": @(self.position),
+        @"sceneLength": @(self.length),
+        @"omitted": @(self.omitted),
         @"synopsis": synopsis,
-		@"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
-		@"line": self.line.forSerialization
-	};
+        @"storybeats": (self.beats.count) ? [self serializedBeats] : @[],
+        @"line": self.line.forSerialization
+    };
 }
 
 - (NSArray*)serializedBeats {

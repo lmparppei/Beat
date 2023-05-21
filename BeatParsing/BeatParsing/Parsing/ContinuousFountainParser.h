@@ -1,6 +1,6 @@
 //
 //  ContinousFountainParser.h
-//  Writer / Beat
+//  Beat
 //
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
@@ -18,7 +18,7 @@
 
 @protocol ContinuousFountainParserDelegate <NSObject>
 @property (nonatomic) bool printSceneNumbers;
-@property (atomic) BeatDocumentSettings *documentSettings;
+@property (atomic, readonly) BeatDocumentSettings *documentSettings;
 @property (nonatomic, readonly) Line* characterInputForLine;
 @property (nonatomic, readonly) NSRange selectedRange;
 

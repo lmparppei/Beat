@@ -104,7 +104,7 @@
 
 @property (nonatomic) NSDictionary<NSString*, NSString*>* characterGenders;
 @property (nonatomic) NSString *revisionColor;
-@property (atomic) BeatDocumentSettings *documentSettings;
+@property (atomic, readonly) BeatDocumentSettings *documentSettings;
 
 @property (nonatomic) bool printSceneNumbers;
 

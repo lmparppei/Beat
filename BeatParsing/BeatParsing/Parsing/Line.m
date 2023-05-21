@@ -1,22 +1,16 @@
 //
 //  Line.m
-//  Writer / Beat
+//  Beat
 //
 //  Created by Hendrik Noeller on 01.04.16.
 //  Copyright © 2016 Hendrik Noeller. All rights reserved.
-//  Parts copyright © 2019-2021 Lauri-Matti Parppei / Lauri-Matti Parppei. All Rights reserved.
-
-/*
-
- This class is HEAVILY modified for Beat.
- There are multiple, overlapping methods for legacy reasons. I'm working on cleaning them up.
- 
- */
+//  (most) parts copyright © 2019-2021 Lauri-Matti Parppei / Lauri-Matti Parppei. All Rights reserved.
 
 #import "Line.h"
 #import "RegExCategories.h"
 #import "FountainRegexes.h"
 #import "NSString+CharacterControl.h"
+#import "BeatMeasure.h"
 
 #define FORMATTING_CHARACTERS @[@"/*", @"*/", @"*", @"_", @"[[", @"]]", @"<<", @">>"]
 
@@ -51,6 +45,12 @@
 @end
 
 @implementation Line
+
+static NSString* BeatFormattingKeyNone = @"BeatNoFormatting";
+static NSString* BeatFormattingKeyItalic = @"BeatItalic";
+static NSString* BeatFormattingKeyBold = @"BeatBold";
+static NSString* BeatFormattingKeyBoldItalic = @"BeatBoldItalic";
+static NSString* BeatFormattingKeyUnderline = @"BeatUnderline";
 
 #pragma mark - Initialization
 
@@ -824,12 +824,13 @@
 
 #pragma mark - Formatting & attribution
 
-/// Parse and apply Fountain stylization inside the string contained by this line
+/// Parse and apply Fountain stylization inside the string contained by this line.
 - (void)resetFormatting {
 	NSUInteger length = self.string.length;
-    if (length > 300000) return; // Objective C doesn't take too kindly to these amounts of symbols.
+    if (length > 300000) return; // Let's not do this for extremely long lines.
     
     @try {
+        // Store the line as a char array to avoid calling characterAtIndex: at each iteration.
         unichar charArray[length];
         [self.string getCharacters:charArray];
         
@@ -1126,7 +1127,32 @@
 }
 */
 
+- (NSAttributedString*)formattingAttributes {
+    NSMutableAttributedString* attrStr = [NSMutableAttributedString.alloc initWithString:self.string];
+    
+    /*
+    NSMutableIndexSet* noFormatting = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.string.length)];
+    [noFormatting removeIndexes:self.italicRanges];
+    [noFormatting removeIndexes:self.boldRanges];
+    [noFormatting removeIndexes:self.boldItalicRanges];
+    [noFormatting removeIndexes:self.underlinedRanges];
+    */
+    
+    [self.italicRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [attrStr addAttribute:BeatFormattingKeyItalic value:@YES range:range];
+    }];
+    [self.boldRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [attrStr addAttribute:BeatFormattingKeyBold value:@YES range:range];
+    }];
+    [self.underlinedRanges enumerateRangesUsingBlock:^(NSRange range, BOOL * _Nonnull stop) {
+        [attrStr addAttribute:BeatFormattingKeyUnderline value:@YES range:range];
+    }];
+    
+    return attrStr;
+}
+
 #pragma mark Formatting range lookup
+
 
 /// Returns ranges between given strings. Used to return attributed string formatting to Fountain markup. The same method can be found in the parser, too.
 - (NSMutableIndexSet*)rangesInChars:(unichar*)string ofLength:(NSUInteger)length between:(char*)startString and:(char*)endString withLength:(NSUInteger)delimLength
@@ -1179,6 +1205,7 @@
 		
 	return indexSet;
 }
+
 
 #pragma mark Formatting checking convenience
 
